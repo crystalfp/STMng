@@ -1,0 +1,33 @@
+---
+"$schema": https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json
+appId: com.electron.{productName}
+productName: STMng
+copyright: Copyright © 2023 ${author}
+asar: true
+directories:
+  output: release/${version}
+  buildResources: resources
+files:
+  - dist-electron
+  - dist
+electronLanguages:
+  - en-US
+  - it
+mac:
+  artifactName: "${productName}_${version}.${ext}"
+  target:
+  - dmg
+win:
+  target:
+  - target: nsis
+    arch:
+    - x64
+  artifactName: ${productName}-${version}-setup.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always

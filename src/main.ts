@@ -1,0 +1,51 @@
+/**
+ * Entry point for the renderer (client) part of the application
+ *
+ * @packageDocumentation
+ */
+import {createApp} from "vue";
+import log from "electron-log/renderer";
+import {createPinia} from "pinia";
+import "@/styles/font-faces.css";
+
+import App from "./App.vue";
+
+// Plugins
+import {router} from "@/router";
+
+import MdiSvg from "@yeliulee/vue-mdi-svg/v3";
+
+import VueTippy from "vue-tippy";
+import "tippy.js/dist/tippy.css";
+import "tippy.js/themes/material.css";
+import "tippy.js/animations/scale-extreme.css";
+
+
+// Start catching unhandled exceptions and promises
+log.errorHandler.startCatching({showDialog: false});
+
+// Create and mount Vue app
+const app = createApp(App)
+    .use(router)
+    .use(createPinia())
+	.use(MdiSvg)
+	.use(VueTippy, {
+		directive: "tooltip",
+		defaultProps: {
+				theme: "material",
+				delay: [900, 150],
+				animation: "scale-extreme",
+				duration: 150,
+				maxWidth: 200,
+				appendTo: "parent",
+				trigger: "mouseenter",
+		}
+	})
+    .directive("focus", {
+        // When the bound element is mounted into the DOM, focus the element
+        mounted(element: HTMLElement) {
+            element.focus();
+        }
+    });
+
+app.mount("#app");

@@ -1,0 +1,187 @@
+@use "sass:color";
+@use "colors";
+@use "fonts";
+
+// > Globals
+// >> Body
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: colors.$background;
+  font-family: fonts.$ui;
+  color: colors.$text;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+// To change theme set this
+// html {
+//   filter: invert(1) hue-rotate(180deg);
+// }
+
+// >> Button
+@mixin button($button-base-color: colors.$button-color-normal) {
+  background: linear-gradient(
+                to bottom,
+                $button-base-color 0%,
+                color.scale($button-base-color, $lightness: -30%) 100%
+              );
+  border: 2px solid colors.$background;
+  cursor: pointer;
+  color: colors.$button-text;
+  padding: 2px 10px 3px;
+  text-shadow: 2px 2px 1px colors.$button-shadow;
+  letter-spacing: 1px;
+  margin: 0 2px;
+  outline: none;
+  user-select: none;
+  border-radius: 6px;
+  text-align: center;
+  font-family: fonts.$ui;
+  font-size: 0.7rem;
+
+  &:hover {
+    background: linear-gradient(
+                  to top,
+                  $button-base-color 0%,
+                  color.scale($button-base-color, $lightness: -30%) 100%
+                );
+  }
+
+  &:active {
+    position: relative;
+    top: 1px;
+  }
+
+  &:focus {
+    outline: 2px dotted color.adjust(color.complement($button-base-color), $lightness: 20%);
+  }
+
+  &:disabled {
+    background: colors.$button-disabled;
+    color: color.scale(colors.$button-disabled, $lightness: 40%);
+  }
+}
+
+button {
+  @include button;
+
+  &.critical {
+    @include button(colors.$button-color-critical);
+  }
+
+  &.positive {
+    @include button(colors.$button-color-positive);
+  }
+
+  &.control {
+    font-size: 1.1rem;
+  }
+
+  &.fixed {
+    width: 6.5rem;
+  }
+}
+
+// >> Fieldset and its legend
+fieldset {
+  user-select: none;
+  margin: 0 7px 7px 7px;
+  padding: 0 0 7px 7px;
+}
+
+legend {
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+// >> Select
+select {
+  width: 10rem;
+  background-color: colors.$background;
+  color: colors.$text;
+  font-size: 1rem;
+  border-color: colors.$border;
+  overflow-y: auto;
+  outline: none;
+
+  &:focus {
+    border: 1px dashed colors.$focus;
+  }
+
+  option {
+    padding-left: 0.5rem;
+  }
+}
+
+// >> Input text or number
+input[type="text"], input[type="number"] {
+  border-radius: 6px;
+  color: colors.$text;
+  background-color: colors.$input-background;
+  border: 1px solid colors.$border;
+  font-size: 1.2rem;
+  font-family: fonts.$ui;
+  padding: 1px 5px 2px;
+
+  &:focus {
+    border: 1px solid colors.$focus;
+    outline: none;
+  }
+}
+
+// > Specific styles
+// >> Tooltip styles
+.tippy-box {
+  box-shadow: 5px 10px 10px colors.$box-shadow;
+  background-color: colors.$tooltip-background;
+}
+
+.tippy-content {
+  font-size: 0.9rem;
+  line-height: 1.4rem;
+  color: colors.$button-text;
+  font-weight: normal;
+  font-family: fonts.$ui;
+}
+
+// >> Project layout common styles
+.prj-layout-title {
+  font-size: 1.5rem;
+  color: colors.$headers;
+  font-family: fonts.$title;
+  font-weight: bold;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid colors.$border;
+  background-color: colors.$background;
+}
+
+// > Big fonts
+.big-font {
+  font-size: 130% !important;
+  line-height: 130% !important;
+
+  h1 {
+    line-height: 95% !important;
+  }
+
+  blockquote {
+    line-height: 140% !important;
+    font-size: 1.1rem !important;
+  }
+}
+
+.big-font-mdata {
+  font-size: 110% !important;
+  line-height: 1.4rem !important;
+
+  .c1 {
+    width: 8rem !important;
+  }
+}
+
+.big-font-title {
+  font-size: 160% !important;
+}

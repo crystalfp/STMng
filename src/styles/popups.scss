@@ -1,0 +1,62 @@
+@use "@/styles/colors";
+@use "@/styles/fonts";
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  content-visibility: auto;
+  display: flex;
+  transform: translateZ(0);
+}
+
+.popup {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: fit-content;
+  width: 324px;
+  background-color: red;
+  opacity: 1;
+  border-radius: 6px;
+  z-index: 1001;
+  cursor: pointer;
+  padding-bottom: 4px;
+  box-shadow: 10px 10px 15px 0 colors.$box-shadow;
+
+  .popup-text {
+    line-height: 2rem;
+    text-align: center;
+    text-shadow: 2px 2px 1px colors.$background;
+    overflow-wrap: break-word;
+    user-select: none;
+    padding: 0 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: fonts.$ui;
+    margin-block: 20px;
+  }
+}
+
+.popup-confirm {
+  background-color: #F16600;
+  padding: 7px 5px;
+  cursor: default;
+}
+
+.popup-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-top: auto;
+  position: relative;
+  bottom: 0;
+
+  button {
+    margin-left: 5px;
+    font-size: 1rem;
+    border-color: #F16600;
+  }
+}
