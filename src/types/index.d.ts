@@ -1,0 +1,47 @@
+import * as THREE from "three";
+
+export interface Viewer3DConfiguration {
+
+    camera: {
+        perspective: boolean;
+    };
+    scene: {
+        background: THREE.ColorRepresentation;
+        showGrid: boolean;
+        showAxis: boolean;
+    };
+    lights: {
+        ambientColor?: THREE.ColorRepresentation;
+        ambientIntensity?: number;
+        directional1Color?: THREE.ColorRepresentation;
+        directional1Intensity?: number;
+        directional1Position?: [number, number, number];
+        directional2Color?: THREE.ColorRepresentation;
+        directional2Intensity?: number;
+        directional2Position?: [number, number, number];
+        directional3Color?: THREE.ColorRepresentation;
+        directional3Intensity?: number;
+        directional3Position?: [number, number, number];
+    };
+}
+
+
+export type Object3D = {
+    type: "sphere";
+    radius: number;
+    position: [number, number, number];
+    color: string | number;
+} |
+{
+    type: "cube";
+    sides: [number, number, number];
+    position: [number, number, number];
+    color: string | number;
+} |
+{
+    type: "cylinder";
+    radius: number;
+    start: [number, number, number];
+    end: [number, number, number];
+    color: string | number;
+};
