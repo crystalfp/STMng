@@ -4,6 +4,7 @@ export interface Viewer3DConfiguration {
 
     camera: {
         perspective: boolean;
+        orthoSide: number;
     };
     scene: {
         background: THREE.ColorRepresentation;

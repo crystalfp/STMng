@@ -3,12 +3,15 @@
 import {onMounted, ref, watch} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+// import {TextGeometry} from "three/addons/geometries/TextGeometry.js";
+// import {FontLoader} from "three/addons/loaders/FontLoader.js";
+// import {Text} from "troika-three-text";
 import type {Viewer3DConfiguration, Object3D} from "@/types";
-
+import {CSS3DRenderer, CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
 
 const props = defineProps<{
 
-    /** Routine to remove the given idx tab */
+    /** True if the viewer part is expanded */
     expanded: boolean;
 
 }>();
@@ -16,25 +19,26 @@ const props = defineProps<{
 const config: Viewer3DConfiguration = {
 
     camera: {
-        perspective: true
+        perspective: true,
+        orthoSide: 10
     },
     scene: {
         background: "skyblue",
-        showGrid: false,
-        showAxis: false,
+        showGrid: true,
+        showAxis: true,
     },
     lights: {
         ambientColor: "white",
-        ambientIntensity: 1,
-        directional1Color: "yellow",
+        ambientIntensity: 0.5,
+        directional1Color: "white",
         directional1Intensity: 3,
         directional2Color: "yellow",
         directional2Intensity: 3,
-        directional3Color: "yellow",
+        directional3Color: "red",
         directional3Intensity: 3,
-        directional1Position: [0, 200, 0],
-        directional2Position: [100, 200, 100],
-        directional3Position: [-100, -200, -100],
+        directional1Position: [0, 1, 0],
+        directional2Position: [1, 1, 1],
+        directional3Position: [-1, -1, -1],
     }
 };
 
@@ -42,19 +46,19 @@ const config: Viewer3DConfiguration = {
 const objects: Object3D[] = [
     {type: "sphere", radius: 1, position: [3, 2, -5], color: "green"},
     {type: "cube", sides: [1, 1, 1], position: [0, 1, 1], color: "blue"},
-    {type: "cylinder", radius: 0.2, start: [0, 1, 1], end: [3, 2, -5], color: "rgb(255, 255, 0)"},
+    {type: "cylinder", radius: 0.2, start: [0, 1, 1], end: [3, 2, -5], color: "rgb(180, 255, 0)"},
 ];
 
-const createMaterial = (color: string |number): THREE.Material => {
+const createMaterial = (color: THREE.ColorRepresentation): THREE.Material => {
 
     return new THREE.MeshStandardMaterial({
-                    color,
-					roughness: 0.7,
-                    metalness: 0.3,
-                    side: THREE.DoubleSide,
-                    // depthTest: true,
-                    // depthWrite: true,
-                });
+        color,
+        roughness: 0.7,
+        metalness: 0.3,
+        side: THREE.DoubleSide,
+        // depthTest: true,
+        // depthWrite: true,
+    });
 };
 
 const cnv = ref<HTMLElement | null>(null);
@@ -71,16 +75,26 @@ onMounted(() => {
 
     // Create camera
     let aspect = cnv.value.clientWidth / cnv.value.clientHeight;
+    const side = config.camera.orthoSide;
     const camera = config.camera.perspective ?
-                        new THREE.PerspectiveCamera(75, aspect, 0.1, 1000) :
-                        new THREE.OrthographicCamera(-5*aspect, 5*aspect, -5, 5, 0.1, 1000);
+                        new THREE.PerspectiveCamera(70, aspect, 0.1, 1000) :
+                        new THREE.OrthographicCamera(-side*aspect, side*aspect, -side, side, 0.1, 1000);
     camera.position.z = 5;
 
     // Add renderer
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
+
+
+    const labelRenderer = new CSS3DRenderer();
+    labelRenderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
+
+    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.top = "0px";
+    labelRenderer.domElement.style.pointerEvents = "none";
+    cnv.value.append(labelRenderer.domElement);
 
     // Add mouse controls
     void new OrbitControls(camera, renderer.domElement);
@@ -89,19 +103,19 @@ onMounted(() => {
     if(config.lights.directional1Color && config.lights.directional1Intensity) {
         const light1 = new THREE.DirectionalLight(config.lights.directional1Color,
                                                   config.lights.directional1Intensity);
-        light1.position.set(...config.lights.directional1Position ?? [10, 0, 0]);
+        light1.position.set(...config.lights.directional1Position ?? [1, 0, 0]);
         scene.add(light1);
     }
     if(config.lights.directional2Color && config.lights.directional2Intensity) {
         const light2 = new THREE.DirectionalLight(config.lights.directional2Color,
                                                   config.lights.directional2Intensity);
-        light2.position.set(...config.lights.directional2Position ?? [0, 10, 0]);
+        light2.position.set(...config.lights.directional2Position ?? [0, 1, 0]);
         scene.add(light2);
     }
     if(config.lights.directional3Color && config.lights.directional3Intensity) {
         const light3 = new THREE.DirectionalLight(config.lights.directional3Color,
                                                   config.lights.directional3Intensity);
-        light3.position.set(...config.lights.directional3Position ?? [0, 0, 10]);
+        light3.position.set(...config.lights.directional3Position ?? [0, 0, 1]);
         scene.add(light3);
     }
 
@@ -113,8 +127,97 @@ onMounted(() => {
 
     // Show helper objects
     if(config.scene.showAxis) {
-        const axesHelper = new THREE.AxesHelper(1);
-        scene.add(axesHelper);
+        // const axesHelper = new THREE.AxesHelper(1);
+        // scene.add(axesHelper);
+
+        const originZero = new THREE.Vector3(0, 0, 0);
+        const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0),
+                                                  originZero, 1,
+                                                  0xFF0000, 0.4, 0.2);
+        const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0),
+                                                  originZero, 1,
+                                                  0x00FF00, 0.4, 0.2);
+        const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1),
+                                                  originZero, 1,
+                                                  0x0000FF, 0.4, 0.2);
+        scene.add(arrowX, arrowY, arrowZ);
+/*
+        const loader = new FontLoader();
+
+        // loader.load("node_modules/three/examples/fonts/helvetiker_regular.typeface.json", (font) => {
+        loader.load("/helvetiker_regular.typeface.json", (font) => {
+            const meshMaterial = createMaterial("white");
+            const gX = new TextGeometry("x", {
+                font,
+                size: 0.2,
+                height: 0.02,
+                curveSegments: 12,
+                bevelEnabled: false,
+            });
+            const mX = new THREE.Mesh(gX, meshMaterial);
+            mX.position.set(1, 0, 0);
+            const gY = new TextGeometry("y", {
+                font,
+                size: 0.2,
+                height: 0.02,
+                curveSegments: 12,
+                bevelEnabled: false,
+            });
+            const mY = new THREE.Mesh(gY, meshMaterial);
+            mY.position.set(0, 1, 0);
+
+            const gZ = new TextGeometry("z", {
+                font,
+                size: 0.2,
+                height: 0.02,
+                curveSegments: 12,
+                bevelEnabled: false,
+            });
+            const mZ = new THREE.Mesh(gZ, meshMaterial);
+            mZ.position.set(0, 0, 1);
+
+            scene.add(mX, mY, mZ);
+        });
+*/
+        // const tttx = new Text();
+        // tttx.text = "Hello world!";
+        // tttx.fontSize = 0.2;
+        // tttx.color = 0x9966FF;
+
+        // scene.add(tttx);
+
+        // // Update the rendering:
+        // tttx.sync();
+
+        const textX = document.createElement("div");
+        textX.style.color = "#FF0000";
+        textX.textContent = "x";
+        textX.style.fontSize = "1px";
+        textX.style.backgroundColor = "transparent";
+
+        const labelX = new CSS3DObject(textX);
+        labelX.position.set(1.3, 0, 0);
+
+        const textY = document.createElement("div");
+        textY.style.color = "#00FF00";
+        textY.textContent = "y";
+        textY.style.fontSize = "10px";
+        textY.style.backgroundColor = "transparent";
+
+        const labelY = new CSS3DObject(textY);
+        labelY.position.set(0, 1.5, 0);
+        labelY.scale.set(0.05, 0.05, 1);
+
+        const textZ = document.createElement("div");
+        textZ.style.color = "#0000FF";
+        textZ.textContent = "z";
+        textZ.style.fontSize = "1px";
+        textZ.style.backgroundColor = "transparent";
+
+        const labelZ = new CSS3DObject(textZ);
+        labelZ.position.set(0, 0, 1.1);
+
+        scene.add(labelX, labelY, labelZ);
     }
 
     if(config.scene.showGrid) {
@@ -146,11 +249,22 @@ onMounted(() => {
                 const dy = obj.start[1] - obj.end[1];
                 const dz = obj.start[2] - obj.end[2];
                 const len = Math.hypot(dx, dy, dz);
-                const geometry = new THREE.CylinderGeometry(obj.radius, obj.radius, len, 32, 2, true);
+                const geometry = new THREE.CylinderGeometry(obj.radius, obj.radius, len, 32, 1, true);
                 const meshMaterial = createMaterial(obj.color);
                 const cylinder = new THREE.Mesh(geometry, meshMaterial);
-                cylinder.position.set(obj.start[0]-dx/2, obj.start[1]-dy/2, obj.start[2]-dz/2);
+
+                const midx = (obj.start[0] + obj.end[0])/2;
+                const midy = (obj.start[1] + obj.end[1])/2;
+                const midz = (obj.start[2] + obj.end[2])/2;
+                cylinder.position.set(midx, midy, midz);
                 cylinder.applyQuaternion(vectorToQuaternion(dx/len, -dy/len, dz/len));
+                // const start = new THREE.Vector3(...obj.start);
+                // const end = new THREE.Vector3(...obj.end);
+                // cylinder.position.copy(start);
+                // cylinder.position.lerp(end, 0.5);
+                // cylinder.scale.set(1, start.distanceTo(end), 1);
+                // cylinder.lookAt(obj.end[0], obj.end[1], obj.end[2]);
+                void vectorToQuaternion;
 
                 scene.add(cylinder);
                 break;
@@ -170,8 +284,8 @@ onMounted(() => {
         }
         else {
             const co = camera as THREE.OrthographicCamera;
-            co.left = -5*aspect;
-            co.right = 5*aspect;
+            co.left = -side*aspect;
+            co.right = side*aspect;
         }
         camera.updateProjectionMatrix();
 
@@ -186,6 +300,7 @@ onMounted(() => {
     const animate = (): void => {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
+        labelRenderer.render( scene, camera );
     };
     animate();
 });

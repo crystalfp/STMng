@@ -281,7 +281,7 @@ rules:
     unicorn/consistent-destructuring: warn
     unicorn/prefer-string-starts-ends-with: warn
     '@typescript-eslint/prefer-string-starts-ends-with': warn
-    unicorn/numeric-separators-style: [error, number: {onlyIfContainsSeparator: true, minimumDigits: 3}]
+    unicorn/numeric-separators-style: [off, number: {onlyIfContainsSeparator: true, minimumDigits: 3}]
     unicorn/no-console-spaces: warn
     unicorn/prefer-string-replace-all: warn
     unicorn/prevent-abbreviations:

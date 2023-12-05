@@ -42,7 +42,7 @@ const toggleExpandedScreen = (): void => {
   display: flex;
   flex-direction: column;
   margin: 0;
-  width: 310px;
+  width: 500px;
 }
 
 .layout-gutter {
