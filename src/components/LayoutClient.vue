@@ -3,6 +3,7 @@
 import {ref} from "vue";
 
 import Viewer3D from "@/components/Viewer3D.vue";
+import Viewer3DCtrl from "@/components/Viewer3DCtrl.vue";
 
 const normalScreen = ref(true);
 const toggleExpandedScreen = (): void => {
@@ -15,7 +16,7 @@ const toggleExpandedScreen = (): void => {
 <template>
 <div class="layout-top">
   <div v-if="normalScreen" class="layout-west">
-    Here!
+    <viewer3-d-ctrl />
   </div>
   <div class="layout-gutter" @click="toggleExpandedScreen" />
   <viewer3-d :expanded="!normalScreen" />

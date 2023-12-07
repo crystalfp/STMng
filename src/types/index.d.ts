@@ -10,6 +10,7 @@ export interface Viewer3DConfiguration {
         background: THREE.ColorRepresentation;
         showGrid: boolean;
         showAxis: boolean;
+        quality: number;
     };
     lights: {
         ambientColor?: THREE.ColorRepresentation;
@@ -31,18 +32,32 @@ export type Object3D = {
     type: "sphere";
     radius: number;
     position: [number, number, number];
-    color: string | number;
+    color: THREE.ColorRepresentation;
 } |
 {
     type: "cube";
     sides: [number, number, number];
     position: [number, number, number];
-    color: string | number;
+    color: THREE.ColorRepresentation;
 } |
 {
     type: "cylinder";
     radius: number;
     start: [number, number, number];
     end: [number, number, number];
-    color: string | number;
+    colorStart: THREE.ColorRepresentation;
+    colorEnd: THREE.ColorRepresentation;
 };
+
+export interface Atom {
+    position: [number, number, number];
+    Z: number;
+}
+
+type BondType = "normal" | "hydrogen";
+
+export interface Bond {
+    from: number;
+    to: number;
+    kind: BondType;
+}

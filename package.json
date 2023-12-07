@@ -30,6 +30,7 @@
     "pinia": "^2.1.7",
     "splitpanes": "^3.1.5",
     "three": "^0.159.0",
+    "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.10",
     "vue-router": "^4.2.5",
     "vue-tippy": "^6.3.1",

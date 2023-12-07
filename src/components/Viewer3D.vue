@@ -1,14 +1,20 @@
+<!-- eslint-disable id-length -->
 <script setup lang="ts">
-
-import {onMounted, ref, watch} from "vue";
+/* eslint-disable  eslint-comments/disable-enable-pair, unicorn/no-zero-fractions */
+import {onMounted, ref, watchEffect, watch} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
-// import {TextGeometry} from "three/addons/geometries/TextGeometry.js";
-// import {FontLoader} from "three/addons/loaders/FontLoader.js";
-// import {Text} from "troika-three-text";
-import type {Viewer3DConfiguration, Object3D} from "@/types";
-import {CSS3DRenderer, CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
+import type {Atom, Bond} from "@/types";
+import {CSS3DRenderer} from "three/addons/renderers/CSS3DRenderer.js";
+import {useConfigStore} from "@/stores/configStore";
+import {Structure2Object3D} from "@/services/Structure2Object3D";
+import {createAxisHelper, createGridHelper,
+        createSphere, createCube, createCylinder} from "@/services/HelperObjects";
 
+// > Access the store
+const configStore = useConfigStore();
+
+// > Properties
 const props = defineProps<{
 
     /** True if the viewer part is expanded */
@@ -16,52 +22,30 @@ const props = defineProps<{
 
 }>();
 
-const config: Viewer3DConfiguration = {
 
-    camera: {
-        perspective: true,
-        orthoSide: 10
-    },
-    scene: {
-        background: "skyblue",
-        showGrid: true,
-        showAxis: true,
-    },
-    lights: {
-        ambientColor: "white",
-        ambientIntensity: 0.5,
-        directional1Color: "white",
-        directional1Intensity: 3,
-        directional2Color: "yellow",
-        directional2Intensity: 3,
-        directional3Color: "red",
-        directional3Intensity: 3,
-        directional1Position: [0, 1, 0],
-        directional2Position: [1, 1, 1],
-        directional3Position: [-1, -1, -1],
-    }
-};
-
-
-const objects: Object3D[] = [
-    {type: "sphere", radius: 1, position: [3, 2, -5], color: "green"},
-    {type: "cube", sides: [1, 1, 1], position: [0, 1, 1], color: "blue"},
-    {type: "cylinder", radius: 0.2, start: [0, 1, 1], end: [3, 2, -5], color: "rgb(180, 255, 0)"},
+const atoms: Atom[] = [
+    {Z: 8, position: [2.0000,  0.0000,  0.1173]},
+    {Z: 1, position: [2.0000,  0.7572, -0.4692]},
+    {Z: 1, position: [2.0000, -0.7572, -0.4692]},
+];
+const bonds: Bond[] =[
+    {from: 0, to: 1, kind: "normal"},
+    {from: 0, to: 2, kind: "normal"},
 ];
 
-const createMaterial = (color: THREE.ColorRepresentation): THREE.Material => {
+const structure = new Structure2Object3D("");
 
-    return new THREE.MeshStandardMaterial({
-        color,
-        roughness: 0.7,
-        metalness: 0.3,
-        side: THREE.DoubleSide,
-        // depthTest: true,
-        // depthWrite: true,
-    });
-};
+const objects = structure.structure2object(atoms, bonds);
 
 const cnv = ref<HTMLElement | null>(null);
+
+// Create scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(configStore.scene.background);
+watchEffect(() => {
+    scene.background = new THREE.Color(configStore.scene.background);
+});
+
 onMounted(() => {
 
     if(!cnv.value) {
@@ -69,14 +53,10 @@ onMounted(() => {
         return;
     }
 
-    // Create scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(config.scene.background);
-
     // Create camera
     let aspect = cnv.value.clientWidth / cnv.value.clientHeight;
-    const side = config.camera.orthoSide;
-    const camera = config.camera.perspective ?
+    const side = configStore.camera.orthoSide;
+    const camera = configStore.camera.perspective ?
                         new THREE.PerspectiveCamera(70, aspect, 0.1, 1000) :
                         new THREE.OrthographicCamera(-side*aspect, side*aspect, -side, side, 0.1, 1000);
     camera.position.z = 5;
@@ -100,172 +80,77 @@ onMounted(() => {
     void new OrbitControls(camera, renderer.domElement);
 
     // Add directional lights
-    if(config.lights.directional1Color && config.lights.directional1Intensity) {
-        const light1 = new THREE.DirectionalLight(config.lights.directional1Color,
-                                                  config.lights.directional1Intensity);
-        light1.position.set(...config.lights.directional1Position ?? [1, 0, 0]);
+    if(configStore.lights.directional1Color && configStore.lights.directional1Intensity) {
+        const light1 = new THREE.DirectionalLight(configStore.lights.directional1Color,
+                                                  configStore.lights.directional1Intensity);
+        light1.position.set(...configStore.lights.directional1Position ?? [1, 0, 0]);
         scene.add(light1);
     }
-    if(config.lights.directional2Color && config.lights.directional2Intensity) {
-        const light2 = new THREE.DirectionalLight(config.lights.directional2Color,
-                                                  config.lights.directional2Intensity);
-        light2.position.set(...config.lights.directional2Position ?? [0, 1, 0]);
+    if(configStore.lights.directional2Color && configStore.lights.directional2Intensity) {
+        const light2 = new THREE.DirectionalLight(configStore.lights.directional2Color,
+                                                  configStore.lights.directional2Intensity);
+        light2.position.set(...configStore.lights.directional2Position ?? [0, 1, 0]);
         scene.add(light2);
     }
-    if(config.lights.directional3Color && config.lights.directional3Intensity) {
-        const light3 = new THREE.DirectionalLight(config.lights.directional3Color,
-                                                  config.lights.directional3Intensity);
-        light3.position.set(...config.lights.directional3Position ?? [0, 0, 1]);
+    if(configStore.lights.directional3Color && configStore.lights.directional3Intensity) {
+        const light3 = new THREE.DirectionalLight(configStore.lights.directional3Color,
+                                                  configStore.lights.directional3Intensity);
+        light3.position.set(...configStore.lights.directional3Position ?? [0, 0, 1]);
         scene.add(light3);
     }
 
     // Add ambient light
-    if(config.lights.ambientColor && (config.lights.ambientIntensity ?? 0) > 0) {
-        const ambient = new THREE.AmbientLight(config.lights.ambientColor, config.lights.ambientIntensity);
+    if(configStore.lights.ambientColor && (configStore.lights.ambientIntensity ?? 0) > 0) {
+        const ambient = new THREE.AmbientLight(configStore.lights.ambientColor, configStore.lights.ambientIntensity);
         scene.add(ambient);
     }
 
     // Show helper objects
-    if(config.scene.showAxis) {
-        // const axesHelper = new THREE.AxesHelper(1);
-        // scene.add(axesHelper);
-
-        const originZero = new THREE.Vector3(0, 0, 0);
-        const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0),
-                                                  originZero, 1,
-                                                  0xFF0000, 0.4, 0.2);
-        const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0),
-                                                  originZero, 1,
-                                                  0x00FF00, 0.4, 0.2);
-        const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1),
-                                                  originZero, 1,
-                                                  0x0000FF, 0.4, 0.2);
-        scene.add(arrowX, arrowY, arrowZ);
-/*
-        const loader = new FontLoader();
-
-        // loader.load("node_modules/three/examples/fonts/helvetiker_regular.typeface.json", (font) => {
-        loader.load("/helvetiker_regular.typeface.json", (font) => {
-            const meshMaterial = createMaterial("white");
-            const gX = new TextGeometry("x", {
-                font,
-                size: 0.2,
-                height: 0.02,
-                curveSegments: 12,
-                bevelEnabled: false,
+    if(configStore.scene.showAxis) scene.add(createAxisHelper());
+    watchEffect(() => {
+        const obj = scene.getObjectByName("AxisHelper");
+        if(obj) {
+            if(configStore.scene.showAxis) return;
+            // Remove object
+            obj.traverse((subObj: THREE.Object3D) => {
+                if(subObj.type === "ArrowHelper") (subObj as THREE.ArrowHelper).dispose();
             });
-            const mX = new THREE.Mesh(gX, meshMaterial);
-            mX.position.set(1, 0, 0);
-            const gY = new TextGeometry("y", {
-                font,
-                size: 0.2,
-                height: 0.02,
-                curveSegments: 12,
-                bevelEnabled: false,
-            });
-            const mY = new THREE.Mesh(gY, meshMaterial);
-            mY.position.set(0, 1, 0);
+            scene.remove(obj);
+            obj.clear();
+        }
+        else if(configStore.scene.showAxis) scene.add(createAxisHelper());
+    });
 
-            const gZ = new TextGeometry("z", {
-                font,
-                size: 0.2,
-                height: 0.02,
-                curveSegments: 12,
-                bevelEnabled: false,
-            });
-            const mZ = new THREE.Mesh(gZ, meshMaterial);
-            mZ.position.set(0, 0, 1);
-
-            scene.add(mX, mY, mZ);
-        });
-*/
-        // const tttx = new Text();
-        // tttx.text = "Hello world!";
-        // tttx.fontSize = 0.2;
-        // tttx.color = 0x9966FF;
-
-        // scene.add(tttx);
-
-        // // Update the rendering:
-        // tttx.sync();
-
-        const textX = document.createElement("div");
-        textX.style.color = "#FF0000";
-        textX.textContent = "x";
-        textX.style.fontSize = "1px";
-        textX.style.backgroundColor = "transparent";
-
-        const labelX = new CSS3DObject(textX);
-        labelX.position.set(1.3, 0, 0);
-
-        const textY = document.createElement("div");
-        textY.style.color = "#00FF00";
-        textY.textContent = "y";
-        textY.style.fontSize = "10px";
-        textY.style.backgroundColor = "transparent";
-
-        const labelY = new CSS3DObject(textY);
-        labelY.position.set(0, 1.5, 0);
-        labelY.scale.set(0.05, 0.05, 1);
-
-        const textZ = document.createElement("div");
-        textZ.style.color = "#0000FF";
-        textZ.textContent = "z";
-        textZ.style.fontSize = "1px";
-        textZ.style.backgroundColor = "transparent";
-
-        const labelZ = new CSS3DObject(textZ);
-        labelZ.position.set(0, 0, 1.1);
-
-        scene.add(labelX, labelY, labelZ);
-    }
-
-    if(config.scene.showGrid) {
-        const gridHelper = new THREE.GridHelper(10, 10);
-        scene.add(gridHelper);
-    }
+    if(configStore.scene.showGrid) scene.add(createGridHelper());
+    watchEffect(() => {
+        const obj = scene.getObjectByName("GridHelper");
+        if(obj) {
+            if(configStore.scene.showGrid) return;
+            scene.remove(obj);
+            (obj as THREE.GridHelper).dispose();
+            obj.clear();
+        }
+        else if(configStore.scene.showGrid) scene.add(createGridHelper());
+    });
 
     // Add scene objects
+    const objQuality = configStore.scene.quality;
     for(const obj of objects) {
         switch(obj.type) {
             case "sphere": {
-                const geometry = new THREE.SphereGeometry(obj.radius, 32, 16);
-                const meshMaterial = createMaterial(obj.color);
-                const sphere = new THREE.Mesh(geometry, meshMaterial);
-                sphere.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                const sphere = createSphere(obj.radius, obj.color, obj.position, objQuality);
                 scene.add(sphere);
                 break;
             }
             case "cube": {
-                const geometry = new THREE.BoxGeometry(obj.sides[0], obj.sides[1], obj.sides[2], 5, 5, 5);
-                const meshMaterial = createMaterial(obj.color);
-                const cube = new THREE.Mesh(geometry, meshMaterial);
-                cube.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                const cube = createCube(obj.sides, obj.color, obj.position, objQuality);
                 scene.add(cube);
                 break;
             }
             case "cylinder": {
-                const dx = obj.start[0] - obj.end[0];
-                const dy = obj.start[1] - obj.end[1];
-                const dz = obj.start[2] - obj.end[2];
-                const len = Math.hypot(dx, dy, dz);
-                const geometry = new THREE.CylinderGeometry(obj.radius, obj.radius, len, 32, 1, true);
-                const meshMaterial = createMaterial(obj.color);
-                const cylinder = new THREE.Mesh(geometry, meshMaterial);
-
-                const midx = (obj.start[0] + obj.end[0])/2;
-                const midy = (obj.start[1] + obj.end[1])/2;
-                const midz = (obj.start[2] + obj.end[2])/2;
-                cylinder.position.set(midx, midy, midz);
-                cylinder.applyQuaternion(vectorToQuaternion(dx/len, -dy/len, dz/len));
-                // const start = new THREE.Vector3(...obj.start);
-                // const end = new THREE.Vector3(...obj.end);
-                // cylinder.position.copy(start);
-                // cylinder.position.lerp(end, 0.5);
-                // cylinder.scale.set(1, start.distanceTo(end), 1);
-                // cylinder.lookAt(obj.end[0], obj.end[1], obj.end[2]);
-                void vectorToQuaternion;
-
+                const cylinder = createCylinder(obj.start, obj.end,
+							                    obj.radius, obj.colorStart,
+							                    obj.colorEnd, objQuality);
                 scene.add(cylinder);
                 break;
             }
@@ -279,7 +164,7 @@ onMounted(() => {
 
         aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
 
-        if(config.camera.perspective) {
+        if(configStore.camera.perspective) {
             (camera as THREE.PerspectiveCamera).aspect = aspect;
         }
         else {
@@ -305,40 +190,26 @@ onMounted(() => {
     animate();
 });
 
-const vectorToQuaternion = (nx: number, ny: number, nz: number): THREE.Quaternion => {
+/*
+function removeObject3D(object3D) {
+    if (!(object3D instanceof THREE.Object3D)) return false;
 
-    const forward = new THREE.Vector3(nx, ny, nz);
-    const direction = new THREE.Vector3(0, 1, 0);
+    // for better memory management and performance
+    if (object3D.geometry) object3D.geometry.dispose();
 
-    const cosTheta = forward.dot(direction);
-    const axis = new THREE.Vector3(0, 0, 0);
-
-    if(cosTheta < -0.999) {
-        // special case when vectors in opposite directions:
-        // there is no "ideal" rotation axis
-        // So guess one; any will do as long as it's perpendicular to start
-        axis.crossVectors(new THREE.Vector3(0, 0, 1), forward);
-
-        if(axis.length() * axis.length() < 0.01) {
-            axis.crossVectors(new THREE.Vector3(1, 0, 0), forward);
+    if (object3D.material) {
+        if (object3D.material instanceof Array) {
+            // for better memory management and performance
+            object3D.material.forEach(material => material.dispose());
+        } else {
+            // for better memory management and performance
+            object3D.material.dispose();
         }
-        axis.normalize();
-        return new THREE.Quaternion(axis.x, axis.y, axis.z, 0);
     }
-
-    axis.crossVectors(forward, direction);
-
-    const es = Math.sqrt((1 + cosTheta) * 2);
-    const invEs = 1 / es;
-
-    return new THREE.Quaternion(
-        axis.x * invEs,
-        axis.y * invEs,
-        axis.z * invEs,
-        es * 0.5
-    );
-};
-
+    object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+    return true;
+}
+*/
 </script>
 
 
