@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {setTitle} from "@/services/RoutesClient";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import Viewer3DCtrl from "@/components/Viewer3DCtrl.vue";
@@ -10,6 +11,9 @@ const toggleExpandedScreen = (): void => {
     normalScreen.value = !normalScreen.value;
 };
 
+onMounted(() => {
+    setTitle("See the Molecole New Generation");
+});
 </script>
 
 
