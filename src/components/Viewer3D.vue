@@ -1,7 +1,6 @@
 <!-- eslint-disable id-length -->
 <script setup lang="ts">
-/* eslint-disable  eslint-comments/disable-enable-pair, unicorn/no-zero-fractions */
-import {onMounted, ref, watchEffect, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import type {Atom, Bond} from "@/types";
@@ -10,6 +9,8 @@ import {useConfigStore} from "@/stores/configStore";
 import {Structure2Object3D} from "@/services/Structure2Object3D";
 import {createAxisHelper, createGridHelper,
         createSphere, createCube, createCylinder} from "@/services/HelperObjects";
+// import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
+import {createScene} from "@/services/CreateScene";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -37,14 +38,11 @@ const structure = new Structure2Object3D("");
 
 const objects = structure.structure2object(atoms, bonds);
 
+// Reference to the view
 const cnv = ref<HTMLElement | null>(null);
 
 // Create scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(configStore.scene.background);
-watchEffect(() => {
-    scene.background = new THREE.Color(configStore.scene.background);
-});
+const scene = createScene();
 
 onMounted(() => {
 
@@ -59,7 +57,7 @@ onMounted(() => {
     const camera = configStore.camera.perspective ?
                         new THREE.PerspectiveCamera(70, aspect, 0.1, 1000) :
                         new THREE.OrthographicCamera(-side*aspect, side*aspect, -side, side, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.set(5, 3, -5);
 
     // Add renderer
     const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -105,33 +103,12 @@ onMounted(() => {
         scene.add(ambient);
     }
 
-    // Show helper objects
-    if(configStore.scene.showAxis) scene.add(createAxisHelper());
-    watchEffect(() => {
-        const obj = scene.getObjectByName("AxisHelper");
-        if(obj) {
-            if(configStore.scene.showAxis) return;
-            // Remove object
-            obj.traverse((subObj: THREE.Object3D) => {
-                if(subObj.type === "ArrowHelper") (subObj as THREE.ArrowHelper).dispose();
-            });
-            scene.remove(obj);
-            obj.clear();
-        }
-        else if(configStore.scene.showAxis) scene.add(createAxisHelper());
-    });
+    // Add, if needed, helper objects
+    createAxisHelper(scene);
 
-    if(configStore.scene.showGrid) scene.add(createGridHelper());
-    watchEffect(() => {
-        const obj = scene.getObjectByName("GridHelper");
-        if(obj) {
-            if(configStore.scene.showGrid) return;
-            scene.remove(obj);
-            (obj as THREE.GridHelper).dispose();
-            obj.clear();
-        }
-        else if(configStore.scene.showGrid) scene.add(createGridHelper());
-    });
+    createGridHelper(scene);
+
+    // const viewHelper = new ViewHelper(camera, renderer.domElement);
 
     // Add scene objects
     const objQuality = configStore.scene.quality;
@@ -185,7 +162,8 @@ onMounted(() => {
     const animate = (): void => {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
-        labelRenderer.render( scene, camera );
+        labelRenderer.render(scene, camera);
+        // viewHelper.render(renderer);
     };
     animate();
 });
@@ -229,6 +207,5 @@ function removeObject3D(object3D) {
   box-sizing: border-box;
   overflow: hidden;
   flex-grow: 1;
-  //   width: calc(100vw - 649px); // Full screen minus columns width minus gutter width
 }
 </style>

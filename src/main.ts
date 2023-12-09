@@ -20,6 +20,13 @@ import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/material.css";
 import "tippy.js/animations/scale-extreme.css";
 
+// Vuetify
+import "vuetify/styles";
+import {createVuetify} from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
+import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
+import {md2} from "vuetify/blueprints";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -41,6 +48,21 @@ const app = createApp(App)
 				trigger: "mouseenter",
 		}
 	})
+	.use(createVuetify({
+		components,
+		directives,
+		theme: {
+    		defaultTheme: "dark",
+  		},
+		icons: {
+			defaultSet: "mdi",
+			aliases,
+			sets: {
+				mdi,
+			},
+  		},
+		blueprint: md2,
+  	}))
     .directive("focus", {
         // When the bound element is mounted into the DOM, focus the element
         mounted(element: HTMLElement) {

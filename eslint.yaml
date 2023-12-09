@@ -32,6 +32,7 @@ extends:
     - plugin:vue/base
     - plugin:vue/vue3-essential
     - plugin:vue/vue3-recommended
+    - plugin:vuetify/base
 
 parserOptions:
     parser: '@typescript-eslint/parser'
@@ -306,6 +307,7 @@ rules:
         - warn
         - indent: 4
     unicorn/prefer-top-level-await: off
+    unicorn/no-zero-fractions: off
 
     promise/catch-or-return: [off, {allowFinally: true}]
 

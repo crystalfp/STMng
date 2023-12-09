@@ -16,10 +16,14 @@ body {
   overflow: hidden;
 }
 
-// To change theme set this
-// html {
-//   filter: invert(1) hue-rotate(180deg);
-// }
+// For vuetify
+html {
+  overflow: hidden !important;
+}
+/* To change theme set this
+html {
+  filter: invert(1) hue-rotate(180deg);
+} */
 
 // >> Button
 @mixin button($button-base-color: colors.$button-color-normal) {

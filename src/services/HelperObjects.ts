@@ -5,8 +5,10 @@ import {CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
 // import {FontLoader} from "three/addons/loaders/FontLoader.js";
 // import {Text} from "troika-three-text";
 import {createMaterial, createColorTextureMaterial} from "@/services/DefineMaterials";
+import {watchEffect} from "vue";
+import {useConfigStore} from "@/stores/configStore";
 
-export const createAxisHelper = (): THREE.Group => {
+const axisHelper = (): THREE.Group => {
 
 	const group = new THREE.Group();
 	group.name = "AxisHelper";
@@ -103,21 +105,56 @@ export const createAxisHelper = (): THREE.Group => {
 	return group;
 };
 
-export const createGridHelper = (): THREE.GridHelper => {
-	const gridHelper = new THREE.GridHelper(10, 10);
-	gridHelper.name = "GridHelper";
+export const createAxisHelper = (scene: THREE.Scene): void => {
 
-	return gridHelper;
+	const configStore = useConfigStore();
+    if(configStore.scene.showAxis) scene.add(axisHelper());
+    watchEffect(() => {
+        const obj = scene.getObjectByName("AxisHelper");
+        if(obj) {
+            if(configStore.scene.showAxis) return;
+            // Remove object
+            obj.traverse((subObj: THREE.Object3D) => {
+                if(subObj.type === "ArrowHelper") (subObj as THREE.ArrowHelper).dispose();
+            });
+            scene.remove(obj);
+            obj.clear();
+        }
+        else if(configStore.scene.showAxis) scene.add(axisHelper());
+    });
 };
 
-const sphereSubdivisions = [4, 8, 16, 32];
+const gridHelper = (): THREE.GridHelper => {
+	const grid = new THREE.GridHelper(10, 10);
+	grid.name = "GridHelper";
+
+	return grid;
+};
+
+export const createGridHelper = (scene: THREE.Scene): void => {
+	const configStore = useConfigStore();
+    if(configStore.scene.showGrid) scene.add(gridHelper());
+    watchEffect(() => {
+        const obj = scene.getObjectByName("GridHelper");
+        if(obj) {
+            if(configStore.scene.showGrid) return;
+            scene.remove(obj);
+            (obj as THREE.GridHelper).dispose();
+            obj.clear();
+        }
+        else if(configStore.scene.showGrid) scene.add(gridHelper());
+    });
+};
+
+const sphereSubdivisions = [2, 4, 6, 10];
 export const createSphere = (radius: number, color: THREE.ColorRepresentation,
 							 position: [number, number, number], quality: number): THREE.Mesh => {
 
 	if(quality < 0) quality = 0;
 	else if(quality > 3) quality = 3;
 	const subdivisions = sphereSubdivisions[quality];
-	const geometry = new THREE.SphereGeometry(radius, subdivisions, subdivisions);
+	// const geometry = new THREE.SphereGeometry(radius, subdivisions, subdivisions);
+	const geometry = new THREE.IcosahedronGeometry(radius, subdivisions);
 	const meshMaterial = createMaterial(color);
 	const sphere = new THREE.Mesh(geometry, meshMaterial);
 	sphere.position.set(position[0], position[1], position[2]);
