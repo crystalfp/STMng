@@ -62,6 +62,11 @@ const app = createApp(App)
 			},
   		},
 		blueprint: md2,
+		defaults: {
+			global: {
+				density: "compact"
+			}
+		}
   	}))
     .directive("focus", {
         // When the bound element is mounted into the DOM, focus the element

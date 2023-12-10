@@ -4,7 +4,7 @@ import {CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
 // import {TextGeometry} from "three/addons/geometries/TextGeometry.js";
 // import {FontLoader} from "three/addons/loaders/FontLoader.js";
 // import {Text} from "troika-three-text";
-import {createMaterial, createColorTextureMaterial} from "@/services/DefineMaterials";
+import {createMaterial, createColorTextureMaterial, getQuality} from "@/services/DefineMaterials";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 
@@ -148,12 +148,9 @@ export const createGridHelper = (scene: THREE.Scene): void => {
 
 const sphereSubdivisions = [2, 4, 6, 10];
 export const createSphere = (radius: number, color: THREE.ColorRepresentation,
-							 position: [number, number, number], quality: number): THREE.Mesh => {
+							 position: [number, number, number]): THREE.Mesh => {
 
-	if(quality < 0) quality = 0;
-	else if(quality > 3) quality = 3;
-	const subdivisions = sphereSubdivisions[quality];
-	// const geometry = new THREE.SphereGeometry(radius, subdivisions, subdivisions);
+	const subdivisions = sphereSubdivisions[getQuality()];
 	const geometry = new THREE.IcosahedronGeometry(radius, subdivisions);
 	const meshMaterial = createMaterial(color);
 	const sphere = new THREE.Mesh(geometry, meshMaterial);
@@ -163,11 +160,9 @@ export const createSphere = (radius: number, color: THREE.ColorRepresentation,
 
 const cubeSubdivisions = [1, 2, 8, 16];
 export const createCube = (sides: [number, number, number], color: THREE.ColorRepresentation,
-						   position: [number, number, number], quality: number): THREE.Mesh => {
+						   position: [number, number, number]): THREE.Mesh => {
 
-	if(quality < 0) quality = 0;
-	else if(quality > 3) quality = 3;
-	const subdivisions = cubeSubdivisions[quality];
+	const subdivisions = cubeSubdivisions[getQuality()];
 	const geometry = new THREE.BoxGeometry(sides[0], sides[1], sides[2],
 										   subdivisions, subdivisions, subdivisions);
 	const meshMaterial = createMaterial(color);
@@ -175,7 +170,6 @@ export const createCube = (sides: [number, number, number], color: THREE.ColorRe
 	cube.position.set(position[0], position[1], position[2]);
 	return cube;
 };
-
 
 const vectorToQuaternion = (nx: number, ny: number, nz: number): THREE.Quaternion => {
 
@@ -214,12 +208,9 @@ const vectorToQuaternion = (nx: number, ny: number, nz: number): THREE.Quaternio
 const cylinderSubdivisions = [4, 8, 16, 32];
 export const createCylinder = (start: [number, number, number], end: [number, number, number],
 							   radius: number, colorStart: THREE.ColorRepresentation,
-							   // eslint-disable-next-line max-params
-							   colorEnd: THREE.ColorRepresentation, quality: number): THREE.Mesh => {
+							   colorEnd: THREE.ColorRepresentation): THREE.Mesh => {
 
-	if(quality < 0) quality = 0;
-	else if(quality > 3) quality = 3;
-	const subdivisions = cylinderSubdivisions[quality];
+	const subdivisions = cylinderSubdivisions[getQuality()];
 
 	const dx = start[0] - end[0];
 	const dy = start[1] - end[1];
@@ -227,7 +218,7 @@ export const createCylinder = (start: [number, number, number], end: [number, nu
 	const len = Math.hypot(dx, dy, dz);
 	const geometry = new THREE.CylinderGeometry(radius, radius, len, subdivisions, 1, true);
 	const meshMaterial = createColorTextureMaterial(new THREE.Color(colorStart),
-													new THREE.Color(colorEnd), 32);
+													new THREE.Color(colorEnd), subdivisions);
 	const cylinder = new THREE.Mesh(geometry, meshMaterial);
 
 	const midx = (start[0] + end[0])/2;

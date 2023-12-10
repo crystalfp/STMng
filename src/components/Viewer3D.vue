@@ -11,6 +11,8 @@ import {createAxisHelper, createGridHelper,
         createSphere, createCube, createCylinder} from "@/services/HelperObjects";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {createScene} from "@/services/CreateScene";
+import {createLights} from "@/services/CreateLights";
+import {setMaterialParams, adjustMaterials} from "@/services/DefineMaterials";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -77,31 +79,7 @@ onMounted(() => {
     // Add mouse controls
     void new OrbitControls(camera, renderer.domElement);
 
-    // Add directional lights
-    if(configStore.lights.directional1Color && configStore.lights.directional1Intensity) {
-        const light1 = new THREE.DirectionalLight(configStore.lights.directional1Color,
-                                                  configStore.lights.directional1Intensity);
-        light1.position.set(...configStore.lights.directional1Position ?? [1, 0, 0]);
-        scene.add(light1);
-    }
-    if(configStore.lights.directional2Color && configStore.lights.directional2Intensity) {
-        const light2 = new THREE.DirectionalLight(configStore.lights.directional2Color,
-                                                  configStore.lights.directional2Intensity);
-        light2.position.set(...configStore.lights.directional2Position ?? [0, 1, 0]);
-        scene.add(light2);
-    }
-    if(configStore.lights.directional3Color && configStore.lights.directional3Intensity) {
-        const light3 = new THREE.DirectionalLight(configStore.lights.directional3Color,
-                                                  configStore.lights.directional3Intensity);
-        light3.position.set(...configStore.lights.directional3Position ?? [0, 0, 1]);
-        scene.add(light3);
-    }
-
-    // Add ambient light
-    if(configStore.lights.ambientColor && (configStore.lights.ambientIntensity ?? 0) > 0) {
-        const ambient = new THREE.AmbientLight(configStore.lights.ambientColor, configStore.lights.ambientIntensity);
-        scene.add(ambient);
-    }
+    createLights(scene);
 
     // Add, if needed, helper objects
     createAxisHelper(scene);
@@ -111,30 +89,33 @@ onMounted(() => {
     // const viewHelper = new ViewHelper(camera, renderer.domElement);
 
     // Add scene objects
-    const objQuality = configStore.scene.quality;
+    const molecule = new THREE.Group;
+    setMaterialParams();
     for(const obj of objects) {
         switch(obj.type) {
             case "sphere": {
-                const sphere = createSphere(obj.radius, obj.color, obj.position, objQuality);
-                scene.add(sphere);
+                const sphere = createSphere(obj.radius, obj.color, obj.position);
+                molecule.add(sphere);
                 break;
             }
             case "cube": {
-                const cube = createCube(obj.sides, obj.color, obj.position, objQuality);
+                const cube = createCube(obj.sides, obj.color, obj.position);
                 scene.add(cube);
                 break;
             }
             case "cylinder": {
                 const cylinder = createCylinder(obj.start, obj.end,
 							                    obj.radius, obj.colorStart,
-							                    obj.colorEnd, objQuality);
-                scene.add(cylinder);
+							                    obj.colorEnd);
+                molecule.add(cylinder);
                 break;
             }
             default:
                 console.log(`Object "${JSON.stringify(obj, undefined, 2)}" is not implemented`);
         }
     }
+    scene.add(molecule);
+    adjustMaterials(molecule);
 
     // Change the camera parameters when the window changes or ask for a expanded view
     const resizeScene = (): void => {

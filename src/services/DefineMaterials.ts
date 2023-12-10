@@ -1,4 +1,58 @@
 import * as THREE from "three";
+import {useConfigStore} from "@/stores/configStore";
+import {watchEffect} from "vue";
+
+let objQuality: number;
+let objRoughness: number;
+let objMetalness: number;
+
+export const setMaterialParams = (): void => {
+
+    const configStore = useConfigStore();
+
+    objQuality   = configStore.materials.quality;
+    objRoughness = configStore.materials.roughness;
+    objMetalness = configStore.materials.metalness;
+};
+
+export const adjustMaterials = (group: THREE.Group): void => {
+    const configStore = useConfigStore();
+    const sphereSubdivisions = [2, 4, 6, 10];
+    const cylinderSubdivisions = [4, 8, 16, 32];
+
+    watchEffect(() => {
+        const {roughness, metalness, quality} = configStore.materials;
+        const detail = sphereSubdivisions[quality];
+        const segments = cylinderSubdivisions[quality];
+        group.traverse((object) => {
+            if(object.type !== "Mesh") return;
+            const mesh = object as THREE.Mesh;
+            const material = mesh.material as THREE.MeshStandardMaterial;
+            material.roughness = roughness;
+            material.metalness = metalness;
+
+            const {geometry} = mesh;
+            if(geometry.type === "IcosahedronGeometry") {
+                const sphere = geometry as THREE.IcosahedronGeometry;
+                if(sphere.parameters.detail !== detail) {
+                    const {radius} = sphere.parameters;
+                    mesh.geometry = new THREE.IcosahedronGeometry(radius, detail);
+                }
+            }
+            else if(geometry.type === "CylinderGeometry") {
+                const cylinder = geometry as THREE.CylinderGeometry;
+                if(cylinder.parameters.radialSegments !== segments) {
+                    const {radiusTop, radiusBottom, height} = cylinder.parameters;
+
+                    mesh.geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom,
+                                                               height, segments, 1, true);
+                }
+            }
+        });
+    });
+};
+
+export const getQuality = (): number => {return objQuality;};
 
 export const createColorTextureMaterial = (colorFrom: THREE.Color,
 									colorTo: THREE.Color,
@@ -36,8 +90,8 @@ export const createColorTextureMaterial = (colorFrom: THREE.Color,
     texture.needsUpdate = true;
 
 	return new THREE.MeshStandardMaterial({
-        roughness: 0.7,
-        metalness: 0.3,
+        roughness: objRoughness,
+        metalness: objMetalness,
         side: THREE.FrontSide,
         map: texture
     });
@@ -48,8 +102,8 @@ export const createMaterial = (color: THREE.ColorRepresentation): THREE.Material
 
     return new THREE.MeshStandardMaterial({
         color,
-        roughness: 0.7,
-        metalness: 0.3,
+        roughness: objRoughness,
+        metalness: objMetalness,
         side: THREE.DoubleSide,
     });
 };

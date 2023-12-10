@@ -16,23 +16,27 @@ export const useConfigStore = defineStore("ConfigStore", {
 			orthoSide: 10
 		},
 		scene: {
-			background: "skyblue",
+			background: "#90CEEC",
 			showGrid: true,
 			showAxis: true,
-			quality: 3,
 		},
 		lights: {
-			ambientColor: "white",
+			ambientColor: "#FFFFFF",
 			ambientIntensity: 0.5,
-			directional1Color: "white",
+			directional1Color: "#FFFFFF",
 			directional1Intensity: 3,
-			directional2Color: "yellow",
+			directional2Color: "#FFFF00",
 			directional2Intensity: 3,
-			directional3Color: "red",
+			directional3Color: "#FF0000",
 			directional3Intensity: 3,
 			directional1Position: [0, 1, 0],
 			directional2Position: [1, 1, 1],
 			directional3Position: [-1, -1, -1],
+		},
+		materials: {
+			quality: 3,
+			roughness: 0.7,
+			metalness: 0.3
 		}
 	} as Viewer3DConfiguration),
 /*

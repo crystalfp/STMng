@@ -1,4 +1,3 @@
-/* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-zero-fractions */
 
 import type {Atom, Bond, Object3D} from "@/types";
 

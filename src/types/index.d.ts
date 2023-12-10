@@ -7,23 +7,27 @@ export interface Viewer3DConfiguration {
         orthoSide: number;
     };
     scene: {
-        background: THREE.ColorRepresentation;
+        background: string;
         showGrid: boolean;
         showAxis: boolean;
-        quality: number;
     };
     lights: {
-        ambientColor?: THREE.ColorRepresentation;
-        ambientIntensity?: number;
-        directional1Color?: THREE.ColorRepresentation;
-        directional1Intensity?: number;
-        directional1Position?: [number, number, number];
-        directional2Color?: THREE.ColorRepresentation;
-        directional2Intensity?: number;
-        directional2Position?: [number, number, number];
-        directional3Color?: THREE.ColorRepresentation;
-        directional3Intensity?: number;
-        directional3Position?: [number, number, number];
+        ambientColor: string;
+        ambientIntensity: number;
+        directional1Color: string;
+        directional1Intensity: number;
+        directional1Position: [number, number, number];
+        directional2Color: string;
+        directional2Intensity: number;
+        directional2Position: [number, number, number];
+        directional3Color: string;
+        directional3Intensity: number;
+        directional3Position: [number, number, number];
+    };
+    materials: {
+        quality: number;
+        roughness: number;
+        metalness: number;
     };
 }
 
