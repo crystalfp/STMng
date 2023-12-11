@@ -128,14 +128,3 @@ watchEffect(() => {
   </v-expansion-panels>
 </v-container>
 </template>
-
-<style lang="scss">
-
-.container {
-  overflow-y: auto;
-  height: calc(100% - 68px);
-}
-.v-slider__label {
-  width: 5rem;
-}
-</style>

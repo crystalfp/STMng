@@ -15,4 +15,5 @@ import {RouterView} from "vue-router";
 @use "@/styles/fonts";
 @use "@/styles/common";
 @use "@/styles/popups";
+@use "@/styles/vuetify"
 </style>

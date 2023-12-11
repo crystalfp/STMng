@@ -1,13 +1,13 @@
 <!-- eslint-disable id-length -->
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import type {Atom, Bond} from "@/types";
 import {CSS3DRenderer} from "three/addons/renderers/CSS3DRenderer.js";
 import {useConfigStore} from "@/stores/configStore";
 import {Structure2Object3D} from "@/services/Structure2Object3D";
-import {createAxisHelper, createGridHelper,
+import {createAxisHelper, createGridHelper, createWireframe,
         createSphere, createCube, createCylinder} from "@/services/HelperObjects";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {createScene} from "@/services/CreateScene";
@@ -56,10 +56,16 @@ onMounted(() => {
     // Create camera
     let aspect = cnv.value.clientWidth / cnv.value.clientHeight;
     const side = configStore.camera.orthoSide;
-    const camera = configStore.camera.perspective ?
-                        new THREE.PerspectiveCamera(70, aspect, 0.1, 1000) :
-                        new THREE.OrthographicCamera(-side*aspect, side*aspect, -side, side, 0.1, 1000);
-    camera.position.set(5, 3, -5);
+    // const camera = configStore.camera.perspective ?
+    //                     new THREE.PerspectiveCamera(75, aspect, 0.1, 5000) :
+    //                     new THREE.OrthographicCamera(-side*aspect, side*aspect, -side, side, 0.1, 1000);
+
+    const cameraPerspective = new THREE.PerspectiveCamera(75, aspect, 0.1, 5000);
+    cameraPerspective.position.set(5, 3, -5);
+    const cameraOrthographic = new THREE.OrthographicCamera(-side*aspect, side*aspect, side, -side, .1, 5000);
+    cameraOrthographic.position.set(-1, -1, 0);
+
+    let camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
 
     // Add renderer
     const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -78,6 +84,10 @@ onMounted(() => {
 
     // Add mouse controls
     void new OrbitControls(camera, renderer.domElement);
+    watchEffect(() => {
+        camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
+        camera.updateProjectionMatrix();
+    });
 
     createLights(scene);
 
@@ -85,8 +95,11 @@ onMounted(() => {
     createAxisHelper(scene);
 
     createGridHelper(scene);
-
+// const helper = new THREE.CameraHelper( camera );
+// scene.add( helper );
     // const viewHelper = new ViewHelper(camera, renderer.domElement);
+
+    scene.add(createWireframe([0, 0, 0], [1, 2, 3]));
 
     // Add scene objects
     const molecule = new THREE.Group;

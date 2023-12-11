@@ -1,0 +1,14 @@
+
+.container {
+  overflow-y: auto;
+  height: calc(100% - 68px);
+}
+
+.v-slider__label {
+  width: 5rem;
+}
+
+.v-selection-control--inline .v-label {
+    width: auto;
+    margin-left: 6px;
+}

@@ -13,7 +13,7 @@ export const useConfigStore = defineStore("ConfigStore", {
 
 		camera: {
 			perspective: true,
-			orthoSide: 10
+			orthoSide: 600
 		},
 		scene: {
 			background: "#90CEEC",

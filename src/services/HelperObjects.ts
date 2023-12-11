@@ -234,3 +234,14 @@ export const createCylinder = (start: [number, number, number], end: [number, nu
 	// cylinder.lookAt(obj.end[0], obj.end[1], obj.end[2]);
 	return cylinder;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-shadow
+export const createWireframe = (origin: [number, number, number],
+								sides: [number, number, number]): THREE.Line => {
+
+	const geometry = new THREE.BoxGeometry(sides[0], sides[1], sides[2]);
+	const edges = new THREE.EdgesGeometry(geometry);
+	const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0x0000FF}));
+	line.position.set(...origin);
+	return line;
+};
