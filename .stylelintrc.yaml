@@ -1,0 +1,43 @@
+
+extends:
+  - stylelint-config-standard
+  - stylelint-config-standard-vue
+  - stylelint-config-standard-scss
+  - stylelint-config-recommended-vue/scss
+  - stylelint-config-recommended-scss
+
+overrides:
+- files:
+  - "*.scss"
+  - "**/*.scss"
+  customSyntax: postcss-scss
+- files:
+  - "*.vue"
+  - "**/*.vue"
+  customSyntax: postcss-html
+
+ignoreFiles:
+  - src/styles/splitpanes.css
+
+reportNeedlessDisables: true
+
+rules:
+  ## declaration-property-value-no-unknown: true # this rule does not accept scss variables
+  alpha-value-notation: number
+  at-rule-no-unknown: null
+  color-function-notation: null
+  color-hex-length: long
+  comment-whitespace-inside: always
+  declaration-block-single-line-max-declarations: 4
+  font-family-no-missing-generic-family-keyword: true
+  function-url-quotes: always
+  max-nesting-depth: 3
+  media-feature-name-no-vendor-prefix: true
+  scss/at-rule-no-unknown: true
+  scss/dollar-variable-empty-line-before: null
+  scss/dollar-variable-pattern: null
+  scss/selector-no-redundant-nesting-selector: null
+  scss/double-slash-comment-empty-line-before: null
+  selector-no-qualifying-type: null
+  selector-pseudo-class-no-unknown: [true, {ignorePseudoClasses: [deep, slotted, global]}]
+  shorthand-property-no-redundant-values: null
