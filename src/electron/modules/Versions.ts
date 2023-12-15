@@ -1,0 +1,32 @@
+/**
+ * Setup the channel to visualize application, Chrome, node and electron versions
+ *
+ * @packageDocumentation
+ */
+import {ipcMain} from "electron";
+
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import fs from "node:fs";
+
+/**
+ * Setup the channel to visualize the application version and
+ * extract version from "package.json" file
+ */
+export const setupChannelVersions = (): void => {
+
+	ipcMain.handle("APP:VERSIONS", () => {
+
+		let appVersion = "0.0.0";
+		const projectDir = path.dirname(fileURLToPath(import.meta.url));
+
+		const pkgFile = path.join(projectDir, "..", "package.json");
+		if(fs.existsSync(pkgFile)) {
+
+			const packageContent = JSON.parse(fs.readFileSync(pkgFile, "utf8")) as {version: string};
+			appVersion = packageContent.version;
+		}
+		const {node, electron, chrome} = process.versions;
+		return {node, electron, chrome, app: appVersion};
+	});
+};

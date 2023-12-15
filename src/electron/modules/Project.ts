@@ -1,12 +1,22 @@
+/**
+ * Load and store the visualized project
+ *
+ * @packageDocumentation
+ */
 
 // import {ipcMain} from "electron";
 import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
-import {sendLoadedProject} from "./WindowsUtilities";
+import {sendLoadedProject, requestLoadedProject} from "./WindowsUtilities";
 import {getProjectPath, setProjectPath} from "./Preferences";
 import {fileURLToPath} from "node:url";
 
+/**
+ * Read the given project and send it to client
+ *
+ * @param filename - Project file to be read
+ */
 export const loadProject = (filename?: string): void => {
 
 	if(filename) setProjectPath(filename);
@@ -28,17 +38,19 @@ export const loadProject = (filename?: string): void => {
 		sendLoadedProject("");
 	}
 };
+
+/**
+ * Save the current project
+ *
+ * @param filename - Where the current project should be saved
+ */
 export const saveProject = (filename: string): void => {
-	console.log("SAVE", filename); // TBD
-};
-export const setupProject = (): void => {
 
-	// ipcMain.handle("PROJECT:GET", (_event, filePath: string) => {
-
-	// 	lastFilename = filePath === "" ? defaultFilePath : filePath;
-	// 	loadProject(lastFilename);
-	// });
-	// ipcMain.on("PROJECT:SAVE", (_event, filePath: string, rawProject: string) => {
-	// 	if(!lastFilename) {}
-	// });
+	requestLoadedProject()
+		.then((rawProject: string) => {
+			fs.writeFileSync(filename, rawProject, "utf8");
+		})
+		.catch((error: Error) => {
+			log.error(`Cannot save project file "${filename}". Error ${error.message}`);
+		});
 };

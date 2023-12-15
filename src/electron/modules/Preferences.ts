@@ -55,11 +55,21 @@ export const setMainTheme = (theme: "dark" | "light", force = false): void => {
 	nativeTheme.themeSource = theme;
 };
 
+/**
+ * Return the last project loaded
+ *
+ * @returns Path to the last project loaded or empty string if no path stored
+ */
 export const getProjectPath = (): string => {
 
 	return store.get("LastProjectLoaded", "") as string;
 };
 
+/**
+ * Store the last loaded project file path
+ *
+ * @param filename - Project file path to store
+ */
 export const setProjectPath = (filename: string): void => {
 
 	store.set("LastProjectLoaded", filename);

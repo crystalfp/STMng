@@ -1,6 +1,7 @@
 /**
  * Relay of messages between a secondary window and the main window
  *
+ * @remarks It is still the original from IIE. Adapt it.
  * @packageDocumentation
  */
 import {ipcMain, type BrowserWindow} from "electron";

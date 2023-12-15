@@ -1,5 +1,10 @@
-<!-- eslint-disable id-length -->
 <script setup lang="ts">
+/**
+ * @component
+ * Viewer 3D initial prototype
+ */
+
+/* eslint-disable eslint-comments/disable-enable-pair, id-length */
 import {onMounted, ref, watch, watchEffect} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";

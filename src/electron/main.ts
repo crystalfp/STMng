@@ -1,5 +1,6 @@
 /**
- * Entry point for the main process. It initializes all the channels between main processes and client windows.
+ * Entry point for the main process.
+ * It initializes all the channels between main processes and client windows.
  *
  * @packageDocumentation
  */
@@ -7,23 +8,14 @@ import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import {Command, Option} from "commander";
-// import {program} from "commander";
 import pck from "../../package.json";
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
 // import installExtension, {VUEJS_DEVTOOLS} from "electron-devtools-installer";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {loadProject} from "./modules/Project";
-// import {setupChannelTags} from "./modules/Tags";
 import {createMainWindow} from "./modules/WindowsUtilities";
-// import {setupChannelVersions} from "./modules/Versions";
-// import {Database, setupChannelDatabase} from "./modules/Database";
-// import {setupChannelExports} from "./modules/Exports";
-// import {setupChannelKB} from "./modules/KB";
-// import {ParseDocuments} from "./modules/ParseDocuments";
-// import {setupChannelConfiguration} from "./modules/Configuration";
-// import {ExtractKeywords} from "./modules/ExtractKeywords";
-// import {setupChannelWorklist} from "./modules/Worklist";
+import {setupChannelVersions} from "./modules/Versions";
 
 // > Setup main process
 // Initialize the logger
@@ -35,17 +27,9 @@ log.transports.file.level = verbose ? "silly" : "warn";
 log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
 
-
 // Initialize the channels
-// setupChannelDatabase(database, parsers);
 setupChannelPreferences();
-// setupChannelConfiguration();
-// setupChannelProjects(database);
-// setupChannelTags();
-// setupChannelVersions();
-// setupChannelExports(database, parsers);
-// setupChannelKB(database, parsers);
-// setupChannelWorklist();
+setupChannelVersions();
 
 // Command line parsing
 const program = new Command("STMng");
@@ -60,7 +44,6 @@ program
 if(import.meta.env.DEV) program.option("--no-sandbox", "Forced during development");
 program.parse(process.argv, {from: "electron"});
 
-// Get the options
 interface ProgramOptions {
     theme?: "dark" | "light";
 }

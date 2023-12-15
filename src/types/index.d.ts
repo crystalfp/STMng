@@ -76,3 +76,8 @@ export interface ProjectElement {
 export interface Project {
     elements: ProjectElement[];
 }
+
+export interface ChartData {
+    x: number[];
+    y: number[];
+}

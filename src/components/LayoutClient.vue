@@ -1,22 +1,24 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Main entry point of the application. It define the general layout of the screen.
+ */
 
-import {ref} from "vue";
+import {ref, shallowRef, defineAsyncComponent} from "vue";
 import log from "electron-log";
-
-// import {onMounted, ref} from "vue";
-import {setTitle, isLoaded, handleFullscreen} from "@/services/RoutesClient";
+import Mousetrap from "mousetrap";
+import {setTitle, isLoaded, handleFullscreen, receiveMenuSelection} from "@/services/RoutesClient";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
-import {loadElements} from "@/services/LoadElements";
 
+/** Toggle expanded viewer window */
 const normalScreen = ref(true);
 const toggleExpandedScreen = (): void => {
     normalScreen.value = !normalScreen.value;
 };
 
-
-// > React to fullscreen requests
+// > React to fullscreen requests and set title
 window.addEventListener("DOMContentLoaded", () => {
     let count = 0;
     const timer = setInterval(() => {
@@ -28,7 +30,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if(isLoaded()) {
             handleFullscreen((isFullScreen: boolean) => {
                 const root = document.documentElement;
-                root.style.setProperty("--usable-height", isFullScreen ? "100vh" : "calc(100vh - 30px)");
+                root.style.setProperty("--usable-height",    isFullScreen ? "100vh" : "calc(100vh - 30px)");
                 root.style.setProperty("--container-height", isFullScreen ? "100vh" : "calc(100% - 74px)");
             });
             setTitle("See the Molecole New Generation");
@@ -37,7 +39,23 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 20);
 });
 
-loadElements();
+// > Setup global keyboard shortcuts
+Mousetrap
+    .bind("f", toggleExpandedScreen); // "f" toggle expanded screen
+
+
+// > The component to load in response to admin and load menus selections
+const loadedPanel = shallowRef<unknown>();
+receiveMenuSelection((menuEntry: string) => {
+
+    if(menuEntry === "show-versions") {
+        loadedPanel.value = defineAsyncComponent(() => import("@/components/About.vue"));
+    }
+    else {
+        log.error(`Menu entry "${menuEntry}" is not implemented`);
+    }
+});
+
 </script>
 
 <template>
@@ -48,6 +66,7 @@ loadElements();
   <div class="layout-gutter" @click="toggleExpandedScreen" />
   <viewer3-d :expanded="!normalScreen" />
 </div>
+<component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
 </template>
 
 

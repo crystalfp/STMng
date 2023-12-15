@@ -10,9 +10,8 @@ import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
 import {setupRelayToMainWin, setupRelayFromMainWin} from "./RelayForMainWin";
-import type {WindowsParams} from "../types";
 import favicon from "../../assets/favicon.png";
-
+import type {WindowsParams} from "../types";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();
@@ -44,7 +43,7 @@ export const createMainWindow = (width = 1000, height = 675): void => {
         },
         title: "Application is currently initializing...",
         titleBarStyle: "hidden",
-        titleBarOverlay: true,
+        titleBarOverlay: false,
         width,
         height,
         show: false,
@@ -211,8 +210,7 @@ const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => 
 const sendToSecondaryWindow = (_event: unknown, payload: {routerPath: string; data: string}): void => {
 
     const win = openedWindows.get(payload.routerPath);
-    if(!win) return;
-    win.webContents.send("APP:DATA", payload.data);
+    if(win) win.webContents.send("APP:DATA", payload.data);
 };
 
 // > Broadcast message
@@ -308,4 +306,13 @@ export const sendLoadedProject = (projectAsString: string): void => {
         return projectAsString;
     });
     mainWin.webContents.send("PROJECT:GET2", projectAsString);
+};
+
+export const requestLoadedProject = (): Promise<string> => {
+
+    mainWin.webContents.send("PROJECT:REQUEST");
+
+    return new Promise((resolve) => {
+        ipcMain.on("PROJECT:ANSWER", (_event: unknown, answer: string): void => resolve(answer));
+    });
 };

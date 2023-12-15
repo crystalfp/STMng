@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import {Menu, shell, app, nativeTheme, ipcMain, dialog} from "electron";
+import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, openMenuEntry} from "./WindowsUtilities";
@@ -121,11 +121,4 @@ export const setupMenu = (): void => {
     // Build the menu
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
-
-    // Receive enable/disable commands from the client
-	ipcMain.handle("APP:MENU-ENTRY-DISABLE", (_event, payload: {menuEntryId: string; disable: boolean}) => {
-
-        const entry = menu.getMenuItemById(payload.menuEntryId);
-        if(entry) entry.enabled = !payload.disable;
-    });
 };

@@ -1,5 +1,5 @@
 /**
- * General storage for preferences and configuration
+ * General storage for preferences
  *
  * @packageDocumentation
  */
@@ -88,31 +88,5 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 */
 	has<K extends keyof T>(key: K): boolean {
 		return this.data[key] !== undefined;
-	}
-
-	/**
-	 * Get the store content
-	 *
-	 * @returns The store content as yaml encoded string
-	 */
-	getRaw(): string {
-		return fs.readFileSync(this.filePath, "utf8");
-	}
-
-	/**
-	 * Set store content
-	 *
-	 * @param content - The content to be set in the store (yaml encoded string)
-	 * @returns - The error message or empty string on success
-	 */
-	setRaw(content: string): string {
-		try {
-			fs.writeFileSync(this.filePath, content, "utf8");
-			this.data = yaml.load(content, {schema: yaml.CORE_SCHEMA}) as T;
-		}
-		catch(error: unknown) {
-			return (error as Error).message;
-		}
-		return "";
 	}
 }

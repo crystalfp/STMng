@@ -1,18 +1,28 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Manage the load of the elements' user interfaces
+ */
 
 import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
-import {receiveBroadcast, receiveProject, getPreferenceSync} from "@/services/RoutesClient";
+import {receiveBroadcast, receiveProject, getPreferenceSync,
+        sendProject} from "@/services/RoutesClient";
 import type {Project, ProjectElement} from "@/types";
 
 const project = ref<Project | undefined>();
 const modules = ref<ProjectElement[]>([]);
 const selectedTabId = ref("");
 
+/** Receive the project loaded */
 receiveProject((rawProject: string) => {
 
     project.value = JSON.parse(rawProject) as Project;
     modules.value = project.value.elements;
     selectedTabId.value = modules.value[0].id;
+});
+
+sendProject(() => {
+    return JSON.stringify(project.value);
 });
 
 const loadedPanel = shallowRef<unknown>();
@@ -31,10 +41,12 @@ watchEffect(() => {
     }
 });
 
+/** Receive the theme change */
 const theme = ref(getPreferenceSync("Theme", "dark"));
 receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
     if(eventType === "theme-change") theme.value = params[0] as string;
 });
+
 </script>
 
 

@@ -1,2 +1,8 @@
 ToDo:
 	☐ Establish shortcuts
+
+Bugs:
+	☐ Send loaded project redefine handler
+
+Archive:
+  ✔ Zooming out show the window controls overlay that does not adjust @done(2023-12-15 08:43) @project(Bugs)
