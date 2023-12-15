@@ -159,3 +159,14 @@ export const receiveInWindow = (callback: (data: string) => void): void => {
 
     window.electron.ipcRenderer.on("APP:DATA", (_event, payload: string) => callback(payload));
 };
+
+/**
+ * Send a string to a specific window
+ *
+ * @param routerPath - Route path of the receiving window
+ * @param data - Data to send to the window
+ */
+export const sendToWindow = (routerPath: string, data: string): void => {
+
+	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
+};

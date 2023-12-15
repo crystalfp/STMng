@@ -80,4 +80,5 @@ export interface Project {
 export interface ChartData {
     x: number[];
     y: number[];
+    type: string;
 }
