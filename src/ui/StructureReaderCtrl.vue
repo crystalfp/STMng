@@ -5,7 +5,7 @@ import {ref, watchEffect} from "vue";
 const readFile = ref<File[] | undefined>();
 
 watchEffect(() => {
-    console.log(readFile.value);
+    console.log("Struct", readFile.value); // TBD
 });
 
 </script>

@@ -26,7 +26,7 @@ import {createVuetify} from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
-import {md2} from "vuetify/blueprints";
+// import {md2} from "vuetify/blueprints";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -61,7 +61,7 @@ const app = createApp(App)
 				mdi,
 			},
   		},
-		blueprint: md2,
+		// blueprint: md2,
 		defaults: {
 			global: {
 				density: "compact"

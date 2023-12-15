@@ -3,12 +3,12 @@
  *
  * @packageDocumentation
  */
-import {Menu, shell, app, nativeTheme, ipcMain} from "electron";
+import {Menu, shell, app, nativeTheme, ipcMain, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import {createSecondaryWindow, broadcastMessage, showDevToolsOnSecondaryWindows,
-        openMenuEntry, openMenuEntryWithAnswer} from "./WindowsUtilities";
+import {broadcastMessage, showDevToolsOnSecondaryWindows, openMenuEntry} from "./WindowsUtilities";
 import {setMainTheme} from "./Preferences";
+import {loadProject, saveProject} from "./Project";
 
 // > Prepare the application menu
 /**
@@ -23,73 +23,41 @@ export const setupMenu = (): void => {
             label: "&File",
             submenu: [
                 {
+                    label: "Load project",
+                    accelerator: "CommandOrControl+O",
+                    click() {
+                        const file = dialog.showOpenDialogSync({
+                            title: "Select project",
+                            properties: ["openFile"],
+                            filters: [
+                                {name: "STM project", extensions: ["prj"]},
+                            ]
+                        });
+                        if(file) loadProject(file[0]);
+                    }
+                },
+                {
+                    label: "Save project",
+                    accelerator: "CommandOrControl+S",
+                    click() {
+                        const file = dialog.showSaveDialogSync({
+                            title: "Select project save file",
+                            filters: [
+                                {name: "STM project", extensions: ["prj"]},
+                            ]
+                        });
+                        if(file) saveProject(file);
+                    }
+                },
+                {type: "separator"},
+                {
                     label: "Quit application",
                     accelerator: "CommandOrControl+Q",
                     click() {
-                        void openMenuEntryWithAnswer("quit").then((doQuit) => {
-                            if(doQuit === "yes") app.quit();
-                        });
+                        app.quit();
                     }
                 },
             ],
-        },
-        {
-            label: "&Admin",
-            submenu: [
-                {
-                    label: "Configuration editor",
-                    click() {
-                        createSecondaryWindow(null, {routerPath: "/config", width: 1020, height: 700, title: "Edit configuration"});
-                    }
-                },
-                {
-                    label: "Colormaps editor",
-                    click() {
-                        createSecondaryWindow(null, {routerPath: "/colors", width: 1340, height: 360, title: "Edit colors"});
-                    }
-                },
-                {
-                    label: "Tags editor",
-                    click() {
-                        createSecondaryWindow(null, {routerPath: "/tags", width: 800, height: 550, title: "Tags editor"});
-                    }
-                },
-                {type: "separator"},
-                {
-                    id: "entryArchive", // Needed to update menu entry
-                    label: "Archive marked",
-                    click() {
-                        openMenuEntry("archive-marked");
-                    }
-                },
-                {
-                    id: "entryPurge",
-                    label: "Purge deleted",
-                    click() {
-                        openMenuEntry("purge-deleted");
-                    }
-                },
-                {
-                    id: "entryQueries",
-                    label: "Remove saved queries",
-                    click() {
-                        openMenuEntry("delete-queries");
-                    }
-                },
-                {type: "separator"},
-                {
-                    label: "Set font size",
-                    click() {
-                        openMenuEntry("set-font-size");
-                    }
-                },
-                {
-                    label: "Set tile size",
-                    click() {
-                        openMenuEntry("set-tile-size");
-                    }
-                },
-            ]
         },
         {
             label: "&View",

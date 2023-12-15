@@ -45,7 +45,9 @@ export default defineConfig({
                         "vue-router",
                         "vue-tippy",
                         "pinia",
-                        // "splitpanes",
+                    ],
+                    three: [
+                        "three"
                     ]
                 }
             }

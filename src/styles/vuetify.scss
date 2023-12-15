@@ -2,7 +2,7 @@
 
 .container {
   overflow-y: auto;
-  height: calc(100% - 68px);
+  height: var(--container-height);
 }
 
 .v-slider__label {
@@ -10,6 +10,5 @@
 }
 
 .v-selection-control--inline .v-label {
-    width: auto;
-    margin-left: 6px;
+    margin-left: 4px;
 }

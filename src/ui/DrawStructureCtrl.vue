@@ -9,9 +9,11 @@ const drawKind = ref("ball-and-stick");
 
 <template>
 <v-container class="container">
-  <v-radio-group v-model="drawKind" inline>
-    <v-radio label="B&S" value="ball-and-stick" /><v-spacer />
-    <v-radio label="VdW" value="van-der-walls" /><v-spacer />
+  <v-radio-group v-model="drawKind" inline label="Structure rendering mode">
+    <v-radio label="Ball&Stick" value="ball-and-stick" />
+    <v-spacer />
+    <v-radio label="VdW" value="van-der-walls" />
+    <v-spacer />
     <v-radio label="Licorice" value="licorice" />
   </v-radio-group>
   <v-label :text="drawKind" />

@@ -54,3 +54,13 @@ export const setMainTheme = (theme: "dark" | "light", force = false): void => {
 	}
 	nativeTheme.themeSource = theme;
 };
+
+export const getProjectPath = (): string => {
+
+	return store.get("LastProjectLoaded", "") as string;
+};
+
+export const setProjectPath = (filename: string): void => {
+
+	store.set("LastProjectLoaded", filename);
+};

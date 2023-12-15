@@ -3,12 +3,17 @@
  *
  * @packageDocumentation
  */
-import {app, BrowserWindow, screen as electronScreen, protocol, net} from "electron";
+import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
+// eslint-disable-next-line @typescript-eslint/no-shadow
+import {Command, Option} from "commander";
+// import {program} from "commander";
+import pck from "../../package.json";
+
 import {setupTitlebar} from "custom-electron-titlebar/main";
 // import installExtension, {VUEJS_DEVTOOLS} from "electron-devtools-installer";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
-// import {setupChannelProjects} from "./modules/Projects";
+import {loadProject} from "./modules/Project";
 // import {setupChannelTags} from "./modules/Tags";
 import {createMainWindow} from "./modules/WindowsUtilities";
 // import {setupChannelVersions} from "./modules/Versions";
@@ -42,35 +47,35 @@ setupChannelPreferences();
 // setupChannelKB(database, parsers);
 // setupChannelWorklist();
 
+// Command line parsing
+const program = new Command("STMng");
+program
+    .version(pck.version)
+    .description(pck.description)
+    .usage("[options]")
+    .addOption(new Option("-t, --theme <theme>", "User interface theme").choices(["dark", "light"]))
+    .addHelpText("before", " ")
+    .addHelpText("after", " ");
+
+if(import.meta.env.DEV) program.option("--no-sandbox", "Forced during development");
+program.parse(process.argv, {from: "electron"});
+
+// Get the options
+interface ProgramOptions {
+    theme?: "dark" | "light";
+}
+const options = program.opts<ProgramOptions>();
+
 // Initialize the theme to use
-const theme = app.commandLine.getSwitchValue("theme");
-if(!theme) {
-    setMainTheme("dark");
-}
-else if(theme === "dark" || theme === "light") {
-    setMainTheme(theme, true);
-}
-else {
-    setMainTheme("dark", true);
-}
+if(!options.theme) setMainTheme("dark");
+else if(options.theme === "dark" || options.theme === "light") setMainTheme(options.theme, true);
+else setMainTheme("dark", true);
 
 // Setup the titlebar main process
 setupTitlebar();
 
 // > Start application
 app.whenReady().then(() => {
-
-    // Set local protocol to load images
-    // The URL should contain the absolute path of the image
-    protocol.handle("iie", (request) => {
-
-        const updatedURL = request.url.slice("iie://".length).replace(/^([A-Z])\//, "$1:/");
-        return net.fetch(`file://${updatedURL}`, {
-            method: request.method,
-            headers: request.headers,
-            body: request.body
-        });
-    });
 
     // Create an initial window that fills the screen's available work area.
     const {width, height} = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -80,6 +85,10 @@ app.whenReady().then(() => {
     app.on("activate", () => {
         if(BrowserWindow.getAllWindows().length === 0) createMainWindow(width, height);
     });
+
+    // Load project
+    if(program.args.length > 0) loadProject(program.args[0]);
+    else loadProject();
 
     // if(import.meta.env.DEV) return installExtension(VUEJS_DEVTOOLS);
     // return "";

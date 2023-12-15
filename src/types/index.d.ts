@@ -65,3 +65,14 @@ export interface Bond {
     to: number;
     kind: BondType;
 }
+
+export interface ProjectElement {
+    id: string;
+    label: string;
+    ui: string;
+    in: string;
+}
+
+export interface Project {
+    elements: ProjectElement[];
+}

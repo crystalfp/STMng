@@ -295,3 +295,17 @@ export const sendUpdatedProject = (projectAsString: string): void => {
 
     mainWin.webContents.send("PROJECTS:RESEND", projectAsString);
 };
+
+// > Update the main window project list
+/**
+ * Update the main window project list
+ *
+ * @param projectAsString - JSON encoded project to update the main window projects list
+ */
+export const sendLoadedProject = (projectAsString: string): void => {
+
+    ipcMain.handle("PROJECT:GET1",  () => {
+        return projectAsString;
+    });
+    mainWin.webContents.send("PROJECT:GET2", projectAsString);
+};

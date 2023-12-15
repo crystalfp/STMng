@@ -1,31 +1,43 @@
 <script setup lang="ts">
 
 import {ref} from "vue";
+import log from "electron-log";
+
 // import {onMounted, ref} from "vue";
-// import {setTitle} from "@/services/RoutesClient";
+import {setTitle, isLoaded, handleFullscreen} from "@/services/RoutesClient";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
+import {loadElements} from "@/services/LoadElements";
 
 const normalScreen = ref(true);
 const toggleExpandedScreen = (): void => {
     normalScreen.value = !normalScreen.value;
 };
 
-// onMounted(() => {
-//     setTitle("See the Molecole New Generation");
-// });
 
+// > React to fullscreen requests
+window.addEventListener("DOMContentLoaded", () => {
+    let count = 0;
+    const timer = setInterval(() => {
+        ++count;
+        if(count > 50) {
+          clearInterval(timer);
+          log.error("Waiting too long for IPC to setup");
+        }
+        if(isLoaded()) {
+            handleFullscreen((isFullScreen: boolean) => {
+                const root = document.documentElement;
+                root.style.setProperty("--usable-height", isFullScreen ? "100vh" : "calc(100vh - 30px)");
+                root.style.setProperty("--container-height", isFullScreen ? "100vh" : "calc(100% - 74px)");
+            });
+            setTitle("See the Molecole New Generation");
+            clearInterval(timer);
+        }
+    }, 20);
+});
 
-// import {useTheme} from "vuetify";
-
-// const theme = useTheme();
-// theme.global.name.value = "dark";
-
-// function toggleTheme () {
-//   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-// }
-
+loadElements();
 </script>
 
 <template>
@@ -44,7 +56,7 @@ const toggleExpandedScreen = (): void => {
 @use "@/styles/colors";
 
 .layout-top {
-  height: calc(100vh - 30px);
+  height: var(--usable-height);
   display: flex;
   flex-direction: row;
   margin: 0;

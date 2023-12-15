@@ -190,3 +190,8 @@ input[type="text"], input[type="number"] {
 .big-font-title {
   font-size: 160% !important;
 }
+
+:root {
+  --usable-height: calc(100vh - 30px);
+  --container-height: calc(100% - 74px);
+}
