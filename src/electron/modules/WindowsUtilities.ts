@@ -302,9 +302,9 @@ export const sendUpdatedProject = (projectAsString: string): void => {
  */
 export const sendLoadedProject = (projectAsString: string): void => {
 
-    ipcMain.handle("PROJECT:GET1",  () => {
-        return projectAsString;
-    });
+    // ipcMain.handle("PROJECT:GET1",  () => {
+    //     return projectAsString;
+    // });
     mainWin.webContents.send("PROJECT:GET2", projectAsString);
 };
 

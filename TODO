@@ -1,8 +1,9 @@
 ToDo:
 	☐ Establish shortcuts
+	☐ Save/Load config data in project
 
 Bugs:
-	☐ Send loaded project redefine handler
+	✔ Send loaded project redefine handler @done(2023-12-16 07:27)
 
 Archive:
   ✔ Zooming out show the window controls overlay that does not adjust @done(2023-12-15 08:43) @project(Bugs)

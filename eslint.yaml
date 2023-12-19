@@ -26,7 +26,7 @@ extends:
     - 'plugin:@typescript-eslint/recommended-type-checked'
     - 'plugin:@typescript-eslint/stylistic-type-checked'
     - plugin:unicorn/recommended
-    - plugin:security/recommended
+    - plugin:security/recommended-legacy
     - plugin:sonarjs/recommended
     - plugin:regexp/recommended
     - plugin:vue/base
@@ -301,6 +301,8 @@ rules:
             props: false
             db: false
             obj: false
+            ext: false
+            dist: false
           checkFilenames: false
 
     unicorn/template-indent:

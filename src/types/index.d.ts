@@ -53,17 +53,17 @@ export type Object3D = {
     colorEnd: THREE.ColorRepresentation;
 };
 
-export interface Atom {
+export interface Atom2 {
     position: [number, number, number];
     Z: number;
 }
 
-type BondType = "normal" | "hydrogen";
+type BondType2 = "normal" | "hydrogen";
 
-export interface Bond {
+export interface Bond2 {
     from: number;
     to: number;
-    kind: BondType;
+    kind: BondType2;
 }
 
 export interface ProjectElement {
@@ -74,11 +74,62 @@ export interface ProjectElement {
 }
 
 export interface Project {
-    elements: ProjectElement[];
+    graph: ProjectElement[];
 }
 
 export interface ChartData {
     x: number[];
     y: number[];
     type: string;
+}
+
+// > Type of a collection of atomic structures
+/** One atom in the structure or step in the structure */
+export interface Atom {
+    /** Atomic number */
+    atomZ:  number;
+    /** Coordinates absolute of the atom (in Å) */
+    x:      number;
+    y:      number;
+    z:      number;
+}
+
+/** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond */
+export type BondType = "n" | "h" | "x";
+
+/** Definition of a bond */
+export interface Bond {
+    /** Index in the structure of the atom from which the bond starts */
+    from: number;
+    /** Index in the structure of the atom from which the bond starts */
+    to:   number;
+    /** Kind of bond */
+    type: BondType;
+}
+
+export type Look = Record<number, AtomAppearance>;
+export interface Structure {
+    atoms: Atom[];
+    bonds: Bond[];
+    look:  Look;
+}
+export interface AtomAppearance {
+
+	/** Element symbol */
+	symbol: string;
+
+	/** Covalent radii (in Angstrom). 1.6 if unknown */
+	rCov: number;
+
+	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
+	rVdW: number;
+
+	/** Atom color as hex string (#RRGGBB) */
+	color: string;
+}
+
+export interface ReaderStructure {
+    filename: string;
+    structures: Structure[];
+    error?: string;
 }

@@ -1,5 +1,5 @@
 
-import type {Atom, Bond, Object3D} from "@/types";
+import type {Atom2, Bond2, Object3D} from "@/types";
 
 interface AtomData {
 	symbol: string;
@@ -53,7 +53,7 @@ export class Structure2Object3D {
     }*/
 	}
 
-	structure2object(atoms: Atom[], bonds: Bond[]): Object3D[] {
+	structure2object(atoms: Atom2[], bonds: Bond2[]): Object3D[] {
 
 		const objects: Object3D[] = [];
 		const scale = 0.5;

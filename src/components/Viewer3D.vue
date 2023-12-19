@@ -8,7 +8,7 @@
 import {onMounted, ref, watch, watchEffect} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
-import type {Atom, Bond} from "@/types";
+import type {Atom2, Bond2} from "@/types";
 import {CSS3DRenderer} from "three/addons/renderers/CSS3DRenderer.js";
 import {useConfigStore} from "@/stores/configStore";
 import {Structure2Object3D} from "@/services/Structure2Object3D";
@@ -31,12 +31,12 @@ const props = defineProps<{
 }>();
 
 
-const atoms: Atom[] = [
+const atoms: Atom2[] = [
     {Z: 8, position: [2.0000,  0.0000,  0.1173]},
     {Z: 1, position: [2.0000,  0.7572, -0.4692]},
     {Z: 1, position: [2.0000, -0.7572, -0.4692]},
 ];
-const bonds: Bond[] =[
+const bonds: Bond2[] =[
     {from: 0, to: 1, kind: "normal"},
     {from: 0, to: 2, kind: "normal"},
 ];

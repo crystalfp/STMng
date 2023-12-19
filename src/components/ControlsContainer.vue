@@ -8,17 +8,19 @@ import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
 import {receiveBroadcast, receiveProject, getPreferenceSync,
         sendProject} from "@/services/RoutesClient";
 import type {Project, ProjectElement} from "@/types";
+import {gm} from "@/services/GraphManager";
 
 const project = ref<Project | undefined>();
-const modules = ref<ProjectElement[]>([]);
+const graph = ref<ProjectElement[]>([]);
 const selectedTabId = ref("");
 
 /** Receive the project loaded */
 receiveProject((rawProject: string) => {
 
     project.value = JSON.parse(rawProject) as Project;
-    modules.value = project.value.elements;
-    selectedTabId.value = modules.value[0].id;
+    graph.value = project.value.graph;
+    selectedTabId.value = graph.value[0].id;
+    gm.updateGraph(graph.value);
 });
 
 sendProject(() => {
@@ -30,7 +32,7 @@ const inFrom = ref("");
 
 watchEffect(() => {
 
-    for(const item of modules.value) {
+    for(const item of graph.value) {
         if(selectedTabId.value === item.id) {
             loadedPanel.value = item.ui === "" ?
                                         undefined :
@@ -53,7 +55,7 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
 <template>
 <v-app :theme="theme">
   <v-tabs v-model="selectedTabId" center-active density="comfortable">
-    <v-tab v-for="item of modules" :key="item.id" :value="item.id">{{ item.label }}</v-tab>
+    <v-tab v-for="item of graph" :key="item.id" :value="item.id">{{ item.label }}</v-tab>
   </v-tabs>
   <component :is="loadedPanel" :in="inFrom" />
 </v-app>

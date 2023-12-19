@@ -13,9 +13,10 @@ import pck from "../../package.json";
 import {setupTitlebar} from "custom-electron-titlebar/main";
 // import installExtension, {VUEJS_DEVTOOLS} from "electron-devtools-installer";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
-import {loadProject} from "./modules/Project";
+import {loadProject, setupChannelProject} from "./modules/Project";
 import {createMainWindow} from "./modules/WindowsUtilities";
 import {setupChannelVersions} from "./modules/Versions";
+import {setupChannelReader} from "./modules/Reader";
 
 // > Setup main process
 // Initialize the logger
@@ -30,6 +31,8 @@ log.eventLogger.startLogging();
 // Initialize the channels
 setupChannelPreferences();
 setupChannelVersions();
+setupChannelProject();
+setupChannelReader();
 
 // Command line parsing
 const program = new Command("STMng");

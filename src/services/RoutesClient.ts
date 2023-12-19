@@ -3,11 +3,8 @@
  *
  * @packageDocumentation
  */
-import type {ElectronAPI} from "@electron-toolkit/preload";
 import log from "electron-log";
-// import type {IpcRendererEvent} from "electron";
-// import type {ProjectOnScreen, TagValue, MainResponse, DocumentFull, DocumentMetadata,
-// 			 DocumentReferenceWithTitle, UUID, FragmentContext, QueryResultsBlock, Languages} from "@/types";
+import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {WindowsParams} from "@/electron/types";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -16,7 +13,6 @@ declare global {
 		electron: ElectronAPI;
 		api: {
 			setTitle: (title: string) => void;
-			refreshMenu: () => void;
 		};
 	}
 }
@@ -44,27 +40,6 @@ export const isLoaded = (): boolean => {
 export const setTitle = (title: string): void => window.api.setTitle(title);
 
 /**
- * Receive a loaded project
- *
- * @param callback - Function to call when receiving a new project
- */
-export const receiveProject = (callback: (rawProject: string) => void): void => {
-
-    window.electron.ipcRenderer.invoke("PROJECT:GET1")
-		// eslint-disable-next-line promise/no-callback-in-promise
-		.then((rawProject: string) => callback(rawProject))
-		.catch((error: Error) => log.error("Cannot retrieve project first time", error.message));
-    window.electron.ipcRenderer.on("PROJECT:GET2", (_event, rawProject: string) => callback(rawProject));
-};
-
-export const sendProject = (callback: () => string): void => {
-	window.electron.ipcRenderer.on("PROJECT:REQUEST", () => {
-		console.log("REQUEST", callback());
-		window.electron.ipcRenderer.send("PROJECT:ANSWER", callback());
-	});
-};
-
-/**
  * Handle full screen selection
  *
  * @param callback - Function to call on full screen status change
@@ -90,7 +65,29 @@ export const receiveBroadcast = (callback: (eventType: string, params: (boolean 
 	);
 };
 
+// > Project
+/**
+ * Receive a loaded project
+ *
+ * @param callback - Function to call when receiving a new project
+ */
+export const receiveProject = (callback: (rawProject: string) => void): void => {
 
+    window.electron.ipcRenderer.invoke("PROJECT:GET1")
+		// eslint-disable-next-line promise/no-callback-in-promise
+		.then((rawProject: string) => callback(rawProject))
+		.catch((error: Error) => log.error("Cannot retrieve project first time", error.message));
+    window.electron.ipcRenderer.on("PROJECT:GET2", (_event, rawProject: string) => callback(rawProject));
+};
+
+export const sendProject = (callback: () => string): void => {
+	window.electron.ipcRenderer.on("PROJECT:REQUEST", () => {
+		window.electron.ipcRenderer.send("PROJECT:ANSWER", callback());
+	});
+};
+
+
+// > Preferences
 /**
  * Synchronously return a preference
  *
@@ -169,4 +166,10 @@ export const receiveInWindow = (callback: (data: string) => void): void => {
 export const sendToWindow = (routerPath: string, data: string): void => {
 
 	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
+};
+
+// > Structure reader
+export const readStructure = (): Promise<string> => {
+
+	return window.electron.ipcRenderer.invoke("READER:READ") as Promise<string>;
 };

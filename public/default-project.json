@@ -1,5 +1,5 @@
 {
-	"elements": [
+	"graph": [
 		{"id": "reader",  "label": "Reader",    "ui": "StructureReaderCtrl",  "in": ""},
 		{"id": "draw",    "label": "Draw",      "ui": "DrawStructureCtrl",    "in": "reader"},
 		{"id": "viewer",  "label": "Viewer",    "ui": "Viewer3DCtrl",     	  "in": "draw"},

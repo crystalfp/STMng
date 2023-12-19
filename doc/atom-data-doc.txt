@@ -1,0 +1,27 @@
+##############################################################################
+#                                                                            #
+#                   Open Babel file: element.txt                             #
+#                                                                            #
+#  Some portions Copyright (c) 2001-2005 Geoffrey R. Hutchison               #
+#  Part of the Open Babel package, under the GNU General Public License (GPL)#
+#                                                                            #
+#  Created from the Blue Obelisk Cheminformatics Data Repository             #
+#  Direct Source: http://www.blueobelisk.org/                                #
+#       http://www.blueobelisk.org/repos/blueobelisk/elements.xml            #
+#  (includes furhter bibliographic citation information)                     #
+#                                                                            #
+#  Columns represent:  (used by data.cpp:OBElementTable and OBElement)       #
+#   - atomic number (used as an index to the vector as well)      [NOT HERE] #
+#   - elemental symbol                                                       #
+#   - covalent radii (in Angstrom)         1.6 if unknown                    #
+#   - "bond order" radii                                          [NOT HERE] #
+#   - van der Waals radii (in Angstrom)    2.0 if unknown                    #
+#   - maximum bond valence         6 if unknown                              #
+#   - IUPAC recommended atomic masses (in amu)                               #
+#   - Pauling electronegativity            0.0 if unknown                    #
+#   - ionization potential (in eV)         0.0 if unknown                    #
+#   - electron affinity (in eV)            0.0 if unknown                    #
+#   - RGB values (defaults for visualization)                                #
+#   - element name (in English)                                              #
+#                                                                            #
+##############################################################################

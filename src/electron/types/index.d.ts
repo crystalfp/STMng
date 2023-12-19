@@ -3,6 +3,7 @@
  *
  * @packageDocumentation
  */
+import type {Structure} from "../../types";
 
 /** Parameters for the window creation */
 export interface WindowsParams {
@@ -16,4 +17,10 @@ export interface WindowsParams {
     title: string;
     /** Data to be passed to the window when it is ready */
     data?: string;
+}
+
+export type Constructable<T> = new() => T;
+
+export interface ReaderImplementation {
+	readStructure: (filename: string) => Promise<Structure[]>;
 }
