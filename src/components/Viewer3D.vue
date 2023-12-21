@@ -4,15 +4,14 @@
  * Viewer 3D initial prototype
  */
 
-/* eslint-disable eslint-comments/disable-enable-pair, id-length */
 import {onMounted, ref, watch, watchEffect} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
-import type {Atom2, Bond2} from "@/types";
+import type {Atom, Bond, BasisType, PositionType} from "@/types";
 import {CSS3DRenderer} from "three/addons/renderers/CSS3DRenderer.js";
 import {useConfigStore} from "@/stores/configStore";
 import {Structure2Object3D} from "@/services/Structure2Object3D";
-import {createAxisHelper, createGridHelper, createWireframe,
+import {createAxisHelper, createGridHelper,
         createSphere, createCube, createCylinder} from "@/services/HelperObjects";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {createScene} from "@/services/CreateScene";
@@ -30,16 +29,89 @@ const props = defineProps<{
 
 }>();
 
+// Fake data
+const atoms: Atom[] = [
+    {atomZ: 8, label: "O", position: [2.0000,  0.0000,  0.1173]},
+    {atomZ: 1, label: "H", position: [2.0000,  0.7572, -0.4692]},
+    {atomZ: 1, label: "H", position: [2.0000, -0.7572, -0.4692]},
+];
+const bonds: Bond[] =[
+    {from: 0, to: 1, type: "n"},
+    {from: 0, to: 2, type: "n"},
+];
 
-const atoms: Atom2[] = [
-    {Z: 8, position: [2.0000,  0.0000,  0.1173]},
-    {Z: 1, position: [2.0000,  0.7572, -0.4692]},
-    {Z: 1, position: [2.0000, -0.7572, -0.4692]},
-];
-const bonds: Bond2[] =[
-    {from: 0, to: 1, kind: "normal"},
-    {from: 0, to: 2, kind: "normal"},
-];
+const cellOrigin: PositionType = [
+      0,
+      0,
+      0
+    ];
+const cellBasis: BasisType = [
+      6.652,
+      0,
+      0,
+      2.855910279727731,
+      7.213205977521055,
+      0,
+      1.972317336072774,
+      1.7677934806298545,
+      7.704445439852851
+    ];
+
+
+const addUnitCell = (orig: PositionType, basis: BasisType, dashed: boolean): THREE.LineSegments => {
+
+    const geometry = new THREE.BufferGeometry();
+
+    const vertices = new Float32Array([
+/* 0 */ orig[0],                            orig[1],                            orig[2],
+/* 1 */ orig[0]+basis[0],                   orig[1]+basis[1],                   orig[2]+basis[2],
+/* 2 */ orig[0]+basis[0]+basis[3],          orig[1]+basis[1]+basis[4],          orig[2]+basis[2]+basis[5],
+/* 3 */ orig[0]+basis[3],                   orig[1]+basis[4],                   orig[2]+basis[5],
+/* 4 */ orig[0]+basis[6],                   orig[1]+basis[7],                   orig[2]+basis[8],
+/* 5 */ orig[0]+basis[0]+basis[6],          orig[1]+basis[1]+basis[7],          orig[2]+basis[2]+basis[8],
+/* 6 */ orig[0]+basis[0]+basis[3]+basis[6], orig[1]+basis[1]+basis[4]+basis[7], orig[2]+basis[2]+basis[5]+basis[8],
+/* 7 */ orig[0]+basis[3]+basis[6],          orig[1]+basis[4]+basis[7],          orig[2]+basis[5]+basis[8],
+    ]);
+
+    const indices = [
+        0, 1, 2,
+        0, 2, 3,
+
+        4, 5, 1,
+        4, 1, 0,
+
+        3, 2, 6,
+        3, 6, 7,
+
+        4, 0, 3,
+        4, 3, 7,
+
+        1, 5, 6,
+        1, 6, 2,
+
+        5, 4, 7,
+        5, 7, 6,
+    ];
+
+    geometry.setIndex(indices);
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+
+	const edges = new THREE.EdgesGeometry(geometry);
+    if(dashed) {
+        const line = new THREE.LineSegments(edges,
+                                    new THREE.LineDashedMaterial({
+                                            color: 0x0000FF,
+                                            linewidth: 1,
+                                            scale: 5,
+                                            dashSize: 1,
+                                            gapSize: 1,
+                                    })
+        );
+        line.computeLineDistances();
+        return line;
+    }
+	return new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0x0000FF}));
+};
 
 const structure = new Structure2Object3D("");
 
@@ -100,11 +172,12 @@ onMounted(() => {
     createAxisHelper(scene);
 
     createGridHelper(scene);
-// const helper = new THREE.CameraHelper( camera );
-// scene.add( helper );
+
+    // const helper = new THREE.CameraHelper( camera );
+    // scene.add( helper );
     // const viewHelper = new ViewHelper(camera, renderer.domElement);
 
-    scene.add(createWireframe([0, 0, 0], [1, 2, 3]));
+    scene.add(addUnitCell(cellOrigin, cellBasis, true));
 
     // Add scene objects
     const molecule = new THREE.Group;

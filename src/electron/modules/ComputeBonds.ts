@@ -6,12 +6,12 @@ const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
 
 const valenceAngle = (atomH: Atom, atomX: Atom, atomY: Atom): number => {
 
-	const v0 = atomH.x - atomX.x;
-	const w0 = atomY.x - atomX.x;
-	const v1 = atomH.y - atomX.y;
-	const w1 = atomY.y - atomX.y;
-	const v2 = atomH.z - atomX.z;
-	const w2 = atomY.z - atomX.z;
+	const v0 = atomH.position[0] - atomX.position[0];
+	const w0 = atomY.position[0] - atomX.position[0];
+	const v1 = atomH.position[1] - atomX.position[1];
+	const w1 = atomY.position[1] - atomX.position[1];
+	const v2 = atomH.position[2] - atomX.position[2];
+	const w2 = atomY.position[2] - atomX.position[2];
 
 	const dotProduct = v0*w0 + v1*w1 + v2*w2;
 	const lv2 = v0*v0 + v1*v1 + v2*v2;
@@ -68,9 +68,9 @@ export const computeBonds = (atoms: Atom[]): Bond[] => {
 			if(atomZi === 1 && atomZj === 1) continue;
 
 			// Compute distance between atoms
-			const dx = atoms[i].x - atoms[j].x;
-			const dy = atoms[i].y - atoms[j].y;
-			const dz = atoms[i].z - atoms[j].z;
+			const dx = atoms[i].position[0] - atoms[j].position[0];
+			const dy = atoms[i].position[1] - atoms[j].position[1];
+			const dz = atoms[i].position[2] - atoms[j].position[2];
 
 			const distSquared = dx*dx+dy*dy+dz*dz;
 
@@ -83,7 +83,7 @@ export const computeBonds = (atoms: Atom[]): Bond[] => {
 			if(computeHBonds &&
 			   ((atomZi === 1 && atomForHBond(atomZj)) || (atomZj === 1 && atomForHBond(atomZi))) &&
 			   (distSquared <= maxDistanceHbondSquared) && (distSquared > sumRcovSquared)) {
-console.log("*** H Bond!", i, j);
+
 				bonds.push({from: i, to: j, type: "h"});
 			}
 
@@ -125,9 +125,9 @@ console.log("*** H Bond!", i, j);
 		if(idxX === undefined) {
 
 			// Recompute distance
-			const dx = atoms[idxH].x - atoms[idxY].x;
-			const dy = atoms[idxH].y - atoms[idxY].y;
-			const dz = atoms[idxH].z - atoms[idxY].z;
+			const dx = atoms[idxH].position[0] - atoms[idxY].position[0];
+			const dy = atoms[idxH].position[1] - atoms[idxY].position[1];
+			const dz = atoms[idxH].position[2] - atoms[idxY].position[2];
 
 			const distSquared = dx*dx+dy*dy+dz*dz;
 
@@ -138,11 +138,10 @@ console.log("*** H Bond!", i, j);
 			const sumCovSquared = sumCov*sumCov;
 
 			bonds[i].type = distSquared <= sumCovSquared ? "n" : "x";
-console.log("Recheck:", bonds[i].type);
+
 			continue;
 		}
 
-console.log("Final:", atomForHBond(atoms[idxX].atomZ), valenceAngle(atoms[idxH], atoms[idxX], atoms[idxY]) < 20);
 		if(!atomForHBond(atoms[idxX].atomZ) ||
 		   valenceAngle(atoms[idxH], atoms[idxX], atoms[idxY]) > maxHValenceAngle) bonds[i].type = "x";
 	}

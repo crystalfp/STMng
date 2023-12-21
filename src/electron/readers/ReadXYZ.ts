@@ -1,10 +1,10 @@
-import type {Structure} from "../../types";
 import fs from "node:fs";
-import type {ReaderImplementation} from "../types";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {getStructureAppearance} from "../modules/ComputeLook";
 import {computeBonds} from "../modules/ComputeBonds";
+import type {ReaderImplementation} from "../types";
+import type {Crystal, Structure} from "../../types";
 
 export class Reader implements ReaderImplementation {
 
@@ -22,7 +22,12 @@ export class Reader implements ReaderImplementation {
 				numberAtoms = Number.parseInt(line, 10);
 				commentLine = true;
 				++step;
-				structures.push({atoms: [], bonds: [], look: {}});
+				const crystal: Crystal = {
+					basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+					origin: [0, 0, 0],
+					spaceGroup: ""
+				};
+				structures.push({crystal, atoms: [], bonds: [], look: {}});
 				atoms = structures[step].atoms;
 			}
 			else if(commentLine) {
@@ -30,10 +35,12 @@ export class Reader implements ReaderImplementation {
 			}
 			else {
 				const fields = line.trim().split(/ +/);
-				const x = Number.parseFloat(fields[1]);
-				const y = Number.parseFloat(fields[2]);
-				const z = Number.parseFloat(fields[3]);
-				atoms!.push({x, y, z, atomZ: getAtomicNumber(fields[0])});
+				const position: [number, number, number] = [
+					Number.parseFloat(fields[1]),
+					Number.parseFloat(fields[2]),
+					Number.parseFloat(fields[3]),
+				];
+				atoms!.push({position, label: fields[0], atomZ: getAtomicNumber(fields[0])});
 
 				--numberAtoms;
 			}

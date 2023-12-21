@@ -1,3 +1,10 @@
+/**
+ * Read chemical structure file.
+ * The original idea was to dynamically load the format reader, but does not work
+ * in production (does not find the reader code)
+ *
+ * @packageDocumentation
+ */
 import {ipcMain, dialog} from "electron";
 import path from "node:path";
 import fs from "node:fs";
@@ -5,11 +12,21 @@ import log from "electron-log";
 import type {ReaderStructure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
 
+// Import the readers
 import {Reader as ReaderXYZ} from "../readers/ReadXYZ";
+import {Reader as ReaderSHELX} from "../readers/ReadSHELX";
 
+/**
+ * Get the loaded file format
+ *
+ * @param filename - Loaded filename
+ * @returns The format as uppercase string
+ */
 const getFileFormat = (filename: string): string => {
 
 	const ext = path.extname(filename).toLowerCase();
+
+	// Formats that are coded in the extension
 	switch(ext) {
 		case ".pdb":  		return "PDB";
 		case ".spf":  		return "SPF";
@@ -22,10 +39,12 @@ const getFileFormat = (filename: string): string => {
 		case ".poscars":	return "POSCAR";
 	}
 
-	// No known extension
+	// Formats that have the format code in the filename
 	const base = path.basename(filename).toLowerCase();
 	if(base.includes("poscar")) return "POSCAR";
 	if(base.includes("chgcar")) return "CHGCAR";
+
+	// No known extension
 	return "";
 };
 
@@ -58,16 +77,19 @@ export const readStructure = async (filename: string): Promise<ReaderStructure> 
 
 	let reader;
 	try {
-		// const mainSourceDirectory = path.dirname(url.fileURLToPath(import.meta.url));
-		// const DIST = path.join(mainSourceDirectory, "..", "dist");
-		// const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-		// const dataFilePath = path.join(publicDir, "word-data.json");
 
 		// const {Reader} = await import(`../readers/Read${type}.ts`) as {Reader: Constructable<ReaderImplementation>};
 
 		// reader = new Reader();
-
-		reader = new ReaderXYZ();
+		switch(type) {
+			case "XYZ":
+				reader = new ReaderXYZ();
+				break;
+			case "SHELX":
+				reader = new ReaderSHELX();
+				break;
+			default: throw Error("Invalid format");
+		}
 	}
 	catch(error: unknown) {
 		log.error(`${type} format not implemented`, (error as Error).message);
@@ -92,6 +114,7 @@ export const setupChannelReader = (): void => {
 				{name: "PDB", extensions: ["pdb"]},
 				{name: "POSCAR", extensions: ["poscar", "poscars"]},
 				{name: "XYZ", extensions: ["xyz"]},
+				{name: "ShelX", extensions: ["ins", "res"]},
 				{name: "All", extensions: ["*"]},
 			]
 		});

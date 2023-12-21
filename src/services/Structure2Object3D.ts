@@ -1,5 +1,5 @@
 
-import type {Atom2, Bond2, Object3D} from "@/types";
+import type {Atom, Bond, Object3D} from "@/types";
 
 interface AtomData {
 	symbol: string;
@@ -53,7 +53,7 @@ export class Structure2Object3D {
     }*/
 	}
 
-	structure2object(atoms: Atom2[], bonds: Bond2[]): Object3D[] {
+	structure2object(atoms: Atom[], bonds: Bond[]): Object3D[] {
 
 		const objects: Object3D[] = [];
 		const scale = 0.5;
@@ -61,7 +61,7 @@ export class Structure2Object3D {
 
 		for(const atom of atoms) {
 
-			const data = this.atomData[atom.Z];
+			const data = this.atomData[atom.atomZ];
 			const color = `rgb(${data.red},${data.green},${data.blue})`;
 			const radius = this.useRCov ? data.rCov*scale : data.rVdW;
 			objects.push({type: "sphere", radius, position: atom.position, color});
@@ -70,8 +70,8 @@ export class Structure2Object3D {
 		if(this.useRCov) {
 			for(const bond of bonds) {
 
-				const from = this.atomData[atoms[bond.from].Z];
-				const to   = this.atomData[atoms[bond.to].Z];
+				const from = this.atomData[atoms[bond.from].atomZ];
+				const to   = this.atomData[atoms[bond.to].atomZ];
 
 				const radiusFrom = from.rCov*scale;
 				const posFrom = atoms[bond.from].position;

@@ -99,6 +99,7 @@ export class AtomData {
 			const {symbol} = this.data[i];
 			this.symbol2an.set(symbol, i);
 			this.symbol2an.set(symbol.toLowerCase(), i);
+			this.symbol2an.set(symbol.toUpperCase(), i);
 		}
 	}
 

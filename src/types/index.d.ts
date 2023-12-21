@@ -31,6 +31,18 @@ export interface Viewer3DConfiguration {
     };
 }
 
+type ModuleParams = {
+    type: "draw-structure";
+} | {
+    type: "structure-reader";
+} | {
+    type: "chart-rendering";
+};
+
+export interface ModulesParams {
+
+    modules: Record<string, ModuleParams>;
+}
 
 export type Object3D = {
     type: "sphere";
@@ -53,21 +65,9 @@ export type Object3D = {
     colorEnd: THREE.ColorRepresentation;
 };
 
-export interface Atom2 {
-    position: [number, number, number];
-    Z: number;
-}
-
-type BondType2 = "normal" | "hydrogen";
-
-export interface Bond2 {
-    from: number;
-    to: number;
-    kind: BondType2;
-}
-
 export interface ProjectElement {
     id: string;
+    type: string;
     label: string;
     ui: string;
     in: string;
@@ -84,34 +84,43 @@ export interface ChartData {
 }
 
 // > Type of a collection of atomic structures
+// >> Base types
+export type PositionType = [number, number, number];
+
+export type BasisType = [number, number, number,
+            number, number, number,
+            number, number, number];
+
+/** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
+export type BondType = "h" | "n" | "x";
+
 /** One atom in the structure or step in the structure */
 export interface Atom {
+
     /** Atomic number */
     atomZ:  number;
-    /** Coordinates absolute of the atom (in Å) */
-    x:      number;
-    y:      number;
-    z:      number;
-}
 
-/** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond */
-export type BondType = "n" | "h" | "x";
+    label: string;
+
+    /** Absolute coordinates of the atom (in Å) [x, y, z] */
+    position: PositionType;
+}
 
 /** Definition of a bond */
 export interface Bond {
-    /** Index in the structure of the atom from which the bond starts */
+    /** Index in the list of atoms where the bond starts */
     from: number;
-    /** Index in the structure of the atom from which the bond starts */
+    /** Index in the list of atoms where the bond ends */
     to:   number;
     /** Kind of bond */
     type: BondType;
 }
 
-export type Look = Record<number, AtomAppearance>;
-export interface Structure {
-    atoms: Atom[];
-    bonds: Bond[];
-    look:  Look;
+
+export interface Crystal {
+    basis: BasisType;
+    origin: PositionType;
+    spaceGroup: string;
 }
 export interface AtomAppearance {
 
@@ -127,6 +136,16 @@ export interface AtomAppearance {
 	/** Atom color as hex string (#RRGGBB) */
 	color: string;
 }
+/** Index is atomZ */
+export type Look = Record<number, AtomAppearance>;
+
+export interface Structure {
+    crystal:    Crystal;
+    atoms:      Atom[];
+    bonds:      Bond[];
+    look:       Look;
+}
+
 
 export interface ReaderStructure {
     filename: string;
