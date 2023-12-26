@@ -11,6 +11,7 @@ import {setTitle, isLoaded, handleFullscreen, receiveMenuSelection} from "@/serv
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
+import {sb} from "@/services/Switchboard";
 
 /** Toggle expanded viewer window */
 const normalScreen = ref(true);
@@ -28,13 +29,14 @@ window.addEventListener("DOMContentLoaded", () => {
           log.error("Waiting too long for IPC to setup");
         }
         if(isLoaded()) {
+            clearInterval(timer);
             handleFullscreen((isFullScreen: boolean) => {
                 const root = document.documentElement;
                 root.style.setProperty("--usable-height",    isFullScreen ? "100vh" : "calc(100vh - 30px)");
                 root.style.setProperty("--container-height", isFullScreen ? "100vh" : "calc(100% - 74px)");
             });
             setTitle("See the Molecole New Generation");
-            clearInterval(timer);
+            sb.setup();
         }
     }, 20);
 });

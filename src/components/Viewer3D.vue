@@ -160,7 +160,8 @@ onMounted(() => {
     cnv.value.append(labelRenderer.domElement);
 
     // Add mouse controls
-    void new OrbitControls(camera, renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.listenToKeyEvents(window);
     watchEffect(() => {
         camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
         camera.updateProjectionMatrix();

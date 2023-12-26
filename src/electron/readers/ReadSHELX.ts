@@ -94,7 +94,6 @@ export class Reader implements ReaderImplementation {
 		// Build the rest of the structure
 		structures[0].look  = getStructureAppearance(structures[0].atoms);
 		structures[0].bonds = computeBonds(structures[0].atoms);
-			console.log(JSON.stringify(structures[0], undefined, 2));
 
 		return structures;
 	}

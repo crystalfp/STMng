@@ -76,7 +76,7 @@ export const receiveProject = (callback: (rawProject: string) => void): void => 
     window.electron.ipcRenderer.invoke("PROJECT:GET1")
 		// eslint-disable-next-line promise/no-callback-in-promise
 		.then((rawProject: string) => callback(rawProject))
-		.catch((error: Error) => log.error("Cannot retrieve project first time", error.message));
+		.catch((error: Error) => log.error("Cannot retrieve project first time.", error.message));
     window.electron.ipcRenderer.on("PROJECT:GET2", (_event, rawProject: string) => callback(rawProject));
 };
 

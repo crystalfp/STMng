@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
-import type {ChartData} from "@/types";
-import {Bar, Line} from "vue-chartjs";
 import {ref} from "vue";
-import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement,
-        LineElement} from "chart.js";
-
-const chartType = ref<string>("line");
+import {Bar, Line} from "vue-chartjs";
+import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
+        LinearScale, PointElement, LineElement} from "chart.js";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import type {ChartParams} from "@/types";
 
 ChartJS.register(
     CategoryScale,
@@ -18,76 +16,11 @@ ChartJS.register(
     Tooltip,
     Legend);
 
-const chartData = {
-    labels: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ],
-    datasets: [
-        {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11],
-            borderColor: "#f87979",
-        },
-        {
-            label: "Data Two",
-            backgroundColor: "#00ff00",
-            data: [4, 2, 2, 4, 1, 4, 5, 9, 6, 19, 3, 8],
-            borderColor: "#00ff00",
-        }
-    ]
-};
-const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      title: {
-          text: "Test chart",
-          display: true,
-          font: {
-              size: 30
-          }
-      }
-    },
-    scales: {
-      x: {
-        title: {
-          color: "red",
-          display: true,
-          text: "Month"
-        },
-        grid: {
-          color: "aqua"
-        }
-      },
-      y: {
-        title: {
-          color: "green",
-          display: true,
-          text: "Sales"
-        },
-        grid: {
-          color: "aqua"
-        }
-      }
-    }
-};
-
+const chartType = ref<string>("");
+let decodedData: ChartParams;
 receiveInWindow((data) => {
 
-    const decodedData = JSON.parse(data) as ChartData;
-
+    decodedData = JSON.parse(data) as ChartParams;
     chartType.value = decodedData.type;
 });
 
@@ -107,12 +40,12 @@ document.addEventListener("keydown", captureEscape);
 <div class="chart-portal">
   <div class="chart-container">
     <Bar v-if="chartType === 'bar'"
-      :options="chartOptions"
-      :data="chartData"
+      :options="decodedData.options"
+      :data="decodedData.data"
     />
-    <Line v-if="chartType === 'line'"
-      :options="chartOptions"
-      :data="chartData"
+    <Line v-else-if="chartType === 'line'"
+      :options="decodedData.options"
+      :data="decodedData.data"
     />
   </div>
   <v-container class="chart-button-strip">

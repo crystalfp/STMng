@@ -1,9 +1,31 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the converter from Structure data to graphical objects
+ */
 
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
+import {sb, type UiParams} from "@/services/Switchboard";
 
-const drawKind = ref("ball-and-stick");
+// > Properties
+const props = defineProps<{
 
+    /** Its own module id */
+    id: string;
+
+    /** From where comes the module input */
+    in: string;
+}>();
+
+// > Get and set ui parameters from the switchboard
+const drawKind = ref("");
+sb.getUiParams(props.id, (params: UiParams) => {
+    drawKind.value = params.drawKind as string ?? "ball-and-stick";
+});
+
+watchEffect(() => {
+    sb.setUiParams(props.id, {drawKind: drawKind.value});
+});
 </script>
 
 

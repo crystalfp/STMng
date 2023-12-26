@@ -1,53 +1,76 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the structure data reader.
+ */
 
-import {ref} from "vue";
-import {readStructure} from "@/services/RoutesClient";
-import type {ReaderStructure} from "@/types";
+import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight} from "@mdi/js";
+import {sb, type UiParams} from "@/services/Switchboard";
 
-const fileRead = ref("");
+// > Properties
+const props = defineProps<{
+
+    /** Its own module id */
+    id: string;
+
+    /** From where comes the module input (ignored here) */
+    in: string;
+}>();
+
+// > Get and set ui parameters from the switchboard
+const fileRead   = ref("");
 const countSteps = ref(1);
-const step = ref(1);
+const step       = ref(1);
+const running    = ref(false);
+const loading    = ref(false);
 
-const askFile = (): void => {
-    readStructure()
-        .then((structureRaw) => {
-            const structure = JSON.parse(structureRaw) as ReaderStructure;
+sb.getUiParams(props.id, (params: UiParams) => {
 
-            if(structure.error) throw Error(structure.error);
-            fileRead.value = structure.filename;
-            countSteps.value = structure.structures.length;
-        })
-        .catch((error: Error) => {fileRead.value = error.message;});
+    fileRead.value   = params.filename as string ?? "";
+    countSteps.value = params.steps as number ?? 1;
+    step.value       = params.step as number ?? 1;
+    running.value    = params.running as boolean ?? false;
+    loading.value    = params.loading as boolean ?? false;
+});
+
+watchEffect(() => {
+    sb.setUiParams(props.id, {
+        step: step.value,
+        running: running.value,
+        loading: loading.value
+    });
+});
+
+
+const loadFile = (): void => {
+
+    loading.value = true;
+    sb.setUiParams(props.id, {
+        loading: true
+    });
 };
 
-let intervalId: ReturnType<typeof setInterval>;
-const running = ref(false);
+const setRunning = (value: boolean): void => {
 
-const stopPlay = (): void => {
+    running.value = value;
+    sb.setUiParams(props.id, {
+        running: value
+    });
+};
 
-    if(running.value) {
-        clearInterval(intervalId);
-        running.value = false;
-    }
+const setStep = (value: number): void => {
+
+    step.value = value;
+    sb.setUiParams(props.id, {
+        step: value
+    });
 };
 
 const togglePlay = (): void => {
 
-    if(running.value) {
-        clearInterval(intervalId);
-        running.value = false;
-    }
-    else if(step.value < countSteps.value) {
-        running.value = true;
-        intervalId = setInterval(() => {
-            ++step.value;
-            if(step.value === countSteps.value) {
-                clearInterval(intervalId);
-                running.value = false;
-            }
-        }, 500);
-    }
+    if(running.value) setRunning(false);
+    else if(step.value < countSteps.value) setRunning(true);
 };
 
 </script>
@@ -56,16 +79,16 @@ const togglePlay = (): void => {
 <template>
 <v-container class="container">
   <v-row>
-    <v-btn @click="askFile">Select file</v-btn>
+    <v-btn @click="loadFile">Select file</v-btn>
     <v-label class="reader-filename">{{ fileRead }}</v-label>
   </v-row>
   <v-container v-if="countSteps > 1">
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
     <v-row>
-      <v-btn variant="tonal" :icon="mdiChevronDoubleLeft" @click="step=1" />
+      <v-btn variant="tonal" :icon="mdiChevronDoubleLeft" @click="setStep(1)" />
       <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" @click="togglePlay" />
-      <v-btn variant="tonal" :icon="mdiChevronDoubleRight" @click="step=countSteps; stopPlay()" />
+      <v-btn variant="tonal" :icon="mdiChevronDoubleRight" @click="setStep(countSteps); setRunning(false)" />
     </v-row>
   </v-container>
 </v-container>

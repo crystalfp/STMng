@@ -1,29 +1,130 @@
 <script setup lang="ts">
-import {ref, watchEffect} from "vue";
+/**
+ * @component
+ * Controls for the chart visualization
+ */
 
+import {ref, watchEffect} from "vue";
+import {sb, type UiParams} from "@/services/Switchboard";
 import {createWindow, sendToWindow} from "@/services/RoutesClient";
 
-const chartType = ref("line");
+// > Properties
+const props = defineProps<{
 
+    /** Its own module id */
+    id: string;
+
+    /** From where comes the module input */
+    in: string;
+}>();
+
+// > Get and set ui parameters from the switchboard
+const chartType = ref("line");
+sb.getUiParams(props.id, (params: UiParams) => {
+    chartType.value = params.chartType as string ?? "line";
+});
+
+watchEffect(() => {
+    sb.setUiParams(props.id, {chartType: chartType.value});
+});
+
+// TEST Hardcoded chart data
+const chartTitle = "Test chart";
+
+const chartData = {
+    labels: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ],
+    datasets: [
+        {
+            label: "Data One",
+            backgroundColor: "#f87979",
+            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11],
+            borderColor: "#f87979",
+        },
+        {
+            label: "Data Two",
+            backgroundColor: "#00ff00",
+            data: [4, 2, 2, 4, 1, 4, 5, 9, 6, 19, 3, 8],
+            borderColor: "#00ff00",
+        }
+    ]
+};
+
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+          text: chartTitle,
+          display: true,
+          font: {
+              size: 30
+          }
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          color: "red",
+          display: true,
+          text: "Month"
+        },
+        grid: {
+          color: "aqua"
+        }
+      },
+      y: {
+        title: {
+          color: "green",
+          display: true,
+          text: "Sales"
+        },
+        grid: {
+          color: "aqua"
+        }
+      }
+    }
+};
+
+// > Open the chart window
 const openChart = (): void => {
 
     const dataToSend = JSON.stringify({
-                x: [1, 2, 3],
-                y: [12, 7.5, 9],
-                type: chartType.value
-            });
+        data: chartData,
+        options: chartOptions,
+        type: chartType.value
+    });
 
     createWindow({
                     routerPath: "/chart",
                     width: 800,
                     height: 600,
-                    title: "Chart example",
+                    title: chartTitle,
                     data: dataToSend
                 });
 };
 
+// > Accept changes from the ui
 watchEffect(() => {
-    sendToWindow("/chart", JSON.stringify({type: chartType.value}));
+
+    const dataToSend = JSON.stringify({
+        data: chartData,
+        options: chartOptions,
+        type: chartType.value
+    });
+    sendToWindow("/chart", dataToSend);
 });
 
 </script>
@@ -35,6 +136,6 @@ watchEffect(() => {
     <v-radio label="Line" value="line" />
     <v-radio label="Bar" value="bar" />
   </v-radio-group>
-  <v-btn @click="openChart">Open Chart</v-btn>
+  <v-btn @click="openChart">Open chart</v-btn>
 </v-container>
 </template>
