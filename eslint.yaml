@@ -32,7 +32,6 @@ extends:
     - plugin:vue/base
     - plugin:vue/vue3-essential
     - plugin:vue/vue3-recommended
-    - plugin:vuetify/base
 
 parserOptions:
     parser: '@typescript-eslint/parser'

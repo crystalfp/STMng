@@ -86,9 +86,11 @@ const togglePlay = (): void => {
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
     <v-row>
+      <v-spacer />
       <v-btn variant="tonal" :icon="mdiChevronDoubleLeft" @click="setStep(1)" />
       <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" @click="togglePlay" />
       <v-btn variant="tonal" :icon="mdiChevronDoubleRight" @click="setStep(countSteps); setRunning(false)" />
+      <v-spacer />
     </v-row>
   </v-container>
 </v-container>
