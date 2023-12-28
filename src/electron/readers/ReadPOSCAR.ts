@@ -1,0 +1,146 @@
+import fs from "node:fs";
+import * as rd from "node:readline/promises";
+import type {ReaderImplementation} from "../types";
+import type {Crystal, Structure, Atom} from "../../types";
+import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
+import {computeBonds} from "../modules/ComputeBonds";
+import {fractionalToCartesianCoordinates} from "../modules/ReaderHelpers";
+import {getStructureAppearance} from "../modules/ComputeLook";
+
+export class ReaderPOSCAR implements ReaderImplementation {
+
+	async readStructure(filename: string): Promise<Structure[]> {
+
+		const crystal: Crystal = {
+			basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+			origin: [0, 0, 0],
+			spaceGroup: ""
+		};
+		const structures: Structure[] = [];
+		const currentStructure: Structure = {crystal, atoms: [], bonds: [], look: {}};
+		let scaleFactor = 1;
+		let lineType = "comment";
+		let base = 0;
+		const atomsCount: number[] = [];
+		const atomsKinds: string[] = [];
+		const atomsZ: number[] = [];
+		let currentIdx = 0;
+		let currentCount = 0;
+
+		const stream = rd.createInterface(fs.createReadStream(filename));
+		for await (const line of stream) {
+
+			switch(lineType) {
+				case "comment":
+					lineType = "scale";
+					currentStructure.crystal = crystal;
+					currentStructure.atoms = [];
+					currentStructure.bonds = [];
+					currentStructure.look = {};
+					break;
+				case "scale":
+					scaleFactor = Number.parseFloat(line);
+					lineType = "basis";
+					break;
+				case "basis": {
+					const fields = line.trim().split(/ +/);
+					const {basis} = currentStructure.crystal;
+					basis[base*3+0] = Number.parseFloat(fields[0]);
+					basis[base*3+1] = Number.parseFloat(fields[1]);
+					basis[base*3+2] = Number.parseFloat(fields[2]);
+					++base;
+					if(base === 3) {
+						lineType = "counts";
+						base = 0;
+
+						// If scale is negative, it is the unit cell volume, so transform it into a scale factor
+						if(scaleFactor < 0) {
+							const Vuc = basis[0]*basis[4]*basis[8] + basis[1]*basis[5]*basis[6] +
+										basis[2]*basis[3]*basis[7] - basis[2]*basis[4]*basis[6] -
+										basis[1]*basis[3]*basis[8] - basis[0]*basis[5]*basis[7];
+							scaleFactor = Math.pow((-scaleFactor)/Vuc, 1/3);
+						}
+						else if(scaleFactor === 0) {
+							throw Error("Invalid scale factor");
+						}
+
+						// Adjust the basis scale
+						if(scaleFactor !== 1) {
+
+							for(let j=0; j < 9; ++j) {
+								basis[j] *= scaleFactor;
+							}
+						}
+					}
+					break;
+				}
+				case "counts": {
+					const fields = line.trim().split(/ +/);
+					if(/\d+/.test(fields[0])) {
+						let atomZ = 1;
+						const hasSymbols = atomsZ.length > 0;
+						atomsCount.length = 0;
+						for(const field of fields) {
+							const count = Number.parseInt(field);
+							atomsCount.push(count);
+							if(!hasSymbols) {
+								atomsZ.push(atomZ);
+								atomsKinds.push(getAtomicSymbol(atomZ));
+								++atomZ;
+							}
+						}
+						lineType = "direct";
+					}
+					else {
+						for(const field of fields) {
+							atomsKinds.push(field);
+							atomsZ.push(getAtomicNumber(field));
+						}
+					}
+					break;
+				}
+				case "direct":
+					lineType = "atoms";
+					currentIdx = 0;
+					currentCount = atomsCount[0];
+					break;
+				case "atoms": {
+					const fields = line.trim().split(/ +/);
+
+					const position = fractionalToCartesianCoordinates(
+										currentStructure.crystal.basis,
+										Number.parseFloat(fields[0]),
+										Number.parseFloat(fields[1]),
+										Number.parseFloat(fields[2]),
+									);
+					const atomZ = atomsZ[currentIdx];
+					const atom: Atom = {
+						atomZ,
+						label: atomsKinds[currentIdx],
+						position
+					};
+					currentStructure.atoms.push(atom);
+					--currentCount;
+					if(currentCount === 0) {
+						++currentIdx;
+						if(currentIdx < atomsCount.length) {
+							currentCount = atomsCount[currentIdx];
+						}
+						else {
+							lineType = "comment";
+							structures.push(currentStructure);
+						}
+					}
+				}
+			}
+		}
+
+		// Add bonds to the structure
+		for(const structure of structures) {
+			structure.look  = getStructureAppearance(structure.atoms);
+			structure.bonds = computeBonds(structure.atoms);
+		}
+console.log(JSON.stringify(structures, undefined, 2));
+		return structures;
+	}
+}

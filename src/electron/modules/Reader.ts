@@ -13,8 +13,9 @@ import type {ReaderStructure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
 
 // Import the readers
-import {Reader as ReaderXYZ} from "../readers/ReadXYZ";
-import {Reader as ReaderSHELX} from "../readers/ReadSHELX";
+import {ReaderXYZ} from "../readers/ReadXYZ";
+import {ReaderSHELX} from "../readers/ReadSHELX";
+import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
 
 /**
  * Get the loaded file format
@@ -88,6 +89,9 @@ export const readStructure = async (filename: string): Promise<ReaderStructure> 
 			case "SHELX":
 				reader = new ReaderSHELX();
 				break;
+			case "POSCAR":
+				reader = new ReaderPOSCAR();
+				break;
 			default: throw Error("Invalid format");
 		}
 	}
@@ -111,11 +115,10 @@ export const setupChannelReader = (): void => {
 			title: "Select input",
 			properties: ["openFile"],
 			filters: [
-				{name: "PDB", extensions: ["pdb"]},
-				{name: "POSCAR", extensions: ["poscar", "poscars"]},
-				{name: "XYZ", extensions: ["xyz"]},
-				{name: "ShelX", extensions: ["ins", "res"]},
-				{name: "All", extensions: ["*"]},
+				{name: "POSCAR",	extensions: ["poscar", "poscars", "*"]},
+				{name: "ShelX",		extensions: ["ins", "res"]},
+				{name: "XYZ",		extensions: ["xyz"]},
+				{name: "All",		extensions: ["*"]},
 			]
 		});
 		if(file) return JSON.stringify(await readStructure(file[0]));

@@ -107,6 +107,10 @@ export class AtomData {
 		return this.symbol2an.get(symbol) ?? 0;
 	}
 
+	atomicSymbol(atomZ: number): string {
+		return this.data[atomZ].symbol;
+	}
+
 	atomicRadiiAndColor(atomZ: number): OneAtomRendering {
 
 		const rs = this.data[atomZ].red.toString(16).toUpperCase().padStart(2, "0");
@@ -146,4 +150,8 @@ export const getAtomicNumber = (symbol: string): number => {
 
 export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => {
 	return AtomData.getInstance().atomicRadiiAndColor(atomZ);
+};
+
+export const getAtomicSymbol = (atomZ: number): string => {
+	return AtomData.getInstance().atomicSymbol(atomZ);
 };

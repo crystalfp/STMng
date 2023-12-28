@@ -7,7 +7,7 @@ import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/ReaderHelpers";
 
-export class Reader implements ReaderImplementation {
+export class ReaderSHELX implements ReaderImplementation {
 
 	async readStructure(filename: string): Promise<Structure[]> {
 

@@ -156,12 +156,14 @@ export interface Bond {
     type: BondType;
 }
 
-
+/** Crystallographic data */
 export interface Crystal {
     basis: BasisType;
     origin: PositionType;
     spaceGroup: string;
 }
+
+/** Appearance of the various atoms types */
 export interface AtomAppearance {
 
 	/** Element symbol */

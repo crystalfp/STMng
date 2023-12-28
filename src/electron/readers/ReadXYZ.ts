@@ -6,7 +6,7 @@ import {computeBonds} from "../modules/ComputeBonds";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure} from "../../types";
 
-export class Reader implements ReaderImplementation {
+export class ReaderXYZ implements ReaderImplementation {
 
 	async readStructure(filename: string): Promise<Structure[]> {
 
