@@ -97,13 +97,14 @@ export const readStructure = async (filename: string): Promise<ReaderStructure> 
 	}
 	catch(error: unknown) {
 		log.error(`${type} format not implemented`, (error as Error).message);
-		return {filename: "", structures: [], error: `${type} format not implemented`};
+		return {filename: "", format: "", structures: [], error: `${type} format not implemented`};
 	}
 
 	const structures = await reader.readStructure(filename);
 
 	return {
 		filename: path.basename(filename),
+		format: type,
 		structures
 	};
 };
@@ -122,6 +123,6 @@ export const setupChannelReader = (): void => {
 			]
 		});
 		if(file) return JSON.stringify(await readStructure(file[0]));
-		return JSON.stringify({filename: "", structures: [], error: "Cannot read"});
+		return "";
 	});
 };

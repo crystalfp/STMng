@@ -3,7 +3,7 @@
   "description": "See The Molecule New Generation",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -17,7 +17,7 @@
     "start": "start ./release/%npm_package_version%/win-unpacked/STMng.exe"
   },
   "dependencies": {
-    "@mdi/js": "^7.3.67",
+    "@mdi/js": "^7.4.47",
     "@yeliulee/vue-mdi-svg": "^1.1.0",
     "animate.css": "^4.1.1",
     "chart.js": "^4.4.1",
@@ -34,13 +34,13 @@
     "vue": "^3.3.13",
     "vue-chartjs": "^5.3.0",
     "vue-router": "^4.2.5",
-    "vue-tippy": "^6.4.0",
-    "vuetify": "^3.4.8"
+    "vue-tippy": "^6.4.1",
+    "vuetify": "^3.4.9"
   },
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
     "@electron-toolkit/preload": "^3.0.0",
-    "@mdi/svg": "^7.3.67",
+    "@mdi/svg": "^7.4.47",
     "@rollup/rollup-win32-x64-msvc": "^4.9.1",
     "@types/fs-extra": "^11.0.4",
     "@types/js-yaml": "^4.0.9",

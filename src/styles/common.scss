@@ -26,6 +26,7 @@ html {
   filter: invert(1) hue-rotate(180deg);
 } */
 
+/*
 // >> Button
 @mixin button($button-base-color: colors.$button-color-normal) {
   background: linear-gradient(
@@ -89,7 +90,7 @@ button {
     width: 6.5rem;
   }
 }
-
+*/
 // >> Fieldset and its legend
 fieldset {
   user-select: none;
@@ -122,20 +123,20 @@ select {
 }
 
 // >> Input text or number
-input[type="text"], input[type="number"] {
-  border-radius: 6px;
-  color: colors.$text;
-  background-color: colors.$input-background;
-  border: 1px solid colors.$border;
-  font-size: 1.2rem;
-  font-family: fonts.$ui;
-  padding: 1px 5px 2px;
+// input[type="text"], input[type="number"] {
+//   border-radius: 6px;
+//   color: colors.$text;
+//   background-color: colors.$input-background;
+//   border: 1px solid colors.$border;
+//   font-size: 1.2rem;
+//   font-family: fonts.$ui;
+//   padding: 1px 5px 2px;
 
-  &:focus {
-    border: 1px solid colors.$focus;
-    outline: none;
-  }
-}
+//   &:focus {
+//     border: 1px solid colors.$focus;
+//     outline: none;
+//   }
+// }
 
 // > Specific styles
 // >> Tooltip styles

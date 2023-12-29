@@ -135,12 +135,12 @@ export class ReaderPOSCAR implements ReaderImplementation {
 			}
 		}
 
-		// Add bonds to the structure
+		// Add bonds and appearance to the structure
 		for(const structure of structures) {
 			structure.look  = getStructureAppearance(structure.atoms);
 			structure.bonds = computeBonds(structure.atoms);
 		}
-console.log(JSON.stringify(structures, undefined, 2));
+
 		return structures;
 	}
 }

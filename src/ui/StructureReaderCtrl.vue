@@ -20,6 +20,7 @@ const props = defineProps<{
 
 // > Get and set ui parameters from the switchboard
 const fileRead   = ref("");
+const format     = ref("");
 const countSteps = ref(1);
 const step       = ref(1);
 const running    = ref(false);
@@ -28,6 +29,7 @@ const loading    = ref(false);
 sb.getUiParams(props.id, (params: UiParams) => {
 
     fileRead.value   = params.filename as string ?? "";
+    format.value     = params.format as string ?? "";
     countSteps.value = params.steps as number ?? 1;
     step.value       = params.step as number ?? 1;
     running.value    = params.running as boolean ?? false;
@@ -92,6 +94,9 @@ const togglePlay = (): void => {
       <v-btn variant="tonal" :icon="mdiChevronDoubleRight" @click="setStep(countSteps); setRunning(false)" />
       <v-spacer />
     </v-row>
+  </v-container>
+  <v-container v-if="format === 'POSCAR'">
+    <v-text-field label="Atoms types" variant="solo-filled" hide-details="auto" clearable />
   </v-container>
 </v-container>
 </template>

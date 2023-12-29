@@ -76,12 +76,16 @@ export class StructureReader {
 
 		readStructure()
 			.then((structureRaw) => {
+
+				if(!structureRaw) return;
+
 				const structure = JSON.parse(structureRaw) as ReaderStructure;
 
 				if(structure.error) throw Error(structure.error);
 
 				sb.setUiParams(this.id, {
 					filename: structure.filename,
+					format: structure.format,
 					steps: structure.structures.length,
 					step: 1,
 					running: false,
@@ -97,7 +101,8 @@ export class StructureReader {
 					steps: 1,
 					step: 1,
 					running: false,
-					loading: false
+					loading: false,
+					format: ""
 				});
 				log.error("Error reading structure.", error.message);
 			});

@@ -191,6 +191,7 @@ export interface Structure {
 
 export interface ReaderStructure {
     filename: string;
+    format: string;
     structures: Structure[];
     error?: string;
 }
