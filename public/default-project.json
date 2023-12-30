@@ -1,8 +1,8 @@
 {
 	"graph": [
-		{"id": "reader", "label": "Reader", "ui": "StructureReaderCtrl", "in": ""},
-		{"id": "draw",   "label": "Draw",   "ui": "DrawStructureCtrl",   "in": "reader"},
-		{"id": "viewer", "label": "Viewer", "ui": "Viewer3DCtrl",     	 "in": "draw"},
-		{"id": "chart",  "label": "Chart",  "ui": "ChartDialogCtrl",     "in": ""}
+		{"id": "reader", "label": "Reader", "type": "structure-reader", "in": ""},
+		{"id": "draw",   "label": "Draw",   "type": "draw-structure",   "in": "reader"},
+		{"id": "viewer", "label": "Viewer", "type": "viewer-3d",     	"in": "draw"},
+		{"id": "chart",  "label": "Chart",  "type": "chart-dialog",     "in": ""}
 	]
 }

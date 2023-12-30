@@ -65,19 +65,6 @@ export type Object3D = {
     colorEnd: THREE.ColorRepresentation;
 };
 
-export interface ProjectElement {
-    id: string;
-    type: string;
-    label: string;
-    ui: string;
-    in: string;
-}
-
-export interface Project {
-    graph: ProjectElement[];
-    currentId?: string;
-}
-
 export interface ChartOptions {
     responsive: boolean;
     maintainAspectRatio: boolean;
