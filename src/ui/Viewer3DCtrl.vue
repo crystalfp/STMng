@@ -112,19 +112,6 @@ watchEffect(() => {
                   min="-90" max="90" step="1" thumb-label />
       </v-expansion-panel-text>
     </v-expansion-panel>
-    <v-expansion-panel>
-      <v-expansion-panel-title>
-        Materials
-      </v-expansion-panel-title>
-      <v-expansion-panel-text>
-        <v-slider v-model="configStore.materials.quality" label="Quality" density="compact"
-                  min="0" max="3" step="1" thumb-label />
-        <v-slider v-model="configStore.materials.roughness" label="Roughness" density="compact"
-                  min="0" max="1" step="0.1" thumb-label />
-        <v-slider v-model="configStore.materials.metalness" label="Metalness" density="compact"
-                  min="0" max="1" step="0.1" thumb-label />
-      </v-expansion-panel-text>
-    </v-expansion-panel>
   </v-expansion-panels>
 </v-container>
 </template>

@@ -25,6 +25,7 @@ const countSteps = ref(1);
 const step       = ref(1);
 const running    = ref(false);
 const loading    = ref(false);
+const atomsTypes = ref("");
 
 sb.getUiParams(props.id, (params: UiParams) => {
 
@@ -96,7 +97,7 @@ const togglePlay = (): void => {
     </v-row>
   </v-container>
   <v-container v-if="format === 'POSCAR'">
-    <v-text-field label="Atoms types" variant="solo-filled" hide-details="auto" clearable />
+    <v-text-field v-model="atomsTypes" label="Atoms types" variant="solo-filled" hide-details="auto" clearable />
   </v-container>
 </v-container>
 </template>
