@@ -1,7 +1,8 @@
 import * as THREE from "three";
 
 export const normalMaterial = (color: THREE.ColorRepresentation,
-						       roughness: number, metalness: number): THREE.MeshStandardMaterial => {
+						       roughness: number,
+							   metalness: number): THREE.MeshStandardMaterial => {
 
 	return new THREE.MeshStandardMaterial({
 		color,

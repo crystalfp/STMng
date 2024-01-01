@@ -5,7 +5,8 @@
  */
 
 import {ref, watchEffect} from "vue";
-import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight} from "@mdi/js";
+import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
+        mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {sb, type UiParams} from "@/services/Switchboard";
 
 // > Properties
@@ -26,6 +27,7 @@ const step       = ref(1);
 const running    = ref(false);
 const loading    = ref(false);
 const atomsTypes = ref("");
+const loopSteps  = ref(false);
 
 sb.getUiParams(props.id, (params: UiParams) => {
 
@@ -35,13 +37,15 @@ sb.getUiParams(props.id, (params: UiParams) => {
     step.value       = params.step as number ?? 1;
     running.value    = params.running as boolean ?? false;
     loading.value    = params.loading as boolean ?? false;
+    loopSteps.value  = params.loopSteps as boolean ?? false;
 });
 
 watchEffect(() => {
     sb.setUiParams(props.id, {
         step: step.value,
         running: running.value,
-        loading: loading.value
+        loading: loading.value,
+        loopSteps: loopSteps.value
     });
 });
 
@@ -49,8 +53,10 @@ watchEffect(() => {
 const loadFile = (): void => {
 
     loading.value = true;
+    step.value = 1;
     sb.setUiParams(props.id, {
-        loading: true
+        loading: true,
+        step: 1
     });
 };
 
@@ -58,7 +64,8 @@ const setRunning = (value: boolean): void => {
 
     running.value = value;
     sb.setUiParams(props.id, {
-        running: value
+        running: value,
+        loopSteps: loopSteps.value
     });
 };
 
@@ -67,6 +74,16 @@ const setStep = (value: number): void => {
     step.value = value;
     sb.setUiParams(props.id, {
         step: value
+    });
+};
+
+const deltaStep = (delta: number): void => {
+
+    const changedStep = step.value + delta;
+    if(changedStep < 1 || changedStep > countSteps.value) return;
+    step.value = changedStep;
+    sb.setUiParams(props.id, {
+        step: changedStep
     });
 };
 
@@ -82,17 +99,25 @@ const togglePlay = (): void => {
 <template>
 <v-container class="container">
   <v-row>
-    <v-btn @click="loadFile">Select file</v-btn>
+    <v-btn size="small" @click="loadFile">Select file</v-btn>
     <v-label class="reader-filename">{{ fileRead }}</v-label>
   </v-row>
   <v-container v-if="countSteps > 1">
+    <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mt-4 ml-2" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
     <v-row>
       <v-spacer />
-      <v-btn variant="tonal" :icon="mdiChevronDoubleLeft" @click="setStep(1)" />
-      <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" @click="togglePlay" />
-      <v-btn variant="tonal" :icon="mdiChevronDoubleRight" @click="setStep(countSteps); setRunning(false)" />
+      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft"
+              @click="setStep(1)" />
+      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft"
+              @click="deltaStep(-1)" />
+      <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay"
+              @click="togglePlay" />
+      <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight"
+              @click="deltaStep(1)" />
+      <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
+              @click="setStep(countSteps); setRunning(false)" />
       <v-spacer />
     </v-row>
   </v-container>

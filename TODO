@@ -1,6 +1,12 @@
 ToDo:
 	☐ Establish shortcuts
 	☐ Save/Load config data in project
+	☐ Add tooltips
+	☐ Add looping mode for reader
+	☐ Put everything related to modules (like adding a new one) in a separate file
+	☐ Add Atoms types to POSCAR Reader
+	☐ Visualize atoms labels
+	☐ Add error notifications
 
 Bugs:
 	✔ Send loaded project redefine handler @done(2023-12-16 07:27)

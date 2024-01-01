@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Show a chart in a secondary window.
+ */
 import {ref} from "vue";
 import {Bar, Line} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,

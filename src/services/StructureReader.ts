@@ -12,6 +12,7 @@ export class StructureReader {
 	private step = 1;
 	private running = false;
 	private loading = false;
+	private loopSteps = false;
 	private intervalId: ReturnType<typeof setInterval> | undefined;
 	private structures: Structure[] = [];
 
@@ -22,6 +23,19 @@ export class StructureReader {
 			const requestedStep = params.step as number ?? 1;
 			this.running    = params.running as boolean ?? false;
 			this.loading    = params.loading as boolean ?? false;
+    		this.loopSteps  = params.loopSteps as boolean ?? false;
+
+			if(this.loading) {
+
+				this.doRead();
+				this.loading = false;
+				this.running = false;
+        		if(this.intervalId !== undefined) {
+					clearInterval(this.intervalId);
+					this.intervalId = undefined;
+				}
+				return;
+			}
 
 			if(requestedStep !== this.step) {
 				this.step = requestedStep;
@@ -33,7 +47,10 @@ export class StructureReader {
 
 					this.intervalId = setInterval(() => {
 						++this.step;
-						if(this.step === this.steps) {
+						if(this.step > this.steps) {
+							this.step = 1;
+						}
+						if(this.step === this.steps && !this.loopSteps) {
 							clearInterval(this.intervalId);
 							this.intervalId = undefined;
 							this.running = false;
@@ -56,18 +73,7 @@ export class StructureReader {
 					clearInterval(this.intervalId);
 					this.intervalId = undefined;
 				}
-				this.running = false;
-			}
-
-			if(this.loading) {
-
-				this.doRead();
-				this.loading = false;
-				this.running = false;
-        		if(this.intervalId !== undefined) {
-					clearInterval(this.intervalId);
-					this.intervalId = undefined;
-				}
+				// this.running = false;
 			}
 		});
 	}
@@ -91,6 +97,7 @@ export class StructureReader {
 					running: false,
 					loading: false
 				});
+				this.step = 1;
 				this.steps = structure.structures.length;
 				this.structures = structure.structures;
 				sb.setData(this.id, structure.structures[0]);
@@ -104,7 +111,7 @@ export class StructureReader {
 					loading: false,
 					format: ""
 				});
-				log.error("Error reading structure.", error.message);
+				log.error("Error reading structure:", error.message);
 			});
 	}
 }

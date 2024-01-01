@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Main entry point of the application. It define the general layout of the screen.
+ * Main entry point of the application. It defines the general layout of the screen.
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";

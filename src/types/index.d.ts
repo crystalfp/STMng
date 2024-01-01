@@ -1,36 +1,5 @@
 import * as THREE from "three";
 
-export interface Viewer3DConfiguration {
-
-    camera: {
-        perspective: boolean;
-        orthoSide: number;
-    };
-    scene: {
-        background: string;
-        showGrid: boolean;
-        showAxis: boolean;
-    };
-    lights: {
-        ambientColor: string;
-        ambientIntensity: number;
-        directional1Color: string;
-        directional1Intensity: number;
-        directional1Position: [number, number, number];
-        directional2Color: string;
-        directional2Intensity: number;
-        directional2Position: [number, number, number];
-        directional3Color: string;
-        directional3Intensity: number;
-        directional3Position: [number, number, number];
-    };
-    materials: {
-        quality: number;
-        roughness: number;
-        metalness: number;
-    };
-}
-
 type ModuleParams = {
     type: "draw-structure";
 } | {
@@ -114,9 +83,11 @@ export interface ChartParams {
 // >> Base types
 export type PositionType = [number, number, number];
 
-export type BasisType = [number, number, number,
-            number, number, number,
-            number, number, number];
+export type BasisType = [
+    number, number, number,
+    number, number, number,
+    number, number, number
+];
 
 /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
 export type BondType = "h" | "n" | "x";
@@ -127,6 +98,7 @@ export interface Atom {
     /** Atomic number */
     atomZ:  number;
 
+    /** Label for the atom */
     label: string;
 
     /** Absolute coordinates of the atom (in Å) [x, y, z] */

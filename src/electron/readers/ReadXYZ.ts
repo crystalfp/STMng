@@ -50,17 +50,6 @@ export class ReaderXYZ implements ReaderImplementation {
 		for(const structure of structures) {
 			structure.look = getStructureAppearance(structure.atoms);
 			structure.bonds = computeBonds(structure.atoms);
-
-			// console.log(JSON.stringify(structure.bonds, undefined, 2));
-			// let nhb = 0;
-			// let nb = 0;
-			// let extra = 0;
-			// for(const bond of structure.bonds) {
-			// 	if(bond.type === "h") ++nhb;
-			// 	else if(bond.type === "n") ++nb;
-			// 	else ++extra;
-			// }
-			// console.log("*** Structure", nb, nhb, extra, structure.atoms.length);
 		}
 
 		return structures;

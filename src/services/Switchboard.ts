@@ -10,6 +10,7 @@ import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {projectIsValid, type Project} from "@/services/Validators";
 import {StructureReader, type StructureReaderData} from "./StructureReader";
 import {DrawStructure} from "./DrawStructure";
+import * as THREE from "three";
 
 export interface NodeUI {
 	id: string;
@@ -33,6 +34,7 @@ export type UiParams = Record<string, string | number | boolean>;
 class Switchboard {
 
     private static instance: Switchboard;
+	private static readonly scene = new THREE.Scene();
 	private nodesCallback: ((nodes: NodeUI[], currentId: string) => void) | undefined;
 	private project: Project | undefined;
 	private readonly mapTypesToCodeParts = new Map<string, CodeParts>();
@@ -193,8 +195,12 @@ class Switchboard {
 
 				break;
 			}
-			case "draw-structure":
+			case "draw-structure": {
+				// const typedData = data as THREE.Group;
+				// const typedStore = switchboardStore.data[id] as THREE.Group;
+				// typedStore = typedData;
 				break;
+			}
 			case "viewer-3d":
 				break;
 			case "chart-rendering":
@@ -227,8 +233,8 @@ class Switchboard {
 					callback(switchboardStore.data[idFrom], idFrom);
 					break;
 				case "draw-structure":
-					break;
 				case "viewer-3d":
+					log.error(`Cannot use getData with type "${type}" id: "${id}"`);
 					break;
 				case "chart-rendering":
 					break;
@@ -239,6 +245,45 @@ class Switchboard {
 					log.error(`Unknown type "${type}" sending from ${id}`);
 			}
 		}
+	}
+
+	sceneAddGroup(group: THREE.Group): void {
+
+		Switchboard.scene.add(group);
+	}
+
+	sceneClearGroup(groupName: string): void {
+
+		const group = Switchboard.scene.getObjectByName(groupName);
+		if(!group) return;
+
+		// Meshes to be delete from the group
+		const meshes: THREE.Mesh[] = [];
+
+		// Remove meshes' parts
+		group.traverse((object) => {
+
+			if(object.type !== "Mesh") return;
+			const mesh = object as THREE.Mesh;
+			if(mesh.geometry) mesh.geometry.dispose();
+			if(mesh.material) {
+				if(Array.isArray(mesh.material)) {
+					for(const material of mesh.material) (material as THREE.Material).dispose();
+				}
+				else {
+					(mesh.material as THREE.Material).dispose();
+				}
+			}
+			meshes.push(mesh);
+		});
+
+		// Clear the group
+		for(const mesh of meshes) group.remove(mesh);
+        group.clear();
+	}
+
+	accessScene(): THREE.Scene {
+		return Switchboard.scene;
 	}
 
 	// > Access the singleton instance

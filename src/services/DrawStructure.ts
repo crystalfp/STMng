@@ -33,28 +33,15 @@ export class DrawStructure {
 		sb.getData(this.id, (data: unknown) => {
 			this.drawStructure(data as StructureReaderData, this.drawKind);
 		});
-		sb.setData(this.id, this.out);
+
+		this.out.name = `DrawStructure-${this.id}`;
+		sb.sceneAddGroup(this.out);
 	}
 
 	private drawStructure(data: StructureReaderData, kind: string): void {
 
 		// Clear previous structure
-		this.out.traverse((object) => {
-			if(object.type !== "Mesh") return;
-			const mesh = object as THREE.Mesh;
-			if(mesh.geometry) mesh.geometry.dispose();
-			if(mesh.material) (mesh.material as THREE.Material).dispose();
-			if(mesh.material) {
-				if(Array.isArray(mesh.material)) {
-					for(const material of mesh.material) (material as THREE.Material).dispose();
-				}
-				else {
-					(mesh.material as THREE.Material).dispose();
-				}
-			}
-			// The parent might be the scene or another Object3D, but it is sure to be removed this way
-			object.removeFromParent();
-		});
+		sb.sceneClearGroup(`DrawStructure-${this.id}`);
 
 		// No atoms present, display nothing
 		if(!data.atoms) return;
@@ -116,8 +103,6 @@ export class DrawStructure {
 				}
 				break;
 		}
-		// console.log(`Receive "${kind}" quality ${quality}`); // TBD
-		// console.log(JSON.stringify(data, undefined, 2));
 	}
 
 	private adjustMaterials(): void {

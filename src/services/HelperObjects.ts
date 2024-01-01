@@ -4,9 +4,9 @@ import {CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
 // import {TextGeometry} from "three/addons/geometries/TextGeometry.js";
 // import {FontLoader} from "three/addons/loaders/FontLoader.js";
 // import {Text} from "troika-three-text";
-import {createMaterial, createColorTextureMaterial, getQuality} from "@/services/DefineMaterials";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
+import {normalMaterial, colorTextureMaterial} from "./HelperMaterials";
 
 const axisHelper = (): THREE.Group => {
 
@@ -29,7 +29,7 @@ const axisHelper = (): THREE.Group => {
 
 	// loader.load("node_modules/three/examples/fonts/helvetiker_regular.typeface.json", (font) => {
 	loader.load("/helvetiker_regular.typeface.json", (font) => {
-		const meshMaterial = createMaterial("white");
+		const meshMaterial = normalMaterial("white");
 		const gX = new TextGeometry("x", {
 			font,
 			size: 0.2,
@@ -150,9 +150,9 @@ const sphereSubdivisions = [2, 4, 6, 10];
 export const createSphere = (radius: number, color: THREE.ColorRepresentation,
 							 position: [number, number, number]): THREE.Mesh => {
 
-	const subdivisions = sphereSubdivisions[getQuality()];
+	const subdivisions = sphereSubdivisions[3];
 	const geometry = new THREE.IcosahedronGeometry(radius, subdivisions);
-	const meshMaterial = createMaterial(color);
+	const meshMaterial = normalMaterial(color, 0.7, 0.3);
 	const sphere = new THREE.Mesh(geometry, meshMaterial);
 	sphere.position.set(position[0], position[1], position[2]);
 	return sphere;
@@ -162,10 +162,10 @@ const cubeSubdivisions = [1, 2, 8, 16];
 export const createCube = (sides: [number, number, number], color: THREE.ColorRepresentation,
 						   position: [number, number, number]): THREE.Mesh => {
 
-	const subdivisions = cubeSubdivisions[getQuality()];
+	const subdivisions = cubeSubdivisions[3];
 	const geometry = new THREE.BoxGeometry(sides[0], sides[1], sides[2],
 										   subdivisions, subdivisions, subdivisions);
-	const meshMaterial = createMaterial(color);
+	const meshMaterial = normalMaterial(color, 0.7, 0.3);
 	const cube = new THREE.Mesh(geometry, meshMaterial);
 	cube.position.set(position[0], position[1], position[2]);
 	return cube;
@@ -210,15 +210,16 @@ export const createCylinder = (start: [number, number, number], end: [number, nu
 							   radius: number, colorStart: THREE.ColorRepresentation,
 							   colorEnd: THREE.ColorRepresentation): THREE.Mesh => {
 
-	const subdivisions = cylinderSubdivisions[getQuality()];
+	const subdivisions = cylinderSubdivisions[3];
 
 	const dx = start[0] - end[0];
 	const dy = start[1] - end[1];
 	const dz = start[2] - end[2];
 	const len = Math.hypot(dx, dy, dz);
 	const geometry = new THREE.CylinderGeometry(radius, radius, len, subdivisions, 1, true);
-	const meshMaterial = createColorTextureMaterial(new THREE.Color(colorStart),
-													new THREE.Color(colorEnd), subdivisions);
+	const meshMaterial = colorTextureMaterial(new THREE.Color(colorStart),
+											  new THREE.Color(colorEnd),
+											  0.7, 0.3, subdivisions);
 	const cylinder = new THREE.Mesh(geometry, meshMaterial);
 
 	const midx = (start[0] + end[0])/2;

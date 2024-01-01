@@ -16,7 +16,7 @@ import {createAxisHelper, createGridHelper,
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {createScene} from "@/services/CreateScene";
 import {createLights} from "@/services/CreateLights";
-import {setMaterialParams, adjustMaterials} from "@/services/DefineMaterials";
+import log from "electron-log";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -126,7 +126,7 @@ const scene = createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        console.log("Cannot create canvas");
+        log.error("Cannot create canvas. Quitting.");
         return;
     }
 
@@ -182,7 +182,7 @@ onMounted(() => {
 
     // Add scene objects
     const molecule = new THREE.Group;
-    setMaterialParams();
+
     for(const obj of objects) {
         switch(obj.type) {
             case "sphere": {
@@ -207,7 +207,6 @@ onMounted(() => {
         }
     }
     scene.add(molecule);
-    adjustMaterials(molecule);
 
     // Change the camera parameters when the window changes or ask for a expanded view
     const resizeScene = (): void => {

@@ -1,4 +1,8 @@
-
+/**
+ * Interfaces to the channels to the main process.
+ *
+ * @packageDocumentation
+ */
 import * as THREE from "three";
 import {watchEffect} from "vue";
 

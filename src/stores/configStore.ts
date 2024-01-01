@@ -4,8 +4,32 @@
  * @packageDocumentation
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
-import type {Viewer3DConfiguration} from "@/types";
 
+interface Viewer3DConfiguration {
+
+    camera: {
+        perspective: boolean;
+        orthoSide: number;
+    };
+    scene: {
+        background: string;
+        showGrid: boolean;
+        showAxis: boolean;
+    };
+    lights: {
+        ambientColor: string;
+        ambientIntensity: number;
+        directional1Color: string;
+        directional1Intensity: number;
+        directional1Position: [number, number, number];
+        directional2Color: string;
+        directional2Intensity: number;
+        directional2Position: [number, number, number];
+        directional3Color: string;
+        directional3Intensity: number;
+        directional3Position: [number, number, number];
+    };
+}
 
 export const useConfigStore = defineStore("ConfigStore", {
 
@@ -33,24 +57,7 @@ export const useConfigStore = defineStore("ConfigStore", {
 			directional2Position: [1, 1, 1],
 			directional3Position: [-1, -1, -1],
 		},
-		materials: {
-			quality: 3,
-			roughness: 0.7,
-			metalness: 0.3
-		}
 	} as Viewer3DConfiguration),
-/*
-    // > Getters
-    getters: {
-	},
-
-    // > Actions
-    actions: {
-		// >> Initialize the store
-        initializeConfigStore() {
-		},
-	},
-*/
 });
 
 // > Support HMR during development

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import type {ReaderImplementation} from "../types";
-import type {Crystal, Structure, Atom} from "../../types";
+import type {Structure, Atom} from "../../types";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {computeBonds} from "../modules/ComputeBonds";
 import {fractionalToCartesianCoordinates} from "../modules/ReaderHelpers";
@@ -11,13 +11,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 	async readStructure(filename: string): Promise<Structure[]> {
 
-		const crystal: Crystal = {
-			basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
-			origin: [0, 0, 0],
-			spaceGroup: ""
-		};
 		const structures: Structure[] = [];
-		const currentStructure: Structure = {crystal, atoms: [], bonds: [], look: {}};
 		let scaleFactor = 1;
 		let lineType = "comment";
 		let base = 0;
@@ -26,6 +20,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		const atomsZ: number[] = [];
 		let currentIdx = 0;
 		let currentCount = 0;
+		let currentStep = -1;
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -33,10 +28,17 @@ export class ReaderPOSCAR implements ReaderImplementation {
 			switch(lineType) {
 				case "comment":
 					lineType = "scale";
-					currentStructure.crystal = crystal;
-					currentStructure.atoms = [];
-					currentStructure.bonds = [];
-					currentStructure.look = {};
+					structures.push({
+						crystal: {
+							basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+							origin: [0, 0, 0],
+							spaceGroup: ""
+						},
+						atoms: [],
+						bonds: [],
+						look: {}
+					});
+					++currentStep;
 					break;
 				case "scale":
 					scaleFactor = Number.parseFloat(line);
@@ -44,7 +46,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					break;
 				case "basis": {
 					const fields = line.trim().split(/ +/);
-					const {basis} = currentStructure.crystal;
+					const {basis} = structures[currentStep].crystal;
 					basis[base*3+0] = Number.parseFloat(fields[0]);
 					basis[base*3+1] = Number.parseFloat(fields[1]);
 					basis[base*3+2] = Number.parseFloat(fields[2]);
@@ -108,7 +110,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					const fields = line.trim().split(/ +/);
 
 					const position = fractionalToCartesianCoordinates(
-										currentStructure.crystal.basis,
+										structures[currentStep].crystal.basis,
 										Number.parseFloat(fields[0]),
 										Number.parseFloat(fields[1]),
 										Number.parseFloat(fields[2]),
@@ -119,7 +121,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						label: atomsKinds[currentIdx],
 						position
 					};
-					currentStructure.atoms.push(atom);
+					structures[currentStep].atoms.push(atom);
 					--currentCount;
 					if(currentCount === 0) {
 						++currentIdx;
@@ -128,7 +130,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						}
 						else {
 							lineType = "comment";
-							structures.push(currentStructure);
 						}
 					}
 				}
