@@ -28,6 +28,9 @@ export class ReaderPOSCAR implements ReaderImplementation {
 			switch(lineType) {
 				case "comment":
 					lineType = "scale";
+					break;
+				case "scale":
+					if(line.trim() === "") break;
 					structures.push({
 						crystal: {
 							basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -39,8 +42,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						look: {}
 					});
 					++currentStep;
-					break;
-				case "scale":
 					scaleFactor = Number.parseFloat(line);
 					lineType = "basis";
 					break;

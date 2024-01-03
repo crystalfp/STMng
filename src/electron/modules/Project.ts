@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import {ipcMain} from "electron";
+import {ipcMain, app} from "electron";
 import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
@@ -26,7 +26,9 @@ export const loadProject = (filename?: string): void => {
 		filename = getProjectPath();
 		if(!filename) {
 			const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-			filename = path.join(mainSourceDirectory, "../dist/default-project.json");
+			const DIST = path.join(mainSourceDirectory, "..", "dist");
+			const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
+			filename = path.join(publicDir, "default-project.json");
 		}
 	}
 

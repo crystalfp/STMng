@@ -6,12 +6,12 @@
 
 import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
 import {receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
-import {sb, type NodeUI} from "@/services/Switchboard";
+import {sb} from "@/services/Switchboard";
+import type {NodeUI} from "@/types";
 
 const graph = ref<NodeUI[]>([]);
 const selectedTabId = ref("");
 const loadedPanel = shallowRef<unknown>();
-const inFrom = ref("");
 const moduleId = ref("");
 
 /** When the project is loaded */
@@ -37,7 +37,6 @@ watchEffect(() => {
             loadedPanel.value = item.ui === "" ?
                                         undefined :
                                         defineAsyncComponent(() => import(`../ui/${item.ui}.vue`));
-            inFrom.value = item.in;
             moduleId.value = item.id;
             break;
         }
@@ -56,8 +55,8 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
 <template>
 <v-app :theme="theme">
   <v-tabs v-model="selectedTabId" center-active density="comfortable">
-    <v-tab v-for="item of graph" :key="item.id" :value="item.id">{{ item.label }}</v-tab>
+    <v-tab v-for="item of graph" :key="item.id" :value="item.id" size="small">{{ item.label }}</v-tab>
   </v-tabs>
-  <component :is="loadedPanel" :id="moduleId" :in="inFrom" />
+  <component :is="loadedPanel" :id="moduleId" />
 </v-app>
 </template>

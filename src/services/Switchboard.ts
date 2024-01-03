@@ -5,29 +5,13 @@
  */
 import {watch} from "vue";
 import log from "electron-log";
+import * as THREE from "three";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {projectIsValid, type Project} from "@/services/Validators";
-import {StructureReader, type StructureReaderData} from "./StructureReader";
-import {DrawStructure} from "./DrawStructure";
-import * as THREE from "three";
-
-export interface NodeUI {
-	id: string;
-	ui: string;
-	in: string;
-	label: string;
-}
-
-interface CodeParts {
-	ui: string;
-}
-const typeToCodeParts: Record<string, CodeParts> = {
-	"structure-reader":	{ui: "StructureReaderCtrl"},
-	"draw-structure":	{ui: "DrawStructureCtrl"},
-	"viewer-3d":   		{ui: "Viewer3DCtrl"},
-	"chart-rendering":	{ui: "ChartDialogCtrl"},
-};
+import {NodeInfo} from "@/services/NodeInfo";
+import type {NodeUI} from "@/types";
+import type {StructureReaderData} from "@/services/StructureReader";
 
 export type UiParams = Record<string, string | number | boolean>;
 
@@ -37,38 +21,15 @@ class Switchboard {
 	private static readonly scene = new THREE.Scene();
 	private nodesCallback: ((nodes: NodeUI[], currentId: string) => void) | undefined;
 	private project: Project | undefined;
-	private readonly mapTypesToCodeParts = new Map<string, CodeParts>();
 	private readonly nodesUI: NodeUI[] = [];
 	private currentId = "";
 	private readonly mapIdToType = new Map<string, string>();
 	private readonly mapIdToCode = new Map<string, unknown>();
 	private readonly mapIdToInputs = new Map<string, string[]>();
+	private readonly nodeInfo;
 
 	private constructor() {
-
-		// Setup the mapping between the node type and the node ui component
-		for(const key in typeToCodeParts) {
-			this.mapTypesToCodeParts.set(key, typeToCodeParts[key]);
-		}
-	}
-
-	private setupRuntime(type: string, id: string, map: Map<string, unknown>): void {
-
-		// TODO Here add the other types
-		switch(type) {
-			case "structure-reader":
-				map.set(id, new StructureReader(id));
-				break;
-			case "draw-structure":
-				map.set(id, new DrawStructure(id));
-				break;
-			case "viewer-3d":
-				break;
-			case "chart-rendering":
-				break;
-			default:
-				log.error(`Invalid type "${type}"`);
-		}
+		this.nodeInfo = new NodeInfo();
 	}
 
 	private setupInputs(id: string, input: string, map: Map<string, string[]>): void {
@@ -125,11 +86,8 @@ class Switchboard {
 				this.mapIdToType.set(node.id, node.type);
 
 				// Access the UI for the module
-				const code = this.mapTypesToCodeParts.get(node.type);
-				if(code?.ui) this.nodesUI.push({id: node.id,
-										  ui: code.ui,
-										  label: node.label,
-										  in: node.in});
+				const nodeUI = this.nodeInfo.getUICode(node);
+				if(nodeUI) this.nodesUI.push(nodeUI);
 
 				// Prepare the params area for the module
 				switchboardStore.ui[node.id] = {};
@@ -138,7 +96,7 @@ class Switchboard {
 				this.setupInputs(node.id, node.in, this.mapIdToInputs);
 
 				// Setup the mapping to the runtime code
-				this.setupRuntime(node.type, node.id, this.mapIdToCode);
+				this.nodeInfo.setupRuntime(node.type, node.id, this.mapIdToCode);
 			}
 
 			// Setup the current module
@@ -203,7 +161,7 @@ class Switchboard {
 			}
 			case "viewer-3d":
 				break;
-			case "chart-rendering":
+			case "chart-viewer":
 				break;
 			case undefined:
 				log.error(`Unknown id "${id}"`);
@@ -236,7 +194,7 @@ class Switchboard {
 				case "viewer-3d":
 					log.error(`Cannot use getData with type "${type}" id: "${id}"`);
 					break;
-				case "chart-rendering":
+				case "chart-viewer":
 					break;
 				case undefined:
 					log.error(`Unknown id "${id}"`);
@@ -263,7 +221,8 @@ class Switchboard {
 		// Remove meshes' parts
 		group.traverse((object) => {
 
-			if(object.type !== "Mesh") return;
+			if(object.type === "Group") return;
+			// if(object.type !== "Mesh") return;
 			const mesh = object as THREE.Mesh;
 			if(mesh.geometry) mesh.geometry.dispose();
 			if(mesh.material) {

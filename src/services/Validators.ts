@@ -18,6 +18,13 @@ const projectSchema = object({
 /** Type of the configuration store */
 export type Project = Output<typeof projectSchema>;
 
+// TBD For now hardcoded, then derived as Project from schema
+export interface GraphNode {
+	id: string;
+	label: string;
+	type: string;
+	in: string;
+}
 
 // > Validate project structure on disk
 /**

@@ -7,6 +7,7 @@ ToDo:
 	☐ Add Atoms types to POSCAR Reader
 	☐ Visualize atoms labels
 	☐ Add error notifications
+	☐ In validator add check of node types
 
 Bugs:
 	✔ Send loaded project redefine handler @done(2023-12-16 07:27)

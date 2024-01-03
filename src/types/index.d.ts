@@ -1,38 +1,10 @@
-import * as THREE from "three";
 
-type ModuleParams = {
-    type: "draw-structure";
-} | {
-    type: "structure-reader";
-} | {
-    type: "chart-rendering";
-};
-
-export interface ModulesParams {
-
-    modules: Record<string, ModuleParams>;
+export interface NodeUI {
+	id: string;
+	ui: string;
+	in: string;
+	label: string;
 }
-
-export type Object3D = {
-    type: "sphere";
-    radius: number;
-    position: [number, number, number];
-    color: THREE.ColorRepresentation;
-} |
-{
-    type: "cube";
-    sides: [number, number, number];
-    position: [number, number, number];
-    color: THREE.ColorRepresentation;
-} |
-{
-    type: "cylinder";
-    radius: number;
-    start: [number, number, number];
-    end: [number, number, number];
-    colorStart: THREE.ColorRepresentation;
-    colorEnd: THREE.ColorRepresentation;
-};
 
 export interface ChartOptions {
     responsive: boolean;

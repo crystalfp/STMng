@@ -1,6 +1,7 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {StructureReaderData} from "./StructureReader";
 import * as THREE from "three";
+import {CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
 import type {PositionType} from "@/types";
 // import log from "electron-log";
 import {normalMaterial, lineDashedMaterial, colorTextureMaterial} from "./HelperMaterials";
@@ -12,6 +13,7 @@ export class DrawStructure {
 	private drawKind = "ball-and-stick";
 	private drawRoughness = 0.7;
 	private drawMetalness = 0.3;
+	private showLabels = true;
 	private readonly out = new THREE.Group();
 	private readonly bondRadius = 0.1;
 	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
@@ -26,6 +28,7 @@ export class DrawStructure {
     		this.drawQuality = params.drawQuality as number ?? 4;
     		this.drawRoughness = params.drawRoughness as number ?? 0.7;
     		this.drawMetalness = params.drawMetalness as number ?? 0.3;
+    		this.showLabels = params.showLabels as boolean ?? true;
 
 			this.adjustMaterials();
 		});
@@ -103,6 +106,43 @@ export class DrawStructure {
 				}
 				break;
 		}
+
+		// Render labels
+		if(this.showLabels) {
+			for(const atom of data.atoms) {
+
+				// const {color} = data.look[atom.atomZ];
+				const color = "#FFFFFF";
+				let offset = 0;
+				switch(kind) {
+					case "ball-and-stick":
+						offset = data.look[atom.atomZ].rCov * this.rCovScale * 1.1;
+						break;
+					case "van-der-walls":
+						offset = data.look[atom.atomZ].rVdW * 1.1;
+						break;
+					case "licorice":
+						offset = this.bondRadius * 1.1;
+						break;
+					case "lines":
+						offset = 0.1;
+						break;
+				}
+
+
+				const text = document.createElement("div");
+				text.style.color = color;
+				text.textContent = atom.label;
+				text.style.fontSize = "0.3px";
+				text.style.backgroundColor = "transparent";
+
+				const label = new CSS3DObject(text);
+				const pos = atom.position;
+				label.position.set(pos[0], pos[1], pos[2] + offset);
+
+				this.out.add(label);
+			}
+		}
 	}
 
 	private adjustMaterials(): void {
@@ -171,11 +211,11 @@ export class DrawStructure {
 
 		const material1 = new THREE.LineBasicMaterial({color: colorFrom});
 		const geometry1 = new THREE.BufferGeometry().setFromPoints([start, mid]);
-		this.out.add(new THREE.Line(geometry1, material1));
 
 		const material2 = new THREE.LineBasicMaterial({color: colorTo});
 		const geometry2 = new THREE.BufferGeometry().setFromPoints([mid, end]);
-		this.out.add(new THREE.Line(geometry2, material2));
+
+		this.out.add(new THREE.Line(geometry1, material1), new THREE.Line(geometry2, material2));
 	}
 
 	private addNormalBondSameAtoms(from: PositionType, to: PositionType, color: string): void {

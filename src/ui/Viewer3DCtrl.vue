@@ -61,9 +61,7 @@ watchEffect(() => {
       <v-expansion-panel-text>
         <v-label text="Background color" />
         <v-color-picker v-model="configStore.scene.background"
-                        :modes="['rgb', 'hsl', 'hex']" elevation="1" />
-        <v-checkbox v-model="configStore.scene.showAxis" label="Show axis" />
-        <v-checkbox v-model="configStore.scene.showGrid" label="Show grid" />
+                        :modes="['rgb', 'hsl', 'hex']" elevation="0" />
       </v-expansion-panel-text>
     </v-expansion-panel>
     <v-expansion-panel>

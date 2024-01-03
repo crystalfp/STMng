@@ -14,9 +14,6 @@ const props = defineProps<{
 
     /** Its own module id */
     id: string;
-
-    /** From where comes the module input (ignored here) */
-    in: string;
 }>();
 
 // > Get and set ui parameters from the switchboard

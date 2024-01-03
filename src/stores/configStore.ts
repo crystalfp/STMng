@@ -13,8 +13,6 @@ interface Viewer3DConfiguration {
     };
     scene: {
         background: string;
-        showGrid: boolean;
-        showAxis: boolean;
     };
     lights: {
         ambientColor: string;
@@ -41,8 +39,6 @@ export const useConfigStore = defineStore("ConfigStore", {
 		},
 		scene: {
 			background: "#90CEEC",
-			showGrid: true,
-			showAxis: true,
 		},
 		lights: {
 			ambientColor: "#FFFFFF",
