@@ -1,16 +1,17 @@
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {StructureReaderData} from "./StructureReader";
+import type {StructureReaderData} from "@/services/StructureReader";
 import * as THREE from "three";
-import {CSS3DObject} from "three/addons/renderers/CSS3DRenderer.js";
 import type {PositionType} from "@/types";
 // import log from "electron-log";
-import {normalMaterial, lineDashedMaterial, colorTextureMaterial} from "./HelperMaterials";
+import {normalMaterial, lineDashedMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
+import SpriteText from "three-spritetext";
 
 
 export class DrawStructure {
 
 	private drawQuality = 4;
 	private drawKind = "ball-and-stick";
+	private previousDrawKind = "ball-and-stick";
 	private drawRoughness = 0.7;
 	private drawMetalness = 0.3;
 	private showLabels = true;
@@ -19,6 +20,9 @@ export class DrawStructure {
 	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
 	private readonly cylinderSubdivisions = [0, 4, 8, 16, 32];
 	private readonly rCovScale = 0.5;
+	private loadedData: StructureReaderData = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+														 origin: [0, 0, 0], spaceGroup: ""},
+														 atoms: [], bonds: [], look: {}};
 
 	constructor(private readonly id: string) {
 
@@ -31,10 +35,24 @@ export class DrawStructure {
     		this.showLabels = params.showLabels as boolean ?? true;
 
 			this.adjustMaterials();
+
+			if(this.drawKind !== this.previousDrawKind) {
+				this.drawStructure(this.loadedData, this.drawKind);
+				this.previousDrawKind = this.drawKind;
+			}
+
+			sb.accessScene().traverse((obj) => {
+
+				if(obj.name === "AtomLabel") {
+					(obj as THREE.Sprite).material.visible = this.showLabels;
+				}
+			});
 		});
 
 		sb.getData(this.id, (data: unknown) => {
 			this.drawStructure(data as StructureReaderData, this.drawKind);
+			this.loadedData = data as StructureReaderData;
+			this.drawLabels(this.loadedData, this.drawKind);
 		});
 
 		this.out.name = `DrawStructure-${this.id}`;
@@ -106,42 +124,49 @@ export class DrawStructure {
 				}
 				break;
 		}
+	}
+
+	drawLabels(data: StructureReaderData, kind: string): void {
+
+		// Remove existing labels
+		sb.accessScene().traverse((obj) => {
+
+			if(obj.name === "AtomLabel") {
+				this.out.remove(obj);
+				(obj as THREE.Sprite).material.dispose();
+			}
+		});
+
+		// No atoms present, display nothing
+		if(!data?.atoms) return;
 
 		// Render labels
-		if(this.showLabels) {
-			for(const atom of data.atoms) {
+		const color = "#FFFFFF";
+		for(const atom of data.atoms) {
 
-				// const {color} = data.look[atom.atomZ];
-				const color = "#FFFFFF";
-				let offset = 0;
-				switch(kind) {
-					case "ball-and-stick":
-						offset = data.look[atom.atomZ].rCov * this.rCovScale * 1.1;
-						break;
-					case "van-der-walls":
-						offset = data.look[atom.atomZ].rVdW * 1.1;
-						break;
-					case "licorice":
-						offset = this.bondRadius * 1.1;
-						break;
-					case "lines":
-						offset = 0.1;
-						break;
-				}
-
-
-				const text = document.createElement("div");
-				text.style.color = color;
-				text.textContent = atom.label;
-				text.style.fontSize = "0.3px";
-				text.style.backgroundColor = "transparent";
-
-				const label = new CSS3DObject(text);
-				const pos = atom.position;
-				label.position.set(pos[0], pos[1], pos[2] + offset);
-
-				this.out.add(label);
+			// const {color} = data.look[atom.atomZ];
+			let offset = 0;
+			switch(kind) {
+				case "ball-and-stick":
+					offset = data.look[atom.atomZ].rCov * this.rCovScale * 1.3;
+					break;
+				case "van-der-walls":
+					offset = data.look[atom.atomZ].rVdW * 1.3;
+					break;
+				case "licorice":
+					offset = this.bondRadius * 1.3;
+					break;
+				case "lines":
+					offset = 0.1;
+					break;
 			}
+
+			const label = new SpriteText(atom.label, 0.3, color);
+			label.fontSize = 160;
+			const pos = atom.position;
+			label.position.set(pos[0], pos[1], pos[2] + offset);
+			label.name = "AtomLabel";
+			this.out.add(label);
 		}
 	}
 
@@ -203,16 +228,16 @@ export class DrawStructure {
 	}
 
 	private addNormalBond(from: PositionType, to: PositionType,
-					   colorFrom: string, colorTo: string): void {
+					      colorFrom: string, colorTo: string): void {
 
 		const start = new THREE.Vector3(from[0], from[1], from[2]);
 		const end = new THREE.Vector3(to[0], to[1], to[2]);
-		const mid = start.lerp(end, 0.5);
+		const mid = new THREE.Vector3((from[0]+to[0])/2, (from[1]+to[1])/2, (from[2]+to[2])/2);
 
-		const material1 = new THREE.LineBasicMaterial({color: colorFrom});
+		const material1 = new THREE.LineBasicMaterial({linewidth: 4, color: colorFrom});
 		const geometry1 = new THREE.BufferGeometry().setFromPoints([start, mid]);
 
-		const material2 = new THREE.LineBasicMaterial({color: colorTo});
+		const material2 = new THREE.LineBasicMaterial({linewidth: 4, color: colorTo});
 		const geometry2 = new THREE.BufferGeometry().setFromPoints([mid, end]);
 
 		this.out.add(new THREE.Line(geometry1, material1), new THREE.Line(geometry2, material2));

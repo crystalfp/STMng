@@ -55,7 +55,7 @@ const tickLabels = ref({1: "Low", 2: "Medium", 3: "Good", 4: "Best"});
     <v-spacer />
     <v-radio label="Lines" value="lines" />
   </v-radio-group>
-  <v-switch color="primary" :model-value="showLabels" label="Show labels" />
+  <v-switch v-model="showLabels" color="primary" label="Show labels" />
   <v-label text="Quality" />
   <v-slider v-model="drawQuality" :ticks="tickLabels" min="1" max="4" step="1"
             show-ticks="always" tick-size="4" />

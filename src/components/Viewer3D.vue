@@ -7,7 +7,6 @@
 import {onMounted, ref, watch, watchEffect} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
-import {CSS3DRenderer} from "three/addons/renderers/CSS3DRenderer.js";
 import {useConfigStore} from "@/stores/configStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {createScene} from "@/services/CreateScene";
@@ -58,14 +57,6 @@ onMounted(() => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
 
-    const labelRenderer = new CSS3DRenderer();
-    labelRenderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
-
-    labelRenderer.domElement.style.position = "absolute";
-    labelRenderer.domElement.style.top = "0px";
-    labelRenderer.domElement.style.pointerEvents = "none";
-    cnv.value.append(labelRenderer.domElement);
-
     // Add mouse controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.listenToKeyEvents(window);
@@ -106,7 +97,6 @@ onMounted(() => {
     const animate = (): void => {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
-        labelRenderer.render(scene, camera);
         // viewHelper.render(renderer);
     };
     animate();

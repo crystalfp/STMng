@@ -2,15 +2,16 @@ ToDo:
 	☐ Establish shortcuts
 	☐ Save/Load config data in project
 	☐ Add tooltips
-	☐ Add looping mode for reader
 	☐ Put everything related to modules (like adding a new one) in a separate file
 	☐ Add Atoms types to POSCAR Reader
-	☐ Visualize atoms labels
 	☐ Add error notifications
 	☐ In validator add check of node types
+	☐ Remove unused triangles in unit cell
 
 Bugs:
-	✔ Send loaded project redefine handler @done(2023-12-16 07:27)
 
 Archive:
+  ✔ Add looping mode for reader @done(2024-01-04 06:53) @project(ToDo)
+  ✔ Visualize atoms labels @done(2024-01-04 06:54) @project(ToDo)
+  ✔ Send loaded project redefine handler @done(2023-12-16 07:27) @project(Bugs)
   ✔ Zooming out show the window controls overlay that does not adjust @done(2023-12-15 08:43) @project(Bugs)
