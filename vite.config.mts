@@ -45,9 +45,13 @@ export default defineConfig({
                         "vue-router",
                         "vue-tippy",
                         "pinia",
+                        "vuetify",
+                        "@mdi/js",
+                        "@yeliulee/vue-mdi-svg",
                     ],
                     three: [
-                        "three"
+                        "three",
+                        "three-spritetext"
                     ]
                 }
             }

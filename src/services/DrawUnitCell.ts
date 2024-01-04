@@ -1,3 +1,8 @@
+/**
+ * Display the structure unit cell.
+ *
+ * @packageDocumentation
+ */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {StructureReaderData} from "./StructureReader";
@@ -41,8 +46,10 @@ export class DrawUnitCell {
 		// Clear previous cell
 		sb.sceneClearGroup(this.name);
 
-	    const geometry = new THREE.BufferGeometry();
+		// If no unit cell return
+		if(!basis.some((value) => value !== 0)) return;
 
+		// Vertices coordinates (bottom then top)
     	const vertices = new Float32Array([
 /* 0 */ orig[0],                            orig[1],                            orig[2],
 /* 1 */ orig[0]+basis[0],                   orig[1]+basis[1],                   orig[2]+basis[2],
@@ -54,9 +61,10 @@ export class DrawUnitCell {
 /* 7 */ orig[0]+basis[3]+basis[6],          orig[1]+basis[4]+basis[7],          orig[2]+basis[5]+basis[8],
     	]);
 
+		// Triangles. Top and bottom facies are not needed
 		const indices = [
-			0, 1, 2,
-			0, 2, 3,
+			// 0, 1, 2,
+			// 0, 2, 3,
 
 			4, 5, 1,
 			4, 1, 0,
@@ -70,10 +78,11 @@ export class DrawUnitCell {
 			1, 5, 6,
 			1, 6, 2,
 
-			5, 4, 7,
-			5, 7, 6,
+			// 5, 4, 7,
+			// 5, 7, 6,
 		];
 
+	    const geometry = new THREE.BufferGeometry();
 		geometry.setIndex(indices);
 		geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
 		const edges = new THREE.EdgesGeometry(geometry);
@@ -85,14 +94,16 @@ export class DrawUnitCell {
 
 	setMaterial(): THREE.LineBasicMaterial {
 		return this.dashedLine ?
-                                    new THREE.LineDashedMaterial({
-                                            color: this.lineColor,
-                                            linewidth: 1,
-                                            scale: 5,
-                                            dashSize: 1,
-                                            gapSize: 1,
-                                    }) :
-									new THREE.LineBasicMaterial({color: this.lineColor});
+							new THREE.LineDashedMaterial({
+								color: this.lineColor,
+								// linewidth: 1,
+								scale: 5,
+								dashSize: 1,
+								gapSize: 1,
+							}) :
+							new THREE.LineBasicMaterial({
+								color: this.lineColor
+							});
 	}
 
 	changeMaterial(): void {

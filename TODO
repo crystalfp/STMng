@@ -6,9 +6,13 @@ ToDo:
 	☐ Add Atoms types to POSCAR Reader
 	☐ Add error notifications
 	☐ In validator add check of node types
-	☐ Remove unused triangles in unit cell
+	✔ Remove unused triangles in unit cell @done(2024-01-04 08:22)
+	✔ If no unit cell (like in xyz files) put basis all zero and do not display it @done(2024-01-04 08:22)
+	✔ Hydrogen bonds: shorter dashes, larger line @done(2024-01-04 08:22)
+	☐ Compute bonds limit the number of bonds to the atom data value
 
 Bugs:
+	☐ Moving from CPK to licorice makes labels disappear
 
 Archive:
   ✔ Add looping mode for reader @done(2024-01-04 06:53) @project(ToDo)

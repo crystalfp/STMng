@@ -3,7 +3,7 @@ import type {StructureReaderData} from "@/services/StructureReader";
 import * as THREE from "three";
 import type {PositionType} from "@/types";
 // import log from "electron-log";
-import {normalMaterial, lineDashedMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
+import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
 import SpriteText from "three-spritetext";
 
 
@@ -215,8 +215,13 @@ export class DrawStructure {
 
 	private addHBond(from: PositionType, to: PositionType): void {
 
+		const material = new THREE.LineDashedMaterial({
+								color: 0x777777,
+								scale: 20,
+								dashSize: 1,
+								gapSize: 1,
+							});
 
-		const material = lineDashedMaterial(0x888888);
 		const points = [
 			new THREE.Vector3(from[0], from[1], from[2]),
 			new THREE.Vector3(to[0], to[1], to[2]),

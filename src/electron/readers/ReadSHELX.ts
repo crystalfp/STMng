@@ -12,7 +12,7 @@ export class ReaderSHELX implements ReaderImplementation {
 	async readStructure(filename: string): Promise<Structure[]> {
 
 		const crystal: Crystal = {
-			basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+			basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 			origin: [0, 0, 0],
 			spaceGroup: ""
 		};

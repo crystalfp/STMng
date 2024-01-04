@@ -33,7 +33,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					if(line.trim() === "") break;
 					structures.push({
 						crystal: {
-							basis: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+							basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 							origin: [0, 0, 0],
 							spaceGroup: ""
 						},

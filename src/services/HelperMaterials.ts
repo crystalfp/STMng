@@ -12,17 +12,6 @@ export const normalMaterial = (color: THREE.ColorRepresentation,
 	});
 };
 
-export const lineDashedMaterial = (color: THREE.ColorRepresentation): THREE.LineDashedMaterial => {
-	return new THREE.LineDashedMaterial({
-		color,
-		linewidth: 1,
-		scale: 5,
-		dashSize: 1,
-		gapSize: 1,
-	});
-};
-
-
 export const colorTextureMaterial = (colorFrom: THREE.Color,
 									colorTo: THREE.Color,
 									roughness: number, metalness: number,
