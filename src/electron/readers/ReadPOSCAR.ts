@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import type {ReaderImplementation} from "../types";
-import type {Structure, Atom} from "../../types";
+import type {Structure, Atom, PositionType} from "../../types";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {computeBonds} from "../modules/ComputeBonds";
 import {fractionalToCartesianCoordinates} from "../modules/ReaderHelpers";
@@ -9,7 +9,9 @@ import {getStructureAppearance} from "../modules/ComputeLook";
 
 export class ReaderPOSCAR implements ReaderImplementation {
 
-	async readStructure(filename: string): Promise<Structure[]> {
+	async readStructure(filename: string, atomsTypes?: string[]): Promise<Structure[]> {
+
+		void atomsTypes; // TBD
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
@@ -21,6 +23,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let currentIdx = 0;
 		let currentCount = 0;
 		let currentStep = -1;
+		let cartesian = false;
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -83,13 +86,22 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						let atomZ = 1;
 						const hasSymbols = atomsZ.length > 0;
 						atomsCount.length = 0;
+						let idx = 0;
 						for(const field of fields) {
 							const count = Number.parseInt(field);
 							atomsCount.push(count);
 							if(!hasSymbols) {
-								atomsZ.push(atomZ);
-								atomsKinds.push(getAtomicSymbol(atomZ));
-								++atomZ;
+								if(atomsTypes?.length) {
+									atomsZ.push(getAtomicNumber(atomsTypes[idx]));
+									atomsKinds.push(atomsTypes[idx]);
+									++idx;
+									if(idx === atomsTypes.length) idx = 0;
+								}
+								else {
+									atomsZ.push(atomZ);
+									atomsKinds.push(getAtomicSymbol(atomZ));
+									++atomZ;
+								}
 							}
 						}
 						lineType = "direct";
@@ -102,20 +114,37 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					break;
 				}
-				case "direct":
-					lineType = "atoms";
-					currentIdx = 0;
-					currentCount = atomsCount[0];
+				case "direct": {
+					const kind = line.trim().toLowerCase();
+					if(kind.startsWith("direct")) {
+						lineType = "atoms";
+						currentIdx = 0;
+						currentCount = atomsCount[0];
+						cartesian = false;
+					}
+					else if(kind.startsWith("cart")) {
+						lineType = "atoms";
+						currentIdx = 0;
+						currentCount = atomsCount[0];
+						cartesian = true;
+					}
+
 					break;
+				}
 				case "atoms": {
 					const fields = line.trim().split(/ +/);
 
-					const position = fractionalToCartesianCoordinates(
-										structures[currentStep].crystal.basis,
-										Number.parseFloat(fields[0]),
-										Number.parseFloat(fields[1]),
-										Number.parseFloat(fields[2]),
-									);
+					const position = cartesian ? [
+											Number.parseFloat(fields[0]) * scaleFactor,
+											Number.parseFloat(fields[1]) * scaleFactor,
+											Number.parseFloat(fields[2]) * scaleFactor,
+										] as PositionType :
+										fractionalToCartesianCoordinates(
+											structures[currentStep].crystal.basis,
+											Number.parseFloat(fields[0]),
+											Number.parseFloat(fields[1]),
+											Number.parseFloat(fields[2]),
+										);
 					const atomZ = atomsZ[currentIdx];
 					const atom: Atom = {
 						atomZ,

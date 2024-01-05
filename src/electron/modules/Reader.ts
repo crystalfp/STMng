@@ -1,13 +1,12 @@
 /**
- * Read chemical structure file.
- * The original idea was to dynamically load the format reader, but does not work
+ * Read atomic structure file.
+ * The original idea was to dynamically load the format reader, but this does not work
  * in production (does not find the reader code)
  *
  * @packageDocumentation
  */
 import {ipcMain, dialog} from "electron";
 import path from "node:path";
-import fs from "node:fs";
 import log from "electron-log";
 import type {ReaderStructure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
@@ -17,64 +16,14 @@ import {ReaderXYZ} from "../readers/ReadXYZ";
 import {ReaderSHELX} from "../readers/ReadSHELX";
 import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
 
-/**
- * Get the loaded file format
- *
- * @param filename - Loaded filename
- * @returns The format as uppercase string
- */
-const getFileFormat = (filename: string): string => {
-
-	const ext = path.extname(filename).toLowerCase();
-
-	// Formats that are coded in the extension
-	switch(ext) {
-		case ".pdb":  		return "PDB";
-		case ".spf":  		return "SPF";
-		case ".ins":
-		case ".res":  		return "SHELX";
-		case ".xyz":  		return "XYZ";
-		case ".cif":  		return "CIF";
-		case ".mol2": 		return "MOL2";
-		case ".poscar":
-		case ".poscars":	return "POSCAR";
-	}
-
-	// Formats that have the format code in the filename
-	const base = path.basename(filename).toLowerCase();
-	if(base.includes("poscar")) return "POSCAR";
-	if(base.includes("chgcar")) return "CHGCAR";
-
-	// No known extension
-	return "";
-};
-
-const getAssociatedFile = (filename: string, format: string): string => {
-
-	let extAssociated = "";
-	switch(format) {
-		case "xyz":
-			extAssociated = "cell";
-			break;
-		case "cell":
-			extAssociated = "xyz";
-			break;
-	}
-
-	if(extAssociated) {
-		const associatedFilename = `${path.dirname(filename)}/${path.basename(filename)}.${extAssociated}`;
-		if(fs.existsSync(associatedFilename)) return associatedFilename;
-	}
-	return "";
-};
+export const readFileStructure = async (filename: string,
+									requestedFormat: string,
+									atomsTypes: string): Promise<ReaderStructure> => {
 
 
-export const readStructure = async (filename: string): Promise<ReaderStructure> => {
+	// const associatedFilename = getAssociatedFile(filename, type);
 
-	const type = getFileFormat(filename);
-	const associatedFilename = getAssociatedFile(filename, type);
-
-	if(associatedFilename) console.log(associatedFilename);
+	// if(associatedFilename) console.log(associatedFilename);
 
 	let reader;
 	try {
@@ -82,11 +31,11 @@ export const readStructure = async (filename: string): Promise<ReaderStructure> 
 		// const {Reader} = await import(`../readers/Read${type}.ts`) as {Reader: Constructable<ReaderImplementation>};
 
 		// reader = new Reader();
-		switch(type) {
+		switch(requestedFormat) {
 			case "XYZ":
 				reader = new ReaderXYZ();
 				break;
-			case "SHELX":
+			case "ShelX":
 				reader = new ReaderSHELX();
 				break;
 			case "POSCAR":
@@ -96,33 +45,54 @@ export const readStructure = async (filename: string): Promise<ReaderStructure> 
 		}
 	}
 	catch(error: unknown) {
-		log.error(`${type} format not implemented`, (error as Error).message);
-		return {filename: "", format: "", structures: [], error: `${type} format not implemented`};
+		log.error(`${requestedFormat} format not implemented`, (error as Error).message);
+		return {filename: "", structures: [], error: `${requestedFormat} format not implemented`};
 	}
 
-	const structures = await reader.readStructure(filename);
+	if(requestedFormat === "POSCAR") {
+		const atoms = atomsTypes.trim().split(/ +/);
+		const structures = await reader.readStructure(filename, atoms);
+		return {
+			filename: path.basename(filename),
+			structures
+		};
+	}
 
 	return {
 		filename: path.basename(filename),
-		format: type,
-		structures
+		structures: await reader.readStructure(filename)
 	};
 };
 
 export const setupChannelReader = (): void => {
 
-	ipcMain.handle("READER:READ", async () => {
+	ipcMain.handle("READER:READ", async (_event, format: string, atomsTypes: string) => {
+
+		// Set filter
+		let filters;
+		switch(format) {
+			case "POSCAR":
+				filters = [{name: "POSCAR",	extensions: ["poscar", "poscars", "*"]},
+						   {name: "All",	extensions: ["*"]}];
+				break;
+			case "ShelX":
+				filters = [{name: "ShelX",	extensions: ["ins", "res"]},
+						   {name: "All",	extensions: ["*"]}];
+				break;
+			case "XYZ":
+				filters = [{name: "XYZ",	extensions: ["xyz"]},
+						   {name: "All",	extensions: ["*"]}];
+				break;
+			default:
+				filters = [{name: "All",	extensions: ["*"]}];
+				break;
+		}
 		const file = dialog.showOpenDialogSync({
 			title: "Select input",
 			properties: ["openFile"],
-			filters: [
-				{name: "POSCAR",	extensions: ["poscar", "poscars", "*"]},
-				{name: "ShelX",		extensions: ["ins", "res"]},
-				{name: "XYZ",		extensions: ["xyz"]},
-				{name: "All",		extensions: ["*"]},
-			]
+			filters
 		});
-		if(file) return JSON.stringify(await readStructure(file[0]));
+		if(file) return JSON.stringify(await readFileStructure(file[0], format, atomsTypes));
 		return "";
 	});
 };

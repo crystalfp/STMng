@@ -5,8 +5,7 @@
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {StructureReaderData} from "./StructureReader";
-import type {BasisType, PositionType} from "@/types";
+import type {BasisType, PositionType, Structure} from "@/types";
 
 export class DrawUnitCell {
 
@@ -35,7 +34,7 @@ export class DrawUnitCell {
 
 		sb.getData(this.id, (data: unknown) => {
 
-			const {crystal} = (data as StructureReaderData);
+			const {crystal} = (data as Structure);
 			if(!crystal) return;
 			this.drawUnitCell(crystal.basis, crystal.origin);
 		});
@@ -92,11 +91,10 @@ export class DrawUnitCell {
         this.out.add(this.line);
 	}
 
-	setMaterial(): THREE.LineBasicMaterial {
+	setMaterial(): THREE.Material {
 		return this.dashedLine ?
 							new THREE.LineDashedMaterial({
 								color: this.lineColor,
-								// linewidth: 1,
 								scale: 5,
 								dashSize: 1,
 								gapSize: 1,

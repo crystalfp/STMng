@@ -10,57 +10,64 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
 import {sb, type UiParams} from "@/services/Switchboard";
 
 // > Properties
-const props = defineProps<{
+const pr = defineProps<{
 
     /** Its own module id */
     id: string;
 }>();
 
+/** Formats that could be loaded */
+const fileFormats = ["XYZ", "ShelX", "POSCAR"];
+
 // > Get and set ui parameters from the switchboard
 const fileRead   = ref("");
-const format     = ref("");
 const countSteps = ref(1);
 const step       = ref(1);
 const running    = ref(false);
-const loading    = ref(false);
+const doLoad     = ref(false);
 const atomsTypes = ref("");
 const loopSteps  = ref(false);
+const format     = ref("");
 
-sb.getUiParams(props.id, (params: UiParams) => {
+sb.getUiParams(pr.id, (params: UiParams) => {
 
     fileRead.value   = params.filename as string ?? "";
-    format.value     = params.format as string ?? "";
     countSteps.value = params.steps as number ?? 1;
     step.value       = params.step as number ?? 1;
     running.value    = params.running as boolean ?? false;
-    loading.value    = params.loading as boolean ?? false;
+    doLoad.value     = params.doLoad as boolean ?? false;
     loopSteps.value  = params.loopSteps as boolean ?? false;
+    format.value     = params.format as string ?? "";
+    atomsTypes.value = params.atomsTypes as string ?? "";
 });
 
 watchEffect(() => {
-    sb.setUiParams(props.id, {
+    sb.setUiParams(pr.id, {
         step: step.value,
         running: running.value,
-        loading: loading.value,
-        loopSteps: loopSteps.value
+        doLoad: doLoad.value,
+        loopSteps: loopSteps.value,
+        format: format.value,
+        atomsTypes: atomsTypes.value,
+        filename: fileRead.value,
     });
 });
 
 
 const loadFile = (): void => {
 
-    loading.value = true;
+    doLoad.value = true;
     step.value = 1;
-    sb.setUiParams(props.id, {
-        loading: true,
-        step: 1
+    sb.setUiParams(pr.id, {
+        doLoad: true,
+        step: 1,
     });
 };
 
 const setRunning = (value: boolean): void => {
 
     running.value = value;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(pr.id, {
         running: value,
         loopSteps: loopSteps.value
     });
@@ -69,7 +76,7 @@ const setRunning = (value: boolean): void => {
 const setStep = (value: number): void => {
 
     step.value = value;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(pr.id, {
         step: value
     });
 };
@@ -79,7 +86,7 @@ const deltaStep = (delta: number): void => {
     const changedStep = step.value + delta;
     if(changedStep < 1 || changedStep > countSteps.value) return;
     step.value = changedStep;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(pr.id, {
         step: changedStep
     });
 };
@@ -88,6 +95,18 @@ const togglePlay = (): void => {
 
     if(running.value) setRunning(false);
     else if(step.value < countSteps.value) setRunning(true);
+    else if(loopSteps.value) {
+        step.value = 1;
+        setRunning(true);
+    }
+};
+
+const setFormat = (changedFormat: string): void => {
+
+    format.value = changedFormat;
+    fileRead.value = "";
+    countSteps.value = 1;
+    step.value = 1;
 };
 
 </script>
@@ -95,9 +114,28 @@ const togglePlay = (): void => {
 
 <template>
 <v-container class="container">
+  <v-row class="mt-4 mb-2">
+    <v-menu open-on-hover>
+      <template #activator="{ props }">
+        <v-btn class="w-25 ml-3" size="small" color="primary" v-bind="props">
+          Format
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item v-for="fmt in fileFormats" :key="fmt">
+          <v-list-item-title style="cursor: pointer" @click="setFormat(fmt)">{{ fmt }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-label class="underlined-label">{{ format }}</v-label>
+  </v-row>
+  <v-container v-if="format === 'POSCAR'" class="pl-0 mb-5 pt-3">
+    <v-text-field v-model="atomsTypes" label="Atoms types"
+                  variant="solo-filled" hide-details="auto" clearable />
+  </v-container>
   <v-row>
-    <v-btn size="small" @click="loadFile">Select file</v-btn>
-    <v-label class="reader-filename">{{ fileRead }}</v-label>
+    <v-btn :disabled="format === ''" class="w-25 ml-3" size="small" @click="loadFile">Load</v-btn>
+    <v-label class="underlined-label">{{ fileRead }}</v-label>
   </v-row>
   <v-container v-if="countSteps > 1">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mt-4 ml-2" />
@@ -118,9 +156,6 @@ const togglePlay = (): void => {
       <v-spacer />
     </v-row>
   </v-container>
-  <v-container v-if="format === 'POSCAR'">
-    <v-text-field v-model="atomsTypes" label="Atoms types" variant="solo-filled" hide-details="auto" clearable />
-  </v-container>
 </v-container>
 </template>
 
@@ -130,7 +165,7 @@ const togglePlay = (): void => {
 @use "@/styles/colors";
 @use "@/styles/fonts";
 
-.reader-filename {
+.underlined-label {
   margin-left: 10px;
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
   width: 60%

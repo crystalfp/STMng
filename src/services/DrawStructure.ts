@@ -1,7 +1,6 @@
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {StructureReaderData} from "@/services/StructureReader";
 import * as THREE from "three";
-import type {PositionType} from "@/types";
+import type {PositionType, Structure} from "@/types";
 // import log from "electron-log";
 import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
 import SpriteText from "three-spritetext";
@@ -20,7 +19,7 @@ export class DrawStructure {
 	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
 	private readonly cylinderSubdivisions = [0, 4, 8, 16, 32];
 	private readonly rCovScale = 0.5;
-	private loadedData: StructureReaderData = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+	private loadedData: Structure = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 														 origin: [0, 0, 0], spaceGroup: ""},
 														 atoms: [], bonds: [], look: {}};
 
@@ -38,6 +37,7 @@ export class DrawStructure {
 
 			if(this.drawKind !== this.previousDrawKind) {
 				this.drawStructure(this.loadedData, this.drawKind);
+				this.drawLabels(this.loadedData, this.drawKind);
 				this.previousDrawKind = this.drawKind;
 			}
 
@@ -50,8 +50,8 @@ export class DrawStructure {
 		});
 
 		sb.getData(this.id, (data: unknown) => {
-			this.drawStructure(data as StructureReaderData, this.drawKind);
-			this.loadedData = data as StructureReaderData;
+			this.drawStructure(data as Structure, this.drawKind);
+			this.loadedData = data as Structure;
 			this.drawLabels(this.loadedData, this.drawKind);
 		});
 
@@ -59,7 +59,7 @@ export class DrawStructure {
 		sb.sceneAddGroup(this.out);
 	}
 
-	private drawStructure(data: StructureReaderData, kind: string): void {
+	private drawStructure(data: Structure, kind: string): void {
 
 		// Clear previous structure
 		sb.sceneClearGroup(`DrawStructure-${this.id}`);
@@ -126,7 +126,7 @@ export class DrawStructure {
 		}
 	}
 
-	drawLabels(data: StructureReaderData, kind: string): void {
+	drawLabels(data: Structure, kind: string): void {
 
 		// Remove existing labels
 		sb.accessScene().traverse((obj) => {
@@ -154,7 +154,7 @@ export class DrawStructure {
 					offset = data.look[atom.atomZ].rVdW * 1.3;
 					break;
 				case "licorice":
-					offset = this.bondRadius * 1.3;
+					offset = this.bondRadius * 2.5;
 					break;
 				case "lines":
 					offset = 0.1;

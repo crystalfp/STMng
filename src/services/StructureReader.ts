@@ -1,20 +1,20 @@
 
 import {sb, type UiParams} from "@/services/Switchboard";
-import {readStructure} from "@/services/RoutesClient";
+import {readFileStructure} from "@/services/RoutesClient";
 import type {ReaderStructure, Structure} from "@/types";
 import log from "electron-log";
-
-export type StructureReaderData = Structure;
 
 export class StructureReader {
 
 	private steps = 1;
 	private step = 1;
 	private running = false;
-	private loading = false;
+	private doLoad = false;
 	private loopSteps = false;
 	private intervalId: ReturnType<typeof setInterval> | undefined;
 	private structures: Structure[] = [];
+	private format = "";
+	private atomsTypes = "";
 
 	constructor(private readonly id: string) {
 
@@ -22,13 +22,35 @@ export class StructureReader {
 
 			const requestedStep = params.step as number ?? 1;
 			this.running    = params.running as boolean ?? false;
-			this.loading    = params.loading as boolean ?? false;
+			this.doLoad     = params.doLoad as boolean ?? false;
     		this.loopSteps  = params.loopSteps as boolean ?? false;
+    		const requestedFormat = params.format as string ?? "";
+    		this.atomsTypes = params.atomsTypes as string ?? "";
 
-			if(this.loading) {
+			if(requestedFormat !== this.format) {
+
+				this.format = requestedFormat;
+				this.step = 1;
+				this.steps = 1;
+				this.doLoad = false;
+				this.running = false;
+				sb.setUiParams(this.id, {
+					filename: "",
+					steps: 1,
+					step: 1,
+					running: false,
+					doLoad: false
+				});
+        		if(this.intervalId !== undefined) {
+					clearInterval(this.intervalId);
+					this.intervalId = undefined;
+				}
+			}
+
+			if(this.doLoad) {
 
 				this.doRead();
-				this.loading = false;
+				this.doLoad = false;
 				this.running = false;
         		if(this.intervalId !== undefined) {
 					clearInterval(this.intervalId);
@@ -68,19 +90,16 @@ export class StructureReader {
 					running: this.running,
 				});
 			}
-			else {
-        		if(this.intervalId !== undefined) {
-					clearInterval(this.intervalId);
-					this.intervalId = undefined;
-				}
-				// this.running = false;
+			else if(this.intervalId !== undefined) {
+				clearInterval(this.intervalId);
+				this.intervalId = undefined;
 			}
 		});
 	}
 
 	private doRead(): void {
 
-		readStructure()
+		readFileStructure(this.format, this.atomsTypes)
 			.then((structureRaw) => {
 
 				if(!structureRaw) return;
@@ -91,11 +110,10 @@ export class StructureReader {
 
 				sb.setUiParams(this.id, {
 					filename: structure.filename,
-					format: structure.format,
 					steps: structure.structures.length,
 					step: 1,
 					running: false,
-					loading: false
+					doLoad: false
 				});
 				this.step = 1;
 				this.steps = structure.structures.length;
@@ -108,7 +126,7 @@ export class StructureReader {
 					steps: 1,
 					step: 1,
 					running: false,
-					loading: false,
+					doLoad: false,
 					format: ""
 				});
 				log.error("Error reading structure:", error.message);

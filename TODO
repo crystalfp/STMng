@@ -2,19 +2,23 @@ ToDo:
 	☐ Establish shortcuts
 	☐ Save/Load config data in project
 	☐ Add tooltips
-	☐ Put everything related to modules (like adding a new one) in a separate file
-	☐ Add Atoms types to POSCAR Reader
+	☐ Put everything related to modules (like adding a new one) into a separate file
 	☐ Add error notifications
 	☐ In validator add check of node types
-	✔ Remove unused triangles in unit cell @done(2024-01-04 08:22)
-	✔ If no unit cell (like in xyz files) put basis all zero and do not display it @done(2024-01-04 08:22)
-	✔ Hydrogen bonds: shorter dashes, larger line @done(2024-01-04 08:22)
-	☐ Compute bonds limit the number of bonds to the atom data value
+	☐ Compute bonds: limit the number of bonds to the atom data value
+	☐ Try lines as rectangle or box (or tube with small radius)
+	☐ Move eslint to flat config (preparing to 9.0.0)
+	☐ Add selecting label between atom label and atom type
 
 Bugs:
-	☐ Moving from CPK to licorice makes labels disappear
+	☐ Ortho camera does not work
 
 Archive:
+  ✔ Add Atoms types to POSCAR Reader @done(2024-01-05 16:23) @project(ToDo)
+  ✔ Remove unused triangles in unit cell @done(2024-01-04 08:22) @project(ToDo)
+  ✔ Moving from CPK to licorice makes labels disappear @done(2024-01-04 09:10) @project(Bugs)
+  ✔ If no unit cell (like in xyz files) put basis all zero and do not display it @done(2024-01-04 08:22) @project(ToDo)
+  ✔ Hydrogen bonds: shorter dashes, larger line @done(2024-01-04 08:22) @project(ToDo)
   ✔ Add looping mode for reader @done(2024-01-04 06:53) @project(ToDo)
   ✔ Visualize atoms labels @done(2024-01-04 06:54) @project(ToDo)
   ✔ Send loaded project redefine handler @done(2023-12-16 07:27) @project(Bugs)

@@ -10,8 +10,7 @@ import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {projectIsValid, type Project} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
-import type {NodeUI} from "@/types";
-import type {StructureReaderData} from "@/services/StructureReader";
+import type {NodeUI, Structure} from "@/types";
 
 export type UiParams = Record<string, string | number | boolean>;
 
@@ -144,8 +143,8 @@ class Switchboard {
 		// TODO Here add the other types
 		switch(type) {
 			case "structure-reader": {
-				const typedData = data as StructureReaderData;
-				const typedStore = switchboardStore.data[id] as StructureReaderData;
+				const typedData = data as Structure;
+				const typedStore = switchboardStore.data[id] as Structure;
 				typedStore.crystal = typedData.crystal;
 				typedStore.atoms = typedData.atoms;
 				typedStore.bonds = typedData.bonds;
@@ -185,7 +184,7 @@ class Switchboard {
 			// TODO Here add the other types
 			switch(type) {
 				case "structure-reader":
-					watch(switchboardStore.data[idFrom] as StructureReaderData,
+					watch(switchboardStore.data[idFrom] as Structure,
 						() => callback(switchboardStore.data[idFrom], idFrom),
 						{deep: true});
 					callback(switchboardStore.data[idFrom], idFrom);

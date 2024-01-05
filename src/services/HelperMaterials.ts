@@ -55,3 +55,57 @@ export const colorTextureMaterial = (colorFrom: THREE.Color,
 		map: texture
 	});
 };
+
+/*
+export const dashedLineMaterialShader = (color: THREE.ColorRepresentation): THREE.ShaderMaterial => {
+
+	const cc = new THREE.Color(color);
+
+	const vpSize = [window.innerWidth, window.innerHeight];
+
+	const uniforms = {
+		u_resolution: {type: "v2", value: {x: vpSize[0], y: vpSize[1]}},
+		u_dashSize : {type:"f", value: 10.0},
+		u_gapSize : {type:"f", value: 5.0},
+		u_color : {type: "v3", value: {x: cc.r, y: cc.g, z: cc.b}}
+	};
+
+	const vertexShader = `
+flat out vec3 startPos;
+out vec3 vertPos;
+
+void main() {
+	vec4 pos    = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+	gl_Position = pos;
+	vertPos     = pos.xyz / pos.w;
+	startPos    = vertPos;
+}`;
+
+	const fragmentShader = `
+precision highp float;
+
+flat in vec3 startPos;
+in vec3 vertPos;
+
+uniform vec3  u_color;
+uniform vec2  u_resolution;
+uniform float u_dashSize;
+uniform float u_gapSize;
+
+void main(){
+
+	vec2  dir  = (vertPos.xy-startPos.xy) * u_resolution.xy/2.0;
+	float dist = length(dir);
+
+	if (fract(dist / (u_dashSize + u_gapSize)) > u_dashSize/(u_dashSize + u_gapSize))
+		discard;
+	gl_FragColor = vec4(u_color.rgb, 1.0);
+}`;
+
+	return new THREE.ShaderMaterial({
+		uniforms,
+		vertexShader,
+		fragmentShader
+	});
+};
+*/

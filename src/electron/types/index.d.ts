@@ -22,5 +22,5 @@ export interface WindowsParams {
 export type Constructable<T> = new() => T;
 
 export interface ReaderImplementation {
-	readStructure: (filename: string) => Promise<Structure[]>;
+	readStructure: (filename: string, atomsTypes?: string[]) => Promise<Structure[]>;
 }
