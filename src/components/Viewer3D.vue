@@ -48,6 +48,13 @@ onMounted(() => {
     cameraPerspective.position.set(5, 3, -5);
     const cameraOrthographic = new THREE.OrthographicCamera(-side*aspect, side*aspect, side, -side, .1, 5000);
     cameraOrthographic.position.set(-1, -1, 0);
+    watchEffect(() => {
+        if(configStore.camera.reset) {
+            configStore.camera.reset = false;
+            cameraPerspective.position.set(5, 3, -5);
+            cameraOrthographic.position.set(-1, -1, 0);
+        }
+    });
 
     let camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
 

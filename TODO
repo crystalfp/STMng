@@ -7,8 +7,10 @@ ToDo:
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
 	☐ Try lines as rectangle or box (or tube with small radius)
-	☐ Move eslint to flat config (preparing to 9.0.0)
+	☐ Move eslint to flat config (preparing for 9.0.0)
 	☐ Add selecting label between atom label and atom type
+	☐ Busy cursor on loading structure file
+	✔ Add reset camera position. @done(2024-01-05 17:02)
 
 Bugs:
 	☐ Ortho camera does not work

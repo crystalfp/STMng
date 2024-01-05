@@ -40,11 +40,13 @@ watchEffect(() => {
     configStore.lights.directional3Position[1] = lenXY*Math.sin(alphaRad);
     configStore.lights.directional3Position[2] = Math.cos(betaRad);
 });
+
 </script>
 
 
 <template>
 <v-container class="container">
+  <v-btn variant="tonal" block class="mb-3" @click="configStore.camera.reset = true">Reset camera</v-btn>
   <v-expansion-panels>
     <v-expansion-panel>
       <v-expansion-panel-title>

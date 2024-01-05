@@ -10,6 +10,7 @@ interface Viewer3DConfiguration {
     camera: {
         perspective: boolean;
         orthoSide: number;
+        reset: boolean;
     };
     scene: {
         background: string;
@@ -35,7 +36,8 @@ export const useConfigStore = defineStore("ConfigStore", {
 
 		camera: {
 			perspective: true,
-			orthoSide: 600
+			orthoSide: 600,
+            reset: false,
 		},
 		scene: {
 			background: "#90CEEC",
