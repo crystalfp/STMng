@@ -6,7 +6,6 @@
  */
 import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
-// eslint-disable-next-line @typescript-eslint/no-shadow
 import {Command, Option} from "commander";
 import pck from "../../package.json";
 

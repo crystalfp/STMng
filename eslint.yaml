@@ -155,7 +155,7 @@ rules:
     no-unsafe-negation: [warn, {enforceForOrderingRelations: true}]
     eqeqeq: [error, always]
     strict: [error, global]
-    max-params: [warn, 5]
+    max-params: [warn, 6]
     space-before-blocks: warn
     no-unused-private-class-members: error
     guard-for-in: off
@@ -253,8 +253,8 @@ rules:
 
     # import/no-unresolved: off
     import/namespace: off
-    # import/no-named-as-default: error
-    # import/no-named-as-default-member: error
+    import/no-named-as-default: off
+    import/no-named-as-default-member: off
     import/default: off
     # import/no-deprecated: warn
 
@@ -262,16 +262,6 @@ rules:
 
     # jest-formatting/padding-around-expect-groups: warn
     # jest/no-disabled-tests: off
-
-    # array-plural/array-plural:
-    #     - warn
-    #     - allows:
-    #         - ignore
-    #         - array
-    #         - list
-    #         - match
-    #         - count
-    #         - table
 
     unicorn/no-keyword-prefix: [warn, {checkProperties: false}]
     unicorn/prefer-array-some: warn

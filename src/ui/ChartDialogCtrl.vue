@@ -129,10 +129,11 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-radio-group v-model="chartType" inline label="Chart type">
+  <v-label class="ml-1 mb-3">Chart type</v-label>
+  <v-radio-group v-model="chartType" inline>
     <v-radio label="Line" value="line" />
     <v-radio label="Bar" value="bar" />
   </v-radio-group>
-  <v-btn @click="openChart">Open chart</v-btn>
+  <v-btn block @click="openChart">Open chart</v-btn>
 </v-container>
 </template>

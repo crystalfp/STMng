@@ -2,7 +2,6 @@
 import type {BasisType, PositionType} from "../../types";
 
 export const extractBasis = (a: number, b: number, c: number,
-							 // eslint-disable-next-line max-params
 							 alpha: number, beta: number, gamma: number): BasisType => {
 
 	if(a <= 0 || b <= 0 || c <= 0) {
@@ -44,7 +43,6 @@ export const extractBasis = (a: number, b: number, c: number,
 
 export const fractionalToCartesianCoordinates = (basis: BasisType,
 												 fx: number, fy: number, fz: number,
-												 // eslint-disable-next-line @typescript-eslint/no-shadow
 												 origin?: PositionType): PositionType => {
 
 	if(!origin) origin = [0, 0, 0];

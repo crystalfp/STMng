@@ -45,7 +45,7 @@ const tickLabels = ref({1: "Low", 2: "Medium", 3: "Good", 4: "Best"});
 
 <template>
 <v-container class="container">
-  <v-label text="Structure rendering mode" />
+  <v-label text="Structure rendering mode" class="mb-3" />
   <v-radio-group v-model="drawKind" inline>
     <v-radio label="CPK" value="ball-and-stick" />
     <v-spacer />
@@ -55,13 +55,13 @@ const tickLabels = ref({1: "Low", 2: "Medium", 3: "Good", 4: "Best"});
     <v-spacer />
     <v-radio label="Lines" value="lines" />
   </v-radio-group>
-  <v-switch v-model="showLabels" color="primary" label="Show labels" />
-  <v-label text="Quality" />
+  <v-switch v-model="showLabels" color="primary" label="Show labels" class="ml-2" />
+  <v-label text="Quality" class="ml-2" />
   <v-slider v-model="drawQuality" :ticks="tickLabels" min="1" max="4" step="1"
             show-ticks="always" tick-size="4" />
-  <v-label text="Roughness" />
+  <v-label text="Roughness" class="ml-2 mt-3" />
   <v-slider v-model="drawRoughness" density="compact" min="0" max="1" step="0.1" thumb-label />
-  <v-label text="Metalness" />
+  <v-label text="Metalness" class="ml-2" />
   <v-slider v-model="drawMetalness" density="compact" min="0" max="1" step="0.1" thumb-label />
 </v-container>
 </template>
