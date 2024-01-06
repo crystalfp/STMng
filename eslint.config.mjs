@@ -17,10 +17,6 @@ import tsdocPlugin from "eslint-plugin-tsdoc";
 import electronPlugin from "eslint-plugin-electron-extension";
 import jsPlugin from "@eslint/js"
 
-// Do the following to settings.json to use flat config in VSC
-// {
-//   "eslint.experimental.useFlatConfig": true
-// }
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [{
@@ -28,8 +24,7 @@ export default [{
         "vite.config.mts",
         "dist-electron/**/*.js",
         "src/vite-env.d.ts"
-    ],
-    }, {
+    ]}, {
     files: [
         "src/**/*.ts",
         "src/**/*.vue"

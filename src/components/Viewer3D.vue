@@ -30,6 +30,38 @@ const cnv = ref<HTMLElement | null>(null);
 // Create scene
 const scene = createScene();
 
+const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
+                               orthographicCamera: THREE.OrthographicCamera): void => {
+
+    const vFov = (perspectiveCamera.fov * Math.PI) / 180;
+    const distance = perspectiveCamera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+    const halfHeight = Math.tan(vFov / 2) * distance;
+    const halfWidth = halfHeight * perspectiveCamera.aspect;
+    orthographicCamera.top = halfHeight;
+    orthographicCamera.bottom = -halfHeight;
+    orthographicCamera.left = -halfWidth;
+    orthographicCamera.right = halfWidth;
+    orthographicCamera.zoom = 1;
+    orthographicCamera.lookAt(new THREE.Vector3(0, 0, 0));
+    orthographicCamera.near = 0.1;
+    orthographicCamera.far = 5000;
+
+    orthographicCamera.position.copy(perspectiveCamera.position);
+};
+
+const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
+                               orthographicCamera: THREE.OrthographicCamera, aspect: number): void => {
+
+    const vFov = (perspectiveCamera.fov * Math.PI) / 180;
+    const distance = perspectiveCamera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+    const halfHeight = Math.tan(vFov / 2) * distance;
+    const halfWidth = halfHeight * aspect;
+    orthographicCamera.top = halfHeight;
+    orthographicCamera.bottom = -halfHeight;
+    orthographicCamera.left = -halfWidth;
+    orthographicCamera.right = halfWidth;
+};
+
 onMounted(() => {
 
     if(!cnv.value) {
@@ -37,24 +69,14 @@ onMounted(() => {
         return;
     }
 
-    // Create camera
-    let aspect = cnv.value.clientWidth / cnv.value.clientHeight;
-    const side = configStore.camera.orthoSide;
-    // const camera = configStore.camera.perspective ?
-    //                     new THREE.PerspectiveCamera(75, aspect, 0.1, 5000) :
-    //                     new THREE.OrthographicCamera(-side*aspect, side*aspect, -side, side, 0.1, 1000);
-
-    const cameraPerspective = new THREE.PerspectiveCamera(75, aspect, 0.1, 5000);
+    // Create cameras
+    const cameraPerspective = new THREE.PerspectiveCamera(75,
+                                                          cnv.value.clientWidth / cnv.value.clientHeight,
+                                                          0.1, 5000);
     cameraPerspective.position.set(5, 3, -5);
-    const cameraOrthographic = new THREE.OrthographicCamera(-side*aspect, side*aspect, side, -side, .1, 5000);
-    cameraOrthographic.position.set(-1, -1, 0);
-    watchEffect(() => {
-        if(configStore.camera.reset) {
-            configStore.camera.reset = false;
-            cameraPerspective.position.set(5, 3, -5);
-            cameraOrthographic.position.set(-1, -1, 0);
-        }
-    });
+
+    const cameraOrthographic = new THREE.OrthographicCamera();
+    copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
 
     let camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
 
@@ -67,9 +89,41 @@ onMounted(() => {
     // Add mouse controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.listenToKeyEvents(window);
+
+    // Switch cameras
     watchEffect(() => {
-        camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
+
+        if(configStore.camera.perspective) {
+
+            const oldY = cameraPerspective.position.y;
+            cameraPerspective.position.copy(cameraOrthographic.position);
+            cameraPerspective.position.y = oldY / cameraOrthographic.zoom;
+            camera = cameraPerspective;
+        }
+        else {
+
+            copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+
+            camera = cameraOrthographic;
+        }
         camera.updateProjectionMatrix();
+        controls.object = camera;
+        controls.update();
+    });
+
+    // Reset camera
+    watchEffect(() => {
+        if(configStore.camera.reset) {
+            configStore.camera.reset = false;
+
+            cameraPerspective.position.set(5, 3, -5);
+            cameraPerspective.lookAt(new THREE.Vector3(0, 0, 0));
+            cameraPerspective.zoom = 1;
+
+            copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+            cameraOrthographic.updateProjectionMatrix();
+        }
+        controls.update();
     });
 
     createLights(scene);
@@ -81,15 +135,13 @@ onMounted(() => {
     // Change the camera parameters when the window changes or ask for a expanded view
     const resizeScene = (): void => {
 
-        aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
+        const aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
 
         if(configStore.camera.perspective) {
-            (camera as THREE.PerspectiveCamera).aspect = aspect;
+            cameraPerspective.aspect = aspect;
         }
         else {
-            const co = camera as THREE.OrthographicCamera;
-            co.left = -side*aspect;
-            co.right = side*aspect;
+            setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
         }
         camera.updateProjectionMatrix();
 

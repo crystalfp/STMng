@@ -11,8 +11,8 @@
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder",
     "preview": "vite preview",
-    "lint": "eslint -c eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
-    "flatlint": "set ESLINT_USE_FLAT_CONFIG=true&& eslint --config eslint.config.mjs -f codeframe src/**/*.ts src/**/*.vue",
+    "oldlint": "eslint -c eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
+    "lint": "set ESLINT_USE_FLAT_CONFIG=true&& eslint --config eslint.config.mjs -f codeframe src/**",
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/*",
     "madge": "node ../ExtractTSfromVue/index.js",
     "start": "start ./release/%npm_package_version%/win-unpacked/STMng.exe"
