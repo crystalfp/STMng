@@ -13,20 +13,30 @@ import App from "./App.vue";
 // Plugins
 import {router} from "@/router";
 
-import MdiSvg from "@yeliulee/vue-mdi-svg/v3";
-
-import VueTippy from "vue-tippy";
-import "tippy.js/dist/tippy.css";
-import "tippy.js/themes/material.css";
-import "tippy.js/animations/scale-extreme.css";
-
 // Vuetify
 import "vuetify/styles";
 import {createVuetify} from "vuetify";
 import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
+// import * as directives from "vuetify/directives";
 import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
 import {md2} from "vuetify/blueprints";
+
+// import {VSlider} from "vuetify/components/VSlider";
+// import {VBtn} from "vuetify/components/VBtn";
+// import {VLabel} from "vuetify/components/VLabel";
+// import {VList} from "vuetify/components/VList";
+// import {VColorPicker} from "vuetify/components/VColorPicker";
+// import {VExpansionPanel} from "vuetify/components/VExpansionPanel";
+// import {VMenu} from "vuetify/components/VMenu";
+// import {VRadio} from "vuetify/components/VRadio";
+// import {VRadioGroup} from "vuetify/components/VRadioGroup";
+// import {VSwitch} from "vuetify/components/VSwitch";
+// import {VTextField} from "vuetify/components/VTextField";
+// import {VDialog} from "vuetify/components/VDialog";
+// import {VCard} from "vuetify/components/VCard";
+// import {VTooltip} from "vuetify/components/VTooltip";
+// import {VTabs} from "vuetify/components/VTabs";
+// import {VApp} from "vuetify/components/VApp";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -35,22 +45,27 @@ log.errorHandler.startCatching({showDialog: false});
 const app = createApp(App)
     .use(router)
     .use(createPinia())
-	.use(MdiSvg)
-	.use(VueTippy, {
-		directive: "tooltip",
-		defaultProps: {
-				theme: "material",
-				delay: [900, 150],
-				animation: "scale-extreme",
-				duration: 150,
-				maxWidth: 200,
-				appendTo: "parent",
-				trigger: "mouseenter",
-		}
-	})
 	.use(createVuetify({
+		// components: {
+		// 	VSlider, //
+		// 	VBtn, //
+		// 	VLabel, //
+		// 	VList, //
+		// 	VColorPicker, //
+		// 	VExpansionPanel, //
+		// 	VMenu, //
+		// 	VRadio, //
+		// 	VRadioGroup, //
+		// 	VSwitch, //
+		// 	VTextField, //
+		// 	VDialog, //
+		// 	VCard, //
+		// 	VTooltip, //
+		// 	VTabs, //
+		// 	VApp //
+		// },
 		components,
-		directives,
+		// directives,
 		theme: {
     		defaultTheme: "dark",
   		},
@@ -70,12 +85,6 @@ const app = createApp(App)
       			density: "default",
     		},
 		}
-  	}))
-    .directive("focus", {
-        // When the bound element is mounted into the DOM, focus the element
-        mounted(element: HTMLElement) {
-            element.focus();
-        }
-    });
+  	}));
 
 app.mount("#app");

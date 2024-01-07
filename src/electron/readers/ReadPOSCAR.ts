@@ -116,13 +116,13 @@ export class ReaderPOSCAR implements ReaderImplementation {
 				}
 				case "direct": {
 					const kind = line.trim().toLowerCase();
-					if(kind.startsWith("direct")) {
+					if(kind.startsWith("dir")) {
 						lineType = "atoms";
 						currentIdx = 0;
 						currentCount = atomsCount[0];
 						cartesian = false;
 					}
-					else if(kind.startsWith("cart")) {
+					else if(kind.startsWith("car") || kind.startsWith("kar")) {
 						lineType = "atoms";
 						currentIdx = 0;
 						currentCount = atomsCount[0];

@@ -4,7 +4,7 @@
  * Viewer 3D initial prototype
  */
 
-import {onMounted, ref, watch, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {useConfigStore} from "@/stores/configStore";
@@ -135,20 +135,23 @@ onMounted(() => {
     // Change the camera parameters when the window changes or ask for a expanded view
     const resizeScene = (): void => {
 
-        const aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
+        void nextTick().then(() => {
 
-        if(configStore.camera.perspective) {
-            cameraPerspective.aspect = aspect;
-        }
-        else {
-            setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
-        }
-        camera.updateProjectionMatrix();
+            const aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
 
-        renderer.setSize(cnv.value!.clientWidth, cnv.value!.clientHeight);
+            if(configStore.camera.perspective) {
+                cameraPerspective.aspect = aspect;
+            }
+            else {
+                setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
+            }
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(cnv.value!.clientWidth, cnv.value!.clientHeight);
+        });
     };
 
-    window.addEventListener("resize", resizeScene, false);
+    window.addEventListener("resize", resizeScene);
 
     watch(props, resizeScene);
 

@@ -6,16 +6,20 @@ ToDo:
 	☐ Add error notifications
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
-	☐ Try lines as rectangle or box (or tube with small radius)
-	☐ Move eslint to flat config (preparing for 9.0.0)
 	☐ Add selecting label between atom label and atom type
-	☐ Busy cursor on loading structure file
-	✔ Add reset camera position. @done(2024-01-05 17:02)
+	☐ Test installer
 
 Bugs:
-	☐ Ortho camera does not work
+
+Nice to have/Future:
+	☐ Try lines as rectangle or box (or tube with small radius)
 
 Archive:
+  ✔ Busy cursor on loading structure file @done(2024-01-07 19:41) @project(ToDo)
+  ✔ Move eslint to flat config (preparing for 9.0.0) @done(2024-01-07 06:58) @project(ToDo)
+  ✔ Add reset camera position. @done(2024-01-05 17:02) @project(ToDo)
+  ✔ Ortho camera does not work @done(2024-01-07 06:58) @project(Bugs)
+  ✔ In ViewerCtrl, the scroller length is wrong (short) @done(2024-01-07 19:41) @project(Bugs)
   ✔ Add Atoms types to POSCAR Reader @done(2024-01-05 16:23) @project(ToDo)
   ✔ Remove unused triangles in unit cell @done(2024-01-04 08:22) @project(ToDo)
   ✔ Moving from CPK to licorice makes labels disappear @done(2024-01-04 09:10) @project(Bugs)

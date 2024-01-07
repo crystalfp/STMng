@@ -33,9 +33,9 @@ window.addEventListener("DOMContentLoaded", () => {
             handleFullscreen((isFullScreen: boolean) => {
                 const root = document.documentElement;
                 root.style.setProperty("--usable-height",    isFullScreen ? "100vh" : "calc(100vh - 30px)");
-                root.style.setProperty("--container-height", isFullScreen ? "100vh" : "calc(100% - 74px)");
+                root.style.setProperty("--container-height", isFullScreen ? "calc(100vh - 44px)" : "calc(100vh - 74px)");
             });
-            setTitle("See the Molecole New Generation");
+            setTitle("See the Molecole new generation");
             sb.setup();
         }
     }, 20);

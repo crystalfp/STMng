@@ -2,11 +2,10 @@
 /**
  * @component
  * Ask the main process for the versions of the application, Node, Electron and Chrome
- * and display them in a Modal dialog.
+ * and display them in a dialog.
  */
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {getVersions, type Versions} from "@/services/RoutesClient";
-import ModalDialog from "@/widgets/ModalDialog.vue";
 
 // > Events
 const emit = defineEmits<{
@@ -16,6 +15,7 @@ const emit = defineEmits<{
 
 const versions = reactive<Versions>({app: "", node: "", electron: "", chrome: ""});
 const isDevelopment = import.meta.env.DEV;
+const isOpen = ref(true);
 
 void getVersions().then((receivedVersions) => {
 
@@ -28,21 +28,24 @@ void getVersions().then((receivedVersions) => {
 
 
 <template>
-<modal-dialog title="About STMng"
-              close-tooltip="Return to the application"
-              @close="emit('close-panel')">
-  <template #content>
-    <div class="message">See the molecule New Generation is a visualization tool
-                         that implements some of the STM4 functionalities.</div>
-    <table>
-      <tr><td class="c1">STMng:</td><td>{{ versions.app }}</td></tr>
-      <tr><td class="c1">Electron:</td><td>{{ versions.electron }}</td></tr>
-      <tr><td class="c1">Chromium:</td><td>{{ versions.chrome }}</td></tr>
-      <tr><td class="c1">Node:</td><td>{{ versions.node }}</td></tr>
-    </table>
-    <div v-if="isDevelopment" class="message">Currently running in the development environment</div>
-  </template>
-</modal-dialog>
+<v-dialog v-model="isOpen" width="25rem">
+  <v-card>
+    <v-card-text>
+      <div class="mb-4 ml-2 mt-4 text-body-1">See The Molecule new generation (STMng) is a visualization tool
+        that implements some of the STM4 functionalities.</div>
+      <table class="text-body-2 ml-2">
+        <tr><td class="c1">STMng:</td><td>{{ versions.app }}</td></tr>
+        <tr><td class="c1">Electron:</td><td>{{ versions.electron }}</td></tr>
+        <tr><td class="c1">Chromium:</td><td>{{ versions.chrome }}</td></tr>
+        <tr><td class="c1">Node:</td><td>{{ versions.node }}</td></tr>
+      </table>
+      <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn color="primary" block @click="isOpen = false; emit('close-panel')">Close</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </template>
 
 
@@ -52,13 +55,4 @@ void getVersions().then((receivedVersions) => {
   width: 5rem;
 }
 
-.message {
-  max-width: 21rem;
-  margin: 5px 0 0.5rem 5px;
-}
-
-table {
-  font-size: 0.8rem;
-  margin: 0.5rem 5px;
-}
 </style>

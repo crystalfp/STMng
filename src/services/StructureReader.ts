@@ -15,6 +15,7 @@ export class StructureReader {
 	private structures: Structure[] = [];
 	private format = "";
 	private atomsTypes = "";
+	private inProgress = false;
 
 	constructor(private readonly id: string) {
 
@@ -26,6 +27,7 @@ export class StructureReader {
     		this.loopSteps  = params.loopSteps as boolean ?? false;
     		const requestedFormat = params.format as string ?? "";
     		this.atomsTypes = params.atomsTypes as string ?? "";
+    		this.inProgress = params.inProgress as boolean ?? false;
 
 			if(requestedFormat !== this.format) {
 
@@ -48,7 +50,7 @@ export class StructureReader {
 			}
 
 			if(this.doLoad) {
-
+				if(this.inProgress) return;
 				this.doRead();
 				this.doLoad = false;
 				this.running = false;
@@ -99,10 +101,16 @@ export class StructureReader {
 
 	private doRead(): void {
 
+		this.inProgress = true;
+		sb.setUiParams(this.id, {inProgress: true});
 		readFileStructure(this.format, this.atomsTypes)
 			.then((structureRaw) => {
 
-				if(!structureRaw) return;
+				if(!structureRaw) {
+					this.inProgress = false;
+					sb.setUiParams(this.id, {inProgress: false});
+					return;
+				}
 
 				const structure = JSON.parse(structureRaw) as ReaderStructure;
 
@@ -113,21 +121,25 @@ export class StructureReader {
 					steps: structure.structures.length,
 					step: 1,
 					running: false,
-					doLoad: false
+					doLoad: false,
+					inProgress: false
 				});
+				this.inProgress = false;
 				this.step = 1;
 				this.steps = structure.structures.length;
 				this.structures = structure.structures;
 				sb.setData(this.id, structure.structures[0]);
 			})
 			.catch((error: Error) => {
+				this.inProgress = false;
 				sb.setUiParams(this.id, {
 					filename: error.message,
 					steps: 1,
 					step: 1,
 					running: false,
 					doLoad: false,
-					format: ""
+					format: "",
+					inProgress: false
 				});
 				log.error("Error reading structure:", error.message);
 			});

@@ -28,6 +28,7 @@ const doLoad     = ref(false);
 const atomsTypes = ref("");
 const loopSteps  = ref(false);
 const format     = ref("");
+const inProgress = ref(false);
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
@@ -39,6 +40,7 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     loopSteps.value  = params.loopSteps as boolean ?? false;
     format.value     = params.format as string ?? "";
     atomsTypes.value = params.atomsTypes as string ?? "";
+    inProgress.value = params.inProgress as boolean ?? false;
 });
 
 watchEffect(() => {
@@ -52,7 +54,6 @@ watchEffect(() => {
         filename: fileRead.value,
     });
 });
-
 
 const loadFile = (): void => {
 
@@ -134,7 +135,9 @@ const setFormat = (changedFormat: string): void => {
                   variant="solo-filled" hide-details="auto" clearable />
   </v-container>
   <v-row>
-    <v-btn :disabled="format === ''" class="w-25 ml-3" size="small" @click="loadFile">Load</v-btn>
+    <v-btn :disabled="format === ''" :loading="inProgress" class="w-25 ml-3" size="small" @click="loadFile">
+      Load
+    </v-btn>
     <v-label class="underlined-label">{{ fileRead }}</v-label>
   </v-row>
   <v-container v-if="countSteps > 1">
