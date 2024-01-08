@@ -122,7 +122,8 @@ export class StructureReader {
 					step: 1,
 					running: false,
 					doLoad: false,
-					inProgress: false
+					inProgress: false,
+					errorMessage: ""
 				});
 				this.inProgress = false;
 				this.step = 1;
@@ -133,13 +134,14 @@ export class StructureReader {
 			.catch((error: Error) => {
 				this.inProgress = false;
 				sb.setUiParams(this.id, {
-					filename: error.message,
+					filename: "",
 					steps: 1,
 					step: 1,
 					running: false,
 					doLoad: false,
 					format: "",
-					inProgress: false
+					inProgress: false,
+					errorMessage: `Error reading structure: ${error.message}`
 				});
 				log.error("Error reading structure:", error.message);
 			});

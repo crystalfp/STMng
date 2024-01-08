@@ -6,13 +6,14 @@ ToDo:
 	☐ Add error notifications
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
-	☐ Add selecting label between atom label and atom type
+	✔ Add selecting label between atom label and atom type @done(2024-01-08 15:04)
 	☐ Test installer
 
 Bugs:
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
+  ☐ Label color
 
 Archive:
   ✔ Busy cursor on loading structure file @done(2024-01-07 19:41) @project(ToDo)

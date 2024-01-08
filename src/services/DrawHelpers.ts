@@ -92,7 +92,7 @@ export class DrawHelpers {
 	 */
 	private gridHelper(): THREE.GridHelper {
 
-		const grid = new THREE.GridHelper(this.side, this.side);
+		const grid = new THREE.GridHelper(this.side, this.side, "red");
 		grid.name = "GridHelper";
 
 		return grid;

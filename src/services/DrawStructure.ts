@@ -14,6 +14,7 @@ export class DrawStructure {
 	private drawRoughness = 0.7;
 	private drawMetalness = 0.3;
 	private showLabels = true;
+	private showAtomLabels = false;
 	private readonly out = new THREE.Group();
 	private readonly bondRadius = 0.1;
 	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
@@ -32,14 +33,15 @@ export class DrawStructure {
     		this.drawRoughness = params.drawRoughness as number ?? 0.7;
     		this.drawMetalness = params.drawMetalness as number ?? 0.3;
     		this.showLabels = params.showLabels as boolean ?? true;
+    		this.showAtomLabels = params.showAtomLabels as boolean ?? false;
 
 			this.adjustMaterials();
 
 			if(this.drawKind !== this.previousDrawKind) {
 				this.drawStructure(this.loadedData, this.drawKind);
-				this.drawLabels(this.loadedData, this.drawKind);
 				this.previousDrawKind = this.drawKind;
 			}
+			this.drawLabels(this.loadedData);
 
 			sb.accessScene().traverse((obj) => {
 
@@ -52,7 +54,7 @@ export class DrawStructure {
 		sb.getData(this.id, (data: unknown) => {
 			this.drawStructure(data as Structure, this.drawKind);
 			this.loadedData = data as Structure;
-			this.drawLabels(this.loadedData, this.drawKind);
+			this.drawLabels(this.loadedData);
 		});
 
 		this.out.name = `DrawStructure-${this.id}`;
@@ -126,19 +128,23 @@ export class DrawStructure {
 		}
 	}
 
-	drawLabels(data: Structure, kind: string): void {
+	drawLabels(data: Structure): void {
 
 		// Remove existing labels
-		sb.accessScene().traverse((obj) => {
+		const labelsToDelete: THREE.Sprite[] = [];
+		this.out.traverse((obj) => {
 
 			if(obj.name === "AtomLabel") {
-				this.out.remove(obj);
-				(obj as THREE.Sprite).material.dispose();
+				labelsToDelete.push(obj as THREE.Sprite);
 			}
 		});
+		for(const obj of labelsToDelete) {
+			this.out.remove(obj);
+			obj.material.dispose();
+		}
 
 		// No atoms present, display nothing
-		if(!data?.atoms) return;
+		if(!data?.atoms || data.atoms.length === 0) return;
 
 		// Render labels
 		const color = "#FFFFFF";
@@ -146,7 +152,7 @@ export class DrawStructure {
 
 			// const {color} = data.look[atom.atomZ];
 			let offset = 0;
-			switch(kind) {
+			switch(this.drawKind) {
 				case "ball-and-stick":
 					offset = data.look[atom.atomZ].rCov * this.rCovScale * 1.3;
 					break;
@@ -161,7 +167,9 @@ export class DrawStructure {
 					break;
 			}
 
-			const label = new SpriteText(atom.label, 0.3, color);
+			const labelText = this.showAtomLabels ? atom.label : data.look[atom.atomZ].symbol;
+
+			const label = new SpriteText(labelText, 0.3, color);
 			label.fontSize = 160;
 			const pos = atom.position;
 			label.position.set(pos[0], pos[1], pos[2] + offset);

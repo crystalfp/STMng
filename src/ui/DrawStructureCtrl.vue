@@ -20,6 +20,7 @@ const drawQuality = ref(4);
 const drawRoughness = ref(0.7);
 const drawMetalness = ref(0.3);
 const showLabels = ref(true);
+const showAtomLabels = ref(false);
 
 sb.getUiParams(props.id, (params: UiParams) => {
     drawKind.value = params.drawKind as string ?? "ball-and-stick";
@@ -27,6 +28,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     drawRoughness.value = params.drawRoughness as number ?? 0.7;
     drawMetalness.value = params.drawMetalness as number ?? 0.3;
     showLabels.value = params.showLabels as boolean ?? true;
+    showAtomLabels.value = params.showAtomLabels as boolean ?? false;
 });
 
 watchEffect(() => {
@@ -35,11 +37,14 @@ watchEffect(() => {
         drawQuality: drawQuality.value,
         drawRoughness: drawRoughness.value,
         drawMetalness: drawMetalness.value,
-        showLabels: showLabels.value
+        showLabels: showLabels.value,
+        showAtomLabels: showAtomLabels.value
     });
 });
 
-const tickLabels = ref({1: "Low", 2: "Medium", 3: "Good", 4: "Best"});
+// Labels for the quality slider
+const tickLabels = {1: "Low", 2: "Medium", 3: "Good", 4: "Best"};
+
 </script>
 
 
@@ -56,9 +61,10 @@ const tickLabels = ref({1: "Low", 2: "Medium", 3: "Good", 4: "Best"});
     <v-radio label="Lines" value="lines" />
   </v-radio-group>
   <v-switch v-model="showLabels" color="primary" label="Show labels" class="ml-2" />
+  <v-switch v-model="showAtomLabels" color="primary" label="Show atom labels" class="ml-2" />
   <v-label text="Quality" class="ml-2" />
   <v-slider v-model="drawQuality" :ticks="tickLabels" min="1" max="4" step="1"
-            show-ticks="always" tick-size="4" />
+            show-ticks="always" tick-size="5" />
   <v-label text="Roughness" class="ml-2 mt-3" />
   <v-slider v-model="drawRoughness" density="compact" min="0" max="1" step="0.1" thumb-label />
   <v-label text="Metalness" class="ml-2" />

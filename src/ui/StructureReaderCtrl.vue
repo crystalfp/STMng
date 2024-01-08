@@ -29,6 +29,7 @@ const atomsTypes = ref("");
 const loopSteps  = ref(false);
 const format     = ref("");
 const inProgress = ref(false);
+const errorMessage = ref("");
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
@@ -41,6 +42,7 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     format.value     = params.format as string ?? "";
     atomsTypes.value = params.atomsTypes as string ?? "";
     inProgress.value = params.inProgress as boolean ?? false;
+    errorMessage.value = params.errorMessage as string ?? "";
 });
 
 watchEffect(() => {
@@ -159,6 +161,8 @@ const setFormat = (changedFormat: string): void => {
       <v-spacer />
     </v-row>
   </v-container>
+  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact"
+           style="position: relative; top: 60px; width: 100%" />
 </v-container>
 </template>
 

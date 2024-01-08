@@ -39,6 +39,7 @@ import {VTooltip} from "vuetify/components/VTooltip";
 import {VTabs, VTab} from "vuetify/components/VTabs";
 import {VApp} from "vuetify/components/VApp";
 import {VRow, VContainer, VSpacer} from "vuetify/components/VGrid";
+import {VAlert} from "vuetify/components/VAlert";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -65,7 +66,8 @@ const app = createApp(App)
 			VTooltip,
 			VTabs, VTab,
 			VApp,
-			VRow, VContainer, VSpacer
+			VRow, VContainer, VSpacer,
+			VAlert
 		},
 		// components,
 		// directives,
