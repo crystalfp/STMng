@@ -45,8 +45,8 @@ const tickLabels = ref({1: "Low", 2: "Medium", 3: "Good", 4: "Best"});
 
 <template>
 <v-container class="container">
-  <v-label text="Structure rendering mode" class="mb-3" />
-  <v-radio-group v-model="drawKind" inline>
+  <v-label text="Structure rendering mode" class="mb-3 ml-2" />
+  <v-radio-group v-model="drawKind" class="ml-1" inline>
     <v-radio label="CPK" value="ball-and-stick" />
     <v-spacer />
     <v-radio label="VdW" value="van-der-walls" />

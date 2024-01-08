@@ -16,27 +16,29 @@ import {router} from "@/router";
 // Vuetify
 import "vuetify/styles";
 import {createVuetify} from "vuetify";
-import * as components from "vuetify/components";
+// import * as components from "vuetify/components";
 // import * as directives from "vuetify/directives";
 import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
 import {md2} from "vuetify/blueprints";
 
-// import {VSlider} from "vuetify/components/VSlider";
-// import {VBtn} from "vuetify/components/VBtn";
-// import {VLabel} from "vuetify/components/VLabel";
-// import {VList} from "vuetify/components/VList";
-// import {VColorPicker} from "vuetify/components/VColorPicker";
-// import {VExpansionPanel} from "vuetify/components/VExpansionPanel";
-// import {VMenu} from "vuetify/components/VMenu";
-// import {VRadio} from "vuetify/components/VRadio";
-// import {VRadioGroup} from "vuetify/components/VRadioGroup";
-// import {VSwitch} from "vuetify/components/VSwitch";
-// import {VTextField} from "vuetify/components/VTextField";
-// import {VDialog} from "vuetify/components/VDialog";
-// import {VCard} from "vuetify/components/VCard";
-// import {VTooltip} from "vuetify/components/VTooltip";
-// import {VTabs} from "vuetify/components/VTabs";
-// import {VApp} from "vuetify/components/VApp";
+import {VSlider} from "vuetify/components/VSlider";
+import {VBtn} from "vuetify/components/VBtn";
+import {VLabel} from "vuetify/components/VLabel";
+import {VList, VListItem, VListItemTitle} from "vuetify/components/VList";
+import {VColorPicker} from "vuetify/components/VColorPicker";
+import {VExpansionPanel, VExpansionPanels,
+		VExpansionPanelTitle, VExpansionPanelText} from "vuetify/components/VExpansionPanel";
+import {VMenu} from "vuetify/components/VMenu";
+import {VRadio} from "vuetify/components/VRadio";
+import {VRadioGroup} from "vuetify/components/VRadioGroup";
+import {VSwitch} from "vuetify/components/VSwitch";
+import {VTextField} from "vuetify/components/VTextField";
+import {VDialog} from "vuetify/components/VDialog";
+import {VCard} from "vuetify/components/VCard";
+import {VTooltip} from "vuetify/components/VTooltip";
+import {VTabs, VTab} from "vuetify/components/VTabs";
+import {VApp} from "vuetify/components/VApp";
+import {VRow, VContainer, VSpacer} from "vuetify/components/VGrid";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -46,25 +48,26 @@ const app = createApp(App)
     .use(router)
     .use(createPinia())
 	.use(createVuetify({
-		// components: {
-		// 	VSlider, //
-		// 	VBtn, //
-		// 	VLabel, //
-		// 	VList, //
-		// 	VColorPicker, //
-		// 	VExpansionPanel, //
-		// 	VMenu, //
-		// 	VRadio, //
-		// 	VRadioGroup, //
-		// 	VSwitch, //
-		// 	VTextField, //
-		// 	VDialog, //
-		// 	VCard, //
-		// 	VTooltip, //
-		// 	VTabs, //
-		// 	VApp //
-		// },
-		components,
+		components: {
+			VSlider,
+			VBtn,
+			VLabel,
+			VList, VListItem, VListItemTitle,
+			VColorPicker,
+			VExpansionPanels, VExpansionPanel, VExpansionPanelText, VExpansionPanelTitle,
+			VMenu,
+			VRadio,
+			VRadioGroup,
+			VSwitch,
+			VTextField,
+			VDialog,
+			VCard,
+			VTooltip,
+			VTabs, VTab,
+			VApp,
+			VRow, VContainer, VSpacer
+		},
+		// components,
 		// directives,
 		theme: {
     		defaultTheme: "dark",

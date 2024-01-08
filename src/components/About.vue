@@ -30,7 +30,7 @@ void getVersions().then((receivedVersions) => {
 <template>
 <v-dialog v-model="isOpen" width="25rem">
   <v-card>
-    <v-card-text>
+    <v-card-text class="pl-2">
       <div class="mb-4 ml-2 mt-4 text-body-1">See The Molecule new generation (STMng) is a visualization tool
         that implements some of the STM4 functionalities.</div>
       <table class="text-body-2 ml-2">
@@ -42,7 +42,8 @@ void getVersions().then((receivedVersions) => {
       <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" block @click="isOpen = false; emit('close-panel')">Close</v-btn>
+      <v-btn class="mt-4" color="primary" rounded="0" variant="tonal" block
+             @click="isOpen = false; emit('close-panel')">Close</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
