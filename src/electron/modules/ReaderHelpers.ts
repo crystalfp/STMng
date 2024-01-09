@@ -45,11 +45,17 @@ export const fractionalToCartesianCoordinates = (basis: BasisType,
 												 fx: number, fy: number, fz: number,
 												 origin?: PositionType): PositionType => {
 
-	if(!origin) origin = [0, 0, 0];
+	if(origin) {
+		return [
+			fx*basis[0] + fy*basis[3] + fz*basis[6] + origin[0],
+			fx*basis[1] + fy*basis[4] + fz*basis[7] + origin[1],
+			fx*basis[2] + fy*basis[5] + fz*basis[8] + origin[2],
+		];
+	}
 
-	const x = fx*basis[0] + fy*basis[3] + fz*basis[6] + origin[0];
-	const y = fx*basis[1] + fy*basis[4] + fz*basis[7] + origin[1];
-	const z = fx*basis[2] + fy*basis[5] + fz*basis[8] + origin[2];
-
-	return [x, y, z];
+	return [
+		fx*basis[0] + fy*basis[3] + fz*basis[6],
+		fx*basis[1] + fy*basis[4] + fz*basis[7],
+		fx*basis[2] + fy*basis[5] + fz*basis[8],
+	];
 };

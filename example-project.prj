@@ -1,7 +1,0 @@
-{
-	"graph": [
-		{"id": "reader",  "label": "ReaderX",   "ui": "StructureReaderCtrl",  "in": ""},
-		{"id": "draw",    "label": "Draw",      "ui": "DrawStructureCtrl",    "in": "reader"},
-		{"id": "viewer",  "label": "Viewer",    "ui": "Viewer3DCtrl",     	  "in": "draw"}
-	]
-}

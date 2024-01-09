@@ -11,7 +11,7 @@
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder",
     "preview": "vite preview",
-    "oldlint": "eslint -c eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
+    "oldlint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint -c ./eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
     "lint": "set ESLINT_USE_FLAT_CONFIG=true&& eslint --config eslint.config.mjs -f codeframe src/**",
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/*",
     "madge": "node ../ExtractTSfromVue/index.js",

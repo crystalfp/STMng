@@ -113,7 +113,7 @@ rules:
     '@typescript-eslint/no-shadow':
         - error
         - hoist: all
-          builtinGlobals: true
+          builtinGlobals: false
           allow: [event, self, window]
     comma-spacing: off
     '@typescript-eslint/comma-spacing': [error, {before: false, after: true}]

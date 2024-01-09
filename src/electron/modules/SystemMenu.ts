@@ -30,7 +30,7 @@ export const setupMenu = (): void => {
                             title: "Select project",
                             properties: ["openFile"],
                             filters: [
-                                {name: "STM project", extensions: ["prj"]},
+                                {name: "STM project", extensions: ["json"]},
                             ]
                         });
                         if(file) loadProject(file[0]);
@@ -43,7 +43,7 @@ export const setupMenu = (): void => {
                         const file = dialog.showSaveDialogSync({
                             title: "Select project save file",
                             filters: [
-                                {name: "STM project", extensions: ["prj"]},
+                                {name: "STM project", extensions: ["json"]},
                             ]
                         });
                         if(file) saveProject(file);
@@ -81,10 +81,10 @@ export const setupMenu = (): void => {
                         showDevToolsOnSecondaryWindows(event.checked);
                     }
                 },
-                {type: "separator"},
-                {role: "resetZoom"},
-                {role: "zoomIn"},
-                {role: "zoomOut"},
+                // {type: "separator"},
+                // {role: "resetZoom"},
+                // {role: "zoomIn"},
+                // {role: "zoomOut"},
                 {type: "separator"},
                 {role: "togglefullscreen"},
                 {
