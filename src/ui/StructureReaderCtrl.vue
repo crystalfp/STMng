@@ -20,28 +20,28 @@ const pr = defineProps<{
 const fileFormats = ["XYZ", "ShelX", "POSCAR"];
 
 // > Get and set ui parameters from the switchboard
-const fileRead   = ref("");
-const countSteps = ref(1);
-const step       = ref(1);
-const running    = ref(false);
-const doLoad     = ref(false);
-const atomsTypes = ref("");
-const loopSteps  = ref(false);
-const format     = ref("");
-const inProgress = ref(false);
+const fileRead     = ref("");
+const countSteps   = ref(1);
+const step         = ref(1);
+const running      = ref(false);
+const doLoad       = ref(false);
+const atomsTypes   = ref("");
+const loopSteps    = ref(false);
+const format       = ref("");
+const inProgress   = ref(false);
 const errorMessage = ref("");
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
-    fileRead.value   = params.filename as string ?? "";
-    countSteps.value = params.steps as number ?? 1;
-    step.value       = params.step as number ?? 1;
-    running.value    = params.running as boolean ?? false;
-    doLoad.value     = params.doLoad as boolean ?? false;
-    loopSteps.value  = params.loopSteps as boolean ?? false;
-    format.value     = params.format as string ?? "";
-    atomsTypes.value = params.atomsTypes as string ?? "";
-    inProgress.value = params.inProgress as boolean ?? false;
+    fileRead.value     = params.filename as string ?? "";
+    countSteps.value   = params.steps as number ?? 1;
+    step.value         = params.step as number ?? 1;
+    running.value      = params.running as boolean ?? false;
+    doLoad.value       = params.doLoad as boolean ?? false;
+    loopSteps.value    = params.loopSteps as boolean ?? false;
+    format.value       = params.format as string ?? "";
+    atomsTypes.value   = params.atomsTypes as string ?? "";
+    inProgress.value   = params.inProgress as boolean ?? false;
     errorMessage.value = params.errorMessage as string ?? "";
 });
 
@@ -57,6 +57,9 @@ watchEffect(() => {
     });
 });
 
+/**
+ * Start loading a file
+ */
 const loadFile = (): void => {
 
     doLoad.value = true;
@@ -76,6 +79,11 @@ const setRunning = (value: boolean): void => {
     });
 };
 
+/**
+ * Manually change the step visualized
+ *
+ * @param value - New step value
+ */
 const setStep = (value: number): void => {
 
     step.value = value;
@@ -84,6 +92,11 @@ const setStep = (value: number): void => {
     });
 };
 
+/**
+ * Change the current step by delta steps
+ *
+ * @param delta - How many steps the current one should move
+ */
 const deltaStep = (delta: number): void => {
 
     const changedStep = step.value + delta;
@@ -94,6 +107,9 @@ const deltaStep = (delta: number): void => {
     });
 };
 
+/**
+ * Start/stop automatic play of steps
+ */
 const togglePlay = (): void => {
 
     if(running.value) setRunning(false);
@@ -104,6 +120,11 @@ const togglePlay = (): void => {
     }
 };
 
+/**
+ * Set the file format to load
+ *
+ * @param changedFormat - The new format to load
+ */
 const setFormat = (changedFormat: string): void => {
 
     format.value = changedFormat;
@@ -117,6 +138,7 @@ const setFormat = (changedFormat: string): void => {
 
 <template>
 <v-container class="container">
+  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact" color="red" />
   <v-row class="mt-4 mb-2">
     <v-menu open-on-hover>
       <template #activator="{ props }">
@@ -161,8 +183,6 @@ const setFormat = (changedFormat: string): void => {
       <v-spacer />
     </v-row>
   </v-container>
-  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact"
-           style="position: relative; top: 60px; width: 100%" />
 </v-container>
 </template>
 

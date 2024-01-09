@@ -1,3 +1,8 @@
+/**
+ * Read a structure.
+ *
+ * @packageDocumentation
+ */
 
 import {sb, type UiParams} from "@/services/Switchboard";
 import {readFileStructure} from "@/services/RoutesClient";
@@ -99,6 +104,9 @@ export class StructureReader {
 		});
 	}
 
+	/**
+	 * Start reading the structure file
+	 */
 	private doRead(): void {
 
 		this.inProgress = true;
