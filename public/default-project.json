@@ -4,7 +4,8 @@
 		{"id": "draw",   	"label": "Draw",   	"type": "draw-structure",   "in": "reader"},
 		{"id": "unit",   	"label": "Cell",   	"type": "draw-unit-cell",   "in": "reader"},
 		{"id": "helpers",	"label": "Helpers", "type": "draw-helpers",   	"in": ""},
-		{"id": "viewer", 	"label": "Viewer", 	"type": "viewer-3d",     	"in": "draw,unit,helpers"},
+		{"id": "polyhedra",	"label": "Poly", 	"type": "draw-polyhedra",   "in": "reader"},
+		{"id": "viewer", 	"label": "Viewer", 	"type": "viewer-3d",     	"in": "draw,unit,helpers,polyhedra"},
 		{"id": "chart",  	"label": "Chart",  	"type": "chart-viewer",     "in": ""}
 	]
 }

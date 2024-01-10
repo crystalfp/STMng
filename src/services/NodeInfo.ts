@@ -4,6 +4,7 @@ import {StructureReader} from "@/services/StructureReader";
 import {DrawStructure} from "@/services/DrawStructure";
 import {DrawUnitCell} from "@/services/DrawUnitCell";
 import {DrawHelpers} from "@/services/DrawHelpers";
+import {DrawPolyhedra} from "@/services/DrawPolyhedra";
 import type {GraphNode} from "@/services/Validators";
 import type {NodeUI} from "@/types";
 
@@ -20,6 +21,7 @@ export class NodeInfo {
 		"draw-helpers":		{ui: "DrawHelpersCtrl"},
 		"chart-viewer":		{ui: "ChartDialogCtrl"},
 		"viewer-3d":   		{ui: "Viewer3DCtrl"},
+		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -56,6 +58,9 @@ export class NodeInfo {
 				break;
 			case "draw-helpers":
 				map.set(id, new DrawHelpers(id));
+				break;
+			case "draw-polyhedra":
+				map.set(id, new DrawPolyhedra(id));
 				break;
 			default:
 				log.error(`Invalid type "${type}" setting runtime for "${id}"`);
