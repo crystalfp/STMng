@@ -8,7 +8,7 @@ import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, openMenuEntry} from "./WindowsUtilities";
 import {setMainTheme} from "./Preferences";
-import {loadProject, getDefaultProject, saveProject} from "./Project";
+import {loadRememberedProject, loadProjectAndRemember, saveProject, saveProjectAs} from "./Project";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -35,19 +35,27 @@ export const setupMenu = (): void => {
                                 {name: "STM project", extensions: ["json"]},
                             ]
                         });
-                        if(file) loadProject(file[0]);
+                        if(file) loadProjectAndRemember(file[0]);
                     }
                 },
                 {
                     label: "Load default project",
                     accelerator: "CommandOrControl+D",
                     click() {
-                        loadProject(getDefaultProject());
+                        loadRememberedProject(true);
                     }
                 },
+                {type: "separator"},
                 {
                     label: "Save project",
                     accelerator: "CommandOrControl+S",
+                    click() {
+                        saveProject();
+                    }
+                },
+                {
+                    label: "Save project as…",
+                    accelerator: "CommandOrControl+Shift+S",
                     click() {
                         const file = dialog.showSaveDialogSync({
                             title: "Save project",
@@ -55,7 +63,7 @@ export const setupMenu = (): void => {
                                 {name: "STM project", extensions: ["json"]},
                             ]
                         });
-                        if(file) saveProject(file);
+                        if(file) saveProjectAs(file);
                     }
                 },
                 {type: "separator"},
@@ -90,10 +98,6 @@ export const setupMenu = (): void => {
                         showDevToolsOnSecondaryWindows(event.checked);
                     }
                 },
-                // {type: "separator"},
-                // {role: "resetZoom"},
-                // {role: "zoomIn"},
-                // {role: "zoomOut"},
                 {type: "separator"},
                 {role: "togglefullscreen"},
                 {

@@ -12,7 +12,7 @@ import pck from "../../package.json";
 import {setupTitlebar} from "custom-electron-titlebar/main";
 // import installExtension, {VUEJS_DEVTOOLS} from "electron-devtools-installer";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
-import {loadProject, setupChannelProject} from "./modules/Project";
+import {loadRememberedProject, loadProjectAndRemember, setupChannelProject} from "./modules/Project";
 import {createMainWindow} from "./modules/WindowsUtilities";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelReader} from "./modules/Reader";
@@ -72,8 +72,8 @@ app.whenReady().then(() => {
     });
 
     // Load project
-    if(program.args.length > 0) loadProject(program.args[0]);
-    else loadProject();
+    if(program.args.length > 0) loadProjectAndRemember(program.args[0]);
+    else loadRememberedProject(false);
 
     // if(import.meta.env.DEV) return installExtension(VUEJS_DEVTOOLS);
     // return "";

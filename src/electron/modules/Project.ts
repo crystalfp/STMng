@@ -9,7 +9,7 @@ import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
 import {sendLoadedProject, requestLoadedProject} from "./WindowsUtilities";
-import {getProjectPath, setProjectPath} from "./Preferences";
+import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {fileURLToPath} from "node:url";
 
 let projectAsString = "";
@@ -19,13 +19,7 @@ let projectAsString = "";
  *
  * @param filename - Project file to be read
  */
-export const loadProject = (filename?: string): void => {
-
-	if(filename) setProjectPath(filename);
-	else {
-		filename = getProjectPath();
-		if(!filename) filename = getDefaultProject();
-	}
+const loadProject = (filename: string): void => {
 
 	try {
 		const rawProject = fs.readFileSync(filename, "utf8");
@@ -40,7 +34,7 @@ export const loadProject = (filename?: string): void => {
 	}
 };
 
-export const getDefaultProject = (): string => {
+const getDefaultProject = (): string => {
 
 	const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 	const DIST = path.join(mainSourceDirectory, "..", "dist");
@@ -48,12 +42,44 @@ export const getDefaultProject = (): string => {
 	return path.join(publicDir, "default-project.json");
 };
 
+
+/**
+ * Read the given project, remember it and send it to client
+ *
+ * @param filename - Project file to be read
+ */
+export const loadProjectAndRemember = (filename: string): void => {
+
+	setProjectPath(filename);
+
+	loadProject(filename);
+};
+
+/**
+ * Read the saved project or the default one
+ *
+ * @param ignoreSaved - If true read only the default project and remove the saved project path
+ */
+export const loadRememberedProject = (ignoreSaved: boolean): void => {
+
+	let filename;
+	if(ignoreSaved) {
+		filename = getDefaultProject();
+		removeProjectPath();
+	}
+	else {
+		filename = getProjectPath();
+		if(!filename) filename = getDefaultProject();
+	}
+	loadProject(filename);
+};
+
 /**
  * Save the current project
  *
  * @param filename - Where the current project should be saved
  */
-export const saveProject = (filename: string): void => {
+export const saveProjectAs = (filename: string): void => {
 
 	requestLoadedProject()
 		.then((rawProject: string) => {
@@ -64,6 +90,13 @@ export const saveProject = (filename: string): void => {
 			log.error(`Cannot save project file "${filename}". Error ${error.message}`);
 			projectAsString = "";
 		});
+};
+
+export const saveProject = (): void => {
+
+	const filename = getProjectPath();
+	if(filename) saveProjectAs(filename);
+	else log.error("Cannot save project. Filename not set.");
 };
 
 export const setupChannelProject = (): void => {

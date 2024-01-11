@@ -73,7 +73,7 @@ onMounted(() => {
     const cameraPerspective = new THREE.PerspectiveCamera(75,
                                                           cnv.value.clientWidth / cnv.value.clientHeight,
                                                           0.1, 5000);
-    cameraPerspective.position.set(5, 3, -5);
+    cameraPerspective.position.set(5, 3, 5);
 
     const cameraOrthographic = new THREE.OrthographicCamera();
     copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
@@ -89,6 +89,9 @@ onMounted(() => {
     // Add mouse controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.listenToKeyEvents(window);
+    controls.addEventListener("end", () => {
+        configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
+    });
 
     // Switch cameras
     watchEffect(() => {
@@ -113,10 +116,10 @@ onMounted(() => {
 
     // Reset camera
     watchEffect(() => {
-        if(configStore.camera.reset) {
-            configStore.camera.reset = false;
+        if(configStore.control.reset) {
+            configStore.control.reset = false;
 
-            cameraPerspective.position.set(5, 3, -5);
+            cameraPerspective.position.set(5, 3, 5);
             cameraPerspective.lookAt(new THREE.Vector3(0, 0, 0));
             cameraPerspective.zoom = 1;
 

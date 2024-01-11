@@ -9,7 +9,7 @@ interface Viewer3DConfiguration {
 
     camera: {
         perspective: boolean;
-        reset: boolean;
+        position: [number, number, number];
     };
     scene: {
         background: string;
@@ -27,7 +27,11 @@ interface Viewer3DConfiguration {
         directional3Intensity: number;
         directional3Position: [number, number, number];
     };
+    control: {
+        reset: boolean;
+    };
 }
+
 
 export const useConfigStore = defineStore("ConfigStore", {
 
@@ -35,7 +39,7 @@ export const useConfigStore = defineStore("ConfigStore", {
 
 		camera: {
 			perspective: true,
-            reset: false,
+            position: [5, 3, 5]
 		},
 		scene: {
 			background: "#90CEEC",
@@ -53,6 +57,9 @@ export const useConfigStore = defineStore("ConfigStore", {
 			directional2Position: [1, 1, 1],
 			directional3Position: [-1, -1, -1],
 		},
+        control: {
+            reset: false,
+        }
 	} as Viewer3DConfiguration),
 
     // > Getters

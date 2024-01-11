@@ -13,8 +13,7 @@ export class DrawStructure {
 	private previousDrawKind = "ball-and-stick";
 	private drawRoughness = 0.7;
 	private drawMetalness = 0.3;
-	private showLabels = true;
-	private showAtomLabels = false;
+	private labelKind = "symbol";
 	private readonly out = new THREE.Group();
 	private readonly bondRadius = 0.1;
 	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
@@ -32,8 +31,7 @@ export class DrawStructure {
     		this.drawQuality = params.drawQuality as number ?? 4;
     		this.drawRoughness = params.drawRoughness as number ?? 0.7;
     		this.drawMetalness = params.drawMetalness as number ?? 0.3;
-    		this.showLabels = params.showLabels as boolean ?? true;
-    		this.showAtomLabels = params.showAtomLabels as boolean ?? false;
+    		this.labelKind = params.labelKind as string ?? "symbol";
 
 			this.adjustMaterials();
 
@@ -46,7 +44,7 @@ export class DrawStructure {
 			sb.accessScene().traverse((obj) => {
 
 				if(obj.name === "AtomLabel") {
-					(obj as THREE.Sprite).material.visible = this.showLabels;
+					(obj as THREE.Sprite).material.visible = this.labelKind !== "none";
 				}
 			});
 		});
@@ -143,11 +141,12 @@ export class DrawStructure {
 			obj.material.dispose();
 		}
 
-		// No atoms present, display nothing
-		if(!data?.atoms || data.atoms.length === 0) return;
+		// No atoms present or no label requested, display nothing
+		if(!data?.atoms || data.atoms.length === 0 || this.labelKind === "none") return;
 
 		// Render labels
 		const color = "#FFFFFF";
+		let idx = 1;
 		for(const atom of data.atoms) {
 
 			// const {color} = data.look[atom.atomZ];
@@ -167,7 +166,18 @@ export class DrawStructure {
 					break;
 			}
 
-			const labelText = this.showAtomLabels ? atom.label : data.look[atom.atomZ].symbol;
+			let labelText;
+			switch(this.labelKind) {
+				case "symbol":
+					labelText = data.look[atom.atomZ].symbol;
+					break;
+				case "label":
+					labelText = atom.label;
+					break;
+				case "index":
+					labelText = idx.toString();
+					break;
+			}
 
 			const label = new SpriteText(labelText, 0.3, color);
 			label.fontSize = 160;
@@ -175,6 +185,8 @@ export class DrawStructure {
 			label.position.set(pos[0], pos[1], pos[2] + offset);
 			label.name = "AtomLabel";
 			this.out.add(label);
+
+			++idx;
 		}
 	}
 
@@ -330,8 +342,7 @@ export class DrawStructure {
 			drawQuality: this.drawQuality,
 			drawRoughness: this.drawRoughness,
 			drawMetalness: this.drawMetalness,
-			showLabels: this.showLabels,
-			showAtomLabels: this.showAtomLabels
+			labelKind: this.labelKind,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

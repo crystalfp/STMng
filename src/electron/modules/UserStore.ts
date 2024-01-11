@@ -89,4 +89,9 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	has<K extends keyof T>(key: K): boolean {
 		return this.data[key] !== undefined;
 	}
+
+	delete<K extends keyof T>(key: K): void {
+		delete this.data[key];
+		fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");
+	}
 }

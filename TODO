@@ -6,26 +6,19 @@ ToDo:
 	☐ Add error notifications
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
-	✔ Add selecting label between atom label and atom type @done(2024-01-08 15:04)
-	✔ Test installer @done(2024-01-10 04:49)
   ☐ Check need for viewer input field (modules goes directly to scene)
-  ✘ Remove Viewer from project and add it in NodeInfo @cancelled(2024-01-10 05:17)
   ☐ Add toggle for structure visibility
   ☐ Add toggle for bonds visibility
-  ☐ Save camera position
-  ☐ Do not save viewer reset value
   ☐ Better camera position initialization (and RNC button {reset-normalize-center})
   ☐ Move fake chart data to ChartViewer.ts
   ☐ Change project to "network" and put a different extension for these files (.net)
-  ☐ If loading default project delete name from Preferences (if preference exists enable save)
-  ☐ Add "save as" for project and save saves in the preference name
+  ☐ Add project path in the title
 
 Bugs:
 
 Requests from Oganov:
   ☐ Save movie
   ☐ Symmetries
-  ✔ Polyhedra @done(2024-01-11 07:41)
   ☐ Charge maps
 
 Nice to have/Future:
@@ -33,6 +26,14 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Do not save viewer reset value @done(2024-01-11 17:04)
+  ✔ If loading default project delete name from Preferences (if preference exists enable save) @done(2024-01-11 15:48)
+  ✔ Add "save as" for project and save saves in the preference name @done(2024-01-11 15:48)
+  ✔ Polyhedra @done(2024-01-11 07:41)
+  ✘ Remove Viewer from project and add it in NodeInfo @cancelled(2024-01-10 05:17)
+  ✔ Save camera position @done(2024-01-11 17:05)
+  ✔ Add selecting label between atom label and atom type @done(2024-01-08 15:04) @project(ToDo)
+  ✔ Test installer @done(2024-01-10 04:49) @project(ToDo)
   ✔ Busy cursor on loading structure file @done(2024-01-07 19:41) @project(ToDo)
   ✔ Move eslint to flat config (preparing for 9.0.0) @done(2024-01-07 06:58) @project(ToDo)
   ✔ Add reset camera position. @done(2024-01-05 17:02) @project(ToDo)

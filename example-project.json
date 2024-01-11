@@ -1,8 +1,116 @@
 {
-	"graph": [
-		{"id": "reader", 	"label": "Reader", 	"type": "structure-reader", "in": ""},
-		{"id": "draw",   	"label": "Draw",   	"type": "draw-structure",   "in": "reader"},
-		{"id": "unit",   	"label": "Cell",   	"type": "draw-unit-cell",   "in": "reader"},
-		{"id": "viewer", 	"label": "Viewer", 	"type": "viewer-3d",     	"in": "draw,unit"}
-	]
+  "graph": [
+    {
+      "id": "reader",
+      "label": "Reader",
+      "type": "structure-reader",
+      "in": ""
+    },
+    {
+      "id": "draw",
+      "label": "Draw",
+      "type": "draw-structure",
+      "in": "reader"
+    },
+    {
+      "id": "unit",
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "in": "reader"
+    },
+    {
+      "id": "helpers",
+      "label": "Helpers",
+      "type": "draw-helpers",
+      "in": ""
+    },
+    {
+      "id": "polyhedra",
+      "label": "Poly",
+      "type": "draw-polyhedra",
+      "in": "reader"
+    },
+    {
+      "id": "viewer",
+      "label": "Viewer",
+      "type": "viewer-3d",
+      "in": "draw,unit,helpers,polyhedra"
+    },
+    {
+      "id": "chart",
+      "label": "Chart",
+      "type": "chart-viewer",
+      "in": ""
+    }
+  ],
+  "viewer": {
+    "camera": {
+      "perspective": true,
+      "position": [
+        0.11343085928870338,
+        3.8036259534508416,
+        14.471054125322569
+      ]
+    },
+    "scene": {
+      "background": "#90CEEC"
+    },
+    "lights": {
+      "ambientColor": "#FFFFFF",
+      "ambientIntensity": 0.5,
+      "directional1Color": "#FFFFFF",
+      "directional1Intensity": 3,
+      "directional2Color": "#FFFF00",
+      "directional2Intensity": 3,
+      "directional3Color": "#FF0000",
+      "directional3Intensity": 3,
+      "directional1Position": [
+        0,
+        1,
+        0
+      ],
+      "directional2Position": [
+        1,
+        1,
+        1
+      ],
+      "directional3Position": [
+        -1,
+        -1,
+        -1
+      ]
+    }
+  },
+  "ui": {
+    "reader": {
+      "loopSteps": false,
+      "step": 1,
+      "format": "ShelX",
+      "atomsTypes": ""
+    },
+    "draw": {
+      "drawKind": "ball-and-stick",
+      "drawQuality": 4,
+      "drawRoughness": 0.7,
+      "drawMetalness": 0.3,
+      "labelKind": "symbol"
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF"
+    },
+    "helpers": {
+      "showAxis": false,
+      "showGrid": false,
+      "side": 10
+    },
+    "polyhedra": {
+      "showPolyhedra": false,
+      "color": "#FFFFFF80"
+    },
+    "chart": {
+      "chartType": "line"
+    }
+  }
 }

@@ -66,6 +66,16 @@ export const getProjectPath = (): string => {
 };
 
 /**
+ * Delete the last project loaded
+ *
+ * @returns Path to the last project loaded or empty string if no path stored
+ */
+export const removeProjectPath = (): void => {
+
+	store.delete("LastProjectLoaded");
+};
+
+/**
  * Store the last loaded project file path
  *
  * @param filename - Project file path to store
