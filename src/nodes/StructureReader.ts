@@ -154,4 +154,14 @@ export class StructureReader {
 				log.error("Error reading structure:", error.message);
 			});
 	}
+	saveStatus(): string {
+
+		const statusToSave = {
+			loopSteps: this.loopSteps,
+			step: 1,
+			format: this.format,
+      		atomsTypes: this.atomsTypes,
+		};
+		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+	}
 }

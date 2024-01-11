@@ -322,4 +322,17 @@ export class DrawStructure {
 		cylinder.applyQuaternion(this.vectorToQuaternion(dx/len, -dy/len, dz/len));
 		this.out.add(cylinder);
 	}
+
+	saveStatus(): string {
+
+		const statusToSave = {
+			drawKind: this.drawKind,
+			drawQuality: this.drawQuality,
+			drawRoughness: this.drawRoughness,
+			drawMetalness: this.drawMetalness,
+			showLabels: this.showLabels,
+			showAtomLabels: this.showAtomLabels
+		};
+		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+	}
 }

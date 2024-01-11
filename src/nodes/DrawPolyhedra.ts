@@ -14,6 +14,7 @@ export class DrawPolyhedra {
 										side: THREE.FrontSide,
 										transparent: true
 									});
+	private color = "#FFFFFF80";
 
 	constructor(private readonly id: string) {
 
@@ -23,10 +24,10 @@ export class DrawPolyhedra {
 		sb.getUiParams(this.id, (params: UiParams) => {
 
 			this.mesh.visible = params.showPolyhedra as boolean ?? false;
-			const color = params.surfaceColor as string ?? "#FFFFFF80";
+			this.color = params.surfaceColor as string ?? "#FFFFFF80";
 
-			this.material.opacity = this.extractOpacity(color);
-			this.material.color = this.extractColor(color);
+			this.material.opacity = this.extractOpacity(this.color);
+			this.material.color = this.extractColor(this.color);
 		});
 
 		sb.getData(this.id, (data: unknown) => {
@@ -58,5 +59,15 @@ export class DrawPolyhedra {
 
 		if(color.length < 9) return 1;
 		return Number.parseInt(color.slice(7, 9), 16) / 255;
+	}
+
+	saveStatus(): string {
+
+		const statusToSave = {
+
+			showPolyhedra: this.mesh.visible,
+			color: this.color,
+		};
+		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 }

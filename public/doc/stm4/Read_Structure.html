@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-us"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <meta http-equiv="Organization" content="Swiss National Supercomputing Centre, Switzerland">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="STM4 module Read_Structure documentation">
+  <meta name="keywords" content="AVS,AVS/Express,STM4">
+  <meta name="copyright" content="Copyright 1999-2012 by CSCS-ETH Zurich">
+
+  <title>Read Structure</title>
+
+  <link rel="stylesheet" href="../help.css" type="text/css">
+
+</head><body>
+
+<h1>Read Structure</h1>
+
+<h2>Description</h2>
+<p>Read structural and volumetric chemical data. To specify a trajectory the file could contain a single structure (single frame); a sequence of structures (Multiframe
+from file); a sequence of files, each containing only one structure, sequentially numbered (Multifile); a list of file names, one per line, each containing only one structure
+(Frame list from file). Some format needs an additional file name before starting the reading. </p>
+
+<h2>Input Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">None</td>
+</tr>
+</table>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Select file format</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the format of the file to be read. The <a href="http://mariovalle.name/STM4/formats.html">available formats</a> are listed on the STM4 web page.</p>
+	</td>
+</tr>
+<tr>
+	<td class="c1">File</td>
+	<td class="c2">file browser</td>
+	<td class="c3">The file name to be read or, for the <b>Multifile</b> trajectory,
+	the first file in the sequence.</td>
+</tr>
+<tr>
+	<td class="c1">Additional file</td>
+	<td class="c2">file browser</td>
+	<td class="c3">Some file formats need an additional file. For example the DCD format needs a PDB file to specify the structure plus a DCD file
+	to specify the trajectory. This file browser appears only if a format requiring an additional file has been selected.</td>
+</tr>
+<tr>
+	<td class="c1">Status line</td>
+	<td class="c2">label</td>
+	<td class="c3">Messages from the reader.</td>
+</tr>
+<tr>
+	<td class="c1">Read mode selection</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select how trajectories are read. Possible values are:
+	<dl>
+	<dt>Single frame</dt>
+		<dd>The file contains a single structure.</dd>
+	<dt>Multiframe from file</dt>
+		<dd>The file contains a sequence of structures.</dd>
+	<dt>Multifile</dt>
+		<dd>The trajectory is specified by a sequence of files, each containing only one structure, sequentially numbered.</dd>
+ 	<dt>Frame list from file</dt>
+		<dd>The file contains a list of file names, one per line, each containing only one structure. Empty lines or lines starting with <tt>#</tt> are
+		ignored.</dd>
+	</dl></td>
+</tr>
+<tr>
+	<td class="c1">Loop</td>
+	<td class="c2"><a href="http://help.avs.com/Express/doc/help_73/reference/dvmac/Loop.html">Loop</a> module panel</td>
+	<td class="c3">Cycle between the various steps. The first step is numbered 1 and the
+	total number of steps is automatically computed from the input file.</td>
+</tr>
+<tr>
+	<td class="c1">Reader controls</td>
+	<td class="c2">panel</td>
+	<td class="c3">Controls for the specific format selected.</td>
+</tr>
+<tr>
+	<td class="c1">Read structure bonds</td>
+	<td class="c2">mod_panel</td>
+	<td class="c3">The panel for a <a href="Compute_Bonds.html">Compute Bonds</a> module that compute the bonds for the structure read.</td>
+</tr>
+</table>
+
+<h2>Output Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">structure_out</td>
+	<td class="c2"><a href="MoleculeType.html">MoleculeType</a></td>
+	<td class="c3">Molecular structure data read.</td>
+</tr>
+<tr>
+	<td class="c1">volume_out</td>
+	<td class="c2">Field_Unif</td>
+	<td class="c3">The volumetric data, if present, with one or two components per node. Beware that the uniform field has been skewed, using xform,
+	to match the unit cell.</td>
+</tr>
+</table>
+
+<div class="back"><a href="index.html" class="back">Return to index</a></div>
+</body></html>

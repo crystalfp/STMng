@@ -18,6 +18,18 @@ export const useSwitchboardStore = defineStore("SwitchboardStore", {
         ui: {},
         data: {}
 	} as SwitchboardState),
+
+    // > Actions
+    actions: {
+        clear() {
+			for(const key in this.ui) delete this.ui[key];
+			for(const key in this.data) delete this.data[key];
+        },
+        initNode(id: string) {
+            this.ui[id] = {};
+            this.data[id] = {};
+        }
+    }
 });
 
 // > Support HMR during development

@@ -24,12 +24,7 @@ export const loadProject = (filename?: string): void => {
 	if(filename) setProjectPath(filename);
 	else {
 		filename = getProjectPath();
-		if(!filename) {
-			const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-			const DIST = path.join(mainSourceDirectory, "..", "dist");
-			const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-			filename = path.join(publicDir, "default-project.json");
-		}
+		if(!filename) filename = getDefaultProject();
 	}
 
 	try {
@@ -43,6 +38,14 @@ export const loadProject = (filename?: string): void => {
 		sendLoadedProject("");
 		projectAsString = "";
 	}
+};
+
+export const getDefaultProject = (): string => {
+
+	const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+	const DIST = path.join(mainSourceDirectory, "..", "dist");
+	const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
+	return path.join(publicDir, "default-project.json");
 };
 
 /**

@@ -8,7 +8,9 @@ import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, openMenuEntry} from "./WindowsUtilities";
 import {setMainTheme} from "./Preferences";
-import {loadProject, saveProject} from "./Project";
+import {loadProject, getDefaultProject, saveProject} from "./Project";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 
 // > Prepare the application menu
 /**
@@ -27,7 +29,7 @@ export const setupMenu = (): void => {
                     accelerator: "CommandOrControl+O",
                     click() {
                         const file = dialog.showOpenDialogSync({
-                            title: "Select project",
+                            title: "Load project",
                             properties: ["openFile"],
                             filters: [
                                 {name: "STM project", extensions: ["json"]},
@@ -37,11 +39,18 @@ export const setupMenu = (): void => {
                     }
                 },
                 {
+                    label: "Load default project",
+                    accelerator: "CommandOrControl+D",
+                    click() {
+                        loadProject(getDefaultProject());
+                    }
+                },
+                {
                     label: "Save project",
                     accelerator: "CommandOrControl+S",
                     click() {
                         const file = dialog.showSaveDialogSync({
-                            title: "Select project save file",
+                            title: "Save project",
                             filters: [
                                 {name: "STM project", extensions: ["json"]},
                             ]
@@ -90,6 +99,7 @@ export const setupMenu = (): void => {
                 {
                     label: "Dark theme",
                     type: "checkbox",
+                    accelerator: "CommandOrControl+T",
                     checked: nativeTheme.themeSource === "dark",
                     click(event) {
                         const theme = event.checked ? "dark" : "light";
@@ -102,6 +112,17 @@ export const setupMenu = (): void => {
         {
             label: "&Help",
             submenu: [
+                {
+                    label: "STMng documentation",
+                    click() {
+                        const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+                        const DIST = path.join(mainSourceDirectory, "..", "dist");
+                        const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
+                        const url = path.join(publicDir, "doc", "index.html");
+
+                        void shell.openExternal(`file:///${url}`);
+                    },
+                },
                 {
                     label: "Learn more",
                     click() {

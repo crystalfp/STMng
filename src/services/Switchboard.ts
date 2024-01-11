@@ -8,6 +8,7 @@ import log from "electron-log";
 import * as THREE from "three";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
+import {useConfigStore} from "@/stores/configStore";
 import {projectIsValid, type Project} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Structure} from "@/types";
@@ -71,12 +72,7 @@ class Switchboard {
 			this.mapIdToInputs.clear();
 
 			// Empty the store
-			for(const key in switchboardStore.ui) {
-				delete switchboardStore.ui[key];
-			}
-			for(const key in switchboardStore.data) {
-				delete switchboardStore.data[key];
-			}
+			switchboardStore.clear();
 
 			// For each module of the project graph
 			for(const node of this.project.graph) {
@@ -89,8 +85,7 @@ class Switchboard {
 				if(nodeUI) this.nodesUI.push(nodeUI);
 
 				// Prepare the params area for the module
-				switchboardStore.ui[node.id] = {};
-				switchboardStore.data[node.id] = {};
+				switchboardStore.initNode(node.id);
 
 				this.setupInputs(node.id, node.in, this.mapIdToInputs);
 
@@ -107,7 +102,24 @@ class Switchboard {
 
 		// Send the project
 		sendProject(() => {
-			return JSON.stringify(this.project);
+
+			// Save the project
+			const graph = this.project?.graph;
+			if(!graph) return "";
+			let project = `{"graph":${JSON.stringify(graph)},`;
+
+			// Save the viewer status
+			const configStore = useConfigStore();
+			project += `"viewer":${configStore.statusToSave},`;
+
+			// Save the modules' UI status
+			project += this.nodeInfo.saveUiStatus(this.mapIdToCode, this.mapIdToType);
+
+			// Close the project structure
+			project += "}";
+
+			// Save the project
+			return JSON.stringify(JSON.parse(project), undefined, 2);
 		});
 	}
 

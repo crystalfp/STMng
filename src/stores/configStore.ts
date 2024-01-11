@@ -54,6 +54,18 @@ export const useConfigStore = defineStore("ConfigStore", {
 			directional3Position: [-1, -1, -1],
 		},
 	} as Viewer3DConfiguration),
+
+    // > Getters
+    getters: {
+        statusToSave(state: Viewer3DConfiguration) {
+            const statusToSave = {
+                camera: state.camera,
+                scene: state.scene,
+                lights: state.lights
+            };
+            return JSON.stringify(statusToSave);
+        }
+    }
 });
 
 // > Support HMR during development

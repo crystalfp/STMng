@@ -40,7 +40,7 @@ export class DrawUnitCell {
 		});
 	}
 
-	drawUnitCell(basis: BasisType, orig: PositionType): void {
+	private drawUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
 		sb.sceneClearGroup(this.name);
@@ -91,7 +91,7 @@ export class DrawUnitCell {
         this.out.add(this.line);
 	}
 
-	setMaterial(): THREE.Material {
+	private setMaterial(): THREE.Material {
 		return this.dashedLine ?
 							new THREE.LineDashedMaterial({
 								color: this.lineColor,
@@ -104,10 +104,20 @@ export class DrawUnitCell {
 							});
 	}
 
-	changeMaterial(): void {
+	private changeMaterial(): void {
 		if(this.line) {
 			this.line.material = this.setMaterial();
         	if(this.dashedLine) this.line.computeLineDistances();
 		}
+	}
+
+	saveStatus(): string {
+
+		const statusToSave = {
+			showUnitCell: this.showUnitCell,
+			dashedLine: this.dashedLine,
+			lineColor: this.lineColor,
+		};
+		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 }

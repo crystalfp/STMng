@@ -1,0 +1,52 @@
+body {
+  font-family: Roboto,Verdana,Helvetica,Geneva,"DejaVu Sans",sans-serif;
+  color: black;
+  margin-left: 1rem;
+  font-size: 18px;
+}
+
+h1 {
+  font-size: 200%;
+  line-height: 100%;
+  color: #FF6400;
+  font-weight: bold;
+  padding-top: 1rem;
+}
+
+h1.title {
+  font-size: 220%;
+}
+
+h2 {
+  font-size: 160%;
+  color: #FF6400;
+  font-weight: normal;
+  padding-top: 0.7rem;
+}
+
+header {
+  margin-bottom: 1rem;
+}
+
+
+details {
+  border: 1px solid #AAAAAA;
+  border-radius: 4px;
+  padding: 0.5em 0.5em 0;
+  width: 50%;
+}
+
+summary {
+  font-weight: bold;
+  margin: -0.5em -0.5em 0;
+  padding: 0.5em;
+}
+
+details[open] {
+  padding: 0.5em;
+}
+
+details[open] summary {
+  border-bottom: 1px solid #AAAAAA;
+  margin-bottom: 0.5em;
+}

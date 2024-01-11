@@ -97,4 +97,15 @@ export class DrawHelpers {
 
 		return grid;
 	}
+
+	saveStatus(): string {
+
+		const statusToSave = {
+
+			showAxis: this.showAxis,
+			showGrid: this.showGrid,
+			side: this.side
+		};
+		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+	}
 }

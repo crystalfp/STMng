@@ -9,10 +9,24 @@ ToDo:
 	✔ Add selecting label between atom label and atom type @done(2024-01-08 15:04)
 	✔ Test installer @done(2024-01-10 04:49)
   ☐ Check need for viewer input field (modules goes directly to scene)
-  ☐ Remove Viewer from project and add it in NodeInfo
+  ✘ Remove Viewer from project and add it in NodeInfo @cancelled(2024-01-10 05:17)
   ☐ Add toggle for structure visibility
+  ☐ Add toggle for bonds visibility
+  ☐ Save camera position
+  ☐ Do not save viewer reset value
+  ☐ Better camera position initialization (and RNC button {reset-normalize-center})
+  ☐ Move fake chart data to ChartViewer.ts
+  ☐ Change project to "network" and put a different extension for these files (.net)
+  ☐ If loading default project delete name from Preferences (if preference exists enable save)
+  ☐ Add "save as" for project and save saves in the preference name
 
 Bugs:
+
+Requests from Oganov:
+  ☐ Save movie
+  ☐ Symmetries
+  ✔ Polyhedra @done(2024-01-11 07:41)
+  ☐ Charge maps
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
