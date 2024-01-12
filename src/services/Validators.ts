@@ -1,5 +1,6 @@
-import {minLength, object, safeParse, string, array, optional, type Output} from "valibot";
+import {minLength, object, safeParse, string, array, optional} from "valibot";
 import log from "electron-log";
+import type {Project} from "@/types";
 
 // {
 // 	"graph": [
@@ -14,17 +15,6 @@ const projectSchema = object({
 	})),
 	currentId: optional(string([minLength(1, "Invalid currentId")]))
 });
-
-/** Type of the configuration store */
-export type Project = Output<typeof projectSchema>;
-
-// TBD For now hardcoded, then derived as Project from schema
-export interface GraphNode {
-	id: string;
-	label: string;
-	type: string;
-	in: string;
-}
 
 // > Validate project structure on disk
 /**

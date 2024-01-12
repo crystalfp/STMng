@@ -1,10 +1,16 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the viewer.
+ */
+
 import {ref, watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 
 // > Access the store
 const configStore = useConfigStore();
 
+// > First directional light
 const alpha1 = ref(0);  // Around X on YZ plane
 const beta1 = ref(0);   // Angle with X axis
 
@@ -17,6 +23,7 @@ watchEffect(() => {
     configStore.lights.directional1Position[2] = -lenYZ*Math.sin(alphaRad);
 });
 
+// > Second directional light
 const alpha2 = ref(0);
 const beta2 = ref(0);
 
@@ -29,6 +36,7 @@ watchEffect(() => {
     configStore.lights.directional2Position[2] = lenXZ*Math.cos(alphaRad);
 });
 
+// > Third directional light
 const alpha3 = ref(0);
 const beta3 = ref(0);
 

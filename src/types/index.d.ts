@@ -6,6 +6,7 @@ export interface NodeUI {
 	label: string;
 }
 
+// TBD Definition of the chart data
 export interface ChartOptions {
     responsive: boolean;
     maintainAspectRatio: boolean;
@@ -109,9 +110,11 @@ export interface AtomAppearance {
 	/** Atom color as hex string (#RRGGBB) */
 	color: string;
 }
+
 /** Index is atomZ */
 export type Look = Record<number, AtomAppearance>;
 
+/** The whole atomic structure */
 export interface Structure {
     crystal:    Crystal;
     atoms:      Atom[];
@@ -124,4 +127,42 @@ export interface ReaderStructure {
     filename: string;
     structures: Structure[];
     error?: string;
+}
+
+// > The project structure
+export interface GraphNode {
+	id: string;
+	label: string;
+	type: string;
+	in: string;
+}
+
+import type {UiParams} from "@/services/Switchboard";
+
+export interface Project {
+    graph: GraphNode[];
+    currentId?: string;
+    viewer?: {
+        camera: {
+            perspective: boolean;
+            position: PositionType;
+        };
+        scene: {
+            background: string;
+        };
+        lights: {
+            ambientColor: string;
+            ambientIntensity: number;
+            directional1Color: string;
+            directional1Intensity: number;
+            directional2Color: string;
+            directional2Intensity: number;
+            directional3Color: string;
+            directional3Intensity: number;
+            directional1Position: PositionType;
+            directional2Position: PositionType;
+            directional3Position: PositionType;
+        };
+    };
+    ui: Record<string, UiParams>;
 }

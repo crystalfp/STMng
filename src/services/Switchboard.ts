@@ -9,9 +9,9 @@ import * as THREE from "three";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {useConfigStore} from "@/stores/configStore";
-import {projectIsValid, type Project} from "@/services/Validators";
+import {projectIsValid} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
-import type {NodeUI, Structure} from "@/types";
+import type {NodeUI, Project} from "@/types";
 
 export type UiParams = Record<string, string | number | boolean>;
 
@@ -87,6 +87,7 @@ class Switchboard {
 				// Prepare the params area for the module
 				switchboardStore.initNode(node.id);
 
+				// Set the connections to the inputs
 				this.setupInputs(node.id, node.in, this.mapIdToInputs);
 
 				// Setup the mapping to the runtime code
@@ -96,11 +97,14 @@ class Switchboard {
 			// Setup the current module
 			this.currentId = this.project.currentId ?? this.nodesUI[0].id;
 
-			// Call the nodes callback if already set
+			// Restore the status
+			this.restoreStatus(this.project);
+
+			// Call the nodes callback if it is already set
 			if(this.nodesCallback) this.nodesCallback(this.nodesUI, this.currentId);
 		});
 
-		// Send the project
+		// Send the project to main process for saving it
 		sendProject(() => {
 
 			// Save the project
@@ -115,8 +119,8 @@ class Switchboard {
 			// Save the modules' UI status
 			project += this.nodeInfo.saveUiStatus(this.mapIdToCode, this.mapIdToType);
 
-			// Close the project structure
-			project += "}";
+			// Save the current selected node and close the project structure
+			project += `,"currentId":"${this.currentId}"}`;
 
 			// Save the project
 			return JSON.stringify(JSON.parse(project), undefined, 2);
@@ -146,40 +150,51 @@ class Switchboard {
 		for(const par in params) switchboardStore.ui[id][par] = params[par];
 	}
 
+	private restoreStatus(savedProject: Project): void {
+
+		// Restore viewer if it has been saved
+		if(savedProject.viewer) {
+
+			const configStore = useConfigStore();
+			const {camera, scene, lights} = configStore;
+			const {camera: savedCamera, scene: savedScene, lights: savedLights} = savedProject.viewer;
+			camera.perspective = savedCamera.perspective;
+			camera.position[0] = savedCamera.position[0];
+			camera.position[1] = savedCamera.position[1];
+			camera.position[2] = savedCamera.position[2];
+			scene.background = savedScene.background;
+			lights.ambientColor = savedLights.ambientColor;
+			lights.ambientIntensity = savedLights.ambientIntensity;
+			lights.directional1Color = savedLights.directional1Color;
+			lights.directional2Color = savedLights.directional2Color;
+			lights.directional3Color = savedLights.directional3Color;
+			lights.directional1Intensity = savedLights.directional1Intensity;
+			lights.directional2Intensity = savedLights.directional2Intensity;
+			lights.directional3Intensity = savedLights.directional3Intensity;
+			lights.directional1Position[0] = savedLights.directional1Position[0];
+			lights.directional2Position[0] = savedLights.directional2Position[0];
+			lights.directional3Position[0] = savedLights.directional3Position[0];
+			lights.directional1Position[1] = savedLights.directional1Position[1];
+			lights.directional2Position[1] = savedLights.directional2Position[1];
+			lights.directional3Position[1] = savedLights.directional3Position[1];
+			lights.directional1Position[2] = savedLights.directional1Position[2];
+			lights.directional2Position[2] = savedLights.directional2Position[2];
+			lights.directional3Position[2] = savedLights.directional3Position[2];
+		}
+
+		// Restore ui parameters for nodes
+		for(const id in savedProject.ui) {
+			this.setUiParams(id, savedProject.ui[id]);
+		}
+	}
+
 	setData(id: string, data: unknown): void {
 
 		const switchboardStore = useSwitchboardStore();
 
 		const type = this.mapIdToType.get(id);
 
-		// TODO Here add the other types
-		switch(type) {
-			case "structure-reader": {
-				const typedData = data as Structure;
-				const typedStore = switchboardStore.data[id] as Structure;
-				typedStore.crystal = typedData.crystal;
-				typedStore.atoms = typedData.atoms;
-				typedStore.bonds = typedData.bonds;
-				typedStore.look = typedData.look;
-
-				break;
-			}
-			case "draw-structure": {
-				// const typedData = data as THREE.Group;
-				// const typedStore = switchboardStore.data[id] as THREE.Group;
-				// typedStore = typedData;
-				break;
-			}
-			case "viewer-3d":
-				break;
-			case "chart-viewer":
-				break;
-			case undefined:
-				log.error(`Unknown id "${id}"`);
-				break;
-			default:
-				log.error(`Unknown type "${type}" sending from ${id}`);
-		}
+		this.nodeInfo.setDataInputs(id, type, data, switchboardStore.data[id]);
 	}
 
 	getData(id: string, callback: (data: unknown, idFrom: string) => void): void {
@@ -193,26 +208,7 @@ class Switchboard {
 
 			const type = this.mapIdToType.get(idFrom);
 
-			// TODO Here add the other types
-			switch(type) {
-				case "structure-reader":
-					watch(switchboardStore.data[idFrom] as Structure,
-						() => callback(switchboardStore.data[idFrom], idFrom),
-						{deep: true});
-					callback(switchboardStore.data[idFrom], idFrom);
-					break;
-				case "draw-structure":
-				case "viewer-3d":
-					log.error(`Cannot use getData with type "${type}" id: "${id}"`);
-					break;
-				case "chart-viewer":
-					break;
-				case undefined:
-					log.error(`Unknown id "${id}"`);
-					break;
-				default:
-					log.error(`Unknown type "${type}" sending from ${id}`);
-			}
+			this.nodeInfo.getDataInputs(id, type, idFrom, switchboardStore.data[idFrom], callback);
 		}
 	}
 

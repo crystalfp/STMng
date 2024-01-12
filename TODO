@@ -1,8 +1,8 @@
 ToDo:
 	☐ Establish shortcuts
-	☐ Save/Load config data in project
+	✔ Save/Load config data in project @done(2024-01-12 09:04)
 	☐ Add tooltips
-	☐ Put everything related to modules (like adding a new one) into a separate file
+	✔ Put everything related to modules (like adding a new one) into a separate file @done(2024-01-12 09:04)
 	☐ Add error notifications
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
@@ -10,7 +10,7 @@ ToDo:
   ☐ Add toggle for structure visibility
   ☐ Add toggle for bonds visibility
   ☐ Better camera position initialization (and RNC button {reset-normalize-center})
-  ☐ Move fake chart data to ChartViewer.ts
+  ✔ Move fake chart data to ChartViewer.ts @done(2024-01-12 09:44)
   ☐ Change project to "network" and put a different extension for these files (.net)
   ☐ Add project path in the title
 

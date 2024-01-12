@@ -1,13 +1,12 @@
 import log from "electron-log";
-
+import {watch} from "vue";
 import {StructureReader} from "@/nodes/StructureReader";
 import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawHelpers} from "@/nodes/DrawHelpers";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
-import type {GraphNode} from "@/services/Validators";
-import type {NodeUI} from "@/types";
+import type {NodeUI, Structure, GraphNode} from "@/types";
 
 interface NodeParts {
 	ui: string;
@@ -70,6 +69,60 @@ export class NodeInfo {
 		}
 	}
 
+	setDataInputs(id: string, type: string | undefined, data: unknown, dataInStore: unknown): void {
+
+		// TODO Here add the other types
+		switch(type) {
+			case "structure-reader": {
+				const typedData = data as Structure;
+				const typedStore = dataInStore as Structure;
+				typedStore.crystal = typedData.crystal;
+				typedStore.atoms = typedData.atoms;
+				typedStore.bonds = typedData.bonds;
+				typedStore.look = typedData.look;
+
+				break;
+			}
+			case "draw-structure": {
+				// const typedData = data as THREE.Group;
+				// const typedStore = switchboardStore.data[id] as THREE.Group;
+				// typedStore = typedData;
+				break;
+			}
+			case "viewer-3d":
+				break;
+			case "chart-viewer":
+				break;
+			case undefined:
+				log.error(`Unknown id "${id}"`);
+				break;
+			default:
+				log.error(`Unknown type "${type}" sending from ${id}`);
+		}
+	}
+
+	getDataInputs(id: string,
+				  type: string | undefined,
+				  idFrom: string,
+				  dataFrom: unknown,
+				  callback: (data: unknown, idFrom: string) => void): void {
+
+		// TODO Here add the other types
+		switch(type) {
+			case "structure-reader":
+				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
+				callback(dataFrom, idFrom);
+				break;
+			case "chart-viewer":
+				break;
+			case undefined:
+				log.error(`Unknown id "${id}"`);
+				break;
+			default:
+				log.error(`Cannot use getData with type "${type}" id: "${id}"`);
+		}
+	}
+
 	saveUiStatus(map: Map<string, unknown>, idToType: Map<string, string>): string {
 
 		let uiStatus = '"ui":{';
@@ -109,11 +162,5 @@ export class NodeInfo {
 		uiStatus += "}";
 
 		return uiStatus;
-	}
-
-	restoreUiStatus(savedStatus: string): void {
-
-		// TBD
-		void savedStatus;
 	}
 }
