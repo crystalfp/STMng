@@ -6,12 +6,11 @@
 
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
+import log from "electron-log";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {useConfigStore} from "@/stores/configStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
-import {createScene} from "@/services/CreateScene";
-import {createLights} from "@/services/CreateLights";
-import log from "electron-log";
+import {sm} from "@/services/SceneManager";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -28,7 +27,7 @@ const props = defineProps<{
 const cnv = ref<HTMLElement | null>(null);
 
 // Create scene
-const scene = createScene();
+const scene = sm.createScene();
 
 const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
                                orthographicCamera: THREE.OrthographicCamera): void => {
@@ -129,7 +128,7 @@ onMounted(() => {
         controls.update();
     });
 
-    createLights(scene);
+    sm.createLights();
 
     // const helper = new THREE.CameraHelper( camera );
     // scene.add( helper );

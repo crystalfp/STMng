@@ -7,6 +7,7 @@
 import * as THREE from "three";
 import SpriteText from "three-spritetext";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {sm} from "@/services/SceneManager";
 
 export class DrawHelpers {
 
@@ -17,7 +18,7 @@ export class DrawHelpers {
 
 	constructor(private readonly id: string) {
 
-		const scene = sb.accessScene();
+		const scene = sm.accessScene();
 		let grid = this.gridHelper();
 		scene.add(grid);
 		const axis = this.axisHelper();

@@ -113,10 +113,17 @@ export class StructureReader {
 		sb.setUiParams(this.id, {inProgress: true});
 		readFileStructure(this.format, this.atomsTypes)
 			.then((structureRaw) => {
-
 				if(!structureRaw) {
 					this.inProgress = false;
-					sb.setUiParams(this.id, {inProgress: false});
+					sb.setUiParams(this.id, {
+						filename: "",
+						steps: 1,
+						step: 1,
+						running: false,
+						doLoad: false,
+						inProgress: false,
+						errorMessage: ""
+					});
 					return;
 				}
 

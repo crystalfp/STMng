@@ -1,10 +1,9 @@
-import {sb, type UiParams} from "@/services/Switchboard";
 import * as THREE from "three";
-import type {PositionType, Structure} from "@/types";
-// import log from "electron-log";
+import {sb, type UiParams} from "@/services/Switchboard";
 import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
 import SpriteText from "three-spritetext";
-
+import type {PositionType, Structure} from "@/types";
+import {sm} from "@/services/SceneManager";
 
 export class DrawStructure {
 
@@ -14,14 +13,20 @@ export class DrawStructure {
 	private drawRoughness = 0.7;
 	private drawMetalness = 0.3;
 	private labelKind = "symbol";
+	private showStructure = true;
+	private showBonds = true;
+	private showLabels = true;
 	private readonly out = new THREE.Group();
+	private readonly atomsGroup = new THREE.Group();
+	private readonly bondsGroup = new THREE.Group();
+	private readonly labelsGroup = new THREE.Group();
 	private readonly bondRadius = 0.1;
 	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
 	private readonly cylinderSubdivisions = [0, 4, 8, 16, 32];
 	private readonly rCovScale = 0.5;
 	private loadedData: Structure = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-														 origin: [0, 0, 0], spaceGroup: ""},
-														 atoms: [], bonds: [], look: {}};
+											   origin: [0, 0, 0], spaceGroup: ""},
+											   atoms: [], bonds: [], look: {}};
 
 	constructor(private readonly id: string) {
 
@@ -32,6 +37,12 @@ export class DrawStructure {
     		this.drawRoughness = params.drawRoughness as number ?? 0.7;
     		this.drawMetalness = params.drawMetalness as number ?? 0.3;
     		this.labelKind = params.labelKind as string ?? "symbol";
+    		this.showStructure = params.showStructure as boolean ?? true;
+    		this.showBonds = params.showBonds as boolean ?? true;
+    		this.showLabels = params.showLabels as boolean ?? true;
+
+			// Combine the groups
+			this.out.add(this.atomsGroup, this.bondsGroup, this.labelsGroup);
 
 			this.adjustMaterials();
 
@@ -41,12 +52,9 @@ export class DrawStructure {
 			}
 			this.drawLabels(this.loadedData);
 
-			sb.accessScene().traverse((obj) => {
-
-				if(obj.name === "AtomLabel") {
-					(obj as THREE.Sprite).material.visible = this.labelKind !== "none";
-				}
-			});
+			this.out.visible = this.showStructure;
+			this.bondsGroup.visible = this.showBonds;
+			this.labelsGroup.visible = this.showLabels;
 		});
 
 		sb.getData(this.id, (data: unknown) => {
@@ -56,13 +64,17 @@ export class DrawStructure {
 		});
 
 		this.out.name = `DrawStructure-${this.id}`;
-		sb.sceneAddGroup(this.out);
+		sm.sceneAddGroup(this.out);
 	}
 
 	private drawStructure(data: Structure, kind: string): void {
 
 		// Clear previous structure
-		sb.sceneClearGroup(`DrawStructure-${this.id}`);
+		sm.sceneClearGroup(`DrawStructure-${this.id}`);
+		this.atomsGroup.clear();
+		this.bondsGroup.clear();
+		this.labelsGroup.clear();
+		this.out.add(this.atomsGroup, this.bondsGroup, this.labelsGroup);
 
 		// No atoms present, display nothing
 		if(!data.atoms) return;
@@ -73,20 +85,20 @@ export class DrawStructure {
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
 					const radius = data.look[atom.atomZ].rCov * this.rCovScale;
-					this.addSphere(radius, color, atom.position);
+					this.addSphere(radius, color, atom.position, this.atomsGroup);
 				}
 				break;
 			case "van-der-walls":
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
 					const radius = data.look[atom.atomZ].rVdW;
-					this.addSphere(radius, color, atom.position);
+					this.addSphere(radius, color, atom.position, this.atomsGroup);
 				}
 				break;
 			case "licorice":
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
-					this.addSphere(this.bondRadius, color, atom.position);
+					this.addSphere(this.bondRadius, color, atom.position, this.atomsGroup);
 				}
 				break;
 		}
@@ -99,11 +111,12 @@ export class DrawStructure {
 
 					const atomFrom = data.atoms[bond.from];
 					const atomTo   = data.atoms[bond.to];
-					if(bond.type === "h") this.addHBond(atomFrom.position, atomTo.position);
+					if(bond.type === "h") this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else {
 						const colorFrom = data.look[atomFrom.atomZ].color;
 						const colorTo   = data.look[atomTo.atomZ].color;
-						this.addCylinder(atomFrom.position, atomTo.position, this.bondRadius, colorFrom, colorTo);
+						this.addCylinder(atomFrom.position, atomTo.position,
+										 this.bondRadius, colorFrom, colorTo, this.bondsGroup);
 					}
 				}
 				break;
@@ -111,15 +124,15 @@ export class DrawStructure {
 				for(const bond of data.bonds) {
 					const atomFrom  = data.atoms[bond.from];
 					const atomTo    = data.atoms[bond.to];
-					if(bond.type === "h") this.addHBond(atomFrom.position, atomTo.position);
+					if(bond.type === "h") this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else if(atomFrom.atomZ === atomTo.atomZ) {
 						const {color} = data.look[atomFrom.atomZ];
-						this.addNormalBondSameAtoms(atomFrom.position, atomTo.position, color);
+						this.addNormalBondSameAtoms(atomFrom.position, atomTo.position, color, this.bondsGroup);
 					}
 					else {
 						const colorFrom = data.look[atomFrom.atomZ].color;
 						const colorTo   = data.look[atomTo.atomZ].color;
-						this.addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo);
+						this.addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo, this.bondsGroup);
 					}
 				}
 				break;
@@ -130,19 +143,19 @@ export class DrawStructure {
 
 		// Remove existing labels
 		const labelsToDelete: THREE.Sprite[] = [];
-		this.out.traverse((obj) => {
+		this.labelsGroup.traverse((obj) => {
 
 			if(obj.name === "AtomLabel") {
 				labelsToDelete.push(obj as THREE.Sprite);
 			}
 		});
 		for(const obj of labelsToDelete) {
-			this.out.remove(obj);
+			this.labelsGroup.remove(obj);
 			obj.material.dispose();
 		}
 
 		// No atoms present or no label requested, display nothing
-		if(!data?.atoms || data.atoms.length === 0 || this.labelKind === "none") return;
+		if(!data?.atoms || data.atoms.length === 0 || !this.showLabels) return;
 
 		// Render labels
 		const color = "#FFFFFF";
@@ -183,8 +196,7 @@ export class DrawStructure {
 			label.fontSize = 160;
 			const pos = atom.position;
 			label.position.set(pos[0], pos[1], pos[2] + offset);
-			label.name = "AtomLabel";
-			this.out.add(label);
+			this.labelsGroup.add(label);
 
 			++idx;
 		}
@@ -223,17 +235,18 @@ export class DrawStructure {
 
 	private addSphere(radius: number,
 					  color: THREE.ColorRepresentation,
-					  position: PositionType): void {
+					  position: PositionType,
+					  out: THREE.Group): void {
 
 		const subdivisions = this.sphereSubdivisions[this.drawQuality];
 		const geometry = new THREE.IcosahedronGeometry(radius, subdivisions);
 		const meshMaterial = normalMaterial(color, this.drawRoughness, this.drawMetalness);
 		const sphere = new THREE.Mesh(geometry, meshMaterial);
 		sphere.position.set(position[0], position[1], position[2]);
-		this.out.add(sphere);
+		out.add(sphere);
 	}
 
-	private addHBond(from: PositionType, to: PositionType): void {
+	private addHBond(from: PositionType, to: PositionType, out: THREE.Group): void {
 
 		const material = new THREE.LineDashedMaterial({
 								color: 0x777777,
@@ -249,11 +262,11 @@ export class DrawStructure {
 		const geometry = new THREE.BufferGeometry().setFromPoints(points);
 		const line = new THREE.Line(geometry, material);
 		line.computeLineDistances();
-		this.out.add(line);
+		out.add(line);
 	}
 
 	private addNormalBond(from: PositionType, to: PositionType,
-					      colorFrom: string, colorTo: string): void {
+					      colorFrom: string, colorTo: string, out: THREE.Group): void {
 
 		const start = new THREE.Vector3(from[0], from[1], from[2]);
 		const end = new THREE.Vector3(to[0], to[1], to[2]);
@@ -265,17 +278,17 @@ export class DrawStructure {
 		const material2 = new THREE.LineBasicMaterial({linewidth: 4, color: colorTo});
 		const geometry2 = new THREE.BufferGeometry().setFromPoints([mid, end]);
 
-		this.out.add(new THREE.Line(geometry1, material1), new THREE.Line(geometry2, material2));
+		out.add(new THREE.Line(geometry1, material1), new THREE.Line(geometry2, material2));
 	}
 
-	private addNormalBondSameAtoms(from: PositionType, to: PositionType, color: string): void {
+	private addNormalBondSameAtoms(from: PositionType, to: PositionType, color: string, out: THREE.Group): void {
 
 		const start = new THREE.Vector3(from[0], from[1], from[2]);
 		const end   = new THREE.Vector3(to[0], to[1], to[2]);
 
 		const material = new THREE.LineBasicMaterial({color});
 		const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
-		this.out.add(new THREE.Line(geometry, material));
+		out.add(new THREE.Line(geometry, material));
 	}
 
 	private vectorToQuaternion(nx: number, ny: number, nz: number): THREE.Quaternion {
@@ -314,7 +327,7 @@ export class DrawStructure {
 
 	private addCylinder(start: PositionType, end: PositionType,
 							   radius: number, colorStart: THREE.ColorRepresentation,
-							   colorEnd: THREE.ColorRepresentation): void {
+							   colorEnd: THREE.ColorRepresentation, out: THREE.Group): void {
 
 		const subdivisions = this.cylinderSubdivisions[this.drawQuality];
 
@@ -332,7 +345,7 @@ export class DrawStructure {
 		const midz = (start[2] + end[2])/2;
 		cylinder.position.set(midx, midy, midz);
 		cylinder.applyQuaternion(this.vectorToQuaternion(dx/len, -dy/len, dz/len));
-		this.out.add(cylinder);
+		out.add(cylinder);
 	}
 
 	saveStatus(): string {
@@ -343,6 +356,9 @@ export class DrawStructure {
 			drawRoughness: this.drawRoughness,
 			drawMetalness: this.drawMetalness,
 			labelKind: this.labelKind,
+			showStructure: this.showStructure,
+			showBonds: this.showBonds,
+			showLabels: this.showLabels,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

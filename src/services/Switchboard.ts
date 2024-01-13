@@ -5,7 +5,6 @@
  */
 import {watch} from "vue";
 import log from "electron-log";
-import * as THREE from "three";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {useConfigStore} from "@/stores/configStore";
@@ -18,7 +17,6 @@ export type UiParams = Record<string, string | number | boolean>;
 class Switchboard {
 
     private static instance: Switchboard;
-	private static readonly scene = new THREE.Scene();
 	private nodesCallback: ((nodes: NodeUI[], currentId: string) => void) | undefined;
 	private project: Project | undefined;
 	private readonly nodesUI: NodeUI[] = [];
@@ -210,46 +208,6 @@ class Switchboard {
 
 			this.nodeInfo.getDataInputs(id, type, idFrom, switchboardStore.data[idFrom], callback);
 		}
-	}
-
-	sceneAddGroup(group: THREE.Group): void {
-
-		Switchboard.scene.add(group);
-	}
-
-	sceneClearGroup(groupName: string): void {
-
-		const group = Switchboard.scene.getObjectByName(groupName);
-		if(!group) return;
-
-		// Meshes to be delete from the group
-		const meshes: THREE.Mesh[] = [];
-
-		// Remove meshes' parts
-		group.traverse((object) => {
-
-			if(object.type === "Group") return;
-			// if(object.type !== "Mesh") return;
-			const mesh = object as THREE.Mesh;
-			if(mesh.geometry) mesh.geometry.dispose();
-			if(mesh.material) {
-				if(Array.isArray(mesh.material)) {
-					for(const material of mesh.material) (material as THREE.Material).dispose();
-				}
-				else {
-					(mesh.material as THREE.Material).dispose();
-				}
-			}
-			meshes.push(mesh);
-		});
-
-		// Clear the group
-		for(const mesh of meshes) group.remove(mesh);
-        group.clear();
-	}
-
-	accessScene(): THREE.Scene {
-		return Switchboard.scene;
 	}
 
 	// > Access the singleton instance

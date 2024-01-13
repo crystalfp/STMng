@@ -88,7 +88,7 @@ export const setupChannelReader = (): void => {
 				break;
 		}
 		const file = dialog.showOpenDialogSync({
-			title: "Select input",
+			title: "Select input structure file",
 			properties: ["openFile"],
 			filters
 		});

@@ -17,7 +17,7 @@ const pr = defineProps<{
 }>();
 
 /** Formats that could be loaded */
-const fileFormats = ["XYZ", "ShelX", "POSCAR"];
+const fileFormats = ["POSCAR", "ShelX", "XYZ"];
 
 // > Get and set ui parameters from the switchboard
 const fileRead     = ref("");

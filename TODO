@@ -1,18 +1,14 @@
 ToDo:
 	☐ Establish shortcuts
-	✔ Save/Load config data in project @done(2024-01-12 09:04)
 	☐ Add tooltips
-	✔ Put everything related to modules (like adding a new one) into a separate file @done(2024-01-12 09:04)
 	☐ Add error notifications
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
   ☐ Check need for viewer input field (modules goes directly to scene)
-  ☐ Add toggle for structure visibility
-  ☐ Add toggle for bonds visibility
   ☐ Better camera position initialization (and RNC button {reset-normalize-center})
-  ✔ Move fake chart data to ChartViewer.ts @done(2024-01-12 09:44)
   ☐ Change project to "network" and put a different extension for these files (.net)
   ☐ Add project path in the title
+  ✔ Extract scene from switchboard and create another singleton @done(2024-01-13 08:04)
 
 Bugs:
 
@@ -26,6 +22,11 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Add toggle for structure visibility @done(2024-01-13 07:35)
+  ✔ Add toggle for bonds visibility @done(2024-01-13 07:35)
+  ✔ Move fake chart data to ChartViewer.ts @done(2024-01-12 09:44)
+  ✔ Save/Load config data in project @done(2024-01-12 09:04) @project(ToDo)
+  ✔ Put everything related to modules (like adding a new one) into a separate file @done(2024-01-12 09:04) @project(ToDo)
   ✔ Do not save viewer reset value @done(2024-01-11 17:04)
   ✔ If loading default project delete name from Preferences (if preference exists enable save) @done(2024-01-11 15:48)
   ✔ Add "save as" for project and save saves in the preference name @done(2024-01-11 15:48)

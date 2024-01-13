@@ -3,6 +3,7 @@ import * as THREE from "three";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
+import {sm} from "@/services/SceneManager";
 
 export class DrawPolyhedra {
 
@@ -18,7 +19,7 @@ export class DrawPolyhedra {
 
 	constructor(private readonly id: string) {
 
-		const scene = sb.accessScene();
+		const scene = sm.accessScene();
 		scene.add(this.mesh);
 
 		sb.getUiParams(this.id, (params: UiParams) => {

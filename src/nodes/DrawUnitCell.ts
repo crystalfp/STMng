@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {BasisType, PositionType, Structure} from "@/types";
+import {sm} from "@/services/SceneManager";
 
 export class DrawUnitCell {
 
@@ -20,7 +21,7 @@ export class DrawUnitCell {
 
 		this.name = `DrawUnitCell-${this.id}`;
 		this.out.name = this.name;
-		sb.sceneAddGroup(this.out);
+		sm.sceneAddGroup(this.out);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
@@ -43,7 +44,7 @@ export class DrawUnitCell {
 	private drawUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
-		sb.sceneClearGroup(this.name);
+		sm.sceneClearGroup(this.name);
 
 		// If no unit cell return
 		if(!basis.some((value) => value !== 0)) return;
