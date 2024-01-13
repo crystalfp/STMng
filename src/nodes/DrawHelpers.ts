@@ -18,11 +18,10 @@ export class DrawHelpers {
 
 	constructor(private readonly id: string) {
 
-		const scene = sm.accessScene();
 		let grid = this.gridHelper();
-		scene.add(grid);
+		sm.add(grid);
 		const axis = this.axisHelper();
-		scene.add(axis);
+		sm.add(axis);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
@@ -34,6 +33,8 @@ export class DrawHelpers {
 			axis.visible = this.showAxis;
 
 			if(this.side !== this.sidePrevious) {
+
+				const scene = sm.accessScene();
 
 				const obj = scene.getObjectByName("GridHelper") as THREE.GridHelper;
 				if(obj) {

@@ -24,12 +24,7 @@ class SceneManager {
 		return SceneManager.scene;
 	}
 
-	sceneAddGroup(group: THREE.Group): void {
-
-		SceneManager.scene.add(group);
-	}
-
-	sceneClearGroup(groupName: string): void {
+	clearGroup(groupName: string): void {
 
 		const group = SceneManager.scene.getObjectByName(groupName);
 		if(!group) return;
@@ -62,6 +57,10 @@ class SceneManager {
 
 	accessScene(): THREE.Scene {
 		return SceneManager.scene;
+	}
+
+	add(obj: THREE.Object3D): void {
+		SceneManager.scene.add(obj);
 	}
 
 	createLights(): void {

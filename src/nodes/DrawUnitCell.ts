@@ -21,7 +21,7 @@ export class DrawUnitCell {
 
 		this.name = `DrawUnitCell-${this.id}`;
 		this.out.name = this.name;
-		sm.sceneAddGroup(this.out);
+		sm.add(this.out);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
@@ -44,7 +44,7 @@ export class DrawUnitCell {
 	private drawUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
-		sm.sceneClearGroup(this.name);
+		sm.clearGroup(this.name);
 
 		// If no unit cell return
 		if(!basis.some((value) => value !== 0)) return;

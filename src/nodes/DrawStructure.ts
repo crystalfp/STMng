@@ -64,13 +64,13 @@ export class DrawStructure {
 		});
 
 		this.out.name = `DrawStructure-${this.id}`;
-		sm.sceneAddGroup(this.out);
+		sm.add(this.out);
 	}
 
 	private drawStructure(data: Structure, kind: string): void {
 
 		// Clear previous structure
-		sm.sceneClearGroup(`DrawStructure-${this.id}`);
+		sm.clearGroup(`DrawStructure-${this.id}`);
 		this.atomsGroup.clear();
 		this.bondsGroup.clear();
 		this.labelsGroup.clear();

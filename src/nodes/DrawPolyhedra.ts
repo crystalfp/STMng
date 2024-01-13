@@ -19,8 +19,7 @@ export class DrawPolyhedra {
 
 	constructor(private readonly id: string) {
 
-		const scene = sm.accessScene();
-		scene.add(this.mesh);
+		sm.add(this.mesh);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
