@@ -22,6 +22,7 @@ export class NodeInfo {
 		"chart-viewer":		{ui: "ChartViewerCtrl"},
 		"viewer-3d":   		{ui: "Viewer3DCtrl"},
 		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
+		"capture-view":   	{ui: "CapturerCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -62,7 +63,8 @@ export class NodeInfo {
 				map.set(id, new DrawPolyhedra(id));
 				break;
 			case "viewer-3d":
-				// The viewer has no runtime code like the others
+			case "capture-view":
+				// These nodes have no runtime code like the others
 				break;
 			default:
 				log.error(`Invalid type "${type}" setting runtime for "${id}"`);

@@ -29,6 +29,7 @@ interface Viewer3DConfiguration {
     };
     control: {
         reset: boolean;
+        snapshot: boolean;
     };
 }
 
@@ -39,7 +40,7 @@ export const useConfigStore = defineStore("ConfigStore", {
 
 		camera: {
 			perspective: true,
-            position: [5, 3, 5]
+            position: [5, 3, 5],
 		},
 		scene: {
 			background: "#90CEEC",
@@ -59,6 +60,7 @@ export const useConfigStore = defineStore("ConfigStore", {
 		},
         control: {
             reset: false,
+            snapshot: false,
         }
 	} as Viewer3DConfiguration),
 

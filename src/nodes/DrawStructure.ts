@@ -1,3 +1,8 @@
+/**
+ * Transform the chemical structure in a set of 3D objects in the scene.
+ *
+ * @packageDocumentation
+ */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
@@ -28,8 +33,14 @@ export class DrawStructure {
 											   origin: [0, 0, 0], spaceGroup: ""},
 											   atoms: [], bonds: [], look: {}};
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of the Draw Structure node
+	 */
 	constructor(private readonly id: string) {
 
+		// Get UI parameters
 		sb.getUiParams(this.id, (params: UiParams) => {
 
     		this.drawKind = params.drawKind as string ?? "ball-and-stick";
@@ -44,21 +55,25 @@ export class DrawStructure {
 			// Combine the groups
 			this.out.add(this.atomsGroup, this.bondsGroup, this.labelsGroup);
 
+			// Adjust the geometry appearance
 			this.adjustMaterials();
 
+			// Redraw the structure if the representation changes
 			if(this.drawKind !== this.previousDrawKind) {
-				this.drawStructure(this.loadedData, this.drawKind);
+				this.drawStructure(this.loadedData);
 				this.previousDrawKind = this.drawKind;
 			}
 			this.drawLabels(this.loadedData);
 
+			// Structure parts visibility
 			this.out.visible = this.showStructure;
 			this.bondsGroup.visible = this.showBonds;
 			this.labelsGroup.visible = this.showLabels;
 		});
 
+		// Get the input data
 		sb.getData(this.id, (data: unknown) => {
-			this.drawStructure(data as Structure, this.drawKind);
+			this.drawStructure(data as Structure);
 			this.loadedData = data as Structure;
 			this.drawLabels(this.loadedData);
 		});
@@ -67,7 +82,12 @@ export class DrawStructure {
 		sm.add(this.out);
 	}
 
-	private drawStructure(data: Structure, kind: string): void {
+	/**
+	 * Convert the structure data into 3D objects
+	 *
+	 * @param data - Structure data
+	 */
+	private drawStructure(data: Structure): void {
 
 		// Clear previous structure
 		sm.clearGroup(`DrawStructure-${this.id}`);
@@ -80,7 +100,7 @@ export class DrawStructure {
 		if(!data.atoms) return;
 
 		// Render atoms
-		switch(kind) {
+		switch(this.drawKind) {
 			case "ball-and-stick":
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
@@ -104,7 +124,7 @@ export class DrawStructure {
 		}
 
 		// Render bonds
-		switch(kind) {
+		switch(this.drawKind) {
 			case "ball-and-stick":
 			case "licorice":
 				for(const bond of data.bonds) {
@@ -139,6 +159,11 @@ export class DrawStructure {
 		}
 	}
 
+	/**
+	 * Draw the atoms labels
+	 *
+	 * @param data - The structure data
+	 */
 	drawLabels(data: Structure): void {
 
 		// Remove existing labels
@@ -162,7 +187,6 @@ export class DrawStructure {
 		let idx = 1;
 		for(const atom of data.atoms) {
 
-			// const {color} = data.look[atom.atomZ];
 			let offset = 0;
 			switch(this.drawKind) {
 				case "ball-and-stick":
@@ -202,6 +226,9 @@ export class DrawStructure {
 		}
 	}
 
+	/**
+	 * Adjust 3D objects characteristics
+	 */
 	private adjustMaterials(): void {
 
 		const detail = this.sphereSubdivisions[this.drawQuality];
@@ -233,6 +260,14 @@ export class DrawStructure {
 		});
 	}
 
+	/**
+	 * Draw a sphere
+	 *
+	 * @param radius - Sphere radius
+	 * @param color - Sphere color
+	 * @param position - Center of the sphere
+	 * @param out - The output group where to add the sphere
+	 */
 	private addSphere(radius: number,
 					  color: THREE.ColorRepresentation,
 					  position: PositionType,
@@ -246,6 +281,13 @@ export class DrawStructure {
 		out.add(sphere);
 	}
 
+	/**
+	 * Create an hydrogen bond (dashed line)
+	 *
+	 * @param from - Position of the bond start
+	 * @param to - Position of the bond end
+	 * @param out - The output group where to add the bond
+	 */
 	private addHBond(from: PositionType, to: PositionType, out: THREE.Group): void {
 
 		const material = new THREE.LineDashedMaterial({
@@ -265,22 +307,55 @@ export class DrawStructure {
 		out.add(line);
 	}
 
+	/**
+	 * Draw a line bond between two atoms of different type
+	 *
+	 * @param from - Position of the bond start
+	 * @param to - Position of the bond end
+	 * @param colorFrom - Color of the bond start
+	 * @param colorTo - Color of the bond end
+	 * @param out - The output group where to add the bond
+	 */
 	private addNormalBond(from: PositionType, to: PositionType,
 					      colorFrom: string, colorTo: string, out: THREE.Group): void {
 
-		const start = new THREE.Vector3(from[0], from[1], from[2]);
-		const end = new THREE.Vector3(to[0], to[1], to[2]);
-		const mid = new THREE.Vector3((from[0]+to[0])/2, (from[1]+to[1])/2, (from[2]+to[2])/2);
+		const midX = (from[0]+to[0])/2;
+		const midY = (from[1]+to[1])/2;
+		const midZ = (from[2]+to[2])/2;
 
-		const material1 = new THREE.LineBasicMaterial({linewidth: 4, color: colorFrom});
-		const geometry1 = new THREE.BufferGeometry().setFromPoints([start, mid]);
+		const vertices = [
+			from[0], from[1], from[2],
+			midX, midY, midZ,
+			midX, midY, midZ,
+			to[0], to[1], to[2]
+		];
 
-		const material2 = new THREE.LineBasicMaterial({linewidth: 4, color: colorTo});
-		const geometry2 = new THREE.BufferGeometry().setFromPoints([mid, end]);
+		const c1 = new THREE.Color(colorFrom);
+		const c2 = new THREE.Color(colorTo);
+		const colors = [
+			c1.r, c1.g, c1.b,
+			c1.r, c1.g, c1.b,
+			c2.r, c2.g, c2.b,
+			c2.r, c2.g, c2.b,
+		];
 
-		out.add(new THREE.Line(geometry1, material1), new THREE.Line(geometry2, material2));
+		const geometry = new THREE.BufferGeometry();
+		geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+		geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+
+		const material = new THREE.LineBasicMaterial({vertexColors: true});
+
+		out.add(new THREE.LineSegments(geometry, material));
 	}
 
+	/**
+	 * Draw a line bond between two atoms of same type
+	 *
+	 * @param from - Position of the bond start
+	 * @param to - Position of the bond end
+	 * @param color - Common color of the bonded atoms
+	 * @param out - The output group where to add the bond
+	 */
 	private addNormalBondSameAtoms(from: PositionType, to: PositionType, color: string, out: THREE.Group): void {
 
 		const start = new THREE.Vector3(from[0], from[1], from[2]);
@@ -291,6 +366,14 @@ export class DrawStructure {
 		out.add(new THREE.Line(geometry, material));
 	}
 
+	/**
+	 * Create a quaternion from a direction vector (versor)
+	 *
+	 * @param nx - Versor x component
+	 * @param ny - Versor y component
+	 * @param nz - Versor z component
+	 * @returns The computed quaternion
+	 */
 	private vectorToQuaternion(nx: number, ny: number, nz: number): THREE.Quaternion {
 
 		const forward = new THREE.Vector3(nx, ny, nz);
@@ -325,6 +408,17 @@ export class DrawStructure {
 		);
 	}
 
+	/**
+	 * Create a cylinder bond
+	 *
+	 * @remarks Till now it is not shaded with a color gradient
+	 * @param from - Position of the bond start
+	 * @param to - Position of the bond end
+	 * @param radius - Radius of the bond
+	 * @param colorStart - Color of the bond start
+	 * @param colorEnd - Color of the bond end
+	 * @param out - The output group where to add the bond
+	 */
 	private addCylinder(start: PositionType, end: PositionType,
 							   radius: number, colorStart: THREE.ColorRepresentation,
 							   colorEnd: THREE.ColorRepresentation, out: THREE.Group): void {
@@ -348,6 +442,11 @@ export class DrawStructure {
 		out.add(cylinder);
 	}
 
+	/**
+	 * Save the node status
+	 *
+	 * @returns The JSON formatted status to be saved
+	 */
 	saveStatus(): string {
 
 		const statusToSave = {

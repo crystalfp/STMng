@@ -9,6 +9,9 @@ ToDo:
   ☐ Change project to "network" and put a different extension for these files (.net)
   ☐ Add project path in the title
   ✔ Extract scene from switchboard and create another singleton @done(2024-01-13 08:04)
+  ☐ Readers do not fail if the file format is invalid
+  ☐ Unify naming: graph, node, project
+  ☐ What happens if you have a dangling input in the graph?
 
 Bugs:
 

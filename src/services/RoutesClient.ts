@@ -6,6 +6,7 @@
 import log from "electron-log";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {WindowsParams} from "@/electron/types";
+import type {MainResponse} from "@/types";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -172,4 +173,9 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 export const readFileStructure = (format: string, atomsTypes: string): Promise<string> => {
 
 	return window.electron.ipcRenderer.invoke("READER:READ", format, atomsTypes) as Promise<string>;
+};
+
+export const saveDataURL = (data: string): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
 };

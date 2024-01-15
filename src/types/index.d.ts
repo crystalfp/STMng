@@ -166,3 +166,8 @@ export interface Project {
     };
     ui: Record<string, UiParams>;
 }
+
+export interface MainResponse {
+    payload: string;
+    error?: string;
+}

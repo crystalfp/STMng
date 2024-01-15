@@ -16,6 +16,7 @@ import {loadRememberedProject, loadProjectAndRemember, setupChannelProject} from
 import {createMainWindow} from "./modules/WindowsUtilities";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelReader} from "./modules/Reader";
+import {setupChannelSnapshot} from "./modules/CaptureMedia";
 
 // > Setup main process
 // Initialize the logger
@@ -32,6 +33,7 @@ setupChannelPreferences();
 setupChannelVersions();
 setupChannelProject();
 setupChannelReader();
+setupChannelSnapshot();
 
 // Command line parsing
 const program = new Command("STMng");

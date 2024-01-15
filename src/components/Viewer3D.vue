@@ -11,6 +11,8 @@ import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {useConfigStore} from "@/stores/configStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
+import type {MainResponse} from "@/types";
+import {saveDataURL} from "@/services/RoutesClient";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -80,7 +82,7 @@ onMounted(() => {
     let camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
 
     // Add renderer
-    const renderer = new THREE.WebGLRenderer({antialias: true});
+    const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
     renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
@@ -126,6 +128,23 @@ onMounted(() => {
             cameraOrthographic.updateProjectionMatrix();
         }
         controls.update();
+    });
+
+    // Take snapshot
+    watchEffect(() => {
+        if(configStore.control.snapshot) {
+            configStore.control.snapshot = false;
+
+            const mimeType = "image/png";
+            // const mimeType = "image/jpeg";
+            saveDataURL(renderer.domElement.toDataURL(mimeType))
+                .then((response: MainResponse) => {
+                    if(response.error) throw Error(response.error);
+                })
+                .catch((error: Error) => {
+                    log.error("Error saving snapshot. Error:", error.message);
+                });
+        }
     });
 
     sm.createLights();
