@@ -160,6 +160,10 @@ class Switchboard {
 			camera.position[0] = savedCamera.position[0];
 			camera.position[1] = savedCamera.position[1];
 			camera.position[2] = savedCamera.position[2];
+			camera.lookAt[0] = savedCamera.lookAt[0];
+			camera.lookAt[1] = savedCamera.lookAt[1];
+			camera.lookAt[2] = savedCamera.lookAt[2];
+			camera.snapshotFormat = savedCamera.snapshotFormat;
 			scene.background = savedScene.background;
 			lights.ambientColor = savedLights.ambientColor;
 			lights.ambientIntensity = savedLights.ambientIntensity;

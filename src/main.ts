@@ -16,8 +16,6 @@ import {router} from "@/router";
 // Vuetify
 import "vuetify/styles";
 import {createVuetify} from "vuetify";
-// import * as components from "vuetify/components";
-// import * as directives from "vuetify/directives";
 import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
 import {md2} from "vuetify/blueprints";
 
@@ -40,6 +38,8 @@ import {VTabs, VTab} from "vuetify/components/VTabs";
 import {VApp} from "vuetify/components/VApp";
 import {VRow, VContainer, VSpacer} from "vuetify/components/VGrid";
 import {VAlert} from "vuetify/components/VAlert";
+import {VDivider} from "vuetify/components/VDivider";
+// import {VIcon} from "vuetify/components/VIcon";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -67,10 +67,10 @@ const app = createApp(App)
 			VTabs, VTab,
 			VApp,
 			VRow, VContainer, VSpacer,
-			VAlert
+			VAlert,
+			VDivider,
+			// VIcon,
 		},
-		// components,
-		// directives,
 		theme: {
     		defaultTheme: "dark",
   		},

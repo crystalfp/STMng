@@ -146,6 +146,8 @@ export interface Project {
         camera: {
             perspective: boolean;
             position: PositionType;
+            lookAt: PositionType;
+            snapshotFormat: string;
         };
         scene: {
             background: string;

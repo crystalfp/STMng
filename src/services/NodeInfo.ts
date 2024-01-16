@@ -22,7 +22,7 @@ export class NodeInfo {
 		"chart-viewer":		{ui: "ChartViewerCtrl"},
 		"viewer-3d":   		{ui: "Viewer3DCtrl"},
 		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
-		"capture-view":   	{ui: "CapturerCtrl"},
+		"capture-view":   	{ui: "CaptureMediaCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 

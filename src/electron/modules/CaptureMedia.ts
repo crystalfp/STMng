@@ -22,7 +22,7 @@ export const setupChannelSnapshot = (): void => {
 		// Save the image
 		try {
 			fs.writeFileSync(filename, Buffer.from(data[1], "base64"));
-			return {payload: "Success!"};
+			return {payload: filename};
 		}
 		catch(error: unknown) {
 			return {payload: "Error",

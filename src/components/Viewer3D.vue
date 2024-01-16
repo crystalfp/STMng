@@ -74,7 +74,8 @@ onMounted(() => {
     const cameraPerspective = new THREE.PerspectiveCamera(75,
                                                           cnv.value.clientWidth / cnv.value.clientHeight,
                                                           0.1, 5000);
-    cameraPerspective.position.set(5, 3, 5);
+    cameraPerspective.position.set(...configStore.camera.position);
+    cameraPerspective.lookAt(new THREE.Vector3(...configStore.camera.lookAt));
 
     const cameraOrthographic = new THREE.OrthographicCamera();
     copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
@@ -120,8 +121,8 @@ onMounted(() => {
         if(configStore.control.reset) {
             configStore.control.reset = false;
 
-            cameraPerspective.position.set(5, 3, 5);
-            cameraPerspective.lookAt(new THREE.Vector3(0, 0, 0));
+            cameraPerspective.position.set(...configStore.camera.position);
+            cameraPerspective.lookAt(new THREE.Vector3(...configStore.camera.lookAt));
             cameraPerspective.zoom = 1;
 
             copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
@@ -135,8 +136,7 @@ onMounted(() => {
         if(configStore.control.snapshot) {
             configStore.control.snapshot = false;
 
-            const mimeType = "image/png";
-            // const mimeType = "image/jpeg";
+            const mimeType = `image/${configStore.camera.snapshotFormat}`;
             saveDataURL(renderer.domElement.toDataURL(mimeType))
                 .then((response: MainResponse) => {
                     if(response.error) throw Error(response.error);
@@ -144,6 +144,31 @@ onMounted(() => {
                 .catch((error: Error) => {
                     log.error("Error saving snapshot. Error:", error.message);
                 });
+        }
+    });
+
+    // Record movie
+    let movieCaptureRunning = false;
+    let stream: MediaStream;
+    watchEffect(() => {
+        if(configStore.control.movie) {
+
+            movieCaptureRunning = true;
+
+            // TBD
+            console.log("Start capturing");
+            stream = renderer.domElement.captureStream(12); // 25 FPS
+        }
+        else if(movieCaptureRunning) {
+            movieCaptureRunning = false;
+            console.log("Stop capturing");
+
+            for(const track of stream.getVideoTracks()) {
+
+                console.log(track);
+                console.log(stream);
+                track.stop();
+            }
         }
     });
 

@@ -45,6 +45,8 @@ export default [{
             requestAnimationFrame: "readonly",
             setInterval: "readonly",
             clearInterval: "readonly",
+            console: "readonly",
+            Buffer: "readonly",
         },
         parserOptions: {
             parser: tsParser,
@@ -326,7 +328,7 @@ export default [{
         "deprecate/import": "off",
         "@typescript-eslint/member-delimiter-style": "warn",
         "tsdoc/syntax": "warn",
-        "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "falls?\\s?through"}],
+        "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],
         "electron-extension/no-incompatible-api": "warn",
         "no-loss-of-precision": "off",
         "@typescript-eslint/no-loss-of-precision": "error",
