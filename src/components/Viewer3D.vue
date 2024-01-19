@@ -158,17 +158,23 @@ onMounted(() => {
             // TBD
             console.log("Start capturing");
             stream = renderer.domElement.captureStream(12); // 25 FPS
+            for(const track of stream.getVideoTracks()) {
+                console.log(track);
+            //     track.addEventListener("ended", (event) => {
+            //         console.log("Track ended");
+            //         console.log(event);
+            //     });
+            }
         }
         else if(movieCaptureRunning) {
             movieCaptureRunning = false;
             console.log("Stop capturing");
+            // for(const track of stream.getVideoTracks()) {
 
-            for(const track of stream.getVideoTracks()) {
-
-                console.log(track);
-                console.log(stream);
-                track.stop();
-            }
+            //     console.log(track);
+            //     console.log(stream);
+            //     track.stop();
+            // }
         }
     });
 

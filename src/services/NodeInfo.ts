@@ -6,6 +6,7 @@ import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawHelpers} from "@/nodes/DrawHelpers";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
+import {ApplySymmetries} from "@/nodes/ApplySymmetries";
 import type {NodeUI, Structure, GraphNode} from "@/types";
 
 interface NodeParts {
@@ -23,6 +24,7 @@ export class NodeInfo {
 		"viewer-3d":   		{ui: "Viewer3DCtrl"},
 		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
 		"capture-view":   	{ui: "CaptureMediaCtrl"},
+		"apply-symmetries": {ui: "ApplySymmetriesCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -62,6 +64,9 @@ export class NodeInfo {
 			case "draw-polyhedra":
 				map.set(id, new DrawPolyhedra(id));
 				break;
+			case "apply-symmetries":
+				map.set(id, new ApplySymmetries(id));
+				break;
 			case "viewer-3d":
 			case "capture-view":
 				// These nodes have no runtime code like the others
@@ -75,6 +80,7 @@ export class NodeInfo {
 
 		// TODO Here add the other types
 		switch(type) {
+			case "apply-symmetries":
 			case "structure-reader": {
 				const typedData = data as Structure;
 				const typedStore = dataInStore as Structure;
@@ -111,6 +117,7 @@ export class NodeInfo {
 
 		// TODO Here add the other types
 		switch(type) {
+			case "apply-symmetries":
 			case "structure-reader":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
@@ -157,6 +164,10 @@ export class NodeInfo {
 				case "draw-polyhedra":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as DrawPolyhedra).saveStatus();
+					break;
+				case "apply-symmetries":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as ApplySymmetries).saveStatus();
 					break;
 			}
 			notFirst = true;

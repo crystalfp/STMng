@@ -40,6 +40,7 @@
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
     "@electron-toolkit/preload": "^3.0.0",
+    "@electron/rebuild": "^3.5.0",
     "@eslint/js": "^8.56.0",
     "@mdi/svg": "^7.4.47",
     "@rollup/rollup-win32-x64-msvc": "^4.9.5",

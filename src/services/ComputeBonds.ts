@@ -1,5 +1,4 @@
-import type {Atom, Bond} from "../../types";
-import {getAtomicRadiiAndColor} from "./AtomData";
+import type {Atom, Bond} from "@/types";
 
 // The H bonds forms when X___H...Y and X, Y are N, O, F (maybe also S)
 const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
@@ -24,9 +23,10 @@ const valenceAngle = (atomH: Atom, atomX: Atom, atomY: Atom): number => {
  * Compute bonds for a given structure
  *
  * @param atoms - Atoms for which the bonds should be computed
+ * @param radii - Covalent radius for each atom
  * @returns The list of computed bonds
  */
-export const computeBonds = (atoms: Atom[]): Bond[] => {
+export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
 
 	// No bonds possible
 	if(atoms.length < 2) return [];
@@ -57,12 +57,14 @@ export const computeBonds = (atoms: Atom[]): Bond[] => {
 	for(let i=len-2; i>= 0; --i) {
 
 		const atomZi = atoms[i].atomZ;
-		const rCi = getAtomicRadiiAndColor(atomZi).rCov;
+		const rCi = radii[i];
+		// const rCi = getAtomicRadiiAndColor(atomZi).rCov;
 
 		for(let j=i+1; j < len; ++j) {
 
 			const atomZj = atoms[j].atomZ;
-			const rCj = getAtomicRadiiAndColor(atomZj).rCov;
+			const rCj = radii[j];
+			// const rCj = getAtomicRadiiAndColor(atomZj).rCov;
 
 			// Never bond hydrogens to each other...
 			if(atomZi === 1 && atomZj === 1) continue;
@@ -94,7 +96,8 @@ export const computeBonds = (atoms: Atom[]): Bond[] => {
 		}
 	}
 
-	// One H bond forms when X___H...Y where X, Y are N, O or F. Here we check the angle HXY. It should be less than 30 deg.
+	// One H bond forms when X___H...Y where X, Y are N, O or F.
+	// Here we check the angle HXY. It should be less than 30 deg.
 	const countBonds = bonds.length;
 	for(let i=0; i < countBonds; ++i) {
 
@@ -131,8 +134,10 @@ export const computeBonds = (atoms: Atom[]): Bond[] => {
 
 			const distSquared = dx*dx+dy*dy+dz*dz;
 
-			const rCH = getAtomicRadiiAndColor(idxH).rCov;
-			const rCY = getAtomicRadiiAndColor(idxY).rCov;
+			const rCH = radii[idxH];
+			const rCY = radii[idxY];
+			// const rCH = getAtomicRadiiAndColor(idxH).rCov;
+			// const rCY = getAtomicRadiiAndColor(idxY).rCov;
 
 			const sumCov = rCH + rCY;
 			const sumCovSquared = sumCov*sumCov;

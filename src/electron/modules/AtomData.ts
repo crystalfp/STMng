@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {app} from "electron";
+import type {Atom} from "../../types";
+
 // ##############################################################################
 // #                                                                            #
 // #                   Open Babel file: element.txt                             #
@@ -154,4 +156,13 @@ export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => {
 
 export const getAtomicSymbol = (atomZ: number): string => {
 	return AtomData.getInstance().atomicSymbol(atomZ);
+};
+
+export const getCovalentRadii = (atoms: Atom[]): number[] => {
+	const rCov: number[] = [];
+	for(const atom of atoms) {
+
+		rCov.push(AtomData.getInstance().atomicRadiiAndColor(atom.atomZ).rCov);
+	}
+	return rCov;
 };
