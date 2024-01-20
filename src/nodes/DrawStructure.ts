@@ -170,9 +170,7 @@ export class DrawStructure {
 		const labelsToDelete: THREE.Sprite[] = [];
 		this.labelsGroup.traverse((obj) => {
 
-			if(obj.name === "AtomLabel") {
-				labelsToDelete.push(obj as THREE.Sprite);
-			}
+			if(obj.type === "Sprite") labelsToDelete.push(obj as THREE.Sprite);
 		});
 		for(const obj of labelsToDelete) {
 			this.labelsGroup.remove(obj);

@@ -179,3 +179,8 @@ export const saveDataURL = (data: string): Promise<MainResponse> => {
 
 	return window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
 };
+
+export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;
+};

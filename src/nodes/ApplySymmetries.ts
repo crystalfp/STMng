@@ -2,7 +2,10 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
 import {computeBonds} from "@/services/ComputeBonds";
+import {computeSymmetries} from "@/services/RoutesClient";
+import log from "electron-log";
 
+// > Kind of directions for fill unit cell
 const X_MIN = 0x010;
 const Y_MIN = 0x020;
 const Z_MIN = 0x040;
@@ -18,7 +21,7 @@ export class ApplySymmetries {
 	private fillUnitCell = false;
 	private enableSymmetryComputation = true;
 	private structure: Structure | undefined;
-	private readonly fractionalCoords: number[] = [];
+	private fractionalCoords: number[] = [];
 	private readonly atomIdx: number[] = [];
 
 	constructor(private readonly id: string) {
@@ -64,7 +67,7 @@ export class ApplySymmetries {
 		}
 
 		// Copy structure to output if no symmetry to apply
-		if(!enabled || this.structure.crystal.spaceGroup === "" || this.structure.crystal.spaceGroup === "P 1") {
+		if(!enabled || this.hasNoSymmetry(this.structure.crystal.spaceGroup)) {
 
 			if(fill) {
 				this.computeFractionalCoordinates();
@@ -77,19 +80,21 @@ export class ApplySymmetries {
 
 		// Compute symmetries
 		this.computeFractionalCoordinates();
-		this.computeStructureSymmetries();
+		computeSymmetries(this.structure.crystal.spaceGroup, this.fractionalCoords)
+			.then((response) => {
 
-		// Clear structure and output it
-		if(fill) this.fillCell();
-		sb.setData(this.id, this.clearStructure());
-	}
+				if(response.error) throw Error(`Error computing symmetries: ${response.error}`);
 
-	/**
-	 * Do the symmetries computation
-	 */
-	private computeStructureSymmetries(): void {
-		// TODO Compute symmetries
-		console.log("Computing symmetries", this.structure!.crystal.spaceGroup);
+				this.fractionalCoords = JSON.parse(response.payload) as number[];
+
+				// Clear structure and output it
+				if(fill) this.fillCell();
+				sb.setData(this.id, this.clearStructure());
+			})
+			.catch((error: Error) => {
+				log.error(error.message);
+				sb.setData(this.id, this.structure);
+			});
 	}
 
 	/**
@@ -142,6 +147,13 @@ export class ApplySymmetries {
 
 			this.atomIdx[i] = i;
 		}
+	}
+
+	private hasNoSymmetry(spaceGroup: string): boolean {
+
+		const sg = spaceGroup.trim();
+
+		return sg === "" || sg === "P 1" || sg === "P1";
 	}
 
 	/**

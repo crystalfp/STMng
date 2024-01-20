@@ -17,6 +17,7 @@ import {createMainWindow} from "./modules/WindowsUtilities";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelReader} from "./modules/Reader";
 import {setupChannelSnapshot} from "./modules/CaptureMedia";
+import {setupChannelSymmetries} from "./modules/Symmetries";
 
 // > Setup main process
 // Initialize the logger
@@ -34,6 +35,7 @@ setupChannelVersions();
 setupChannelProject();
 setupChannelReader();
 setupChannelSnapshot();
+setupChannelSymmetries();
 
 // Command line parsing
 const program = new Command("STMng");

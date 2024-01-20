@@ -1,5 +1,16 @@
+/**
+ * Everything related to nodes and relative UI interfaces.
+ *
+ * @packageDocumentation
+ *
+ * @remarks
+ * Using a NOTE comment, the points to touch to add a new node are marked.
+ */
 import log from "electron-log";
 import {watch} from "vue";
+import type {NodeUI, Structure, GraphNode} from "@/types";
+
+// NOTE 1) Add here the class that defines the node
 import {StructureReader} from "@/nodes/StructureReader";
 import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
@@ -7,7 +18,6 @@ import {DrawHelpers} from "@/nodes/DrawHelpers";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {ApplySymmetries} from "@/nodes/ApplySymmetries";
-import type {NodeUI, Structure, GraphNode} from "@/types";
 
 interface NodeParts {
 	ui: string;
@@ -15,6 +25,7 @@ interface NodeParts {
 
 export class NodeInfo {
 
+	// NOTE 2) Add the type and ui component
 	private static readonly typeToPartsRecord: Record<string, NodeParts> = {
 		"structure-reader":	{ui: "StructureReaderCtrl"},
 		"draw-structure":	{ui: "DrawStructureCtrl"},
@@ -44,7 +55,7 @@ export class NodeInfo {
 
 	setupRuntime(type: string, id: string, map: Map<string, unknown>): void {
 
-		// TODO Here add the other types
+		// NOTE 3) Add node class instantiation
 		switch(type) {
 			case "structure-reader":
 				map.set(id, new StructureReader(id));
@@ -78,8 +89,10 @@ export class NodeInfo {
 
 	setDataInputs(id: string, type: string | undefined, data: unknown, dataInStore: unknown): void {
 
-		// TODO Here add the other types
+		// NOTE 4) Add the node types that have an output
 		switch(type) {
+
+			// Nodes that have output
 			case "apply-symmetries":
 			case "structure-reader": {
 				const typedData = data as Structure;
@@ -91,21 +104,20 @@ export class NodeInfo {
 
 				break;
 			}
-			case "draw-structure": {
-				// const typedData = data as THREE.Group;
-				// const typedStore = switchboardStore.data[id] as THREE.Group;
-				// typedStore = typedData;
-				break;
-			}
+
+			// Nodes that have no output
+			case "draw-structure":
 			case "viewer-3d":
-				break;
 			case "chart-viewer":
 				break;
+
+			// Error handling
 			case undefined:
 				log.error(`Unknown id "${id}"`);
 				break;
 			default:
-				log.error(`Unknown type "${type}" sending from ${id}`);
+				log.error(`Unknown type "${type}" output from ${id}`);
+				break;
 		}
 	}
 
@@ -115,7 +127,7 @@ export class NodeInfo {
 				  dataFrom: unknown,
 				  callback: (data: unknown, idFrom: string) => void): void {
 
-		// TODO Here add the other types
+		// NOTE 5) Add the node types that have an input
 		switch(type) {
 			case "apply-symmetries":
 			case "structure-reader":
@@ -140,6 +152,7 @@ export class NodeInfo {
 
 			const type = idToType.get(id);
 
+			// NOTE 6) Add here the node status save
 			switch(type) {
 				case "structure-reader":
 					if(notFirst) uiStatus += ",";

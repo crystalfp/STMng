@@ -155,7 +155,7 @@ onMounted(() => {
 
             movieCaptureRunning = true;
 
-            // TBD
+            // TBD Capturing movie
             console.log("Start capturing");
             stream = renderer.domElement.captureStream(12); // 25 FPS
             for(const track of stream.getVideoTracks()) {
