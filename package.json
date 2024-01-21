@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder",
+    "prebuild": "node-gyp rebuild && electron-builder install-app-deps",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
     "oldlint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint -c ./eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
@@ -38,8 +39,7 @@
     "vue": "^3.4.15",
     "vue-chartjs": "^5.3.0",
     "vue-router": "^4.2.5",
-    "vuetify": "^3.5.0",
-    "bindings": "^1.5.0"
+    "vuetify": "^3.5.0"
   },
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
@@ -47,7 +47,6 @@
     "@eslint/js": "^8.56.0",
     "@mdi/svg": "^7.4.47",
     "@rollup/rollup-win32-x64-msvc": "^4.9.5",
-    "@types/bindings": "^1.5.5",
     "@types/fs-extra": "^11.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/mousetrap": "^1.6.15",
@@ -75,6 +74,7 @@
     "eslint-plugin-vitest": "^0.3.20",
     "eslint-plugin-vue": "^9.20.1",
     "node-addon-api": "^7.1.0",
+    "node-gyp": "^10.0.1",
     "postcss-html": "^1.6.0",
     "sass": "^1.70.0",
     "stylelint": "^16.2.0",

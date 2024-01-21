@@ -2,7 +2,7 @@
 "$schema": https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json
 appId: com.electron.{productName}
 productName: STMng
-copyright: Copyright © 2023 ${author}
+copyright: Copyright © 2024 ${author}
 asar: true
 directories:
   output: release/${version}
@@ -10,7 +10,7 @@ directories:
 files:
   - dist-electron
   - dist
-  - build/Release/hello.node
+  - build/Release/native.node
 electronLanguages:
   - en-US
   - it
