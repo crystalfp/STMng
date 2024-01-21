@@ -10,6 +10,7 @@ directories:
 files:
   - dist-electron
   - dist
+  - build/Release/hello.node
 electronLanguages:
   - en-US
   - it
