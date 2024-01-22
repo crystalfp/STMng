@@ -87,6 +87,21 @@ export class ApplySymmetries {
 
 				this.fractionalCoords = JSON.parse(response.payload) as number[];
 
+				const natoms = this.structure!.atoms.length;
+				const repetitions = this.fractionalCoords.length / (natoms*3);
+
+				this.atomIdx.length = natoms*repetitions;
+				for(let i=0; i < repetitions; ++i) {
+					for(let j=0; j < natoms; ++j) this.atomIdx[i*natoms+j] = j;
+				}
+
+				// TEST
+				const len = this.fractionalCoords.length / 3;
+				for(let i=0; i < len; i+=3) {
+					console.log(this.fractionalCoords[i], this.fractionalCoords[i+1], this.fractionalCoords[i+2],
+					this.atomIdx[i/3]);
+				}
+
 				// Clear structure and output it
 				if(fill) this.fillCell();
 				sb.setData(this.id, this.clearStructure());
@@ -111,7 +126,7 @@ export class ApplySymmetries {
 					b[2] * (b[3] * b[7] - b[4] * b[6]);
 
 		// Check if the determinant is zero, which means the matrix is not invertible
-		if(det === 0) throw Error("Matrix is not invertible");
+		if(det === 0) throw Error("Basis matrix is not invertible");
 
 		// Calculate the inverse basis matrix
 		const invDet = 1 / det;
@@ -141,9 +156,9 @@ export class ApplySymmetries {
 			const cy = position[1] - origin[1];
 			const cz = position[2] - origin[2];
 
-			this.fractionalCoords[i*3+0] = cx*inverse[0] + cy*inverse[1] + cz*inverse[2];
-			this.fractionalCoords[i*3+1] = cx*inverse[3] + cy*inverse[4] + cz*inverse[5];
-			this.fractionalCoords[i*3+2] = cx*inverse[6] + cy*inverse[7] + cz*inverse[8];
+			this.fractionalCoords[i*3+0] = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
+			this.fractionalCoords[i*3+1] = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
+			this.fractionalCoords[i*3+2] = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
 
 			this.atomIdx[i] = i;
 		}

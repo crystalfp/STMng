@@ -12,36 +12,60 @@ import {sm} from "@/services/SceneManager";
 export class DrawHelpers {
 
 	private showAxis = false;
-	private showGrid = false;
+	private showGridXZ = false;
+	private showGridXY = false;
+	private showGridYZ = false;
 	private side = 10;
 	private sidePrevious = 10;
 
 	constructor(private readonly id: string) {
 
-		let grid = this.gridHelper();
-		sm.add(grid);
+		let gridXZ = this.gridHelper("XZ");
+		sm.add(gridXZ);
+		let gridXY = this.gridHelper("XY");
+		sm.add(gridXY);
+		let gridYZ = this.gridHelper("YZ");
+		sm.add(gridYZ);
 		const axis = this.axisHelper();
 		sm.add(axis);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
-    		this.showAxis = params.showAxis as boolean ?? false;
-    		this.showGrid = params.showGrid as boolean ?? false;
+    		this.showAxis   = params.showAxis as boolean ?? false;
+    		this.showGridXZ = params.showGridXZ as boolean ?? false;
+    		this.showGridXY = params.showGridXY as boolean ?? false;
+    		this.showGridYZ = params.showGridYZ as boolean ?? false;
 			this.side = params.gridSize as number ?? 10;
 
-			grid.visible = this.showGrid;
-			axis.visible = this.showAxis;
+			gridXZ.visible = this.showGridXZ;
+			gridXY.visible = this.showGridXY;
+			gridYZ.visible = this.showGridYZ;
+			axis.visible   = this.showAxis;
 
 			if(this.side !== this.sidePrevious) {
 
 				const scene = sm.accessScene();
 
-				const obj = scene.getObjectByName("GridHelper") as THREE.GridHelper;
+				let obj = scene.getObjectByName("GridHelperXZ") as THREE.GridHelper;
 				if(obj) {
 					scene.remove(obj);
 					obj.dispose();
-					grid = this.gridHelper();
-					scene.add(grid);
+					gridXZ = this.gridHelper("XZ");
+					scene.add(gridXZ);
+				}
+				obj = scene.getObjectByName("GridHelperXY") as THREE.GridHelper;
+				if(obj) {
+					scene.remove(obj);
+					obj.dispose();
+					gridXY = this.gridHelper("XY");
+					scene.add(gridXY);
+				}
+				obj = scene.getObjectByName("GridHelperYZ") as THREE.GridHelper;
+				if(obj) {
+					scene.remove(obj);
+					obj.dispose();
+					gridYZ = this.gridHelper("YZ");
+					scene.add(gridYZ);
 				}
 				this.sidePrevious = this.side;
 			}
@@ -92,11 +116,17 @@ export class DrawHelpers {
 	 *
 	 * @returns The grid to be added to the scene
 	 */
-	private gridHelper(): THREE.GridHelper {
+	private gridHelper(plane: "XZ" | "XY" | "YZ"): THREE.GridHelper {
 
 		const grid = new THREE.GridHelper(this.side, this.side, "red");
-		grid.name = "GridHelper";
+		grid.name = `GridHelper${plane}`;
 
+		if(plane === "XY") {
+			grid.rotateX(Math.PI / 2);
+		}
+		else if(plane === "YZ") {
+			grid.rotateZ(Math.PI / 2);
+		}
 		return grid;
 	}
 
@@ -105,7 +135,9 @@ export class DrawHelpers {
 		const statusToSave = {
 
 			showAxis: this.showAxis,
-			showGrid: this.showGrid,
+			showGridXZ: this.showGridXZ,
+			showGridXY: this.showGridXY,
+			showGridYZ: this.showGridYZ,
 			side: this.side
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;

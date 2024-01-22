@@ -10,19 +10,25 @@ const props = defineProps<{
     id: string;
 }>();
 
-const showAxis = ref(false);
-const showGrid = ref(false);
-const gridSize = ref(10);
+const showAxis   = ref(false);
+const showGridXZ = ref(false);
+const showGridXY = ref(false);
+const showGridYZ = ref(false);
+const gridSize   = ref(10);
 
 sb.getUiParams(props.id, (params: UiParams) => {
-    showAxis.value = params.showAxis as boolean ?? false;
-    showGrid.value = params.showGrid as boolean ?? false;
-    gridSize.value = params.gridSize as number ?? 10;
+    showAxis.value   = params.showAxis as boolean ?? false;
+    showGridXZ.value = params.showGridXZ as boolean ?? false;
+    showGridXY.value = params.showGridXY as boolean ?? false;
+    showGridYZ.value = params.showGridYZ as boolean ?? false;
+    gridSize.value   = params.gridSize as number ?? 10;
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
         showAxis: showAxis.value,
-        showGrid: showGrid.value,
+        showGridXZ: showGridXZ.value,
+        showGridXY: showGridXY.value,
+        showGridYZ: showGridYZ.value,
         gridSize: gridSize.value
     });
 });
@@ -32,7 +38,9 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="showAxis" color="primary" label="Show axis" density="compact" class="mt-2 ml-3" />
-  <v-switch v-model="showGrid" color="primary" label="Show grid" density="compact" class="ml-3" />
+  <v-switch v-model="showGridXZ" color="primary" label="Show grid XZ" density="compact" class="ml-3" />
+  <v-switch v-model="showGridXY" color="primary" label="Show grid XY" density="compact" class="ml-3" />
+  <v-switch v-model="showGridYZ" color="primary" label="Show grid YZ" density="compact" class="ml-3" />
   <v-slider v-model="gridSize" label="Grid side" density="compact" min="2" max="40" step="2" thumb-label />
 </v-container>
 </template>

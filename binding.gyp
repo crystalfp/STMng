@@ -5,12 +5,18 @@
       "cflags!": [ "-fno-exceptions" ],
       "cflags_cc!": [ "-fno-exceptions" ],
       "sources": [
-		    "src/cpp/native.cpp"
+		    "src/cpp/native.cpp",
+        "src/cpp/ComputeSymmetries.cpp",
+        "src/cpp/sginfo/sgclib.c",
+        "src/cpp/sginfo/sgfind.c",
+        "src/cpp/sginfo/sghkl.c",
+        "src/cpp/sginfo/sginfo.c",
+        "src/cpp/sginfo/sgio.c",
+        "src/cpp/sginfo/sgsi.c"
 	    ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")"
       ],
-      "libraries": [],
       "dependencies": [
         "<!(node -p \"require('node-addon-api').gyp\")"
       ],

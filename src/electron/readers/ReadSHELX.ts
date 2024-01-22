@@ -85,7 +85,7 @@ export class ReaderSHELX implements ReaderImplementation {
 
 		// Set the structure space group
 		// Cover the case of LATT without SYMM cards
-		if(latticeType > 0) {
+		if(latticeType !== 0) {
 
 			spaceGroup = spaceGroup === "" ? `(${latticeType})x,y,z` : `(${latticeType})${spaceGroup}`;
 		}

@@ -1,17 +1,6 @@
 #include <napi.h>
-#include <iostream>
 #include <string>
-
-std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
-
-	std::cout << "Space group: " << sg << "\n";
-
-	std::cout << "Input len: " << fc.size() << "\n";
-	for(auto v : fc) std::cout << " " << v;
-	std::cout << "\n";
-
-	return fc; // TODO Compute symmetries
-}
+#include "ComputeSymmetries.h"
 
 Napi::Value computeSymmetries(const Napi::CallbackInfo& info) {
 

@@ -47,6 +47,7 @@ export default [{
             clearInterval: "readonly",
             console: "readonly",
             Buffer: "readonly",
+            require: "readonly",
         },
         parserOptions: {
             parser: tsParser,
