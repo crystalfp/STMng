@@ -12,11 +12,11 @@ const configStore = useConfigStore();
 <v-container class="container">
   <v-label class="text-h5 w-100 justify-center mt-4">Snapshot</v-label>
   <v-row class="mt-4">
-  <v-label class="pb-5 ml-3">Format:</v-label>
-  <v-radio-group v-model="configStore.camera.snapshotFormat" inline class="ml-3">
-    <v-radio label="JPEG" value="jpeg" />
-    <v-radio label="PNG" value="png" />
-  </v-radio-group>
+  <v-label class="pb-3 ml-3 mr-4">Format:</v-label>
+  <v-btn-toggle v-model="configStore.camera.snapshotFormat" color="primary" class="mb-3">
+    <v-btn value="jpeg">JPEG</v-btn>
+    <v-btn value="png">PNG</v-btn>
+  </v-btn-toggle>
   </v-row>
   <v-btn block class="mt-3" @click="configStore.control.snapshot = true">Capture snapshot</v-btn>
   <v-divider :thickness="8" class="mt-4" />

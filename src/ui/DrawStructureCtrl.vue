@@ -56,27 +56,24 @@ const tickLabels = {1: "Low", 2: "Medium", 3: "Good", 4: "Best"};
 
 <template>
 <v-container class="container">
-  <v-label text="Structure rendering mode" class="mb-3 ml-2" />
-  <v-radio-group v-model="drawKind" class="ml-1" inline>
-    <v-radio label="CPK" value="ball-and-stick" />
-    <v-spacer />
-    <v-radio label="VdW" value="van-der-walls" />
-    <v-spacer />
-    <v-radio label="Licorice" value="licorice" />
-    <v-spacer />
-    <v-radio label="Lines" value="lines" />
-  </v-radio-group>
-  <v-label text="Label mode" class="mb-3 ml-2" />
-  <v-radio-group v-model="labelKind" class="ml-1" inline>
-    <v-radio label="Symbol" value="symbol" />
-    <v-spacer />
-    <v-radio label="Label" value="label" />
-    <v-spacer />
-    <v-radio label="Index" value="index" />
-  </v-radio-group>
-  <v-switch v-model="showStructure" color="primary" label="Show structure" density="compact" />
-  <v-switch v-model="showBonds" color="primary" label="Show bonds" density="compact" class="mt-n5" />
-  <v-switch v-model="showLabels" color="primary" label="Show labels" density="compact" class="mt-n5" />
+  <v-label text="Structure rendering mode" class="mb-3 ml-2" /><br>
+  <v-btn-toggle v-model="drawKind" color="primary" class="mb-6 ml-2">
+    <v-btn value="ball-and-stick">CPK</v-btn>
+    <v-btn value="van-der-walls">VdW</v-btn>
+    <v-btn value="licorice">Licorice</v-btn>
+    <v-btn value="lines">Lines</v-btn>
+  </v-btn-toggle>
+
+  <v-label text="Label mode" class="mb-3 ml-2" /><br>
+  <v-btn-toggle v-model="labelKind" color="primary" class="mb-6 ml-2">
+    <v-btn value="symbol">Symbol</v-btn>
+    <v-btn value="label">Label</v-btn>
+    <v-btn value="index">Index</v-btn>
+  </v-btn-toggle>
+
+  <v-switch v-model="showStructure" color="primary" label="Show structure" class="ml-3" />
+  <v-switch v-model="showBonds" color="primary" label="Show bonds" class="mt-n5 ml-3" />
+  <v-switch v-model="showLabels" color="primary" label="Show labels" class="mt-n5 ml-3" />
   <v-label text="Quality" class="ml-2" />
   <v-slider v-model="drawQuality" :ticks="tickLabels" min="1" max="4" step="1"
             show-ticks="always" tick-size="5" />

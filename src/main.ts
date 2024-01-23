@@ -27,8 +27,6 @@ import {VColorPicker} from "vuetify/components/VColorPicker";
 import {VExpansionPanel, VExpansionPanels,
 		VExpansionPanelTitle, VExpansionPanelText} from "vuetify/components/VExpansionPanel";
 import {VMenu} from "vuetify/components/VMenu";
-import {VRadio} from "vuetify/components/VRadio";
-import {VRadioGroup} from "vuetify/components/VRadioGroup";
 import {VSwitch} from "vuetify/components/VSwitch";
 import {VTextField} from "vuetify/components/VTextField";
 import {VDialog} from "vuetify/components/VDialog";
@@ -39,7 +37,8 @@ import {VApp} from "vuetify/components/VApp";
 import {VRow, VContainer, VSpacer} from "vuetify/components/VGrid";
 import {VAlert} from "vuetify/components/VAlert";
 import {VDivider} from "vuetify/components/VDivider";
-// import {VIcon} from "vuetify/components/VIcon";
+import {VIcon} from "vuetify/components/VIcon";
+import {VBtnToggle} from "vuetify/components/VBtnToggle";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -57,8 +56,6 @@ const app = createApp(App)
 			VColorPicker,
 			VExpansionPanels, VExpansionPanel, VExpansionPanelText, VExpansionPanelTitle,
 			VMenu,
-			VRadio,
-			VRadioGroup,
 			VSwitch,
 			VTextField,
 			VDialog,
@@ -69,7 +66,8 @@ const app = createApp(App)
 			VRow, VContainer, VSpacer,
 			VAlert,
 			VDivider,
-			// VIcon,
+			VIcon,
+			VBtnToggle,
 		},
 		theme: {
     		defaultTheme: "dark",

@@ -36,11 +36,11 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-row class="mt-2">
-    <v-label text="Symmetry group:" class="ml-2 mr-4" />
+    <v-label text="Symmetry group:" class="ml-3 mr-4" />
     <v-label :text="symmetryGroup" style="white-space: break-spaces;font-family:monospace;" />
   </v-row>
-  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-1 mt-6" />
+  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-6" />
   <v-switch v-model="enableSymmetryComputation" color="primary"
-            label="Enable symmetry computation" class="ml-1 mt-n4" />
+            label="Enable symmetry computation" class="ml-2 mt-n5" />
 </v-container>
 </template>

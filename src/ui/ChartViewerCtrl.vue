@@ -33,11 +33,11 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-label class="ml-1 mb-3">Chart type</v-label>
-  <v-radio-group v-model="chartType" inline>
-    <v-radio label="Line" value="line" />
-    <v-radio label="Bar" value="bar" />
-  </v-radio-group>
+  <v-label class="ml-1 mb-3">Chart type</v-label><br>
+  <v-btn-toggle v-model="chartType" color="primary" class="mb-6">
+    <v-btn value="line">Line</v-btn>
+    <v-btn value="bar">Bar</v-btn>
+  </v-btn-toggle>
   <v-btn block @click="openChart=true">Open chart</v-btn>
 </v-container>
 </template>
