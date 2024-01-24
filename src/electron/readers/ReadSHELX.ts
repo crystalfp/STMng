@@ -27,6 +27,12 @@ export class ReaderSHELX implements ReaderImplementation {
 			const lineUC = line.toUpperCase();
 			if(lineUC.startsWith("END")) break;
 
+			// Ignore continuation lines
+			if(ignoreNext) {
+				ignoreNext = false;
+				continue;
+			}
+
 			// Ignore keywords and lines starting with blank
 			if(/^[^A-Z]/.test(lineUC) ||
 				lineUC.startsWith("TITL") ||
@@ -35,6 +41,8 @@ export class ReaderSHELX implements ReaderImplementation {
 				lineUC.startsWith("UNIT") ||
 				lineUC.startsWith("REM")  ||
 				lineUC.startsWith("HKLF") ||
+				lineUC.startsWith("OMIT") ||
+				lineUC.startsWith("FVAR") ||
 				lineUC.startsWith("SFAC")) continue;
 
 			if(lineUC.startsWith("SYMM")) {
@@ -55,10 +63,6 @@ export class ReaderSHELX implements ReaderImplementation {
 				const gamma = Number.parseFloat(fields[7]);
 
 				structures[0].crystal.basis = extractBasis(a, b, c, alpha, beta, gamma);
-			}
-			else if(ignoreNext) {
-				ignoreNext = false;
-				continue;
 			}
 			else {
 				// Ordinary atom line

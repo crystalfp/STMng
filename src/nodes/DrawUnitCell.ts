@@ -5,23 +5,41 @@
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {BasisType, PositionType, Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
+import {computeBonds} from "@/services/ComputeBonds";
+import type {BasisType, PositionType, Structure, Atom} from "@/types";
 
 export class DrawUnitCell {
 
-	private readonly name: string;
+	private readonly nameUC: string;
+	private readonly nameSC: string;
+	private readonly outUC = new THREE.Group();
+	private readonly outSC = new THREE.Group();
+	private lineUC: THREE.LineSegments | undefined;
+	private lineSC: THREE.LineSegments | undefined;
 	private showUnitCell = true;
 	private dashedLine = false;
 	private lineColor = "#0000FF";
-	private readonly out = new THREE.Group();
-	private line: THREE.LineSegments | undefined;
+	private repetitionsA = 1;
+	private repetitionsB = 1;
+	private repetitionsC = 1;
+	private previousRepetitionsA = 1;
+	private previousRepetitionsB = 1;
+	private previousRepetitionsC = 1;
+	private showSupercell = false;
+	private supercellColor = "#02A502";
+	private dashedSupercell = false;
+	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
 
-		this.name = `DrawUnitCell-${this.id}`;
-		this.out.name = this.name;
-		sm.add(this.out);
+		// Prepare the groups and add to scene
+		this.nameUC = `DrawUnitCell-${this.id}`;
+		this.outUC.name = this.nameUC;
+		sm.add(this.outUC);
+		this.nameSC = `DrawSupercell-${this.id}`;
+		this.outSC.name = this.nameSC;
+		sm.add(this.outSC);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
@@ -29,22 +47,43 @@ export class DrawUnitCell {
 			this.lineColor = params.lineColor as string ?? "#0000FF";
 			this.dashedLine = params.dashedLine as boolean ?? false;
 
-			this.changeMaterial();
-			this.out.visible = this.showUnitCell;
+			this.outUC.visible = this.showUnitCell;
+
+    		this.repetitionsA = params.repetitionsA as number ?? 1;
+    		this.repetitionsB = params.repetitionsB as number ?? 1;
+    		this.repetitionsC = params.repetitionsC as number ?? 1;
+    		this.showSupercell = params.showSupercell as boolean ?? false;
+    		this.supercellColor = params.supercellColor as string ?? "#02A502";
+    		this.dashedSupercell = params.dashedSupercell as boolean ?? false;
+
+			if(this.repetitionsA !== this.previousRepetitionsA ||
+			   this.repetitionsB !== this.previousRepetitionsB ||
+			   this.repetitionsC !== this.previousRepetitionsC) {
+				this.drawSupercell(this.structure!.crystal.basis, this.structure!.crystal.origin);
+				this.previousRepetitionsA = this.repetitionsA;
+				this.previousRepetitionsB = this.repetitionsB;
+				this.previousRepetitionsC = this.repetitionsC;
+				this.replicateUnitCell();
+			}
+			this.outSC.visible = this.showSupercell;
+			this.changeMaterials();
 		});
 
 		sb.getData(this.id, (data: unknown) => {
 
-			const {crystal} = (data as Structure);
+			const {crystal} = data as Structure;
 			if(!crystal) return;
 			this.drawUnitCell(crystal.basis, crystal.origin);
+			this.drawSupercell(crystal.basis, crystal.origin);
+			this.structure = data as Structure;
+			this.replicateUnitCell();
 		});
 	}
 
 	private drawUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
-		sm.clearGroup(this.name);
+		sm.clearGroup(this.nameUC);
 
 		// If no unit cell return
 		if(!basis.some((value) => value !== 0)) return;
@@ -87,29 +126,173 @@ export class DrawUnitCell {
 		geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
 		const edges = new THREE.EdgesGeometry(geometry);
 
-        this.line = new THREE.LineSegments(edges, this.setMaterial());
-        if(this.dashedLine) this.line.computeLineDistances();
-        this.out.add(this.line);
+        this.lineUC = new THREE.LineSegments(edges, this.setMaterial(this.lineColor, this.dashedLine));
+        if(this.dashedLine) this.lineUC.computeLineDistances();
+        this.outUC.add(this.lineUC);
 	}
 
-	private setMaterial(): THREE.Material {
-		return this.dashedLine ?
-							new THREE.LineDashedMaterial({
-								color: this.lineColor,
-								scale: 5,
-								dashSize: 1,
-								gapSize: 1,
-							}) :
-							new THREE.LineBasicMaterial({
-								color: this.lineColor
-							});
+	private drawSupercell(basis: BasisType, orig: PositionType): void {
+
+		// Clear previous cell
+		sm.clearGroup(this.nameSC);
+
+		// If no unit cell return
+		if(!basis.some((value) => value !== 0)) return;
+
+		// If no supercell return
+		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1) return;
+
+		// Supercell basis
+		const scb = [
+			basis[0]*this.repetitionsA,
+			basis[1]*this.repetitionsA,
+			basis[2]*this.repetitionsA,
+			basis[3]*this.repetitionsB,
+			basis[4]*this.repetitionsB,
+			basis[5]*this.repetitionsB,
+			basis[6]*this.repetitionsC,
+			basis[7]*this.repetitionsC,
+			basis[8]*this.repetitionsC,
+		];
+
+		// Vertices coordinates (bottom then top)
+    	const vertices = new Float32Array([
+/* 0 */ orig[0],                      orig[1],                      orig[2],
+/* 1 */ orig[0]+scb[0],               orig[1]+scb[1],               orig[2]+scb[2],
+/* 2 */ orig[0]+scb[0]+scb[3],        orig[1]+scb[1]+scb[4],        orig[2]+scb[2]+scb[5],
+/* 3 */ orig[0]+scb[3],               orig[1]+scb[4],               orig[2]+scb[5],
+/* 4 */ orig[0]+scb[6],               orig[1]+scb[7],               orig[2]+scb[8],
+/* 5 */ orig[0]+scb[0]+scb[6],        orig[1]+scb[1]+scb[7],        orig[2]+scb[2]+scb[8],
+/* 6 */ orig[0]+scb[0]+scb[3]+scb[6], orig[1]+scb[1]+scb[4]+scb[7], orig[2]+scb[2]+scb[5]+scb[8],
+/* 7 */ orig[0]+scb[3]+scb[6],        orig[1]+scb[4]+scb[7],        orig[2]+scb[5]+scb[8],
+    	]);
+
+		// Triangles. Top and bottom facies are not needed
+		const indices = [
+			// 0, 1, 2,
+			// 0, 2, 3,
+
+			4, 5, 1,
+			4, 1, 0,
+
+			3, 2, 6,
+			3, 6, 7,
+
+			4, 0, 3,
+			4, 3, 7,
+
+			1, 5, 6,
+			1, 6, 2,
+
+			// 5, 4, 7,
+			// 5, 7, 6,
+		];
+
+	    const geometry = new THREE.BufferGeometry();
+		geometry.setIndex(indices);
+		geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+		const edges = new THREE.EdgesGeometry(geometry);
+
+        this.lineSC = new THREE.LineSegments(edges, this.setMaterial(this.supercellColor, this.dashedSupercell));
+        if(this.dashedSupercell) this.lineSC.computeLineDistances();
+        this.outSC.add(this.lineSC);
 	}
 
-	private changeMaterial(): void {
-		if(this.line) {
-			this.line.material = this.setMaterial();
-        	if(this.dashedLine) this.line.computeLineDistances();
+	private setMaterial(color: string, dashed: boolean): THREE.Material {
+		return dashed ? new THREE.LineDashedMaterial({
+							color,
+							scale: 5,
+							dashSize: 1,
+							gapSize: 1,
+						}) :
+						new THREE.LineBasicMaterial({
+							color
+						});
+	}
+
+	private changeMaterials(): void {
+		if(this.lineUC) {
+			this.lineUC.material = this.setMaterial(this.lineColor, this.dashedLine);
+        	if(this.dashedLine) this.lineUC.computeLineDistances();
 		}
+		if(this.lineSC) {
+			this.lineSC.material = this.setMaterial(this.supercellColor, this.dashedSupercell);
+        	if(this.dashedSupercell) this.lineSC.computeLineDistances();
+		}
+	}
+
+	private replicateUnitCell(): void {
+
+		if(!this.structure) return;
+		const natoms = this.structure.atoms.length;
+		if(natoms === 0) return;
+		const bs = this.structure.crystal.basis;
+		const atoms: Atom[] = [];
+		for(let a=0; a < this.repetitionsA; ++a) {
+			for(let b=0; b < this.repetitionsB; ++b) {
+				for(let c=0; c < this.repetitionsC; ++c) {
+					for(let i=0; i < natoms; ++i) {
+						const position: PositionType = [
+							this.structure.atoms[i].position[0] + a*bs[0] + b*bs[3] + c*bs[6],
+							this.structure.atoms[i].position[1] + a*bs[1] + b*bs[4] + c*bs[7],
+							this.structure.atoms[i].position[2] + a*bs[2] + b*bs[5] + c*bs[8],
+						];
+
+						atoms.push({
+							position,
+							atomZ: this.structure.atoms[i].atomZ,
+							label: this.structure.atoms[i].label,
+						});
+					}
+				}
+			}
+		}
+
+		// Remove duplicated
+		const tol = 1e-5;
+		const outAtoms = atoms.length;
+		const duplicated = Array(outAtoms) as boolean[];
+		for(let i=0; i < outAtoms; ++i) duplicated[i] = false;
+		for(let i=0; i < outAtoms-1; ++i) {
+			if(duplicated[i]) continue;
+			for(let j=i+1; j < outAtoms; ++j) {
+				if(duplicated[j]) continue;
+
+				const fdx = atoms[i].position[0] - atoms[j].position[0];
+				if(fdx < tol && fdx > -tol) {
+					const fdy = atoms[i].position[1] - atoms[j].position[1];
+					if(fdy < tol && fdy > -tol) {
+						const fdz = atoms[i].position[2] - atoms[j].position[2];
+						if(fdz < tol && fdz > -tol) {
+							duplicated[j] = true;
+						}
+					}
+				}
+			}
+		}
+
+		// Create out
+		const out: Structure = {
+			crystal: this.structure!.crystal,
+			atoms: [],
+			bonds: [],
+			look: this.structure!.look
+		};
+		for(let i=0; i < outAtoms; ++i) {
+			if(duplicated[i]) continue;
+			out.atoms.push(atoms[i]);
+		}
+
+		// Recompute bonds
+		const rCov: number[] = [];
+		for(const atom of out.atoms) {
+			const {atomZ} = atom;
+			rCov.push(out.look[atomZ].rCov);
+		}
+		out.bonds = computeBonds(out.atoms, rCov);
+
+		// Output the result
+		sb.setData(this.id, out);
 	}
 
 	saveStatus(): string {
@@ -118,6 +301,12 @@ export class DrawUnitCell {
 			showUnitCell: this.showUnitCell,
 			dashedLine: this.dashedLine,
 			lineColor: this.lineColor,
+        	repetitionsA: this.repetitionsA,
+        	repetitionsB: this.repetitionsB,
+        	repetitionsC: this.repetitionsC,
+        	showSupercell: this.showSupercell,
+        	supercellColor: this.supercellColor,
+        	dashedSupercell: this.dashedSupercell
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

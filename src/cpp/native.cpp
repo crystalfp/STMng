@@ -39,16 +39,19 @@ Napi::Value computeSymmetries(const Napi::CallbackInfo& info) {
 	std::vector<double_t> inputValues(doubleArray.Data(), doubleArray.Data() + arrayLength);
 
 	// Compute symmetries
-	std::vector<double_t> out = compute(sg, inputValues);
+	std::string errorMessage;
+	std::vector<double_t> out = compute(sg, inputValues, errorMessage);
 
 	// Transform result into a JSON formatted string
-	std::string json = "[";
+	std::string json = "{\"coords\":[";
 	size_t len = out.size();
 	for(size_t i = 0; i < len; ++i) {
 		if(i > 0) json.append(",");
 		json.append(std::to_string(out[i]));
 	}
-	json.append("]");
+	json.append("],\"error\":\"");
+	json.append(errorMessage);
+	json.append("\"}");
 
 	// Return the new coordinates already formatted for sending to client
 	return Napi::String::New(env, json.c_str());

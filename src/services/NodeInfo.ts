@@ -4,7 +4,7 @@
  * @packageDocumentation
  *
  * @remarks
- * Using a NOTE comment, the points to touch to add a new node are marked.
+ * The points to modify to add a new node are marked using a NOTE comment.
  */
 import log from "electron-log";
 import {watch} from "vue";
@@ -87,13 +87,14 @@ export class NodeInfo {
 		}
 	}
 
-	setDataInputs(id: string, type: string | undefined, data: unknown, dataInStore: unknown): void {
+	setDataOutputs(id: string, type: string | undefined, data: unknown, dataInStore: unknown): void {
 
-		// NOTE 4) Add the node types that have an output
+		// NOTE 4) Add the node types that generate an output
 		switch(type) {
 
-			// Nodes that have output
+			// Nodes that have an output
 			case "apply-symmetries":
+			case "draw-unit-cell":
 			case "structure-reader": {
 				const typedData = data as Structure;
 				const typedStore = dataInStore as Structure;
@@ -105,18 +106,12 @@ export class NodeInfo {
 				break;
 			}
 
-			// Nodes that have no output
-			case "draw-structure":
-			case "viewer-3d":
-			case "chart-viewer":
-				break;
-
 			// Error handling
 			case undefined:
 				log.error(`Unknown id "${id}"`);
 				break;
 			default:
-				log.error(`Unknown type "${type}" output from ${id}`);
+				log.error(`Cannot use setData with type "${type}" from id: "${id}"`);
 				break;
 		}
 	}
@@ -127,15 +122,18 @@ export class NodeInfo {
 				  dataFrom: unknown,
 				  callback: (data: unknown, idFrom: string) => void): void {
 
-		// NOTE 5) Add the node types that have an input
+		// NOTE 5) Add the node types from which other nodes could take an input
 		switch(type) {
-			case "apply-symmetries":
+
+			// Nodes from which other nodes could take an input
+			case "draw-unit-cell":
 			case "structure-reader":
+			case "apply-symmetries":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
 				break;
-			case "chart-viewer":
-				break;
+
+			// Error handling
 			case undefined:
 				log.error(`Unknown id "${id}"`);
 				break;
@@ -152,7 +150,7 @@ export class NodeInfo {
 
 			const type = idToType.get(id);
 
-			// NOTE 6) Add here the node status save
+			// NOTE 6) Add here the node UI status save. Viewer-3d and capture-view don't belongs here.
 			switch(type) {
 				case "structure-reader":
 					if(notFirst) uiStatus += ",";

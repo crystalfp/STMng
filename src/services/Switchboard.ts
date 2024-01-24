@@ -196,7 +196,7 @@ class Switchboard {
 
 		const type = this.mapIdToType.get(id);
 
-		this.nodeInfo.setDataInputs(id, type, data, switchboardStore.data[id]);
+		this.nodeInfo.setDataOutputs(id, type, data, switchboardStore.data[id]);
 	}
 
 	getData(id: string, callback: (data: unknown, idFrom: string) => void): void {

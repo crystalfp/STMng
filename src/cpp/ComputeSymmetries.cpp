@@ -6,7 +6,14 @@
 extern "C" {
 #include "./sginfo/sginfo.h"
 }
-#define DEBUG
+// #define DEBUG
+
+static const char *errorMsg(const char *msg, const char *extra)
+{
+	static char str[512];
+	sprintf(str, "%.250s %.250s", msg, extra);
+	return str;
+}
 
 static std::vector<double_t> ApplySymmetries(std::vector<double_t>& fc, T_SgInfo& SgInfo)
 {
@@ -39,16 +46,21 @@ static std::vector<double_t> ApplySymmetries(std::vector<double_t>& fc, T_SgInfo
 				for(int i = 0; i < 9; i++) SMx.s.R[i] = f * lsmx->s.R[i];
 				for(int i = 0; i < 3; i++) SMx.s.T[i] = iModPositive(f * lsmx->s.T[i] + TrV[i], STBF);
 
+				double T[3];
+				T[0] = (double)SMx.s.T[0] / (double)STBF;
+				T[1] = (double)SMx.s.T[1] / (double)STBF;
+				T[2] = (double)SMx.s.T[2] / (double)STBF;
+				int *R = SMx.s.R;
+
 #ifdef DEBUG
-    			printf("Applying matrix [%2d %2d %2d; %2d %2d %2d; %2d %2d %2d] and translation (%d,%d,%d) STBF %d\n",
-					   SMx.s.R[0], SMx.s.R[1], SMx.s.R[2],
-					   SMx.s.R[3], SMx.s.R[4], SMx.s.R[5],
-					   SMx.s.R[6], SMx.s.R[7], SMx.s.R[8],
-					   SMx.s.T[0], SMx.s.T[1], SMx.s.T[2],
-					   STBF);
+    			printf("Applying matrix with translation (%f, %f, %f)\n", T[0], T[1], T[2]);
+    			printf("[%2d %2d %2d;\n %2d %2d %2d;\n %2d %2d %2d]\n",
+					   R[0], R[1], R[2],
+					   R[3], R[4], R[5],
+					   R[6], R[7], R[8]
+				);
 				fflush(stdout);
 #endif
-
 				// Use SMx at this point
 				int natoms = fc.size() / 3;
 				for(int i=0; i < natoms; ++i)
@@ -57,10 +69,10 @@ static std::vector<double_t> ApplySymmetries(std::vector<double_t>& fc, T_SgInfo
 
 					for(int j=0; j < 3; ++j)
 					{
-						Bfr[j] = fc[i*3+0]*SMx.s.R[3*j+0] +
-								 fc[i*3+1]*SMx.s.R[3*j+1] +
-								 fc[i*3+2]*SMx.s.R[3*j+2] +
-								 (double)SMx.s.T[j] / (double)STBF;
+						Bfr[j] = fc[i*3+0]*R[3*j+0] +
+								 fc[i*3+1]*R[3*j+1] +
+								 fc[i*3+2]*R[3*j+2] +
+								 T[j];
 
 						// Fold everything back to the unit cell
 						if(Bfr[j] > 1.F+EPS)   Bfr[j] -= floorf(Bfr[j]);
@@ -84,7 +96,10 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 	return fcOut;
 }
 
-std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
+std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::string& error) {
+
+	// Initialize the error message to no message
+	error = "";
 
 	// Now compute the list of Seitz matrices
 	T_SgInfo SgInfo;
@@ -96,14 +111,14 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 	SgInfo.ListSeitzMx = (T_RTMx *)malloc(SgInfo.MaxList * sizeof(*SgInfo.ListSeitzMx));
 	if(SgInfo.ListSeitzMx == NULL)
 	{
-		std::cout << "Not enough core for ListSeitzMx\n";
+		error = "Not enough core for ListSeitzMx";
 		return fc;
 	}
 
 	SgInfo.ListRotMxInfo = (T_RotMxInfo *)malloc(SgInfo.MaxList * sizeof(*SgInfo.ListRotMxInfo));
 	if(SgInfo.ListRotMxInfo == NULL)
 	{
-		std::cout << "Not enough core for ListRotMxInfo\n";
+		error = "Not enough core for ListRotMxInfo";
 
 		free(SgInfo.ListSeitzMx);
 		return fc;
@@ -124,8 +139,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 		ParseHallSymbol(tsgn->HallSymbol, &SgInfo);
 		if(SgError != NULL)
 		{
-			std::cout << SgError << "(1)\n";
-
+			error = errorMsg(SgError, "(1)");
 			free(SgInfo.ListSeitzMx);
 			free(SgInfo.ListRotMxInfo);
 			return fc;
@@ -136,7 +150,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 		// table of space group symbols
 		if(CompleteSgInfo(&SgInfo) != 0)
 		{
-			std::cout << SgError << "(2)\n";
+			error = errorMsg(SgError, "(2)");
 
 			free(SgInfo.ListSeitzMx);
 			free(SgInfo.ListRotMxInfo);
@@ -230,10 +244,11 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 		// Successfully parsed
 		if(success)
 		{
+#ifdef DEBUG
 			char msg[32];
 			sprintf(msg, "Parsed %d XYZ symbol%s", n, (n > 1) ? "s" : "");
 			std::cout << msg;
-
+#endif
 			if(lattice_indicator != 0)
 			{
 				// Lattice type: 1=P, 2=I, 3=rhombohedral obverse on hexagonal axes, 4=F, 5=A, 6=B, 7=C. N
@@ -244,7 +259,8 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 					// mark non-centrosymmetric
 					if(AddInversion2ListSeitzMx(&SgInfo) != 0)
 					{
-						std::cout << SgError << "(3)\n";
+						error = errorMsg(SgError, "(3)");
+
 						free(SgInfo.ListSeitzMx);
 						free(SgInfo.ListRotMxInfo);
 						return fc;
@@ -288,7 +304,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 
 			if(CompleteSgInfo(&SgInfo) != 0)
 			{
-				std::cout << SgError << "(4)\n";
+				error = errorMsg(SgError, "(4)");
 
 				free(SgInfo.ListSeitzMx);
 				free(SgInfo.ListRotMxInfo);
@@ -298,7 +314,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 		else
 		{
 			// No matching table entry
-			std::cout << "Invalid space group symbol <" << sg << ">\n";
+			error = errorMsg("Invalid space group symbol: ", sg.c_str());
 
 			free(SgInfo.ListSeitzMx);
 			free(SgInfo.ListRotMxInfo);
@@ -313,7 +329,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 	free(SgInfo.ListSeitzMx);
 	free(SgInfo.ListRotMxInfo);
 
-	///////////////////////////////////////////////////////////////////////////////////
+#ifdef DEBUG
 	std::cout << "\nSpace group: " << sg << "\n";
 
 	std::cout << "Input len: " << fc.size() << "\n";
@@ -321,6 +337,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc) {
 	// std::cout << "\n";
 
 	std::cout << "Output len: " << fcOut.size() << "\n";
+#endif
 
 	return fcOut;
 }

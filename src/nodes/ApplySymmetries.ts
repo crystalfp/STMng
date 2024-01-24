@@ -85,7 +85,9 @@ export class ApplySymmetries {
 
 				if(response.error) throw Error(`Error computing symmetries: ${response.error}`);
 
-				this.fractionalCoords = JSON.parse(response.payload) as number[];
+				const payload = JSON.parse(response.payload) as {coords: number[]; error: string};
+				this.fractionalCoords = payload.coords;
+				if(payload.error !== "") throw Error(payload.error);
 
 				const natoms = this.structure!.atoms.length;
 				const repetitions = this.fractionalCoords.length / (natoms*3);
@@ -95,18 +97,12 @@ export class ApplySymmetries {
 					for(let j=0; j < natoms; ++j) this.atomIdx[i*natoms+j] = j;
 				}
 
-				// TEST
-				const len = this.fractionalCoords.length / 3;
-				for(let i=0; i < len; i+=3) {
-					console.log(this.fractionalCoords[i], this.fractionalCoords[i+1], this.fractionalCoords[i+2],
-					this.atomIdx[i/3]);
-				}
-
 				// Clear structure and output it
 				if(fill) this.fillCell();
 				sb.setData(this.id, this.clearStructure());
 			})
 			.catch((error: Error) => {
+				sb.setUiParams(this.id, {error: error.message});
 				log.error(error.message);
 				sb.setData(this.id, this.structure);
 			});
