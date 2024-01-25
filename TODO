@@ -7,8 +7,6 @@ ToDo:
   ☐ Check need for viewer input field (modules goes directly to scene)
   ☐ Better camera position initialization (and RNC button {reset-normalize-center})
   ☐ Change project to "network" and put a different extension for these files (.net)
-  ✔ Add project path in the title @done(2024-01-25 08:40)
-  ✔ Extract scene from switchboard and create another singleton @done(2024-01-13 08:04)
   ☐ Readers do not fail if the file format is invalid
   ☐ Unify naming: graph, node, project
   ☐ What happens if you have a dangling input in the graph?
@@ -18,7 +16,6 @@ Bugs:
 
 Requests from Oganov:
   ☐ Save movie
-  ✔ Symmetries @done(2024-01-25 06:15)
   ☐ Charge maps
 
 Nice to have/Future:
@@ -26,6 +23,9 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Add project path in the title @done(2024-01-25 08:40)
+  ✔ Extract scene from switchboard and create another singleton @done(2024-01-13 08:04)
+  ✔ Symmetries @done(2024-01-25 06:15)
   ✔ Add toggle for structure visibility @done(2024-01-13 07:35)
   ✔ Add toggle for bonds visibility @done(2024-01-13 07:35)
   ✔ Move fake chart data to ChartViewer.ts @done(2024-01-12 09:44)
