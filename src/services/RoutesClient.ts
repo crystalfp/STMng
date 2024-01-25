@@ -74,19 +74,36 @@ export const receiveBroadcast = (callback: (eventType: string, params: (boolean 
  */
 export const receiveProject = (callback: (rawProject: string) => void): void => {
 
-    window.electron.ipcRenderer.invoke("PROJECT:GET1")
+    window.electron.ipcRenderer.invoke("PROJECT:GET")
 		// eslint-disable-next-line promise/no-callback-in-promise
 		.then((rawProject: string) => callback(rawProject))
 		.catch((error: Error) => log.error("Cannot retrieve project first time.", error.message));
-    window.electron.ipcRenderer.on("PROJECT:GET2", (_event, rawProject: string) => callback(rawProject));
+    window.electron.ipcRenderer.on("PROJECT:GET-NEXT", (_event, rawProject: string) => callback(rawProject));
 };
 
+/**
+ * Send the current project to the main process for saving.
+ *
+ * @param callback - Function that returns the current loaded project to be saved
+ */
 export const sendProject = (callback: () => string): void => {
 	window.electron.ipcRenderer.on("PROJECT:REQUEST", () => {
 		window.electron.ipcRenderer.send("PROJECT:ANSWER", callback());
 	});
 };
 
+/**
+ * Set the title with the current loaded project path.
+ *
+ * @param baseTitle - The first part of the title
+ */
+export const updateProjectPathTitle = (baseTitle: string): void => {
+
+	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
+
+		 window.api.setTitle(`${baseTitle} — ${projectPath || "default project"}`);
+	});
+};
 
 // > Preferences
 /**
@@ -180,6 +197,7 @@ export const saveDataURL = (data: string): Promise<MainResponse> => {
 	return window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
 };
 
+// > Symmetries
 export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => {
 
 	return window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;

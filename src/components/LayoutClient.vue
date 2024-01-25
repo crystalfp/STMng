@@ -7,7 +7,7 @@
 import {ref, shallowRef, defineAsyncComponent} from "vue";
 import log from "electron-log";
 import Mousetrap from "mousetrap";
-import {setTitle, isLoaded, handleFullscreen,
+import {setTitle, isLoaded, handleFullscreen, updateProjectPathTitle,
         receiveMenuSelection, getPreferenceSync} from "@/services/RoutesClient";
 
 import Viewer3D from "@/components/Viewer3D.vue";
@@ -38,6 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             const project = getPreferenceSync("LastProjectLoaded", "default project");
             setTitle(`See the Molecole new generation - ${project}`);
+            updateProjectPathTitle("See the Molecole new generation");
             sb.setup();
         }
     }, 20);

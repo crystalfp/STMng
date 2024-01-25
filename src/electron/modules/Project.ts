@@ -8,7 +8,7 @@ import {ipcMain, app} from "electron";
 import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
-import {sendLoadedProject, requestLoadedProject} from "./WindowsUtilities";
+import {sendLoadedProject, requestLoadedProject, sendProjectPath} from "./WindowsUtilities";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {fileURLToPath} from "node:url";
 
@@ -53,6 +53,8 @@ export const loadProjectAndRemember = (filename: string): void => {
 	setProjectPath(filename);
 
 	loadProject(filename);
+
+	sendProjectPath(filename);
 };
 
 /**
@@ -66,10 +68,15 @@ export const loadRememberedProject = (ignoreSaved: boolean): void => {
 	if(ignoreSaved) {
 		filename = getDefaultProject();
 		removeProjectPath();
+		sendProjectPath();
 	}
 	else {
 		filename = getProjectPath();
-		if(!filename) filename = getDefaultProject();
+		if(filename) sendProjectPath(filename);
+		else {
+			filename = getDefaultProject();
+			sendProjectPath();
+		}
 	}
 	loadProject(filename);
 };
@@ -85,6 +92,7 @@ export const saveProjectAs = (filename: string): void => {
 		.then((rawProject: string) => {
 			fs.writeFileSync(filename, rawProject, "utf8");
 			projectAsString = rawProject;
+			sendProjectPath(filename);
 		})
 		.catch((error: Error) => {
 			log.error(`Cannot save project file "${filename}". Error ${error.message}`);
@@ -100,7 +108,7 @@ export const saveProject = (): void => {
 };
 
 export const setupChannelProject = (): void => {
-    ipcMain.handle("PROJECT:GET1",  () => {
+    ipcMain.handle("PROJECT:GET",  () => {
         return projectAsString;
     });
 };

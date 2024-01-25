@@ -7,16 +7,28 @@
       "in": ""
     },
     {
-      "id": "draw",
-      "label": "Draw",
-      "type": "draw-structure",
+      "id": "symmetry",
+      "label": "Symmetry",
+      "type": "apply-symmetries",
       "in": "reader"
     },
     {
       "id": "unit",
       "label": "Cell",
       "type": "draw-unit-cell",
-      "in": "reader"
+      "in": "symmetry"
+    },
+    {
+      "id": "draw",
+      "label": "Draw",
+      "type": "draw-structure",
+      "in": "unit"
+    },
+    {
+      "id": "polyhedra",
+      "label": "Poly",
+      "type": "draw-polyhedra",
+      "in": "symmetry"
     },
     {
       "id": "helpers",
@@ -25,16 +37,16 @@
       "in": ""
     },
     {
-      "id": "polyhedra",
-      "label": "Poly",
-      "type": "draw-polyhedra",
-      "in": "reader"
-    },
-    {
       "id": "viewer",
       "label": "Viewer",
       "type": "viewer-3d",
-      "in": "draw,unit,helpers,polyhedra"
+      "in": ""
+    },
+    {
+      "id": "capture",
+      "label": "Capture",
+      "type": "capture-view",
+      "in": ""
     },
     {
       "id": "chart",
@@ -47,10 +59,16 @@
     "camera": {
       "perspective": true,
       "position": [
-        0.11343085928870338,
-        3.8036259534508416,
-        14.471054125322569
-      ]
+        5,
+        3,
+        5
+      ],
+      "lookAt": [
+        0,
+        0,
+        0
+      ],
+      "snapshotFormat": "png"
     },
     "scene": {
       "background": "#90CEEC"
@@ -85,32 +103,48 @@
     "reader": {
       "loopSteps": false,
       "step": 1,
-      "format": "ShelX",
+      "format": "",
       "atomsTypes": ""
+    },
+    "symmetry": {
+      "fillUnitCell": false,
+      "enableSymmetryComputation": true
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false
     },
     "draw": {
       "drawKind": "ball-and-stick",
       "drawQuality": 4,
       "drawRoughness": 0.7,
       "drawMetalness": 0.3,
-      "labelKind": "symbol"
-    },
-    "unit": {
-      "showUnitCell": true,
-      "dashedLine": false,
-      "lineColor": "#0000FF"
-    },
-    "helpers": {
-      "showAxis": false,
-      "showGrid": false,
-      "side": 10
+      "labelKind": "symbol",
+      "showStructure": true,
+      "showBonds": true,
+      "showLabels": true
     },
     "polyhedra": {
       "showPolyhedra": false,
       "color": "#FFFFFF80"
     },
+    "helpers": {
+      "showAxis": false,
+      "showGridXZ": false,
+      "showGridXY": false,
+      "showGridYZ": false,
+      "side": 10
+    },
     "chart": {
       "chartType": "line"
     }
-  }
+  },
+  "currentId": "reader"
 }

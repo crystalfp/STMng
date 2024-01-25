@@ -255,45 +255,6 @@ export const openMenuEntry = (entryName: string, payload=""): void => {
     mainWin.webContents.send("APP:MENU", entryName, payload);
 };
 
-// > Open the given system menu entry and execute callback on answer
-/**
- * Open the given system menu entry and execute callback on answer
- *
- * @param entryName - Label to identify the menu entry activated on the main window
- * @returns The answer from the main window
- */
-export const openMenuEntryWithAnswer = (entryName: string): Promise<string> => {
-
-    mainWin.webContents.send("APP:MENU", entryName);
-    const channelName = `APP:MENU-${entryName}`;
-
-    return new Promise((resolve) => {
-        ipcMain.once(channelName, (_event: unknown, answer: string): void => resolve(answer));
-    });
-};
-
- // > Send a message line to main window
-/**
- * Send a message line to main window
- *
- * @param messageLine - Message line to be passed to main window
- */
-export const sendMessageLine = (messageLine: string): void => {
-
-    mainWin.webContents.send("APP:MESSAGE-LINE", messageLine);
-};
-
-// > Update the main window project list
-/**
- * Update the main window project list
- *
- * @param projectAsString - JSON encoded project to update the main window projects list
- */
-export const sendUpdatedProject = (projectAsString: string): void => {
-
-    mainWin.webContents.send("PROJECTS:RESEND", projectAsString);
-};
-
 // > Update the main window project list
 /**
  * Update the main window project list
@@ -302,12 +263,14 @@ export const sendUpdatedProject = (projectAsString: string): void => {
  */
 export const sendLoadedProject = (projectAsString: string): void => {
 
-    // ipcMain.handle("PROJECT:GET1",  () => {
-    //     return projectAsString;
-    // });
-    mainWin.webContents.send("PROJECT:GET2", projectAsString);
+    mainWin.webContents.send("PROJECT:GET-NEXT", projectAsString);
 };
 
+/**
+ * Get the current loaded project with its parameters for save.
+ *
+ * @returns The current loaded project as JSON formatted string
+ */
 export const requestLoadedProject = (): Promise<string> => {
 
     mainWin.webContents.send("PROJECT:REQUEST");
@@ -315,4 +278,14 @@ export const requestLoadedProject = (): Promise<string> => {
     return new Promise((resolve) => {
         ipcMain.on("PROJECT:ANSWER", (_event: unknown, answer: string): void => resolve(answer));
     });
+};
+
+/**
+ * Send the current project path to main window to put it in the title.
+ *
+ * @param projectPath - The project file path or an empty string for the default project
+ */
+export const sendProjectPath = (projectPath?: string): void => {
+
+    mainWin.webContents.send("PROJECT:PATH", projectPath ? path.basename(projectPath) : "");
 };
