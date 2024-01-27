@@ -7,12 +7,12 @@
 import {ref, shallowRef, defineAsyncComponent} from "vue";
 import log from "electron-log";
 import Mousetrap from "mousetrap";
-import {setTitle, isLoaded, handleFullscreen, updateProjectPathTitle,
-        receiveMenuSelection, getPreferenceSync} from "@/services/RoutesClient";
+import {isLoaded, handleFullscreen, setProjectPathInTitle,
+        receiveMenuSelection} from "@/services/RoutesClient";
+import {sb} from "@/services/Switchboard";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
-import {sb} from "@/services/Switchboard";
 
 /** Toggle expanded viewer window */
 const normalScreen = ref(true);
@@ -36,9 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 root.style.setProperty("--usable-height",    isFullScreen ? "100vh" : "calc(100vh - 30px)");
                 root.style.setProperty("--container-height", isFullScreen ? "calc(100vh - 44px)" : "calc(100vh - 74px)");
             });
-            const project = getPreferenceSync("LastProjectLoaded", "default project");
-            setTitle(`See the Molecole new generation - ${project}`);
-            updateProjectPathTitle("See the Molecole new generation");
+            setProjectPathInTitle("See the Molecole new generation");
             sb.setup();
         }
     }, 20);

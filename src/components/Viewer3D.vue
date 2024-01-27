@@ -127,6 +127,8 @@ onMounted(() => {
 
             copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
             cameraOrthographic.updateProjectionMatrix();
+
+            controls.target = new THREE.Vector3(...configStore.control.target);
         }
         controls.update();
     });
@@ -157,7 +159,7 @@ onMounted(() => {
 
             // TBD Capturing movie
             console.log("Start capturing");
-            stream = renderer.domElement.captureStream(12); // 25 FPS
+            stream = renderer.domElement.captureStream(25); // 25 FPS
             for(const track of stream.getVideoTracks()) {
                 console.log(track);
             //     track.addEventListener("ended", (event) => {
@@ -176,6 +178,12 @@ onMounted(() => {
             //     track.stop();
             // }
         }
+    });
+
+    watchEffect(() => {
+
+        controls.target = new THREE.Vector3(...configStore.control.target);
+        controls.update();
     });
 
     sm.createLights();

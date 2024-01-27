@@ -12,7 +12,6 @@ class SceneManager {
     private static instance: SceneManager;
 	private static readonly scene = new THREE.Scene();
 
-
 	createScene(): THREE.Scene {
 
 		const configStore = useConfigStore();
@@ -108,6 +107,12 @@ class SceneManager {
 			ambient.intensity = configStore.lights.ambientIntensity;
 			ambient.color = new THREE.Color(configStore.lights.ambientColor);
 		});
+	}
+
+	setCenter(center: [number, number, number]): void {
+
+		const configStore = useConfigStore();
+		configStore.control.target = center;
 	}
 
 	// > Access the singleton instance

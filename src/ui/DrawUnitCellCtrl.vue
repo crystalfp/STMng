@@ -1,12 +1,13 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the structure data reader.
+ * Controls for the unit cell / supercell visualization.
  */
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {mdiRectangle, mdiRestore} from "@mdi/js";
+import {mdiRestore} from "@mdi/js";
+import ColorSelector from "@/widgets/ColorSelector.vue";
 
 // > Properties
 const props = defineProps<{
@@ -19,7 +20,6 @@ const props = defineProps<{
 const showUnitCell = ref(true);
 const lineColor = ref("#0000FF");
 const dashedLine = ref(false);
-const lineColorShow = ref(false);
 
 // Supercell
 const repetitionsA = ref(1);
@@ -28,7 +28,6 @@ const repetitionsC = ref(1);
 const showSupercell = ref(false);
 const supercellColor = ref("#16a004");
 const dashedSupercell = ref(false);
-const supercellColorShow = ref(false);
 
 const hasSupercell = (): boolean => {
     return repetitionsA.value > 1 || repetitionsB.value > 1 || repetitionsC.value > 1;
@@ -74,14 +73,7 @@ const resetSliders = (): void => {
 <v-container class="container">
   <v-switch v-model="showUnitCell" color="primary" label="Show unit cell" class="mt-4 ml-4" />
   <v-switch v-model="dashedLine" color="primary" label="Dashed lines" class="ml-4 mt-n5" />
-  <v-btn class="mb-6 ml-2 w-50" @click="lineColorShow = !lineColorShow">
-    <template #append>
-      <v-icon :icon="mdiRectangle" :color="lineColor" size="x-large" />
-    </template>
-    Line color
-  </v-btn><br>
-  <v-color-picker v-if="lineColorShow" v-model="lineColor" :modes="['rgb', 'hsl', 'hex']"
-                  elevation="0" class="mb-4 ml-2" />
+  <color-selector v-model="lineColor" label="Line color" />
   <v-divider :thickness="8" class="mb-4" />
   <v-label text="Cell repetitions" class="ml-2 mb-3" />
   <v-slider v-model="repetitionsA" label="Along a" min="1" max="10" step="1" thumb-label
@@ -98,13 +90,6 @@ const resetSliders = (): void => {
   </v-btn>
   <v-switch v-model="showSupercell" color="primary" :disabled="!hasSupercell()" label="Show supercell" class="ml-4" />
   <v-switch v-model="dashedSupercell" color="primary" label="Dashed lines supercell" class="ml-4 mt-n5" />
-  <v-btn class="mb-6 ml-2 w-50" @click="supercellColorShow = !supercellColorShow">
-    <template #append>
-      <v-icon :icon="mdiRectangle" :color="supercellColor" size="x-large" />
-    </template>
-    Line color
-  </v-btn><br>
-  <v-color-picker v-if="supercellColorShow" v-model="supercellColor" :modes="['rgb', 'hsl', 'hex']"
-                  elevation="0" class="mb-4 ml-2" />
+  <color-selector v-model="supercellColor" label="Line color" />
 </v-container>
 </template>

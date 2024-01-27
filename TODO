@@ -11,6 +11,7 @@ ToDo:
   ☐ Unify naming: graph, node, project
   ☐ What happens if you have a dangling input in the graph?
   ☐ Change OrbitControl to camera-controls
+  ✔ Set `target` for the orbit control @done(2024-01-27 11:03)
 
 Bugs:
 

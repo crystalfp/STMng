@@ -25,5 +25,7 @@ const configStore = useConfigStore();
         @click="configStore.control.movie = !configStore.control.movie">
       {{ configStore.control.movie ? "Stop recording" : "Start recording" }}
   </v-btn>
+  <v-alert title="Not yet implemented" text="Movie capture not yet implemented"
+           type="error" density="compact" color="red" class="mt-4" />
 </v-container>
 </template>
