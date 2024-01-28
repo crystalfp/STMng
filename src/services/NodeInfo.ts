@@ -1,5 +1,5 @@
 /**
- * Everything related to nodes and relative UI interfaces.
+ * Everything related to nodes and their UI interfaces.
  *
  * @packageDocumentation
  *
@@ -25,7 +25,7 @@ interface NodeParts {
 
 export class NodeInfo {
 
-	// NOTE 2) Add the type and ui component
+	// NOTE 2) Add the type and its ui component
 	private static readonly typeToPartsRecord: Record<string, NodeParts> = {
 		"structure-reader":	{ui: "StructureReaderCtrl"},
 		"draw-structure":	{ui: "DrawStructureCtrl"},
@@ -39,6 +39,9 @@ export class NodeInfo {
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
+	/**
+	 * Initialize the type to parts map
+	 */
 	constructor() {
 
 		// Setup the mapping between the node type and the node ui component
@@ -47,12 +50,25 @@ export class NodeInfo {
 		}
 	}
 
+	/**
+	 * Return node info
+	 *
+	 * @param node - Node in the graph
+	 * @returns Info on the node
+	 */
 	getUICode(node: GraphNode): NodeUI | undefined {
 
 		const info = this.typeToParts.get(node.type);
 		return info ? {id: node.id, ui: info.ui, label: node.label, in: node.in} : undefined;
 	}
 
+	/**
+	 * Setup the node instances
+	 *
+	 * @param type - Type of the node
+	 * @param id - ID of the node
+	 * @param map - Map to be filled
+	 */
 	setupRuntime(type: string, id: string, map: Map<string, unknown>): void {
 
 		// NOTE 3) Add node class instantiation
@@ -87,6 +103,14 @@ export class NodeInfo {
 		}
 	}
 
+	/**
+	 * Setup the output of a node
+	 *
+	 * @param id - ID of the node that generates an output
+	 * @param type - Type of the node
+	 * @param data - Data to output
+	 * @param dataInStore - Data to put in the switchboard store
+	 */
 	setDataOutputs(id: string, type: string | undefined, data: unknown, dataInStore: unknown): void {
 
 		// NOTE 4) Add the node types that generate an output
@@ -116,6 +140,15 @@ export class NodeInfo {
 		}
 	}
 
+	/**
+	 * Get the input data
+	 *
+	 * @param id - ID of the node that receive an input
+	 * @param type - Type of the node
+	 * @param idFrom - From which node it takes the input
+	 * @param dataFrom - Data in input
+	 * @param callback - Function to be called when the node receive new data
+	 */
 	getDataInputs(id: string,
 				  type: string | undefined,
 				  idFrom: string,
@@ -142,6 +175,13 @@ export class NodeInfo {
 		}
 	}
 
+	/**
+	 * Save the status of all nodes
+	 *
+	 * @param map - Map of the nodes
+	 * @param idToType - Map from node id to its type
+	 * @returns - Formatted status as a JSON string
+	 */
 	saveUiStatus(map: Map<string, unknown>, idToType: Map<string, string>): string {
 
 		let uiStatus = '"ui":{';

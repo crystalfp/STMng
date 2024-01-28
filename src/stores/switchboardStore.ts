@@ -1,5 +1,5 @@
 /**
- * The shared state of the application.
+ * The shared state of the application. It is accessed through the switchboard
  *
  * @packageDocumentation
  */

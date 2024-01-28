@@ -1,3 +1,8 @@
+/**
+ * Load atoms info
+ *
+ * @packageDocumentation
+ */
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -22,7 +27,7 @@ import type {Atom} from "../../types";
 // #   - covalent radii (in Angstrom)         1.6 if unknown                    #
 // #   - "bond order" radii                                          [NOT HERE] #
 // #   - van der Waals radii (in Angstrom)    2.0 if unknown                    #
-// #   - maximum bond valence         6 if unknown                              #
+// #   - maximum bond valence         		  6 if unknown                      #
 // #   - IUPAC recommended atomic masses (in amu)                               #
 // #   - Pauling electronegativity            0.0 if unknown                    #
 // #   - ionization potential (in eV)         0.0 if unknown                    #
@@ -88,6 +93,9 @@ export class AtomData {
 	private readonly data;
 	private readonly symbol2an = new Map<string, number>();
 
+	/**
+	 * Build the class by loading the atomic data
+	 */
 	private constructor() {
 		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 		const DIST = path.join(mainSourceDirectory, "..", "dist");
@@ -105,14 +113,32 @@ export class AtomData {
 		}
 	}
 
+	/**
+	 * Convert atomic symbol to atom Z
+	 *
+	 * @param symbol - Atomic symbol as read from the structure file
+	 * @returns The atom Z value
+	 */
 	atomicNumber(symbol: string): number {
 		return this.symbol2an.get(symbol) ?? 0;
 	}
 
+	/**
+	 * Convert the atom Z value into atom symbol
+	 *
+	 * @param atomZ - Atom Z value
+	 * @returns The corresponding atomic symbol
+	 */
 	atomicSymbol(atomZ: number): string {
 		return this.data[atomZ].symbol;
 	}
 
+	/**
+	 * Return other information on the atom with Z value
+	 *
+	 * @param atomZ - Z value of the atom that should be retrieved
+	 * @returns Structure containing symbol, radii and color
+	 */
 	atomicRadiiAndColor(atomZ: number): OneAtomRendering {
 
 		const rs = this.data[atomZ].red.toString(16).toUpperCase().padStart(2, "0");
@@ -126,6 +152,7 @@ export class AtomData {
 			color:	`#${rs}${gs}${bs}`
 		};
 	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
@@ -146,18 +173,42 @@ export class AtomData {
     }
 }
 
+/**
+ * Convert atomic symbol to atom Z
+ *
+ * @param symbol - Atomic symbol as read from the structure file
+ * @returns The atom Z value
+ */
 export const getAtomicNumber = (symbol: string): number => {
 	return AtomData.getInstance().atomicNumber(symbol);
 };
 
+/**
+ * Return other information on the atom with Z value
+ *
+ * @param atomZ - Z value of the atom that should be retrieved
+ * @returns Structure containing symbol, radii and color
+ */
 export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => {
 	return AtomData.getInstance().atomicRadiiAndColor(atomZ);
 };
 
+/**
+ * Convert the atom Z value into atom symbol
+ *
+ * @param atomZ - Atom Z value
+ * @returns The corresponding atomic symbol
+ */
 export const getAtomicSymbol = (atomZ: number): string => {
 	return AtomData.getInstance().atomicSymbol(atomZ);
 };
 
+/**
+ * Return a list of covalent radii for the given atoms
+ *
+ * @param atoms - List of atom structures
+ * @returns List of covalent radii for the given atoms
+ */
 export const getCovalentRadii = (atoms: Atom[]): number[] => {
 	const rCov: number[] = [];
 	for(const atom of atoms) {

@@ -1,14 +1,24 @@
+/**
+ * Reader for ShelX formatted files
+ *
+ * @packageDocumentation
+ */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber, getCovalentRadii} from "../modules/AtomData";
-import {getStructureAppearance} from "../modules/ComputeLook";
 import {computeBonds} from "../../services/ComputeBonds";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
-import {extractBasis, fractionalToCartesianCoordinates} from "../modules/ReaderHelpers";
+import {extractBasis, fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderHelpers";
 
 export class ReaderSHELX implements ReaderImplementation {
 
+	/**
+	 * Read the structures from the file
+	 *
+	 * @param filename - File to be read
+	 * @returns - The set of structure read
+	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 
 		const crystal: Crystal = {

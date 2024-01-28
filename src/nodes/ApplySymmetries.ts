@@ -1,3 +1,8 @@
+/**
+ * Apply symmetries to structure.
+ *
+ * @packageDocumentation
+ */
 /* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
@@ -5,7 +10,7 @@ import {computeBonds} from "@/services/ComputeBonds";
 import {computeSymmetries} from "@/services/RoutesClient";
 import log from "electron-log";
 
-// > Kind of directions for fill unit cell
+// > Kind of directions for filling unit cell
 const X_MIN = 0x010;
 const Y_MIN = 0x020;
 const Z_MIN = 0x040;
@@ -24,6 +29,11 @@ export class ApplySymmetries {
 	private fractionalCoords: number[] = [];
 	private readonly atomIdx: number[] = [];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of theApply Symmetries node
+	 */
 	constructor(private readonly id: string) {
 
 		sb.getUiParams(this.id, (params: UiParams) => {

@@ -1,5 +1,19 @@
+/**
+ * Compute materials.
+ * @remarks The color interpolated for bonds should be implemented (an idea is the commented part).
+ *
+ * @packageDocumentation
+ */
 import * as THREE from "three";
 
+/**
+ * Compute surface material
+ *
+ * @param color - Color of the surface
+ * @param roughness - Rugosity of the material
+ * @param metalness - Metal shinig of the material
+ * @returns The mesh material
+ */
 export const normalMaterial = (color: THREE.ColorRepresentation,
 						       roughness: number,
 							   metalness: number): THREE.MeshStandardMaterial => {
@@ -12,6 +26,16 @@ export const normalMaterial = (color: THREE.ColorRepresentation,
 	});
 };
 
+/**
+ * Compute material that interpolates between two colors
+ *
+ * @param colorFrom - First side color
+ * @param colorTo - End side color
+ * @param roughness - Rugosity of the material
+ * @param metalness - Metal shinig of the material
+ * @param width - of the surface
+ * @returns Material to apply
+ */
 export const colorTextureMaterial = (colorFrom: THREE.Color,
 									colorTo: THREE.Color,
 									roughness: number, metalness: number,

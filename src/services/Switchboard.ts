@@ -26,10 +26,20 @@ class Switchboard {
 	private readonly mapIdToInputs = new Map<string, string[]>();
 	private readonly nodeInfo;
 
+	/**
+	 * At switchboard creation, access the node specific functionalities
+	 */
 	private constructor() {
 		this.nodeInfo = new NodeInfo();
 	}
 
+	/**
+	 * Parse the inputs from the graph
+	 *
+	 * @param id - ID of the node for which the inputs should be defined
+	 * @param input - String of inputs from the graph
+	 * @param map - Map to be set with the inputs
+	 */
 	private setupInputs(id: string, input: string, map: Map<string, string[]>): void {
 
 		if(!input) return;
@@ -125,12 +135,23 @@ class Switchboard {
 		});
 	}
 
+	/**
+	 * When the switchboard is ready, the callback is called to setup the UI
+	 *
+	 * @param callback - Function to be called to setup the UI
+	 */
 	subscribeToUiNodes(callback: (nodes: NodeUI[], currentId: string) => void): void {
 
 		if(this.project && this.project.graph.length > 0) callback(this.nodesUI, this.currentId);
 		this.nodesCallback = callback;
 	}
 
+	/**
+	 * Receive the UI parameters
+	 *
+	 * @param id - ID of the node receiving the UI parameters
+	 * @param callback - Function to be called when the UI parameters change
+	 */
 	getUiParams(id: string, callback: (params: UiParams) => void): void {
 
 		const switchboardStore = useSwitchboardStore();
@@ -141,6 +162,12 @@ class Switchboard {
 		callback(switchboardStore.ui[id]);
 	}
 
+	/**
+	 * Send parameters to the user interface
+	 *
+	 * @param id - ID of the node
+	 * @param params - Parameters to be passed to the UI
+	 */
 	setUiParams(id: string, params: UiParams): void {
 
 		const switchboardStore = useSwitchboardStore();
@@ -148,6 +175,11 @@ class Switchboard {
 		for(const par in params) switchboardStore.ui[id][par] = params[par];
 	}
 
+	/**
+	 * Restore UI status
+	 *
+	 * @param savedProject - Project from which the status should be restored
+	 */
 	private restoreStatus(savedProject: Project): void {
 
 		// Restore viewer if it has been saved
@@ -190,6 +222,12 @@ class Switchboard {
 		}
 	}
 
+	/**
+	 * Set data in output
+	 *
+	 * @param id - ID of the node that sets the data
+	 * @param data - Data to transmit
+	 */
 	setData(id: string, data: unknown): void {
 
 		const switchboardStore = useSwitchboardStore();
@@ -199,6 +237,12 @@ class Switchboard {
 		this.nodeInfo.setDataOutputs(id, type, data, switchboardStore.data[id]);
 	}
 
+	/**
+	 * Get data from another node
+	 *
+	 * @param id - ID of the node receiving the data
+	 * @param callback - Function called when the data changes
+	 */
 	getData(id: string, callback: (data: unknown, idFrom: string) => void): void {
 
 		const inputs = this.mapIdToInputs.get(id);

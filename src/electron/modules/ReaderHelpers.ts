@@ -1,6 +1,22 @@
+/**
+ * Support routines for the readers.
+ *
+ * @packageDocumentation
+ */
 
-import type {BasisType, PositionType} from "../../types";
+import {getAtomicRadiiAndColor} from "./AtomData";
+import type {BasisType, PositionType, Atom, Look} from "../../types";
 
+/**
+ *
+ * @param a - Unit cell vector a
+ * @param b - Unit cell vector b
+ * @param c - Unit cell vector c
+ * @param alpha - Unit cell angles (degrees)
+ * @param beta - Unit cell angles (degrees)
+ * @param gamma - Unit cell angles (degrees)
+ * @returns - The basis vectors
+ */
 export const extractBasis = (a: number, b: number, c: number,
 							 alpha: number, beta: number, gamma: number): BasisType => {
 
@@ -41,6 +57,16 @@ export const extractBasis = (a: number, b: number, c: number,
 	return basis;
 };
 
+/**
+ * Convert fractional coordinates into corresponding cartesian ones
+ *
+ * @param basis - The structure basis vectors
+ * @param fx - The fractional x coordinate
+ * @param fy - The fractional y coordinate
+ * @param fz - The fractional z coordinate
+ * @param origin - Origin of the unit cell (if missing means [0, 0, 0])
+ * @returns - The corresponding cartesian coordinates
+ */
 export const fractionalToCartesianCoordinates = (basis: BasisType,
 												 fx: number, fy: number, fz: number,
 												 origin?: PositionType): PositionType => {
@@ -65,4 +91,25 @@ export const fractionalToCartesianCoordinates = (basis: BasisType,
 		fx*basis[1] + fy*basis[4] + fz*basis[7],
 		fx*basis[2] + fy*basis[5] + fz*basis[8],
 	];
+};
+
+/**
+ * Compute the "look" part of the structure
+ *
+ * @param atoms - Atoms in the structure
+ * @returns The "look" component of the structure
+ */
+export const getStructureAppearance = (atoms: Atom[]): Look => {
+
+	// Find distinct atom species
+	const distinctAtoms = new Set<number>();
+	for(const atom of atoms) distinctAtoms.add(atom.atomZ);
+
+	const out: Look = {};
+	for(const atomZ of distinctAtoms) {
+
+		out[atomZ] = getAtomicRadiiAndColor(atomZ);
+	}
+
+	return out;
 };

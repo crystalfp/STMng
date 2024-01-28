@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the capture media node.
+ * Movie capture not yet implemented.
+ */
 
 import {useConfigStore} from "@/stores/configStore";
 

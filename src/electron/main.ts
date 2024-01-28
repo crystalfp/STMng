@@ -42,8 +42,9 @@ const program = new Command("STMng");
 program
     .version(pck.version)
     .description(pck.description)
-    .usage("[options]")
+    .usage("[options] [project-file]")
     .addOption(new Option("-t, --theme <theme>", "User interface theme").choices(["dark", "light"]))
+    .option("-d, --default", "Force load of default project")
     .addHelpText("before", " ")
     .addHelpText("after", " ");
 
@@ -52,6 +53,7 @@ program.parse(process.argv, {from: "electron"});
 
 interface ProgramOptions {
     theme?: "dark" | "light";
+    default: boolean;
 }
 const options = program.opts<ProgramOptions>();
 
@@ -76,7 +78,8 @@ app.whenReady().then(() => {
     });
 
     // Load project
-    if(program.args.length > 0) loadProjectAndRemember(program.args[0]);
+    if(options.default) loadRememberedProject(true);
+    else if(program.args.length > 0) loadProjectAndRemember(program.args[0]);
     else loadRememberedProject(false);
 
     // if(import.meta.env.DEV) return installExtension(VUEJS_DEVTOOLS);

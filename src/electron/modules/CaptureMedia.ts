@@ -1,6 +1,14 @@
+/**
+ * Save a screen capture
+ *
+ * @packageDocumentation
+ */
 import {ipcMain} from "electron";
 import fs from "node:fs";
 
+/**
+ * Setup the channels to save a scene snapshot
+ */
 export const setupChannelSnapshot = (): void => {
 
     ipcMain.handle("VIEWER:SNAPSHOT",  (_event, dataURI: string) => {
@@ -29,4 +37,6 @@ export const setupChannelSnapshot = (): void => {
 				    error: `Cannot save image file "${filename}". Error: ${(error as Error).message}`};
 		}
     });
+
+	// TBD Add save movie
 };

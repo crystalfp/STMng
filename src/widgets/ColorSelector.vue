@@ -1,5 +1,8 @@
 <script setup lang="ts">
-
+/**
+ * @component
+ * Show a button to change a color
+ */
 import {ref} from "vue";
 import {mdiRectangle} from "@mdi/js";
 

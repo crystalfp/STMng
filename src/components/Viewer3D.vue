@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Viewer 3D initial prototype
+ * Viewer 3D component.
  */
 
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
@@ -25,12 +25,12 @@ const props = defineProps<{
 
 }>();
 
-// Reference to the view
-const cnv = ref<HTMLElement | null>(null);
-
-// Create scene
-const scene = sm.createScene();
-
+/**
+ * Copy the position of the perspective camera to the orthographic camera
+ *
+ * @param perspectiveCamera - The perspective camera, the source of the copy
+ * @param orthographicCamera - The orthographic camera, the receiver of the copy
+ */
 const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
                                orthographicCamera: THREE.OrthographicCamera): void => {
 
@@ -50,6 +50,13 @@ const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
     orthographicCamera.position.copy(perspectiveCamera.position);
 };
 
+/**
+ * Set the orthographic camera aspect ratio from the perspective camera
+ *
+ * @param perspectiveCamera - The perspective camera, the source of the computation
+ * @param orthographicCamera - The orthographic camera that receives the result
+ * @param aspect - The aspect ratio of the perspective camera
+ */
 const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
                                orthographicCamera: THREE.OrthographicCamera, aspect: number): void => {
 
@@ -63,6 +70,13 @@ const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
     orthographicCamera.right = halfWidth;
 };
 
+// Reference to the view
+const cnv = ref<HTMLElement | null>(null);
+
+// Create the scene
+const scene = sm.createScene();
+
+// > When the canvas is defined, mount the viewer
 onMounted(() => {
 
     if(!cnv.value) {
@@ -180,12 +194,14 @@ onMounted(() => {
         }
     });
 
+    // Set the camera target point as loaded by the structure rendering node
     watchEffect(() => {
 
         controls.target = new THREE.Vector3(...configStore.control.target);
         controls.update();
     });
 
+    // Create lights
     sm.createLights();
 
     // const helper = new THREE.CameraHelper( camera );

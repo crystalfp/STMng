@@ -1,5 +1,5 @@
 /**
- * Display the structure unit cell.
+ * Display the structure unit cell and replicate structure for a supercell.
  *
  * @packageDocumentation
  */
@@ -31,6 +31,11 @@ export class DrawUnitCell {
 	private dashedSupercell = false;
 	private structure: Structure | undefined;
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of the Draw Unit Cell node
+	 */
 	constructor(private readonly id: string) {
 
 		// Prepare the groups and add to scene
@@ -80,6 +85,12 @@ export class DrawUnitCell {
 		});
 	}
 
+	/**
+	 * Draw the unit cell
+	 *
+	 * @param basis - The cell basis vectors
+	 * @param orig - The cell origin
+	 */
 	private drawUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
@@ -131,6 +142,12 @@ export class DrawUnitCell {
         this.outUC.add(this.lineUC);
 	}
 
+	/**
+	 * Draw the supercell
+	 *
+	 * @param basis - The cell basis vectors
+	 * @param orig - The cell origin
+	 */
 	private drawSupercell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
@@ -198,6 +215,13 @@ export class DrawUnitCell {
         this.outSC.add(this.lineSC);
 	}
 
+	/**
+	 * Define the material to be used to draw the lines
+	 *
+	 * @param color - Color of the lines
+	 * @param dashed - If the line should be dashed
+	 * @returns The material to apply to the lines
+	 */
 	private setMaterial(color: string, dashed: boolean): THREE.Material {
 		return dashed ? new THREE.LineDashedMaterial({
 							color,
@@ -210,6 +234,9 @@ export class DrawUnitCell {
 						});
 	}
 
+	/**
+	 * Change the materials
+	 */
 	private changeMaterials(): void {
 		if(this.lineUC) {
 			this.lineUC.material = this.setMaterial(this.lineColor, this.dashedLine);
@@ -221,6 +248,9 @@ export class DrawUnitCell {
 		}
 	}
 
+	/**
+	 * Replicate the structure to fill the supercell
+	 */
 	private replicateUnitCell(): void {
 
 		if(!this.structure) return;
@@ -295,6 +325,11 @@ export class DrawUnitCell {
 		sb.setData(this.id, out);
 	}
 
+	/**
+	 * Save the node status
+	 *
+	 * @returns The JSON formatted status to be saved
+	 */
 	saveStatus(): string {
 
 		const statusToSave = {

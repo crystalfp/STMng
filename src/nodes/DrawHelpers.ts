@@ -1,5 +1,5 @@
 /**
- * Show helper objects: Axis and Grid.
+ * Show helper objects: axis and axis aligned grids.
  *
  * @packageDocumentation
  */
@@ -18,6 +18,11 @@ export class DrawHelpers {
 	private side = 10;
 	private sidePrevious = 10;
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of the Draw Helpers node
+	 */
 	constructor(private readonly id: string) {
 
 		let gridXZ = this.gridHelper("XZ");
@@ -44,7 +49,7 @@ export class DrawHelpers {
 
 			if(this.side !== this.sidePrevious) {
 
-				const scene = sm.accessScene();
+				const {scene} = sm;
 
 				let obj = scene.getObjectByName("GridHelperXZ") as THREE.GridHelper;
 				if(obj) {
@@ -130,6 +135,11 @@ export class DrawHelpers {
 		return grid;
 	}
 
+	/**
+	 * Save the node status
+	 *
+	 * @returns Node status as JSON formatted string
+	 */
 	saveStatus(): string {
 
 		const statusToSave = {

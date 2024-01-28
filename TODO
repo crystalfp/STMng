@@ -11,7 +11,7 @@ ToDo:
   ☐ Unify naming: graph, node, project
   ☐ What happens if you have a dangling input in the graph?
   ☐ Change OrbitControl to camera-controls
-  ✔ Set `target` for the orbit control @done(2024-01-27 11:03)
+  ☐ Disable save project menu entry if the project loaded is the default one
 
 Bugs:
 
@@ -24,6 +24,7 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Set `target` for the orbit control @done(2024-01-27 11:03)
   ✔ Add project path in the title @done(2024-01-25 08:40)
   ✔ Extract scene from switchboard and create another singleton @done(2024-01-13 08:04)
   ✔ Symmetries @done(2024-01-25 06:15)

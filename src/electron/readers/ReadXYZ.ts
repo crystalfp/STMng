@@ -1,13 +1,24 @@
+/**
+ * Reader for XYZ formatted files
+ *
+ * @packageDocumentation
+ */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber, getCovalentRadii} from "../modules/AtomData";
-import {getStructureAppearance} from "../modules/ComputeLook";
+import {getStructureAppearance} from "../modules/ReaderHelpers";
 import {computeBonds} from "../../services/ComputeBonds";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure} from "../../types";
 
 export class ReaderXYZ implements ReaderImplementation {
 
+	/**
+	 * Read the structures from the file
+	 *
+	 * @param filename - File to be read
+	 * @returns - The set of structure read
+	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 
 		const structures: Structure[] = [];

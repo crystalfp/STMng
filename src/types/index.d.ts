@@ -65,7 +65,7 @@ export type BasisType = [
 /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
 export type BondType = "h" | "n" | "x";
 
-/** One atom in the structure or step in the structure */
+/** One atom in the structure or in one step in the structure */
 export interface Atom {
 
     /** Atomic number */
@@ -80,18 +80,27 @@ export interface Atom {
 
 /** Definition of a bond */
 export interface Bond {
+
     /** Index in the list of atoms where the bond starts */
     from: number;
+
     /** Index in the list of atoms where the bond ends */
     to:   number;
+
     /** Kind of bond */
     type: BondType;
 }
 
 /** Crystallographic data */
 export interface Crystal {
+
+    /** The unit cell basis vectors */
     basis: BasisType;
+
+    /** Origin of the unit cell */
     origin: PositionType;
+
+    /** Space group */
     spaceGroup: string;
 }
 

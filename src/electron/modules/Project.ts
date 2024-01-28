@@ -34,6 +34,11 @@ const loadProject = (filename: string): void => {
 	}
 };
 
+/**
+ * Get the default project file path
+ *
+ * @returns Full path to the default project
+ */
 const getDefaultProject = (): string => {
 
 	const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -100,6 +105,9 @@ export const saveProjectAs = (filename: string): void => {
 		});
 };
 
+/**
+ * Save a loaded project
+ */
 export const saveProject = (): void => {
 
 	const filename = getProjectPath();

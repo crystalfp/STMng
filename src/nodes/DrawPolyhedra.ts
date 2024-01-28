@@ -1,3 +1,8 @@
+/**
+ * Extract the enclosing polyhedra
+ *
+ * @packageDocumentation
+ */
 
 import * as THREE from "three";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
@@ -17,6 +22,11 @@ export class DrawPolyhedra {
 									});
 	private color = "#FFFFFF80";
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of the Draw Polyhedra node
+	 */
 	constructor(private readonly id: string) {
 
 		sm.add(this.mesh);
@@ -49,18 +59,35 @@ export class DrawPolyhedra {
 		});
 	}
 
+	/**
+	 * Extract the color from a string containing alpha
+	 *
+	 * @param color - Color in #RRGGBBAA format
+	 * @returns The color part
+	 */
 	private extractColor(color: string): THREE.Color {
 
 		const colorString = color.slice(0, 7);
 		return new THREE.Color(colorString);
 	}
 
+	/**
+	 * Extract the opacity from a string containing alpha
+	 *
+	 * @param color - Color in #RRGGBBAA format
+	 * @returns The opacity value
+	 */
 	private extractOpacity(color: string): number {
 
 		if(color.length < 9) return 1;
 		return Number.parseInt(color.slice(7, 9), 16) / 255;
 	}
 
+	/**
+	 * Save the node status
+	 *
+	 * @returns Node status as JSON formatted string
+	 */
 	saveStatus(): string {
 
 		const statusToSave = {

@@ -16,10 +16,17 @@ import {ReaderXYZ} from "../readers/ReadXYZ";
 import {ReaderSHELX} from "../readers/ReadSHELX";
 import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
 
+/**
+ * Read structure file in a given format
+ *
+ * @param filename - File to read
+ * @param requestedFormat - Format to use to read the file
+ * @param atomsTypes - Atoms types to assign to atoms read
+ * @returns Structure read and eventual error message
+ */
 export const readFileStructure = async (filename: string,
 									requestedFormat: string,
 									atomsTypes: string): Promise<ReaderStructure> => {
-
 
 	// const associatedFilename = getAssociatedFile(filename, type);
 
@@ -64,6 +71,9 @@ export const readFileStructure = async (filename: string,
 	};
 };
 
+/**
+ * Setup channels for readers
+ */
 export const setupChannelReader = (): void => {
 
 	ipcMain.handle("READER:READ", async (_event, format: string, atomsTypes: string) => {

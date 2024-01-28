@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the helper objects visualization.
+ */
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";

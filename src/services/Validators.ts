@@ -38,6 +38,12 @@ export const projectIsValid = (prj: Project): boolean => {
 	return false;
 };
 
+/**
+ * Check id in the project
+ *
+ * @param prj - The project
+ * @returns True if there are no problems with the id of the modules
+ */
 const checkIds = (prj: Project): boolean => {
 
 	const ids = new Set<string>();

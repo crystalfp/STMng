@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the apply symmetries node.
+ */
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
@@ -38,7 +42,7 @@ watchEffect(() => {
 <v-container class="container">
   <v-row class="mt-2">
     <v-label text="Symmetry group:" class="ml-3 mr-4" />
-    <v-label :text="symmetryGroup" style="white-space: break-spaces;font-family:monospace;" />
+    <v-label :text="symmetryGroup" style="white-space: break-spaces;font-family: monospace;" />
   </v-row>
   <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact" color="red" />
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-6" />

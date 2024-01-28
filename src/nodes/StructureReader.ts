@@ -22,6 +22,11 @@ export class StructureReader {
 	private atomsTypes = "";
 	private inProgress = false;
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of the Structure Reader node
+	 */
 	constructor(private readonly id: string) {
 
 		sb.getUiParams(this.id, (params: UiParams) => {
@@ -161,6 +166,12 @@ export class StructureReader {
 				log.error("Error reading structure:", error.message);
 			});
 	}
+
+	/**
+	 * Save the node status
+	 *
+	 * @returns The JSON formatted status to be saved
+	 */
 	saveStatus(): string {
 
 		const statusToSave = {

@@ -41,7 +41,7 @@ export const isLoaded = (): boolean => {
 export const setTitle = (title: string): void => window.api.setTitle(title);
 
 /**
- * Handle full screen selection
+ * Handle full screen view
  *
  * @param callback - Function to call on full screen status change
  */
@@ -64,6 +64,17 @@ export const receiveBroadcast = (callback: (eventType: string, params: (boolean 
 											eventData as (boolean | string)[]
 								   		)
 	);
+};
+
+/**
+ * Receive system menu selection.
+ *
+ * @param callback - Function to be called when an entry in the system menu is selected
+ */
+export const receiveMenuSelection = (callback: (menuEntry: string, payload: string) => void): void => {
+
+	window.electron.ipcRenderer.on("APP:MENU", (_event, entryName: string, payload: string) =>
+														callback(entryName, payload));
 };
 
 // > Project
@@ -124,7 +135,6 @@ export function getPreferenceSync<T>(key: string, defaultValue: T): T {
 	return value ?? defaultValue;
 }
 
-
 /** Versions of the various application components */
 export interface Versions {app: string; node: string; electron: string; chrome: string}
 /**
@@ -135,17 +145,6 @@ export interface Versions {app: string; node: string; electron: string; chrome: 
 export const getVersions = (): Promise<Versions> => {
 
 	return window.electron.ipcRenderer.invoke("APP:VERSIONS") as Promise<Versions>;
-};
-
-/**
- * Receive system menu selection.
- *
- * @param callback - Function to be called when an entry in the system menu is selected
- */
-export const receiveMenuSelection = (callback: (menuEntry: string, payload: string) => void): void => {
-
-	window.electron.ipcRenderer.on("APP:MENU", (_event, entryName: string, payload: string) =>
-														callback(entryName, payload));
 };
 
 // > Generic secondary windows handling
@@ -192,17 +191,36 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 };
 
 // > Structure reader
+/**
+ *
+ * @param format - Format to be read
+ * @param atomsTypes - Atoms types to use (if not present in the file)
+ * @returns The structure read as JSON formatted string
+ */
 export const readFileStructure = (format: string, atomsTypes: string): Promise<string> => {
 
 	return window.electron.ipcRenderer.invoke("READER:READ", format, atomsTypes) as Promise<string>;
 };
 
+/**
+ * Save an image given as data url
+ *
+ * @param data - Data url representing an image
+ * @returns Response from the main process
+ */
 export const saveDataURL = (data: string): Promise<MainResponse> => {
 
 	return window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
 };
 
 // > Symmetries
+/**
+ * Compute symmetries in the main process
+ *
+ * @param spaceGroup - Space group of the structure
+ * @param fractionalCoords - Fracional coordinates of the structure atoms
+ * @returns The new fractional coordinates and error if any
+ */
 export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => {
 
 	return window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;

@@ -1,3 +1,8 @@
+/**
+ * Create a chart in a secondary window.
+ *
+ * @packageDocumentation
+ */
 import {sb, type UiParams} from "@/services/Switchboard";
 import {createWindow, sendToWindow} from "@/services/RoutesClient";
 
@@ -76,6 +81,11 @@ export class ChartViewer {
 		}
 	};
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - ID of the Chart viewer node
+	 */
 	constructor(private readonly id: string) {
 
 		sb.getUiParams(this.id, (params: UiParams) => {
@@ -92,6 +102,9 @@ export class ChartViewer {
 		});
 	}
 
+	/**
+	 * Compute the chart data and open the chart window
+	 */
 	private computeChart(): void {
 
 		const dataToSend = JSON.stringify({
@@ -109,7 +122,11 @@ export class ChartViewer {
 					});
 	}
 
+	/**
+	 * Update chart if data changed
+	 */
 	private updateChart(): void {
+
 		const dataToSend = JSON.stringify({
 			data: this.chartData,
 			options: this.chartOptions,
@@ -118,6 +135,11 @@ export class ChartViewer {
 		sendToWindow("/chart", dataToSend);
 	}
 
+	/**
+	 * Save the node status
+	 *
+	 * @returns Node status as JSON formatted string
+	 */
 	saveStatus(): string {
 
 		const statusToSave = {

@@ -1,14 +1,25 @@
+/**
+ * Reader for POSCAR formatted files
+ *
+ * @packageDocumentation
+ */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import type {ReaderImplementation} from "../types";
-import type {Structure, Atom, PositionType} from "../../types";
 import {getAtomicNumber, getAtomicSymbol, getCovalentRadii} from "../modules/AtomData";
 import {computeBonds} from "../../services/ComputeBonds";
-import {fractionalToCartesianCoordinates} from "../modules/ReaderHelpers";
-import {getStructureAppearance} from "../modules/ComputeLook";
+import {fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderHelpers";
+import type {ReaderImplementation} from "../types";
+import type {Structure, Atom, PositionType} from "../../types";
 
 export class ReaderPOSCAR implements ReaderImplementation {
 
+	/**
+	 * Read the structures from the file
+	 *
+	 * @param filename - File to be read
+	 * @param atomsTypes - Optional atoms types to be used (normally they are not in the file)
+	 * @returns - The set of structure read
+	 */
 	async readStructure(filename: string, atomsTypes?: string[]): Promise<Structure[]> {
 
 		const structures: Structure[] = [];

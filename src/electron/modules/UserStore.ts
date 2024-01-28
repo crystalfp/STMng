@@ -21,7 +21,7 @@ interface StoreOptions {
 
 /**
  * Per user storage.
- * The storage type should be a Type, not an Interface.
+ * @remarks The storage type should be a Type, not an Interface.
  *
  * @typeParam T - The type of the store
  */
@@ -90,6 +90,11 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 		return this.data[key] !== undefined;
 	}
 
+	/**
+	 * Delete a key from the store
+	 *
+	 * @param key - Key to be deleted
+	 */
 	delete<K extends keyof T>(key: K): void {
 		delete this.data[key];
 		fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");

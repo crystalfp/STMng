@@ -1,8 +1,21 @@
+/**
+ * Compute structure bonds.
+ *
+ * @packageDocumentation
+ */
 import type {Atom, Bond} from "@/types";
 
 // The H bonds forms when X___H...Y and X, Y are N, O, F (maybe also S)
 const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
 
+/**
+ * Compute the valence angle. In X___H...Y the valence angle is HXY
+ *
+ * @param atomH - Hydrogen atom
+ * @param atomX - Atom at one side
+ * @param atomY - Atom at the other side
+ * @returns Valence angle in degrees
+ */
 const valenceAngle = (atomH: Atom, atomX: Atom, atomY: Atom): number => {
 
 	const v0 = atomH.position[0] - atomX.position[0];

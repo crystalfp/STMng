@@ -1,5 +1,5 @@
 /**
- * Manage the connection between modules and inside modules with their GUI.
+ * Manage the scene to be show.
  *
  * @packageDocumentation
  */
@@ -12,6 +12,11 @@ class SceneManager {
     private static instance: SceneManager;
 	private static readonly scene = new THREE.Scene();
 
+	/**
+	 * Create the scene
+	 *
+	 * @returns The created scene
+	 */
 	createScene(): THREE.Scene {
 
 		const configStore = useConfigStore();
@@ -23,6 +28,11 @@ class SceneManager {
 		return SceneManager.scene;
 	}
 
+	/**
+	 * Empty a group with the given name
+	 *
+	 * @param groupName - Name of the group to be cleared
+	 */
 	clearGroup(groupName: string): void {
 
 		const group = SceneManager.scene.getObjectByName(groupName);
@@ -54,14 +64,25 @@ class SceneManager {
         group.clear();
 	}
 
-	accessScene(): THREE.Scene {
+	/**
+	 * Access the scene
+	 */
+	get scene(): THREE.Scene {
 		return SceneManager.scene;
 	}
 
+	/**
+	 * Add an object to the scene
+	 *
+	 * @param obj - Object to be added to the scene
+	 */
 	add(obj: THREE.Object3D): void {
 		SceneManager.scene.add(obj);
 	}
 
+	/**
+	 * Create lights
+	 */
 	createLights(): void {
 
 		const configStore = useConfigStore();
@@ -109,6 +130,11 @@ class SceneManager {
 		});
 	}
 
+	/**
+	 * Save the scene center
+	 *
+	 * @param center - Center to be saved
+	 */
 	setCenter(center: [number, number, number]): void {
 
 		const configStore = useConfigStore();
