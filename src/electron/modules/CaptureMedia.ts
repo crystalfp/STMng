@@ -6,7 +6,7 @@
 import {ipcMain, dialog} from "electron";
 import fs from "fs-extra";
 import path from "node:path";
-import {exec} from "node:child_process";
+import {execSync} from "node:child_process";
 import tmp from "tmp";
 
 /**
@@ -48,29 +48,34 @@ export const setupChannelCapture = (): void => {
 			filters: [
 				{name: "WEBm", extensions: ["webm"]},
 				{name: "mp4",  extensions: ["mp4"]},
+				{name: "avi",  extensions: ["avi"]},
 			]
 		});
 		if(!filename) return {payload: ""};
 
-		if(path.extname(filename) !== ".webm") {
+		const format = path.extname(filename);
+		if(format !== ".webm") {
 
+			// Save the movie to a temporary WEBM formatted file
 			const webmFile = tmp.tmpNameSync({postfix: ".webm"});
 			try {
 				fs.writeFileSync(webmFile, Buffer.from(buffer));
-
-				// eslint-disable-next-line security/detect-child-process
-				exec(`ffmpeg -i ${webmFile} ${filename}`, {windowsHide: true}, (error) => {
-					if(error) {
-						console.error(`exec error: ${error.message}`);
-						return;
-					}
-					fs.removeSync(webmFile);
-				});
-				return {payload: filename};
 			}
 			catch(error: unknown) {
 				return {payload: "Error",
 						error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
+			}
+
+			// Call ffmpeg to do the format conversion
+			try {
+				const opt = format === ".mp4" ? "-movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov" : "";
+				execSync(`ffmpeg -y -i ${webmFile} ${opt} ${filename}`, {windowsHide: true});
+				void fs.remove(webmFile);
+				return {payload: filename};
+			}
+			catch(error: unknown) {
+				return {payload: "Error",
+						error: `Cannot convert movie file. Error: ${(error as Error).message}`};
 			}
 		}
 		try {
