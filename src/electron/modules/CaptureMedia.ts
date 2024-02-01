@@ -3,15 +3,18 @@
  *
  * @packageDocumentation
  */
-import {ipcMain} from "electron";
-import fs from "node:fs";
+import {ipcMain, dialog} from "electron";
+import fs from "fs-extra";
+import path from "node:path";
+import {exec} from "node:child_process";
+import tmp from "tmp";
 
 /**
- * Setup the channels to save a scene snapshot
+ * Setup the channels to save a scene snapshot or a movie
  */
-export const setupChannelSnapshot = (): void => {
+export const setupChannelCapture = (): void => {
 
-    ipcMain.handle("VIEWER:SNAPSHOT",  (_event, dataURI: string) => {
+    ipcMain.handle("VIEWER:SNAPSHOT", (_event, dataURI: string) => {
 
 		// Split the dataURI and extract the image format
 		const data = dataURI.split(",");
@@ -38,5 +41,46 @@ export const setupChannelSnapshot = (): void => {
 		}
     });
 
-	// TBD Add save movie
+	ipcMain.handle("VIEWER:MOVIE",  (_event, buffer: ArrayBuffer) => {
+
+		const filename = dialog.showSaveDialogSync({
+			title: "Save movie",
+			filters: [
+				{name: "WEBm", extensions: ["webm"]},
+				{name: "mp4",  extensions: ["mp4"]},
+			]
+		});
+		if(!filename) return {payload: ""};
+
+		if(path.extname(filename) !== ".webm") {
+
+			const webmFile = tmp.tmpNameSync({postfix: ".webm"});
+			try {
+				fs.writeFileSync(webmFile, Buffer.from(buffer));
+
+				// eslint-disable-next-line security/detect-child-process
+				exec(`ffmpeg -i ${webmFile} ${filename}`, {windowsHide: true}, (error) => {
+					if(error) {
+						console.error(`exec error: ${error.message}`);
+						return;
+					}
+					fs.removeSync(webmFile);
+				});
+				return {payload: filename};
+			}
+			catch(error: unknown) {
+				return {payload: "Error",
+						error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
+			}
+		}
+		try {
+			fs.writeFileSync(filename, Buffer.from(buffer));
+			return {payload: filename};
+		}
+		catch(error: unknown) {
+			return {payload: "Error",
+					error: `Cannot save movie file "${filename}". Error: ${(error as Error).message}`};
+		}
+	});
+
 };

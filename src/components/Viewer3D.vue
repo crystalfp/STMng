@@ -12,7 +12,7 @@ import {useConfigStore} from "@/stores/configStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
 import type {MainResponse} from "@/types";
-import {saveDataURL} from "@/services/RoutesClient";
+import {saveDataURL, saveMovie} from "@/services/RoutesClient";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -68,6 +68,38 @@ const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
     orthographicCamera.bottom = -halfHeight;
     orthographicCamera.left = -halfWidth;
     orthographicCamera.right = halfWidth;
+};
+
+// All recorded chunks captured
+const recordedChunks: Blob[] = [];
+/**
+ * Save data chunk from MediaRecorder
+ *
+ * @param event - Data from MediaRecorder
+ */
+const handleDataAvailable = (event: BlobEvent): void => {recordedChunks.push(event.data);};
+
+/**
+ * Saves the video file on stop recording
+ */
+async function handleStop(): Promise<void> {
+
+    const blob = new Blob(recordedChunks, {
+        type: "video/webm; codecs=vp9"
+    });
+
+    const buffer = await blob.arrayBuffer();
+    const sts = await saveMovie(buffer);
+    if(sts.error) configStore.control.movieMessage = `E|${sts.error}`;
+    else if(sts.payload) configStore.control.movieMessage = `S|${sts.payload}`;
+}
+/**
+ * Handle MediaRecording errors
+ *
+ * @param event - Error event
+ */
+const handleError = (event: Event): void => {
+    configStore.control.movieMessage = `E|${(event as unknown as {error: {name: string}}).error.name}`;
 };
 
 // Reference to the view
@@ -150,47 +182,49 @@ onMounted(() => {
     // Take snapshot
     watchEffect(() => {
         if(configStore.control.snapshot) {
+
             configStore.control.snapshot = false;
 
             const mimeType = `image/${configStore.camera.snapshotFormat}`;
             saveDataURL(renderer.domElement.toDataURL(mimeType))
                 .then((response: MainResponse) => {
                     if(response.error) throw Error(response.error);
+                    configStore.control.snapshotMessage = `S|${response.payload}`;
                 })
                 .catch((error: Error) => {
-                    log.error("Error saving snapshot. Error:", error.message);
+                    configStore.control.snapshotMessage = `E|Error saving snapshot. Error: ${error.message}`;
                 });
         }
     });
 
     // Record movie
     let movieCaptureRunning = false;
+    let mediaRecorder: MediaRecorder;
     let stream: MediaStream;
     watchEffect(() => {
         if(configStore.control.movie) {
 
             movieCaptureRunning = true;
 
-            // TBD Capturing movie
-            console.log("Start capturing");
+            // Capturing movie
             stream = renderer.domElement.captureStream(25); // 25 FPS
-            for(const track of stream.getVideoTracks()) {
-                console.log(track);
-            //     track.addEventListener("ended", (event) => {
-            //         console.log("Track ended");
-            //         console.log(event);
-            //     });
-            }
+
+            // Create the Media Recorder
+            const options = {mimeType: "video/webm; codecs=vp9"};
+            mediaRecorder = new MediaRecorder(stream, options);
+
+            // Register event handlers and start recording
+            mediaRecorder.ondataavailable = handleDataAvailable;
+            mediaRecorder.onstop = handleStop;
+            // eslint-disable-next-line unicorn/prefer-add-event-listener
+            mediaRecorder.onerror = handleError;
+            mediaRecorder.start();
         }
         else if(movieCaptureRunning) {
             movieCaptureRunning = false;
-            console.log("Stop capturing");
-            // for(const track of stream.getVideoTracks()) {
-
-            //     console.log(track);
-            //     console.log(stream);
-            //     track.stop();
-            // }
+            mediaRecorder.stop();
+            const tracks = stream.getTracks();
+            for(const track of tracks) track.stop();
         }
     });
 
@@ -208,7 +242,7 @@ onMounted(() => {
     // scene.add( helper );
     // const viewHelper = new ViewHelper(camera, renderer.domElement);
 
-    // Change the camera parameters when the window changes or ask for a expanded view
+    // Change the camera parameters when the window changes or ask for an expanded view
     const resizeScene = (): void => {
 
         void nextTick().then(() => {

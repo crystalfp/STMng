@@ -16,7 +16,7 @@ import {loadRememberedProject, loadProjectAndRemember, setupChannelProject} from
 import {createMainWindow} from "./modules/WindowsUtilities";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelReader} from "./modules/Reader";
-import {setupChannelSnapshot} from "./modules/CaptureMedia";
+import {setupChannelCapture} from "./modules/CaptureMedia";
 import {setupChannelSymmetries} from "./modules/Symmetries";
 
 // > Setup main process
@@ -34,7 +34,7 @@ setupChannelPreferences();
 setupChannelVersions();
 setupChannelProject();
 setupChannelReader();
-setupChannelSnapshot();
+setupChannelCapture();
 setupChannelSymmetries();
 
 // Command line parsing

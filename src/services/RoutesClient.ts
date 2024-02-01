@@ -202,6 +202,7 @@ export const readFileStructure = (format: string, atomsTypes: string): Promise<s
 	return window.electron.ipcRenderer.invoke("READER:READ", format, atomsTypes) as Promise<string>;
 };
 
+// > Capturer
 /**
  * Save an image given as data url
  *
@@ -211,6 +212,17 @@ export const readFileStructure = (format: string, atomsTypes: string): Promise<s
 export const saveDataURL = (data: string): Promise<MainResponse> => {
 
 	return window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
+};
+
+/**
+ * Save a movie
+ *
+ * @param buffer - Movie captured as buffer
+ * @returns Response from the main process
+ */
+export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("VIEWER:MOVIE", buffer) as Promise<MainResponse>;
 };
 
 // > Symmetries

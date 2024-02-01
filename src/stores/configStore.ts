@@ -32,7 +32,9 @@ interface Viewer3DConfiguration {
     control: {
         reset: boolean;
         snapshot: boolean;
+        snapshotMessage: string;
         movie: boolean;
+        movieMessage: string;
         target: [number, number, number];
     };
 }
@@ -67,7 +69,9 @@ export const useConfigStore = defineStore("ConfigStore", {
         control: {
             reset: false,
             snapshot: false,
+            snapshotMessage: "",
             movie: false,
+            movieMessage: "",
             target: [0, 0, 0],
         }
 	} as Viewer3DConfiguration),

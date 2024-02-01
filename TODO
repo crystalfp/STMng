@@ -12,11 +12,14 @@ ToDo:
   ☐ What happens if you have a dangling input in the graph?
   ☐ Change OrbitControl to camera-controls
   ☐ Disable save project menu entry if the project loaded is the default one
+  ✔ Convert to other movie format @done(2024-02-01 08:48)
+  ☐ Promisify exec to pass error message to client
+  ☐ Finish help
 
 Bugs:
 
 Requests from Oganov:
-  ☐ Save movie
+  ✔ Save movie @done(2024-01-30 08:49)
   ☐ Charge maps
 
 Nice to have/Future:

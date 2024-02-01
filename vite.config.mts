@@ -8,11 +8,14 @@ import path from "node:path";
 export default defineConfig({
     resolve: {
         alias: {
-            "@":  path.resolve(__dirname, "./src")
+            "@":  path.resolve(__dirname, "./src"),
         }
     },
     optimizeDeps: {
         exclude: ["doc", "release", "tests"],
+    },
+    define : {
+        __VUE_PROD_DEVTOOLS__: "false",
     },
     plugins: [
         vue(),
@@ -52,7 +55,7 @@ export default defineConfig({
                         "three-spritetext"
                     ]
                 }
-            }
+            },
         }
     },
 });
