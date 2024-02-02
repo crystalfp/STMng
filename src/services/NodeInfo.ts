@@ -18,6 +18,7 @@ import {DrawHelpers} from "@/nodes/DrawHelpers";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {ApplySymmetries} from "@/nodes/ApplySymmetries";
+import {FindSymmetries} from "@/nodes/FindSymmetries";
 
 interface NodeParts {
 	ui: string;
@@ -36,6 +37,7 @@ export class NodeInfo {
 		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
 		"capture-view":   	{ui: "CaptureMediaCtrl"},
 		"apply-symmetries": {ui: "ApplySymmetriesCtrl"},
+		"find-symmetries": 	{ui: "FindSymmetriesCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -94,6 +96,9 @@ export class NodeInfo {
 			case "apply-symmetries":
 				map.set(id, new ApplySymmetries(id));
 				break;
+			case "find-symmetries":
+				map.set(id, new FindSymmetries(id));
+				break;
 			case "viewer-3d":
 			case "capture-view":
 				// These nodes have no runtime code like the others
@@ -118,6 +123,7 @@ export class NodeInfo {
 
 			// Nodes that have an output
 			case "apply-symmetries":
+			case "find-symmetries":
 			case "draw-unit-cell":
 			case "structure-reader": {
 				const typedData = data as Structure;
@@ -162,6 +168,7 @@ export class NodeInfo {
 			case "draw-unit-cell":
 			case "structure-reader":
 			case "apply-symmetries":
+			case "find-symmetries":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
 				break;
@@ -219,6 +226,10 @@ export class NodeInfo {
 				case "apply-symmetries":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as ApplySymmetries).saveStatus();
+					break;
+				case "find-symmetries":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as FindSymmetries).saveStatus();
 					break;
 			}
 			notFirst = true;

@@ -126,7 +126,7 @@ export class ApplySymmetries {
 		// Get the basis
 		const b = this.structure!.crystal.basis;
 
-		// Calculate the determinant of the matrix
+		// Compute the determinant of the matrix
 		const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
 					b[1] * (b[3] * b[8] - b[5] * b[6]) +
 					b[2] * (b[3] * b[7] - b[4] * b[6]);
@@ -134,7 +134,7 @@ export class ApplySymmetries {
 		// Check if the determinant is zero, which means the matrix is not invertible
 		if(det === 0) throw Error("Basis matrix is not invertible");
 
-		// Calculate the inverse basis matrix
+		// Compute the inverse basis matrix
 		const invDet = 1 / det;
 		const inverse = [
             (b[4] * b[8] - b[5] * b[7]) * invDet,

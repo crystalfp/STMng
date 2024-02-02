@@ -8,6 +8,7 @@ import {getAtomicRadiiAndColor} from "./AtomData";
 import type {BasisType, PositionType, Atom, Look} from "../../types";
 
 /**
+ * Extract the basis vectors from basis lengths and angles
  *
  * @param a - Unit cell vector a
  * @param b - Unit cell vector b
@@ -112,4 +113,45 @@ export const getStructureAppearance = (atoms: Atom[]): Look => {
 	}
 
 	return out;
+};
+
+/**
+ * Compute the angle between two vectore.
+ *
+ * @param v0 - First vector x
+ * @param v1 - First vector y
+ * @param v2 - First vector z
+ * @param w0 - Second vector x
+ * @param w1 - Second vector y
+ * @param w2 - Second vector z
+ * @returns Angle in degrees betwen the two vectors
+ */
+const vectorAngle = (v0: number, v1: number, v2: number, w0: number, w1: number, w2: number): number => {
+
+	const dotProduct = v0*w0 + v1*w1 + v2*w2;
+	const lv2 = v0*v0 + v1*v1 + v2*v2;
+	const lw2 = w0*w0 + w1*w1 + w2*w2;
+
+	return Math.acos(dotProduct/Math.sqrt(lv2*lw2))*180/Math.PI;
+};
+
+/**
+ * Transform the basis vectors into (a, b, c, alpha, beta, gamma)
+ *
+ * @param basis - Basis vectors
+ * @returns Vector with in order: a, b, c, alpha, beta, gamma
+ */
+export const basisToLengthAngles = (basis: BasisType): number[] => {
+
+	return [
+		// Unit cell sides
+		Math.hypot(basis[0], basis[1], basis[2]),
+		Math.hypot(basis[3], basis[4], basis[5]),
+		Math.hypot(basis[6], basis[7], basis[8]),
+
+		// Angles
+		vectorAngle(basis[6], basis[7], basis[8], basis[3], basis[4], basis[5]),
+		vectorAngle(basis[0], basis[1], basis[2], basis[6], basis[7], basis[8]),
+		vectorAngle(basis[0], basis[1], basis[2], basis[3], basis[4], basis[5]),
+	];
 };

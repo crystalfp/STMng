@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import type {Structure} from "../../types";
+import type {Structure, BasisType} from "../../types";
 
 /** Parameters for the window creation */
 export interface WindowsParams {
@@ -23,4 +23,16 @@ export interface WindowsParams {
 
 export interface ReaderImplementation {
 	readStructure: (filename: string, atomsTypes?: string[]) => Promise<Structure[]>;
+}
+
+/** Type of the parameters passed to FindSymmetries compute module */
+export interface FindSymmetriesParams {
+	ignoreSymmetries: boolean;
+	basis: BasisType;
+	spaceGroup: string;
+	atomsZ: number[];
+	fractionalCoordinates: number[];
+	tolS: number;
+	tolT: number;
+	tolG: number;
 }

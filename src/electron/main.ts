@@ -18,6 +18,7 @@ import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelReader} from "./modules/Reader";
 import {setupChannelCapture} from "./modules/CaptureMedia";
 import {setupChannelSymmetries} from "./modules/Symmetries";
+import {setupChannelFindSymmetries} from "./modules/FindSymmetries";
 
 // > Setup main process
 // Initialize the logger
@@ -36,6 +37,7 @@ setupChannelProject();
 setupChannelReader();
 setupChannelCapture();
 setupChannelSymmetries();
+setupChannelFindSymmetries();
 
 // Command line parsing
 const program = new Command("STMng");

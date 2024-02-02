@@ -1,13 +1,14 @@
 {
 	"graph": [
-		{"id": "reader", 	"label": "Reader", 	"type": "structure-reader", "in": ""},
-		{"id": "symmetry",  "label": "Symmetry","type": "apply-symmetries", "in": "reader"},
-		{"id": "unit",   	"label": "Cell",   	"type": "draw-unit-cell",   "in": "symmetry"},
-		{"id": "draw",   	"label": "Draw",   	"type": "draw-structure",   "in": "unit"},
-		{"id": "polyhedra",	"label": "Poly", 	"type": "draw-polyhedra",   "in": "symmetry"},
-		{"id": "helpers",	"label": "Helpers", "type": "draw-helpers",   	"in": ""},
-		{"id": "viewer", 	"label": "Viewer", 	"type": "viewer-3d",     	"in": ""},
-		{"id": "capture",  	"label": "Capture", "type": "capture-view",     "in": ""},
-		{"id": "chart",  	"label": "Chart",  	"type": "chart-viewer",     "in": ""}
+		{"id": "reader", 	"label": "Reader", 	 "type": "structure-reader", "in": ""},
+		{"id": "findsymm",  "label": "Find symm","type": "find-symmetries",  "in": "reader"},
+		{"id": "symmetry",  "label": "Symmetry", "type": "apply-symmetries", "in": "findsymm"},
+		{"id": "unit",   	"label": "Cell",   	 "type": "draw-unit-cell",   "in": "symmetry"},
+		{"id": "draw",   	"label": "Draw",   	 "type": "draw-structure",   "in": "unit"},
+		{"id": "polyhedra",	"label": "Poly", 	 "type": "draw-polyhedra",   "in": "symmetry"},
+		{"id": "helpers",	"label": "Helpers",  "type": "draw-helpers",   	 "in": ""},
+		{"id": "viewer", 	"label": "Viewer", 	 "type": "viewer-3d",     	 "in": ""},
+		{"id": "capture",  	"label": "Capture",  "type": "capture-view",     "in": ""},
+		{"id": "chart",  	"label": "Chart",  	 "type": "chart-viewer",     "in": ""}
 	]
 }
