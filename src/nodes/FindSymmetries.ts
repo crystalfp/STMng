@@ -1,11 +1,12 @@
 /**
- * Find the structure symmetries
+ * Find structure symmetries using the KPLOT program
  *
  * @packageDocumentation
  */
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
 import type {FindSymmetriesParams} from "@/electron/types";
+import {findSymmetries} from "@/services/RoutesClient";
 
 export class FindSymmetries {
 
@@ -18,7 +19,7 @@ export class FindSymmetries {
 	/**
 	 * Create the node
 	 *
-	 * @param id - ID of the Draw Polyhedra node
+	 * @param id - ID of the Find Symmetries node
 	 */
 	constructor(private readonly id: string) {
 
@@ -32,7 +33,7 @@ export class FindSymmetries {
 				sb.setData(this.id, this.structure);
 			}
 			else if(this.structure) {
-				sb.setData(this.id, this.findSymmetries());
+				this.findAndReturnSymmetries();
 			}
 		});
 
@@ -44,16 +45,21 @@ export class FindSymmetries {
 				sb.setData(this.id, this.structure);
 			}
 			else if(this.structure) {
-				sb.setData(this.id, this.findSymmetries());
+				this.findAndReturnSymmetries();
 			}
 		});
 	}
 
-	private findSymmetries(): Structure {
+	/**
+	 * Find structure symmetries and return the updated structure
+	 *
+	 * @returns The structure with the new symmetries
+	 */
+	private findAndReturnSymmetries(): void {
 
 		// No atoms, do nothing
 		if(!this.structure?.atoms) {
-			return {
+			sb.setData(this.id, {
 				crystal: {
 					basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 					origin: [0, 0, 0],
@@ -62,14 +68,19 @@ export class FindSymmetries {
 				atoms: [],
 				bonds: [],
 				look: {}
-			};
+			});
+			return;
 		}
-		if(this.structure.atoms.length === 0) return this.structure;
+		if(this.structure.atoms.length === 0) {
+			sb.setData(this.id, this.structure);
+			return;
+		}
 
 		// Extract data for the computational part
 		const atomsZ: number[] = [];
 		for(const atom of this.structure.atoms) atomsZ.push(atom.atomZ);
 
+		// Send params to the computational part
 		const computeParams: FindSymmetriesParams = {
 			ignoreSymmetries: this.ignoreInputSymmetries,
 			basis: this.structure.crystal.basis,
@@ -81,11 +92,20 @@ export class FindSymmetries {
 			tolG: this.tolG,
 		};
 
-		console.log("Computing Finding symmetries", JSON.stringify(computeParams, undefined, 2)); // TBD
-
-		return this.structure;
+		// Find symmetries on the main process
+		findSymmetries(computeParams)
+			.then((sts) => {
+				if(sts.error) throw Error(sts.error);
+				sb.setData(this.id, JSON.parse(sts.payload));
+			})
+			.catch((error: Error) => {throw error;});
 	}
 
+	/**
+	 * Extract fractional coordinates from the loaded structure
+	 *
+	 * @returns Array of fractional coordinates
+	 */
 	private computeFractionalCoordinates(): number[] {
 
 		// Get the basis

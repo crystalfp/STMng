@@ -5,7 +5,7 @@
  */
 import log from "electron-log";
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {WindowsParams} from "@/electron/types";
+import type {WindowsParams, FindSymmetriesParams} from "@/electron/types";
 import type {MainResponse} from "@/types";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -236,4 +236,15 @@ export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> => {
 export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => {
 
 	return window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;
+};
+
+/**
+ * Find structure symmetries in the main process
+ *
+ * @param params - Data for the computation
+ * @returns The new structure with found symmetries and error if any
+ */
+export const findSymmetries = (params: FindSymmetriesParams): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("FIND:SYMMETRIES", JSON.stringify(params)) as Promise<MainResponse>;
 };

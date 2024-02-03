@@ -6,10 +6,14 @@
 import {ipcMain} from "electron";
 import tmp from "tmp";
 import fs from "fs-extra";
+import * as rd from "node:readline/promises";
 import path from "node:path";
+import {extractBasis, fractionalToCartesianCoordinates,
+		basisToLengthAngles, getStructureAppearance} from "./ReaderHelpers";
+import {computeBonds} from "../../services/ComputeBonds";
+import {getAtomicSymbol, getCovalentRadii} from "../modules/AtomData";
 import type {FindSymmetriesParams} from "../types";
-import {basisToLengthAngles} from "./ReaderHelpers";
-import {getAtomicSymbol} from "./AtomData";
+import type {Structure, Atom} from "../../types";
 
 const removeWorkingDir = (wd: tmp.DirResult, workingDir: string): void => {
 
@@ -31,12 +35,12 @@ const removeWorkingDir = (wd: tmp.DirResult, workingDir: string): void => {
  */
 export const setupChannelFindSymmetries = (): void => {
 
-	ipcMain.handle("FIND:SYMMETRIES", (_event, payload: string) => {
+	ipcMain.handle("FIND:SYMMETRIES", async (_event, payload: string) => {
 
 		const params = JSON.parse(payload) as FindSymmetriesParams;
 
 		// Create a temporary working directory
-		const tmpobj = tmp.dirSync({unsafeCleanup: true});
+		const tmpobj = tmp.dirSync({unsafeCleanup: true, prefix: "stm-ng"});
 		const workingDir = tmpobj.name;
 		const inputFile = path.join(workingDir, "INPUT.DAT");
 		const fp = fs.openSync(inputFile, "w");
@@ -55,8 +59,8 @@ export const setupChannelFindSymmetries = (): void => {
 		else fs.writeSync(fp, `HMS '${sg}'\n`);
 
 		// Required dummy atoms
-		fs.writeSync(fp, "ATOM Fake    1  0.500000  0.500000  0.500000\n");
-		fs.writeSync(fp, "ATOM Fake    2  0.000000  0.000000  0.000000\n");
+		fs.writeSync(fp, "ATOM Fake    1 0.500000  0.500000  0.500000\n");
+		fs.writeSync(fp, "ATOM Fake    2 0.000000  0.000000  0.000000\n");
 
 		// The input atoms
 		const natoms = params.atomsZ.length;
@@ -78,12 +82,79 @@ export const setupChannelFindSymmetries = (): void => {
 		fs.writeSync(fp, "CLSE;\n");
 		fs.closeSync(fp);
 
-		// Invoke the KPLOT executable
+		// TBD Invoke the KPLOT executable
 
-		// TBD
+		// Read Kplot output
+		const outputFile = path.join(workingDir, "OUTPUT.DAT");
+
+		// The recomputed structure
+		const out: Structure = {
+			crystal: {
+				basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+				origin: [0, 0, 0],
+				spaceGroup: ""
+			},
+			atoms: [],
+			bonds: [],
+			look: {}
+		};
+
+		const reader = rd.createInterface(fs.createReadStream(outputFile));
+		for await (const line of reader) {
+
+			if(line.startsWith("Z ")) {
+				// Z   11.50200  11.50200  11.50200   90.0000   90.0000   90.0000
+				const fields = line.trim().split(/ +/);
+
+				const a = Number.parseFloat(fields[1]);
+				const b = Number.parseFloat(fields[2]);
+				const c = Number.parseFloat(fields[3]);
+				const alpha = Number.parseFloat(fields[4]);
+				const beta  = Number.parseFloat(fields[5]);
+				const gamma = Number.parseFloat(fields[6]);
+
+				out.crystal.basis = extractBasis(a, b, c, alpha, beta, gamma);
+
+				console.log("Z>", line, "->", a, b, c, alpha, beta, gamma);
+			}
+			else if(line.startsWith("HMS ")) {
+				// HMS 'IA-3D   ' (  230)
+				out.crystal.spaceGroup = line.replace(/HMS +'([^']+)'/, "$1");
+
+				console.log("H>", line, "->", out.crystal.spaceGroup);
+			}
+			else if(line.startsWith("ATOM ")) {
+				// ATOM (   1) 'Fake'     '1   '       .500000   .500000   .500000     .3000    0
+				// ATOM (   2) 'Fake'     '2   '       .000000   .000000   .000000     .3000    0
+				// ATOM (   3) 'Mg  '     '0   '       .750000   .375000   .000000     .3000    0
+				// ATOM (   4) 'Al  '     '1   '       .000000   .500000   .000000     .3000    0
+				// ATOM (   5) 'Si  '     '2   '       .750000   .125000   .000000     .3000    0
+				// ATOM (   6) 'O   '     '3   '       .847199   .533300   .049800     .3000    0
+
+				const element = line.slice(13, 17).trim();
+				if(element === "Fake") continue;
+
+				// Fractional coordinates converted to cartesian coordinates
+				const fields = line.slice(32).trim().split(/ +/);
+				const fx = Number.parseFloat(fields[0]);
+				const fy = Number.parseFloat(fields[1]);
+				const fz = Number.parseFloat(fields[2]);
+
+				const atom: Atom = {
+					label: element,
+					atomZ: 0,
+					position: fractionalToCartesianCoordinates(out.crystal.basis, fx, fy, fz)
+				};
+				console.log("A>", line, "->", JSON.stringify(atom, undefined, 2));
+
+				out.atoms.push(atom);
+			}
+		}
+		out.look = getStructureAppearance(out.atoms);
+		out.bonds = computeBonds(out.atoms, getCovalentRadii(out.atoms));
 
 		// Close the working space
 		removeWorkingDir(tmpobj, workingDir);
-		return "";
+		return {payload: JSON.stringify(out)};
 	});
 };

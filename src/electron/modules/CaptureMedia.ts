@@ -57,7 +57,7 @@ export const setupChannelCapture = (): void => {
 		if(format !== ".webm") {
 
 			// Save the movie to a temporary WEBM formatted file
-			const webmFile = tmp.tmpNameSync({postfix: ".webm"});
+			const webmFile = tmp.tmpNameSync({prefix: "stm-ng", postfix: ".webm"});
 			try {
 				fs.writeFileSync(webmFile, Buffer.from(buffer));
 			}
