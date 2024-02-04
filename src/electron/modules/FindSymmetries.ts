@@ -107,10 +107,12 @@ export const setupChannelFindSymmetries = (): void => {
 		let lines;
 		try {
 			const outputFile = path.join(workingDir, "OUTPUT.DAT");
+			if(!fs.existsSync(outputFile)) return {payload: "Error", error: "Computed data file not found"};
 			const stream = fs.createReadStream(outputFile);
 			lines = rd.createInterface(stream);
 		}
 		catch(error: unknown) {
+			log.error((error as Error).message);
 			removeWorkingDir(tmpobj, workingDir);
 			return {payload: "Error", error: (error as Error).message};
 		}

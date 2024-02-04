@@ -19,6 +19,7 @@ const ignoreInputSymmetries = ref(false);
 const tolS = ref(0.25);
 const tolT = ref(0.25);
 const tolG = ref(0.10);
+const errorMessage = ref("");
 
 sb.getUiParams(props.id, (params: UiParams) => {
     bypassComputation.value = params.bypassComputation as boolean ?? false;
@@ -26,6 +27,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     tolS.value = params.tolS as number ?? 0.25;
     tolT.value = params.tolT as number ?? 0.25;
     tolG.value = params.tolG as number ?? 0.10;
+    errorMessage.value = params.errorMessage as string ?? "";
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
@@ -53,6 +55,9 @@ watchEffect(() => {
             min="0.01" max="1" step="0.01" thumb-label />
   <v-slider v-model="tolG" :label="`G (${tolG.toFixed(2)})`" density="compact"
             min="0.01" max="1" step="0.01" thumb-label />
+  <v-alert v-if="errorMessage !== ''" title="Error"
+           :text="errorMessage" type="error" density="compact" class="mt-4"
+           style="cursor: pointer;" @click="errorMessage=''" />
 </v-container>
 </template>
 

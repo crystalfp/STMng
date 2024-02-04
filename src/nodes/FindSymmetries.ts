@@ -33,6 +33,7 @@ export class FindSymmetries {
 
 			if(this.bypassComputation) {
 				sb.setData(this.id, this.structure);
+				sb.setUiParams(this.id, {errorMessage: ""});
 			}
 			else if(this.structure) {
 				this.findAndReturnSymmetries();
@@ -45,6 +46,7 @@ export class FindSymmetries {
 
 			if(this.bypassComputation) {
 				sb.setData(this.id, this.structure);
+				sb.setUiParams(this.id, {errorMessage: ""});
 			}
 			else if(this.structure) {
 				this.findAndReturnSymmetries();
@@ -99,8 +101,15 @@ export class FindSymmetries {
 			.then((sts) => {
 				if(sts.error) throw Error(sts.error);
 				sb.setData(this.id, JSON.parse(sts.payload));
+				sb.setUiParams(this.id, {
+					errorMessage: ""
+				});
 			})
-			.catch((error: Error) => {throw error;});
+			.catch((error: Error) => {
+				sb.setUiParams(this.id, {
+					errorMessage: error.message
+				});
+			});
 	}
 
 	/**
@@ -164,6 +173,7 @@ export class FindSymmetries {
 	saveStatus(): string {
 
 		const statusToSave = {
+			bypassComputation: this.bypassComputation,
 			ignoreInputSymmetries: this.ignoreInputSymmetries,
 			tolS: this.tolS,
 			tolT: this.tolT,
