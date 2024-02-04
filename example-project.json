@@ -20,7 +20,7 @@
     },
     {
       "id": "draw",
-      "label": "Draw",
+      "label": "Render",
       "type": "draw-structure",
       "in": "unit"
     },
@@ -28,7 +28,7 @@
       "id": "polyhedra",
       "label": "Poly",
       "type": "draw-polyhedra",
-      "in": "symmetry"
+      "in": "unit"
     },
     {
       "id": "helpers",

@@ -196,7 +196,7 @@ export class DrawStructure {
 
 		// Render labels
 		const color = "#FFFFFF";
-		let idx = 1;
+		let idx = 0;
 		for(const atom of data.atoms) {
 
 			let offset = 0;

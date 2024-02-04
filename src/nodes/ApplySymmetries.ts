@@ -351,7 +351,7 @@ export class ApplySymmetries {
 	private clearStructure(): Structure {
 
 		// Remove duplicated
-		const tol = 1e-5;
+		const tol = 1e-3;
 		const fc = this.fractionalCoords;
 		const nfatoms = fc.length / 3;
 		const duplicated = Array(nfatoms) as boolean[];
@@ -360,7 +360,6 @@ export class ApplySymmetries {
 			if(duplicated[i]) continue;
 			for(let j=i+1; j < nfatoms; ++j) {
 				if(duplicated[j]) continue;
-
 				const fdx = fc[3*i+0] - fc[3*j+0];
 				if(fdx < tol && fdx > -tol) {
 					const fdy = fc[3*i+1] - fc[3*j+1];
