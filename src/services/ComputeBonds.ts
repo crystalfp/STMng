@@ -35,6 +35,8 @@ const valenceAngle = (atomH: Atom, atomX: Atom, atomY: Atom): number => {
 /**
  * Compute bonds for a given structure
  *
+ * @remarks The radii should came from outside, because the routine is executed in main process AND client process
+ *
  * @param atoms - Atoms for which the bonds should be computed
  * @param radii - Covalent radius for each atom
  * @returns The list of computed bonds
@@ -71,13 +73,11 @@ export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
 
 		const atomZi = atoms[i].atomZ;
 		const rCi = radii[i];
-		// const rCi = getAtomicRadiiAndColor(atomZi).rCov;
 
 		for(let j=i+1; j < len; ++j) {
 
 			const atomZj = atoms[j].atomZ;
 			const rCj = radii[j];
-			// const rCj = getAtomicRadiiAndColor(atomZj).rCov;
 
 			// Never bond hydrogens to each other...
 			if(atomZi === 1 && atomZj === 1) continue;
@@ -149,8 +149,6 @@ export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
 
 			const rCH = radii[idxH];
 			const rCY = radii[idxY];
-			// const rCH = getAtomicRadiiAndColor(idxH).rCov;
-			// const rCY = getAtomicRadiiAndColor(idxY).rCov;
 
 			const sumCov = rCH + rCY;
 			const sumCovSquared = sumCov*sumCov;
@@ -163,7 +161,6 @@ export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
 		if(!atomForHBond(atoms[idxX].atomZ) ||
 		   valenceAngle(atoms[idxH], atoms[idxX], atoms[idxY]) > maxHValenceAngle) bonds[i].type = "x";
 	}
-
 
 	// Clean up bond list removing invalid H-bonds
 	for(let i = countBonds-1; i >= 0; --i) {

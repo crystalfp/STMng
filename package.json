@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -46,6 +46,7 @@
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
     "@electron-toolkit/preload": "^3.0.0",
+    "@electron/asar": "^3.2.8",
     "@eslint/js": "^8.56.0",
     "@mdi/svg": "^7.4.47",
     "@rollup/rollup-win32-x64-msvc": "^4.9.6",

@@ -44,9 +44,9 @@ watchEffect(() => {
     <v-label text="Symmetry group:" class="ml-3 mr-4" />
     <v-label :text="symmetryGroup" style="white-space: break-spaces;font-family: monospace;" />
   </v-row>
-  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact" color="red" />
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-6" />
   <v-switch v-model="enableSymmetryComputation" color="primary"
             label="Enable symmetry computation" class="ml-2 mt-n5" />
+  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact" color="red" />
 </v-container>
 </template>

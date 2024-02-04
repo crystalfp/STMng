@@ -11,6 +11,9 @@ files:
   - dist-electron
   - dist
   - build/Release/native.node
+asarUnpack:
+  - dist/bin/ffmpeg.exe
+  - dist/bin/kplot.mingw.exe
 electronLanguages:
   - en-US
   - it

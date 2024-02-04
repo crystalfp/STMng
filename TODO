@@ -15,6 +15,7 @@ ToDo:
   ✔ Convert to other movie format @done(2024-02-01 08:48)
   ✔ Promisify exec to pass error message to client @done(2024-02-01 14:46)
   ☐ Finish help
+  ☐ Add show log function
 
 Bugs:
 

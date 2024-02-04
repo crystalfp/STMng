@@ -10,6 +10,7 @@ import {findSymmetries} from "@/services/RoutesClient";
 
 export class FindSymmetries {
 
+	private bypassComputation = false;
 	private ignoreInputSymmetries = false;
 	private structure: Structure | undefined;
 	private tolS = .25;
@@ -24,12 +25,13 @@ export class FindSymmetries {
 	constructor(private readonly id: string) {
 
 		sb.getUiParams(this.id, (params: UiParams) => {
+    		this.bypassComputation = params.bypassComputation as boolean ?? false;
     		this.ignoreInputSymmetries = params.ignoreInputSymmetries as boolean ?? false;
     		this.tolS = params.tolS as number ?? 0.25;
     		this.tolT = params.tolT as number ?? 0.25;
     		this.tolG = params.tolG as number ?? 0.10;
 
-			if(this.ignoreInputSymmetries) {
+			if(this.bypassComputation) {
 				sb.setData(this.id, this.structure);
 			}
 			else if(this.structure) {
@@ -41,7 +43,7 @@ export class FindSymmetries {
 
 			this.structure = data as Structure;
 
-			if(this.ignoreInputSymmetries) {
+			if(this.bypassComputation) {
 				sb.setData(this.id, this.structure);
 			}
 			else if(this.structure) {

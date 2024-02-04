@@ -3,11 +3,12 @@
  *
  * @packageDocumentation
  */
-import {ipcMain, dialog} from "electron";
+import {ipcMain, dialog, app} from "electron";
 import fs from "fs-extra";
 import path from "node:path";
 import {execSync} from "node:child_process";
 import tmp from "tmp";
+import {fileURLToPath} from "node:url";
 
 /**
  * Setup the channels to save a scene snapshot or a movie
@@ -66,10 +67,19 @@ export const setupChannelCapture = (): void => {
 						error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
 			}
 
+			// Find the ffmpeg executable
+			const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+			const ffmpeg = app.isPackaged ?
+								path.resolve(process.resourcesPath, "app.asar.unpacked/dist/bin/ffmpeg.exe") :
+								path.join(mainSourceDirectory, "..", "public", "bin", "ffmpeg.exe");
+
+			// Setup movie format specific options
+			const opt = format === ".mp4" ?
+								"-movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov" : "";
+
 			// Call ffmpeg to do the format conversion
 			try {
-				const opt = format === ".mp4" ? "-movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov" : "";
-				execSync(`ffmpeg -y -i ${webmFile} ${opt} ${filename}`, {windowsHide: true});
+				execSync(`"${ffmpeg}" -y -i ${webmFile} ${opt} ${filename}`, {windowsHide: true});
 				void fs.remove(webmFile);
 				return {payload: filename};
 			}
