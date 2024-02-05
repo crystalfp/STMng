@@ -20,17 +20,37 @@ import {setupChannelCapture} from "./modules/CaptureMedia";
 import {setupChannelSymmetries} from "./modules/Symmetries";
 import {setupChannelFindSymmetries} from "./modules/FindSymmetries";
 
-// > Setup main process
+// > Command line parsing
+const program = new Command("STMng");
+program
+    .version(pck.version)
+    .description(pck.description)
+    .usage("[options] [project-file]")
+    .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
+    .option("-d, --default", "force load of default project")
+	.option("-v, --verbose", "verbose")
+    .addHelpText("before", " ")
+    .addHelpText("after", " ");
+
+if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
+program.parse(process.argv, {from: "electron"});
+
+interface ProgramOptions {
+    theme?: "dark" | "light";
+    default?: boolean;
+    verbose?: boolean;
+}
+const options = program.opts<ProgramOptions>();
+
+// > Setup the main process
 // Initialize the logger
 log.initialize();
-const verbose = app.commandLine.hasSwitch("verbose") ||
-                (process.env.IIE_VERBOSE && Number.parseInt(process.env.IIE_VERBOSE) > 0);
-log.transports.console.level = verbose ? "silly" : "warn";
-log.transports.file.level = verbose ? "silly" : "warn";
+log.transports.console.level = options.verbose ? "silly" : "warn";
+log.transports.file.level = options.verbose ? "silly" : "warn";
 log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
 
-// Initialize the channels
+// Initialize the channels between main process and client
 setupChannelPreferences();
 setupChannelVersions();
 setupChannelProject();
@@ -38,26 +58,6 @@ setupChannelReader();
 setupChannelCapture();
 setupChannelSymmetries();
 setupChannelFindSymmetries();
-
-// Command line parsing
-const program = new Command("STMng");
-program
-    .version(pck.version)
-    .description(pck.description)
-    .usage("[options] [project-file]")
-    .addOption(new Option("-t, --theme <theme>", "User interface theme").choices(["dark", "light"]))
-    .option("-d, --default", "Force load of default project")
-    .addHelpText("before", " ")
-    .addHelpText("after", " ");
-
-if(import.meta.env.DEV) program.option("--no-sandbox", "Forced during development");
-program.parse(process.argv, {from: "electron"});
-
-interface ProgramOptions {
-    theme?: "dark" | "light";
-    default: boolean;
-}
-const options = program.opts<ProgramOptions>();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");
