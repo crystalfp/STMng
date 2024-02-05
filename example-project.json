@@ -3,8 +3,7 @@
     {
       "id": "reader",
       "label": "Reader",
-      "type": "structure-reader",
-      "in": ""
+      "type": "structure-reader"
     },
     {
       "id": "symmetry",
@@ -33,26 +32,22 @@
     {
       "id": "helpers",
       "label": "Helpers",
-      "type": "draw-helpers",
-      "in": ""
+      "type": "draw-helpers"
     },
     {
       "id": "viewer",
       "label": "Viewer",
-      "type": "viewer-3d",
-      "in": ""
+      "type": "viewer-3d"
     },
     {
       "id": "capture",
       "label": "Capture",
-      "type": "capture-view",
-      "in": ""
+      "type": "capture-view"
     },
     {
       "id": "chart",
       "label": "Chart",
-      "type": "chart-viewer",
-      "in": ""
+      "type": "chart-viewer"
     }
   ],
   "viewer": {
@@ -124,8 +119,8 @@
     "draw": {
       "drawKind": "ball-and-stick",
       "drawQuality": 4,
-      "drawRoughness": 0.7,
-      "drawMetalness": 0.3,
+      "drawRoughness": 0.5,
+      "drawMetalness": 0.6,
       "labelKind": "symbol",
       "showStructure": true,
       "showBonds": true,

@@ -14,6 +14,7 @@ import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {loadRememberedProject, loadProjectAndRemember, setupChannelProject} from "./modules/Project";
 import {createMainWindow} from "./modules/WindowsUtilities";
+import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelReader} from "./modules/Reader";
 import {setupChannelCapture} from "./modules/CaptureMedia";
@@ -80,9 +81,19 @@ app.whenReady().then(() => {
     });
 
     // Load project
-    if(options.default) loadRememberedProject(true);
-    else if(program.args.length > 0) loadProjectAndRemember(program.args[0]);
-    else loadRememberedProject(false);
+    if(options.default) {
+        // Load default project
+        loadRememberedProject(true);
+        disableSaveProjectEntry(true);
+    }
+    else if(program.args.length > 0) {
+        loadProjectAndRemember(program.args[0]);
+        disableSaveProjectEntry(false);
+    }
+    else {
+        const loadedDefaultProject = loadRememberedProject(false);
+        disableSaveProjectEntry(loadedDefaultProject);
+    }
 
     // if(import.meta.env.DEV) return installExtension(VUEJS_DEVTOOLS);
     // return "";

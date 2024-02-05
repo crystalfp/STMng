@@ -143,7 +143,7 @@ export interface GraphNode {
 	id: string;
 	label: string;
 	type: string;
-	in: string;
+	in?: string;
 }
 
 import type {UiParams} from "@/services/Switchboard";

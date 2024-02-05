@@ -11,7 +11,7 @@ const projectSchema = object({
 		id: string([minLength(1, "Missing id")]),
 		label: string([minLength(1, "Missing label")]),
 		type: string([minLength(1, "Missing type")]),
-		in: string()
+		in: optional(string())
 	})),
 	currentId: optional(string([minLength(1, "Invalid currentId")]))
 });
@@ -27,15 +27,21 @@ export const projectIsValid = (prj: Project): boolean => {
 
 	if(!prj) return false;
 
+	// Check against the schema
 	const result = safeParse(projectSchema, prj);
-	if(result.success) return checkIds(prj);
 
-	for(const issue of result.issues) {
-		log.error(`Error from project validator "${issue.validation}": ${issue.message}`);
-		if(issue.input) log.error(`Input: ${issue.input as string}`);
-		else log.error(`Missing key "${issue.path![0].key as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
+	if(!result.success) {
+
+		for(const issue of result.issues) {
+			log.error(`Error from project validator "${issue.validation}": ${issue.message}`);
+			if(issue.input) log.error(`Input: ${issue.input as string}`);
+			else log.error(`Missing key "${issue.path![0].key as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
+		}
+		return false;
 	}
-	return false;
+
+	// Check the IDs
+	return checkIds(prj);
 };
 
 /**
@@ -57,7 +63,7 @@ const checkIds = (prj: Project): boolean => {
 	}
 
 	for(const entry of prj.graph) {
-		if(entry.in === "") continue;
+		if(!entry.in) continue;
 		const inputs = entry.in.split(/, */);
 		for(const input of inputs) {
 			if(ids.has(input)) continue;

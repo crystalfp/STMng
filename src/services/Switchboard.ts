@@ -40,7 +40,7 @@ class Switchboard {
 	 * @param input - String of inputs from the graph
 	 * @param map - Map to be set with the inputs
 	 */
-	private setupInputs(id: string, input: string, map: Map<string, string[]>): void {
+	private setupInputs(id: string, input: string | undefined, map: Map<string, string[]>): void {
 
 		if(!input) return;
 
@@ -59,25 +59,29 @@ class Switchboard {
 		// Receive the project
 		receiveProject((rawProject: string) => {
 
-			// Decode and check the project
+			// Decode the project
 			try {
 				this.project = JSON.parse(rawProject) as Project;
-
-				if(!projectIsValid(this.project)) throw Error("Invalid IDs in the project");
 			}
 			catch(error: unknown) {
-				log.error("Invalid project. Error:", (error as Error).message);
+				log.error("Invalid project file format. Error:", (error as Error).message);
 				return;
 			}
 
-			// Access the store
-			const switchboardStore = useSwitchboardStore();
+			// Check the project
+			if(!projectIsValid(this.project)) {
+				log.error("Invalid project content. Project not loaded");
+				return;
+			}
 
-			// Clean the previous content
+			// Clean the previous project content
 			this.nodesUI.length = 0;
 			this.mapIdToType.clear();
 			this.mapIdToCode.clear();
 			this.mapIdToInputs.clear();
+
+			// Access the store
+			const switchboardStore = useSwitchboardStore();
 
 			// Empty the store
 			switchboardStore.clear();

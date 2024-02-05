@@ -12,6 +12,8 @@ import {loadRememberedProject, loadProjectAndRemember, saveProject, saveProjectA
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
+let systemMenu: Menu;
+
 // > Prepare the application menu
 /**
  * Prepare the application menu
@@ -35,7 +37,10 @@ export const setupMenu = (): void => {
                                 {name: "STM project", extensions: ["json"]},
                             ]
                         });
-                        if(file) loadProjectAndRemember(file[0]);
+                        if(file) {
+                            const loadedDefaultProject = loadProjectAndRemember(file[0]);
+                            disableSaveProjectEntry(loadedDefaultProject);
+                        }
                     }
                 },
                 {
@@ -43,11 +48,13 @@ export const setupMenu = (): void => {
                     accelerator: "CommandOrControl+D",
                     click() {
                         loadRememberedProject(true);
+                        disableSaveProjectEntry(true);
                     }
                 },
                 {type: "separator"},
                 {
                     label: "Save project",
+                    id: "saveProject",
                     accelerator: "CommandOrControl+S",
                     click() {
                         saveProject();
@@ -63,7 +70,10 @@ export const setupMenu = (): void => {
                                 {name: "STM project", extensions: ["json"]},
                             ]
                         });
-                        if(file) saveProjectAs(file);
+                        if(file) {
+                            saveProjectAs(file);
+                            disableSaveProjectEntry(false);
+                        }
                     }
                 },
                 {type: "separator"},
@@ -144,6 +154,17 @@ export const setupMenu = (): void => {
     ];
 
     // Build the menu
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
+    systemMenu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(systemMenu);
+};
+
+
+/**
+ * Disable menu entry "Save project"
+ *
+ * @param disable - Disable save project menu entry if true
+ */
+export const disableSaveProjectEntry = (disable: boolean): void => {
+    const entry = systemMenu.getMenuItemById("saveProject");
+    if(entry) entry.enabled = !disable;
 };

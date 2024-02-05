@@ -52,38 +52,62 @@ const getDefaultProject = (): string => {
  * Read the given project, remember it and send it to client
  *
  * @param filename - Project file to be read
+ * @returns True if the loaded project is the default one
  */
-export const loadProjectAndRemember = (filename: string): void => {
+export const loadProjectAndRemember = (filename: string): boolean => {
 
-	setProjectPath(filename);
+	let loadedDefaultProject = false;
 
+	if(fs.existsSync(filename)) {
+
+		setProjectPath(filename);
+		sendProjectPath(filename);
+	}
+	else {
+		log.error(`Project file ${filename} does not exist. Loading default project`);
+		removeProjectPath();
+		filename = getDefaultProject();
+		sendProjectPath();
+		loadedDefaultProject = true;
+	}
 	loadProject(filename);
-
-	sendProjectPath(filename);
+	return loadedDefaultProject;
 };
 
 /**
  * Read the saved project or the default one
  *
  * @param ignoreSaved - If true read only the default project and remove the saved project path
+ * @returns True if the loaded project is the default one
  */
-export const loadRememberedProject = (ignoreSaved: boolean): void => {
+export const loadRememberedProject = (ignoreSaved: boolean): boolean => {
 
 	let filename;
+	let loadedDefaultProject = false;
 	if(ignoreSaved) {
 		filename = getDefaultProject();
 		removeProjectPath();
 		sendProjectPath();
+		loadedDefaultProject = true;
 	}
 	else {
 		filename = getProjectPath();
-		if(filename) sendProjectPath(filename);
-		else {
+		if(!filename) {
 			filename = getDefaultProject();
 			sendProjectPath();
+			loadedDefaultProject = true;
+		}
+		if(fs.existsSync(filename)) sendProjectPath(filename);
+		else {
+			log.error(`Project file ${filename} does not exist. Loading default project`);
+			removeProjectPath();
+			filename = getDefaultProject();
+			sendProjectPath();
+			loadedDefaultProject = true;
 		}
 	}
 	loadProject(filename);
+	return loadedDefaultProject;
 };
 
 /**

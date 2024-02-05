@@ -42,7 +42,8 @@ watchEffect(() => {
 <v-container class="container">
   <v-row class="mt-2">
     <v-label text="Symmetry group:" class="ml-3 mr-4" />
-    <v-label :text="symmetryGroup" style="white-space: break-spaces;font-family: monospace;" />
+    <v-label :text="symmetryGroup" style="overflow-wrap: break-word;white-space: break-spaces;font-family: monospace;"
+    class="w-50" />
   </v-row>
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-6" />
   <v-switch v-model="enableSymmetryComputation" color="primary"
