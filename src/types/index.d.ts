@@ -2,7 +2,7 @@
 export interface NodeUI {
 	id: string;
 	ui: string;
-	in: string;
+	in?: string;
 	label: string;
 }
 
