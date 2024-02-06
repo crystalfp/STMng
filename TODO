@@ -4,23 +4,17 @@ ToDo:
 	☐ Add error notifications
 	☐ In validator add check of node types
 	☐ Compute bonds: limit the number of bonds to the atom data value
-  ✔ Check need for viewer input field (modules goes directly to scene) @done(2024-02-05 17:26)
   ☐ Better camera position initialization (and RNC button {reset-normalize-center})
   ☐ Change project to "network" and put a different extension for these files (.net)
   ☐ Readers do not fail if the file format is invalid
   ☐ Unify naming: graph, node, project
-  ✔ What happens if you have a dangling input in the graph? @done(2024-02-05 17:48)
   ☐ Change OrbitControl to camera-controls
-  ✔ Disable save project menu entry if the project loaded is the default one @done(2024-02-05 15:42)
-  ✔ Convert to other movie format @done(2024-02-01 08:48)
-  ✔ Promisify exec to pass error message to client @done(2024-02-01 14:46)
   ☐ Finish help
   ☐ Add show log function
 
 Bugs:
 
 Requests from Oganov:
-  ✔ Save movie @done(2024-01-30 08:49)
   ☐ Charge maps
 
 Nice to have/Future:
@@ -28,6 +22,13 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Check need for viewer input field (modules goes directly to scene) @done(2024-02-05 17:26)
+  ✔ What happens if you have a dangling input in the graph? @done(2024-02-05 17:48)
+  ✔ Disable save project menu entry if the project loaded is the default one @done(2024-02-05 15:42)
+  ✔ Convert to other movie format @done(2024-02-01 08:48)
+  ✔ Promisify exec to pass error message to client @done(2024-02-01 14:46)
+  ✔ Make slider+label a widget or a group of sliders with aligned labels @done(2024-02-06 08:35)
+  ✔ Save movie @done(2024-01-30 08:49)
   ✔ Set `target` for the orbit control @done(2024-01-27 11:03)
   ✔ Add project path in the title @done(2024-01-25 08:40)
   ✔ Extract scene from switchboard and create another singleton @done(2024-01-13 08:04)

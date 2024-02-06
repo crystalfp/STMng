@@ -8,6 +8,7 @@ import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {mdiRestore} from "@mdi/js";
 import ColorSelector from "@/widgets/ColorSelector.vue";
+import AlignLabels from "@/widgets/AlignLabels.vue";
 
 // > Properties
 const props = defineProps<{
@@ -76,12 +77,14 @@ const resetSliders = (): void => {
   <color-selector v-model="lineColor" label="Line color" />
   <v-divider :thickness="8" class="mb-4" />
   <v-label text="Cell repetitions" class="ml-2 mb-3" />
-  <v-slider v-model="repetitionsA" label="Along a" min="1" max="10" step="1" thumb-label
-            show-ticks="always" tick-size="2" />
-  <v-slider v-model="repetitionsB" label="Along b" min="1" max="10" step="1" thumb-label
-            show-ticks="always" tick-size="2" />
-  <v-slider v-model="repetitionsC" label="Along c" min="1" max="10" step="1" thumb-label
-            show-ticks="always" tick-size="2" />
+  <align-labels label-width="4rem">
+    <v-slider v-model="repetitionsA" label="Along a" min="1" max="10" step="1" thumb-label
+              show-ticks="always" tick-size="2" />
+    <v-slider v-model="repetitionsB" label="Along b" min="1" max="10" step="1" thumb-label
+              show-ticks="always" tick-size="2" />
+    <v-slider v-model="repetitionsC" label="Along c" min="1" max="10" step="1" thumb-label
+              show-ticks="always" tick-size="2" />
+  </align-labels>
   <v-btn :disabled="!hasSupercell()" class="mb-4 ml-2 w-50" @click="resetSliders">
     <template #append>
       <v-icon :icon="mdiRestore" size="x-large" />

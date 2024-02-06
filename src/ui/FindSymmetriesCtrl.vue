@@ -6,6 +6,7 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import AlignLabels from "@/widgets/AlignLabels.vue";
 
 // > Properties
 const props = defineProps<{
@@ -49,20 +50,16 @@ watchEffect(() => {
   <v-switch v-model="ignoreInputSymmetries" color="primary"
             label="Ignore input symmetries" density="compact" class="mt-n5 ml-4" />
   <v-label class="mb-2 ml-2">Tolerances:</v-label>
-  <v-slider v-model="tolS" :label="`S (${tolS.toFixed(2)})`" density="compact"
-            min="0.01" max="1" step="0.01" thumb-label />
-  <v-slider v-model="tolT" :label="`T (${tolT.toFixed(2)})`" density="compact"
-            min="0.01" max="1" step="0.01" thumb-label />
-  <v-slider v-model="tolG" :label="`G (${tolG.toFixed(2)})`" density="compact"
-            min="0.01" max="1" step="0.01" thumb-label />
+  <align-labels label-width="3.5rem">
+    <v-slider v-model="tolS" :label="`S (${tolS.toFixed(2)})`" density="compact"
+                min="0.01" max="1" step="0.01" thumb-label />
+    <v-slider v-model="tolT" :label="`T (${tolT.toFixed(2)})`" density="compact"
+                min="0.01" max="1" step="0.01" thumb-label />
+    <v-slider v-model="tolG" :label="`G (${tolG.toFixed(2)})`" density="compact"
+                min="0.01" max="1" step="0.01" thumb-label />
+  </align-labels>
   <v-alert v-if="errorMessage !== ''" title="Error"
            :text="errorMessage" type="error" density="compact" class="mt-4"
            style="cursor: pointer;" @click="errorMessage=''" />
 </v-container>
 </template>
-
-<style>
-.v-slider__label {
-  width: 4rem;
-}
-</style>
