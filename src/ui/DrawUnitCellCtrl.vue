@@ -21,6 +21,7 @@ const props = defineProps<{
 const showUnitCell = ref(true);
 const lineColor = ref("#0000FF");
 const dashedLine = ref(false);
+const showBasisVectors = ref(false);
 
 // Supercell
 const repetitionsA = ref(1);
@@ -38,6 +39,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     showUnitCell.value = params.showUnitCell as boolean ?? true;
     lineColor.value = params.lineColor as string ?? "#0000FF";
     dashedLine.value = params.dashedLine as boolean ?? false;
+    showBasisVectors.value = params.showBasisVectors as boolean ?? false;
 
     repetitionsA.value = params.repetitionsA as number ?? 1;
     repetitionsB.value = params.repetitionsB as number ?? 1;
@@ -51,6 +53,7 @@ watchEffect(() => {
         showUnitCell: showUnitCell.value,
         lineColor: lineColor.value,
         dashedLine: dashedLine.value,
+        showBasisVectors: showBasisVectors.value,
         repetitionsA: repetitionsA.value,
         repetitionsB: repetitionsB.value,
         repetitionsC: repetitionsC.value,
@@ -74,6 +77,7 @@ const resetSliders = (): void => {
 <v-container class="container">
   <v-switch v-model="showUnitCell" color="primary" label="Show unit cell" class="mt-4 ml-4" />
   <v-switch v-model="dashedLine" color="primary" label="Dashed lines" class="ml-4 mt-n5" />
+  <v-switch v-model="showBasisVectors" color="primary" label="Show basis vectors" class="ml-4 mt-n5" />
   <color-selector v-model="lineColor" label="Line color" />
   <v-divider :thickness="8" class="mb-4" />
   <v-label text="Cell repetitions" class="ml-2 mb-3" />

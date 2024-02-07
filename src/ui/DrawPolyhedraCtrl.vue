@@ -34,7 +34,7 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showPolyhedra" color="primary" label="Show polyhedra" density="compact" class="mt-2 ml-2" />
+  <v-switch v-model="showPolyhedra" color="primary" label="Show polyhedra" density="compact" class="mt-2 ml-4" />
   <color-selector v-model="surfaceColor" label="Surface color" :transparency="true" />
 </v-container>
 </template>

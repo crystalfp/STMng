@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 import * as THREE from "three";
+import SpriteText from "three-spritetext";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import {computeBonds} from "@/services/ComputeBonds";
@@ -13,12 +14,15 @@ export class DrawUnitCell {
 
 	private readonly nameUC: string;
 	private readonly nameSC: string;
+	private readonly nameBV: string;
 	private readonly outUC = new THREE.Group();
 	private readonly outSC = new THREE.Group();
+	private readonly outBV = new THREE.Group();
 	private lineUC: THREE.LineSegments | undefined;
 	private lineSC: THREE.LineSegments | undefined;
 	private showUnitCell = true;
 	private dashedLine = false;
+	private showBasisVectors = false;
 	private lineColor = "#0000FF";
 	private repetitionsA = 1;
 	private repetitionsB = 1;
@@ -45,14 +49,19 @@ export class DrawUnitCell {
 		this.nameSC = `DrawSupercell-${this.id}`;
 		this.outSC.name = this.nameSC;
 		sm.add(this.outSC);
+		this.nameBV = `DrawBasisVectors-${this.id}`;
+		this.outBV.name = this.nameBV;
+		sm.add(this.outBV);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
     		this.showUnitCell = params.showUnitCell as boolean ?? true;
 			this.lineColor = params.lineColor as string ?? "#0000FF";
 			this.dashedLine = params.dashedLine as boolean ?? false;
+			this.showBasisVectors = params.showBasisVectors as boolean ?? false;
 
 			this.outUC.visible = this.showUnitCell;
+			this.outBV.visible = this.showBasisVectors;
 
     		this.repetitionsA = params.repetitionsA as number ?? 1;
     		this.repetitionsB = params.repetitionsB as number ?? 1;
@@ -80,6 +89,7 @@ export class DrawUnitCell {
 			if(!crystal) return;
 			this.drawUnitCell(crystal.basis, crystal.origin);
 			this.drawSupercell(crystal.basis, crystal.origin);
+			this.drawBasisVectors(crystal.basis, crystal.origin);
 			this.structure = data as Structure;
 			this.replicateUnitCell();
 		});
@@ -140,6 +150,49 @@ export class DrawUnitCell {
         this.lineUC = new THREE.LineSegments(edges, this.setMaterial(this.lineColor, this.dashedLine));
         if(this.dashedLine) this.lineUC.computeLineDistances();
         this.outUC.add(this.lineUC);
+	}
+
+	/**
+	 * Draw the basis vectors
+	 *
+	 * @param basis - The cell basis vectors
+	 * @param orig - The cell origin
+	 */
+	private drawBasisVectors(basis: BasisType, orig: PositionType): void {
+
+		const originZero = new THREE.Vector3(...orig);
+
+		const basisA = new THREE.Vector3(basis[0], basis[1], basis[2]);
+		const basisB = new THREE.Vector3(basis[3], basis[4], basis[5]);
+		const basisC = new THREE.Vector3(basis[6], basis[7], basis[8]);
+
+		const basisALen = basisA.length();
+		const basisBLen = basisB.length();
+		const basisCLen = basisC.length();
+
+		const nA = basisA.clone().normalize();
+		const nB = basisB.clone().normalize();
+		const nC = basisC.clone().normalize();
+
+		const arrowA = new THREE.ArrowHelper(nA, originZero, basisALen, 0xFF0000, 0.4, 0.2);
+		const arrowB = new THREE.ArrowHelper(nB, originZero, basisBLen, 0x00FF00, 0.4, 0.2);
+		const arrowC = new THREE.ArrowHelper(nC, originZero, basisCLen, 0x0000FF, 0.4, 0.2);
+
+		this.outBV.add(arrowA, arrowB, arrowC);
+
+		const spriteA = new SpriteText("a", 0.3, "#FF0000");
+		spriteA.fontSize = 180;
+		spriteA.position.addVectors(basisA, new THREE.Vector3(0.1+orig[0], orig[1], orig[2]));
+
+		const spriteB = new SpriteText("b", 0.3, "#00FF00");
+		spriteB.fontSize = 180;
+		spriteB.position.addVectors(basisB, new THREE.Vector3(orig[0], 0.1+orig[1], orig[2]));
+
+		const spriteC = new SpriteText("c", 0.3, "#0000FF");
+		spriteC.fontSize = 180;
+		spriteC.position.addVectors(basisC, new THREE.Vector3(orig[0], orig[1], 0.1+orig[2]));
+
+		this.outBV.add(spriteA, spriteB, spriteC);
 	}
 
 	/**
@@ -336,6 +389,7 @@ export class DrawUnitCell {
 			showUnitCell: this.showUnitCell,
 			dashedLine: this.dashedLine,
 			lineColor: this.lineColor,
+			showBasisVectors: this.showBasisVectors,
         	repetitionsA: this.repetitionsA,
         	repetitionsB: this.repetitionsB,
         	repetitionsC: this.repetitionsC,

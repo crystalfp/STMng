@@ -17,6 +17,9 @@ export class DrawHelpers {
 	private showGridYZ = false;
 	private side = 10;
 	private sidePrevious = 10;
+	private axisLength = 1;
+	private axisLengthPrevious = 1;
+	private readonly originZero = new THREE.Vector3(0, 0, 0);
 
 	/**
 	 * Create the node
@@ -31,8 +34,10 @@ export class DrawHelpers {
 		sm.add(gridXY);
 		let gridYZ = this.gridHelper("YZ");
 		sm.add(gridYZ);
-		const axis = this.axisHelper();
+		const axis = new THREE.Group();
+		axis.name = "AxisHelper";
 		sm.add(axis);
+		this.axisHelper(axis);
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
@@ -40,16 +45,27 @@ export class DrawHelpers {
     		this.showGridXZ = params.showGridXZ as boolean ?? false;
     		this.showGridXY = params.showGridXY as boolean ?? false;
     		this.showGridYZ = params.showGridYZ as boolean ?? false;
-			this.side = params.gridSize as number ?? 10;
+			this.side       = params.gridSize as number ?? 10;
+			this.axisLength = params.axisLength as number ?? 1;
 
 			gridXZ.visible = this.showGridXZ;
 			gridXY.visible = this.showGridXY;
 			gridYZ.visible = this.showGridYZ;
 			axis.visible   = this.showAxis;
 
-			if(this.side !== this.sidePrevious) {
+			const {scene} = sm;
 
-				const {scene} = sm;
+			if(this.axisLength !== this.axisLengthPrevious) {
+
+				const obj =  scene.getObjectByName("AxisHelper") as THREE.Group;
+				if(obj) {
+					obj.clear();
+					this.axisHelper(obj);
+				}
+				this.axisLengthPrevious = this.axisLength;
+			}
+
+			if(this.side !== this.sidePrevious) {
 
 				let obj = scene.getObjectByName("GridHelperXZ") as THREE.GridHelper;
 				if(obj) {
@@ -78,42 +94,36 @@ export class DrawHelpers {
 	}
 
 	/**
-	 * Create a group containing the axis
+	 * Fill a group with the axis
 	 *
-	 * @returns The group containing the axis to be added to the scene
+	 * @param group - The group that will contains the axis to be added to the scene
 	 */
-	private axisHelper(): THREE.Group {
+	private axisHelper(group: THREE.Group): void {
 
-		const group = new THREE.Group();
-		group.name = "AxisHelper";
-
-		const originZero = new THREE.Vector3(0, 0, 0);
 		const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0),
-													originZero, 1,
+													this.originZero, this.axisLength,
 													0xFF0000, 0.4, 0.2);
 		const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0),
-													originZero, 1,
+													this.originZero, this.axisLength,
 													0x00FF00, 0.4, 0.2);
 		const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1),
-													originZero, 1,
+													this.originZero, this.axisLength,
 													0x0000FF, 0.4, 0.2);
 		group.add(arrowX, arrowY, arrowZ);
 
 		const spriteX = new SpriteText("x", 0.3, "#FF0000");
 		spriteX.fontSize = 180;
-		spriteX.position.set(1.1, 0, 0);
+		spriteX.position.set(this.axisLength+0.1, 0, 0);
 
 		const spriteY = new SpriteText("y", 0.3, "#00FF00");
 		spriteY.fontSize = 180;
-		spriteY.position.set(0, 1.2, 0);
+		spriteY.position.set(0, this.axisLength+0.2, 0);
 
 		const spriteZ = new SpriteText("z", 0.3, "#0000FF");
 		spriteZ.fontSize = 180;
-		spriteZ.position.set(0, 0, 1.1);
+		spriteZ.position.set(0, 0, this.axisLength+0.1);
 
 		group.add(spriteX, spriteY, spriteZ);
-
-		return group;
 	}
 
 	/**
@@ -148,7 +158,8 @@ export class DrawHelpers {
 			showGridXZ: this.showGridXZ,
 			showGridXY: this.showGridXY,
 			showGridYZ: this.showGridYZ,
-			side: this.side
+			side: this.side,
+			axisLength: this.axisLength
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

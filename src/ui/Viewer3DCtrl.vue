@@ -55,7 +55,7 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="configStore.camera.perspective" color="primary" label="Perspective camera" class="ml-1" />
+  <v-switch v-model="configStore.camera.perspective" color="primary" label="Perspective camera" class="ml-2" />
   <v-btn block class="mb-3" @click="configStore.control.reset = true">Reset camera</v-btn>
   <v-expansion-panels>
     <v-expansion-panel>

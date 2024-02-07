@@ -6,6 +6,7 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import AlignLabels from "@/widgets/AlignLabels.vue";
 
 // > Properties
 const props = defineProps<{
@@ -19,6 +20,7 @@ const showGridXZ = ref(false);
 const showGridXY = ref(false);
 const showGridYZ = ref(false);
 const gridSize   = ref(10);
+const axisLength = ref(1);
 
 sb.getUiParams(props.id, (params: UiParams) => {
     showAxis.value   = params.showAxis as boolean ?? false;
@@ -26,6 +28,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     showGridXY.value = params.showGridXY as boolean ?? false;
     showGridYZ.value = params.showGridYZ as boolean ?? false;
     gridSize.value   = params.gridSize as number ?? 10;
+    axisLength.value = params.axisLength as number ?? 1;
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
@@ -33,7 +36,8 @@ watchEffect(() => {
         showGridXZ: showGridXZ.value,
         showGridXY: showGridXY.value,
         showGridYZ: showGridYZ.value,
-        gridSize: gridSize.value
+        gridSize: gridSize.value,
+        axisLength: axisLength.value
     });
 });
 </script>
@@ -41,10 +45,13 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showAxis" color="primary" label="Show axis" density="compact" class="mt-2 ml-3" />
-  <v-switch v-model="showGridXZ" color="primary" label="Show grid XZ" density="compact" class="ml-3 mt-n5" />
-  <v-switch v-model="showGridXY" color="primary" label="Show grid XY" density="compact" class="ml-3 mt-n5" />
-  <v-switch v-model="showGridYZ" color="primary" label="Show grid YZ" density="compact" class="ml-3 mt-n5" />
-  <v-slider v-model="gridSize" label="Grid side" density="compact" min="2" max="40" step="2" thumb-label />
+  <v-switch v-model="showAxis" color="primary" label="Show axis" density="compact" class="mt-2 ml-4" />
+  <v-switch v-model="showGridXZ" color="primary" label="Show grid XZ" density="compact" class="ml-4 mt-n5" />
+  <v-switch v-model="showGridXY" color="primary" label="Show grid XY" density="compact" class="ml-4 mt-n5" />
+  <v-switch v-model="showGridYZ" color="primary" label="Show grid YZ" density="compact" class="ml-4 mt-n5" />
+  <align-labels label-width="5rem">
+    <v-slider v-model="gridSize" label="Grid side" density="compact" min="2" max="40" step="2" thumb-label />
+    <v-slider v-model="axisLength" label="Axis length" density="compact" min="0.5" max="20" step="0.5" thumb-label />
+  </align-labels>
 </v-container>
 </template>
