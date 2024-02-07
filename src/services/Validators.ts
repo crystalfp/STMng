@@ -33,7 +33,7 @@ export const projectIsValid = (prj: Project): boolean => {
 	if(!result.success) {
 
 		for(const issue of result.issues) {
-			log.error(`Error from project validator "${issue.validation}": ${issue.message}`);
+			log.error(`Error from project validator "${issue.reason}": ${issue.message}`);
 			if(issue.input) log.error(`Input: ${issue.input as string}`);
 			else log.error(`Missing key "${issue.path![0].key as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
 		}

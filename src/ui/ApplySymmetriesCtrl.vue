@@ -6,6 +6,7 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {useMessageStore} from "@/stores/messageStore";
 
 // > Properties
 const pr = defineProps<{
@@ -14,18 +15,19 @@ const pr = defineProps<{
     id: string;
 }>();
 
+// > Access the messages store
+const messageStore = useMessageStore();
+
 // > Get and set ui parameters from the switchboard
 const symmetryGroup = ref("");
 const fillUnitCell = ref(false);
 const enableSymmetryComputation = ref(true);
-const errorMessage = ref("");
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
     symmetryGroup.value = params.symmetryGroup as string ?? "";
     fillUnitCell.value  = params.fillUnitCell as boolean ?? false;
     enableSymmetryComputation.value = params.enableSymmetryComputation as boolean ?? true;
-    errorMessage.value = params.error as string ?? "";
 });
 
 watchEffect(() => {
@@ -48,6 +50,8 @@ watchEffect(() => {
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-6" />
   <v-switch v-model="enableSymmetryComputation" color="primary"
             label="Enable symmetry computation" class="ml-2 mt-n5" />
-  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact" color="red" />
+  <v-alert v-if="messageStore.applySymmetries.message !== ''" title="Error"
+           :text="messageStore.applySymmetries.message" type="error" density="compact" color="red"
+           style="cursor: pointer;" @click="messageStore.applySymmetries.message=''" />
 </v-container>
 </template>

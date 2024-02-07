@@ -9,6 +9,7 @@ import type {Structure} from "@/types";
 import {computeBonds} from "@/services/ComputeBonds";
 import {computeSymmetries} from "@/services/RoutesClient";
 import log from "electron-log";
+import {useMessageStore} from "@/stores/messageStore";
 
 // > Kind of directions for filling unit cell
 const X_MIN = 0x010;
@@ -32,7 +33,7 @@ export class ApplySymmetries {
 	/**
 	 * Create the node
 	 *
-	 * @param id - ID of theApply Symmetries node
+	 * @param id - ID of the Apply Symmetries node
 	 */
 	constructor(private readonly id: string) {
 
@@ -62,6 +63,10 @@ export class ApplySymmetries {
 	 * @param fill - Fill the unit cell
 	 */
 	private computeSymmetries(enabled: boolean, fill: boolean): void {
+
+		// Access the message store
+		const messageStore = useMessageStore();
+		messageStore.applySymmetries.message = "";
 
 		// If no input structure, output an empty structure
 		if(!this.structure?.atoms || this.structure.atoms?.length === 0) {
@@ -112,7 +117,7 @@ export class ApplySymmetries {
 				sb.setData(this.id, this.clearStructure());
 			})
 			.catch((error: Error) => {
-				sb.setUiParams(this.id, {error: error.message});
+				messageStore.applySymmetries.message = error.message;
 				log.error(error.message);
 				sb.setData(this.id, this.structure);
 			});
@@ -170,6 +175,12 @@ export class ApplySymmetries {
 		}
 	}
 
+	/**
+	 * Check if the structure has symmetry
+	 *
+	 * @param spaceGroup - Space Group from the structure
+	 * @returns True if the structure has no symmetry
+	 */
 	private hasNoSymmetry(spaceGroup: string): boolean {
 
 		const sg = spaceGroup.trim();

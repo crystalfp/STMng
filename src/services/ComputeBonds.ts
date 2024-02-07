@@ -39,12 +39,14 @@ const valenceAngle = (atomH: Atom, atomX: Atom, atomY: Atom): number => {
  *
  * @param atoms - Atoms for which the bonds should be computed
  * @param radii - Covalent radius for each atom
+ * @param maxBonds - Max number of bonds for each atom. If missing means no limit on the number of bonds
  * @returns The list of computed bonds
  */
-export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
+export const computeBonds = (atoms: Atom[], radii: number[], maxBonds?: number[]): Bond[] => {
 
 	// No bonds possible
-	if(atoms.length < 2) return [];
+	const atomsCount = atoms.length;
+	if(atomsCount < 2) return [];
 
 	// The computed bonds
 	const bonds: Bond[] = [];
@@ -68,13 +70,12 @@ export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
 	const computeHBonds = atoms.some((atom) => {return atom.atomZ === 1;});
 
 	// Visit each pair of atoms
-	const len = atoms.length;
-	for(let i=len-2; i>= 0; --i) {
+	for(let i=atomsCount-2; i>= 0; --i) {
 
 		const atomZi = atoms[i].atomZ;
 		const rCi = radii[i];
 
-		for(let j=i+1; j < len; ++j) {
+		for(let j=i+1; j < atomsCount; ++j) {
 
 			const atomZj = atoms[j].atomZ;
 			const rCj = radii[j];
@@ -162,7 +163,21 @@ export const computeBonds = (atoms: Atom[], radii: number[]): Bond[] => {
 		   valenceAngle(atoms[idxH], atoms[idxX], atoms[idxY]) > maxHValenceAngle) bonds[i].type = "x";
 	}
 
-	// Clean up bond list removing invalid H-bonds
+	// Check number of bonds for each atom
+	if(maxBonds) {
+		for(let i=0; i < atomsCount; ++i) {
+			let bondsForAtom = 0;
+
+			for(let j=0; j < countBonds; ++j) {
+				if(bonds[j].type === "n" && (bonds[j].from === i || bonds[j].to === i)) {
+					++bondsForAtom;
+					if(bondsForAtom > maxBonds[i]) bonds[j].type = "x";
+				}
+			}
+		}
+	}
+
+	// Clean up bond list removing invalid bonds
 	for(let i = countBonds-1; i >= 0; --i) {
 
 		if(bonds[i].type === "x") {

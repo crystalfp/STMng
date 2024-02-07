@@ -9,13 +9,15 @@ import * as THREE from "three";
 import log from "electron-log";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {useConfigStore} from "@/stores/configStore";
+import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
 import type {MainResponse} from "@/types";
 import {saveDataURL, saveMovie} from "@/services/RoutesClient";
 
-// > Access the store
+// > Access the stores
 const configStore = useConfigStore();
+const messageStore = useMessageStore();
 
 // > Properties
 const props = defineProps<{
@@ -90,8 +92,14 @@ async function handleStop(): Promise<void> {
 
     const buffer = await blob.arrayBuffer();
     const sts = await saveMovie(buffer);
-    if(sts.error) configStore.control.movieMessage = `E|${sts.error}`;
-    else if(sts.payload) configStore.control.movieMessage = `S|${sts.payload}`;
+    if(sts.error) {
+        messageStore.captureMedia.typeM = "error";
+        messageStore.captureMedia.textM = sts.error;
+    }
+    else if(sts.payload) {
+        messageStore.captureMedia.typeM = "success";
+        messageStore.captureMedia.textM = sts.payload;
+    }
 }
 /**
  * Handle MediaRecording errors
@@ -99,7 +107,8 @@ async function handleStop(): Promise<void> {
  * @param event - Error event
  */
 const handleError = (event: Event): void => {
-    configStore.control.movieMessage = `E|${(event as unknown as {error: {name: string}}).error.name}`;
+    messageStore.captureMedia.typeM = "error";
+    messageStore.captureMedia.textM = (event as unknown as {error: {name: string}}).error.name;
 };
 
 // Reference to the view
@@ -189,10 +198,12 @@ onMounted(() => {
             saveDataURL(renderer.domElement.toDataURL(mimeType))
                 .then((response: MainResponse) => {
                     if(response.error) throw Error(response.error);
-                    configStore.control.snapshotMessage = `S|${response.payload}`;
+                    messageStore.captureMedia.typeS = "success";
+                    messageStore.captureMedia.textS = response.payload;
                 })
                 .catch((error: Error) => {
-                    configStore.control.snapshotMessage = `E|Error saving snapshot. Error: ${error.message}`;
+                    messageStore.captureMedia.typeS = "error";
+                    messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
                 });
         }
     });
@@ -206,8 +217,8 @@ onMounted(() => {
 
             movieCaptureRunning = true;
 
-            // Capturing movie
-            stream = renderer.domElement.captureStream(25); // 25 FPS
+            // Capturing movie at 25 fps
+            stream = renderer.domElement.captureStream(25);
 
             // Create the Media Recorder
             const options = {mimeType: "video/webm; codecs=vp9"};

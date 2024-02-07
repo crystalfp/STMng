@@ -7,10 +7,11 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
 import type {FindSymmetriesParams} from "@/electron/types";
 import {findSymmetries} from "@/services/RoutesClient";
+import {useMessageStore} from "@/stores/messageStore";
 
 export class FindSymmetries {
 
-	private bypassComputation = false;
+	private enableComputation = true;
 	private ignoreInputSymmetries = false;
 	private structure: Structure | undefined;
 	private tolS = .25;
@@ -24,16 +25,20 @@ export class FindSymmetries {
 	 */
 	constructor(private readonly id: string) {
 
+		// Access the message store
+		const messageStore = useMessageStore();
+		messageStore.findSymmetries.message = "";
+
 		sb.getUiParams(this.id, (params: UiParams) => {
-    		this.bypassComputation = params.bypassComputation as boolean ?? false;
+    		this.enableComputation = params.enableComputation as boolean ?? true;
     		this.ignoreInputSymmetries = params.ignoreInputSymmetries as boolean ?? false;
     		this.tolS = params.tolS as number ?? 0.25;
     		this.tolT = params.tolT as number ?? 0.25;
     		this.tolG = params.tolG as number ?? 0.10;
 
-			if(this.bypassComputation) {
+			messageStore.findSymmetries.message = "";
+			if(!this.enableComputation) {
 				sb.setData(this.id, this.structure);
-				sb.setUiParams(this.id, {errorMessage: ""});
 			}
 			else if(this.structure) {
 				this.findAndReturnSymmetries();
@@ -44,9 +49,9 @@ export class FindSymmetries {
 
 			this.structure = data as Structure;
 
-			if(this.bypassComputation) {
+			messageStore.findSymmetries.message = "";
+			if(!this.enableComputation) {
 				sb.setData(this.id, this.structure);
-				sb.setUiParams(this.id, {errorMessage: ""});
 			}
 			else if(this.structure) {
 				this.findAndReturnSymmetries();
@@ -101,14 +106,11 @@ export class FindSymmetries {
 			.then((sts) => {
 				if(sts.error) throw Error(sts.error);
 				sb.setData(this.id, JSON.parse(sts.payload));
-				sb.setUiParams(this.id, {
-					errorMessage: ""
-				});
 			})
 			.catch((error: Error) => {
-				sb.setUiParams(this.id, {
-					errorMessage: error.message
-				});
+				// Access the message store
+				const messageStore = useMessageStore();
+				messageStore.findSymmetries.message = error.message;
 			});
 	}
 
@@ -128,7 +130,11 @@ export class FindSymmetries {
 					b[2] * (b[3] * b[7] - b[4] * b[6]);
 
 		// Check if the determinant is zero, which means the matrix is not invertible
-		if(det === 0) throw Error("Basis matrix is not invertible");
+		if(det === 0) {
+			const messageStore = useMessageStore();
+			messageStore.findSymmetries.message = "Basis matrix is not invertible";
+			return [];
+		}
 
 		// Compute the inverse basis matrix
 		const invDet = 1 / det;
@@ -173,7 +179,7 @@ export class FindSymmetries {
 	saveStatus(): string {
 
 		const statusToSave = {
-			bypassComputation: this.bypassComputation,
+			enableComputation: this.enableComputation,
 			ignoreInputSymmetries: this.ignoreInputSymmetries,
 			tolS: this.tolS,
 			tolT: this.tolT,

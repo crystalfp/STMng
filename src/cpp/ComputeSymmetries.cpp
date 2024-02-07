@@ -111,14 +111,14 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::s
 	SgInfo.ListSeitzMx = (T_RTMx *)malloc(SgInfo.MaxList * sizeof(*SgInfo.ListSeitzMx));
 	if(SgInfo.ListSeitzMx == NULL)
 	{
-		error = "Not enough core for ListSeitzMx";
+		error = "Not enough memory for ListSeitzMx";
 		return fc;
 	}
 
 	SgInfo.ListRotMxInfo = (T_RotMxInfo *)malloc(SgInfo.MaxList * sizeof(*SgInfo.ListRotMxInfo));
 	if(SgInfo.ListRotMxInfo == NULL)
 	{
-		error = "Not enough core for ListRotMxInfo";
+		error = "Not enough memory for ListRotMxInfo";
 
 		free(SgInfo.ListSeitzMx);
 		return fc;
@@ -139,7 +139,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::s
 		ParseHallSymbol(tsgn->HallSymbol, &SgInfo);
 		if(SgError != NULL)
 		{
-			error = errorMsg(SgError, "(1)");
+			error = errorMsg(SgError, "(from ParseHallSymbol)");
 			free(SgInfo.ListSeitzMx);
 			free(SgInfo.ListRotMxInfo);
 			return fc;
@@ -150,7 +150,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::s
 		// table of space group symbols
 		if(CompleteSgInfo(&SgInfo) != 0)
 		{
-			error = errorMsg(SgError, "(2)");
+			error = errorMsg(SgError, "(from CompleteSgInfo)");
 
 			free(SgInfo.ListSeitzMx);
 			free(SgInfo.ListRotMxInfo);
@@ -246,11 +246,14 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::s
 		{
 #ifdef DEBUG
 			char msg[32];
-			sprintf(msg, "Parsed %d XYZ symbol%s", n, (n > 1) ? "s" : "");
+			sprintf(msg, "Parsed %d XYZ symbol%s\n", n, (n > 1) ? "s" : "");
 			std::cout << msg;
 #endif
 			if(lattice_indicator != 0)
 			{
+#ifdef DEBUG
+				printf("Lattice indicator: %d\n", lattice_indicator);
+#endif
 				// Lattice type: 1=P, 2=I, 3=rhombohedral obverse on hexagonal axes, 4=F, 5=A, 6=B, 7=C. N
 				// must be made negative if the structure is non-centrosymmetric.
 
@@ -259,7 +262,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::s
 					// mark non-centrosymmetric
 					if(AddInversion2ListSeitzMx(&SgInfo) != 0)
 					{
-						error = errorMsg(SgError, "(3)");
+						error = errorMsg(SgError, "(from AddInversion2ListSeitzMx)");
 
 						free(SgInfo.ListSeitzMx);
 						free(SgInfo.ListRotMxInfo);
@@ -304,7 +307,7 @@ std::vector<double_t> compute(std::string& sg, std::vector<double_t>& fc, std::s
 
 			if(CompleteSgInfo(&SgInfo) != 0)
 			{
-				error = errorMsg(SgError, "(4)");
+				error = errorMsg(SgError, "(from CompleteSgInfo)");
 
 				free(SgInfo.ListSeitzMx);
 				free(SgInfo.ListRotMxInfo);

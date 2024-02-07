@@ -77,9 +77,9 @@ const tickLabels = {1: "Low", 2: "Medium", 3: "Good", 4: "Best"};
   <v-label text="Quality" class="ml-2" />
   <v-slider v-model="drawQuality" :ticks="tickLabels" min="1" max="4" step="1"
             show-ticks="always" tick-size="5" />
-  <v-label text="Roughness" class="ml-2 mt-3" />
+  <v-label :text="`Roughness (${drawRoughness.toFixed(2)})`" class="ml-2 mt-3" />
   <v-slider v-model="drawRoughness" density="compact" min="0" max="1" step="0.1" thumb-label />
-  <v-label text="Metalness" class="ml-2" />
+  <v-label :text="`Metalness (${drawMetalness.toFixed(2)})`" class="ml-2" />
   <v-slider v-model="drawMetalness" density="compact" min="0" max="1" step="0.1" thumb-label />
 </v-container>
 </template>

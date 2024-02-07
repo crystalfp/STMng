@@ -14,7 +14,7 @@ import {fileURLToPath} from "node:url";
 import {extractBasis, fractionalToCartesianCoordinates,
 		basisToLengthAngles, getStructureAppearance} from "./ReaderHelpers";
 import {computeBonds} from "../../services/ComputeBonds";
-import {getAtomicSymbol, getAtomicNumber, getCovalentRadii} from "../modules/AtomData";
+import {getAtomicSymbol, getAtomicNumber, getCovalentRadii, getMaxBonds} from "../modules/AtomData";
 import type {FindSymmetriesParams} from "../types";
 import type {Structure, Atom} from "../../types";
 
@@ -161,7 +161,7 @@ export const setupChannelFindSymmetries = (): void => {
 			}
 		}
 		out.look = getStructureAppearance(out.atoms);
-		out.bonds = computeBonds(out.atoms, getCovalentRadii(out.atoms));
+		out.bonds = computeBonds(out.atoms, getCovalentRadii(out.atoms), getMaxBonds(out.atoms));
 
 		// Close the working space
 		removeWorkingDir(tmpobj, workingDir);

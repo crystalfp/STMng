@@ -1,9 +1,7 @@
 ToDo:
 	☐ Establish shortcuts
 	☐ Add tooltips
-	☐ Add error notifications
 	☐ In validator add check of node types
-	☐ Compute bonds: limit the number of bonds to the atom data value
   ☐ Better camera position initialization (and RNC button {reset-normalize-center})
   ☐ Change project to "network" and put a different extension for these files (.net)
   ☐ Readers do not fail if the file format is invalid
@@ -13,6 +11,7 @@ ToDo:
   ☐ Add show log function
 
 Bugs:
+  ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
 
 Requests from Oganov:
   ☐ Charge maps
@@ -22,6 +21,8 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Add error notifications @done(2024-02-07 15:00) @project(ToDo)
+  ✔ Compute bonds: limit the number of bonds to the atom data value @done(2024-02-06 18:35) @project(ToDo)
   ✔ Check need for viewer input field (modules goes directly to scene) @done(2024-02-05 17:26)
   ✔ What happens if you have a dangling input in the graph? @done(2024-02-05 17:48)
   ✔ Disable save project menu entry if the project loaded is the default one @done(2024-02-05 15:42)

@@ -153,6 +153,16 @@ export class AtomData {
 		};
 	}
 
+	/**
+	 * Return the max number of bonds for the given atom
+	 *
+	 * @param atomZ - Atom for which the max number of bonds should be returned
+	 * @returns The max number of bonds for the given atom
+	 */
+	atomMaxBonds(atomZ: number): number {
+		return this.data[atomZ].maxBonds;
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
@@ -210,10 +220,27 @@ export const getAtomicSymbol = (atomZ: number): string => {
  * @returns List of covalent radii for the given atoms
  */
 export const getCovalentRadii = (atoms: Atom[]): number[] => {
+
 	const rCov: number[] = [];
 	for(const atom of atoms) {
 
 		rCov.push(AtomData.getInstance().atomicRadiiAndColor(atom.atomZ).rCov);
 	}
 	return rCov;
+};
+
+/**
+ * Return a list of max bonds number for the given atoms
+ *
+ * @param atoms - List of atom structures
+ * @returns List of max bonds for the given atoms
+ */
+export const getMaxBonds = (atoms: Atom[]): number[] => {
+
+	const maxBonds: number[] = [];
+	for(const atom of atoms) {
+
+		maxBonds.push(AtomData.getInstance().atomMaxBonds(atom.atomZ));
+	}
+	return maxBonds;
 };

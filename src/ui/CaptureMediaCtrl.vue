@@ -3,35 +3,12 @@
  * @component
  * Controls for the capture media node.
  */
-import {ref, watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
+import {useMessageStore} from "@/stores/messageStore";
 
-// > Access the store
+// > Access the stores
 const configStore = useConfigStore();
-
-// > Prepare the alerts
-const typeM = ref<"error" | "success" | "warning" | "info" | undefined>();
-const textM = ref("");
-watchEffect(() => {
-    const status = configStore.control.movieMessage;
-    typeM.value = undefined;
-    if(!status) return;
-    const parts = status.split("|");
-
-    typeM.value = parts[0] === "E" ? "error" : "success";
-    textM.value = parts[1];
-});
-const typeS = ref<"error" | "success" | "warning" | "info" | undefined>();
-const textS = ref("");
-watchEffect(() => {
-    const status = configStore.control.snapshotMessage;
-    typeS.value = undefined;
-    if(!status) return;
-    const parts = status.split("|");
-
-    typeS.value = parts[0] === "E" ? "error" : "success";
-    textS.value = parts[1];
-});
+const messageStore = useMessageStore();
 
 </script>
 
@@ -47,17 +24,21 @@ watchEffect(() => {
   </v-btn-toggle>
   </v-row>
   <v-btn block class="mt-3" @click="configStore.control.snapshot = true">Capture snapshot</v-btn>
-  <v-alert v-if="typeS !== undefined" :title="typeS === 'error' ? 'Error' : 'Success!'"
-          :text="textS" :type="typeS" density="compact" class="mt-4"
-          style="cursor: pointer;" @click="typeS=undefined" />
+  <v-alert v-if="messageStore.captureMedia.typeS !== undefined"
+           :title="messageStore.captureMedia.typeS === 'error' ? 'Error' : 'Success!'"
+           :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
+           density="compact" class="mt-4" color="red"
+           style="cursor: pointer;" @click="messageStore.captureMedia.typeS=undefined" />
   <v-divider :thickness="8" class="mt-4" />
   <v-label class="mt-4 text-h5 w-100 justify-center">Movie</v-label>
   <v-btn block class="mt-3" :color="configStore.control.movie ? 'error' : 'primary'"
         @click="configStore.control.movie = !configStore.control.movie">
       {{ configStore.control.movie ? "Stop recording" : "Start recording" }}
   </v-btn>
-  <v-alert v-if="typeM !== undefined" :title="typeM === 'error' ? 'Error' : 'Success!'"
-           :text="textM" :type="typeM" density="compact" class="mt-4"
-           style="cursor: pointer;" @click="typeM=undefined" />
+  <v-alert v-if="messageStore.captureMedia.typeM !== undefined"
+           :title="messageStore.captureMedia.typeM === 'error' ? 'Error' : 'Success!'"
+           :text="messageStore.captureMedia.textM" :type="messageStore.captureMedia.typeM"
+           density="compact" class="mt-4" color="red"
+           style="cursor: pointer;" @click="messageStore.captureMedia.typeM=undefined" />
 </v-container>
 </template>

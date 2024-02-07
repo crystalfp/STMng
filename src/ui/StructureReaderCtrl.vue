@@ -8,6 +8,7 @@ import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {useMessageStore} from "@/stores/messageStore";
 
 // > Properties
 const pr = defineProps<{
@@ -15,6 +16,10 @@ const pr = defineProps<{
     /** Its own module id */
     id: string;
 }>();
+
+// Access the message store
+const messageStore = useMessageStore();
+messageStore.structureReader.message = "";
 
 /** Formats that could be loaded */
 const fileFormats = ["POSCAR", "ShelX", "XYZ"];
@@ -29,7 +34,6 @@ const atomsTypes   = ref("");
 const loopSteps    = ref(false);
 const format       = ref("");
 const inProgress   = ref(false);
-const errorMessage = ref("");
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
@@ -42,7 +46,6 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     format.value       = params.format as string ?? "";
     atomsTypes.value   = params.atomsTypes as string ?? "";
     inProgress.value   = params.inProgress as boolean ?? false;
-    errorMessage.value = params.errorMessage as string ?? "";
 });
 
 watchEffect(() => {
@@ -138,7 +141,6 @@ const setFormat = (changedFormat: string): void => {
 
 <template>
 <v-container class="container">
-  <v-alert v-if="errorMessage !== ''" title="Error" :text="errorMessage" type="error" density="compact" color="red" />
   <v-row class="mt-4 mb-2">
     <v-menu open-on-hover>
       <template #activator="{ props }">
@@ -183,6 +185,9 @@ const setFormat = (changedFormat: string): void => {
       <v-spacer />
     </v-row>
   </v-container>
+  <v-alert v-if="messageStore.structureReader.message !== ''" title="Error"
+           :text="messageStore.structureReader.message" type="error" density="compact"
+           color="red" style="cursor: pointer;" @click="messageStore.structureReader.message=''" />
 </v-container>
 </template>
 

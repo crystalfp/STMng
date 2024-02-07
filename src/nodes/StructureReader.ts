@@ -8,6 +8,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {readFileStructure} from "@/services/RoutesClient";
 import type {ReaderStructure, Structure} from "@/types";
 import log from "electron-log";
+import {useMessageStore} from "@/stores/messageStore";
 
 export class StructureReader {
 
@@ -114,10 +115,13 @@ export class StructureReader {
 	 */
 	private doRead(): void {
 
+		const messageStore = useMessageStore();
+
 		this.inProgress = true;
 		sb.setUiParams(this.id, {inProgress: true});
 		readFileStructure(this.format, this.atomsTypes)
 			.then((structureRaw) => {
+				messageStore.structureReader.message = "";
 				if(!structureRaw) {
 					this.inProgress = false;
 					sb.setUiParams(this.id, {
@@ -127,8 +131,8 @@ export class StructureReader {
 						running: false,
 						doLoad: false,
 						inProgress: false,
-						errorMessage: ""
 					});
+
 					return;
 				}
 
@@ -143,7 +147,6 @@ export class StructureReader {
 					running: false,
 					doLoad: false,
 					inProgress: false,
-					errorMessage: ""
 				});
 				this.inProgress = false;
 				this.step = 1;
@@ -161,8 +164,10 @@ export class StructureReader {
 					doLoad: false,
 					format: "",
 					inProgress: false,
-					errorMessage: `Error reading structure: ${error.message}`
 				});
+
+				messageStore.structureReader.message = `Error reading structure: ${error.message}`;
+
 				log.error("Error reading structure:", error.message);
 			});
 	}

@@ -15,8 +15,8 @@ export class DrawStructure {
 	private drawQuality = 4;
 	private drawKind = "ball-and-stick";
 	private previousDrawKind = "ball-and-stick";
-	private drawRoughness = 0.7;
-	private drawMetalness = 0.3;
+	private drawRoughness = 0.5;
+	private drawMetalness = 0.6;
 	private labelKind = "symbol";
 	private showStructure = true;
 	private showBonds = true;
@@ -45,8 +45,8 @@ export class DrawStructure {
 
     		this.drawKind = params.drawKind as string ?? "ball-and-stick";
     		this.drawQuality = params.drawQuality as number ?? 4;
-    		this.drawRoughness = params.drawRoughness as number ?? 0.7;
-    		this.drawMetalness = params.drawMetalness as number ?? 0.3;
+    		this.drawRoughness = params.drawRoughness as number ?? 0.5;
+    		this.drawMetalness = params.drawMetalness as number ?? 0.6;
     		this.labelKind = params.labelKind as string ?? "symbol";
     		this.showStructure = params.showStructure as boolean ?? true;
     		this.showBonds = params.showBonds as boolean ?? true;

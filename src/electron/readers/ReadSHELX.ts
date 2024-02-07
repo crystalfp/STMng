@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getAtomicNumber, getCovalentRadii} from "../modules/AtomData";
+import {getAtomicNumber, getCovalentRadii, getMaxBonds} from "../modules/AtomData";
 import {computeBonds} from "../../services/ComputeBonds";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
@@ -107,7 +107,8 @@ export class ReaderSHELX implements ReaderImplementation {
 
 		// Build the rest of the structure
 		structures[0].look  = getStructureAppearance(structures[0].atoms);
-		structures[0].bonds = computeBonds(structures[0].atoms, getCovalentRadii(structures[0].atoms));
+		structures[0].bonds = computeBonds(structures[0].atoms,
+									getCovalentRadii(structures[0].atoms), getMaxBonds(structures[0].atoms));
 
 		return structures;
 	}
