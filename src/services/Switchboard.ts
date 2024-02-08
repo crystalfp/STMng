@@ -192,7 +192,7 @@ class Switchboard {
 			const configStore = useConfigStore();
 			const {camera, scene, lights} = configStore;
 			const {camera: savedCamera, scene: savedScene, lights: savedLights} = savedProject.viewer;
-			camera.perspective = savedCamera.perspective;
+			camera.type        = savedCamera.type;
 			camera.position[0] = savedCamera.position[0];
 			camera.position[1] = savedCamera.position[1];
 			camera.position[2] = savedCamera.position[2];

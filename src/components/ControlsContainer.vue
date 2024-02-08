@@ -8,6 +8,10 @@ import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
 import {receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 import type {NodeUI} from "@/types";
+import {useConfigStore} from "@/stores/configStore";
+
+// > Access the store
+const configStore = useConfigStore();
 
 const graph = ref<NodeUI[]>([]);
 const selectedTabId = ref("");
@@ -58,5 +62,8 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
     <v-tab v-for="item of graph" :key="item.id" :value="item.id" size="small">{{ item.label }}</v-tab>
   </v-tabs>
   <component :is="loadedPanel" :id="moduleId" />
+  <v-btn density="comfortable" variant="tonal" rounded="0" @click="configStore.control.reset = true">
+    Reset camera
+  </v-btn>
 </v-app>
 </template>

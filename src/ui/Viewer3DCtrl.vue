@@ -55,8 +55,11 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="configStore.camera.perspective" color="primary" label="Perspective camera" class="ml-2" />
-  <v-btn block class="mb-3" @click="configStore.control.reset = true">Reset camera</v-btn>
+  <v-label class="mb-2 mt-3 w-100 justify-center">Camera type</v-label><br>
+  <v-btn-toggle v-model="configStore.camera.type" color="primary" class="mb-8 w-100 justify-center">
+    <v-btn value="perspective">Perspective</v-btn>
+    <v-btn value="orthographic">Orthographic</v-btn>
+  </v-btn-toggle>
   <v-expansion-panels>
     <v-expansion-panel>
       <v-expansion-panel-title>

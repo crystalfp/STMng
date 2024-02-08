@@ -1,5 +1,6 @@
 
 .container {
   overflow-y: auto;
-  height: var(--container-height);
+  // height: var(--container-height);
+  height: calc(var(--container-height) - 30px);
 }

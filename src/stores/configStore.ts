@@ -4,13 +4,14 @@
  * @packageDocumentation
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
+import type {PositionType} from "@/types";
 
 interface Viewer3DConfiguration {
 
     camera: {
-        perspective: boolean;
-        position: [number, number, number];
-        lookAt: [number, number, number];
+        type: "perspective" | "orthographic";
+        position: PositionType;
+        lookAt: PositionType;
         snapshotFormat: string;
     };
     scene: {
@@ -21,20 +22,20 @@ interface Viewer3DConfiguration {
         ambientIntensity: number;
         directional1Color: string;
         directional1Intensity: number;
-        directional1Position: [number, number, number];
+        directional1Position: PositionType;
         directional2Color: string;
         directional2Intensity: number;
-        directional2Position: [number, number, number];
+        directional2Position: PositionType;
         directional3Color: string;
         directional3Intensity: number;
-        directional3Position: [number, number, number];
+        directional3Position: PositionType;
     };
     control: {
         reset: boolean;
         snapshot: boolean;
         movie: boolean;
-        sceneCenter: [number, number, number];
-        sceneSides: [number, number, number];
+        sceneCenter: PositionType;
+        sceneSides: PositionType;
     };
 }
 
@@ -44,7 +45,7 @@ export const useConfigStore = defineStore("ConfigStore", {
     state: () => ({
 
 		camera: {
-			perspective: true,
+			type: "perspective",
             position: [5, 3, 5],
             lookAt: [0, 0, 0],
             snapshotFormat: "png",

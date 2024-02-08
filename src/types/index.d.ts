@@ -131,18 +131,31 @@ export interface Structure {
     look:       Look;
 }
 
-
+// > Interfaces with main process
 export interface ReaderStructure {
     filename: string;
     structures: Structure[];
     error?: string;
 }
 
+export interface MainResponse {
+    payload: string;
+    error?: string;
+}
+
 // > The project structure
 export interface GraphNode {
+
+    /** Unique id for the node */
 	id: string;
+
+    /** The label that appears on the node selector */
 	label: string;
+
+    /** The type of the node (valid values in NodeInfo.ts) */
 	type: string;
+
+    /** Comma separated list of node ids from which the node takes inputs */
 	in?: string;
 }
 
@@ -153,7 +166,7 @@ export interface Project {
     currentId?: string;
     viewer?: {
         camera: {
-            perspective: boolean;
+            type: "perspective" | "orthographic";
             position: PositionType;
             lookAt: PositionType;
             snapshotFormat: string;
@@ -176,9 +189,4 @@ export interface Project {
         };
     };
     ui: Record<string, UiParams>;
-}
-
-export interface MainResponse {
-    payload: string;
-    error?: string;
 }

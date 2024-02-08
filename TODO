@@ -8,8 +8,8 @@ ToDo:
   ☐ Change OrbitControl to camera-controls
   ☐ Finish help
   ☐ Add show log function
-  ☐ Move camera reset button to the bottom of the node parameters container
   ☐ Return message (like disabled input symmetries) from Find Symmetries to client
+  ☐ Fix reset camera for orthographic camera
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
@@ -22,6 +22,7 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Move camera reset button to the bottom of the node parameters container @done(2024-02-08 19:13)
   ✔ Better camera position initialization (and RNC button {reset-normalize-center}) @done(2024-02-08 14:32)
   ✔ Add error notifications @done(2024-02-07 15:00) @project(ToDo)
   ✔ Compute bonds: limit the number of bonds to the atom data value @done(2024-02-06 18:35) @project(ToDo)

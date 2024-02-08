@@ -52,7 +52,7 @@
   ],
   "viewer": {
     "camera": {
-      "perspective": true,
+      "type": "perspective",
       "position": [
         5,
         3,

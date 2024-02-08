@@ -137,7 +137,7 @@ onMounted(() => {
     const cameraOrthographic = new THREE.OrthographicCamera();
     copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
 
-    let camera = configStore.camera.perspective ? cameraPerspective : cameraOrthographic;
+    let camera = configStore.camera.type === "perspective" ? cameraPerspective : cameraOrthographic;
 
     // Add renderer
     const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
@@ -155,7 +155,7 @@ onMounted(() => {
     // Switch cameras
     watchEffect(() => {
 
-        if(configStore.camera.perspective) {
+        if(configStore.camera.type === "perspective") {
 
             const oldY = cameraPerspective.position.y;
             cameraPerspective.position.copy(cameraOrthographic.position);
@@ -260,7 +260,7 @@ onMounted(() => {
 
             const aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
 
-            if(configStore.camera.perspective) {
+            if(configStore.camera.type === "perspective") {
                 cameraPerspective.aspect = aspect;
             }
             else {
