@@ -75,8 +75,6 @@ receiveMenuSelection((menuEntry: string) => {
 
 <style scoped lang="scss">
 
-@use "@/styles/colors";
-
 .layout-top {
   height: var(--usable-height);
   display: flex;
@@ -98,7 +96,7 @@ receiveMenuSelection((menuEntry: string) => {
 
 .layout-gutter {
   width: 6px;
-  background-color: colors.$border;
+  background-color: #6F6F6F;
   cursor: pointer;
 }
 </style>

@@ -10,6 +10,7 @@ ToDo:
   ☐ Add show log function
   ☐ Return message (like disabled input symmetries) from Find Symmetries to client
   ☐ Fix reset camera for orthographic camera
+  ✔ Remove unused colors and fonts @done(2024-02-08 22:23)
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"

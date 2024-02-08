@@ -6,7 +6,6 @@
 import {createApp} from "vue";
 import log from "electron-log/renderer";
 import {createPinia} from "pinia";
-import "@/styles/font-faces.css";
 
 import App from "./App.vue";
 

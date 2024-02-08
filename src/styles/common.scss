@@ -1,5 +1,3 @@
-@use "colors";
-@use "fonts";
 
 // > Globals
 // >> Body
@@ -8,9 +6,6 @@ body {
   padding: 0;
   height: 100vh;
   width: 100vw;
-  background-color: colors.$background;
-  font-family: fonts.$ui;
-  color: colors.$text;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }

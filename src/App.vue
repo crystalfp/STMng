@@ -11,9 +11,6 @@ import {RouterView} from "vue-router";
 </template>
 
 <style lang="scss">
-@use "@/styles/colors";
-@use "@/styles/fonts";
 @use "@/styles/common";
-@use "@/styles/popups";
 @use "@/styles/vuetify"
 </style>

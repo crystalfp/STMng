@@ -11,7 +11,7 @@ import * as THREE from "three";
  *
  * @param color - Color of the surface
  * @param roughness - Rugosity of the material
- * @param metalness - Metal shinig of the material
+ * @param metalness - Metal shining of the material
  * @returns The mesh material
  */
 export const normalMaterial = (color: THREE.ColorRepresentation,
@@ -32,7 +32,7 @@ export const normalMaterial = (color: THREE.ColorRepresentation,
  * @param colorFrom - First side color
  * @param colorTo - End side color
  * @param roughness - Rugosity of the material
- * @param metalness - Metal shinig of the material
+ * @param metalness - Metal shining of the material
  * @param width - of the surface
  * @returns Material to apply
  */
