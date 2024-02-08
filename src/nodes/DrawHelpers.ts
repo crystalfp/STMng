@@ -72,6 +72,7 @@ export class DrawHelpers {
 					scene.remove(obj);
 					obj.dispose();
 					gridXZ = this.gridHelper("XZ");
+					gridXZ.visible = this.showGridXZ;
 					scene.add(gridXZ);
 				}
 				obj = scene.getObjectByName("GridHelperXY") as THREE.GridHelper;
@@ -79,6 +80,7 @@ export class DrawHelpers {
 					scene.remove(obj);
 					obj.dispose();
 					gridXY = this.gridHelper("XY");
+					gridXY.visible = this.showGridXY;
 					scene.add(gridXY);
 				}
 				obj = scene.getObjectByName("GridHelperYZ") as THREE.GridHelper;
@@ -86,6 +88,7 @@ export class DrawHelpers {
 					scene.remove(obj);
 					obj.dispose();
 					gridYZ = this.gridHelper("YZ");
+					gridYZ.visible = this.showGridYZ;
 					scene.add(gridYZ);
 				}
 				this.sidePrevious = this.side;

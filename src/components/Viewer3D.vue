@@ -15,6 +15,8 @@ import {sm} from "@/services/SceneManager";
 import type {MainResponse} from "@/types";
 import {saveDataURL, saveMovie} from "@/services/RoutesClient";
 
+import {fitCameraToObject} from "@/services/FitCamera";
+
 // > Access the stores
 const configStore = useConfigStore();
 const messageStore = useMessageStore();
@@ -174,18 +176,23 @@ onMounted(() => {
     // Reset camera
     watchEffect(() => {
         if(configStore.control.reset) {
+
             configStore.control.reset = false;
 
-            cameraPerspective.position.set(...configStore.camera.position);
-            cameraPerspective.lookAt(new THREE.Vector3(...configStore.camera.lookAt));
             cameraPerspective.zoom = 1;
-
+            fitCameraToObject(cameraPerspective, controls);
             copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
             cameraOrthographic.updateProjectionMatrix();
-
-            controls.target = new THREE.Vector3(...configStore.control.target);
         }
-        controls.update();
+    });
+
+    // Set the camera target point as loaded by the structure rendering node
+    watchEffect(() => {
+
+        cameraPerspective.zoom = 1;
+        fitCameraToObject(cameraPerspective, controls);
+        copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+        cameraOrthographic.updateProjectionMatrix();
     });
 
     // Take snapshot
@@ -237,13 +244,6 @@ onMounted(() => {
             const tracks = stream.getTracks();
             for(const track of tracks) track.stop();
         }
-    });
-
-    // Set the camera target point as loaded by the structure rendering node
-    watchEffect(() => {
-
-        controls.target = new THREE.Vector3(...configStore.control.target);
-        controls.update();
     });
 
     // Create lights

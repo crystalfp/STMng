@@ -9,6 +9,7 @@ import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
 import SpriteText from "three-spritetext";
 import type {PositionType, Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
+import {getBoundingBox} from "@/services/BoundingBox";
 
 export class DrawStructure {
 
@@ -158,19 +159,8 @@ export class DrawStructure {
 				break;
 		}
 
-		// Find the camera rotation center
-		const center: [number, number, number] = [0, 0, 0];
-		const natoms = data.atoms.length;
-		for(const atom of data.atoms) {
-			center[0] += atom.position[0];
-			center[1] += atom.position[1];
-			center[2] += atom.position[2];
-		}
-		center[0] /= natoms;
-		center[1] /= natoms;
-		center[2] /= natoms;
-
-		sm.setCenter(center);
+		// Find the camera rotation center and position based on the structure bounding box
+		sm.setBoundingBox(getBoundingBox(data.atoms));
 	}
 
 	/**

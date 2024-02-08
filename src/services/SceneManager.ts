@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
+import type {BoundingBox} from "@/services/BoundingBox";
 
 class SceneManager {
 
@@ -131,14 +132,15 @@ class SceneManager {
 	}
 
 	/**
-	 * Save the scene center
+	 * Save the scene bounding box to be used by camera positioning
 	 *
-	 * @param center - Center to be saved
+	 * @param boundingBox - The scene bounding box
 	 */
-	setCenter(center: [number, number, number]): void {
+	setBoundingBox(boundingBox: BoundingBox): void {
 
 		const configStore = useConfigStore();
-		configStore.control.target = center;
+		configStore.control.sceneCenter = boundingBox.center;
+		configStore.control.sceneSides = boundingBox.side;
 	}
 
 	// > Access the singleton instance
