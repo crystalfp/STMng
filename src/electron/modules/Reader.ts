@@ -8,7 +8,7 @@
 import {ipcMain, dialog} from "electron";
 import path from "node:path";
 import log from "electron-log";
-import type {ReaderStructure} from "../../types";
+import type {ReaderStructure, Structure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
 
 // Import the readers
@@ -24,9 +24,9 @@ import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
  * @param atomsTypes - Atoms types to assign to atoms read
  * @returns Structure read and eventual error message
  */
-export const readFileStructure = async (filename: string,
-									requestedFormat: string,
-									atomsTypes: string): Promise<ReaderStructure> => {
+const readFileStructure = async (filename: string,
+								 requestedFormat: string,
+								 atomsTypes: string): Promise<ReaderStructure> => {
 
 	// const associatedFilename = getAssociatedFile(filename, type);
 
@@ -58,17 +58,33 @@ export const readFileStructure = async (filename: string,
 
 	if(requestedFormat === "POSCAR") {
 		const atoms = atomsTypes.trim().split(/ +/);
-		const structures = await reader.readStructure(filename, atoms);
-		return {
-			filename: path.basename(filename),
-			structures
-		};
+		const structures1 = await reader.readStructure(filename, atoms);
+		const file1 = path.basename(filename);
+		return checkStructures(structures1) ?
+					{filename: file1, structures: structures1} :
+					{filename: file1, structures: [], error: "Invalid POSCAR file"};
 	}
 
-	return {
-		filename: path.basename(filename),
-		structures: await reader.readStructure(filename)
-	};
+	const structures = await reader.readStructure(filename);
+	const file = path.basename(filename);
+	return checkStructures(structures) ?
+				{filename: file, structures} :
+				{filename: file, structures: [], error: `Invalid ${requestedFormat} file`};
+};
+
+/**
+ * Sanity check for the structures read
+ *
+ * @param structures - Structures read
+ * @returns True if the structures are valid
+ */
+const checkStructures = (structures: Structure[]): boolean => {
+
+	if(structures.length === 0) return false;
+	for(const structure of structures) {
+		if(structure.atoms.length === 0) return false;
+	}
+	return true;
 };
 
 /**

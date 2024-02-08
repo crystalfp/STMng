@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",

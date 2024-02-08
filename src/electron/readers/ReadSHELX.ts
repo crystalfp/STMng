@@ -55,6 +55,7 @@ export class ReaderSHELX implements ReaderImplementation {
 				lineUC.startsWith("FVAR") ||
 				lineUC.startsWith("SFAC")) continue;
 
+			// Get the lines to be used
 			if(lineUC.startsWith("SYMM")) {
 				const sg = lineUC.replace(/\s+\(.+$/, "").replace(/^SYMM\s+/, "");
 				if(spaceGroup) spaceGroup += `\n${sg}`;
@@ -65,6 +66,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			}
 			else if(lineUC.startsWith("CELL")) {
 				const fields = lineUC.split(/ +/);
+				if(fields.length < 8) continue;
 				const a = Number.parseFloat(fields[2]);
 				const b = Number.parseFloat(fields[3]);
 				const c = Number.parseFloat(fields[4]);
@@ -77,6 +79,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			else {
 				// Ordinary atom line
 				const fields = line.split(/ +/);
+				if(fields.length < 5) continue;
 
 				// Extract the element type
 				const atomZ = getAtomicNumber(fields[0].replace(/\d+/, ""));
@@ -97,7 +100,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			}
 		}
 
-		// Set the structure space group
+		// All lines read. Set the structure space group
 		// Cover the case of LATT without SYMM cards
 		if(latticeType !== 0) {
 
