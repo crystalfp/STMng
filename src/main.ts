@@ -29,7 +29,7 @@ import {VMenu} from "vuetify/components/VMenu";
 import {VSwitch} from "vuetify/components/VSwitch";
 import {VTextField} from "vuetify/components/VTextField";
 import {VDialog} from "vuetify/components/VDialog";
-import {VCard} from "vuetify/components/VCard";
+import {VCard, VCardText, VCardActions} from "vuetify/components/VCard";
 import {VTooltip} from "vuetify/components/VTooltip";
 import {VTabs, VTab} from "vuetify/components/VTabs";
 import {VApp} from "vuetify/components/VApp";
@@ -58,7 +58,7 @@ const app = createApp(App)
 			VSwitch,
 			VTextField,
 			VDialog,
-			VCard,
+			VCard, VCardText, VCardActions,
 			VTooltip,
 			VTabs, VTab,
 			VApp,

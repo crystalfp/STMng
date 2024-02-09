@@ -28,7 +28,7 @@ const repetitionsA = ref(1);
 const repetitionsB = ref(1);
 const repetitionsC = ref(1);
 const showSupercell = ref(false);
-const supercellColor = ref("#16a004");
+const supercellColor = ref("#16A004");
 const dashedSupercell = ref(false);
 
 const hasSupercell = (): boolean => {
@@ -45,7 +45,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     repetitionsB.value = params.repetitionsB as number ?? 1;
     repetitionsC.value = params.repetitionsC as number ?? 1;
     showSupercell.value = params.showSupercell as boolean ?? hasSupercell();
-    supercellColor.value = params.supercellColor as string ?? "#16a004";
+    supercellColor.value = params.supercellColor as string ?? "#16A004";
     dashedSupercell.value = params.dashedSupercell as boolean ?? false;
 });
 watchEffect(() => {

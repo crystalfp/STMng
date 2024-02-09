@@ -28,32 +28,23 @@ void getVersions().then((receivedVersions) => {
 
 
 <template>
-<v-dialog v-model="isOpen" width="25rem">
+<v-dialog v-model="isOpen" width="26rem">
   <v-card>
     <v-card-text class="pl-2">
-      <div class="mb-4 ml-2 mt-4 text-body-1">See The Molecule new generation (STMng) is a visualization tool
-        that implements some of the STM4 functionalities.</div>
+      <div class="mb-4 ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a visualization tool
+           that implements some of the STM4 functionalities.</div>
       <table class="text-body-2 ml-2">
-        <tr><td class="c1">STMng:</td><td>{{ versions.app }}</td></tr>
-        <tr><td class="c1">Electron:</td><td>{{ versions.electron }}</td></tr>
-        <tr><td class="c1">Chromium:</td><td>{{ versions.chrome }}</td></tr>
-        <tr><td class="c1">Node:</td><td>{{ versions.node }}</td></tr>
+        <tr><td class="w-50">STMng:</td><td>{{ versions.app }}</td></tr>
+        <tr><td class="w-50">Electron:</td><td>{{ versions.electron }}</td></tr>
+        <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
+        <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
       </table>
       <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
     </v-card-text>
     <v-card-actions>
-      <v-btn class="mt-4" color="primary" rounded="0" variant="tonal" block
+      <v-btn class="mt-2" color="primary" rounded="0" variant="tonal" block
              @click="isOpen = false; emit('close-panel')">Close</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
 </template>
-
-
-<style scoped lang="scss">
-
-.c1 {
-  width: 5rem;
-}
-
-</style>

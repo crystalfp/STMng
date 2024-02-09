@@ -64,16 +64,3 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 }
 
 NODE_API_MODULE(NODE_GYP_MODULE_NAME, Init)
-
-/*
-Add this to binding.gyp after libraries to copy the linked library:
-'copies': [
-	# Here i copy the SDL2.dll file
-	{
-		'destination': '<(module_root_dir)/build/Release/',
-		'files': [
-			'C:\\SDL\\SDL2-2.26.5\\lib\\x64\\SDL2.dll'
-		]
-	}
-*/
-// Tools needed: https://nodejs.github.io/node-addon-examples/getting-started/tools

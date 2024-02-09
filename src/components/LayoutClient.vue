@@ -96,7 +96,7 @@ receiveMenuSelection((menuEntry: string) => {
 
 .layout-gutter {
   width: 6px;
-  background-color: #6F6F6F;
+  background-color: rgb(var(--v-theme-surface-light));
   cursor: pointer;
 }
 </style>

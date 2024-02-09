@@ -12,5 +12,4 @@ import {RouterView} from "vue-router";
 
 <style lang="scss">
 @use "@/styles/common";
-@use "@/styles/vuetify"
 </style>
