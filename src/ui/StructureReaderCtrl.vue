@@ -192,7 +192,7 @@ const setFormat = (changedFormat: string): void => {
 </template>
 
 
-<style scoped lang="scss">
+<style scoped>
 
 .underlined-label {
   margin-left: 10px;

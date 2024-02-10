@@ -6,7 +6,6 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import AlignLabels from "@/widgets/AlignLabels.vue";
 
 // > Properties
 const props = defineProps<{
@@ -49,9 +48,9 @@ watchEffect(() => {
   <v-switch v-model="showGridXZ" color="primary" label="Show grid XZ" density="compact" class="ml-4 mt-n5" />
   <v-switch v-model="showGridXY" color="primary" label="Show grid XY" density="compact" class="ml-4 mt-n5" />
   <v-switch v-model="showGridYZ" color="primary" label="Show grid YZ" density="compact" class="ml-4 mt-n5" />
-  <align-labels label-width="5rem">
+  <g-align-labels label-width="5rem">
     <v-slider v-model="gridSize" label="Grid side" density="compact" min="2" max="40" step="2" thumb-label />
     <v-slider v-model="axisLength" label="Axis length" density="compact" min="0.5" max="20" step="0.5" thumb-label />
-  </align-labels>
+  </g-align-labels>
 </v-container>
 </template>

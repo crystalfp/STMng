@@ -63,8 +63,8 @@ export const useConfigStore = defineStore("ConfigStore", {
 			directional3Color: "#FF0000",
 			directional3Intensity: 3,
 			directional1Position: [0, 1, 0],
-			directional2Position: [1, 1, 1],
-			directional3Position: [-1, -1, -1],
+			directional2Position: [0.5774, 0.5774, 0.5774],
+			directional3Position: [-0.5774, -0.5774, -0.5774],
 		},
         control: {
             reset: false,

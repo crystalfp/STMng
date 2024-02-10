@@ -73,7 +73,7 @@ receiveMenuSelection((menuEntry: string) => {
 </template>
 
 
-<style scoped lang="scss">
+<style scoped>
 
 .layout-top {
   height: var(--usable-height);
@@ -82,7 +82,7 @@ receiveMenuSelection((menuEntry: string) => {
   margin: 0;
   overflow: hidden;
   width: 99.9vw;
-  // width: 100vw;
+  /* width: 100vw; */
 }
 
 .layout-west {

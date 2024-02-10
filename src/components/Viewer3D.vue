@@ -12,10 +12,9 @@ import {useConfigStore} from "@/stores/configStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
-import type {MainResponse} from "@/types";
 import {saveDataURL, saveMovie} from "@/services/RoutesClient";
-
 import {fitCameraToObject} from "@/services/FitCamera";
+import type {MainResponse} from "@/types";
 
 // > Access the stores
 const configStore = useConfigStore();
@@ -293,7 +292,7 @@ onMounted(() => {
 </template>
 
 
-<style scoped lang="scss">
+<style scoped>
 
 .canvas {
   width: 100%;

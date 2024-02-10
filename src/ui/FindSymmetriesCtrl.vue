@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the polyhedra visualizer.
+ * Controls for the Find Symmetries node.
  */
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import AlignLabels from "@/widgets/AlignLabels.vue";
 import {useMessageStore} from "@/stores/messageStore";
 
 // > Properties
@@ -53,14 +52,14 @@ watchEffect(() => {
   <v-switch v-model="ignoreInputSymmetries" color="primary"
             label="Ignore input symmetries" density="compact" class="mt-n5 ml-4" />
   <v-label class="mb-2 ml-2">Tolerances:</v-label>
-  <align-labels label-width="3.5rem">
+  <g-align-labels label-width="3.5rem">
     <v-slider v-model="tolS" :label="`S (${tolS.toFixed(2)})`" density="compact"
                 min="0.01" max="1" step="0.01" thumb-label />
     <v-slider v-model="tolT" :label="`T (${tolT.toFixed(2)})`" density="compact"
                 min="0.01" max="1" step="0.01" thumb-label />
     <v-slider v-model="tolG" :label="`G (${tolG.toFixed(2)})`" density="compact"
                 min="0.01" max="1" step="0.01" thumb-label />
-  </align-labels>
+  </g-align-labels>
   <v-alert v-if="messageStore.findSymmetries.message !== ''" title="Error" color="red"
            :text="messageStore.findSymmetries.message" type="error" density="compact" class="mt-4"
            style="cursor: pointer;" @click="messageStore.findSymmetries.message=''" />

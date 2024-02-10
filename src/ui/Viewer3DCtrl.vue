@@ -6,7 +6,6 @@
 
 import {ref, watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
-import AlignLabels from "@/widgets/AlignLabels.vue";
 
 // > Access the store
 const configStore = useConfigStore();
@@ -91,36 +90,36 @@ watchEffect(() => {
         <v-label text="Directional light 1" />
         <v-color-picker v-model="configStore.lights.directional1Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
-        <align-labels label-width="4.5rem">
+        <g-align-labels label-width="4.5rem">
           <v-slider v-model="configStore.lights.directional1Intensity" label="Intensity" density="compact"
                     min="0" max="3" step="0.1" thumb-label />
           <v-slider v-model="alpha1" label="Around X" density="compact"
                     min="-180" max="180" step="1" thumb-label />
           <v-slider v-model="beta1" label="Along X" density="compact"
                     min="-90" max="90" step="1" thumb-label />
-        </align-labels>
+        </g-align-labels>
         <v-label text="Directional light 2" />
         <v-color-picker v-model="configStore.lights.directional2Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
-        <align-labels label-width="4.5rem">
+        <g-align-labels label-width="4.5rem">
           <v-slider v-model="configStore.lights.directional2Intensity" label="Intensity" density="compact"
                     min="0" max="3" step="0.1" thumb-label />
           <v-slider v-model="alpha2" label="Around Y" density="compact"
                     min="-180" max="180" step="1" thumb-label />
           <v-slider v-model="beta2" label="Along Y" density="compact"
                     min="-90" max="90" step="1" thumb-label />
-        </align-labels>
+        </g-align-labels>
         <v-label text="Directional light 3" />
         <v-color-picker v-model="configStore.lights.directional3Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
-        <align-labels label-width="4.5rem">
+        <g-align-labels label-width="4.5rem">
           <v-slider v-model="configStore.lights.directional3Intensity" label="Intensity" density="compact"
                     min="0" max="3" step="0.1" thumb-label />
           <v-slider v-model="alpha3" label="Around Z" density="compact"
                     min="-180" max="180" step="1" thumb-label />
           <v-slider v-model="beta3" label="Along Z" density="compact"
                     min="-90" max="90" step="1" thumb-label />
-        </align-labels>
+        </g-align-labels>
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>

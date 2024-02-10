@@ -28,7 +28,7 @@ const loadProject = (filename: string): void => {
 		projectAsString = rawProject;
 	}
 	catch(error: unknown) {
-		log.error(`Cannot read project file "${filename}". Error ${(error as Error).message}`);
+		log.error(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
 		sendLoadedProject("");
 		projectAsString = "";
 	}
@@ -44,7 +44,7 @@ const getDefaultProject = (): string => {
 	const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 	const DIST = path.join(mainSourceDirectory, "..", "dist");
 	const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-	return path.join(publicDir, "default-project.json");
+	return path.join(publicDir, "default-project.prj");
 };
 
 
@@ -64,7 +64,7 @@ export const loadProjectAndRemember = (filename: string): boolean => {
 		sendProjectPath(filename);
 	}
 	else {
-		log.error(`Project file ${filename} does not exist. Loading default project`);
+		log.error(`Project file "${filename}" does not exist. Loading default project`);
 		removeProjectPath();
 		filename = getDefaultProject();
 		sendProjectPath();
@@ -99,7 +99,7 @@ export const loadRememberedProject = (ignoreSaved: boolean): boolean => {
 		}
 		if(fs.existsSync(filename)) sendProjectPath(filename);
 		else {
-			log.error(`Project file ${filename} does not exist. Loading default project`);
+			log.error(`Project file "${filename}" does not exist. Loading default project`);
 			removeProjectPath();
 			filename = getDefaultProject();
 			sendProjectPath();
@@ -122,9 +122,10 @@ export const saveProjectAs = (filename: string): void => {
 			fs.writeFileSync(filename, rawProject, "utf8");
 			projectAsString = rawProject;
 			sendProjectPath(filename);
+			setProjectPath(filename);
 		})
 		.catch((error: Error) => {
-			log.error(`Cannot save project file "${filename}". Error ${error.message}`);
+			log.error(`Cannot save project file "${filename}". Error: ${error.message}`);
 			projectAsString = "";
 		});
 };
@@ -139,6 +140,9 @@ export const saveProject = (): void => {
 	else log.error("Cannot save project. Filename not set.");
 };
 
+/**
+ * Setup the channel to handle project requests from client
+ */
 export const setupChannelProject = (): void => {
     ipcMain.handle("PROJECT:GET",  () => {
         return projectAsString;

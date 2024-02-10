@@ -62,7 +62,7 @@ document.addEventListener("keydown", captureEscape);
 </template>
 
 
-<style scoped lang="scss">
+<style scoped>
 
 .chart-portal {
   display: flex;

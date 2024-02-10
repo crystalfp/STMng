@@ -242,7 +242,7 @@ class Switchboard {
 	}
 
 	/**
-	 * Get data from another node
+	 * Get data from other nodes
 	 *
 	 * @param id - ID of the node receiving the data
 	 * @param callback - Function called when the data changes

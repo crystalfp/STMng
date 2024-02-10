@@ -67,7 +67,7 @@ export const setupMenu = (): void => {
                         const file = dialog.showSaveDialogSync({
                             title: "Save project",
                             filters: [
-                                {name: "STM project", extensions: ["json"]},
+                                {name: "STMng project", extensions: ["prj"]},
                             ]
                         });
                         if(file) {

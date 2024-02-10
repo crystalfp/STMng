@@ -13,8 +13,9 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: ["doc", "release", "tests"],
+        holdUntilCrawlEnd: false
     },
-    define : {
+    define: {
         __VUE_PROD_DEVTOOLS__: "false",
     },
     plugins: [
