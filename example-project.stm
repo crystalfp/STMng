@@ -1,62 +1,58 @@
 {
-  "graph": [
-    {
-      "id": "reader",
+  "graph": {
+    "reader": {
       "label": "Reader",
       "type": "structure-reader"
     },
-    {
-      "id": "symmetry",
-      "label": "Symmetry",
-      "type": "apply-symmetries",
+    "findsymm": {
+      "label": "Find symm",
+      "type": "find-symmetries",
       "in": "reader"
     },
-    {
-      "id": "unit",
+    "symmetry": {
+      "label": "Symmetry",
+      "type": "apply-symmetries",
+      "in": "findsymm"
+    },
+    "unit": {
       "label": "Cell",
       "type": "draw-unit-cell",
       "in": "symmetry"
     },
-    {
-      "id": "draw",
+    "draw": {
       "label": "Render",
       "type": "draw-structure",
       "in": "unit"
     },
-    {
-      "id": "polyhedra",
-      "label": "Poly",
+    "polyhedra": {
+      "label": "Polyhedra",
       "type": "draw-polyhedra",
       "in": "unit"
     },
-    {
-      "id": "helpers",
+    "helpers": {
       "label": "Helpers",
       "type": "draw-helpers"
     },
-    {
-      "id": "viewer",
+    "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
     },
-    {
-      "id": "capture",
+    "capture": {
       "label": "Capture",
       "type": "capture-view"
     },
-    {
-      "id": "chart",
+    "chart": {
       "label": "Chart",
       "type": "chart-viewer"
     }
-  ],
+  },
   "viewer": {
     "camera": {
       "type": "perspective",
       "position": [
-        5,
-        3,
-        5
+        -10.916984970788626,
+        5.4242112318735245,
+        2.816208427657685
       ],
       "lookAt": [
         0,
@@ -83,14 +79,14 @@
         0
       ],
       "directional2Position": [
-        1,
-        1,
-        1
+        0.5774,
+        0.5774,
+        0.5774
       ],
       "directional3Position": [
-        -1,
-        -1,
-        -1
+        -0.5774,
+        -0.5774,
+        -0.5774
       ]
     }
   },
@@ -98,22 +94,30 @@
     "reader": {
       "loopSteps": false,
       "step": 1,
-      "format": "",
+      "format": "ShelX",
       "atomsTypes": ""
+    },
+    "findsymm": {
+      "enableComputation": true,
+      "ignoreInputSymmetries": false,
+      "tolS": 0.25,
+      "tolT": 0.25,
+      "tolG": 0.1
     },
     "symmetry": {
       "fillUnitCell": false,
       "enableSymmetryComputation": true
     },
     "unit": {
-      "showUnitCell": true,
+      "showUnitCell": false,
       "dashedLine": false,
       "lineColor": "#0000FF",
+      "showBasisVectors": true,
       "repetitionsA": 1,
       "repetitionsB": 1,
       "repetitionsC": 1,
       "showSupercell": false,
-      "supercellColor": "#02A502",
+      "supercellColor": "#16A004",
       "dashedSupercell": false
     },
     "draw": {
@@ -127,7 +131,7 @@
       "showLabels": true
     },
     "polyhedra": {
-      "showPolyhedra": false,
+      "showPolyhedra": true,
       "color": "#FFFFFF80"
     },
     "helpers": {
@@ -135,7 +139,8 @@
       "showGridXZ": false,
       "showGridXY": false,
       "showGridYZ": false,
-      "side": 10
+      "side": 10,
+      "axisLength": 1
     },
     "chart": {
       "chartType": "line"

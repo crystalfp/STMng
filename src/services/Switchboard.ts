@@ -87,23 +87,26 @@ class Switchboard {
 			switchboardStore.clear();
 
 			// For each module of the project graph
-			for(const node of this.project.graph) {
+			for(const id in this.project.graph) {
+
+				// Access the node (id is its id)
+				const node = this.project.graph[id];
 
 				// Set mapping from module to its type
-				this.mapIdToType.set(node.id, node.type);
+				this.mapIdToType.set(id, node.type);
 
 				// Access the UI for the module
-				const nodeUI = this.nodeInfo.getUICode(node);
+				const nodeUI = this.nodeInfo.getUICode(id, node);
 				if(nodeUI) this.nodesUI.push(nodeUI);
 
 				// Prepare the params area for the module
-				switchboardStore.initNode(node.id);
+				switchboardStore.initNode(id);
 
 				// Set the connections to the inputs
-				this.setupInputs(node.id, node.in, this.mapIdToInputs);
+				this.setupInputs(id, node.in, this.mapIdToInputs);
 
 				// Setup the mapping to the runtime code
-				this.nodeInfo.setupRuntime(node.type, node.id, this.mapIdToCode);
+				this.nodeInfo.setupRuntime(node.type, id, this.mapIdToCode);
 			}
 
 			// Setup the current module
@@ -146,8 +149,13 @@ class Switchboard {
 	 */
 	subscribeToUiNodes(callback: (nodes: NodeUI[], currentId: string) => void): void {
 
-		if(this.project && this.project.graph.length > 0) callback(this.nodesUI, this.currentId);
+		// Save the callback
 		this.nodesCallback = callback;
+
+		// If there is at least one node in the graph, run the callback
+		let hasNodes = false;
+		if(this.project) for(const id in this.project.graph) {void id; hasNodes = true; break;}
+		if(hasNodes) callback(this.nodesUI, this.currentId);
 	}
 
 	/**

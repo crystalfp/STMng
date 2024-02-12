@@ -58,10 +58,10 @@ export class NodeInfo {
 	 * @param node - Node in the graph
 	 * @returns Info on the node
 	 */
-	getUICode(node: GraphNode): NodeUI | undefined {
+	getUICode(id: string, node: GraphNode): NodeUI | undefined {
 
 		const info = this.typeToParts.get(node.type);
-		return info ? {id: node.id, ui: info.ui, label: node.label, in: node.in} : undefined;
+		return info ? {id, ui: info.ui, label: node.label, in: node.in} : undefined;
 	}
 
 	/**

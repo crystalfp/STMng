@@ -108,7 +108,7 @@ export class DrawHelpers {
 													0xFF0000, 0.4, 0.2);
 		const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0),
 													this.originZero, this.axisLength,
-													0x00FF00, 0.4, 0.2);
+													0x79FF00, 0.4, 0.2);
 		const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1),
 													this.originZero, this.axisLength,
 													0x0000FF, 0.4, 0.2);
@@ -118,7 +118,7 @@ export class DrawHelpers {
 		spriteX.fontSize = 180;
 		spriteX.position.set(this.axisLength+0.1, 0, 0);
 
-		const spriteY = new SpriteText("y", 0.3, "#00FF00");
+		const spriteY = new SpriteText("y", 0.3, "#79FF00");
 		spriteY.fontSize = 180;
 		spriteY.position.set(0, this.axisLength+0.2, 0);
 

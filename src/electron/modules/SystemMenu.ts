@@ -34,7 +34,7 @@ export const setupMenu = (): void => {
                             title: "Load project",
                             properties: ["openFile"],
                             filters: [
-                                {name: "STMng project", extensions: ["prj"]},
+                                {name: "STMng project", extensions: ["stm"]},
                             ]
                         });
                         if(file) {
@@ -67,7 +67,7 @@ export const setupMenu = (): void => {
                         const file = dialog.showSaveDialogSync({
                             title: "Save project",
                             filters: [
-                                {name: "STMng project", extensions: ["prj"]},
+                                {name: "STMng project", extensions: ["stm"]},
                             ]
                         });
                         if(file) {

@@ -1,0 +1,14 @@
+{
+	"graph": {
+		"reader": 	 {"label": "Reader", 	"type": "structure-reader"},
+		"findsymm":  {"label": "Find symm", "type": "find-symmetries",  "in": "reader"},
+		"symmetry":  {"label": "Symmetry",  "type": "apply-symmetries", "in": "findsymm"},
+		"unit":   	 {"label": "Cell",   	"type": "draw-unit-cell",   "in": "symmetry"},
+		"draw":   	 {"label": "Render",    "type": "draw-structure",   "in": "unit"},
+		"polyhedra": {"label": "Polyhedra", "type": "draw-polyhedra",   "in": "unit"},
+		"helpers":	 {"label": "Helpers",   "type": "draw-helpers"},
+		"viewer": 	 {"label": "Viewer", 	"type": "viewer-3d"},
+		"capture":   {"label": "Capture",   "type": "capture-view"},
+		"chart":  	 {"label": "Chart",  	"type": "chart-viewer"}
+	}
+}

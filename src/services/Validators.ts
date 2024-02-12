@@ -1,19 +1,24 @@
-import {minLength, object, safeParse, string, array, optional} from "valibot";
+import {minLength, object, safeParse, string, optional, record, union, number, boolean} from "valibot";
 import type {Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // {
-// 	"graph": [
-// 		{"id": "reader", "label": "Reader", "ui": "StructureReaderCtrl", "in": ""},
+// "graph": {
+// 	"reader": 	 {"label": "Reader", 	"type": "structure-reader"},
+// 	"findsymm":  {"label": "Find symm", "type": "find-symmetries",  "in": "reader"},
 
 const projectSchema = object({
-	graph: array(object({
-		id: string([minLength(1, "Missing id")]),
-		label: string([minLength(1, "Missing label")]),
-		type: string([minLength(1, "Missing type")]),
-		in: optional(string())
-	})),
-	currentId: optional(string([minLength(1, "Invalid currentId")]))
+	graph: record(string([minLength(1, "Missing id")]), object({
+			label: string([minLength(1, "Missing label")]),
+			type: string([minLength(1, "Missing type")]),
+			in: optional(string())
+		}),
+	),
+	currentId: optional(string([minLength(1, "Invalid currentId")])),
+	ui: optional(record(string([minLength(1, "Missing id")]),
+						record(string([minLength(1, "Missing id")]),
+							   union([string(), number(), boolean()]))
+	))
 });
 
 // > Validate project structure on disk
@@ -54,20 +59,22 @@ const checkIds = (prj: Project): boolean => {
 
 	const ids = new Set<string>();
 
-	for(const entry of prj.graph) {
-		if(ids.has(entry.id)) {
-			showErrorNotification(`Duplicated id "${entry.id}"`);
+	for(const id in prj.graph) {
+		if(ids.has(id)) {
+			showErrorNotification(`Duplicated id "${id}"`);
 			return false;
 		}
-		ids.add(entry.id);
+		ids.add(id);
 	}
 
-	for(const entry of prj.graph) {
+	for(const id in prj.graph) {
+
+		const entry = prj.graph[id];
 		if(!entry.in) continue;
 		const inputs = entry.in.split(/, */);
 		for(const input of inputs) {
 			if(ids.has(input)) continue;
-			showErrorNotification(`Invalid input to "${entry.id}": ${input}`);
+			showErrorNotification(`Invalid input to node "${id}": ${input}`);
 			return false;
 		}
 	}

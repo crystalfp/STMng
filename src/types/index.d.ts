@@ -146,9 +146,6 @@ export interface MainResponse {
 // > The project structure
 export interface GraphNode {
 
-    /** Unique id for the node */
-	id: string;
-
     /** The label that appears on the node selector */
 	label: string;
 
@@ -162,7 +159,7 @@ export interface GraphNode {
 import type {UiParams} from "@/services/Switchboard";
 
 export interface Project {
-    graph: GraphNode[];
+    graph: Record<string, GraphNode>; // The key is the node id
     currentId?: string;
     viewer?: {
         camera: {
@@ -188,5 +185,5 @@ export interface Project {
             directional3Position: PositionType;
         };
     };
-    ui: Record<string, UiParams>;
+    ui?: Record<string, UiParams>;
 }

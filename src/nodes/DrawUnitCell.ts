@@ -160,6 +160,9 @@ export class DrawUnitCell {
 	 */
 	private drawBasisVectors(basis: BasisType, orig: PositionType): void {
 
+		// Clear previous cell
+		sm.clearGroup(this.nameBV);
+
 		const originZero = new THREE.Vector3(...orig);
 
 		const basisA = new THREE.Vector3(basis[0], basis[1], basis[2]);
@@ -175,7 +178,7 @@ export class DrawUnitCell {
 		const nC = basisC.clone().normalize();
 
 		const arrowA = new THREE.ArrowHelper(nA, originZero, basisALen, 0xFF0000, 0.4, 0.2);
-		const arrowB = new THREE.ArrowHelper(nB, originZero, basisBLen, 0x00FF00, 0.4, 0.2);
+		const arrowB = new THREE.ArrowHelper(nB, originZero, basisBLen, 0x79FF00, 0.4, 0.2);
 		const arrowC = new THREE.ArrowHelper(nC, originZero, basisCLen, 0x0000FF, 0.4, 0.2);
 
 		this.outBV.add(arrowA, arrowB, arrowC);
@@ -184,7 +187,7 @@ export class DrawUnitCell {
 		spriteA.fontSize = 180;
 		spriteA.position.addVectors(basisA, new THREE.Vector3(0.1+orig[0], orig[1], orig[2]));
 
-		const spriteB = new SpriteText("b", 0.3, "#00FF00");
+		const spriteB = new SpriteText("b", 0.3, "#79FF00");
 		spriteB.fontSize = 180;
 		spriteB.position.addVectors(basisB, new THREE.Vector3(orig[0], 0.1+orig[1], orig[2]));
 

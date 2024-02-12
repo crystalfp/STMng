@@ -8,9 +8,10 @@ import {ipcMain, app} from "electron";
 import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
-import {sendLoadedProject, requestLoadedProject, sendProjectPath, sendErrorNotification} from "./WindowsUtilities";
-import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {fileURLToPath} from "node:url";
+import {sendLoadedProject, requestLoadedProject,
+		sendProjectPath, sendErrorNotification} from "./WindowsUtilities";
+import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 
 let projectAsString = "";
 
@@ -47,7 +48,7 @@ const getDefaultProject = (): string => {
 	const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 	const DIST = path.join(mainSourceDirectory, "..", "dist");
 	const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-	return path.join(publicDir, "default-project.prj");
+	return path.join(publicDir, "default-project.stm");
 };
 
 /**
