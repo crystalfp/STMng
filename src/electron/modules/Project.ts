@@ -8,7 +8,7 @@ import {ipcMain, app} from "electron";
 import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
-import {sendLoadedProject, requestLoadedProject, sendProjectPath} from "./WindowsUtilities";
+import {sendLoadedProject, requestLoadedProject, sendProjectPath, sendErrorNotification} from "./WindowsUtilities";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {fileURLToPath} from "node:url";
 
@@ -28,7 +28,10 @@ const loadProject = (filename: string): void => {
 		projectAsString = rawProject;
 	}
 	catch(error: unknown) {
-		log.error(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
+		const message = `Cannot read project file "${filename}". Error: ${(error as Error).message}`;
+		log.error(message);
+		sendErrorNotification(message);
+
 		sendLoadedProject("");
 		projectAsString = "";
 	}
@@ -47,7 +50,6 @@ const getDefaultProject = (): string => {
 	return path.join(publicDir, "default-project.prj");
 };
 
-
 /**
  * Read the given project, remember it and send it to client
  *
@@ -64,7 +66,10 @@ export const loadProjectAndRemember = (filename: string): boolean => {
 		sendProjectPath(filename);
 	}
 	else {
-		log.error(`Project file "${filename}" does not exist. Loading default project`);
+		const message = `Project file "${filename}" does not exist. Loading default project`;
+		log.error(message);
+		sendErrorNotification(message);
+
 		removeProjectPath();
 		filename = getDefaultProject();
 		sendProjectPath();
@@ -99,7 +104,9 @@ export const loadRememberedProject = (ignoreSaved: boolean): boolean => {
 		}
 		if(fs.existsSync(filename)) sendProjectPath(filename);
 		else {
-			log.error(`Project file "${filename}" does not exist. Loading default project`);
+			const message = `Project file "${filename}" does not exist. Loading default project`;
+			log.error(message);
+			sendErrorNotification(message);
 			removeProjectPath();
 			filename = getDefaultProject();
 			sendProjectPath();
@@ -125,7 +132,9 @@ export const saveProjectAs = (filename: string): void => {
 			setProjectPath(filename);
 		})
 		.catch((error: Error) => {
-			log.error(`Cannot save project file "${filename}". Error: ${error.message}`);
+			const message = `Cannot save project file "${filename}". Error: ${error.message}`;
+			log.error(message);
+			sendErrorNotification(message);
 			projectAsString = "";
 		});
 };
@@ -137,7 +146,11 @@ export const saveProject = (): void => {
 
 	const filename = getProjectPath();
 	if(filename) saveProjectAs(filename);
-	else log.error("Cannot save project. Filename not set.");
+	else {
+		const message = "Cannot save project. Filename not set";
+		log.error(message);
+		sendErrorNotification(message);
+	}
 };
 
 /**

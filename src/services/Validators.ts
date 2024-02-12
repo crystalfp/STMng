@@ -1,6 +1,6 @@
 import {minLength, object, safeParse, string, array, optional} from "valibot";
-import log from "electron-log";
 import type {Project} from "@/types";
+import {showErrorNotification} from "@/services/ErrorNotification";
 
 // {
 // 	"graph": [
@@ -33,9 +33,9 @@ export const projectIsValid = (prj: Project): boolean => {
 	if(!result.success) {
 
 		for(const issue of result.issues) {
-			log.error(`Error from project validator "${issue.reason}": ${issue.message}`);
-			if(issue.input) log.error(`Input: ${issue.input as string}`);
-			else log.error(`Missing key "${issue.path![0].key as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
+			showErrorNotification(`Error from project validator "${issue.reason}": ${issue.message}`);
+			if(issue.input) showErrorNotification(`Input: ${issue.input as string}`);
+			else showErrorNotification(`Missing key "${issue.path![0].key as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
 		}
 		return false;
 	}
@@ -56,7 +56,7 @@ const checkIds = (prj: Project): boolean => {
 
 	for(const entry of prj.graph) {
 		if(ids.has(entry.id)) {
-			log.error(`Duplicated id "${entry.id}"`);
+			showErrorNotification(`Duplicated id "${entry.id}"`);
 			return false;
 		}
 		ids.add(entry.id);
@@ -67,7 +67,7 @@ const checkIds = (prj: Project): boolean => {
 		const inputs = entry.in.split(/, */);
 		for(const input of inputs) {
 			if(ids.has(input)) continue;
-			log.error(`Invalid input to "${entry.id}": ${input}`);
+			showErrorNotification(`Invalid input to "${entry.id}": ${input}`);
 			return false;
 		}
 	}

@@ -5,14 +5,14 @@
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
-import log from "electron-log";
 import Mousetrap from "mousetrap";
 import {isLoaded, handleFullscreen, setProjectPathInTitle,
-        receiveMenuSelection} from "@/services/RoutesClient";
+        receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
+import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Toggle expanded viewer window */
 const normalScreen = ref(true);
@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
         ++count;
         if(count > 50) {
           clearInterval(timer);
-          log.error("Waiting too long for IPC to setup");
+          showErrorNotification("Waiting too long for IPC to setup");
         }
         if(isLoaded()) {
             clearInterval(timer);
@@ -55,8 +55,19 @@ receiveMenuSelection((menuEntry: string) => {
         loadedPanel.value = defineAsyncComponent(() => import("@/components/About.vue"));
     }
     else {
-        log.error(`Menu entry "${menuEntry}" is not implemented`);
+        showErrorNotification(`Menu entry "${menuEntry}" is not implemented`);
     }
+});
+
+// > Visualize notifications and errors from main process
+const showNotification = ref(false);
+const notificationText = ref("");
+const notificationColor = ref("red-darken-4");
+receiveNotifications((type: "error" | "success", text: string) => {
+
+    notificationText.value = text;
+    notificationColor.value = type === "error" ? "red-darken-4" : "success";
+    showNotification.value = true;
 });
 
 </script>
@@ -68,6 +79,10 @@ receiveMenuSelection((menuEntry: string) => {
   </div>
   <div class="layout-gutter" @click="toggleExpandedScreen" />
   <viewer3-d :expanded="!normalScreen" />
+  <v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info"
+              close-on-content-click :color="notificationColor">
+    {{ notificationText }}
+  </v-snackbar>
 </div>
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
 </template>

@@ -6,9 +6,9 @@
  * @remarks
  * The points to modify to add a new node are marked using a NOTE comment.
  */
-import log from "electron-log";
 import {watch} from "vue";
 import type {NodeUI, Structure, GraphNode} from "@/types";
+import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
 import {StructureReader} from "@/nodes/StructureReader";
@@ -104,7 +104,7 @@ export class NodeInfo {
 				// These nodes have no runtime code like the others
 				break;
 			default:
-				log.error(`Invalid type "${type}" setting runtime for "${id}"`);
+				showErrorNotification(`Invalid type "${type}" in setting runtime for "${id}"`);
 		}
 	}
 
@@ -138,10 +138,10 @@ export class NodeInfo {
 
 			// Error handling
 			case undefined:
-				log.error(`Unknown id "${id}"`);
+				showErrorNotification(`Unknown id "${id}"`);
 				break;
 			default:
-				log.error(`Cannot use setData with type "${type}" from id: "${id}"`);
+				showErrorNotification(`Cannot use setData with type "${type}" from id: "${id}"`);
 				break;
 		}
 	}
@@ -175,10 +175,11 @@ export class NodeInfo {
 
 			// Error handling
 			case undefined:
-				log.error(`Unknown id "${id}"`);
+				showErrorNotification(`Unknown id "${id}"`);
 				break;
 			default:
-				log.error(`Cannot use getData with type "${type}" id: "${id}"`);
+				showErrorNotification(`Cannot use getData with type "${type}" id: "${id}"`);
+				break;
 		}
 	}
 

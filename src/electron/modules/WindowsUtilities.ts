@@ -128,7 +128,7 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
         }
     });
     if(!secondaryWin) {
-        log.error("Cannot create secondary window. Quit");
+        sendErrorNotification("Cannot create secondary window");
         return;
     }
     secondaryWin.removeMenu();
@@ -288,4 +288,25 @@ export const requestLoadedProject = (): Promise<string> => {
 export const sendProjectPath = (projectPath?: string): void => {
 
     mainWin.webContents.send("PROJECT:PATH", projectPath ? path.basename(projectPath) : "");
+};
+
+/**
+ * Send notification from main process
+ *
+ * @param type - Kind of notification
+ * @param text - Text of the notification
+ */
+export const sendNotification = (type: "error" | "success", text: string): void => {
+
+    mainWin.webContents.send("APP:NOTIFICATION", type, text);
+};
+
+/**
+ * Send error notification from main process
+ *
+ * @param text - Text of the notification
+ */
+export const sendErrorNotification = (text: string): void => {
+
+    mainWin.webContents.send("APP:NOTIFICATION", "error", text);
 };

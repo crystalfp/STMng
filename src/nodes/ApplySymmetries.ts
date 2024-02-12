@@ -8,8 +8,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
 import {computeBonds} from "@/services/ComputeBonds";
 import {computeSymmetries} from "@/services/RoutesClient";
-import log from "electron-log";
-import {useMessageStore} from "@/stores/messageStore";
+import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
 
 // > Kind of directions for filling unit cell
 const X_MIN = 0x010;
@@ -64,12 +63,12 @@ export class ApplySymmetries {
 	 */
 	private computeSymmetries(enabled: boolean, fill: boolean): void {
 
-		// Access the message store
-		const messageStore = useMessageStore();
-		messageStore.applySymmetries.message = "";
+		// Reset error notification
+		resetErrorNotification("applySymmetries");
 
 		// If no input structure, output an empty structure
 		if(!this.structure?.atoms || this.structure.atoms?.length === 0) {
+
 			this.outputEmptyStructure();
 			return;
 		}
@@ -117,8 +116,8 @@ export class ApplySymmetries {
 				sb.setData(this.id, this.clearStructure());
 			})
 			.catch((error: Error) => {
-				messageStore.applySymmetries.message = error.message;
-				log.error(error.message);
+				showErrorNotification(error.message, "applySymmetries");
+
 				sb.setData(this.id, this.structure);
 			});
 	}
@@ -137,7 +136,10 @@ export class ApplySymmetries {
 					b[2] * (b[3] * b[7] - b[4] * b[6]);
 
 		// Check if the determinant is zero, which means the matrix is not invertible
-		if(det === 0) throw Error("Basis matrix is not invertible");
+		if(det === 0) {
+			showErrorNotification("Basis matrix is not invertible", "applySymmetries");
+			return;
+		}
 
 		// Compute the inverse basis matrix
 		const invDet = 1 / det;

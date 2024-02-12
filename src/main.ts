@@ -40,6 +40,7 @@ import {VAlert} from "vuetify/components/VAlert";
 import {VDivider} from "vuetify/components/VDivider";
 import {VIcon} from "vuetify/components/VIcon";
 import {VBtnToggle} from "vuetify/components/VBtnToggle";
+import {VSnackbar} from "vuetify/components/VSnackbar";
 
 // Project defined components. The registered name should begin by G (g- in use)
 import AlignLabels from "@/widgets/AlignLabels.vue";
@@ -73,6 +74,7 @@ const app = createApp(App)
 			VDivider,
 			VIcon,
 			VBtnToggle,
+			VSnackbar,
 		},
 		theme: {
     		defaultTheme: "dark",

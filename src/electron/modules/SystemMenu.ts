@@ -34,7 +34,7 @@ export const setupMenu = (): void => {
                             title: "Load project",
                             properties: ["openFile"],
                             filters: [
-                                {name: "STM project", extensions: ["json"]},
+                                {name: "STMng project", extensions: ["prj"]},
                             ]
                         });
                         if(file) {

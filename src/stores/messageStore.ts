@@ -21,6 +21,9 @@ interface MessageState {
 		typeM: "error" | "success" | "warning" | "info" | undefined;
 		textM: string;
 	};
+	system: {
+		error: string;
+	};
 }
 
 export const useMessageStore = defineStore("MessageStore", {
@@ -34,7 +37,8 @@ export const useMessageStore = defineStore("MessageStore", {
 			textS: "",
 			typeM: undefined,
 			textM: "",
-		}
+		},
+		system: {error: ""}
 	} as MessageState),
 });
 

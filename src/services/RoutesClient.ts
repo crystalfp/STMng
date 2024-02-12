@@ -3,10 +3,12 @@
  *
  * @packageDocumentation
  */
-import log from "electron-log";
+import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {WindowsParams, FindSymmetriesParams} from "@/electron/types";
 import type {MainResponse} from "@/types";
+import {useMessageStore} from "@/stores/messageStore";
+import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -77,6 +79,30 @@ export const receiveMenuSelection = (callback: (menuEntry: string, payload: stri
 														callback(entryName, payload));
 };
 
+/**
+ * Receive notifications from main process.
+ *
+ * @param callback - Function to be called when a notification arrives
+ */
+export const receiveNotifications = (callback: (type: "error" | "success",
+												text: string) => void): void => {
+
+	// Notifications from main process
+	window.electron.ipcRenderer.on("APP:NOTIFICATION", (_event, type: string, text: string) =>
+														callback(type as "error" | "success", text));
+
+	// Notifications from main window
+	watchEffect(() => {
+		const messageStore = useMessageStore();
+
+		const message = messageStore.system.error;
+		if(message) {
+			callback("error", message);
+			messageStore.system.error = "";
+		}
+	});
+};
+
 // > Project
 /**
  * Receive a loaded project
@@ -88,7 +114,7 @@ export const receiveProject = (callback: (rawProject: string) => void): void => 
     window.electron.ipcRenderer.invoke("PROJECT:GET")
 		// eslint-disable-next-line promise/no-callback-in-promise
 		.then((rawProject: string) => callback(rawProject))
-		.catch((error: Error) => log.error("Cannot retrieve project first time.", error.message));
+		.catch((error: Error) => showErrorNotification(`Cannot retrieve project first time. ${error.message}`));
     window.electron.ipcRenderer.on("PROJECT:GET-NEXT", (_event, rawProject: string) => callback(rawProject));
 };
 

@@ -6,7 +6,6 @@
 
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
-import log from "electron-log";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {useConfigStore} from "@/stores/configStore";
 import {useMessageStore} from "@/stores/messageStore";
@@ -15,6 +14,7 @@ import {sm} from "@/services/SceneManager";
 import {saveDataURL, saveMovie} from "@/services/RoutesClient";
 import {fitCameraToObject} from "@/services/FitCamera";
 import type {MainResponse} from "@/types";
+import {showErrorNotification} from "@/services/ErrorNotification";
 
 // > Access the stores
 const configStore = useConfigStore();
@@ -122,7 +122,7 @@ const scene = sm.createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        log.error("Cannot create canvas. Quitting.");
+        showErrorNotification("Cannot create canvas. Quitting.");
         return;
     }
 

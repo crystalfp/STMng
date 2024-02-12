@@ -4,13 +4,13 @@
  * @packageDocumentation
  */
 import {watch} from "vue";
-import log from "electron-log";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {useConfigStore} from "@/stores/configStore";
 import {projectIsValid} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";
+import {showErrorNotification} from "@/services/ErrorNotification";
 
 export type UiParams = Record<string, string | number | boolean>;
 
@@ -64,13 +64,13 @@ class Switchboard {
 				this.project = JSON.parse(rawProject) as Project;
 			}
 			catch(error: unknown) {
-				log.error("Invalid project file format. Error:", (error as Error).message);
+				showErrorNotification(`Invalid project file format. Error: ${(error as Error).message}`);
 				return;
 			}
 
 			// Check the project
 			if(!projectIsValid(this.project)) {
-				log.error("Invalid project content. Project not loaded");
+				showErrorNotification("Invalid project content. Project not loaded");
 				return;
 			}
 

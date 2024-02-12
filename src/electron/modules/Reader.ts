@@ -1,6 +1,6 @@
 /**
  * Read atomic structure file.
- * The original idea was to dynamically load the format reader, but this does not work
+ * @remarks The original idea was to dynamically load the format reader, but this does not work
  * in production (does not find the reader code)
  *
  * @packageDocumentation
@@ -52,8 +52,9 @@ const readFileStructure = async (filename: string,
 		}
 	}
 	catch(error: unknown) {
-		log.error(`${requestedFormat} format not implemented`, (error as Error).message);
-		return {filename: "", structures: [], error: `${requestedFormat} format not implemented`};
+		const message = `${requestedFormat} format not implemented. Error: ${(error as Error).message}`;
+		log.error(message);
+		return {filename: "", structures: [], error: message};
 	}
 
 	if(requestedFormat === "POSCAR") {

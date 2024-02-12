@@ -11,6 +11,10 @@ ToDo:
   ☐ Return message (like disabled input symmetries) from Find Symmetries to client
   ☐ Fix reset camera for orthographic camera
   ✔ Remove unused colors and fonts @done(2024-02-08 22:23)
+  ☐ Graph from [] to {} with key = id node
+  ☐ Manage multiple output from node (eg. reader has structure and structures)
+  ✔ Finish error notification for log.error() @done(2024-02-12 06:09)
+  ☐ Finish error notification for v-alert
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"

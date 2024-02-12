@@ -7,7 +7,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure} from "@/types";
 import type {FindSymmetriesParams} from "@/electron/types";
 import {findSymmetries} from "@/services/RoutesClient";
-import {useMessageStore} from "@/stores/messageStore";
+import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 
 export class FindSymmetries {
 
@@ -25,9 +25,7 @@ export class FindSymmetries {
 	 */
 	constructor(private readonly id: string) {
 
-		// Access the message store
-		const messageStore = useMessageStore();
-		messageStore.findSymmetries.message = "";
+		resetErrorNotification("findSymmetries");
 
 		sb.getUiParams(this.id, (params: UiParams) => {
     		this.enableComputation = params.enableComputation as boolean ?? true;
@@ -36,7 +34,7 @@ export class FindSymmetries {
     		this.tolT = params.tolT as number ?? 0.25;
     		this.tolG = params.tolG as number ?? 0.10;
 
-			messageStore.findSymmetries.message = "";
+			resetErrorNotification("findSymmetries");
 			if(!this.enableComputation) {
 				sb.setData(this.id, this.structure);
 			}
@@ -49,7 +47,8 @@ export class FindSymmetries {
 
 			this.structure = data as Structure;
 
-			messageStore.findSymmetries.message = "";
+			resetErrorNotification("findSymmetries");
+
 			if(!this.enableComputation) {
 				sb.setData(this.id, this.structure);
 			}
@@ -108,9 +107,7 @@ export class FindSymmetries {
 				sb.setData(this.id, JSON.parse(sts.payload));
 			})
 			.catch((error: Error) => {
-				// Access the message store
-				const messageStore = useMessageStore();
-				messageStore.findSymmetries.message = error.message;
+				showErrorNotification(error.message, "findSymmetries");
 			});
 	}
 
@@ -131,8 +128,7 @@ export class FindSymmetries {
 
 		// Check if the determinant is zero, which means the matrix is not invertible
 		if(det === 0) {
-			const messageStore = useMessageStore();
-			messageStore.findSymmetries.message = "Basis matrix is not invertible";
+			showErrorNotification("Basis matrix is not invertible", "findSymmetries");
 			return [];
 		}
 
