@@ -30,6 +30,14 @@ interface Viewer3DConfiguration {
         directional3Intensity: number;
         directional3Position: PositionType;
     };
+    helpers: {
+        showAxis: boolean;
+        showGridXZ: boolean;
+        showGridXY: boolean;
+        showGridYZ: boolean;
+        gridSize: number;
+        axisLength: number;
+    };
     control: {
         reset: boolean;
         snapshot: boolean;
@@ -66,6 +74,14 @@ export const useConfigStore = defineStore("ConfigStore", {
 			directional2Position: [0.5774, 0.5774, 0.5774],
 			directional3Position: [-0.5774, -0.5774, -0.5774],
 		},
+        helpers: {
+            showAxis: false,
+            showGridXZ: false,
+            showGridXY: false,
+            showGridYZ: false,
+            gridSize: 10,
+            axisLength: 1,
+        },
         control: {
             reset: false,
             snapshot: false,
@@ -81,7 +97,8 @@ export const useConfigStore = defineStore("ConfigStore", {
             const statusToSave = {
                 camera: state.camera,
                 scene: state.scene,
-                lights: state.lights
+                lights: state.lights,
+                helpers: state.helpers,
             };
             return JSON.stringify(statusToSave);
         }

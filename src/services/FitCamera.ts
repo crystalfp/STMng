@@ -6,7 +6,7 @@
  */
 import * as THREE from "three";
 import {useConfigStore} from "@/stores/configStore";
-import type {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import type CameraControls from "camera-controls";
 
 /**
  * Fit the camera to look at the whole scene
@@ -15,7 +15,7 @@ import type {OrbitControls} from "three/addons/controls/OrbitControls.js";
  * @param controls - The orbit control to have the rotation center updated
  */
 export const fitCameraToObject = (camera: THREE.PerspectiveCamera,
-								  controls: OrbitControls): void => {
+								  controls: CameraControls): void => {
 
 	// Get bounding box of the scene - this will be used to setup controls and camera
 	const configStore = useConfigStore();
@@ -35,6 +35,5 @@ export const fitCameraToObject = (camera: THREE.PerspectiveCamera,
 	camera.updateProjectionMatrix();
 
 	// Set camera to rotate around center of loaded object
-	controls.target = center;
-	controls.update();
+	controls.setOrbitPoint(center.x, center.y, center.z);
 };

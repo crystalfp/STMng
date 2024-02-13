@@ -6,7 +6,7 @@
 
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import CameraControls from "camera-controls";
 import {useConfigStore} from "@/stores/configStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
@@ -15,6 +15,7 @@ import {saveDataURL, saveMovie} from "@/services/RoutesClient";
 import {fitCameraToObject} from "@/services/FitCamera";
 import type {MainResponse} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
+import {setupSceneHelpers} from "@/services/SceneHelpers";
 
 // > Access the stores
 const configStore = useConfigStore();
@@ -144,10 +145,39 @@ onMounted(() => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
 
-    // Add mouse controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.listenToKeyEvents(window);
-    controls.addEventListener("end", () => {
+    // Add mouse controls to move the camera
+    CameraControls.install({THREE});
+    const controls = new CameraControls(camera, renderer.domElement);
+
+    // Add keyboard controls to camera positioning
+    const body = document.querySelector("body");
+    window.addEventListener("keydown", (event: KeyboardEvent): void => {
+        if(event.target !== body) return;
+
+        switch(event.code) {
+            case "ArrowLeft":
+                if(event.ctrlKey) void controls.rotate(THREE.MathUtils.DEG2RAD, 0, true);
+                else void controls.truck(.1, 0, false);
+                break;
+            case "ArrowRight":
+                if(event.ctrlKey) void controls.rotate(-THREE.MathUtils.DEG2RAD, 0, true);
+                else void controls.truck(-.1, 0, false);
+                break;
+            case "ArrowUp":
+                if(event.ctrlKey) void controls.rotate(0, THREE.MathUtils.DEG2RAD, true);
+                else if(event.altKey) void controls.forward(0.1, false);
+                else if(event.shiftKey) void controls.zoom(0.1, false);
+                else void controls.truck(0, .1, false);
+                break;
+            case "ArrowDown":
+                if(event.ctrlKey) void controls.rotate(0, -THREE.MathUtils.DEG2RAD, true);
+                else if(event.altKey) void controls.forward(-0.1, false);
+                else if(event.shiftKey) void controls.zoom(-0.1, false);
+                else void controls.truck(0, -.1, false);
+                break;
+        }
+    });
+    controls.addEventListener("controlend", () => {
         configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
     });
 
@@ -168,8 +198,7 @@ onMounted(() => {
             camera = cameraOrthographic;
         }
         camera.updateProjectionMatrix();
-        controls.object = camera;
-        controls.update();
+        controls.camera = camera;
     });
 
     // Reset camera
@@ -245,6 +274,9 @@ onMounted(() => {
         }
     });
 
+    // Scene helpers
+    setupSceneHelpers();
+
     // Create lights
     sm.createLights();
 
@@ -276,10 +308,12 @@ onMounted(() => {
     watch(props, resizeScene);
 
     // Start run
+    const clock = new THREE.Clock();
     const animate = (): void => {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
         // viewHelper.render(renderer);
+        controls.update(clock.getDelta());
     };
     animate();
 });

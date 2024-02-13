@@ -198,8 +198,9 @@ class Switchboard {
 		if(savedProject.viewer) {
 
 			const configStore = useConfigStore();
-			const {camera, scene, lights} = configStore;
-			const {camera: savedCamera, scene: savedScene, lights: savedLights} = savedProject.viewer;
+			const {camera, scene, lights, helpers} = configStore;
+			const {camera: savedCamera, scene: savedScene,
+				   lights: savedLights, helpers: savedHelpers} = savedProject.viewer;
 			camera.type        = savedCamera.type;
 			camera.position[0] = savedCamera.position[0];
 			camera.position[1] = savedCamera.position[1];
@@ -226,6 +227,12 @@ class Switchboard {
 			lights.directional1Position[2] = savedLights.directional1Position[2];
 			lights.directional2Position[2] = savedLights.directional2Position[2];
 			lights.directional3Position[2] = savedLights.directional3Position[2];
+        	helpers.showAxis   = savedHelpers.showAxis;
+        	helpers.showGridXZ = savedHelpers.showGridXZ;
+        	helpers.showGridXY = savedHelpers.showGridXY;
+        	helpers.showGridYZ = savedHelpers.showGridYZ;
+        	helpers.gridSize   = savedHelpers.gridSize;
+        	helpers.axisLength = savedHelpers.axisLength;
 		}
 
 		// Restore ui parameters for nodes

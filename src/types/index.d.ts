@@ -184,6 +184,14 @@ export interface Project {
             directional2Position: PositionType;
             directional3Position: PositionType;
         };
+        helpers: {
+            showAxis: boolean;
+            showGridXZ: boolean;
+            showGridXY: boolean;
+            showGridYZ: boolean;
+            gridSize: number;
+            axisLength: number;
+        };
     };
     ui?: Record<string, UiParams>;
 }

@@ -14,7 +14,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 import {StructureReader} from "@/nodes/StructureReader";
 import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
-import {DrawHelpers} from "@/nodes/DrawHelpers";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {ApplySymmetries} from "@/nodes/ApplySymmetries";
@@ -31,7 +30,6 @@ export class NodeInfo {
 		"structure-reader":	{ui: "StructureReaderCtrl"},
 		"draw-structure":	{ui: "DrawStructureCtrl"},
 		"draw-unit-cell":	{ui: "DrawUnitCellCtrl"},
-		"draw-helpers":		{ui: "DrawHelpersCtrl"},
 		"chart-viewer":		{ui: "ChartViewerCtrl"},
 		"viewer-3d":   		{ui: "Viewer3DCtrl"},
 		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
@@ -86,9 +84,6 @@ export class NodeInfo {
 				break;
 			case "draw-unit-cell":
 				map.set(id, new DrawUnitCell(id));
-				break;
-			case "draw-helpers":
-				map.set(id, new DrawHelpers(id));
 				break;
 			case "draw-polyhedra":
 				map.set(id, new DrawPolyhedra(id));
@@ -215,10 +210,6 @@ export class NodeInfo {
 				case "draw-unit-cell":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as DrawUnitCell).saveStatus();
-					break;
-				case "draw-helpers":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as DrawHelpers).saveStatus();
 					break;
 				case "draw-polyhedra":
 					if(notFirst) uiStatus += ",";

@@ -122,6 +122,27 @@ watchEffect(() => {
         </g-align-labels>
       </v-expansion-panel-text>
     </v-expansion-panel>
+    <v-expansion-panel>
+      <v-expansion-panel-title>
+        Helper objects
+      </v-expansion-panel-title>
+      <v-expansion-panel-text>
+        <v-switch v-model="configStore.helpers.showAxis" color="primary"
+                  label="Show axis" density="compact" class="mt-3" />
+        <v-switch v-model="configStore.helpers.showGridXZ" color="primary"
+                  label="Show grid XZ" density="compact" class="mt-n5" />
+        <v-switch v-model="configStore.helpers.showGridXY" color="primary"
+                  label="Show grid XY" density="compact" class="mt-n5" />
+        <v-switch v-model="configStore.helpers.showGridYZ" color="primary"
+                  label="Show grid YZ" density="compact" class="mt-n5" />
+        <g-align-labels label-width="5rem" class="ml-n4">
+          <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
+                    min="2" max="40" step="2" thumb-label />
+          <v-slider v-model="configStore.helpers.axisLength" label="Axis length" density="compact"
+                    min="0.5" max="20" step="0.5" thumb-label />
+        </g-align-labels>
+      </v-expansion-panel-text>
+    </v-expansion-panel>
   </v-expansion-panels>
 </v-container>
 </template>
