@@ -20,13 +20,13 @@ const messageStore = useMessageStore();
 
 // > Get and set ui parameters from the switchboard
 const symmetryGroup = ref("");
-const fillUnitCell = ref(false);
+const fillUnitCell = ref(true);
 const enableSymmetryComputation = ref(true);
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
     symmetryGroup.value = params.symmetryGroup as string ?? "";
-    fillUnitCell.value  = params.fillUnitCell as boolean ?? false;
+    fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
     enableSymmetryComputation.value = params.enableSymmetryComputation as boolean ?? true;
 });
 

@@ -23,7 +23,7 @@ const Z_ANY = 0x004;
 
 export class ApplySymmetries {
 
-	private fillUnitCell = false;
+	private fillUnitCell = true;
 	private enableSymmetryComputation = true;
 	private structure: Structure | undefined;
 	private fractionalCoords: number[] = [];
@@ -38,7 +38,7 @@ export class ApplySymmetries {
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
-    		this.fillUnitCell  = params.fillUnitCell as boolean ?? false;
+    		this.fillUnitCell  = params.fillUnitCell as boolean ?? true;
     		this.enableSymmetryComputation = params.enableSymmetryComputation as boolean ?? true;
 
 			this.computeSymmetries(this.enableSymmetryComputation, this.fillUnitCell);

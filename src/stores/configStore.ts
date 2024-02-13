@@ -45,7 +45,7 @@ export const useConfigStore = defineStore("ConfigStore", {
     state: () => ({
 
 		camera: {
-			type: "perspective",
+			type: "orthographic",
             position: [5, 3, 5],
             lookAt: [0, 0, 0],
             snapshotFormat: "png",

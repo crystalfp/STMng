@@ -105,7 +105,7 @@
       "tolG": 0.1
     },
     "symmetry": {
-      "fillUnitCell": false,
+      "fillUnitCell": true,
       "enableSymmetryComputation": true
     },
     "unit": {
