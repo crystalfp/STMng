@@ -159,7 +159,8 @@ export class DrawStructure {
 				break;
 		}
 
-		// Find the camera rotation center and position based on the structure bounding box
+		// Find the camera rotation center and position based
+		// on the structure bounding box
 		sm.setBoundingBox(getBoundingBox(data.atoms));
 	}
 

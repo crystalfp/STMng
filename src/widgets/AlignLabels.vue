@@ -24,6 +24,7 @@ const width = ref(props.labelWidth);
 
 <style>
 
+/* stylelint-disable selector-class-pattern */
 .v-slider__label {
   width: v-bind(width);
 }

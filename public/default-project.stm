@@ -1,13 +1,12 @@
 {
 	"graph": {
-		"reader": 	 {"label": "Reader", 	"type": "structure-reader"},
-		"findsymm":  {"label": "Find symm", "type": "find-symmetries",  "in": "reader"},
-		"symmetry":  {"label": "Symmetry",  "type": "apply-symmetries", "in": "findsymm"},
-		"unit":   	 {"label": "Cell",   	"type": "draw-unit-cell",   "in": "symmetry"},
-		"draw":   	 {"label": "Render",    "type": "draw-structure",   "in": "unit"},
-		"polyhedra": {"label": "Polyhedra", "type": "draw-polyhedra",   "in": "unit"},
-		"viewer": 	 {"label": "Viewer", 	"type": "viewer-3d"},
-		"capture":   {"label": "Capture",   "type": "capture-view"},
-		"chart":  	 {"label": "Chart",  	"type": "chart-viewer"}
+		"reader": 	 {"label": "Reader", 	 "type": "structure-reader"},
+		"symmetry":  {"label": "Symmetries", "type": "compute-symmetries", "in": "reader"},
+		"unit":   	 {"label": "Cell",   	 "type": "draw-unit-cell",     "in": "symmetry"},
+		"draw":   	 {"label": "Render",     "type": "draw-structure",     "in": "unit"},
+		"polyhedra": {"label": "Polyhedra",  "type": "draw-polyhedra",     "in": "unit"},
+		"viewer": 	 {"label": "Viewer", 	 "type": "viewer-3d"},
+		"capture":   {"label": "Capture",    "type": "capture-view"},
+		"chart":  	 {"label": "Chart",  	 "type": "chart-viewer"}
 	}
 }

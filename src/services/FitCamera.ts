@@ -37,3 +37,18 @@ export const fitCameraToObject = (camera: THREE.PerspectiveCamera,
 	// Set camera to rotate around center of loaded object
 	controls.setOrbitPoint(center.x, center.y, center.z);
 };
+
+export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
+											  controls: CameraControls): void => {
+
+	const configStore = useConfigStore();
+	const {sceneCenter, sceneSides} = configStore.control;
+
+    camera.lookAt(new THREE.Vector3(...sceneCenter));
+
+	// Set camera to rotate around center of loaded object
+	controls.setOrbitPoint(...sceneCenter);
+	const maxSide = Math.max(...sceneSides);
+	void controls.setLookAt(sceneCenter[0], sceneCenter[1], sceneCenter[2] + maxSide,
+							sceneCenter[0], sceneCenter[1], sceneCenter[2], false);
+};

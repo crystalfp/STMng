@@ -6,10 +6,7 @@
 import {defineStore, acceptHMRUpdate} from "pinia";
 
 interface MessageState {
-    applySymmetries: {
-		message: string;
-	};
-    findSymmetries: {
+    symmetries: {
 		message: string;
 	};
     structureReader: {
@@ -29,8 +26,7 @@ interface MessageState {
 export const useMessageStore = defineStore("MessageStore", {
 
     state: () => ({
-        applySymmetries: {message: ""},
-        findSymmetries: {message: ""},
+        symmetries: {message: ""},
         structureReader: {message: ""},
 		captureMedia: {
 			typeS: undefined,

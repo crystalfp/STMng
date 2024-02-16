@@ -96,8 +96,7 @@ receiveNotifications((type: "error" | "success", text: string) => {
   flex-direction: row;
   margin: 0;
   overflow: hidden;
-  width: 99.9vw;
-  /* width: 100vw; */
+  width: 99.9vw; /* width: 100vw; */
 }
 
 .layout-west {

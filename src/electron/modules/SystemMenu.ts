@@ -158,7 +158,6 @@ export const setupMenu = (): void => {
     Menu.setApplicationMenu(systemMenu);
 };
 
-
 /**
  * Disable menu entry "Save project"
  *

@@ -4,15 +4,10 @@
       "label": "Reader",
       "type": "structure-reader"
     },
-    "findsymm": {
-      "label": "Find symm",
-      "type": "find-symmetries",
-      "in": "reader"
-    },
     "symmetry": {
-      "label": "Symmetry",
-      "type": "apply-symmetries",
-      "in": "findsymm"
+      "label": "Symmetries",
+      "type": "compute-symmetries",
+      "in": "reader"
     },
     "unit": {
       "label": "Cell",
@@ -29,10 +24,6 @@
       "type": "draw-polyhedra",
       "in": "unit"
     },
-    "helpers": {
-      "label": "Helpers",
-      "type": "draw-helpers"
-    },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
@@ -48,11 +39,11 @@
   },
   "viewer": {
     "camera": {
-      "type": "perspective",
+      "type": "orthographic",
       "position": [
-        -10.916984970788626,
-        5.4242112318735245,
-        2.816208427657685
+        5,
+        3,
+        5
       ],
       "lookAt": [
         0,
@@ -88,36 +79,42 @@
         -0.5774,
         -0.5774
       ]
+    },
+    "helpers": {
+      "showAxis": false,
+      "showGridXZ": false,
+      "showGridXY": false,
+      "showGridYZ": false,
+      "gridSize": 10,
+      "axisLength": 1
     }
   },
   "ui": {
     "reader": {
       "loopSteps": false,
       "step": 1,
-      "format": "ShelX",
+      "format": "",
       "atomsTypes": ""
     },
-    "findsymm": {
-      "enableComputation": true,
+    "symmetry": {
+      "enableFindSymmetries": true,
       "ignoreInputSymmetries": false,
       "tolS": 0.25,
       "tolT": 0.25,
-      "tolG": 0.1
-    },
-    "symmetry": {
+      "tolG": 0.1,
       "fillUnitCell": true,
-      "enableSymmetryComputation": true
+      "enableApplySymmetries": true
     },
     "unit": {
-      "showUnitCell": false,
+      "showUnitCell": true,
       "dashedLine": false,
       "lineColor": "#0000FF",
-      "showBasisVectors": true,
+      "showBasisVectors": false,
       "repetitionsA": 1,
       "repetitionsB": 1,
       "repetitionsC": 1,
       "showSupercell": false,
-      "supercellColor": "#16A004",
+      "supercellColor": "#02A502",
       "dashedSupercell": false
     },
     "draw": {
@@ -133,14 +130,6 @@
     "polyhedra": {
       "showPolyhedra": true,
       "color": "#FFFFFF80"
-    },
-    "helpers": {
-      "showAxis": false,
-      "showGridXZ": false,
-      "showGridXY": false,
-      "showGridYZ": false,
-      "side": 10,
-      "axisLength": 1
     },
     "chart": {
       "chartType": "line"

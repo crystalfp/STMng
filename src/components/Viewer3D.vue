@@ -12,7 +12,7 @@ import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
 import {saveDataURL, saveMovie} from "@/services/RoutesClient";
-import {fitCameraToObject} from "@/services/FitCamera";
+import {fitCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import type {MainResponse} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
@@ -74,8 +74,10 @@ const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
     orthographicCamera.right = halfWidth;
 };
 
+// > Movie and screenshot support
 // All recorded chunks captured
 const recordedChunks: Blob[] = [];
+
 /**
  * Save data chunk from MediaRecorder
  *
@@ -103,6 +105,7 @@ async function handleStop(): Promise<void> {
         messageStore.captureMedia.textM = sts.payload;
     }
 }
+
 /**
  * Handle MediaRecording errors
  *
@@ -150,9 +153,9 @@ onMounted(() => {
     const controls = new CameraControls(camera, renderer.domElement);
 
     // Add keyboard controls to camera positioning
-    const body = document.querySelector("body");
+    // const body = document.querySelector("body");
     window.addEventListener("keydown", (event: KeyboardEvent): void => {
-        if(event.target !== body) return;
+        // if(event.target !== body) return;
 
         switch(event.code) {
             case "ArrowLeft":
@@ -207,10 +210,16 @@ onMounted(() => {
 
             configStore.control.reset = false;
 
-            cameraPerspective.zoom = 1;
-            fitCameraToObject(cameraPerspective, controls);
-            copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
-            cameraOrthographic.updateProjectionMatrix();
+            if(configStore.camera.type === "perspective") {
+
+                cameraPerspective.zoom = 1;
+                fitCameraToObject(cameraPerspective, controls);
+                copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+                cameraOrthographic.updateProjectionMatrix();
+            }
+            else {
+                fitOrthographicCameraToObject(cameraOrthographic, controls);
+            }
         }
     });
 
@@ -219,8 +228,10 @@ onMounted(() => {
 
         cameraPerspective.zoom = 1;
         fitCameraToObject(cameraPerspective, controls);
-        copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
-        cameraOrthographic.updateProjectionMatrix();
+        fitOrthographicCameraToObject(cameraOrthographic, controls);
+
+        // copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+        // cameraOrthographic.updateProjectionMatrix();
     });
 
     // Take snapshot

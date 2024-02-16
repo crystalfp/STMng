@@ -16,8 +16,7 @@ import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
-import {ApplySymmetries} from "@/nodes/ApplySymmetries";
-import {FindSymmetries} from "@/nodes/FindSymmetries";
+import {Symmetries} from "@/nodes/Symmetries";
 
 interface NodeParts {
 	ui: string;
@@ -27,15 +26,14 @@ export class NodeInfo {
 
 	// NOTE 2) Add the type and its ui component
 	private static readonly typeToPartsRecord: Record<string, NodeParts> = {
-		"structure-reader":	{ui: "StructureReaderCtrl"},
-		"draw-structure":	{ui: "DrawStructureCtrl"},
-		"draw-unit-cell":	{ui: "DrawUnitCellCtrl"},
-		"chart-viewer":		{ui: "ChartViewerCtrl"},
-		"viewer-3d":   		{ui: "Viewer3DCtrl"},
-		"draw-polyhedra":   {ui: "DrawPolyhedraCtrl"},
-		"capture-view":   	{ui: "CaptureMediaCtrl"},
-		"apply-symmetries": {ui: "ApplySymmetriesCtrl"},
-		"find-symmetries": 	{ui: "FindSymmetriesCtrl"},
+		"structure-reader":		{ui: "StructureReaderCtrl"},
+		"draw-structure":		{ui: "DrawStructureCtrl"},
+		"draw-unit-cell":		{ui: "DrawUnitCellCtrl"},
+		"chart-viewer":			{ui: "ChartViewerCtrl"},
+		"viewer-3d":   			{ui: "Viewer3DCtrl"},
+		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl"},
+		"capture-view":   		{ui: "CaptureMediaCtrl"},
+		"compute-symmetries": 	{ui: "SymmetriesCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -88,11 +86,8 @@ export class NodeInfo {
 			case "draw-polyhedra":
 				map.set(id, new DrawPolyhedra(id));
 				break;
-			case "apply-symmetries":
-				map.set(id, new ApplySymmetries(id));
-				break;
-			case "find-symmetries":
-				map.set(id, new FindSymmetries(id));
+			case "compute-symmetries":
+				map.set(id, new Symmetries(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":
@@ -117,8 +112,7 @@ export class NodeInfo {
 		switch(type) {
 
 			// Nodes that have an output
-			case "apply-symmetries":
-			case "find-symmetries":
+			case "compute-symmetries":
 			case "draw-unit-cell":
 			case "structure-reader": {
 				const typedData = data as Structure;
@@ -162,8 +156,7 @@ export class NodeInfo {
 			// Nodes from which other nodes could take an input
 			case "draw-unit-cell":
 			case "structure-reader":
-			case "apply-symmetries":
-			case "find-symmetries":
+			case "compute-symmetries":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
 				break;
@@ -193,7 +186,7 @@ export class NodeInfo {
 
 			const type = idToType.get(id);
 
-			// NOTE 6) Add here the node UI status save. Viewer-3d and capture-view don't belongs here.
+			// NOTE 6) Add here the node UI status save. Viewer-3d and capture-view don't belong here.
 			switch(type) {
 				case "structure-reader":
 					if(notFirst) uiStatus += ",";
@@ -215,13 +208,9 @@ export class NodeInfo {
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as DrawPolyhedra).saveStatus();
 					break;
-				case "apply-symmetries":
+				case "compute-symmetries":
 					if(notFirst) uiStatus += ",";
-					uiStatus += (node as ApplySymmetries).saveStatus();
-					break;
-				case "find-symmetries":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as FindSymmetries).saveStatus();
+					uiStatus += (node as Symmetries).saveStatus();
 					break;
 			}
 			notFirst = true;
