@@ -5,7 +5,7 @@
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
-import {isLoaded, handleFullscreen, setProjectPathInTitle,
+import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
         receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 
@@ -34,6 +34,7 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             setProjectPathInTitle("See the Molecole new generation");
             sb.setup();
+            receiveRefreshMenu();
         }
     }, 20);
 });

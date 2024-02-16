@@ -36,7 +36,8 @@ window.addEventListener("DOMContentLoaded", (loadEvent: Event) => {
 
         // Export set title and refresh menu functions
         contextBridge.exposeInMainWorld("api", {
-            setTitle: (title: string): CustomTitlebar => ct.updateTitle(title)
+            setTitle: (title: string): CustomTitlebar => ct.updateTitle(title),
+            refreshMenu: (): void => void ct.refreshMenu()
         });
     }
 });

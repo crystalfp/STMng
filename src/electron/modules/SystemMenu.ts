@@ -6,7 +6,8 @@
 import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import {broadcastMessage, showDevToolsOnSecondaryWindows, openMenuEntry} from "./WindowsUtilities";
+import {broadcastMessage, showDevToolsOnSecondaryWindows,
+        refreshSystemMenu, openMenuEntry} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {loadRememberedProject, loadProjectAndRemember, saveProject, saveProjectAs} from "./Project";
 import path from "node:path";
@@ -174,6 +175,10 @@ export const setupMenu = (): void => {
  * @param disable - Disable save project menu entry if true
  */
 export const disableSaveProjectEntry = (disable: boolean): void => {
+
     const entry = systemMenu.getMenuItemById("saveProject");
-    if(entry) entry.enabled = !disable;
+    if(entry) {
+        entry.enabled = !disable;
+        refreshSystemMenu();
+    }
 };

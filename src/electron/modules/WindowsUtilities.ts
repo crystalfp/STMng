@@ -310,3 +310,11 @@ export const sendErrorNotification = (text: string): void => {
 
     mainWin.webContents.send("APP:NOTIFICATION", "error", text);
 };
+
+/**
+ * Request a system menu refresh in the client process
+ */
+export const refreshSystemMenu = (): void => {
+
+    mainWin.webContents.send("APP:REFRESH-MENU");
+};

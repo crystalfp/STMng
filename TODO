@@ -7,12 +7,9 @@ ToDo:
   ☐ Finish help
   ☐ Add show log function
   ☐ Manage multiple output from node (eg. reader has structure and structures)
-  ✔ Put extend viewer also in system menu @done(2024-02-16 10:46)
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
-  ☐ Load default project, save → The menu save entry is not enabled
-  ☐ Load a project, load default project → The menu save entry is enabled
 
 Requests from Oganov:
   ☐ Charge maps
@@ -24,6 +21,9 @@ Nice to have/Future:
   ☐ Label color
 
 Archive:
+  ✔ Load a project, load default project → The menu save entry is enabled @done(2024-02-16 15:34) @project(Bugs)
+  ✔ Put extend viewer also in system menu @done(2024-02-16 10:46)
+  ✔ Load default project, save → The menu save entry is not enabled @done(2024-02-16 15:34) @project(Bugs)
   ✔ Fix reset camera for orthographic camera @done(2024-02-16 09:48)
   ✔ Finish error notification for v-alert @done(2024-02-16 09:48)
   ✔ Change OrbitControl to camera-controls @done(2024-02-16 09:47)

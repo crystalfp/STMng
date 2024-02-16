@@ -16,6 +16,7 @@ declare global {
 		electron: ElectronAPI;
 		api: {
 			setTitle: (title: string) => void;
+			refreshMenu: () => void;
 		};
 	}
 }
@@ -30,7 +31,8 @@ declare global {
 export const isLoaded = (): boolean => {
 
 	return window.electron?.ipcRenderer !== undefined &&
-		   window.api?.setTitle !== undefined;
+		   window.api?.setTitle !== undefined &&
+		   window.api?.refreshMenu !== undefined;
 };
 
 
@@ -102,6 +104,15 @@ export const receiveNotifications = (callback: (type: "error" | "success",
 		}
 	});
 };
+
+/**
+ * Refresh the system menu that has been changed in the main process
+ */
+export const receiveRefreshMenu = (): void => {
+
+	window.electron.ipcRenderer.on("APP:REFRESH-MENU", window.api.refreshMenu);
+};
+
 
 // > Project
 /**
