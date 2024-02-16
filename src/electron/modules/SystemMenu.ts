@@ -7,7 +7,7 @@ import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, openMenuEntry} from "./WindowsUtilities";
-import {setMainTheme} from "./Preferences";
+import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {loadRememberedProject, loadProjectAndRemember, saveProject, saveProjectAs} from "./Project";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -119,6 +119,16 @@ export const setupMenu = (): void => {
                         const theme = event.checked ? "dark" : "light";
                         setMainTheme(theme, true);
                         broadcastMessage("theme-change", theme);
+                    }
+                },
+                {
+                    label: "Extended viewer",
+                    type: "checkbox",
+                    accelerator: "CommandOrControl+E",
+                    checked: isExtended(),
+                    click(event) {
+                        setExtended(event.checked);
+                        openMenuEntry("extend-viewer", event.checked ? "yes" : "no");
                     }
                 }
             ]

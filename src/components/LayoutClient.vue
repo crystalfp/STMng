@@ -5,7 +5,6 @@
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
-import Mousetrap from "mousetrap";
 import {isLoaded, handleFullscreen, setProjectPathInTitle,
         receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
@@ -14,11 +13,8 @@ import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
-/** Toggle expanded viewer window */
+/** Normal/Expanded viewer window */
 const normalScreen = ref(true);
-const toggleExpandedScreen = (): void => {
-    normalScreen.value = !normalScreen.value;
-};
 
 // > React to fullscreen requests and set title
 window.addEventListener("DOMContentLoaded", () => {
@@ -42,20 +38,20 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 20);
 });
 
-// > Setup global keyboard shortcuts
-Mousetrap
-    .bind("f", toggleExpandedScreen); // "f" toggle expanded screen
-
-
-// > The component to load in response to admin and load menus selections
+// > The component to load in response to menus selections
 const loadedPanel = shallowRef<unknown>();
-receiveMenuSelection((menuEntry: string) => {
+receiveMenuSelection((menuEntry: string, payload: string) => {
 
-    if(menuEntry === "show-versions") {
-        loadedPanel.value = defineAsyncComponent(() => import("@/components/About.vue"));
-    }
-    else {
-        showErrorNotification(`Menu entry "${menuEntry}" is not implemented`);
+    switch(menuEntry) {
+        case "show-versions":
+            loadedPanel.value = defineAsyncComponent(() => import("@/components/About.vue"));
+            break;
+        case "extend-viewer":
+            normalScreen.value = payload === "no";
+            break;
+        default:
+            showErrorNotification(`Menu entry "${menuEntry}" is not implemented`);
+            break;
     }
 });
 
@@ -77,7 +73,7 @@ receiveNotifications((type: "error" | "success", text: string) => {
   <div v-if="normalScreen" class="layout-west">
     <controls-container />
   </div>
-  <div class="layout-gutter" @click="toggleExpandedScreen" />
+  <div class="layout-gutter" @click="normalScreen = !normalScreen" />
   <viewer3-d :expanded="!normalScreen" />
   <v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info"
               close-on-content-click :color="notificationColor">

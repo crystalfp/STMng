@@ -84,3 +84,29 @@ export const setProjectPath = (filename: string): void => {
 
 	store.set("LastProjectLoaded", filename);
 };
+
+/**
+ * Return status of the viewer 3D
+ *
+ * @returns True if the viewer 3D is extended
+ */
+export const isExtended = (): boolean => {
+
+	if(store.has("ViewerExtended")) {
+		const status = store.get("ViewerExtended", "no");
+		return status === "yes";
+	}
+
+	store.set("ViewerExtended", "no");
+	return false;
+};
+
+/**
+ * Set viewer 3D extended status
+ *
+ * @param viewerIsExtended - Status of the Viewer 3D (true if extended)
+ */
+export const setExtended = (viewerIsExtended: boolean): void => {
+
+	store.set("ViewerExtended", viewerIsExtended ? "yes" : "no");
+};
