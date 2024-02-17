@@ -7,7 +7,7 @@
 import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
 import {Command, Option} from "commander";
-import pck from "../../package.json";
+import pkg from "../../package.json";
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
 // import installExtension, {VUEJS_DEVTOOLS} from "electron-devtools-installer";
@@ -24,8 +24,8 @@ import {setupChannelFindSymmetries} from "./modules/FindSymmetries";
 // > Command line parsing
 const program = new Command("STMng");
 program
-    .version(pck.version)
-    .description(pck.description)
+    .version(pkg.version)
+    .description(pkg.description)
     .usage("[options] [project-file]")
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")

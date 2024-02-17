@@ -141,11 +141,11 @@ export const setupMenu = (): void => {
                     label: "STMng documentation",
                     accelerator: "F1",
                     click() {
-                        const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-                        const DIST = path.join(mainSourceDirectory, "..", "dist");
-                        const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-                        const url = path.join(publicDir, "doc", "index.html");
 
+                        const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+		                const url = app.isPackaged ?
+                            path.resolve(process.resourcesPath, "app.asar.unpacked/dist/doc/index.html") :
+                            path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
                         void shell.openExternal(`file:///${url}`);
                     },
                 },

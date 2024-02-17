@@ -1,5 +1,5 @@
 ToDo:
-	☐ Establish shortcuts
+	✔ Establish shortcuts @done(2024-02-17 08:15)
 	☐ Add tooltips
 	☐ In validator add check of node types
   ☐ Readers do not fail if the file format is invalid
@@ -21,6 +21,7 @@ Requests from Oganov:
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
   ☐ Label color
+  ☐ Show graph (maybe edit too)
 
 Archive:
   ✔ Load a project, load default project → The menu save entry is enabled @done(2024-02-16 15:34) @project(Bugs)
