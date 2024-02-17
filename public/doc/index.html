@@ -32,27 +32,98 @@ that implements some of the STM4 functionalities.
     one or more atomic structures</p>
   <p><a href="modules/draw-structure.html">Draw Structure</a>: render an atomic structure</p>
   <p><a href="modules/draw-unit-cell.html">Draw Unit Cell</a>: render an atomic structure</p>
-  <p><a href="modules/draw-helpers.html">Draw Helpers</a>: render a grid and an axis object</p>
   <p><a href="modules/draw-polyhedra.html">Draw Polyhedra</a>: draw a convex hull around atoms</p>
   <p><a href="modules/chart-viewer.html">Chart Dialog</a>: open a window showing a chart</p>
   <p><a href="modules/viewer-3d.html">Viewer 3D</a>: the viewer frame</p>
+  <p><a href="modules/capture-view.html">Capture view</a>: capture the viewer content as snapshot or movie</p>
+  <p><a href="modules/compute-symmetries.html">Compute symmetries</a>: find and apply symmetries to the structure</p>
+  <p><a href="modules/compute-bonds.html">Compute bonds</a>: add bonds to the given structure</p>
 </details>
 <details>
   <summary>Old STM4 documentation</summary>
-  <p>Something small enough to escape casual notice.</p>
+  <p>Here the old STM4 documentation pages could be accessed.</p>
 </details>
 <details>
   <summary>Project</summary>
   <p>This is the description of the modules used and their interconnections.</p>
-  <p>A <b>project</b> is a file in JSON format with extension <tt>.json</tt>
+  <p>The project or default project will be automatically loaded on application start. The project file could be loaded on the command line.</p>
+  <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
   with the following content:</p>
   <ul>
-    <li>graph</li>
+    <li><b>graph</b> List the loaded nodes and their interconnections</li>
+    <li><b>viewer</b> Optional section to collect the viewer parameters</li>
+    <li><b>ui</b> Optional section to collect the parameters for each node</li>
+    <li><b>currentId</b> Optional parameter to set the initial ui panel to this node key.</li>
+  </ul>
+  <h2>Graph content</h2>
+  <p>This section is a JSON record with key an unique identifier of the module</p>
+  <p>The graph record content</p>
+  <ul>
+    <li><b>label:</b> The label that appear in the UI selection panel</li>
+    <li><b>type:</b> The type of node, that is its functionality.</li>
+    <li><b>in:</b> (optional) The id of the node from which this node takes the input. It is missing if the node has no input or it the input come from the graphical scene.</li>
   </ul>
 </details>
 <details>
   <summary>Shortcuts</summary>
-  <p>Something small enough to escape casual notice.</p>
+  <h2>System menu</h2>
+  <ul>
+    <li><b>Alt+F:</b> File submenu</li>
+    <li><b>Alt+V:</b> View submenu</li>
+    <li><b>Alt+H:</b> Help submenu</li>
+  </ul>
+  <h2>Project file group</h2>
+  <ul>
+    <li><b>Control+O:</b> Load a project file</li>
+    <li><b>Control+D:</b> Load the default project</li>
+    <li><b>Control+S:</b> Save the project to the file from which has been loaded</li>
+    <li><b>Control+Shift+S:</b> Save the project to a selected file. This file will be loaded automatically next time</li>
+  </ul>
+  <h2>Application group</h2>
+  <ul>
+    <li><b>Control+R:</b> Reload the application</li>
+    <li><b>Control+Shift+R:</b> Force reload the application</li>
+    <li><b>Control+Q:</b> Quit the application without asking confirmation</li>
+    <li><b>F11:</b> Toggle full screen</li>
+    <li><b>Control+T:</b> Toggle the dark theme for the application</li>
+    <li><b>Control+E:</b> Toggle the viewer extension, that is hide the control panel on the left</li>
+  </ul>
+  During development the following keys are also available:
+  <ul>
+    <li><b>F12:</b> Toggle development tools</li>
+    <li><b>Control+F12:</b> Toggle development tools also on opened secondary windows</li>
+  </ul>
+  <h2>Help</h2>
+  <ul>
+    <li><b>F1:</b> Open the STMng help in browser</li>
+    <li><b>Control+A:</b> Open the About dialog</li>
+  </ul>
+</details>
+<details>
+  <summary>Interaction with the viewer</summary>
+  <p>Interacting with the viewer means moving the camera around the visualized structure.</p>
+  <p>This interaction is done through mouse movements and keyboard arrows.</p>
+  <h2>Terminology</h2>
+  <ul>
+    <li><b>Rotate:</b> Rotate the camera around the scene center</li>
+    <li><b>Pan:</b> Move the camera on the viewer plane</li>
+    <li><b>Zoom:</b> Change the magnification of the camera without moving it</li>
+    <li><b>Dolly:</b> Move the camera perpendicular to the viewer plane</li>
+  </ul>
+  <h2>Mouse</h2>
+  <ul>
+    <li><b>Drag with left mouse button:</b> Rotate</li>
+    <li><b>Drag with right mouse button:</b> Pan</li>
+    <li><b>Drag with center mouse button:</b> Dolly</li>
+    <li><b>Mouse wheel:</b> Zoom</li>
+  </ul>
+  <h2>Keyboard arrows</h2>
+  <ul>
+    <li><b>Any arrow:</b> Pan</li>
+    <li><b>Control + any arrow:</b> Rotate</li>
+    <li><b>Shift + any arrow:</b> Zoom (Left and Down do the same, as do Right and Up)</li>
+    <li><b>Alt + any arrow:</b> Dolly (Left and Down do the same, as do Right and Up)</li>
+  </ul>
 </details>
 </body>
 </html>

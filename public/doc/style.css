@@ -28,7 +28,6 @@ header {
   margin-bottom: 1rem;
 }
 
-
 details {
   border: 1px solid #AAAAAA;
   border-radius: 4px;
@@ -40,6 +39,7 @@ summary {
   font-weight: bold;
   margin: -0.5em -0.5em 0;
   padding: 0.5em;
+  cursor: pointer;
 }
 
 details[open] {

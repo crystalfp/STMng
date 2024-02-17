@@ -139,6 +139,7 @@ export const setupMenu = (): void => {
             submenu: [
                 {
                     label: "STMng documentation",
+                    accelerator: "F1",
                     click() {
                         const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
                         const DIST = path.join(mainSourceDirectory, "..", "dist");
@@ -156,6 +157,7 @@ export const setupMenu = (): void => {
                 },
                 {
                     label: "About",
+                    accelerator: "CommandOrControl+A",
                     click() {
                         openMenuEntry("show-versions");
                     }
