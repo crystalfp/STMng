@@ -5,9 +5,8 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getAtomicNumber, getCovalentRadii, getMaxBonds} from "../modules/AtomData";
+import {getAtomicNumber} from "../modules/AtomData";
 import {getStructureAppearance} from "../modules/ReaderHelpers";
-import {computeBonds} from "../../services/ComputeBonds";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure} from "../../types";
 
@@ -60,8 +59,7 @@ export class ReaderXYZ implements ReaderImplementation {
 		// Build the structure
 		for(const structure of structures) {
 			structure.look = getStructureAppearance(structure.atoms);
-			structure.bonds = computeBonds(structure.atoms,
-									getCovalentRadii(structure.atoms), getMaxBonds(structure.atoms));
+			structure.bonds = [];
 		}
 
 		return structures;

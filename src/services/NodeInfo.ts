@@ -17,6 +17,7 @@ import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Symmetries} from "@/nodes/Symmetries";
+import {ComputeBonds} from "@/nodes/ComputeBonds";
 
 interface NodeParts {
 	ui: string;
@@ -34,6 +35,7 @@ export class NodeInfo {
 		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl"},
 		"capture-view":   		{ui: "CaptureMediaCtrl"},
 		"compute-symmetries": 	{ui: "SymmetriesCtrl"},
+		"compute-bonds": 		{ui: "ComputeBondsCtrl"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -89,6 +91,9 @@ export class NodeInfo {
 			case "compute-symmetries":
 				map.set(id, new Symmetries(id));
 				break;
+			case "compute-bonds":
+				map.set(id, new ComputeBonds(id));
+				break;
 			case "viewer-3d":
 			case "capture-view":
 				// These nodes have no runtime code like the others
@@ -113,6 +118,7 @@ export class NodeInfo {
 
 			// Nodes that have an output
 			case "compute-symmetries":
+			case "compute-bonds":
 			case "draw-unit-cell":
 			case "structure-reader": {
 				const typedData = data as Structure;
@@ -156,6 +162,7 @@ export class NodeInfo {
 			// Nodes from which other nodes could take an input
 			case "draw-unit-cell":
 			case "structure-reader":
+			case "compute-bonds":
 			case "compute-symmetries":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
@@ -211,6 +218,10 @@ export class NodeInfo {
 				case "compute-symmetries":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as Symmetries).saveStatus();
+					break;
+				case "compute-bonds":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as ComputeBonds).saveStatus();
 					break;
 			}
 			notFirst = true;

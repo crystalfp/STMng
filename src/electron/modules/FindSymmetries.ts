@@ -13,8 +13,7 @@ import {execSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {extractBasis, fractionalToCartesianCoordinates,
 		basisToLengthAngles, getStructureAppearance} from "./ReaderHelpers";
-import {computeBonds} from "../../services/ComputeBonds";
-import {getAtomicSymbol, getAtomicNumber, getCovalentRadii, getMaxBonds} from "../modules/AtomData";
+import {getAtomicSymbol, getAtomicNumber} from "../modules/AtomData";
 import type {FindSymmetriesParams} from "../types";
 import type {Structure, Atom} from "../../types";
 
@@ -112,7 +111,7 @@ export const setupChannelFindSymmetries = (): void => {
 		let lines;
 		try {
 			const outputFile = path.join(workingDir, "OUTPUT.DAT");
-			if(!fs.existsSync(outputFile)) throw Error("Computation failed");
+			if(!fs.existsSync(outputFile)) throw Error("Find symmetries computation failed");
 			const stream = fs.createReadStream(outputFile);
 			lines = rd.createInterface(stream);
 		}
@@ -166,7 +165,7 @@ export const setupChannelFindSymmetries = (): void => {
 			}
 		}
 		out.look = getStructureAppearance(out.atoms);
-		out.bonds = computeBonds(out.atoms, getCovalentRadii(out.atoms), getMaxBonds(out.atoms));
+		out.bonds = [];
 
 		// Remove the working directory and return the computed structure
 		removeWorkingDir(tmpobj, workingDir);

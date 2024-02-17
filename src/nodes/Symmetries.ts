@@ -5,7 +5,6 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {sb, type UiParams} from "@/services/Switchboard";
-import {computeBonds} from "@/services/ComputeBonds";
 import {computeSymmetries, findSymmetries} from "@/services/RoutesClient";
 import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
 import type {Structure} from "@/types";
@@ -519,14 +518,6 @@ export class Symmetries {
 				]
 			});
 		}
-
-		// Recompute bonds
-		const rCov: number[] = [];
-		for(const atom of out.atoms) {
-			const {atomZ} = atom;
-			rCov.push(out.look[atomZ].rCov);
-		}
-		out.bonds = computeBonds(out.atoms, rCov);
 
 		// Output structure from the node
 		return out;

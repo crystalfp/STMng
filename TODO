@@ -10,11 +10,13 @@ ToDo:
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
+  ☐ Load ZnTe.res, load diamond.res → the first unit cell does not disappear (cannot reproduce)
 
 Requests from Oganov:
   ☐ Charge maps
   ☐ New polyhedra
   ☐ Add tolerance for bonds
+  ☐ Put capture movie start in reader also
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)

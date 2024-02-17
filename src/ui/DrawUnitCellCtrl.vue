@@ -29,6 +29,11 @@ const showSupercell = ref(false);
 const supercellColor = ref("#16A004");
 const dashedSupercell = ref(false);
 
+/**
+ * Check if a supercell has been requested
+ *
+ * @returns True if there is a repetition
+ */
 const hasSupercell = (): boolean => {
     return repetitionsA.value > 1 || repetitionsB.value > 1 || repetitionsC.value > 1;
 };
@@ -61,6 +66,9 @@ watchEffect(() => {
     });
 });
 
+/**
+ * Reset repetition sliders to default values
+ */
 const resetSliders = (): void => {
     repetitionsA.value = 1;
     repetitionsB.value = 1;

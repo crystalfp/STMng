@@ -147,11 +147,18 @@ export const sendProject = (callback: () => string): void => {
  */
 export const setProjectPathInTitle = (baseTitle: string): void => {
 
+	// Set the title the first time
 	const project = window.electron.ipcRenderer
 							.sendSync("PREFERENCES:GET-SYNC", "LastProjectLoaded") as string;
 
-    window.api.setTitle(`See the Molecole new generation - ${project ?? "default project"}`);
+	if(project) {
+		let idx = project.lastIndexOf("\\");
+		if(idx < 0) idx = project.lastIndexOf("/");
+    	window.api.setTitle(`${baseTitle} — ${project.slice(idx+1)}`);
+	}
+    else window.api.setTitle(`${baseTitle} — default project`);
 
+	// Receive title updates
 	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
 
 		window.api.setTitle(`${baseTitle} — ${projectPath || "default project"}`);

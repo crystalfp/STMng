@@ -7,7 +7,6 @@ import * as THREE from "three";
 import SpriteText from "three-spritetext";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
-import {computeBonds} from "@/services/ComputeBonds";
 import type {BasisType, PositionType, Structure, Atom} from "@/types";
 
 export class DrawUnitCell {
@@ -85,12 +84,14 @@ export class DrawUnitCell {
 
 		sb.getData(this.id, (data: unknown) => {
 
-			const {crystal} = data as Structure;
+			this.structure = data as Structure;
+			if(!this.structure) return;
+			const {crystal} = this.structure;
 			if(!crystal) return;
+
 			this.drawUnitCell(crystal.basis, crystal.origin);
 			this.drawSupercell(crystal.basis, crystal.origin);
 			this.drawBasisVectors(crystal.basis, crystal.origin);
-			this.structure = data as Structure;
 			this.replicateUnitCell();
 		});
 	}
@@ -368,14 +369,6 @@ export class DrawUnitCell {
 			if(duplicated[i]) continue;
 			out.atoms.push(atoms[i]);
 		}
-
-		// Recompute bonds
-		const rCov: number[] = [];
-		for(const atom of out.atoms) {
-			const {atomZ} = atom;
-			rCov.push(out.look[atomZ].rCov);
-		}
-		out.bonds = computeBonds(out.atoms, rCov);
 
 		// Output the result
 		sb.setData(this.id, out);

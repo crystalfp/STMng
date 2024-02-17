@@ -5,8 +5,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getAtomicNumber, getAtomicSymbol, getCovalentRadii, getMaxBonds} from "../modules/AtomData";
-import {computeBonds} from "../../services/ComputeBonds";
+import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderHelpers";
 import type {ReaderImplementation} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
@@ -178,8 +177,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		// Add bonds and appearance to the structure
 		for(const structure of structures) {
 			structure.look  = getStructureAppearance(structure.atoms);
-			structure.bonds = computeBonds(structure.atoms,
-									getCovalentRadii(structure.atoms), getMaxBonds(structure.atoms));
+			structure.bonds = [];
 		}
 
 		return structures;
