@@ -9,6 +9,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
+import {useConfigStore} from "@/stores/configStore";
 
 // > Properties
 const pr = defineProps<{
@@ -34,6 +35,7 @@ const atomsTypes   = ref("");
 const loopSteps    = ref(false);
 const format       = ref("");
 const inProgress   = ref(false);
+const captureMovie = ref(false);
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
@@ -73,7 +75,27 @@ const loadFile = (): void => {
     });
 };
 
+/**
+ * Start and stop capture of a movie of the sequence
+ *
+ * @param capture - The running value (true starts capture, false stop it)
+ */
+const setCaptureMovie = (capture: boolean): void => {
+
+    if(captureMovie.value) {
+        const configStore = useConfigStore();
+        configStore.control.movie = capture;
+    }
+};
+
+/**
+ * Set the running status
+ *
+ * @param value - The running value to set
+ */
 const setRunning = (value: boolean): void => {
+
+    setCaptureMovie(value);
 
     running.value = value;
     sb.setUiParams(pr.id, {
@@ -168,17 +190,18 @@ const setFormat = (changedFormat: string): void => {
   </v-row>
   <v-container v-if="countSteps > 1">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mt-4 ml-2" />
+    <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact" class="mt-n5 ml-2" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
     <v-row>
       <v-spacer />
-      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft"
+      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
               @click="setStep(1)" />
-      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft"
+      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft" class="mr-1"
               @click="deltaStep(-1)" />
-      <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay"
+      <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" class="mr-1"
               @click="togglePlay" />
-      <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight"
+      <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight" class="mr-1"
               @click="deltaStep(1)" />
       <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
               @click="setStep(countSteps); setRunning(false)" />

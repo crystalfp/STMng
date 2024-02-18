@@ -95,7 +95,7 @@ export class StructureReader {
 							running: this.running,
 						});
 
-					}, 500);
+					}, 100);
 				}
 				sb.setUiParams(this.id, {
 					step: this.step,

@@ -1,5 +1,5 @@
+
 ToDo:
-	✔ Establish shortcuts @done(2024-02-17 08:15)
 	☐ Add tooltips
 	☐ In validator add check of node types
   ☐ Readers do not fail if the file format is invalid
@@ -21,9 +21,10 @@ Requests from Oganov:
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
   ☐ Label color
-  ☐ Show graph (maybe edit too)
 
 Archive:
+  ✔ Establish shortcuts @done(2024-02-17 08:15)
+  ✔ Show graph (maybe edit too) @done(2024-02-18 19:16)
   ✔ Load a project, load default project → The menu save entry is enabled @done(2024-02-16 15:34) @project(Bugs)
   ✔ Put extend viewer also in system menu @done(2024-02-16 10:46)
   ✔ Load default project, save → The menu save entry is not enabled @done(2024-02-16 15:34) @project(Bugs)

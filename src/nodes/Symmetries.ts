@@ -89,6 +89,18 @@ export class Symmetries {
 		// Reset error notification
 		resetErrorNotification("symmetries");
 
+		// If input structure has no unit cell, disable find symmetries
+		if(!this.inputStructure!.crystal.basis.some((value) => value !== 0)) {
+
+			sb.setData(this.id, this.inputStructure!);
+			sb.setUiParams(this.id, {
+				finalSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
+				enableFindSymmetries: false,
+				enableApplySymmetries: false
+			});
+			return;
+		}
+
 		if(this.enableFindSymmetries) {
 			this.findSymmetries(this.inputStructure!)
 				.then((structure) => {
