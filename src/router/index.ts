@@ -7,6 +7,7 @@ import {createWebHashHistory, createRouter} from "vue-router";
 
 import LayoutClient from "@/components/LayoutClient.vue";
 import ChartViewer from "@/components/ChartViewer.vue";
+import ProjectEditor from "@/components/ProjectEditor.vue";
 
 export const router = createRouter({
     history: createWebHashHistory(),
@@ -18,6 +19,10 @@ export const router = createRouter({
         {
             path: "/chart",
             component: ChartViewer
+        },
+        {
+            path: "/editor",
+            component: ProjectEditor
         },
     ],
 });

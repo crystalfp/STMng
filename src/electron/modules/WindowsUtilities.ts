@@ -196,7 +196,7 @@ const closeSecondaryWindow = (_event: unknown, routerPath: string): void => {
  * @param routerPath - The router path of the created window to check
  * @returns True if the window is open
  */
-const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => {
+export const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => {
     return openedWindows.has(routerPath);
 };
 
@@ -207,7 +207,8 @@ const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => 
  * @param _event - Ignored IPC event
  * @param payload - Destination window and the data to send to it
  */
-const sendToSecondaryWindow = (_event: unknown, payload: {routerPath: string; data: string}): void => {
+export const sendToSecondaryWindow = (_event: unknown,
+                                      payload: {routerPath: string; data: string}): void => {
 
     const win = openedWindows.get(payload.routerPath);
     if(win) win.webContents.send("APP:DATA", payload.data);

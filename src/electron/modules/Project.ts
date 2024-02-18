@@ -9,8 +9,8 @@ import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {sendLoadedProject, requestLoadedProject,
-		sendProjectPath, sendErrorNotification} from "./WindowsUtilities";
+import {sendLoadedProject, requestLoadedProject, sendToSecondaryWindow, createSecondaryWindow,
+		isSecondaryWindowOpen, sendProjectPath, sendErrorNotification} from "./WindowsUtilities";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 
 let projectAsString = "";
@@ -35,6 +35,30 @@ const loadProject = (filename: string): void => {
 
 		sendLoadedProject("");
 		projectAsString = "";
+	}
+};
+
+/**
+ * Create the project editor/viewer window
+ */
+export const createProjectEditor = (): void => {
+
+		createSecondaryWindow(undefined, {
+		routerPath: "/editor",
+		width: 1600,
+		height: 900,
+		title: "View loaded project",
+		data: projectAsString
+	});
+};
+
+/**
+ * Send the project content to the editor/viewer window
+ */
+export const sendProjectToEditor = (): void => {
+
+	if(isSecondaryWindowOpen(undefined, "/editor")) {
+		sendToSecondaryWindow(undefined, {routerPath: "/editor", data: projectAsString});
 	}
 };
 

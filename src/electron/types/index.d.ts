@@ -7,7 +7,7 @@ import type {Structure, BasisType} from "../../types";
 
 /** Parameters for the window creation */
 export interface WindowsParams {
-    /** The router path for the created window (should also be in src/main.ts) */
+    /** The router path for the created window (should also be in src/router/index.ts) */
     routerPath: string;
     /** Width of the window */
     width: number;

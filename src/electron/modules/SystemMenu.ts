@@ -9,7 +9,8 @@ import type {MenuItemConstructorOptions} from "electron";
 import {broadcastMessage, showDevToolsOnSecondaryWindows,
         refreshSystemMenu, openMenuEntry} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
-import {loadRememberedProject, loadProjectAndRemember, saveProject, saveProjectAs} from "./Project";
+import {loadRememberedProject, loadProjectAndRemember, saveProject, sendProjectToEditor,
+        saveProjectAs, createProjectEditor} from "./Project";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -41,6 +42,7 @@ export const setupMenu = (): void => {
                         if(file) {
                             const loadedDefaultProject = loadProjectAndRemember(file[0]);
                             disableSaveProjectEntry(loadedDefaultProject);
+                            sendProjectToEditor();
                         }
                     }
                 },
@@ -50,6 +52,7 @@ export const setupMenu = (): void => {
                     click() {
                         loadRememberedProject(true);
                         disableSaveProjectEntry(true);
+                        sendProjectToEditor();
                     }
                 },
                 {type: "separator"},
@@ -59,6 +62,7 @@ export const setupMenu = (): void => {
                     accelerator: "CommandOrControl+S",
                     click() {
                         saveProject();
+                        sendProjectToEditor();
                     }
                 },
                 {
@@ -74,7 +78,14 @@ export const setupMenu = (): void => {
                         if(file) {
                             saveProjectAs(file);
                             disableSaveProjectEntry(false);
+                            sendProjectToEditor();
                         }
+                    }
+                },
+                {
+                    label: "Show project",
+                    click() {
+                        createProjectEditor();
                     }
                 },
                 {type: "separator"},
