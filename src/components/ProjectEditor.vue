@@ -1,13 +1,20 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Generates a chart in a new windows with the structure of the loaded project
+ */
 
 import {ref, onMounted} from "vue";
 import {closeWindow, receiveInWindow,
         receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
 import {showErrorNotification} from "@/services/ErrorNotification";
-import type {Project, GraphNode} from "@/types";
+import type {Project, ProjectGraph} from "@/types";
+import {sb} from "@/services/Switchboard";
 
-const NODE_WIDTH = 150;
-const NODE_HEIGHT = 50;
+// Dimensions of the node on screen
+const NODE_WIDTH  = 150;
+const NODE_HEIGHT =  50;
+const NODE_GAP    =  10;
 
 // Set the line color
 const line = ref("#FFF");
@@ -25,7 +32,7 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
     }
 });
 
-let graph: Record<string, GraphNode>;
+let graph: ProjectGraph;
 
 // Reference to the view
 const svg = ref<SVGElement | null>(null);
@@ -39,13 +46,213 @@ interface NodeType {
     id: string;
     label: string;
     selected: boolean;
+    graphics: string;  // Contains "in" for the viewer node, "out" for nodes that generate graphics objects
 }
 
 /** Information about an edge */
 interface EdgeType {
     idx: number;
     points: string;
+    dotted: string;
 }
+
+/**
+ * Create nodes for the chart
+ *
+ * @param projectGraph - The project graph
+ * @returns The array of nodes to display
+ */
+const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
+
+    // Select nodes that have connections
+    const keysWithConnections = new Set<string>();
+    for(const key in projectGraph) {
+        for(const otherKey in projectGraph) {
+            if(otherKey === key) continue;
+            if(!projectGraph[otherKey].in) continue;
+            const inputs = projectGraph[otherKey].in!.split(/, */);
+            if(inputs.includes(key)) {
+                keysWithConnections.add(key);
+                keysWithConnections.add(otherKey);
+            }
+        }
+    }
+
+    // Add nodes that have graphical output
+    for(const key in projectGraph) {
+        if(sb.generatesGraphics(projectGraph[key].type)) keysWithConnections.add(key);
+    }
+
+    // Nodes to display
+    const out: NodeType[] = [];
+
+    // Start with nodes that have connections
+    let x = NODE_GAP;
+    let y = NODE_GAP;
+    for(const key in projectGraph) {
+
+        if(!keysWithConnections.has(key)) continue;
+
+        const graphicsOut = sb.generatesGraphics(projectGraph[key].type) ? "out" : "";
+
+        out.push({x, y, w: NODE_WIDTH, h: NODE_HEIGHT,
+                  id: key, label: projectGraph[key].label, selected: false, graphics: graphicsOut});
+        x += NODE_WIDTH + NODE_GAP;
+        y += NODE_HEIGHT + NODE_GAP;
+    }
+
+    // Add the viewer at the end
+    const viewerType = sb.getViewerType();
+    for(const key in projectGraph) {
+        if(projectGraph[key].type === viewerType) {
+            out.push({x, y, w: NODE_WIDTH, h: NODE_HEIGHT,
+                      id: key, label: projectGraph[key].label, selected: false, graphics: "in"});
+            keysWithConnections.add(key);
+            x += NODE_WIDTH + NODE_GAP;
+            y += NODE_HEIGHT + NODE_GAP;
+            break;
+        }
+    }
+
+    // Then nodes that have no connections
+    for(const key in projectGraph) {
+
+        if(keysWithConnections.has(key)) continue;
+
+        out.push({x, y, w: NODE_WIDTH, h: NODE_HEIGHT,
+                  id: key, label: projectGraph[key].label, selected: false, graphics: ""});
+        x += NODE_WIDTH + NODE_GAP;
+        y += NODE_HEIGHT + NODE_GAP;
+    }
+
+    return out;
+};
+
+/**
+ * Add edges to the chart
+ *
+ * @param projectGraph - The project graph part
+ * @param nodesList - The already computed nodes
+ * @returns The list of edges for the chart
+ */
+const createEdges = (projectGraph: ProjectGraph, nodesList: NodeType[]): EdgeType[] => {
+
+    // Get the connections between nodes
+    const connections = [];
+    for(const key in projectGraph) {
+
+        if(!projectGraph[key].in) continue;
+
+        const inputs = projectGraph[key].in!.split(/, */);
+        for(const input of inputs) {
+            const from = input;
+            const to = key;
+
+            const connection = {
+
+                xFrom:   0,
+                yFrom:   0,
+                wFrom:   0,
+                hFrom:   0,
+                xTo:     0,
+                yTo:     0,
+                wTo:     0,
+                hTo:     0,
+                special: false,
+            };
+            for(const node of nodesList) {
+                if(node.id === from) {
+                    connection.xFrom = node.x;
+                    connection.yFrom = node.y;
+                    connection.wFrom = node.w;
+                    connection.hFrom = node.h;
+                }
+                else if(node.id === to) {
+                    connection.xTo = node.x;
+                    connection.yTo = node.y;
+                    connection.wTo = node.w;
+                    connection.hTo = node.h;
+                }
+            }
+            connections.push(connection);
+        }
+    }
+
+    // Get the viewer node
+    let viewerNode;
+    for(const node of nodesList) {
+        if(node.graphics === "in") {
+            viewerNode = node;
+            break;
+        }
+    }
+
+    // Get the special connections
+    if(viewerNode) {
+        for(const node of nodesList) {
+            if(node.graphics === "out") {
+                const connection = {
+
+                    xFrom:   node.x,
+                    yFrom:   node.y,
+                    wFrom:   node.w,
+                    hFrom:   node.h,
+                    xTo:     viewerNode.x,
+                    yTo:     viewerNode.y,
+                    wTo:     viewerNode.w,
+                    hTo:     viewerNode.h,
+                    special: true,
+                };
+                connections.push(connection);
+            }
+        }
+    }
+
+    // Compute edges
+    let idx = 0;
+    const out: EdgeType[] = [];
+    for(const connection of connections) {
+
+        let xStart;
+        let yStart;
+        let xEnd;
+        let yEnd;
+
+        if(connection.special) {
+            // Connection under the diagonal, but reversed
+            xStart = connection.xFrom + connection.wFrom / 2;
+            yStart = connection.yFrom + connection.hFrom;
+            xEnd   = connection.xTo - 2;
+            yEnd   = connection.yTo + connection.hTo / 2;
+
+            const specialPoints = `${xStart},${yStart} ${xStart},${yEnd} ${xEnd},${yEnd}`;
+            out.push({idx, points: specialPoints, dotted: "3 2"});
+            ++idx;
+            continue;
+        }
+        else if(connection.xFrom < connection.xTo) {
+            // Connection above the diagonal
+            xStart = connection.xFrom + connection.wFrom;
+            yStart = connection.yFrom + connection.hFrom / 2;
+            xEnd   = connection.xTo + connection.wTo / 2;
+            yEnd   = connection.yTo - 2;
+        }
+        else {
+            // Connection under the diagonal
+            xStart = connection.xTo;
+            yStart = connection.yTo + connection.hTo / 2;
+            xEnd   = connection.xFrom + connection.wFrom / 2;
+            yEnd   = connection.yFrom + connection.hFrom + 2;
+        }
+        const points = `${xStart},${yStart} ${xEnd},${yStart} ${xEnd},${yEnd}`;
+        out.push({idx, points, dotted: ""});
+        ++idx;
+    }
+
+    return out;
+};
+
+/** Data that goes to the chart */
 const nodes = ref<NodeType[]>([]);
 const edges = ref<EdgeType[]>([]);
 
@@ -62,117 +269,10 @@ onMounted(() => {
         const project = JSON.parse(data) as Project;
         graph = project.graph;
 
-        // Select nodes that have connections
-        const keysWithConnections = new Set<string>();
-        for(const key in graph) {
-            for(const otherKey in graph) {
-                if(otherKey === key) continue;
-                if(!graph[otherKey].in) continue;
-                const inputs = graph[otherKey].in!.split(/, */);
-                if(inputs.includes(key)) {
-                    keysWithConnections.add(key);
-                    keysWithConnections.add(otherKey);
-                }
-            }
-        }
+        const nodesList = createNodes(graph);
+        nodes.value = nodesList;
 
-        // Empty the node lists
-        nodes.value.length = 0;
-
-        // Start with nodes that have connections
-        let x = 0;
-        let y = 0;
-        for(const key in graph) {
-
-            if(!keysWithConnections.has(key)) continue;
-
-            const node = graph[key];
-            nodes.value.push({x, y,
-                              w: NODE_WIDTH, h: NODE_HEIGHT,
-                              id: key, label: node.label, selected: false});
-            x += NODE_WIDTH + 10;
-            y += NODE_HEIGHT + 10;
-        }
-
-        // Then nodes that have no (explicit) connections
-        x = 0;
-        y += NODE_HEIGHT + 10;
-        for(const key in graph) {
-
-            if(keysWithConnections.has(key)) continue;
-
-            const node = graph[key];
-            nodes.value.push({x, y,
-                              w: NODE_WIDTH, h: NODE_HEIGHT,
-                              id: key, label: node.label, selected: false});
-            x += NODE_WIDTH + 10;
-        }
-
-        // Get the connections between nodes
-        const connections = [];
-        for(const key in graph) {
-            if(!graph[key].in) continue;
-            const inputs = graph[key].in!.split(/, */);
-            for(const input of inputs) {
-                const from = input;
-                const to = key;
-
-                const connection = {
-
-                    xFrom: 0,
-                    yFrom: 0,
-                    wFrom: 0,
-                    hFrom: 0,
-                    xTo: 0,
-                    yTo: 0,
-                    wTo: 0,
-                    hTo: 0,
-                };
-                for(const node of nodes.value) {
-                    if(node.id === from) {
-                        connection.xFrom = node.x;
-                        connection.yFrom = node.y;
-                        connection.wFrom = node.w;
-                        connection.hFrom = node.h;
-                    }
-                    else if(node.id === to) {
-                        connection.xTo = node.x;
-                        connection.yTo = node.y;
-                        connection.wTo = node.w;
-                        connection.hTo = node.h;
-                    }
-                }
-                connections.push(connection);
-            }
-        }
-
-        // Compute edges
-        let idx = 0;
-        for(const connection of connections) {
-
-            let xStart;
-            let yStart;
-            let xEnd;
-            let yEnd;
-
-            if(connection.xFrom < connection.xTo) {
-                // Connection above the diagonal
-                xStart = connection.xFrom + connection.wFrom;
-                yStart = connection.yFrom + connection.hFrom / 2;
-                xEnd   = connection.xTo + connection.wTo / 2;
-                yEnd   = connection.yTo - 2;
-            }
-            else {
-                // Connection under the diagonal
-                xStart = connection.xTo;
-                yStart = connection.yTo + connection.hTo / 2;
-                xEnd   = connection.xFrom + connection.wFrom / 2;
-                yEnd   = connection.yFrom + connection.hFrom + 2;
-            }
-            const points = `${xStart},${yStart} ${xEnd},${yStart} ${xEnd},${yEnd}`;
-            edges.value.push({idx, points});
-            ++idx;
-        }
+        edges.value = createEdges(graph, nodesList);
     });
 });
 
@@ -192,6 +292,12 @@ document.addEventListener("keydown", captureEscape);
 
 const showInfo = ref(false);
 const infoContent = ref<{label: string; value: string}[]>([]);
+
+/**
+ * Show the data pertaining to a node
+ *
+ * @param key - Key of the selected node
+ */
 const selectNode = (key: string): void => {
 
     showInfo.value = true;
@@ -211,7 +317,6 @@ const selectNode = (key: string): void => {
 <v-app :theme="theme">
 <div class="graph-editor-portal">
   <div class="graph-editor-container">
-    <!-- eslint-disable @alasdair/max-len/max-len -->
     <svg ref="svg" width="2500" height="3000" x="0" y="0" viewBox="0 0 2500 3000"
     	   xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -225,11 +330,13 @@ const selectNode = (key: string): void => {
            :width="n.w" :height="n.h" class="node" @click="selectNode(n.id)">
         <rect class="border" :class="{selected: n.selected}" x="1" y="1"
           :width="n.w-2" :height="n.h-2" rx="10" ry="10" />
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="label">{{ n.label }}</text>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              class="label">{{ n.label }}</text>
       </svg>
       <polyline v-for="e of edges" :key="e.idx" :points="e.points" :stroke="line"
-			          style="stroke-width:2;stroke-linecap:butt;fill:none;stroke-opacity:0.7"
-			          marker-end="url(#arrow)" pointer-events="none" vector-effect="non-scaling-stroke" />
+                :stroke-dasharray="e.dotted"
+			    style="stroke-width:2;stroke-linecap:butt;fill:none;stroke-opacity:0.7"
+			    marker-end="url(#arrow)" pointer-events="none" vector-effect="non-scaling-stroke" />
     </svg>
   </div>
   <v-container v-if="showInfo" class="mt-2">

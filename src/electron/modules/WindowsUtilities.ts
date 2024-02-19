@@ -231,16 +231,14 @@ export const broadcastMessage = (eventType: string, ...params: (boolean | string
 // > Show developer tools on each secondary window open
 /**
  * Show developer tools on each secondary window open
- *
- * @param show - Open or close developer tools window
  */
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export const showDevToolsOnSecondaryWindows = (show: boolean): void => {
+export const showDevToolsOnSecondaryWindows = (): void => {
 
     for(const win of openedWindows) {
         if(win[0] === "/") continue;
-        if(show) win[1].webContents.openDevTools();
-        else     win[1].webContents.closeDevTools();
+        win[1].webContents.closeDevTools();
+        win[1].webContents.openDevTools();
     }
 };
 

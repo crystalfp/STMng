@@ -20,22 +20,23 @@ import {Symmetries} from "@/nodes/Symmetries";
 import {ComputeBonds} from "@/nodes/ComputeBonds";
 
 interface NodeParts {
-	ui: string;
+	ui: string;						// The name of the node ui component
+	graphic: "none" | "in" | "out";	// "out" generates graphical output, "in" the viewer
 }
 
 export class NodeInfo {
 
-	// NOTE 2) Add the type and its ui component
+	// NOTE 2) Add the type, its ui component and if create graphical object
 	private static readonly typeToPartsRecord: Record<string, NodeParts> = {
-		"structure-reader":		{ui: "StructureReaderCtrl"},
-		"draw-structure":		{ui: "DrawStructureCtrl"},
-		"draw-unit-cell":		{ui: "DrawUnitCellCtrl"},
-		"chart-viewer":			{ui: "ChartViewerCtrl"},
-		"viewer-3d":   			{ui: "Viewer3DCtrl"},
-		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl"},
-		"capture-view":   		{ui: "CaptureMediaCtrl"},
-		"compute-symmetries": 	{ui: "SymmetriesCtrl"},
-		"compute-bonds": 		{ui: "ComputeBondsCtrl"},
+		"structure-reader":		{ui: "StructureReaderCtrl",	graphic: "none"},
+		"draw-structure":		{ui: "DrawStructureCtrl",	graphic: "out"},
+		"draw-unit-cell":		{ui: "DrawUnitCellCtrl",	graphic: "out"},
+		"chart-viewer":			{ui: "ChartViewerCtrl",		graphic: "none"},
+		"viewer-3d":   			{ui: "Viewer3DCtrl",		graphic: "in"},
+		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl",	graphic: "out"},
+		"capture-view":   		{ui: "CaptureMediaCtrl",	graphic: "none"},
+		"compute-symmetries": 	{ui: "SymmetriesCtrl",		graphic: "none"},
+		"compute-bonds": 		{ui: "ComputeBondsCtrl",	graphic: "none"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -54,7 +55,7 @@ export class NodeInfo {
 	 * Return node info
 	 *
 	 * @param node - Node in the graph
-	 * @returns Info on the node
+	 * @returns Info about the node
 	 */
 	getUICode(id: string, node: GraphNode): NodeUI | undefined {
 
@@ -183,7 +184,7 @@ export class NodeInfo {
 	 *
 	 * @param map - Map of the nodes
 	 * @param idToType - Map from node id to its type
-	 * @returns - Formatted status as a JSON string
+	 * @returns Formatted status as a JSON string
 	 */
 	saveUiStatus(map: Map<string, unknown>, idToType: Map<string, string>): string {
 
@@ -229,5 +230,30 @@ export class NodeInfo {
 		uiStatus += "}";
 
 		return uiStatus;
+	}
+
+	/**
+	 * Get the type of the Viewer3D
+	 *
+	 * @returns The type of the viewer node
+	 */
+	getViewerType(): string {
+
+		for(const key in NodeInfo.typeToPartsRecord) {
+			const nodeParts = NodeInfo.typeToPartsRecord[key];
+			if(nodeParts.graphic === "in") return key;
+		}
+		return "";
+	}
+
+	/**
+	 * Check if the node generates also graphical output
+	 *
+	 * @param type - Type of the node
+	 * @returns True if the node generates also graphical output that goes directly to the scene
+	 */
+	generatesGraphics(type: string): boolean {
+		const nodeParts = NodeInfo.typeToPartsRecord[type];
+		return nodeParts?.graphic === "out";
 	}
 }

@@ -111,13 +111,11 @@ export const setupMenu = (): void => {
                 },
                 {
                     label: "DevTools on secondary",
-                    type: "checkbox",
                     enabled: isDevelopment,
                     visible: isDevelopment,
                     accelerator: "CommandOrControl+F12",
-                    checked: false,
-                    click(event) {
-                        showDevToolsOnSecondaryWindows(event.checked);
+                    click() {
+                        showDevToolsOnSecondaryWindows();
                     }
                 },
                 {type: "separator"},

@@ -158,8 +158,10 @@ export interface GraphNode {
 
 import type {UiParams} from "@/services/Switchboard";
 
+export type ProjectGraph = Record<string, GraphNode>; // The key is the node id
+
 export interface Project {
-    graph: Record<string, GraphNode>; // The key is the node id
+    graph: ProjectGraph;
     currentId?: string;
     viewer?: {
         camera: {

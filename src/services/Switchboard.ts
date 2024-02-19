@@ -277,6 +277,27 @@ class Switchboard {
 		}
 	}
 
+	/**
+	 * Check if the node type generates also graphical output
+	 *
+	 * @param type - Type of the node
+	 * @returns True if this node type generates graphical output
+	 */
+	generatesGraphics(type: string): boolean {
+
+		return this.nodeInfo.generatesGraphics(type);
+	}
+
+	/**
+	 * Get the viewer type
+	 *
+	 * @returns The type of the viewer 3D
+	 */
+	getViewerType(): string {
+
+		return this.nodeInfo.getViewerType();
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
