@@ -23,7 +23,7 @@ const messageStore = useMessageStore();
 messageStore.structureReader.message = "";
 
 /** Formats that could be loaded */
-const fileFormats = ["POSCAR", "ShelX", "XYZ"];
+const fileFormats = ["CIF", "POSCAR", "ShelX", "XYZ"];
 
 // > Get and set ui parameters from the switchboard
 const fileRead     = ref("");
@@ -208,7 +208,7 @@ const setFormat = (changedFormat: string): void => {
       <v-spacer />
     </v-row>
   </v-container>
-  <v-alert v-if="messageStore.structureReader.message !== ''" title="Error"
+  <v-alert v-if="messageStore.structureReader.message !== ''" title="Error" class="mt-7"
            :text="messageStore.structureReader.message" type="error" density="compact"
            color="red" style="cursor: pointer;" @click="messageStore.structureReader.message=''" />
 </v-container>

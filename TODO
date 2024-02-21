@@ -7,6 +7,8 @@ ToDo:
   ☐ Finish help
   ☐ Add show log function
   ☐ Manage multiple output from node (eg. reader has structure and structures)
+  ☐ Check if needed to use `onUnmonted` to stop listeners and timers
+  ✔ Add CIF reader @done(2024-02-21 06:51)
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
@@ -15,12 +17,14 @@ Bugs:
 Requests from Oganov:
   ☐ Charge maps
   ☐ New polyhedra
-  ☐ Add tolerance for bonds
   ✔ Put capture movie start in reader also @done(2024-02-19 06:46)
+  ☐ Change compute bonds not changing min/max but scale of sum rCov
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
   ☐ Label color
+  ☐ Add multi-file reader (with number sequence or file containing the list of files)
+  ☐ Use CIF parser <https://github.com/stur86/crystcif-parse>
 
 Archive:
   ✔ Establish shortcuts @done(2024-02-17 08:15)

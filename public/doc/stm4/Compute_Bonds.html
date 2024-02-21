@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-us"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Organization" content="Swiss National Supercomputing Centre, Switzerland">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="STM4 module Compute_Bonds documentation">
+  <meta name="keywords" content="AVS,AVS/Express,STM4">
+  <meta name="copyright" content="Copyright 1999-2012 by CSCS-ETH Zurich">
+
+  <title>Compute Bonds</title>
+
+  <link rel="stylesheet" href="stm4.css" type="text/css">
+
+</head><body>
+
+<h1>Compute Bonds</h1>
+
+<h2>Description</h2>
+<p>Compute atomic bonds.</p>
+
+<h2>Input Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">structure_in</td>
+	<td class="c2"><a href="MoleculeType.html">MoleculeType</a></td>
+	<td class="c3">Molecular structure data. If it already has bonds defined, the module offers the choice
+	to keep or recompute them.</td>
+</tr>
+</table>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">H bonds</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Enable computation of H bonds.</td>
+</tr>
+<tr>
+	<td class="c1">Force recomp.</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Recompute bonds even if they are present in the input structure.</td>
+</tr>
+<tr>
+	<td class="c1">Use alt. dist.</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Use bonding distances from the current <a href="Info_Sets_Editor.html">info set</a>.</td>
+</tr>
+<tr>
+	<td class="c1">Freeze bonds</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Don't recompute bonds even if interatomic distances change.</td>
+</tr>
+<tr>
+	<td class="c1">Greedy bonding</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Disregard the maximum bonds per atom limit.</td>
+</tr>
+<tr>
+	<td class="c1">Bonding Range Adjustment</td>
+	<td class="c2">slider</td>
+	<td class="c3">Percentage of variation of the maximum distance between atoms to form a bond.</td>
+</tr>
+<tr>
+	<td class="c1">H Bonding Range Adjustment</td>
+	<td class="c2">slider</td>
+	<td class="c3">Percentage of variation of the maximum distance between H and an atom to form a bond.</td>
+</tr>
+<tr>
+	<td class="c1">H Bond Max Distance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Maximum distance to form an H bond.</td>
+</tr>
+<tr>
+	<td class="c1">H Bond Max Angle</td>
+	<td class="c2">slider</td>
+	<td class="c3">Maximum angle <tt>HXY</tt> (in <tt>X__H..Y</tt> where <tt>..</tt> is the H bond) to form an H bond.</td>
+</tr>
+</table>
+
+<h2>Output Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">structure_out</td>
+	<td class="c2"><a href="MoleculeType.html">MoleculeType</a></td>
+	<td class="c3">Molecular structure data with the newly computed bonds added.</td>
+</tr>
+</table>
+
+<div class="back"><a href="../index.html" class="back">Return to index</a></div>
+</body></html>

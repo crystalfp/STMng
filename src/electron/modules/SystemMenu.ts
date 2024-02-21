@@ -82,6 +82,7 @@ export const setupMenu = (): void => {
                         }
                     }
                 },
+                {type: "separator"},
                 {
                     label: "Show project",
                     click() {

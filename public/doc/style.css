@@ -31,22 +31,30 @@ header {
 details {
   border: 1px solid #AAAAAA;
   border-radius: 4px;
-  padding: 0.5em 0.5em 0;
+  padding: 0.5rem 0.5rem 0;
   width: 50%;
 }
 
 summary {
   font-weight: bold;
-  margin: -0.5em -0.5em 0;
-  padding: 0.5em;
+  margin: -0.5rem -0.5rem 0;
+  padding: 0.5rem;
   cursor: pointer;
 }
 
 details[open] {
-  padding: 0.5em;
+  padding: 0.5rem;
 }
 
 details[open] summary {
   border-bottom: 1px solid #AAAAAA;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
+}
+
+code {
+  white-space: pre-wrap;
+}
+
+.m1 {
+  width: 13rem;
 }

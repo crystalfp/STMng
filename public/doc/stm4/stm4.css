@@ -1,0 +1,77 @@
+body {
+	font-family:Verdana,Arial,Helvetica,Geneva,sans-serif;
+	font-size: 88%; /* fixes IE font too big problems */
+	/*Font size value for IE4/5 on Windows*/
+	voice-family: "\"}\"";
+	voice-family:inherit;
+	font-size: 90.01%; /* Prevents a bug in Opera and fixes IE font problems */
+}
+h1 {
+	font-size: 24pt;
+	font-weight: bold;
+	margin: 0.02in  0.006in  0.02in  0.009in;
+	padding: 0.02in  0.0in  0.02in  0.02in;
+	font-family: Verdana,Arial,Helvetica,Geneva,sans-serif;
+	border-top: thick solid gray;
+	border-bottom: thick solid gray;
+}
+td.c1 {
+	width: 240px;
+	vertical-align: top;
+	padding-left: 20px;
+	font-weight: bold;
+	font-family: Verdana,Arial,Helvetica,Geneva,sans-serif;
+}
+td.c2 {
+	width: 150px;
+	vertical-align: top;
+}
+td.c3 {
+	vertical-align: top;
+}
+h2, h3 {
+	font-family: Verdana,Arial,Helvetica,Geneva,sans-serif;
+	margin-left: 0.02in;
+}
+dt {
+	font-weight: bold;
+}
+p {
+	padding-left: 20px;
+	line-height: 130%;
+}
+td.m1 {
+	width: 240px;
+	vertical-align: top;
+	padding-left: 20px;
+	font-family: Verdana,Arial,Helvetica,Geneva,sans-serif;
+}
+td.m2 {
+	vertical-align: top;
+}
+td.cspan {
+	vertical-align: top;
+	padding-left: 20px;
+	font-weight: bold;
+	font-family: Verdana,Arial,Helvetica,Geneva,sans-serif;
+}
+td.m1s {
+	width: 220px;
+	vertical-align: top;
+	padding-left: 40px;
+}
+a.back {
+	padding: 0.5em 1em 0.5em 1em;
+	font-family: Verdana,Arial,Helvetica,Geneva,sans-serif;
+	background-color: gray;
+	text-decoration: none;
+	color: black;
+}
+div.back {
+	margin-top: 3em;
+}
+ul.sublist {
+	margin-top:0;
+	margin-bottom: 0.1em;
+	list-style-type:none;
+}

@@ -3,66 +3,89 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>See the Molecule new generation</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-  </style>
+  <title>STMng documentation</title>
   <link rel="stylesheet" href="style.css" />
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
+	<link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-<header id="title-block-header">
+<header>
 <h1 class="title">STMng documentation</h1>
-<div class="abstract">
-See The Molecule new generation (STMng) is a visualization tool
+<p>
+See The Molecule new generation (STMng) is a chemical and crystallographic structures visualization tool
 that implements some of the STM4 functionalities.
-</div>
+</p>
 </header>
 <details>
-  <summary>Modules</summary>
-  <p><a href="modules/structure-reader.html">Structure Reader</a>: read the file containing
-    one or more atomic structures</p>
-  <p><a href="modules/draw-structure.html">Draw Structure</a>: render an atomic structure</p>
-  <p><a href="modules/draw-unit-cell.html">Draw Unit Cell</a>: render an atomic structure</p>
-  <p><a href="modules/draw-polyhedra.html">Draw Polyhedra</a>: draw a convex hull around atoms</p>
-  <p><a href="modules/chart-viewer.html">Chart Dialog</a>: open a window showing a chart</p>
-  <p><a href="modules/viewer-3d.html">Viewer 3D</a>: the viewer frame</p>
-  <p><a href="modules/capture-view.html">Capture view</a>: capture the viewer content as snapshot or movie</p>
-  <p><a href="modules/compute-symmetries.html">Compute symmetries</a>: find and apply symmetries to the structure</p>
-  <p><a href="modules/compute-bonds.html">Compute bonds</a>: add bonds to the given structure</p>
+  <summary>General information</summary>
+  <table>
+    <tr><td class="m1"><a href="general/formats.html">Supported formats</a></td>
+        <td>The file formats read by STMng.</td></tr>
+  </table>
+</details>
+<details>
+  <summary>Nodes</summary>
+  <table>
+    <tr><td class="m1"><a href="nodes/structure-reader.html">Structure Reader</a></td>
+        <td>Read a file containing one or more atomic structures.</td></tr>
+    <tr><td><a href="nodes/draw-structure.html">Draw Structure</a></td>
+        <td>Transform the atomic structure data into graphic objects for display.</td></tr>
+    <tr><td><a href="nodes/draw-unit-cell.html">Draw Unit Cell</a></td>
+        <td>Draw unit cell and supercell. Compute supercell structure.</td></tr>
+    <tr><td><a href="nodes/draw-polyhedra.html">Draw Polyhedra</a></td>
+        <td>Draw a convex hull around atoms</td></tr>
+    <tr><td><a href="nodes/chart-viewer.html">Chart Dialog</a></td>
+        <td>Open a window showing a chart. (experimental)</td></tr>
+    <tr><td><a href="nodes/viewer-3d.html">Viewer 3D</a></td>
+        <td>The viewer frame.</td></tr>
+    <tr><td><a href="nodes/capture-view.html">Capture view</a></td>
+        <td>Capture the viewer content as snapshot or movie.</td></tr>
+    <tr><td><a href="nodes/compute-symmetries.html">Compute symmetries</a></td>
+        <td>Find and apply symmetries to the structure.</td></tr>
+    <tr><td><a href="nodes/compute-bonds.html">Compute bonds</a></td>
+        <td>Add bonds to the given atomic structure.</td></tr>
+  </table>
 </details>
 <details>
   <summary>Old STM4 documentation</summary>
-  <p>Here the old STM4 documentation pages could be accessed.</p>
+  <p>Here are the old STM4 documentation pages related to the new nodes.</p>
+  <table>
+    <tr><td class="m1"><a href="stm4/Read_Structure.html">Read Structure</a></td>
+        <td>Read structural and volumetric chemical data.</td></tr>
+    <tr><td><a href="stm4/Compute_Bonds.html">Compute Bonds</a></td>
+        <td>Compute atomic bonds.</td></tr>
+    <tr><td><a href="stm4/Draw_Structure.html">Draw Structure</a></td>
+        <td>Transform the molecule structure data into graphic objects for display.</td></tr>
+    <tr><td><a href="stm4/Display_Unit_Cell.html">Display Unit Cell</a></td>
+        <td>Displays the borders of the unit cell.</td></tr>
+    <tr><td><a href="stm4/Replicate_Lattice.html">Replicate Lattice</a></td>
+        <td>Replicate the molecule unit cell along the three base vectors.</td></tr>
+  </table>
 </details>
 <details>
   <summary>Project</summary>
-  <p>This is the description of the modules used and their interconnections.</p>
-  <p>The project or default project will be automatically loaded on application start. The project file could be loaded on the command line.</p>
+  <p>The <b>project</b> is the description of the nodes used, their interconnections
+  and their parameters.</p>
+  <p>The nodes provided by the project have their UI visible in the UI section of the screen.</p>
+  <p>The application comes with an hardcoded project, called <b>default project,</b>
+  that contains all the nodes shipped. It cannot be changed, but can be saved and edited.</p>
+  <p>The project or the default project is automatically loaded on application start.
+  The project file could also be loaded on the command line.</p>
   <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
   with the following content:</p>
   <ul>
     <li><b>graph</b> List the loaded nodes and their interconnections</li>
-    <li><b>viewer</b> Optional section to collect the viewer parameters</li>
+    <li><b>viewer</b> Optional section to collect the viewer 3D parameters</li>
     <li><b>ui</b> Optional section to collect the parameters for each node</li>
     <li><b>currentId</b> Optional parameter to set the initial ui panel to this node key.</li>
   </ul>
   <h2>Graph content</h2>
-  <p>This section is a JSON record with key an unique identifier of the module</p>
-  <p>The graph record content</p>
+  <p>This section is a JSON record using as key the unique identifier of the node with the following content:</p>
   <ul>
     <li><b>label:</b> The label that appear in the UI selection panel</li>
     <li><b>type:</b> The type of node, that is its functionality.</li>
-    <li><b>in:</b> (optional) The id of the node from which this node takes the input. It is missing if the node has no input or it the input come from the graphical scene.</li>
+    <li><b>in:</b> (optional) The comma separated list of id of the nodes from which this node takes the input. It is missing if the node has no input or it the input come from the graphical scene.</li>
   </ul>
+  <p>The graph structure could be seen using the <b>File → Show project</b> menu entry. Here the solid lines show the data connections between nodes. The dotted lines instead show the graphical objects going to the viewer.</p>
 </details>
 <details>
   <summary>Shortcuts</summary>

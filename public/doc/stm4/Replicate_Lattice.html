@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-us"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Organization" content="Swiss National Supercomputing Centre, Switzerland">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="STM4 module Replicate_Lattice documentation">
+  <meta name="keywords" content="AVS,AVS/Express,STM4">
+  <meta name="copyright" content="Copyright 1999-2012 by CSCS-ETH Zurich">
+
+  <title>Replicate Lattice</title>
+
+  <link rel="stylesheet" href="stm4.css" type="text/css">
+
+</head><body>
+
+<h1>Replicate Lattice</h1>
+
+<h2>Description</h2>
+<p>Replicate the molecule unit cell along the three base vectors. It removes duplicated atoms, ie. atoms that due to duplication coincide with
+existing ones. Optionally recompute bonds and display the replicated unit cell borders.</p>
+<p>If a Cube volumetric data is present, it is replicated also.</p>
+
+<h2>Input Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">structure_in</td>
+	<td class="c2"><a href="MoleculeType.html">MoleculeType</a></td>
+	<td class="c3">Molecular structure data with unit cell information.</td>
+</tr>
+<tr>
+	<td class="c1">cube_in</td>
+	<td class="c2">Field_Unif</td>
+	<td class="c3">The cube data. Beware that the uniform field has been skewed, using xform, to match the unit cell.</td>
+</tr>
+</table>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">base vector a (or b or c)</td>
+	<td class="c2">slider</td>
+	<td class="c3">Number of replications along the indicated unit cell base vector.</td>
+</tr>
+<tr>
+	<td class="c1">reverse</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Reverse the direction of replication along the corresponding unit cell base vector.</td>
+</tr>
+<tr>
+	<td class="c1">Unit Cell borders</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select how the unit cell borders are rendered on screen:
+	<dl>
+	<dt>No Unit Cell</dt>
+		<dd>No unit cell borders are visible</dd>
+	<dt>Single Unit Cell</dt>
+		<dd>Only the base (unreplicated) unit cell is visible</dd>
+	<dt>Line Replications</dt>
+		<dd>The borders of the base and replicated unit cells are rendered with lines</dd>
+	<dt>Dashed Replications</dt>
+		<dd>The borders of the replicated unit cells are rendered with dashed lines,
+		the base one is rendered with solid lines</dd>
+	</dl></td>
+</tr>
+<tr>
+	<td class="c1">Black</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If set draw the unit cell borders black, otherwise white.</td>
+</tr>
+<tr>
+	<td class="c1">Shift back</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If set moves the origin of the unit cell back from the center of the true unit cell back to the correct origin.</td>
+</tr>
+<tr>
+	<td class="c1">Replicate Lattice Bonds</td>
+	<td class="c2">The <a href="Compute_Bonds.html">Compute Bonds</a> module</td>
+	<td class="c3">Recompute bonds.</td>
+</tr>
+</table>
+
+<h2>Output Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">replicated_structure</td>
+	<td class="c2"><a href="MoleculeType.html">MoleculeType</a></td>
+	<td class="c3">Replicated structure data.</td>
+</tr>
+<tr>
+	<td class="c1">replicated_cube</td>
+	<td class="c2">Field_Unif</td>
+	<td class="c3">The replicated cube data. Beware that the uniform field has been skewed, using xform, to match the replicated unit cell.</td>
+</tr>
+<tr>
+	<td class="c1">unit_cell</td>
+	<td class="c2">DefaultObject</td>
+	<td class="c3">The renderable version of the replicated unit cells. The node data is set to RGB white or black.</td>
+</tr>
+</table>
+
+<h2>See also</h2>
+<ul>
+	<li><a href="Display_Unit_Cell.html">Display a single copy of the Unit Cell</a>.</li>
+	<li><a href="Read_Structure.html">Read Structure</a> for the list of formats that support the Unit Cell definition.</li>
+</ul>
+
+<h2>Limitations</h2>
+<p>It is not entirely clear how to replicate volumetric data.
+The interpretation implemented could be changed by a compile time constant.</p>
+
+<div class="back"><a href="../index.html" class="back">Return to index</a></div>
+</body></html>
