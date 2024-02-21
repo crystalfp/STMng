@@ -6,7 +6,7 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure, Atom, Bond} from "@/types";
 
-// The H bonds forms when X___H...Y and X, Y are N, O, F (maybe also S)
+// The H bonds form when X___H...Y and X, Y are N, O, F (maybe also S)
 const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
 
 /**
@@ -42,6 +42,7 @@ export class ComputeBonds {
 	private maxHBondingDistance = 3.00;
 	private maxHValenceAngle    = 30;
 	private enableComputeBonds  = true;
+	private bondScale           = 1.1;
 
 	/**
 	 * Create the node
@@ -58,6 +59,7 @@ export class ComputeBonds {
     		this.maxBondingDistance  = params.maxBondingDistance as number ?? 4.50;
     		this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
     		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
+    		this.bondScale    		 = params.bondScale as number ?? 1.1;
 
 			this.addBonds();
 		});
@@ -109,7 +111,7 @@ export class ComputeBonds {
 		// The computed bonds
 		const bonds: Bond[] = [];
 
-		const {maxHValenceAngle, minBondingDistance, maxBondingDistance, maxHBondingDistance} = this;
+		const {maxHValenceAngle, minBondingDistance, maxBondingDistance, maxHBondingDistance, bondScale} = this;
 
 		// Minimum covalent radius is 0.32 for He, so no bond shorter than .64 could exist
 		const minDistanceSquared = minBondingDistance*minBondingDistance;
@@ -148,13 +150,13 @@ export class ComputeBonds {
 
 				if(distSquared < minDistanceSquared || distSquared > maxDistanceSquared) continue;
 
-				const sumRcov = rCi + rCj;
+				const sumRcov = (rCi + rCj)*bondScale;
 				const sumRcovSquared = sumRcov*sumRcov;
 
 				// Check for H-bond
 				if(computeHBonds &&
-				((atomZi === 1 && atomForHBond(atomZj)) || (atomZj === 1 && atomForHBond(atomZi))) &&
-				(distSquared <= maxDistanceHbondSquared) && (distSquared > sumRcovSquared)) {
+				   ((atomZi === 1 && atomForHBond(atomZj)) || (atomZj === 1 && atomForHBond(atomZi))) &&
+				   (distSquared <= maxDistanceHbondSquared) && (distSquared > sumRcovSquared)) {
 
 					bonds.push({from: i, to: j, type: "h"});
 				}
@@ -259,6 +261,7 @@ export class ComputeBonds {
 			maxBondingDistance:  this.maxBondingDistance,
 			maxHBondingDistance: this.maxHBondingDistance,
 			maxHValenceAngle:    this.maxHValenceAngle,
+			bondScale:			 this.bondScale,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

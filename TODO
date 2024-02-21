@@ -8,7 +8,7 @@ ToDo:
   ☐ Add show log function
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Check if needed to use `onUnmonted` to stop listeners and timers
-  ✔ Add CIF reader @done(2024-02-21 06:51)
+  ☐ Remove realign camera at every step of a sequence
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
@@ -17,8 +17,6 @@ Bugs:
 Requests from Oganov:
   ☐ Charge maps
   ☐ New polyhedra
-  ✔ Put capture movie start in reader also @done(2024-02-19 06:46)
-  ☐ Change compute bonds not changing min/max but scale of sum rCov
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
@@ -27,6 +25,9 @@ Nice to have/Future:
   ☐ Use CIF parser <https://github.com/stur86/crystcif-parse>
 
 Archive:
+  ✔ Change compute bonds not changing min/max but scale of sum rCov @done(2024-02-21 08:08) @project(Requests from Oganov)
+  ✔ Add CIF reader @done(2024-02-21 06:51)
+  ✔ Put capture movie start in reader also @done(2024-02-19 06:46) @project(Requests from Oganov)
   ✔ Establish shortcuts @done(2024-02-17 08:15)
   ✔ Show graph (maybe edit too) @done(2024-02-18 19:16)
   ✔ Load a project, load default project → The menu save entry is enabled @done(2024-02-16 15:34) @project(Bugs)
