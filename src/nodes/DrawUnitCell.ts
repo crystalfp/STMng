@@ -108,7 +108,7 @@ export class DrawUnitCell {
 		sm.clearGroup(this.nameUC);
 
 		// If no unit cell return
-		if(!basis.some((value) => value !== 0)) return;
+		if(basis.every((value) => value === 0)) return;
 
 		// Vertices coordinates (bottom then top)
     	const vertices = new Float32Array([
@@ -211,7 +211,7 @@ export class DrawUnitCell {
 		sm.clearGroup(this.nameSC);
 
 		// If no unit cell return
-		if(!basis.some((value) => value !== 0)) return;
+		if(basis.every((value) => value === 0)) return;
 
 		// If no supercell return
 		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1) return;
@@ -338,8 +338,7 @@ export class DrawUnitCell {
 		// Remove duplicated
 		const tol = 1e-5;
 		const outAtoms = atoms.length;
-		const duplicated = Array(outAtoms) as boolean[];
-		for(let i=0; i < outAtoms; ++i) duplicated[i] = false;
+		const duplicated = Array(outAtoms).fill(false) as boolean[];
 		for(let i=0; i < outAtoms-1; ++i) {
 			if(duplicated[i]) continue;
 			for(let j=i+1; j < outAtoms; ++j) {

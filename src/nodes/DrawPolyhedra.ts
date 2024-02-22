@@ -98,8 +98,7 @@ export class DrawPolyhedra {
 		}
 
 		// Mark all the vertices as not visited
-		const visited = Array(natoms) as boolean[];
-		for(let i = 0; i < natoms; i++) visited[i] = false;
+		const visited = Array(natoms).fill(false) as boolean[];
 
 		const islands: number[][] = [];
 

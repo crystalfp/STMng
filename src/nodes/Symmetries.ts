@@ -90,7 +90,7 @@ export class Symmetries {
 		resetErrorNotification("symmetries");
 
 		// If input structure has no unit cell, disable find symmetries
-		if(!this.inputStructure!.crystal.basis.some((value) => value !== 0)) {
+		if(this.inputStructure!.crystal.basis.every((value) => value === 0)) {
 
 			sb.setData(this.id, this.inputStructure!);
 			sb.setUiParams(this.id, {
@@ -186,7 +186,7 @@ export class Symmetries {
 		}
 
 		// If has no unit cell, do nothing
-		if(!structure.crystal?.basis?.some((value) => value !== 0)) {
+		if(structure.crystal?.basis === undefined || structure.crystal.basis.every((value) => value === 0)) {
 
 			sb.setData(this.id, structure);
 			return;
@@ -270,7 +270,7 @@ export class Symmetries {
 
 		// For each atom compute the fractional coordinates
 		const natoms = structure.atoms.length;
-		const fractionalCoords = Array(natoms*3) as number[];
+		const fractionalCoords = Array(natoms*3).fill(0) as number[];
 
 		this.atomIdx.length = natoms;
 
@@ -334,7 +334,7 @@ export class Symmetries {
 		const tol = 1e-3;
 
 		const natoms = this.fractionalCoords.length/3;
-		const direction = Array(natoms) as number[];
+		const direction = Array(natoms).fill(0) as number[];
 		for(let i=0; i < natoms; ++i) {
 
 			const xf = this.fractionalCoords[i*3+0];
@@ -342,9 +342,8 @@ export class Symmetries {
 			const zf = this.fractionalCoords[i*3+2];
 
 			// Mark atoms exactly on the border
-			if(xf < tol && xf > -tol)          	direction[i] = X_MIN|X_ANY;
-			else if(xf > 1-tol && xf < 1+tol)	direction[i] = X_MAX|X_ANY;
-			else                  				direction[i] = 0;
+			if(xf < tol && xf > -tol)          	direction[i]  = X_MIN|X_ANY;
+			else if(xf > 1-tol && xf < 1+tol)	direction[i]  = X_MAX|X_ANY;
 			if(yf < tol && yf > -tol)			direction[i] |= Y_MIN|Y_ANY;
 			else if(yf > 1-tol && yf < 1+tol)	direction[i] |= Y_MAX|Y_ANY;
 			if(zf < tol && zf > -tol)			direction[i] |= Z_MIN|Z_ANY;
@@ -352,7 +351,7 @@ export class Symmetries {
 		}
 
 		// No atoms to add. Do nothing
-		if(!direction.some((value) => value !== 0)) return;
+		if(direction.every((value) => value === 0)) return;
 
 		// Replicate the original atoms
 		const fc = this.fractionalCoords;
@@ -485,8 +484,7 @@ export class Symmetries {
 		const tol = 1e-5;
 		const fc = this.fractionalCoords;
 		const nfatoms = fc.length / 3;
-		const duplicated = Array(nfatoms) as boolean[];
-		for(let i=0; i < nfatoms; ++i) duplicated[i] = false;
+		const duplicated = Array(nfatoms).fill(false) as boolean[];
 		for(let i=0; i < nfatoms-1; ++i) {
 			if(duplicated[i]) continue;
 			for(let j=i+1; j < nfatoms; ++j) {
