@@ -19,64 +19,102 @@ export const setupSceneHelpers = (): void => {
 	// Access the stores
 	const configStore = useConfigStore();
 
-	let gridXZ = gridHelper("XZ", configStore.helpers.gridSize);
-	sm.add(gridXZ);
-	let gridXY = gridHelper("XY", configStore.helpers.gridSize);
-	sm.add(gridXY);
-	let gridYZ = gridHelper("YZ", configStore.helpers.gridSize);
-	sm.add(gridYZ);
-	const axis = new THREE.Group();
-	axis.name = "AxisHelper";
-	sm.add(axis);
-	axisHelper(axis, configStore.helpers.axisLength);
-
 	watchEffect(() => {
 
-		gridXZ.visible = configStore.helpers.showGridXZ;
-		gridXY.visible = configStore.helpers.showGridXY;
-		gridYZ.visible = configStore.helpers.showGridYZ;
-		axis.visible   = configStore.helpers.showAxis;
-
+		// Access the scene
 		const {scene} = sm;
 
-		if(configStore.helpers.axisLength !== axisLengthPrevious) {
+		// Manage axis helper
+		let axis = scene.getObjectByName("AxisHelper") as THREE.Group;
+		if(configStore.helpers.showAxis) {
 
-			const obj =  scene.getObjectByName("AxisHelper") as THREE.Group;
-			if(obj) {
-				obj.clear();
-				axisHelper(obj, configStore.helpers.axisLength);
+			if(axis) {
+				axis.visible = true;
+				if(configStore.helpers.axisLength !== axisLengthPrevious) {
+					axis.clear();
+					axisHelper(axis, configStore.helpers.axisLength);
+					axisLengthPrevious = configStore.helpers.axisLength;
+				}
 			}
-			axisLengthPrevious = configStore.helpers.axisLength;
+			else {
+				axis = new THREE.Group();
+				axis.name = "AxisHelper";
+				scene.add(axis);
+				axis.visible = true;
+				axisHelper(axis, configStore.helpers.axisLength);
+				axisLengthPrevious = configStore.helpers.axisLength;
+			}
 		}
+		else if(axis) axis.visible = false;
 
-		if(configStore.helpers.gridSize !== sidePrevious) {
-
-			let obj = scene.getObjectByName("GridHelperXZ") as THREE.GridHelper;
-			if(obj) {
-				scene.remove(obj);
-				obj.dispose();
+		// Manage XZ helper plane
+		let gridXZ = scene.getObjectByName("GridHelperXZ") as THREE.GridHelper;
+		if(configStore.helpers.showGridXZ) {
+			if(gridXZ) {
+				gridXZ.visible = true;
+				if(configStore.helpers.gridSize !== sidePrevious) {
+					scene.remove(gridXZ);
+					gridXZ.dispose();
+					gridXZ = gridHelper("XZ", configStore.helpers.gridSize);
+					gridXZ.visible = true;
+					scene.add(gridXZ);
+					sidePrevious = configStore.helpers.gridSize;
+				}
+			}
+			else {
 				gridXZ = gridHelper("XZ", configStore.helpers.gridSize);
-				gridXZ.visible = configStore.helpers.showGridXZ;
+				gridXZ.visible = true;
 				scene.add(gridXZ);
+				sidePrevious = configStore.helpers.gridSize;
 			}
-			obj = scene.getObjectByName("GridHelperXY") as THREE.GridHelper;
-			if(obj) {
-				scene.remove(obj);
-				obj.dispose();
-				gridXY = gridHelper("XY", configStore.helpers.gridSize);
-				gridXY.visible = configStore.helpers.showGridXY;
-				scene.add(gridXY);
-			}
-			obj = scene.getObjectByName("GridHelperYZ") as THREE.GridHelper;
-			if(obj) {
-				scene.remove(obj);
-				obj.dispose();
-				gridYZ = gridHelper("YZ", configStore.helpers.gridSize);
-				gridYZ.visible = configStore.helpers.showGridYZ;
-				scene.add(gridYZ);
-			}
-			sidePrevious = configStore.helpers.gridSize;
 		}
+		else if(gridXZ) gridXZ.visible = false;
+
+		// Manage XY helper plane
+		let gridXY = scene.getObjectByName("GridHelperXY") as THREE.GridHelper;
+		if(configStore.helpers.showGridXY) {
+			if(gridXY) {
+				gridXY.visible = true;
+				if(configStore.helpers.gridSize !== sidePrevious) {
+					scene.remove(gridXY);
+					gridXY.dispose();
+					gridXY = gridHelper("XY", configStore.helpers.gridSize);
+					gridXY.visible = true;
+					scene.add(gridXY);
+					sidePrevious = configStore.helpers.gridSize;
+				}
+			}
+			else {
+				gridXY = gridHelper("XY", configStore.helpers.gridSize);
+				gridXY.visible = true;
+				scene.add(gridXY);
+				sidePrevious = configStore.helpers.gridSize;
+			}
+		}
+		else if(gridXY) gridXY.visible = false;
+
+		// Manage YZ helper plane
+		let gridYZ = scene.getObjectByName("GridHelperYZ") as THREE.GridHelper;
+		if(configStore.helpers.showGridYZ) {
+			if(gridYZ) {
+				gridYZ.visible = true;
+				if(configStore.helpers.gridSize !== sidePrevious) {
+					scene.remove(gridYZ);
+					gridYZ.dispose();
+					gridYZ = gridHelper("YZ", configStore.helpers.gridSize);
+					gridYZ.visible = true;
+					scene.add(gridYZ);
+					sidePrevious = configStore.helpers.gridSize;
+				}
+			}
+			else {
+				gridYZ = gridHelper("YZ", configStore.helpers.gridSize);
+				gridYZ.visible = true;
+				scene.add(gridYZ);
+				sidePrevious = configStore.helpers.gridSize;
+			}
+		}
+		else if(gridYZ) gridYZ.visible = false;
 	});
 };
 

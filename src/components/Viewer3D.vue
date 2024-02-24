@@ -12,7 +12,7 @@ import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
 import {saveDataURL, saveMovie} from "@/services/RoutesClient";
-import {fitCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
+import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import type {MainResponse} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
@@ -184,7 +184,14 @@ onMounted(() => {
                 break;
         }
     });
-    controls.addEventListener("controlend", () => {
+    // controls.addEventListener("controlend", () => {
+    //     configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
+    //             console.log("POSITION*:",
+    //                 cameraOrthographic.position.x,
+    //                 cameraOrthographic.position.y,
+    //                 cameraOrthographic.position.z);
+    // });
+    controls.addEventListener("sleep", () => {
         configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
     });
 
@@ -208,34 +215,23 @@ onMounted(() => {
         controls.camera = camera;
     });
 
-    // Reset camera
+    // Reset camera on request or when the scene objects change
     watchEffect(() => {
+
         if(configStore.control.reset) {
 
             configStore.control.reset = false;
-
-            if(configStore.camera.type === "perspective") {
-
-                cameraPerspective.zoom = 1;
-                fitCameraToObject(cameraPerspective, controls);
-                copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
-                cameraOrthographic.updateProjectionMatrix();
-            }
-            else {
-                fitOrthographicCameraToObject(cameraOrthographic, controls);
-            }
         }
-    });
 
-    // Set the camera target point as loaded by the structure rendering node
-    watchEffect(() => {
+        if(configStore.camera.type === "perspective") {
 
-        cameraPerspective.zoom = 1;
-        fitCameraToObject(cameraPerspective, controls);
-        fitOrthographicCameraToObject(cameraOrthographic, controls);
-
-        // copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
-        // cameraOrthographic.updateProjectionMatrix();
+            fitPerspectiveCameraToObject(cameraPerspective, controls);
+            copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+            cameraOrthographic.updateProjectionMatrix();
+        }
+        else {
+            fitOrthographicCameraToObject(cameraOrthographic, controls);
+        }
     });
 
     // Take snapshot

@@ -11,6 +11,7 @@ import {projectIsValid} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
+import {sm} from "@/services/SceneManager";
 
 export type UiParams = Record<string, string | number | boolean>;
 
@@ -79,6 +80,9 @@ class Switchboard {
 			this.mapIdToType.clear();
 			this.mapIdToCode.clear();
 			this.mapIdToInputs.clear();
+
+			// Clear the scene
+			sm.clearScene();
 
 			// Access the store
 			const switchboardStore = useSwitchboardStore();

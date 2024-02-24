@@ -62,7 +62,8 @@ const readFileStructure = async (filename: string,
 	}
 
 	if(requestedFormat === "POSCAR") {
-		const atoms = atomsTypes.trim().split(/ +/);
+		const atomsTypesTrimmed = atomsTypes.trim();
+		const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
 		const structures1 = await reader.readStructure(filename, atoms);
 		const file1 = path.basename(filename);
 		return checkStructures(structures1) ?

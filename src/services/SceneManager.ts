@@ -30,6 +30,18 @@ class SceneManager {
 	}
 
 	/**
+	 * Clear the scene of all graphical objects
+	 */
+	clearScene(): void {
+
+		SceneManager.scene.traverse((object) => {
+
+			if(["AmbientLight", "DirectionalLight", "Scene"].includes(object.type)) return;
+			object.clear();
+		});
+	}
+
+	/**
 	 * Empty a group with the given name
 	 *
 	 * @param groupName - Name of the group to be cleared
@@ -118,7 +130,6 @@ class SceneManager {
 			light3.color = new THREE.Color(configStore.lights.directional3Color);
 			light3.position.set(...configStore.lights.directional3Position);
 		});
-
 
 		// Add ambient light
 		const ambient = new THREE.AmbientLight(configStore.lights.ambientColor,
