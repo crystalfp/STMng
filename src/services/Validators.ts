@@ -1,6 +1,7 @@
 import {minLength, object, safeParse, string, optional, record, union, number, boolean} from "valibot";
 import type {Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
+import {sb} from "@/services/Switchboard";
 
 // {
 // "graph": {
@@ -45,12 +46,13 @@ export const projectIsValid = (prj: Project): boolean => {
 		return false;
 	}
 
-	// Check the IDs
-	return checkIds(prj);
+	// Check IDs and types
+	return checkIds(prj) && checkTypes(prj);
 };
 
+// > Check node IDs in the project
 /**
- * Check id in the project
+ * Check node IDs in the project
  *
  * @param prj - The project
  * @returns True if there are no problems with the id of the modules
@@ -79,5 +81,26 @@ const checkIds = (prj: Project): boolean => {
 		}
 	}
 
+	return true;
+};
+
+// > Verify node types
+/**
+ * Verify node types
+ *
+ * @param prj - The project under check
+ * @returns True if the types of the nodes are valid
+ */
+const checkTypes = (prj: Project): boolean => {
+
+	for(const id in prj.graph) {
+
+		const {type} = prj.graph[id];
+		if(!sb.checkType(type)) {
+
+			showErrorNotification(`Node type "${type}" does not exist`);
+			return false;
+		}
+	}
 	return true;
 };

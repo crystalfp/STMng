@@ -7,7 +7,6 @@
 import {ref, onMounted} from "vue";
 import {closeWindow, receiveInWindow,
         receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
-import {showErrorNotification} from "@/services/ErrorNotification";
 import type {Project, ProjectGraph} from "@/types";
 import {sb} from "@/services/Switchboard";
 
@@ -33,9 +32,6 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
 });
 
 let graph: ProjectGraph;
-
-// Reference to the view
-const svg = ref<SVGElement | null>(null);
 
 /** Information about a node */
 interface NodeType {
@@ -258,11 +254,6 @@ const edges = ref<EdgeType[]>([]);
 
 onMounted(() => {
 
-    if(!svg.value) {
-        showErrorNotification("Cannot create graph editor/viewer.");
-        return;
-    }
-
     // When the loaded project changes
     receiveInWindow((data) => {
 
@@ -294,12 +285,16 @@ const showInfo = ref(false);
 const infoContent = ref<{label: string; value: string}[]>([]);
 
 /**
- * Show the data pertaining to a node
+ * Show the data pertaining to a node and toggle its visibility
  *
  * @param key - Key of the selected node
  */
 const selectNode = (key: string): void => {
 
+    if(showInfo.value) {
+        showInfo.value = false;
+        return;
+    }
     showInfo.value = true;
     const node = graph[key];
     infoContent.value.length = 0;
@@ -317,10 +312,9 @@ const selectNode = (key: string): void => {
 <v-app :theme="theme">
 <div class="graph-editor-portal">
   <div class="graph-editor-container">
-    <svg ref="svg" width="2500" height="3000" x="0" y="0" viewBox="0 0 2500 3000"
-    	   xmlns="http://www.w3.org/2000/svg">
+    <svg width="2500" height="3000" x="0" y="0" viewBox="0 0 2500 3000"
+    	 xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- Arrows -->
         <marker id="arrow" markerWidth="6" markerHeight="4" refX="4" refY="2"
                 orient="auto" markerUnits="strokeWidth">
           <polygon points="0,0 0,4 6,2" :fill="line" />
@@ -380,8 +374,6 @@ const selectNode = (key: string): void => {
 
 // > Colors
 $node-selected-color: #FF0;
-// $node-hover-color: #0F0;
-$node-label-font: Verdana,Arial,Helvetica,Geneva,'DejaVu Sans',sans-serif;
 
 // > Node
 .border {
@@ -407,10 +399,8 @@ $node-label-font: Verdana,Arial,Helvetica,Geneva,'DejaVu Sans',sans-serif;
 // > Text field
 .label {
   fill: v-bind(line);
-  font: {
-    size: 1rem;
-    family: $node-label-font;
-  }
+  font-size: 1.1rem;
+  user-select: none;
 }
 
 </style>

@@ -57,7 +57,7 @@ export class NodeInfo {
 	 * @param node - Node in the graph
 	 * @returns Info about the node
 	 */
-	getUICode(id: string, node: GraphNode): NodeUI | undefined {
+	getNodeUI(id: string, node: GraphNode): NodeUI | undefined {
 
 		const info = this.typeToParts.get(node.type);
 		return info ? {id, ui: info.ui, label: node.label, in: node.in} : undefined;
@@ -255,5 +255,15 @@ export class NodeInfo {
 	generatesGraphics(type: string): boolean {
 		const nodeParts = NodeInfo.typeToPartsRecord[type];
 		return nodeParts?.graphic === "out";
+	}
+
+	/**
+	 * Check node type existence
+	 *
+	 * @param type - Node type to check
+	 * @returns True if the node type exists
+	 */
+	checkType(type: string): boolean {
+		return this.typeToParts.has(type);
 	}
 }

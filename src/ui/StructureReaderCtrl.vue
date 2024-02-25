@@ -179,7 +179,7 @@ const setFormat = (changedFormat: string): void => {
     <v-label class="underlined-label">{{ format }}</v-label>
   </v-row>
   <v-container v-if="format === 'POSCAR'" class="pl-0 mb-5 pt-3">
-    <v-text-field v-model="atomsTypes" label="Atoms types"
+    <v-text-field v-model="atomsTypes" label="Atoms types" placeholder="Space separated types list"
                   variant="solo-filled" hide-details="auto" clearable />
   </v-container>
   <v-row>
@@ -220,6 +220,6 @@ const setFormat = (changedFormat: string): void => {
 .underlined-label {
   margin-left: 10px;
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
-  width: 60%
+  width: 62%
 }
 </style>

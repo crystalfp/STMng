@@ -100,7 +100,7 @@ class Switchboard {
 				this.mapIdToType.set(id, node.type);
 
 				// Access the UI for the module
-				const nodeUI = this.nodeInfo.getUICode(id, node);
+				const nodeUI = this.nodeInfo.getNodeUI(id, node);
 				if(nodeUI) this.nodesUI.push(nodeUI);
 
 				// Prepare the params area for the module
@@ -300,6 +300,16 @@ class Switchboard {
 	getViewerType(): string {
 
 		return this.nodeInfo.getViewerType();
+	}
+
+	/**
+	 * Check node type existence
+	 *
+	 * @param type - Node type to check
+	 * @returns True if the node type exists
+	 */
+	checkType(type: string): boolean {
+		return this.nodeInfo.checkType(type);
 	}
 
 	// > Access the singleton instance
