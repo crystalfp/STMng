@@ -1,0 +1,11 @@
+{
+	"graph": {
+		"reader": 	 {"label": "Reader", 	 "type": "structure-reader"},
+		"symmetry":  {"label": "Symmetries", "type": "compute-symmetries", "in": "reader"},
+		"unit":   	 {"label": "Cell",   	 "type": "draw-unit-cell",     "in": "symmetry"},
+		"bonds":	 {"label": "Bonds",		 "type": "compute-bonds",	   "in": "unit"},
+		"draw":   	 {"label": "Render",     "type": "draw-structure",     "in": "bonds"},
+		"polyhedra": {"label": "Polyhedra",  "type": "draw-polyhedra",     "in": "bonds"},
+		"viewer": 	 {"label": "Viewer", 	 "type": "viewer-3d"}
+	}
+}

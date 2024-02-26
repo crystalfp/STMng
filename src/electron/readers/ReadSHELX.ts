@@ -1,5 +1,5 @@
 /**
- * Reader for ShelX formatted files
+ * Reader for Shel-X formatted files
  *
  * @packageDocumentation
  */

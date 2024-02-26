@@ -43,7 +43,7 @@ const readFileStructure = async (filename: string,
 			case "XYZ":
 				reader = new ReaderXYZ();
 				break;
-			case "ShelX":
+			case "Shel-X":
 				reader = new ReaderSHELX();
 				break;
 			case "POSCAR":
@@ -111,8 +111,8 @@ export const setupChannelReader = (): void => {
 				filters = [{name: "POSCAR",	extensions: ["poscar", "poscars", "*"]},
 						   {name: "All",	extensions: ["*"]}];
 				break;
-			case "ShelX":
-				filters = [{name: "ShelX",	extensions: ["ins", "res"]},
+			case "Shel-X":
+				filters = [{name: "Shel-X",	extensions: ["ins", "res"]},
 						   {name: "All",	extensions: ["*"]}];
 				break;
 			case "XYZ":

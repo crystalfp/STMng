@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="author" content="Mario Valle">
-  <meta name="Description" content="Chemistry files formats supported by STMg visualization tool"/>
+  <meta name="Description" content="Chemistry files formats supported by STMng visualization tool"/>
   <meta name="keywords" content="STMng,chemistry visualization">
-	<meta name="date" content="2024-02-20"/>
+  <meta name="date" content="2024-02-20"/>
   <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
-	<meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
-	<meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
   <link rel="stylesheet" href="../style.css" type="text/css">
-	<link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
   <title>STMng — supported file formats</title>
@@ -20,8 +20,52 @@
 <h1>STMng — supported file formats</h1>
 <table style="width:98.7%;margin-top: 2em; margin-left: 14px">
 <tr>
-    <th>Name</th>
-    <th style="width:12em;text-align:left">Extension</th>
+    <th style="width:18em;text-align:left">Name</th>
+    <th style="width:12em;text-align:left">File selector</th>
+    <th style="width:3em;text-align:left">RW</th>
+    <th style="width:4em;text-align:left">Volume</th>
+    <th>Description</th>
+    <th style="width:4.5em;text-align:left">Notes</th>
+</tr>
+<tr>
+    <td>CIF</td>
+    <td>*.cif</td>
+    <td>RW</td>
+    <td></td>
+    <td>Crystallographic Information File</td>
+    <td><a href="http://www.iucr.org/iucr-top/cif/">ref</a></td>
+</tr>
+<tr>
+    <td>VASP Poscar</td>
+    <td>*POSCAR*</td>
+    <td>RW</td>
+    <td></td>
+    <td>VASP, also as concatenated file</td>
+    <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a> <a href="#note7">7</a></td>
+</tr>
+<tr>
+    <td>Shel-X</td>
+    <td>*.res</td>
+    <td>R</td>
+    <td></td>
+    <td>Shel-X crystallography program</td>
+    <td><a href="http://shelx.uni-ac.gwdg.de/SHELX/index.php">site</a></td>
+</tr>
+<tr>
+    <td>XYZ (Kino)</td>
+    <td>*.xyz</td>
+    <td>RW</td>
+    <td></td>
+    <td>The simple xyz format, animated also</td>
+    <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/xyzplugin.html">ref</a></td>
+</tr>
+</table>
+
+<h1>File formats from STM4 not (yet) supported</h1>
+<table style="width:98.7%;margin-top: 2em; margin-left: 14px">
+<tr>
+    <th style="width:18em;text-align:left">Name</th>
+    <th style="width:12em;text-align:left">File selector</th>
     <th style="width:3em;text-align:left">RW</th>
     <th style="width:4em;text-align:left">Volume</th>
     <th>Description</th>
@@ -42,14 +86,6 @@
     <td>Yes</td>
     <td>VASP format containing also volume data</td>
     <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/vaspplugin.html">ref</a> <a href="#note1">1</a></td>
-</tr>
-<tr>
-    <td>CIF</td>
-    <td>*.cif</td>
-    <td>RW</td>
-    <td></td>
-    <td>Crystallographic Information File</td>
-    <td><a href="http://www.iucr.org/iucr-top/cif/">ref</a></td>
 </tr>
 <tr>
     <td>Gaussian cube</td>
@@ -141,14 +177,6 @@
     <td><a href="http://www.csc.fi/english/pages/g0penMol/tutorials/gopenmol.pdf">ref</a> <a href="#note1">1</a></td>
 </tr>
 <tr>
-    <td>VASP Poscar</td>
-    <td>*POSCAR*</td>
-    <td>RW</td>
-    <td></td>
-    <td>VASP, also as concatenated file</td>
-    <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a> <a href="#note7">7</a></td>
-</tr>
-<tr>
     <td>VASP Poscar + elements</td>
     <td>*POSCAR* + *</td>
     <td>RW</td>
@@ -165,14 +193,6 @@
     <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a></td>
 </tr>
 <tr>
-    <td>Shel-X</td>
-    <td>*.res</td>
-    <td>R</td>
-    <td></td>
-    <td>Shel-X crystallography program</td>
-    <td><a href="http://shelx.uni-ac.gwdg.de/SHELX/index.php">site</a></td>
-</tr>
-<tr>
     <td>Siesta</td>
     <td>*</td>
     <td>R</td>
@@ -187,14 +207,6 @@
     <td></td>
     <td>Another VASP animated format</td>
     <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a></td>
-</tr>
-<tr>
-    <td>XYZ (Kino)</td>
-    <td>*.xyz</td>
-    <td>RW</td>
-    <td></td>
-    <td>The simple xyz format, animated also</td>
-    <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/xyzplugin.html">ref</a></td>
 </tr>
 <tr>
     <td>XYZ plus unit cell</td>
@@ -217,23 +229,5 @@
 <li><a id="note7"></a>Read the old and new versions (the one with element names). Write only the new version.</li>
 </ol>
 
-</section>
-		<footer>
-			<a href="../contact.html">Mario Valle</a> &mdash; Last modified:
-			<script src="../lastmodified.js"></script>
-		<noscript>[No JavaScript support!]</noscript>
-		</footer>
-	</div>
-<script>
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-335903-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
 </body>
 </html>

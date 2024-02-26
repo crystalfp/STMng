@@ -23,7 +23,7 @@ const messageStore = useMessageStore();
 messageStore.structureReader.message = "";
 
 /** Formats that could be loaded */
-const fileFormats = ["CIF", "POSCAR", "ShelX", "XYZ"];
+const fileFormats = ["CIF", "POSCAR", "Shel-X", "XYZ"];
 
 // > Get and set ui parameters from the switchboard
 const fileRead     = ref("");
@@ -179,7 +179,8 @@ const setFormat = (changedFormat: string): void => {
     <v-label class="underlined-label">{{ format }}</v-label>
   </v-row>
   <v-container v-if="format === 'POSCAR'" class="pl-0 mb-5 pt-3">
-    <v-text-field v-model="atomsTypes" label="Atoms types" placeholder="Space separated types list"
+    <v-text-field v-model="atomsTypes" label="Atoms types"
+                  placeholder="Space separated types list"
                   variant="solo-filled" hide-details="auto" clearable />
   </v-container>
   <v-row>
