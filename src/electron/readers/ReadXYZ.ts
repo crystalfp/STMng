@@ -37,7 +37,7 @@ export class ReaderXYZ implements ReaderImplementation {
 					origin: [0, 0, 0],
 					spaceGroup: ""
 				};
-				structures.push({crystal, atoms: [], bonds: [], look: {}});
+				structures.push({crystal, atoms: [], bonds: [], look: {}, volume: []});
 				atoms = structures[step].atoms;
 			}
 			else if(commentLine) {

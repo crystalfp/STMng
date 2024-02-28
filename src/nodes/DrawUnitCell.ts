@@ -362,7 +362,8 @@ export class DrawUnitCell {
 			crystal: this.structure!.crystal,
 			atoms: [],
 			bonds: [],
-			look: this.structure!.look
+			look: this.structure!.look,
+			volume: this.structure!.volume
 		};
 		for(let i=0; i < outAtoms; ++i) {
 			if(duplicated[i]) continue;

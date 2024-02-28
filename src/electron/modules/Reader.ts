@@ -16,6 +16,7 @@ import {ReaderXYZ} from "../readers/ReadXYZ";
 import {ReaderSHELX} from "../readers/ReadSHELX";
 import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
 import {ReaderCIF} from "../readers/ReadCIF";
+import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
 
 /**
  * Read structure file in a given format
@@ -52,6 +53,9 @@ const readFileStructure = async (filename: string,
 			case "CIF":
 				reader = new ReaderCIF();
 				break;
+			case "CHGCAR":
+				reader = new ReaderCHGCAR();
+				break;
 			default: throw Error("Invalid format");
 		}
 	}
@@ -61,14 +65,14 @@ const readFileStructure = async (filename: string,
 		return {filename: "", structures: [], error: message};
 	}
 
-	if(requestedFormat === "POSCAR") {
+	if(requestedFormat === "POSCAR" || requestedFormat === "CHGCAR") {
 		const atomsTypesTrimmed = atomsTypes.trim();
 		const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
 		const structures1 = await reader.readStructure(filename, atoms);
 		const file1 = path.basename(filename);
 		return checkStructures(structures1) ?
 					{filename: file1, structures: structures1} :
-					{filename: file1, structures: [], error: "Invalid POSCAR file"};
+					{filename: file1, structures: [], error: `Invalid ${requestedFormat} file`};
 	}
 
 	const structures = await reader.readStructure(filename);
@@ -103,6 +107,10 @@ export const setupChannelReader = (): void => {
 		// Set filter
 		let filters;
 		switch(format) {
+			case "CHGCAR":
+				filters = [{name: "CHGCAR",	extensions: ["chgcar", "*"]},
+						   {name: "All",	extensions: ["*"]}];
+				break;
 			case "CIF":
 				filters = [{name: "CIF",	extensions: ["cif"]},
 						   {name: "All",	extensions: ["*"]}];

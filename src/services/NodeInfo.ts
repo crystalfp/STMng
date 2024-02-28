@@ -18,6 +18,7 @@ import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Symmetries} from "@/nodes/Symmetries";
 import {ComputeBonds} from "@/nodes/ComputeBonds";
+import {Orthoslice} from "@/nodes/Orthoslice";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -37,6 +38,7 @@ export class NodeInfo {
 		"capture-view":   		{ui: "CaptureMediaCtrl",	graphic: "none"},
 		"compute-symmetries": 	{ui: "SymmetriesCtrl",		graphic: "none"},
 		"compute-bonds": 		{ui: "ComputeBondsCtrl",	graphic: "none"},
+		"orthoslice":			{ui: "OrthosliceCtrl",		graphic: "out"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -95,6 +97,9 @@ export class NodeInfo {
 			case "compute-bonds":
 				map.set(id, new ComputeBonds(id));
 				break;
+			case "orthoslice":
+				map.set(id, new Orthoslice(id));
+				break;
 			case "viewer-3d":
 			case "capture-view":
 				// These nodes have no runtime code like the others
@@ -125,9 +130,10 @@ export class NodeInfo {
 				const typedData = data as Structure;
 				const typedStore = dataInStore as Structure;
 				typedStore.crystal = typedData.crystal;
-				typedStore.atoms = typedData.atoms;
-				typedStore.bonds = typedData.bonds;
-				typedStore.look = typedData.look;
+				typedStore.atoms   = typedData.atoms;
+				typedStore.bonds   = typedData.bonds;
+				typedStore.look    = typedData.look;
+				typedStore.volume  = typedData.volume;
 
 				break;
 			}
@@ -223,6 +229,10 @@ export class NodeInfo {
 				case "compute-bonds":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as ComputeBonds).saveStatus();
+					break;
+				case "orthoslice":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as Orthoslice).saveStatus();
 					break;
 			}
 			notFirst = true;

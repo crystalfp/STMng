@@ -46,9 +46,9 @@ watchEffect(() => {
     <v-btn value="label">Label</v-btn>
     <v-btn value="index">Index</v-btn>
   </v-btn-toggle>
-    <v-text-field v-model="atomsSelector" label="Atoms selector" class="mb-6 ml-2"
-                  placeholder="Space separated list"
-                  variant="solo-filled" hide-details="auto" clearable />
+  <v-text-field v-model="atomsSelector" label="Central atoms selector" class="mb-6 ml-2"
+                placeholder="Space separated list"
+                variant="solo-filled" hide-details="auto" clearable />
   <g-color-selector v-model="surfaceColor" label="Surface color" :transparency="true" />
 </v-container>
 </template>

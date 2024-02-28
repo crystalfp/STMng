@@ -144,7 +144,8 @@ export class Symmetries {
 				},
 				atoms: [],
 				bonds: [],
-				look: {}
+				look: {},
+				volume: []
 			};
 		}
 		if(structure.atoms.length === 0) return structure;
@@ -283,7 +284,7 @@ export class Symmetries {
 			const cy = position[1] - origin[1];
 			const cz = position[2] - origin[2];
 
-			fractionalCoords[i*3+0] = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
+			fractionalCoords[i*3]   = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
 			fractionalCoords[i*3+1] = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
 			fractionalCoords[i*3+2] = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
 
@@ -321,7 +322,8 @@ export class Symmetries {
 			},
 			atoms: [],
 			bonds: [],
-			look: {}
+			look: {},
+			volume: []
 		});
 	}
 
@@ -337,7 +339,7 @@ export class Symmetries {
 		const direction = Array(natoms).fill(0) as number[];
 		for(let i=0; i < natoms; ++i) {
 
-			const xf = this.fractionalCoords[i*3+0];
+			const xf = this.fractionalCoords[i*3];
 			const yf = this.fractionalCoords[i*3+1];
 			const zf = this.fractionalCoords[i*3+2];
 
@@ -370,12 +372,12 @@ export class Symmetries {
 				break;
 
 			case Y_ANY:
-				fc.push(fc[3*i+0], dir & Y_MIN ? 1 : 0, fc[3*i+2]);
+				fc.push(fc[3*i], dir & Y_MIN ? 1 : 0, fc[3*i+2]);
 				idx.push(idx[i]);
 				break;
 
 			case Z_ANY:
-				fc.push(fc[3*i+0], fc[3*i+1], dir & Z_MIN ? 1 : 0);
+				fc.push(fc[3*i], fc[3*i+1], dir & Z_MIN ? 1 : 0);
 				idx.push(idx[i]);
 				break;
 
@@ -419,19 +421,19 @@ export class Symmetries {
 
 			case Y_ANY|Z_ANY:
 				if((dir & (Y_MIN|Z_MIN)) !== (Y_MIN|Z_MIN)) {
-					fc.push(fc[3*i+0], 0, 0);
+					fc.push(fc[3*i], 0, 0);
 					idx.push(idx[i]);
 				}
 				if((dir & (Y_MAX|Z_MIN)) !== (Y_MAX|Z_MIN)) {
-					fc.push(fc[3*i+0], 1, 0);
+					fc.push(fc[3*i], 1, 0);
 					idx.push(idx[i]);
 				}
 				if((dir & (Y_MIN|Z_MAX)) !== (Y_MIN|Z_MAX)) {
-					fc.push(fc[3*i+0], 0, 1);
+					fc.push(fc[3*i], 0, 1);
 					idx.push(idx[i]);
 				}
 				if((dir & (Y_MAX|Z_MAX)) !== (Y_MAX|Z_MAX)) {
-					fc.push(fc[3*i+0], 1, 1);
+					fc.push(fc[3*i], 1, 1);
 					idx.push(idx[i]);
 				}
 				break;
@@ -489,7 +491,7 @@ export class Symmetries {
 			if(duplicated[i]) continue;
 			for(let j=i+1; j < nfatoms; ++j) {
 				if(duplicated[j]) continue;
-				const fdx = fc[3*i+0] - fc[3*j+0];
+				const fdx = fc[3*i] - fc[3*j];
 				if(fdx < tol && fdx > -tol) {
 					const fdy = fc[3*i+1] - fc[3*j+1];
 					if(fdy < tol && fdy > -tol) {
@@ -507,14 +509,15 @@ export class Symmetries {
 			crystal: structure.crystal,
 			atoms: [],
 			bonds: [],
-			look: structure.look
+			look: structure.look,
+			volume: structure.volume
 		};
 		const {basis, origin} = structure.crystal;
 		for(let i=0; i < nfatoms; ++i) {
 
 			if(duplicated[i]) continue;
 
-			const fx = this.fractionalCoords[i*3+0];
+			const fx = this.fractionalCoords[i*3];
 			const fy = this.fractionalCoords[i*3+1];
 			const fz = this.fractionalCoords[i*3+2];
 

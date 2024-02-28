@@ -177,7 +177,11 @@ export class ReaderCIF implements ReaderImplementation {
 						origin: [0, 0, 0],
 						spaceGroup: ""
 					};
-					this.structures.push({crystal, atoms: [], bonds: [], look: {}});
+					this.structures.push({crystal,
+										  atoms: [],
+										  bonds: [],
+										  look: {},
+										  volume: []});
 				}
 				basisSides  = [0, 0, 0];
 				basisAngles = [0, 0, 0];

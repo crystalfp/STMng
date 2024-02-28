@@ -27,8 +27,8 @@ const messageStore = useMessageStore();
   <v-alert v-if="messageStore.captureMedia.typeS !== undefined"
            :title="messageStore.captureMedia.typeS === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
-           density="compact" class="mt-4" color="red"
-           style="cursor: pointer;" @click="messageStore.captureMedia.typeS=undefined" />
+           density="compact" class="mt-4 cursor-pointer" color="red"
+           @click="messageStore.captureMedia.typeS=undefined" />
   <v-divider :thickness="8" class="mt-6" />
   <v-label class="mt-4 text-h5 w-100 justify-center">Movie</v-label>
   <v-btn block class="mt-3" :color="configStore.control.movie ? 'red' : 'primary'"
@@ -38,7 +38,7 @@ const messageStore = useMessageStore();
   <v-alert v-if="messageStore.captureMedia.typeM !== undefined"
            :title="messageStore.captureMedia.typeM === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textM" :type="messageStore.captureMedia.typeM"
-           density="compact" class="mt-4" color="red"
-           style="cursor: pointer;" @click="messageStore.captureMedia.typeM=undefined" />
+           density="compact" class="mt-4 cursor-pointer" color="red"
+           @click="messageStore.captureMedia.typeM=undefined" />
 </v-container>
 </template>

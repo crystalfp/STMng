@@ -32,7 +32,8 @@ export class DrawStructure {
 	private readonly rCovScale = 0.5;
 	private loadedData: Structure = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 											   origin: [0, 0, 0], spaceGroup: ""},
-											   atoms: [], bonds: [], look: {}};
+											   atoms: [], bonds: [], look: {},
+											   volume: []};
 
 	/**
 	 * Create the node

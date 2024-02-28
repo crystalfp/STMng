@@ -92,7 +92,7 @@ watchEffect(() => {
 
   <v-alert v-if="messageStore.symmetries.message !== ''" title="Error"
            :text="messageStore.symmetries.message" type="error" density="compact" color="red"
-           style="cursor: pointer;" @click="messageStore.symmetries.message=''" />
+           class="cursor-pointer" @click="messageStore.symmetries.message=''" />
 </v-container>
 </template>
 

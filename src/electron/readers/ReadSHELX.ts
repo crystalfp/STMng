@@ -25,7 +25,11 @@ export class ReaderSHELX implements ReaderImplementation {
 			origin: [0, 0, 0],
 			spaceGroup: ""
 		};
-		const structures: Structure[] = [{crystal, atoms: [], bonds: [], look: {}}];
+		const structures: Structure[] = [{crystal,
+										  atoms: [],
+										  bonds: [],
+										  look: {},
+										  volume: []}];
 		let spaceGroup = "";
 		let latticeType = 0;
 		let ignoreNext = false;

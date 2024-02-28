@@ -84,7 +84,8 @@ export class ComputeBonds {
 				crystal: this.inputStructure.crystal,
 				atoms: this.inputStructure.atoms,
 				bonds: this.computeBonds(),
-				look: this.inputStructure.look
+				look: this.inputStructure.look,
+				volume: this.inputStructure.volume
 			};
 			sb.setData(this.id, out);
 		}
@@ -244,7 +245,8 @@ export class ComputeBonds {
 			},
 			atoms: [],
 			bonds: [],
-			look: {}
+			look: {},
+			volume: []
 		});
 	}
 

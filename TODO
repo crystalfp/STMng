@@ -10,6 +10,7 @@ ToDo:
   ☐ Remove realign camera at every step of a sequence
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
+  ☐ Finish volumetric data updating in modules that output a Structure
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
@@ -17,7 +18,6 @@ Bugs:
 
 Requests from Oganov:
   ☐ Charge maps
-  ☐ New polyhedra
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius)
@@ -25,6 +25,7 @@ Nice to have/Future:
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
 
 Archive:
+  ✔ New polyhedra @done(2024-02-26 15:51) @project(Requests from Oganov)
   ✔ In validator add check of node types @done(2024-02-25 06:40)
   ✘ Use CIF parser <https://github.com/stur86/crystcif-parse> @cancelled(2024-02-25 06:40)
   ✔ Change compute bonds not changing min/max but scale of sum rCov @done(2024-02-21 08:08) @project(Requests from Oganov)

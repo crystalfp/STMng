@@ -123,12 +123,19 @@ export interface AtomAppearance {
 /** Index is atomZ */
 export type Look = Record<number, AtomAppearance>;
 
+/** Volumetric data */
+export interface Volume {
+    sides: PositionType;
+    values: number[];
+}
+
 /** The whole atomic structure */
 export interface Structure {
     crystal:    Crystal;
     atoms:      Atom[];
     bonds:      Bond[];
     look:       Look;
+    volume:     Volume[];
 }
 
 // > Interfaces with main process

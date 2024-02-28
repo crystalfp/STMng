@@ -1,5 +1,5 @@
 /**
- * Reader for POSCAR formatted files
+ * Reader for CHGCAR formatted files
  *
  * @packageDocumentation
  */
@@ -10,7 +10,7 @@ import {fractionalToCartesianCoordinates, getStructureAppearance} from "../modul
 import type {ReaderImplementation} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
 
-export class ReaderPOSCAR implements ReaderImplementation {
+export class ReaderCHGCAR implements ReaderImplementation {
 
 	/**
 	 * Read the structures from the file
@@ -32,6 +32,8 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let currentCount = 0;
 		let currentStep = -1;
 		let cartesian = false;
+		let totalPoints = 0;
+		let volume: number[] = [];
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -168,17 +170,70 @@ export class ReaderPOSCAR implements ReaderImplementation {
 							currentCount = atomsCount[currentIdx];
 						}
 						else {
-							lineType = "comment";
+							lineType = "blank";
 						}
 					}
+					break;
+				}
+				case "blank":
+					lineType = "volume-count";
+					break;
+				case "volume-count": {
+					const fields = line.trim().split(/ +/);
+					if(fields.length < 3) {
+						lineType = "exit";
+						break;
+					}
+					const sides: PositionType = [
+						Number.parseInt(fields[0]),
+						Number.parseInt(fields[1]),
+						Number.parseInt(fields[2])
+					];
+					if(Number.isNaN(sides[0]) || sides[0] <= 0 ||
+					   Number.isNaN(sides[1]) || sides[1] <= 0 ||
+					   Number.isNaN(sides[2]) || sides[2] <= 0) {
+						lineType = "exit";
+						break;
+					}
+					if(structures[currentStep].volume.length > 0) {
+						const previousSides = structures[currentStep].volume.at(-1)!.sides;
+						if(sides[0] !== previousSides[0] ||
+						   sides[1] !== previousSides[1] ||
+						   sides[2] !== previousSides[2]) {
+							lineType = "exit";
+							break;
+						}
+					}
+					structures[currentStep].volume.push({
+						sides,
+						values: []
+					});
+					totalPoints = sides[0]*sides[1]*sides[2];
+					volume = structures[currentStep].volume.at(-1)!.values;
+					lineType = "volume-values";
+					break;
+				}
+				case "volume-values": {
+					const fields = line.trim().split(/ +/);
+					for(const field of fields) volume.push(Number.parseFloat(field));
+					totalPoints -= fields.length;
+					if(totalPoints === 0) lineType = "volume-count";
+					break;
 				}
 			}
+			if(lineType === "exit") break;
 		}
 
-		// Add bonds and appearance to the structure
+		// for(const structure of structures) {
+		// 	console.log("Structure");
+		// 	for(const set of structure.volume) {
+		// 		console.log(set.sides, "->", set.values.length);
+		// 	}
+		// }
+
+		// Add appearance to the structure
 		for(const structure of structures) {
 			structure.look  = getStructureAppearance(structure.atoms);
-			structure.bonds = [];
 		}
 
 		return structures;

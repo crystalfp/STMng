@@ -75,7 +75,7 @@ export const setupChannelFindSymmetries = (): void => {
 
 			const atomSymbol = getAtomicSymbol(params.atomsZ[i]).padEnd(4, " ");
 			const idx = (i+3).toString().padStart(4, " ");
-			const fcX = params.fractionalCoordinates[i*3+0].toFixed(6).padEnd(9, " ");
+			const fcX = params.fractionalCoordinates[i*3].toFixed(6).padEnd(9, " ");
 			const fcY = params.fractionalCoordinates[i*3+1].toFixed(6).padEnd(9, " ");
 			const fcZ = params.fractionalCoordinates[i*3+2].toFixed(6).padEnd(9, " ");
 			stdin += `ATOM ${atomSymbol} ${idx} ${fcX} ${fcY} ${fcZ}\n`;
@@ -104,7 +104,8 @@ export const setupChannelFindSymmetries = (): void => {
 			},
 			atoms: [],
 			bonds: [],
-			look: {}
+			look: {},
+			volume: []
 		};
 
 		// Read Kplot output

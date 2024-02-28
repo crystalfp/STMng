@@ -61,8 +61,8 @@ const resetSliders = (): void => {
   <v-slider v-model="minBondingDistance" density="compact" min="0.6" max="1" step="0.01" />
   <v-label :text="`Bonding max distance (${maxBondingDistance.toFixed(2)})`" class="ml-2" />
   <v-slider v-model="maxBondingDistance" density="compact" min="2.0" max="5.0" step="0.01" />
-  <v-label :text="`Bonding scale (${bondScale.toFixed(2)})`" class="ml-2" />
-  <v-slider v-model="bondScale" density="compact" min="0.5" max="2.0" step="0.1" />
+  <v-label :text="`Sum covalent radii multiplier (${bondScale.toFixed(2)})`" class="ml-2" />
+  <v-slider v-model="bondScale" density="compact" min="0.5" max="2.0" step="0.01" />
   <v-label :text="`H Bonding max distance (${maxHBondingDistance.toFixed(2)})`" class="ml-2" />
   <v-slider v-model="maxHBondingDistance" density="compact" min="2.5" max="4.0" step="0.01" />
   <v-label :text="`H Bonding max valence angle (${maxHValenceAngle.toFixed(2)})`" class="ml-2" />
