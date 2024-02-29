@@ -7,7 +7,7 @@ import * as THREE from "three";
 import SpriteText from "three-spritetext";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
-import type {BasisType, PositionType, Structure, Atom} from "@/types";
+import type {BasisType, PositionType, Structure, Atom, Volume} from "@/types";
 
 export class DrawUnitCell {
 
@@ -358,13 +358,30 @@ export class DrawUnitCell {
 		}
 
 		// Create out
+		const {crystal} = this.structure!;
 		const out: Structure = {
-			crystal: this.structure!.crystal,
+
+			crystal: {
+				basis: [
+					crystal.basis[0]*this.repetitionsA,
+					crystal.basis[1]*this.repetitionsA,
+					crystal.basis[2]*this.repetitionsA,
+					crystal.basis[3]*this.repetitionsB,
+					crystal.basis[4]*this.repetitionsB,
+					crystal.basis[5]*this.repetitionsB,
+					crystal.basis[6]*this.repetitionsC,
+					crystal.basis[7]*this.repetitionsC,
+					crystal.basis[8]*this.repetitionsC,
+				],
+				origin: crystal.origin,
+				spaceGroup: crystal.spaceGroup
+			},
 			atoms: [],
 			bonds: [],
 			look: this.structure!.look,
-			volume: this.structure!.volume
+			volume: this.replicateVolume(this.structure!.volume)
 		};
+
 		for(let i=0; i < outAtoms; ++i) {
 			if(duplicated[i]) continue;
 			out.atoms.push(atoms[i]);
@@ -372,6 +389,47 @@ export class DrawUnitCell {
 
 		// Output the result
 		sb.setData(this.id, out);
+	}
+
+	/**
+	 * Replicate the volume data to fill the supercell
+	 *
+	 * @param volume - Input volumetric data
+	 * @returns The new volume data for the computed supercell
+	 */
+	private replicateVolume(volume: Volume[]): Volume[] {
+
+		// If no volumetric data or no replications, do nothing
+		if(volume.length === 0) return [];
+		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1) return volume;
+
+		const out: Volume[] = [];
+		for(const set of volume) {
+
+			const sides: PositionType = [
+				set.sides[0]*this.repetitionsA,
+				set.sides[1]*this.repetitionsB,
+				set.sides[2]*this.repetitionsC,
+			];
+
+			const values = [];
+			for(let c=0; c < this.repetitionsC; ++c) {
+				for(let ic=0; ic < set.sides[2]; ++ic) {
+					for(let b=0; b < this.repetitionsB; ++b) {
+						for(let ib=0; ib < set.sides[1]; ++ib) {
+							for(let a=0; a < this.repetitionsA; ++a) {
+								for(let ia=0; ia < set.sides[0]; ++ia) {
+									values.push(set.values[ia+set.sides[0]*(ib+ic*set.sides[1])]);
+								}
+							}
+						}
+					}
+				}
+			}
+			out.push({sides, values});
+		}
+
+		return out;
 	}
 
 	/**

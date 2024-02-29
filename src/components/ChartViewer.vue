@@ -3,7 +3,7 @@
  * @component
  * Show a chart in a secondary window.
  */
-import {ref} from "vue";
+import {ref, onUnmounted} from "vue";
 import {Bar, Line} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
@@ -36,6 +36,10 @@ const captureEscape = (event: KeyboardEvent): void => {
     }
 };
 document.addEventListener("keydown", captureEscape);
+
+onUnmounted(() => {
+    document.removeEventListener("keydown", captureEscape);
+});
 
 </script>
 

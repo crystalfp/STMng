@@ -4,21 +4,21 @@
  * Generates a chart in a new windows with the structure of the loaded project
  */
 
-import {ref, onMounted} from "vue";
+import {ref, onMounted, onUnmounted} from "vue";
 import {closeWindow, receiveInWindow,
         receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
 import type {Project, ProjectGraph} from "@/types";
 import {sb} from "@/services/Switchboard";
 
-// Dimensions of the node on screen
+/** Dimensions of the node on screen */
 const NODE_WIDTH  = 150;
 const NODE_HEIGHT =  50;
 const NODE_GAP    =  10;
 
-// Set the line color
-const line = ref("#FFF");
+/** Set the foreground color */
+const fg = ref("#FFF");
 const setColors = (): void => {
-    line.value = theme.value === "dark" ? "#FFF" : "#000";
+    fg.value = theme.value === "dark" ? "#FFF" : "#000";
 };
 
 /** Receive the theme change */
@@ -110,7 +110,7 @@ const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
         }
     }
 
-    // Then nodes that have no connections
+    // Then put nodes that have no connections
     for(const key in projectGraph) {
 
         if(keysWithConnections.has(key)) continue;
@@ -281,6 +281,10 @@ const captureEscape = (event: KeyboardEvent): void => {
 };
 document.addEventListener("keydown", captureEscape);
 
+onUnmounted(() => {
+    document.removeEventListener("keydown", captureEscape);
+});
+
 const showInfo = ref(false);
 const infoContent = ref<{label: string; value: string}[]>([]);
 
@@ -317,7 +321,7 @@ const selectNode = (key: string): void => {
       <defs>
         <marker id="arrow" markerWidth="6" markerHeight="4" refX="4" refY="2"
                 orient="auto" markerUnits="strokeWidth">
-          <polygon points="0,0 0,4 6,2" :fill="line" />
+          <polygon points="0,0 0,4 6,2" :fill="fg" />
         </marker>
       </defs>
       <svg v-for="n of nodes" :key="n.id" :x="n.x" :y="n.y"
@@ -327,7 +331,7 @@ const selectNode = (key: string): void => {
         <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
               class="label">{{ n.label }}</text>
       </svg>
-      <polyline v-for="e of edges" :key="e.idx" :points="e.points" :stroke="line"
+      <polyline v-for="e of edges" :key="e.idx" :points="e.points" :stroke="fg"
                 :stroke-dasharray="e.dotted"
 			    style="stroke-width:2;stroke-linecap:butt;fill:none;stroke-opacity:0.7"
 			    marker-end="url(#arrow)" pointer-events="none" vector-effect="non-scaling-stroke" />
@@ -377,7 +381,7 @@ $node-selected-color: #FF0;
 
 // > Node
 .border {
-  stroke: v-bind(line);
+  stroke: v-bind(fg);
   stroke-width: 2;
   fill: transparent;
 }
@@ -398,7 +402,7 @@ $node-selected-color: #FF0;
 
 // > Text field
 .label {
-  fill: v-bind(line);
+  fill: v-bind(fg);
   font-size: 1.1rem;
   user-select: none;
 }

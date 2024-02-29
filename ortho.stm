@@ -1,10 +1,10 @@
 {
 	"graph": {
 		"reader": 	 {"label": "Reader", 	 "type": "structure-reader"},
-		"unit":   	 {"label": "Cell",   	 "type": "draw-unit-cell",     "in": "reader"},
-		"bonds":	 {"label": "Bonds",		 "type": "compute-bonds",	    "in": "unit"},
-		"draw":   	 {"label": "Render",     "type": "draw-structure",     "in": "bonds"},
-		"ortho": 	 {"label": "Orthoslice", "type": "orthoslice",        "in": "reader"},
+		"unit":   	 {"label": "Cell",   	 "type": "draw-unit-cell",	"in": "reader"},
+		"bonds":	 {"label": "Bonds",		 "type": "compute-bonds",	"in": "unit"},
+		"draw":   	 {"label": "Render",     "type": "draw-structure",	"in": "bonds"},
+		"ortho": 	 {"label": "Orthoslice", "type": "orthoslice",		"in": "unit"},
 		"viewer": 	 {"label": "Viewer", 	 "type": "viewer-3d"}
 	}
 }
