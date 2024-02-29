@@ -72,7 +72,7 @@ export class Symmetries {
 			}
 
 			sb.setUiParams(this.id, {
-				inputSymmetry: crystal.spaceGroup,
+				// inputSymmetry: crystal.spaceGroup,
 				ignoreInputSymmetries: this.ignoreInputSymmetries
 			});
 

@@ -51,7 +51,8 @@ export class StructureReader {
 					steps: 1,
 					step: 1,
 					running: false,
-					doLoad: false
+					doLoad: false,
+					symmetryRead: ""
 				});
         		if(this.intervalId !== undefined) {
 					clearInterval(this.intervalId);
@@ -74,6 +75,9 @@ export class StructureReader {
 			if(requestedStep !== this.step) {
 				this.step = requestedStep;
 				sb.setData(this.id, this.structures[this.step-1]);
+				sb.setUiParams(this.id, {
+					symmetryRead: this.structures[this.step-1].crystal.spaceGroup
+				});
 			}
 			if(this.running) {
 
@@ -93,6 +97,7 @@ export class StructureReader {
 						sb.setUiParams(this.id, {
 							step: this.step,
 							running: this.running,
+							symmetryRead: this.structures[this.step-1].crystal.spaceGroup
 						});
 
 					}, 100);
@@ -146,6 +151,7 @@ export class StructureReader {
 					running: false,
 					doLoad: false,
 					inProgress: false,
+					symmetryRead: structure.structures[0].crystal.spaceGroup
 				});
 				this.inProgress = false;
 				this.step = 1;
@@ -163,6 +169,7 @@ export class StructureReader {
 					doLoad: false,
 					format: "",
 					inProgress: false,
+					symmetryRead: ""
 				});
 
 				showErrorNotification(`Error reading structure: ${error.message}`, "structureReader");

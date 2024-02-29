@@ -36,6 +36,7 @@ const loopSteps    = ref(false);
 const format       = ref("");
 const inProgress   = ref(false);
 const captureMovie = ref(false);
+const symmetryRead = ref("");
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
@@ -48,6 +49,7 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     format.value       = params.format as string ?? "";
     atomsTypes.value   = params.atomsTypes as string ?? "";
     inProgress.value   = params.inProgress as boolean ?? false;
+    symmetryRead.value = params.symmetryRead as string ?? "";
 });
 
 watchEffect(() => {
@@ -212,6 +214,12 @@ const setFormat = (changedFormat: string): void => {
   <v-alert v-if="messageStore.structureReader.message !== ''" title="Error" class="mt-7 cursor-pointer"
            :text="messageStore.structureReader.message" type="error" density="compact"
            color="red" @click="messageStore.structureReader.message=''" />
+
+  <v-container v-if="symmetryRead !== ''" class="pl-0">
+    <v-divider :thickness="8" class="mt-9" />
+    <v-label class="text-h5 w-100 justify-center mt-4">Input has symmetry</v-label>
+    <v-label :text="symmetryRead" class="mt-4 w-100 justify-center show-symmetry" />
+  </v-container>
 </v-container>
 </template>
 
@@ -223,4 +231,11 @@ const setFormat = (changedFormat: string): void => {
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
   width: 62%
 }
+
+.show-symmetry {
+  overflow-wrap: break-word;
+  white-space: break-spaces;
+  font-family: monospace;
+}
+
 </style>

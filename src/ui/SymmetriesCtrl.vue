@@ -15,7 +15,7 @@ const pr = defineProps<{
 const messageStore = useMessageStore();
 
 // > Get and set ui parameters from the switchboard
-const inputSymmetry = ref("");
+// const inputSymmetry = ref("");
 
 const enableFindSymmetries = ref(true);
 const ignoreInputSymmetries = ref(false);
@@ -29,7 +29,7 @@ const enableApplySymmetries = ref(true);
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
-    inputSymmetry.value = params.inputSymmetry as string ?? "";
+    // inputSymmetry.value = params.inputSymmetry as string ?? "";
 
     enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
     ignoreInputSymmetries.value = params.ignoreInputSymmetries as boolean ?? false;
@@ -60,11 +60,11 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center mt-4">Input symmetry</v-label>
+  <!-- <v-label class="text-h5 w-100 justify-center mt-4">Input symmetry</v-label>
 
   <v-label :text="inputSymmetry" class="mt-4 w-100 justify-center show-symmetry" />
 
-  <v-divider :thickness="8" class="mt-3" />
+  <v-divider :thickness="8" class="mt-3" /> -->
 
   <v-label class="text-h5 w-100 justify-center mt-3">Find symmetries</v-label>
   <v-switch v-model="enableFindSymmetries" color="primary"
