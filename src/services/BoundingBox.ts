@@ -1,9 +1,9 @@
-/* eslint-disable eslint-comments/disable-enable-pair, @typescript-eslint/no-shadow */
 /**
  * Compute bounding box of the given structure.
  *
  * @packageDocumentation
  */
+/* eslint-disable eslint-comments/disable-enable-pair, @typescript-eslint/no-shadow */
 
 import type {PositionType, Structure} from "@/types";
 

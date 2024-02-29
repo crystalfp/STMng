@@ -6,8 +6,9 @@
 
 import {sb, type UiParams} from "@/services/Switchboard";
 import {readFileStructure} from "@/services/RoutesClient";
-import type {ReaderStructure, Structure} from "@/types";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
+import {useConfigStore} from "@/stores/configStore";
+import type {ReaderStructure, Structure} from "@/types";
 
 export class StructureReader {
 
@@ -158,6 +159,12 @@ export class StructureReader {
 				this.steps = structure.structures.length;
 				this.structures = structure.structures;
 				sb.setData(this.id, structure.structures[0]);
+
+				// Try to reset the camera
+				setTimeout(() => {
+					const configStore = useConfigStore();
+					configStore.control.reset = true;
+				}, 400);
 			})
 			.catch((error: Error) => {
 				this.inProgress = false;

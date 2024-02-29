@@ -221,17 +221,18 @@ onMounted(() => {
         if(configStore.control.reset) {
 
             configStore.control.reset = false;
+
+            if(configStore.camera.type === "perspective") {
+
+                fitPerspectiveCameraToObject(cameraPerspective, controls);
+                copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+                cameraOrthographic.updateProjectionMatrix();
+            }
+            else {
+                fitOrthographicCameraToObject(cameraOrthographic, controls);
+            }
         }
 
-        if(configStore.camera.type === "perspective") {
-
-            fitPerspectiveCameraToObject(cameraPerspective, controls);
-            copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
-            cameraOrthographic.updateProjectionMatrix();
-        }
-        else {
-            fitOrthographicCameraToObject(cameraOrthographic, controls);
-        }
     });
 
     // Take snapshot
