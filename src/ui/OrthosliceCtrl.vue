@@ -4,7 +4,7 @@
  * Controls for the orthoslice.
  */
 
-import {ref, watchEffect} from "vue";
+import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 
 // > Properties
@@ -26,7 +26,22 @@ const showOrthoslice = ref(false);
 const maxDataset = ref(0);
 const maxPlane = ref(0);
 const colormapName = ref("rainbow");
+const limits = ref<number[]>([]);
+const limitLow = ref(0);
+const limitHigh = ref(100);
+const valueMin = ref(0);
+const valueMax = ref(100);
+const step = computed(() => {
+    return (valueMax.value - valueMin.value)/100;
+});
+const valueRange = computed(() => {
 
+    const ll = limitLow.value;
+    const hh = limitHigh.value;
+    const sl = ll < 10 && ll > -10 ? limitLow.value.toFixed(3) : limitLow.value.toExponential(3);
+    const sh = hh < 10 && hh > -10 ? limitHigh.value.toFixed(3) : limitHigh.value.toExponential(3);
+    return `${sl} – ${sh}`;
+});
 
 sb.getUiParams(pr.id, (params: UiParams) => {
     showOrthoslice.value = params.showOrthoslice as boolean ?? false;
@@ -36,6 +51,13 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     maxDataset.value = params.maxDataset as number ?? 0;
     maxPlane.value = params.maxPlane as number ?? 0;
     colormapName.value = params.colormapName as string ?? "rainbow";
+    limitLow.value = params.limitLow as number ?? -10;
+    limitHigh.value = params.limitHigh as number ?? 10;
+    valueMin.value = params.valueMin as number ?? -10;
+    valueMax.value = params.valueMax as number ?? 10;
+
+    limits.value[0] = limitLow.value;
+    limits.value[1] = limitHigh.value;
 });
 watchEffect(() => {
     sb.setUiParams(pr.id, {
@@ -43,7 +65,9 @@ watchEffect(() => {
         dataset: dataset.value,
         axis: axis.value,
         plane: plane.value,
-        colormapName: colormapName.value
+        colormapName: colormapName.value,
+        limitLow: limits.value[0],
+        limitHigh: limits.value[1],
     });
 });
 
@@ -60,7 +84,9 @@ watchEffect(() => {
             show-ticks="always" tick-size="5" class="ml-4 mt-1" />
   <v-label :text="`Plane (${plane})`" class="ml-2 mt-3" />
   <v-slider v-model="plane" min="0" :max="maxPlane" step="1" class="ml-4 mt-1" />
-
+  <v-label :text="`Values range (${valueRange})`" class="ml-2 mt-1" />
+  <v-range-slider v-model="limits" strict :step="step" :min="valueMin" :max="valueMax"
+                  color="primary" class="ml-4 mt-1 pr-2" />
   <v-row class="mt-6 mb-2">
     <v-menu open-on-hover>
       <template #activator="{ props }">

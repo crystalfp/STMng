@@ -19,7 +19,10 @@ export class Orthoslice {
 	private maxDataset = 0;
 	private maxPlane = 0;
     private colormapName = "rainbow";
-    private lut = new Lut("rainbow", 512);
+    private lut = new Lut(this.colormapName, 512);
+    private limitLow = -10;
+    private limitHigh = 10;
+    private range: [number, number] = [-10, 10];
 
 	/**
 	* Create the node
@@ -35,7 +38,13 @@ export class Orthoslice {
 			this.plane = params.plane as number ?? 0;
             this.colormapName = params.colormapName as string ?? "rainbow";
 
-            this.lut = new Lut( this.colormapName, 512);
+            this.lut = new Lut(this.colormapName, 512);
+
+            this.limitLow = params.limitLow as number ?? -10;
+            this.limitHigh = params.limitHigh as number ?? 10;
+
+            this.lut.setMax(this.limitHigh);
+            this.lut.setMin(this.limitLow);
 
 			this.computeOrthoslice();
 		});
@@ -54,6 +63,9 @@ export class Orthoslice {
 				this.plane = 0;
 				this.maxDataset = 0;
 				this.maxPlane = 0;
+                this.range = [-10, 10];
+                this.limitLow = -10;
+                this.limitHigh = 10;
 			}
 			else {
 				this.dataset = 0;
@@ -62,6 +74,13 @@ export class Orthoslice {
 
 				// The number of planes is one more the sides. The last plane is equal to the first one
 				this.maxPlane = this.structure.volume[0].sides[0];
+
+                this.range = this.getValueLimits();
+                this.limitLow = this.range[0];
+                this.limitHigh = this.range[1];
+
+                this.lut.setMax(this.limitHigh);
+                this.lut.setMin(this.limitLow);
 			}
 			sb.setUiParams(this.id, {
 				showOrthoslice: this.showOrthoslice,
@@ -70,10 +89,37 @@ export class Orthoslice {
 				plane: this.plane,
 				maxDataset: this.maxDataset,
 				maxPlane: this.maxPlane,
+                valueMin: this.range[0],
+                valueMax: this.range[1],
+                limitLow: this.limitLow,
+                limitHigh: this.limitHigh,
 			});
 			this.computeOrthoslice();
 		});
 	}
+
+    /**
+     * Get the volume value range for the colormap
+     *
+     * @returns [min volume value, max volume value]
+     */
+    private getValueLimits(): [number, number] {
+
+        // Check if the plane should be created
+        if(!this.structure?.volume) return [-10, 10];
+        const {values} = this.structure.volume[this.dataset];
+        if(values.length === 0) return [-10, 10];
+
+        // Set the value range for the color map
+        let minValue = Number.POSITIVE_INFINITY;
+        let maxValue = Number.NEGATIVE_INFINITY;
+        for(const value of values) {
+            if(value < minValue) minValue = value;
+            if(value > maxValue) maxValue = value;
+        }
+
+        return [minValue, maxValue];
+    }
 
     /**
      * Compute the orthoslice for the given parameters
@@ -99,21 +145,11 @@ export class Orthoslice {
         const {basis, origin} = this.structure.crystal;
         const {sides, values} = this.structure.volume[this.dataset];
 
-        // Prepare value mapping
-        let minValue = Number.POSITIVE_INFINITY;
-        let maxValue = Number.NEGATIVE_INFINITY;
-        for(const value of values) {
-            if(value < minValue) minValue = value;
-            if(value > maxValue) maxValue = value;
-        }
-        this.lut.setMax(maxValue);
-        this.lut.setMin(minValue);
-
+        // Create the orthoslice depending on the axis requested
         let fixed;
         const vertices: number[] = [];
         const indices: number[]  = [];
         const colors: number[]   = [];
-        const normals: number[]  = [];
 
         switch(this.axis) {
 
@@ -127,7 +163,6 @@ export class Orthoslice {
                     }
                 }
                 this.generateIndices(sides[2], sides[1], indices);
-                this.generateNormals(sides[2], sides[1], 0, normals);
                 break;
 
             case 1: // Y
@@ -140,7 +175,6 @@ export class Orthoslice {
                     }
                 }
                 this.generateIndices(sides[2], sides[0], indices);
-                this.generateNormals(sides[2], sides[0], 1, normals);
                 break;
 
             case 2: // Z
@@ -153,18 +187,16 @@ export class Orthoslice {
                     }
                 }
                 this.generateIndices(sides[1], sides[0], indices);
-                this.generateNormals(sides[1], sides[0], 2, normals);
                 break;
         }
 
-        // Create and add the plane to the scene
+        // Create and add the plane to the scene with no lighting effects
         const geometry = new THREE.BufferGeometry();
 		geometry.setIndex(indices);
 		geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
 		geometry.setAttribute("color",    new THREE.Float32BufferAttribute(colors, 3));
-		geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(normals, 3));
 
-        const material = new THREE.MeshStandardMaterial({
+        const material = new THREE.MeshBasicMaterial({
             side: THREE.DoubleSide,
             vertexColors: true
         });
@@ -241,28 +273,6 @@ export class Orthoslice {
         const oneValue = values[nx + (ny + nz*sides[1])*sides[0]];
         const color = this.lut.getColor(oneValue);
         return [color.r, color.g, color.b];
-    }
-
-    /**
-     * Compute the plane normals
-     *
-     * @param fastSide - The index that varies faster than the other
-     * @param slowSide - The index that varies slower than the other
-     * @param normalIdx - Index of the direction of the normal
-     * @param normals - The computed normals
-     */
-    private generateNormals(fastSide: number, slowSide: number, normalIdx: number, normals: number[]): void {
-
-        const {basis} = this.structure!.crystal;
-        const idx = normalIdx*3;
-        const normal = [basis[idx], basis[idx+1], basis[idx+2]];
-        const len = -Math.hypot(...normal);
-
-        for(let vv=0; vv <= slowSide; ++vv) {
-            for(let uu=0; uu <= fastSide; ++uu) {
-                normals.push(normal[0]/len, normal[1]/len, normal[2]/len);
-            }
-        }
     }
 
 	/**
