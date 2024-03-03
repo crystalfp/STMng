@@ -45,8 +45,9 @@ class SceneManager {
 	 * Empty a group with the given name
 	 *
 	 * @param groupName - Name of the group to be cleared
+	 * @param removeGroup - If true remove also the group itself from the scene
 	 */
-	clearGroup(groupName: string): void {
+	clearGroup(groupName: string, removeGroup=false): void {
 
 		const group = SceneManager.scene.getObjectByName(groupName);
 		if(!group) return;
@@ -75,6 +76,23 @@ class SceneManager {
 		// Clear the group
 		for(const mesh of meshes) group.remove(mesh);
         group.clear();
+
+		// Remove the group itself
+		if(removeGroup) SceneManager.scene.remove(group);
+	}
+
+	/**
+	 * Delete a mesh with the given name
+	 * @param meshName - Name of the mesh to be deleted
+	 */
+	deleteMesh(meshName: string): void {
+
+        const object = SceneManager.scene.getObjectByName(meshName) as THREE.Mesh;
+        if(object) {
+            SceneManager.scene.remove(object);
+            if(object.geometry) object.geometry.dispose();
+			(object.material as THREE.Material).dispose();
+        }
 	}
 
 	/**

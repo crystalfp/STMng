@@ -1,5 +1,5 @@
 /**
- * Compute an orthoslice of the volumetric data
+ * Compute an orthoslice of the volumetric data. If requested show also the isolines
  *
  * @packageDocumentation
  */
@@ -8,6 +8,7 @@ import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {PositionType, Structure, BasisType} from "@/types";
 import {sm} from "@/services/SceneManager";
+import {Isolines} from "@/services/Isolines";
 
 export class Orthoslice {
 
@@ -23,6 +24,11 @@ export class Orthoslice {
     private limitLow = -10;
     private limitHigh = 10;
     private range: [number, number] = [-10, 10];
+    private useColorClasses = false;
+    private colorClasses = 5;
+    private showIsolines = false;
+    private isoValue = 0;
+    private colorIsolines = false;
 
 	/**
 	* Create the node
@@ -37,14 +43,20 @@ export class Orthoslice {
 			this.axis = params.axis as number ?? 0;
 			this.plane = params.plane as number ?? 0;
             this.colormapName = params.colormapName as string ?? "rainbow";
+            this.useColorClasses = params.useColorClasses as boolean ?? false;
+            this.colorClasses = params.colorClasses as number ?? 5;
 
-            this.lut = new Lut(this.colormapName, 512);
+            this.lut = new Lut(this.colormapName, this.useColorClasses ? this.colorClasses : 512);
 
             this.limitLow = params.limitLow as number ?? -10;
             this.limitHigh = params.limitHigh as number ?? 10;
 
             this.lut.setMax(this.limitHigh);
             this.lut.setMin(this.limitLow);
+
+            this.showIsolines = params.showIsolines as boolean ?? false;
+            this.isoValue = params.isoValue as number ?? 0;
+            this.colorIsolines = params.colorIsolines as boolean ?? false;
 
 			this.computeOrthoslice();
 		});
@@ -122,22 +134,20 @@ export class Orthoslice {
     }
 
     /**
-     * Compute the orthoslice for the given parameters
+     * Compute the orthoslice and the isolines for the given parameters
      */
 	private computeOrthoslice(): void {
 
         // Remove the existing plane
-        const {scene} = sm;
         const meshName = `Orthoslice-${this.id}`;
-        const object = scene.getObjectByName(meshName) as THREE.Mesh;
-        if(object) {
-            scene.remove(object);
-            if(object.geometry) object.geometry.dispose();
-			(object.material as THREE.Material).dispose();
-        }
+        sm.deleteMesh(meshName);
+
+        // Remove existing isolines
+        const isolinesName = `Isolines-${this.id}`;
+        sm.clearGroup(isolinesName, true);
 
         // Check if the plane should be created
-        if(!this.showOrthoslice ||
+        if((!this.showOrthoslice && !this.showIsolines) ||
            !this.structure?.volume ||
             this.structure.volume[this.dataset].values.length === 0) return;
 
@@ -151,6 +161,26 @@ export class Orthoslice {
         const indices: number[]  = [];
         const colors: number[]   = [];
 
+        // Create the isolines values
+        let isolineValues: number[] = [];
+        if(this.useColorClasses) {
+            const delta = (this.limitHigh - this.limitLow) / this.colorClasses;
+            isolineValues = [this.limitLow];
+            for(let i=1; i < this.colorClasses; ++i) isolineValues.push(this.limitLow + i*delta);
+            isolineValues.push(this.limitHigh);
+        }
+        else isolineValues = [this.isoValue];
+
+        // Create the isoline colors
+        const isolineColors = isolineValues.map((value) => {
+            return this.lut.getColor(value).getHex();
+        });
+
+        // Initialize the isolines
+        const isolines = new Isolines(values, sides, isolineValues,
+                                      this.colorIsolines ? isolineColors : undefined);
+
+        // Compute the orthoslice
         switch(this.axis) {
 
             case 0: // X
@@ -163,6 +193,7 @@ export class Orthoslice {
                     }
                 }
                 this.generateIndices(sides[2], sides[1], indices);
+                isolines.computeIsolines(2, 1, 0, this.plane, vertices);
                 break;
 
             case 1: // Y
@@ -175,6 +206,7 @@ export class Orthoslice {
                     }
                 }
                 this.generateIndices(sides[2], sides[0], indices);
+                isolines.computeIsolines(2, 0, 1, this.plane, vertices);
                 break;
 
             case 2: // Z
@@ -187,6 +219,7 @@ export class Orthoslice {
                     }
                 }
                 this.generateIndices(sides[1], sides[0], indices);
+                isolines.computeIsolines(1, 0, 2, this.plane, vertices);
                 break;
         }
 
@@ -203,7 +236,13 @@ export class Orthoslice {
 
 		const mesh = new THREE.Mesh(geometry, material);
         mesh.name = meshName;
-        scene.add(mesh);
+        mesh.visible = this.showOrthoslice;
+        sm.add(mesh);
+
+        // Add the isolines
+        const group = isolines.getIsolinesGroup(isolinesName);
+        group.visible = this.showIsolines;
+        sm.add(group);
 	}
 
     /**
@@ -288,6 +327,13 @@ export class Orthoslice {
             plane: this.plane,
             showOrthoslice: this.showOrthoslice,
             colormapName: this.colormapName,
+            limitLow: this.limitLow,
+            limitHigh: this.limitHigh,
+            useColorClasses: this.useColorClasses,
+            colorClasses: this.colorClasses,
+            showIsolines: this.showIsolines,
+            isoValue: this.isoValue,
+            colorIsolines: this.colorIsolines,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

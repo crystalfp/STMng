@@ -7,8 +7,8 @@
 import * as THREE from "three";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
+import type {Structure} from "@/types";
 
 type SelectorType = "symbol" | "label" | "index";
 
@@ -61,6 +61,24 @@ export class DrawPolyhedra {
 	}
 
 	/**
+	 * Find a contrasting color
+	 *
+	 * @param materialColor - Polyhedra color
+	 * @param bw - True (default) to create contrasting black and white color
+	 * @returns Color for the polyhedra edges
+	 */
+	private createContrastingColor(materialColor: THREE.Color, bw=true): number {
+
+    	const {r, g, b} = materialColor;
+
+		// B&W output (https://stackoverflow.com/a/3943023/112731)
+		if(bw) return (r * 76.245 + g * 149.685 + b * 29.07) > 186 ? 0x000000 : 0xFFFFFF;
+
+		// Invert color components
+		return (((1-r)*255 + (1-g))*255 + (1-b))*255;
+	}
+
+	/**
 	 * Create the polyhedrons if visible
 	 */
 	private createPolyhedra(): void {
@@ -76,10 +94,18 @@ export class DrawPolyhedra {
 		if(islands.length === 0) return;
 
 		for(const island of islands) {
+
+			// The polyhedron
 			const mesh = new THREE.Mesh();
 			mesh.geometry = new ConvexGeometry(island);
 			mesh.material = this.material;
 			this.group.add(mesh);
+
+			// The polyhedron edges
+			const edgeColor = this.createContrastingColor(this.material.color);
+			const edges = new THREE.EdgesGeometry(mesh.geometry);
+			const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: edgeColor}));
+			this.group.add(line);
 		}
 	}
 

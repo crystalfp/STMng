@@ -27,10 +27,12 @@ const maxDataset = ref(0);
 const maxPlane = ref(0);
 const colormapName = ref("rainbow");
 const limits = ref<number[]>([]);
-const limitLow = ref(0);
-const limitHigh = ref(100);
-const valueMin = ref(0);
-const valueMax = ref(100);
+const limitLow = ref(-10);
+const limitHigh = ref(10);
+const valueMin = ref(-10);
+const valueMax = ref(10);
+const useColorClasses = ref(false);
+const colorClasses = ref(5);
 const step = computed(() => {
     return (valueMax.value - valueMin.value)/100;
 });
@@ -41,6 +43,13 @@ const valueRange = computed(() => {
     const sl = ll < 10 && ll > -10 ? limitLow.value.toFixed(3) : limitLow.value.toExponential(3);
     const sh = hh < 10 && hh > -10 ? limitHigh.value.toFixed(3) : limitHigh.value.toExponential(3);
     return `${sl} – ${sh}`;
+});
+const showIsolines = ref(false);
+const colorIsolines = ref(false);
+const isoValue = ref((valueMax.value+valueMin.value)/2);
+const isoValueLabel = computed(() => {
+    return isoValue.value < 10 && isoValue.value > -10 ?
+                            isoValue.value.toFixed(3) : isoValue.value.toExponential(3);
 });
 
 sb.getUiParams(pr.id, (params: UiParams) => {
@@ -55,6 +64,14 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     limitHigh.value = params.limitHigh as number ?? 10;
     valueMin.value = params.valueMin as number ?? -10;
     valueMax.value = params.valueMax as number ?? 10;
+    useColorClasses.value = params.useColorClasses as boolean ?? false;
+    colorClasses.value = params.colorClasses as number ?? 5;
+    showIsolines.value = params.showIsolines as boolean ?? false;
+    isoValue.value = params.isoValue as number ?? 0;
+    colorIsolines.value = params.colorIsolines as boolean ?? false;
+
+    if(isoValue.value > limitHigh.value) isoValue.value = limitHigh.value;
+    if(isoValue.value < limitLow.value)  isoValue.value = limitLow.value;
 
     limits.value[0] = limitLow.value;
     limits.value[1] = limitHigh.value;
@@ -68,6 +85,11 @@ watchEffect(() => {
         colormapName: colormapName.value,
         limitLow: limits.value[0],
         limitHigh: limits.value[1],
+        colorClasses: colorClasses.value,
+        useColorClasses: useColorClasses.value,
+        showIsolines: showIsolines.value,
+        isoValue: isoValue.value,
+        colorIsolines: colorIsolines.value,
     });
 });
 
@@ -77,20 +99,28 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice" density="compact" class="mt-2 ml-4" />
-  <v-label :text="`Dataset (${dataset})`" class="ml-2 mt-1" />
+  <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
-  <v-label text="Axis" class="ml-2 mt-1" />
+  <v-label text="Axis" class="ml-2" />
   <v-slider v-model="axis" :ticks="tickLabels" min="0" max="2" step="1"
             show-ticks="always" tick-size="5" class="ml-4 mt-1" />
-  <v-label :text="`Plane (${plane})`" class="ml-2 mt-3" />
+  <v-label :text="`Plane (${plane})`" class="ml-2 mt-2" />
   <v-slider v-model="plane" min="0" :max="maxPlane" step="1" class="ml-4 mt-1" />
-  <v-label :text="`Values range (${valueRange})`" class="ml-2 mt-1" />
+
+  <v-label :text="`Values range (${valueRange})`" class="ml-2" />
   <v-range-slider v-model="limits" strict :step="step" :min="valueMin" :max="valueMax"
                   color="primary" class="ml-4 mt-1 pr-2" />
-  <v-row class="mt-6 mb-2">
+
+  <v-switch v-model="useColorClasses" color="primary"
+            :label="`Use discrete color classes (${colorClasses})`"
+            density="compact" class="ml-4" />
+  <v-slider v-model="colorClasses" min="2" :max="20" step="1" :disabled="!useColorClasses"
+            class="ml-4" />
+
+  <v-row class="mt-3 mb-2">
     <v-menu open-on-hover>
       <template #activator="{ props }">
-        <v-btn class="w-25 ml-3" size="small" color="primary" v-bind="props">
+        <v-btn class="w-25 ml-6" size="small" color="primary" v-bind="props">
           Colormap
         </v-btn>
       </template>
@@ -103,6 +133,13 @@ watchEffect(() => {
     <v-label class="underlined-label">{{ colormapName }}</v-label>
   </v-row>
 
+  <v-switch v-model="showIsolines" color="primary" label="Show isolines"
+            density="compact" class="mt-6 ml-4" />
+  <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
+            density="compact" class="ml-4 mt-n5" />
+  <v-label :text="`Isoline value (${isoValueLabel})`" class="ml-4" />
+  <v-slider v-model="isoValue" :step="step" :min="valueMin" :max="valueMax"
+            :disabled="useColorClasses" class="ml-4 mt-1" />
 </v-container>
 </template>
 
