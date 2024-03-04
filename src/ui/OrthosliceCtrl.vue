@@ -142,13 +142,3 @@ watchEffect(() => {
             :disabled="useColorClasses" class="ml-4 mt-1" />
 </v-container>
 </template>
-
-
-<style scoped>
-
-.underlined-label {
-  margin-left: 10px;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
-  width: 62%
-}
-</style>

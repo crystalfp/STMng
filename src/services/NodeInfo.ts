@@ -19,6 +19,7 @@ import {ChartViewer} from "@/nodes/ChartViewer";
 import {Symmetries} from "@/nodes/Symmetries";
 import {ComputeBonds} from "@/nodes/ComputeBonds";
 import {Orthoslice} from "@/nodes/Orthoslice";
+import {StructureWriter} from "@/nodes/StructureWriter";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -39,6 +40,7 @@ export class NodeInfo {
 		"compute-symmetries": 	{ui: "SymmetriesCtrl",		graphic: "none"},
 		"compute-bonds": 		{ui: "ComputeBondsCtrl",	graphic: "none"},
 		"orthoslice":			{ui: "OrthosliceCtrl",		graphic: "out"},
+		"structure-writer":		{ui: "StructureWriterCtrl",	graphic: "none"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -99,6 +101,9 @@ export class NodeInfo {
 				break;
 			case "orthoslice":
 				map.set(id, new Orthoslice(id));
+				break;
+			case "structure-writer":
+				map.set(id, new StructureWriter(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":
@@ -233,6 +238,10 @@ export class NodeInfo {
 				case "orthoslice":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as Orthoslice).saveStatus();
+					break;
+				case "structure-writer":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as StructureWriter).saveStatus();
 					break;
 			}
 			notFirst = true;

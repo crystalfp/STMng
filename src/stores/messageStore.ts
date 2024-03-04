@@ -12,6 +12,9 @@ interface MessageState {
     structureReader: {
 		message: string;
 	};
+    structureWriter: {
+		message: string;
+	};
 	captureMedia: {
 		typeS: "error" | "success" | "warning" | "info" | undefined;
 		textS: string;
@@ -28,6 +31,7 @@ export const useMessageStore = defineStore("MessageStore", {
     state: () => ({
         symmetries: {message: ""},
         structureReader: {message: ""},
+        structureWriter: {message: ""},
 		captureMedia: {
 			typeS: undefined,
 			textS: "",

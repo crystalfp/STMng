@@ -20,6 +20,7 @@ import {setupChannelReader} from "./modules/Reader";
 import {setupChannelCapture} from "./modules/CaptureMedia";
 import {setupChannelSymmetries} from "./modules/Symmetries";
 import {setupChannelFindSymmetries} from "./modules/FindSymmetries";
+import {setupChannelWriter} from "./modules/Writer";
 
 // > Command line parsing
 const program = new Command("STMng");
@@ -59,6 +60,7 @@ setupChannelReader();
 setupChannelCapture();
 setupChannelSymmetries();
 setupChannelFindSymmetries();
+setupChannelWriter();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

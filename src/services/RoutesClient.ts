@@ -246,6 +246,31 @@ export const readFileStructure = (format: string, atomsTypes: string): Promise<s
 	return window.electron.ipcRenderer.invoke("READER:READ", format, atomsTypes) as Promise<string>;
 };
 
+// > Structure writer
+/**
+ * Select the file where the structure will be saved
+ *
+ * @param format - File format to be selected
+ * @returns The selected filename path
+ */
+export const selectSaveStructureFile = (format: string): Promise<string> => {
+
+	return window.electron.ipcRenderer.invoke("WRITER:SELECT", format) as Promise<string>;
+};
+
+/**
+ * Save the structures to the file
+ *
+ * @param format - File format to be selected
+ * @param filename - File path where to save the structures
+ * @param encodedStructures - JSON encoded structures to be saved
+ * @returns Response from the main process
+ */
+export const saveStructureFile = (format: string, filename: string, encodedStructures: string): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("WRITER:WRITE", format, filename, encodedStructures) as Promise<MainResponse>;
+};
+
 // > Capturer
 /**
  * Save an image given as data url

@@ -17,6 +17,11 @@ Bugs:
 Requests from Oganov:
   ☐ Structure writers
   ☐ Dialog with symmetry data
+  ☐ An option to specify arbitrary section plane
+  ☐ Tracing trajectories of selected atoms or atomic types
+  ☐ Measuring bond distances and angles
+  ☐ Computation of fingerprints and their use to remove duplicate structures.
+  ☐ Use of local fingerprint order parameters to color atoms
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius) Check <https://discourse.threejs.org/t/increase-width-of-lines-in-axes-helper/61869/8>

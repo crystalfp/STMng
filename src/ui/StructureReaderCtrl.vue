@@ -226,12 +226,6 @@ const setFormat = (changedFormat: string): void => {
 
 <style scoped>
 
-.underlined-label {
-  margin-left: 10px;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
-  width: 62%
-}
-
 .show-symmetry {
   overflow-wrap: break-word;
   white-space: break-spaces;

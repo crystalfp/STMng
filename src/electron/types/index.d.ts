@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import type {Structure, BasisType} from "../../types";
+import type {Structure, BasisType, MainResponse} from "../../types";
 
 /** Parameters for the window creation */
 export interface WindowsParams {
@@ -21,6 +21,7 @@ export interface WindowsParams {
 
 // export type Constructable<T> = new() => T;
 
+/** Interface exposed by all format readers */
 export interface ReaderImplementation {
 	readStructure: (filename: string, atomsTypes?: string[]) => Promise<Structure[]>;
 }
@@ -35,4 +36,9 @@ export interface FindSymmetriesParams {
 	tolS: number;
 	tolT: number;
 	tolG: number;
+}
+
+/** Interface exposed by all format writers */
+export interface WriterImplementation {
+	writeStructure: (filename: string, structures: Structure[]) => MainResponse;
 }
