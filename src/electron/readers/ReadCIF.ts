@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {extractBasis, fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderHelpers";
+import {extractBasis, fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderWriterHelpers";
 import {getAtomicNumber} from "../modules/AtomData";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";

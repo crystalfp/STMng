@@ -8,6 +8,10 @@ import log from "electron-log";
 import type {Structure} from "../../types";
 
 import {WriterXYZ} from "../writers/WriteXYZ";
+import {WriterPOSCAR} from "../writers/WritePOSCAR";
+import {WriterSHELX} from "../writers/WriteSHELX";
+import {WriterCHGCAR} from "../writers/WriteCHGCAR";
+import {WriterCIF} from "../writers/WriteCIF";
 
 /**
  * Setup channels for writer
@@ -20,7 +24,7 @@ export const setupChannelWriter = (): void => {
 		let filters;
 		switch(format) {
 			case "CHGCAR":
-				filters = [{name: "CHGCAR",	extensions: ["chgcar", "*"]},
+				filters = [{name: "CHGCAR",	extensions: ["chgcar"]},
 						   {name: "All",	extensions: ["*"]}];
 				break;
 			case "CIF":
@@ -28,11 +32,11 @@ export const setupChannelWriter = (): void => {
 						   {name: "All",	extensions: ["*"]}];
 				break;
 			case "POSCAR":
-				filters = [{name: "POSCAR",	extensions: ["poscar", "poscars", "*"]},
+				filters = [{name: "POSCAR",	extensions: ["poscar"]},
 						   {name: "All",	extensions: ["*"]}];
 				break;
 			case "Shel-X":
-				filters = [{name: "Shel-X",	extensions: ["ins", "res"]},
+				filters = [{name: "Shel-X",	extensions: ["res"]},
 						   {name: "All",	extensions: ["*"]}];
 				break;
 			case "XYZ":
@@ -52,29 +56,30 @@ export const setupChannelWriter = (): void => {
 		return "";
 	});
 
-	ipcMain.handle("WRITER:WRITE", (_event, format: string, filename: string, encodedStructures: string) => {
+	ipcMain.handle("WRITER:WRITE", (_event, format: string,
+									filename: string, encodedStructures: string) => {
 
 		let writer;
 		try {
 
-			// const {Writer} = await import(`../readers/Read${type}.ts`) as {Writer: Constructable<WriterImplementation>};
-
+			// const {Writer} = await import(`../readers/Write${type}.ts`) as {Writer: Constructable<WriterImplementation>};
 			// reader = new Writer();
+
 			switch(format) {
 				case "XYZ":
 					writer = new WriterXYZ();
 					break;
 				case "Shel-X":
-					// writer = new WriterSHELX();
+					writer = new WriterSHELX();
 					break;
 				case "POSCAR":
-					// writer = new WriterPOSCAR();
+					writer = new WriterPOSCAR();
 					break;
 				case "CIF":
-					// writer = new WriterCIF();
+					writer = new WriterCIF();
 					break;
 				case "CHGCAR":
-					// writer = new WriterCHGCAR();
+					writer = new WriterCHGCAR();
 					break;
 				default: throw Error("Invalid format");
 			}

@@ -3,9 +3,9 @@
  *
  * @packageDocumentation
  */
-
+import log from "electron-log";
 import {getAtomicRadiiAndColor} from "./AtomData";
-import type {BasisType, PositionType, Atom, Look} from "../../types";
+import type {BasisType, PositionType, Atom, Look, Structure} from "../../types";
 
 /**
  * Extract the basis vectors from basis lengths and angles
@@ -154,4 +154,67 @@ export const basisToLengthAngles = (basis: BasisType): number[] => {
 		vectorAngle(basis[0], basis[1], basis[2], basis[6], basis[7], basis[8]),
 		vectorAngle(basis[0], basis[1], basis[2], basis[3], basis[4], basis[5]),
 	];
+};
+
+
+// > Compute the atoms' fractional coordinates
+/**
+ * Compute the structure atoms' fractional coordinates
+ */
+export const cartesianToFractionalCoordinates = (structure: Structure): number[] => {
+
+	// Get the structure
+	const {crystal, atoms} = structure;
+	const {basis: b, origin} = crystal;
+
+	// Compute the determinant of the matrix
+	const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
+				b[1] * (b[3] * b[8] - b[5] * b[6]) +
+				b[2] * (b[3] * b[7] - b[4] * b[6]);
+
+	// Check if the determinant is zero, which means the matrix is not invertible
+	if(det === 0) {
+		log.error("Basis matrix is not invertible");
+		return [];
+	}
+
+	// Compute the inverse basis matrix
+	const invDet = 1 / det;
+	const inverse = [
+		(b[4] * b[8] - b[5] * b[7]) * invDet,
+		(b[2] * b[7] - b[1] * b[8]) * invDet,
+		(b[1] * b[5] - b[2] * b[4]) * invDet,
+		(b[5] * b[6] - b[3] * b[8]) * invDet,
+		(b[0] * b[8] - b[2] * b[6]) * invDet,
+		(b[2] * b[3] - b[0] * b[5]) * invDet,
+		(b[3] * b[7] - b[4] * b[6]) * invDet,
+		(b[1] * b[6] - b[0] * b[7]) * invDet,
+		(b[0] * b[4] - b[1] * b[3]) * invDet
+	];
+
+	// For each atom compute the fractional coordinates
+	const fractionalCoords: number[] = [];
+	for(const atom of atoms) {
+
+		const {position} = atom;
+		const cx = position[0] - origin[0];
+		const cy = position[1] - origin[1];
+		const cz = position[2] - origin[2];
+
+		fractionalCoords.push(cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
+							  cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
+							  cx*inverse[2] + cy*inverse[5] + cz*inverse[8]);
+	}
+
+	return fractionalCoords;
+};
+
+/**
+ * Format a floating point value
+ *
+ * @param value - Value to be formatted
+ * @returns - Value as string
+ */
+export const format = (value: number): string => {
+	return value.toFixed(6).padStart(10, " ");
 };

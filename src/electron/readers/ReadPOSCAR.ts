@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
-import {fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderHelpers";
+import {fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
 

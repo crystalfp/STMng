@@ -1,7 +1,14 @@
+/**
+ * Writer for XYZ formatted files
+ *
+ * @packageDocumentation
+ */
 
+import fs from "node:fs";
+import {format} from "../modules/ReaderWriterHelpers";
 import type {Structure, MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
-import fs from "node:fs";
+
 export class WriterXYZ implements WriterImplementation {
 
 	writeStructure(filename: string, structures: Structure[]): MainResponse {
@@ -10,14 +17,15 @@ export class WriterXYZ implements WriterImplementation {
 			const fd = fs.openSync(filename, "w");
 			for(const structure of structures) {
 
-				fs.writeSync(fd, `  ${structure.atoms.length}\n\n`);
-
 				const {look, atoms} = structure;
+
+				fs.writeSync(fd, `  ${atoms.length}\n\n`);
+
 				for(const atom of atoms) {
 					const symbol = look[atom.atomZ].symbol.padEnd(2, " ");
-					const x = atom.position[0].toFixed(6).padStart(10, " ");
-					const y = atom.position[1].toFixed(6).padStart(10, " ");
-					const z = atom.position[2].toFixed(6).padStart(10, " ");
+					const x = format(atom.position[0]);
+					const y = format(atom.position[1]);
+					const z = format(atom.position[2]);
 					fs.writeSync(fd, `${symbol} ${x} ${y} ${z}\n`);
 				}
 			}

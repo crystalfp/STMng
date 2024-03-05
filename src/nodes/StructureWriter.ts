@@ -49,11 +49,9 @@ export class StructureWriter {
 							});
 						}
 						else {
-							const pos = filename.lastIndexOf("/");
-							const basename = filename.slice(pos+1);
 							sb.setUiParams(this.id, {
 								selectFile: false,
-								outputFile: basename
+								outputFile: filename
 							});
 						}
 					})
@@ -79,13 +77,15 @@ export class StructureWriter {
 							this.inProgress = false;
 							if(stat.error) throw Error(stat.error);
 							sb.setUiParams(this.id, {
-								inProgress: false
+								inProgress: false,
+								finish: true
 							});
 						})
 						.catch((error: Error) => {
 							this.inProgress = false;
 							sb.setUiParams(this.id, {
-								inProgress: false
+								inProgress: false,
+								finish: true
 							});
 							showErrorNotification(`Error writing structure: ${error.message}`,
 											  	  "structureWriter");
@@ -103,18 +103,19 @@ export class StructureWriter {
 						this.inProgress = false;
 						if(stat.error) throw Error(stat.error);
 						sb.setUiParams(this.id, {
-							inProgress: false
+							inProgress: false,
+							finish: true
 						});
 					})
 					.catch((error: Error) => {
 						this.inProgress = false;
 						sb.setUiParams(this.id, {
-							inProgress: false
+							inProgress: false,
+							finish: true
 						});
 						showErrorNotification(`Error writing structure: ${error.message}`,
 											  "structureWriter");
 					});
-
 			}
 		});
 

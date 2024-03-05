@@ -30,9 +30,11 @@ win:
   artifactName: ${productName}-${version}-setup.${ext}
 nsis:
   oneClick: false
-  perMachine: false
+  perMachine: true
+  selectPerMachineByDefault: true
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: false
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  # createStartMenuShortcut: true

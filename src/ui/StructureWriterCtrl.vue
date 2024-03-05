@@ -6,6 +6,7 @@
 
 import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {useMessageStore} from "@/stores/messageStore";
 
 // > Properties
 const pr = defineProps<{
@@ -14,15 +15,20 @@ const pr = defineProps<{
     id: string;
 }>();
 
-/** Formats that could be loaded */
-// const fileFormats = ["CHGCAR", "CIF", "POSCAR", "Shel-X", "XYZ"];
-const fileFormats = ["XYZ"];
+// Access the message store
+const messageStore = useMessageStore();
+messageStore.structureWriter.message = "";
 
-const format      = ref("");
-const outputFile  = ref("");
-const inProgress  = ref(false);
-const continuous  = ref(false);
-const doSelectFile  = ref(false);
+/** Formats that could be loaded */
+const fileFormats = ["CHGCAR", "CIF", "POSCAR", "XYZ"];
+
+const format         = ref("");
+const outputFile     = ref("");
+const outputFileFull = ref("");
+const inProgress     = ref(false);
+const continuous     = ref(false);
+const doSelectFile   = ref(false);
+const finish         = ref(false);
 
 /** Define the label for the capture button */
 const captureButtonLabel = computed(() => {
@@ -55,9 +61,16 @@ const startStopCapture = (): void => {
 sb.getUiParams(pr.id, (params: UiParams) => {
     format.value = params.format as string ?? "";
     doSelectFile.value = params.selectFile as boolean ?? false;
-    outputFile.value = params.outputFile as string ?? "";
+    outputFileFull.value = params.outputFile as string ?? "";
     continuous.value = params.continuous as boolean ?? false;
     inProgress.value = params.inProgress as boolean ?? false;
+    finish.value = params.finish as boolean ?? false;
+
+    if(outputFileFull.value === "") outputFile.value = "";
+    else {
+        const pos = outputFileFull.value.lastIndexOf("/");
+        outputFile.value = outputFileFull.value.slice(pos+1);
+    }
 });
 watchEffect(() => {
     sb.setUiParams(pr.id, {
@@ -65,6 +78,7 @@ watchEffect(() => {
         selectFile: doSelectFile.value,
         continuous: continuous.value,
         inProgress: inProgress.value,
+        finish: finish.value
     });
 });
 
@@ -102,5 +116,11 @@ watchEffect(() => {
       {{ captureButtonLabel }}
     </v-btn>
   </v-row>
+  <v-alert v-if="finish" title="Done" class="mt-7 cursor-pointer"
+           :text="`File written to: ${outputFileFull}`" type="success" density="compact"
+           @click="finish=false" />
+  <v-alert v-if="messageStore.structureWriter.message !== ''" title="Error" class="mt-7 cursor-pointer"
+           :text="messageStore.structureWriter.message" type="error" density="compact"
+           color="red" @click="messageStore.structureWriter.message=''" />
   </v-container>
 </template>

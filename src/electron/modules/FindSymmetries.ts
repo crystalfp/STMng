@@ -12,7 +12,7 @@ import path from "node:path";
 import {execSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {extractBasis, fractionalToCartesianCoordinates,
-		basisToLengthAngles, getStructureAppearance} from "./ReaderHelpers";
+		basisToLengthAngles, getStructureAppearance} from "./ReaderWriterHelpers";
 import {getAtomicSymbol, getAtomicNumber} from "../modules/AtomData";
 import type {FindSymmetriesParams} from "../types";
 import type {Structure, Atom} from "../../types";

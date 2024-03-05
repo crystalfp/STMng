@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import {getStructureAppearance} from "../modules/ReaderHelpers";
+import {getStructureAppearance} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure} from "../../types";
 

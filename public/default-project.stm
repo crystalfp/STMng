@@ -9,6 +9,7 @@
         "ortho":     {"label": "Orthoslice", "type": "orthoslice",         "in": "unit"},
         "viewer":    {"label": "Viewer",     "type": "viewer-3d"},
         "capture":   {"label": "Capture",    "type": "capture-view"},
-        "chart":     {"label": "Chart",      "type": "chart-viewer"}
+        "chart":     {"label": "Chart",      "type": "chart-viewer"},
+		"writer": 	 {"label": "Writer", 	 "type": "structure-writer",   "in": "bonds"}
     }
 }
