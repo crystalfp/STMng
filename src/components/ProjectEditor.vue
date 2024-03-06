@@ -360,6 +360,7 @@ const selectNode = (key: string): void => {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  padding: 0;
 }
 
 .graph-editor-container {

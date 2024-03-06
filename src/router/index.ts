@@ -8,6 +8,7 @@ import {createWebHashHistory, createRouter} from "vue-router";
 import LayoutClient from "@/components/LayoutClient.vue";
 import ChartViewer from "@/components/ChartViewer.vue";
 import ProjectEditor from "@/components/ProjectEditor.vue";
+import ShowSymmetries from "@/components/ShowSymmetries.vue";
 
 export const router = createRouter({
     history: createWebHashHistory(),
@@ -23,6 +24,10 @@ export const router = createRouter({
         {
             path: "/editor",
             component: ProjectEditor
+        },
+        {
+            path: "/symmetries",
+            component: ShowSymmetries
         },
     ],
 });

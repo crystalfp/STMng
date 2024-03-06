@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Controls for the symmetry (find and apply) node.
+ */
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
@@ -15,8 +19,6 @@ const pr = defineProps<{
 const messageStore = useMessageStore();
 
 // > Get and set ui parameters from the switchboard
-// const inputSymmetry = ref("");
-
 const enableFindSymmetries = ref(true);
 const ignoreInputSymmetries = ref(false);
 const tolS = ref(0.25);
@@ -26,10 +28,9 @@ const tolG = ref(0.10);
 const finalSymmetry = ref("");
 const fillUnitCell = ref(true);
 const enableApplySymmetries = ref(true);
+const showSymmetriesDialog = ref(false);
 
 sb.getUiParams(pr.id, (params: UiParams) => {
-
-    // inputSymmetry.value = params.inputSymmetry as string ?? "";
 
     enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
     ignoreInputSymmetries.value = params.ignoreInputSymmetries as boolean ?? false;
@@ -40,6 +41,7 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     finalSymmetry.value = params.finalSymmetry as string ?? "";
     fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
     enableApplySymmetries.value = params.enableApplySymmetries as boolean ?? true;
+    showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
 });
 
 watchEffect(() => {
@@ -52,6 +54,7 @@ watchEffect(() => {
 
         fillUnitCell: fillUnitCell.value,
         enableApplySymmetries: enableApplySymmetries.value,
+        showSymmetriesDialog: showSymmetriesDialog.value,
     });
 });
 
@@ -60,12 +63,6 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <!-- <v-label class="text-h5 w-100 justify-center mt-4">Input symmetry</v-label>
-
-  <v-label :text="inputSymmetry" class="mt-4 w-100 justify-center show-symmetry" />
-
-  <v-divider :thickness="8" class="mt-3" /> -->
-
   <v-label class="text-h5 w-100 justify-center mt-3">Find symmetries</v-label>
   <v-switch v-model="enableFindSymmetries" color="primary"
             label="Enable find symmetries" density="compact" class="mt-6 ml-4" />
@@ -81,7 +78,7 @@ watchEffect(() => {
                 min="0.01" max="1" step="0.01" thumb-label />
   </g-align-labels>
 
-  <v-divider :thickness="8" />
+  <v-divider thickness="8" />
   <v-label class="text-h5 w-100 justify-center mt-3">Apply symmetries</v-label>
 
   <v-label :text="finalSymmetry" class="mt-4 w-100 justify-center show-symmetry" />
@@ -89,6 +86,8 @@ watchEffect(() => {
   <v-switch v-model="enableApplySymmetries" color="primary"
             label="Enable apply symmetries" class="ml-4 mt-3" />
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-4 mt-n5" />
+
+  <v-btn block @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
 
   <v-alert v-if="messageStore.symmetries.message !== ''" title="Error"
            :text="messageStore.symmetries.message" type="error" density="compact" color="red"

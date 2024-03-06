@@ -35,7 +35,7 @@ import {VCard, VCardText, VCardActions} from "vuetify/components/VCard";
 import {VTooltip} from "vuetify/components/VTooltip";
 import {VTabs, VTab} from "vuetify/components/VTabs";
 import {VApp} from "vuetify/components/VApp";
-import {VRow, VContainer, VSpacer} from "vuetify/components/VGrid";
+import {VRow, VContainer, VSpacer, VCol} from "vuetify/components/VGrid";
 import {VAlert} from "vuetify/components/VAlert";
 import {VDivider} from "vuetify/components/VDivider";
 import {VIcon} from "vuetify/components/VIcon";
@@ -71,7 +71,7 @@ const app = createApp(App)
 			VTooltip,
 			VTabs, VTab,
 			VApp,
-			VRow, VContainer, VSpacer,
+			VRow, VContainer, VSpacer, VCol,
 			VAlert,
 			VDivider,
 			VIcon,

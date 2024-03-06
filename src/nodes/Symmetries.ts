@@ -5,7 +5,7 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {sb, type UiParams} from "@/services/Switchboard";
-import {computeSymmetries, findSymmetries} from "@/services/RoutesClient";
+import {computeSymmetries, findSymmetries, createWindow, sendToWindow} from "@/services/RoutesClient";
 import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
 import type {Structure} from "@/types";
 import type {FindSymmetriesParams} from "@/electron/types";
@@ -34,6 +34,8 @@ export class Symmetries {
 	private enableApplySymmetries = true;
 	private fillUnitCell = true;
 
+	private showSymmetriesDialog = false;
+
 	private fractionalCoords: number[] = [];
 	private readonly atomIdx: number[] = [];
 
@@ -55,6 +57,13 @@ export class Symmetries {
 
     		this.enableApplySymmetries = params.enableApplySymmetries as boolean ?? true;
     		this.fillUnitCell  = params.fillUnitCell as boolean ?? true;
+
+			this.showSymmetriesDialog = params.showSymmetriesDialog as boolean ?? false;
+
+			if(this.showSymmetriesDialog) {
+				sb.setUiParams(this.id, {showSymmetriesDialog: false});
+				this.openSymmetriesDialog();
+			}
 
 			if(this.inputStructure?.crystal) this.getSymmetries();
 		});
@@ -98,6 +107,7 @@ export class Symmetries {
 				enableFindSymmetries: false,
 				enableApplySymmetries: false
 			});
+			this.updateSymmetriesDialog();
 			return;
 		}
 
@@ -108,6 +118,7 @@ export class Symmetries {
 						finalSymmetry: structure.crystal.spaceGroup
 					});
 					this.applySymmetries(structure);
+					this.updateSymmetriesDialog(structure.crystal.spaceGroup);
 				})
 				.catch((error: Error) => {
 					showErrorNotification(error.message, "symmetries");
@@ -115,6 +126,7 @@ export class Symmetries {
 						finalSymmetry: this.inputStructure?.crystal?.spaceGroup ?? ""
 					});
 					this.applySymmetries(this.inputStructure);
+					this.updateSymmetriesDialog();
 				});
 		}
 		else {
@@ -122,6 +134,7 @@ export class Symmetries {
 				finalSymmetry: this.inputStructure?.crystal?.spaceGroup ?? ""
 			});
 			this.applySymmetries(this.inputStructure);
+			this.updateSymmetriesDialog();
 		}
 	}
 
@@ -534,6 +547,43 @@ export class Symmetries {
 
 		// Output structure from the node
 		return out;
+	}
+
+	/**
+	 * Collect the symmetries and open the show symmetries window
+	 */
+	private openSymmetriesDialog(): void {
+
+		const dataToSend = JSON.stringify({
+			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
+			outSymmetry: ""
+		});
+
+		createWindow({
+						routerPath: "/symmetries",
+						width: 700,
+						height: 400,
+						title: "Show symmetries",
+						data: dataToSend
+					});
+	}
+
+	/**
+	 * Update chart if data changed
+	 *
+	 * @param outSymmetry - Output symmetry to display, if missing use the input symmetry
+	 */
+	private updateSymmetriesDialog(outSymmetry?: string): void {
+
+		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
+		if(!outSymmetry) outSymmetry = inSymmetry;
+
+		const dataToSend = JSON.stringify({
+			inSymmetry,
+			outSymmetry
+		});
+
+		sendToWindow("/symmetries", dataToSend);
 	}
 
 	// > Save the node status

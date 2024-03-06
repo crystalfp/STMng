@@ -85,7 +85,7 @@ const resetSliders = (): void => {
   <v-switch v-model="dashedLine" color="primary" label="Dashed lines" class="ml-4 mt-n5" />
   <v-switch v-model="showBasisVectors" color="primary" label="Show basis vectors" class="ml-4 mt-n5" />
   <g-color-selector v-model="lineColor" label="Line color" />
-  <v-divider :thickness="8" class="mb-4" />
+  <v-divider thickness="8" class="mb-4" />
   <v-label text="Cell repetitions" class="ml-2 mb-3" />
   <g-align-labels label-width="4rem">
     <v-slider v-model="repetitionsA" label="Along a" min="1" max="10" step="1" thumb-label

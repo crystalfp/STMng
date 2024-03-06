@@ -29,7 +29,7 @@ const messageStore = useMessageStore();
            :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
            density="compact" class="mt-4 cursor-pointer" color="red"
            @click="messageStore.captureMedia.typeS=undefined" />
-  <v-divider :thickness="8" class="mt-6" />
+  <v-divider thickness="8" class="mt-6" />
   <v-label class="mt-4 text-h5 w-100 justify-center">Movie</v-label>
   <v-btn block class="mt-3" :color="configStore.control.movie ? 'red' : 'primary'"
         @click="configStore.control.movie = !configStore.control.movie">
