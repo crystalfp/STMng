@@ -4,7 +4,7 @@
 		"unit":   	 {"label": "Cell",   	 "type": "draw-unit-cell",	 "in": "reader"},
 		"bonds":	 {"label": "Bonds",		 "type": "compute-bonds",	 "in": "unit"},
 		"draw":   	 {"label": "Render",     "type": "draw-structure",	 "in": "bonds"},
-		"writer": 	 {"label": "Writer", 	 "type": "structure-writer", "in": "reader"},
+		"measure": 	 {"label": "Measures", 	 "type": "measures",         "in": "bonds"},
 		"viewer": 	 {"label": "Viewer", 	 "type": "viewer-3d"}
 	}
 }

@@ -20,6 +20,7 @@ import {Symmetries} from "@/nodes/Symmetries";
 import {ComputeBonds} from "@/nodes/ComputeBonds";
 import {Orthoslice} from "@/nodes/Orthoslice";
 import {StructureWriter} from "@/nodes/StructureWriter";
+import {Measures} from "@/nodes/Measures";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -41,6 +42,7 @@ export class NodeInfo {
 		"compute-bonds": 		{ui: "ComputeBondsCtrl",	graphic: "none"},
 		"orthoslice":			{ui: "OrthosliceCtrl",		graphic: "out"},
 		"structure-writer":		{ui: "StructureWriterCtrl",	graphic: "none"},
+		"measures":				{ui: "MeasuresCtrl",		graphic: "out"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -104,6 +106,9 @@ export class NodeInfo {
 				break;
 			case "structure-writer":
 				map.set(id, new StructureWriter(id));
+				break;
+			case "measures":
+				map.set(id, new Measures(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":

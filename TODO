@@ -14,10 +14,10 @@ Bugs:
   ☐ Load ZnTe.res, load diamond.res → the first unit cell does not disappear (cannot reproduce)
 
 Requests from Oganov:
-  ☐ Dialog with symmetry data
+  ✔ Dialog with symmetry data @done(2024-03-06 05:40)
   ☐ An option to specify arbitrary section plane
   ☐ Tracing trajectories of selected atoms or atomic types
-  ☐ Measuring bond distances and angles
+  ✔ Measuring bond distances and angles @done(2024-03-07 11:31)
   ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ Use of local fingerprint order parameters to color atoms
 

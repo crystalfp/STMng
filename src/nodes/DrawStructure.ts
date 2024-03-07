@@ -102,25 +102,29 @@ export class DrawStructure {
 		if(!data.atoms) return;
 
 		// Render atoms
+		let index = 0;
 		switch(this.drawKind) {
 			case "ball-and-stick":
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
 					const radius = data.look[atom.atomZ].rCov * this.rCovScale;
-					this.addSphere(radius, color, atom.position, this.atomsGroup);
+					this.addSphere(radius, color, atom.position, index, this.atomsGroup);
+					++index;
 				}
 				break;
 			case "van-der-walls":
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
 					const radius = data.look[atom.atomZ].rVdW;
-					this.addSphere(radius, color, atom.position, this.atomsGroup);
+					this.addSphere(radius, color, atom.position, index, this.atomsGroup);
+					++index;
 				}
 				break;
 			case "licorice":
 				for(const atom of data.atoms) {
 					const {color} = data.look[atom.atomZ];
-					this.addSphere(this.bondRadius, color, atom.position, this.atomsGroup);
+					this.addSphere(this.bondRadius, color, atom.position, index, this.atomsGroup);
+					++index;
 				}
 				break;
 		}
@@ -270,11 +274,13 @@ export class DrawStructure {
 	 * @param radius - Sphere radius
 	 * @param color - Sphere color
 	 * @param position - Center of the sphere
+	 * @param index - Index of the atom in the structure atom list
 	 * @param out - The output group where to add the sphere
 	 */
 	private addSphere(radius: number,
 					  color: THREE.ColorRepresentation,
 					  position: PositionType,
+					  index: number,
 					  out: THREE.Group): void {
 
 		const subdivisions = this.sphereSubdivisions[this.drawQuality];
@@ -282,6 +288,8 @@ export class DrawStructure {
 		const meshMaterial = normalMaterial(color, this.drawRoughness, this.drawMetalness);
 		const sphere = new THREE.Mesh(geometry, meshMaterial);
 		sphere.position.set(position[0], position[1], position[2]);
+		sphere.name = "Atom";
+		sphere.userData = {index};
 		out.add(sphere);
 	}
 

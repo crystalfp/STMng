@@ -36,21 +36,22 @@ const colorClasses = ref(5);
 const step = computed(() => {
     return (valueMax.value - valueMin.value)/100;
 });
-const valueRange = computed(() => {
 
-    const ll = limitLow.value;
-    const hh = limitHigh.value;
-    const sl = ll < 10 && ll > -10 ? limitLow.value.toFixed(3) : limitLow.value.toExponential(3);
-    const sh = hh < 10 && hh > -10 ? limitHigh.value.toFixed(3) : limitHigh.value.toExponential(3);
-    return `${sl} – ${sh}`;
-});
+const formatPrecision = 4;
+const tenToN = Math.pow(10, formatPrecision);
+const tenToMinusN = Math.pow(10, -formatPrecision);
+const formatZero = `0.${"0".repeat(formatPrecision)}`;
+const humanFormat = (x: number): string => {
+
+    if(x === 0) return formatZero;
+    if(x >= tenToN || x <= -tenToN) return x.toExponential(formatPrecision);
+    if(x < tenToMinusN && x > -tenToMinusN) return x.toExponential(formatPrecision);
+    return x.toPrecision(formatPrecision);
+};
+
 const showIsolines = ref(false);
 const colorIsolines = ref(false);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
-const isoValueLabel = computed(() => {
-    return isoValue.value < 10 && isoValue.value > -10 ?
-                            isoValue.value.toFixed(3) : isoValue.value.toExponential(3);
-});
 
 sb.getUiParams(pr.id, (params: UiParams) => {
     showOrthoslice.value = params.showOrthoslice as boolean ?? false;
@@ -107,12 +108,12 @@ watchEffect(() => {
   <v-label :text="`Plane (${plane})`" class="ml-2 mt-2" />
   <v-slider v-model="plane" min="0" :max="maxPlane" step="1" class="ml-4 mt-1" />
 
-  <v-label :text="`Values range (${valueRange})`" class="ml-2" />
+  <v-label :text="`Values range (${humanFormat(limitLow)} – ${humanFormat(limitHigh)})`" class="ml-2" />
   <v-range-slider v-model="limits" strict :step="step" :min="valueMin" :max="valueMax"
                   color="primary" class="ml-4 mt-1 pr-2" />
 
   <v-switch v-model="useColorClasses" color="primary"
-            :label="`Use discrete color classes (${colorClasses})`"
+            :label="`Use discrete classes (${colorClasses})`"
             density="compact" class="ml-4" />
   <v-slider v-model="colorClasses" min="2" :max="20" step="1" :disabled="!useColorClasses"
             class="ml-4" />
@@ -126,7 +127,9 @@ watchEffect(() => {
       </template>
       <v-list>
         <v-list-item v-for="colormap in colormaps" :key="colormap">
-          <v-list-item-title style="cursor: pointer" @click="colormapName = colormap">{{ colormap }}</v-list-item-title>
+          <v-list-item-title style="cursor: pointer" @click="colormapName = colormap">
+            {{ colormap }}
+          </v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -137,7 +140,7 @@ watchEffect(() => {
             density="compact" class="mt-6 ml-4" />
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
-  <v-label :text="`Isoline value (${isoValueLabel})`" class="ml-4" />
+  <v-label :text="`Isoline value (${humanFormat(isoValue)})`" class="ml-4" />
   <v-slider v-model="isoValue" :step="step" :min="valueMin" :max="valueMax"
             :disabled="useColorClasses" class="ml-4 mt-1" />
 </v-container>

@@ -195,6 +195,32 @@ onMounted(() => {
         configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
     });
 
+    // Pick atoms by Ctrl+MouseLeft
+    renderer.domElement.addEventListener("mousedown", (event: MouseEvent): void => {
+
+        // if(!event.ctrlKey || !event.shiftKey) return;
+        if(!event.ctrlKey) return;
+        event.preventDefault();
+
+        const mouse2D = new THREE.Vector2((event.offsetX / cnv.value!.clientWidth) * 2 - 1,
+                                          -(event.offsetY / cnv.value!.clientHeight) * 2 + 1);
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse2D, camera);
+
+        const objects: THREE.Object3D[] = [];
+        scene.traverse((object) => {
+            if(object.name === "Atom") objects.push(object);
+        });
+        const intersects = raycaster.intersectObjects(objects);
+
+        if(intersects.length > 0) {
+            configStore.addSelectedAtom(intersects[0].object.userData.index as number);
+        }
+        else {
+            configStore.deselectAtoms();
+        }
+    });
+
     // Switch cameras
     watchEffect(() => {
 

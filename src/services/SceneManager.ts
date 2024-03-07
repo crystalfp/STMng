@@ -177,13 +177,13 @@ class SceneManager {
 	 *
 	 * @param label - Identifier for this dump
 	 */
-	// dumpScene(label: string): void {
-	// 	console.log(`\n*** ${label} ***`);
-	// 	SceneManager.scene.traverse((object) => {
-	// 		if(["AmbientLight", "DirectionalLight", "Scene"].includes(object.type)) return;
-	// 		console.log(object.type, object.name);
-	// 	});
-	// }
+	dumpScene(label: string): void {
+		console.log(`\n*** ${label} ***`);
+		SceneManager.scene.traverse((object) => {
+			if(["AmbientLight", "DirectionalLight", "Scene"].includes(object.type)) return;
+			console.log(object.type, object.name);
+		});
+	}
 
 	// > Access the singleton instance
 	/**
