@@ -15,13 +15,18 @@
       "in": "unit"
     },
     "draw": {
-      "label": "Render",
+      "label": "Structure",
       "type": "draw-structure",
       "in": "bonds"
     },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
+    },
+    "trace": {
+      "label": "Trajectories",
+      "type": "draw-trajectories",
+      "in": "bonds"
     }
   },
   "viewer": {

@@ -14,12 +14,10 @@ Bugs:
   ☐ Load ZnTe.res, load diamond.res → the first unit cell does not disappear (cannot reproduce)
 
 Requests from Oganov:
-  ✔ Dialog with symmetry data @done(2024-03-06 05:40)
   ☐ An option to specify arbitrary section plane
-  ☐ Tracing trajectories of selected atoms or atomic types
-  ✔ Measuring bond distances and angles @done(2024-03-07 11:31)
   ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ Use of local fingerprint order parameters to color atoms
+  ☐ Bonding criteria different for pair of atoms types
 
 Nice to have/Future:
 	☐ Try lines as rectangle or box (or tube with small radius) Check <https://discourse.threejs.org/t/increase-width-of-lines-in-axes-helper/61869/8>
@@ -27,8 +25,12 @@ Nice to have/Future:
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Color polyhedra by central atom color
   ☐ Shift unit cell (from STM4). The problem is shifting the volumetric data.
+  ☐ Coloring of trajectories
 
 Archive:
+  ✔ Measuring bond distances and angles @done(2024-03-07 11:31) @project(Requests from Oganov)
+  ✔ Dialog with symmetry data @done(2024-03-06 05:40) @project(Requests from Oganov)
+  ✔ Tracing trajectories of selected atoms or atomic types @done(2024-03-08 05:30) @project(Requests from Oganov)
   ✔ Finish volumetric data updating in modules that output a Structure @done(2024-03-05 10:48)
   ✔ Structure writers @done(2024-03-05 10:47) @project(Requests from Oganov)
   ✔ Charge maps @done(2024-03-01 12:07) @project(Requests from Oganov)

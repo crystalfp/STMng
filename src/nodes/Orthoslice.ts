@@ -231,7 +231,9 @@ export class Orthoslice {
 
         const material = new THREE.MeshBasicMaterial({
             side: THREE.DoubleSide,
-            vertexColors: true
+            vertexColors: true,
+            polygonOffset: true,
+            polygonOffsetFactor: 1
         });
 
 		const mesh = new THREE.Mesh(geometry, material);

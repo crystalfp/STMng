@@ -24,7 +24,9 @@ export class DrawPolyhedra {
 										color: "#FFFFFF",
 										opacity: 0.5,
 										side: THREE.FrontSide,
-										transparent: true
+										transparent: true,
+										polygonOffset: true,
+										polygonOffsetFactor: 1
 									});
 
 	private readonly group = new THREE.Group();
@@ -240,6 +242,7 @@ export class DrawPolyhedra {
 			showPolyhedra: this.visible,
 			color: this.color,
 			labelKind: this.labelKind,
+			atomsSelector: this.atomsSelector,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

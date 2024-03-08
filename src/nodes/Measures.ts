@@ -1,16 +1,17 @@
 /**
- * Measure interaomic distances and angles
+ * Measure interatomic distances and angles
  *
  * @packageDocumentation
  */
 import * as THREE from "three";
+import {watchEffect} from "vue";
 import {sm} from "@/services/SceneManager";
 import {sb} from "@/services/Switchboard";
 import {useConfigStore} from "@/stores/configStore";
 import type {Structure} from "@/types";
-import {watchEffect} from "vue";
 
-// > Access the stores
+const labels = ["Atom A:", "Atom B:", "Atom C:"];
+const colors = ["#FF0000", "#00FF00", "#4263FF"];
 
 export class Measures {
 
@@ -58,8 +59,6 @@ export class Measures {
 				return;
 			}
 			const out = [];
-			const labels = ["A", "B", "C"];
-			const colors = ["#FF0000", "#00FF00", "#4263FF"];
 			const {atoms, look} = this.inputStructure;
 
 			let i = 0;

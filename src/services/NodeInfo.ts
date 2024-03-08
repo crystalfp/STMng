@@ -21,6 +21,7 @@ import {ComputeBonds} from "@/nodes/ComputeBonds";
 import {Orthoslice} from "@/nodes/Orthoslice";
 import {StructureWriter} from "@/nodes/StructureWriter";
 import {Measures} from "@/nodes/Measures";
+import {Trajectories} from "@/nodes/Trajectories";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -43,6 +44,7 @@ export class NodeInfo {
 		"orthoslice":			{ui: "OrthosliceCtrl",		graphic: "out"},
 		"structure-writer":		{ui: "StructureWriterCtrl",	graphic: "none"},
 		"measures":				{ui: "MeasuresCtrl",		graphic: "out"},
+		"draw-trajectories":	{ui: "TrajectoriesCtrl",	graphic: "out"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -109,6 +111,9 @@ export class NodeInfo {
 				break;
 			case "measures":
 				map.set(id, new Measures(id));
+				break;
+			case "draw-trajectories":
+				map.set(id, new Trajectories(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":
@@ -247,6 +252,10 @@ export class NodeInfo {
 				case "structure-writer":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as StructureWriter).saveStatus();
+					break;
+				case "draw-trajectories":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as Trajectories).saveStatus();
 					break;
 			}
 			notFirst = true;

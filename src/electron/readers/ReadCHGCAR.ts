@@ -34,6 +34,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 		let cartesian = false;
 		let totalPoints = 0;
 		let volume: number[] = [];
+		let volumeIndex = 0;
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -204,18 +205,21 @@ export class ReaderCHGCAR implements ReaderImplementation {
 							break;
 						}
 					}
+					volumeIndex = 0;
+					totalPoints = sides[0]*sides[1]*sides[2];
 					structures[currentStep].volume.push({
 						sides,
-						values: []
+						values: Array(totalPoints).fill(0) as number[]
 					});
-					totalPoints = sides[0]*sides[1]*sides[2];
 					volume = structures[currentStep].volume.at(-1)!.values;
 					lineType = "volume-values";
 					break;
 				}
 				case "volume-values": {
 					const fields = line.trim().split(/ +/);
-					for(const field of fields) volume.push(Number.parseFloat(field));
+					for(const field of fields) {
+						volume[volumeIndex++] = Number.parseFloat(field);
+					}
 					totalPoints -= fields.length;
 					if(totalPoints === 0) lineType = "volume-count";
 					break;
@@ -223,13 +227,6 @@ export class ReaderCHGCAR implements ReaderImplementation {
 			}
 			if(lineType === "exit") break;
 		}
-
-		// for(const structure of structures) {
-		// 	console.log("Structure");
-		// 	for(const set of structure.volume) {
-		// 		console.log(set.sides, "->", set.values.length);
-		// 	}
-		// }
 
 		// Add appearance to the structure
 		for(const structure of structures) {

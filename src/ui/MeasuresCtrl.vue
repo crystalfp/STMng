@@ -48,7 +48,7 @@ sb.getUiParams(properties.id, (params: UiParams) => {
   <v-label class="text-h5 w-100 justify-center mb-2 mt-2">Selected atoms</v-label>
   <v-table density="default">
     <tr v-for="line of details" :key="line.index">
-      <td :style="`color: ${line.color}`">{{ `Atom ${line.label}:` }}</td>
+      <td :style="`color: ${line.color}`">{{ line.label }}</td>
       <td>{{ line.symbol }}</td>
     </tr>
   </v-table>
