@@ -379,48 +379,6 @@ export class DrawStructure {
 	}
 
 	/**
-	 * Create a quaternion from a direction vector (versor)
-	 *
-	 * @param nx - Versor x component
-	 * @param ny - Versor y component
-	 * @param nz - Versor z component
-	 * @returns The computed quaternion
-	 */
-	private vectorToQuaternion(nx: number, ny: number, nz: number): THREE.Quaternion {
-
-		const forward = new THREE.Vector3(nx, ny, nz);
-		const direction = new THREE.Vector3(0, 1, 0);
-
-		const cosTheta = forward.dot(direction);
-		const axis = new THREE.Vector3(0, 0, 0);
-
-		if(cosTheta < -0.999) {
-			// special case when vectors in opposite directions:
-			// there is no "ideal" rotation axis
-			// So guess one; any will do as long as it's perpendicular to start
-			axis.crossVectors(new THREE.Vector3(0, 0, 1), forward);
-
-			if(axis.length() * axis.length() < 0.01) {
-				axis.crossVectors(new THREE.Vector3(1, 0, 0), forward);
-			}
-			axis.normalize();
-			return new THREE.Quaternion(axis.x, axis.y, axis.z, 0);
-		}
-
-		axis.crossVectors(forward, direction);
-
-		const es = Math.sqrt((1 + cosTheta) * 2);
-		const invEs = 1 / es;
-
-		return new THREE.Quaternion(
-			axis.x * invEs,
-			axis.y * invEs,
-			axis.z * invEs,
-			es * 0.5
-		);
-	}
-
-	/**
 	 * Create a cylinder bond
 	 *
 	 * @remarks Till now it is not shaded with a color gradient
@@ -437,21 +395,43 @@ export class DrawStructure {
 
 		const subdivisions = this.cylinderSubdivisions[this.drawQuality];
 
-		const dx = start[0] - end[0];
-		const dy = start[1] - end[1];
-		const dz = start[2] - end[2];
+		const dx = end[0] - start[0];
+		const dy = end[1] - start[1];
+		const dz = end[2] - start[2];
 		const len = Math.hypot(dx, dy, dz);
 		const geometry = new THREE.CylinderGeometry(radius, radius, len, subdivisions, 1, true);
 		const meshMaterial = colorTextureMaterial(new THREE.Color(colorStart), new THREE.Color(colorEnd),
 												  this.drawRoughness, this.drawMetalness, subdivisions);
 		const cylinder = new THREE.Mesh(geometry, meshMaterial);
 
+		this.setDirection(dx/len, dy/len, dz/len, cylinder.quaternion);
+
 		const midx = (start[0] + end[0])/2;
 		const midy = (start[1] + end[1])/2;
 		const midz = (start[2] + end[2])/2;
 		cylinder.position.set(midx, midy, midz);
-		cylinder.applyQuaternion(this.vectorToQuaternion(dx/len, -dy/len, dz/len));
+
 		out.add(cylinder);
+	}
+
+	/**
+	 * Set a quaternion from a direction vector (versor)
+	 *
+	 * @param nx - Versor x component
+	 * @param ny - Versor y component
+	 * @param nz - Versor z component
+	 * @param quaternion - The computed quaternion
+	 */
+	private setDirection(nx: number, ny: number, nz: number, quaternion: THREE.Quaternion): void {
+
+		// Versor is assumed to be normalized
+		if(ny > 0.99999) quaternion.set(0, 0, 0, 1);
+		else if(ny < -0.99999) quaternion.set(1, 0, 0, 0);
+		else {
+			const rotationAxis = new THREE.Vector3(nz, 0, -nx).normalize();
+			const radians = Math.acos(ny);
+			quaternion.setFromAxisAngle(rotationAxis, radians);
+		}
 	}
 
 	/**

@@ -87,7 +87,7 @@ watchEffect(() => {
             label="Enable apply symmetries" class="ml-4 mt-3" />
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-4 mt-n5" />
 
-  <v-btn block @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
+  <v-btn block class="mb-4" @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
 
   <v-alert v-if="messageStore.symmetries.message !== ''" title="Error"
            :text="messageStore.symmetries.message" type="error" density="compact" color="red"

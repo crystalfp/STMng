@@ -12,7 +12,6 @@ import {useConfigStore} from "@/stores/configStore";
 
 let sidePrevious = 10;
 let axisLengthPrevious = 1;
-const originZero = new THREE.Vector3(0, 0, 0);
 
 export const setupSceneHelpers = (): void => {
 
@@ -119,39 +118,6 @@ export const setupSceneHelpers = (): void => {
 };
 
 /**
- * Fill a group with the axis
- *
- * @param group - The group that will contains the axis to be added to the scene
- */
-const axisHelper = (group: THREE.Group, axisLength: number): void => {
-
-	const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0),
-												originZero, axisLength,
-												0xFF0000, 0.4, 0.2);
-	const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0),
-												originZero, axisLength,
-												0x79FF00, 0.4, 0.2);
-	const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1),
-												originZero, axisLength,
-												0x0000FF, 0.4, 0.2);
-	group.add(arrowX, arrowY, arrowZ);
-
-	const spriteX = new SpriteText("x", 0.3, "#FF0000");
-	spriteX.fontSize = 180;
-	spriteX.position.set(axisLength+0.1, 0, 0);
-
-	const spriteY = new SpriteText("y", 0.3, "#79FF00");
-	spriteY.fontSize = 180;
-	spriteY.position.set(0, axisLength+0.2, 0);
-
-	const spriteZ = new SpriteText("z", 0.3, "#0000FF");
-	spriteZ.fontSize = 180;
-	spriteZ.position.set(0, 0, axisLength+0.1);
-
-	group.add(spriteX, spriteY, spriteZ);
-};
-
-/**
  * Create the grid
  *
  * @returns The grid to be added to the scene
@@ -168,4 +134,79 @@ const gridHelper = (plane: "XZ" | "XY" | "YZ", gridSide: number): THREE.GridHelp
 		grid.rotateZ(Math.PI / 2);
 	}
 	return grid;
+};
+
+/**
+ * Fill the group with the axis versors
+ *
+ * @param group - The group that will contains the axis to be added to the scene
+ * @param axisLength - Length of each arrow
+ */
+const axisHelper = (group: THREE.Group, axisLength: number): void => {
+
+	const size = 0.05;
+	const coneSize = 2*size;
+	const coneLen = 5*size;
+	const conePosition = axisLength+size;
+	const labelPosition = axisLength+coneLen;
+
+	// Axis
+	const cylinderX = new THREE.Mesh(
+		new THREE.CylinderGeometry(size, size, axisLength, 10),
+		new THREE.MeshBasicMaterial({color: 0xFF0000}) // Red - X
+	);
+	cylinderX.position.set(axisLength/2, 0, 0);
+	cylinderX.rotation.set(0, 0, Math.PI / 2);
+
+	const cylinderY = new THREE.Mesh(
+		new THREE.CylinderGeometry(size, size, axisLength, 10),
+		new THREE.MeshBasicMaterial({color: 0x79FF00}) // Green - Y
+	);
+	cylinderY.position.set(0, axisLength/2, 0);
+
+	const cylinderZ = new THREE.Mesh(
+		new THREE.CylinderGeometry(size, size, axisLength, 10),
+		new THREE.MeshBasicMaterial({color: 0x0000FF}) // Blue - Z
+	);
+	cylinderZ.position.set(0, 0, axisLength/2);
+	cylinderZ.rotation.set(Math.PI / 2, 0, 0);
+
+	// Arrow tips
+	const coneX = new THREE.Mesh(
+		new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
+		new THREE.MeshBasicMaterial({color: 0xFF0000})
+	);
+	coneX.position.set(conePosition, 0, 0);
+	coneX.rotation.set(0, 0, -Math.PI / 2);
+
+	const coneY = new THREE.Mesh(
+		new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
+		new THREE.MeshBasicMaterial({color: 0x79FF00})
+	);
+	coneY.position.set(0, conePosition, 0);
+
+	const coneZ = new THREE.Mesh(
+		new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
+		new THREE.MeshBasicMaterial({color: 0x0000FF})
+	);
+	coneZ.position.set(0, 0, conePosition);
+	coneZ.rotation.set(Math.PI / 2, 0, 0);
+
+	// Axis labels
+	const spriteX = new SpriteText("x", 0.3, "#FF0000");
+	spriteX.fontSize = 180;
+	spriteX.position.set(labelPosition, 0, 0);
+
+	const spriteY = new SpriteText("y", 0.3, "#79FF00");
+	spriteY.fontSize = 180;
+	spriteY.position.set(0, labelPosition+coneSize, 0);
+
+	const spriteZ = new SpriteText("z", 0.3, "#0000FF");
+	spriteZ.fontSize = 180;
+	spriteZ.position.set(0, 0, labelPosition);
+
+	// Add to the output group
+	group.add(cylinderX, cylinderY, cylinderZ,
+			  coneX, coneY, coneZ,
+			  spriteX, spriteY, spriteZ);
 };

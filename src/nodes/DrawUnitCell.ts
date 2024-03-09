@@ -161,7 +161,7 @@ export class DrawUnitCell {
 	 */
 	private drawBasisVectors(basis: BasisType, orig: PositionType): void {
 
-		// Clear previous cell
+		// Clear basis vectors
 		sm.clearGroup(this.nameBV);
 
 		const originZero = new THREE.Vector3(...orig);
@@ -170,33 +170,73 @@ export class DrawUnitCell {
 		const basisB = new THREE.Vector3(basis[3], basis[4], basis[5]);
 		const basisC = new THREE.Vector3(basis[6], basis[7], basis[8]);
 
-		const basisALen = basisA.length();
-		const basisBLen = basisB.length();
-		const basisCLen = basisC.length();
+		this.basisVectorArrow(basisA, originZero, "#FF0000", "a", this.outBV);
+		this.basisVectorArrow(basisB, originZero, "#79FF00", "b", this.outBV);
+		this.basisVectorArrow(basisC, originZero, "#0000FF", "c", this.outBV);
+	}
 
-		const nA = basisA.clone().normalize();
-		const nB = basisB.clone().normalize();
-		const nC = basisC.clone().normalize();
+	/**
+	 * From a direction extract needed rotation
+	 *
+	 * @param versor - Direction versor
+	 * @param quaternion - Resulting rotation quaternion
+	 */
+	private setDirection(versor: THREE.Vector3, quaternion: THREE.Quaternion): void {
 
-		const arrowA = new THREE.ArrowHelper(nA, originZero, basisALen, 0xFF0000, 0.4, 0.2);
-		const arrowB = new THREE.ArrowHelper(nB, originZero, basisBLen, 0x79FF00, 0.4, 0.2);
-		const arrowC = new THREE.ArrowHelper(nC, originZero, basisCLen, 0x0000FF, 0.4, 0.2);
+		// Versor is assumed to be normalized
+		if(versor.y > 0.99999) quaternion.set(0, 0, 0, 1);
+		else if(versor.y < -0.99999) quaternion.set(1, 0, 0, 0);
+		else {
+			const rotationAxis = new THREE.Vector3(versor.z, 0, -versor.x).normalize();
+			const radians = Math.acos(versor.y);
+			quaternion.setFromAxisAngle(rotationAxis, radians);
+		}
+	}
 
-		this.outBV.add(arrowA, arrowB, arrowC);
+	/**
+	 * Create an arrow in the direction of the basis vector
+	 *
+	 * @param basis - Basis vector to be show
+	 * @param origin - Unit cell origin
+	 * @param color - Color of the arrow and the label
+	 * @param label - Label of the vector
+	 * @param group - The arrow is added to this group
+	 */
+	private basisVectorArrow(basis: THREE.Vector3, origin: THREE.Vector3,
+							 color: string, label: string, group: THREE.Group): void {
 
-		const spriteA = new SpriteText("a", 0.3, "#FF0000");
-		spriteA.fontSize = 180;
-		spriteA.position.addVectors(basisA, new THREE.Vector3(0.1+orig[0], orig[1], orig[2]));
+		const versor = basis.clone().normalize();
+		const basisLen = basis.length();
 
-		const spriteB = new SpriteText("b", 0.3, "#79FF00");
-		spriteB.fontSize = 180;
-		spriteB.position.addVectors(basisB, new THREE.Vector3(orig[0], 0.1+orig[1], orig[2]));
+		const size = 0.05;
+		const coneSize = 2*size;
+		const coneLen = 5*size;
 
-		const spriteC = new SpriteText("c", 0.3, "#0000FF");
-		spriteC.fontSize = 180;
-		spriteC.position.addVectors(basisC, new THREE.Vector3(orig[0], orig[1], 0.1+orig[2]));
+		const cylinder = new THREE.Mesh(
+			new THREE.CylinderGeometry(size, size, basisLen-coneLen, 10),
+			new THREE.MeshBasicMaterial({color})
+		);
 
-		this.outBV.add(spriteA, spriteB, spriteC);
+		this.setDirection(versor, cylinder.quaternion);
+		cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
+
+		// Arrow tips
+		const cone = new THREE.Mesh(
+			new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
+			new THREE.MeshBasicMaterial({color})
+		);
+
+		cone.quaternion.copy(cylinder.quaternion);
+		cone.position.addVectors(basis, origin);
+		cone.position.addScaledVector(versor, -coneLen/2);
+
+		// Label
+		const sprite = new SpriteText(label, 0.3, color);
+		sprite.fontSize = 180;
+		sprite.position.addVectors(basis, origin);
+		sprite.position.addScaledVector(versor, 0.1);
+
+		group.add(cylinder, cone, sprite);
 	}
 
 	/**
