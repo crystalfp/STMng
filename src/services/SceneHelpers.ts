@@ -6,9 +6,9 @@
 
 import * as THREE from "three";
 import {watchEffect} from "vue";
-import SpriteText from "three-spritetext";
 import {sm} from "@/services/SceneManager";
 import {useConfigStore} from "@/stores/configStore";
+import {spriteText} from "@/services/SpriteText";
 
 let sidePrevious = 10;
 let axisLengthPrevious = 1;
@@ -193,17 +193,9 @@ const axisHelper = (group: THREE.Group, axisLength: number): void => {
 	coneZ.rotation.set(Math.PI / 2, 0, 0);
 
 	// Axis labels
-	const spriteX = new SpriteText("x", 0.3, "#FF0000");
-	spriteX.fontSize = 180;
-	spriteX.position.set(labelPosition, 0, 0);
-
-	const spriteY = new SpriteText("y", 0.3, "#79FF00");
-	spriteY.fontSize = 180;
-	spriteY.position.set(0, labelPosition+coneSize, 0);
-
-	const spriteZ = new SpriteText("z", 0.3, "#0000FF");
-	spriteZ.fontSize = 180;
-	spriteZ.position.set(0, 0, labelPosition);
+	const spriteX = spriteText("x", "#FF0000", [labelPosition, 0, 0]);
+	const spriteY = spriteText("y", "#79FF00", [0, labelPosition+3*size, 0]);
+	const spriteZ = spriteText("z", "#0000FF", [0, 0, labelPosition]);
 
 	// Add to the output group
 	group.add(cylinderX, cylinderY, cylinderZ,

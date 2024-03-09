@@ -43,7 +43,7 @@ const loadProject = (filename: string): void => {
  */
 export const createProjectEditor = (): void => {
 
-		createSecondaryWindow(undefined, {
+	createSecondaryWindow(undefined, {
 		routerPath: "/editor",
 		width: 1700,
 		height: 900,

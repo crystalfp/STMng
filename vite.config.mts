@@ -53,7 +53,6 @@ export default defineConfig({
                     ],
                     three: [
                         "three",
-                        "three-spritetext"
                     ]
                 }
             },

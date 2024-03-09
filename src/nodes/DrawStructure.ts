@@ -6,10 +6,10 @@
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
-import SpriteText from "three-spritetext";
 import type {PositionType, Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
+import {spriteText} from "@/services/SpriteText";
 
 export class DrawStructure {
 
@@ -222,12 +222,12 @@ export class DrawStructure {
 				case "index":
 					labelText = idx.toString();
 					break;
+				default:
+					labelText = "?";
+					break;
 			}
 
-			const label = new SpriteText(labelText, 0.3, color);
-			label.fontSize = 160;
-			const pos = atom.position;
-			label.position.set(pos[0], pos[1], pos[2] + offset);
+			const label = spriteText(labelText, color, atom.position, [0, 0, offset]);
 			this.labelsGroup.add(label);
 
 			++idx;

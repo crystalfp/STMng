@@ -4,10 +4,10 @@
  * @packageDocumentation
  */
 import * as THREE from "three";
-import SpriteText from "three-spritetext";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {BasisType, PositionType, Structure, Atom, Volume} from "@/types";
+import {spriteText} from "@/services/SpriteText";
 
 export class DrawUnitCell {
 
@@ -231,10 +231,9 @@ export class DrawUnitCell {
 		cone.position.addScaledVector(versor, -coneLen/2);
 
 		// Label
-		const sprite = new SpriteText(label, 0.3, color);
-		sprite.fontSize = 180;
-		sprite.position.addVectors(basis, origin);
-		sprite.position.addScaledVector(versor, 0.1);
+		const sprite = spriteText(label, color,
+								  [basis.x+origin.x, basis.y+origin.y, basis.z+origin.z],
+								  [versor.x*0.1, versor.y*0.1, versor.z*0.1]);
 
 		group.add(cylinder, cone, sprite);
 	}

@@ -254,11 +254,11 @@ export const openMenuEntry = (entryName: string, payload=""): void => {
     mainWin.webContents.send("APP:MENU", entryName, payload);
 };
 
-// > Update the main window project list
+// > Update the main window project
 /**
- * Update the main window project list
+ * Update the main window project
  *
- * @param projectAsString - JSON encoded project to update the main window projects list
+ * @param projectAsString - JSON encoded project to update the main window project
  */
 export const sendLoadedProject = (projectAsString: string): void => {
 
