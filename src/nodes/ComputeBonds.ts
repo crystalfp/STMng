@@ -6,6 +6,14 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure, Atom, Bond} from "@/types";
 
+/** Data for the per atom pair multiplier of the sum of covalent radii */
+interface PairData {
+    label: string;
+	atomZi: number;
+	atomZj: number;
+    scale: number;
+}
+
 // The H bonds form when X___H...Y and X, Y are N, O, F (maybe also S)
 const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
 
@@ -43,6 +51,8 @@ export class ComputeBonds {
 	private maxHValenceAngle    = 30;
 	private enableComputeBonds  = true;
 	private bondScale           = 1.1;
+	private perPairScale		= false;
+	private perPairData: PairData[] = [];
 
 	/**
 	 * Create the node
@@ -60,6 +70,9 @@ export class ComputeBonds {
     		this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
     		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
     		this.bondScale    		 = params.bondScale as number ?? 1.1;
+			this.perPairScale		 = params.perPairScale as boolean ?? false;
+
+			this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
 			this.addBonds();
 		});
@@ -67,10 +80,71 @@ export class ComputeBonds {
 		sb.getData(this.id, (data: unknown) => {
 
 			this.inputStructure = data as Structure;
+
+			this.createPairData();
+
+			sb.setUiParams(this.id, {
+				perPairData: JSON.stringify(this.perPairData)
+			});
 			this.addBonds();
 		});
 	}
 
+	/**
+	 * Create the table of per atom pair multiplier of the sum of covalent radii
+	 */
+	private createPairData(): void {
+
+		// Get the structure atoms
+		if(!this.inputStructure?.look || this.inputStructure.atoms.length === 0) {
+			this.perPairData = [];
+			return;
+		}
+		const {look} = this.inputStructure;
+
+		// Remove previous entries not existing in the current structure
+		let len = this.perPairData.length;
+		for(let i=len-1; i >= 0; --i) {
+			if(!look[this.perPairData[i].atomZi] || !look[this.perPairData[i].atomZj]) {
+				this.perPairData.splice(i, 1);
+			}
+		}
+
+		// Get the type of atoms in the structure
+		const z: number[] = [];
+		for(const atomZ in look) z.push(Number.parseInt(atomZ));
+
+		// Add missing pairs
+		len = z.length;
+		for(let i=0; i < len; ++i) {
+			for(let j=i; j < len; ++j) {
+
+				if(z[i] === 1 && z[j] === 1) continue;
+
+				let add = true;
+				for(const pair of this.perPairData) {
+					if((pair.atomZi === z[i] && pair.atomZj === z[j]) ||
+					   (pair.atomZi === z[j] && pair.atomZj === z[i])) {
+						add = false;
+						break;
+					}
+				}
+
+				if(add) {
+					this.perPairData.push({
+						label: `${look[z[i]].symbol} – ${look[z[j]].symbol}`,
+						atomZi: z[i],
+						atomZj: z[j],
+						scale: 1.1
+					});
+				}
+			}
+		}
+	}
+
+	/**
+	 * Add bonds to output structure
+	 */
 	private addBonds(): void {
 
 		// If no input structure, output an empty structure
@@ -95,6 +169,11 @@ export class ComputeBonds {
 		}
 	}
 
+	/**
+	 * Compute bonds for the given structure
+	 *
+	 * @returns Computed bonds list
+	 */
 	private computeBonds(): Bond[] {
 
 		const {atoms, look} = this.inputStructure!;
@@ -112,7 +191,7 @@ export class ComputeBonds {
 		// The computed bonds
 		const bonds: Bond[] = [];
 
-		const {maxHValenceAngle, minBondingDistance, maxBondingDistance, maxHBondingDistance, bondScale} = this;
+		const {maxHValenceAngle, minBondingDistance, maxBondingDistance, maxHBondingDistance} = this;
 
 		// Minimum covalent radius is 0.32 for He, so no bond shorter than .64 could exist
 		const minDistanceSquared = minBondingDistance*minBondingDistance;
@@ -123,7 +202,7 @@ export class ComputeBonds {
 		// Maximum distance for an H bond
 		const maxDistanceHbondSquared = maxHBondingDistance*maxHBondingDistance;
 
-		// Maximum angle to form a H bond
+		// Maximum angle to form a H bond (already in maxHValenceAngle)
 
 		// Compute H bonds only if H atoms present
 		const computeHBonds = atoms.some((atom) => {return atom.atomZ === 1;});
@@ -151,7 +230,7 @@ export class ComputeBonds {
 
 				if(distSquared < minDistanceSquared || distSquared > maxDistanceSquared) continue;
 
-				const sumRcov = (rCi + rCj)*bondScale;
+				const sumRcov = (rCi + rCj)*this.boundingScale(atomZi, atomZj);
 				const sumRcovSquared = sumRcov*sumRcov;
 
 				// Check for H-bond
@@ -170,7 +249,7 @@ export class ComputeBonds {
 		}
 
 		// One H bond forms when X___H...Y where X, Y are N, O or F.
-		// Here we check the angle HXY. It should be less than 30 deg.
+		// Here we check the angle HXY. It should be less than maxHValenceAngle (usually 30 deg.)
 		const countBonds = bonds.length;
 		for(let i=0; i < countBonds; ++i) {
 
@@ -210,7 +289,7 @@ export class ComputeBonds {
 				const rCH = radii[idxH];
 				const rCY = radii[idxY];
 
-				const sumCov = rCH + rCY;
+				const sumCov = (rCH + rCY)*this.boundingScale(atoms[idxH].atomZ, atoms[idxY].atomZ);
 				const sumCovSquared = sumCov*sumCov;
 
 				bonds[i].type = distSquared <= sumCovSquared ? "n" : "x";
@@ -229,6 +308,31 @@ export class ComputeBonds {
 		}
 
 		return bonds;
+	}
+
+	// > Bonding scale by type
+	/**
+	 * Bonding scale by type of involved atoms
+	 *
+	 * @param atomZi - Atom type of the first atom in the possible bond
+	 * @param atomZj - Atom type of the second atom in the possible bond
+	 * @returns The multiplier for the sum of covalent radii
+	 */
+	private boundingScale(atomZi: number, atomZj: number): number {
+
+		// Get multiplier for the given pair of atoms
+		if(this.perPairScale) {
+
+			for(const pair of this.perPairData) {
+				if((pair.atomZi === atomZi && pair.atomZj === atomZj) ||
+				   (pair.atomZi === atomZj && pair.atomZj === atomZi)) {
+					return pair.scale;
+				   }
+			}
+		}
+
+		// Return the default value for all atoms pairs
+		return this.bondScale;
 	}
 
 	// > Output an empty structure
@@ -264,6 +368,7 @@ export class ComputeBonds {
 			maxHBondingDistance: this.maxHBondingDistance,
 			maxHValenceAngle:    this.maxHValenceAngle,
 			bondScale:			 this.bondScale,
+			perPairScale: 		 this.perPairScale,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

@@ -17,10 +17,8 @@ Requests from Oganov:
   ☐ An option to specify arbitrary section plane
   ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ Use of local fingerprint order parameters to color atoms
-  ☐ Bonding criteria different for pair of atoms types
 
 Nice to have/Future:
-	☐ Try lines as rectangle or box (or tube with small radius) Check <https://discourse.threejs.org/t/increase-width-of-lines-in-axes-helper/61869/8>
   ☐ Label color
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Color polyhedra by central atom color
@@ -28,6 +26,8 @@ Nice to have/Future:
   ☐ Coloring of trajectories
 
 Archive:
+  ✔ Try lines as rectangle or box (or tube with small radius) Check <https://discourse.threejs.org/t/increase-width-of-lines-in-axes-helper/61869/8> @done(2024-03-10 15:49)
+  ✔ Bonding criteria different for pair of atoms types @done(2024-03-10 15:41) @project(Requests from Oganov)
   ✔ Measuring bond distances and angles @done(2024-03-07 11:31) @project(Requests from Oganov)
   ✔ Dialog with symmetry data @done(2024-03-06 05:40) @project(Requests from Oganov)
   ✔ Tracing trajectories of selected atoms or atomic types @done(2024-03-08 05:30) @project(Requests from Oganov)
