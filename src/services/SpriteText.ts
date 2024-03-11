@@ -19,18 +19,18 @@ export const spriteText = (text: string, color: string,
 						   position: PositionType, offset?: PositionType): THREE.Sprite => {
 
 	const canvas = document.createElement("canvas");
-	canvas.width = 128;
-	canvas.height = 128;
+	canvas.width = 256;
+	canvas.height = 256;
 	const ctx = canvas.getContext("2d")!;
-	ctx.font = "60pt Roboto";
+	ctx.font = "bold 36pt Roboto";
 	ctx.fillStyle = color;
 	ctx.textAlign = "center";
 	ctx.textBaseline = "middle";
-	ctx.fillText(text, 64, 60);
+	ctx.fillText(text, 128, 128);
 	const tex = new THREE.Texture(canvas);
 	tex.needsUpdate = true;
-	tex.minFilter = THREE.LinearFilter;
-    tex.colorSpace = THREE.SRGBColorSpace;
+	// tex.minFilter = THREE.LinearFilter;
+    // tex.colorSpace = THREE.SRGBColorSpace;
 	const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: tex}));
 	if(offset) {
 		sprite.position.set(position[0]+offset[0], position[1]+offset[1], position[2]+offset[2]);

@@ -76,7 +76,7 @@ const resetSliders = (): void => {
 <v-container class="container">
 
   <v-switch v-model="enableComputeBonds" color="primary"
-            label="Enable compute bonds" density="compact" class="mt-6 ml-2" />
+            label="Enable compute bonds" density="compact" class="mt-4 ml-2" />
 
   <v-label :text="`Bonding min distance (${minBondingDistance.toFixed(2)})`" class="ml-0 mt-1" />
   <v-slider v-model="minBondingDistance" density="compact" min="0.6" max="1" step="0.01" class="ml-0" />

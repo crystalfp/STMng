@@ -18,10 +18,11 @@ import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Symmetries} from "@/nodes/Symmetries";
 import {ComputeBonds} from "@/nodes/ComputeBonds";
-import {Orthoslice} from "@/nodes/Orthoslice";
+import {Orthoslice} from "@/nodes/DrawOrthoslice";
 import {StructureWriter} from "@/nodes/StructureWriter";
 import {Measures} from "@/nodes/Measures";
 import {Trajectories} from "@/nodes/Trajectories";
+import {Isosurface} from "@/nodes/DrawIsosurface";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -45,6 +46,7 @@ export class NodeInfo {
 		"structure-writer":		{ui: "StructureWriterCtrl",	graphic: "none"},
 		"measures":				{ui: "MeasuresCtrl",		graphic: "out"},
 		"draw-trajectories":	{ui: "TrajectoriesCtrl",	graphic: "out"},
+		"isosurface":			{ui: "IsosurfaceCtrl",		graphic: "out"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -114,6 +116,9 @@ export class NodeInfo {
 				break;
 			case "draw-trajectories":
 				map.set(id, new Trajectories(id));
+				break;
+			case "isosurface":
+				map.set(id, new Isosurface(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":
@@ -256,6 +261,10 @@ export class NodeInfo {
 				case "draw-trajectories":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as Trajectories).saveStatus();
+					break;
+				case "isosurface":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as Isosurface).saveStatus();
 					break;
 			}
 			notFirst = true;

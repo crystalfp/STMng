@@ -23,9 +23,9 @@
       "label": "Viewer",
       "type": "viewer-3d"
     },
-    "trace": {
-      "label": "Trajectories",
-      "type": "draw-trajectories",
+    "isosurface": {
+      "label": "Isosurface",
+      "type": "isosurface",
       "in": "bonds"
     }
   },

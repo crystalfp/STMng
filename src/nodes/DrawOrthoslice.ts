@@ -31,10 +31,10 @@ export class Orthoslice {
     private colorIsolines = false;
 
 	/**
-	* Create the node
-	*
-	* @param id - ID of the Ortho Plane node
-	*/
+	 * Create the node
+	 *
+	 * @param id - ID of the Orthoslice node
+	 */
 	constructor(private readonly id: string) {
 
 		sb.getUiParams(this.id, (params: UiParams) => {

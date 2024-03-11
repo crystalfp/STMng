@@ -16,7 +16,7 @@ const pr = defineProps<{
 
 const tickLabels: Record<number, string> = {0: "X", 1: "Y", 2: "Z"};
 
-/** Formats that could be loaded */
+/** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
 const dataset = ref(0);

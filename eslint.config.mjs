@@ -193,7 +193,10 @@ export default [{
         "guard-for-in": "off",
         "no-unneeded-ternary": "warn",
         "no-trailing-spaces": "warn",
-        "id-length": ["warn", {exceptions: ["i", "j", "k", "x", "y", "z", "w", "h", "r", "g", "a", "b", "c"]}],
+        "id-length": ["warn", {exceptions: [
+                                    "i", "j", "k", "x", "y", "z",
+                                    "w", "h", "r", "g", "a", "b", "c", "t"
+                               ]}],
         "prefer-const": "warn",
         "for-direction": "error",
         "no-template-curly-in-string": "error",
