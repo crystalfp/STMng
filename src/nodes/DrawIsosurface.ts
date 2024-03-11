@@ -7,7 +7,6 @@ import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
-// import type {PositionType, Structure, BasisType} from "@/types";
 import type {Structure} from "@/types";
 import {IsosurfaceCore} from "@/services/Isosurface";
 
@@ -21,6 +20,7 @@ export class Isosurface {
     private range: [number, number] = [-10, 10];
     private colormapName = "rainbow";
     private lut = new Lut(this.colormapName, 512);
+	private opacity = 1;
 
 	/**
 	 * Create the node
@@ -35,6 +35,7 @@ export class Isosurface {
     		this.isoValue = params.isoValue as number ?? 0;
             this.colormapName = params.colormapName as string ?? "rainbow";
             this.lut = new Lut(this.colormapName, 512);
+			this.opacity = params.opacity as number ?? 1;
 
 			this.createIsosurface();
 		});
@@ -118,14 +119,18 @@ export class Isosurface {
         const geometry = new THREE.BufferGeometry();
 		geometry.setIndex(iso.indices);
 		geometry.setAttribute("position", new THREE.Float32BufferAttribute(iso.vertices, 3));
-		geometry.setAttribute("normal", new THREE.Float32BufferAttribute(iso.normals, 3));
+		geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(iso.normals, 3));
 
 		this.lut.setMin(this.range[0]);
 		this.lut.setMax(this.range[1]);
 
         const material = new THREE.MeshStandardMaterial({
             side: THREE.DoubleSide,
-			color: this.lut.getColor(this.isoValue).getHex()
+			color: this.lut.getColor(this.isoValue).getHex(),
+			opacity: this.opacity,
+			roughness: 0.5,
+			metalness: 0.6,
+			transparent: true,
         });
 
 		const mesh = new THREE.Mesh(geometry, material);
@@ -146,6 +151,7 @@ export class Isosurface {
 			dataset: this.dataset,
     		isoValue: this.isoValue,
             colormapName: this.colormapName,
+			opacity: this.opacity,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

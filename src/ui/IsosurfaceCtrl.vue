@@ -24,6 +24,7 @@ const step = computed(() => {
     return (valueMax.value - valueMin.value)/100;
 });
 const colormapName = ref("rainbow");
+const opacity = ref(1);
 
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
@@ -48,7 +49,7 @@ sb.getUiParams(properties.id, (params: UiParams) => {
     valueMax.value = params.valueMax as number ?? 10;
     isoValue.value = params.isoValue as number ?? 0;
     colormapName.value = params.colormapName as string ?? "rainbow";
-
+    opacity.value = params.opacity as number ?? 1;
 });
 watchEffect(() => {
     sb.setUiParams(properties.id, {
@@ -56,6 +57,7 @@ watchEffect(() => {
         dataset: dataset.value,
         isoValue: isoValue.value,
         colormapName: colormapName.value,
+        opacity: opacity.value,
     });
 });
 
@@ -68,7 +70,7 @@ watchEffect(() => {
             density="compact" class="mt-4 ml-4" />
   <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
-  <v-label :text="`Isoline value (${humanFormat(isoValue)})`" class="ml-2" />
+  <v-label :text="`Isosurface value (${humanFormat(isoValue)})`" class="ml-2" />
   <v-slider v-model="isoValue" :step="step" :min="valueMin" :max="valueMax" class="ml-4 mt-1" />
 
   <v-row class="mt-3 mb-2">
@@ -88,5 +90,7 @@ watchEffect(() => {
     </v-menu>
     <v-label class="underlined-label">{{ colormapName }}</v-label>
   </v-row>
+  <v-label :text="`Opacity (${opacity.toFixed(1)})`" class="ml-2 mt-6" />
+  <v-slider v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-4 mt-1" />
 </v-container>
 </template>
