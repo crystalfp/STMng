@@ -23,7 +23,8 @@ export default [{
     ignores: [
         "vite.config.mts",
         "dist-electron/**/*.js",
-        "src/vite-env.d.ts"
+        "src/vite-env.d.ts",
+        "save/**/*.*"
     ]}, {
     files: [
         "src/**/*.ts",

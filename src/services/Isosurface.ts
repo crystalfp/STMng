@@ -10,7 +10,6 @@ import {getCase, getEdge} from "@/services/IsosurfaceTables";
 
 export class IsosurfaceCore {
 
-	private readonly ids: number[] = [];
 	private readonly voxelScalars: number[] = [];
 	private readonly voxelPts: number[] = [];
 	private readonly voxelGradients: number[] = [];
@@ -50,6 +49,11 @@ export class IsosurfaceCore {
 		this.dims0x1 = this.dims[0]*this.dims[1];
 	}
 
+	/**
+	 * Compute the isosurface
+	 *
+	 * @param isoValue - The value at which the isosurface should be computed
+	 */
 	computeIsosurface(isoValue: number): void {
 
 		// For each voxel
@@ -63,6 +67,14 @@ export class IsosurfaceCore {
 		}
 	}
 
+	/**
+	 * Compute the triangles inside a voxel
+	 *
+	 * @param i - Fast index of the origin of the voxel
+	 * @param j - Intermediate index of the origin of the voxel
+	 * @param k - Slow index of the origin of the voxel
+	 * @param isoValue - Value at which the triangles should be computed
+	 */
 	private produceTriangles(i: number, j: number, k: number, isoValue: number): void {
 
 		// Get vertices values
@@ -109,6 +121,7 @@ export class IsosurfaceCore {
 				);
 				this.faceIndices.push(this.vertexIndex++);
 
+				// Interpolate the normals
 				const n0 = this.voxelGradients.slice(edgeVerts[0] * 3, (edgeVerts[0] + 1) * 3);
             	const n1 = this.voxelGradients.slice(edgeVerts[1] * 3, (edgeVerts[1] + 1) * 3);
 				const nn = [
@@ -122,22 +135,31 @@ export class IsosurfaceCore {
       	}
 	}
 
+	/**
+	 * Get the values at the corners of the voxel
+	 *
+	 * @param i - Fast index of the origin of the voxel
+	 * @param j - Intermediate index of the origin of the voxel
+	 * @param k - Slow index of the origin of the voxel
+	 */
 	private getVoxelScalars(i: number, j: number, k: number): void {
+
+		const ids = Array(8).fill(0) as number[];
 
 		// First get the indices for the voxel
 		// (i,i+1),(j,j+1),(k,k+1) - i varies fastest; then j; then k
-		this.ids[0] = k * this.dims[0] * this.dims[1] + j * this.dims[0] + i; // i, j, k
-		this.ids[1] = this.ids[0] + 1; // i+1, j, k
-		this.ids[2] = this.ids[0] + this.dims[0]; // i, j+1, k
-		this.ids[3] = this.ids[2] + 1; // i+1, j+1, k
-		this.ids[4] = this.ids[0] + this.dims[0] * this.dims[1]; // i, j, k+1
-		this.ids[5] = this.ids[4] + 1; // i+1, j, k+1
-		this.ids[6] = this.ids[4] + this.dims[0]; // i, j+1, k+1
-		this.ids[7] = this.ids[6] + 1; // i+1, j+1, k+1
+		ids[0] = k * this.dims[0] * this.dims[1] + j * this.dims[0] + i; // i, j, k
+		ids[1] = ids[0] + 1; // i+1, j, k
+		ids[2] = ids[0] + this.dims[0]; // i, j+1, k
+		ids[3] = ids[2] + 1; // i+1, j+1, k
+		ids[4] = ids[0] + this.dims[0] * this.dims[1]; // i, j, k+1
+		ids[5] = ids[4] + 1; // i+1, j, k+1
+		ids[6] = ids[4] + this.dims[0]; // i, j+1, k+1
+		ids[7] = ids[6] + 1; // i+1, j+1, k+1
 
 		// Now retrieve the scalars
 		for(let ii = 0; ii < 8; ++ii) {
-			this.voxelScalars[ii] = this.values[this.ids[ii]];
+			this.voxelScalars[ii] = this.values[ids[ii]];
 		}
 	}
 

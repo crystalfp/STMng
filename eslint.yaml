@@ -372,3 +372,4 @@ globals:
 ignorePatterns:
     - vite.config.mts
     - dist-electron/**/*.js
+    - save/**/*.*

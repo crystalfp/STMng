@@ -28,7 +28,7 @@ class FatAxesHelper extends Line2 {
     this.computeLineDistances();
   }
 
-  dispose(): void {
+  dispose() {
     this.geometry.dispose();
     this.material.dispose();
   }

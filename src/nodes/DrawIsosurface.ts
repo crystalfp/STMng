@@ -22,6 +22,11 @@ export class Isosurface {
     private lut = new Lut(this.colormapName, 512);
 	private opacity = 1;
 
+	private datasetPrevious = 0;
+	private isovaluePrevious = 0;
+
+	private mesh: THREE.Mesh | undefined;
+
 	/**
 	 * Create the node
 	 *
@@ -37,7 +42,26 @@ export class Isosurface {
             this.lut = new Lut(this.colormapName, 512);
 			this.opacity = params.opacity as number ?? 1;
 
-			this.createIsosurface();
+			// Check if needs to change only material and visibility of the surface
+			if(this.mesh &&
+			   this.dataset === this.datasetPrevious &&
+			   this.isoValue === this.isovaluePrevious) {
+
+				this.mesh.visible = this.showIsosurface;
+				const material = this.mesh.material as THREE.MeshStandardMaterial;
+				material.opacity = this.opacity;
+				material.transparent = this.opacity < 0.999;
+				this.lut.setColorMap(this.colormapName, 512);
+				this.lut.setMin(this.range[0]);
+				this.lut.setMax(this.range[1]);
+
+				material.color = this.lut.getColor(this.isoValue);
+			}
+			else {
+				this.datasetPrevious = this.dataset;
+				this.isovaluePrevious = this.isoValue;
+				this.createIsosurface();
+			}
 		});
 
 		sb.getData(this.id, (data: unknown) => {
@@ -51,11 +75,15 @@ export class Isosurface {
 				this.dataset = 0;
 				this.maxDataset = 0;
                 this.range = [-10, 10];
+				this.isoValue = 0;
 			}
 			else {
 				this.dataset = 0;
 				this.maxDataset = countDatasets - 1;
 				this.range = this.getValueLimits();
+				this.isoValue = (this.range[0]+this.range[1])/2;
+				this.datasetPrevious = this.dataset;
+				this.isovaluePrevious = this.isoValue;
 			}
 
 			sb.setUiParams(this.id, {
@@ -64,6 +92,7 @@ export class Isosurface {
 				maxDataset: this.maxDataset,
                 valueMin: this.range[0],
                 valueMax: this.range[1],
+				isoValue: this.isoValue
 			});
 
 			this.createIsosurface();
@@ -93,6 +122,9 @@ export class Isosurface {
         return [minValue, maxValue];
     }
 
+	/**
+	 * Create a new isosurface
+	 */
 	createIsosurface(): void {
 
         // Remove the existing surface
@@ -130,13 +162,13 @@ export class Isosurface {
 			opacity: this.opacity,
 			roughness: 0.5,
 			metalness: 0.6,
-			transparent: true,
+			transparent: this.opacity < 0.999,
         });
 
-		const mesh = new THREE.Mesh(geometry, material);
-        mesh.name = meshName;
-        mesh.visible = this.showIsosurface;
-        sm.add(mesh);
+		this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.name = meshName;
+        this.mesh.visible = this.showIsosurface;
+        sm.add(this.mesh);
 	}
 
 	/**
