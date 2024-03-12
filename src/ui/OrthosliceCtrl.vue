@@ -4,8 +4,9 @@
  * Controls for the orthoslice.
  */
 
-import {ref, watchEffect, computed} from "vue";
+import {ref, watchEffect, computed, watch} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {humanFormat} from "@/services/HumanFormat";
 
 // > Properties
 const pr = defineProps<{
@@ -37,21 +38,21 @@ const step = computed(() => {
     return (valueMax.value - valueMin.value)/100;
 });
 
-const formatPrecision = 4;
-const tenToN = Math.pow(10, formatPrecision);
-const tenToMinusN = Math.pow(10, -formatPrecision);
-const formatZero = `0.${"0".repeat(formatPrecision)}`;
-const humanFormat = (x: number): string => {
-
-    if(x === 0) return formatZero;
-    if(x >= tenToN || x <= -tenToN) return x.toExponential(formatPrecision);
-    if(x < tenToMinusN && x > -tenToMinusN) return x.toExponential(formatPrecision);
-    return x.toPrecision(formatPrecision);
-};
-
 const showIsolines = ref(false);
 const colorIsolines = ref(false);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
+
+// Debounce the isoValue so the slider becomes more reactive
+const isoValueToDebounce = ref(0);
+let debouncingTimeoutId: NodeJS.Timeout;
+watch(isoValueToDebounce, () => {
+
+    clearTimeout(debouncingTimeoutId);
+
+    debouncingTimeoutId = setTimeout(() => {
+        isoValue.value = isoValueToDebounce.value;
+    }, 500);
+});
 
 sb.getUiParams(pr.id, (params: UiParams) => {
     showOrthoslice.value = params.showOrthoslice as boolean ?? false;
@@ -76,6 +77,8 @@ sb.getUiParams(pr.id, (params: UiParams) => {
 
     limits.value[0] = limitLow.value;
     limits.value[1] = limitHigh.value;
+
+    isoValueToDebounce.value = isoValue.value;
 });
 watchEffect(() => {
     sb.setUiParams(pr.id, {
@@ -141,7 +144,7 @@ watchEffect(() => {
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
   <v-label :text="`Isoline value (${humanFormat(isoValue)})`" class="ml-4" />
-  <v-slider v-model="isoValue" :step="step" :min="valueMin" :max="valueMax"
+  <v-slider v-model="isoValueToDebounce" :step="step" :min="valueMin" :max="valueMax"
             :disabled="useColorClasses" class="ml-4 mt-1" />
 </v-container>
 </template>

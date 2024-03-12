@@ -4,8 +4,9 @@
  * Controls for bonds computation.
  */
 
-import {ref, watchEffect, computed} from "vue";
+import {ref, watchEffect, computed, watch} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {humanFormat} from "@/services/HumanFormat";
 
 // > Properties
 const properties = defineProps<{
@@ -29,17 +30,17 @@ const opacity = ref(1);
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
-const formatPrecision = 4;
-const tenToN = Math.pow(10, formatPrecision);
-const tenToMinusN = Math.pow(10, -formatPrecision);
-const formatZero = `0.${"0".repeat(formatPrecision)}`;
-const humanFormat = (x: number): string => {
+// Debounce the isoValue so the slider becomes more reactive
+const isoValueToDebounce = ref(0);
+let debouncingTimeoutId: NodeJS.Timeout;
+watch(isoValueToDebounce, () => {
 
-    if(x === 0) return formatZero;
-    if(x >= tenToN || x <= -tenToN) return x.toExponential(formatPrecision);
-    if(x < tenToMinusN && x > -tenToMinusN) return x.toExponential(formatPrecision);
-    return x.toPrecision(formatPrecision);
-};
+    clearTimeout(debouncingTimeoutId);
+
+    debouncingTimeoutId = setTimeout(() => {
+        isoValue.value = isoValueToDebounce.value;
+    }, 500);
+});
 
 sb.getUiParams(properties.id, (params: UiParams) => {
     showIsosurface.value = params.showIsosurface as boolean ?? false;
@@ -50,6 +51,8 @@ sb.getUiParams(properties.id, (params: UiParams) => {
     isoValue.value = params.isoValue as number ?? 0;
     colormapName.value = params.colormapName as string ?? "rainbow";
     opacity.value = params.opacity as number ?? 1;
+
+    isoValueToDebounce.value = isoValue.value;
 });
 watchEffect(() => {
     sb.setUiParams(properties.id, {
@@ -71,7 +74,7 @@ watchEffect(() => {
   <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
   <v-label :text="`Isosurface value (${humanFormat(isoValue)})`" class="ml-2" />
-  <v-slider v-model="isoValue" :step="step" :min="valueMin" :max="valueMax" class="ml-4 mt-1" />
+  <v-slider v-model="isoValueToDebounce" :step="step" :min="valueMin" :max="valueMax" class="ml-4 mt-1" />
 
   <v-row class="mt-3 mb-2">
     <v-menu open-on-hover>

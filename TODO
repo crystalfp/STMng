@@ -8,7 +8,7 @@ ToDo:
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
-  ☐ Add transparency to the isosurface
+  ✔ Add transparency to the isosurface @done(2024-03-12 18:01)
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"

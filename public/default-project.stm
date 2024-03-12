@@ -7,6 +7,7 @@
         "draw":      {"label": "Structures",   "type": "draw-structure",     "in": "bonds"},
         "polyhedra": {"label": "Polyhedra",    "type": "draw-polyhedra",     "in": "bonds"},
         "ortho":     {"label": "Orthoslice",   "type": "orthoslice",         "in": "unit"},
+        "iso":       {"label": "Isosurface",   "type": "isosurface",         "in": "unit"},
         "trace":     {"label": "Trajectories", "type": "draw-trajectories",  "in": "bonds" },
 		"measure": 	 {"label": "Measures", 	   "type": "measures",           "in": "bonds"},
 		"writer": 	 {"label": "Writer", 	   "type": "structure-writer",   "in": "bonds"},
