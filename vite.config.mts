@@ -52,7 +52,10 @@ export default defineConfig({
                         "@mdi/js",
                     ],
                     three: [
-                        "three",
+                        "three"
+                    ],
+                    troika: [
+                        "troika-three-text"
                     ]
                 }
             },

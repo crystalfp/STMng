@@ -143,7 +143,7 @@ watchEffect(() => {
             density="compact" class="mt-6 ml-4" />
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
-  <v-label :text="`Isoline value (${humanFormat(isoValue)})`" class="ml-4" />
+  <v-label :text="`Isoline value (${humanFormat(isoValueToDebounce)})`" class="ml-4" />
   <v-slider v-model="isoValueToDebounce" :step="step" :min="valueMin" :max="valueMax"
             :disabled="useColorClasses" class="ml-4 mt-1" />
 </v-container>

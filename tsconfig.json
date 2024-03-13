@@ -33,6 +33,6 @@
       "@/*": ["src/*"]
     },
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.mts"],
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.mts", "troika-three-text.d.ts"],
   "exclude": ["node_modules", "dist", "dist-electron", "doc", "release"]
 }

@@ -5,6 +5,9 @@
  */
 import * as THREE from "three";
 import type {PositionType} from "@/types";
+import {Text} from "troika-three-text";
+
+import localRoboto from "../assets/Roboto-Regular.ttf";
 
 /**
  * Create a text sprite
@@ -15,23 +18,19 @@ import type {PositionType} from "@/types";
  * @param offset - If present gives the offset respect to position
  * @returns The sprite to be added to the scene
  */
-export const spriteText = (text: string, color: string,
-						   position: PositionType, offset?: PositionType): THREE.Sprite => {
+export const spriteText = (text: string,
+						   color: string,
+						   position: PositionType,
+						   offset?: PositionType): THREE.Mesh => {
 
-	const canvas = document.createElement("canvas");
-	canvas.width = 256;
-	canvas.height = 256;
-	const ctx = canvas.getContext("2d")!;
-	ctx.font = "bold 36pt Roboto";
-	ctx.fillStyle = color;
-	ctx.textAlign = "center";
-	ctx.textBaseline = "middle";
-	ctx.fillText(text, 128, 128);
-	const tex = new THREE.Texture(canvas);
-	tex.needsUpdate = true;
-	// tex.minFilter = THREE.LinearFilter;
-    // tex.colorSpace = THREE.SRGBColorSpace;
-	const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: tex}));
+	const sprite = new Text();
+
+	sprite.font = localRoboto;
+	sprite.text = text;
+	sprite.fontSize = 0.4;
+	sprite.color = color;
+	sprite.anchorX = "center";
+	sprite.anchorY = "middle";
 	if(offset) {
 		sprite.position.set(position[0]+offset[0], position[1]+offset[1], position[2]+offset[2]);
 	}

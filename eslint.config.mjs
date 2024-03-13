@@ -58,7 +58,7 @@ export default [{
                 "tsconfig.json"
             ],
             warnOnUnsupportedTypeScriptVersion: false,
-            extraFileExtensions: ['.vue', '.mts'],
+            extraFileExtensions: ['.vue'],
             vueFeatures: {filter: false},
         }
     },

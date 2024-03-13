@@ -50,7 +50,7 @@ export class Isosurface {
 				this.mesh.visible = this.showIsosurface;
 				const material = this.mesh.material as THREE.MeshStandardMaterial;
 				material.opacity = this.opacity;
-				material.transparent = this.opacity < 0.999;
+				material.transparent = this.opacity < 0.99;
 				this.lut.setColorMap(this.colormapName, 512);
 				this.lut.setMin(this.range[0]);
 				this.lut.setMax(this.range[1]);
@@ -162,7 +162,8 @@ export class Isosurface {
 			opacity: this.opacity,
 			roughness: 0.5,
 			metalness: 0.6,
-			transparent: this.opacity < 0.999,
+			transparent: this.opacity < 0.99,
+			// depthWrite: false,
         });
 
 		this.mesh = new THREE.Mesh(geometry, material);

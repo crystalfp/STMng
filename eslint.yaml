@@ -41,7 +41,7 @@ parserOptions:
     project:
         - ./tsconfig.json
     warnOnUnsupportedTypeScriptVersion: false
-    extraFileExtensions: ['.vue', '.mts']
+    extraFileExtensions: ['.vue']
     sourceType: module
     vueFeatures:
         filter: false

@@ -73,7 +73,7 @@ watchEffect(() => {
             density="compact" class="mt-4 ml-4" />
   <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
-  <v-label :text="`Isosurface value (${humanFormat(isoValue)})`" class="ml-2" />
+  <v-label :text="`Isosurface value (${humanFormat(isoValueToDebounce)})`" class="ml-2" />
   <v-slider v-model="isoValueToDebounce" :step="step" :min="valueMin" :max="valueMax" class="ml-4 mt-1" />
 
   <v-row class="mt-3 mb-2">
