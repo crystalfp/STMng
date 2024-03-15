@@ -17,6 +17,7 @@ import {ReaderSHELX} from "../readers/ReadSHELX";
 import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
 import {ReaderCIF} from "../readers/ReadCIF";
 import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
+import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
 
 /**
  * Read structure file in a given format
@@ -47,6 +48,9 @@ const readFileStructure = async (filename: string,
 			case "Shel-X":
 				reader = new ReaderSHELX();
 				break;
+			case "LAMMPS":
+				reader = new ReaderLAMMPS();
+				break;
 			case "POSCAR":
 				reader = new ReaderPOSCAR();
 				break;
@@ -65,7 +69,9 @@ const readFileStructure = async (filename: string,
 		return {filename: "", structures: [], error: message};
 	}
 
-	if(requestedFormat === "POSCAR" || requestedFormat === "CHGCAR") {
+	if(requestedFormat === "POSCAR" ||
+	   requestedFormat === "CHGCAR" ||
+	   requestedFormat === "LAMMPS") {
 		const atomsTypesTrimmed = atomsTypes.trim();
 		const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
 		const structures1 = await reader.readStructure(filename, atoms);
