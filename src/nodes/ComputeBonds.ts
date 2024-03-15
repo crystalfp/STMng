@@ -14,9 +14,49 @@ interface PairData {
     scale: number;
 }
 
+/** Multiplicative coefficients for basis to get atoms adjacent to the unit cell */
+const displacementCoefficients = [
+
+	[1, 0, 0], // Z = 0
+	[1, 1, 0],
+	[1, -1, 0],
+
+	[-1, 0, 0],
+	[-1, 1, 0],
+	[-1, -1, 0],
+
+	[0, 1, 0], // [0, 0, 0] is obviously missing
+	[0, -1, 0],
+
+	[0, 0, 1], // Z = 1
+	[0, 1, 1],
+	[0, -1, 1],
+
+	[-1, 0, 1],
+	[-1, 1, 1],
+	[-1, -1, 1],
+
+	[1, 0, 1],
+	[1, 1, 1],
+	[1, -1, 1],
+
+	[0, 0, -1], // Z = -1
+	[0, 1, -1],
+	[0, -1, -1],
+
+	[-1, 0, -1],
+	[-1, 1, -1],
+	[-1, -1, -1],
+
+	[1, 0, -1],
+	[1, 1, -1],
+	[1, -1, -1],
+];
+
 // The H bonds form when X___H...Y and X, Y are N, O, F (maybe also S)
 const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
 
+// > Compute the valence angle
 /**
  * Compute the valence angle. In X___H...Y the valence angle is HXY
  *
@@ -53,11 +93,15 @@ export class ComputeBonds {
 	private bondScale           = 1.1;
 	private perPairScale		= false;
 	private perPairData: PairData[] = [];
+	private enlargeCell         = false;
+	private addType: number[]   = []; // 1: atom in unit cell; 2: atom outside unit cell
+	private inputNumAtoms		= 0;
 
+	// > Create the node
 	/**
 	 * Create the node
 	 *
-	 * @param id - ID of the Draw Unit Cell node
+	 * @param id - ID of the Compute Bonds node
 	 */
 	constructor(private readonly id: string) {
 
@@ -71,6 +115,7 @@ export class ComputeBonds {
     		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
     		this.bondScale    		 = params.bondScale as number ?? 1.1;
 			this.perPairScale		 = params.perPairScale as boolean ?? false;
+			this.enlargeCell	     = params.enlargeCell as boolean ?? false;
 
 			this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
@@ -86,10 +131,12 @@ export class ComputeBonds {
 			sb.setUiParams(this.id, {
 				perPairData: JSON.stringify(this.perPairData)
 			});
+
 			this.addBonds();
 		});
 	}
 
+	// > Create the table of per atom pair multiplier
 	/**
 	 * Create the table of per atom pair multiplier of the sum of covalent radii
 	 */
@@ -142,6 +189,108 @@ export class ComputeBonds {
 		}
 	}
 
+	// >  Add atoms from the 26 cells around the given cell
+	/**
+	 * Add atoms from the 26 cells around the given cell
+	 *
+	 * @returns Structure with added adjacent atoms
+	 */
+	private addOutsideAtoms(): Structure {
+
+		const natoms = this.inputStructure!.atoms.length;
+		this.inputNumAtoms = natoms;
+		const {crystal, atoms, look, volume} = this.inputStructure!;
+		const {basis} = crystal;
+
+		// Add the input atoms
+		const outAtoms: Atom[] = [];
+		for(const atom of atoms) {
+			outAtoms.push({
+				atomZ: atom.atomZ,
+				label: atom.label,
+				position: [
+					atom.position[0],
+					atom.position[1],
+					atom.position[2],
+				]
+			});
+		}
+
+		// The first atoms are the ones inside the unit cell
+		this.addType = Array(natoms).fill(1) as number[];
+
+		// Add adjacent atoms (don't use for...of)
+		for(let i=0; i < natoms; ++i) {
+
+			const atom = atoms[i];
+
+			for(const c of displacementCoefficients) {
+
+				outAtoms.push({
+					atomZ: atom.atomZ,
+					label: atom.label,
+					position: [
+						atom.position[0]+c[0]*basis[0]+c[1]*basis[3]+c[2]*basis[6],
+						atom.position[1]+c[0]*basis[1]+c[1]*basis[4]+c[2]*basis[7],
+						atom.position[2]+c[0]*basis[2]+c[1]*basis[5]+c[2]*basis[8],
+					]
+				});
+				this.addType.push(2);
+			}
+		}
+
+		return {
+			crystal,
+			atoms: outAtoms,
+			bonds: [],
+			look,
+			volume
+		};
+	}
+
+	// > Clear outside atoms
+	/**
+	 *  added that are not bonded to inside atoms
+	 *
+	 * @param structure - The extended structure to be cleaned
+	 */
+	private clearOutsideAtoms(structure: Structure): void {
+
+		const {bonds, atoms} = structure;
+
+		// Get the list of atoms that have bonds
+		const bondedAtoms = new Set<number>();
+		for(const bond of bonds) {
+			bondedAtoms.add(bond.from);
+			bondedAtoms.add(bond.to);
+		}
+
+		// Mark the atoms that have bonds
+		const natoms = atoms.length;
+		for(let i=this.inputNumAtoms; i < natoms; ++i) {
+			if(bondedAtoms.has(i)) this.addType[i] = 1;
+		}
+
+		// Create map of atoms indices after cleaning atoms list
+		const mapPositions = Array(natoms).fill(0) as number[];
+		let idx = 0;
+		for(let i=0; i < natoms; ++i) {
+			if(this.addType[i] === 1) mapPositions[i] = idx++;
+		}
+
+		// Remove not bonded outside atoms
+		for(let i=natoms-1; i >=0; --i) {
+			if(this.addType[i] === 2) atoms.splice(i, 1);
+		}
+
+		// Remap bonds
+		for(const bond of bonds) {
+			bond.from = mapPositions[bond.from];
+			bond.to = mapPositions[bond.to];
+		}
+	}
+
+	// > Add bonds to output structure
 	/**
 	 * Add bonds to output structure
 	 */
@@ -154,14 +303,29 @@ export class ComputeBonds {
 		}
 		else if(this.enableComputeBonds) {
 
-			const out: Structure = {
-				crystal: this.inputStructure.crystal,
-				atoms: this.inputStructure.atoms,
-				bonds: this.computeBonds(),
-				look: this.inputStructure.look,
-				volume: this.inputStructure.volume
-			};
-			sb.setData(this.id, out);
+			if(this.enlargeCell) {
+
+				// If no unit cell, do nothing
+				if(this.inputStructure.crystal.basis.every((value) => value === 0)) {
+					sb.setData(this.id, this.inputStructure);
+					return;
+				}
+
+				const enlargedStructure = this.addOutsideAtoms();
+				enlargedStructure.bonds = this.computeBonds(enlargedStructure);
+				this.clearOutsideAtoms(enlargedStructure);
+				sb.setData(this.id, enlargedStructure);
+			}
+			else {
+				const out: Structure = {
+					crystal: this.inputStructure.crystal,
+					atoms: this.inputStructure.atoms,
+					bonds: this.computeBonds(this.inputStructure),
+					look: this.inputStructure.look,
+					volume: this.inputStructure.volume
+				};
+				sb.setData(this.id, out);
+			}
 		}
 		else {
 
@@ -169,14 +333,15 @@ export class ComputeBonds {
 		}
 	}
 
+	// > Compute bonds
 	/**
 	 * Compute bonds for the given structure
 	 *
 	 * @returns Computed bonds list
 	 */
-	private computeBonds(): Bond[] {
+	private computeBonds(structure: Structure): Bond[] {
 
-		const {atoms, look} = this.inputStructure!;
+		const {atoms, look} = structure;
 
 		const radii: number[] = [];
 		for(const atom of atoms) {
@@ -218,6 +383,10 @@ export class ComputeBonds {
 				const atomZj = atoms[j].atomZ;
 				const rCj = radii[j];
 
+				// Don't compute bonds between external atoms
+				const {enlargeCell, addType} = this;
+				if(enlargeCell && addType[i] === 2 && addType[j] === 2) continue;
+
 				// Never bond hydrogens to each other...
 				if(atomZi === 1 && atomZj === 1) continue;
 
@@ -243,7 +412,7 @@ export class ComputeBonds {
 
 				// Check for ordinary bond
 				else if(distSquared <= sumRcovSquared) {
-						bonds.push({from: i, to: j, type: "n"});
+					bonds.push({from: i, to: j, type: "n"});
 				}
 			}
 		}
@@ -301,7 +470,7 @@ export class ComputeBonds {
 			   valenceAngle(atoms[idxH], atoms[idxX], atoms[idxY]) > maxHValenceAngle) bonds[i].type = "x";
 		}
 
-		// Clean up bond list removing invalid bonds
+		// Clean up bonds list removing invalid bonds
 		for(let i = countBonds-1; i >= 0; --i) {
 
 			if(bonds[i].type === "x") bonds.splice(i, 1);
@@ -325,9 +494,7 @@ export class ComputeBonds {
 
 			for(const pair of this.perPairData) {
 				if((pair.atomZi === atomZi && pair.atomZj === atomZj) ||
-				   (pair.atomZi === atomZj && pair.atomZj === atomZi)) {
-					return pair.scale;
-				   }
+				   (pair.atomZi === atomZj && pair.atomZj === atomZi)) return pair.scale;
 			}
 		}
 
@@ -369,6 +536,7 @@ export class ComputeBonds {
 			maxHValenceAngle:    this.maxHValenceAngle,
 			bondScale:			 this.bondScale,
 			perPairScale: 		 this.perPairScale,
+			enlargeCell:	 	 this.enlargeCell
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

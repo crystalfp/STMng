@@ -30,6 +30,7 @@ const maxHValenceAngle    = ref(30);
 const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
 const perPairData         = ref<PairData[]>([]);
+const enlargeCell         = ref(false);
 
 sb.getUiParams(props.id, (params: UiParams) => {
     minBondingDistance.value  = params.minBondingDistance as number ?? 0.64;
@@ -39,6 +40,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
     bondScale.value      		  = params.bondScale as number ?? 1.1;
     perPairScale.value        = params.perPairScale as boolean ?? false;
+    enlargeCell.value         = params.enlargeCell as boolean ?? false;
 
     perPairData.value.length = 0;
     const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
@@ -54,6 +56,7 @@ watchEffect(() => {
         bondScale:           bondScale.value,
         perPairScale:        perPairScale.value,
         perPairData:         JSON.stringify(perPairData.value),
+        enlargeCell:         enlargeCell.value
     });
 });
 
@@ -102,6 +105,8 @@ const resetSliders = (): void => {
     <v-label :text="`For all atom pairs (${bondScale.toFixed(2)})`" class="ml-0" />
     <v-slider v-model="bondScale" density="compact" min="0.5" max="2.0" step="0.01" class="ml-0" />
   </v-container>
+  <v-switch v-model="enlargeCell" color="primary"
+            label="Add bonded atoms outside unit cell" density="compact" class="mt-2 ml-2" />
   <v-btn block class="mt-4" @click="resetSliders">
     <template #append>
       <v-icon :icon="mdiRestore" size="x-large" />
