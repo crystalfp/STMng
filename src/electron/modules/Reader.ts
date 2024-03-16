@@ -18,6 +18,7 @@ import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
 import {ReaderCIF} from "../readers/ReadCIF";
 import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
 import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
+import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
 
 /**
  * Read structure file in a given format
@@ -51,6 +52,9 @@ const readFileStructure = async (filename: string,
 			case "LAMMPS":
 				reader = new ReaderLAMMPS();
 				break;
+			case "LAMMPStrj":
+				reader = new ReaderLAMMPStrj();
+				break;
 			case "POSCAR":
 				reader = new ReaderPOSCAR();
 				break;
@@ -71,7 +75,8 @@ const readFileStructure = async (filename: string,
 
 	if(requestedFormat === "POSCAR" ||
 	   requestedFormat === "CHGCAR" ||
-	   requestedFormat === "LAMMPS") {
+	   requestedFormat === "LAMMPS" ||
+	   requestedFormat === "LAMMPStrj") {
 		const atomsTypesTrimmed = atomsTypes.trim();
 		const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
 		const structures1 = await reader.readStructure(filename, atoms);
@@ -119,6 +124,14 @@ export const setupChannelReader = (): void => {
 				break;
 			case "CIF":
 				filters = [{name: "CIF",	extensions: ["cif"]},
+						   {name: "All",	extensions: ["*"]}];
+				break;
+			case "LAMMPS":
+				filters = [{name: "LAMMPS",	extensions: ["lmp"]},
+						   {name: "All",	extensions: ["*"]}];
+				break;
+			case "LAMMPStrj":
+				filters = [{name: "LAMMPStrj", extensions: ["lammpstrj"]},
 						   {name: "All",	extensions: ["*"]}];
 				break;
 			case "POSCAR":

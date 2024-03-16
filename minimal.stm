@@ -9,33 +9,23 @@
       "type": "draw-unit-cell",
       "in": "reader"
     },
-    "bonds": {
-      "label": "Bonds",
-      "type": "compute-bonds",
-      "in": "unit"
-    },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
-      "in": "bonds"
+      "in": "unit"
     },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
-    },
-    "isosurface": {
-      "label": "Isosurface",
-      "type": "isosurface",
-      "in": "bonds"
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        0,
-        0,
-        0
+        5,
+        2.9999999999999996,
+        5.000000000000001
       ],
       "lookAt": [
         0,
@@ -55,21 +45,21 @@
       "directional2Color": "#FFFF00",
       "directional2Intensity": 3,
       "directional3Color": "#FF0000",
-      "directional3Intensity": 3,
+      "directional3Intensity": 0,
       "directional1Position": [
+        1,
+        0,
+        0
+      ],
+      "directional2Position": [
         0,
         1,
         0
       ],
-      "directional2Position": [
-        0.5774,
-        0.5774,
-        0.5774
-      ],
       "directional3Position": [
-        -0.5774,
-        -0.5774,
-        -0.5774
+        0,
+        0,
+        1
       ]
     },
     "helpers": {
@@ -85,8 +75,8 @@
     "reader": {
       "loopSteps": false,
       "step": 1,
-      "format": "",
-      "atomsTypes": ""
+      "format": "LAMMPStrj",
+      "atomsTypes": "Fe O"
     },
     "unit": {
       "showUnitCell": true,
@@ -97,25 +87,18 @@
       "repetitionsB": 1,
       "repetitionsC": 1,
       "showSupercell": false,
-      "supercellColor": "#02A502",
+      "supercellColor": "#16A004",
       "dashedSupercell": false
-    },
-    "bonds": {
-      "minBondingDistance": 0.64,
-      "maxBondingDistance": 4.5,
-      "maxHBondingDistance": 3,
-      "maxHValenceAngle": 30,
-      "bondScale": 1.1
     },
     "draw": {
       "drawKind": "ball-and-stick",
-      "drawQuality": 4,
+      "drawQuality": 1,
       "drawRoughness": 0.5,
       "drawMetalness": 0.6,
       "labelKind": "symbol",
       "showStructure": true,
-      "showBonds": true,
-      "showLabels": true
+      "showBonds": false,
+      "showLabels": false
     }
   },
   "currentId": "reader"

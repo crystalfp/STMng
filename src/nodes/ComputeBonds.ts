@@ -126,11 +126,22 @@ export class ComputeBonds {
 
 			this.inputStructure = data as Structure;
 
+			// Create atoms pair list
 			this.createPairData();
 
-			sb.setUiParams(this.id, {
-				perPairData: JSON.stringify(this.perPairData)
-			});
+			// Disable bonds computation if there are too much atoms
+			if((this.inputStructure?.atoms?.length ?? 0) > 500) {
+				this.enableComputeBonds = false;
+				sb.setUiParams(this.id, {
+					perPairData: JSON.stringify(this.perPairData),
+					enableComputeBonds: false
+				});
+			}
+			else {
+				sb.setUiParams(this.id, {
+					perPairData: JSON.stringify(this.perPairData)
+				});
+			}
 
 			this.addBonds();
 		});
@@ -356,7 +367,9 @@ export class ComputeBonds {
 		// The computed bonds
 		const bonds: Bond[] = [];
 
-		const {maxHValenceAngle, minBondingDistance, maxBondingDistance, maxHBondingDistance} = this;
+		const {maxHValenceAngle, minBondingDistance,
+			   maxBondingDistance, maxHBondingDistance,
+			   enlargeCell, addType} = this;
 
 		// Minimum covalent radius is 0.32 for He, so no bond shorter than .64 could exist
 		const minDistanceSquared = minBondingDistance*minBondingDistance;
@@ -377,28 +390,33 @@ export class ComputeBonds {
 
 			const atomZi = atoms[i].atomZ;
 			const rCi = radii[i];
+			const positionI = atoms[i].position;
 
 			for(let j=i+1; j < atomsCount; ++j) {
 
 				const atomZj = atoms[j].atomZ;
 				const rCj = radii[j];
+				const positionJ = atoms[j].position;
 
 				// Don't compute bonds between external atoms
-				const {enlargeCell, addType} = this;
 				if(enlargeCell && addType[i] === 2 && addType[j] === 2) continue;
 
 				// Never bond hydrogens to each other...
 				if(atomZi === 1 && atomZj === 1) continue;
 
 				// Compute distance between atoms
-				const dx = atoms[i].position[0] - atoms[j].position[0];
-				const dy = atoms[i].position[1] - atoms[j].position[1];
-				const dz = atoms[i].position[2] - atoms[j].position[2];
+				const dx = positionI[0] - positionJ[0];
+				const dy = positionI[1] - positionJ[1];
+				const dz = positionI[2] - positionJ[2];
 
+				// If atoms are distant along one axis, it is sure they cannot bind
+				if(dx > maxBondingDistance || dy > maxBondingDistance || dz > maxBondingDistance) continue;
+
+				// Check more precise limits
 				const distSquared = dx*dx+dy*dy+dz*dz;
-
 				if(distSquared < minDistanceSquared || distSquared > maxDistanceSquared) continue;
 
+				// Get the distance for bonding
 				const sumRcov = (rCi + rCj)*this.boundingScale(atomZi, atomZj);
 				const sumRcovSquared = sumRcov*sumRcov;
 
@@ -445,20 +463,23 @@ export class ComputeBonds {
 				if(bonds[j].to   === idxH) {idxX = bonds[j].from; break;}
 			}
 
+			const atomH = atoms[idxH];
+			const atomY = atoms[idxY];
+
 			// If H is not bond to X recompute bond as ordinary bond or remove it
 			if(idxX === undefined) {
 
 				// Recompute distance
-				const dx = atoms[idxH].position[0] - atoms[idxY].position[0];
-				const dy = atoms[idxH].position[1] - atoms[idxY].position[1];
-				const dz = atoms[idxH].position[2] - atoms[idxY].position[2];
+				const dx = atomH.position[0] - atomY.position[0];
+				const dy = atomH.position[1] - atomY.position[1];
+				const dz = atomH.position[2] - atomY.position[2];
 
 				const distSquared = dx*dx+dy*dy+dz*dz;
 
 				const rCH = radii[idxH];
 				const rCY = radii[idxY];
 
-				const sumCov = (rCH + rCY)*this.boundingScale(atoms[idxH].atomZ, atoms[idxY].atomZ);
+				const sumCov = (rCH + rCY)*this.boundingScale(atomH.atomZ, atomY.atomZ);
 				const sumCovSquared = sumCov*sumCov;
 
 				bonds[i].type = distSquared <= sumCovSquared ? "n" : "x";
@@ -466,17 +487,18 @@ export class ComputeBonds {
 				continue;
 			}
 
-			if(!atomForHBond(atoms[idxX].atomZ) ||
-			   valenceAngle(atoms[idxH], atoms[idxX], atoms[idxY]) > maxHValenceAngle) bonds[i].type = "x";
+			const atomX = atoms[idxX];
+			if(!atomForHBond(atomX.atomZ) ||
+			   valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = "x";
 		}
 
 		// Clean up bonds list removing invalid bonds
-		for(let i = countBonds-1; i >= 0; --i) {
-
-			if(bonds[i].type === "x") bonds.splice(i, 1);
+		const outBonds: Bond[] = [];
+		for(let i=0; i < countBonds; ++i) {
+			if(bonds[i].type !== "x") outBonds.push(bonds[i]);
 		}
 
-		return bonds;
+		return outBonds;
 	}
 
 	// > Bonding scale by type

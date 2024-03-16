@@ -116,6 +116,24 @@ export const getStructureAppearance = (atoms: Atom[]): Look => {
 };
 
 /**
+ * Compute the "look" part of the structure from the list of atoms Z values
+ *
+ * @param atomsZ - Atom Z values of the atoms in the structure
+ * @returns The "look" component of the structure
+ */
+export const getStructureAppearanceFromZ = (atomsZ: number[]): Look => {
+
+	const out: Look = {};
+	for(const atomZ of atomsZ) {
+
+		if(!atomZ) continue;
+		out[atomZ] = getAtomicRadiiAndColor(atomZ);
+	}
+
+	return out;
+};
+
+/**
  * Compute the angle between two vectore.
  *
  * @param v0 - First vector x

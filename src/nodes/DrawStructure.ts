@@ -27,8 +27,8 @@ export class DrawStructure {
 	private readonly bondsGroup = new THREE.Group();
 	private readonly labelsGroup = new THREE.Group();
 	private readonly bondRadius = 0.1;
-	private readonly sphereSubdivisions = [0, 2, 4, 6, 10];
-	private readonly cylinderSubdivisions = [0, 4, 8, 16, 32];
+	private readonly sphereSubdivisions   = [0, 0, 1, 3,  9];
+	private readonly cylinderSubdivisions = [0, 3, 5, 8, 16];
 	private readonly rCovScale = 0.5;
 	private loadedData: Structure = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 											   origin: [0, 0, 0], spaceGroup: ""},

@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getStructureAppearance} from "../modules/ReaderWriterHelpers";
+import {getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
 import {getAtomicNumber} from "../modules/AtomData";
@@ -112,7 +112,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			}
 		}
 
-		structure.look = getStructureAppearance(structure.atoms);
+		structure.look = getStructureAppearanceFromZ(correspond);
 
 		return [structure];
 	}

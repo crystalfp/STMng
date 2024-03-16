@@ -41,16 +41,22 @@ export class DrawUnitCell {
 	 */
 	constructor(private readonly id: string) {
 
-		// Prepare the groups and add to scene
+		// Prepare the groups and add to the scene
 		this.nameUC = `DrawUnitCell-${this.id}`;
 		this.outUC.name = this.nameUC;
 		sm.add(this.outUC);
+		sm.clearGroup(this.nameUC);
+
 		this.nameSC = `DrawSupercell-${this.id}`;
 		this.outSC.name = this.nameSC;
 		sm.add(this.outSC);
+		sm.clearGroup(this.nameSC);
+
 		this.nameBV = `DrawBasisVectors-${this.id}`;
 		this.outBV.name = this.nameBV;
 		sm.add(this.outBV);
+		sm.clearGroup(this.nameBV);
+
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 

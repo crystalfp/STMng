@@ -23,7 +23,7 @@ const messageStore = useMessageStore();
 messageStore.structureReader.message = "";
 
 /** Formats that could be loaded */
-const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "POSCAR", "Shel-X", "XYZ"];
+const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "LAMMPStrj", "POSCAR", "Shel-X", "XYZ"];
 
 // > Get and set ui parameters from the switchboard
 const fileRead     = ref("");
@@ -158,6 +158,17 @@ const setFormat = (changedFormat: string): void => {
     step.value = 1;
 };
 
+const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj"]);
+/**
+ * Check if the format needs the atom types
+ *
+ * @param fileFormat - The format to check
+ * @returns The check result
+ */
+const needsAtomTypes = (fileFormat: string): boolean => {
+    return formatsThatNeedsAtomTypes.has(fileFormat);
+};
+
 </script>
 
 
@@ -178,7 +189,7 @@ const setFormat = (changedFormat: string): void => {
     </v-menu>
     <v-label class="underlined-label">{{ format }}</v-label>
   </v-row>
-  <v-container v-if="format === 'POSCAR' || format === 'CHGCAR' || format === 'LAMMPS'" class="pl-0 mb-5 pt-3">
+  <v-container v-if="needsAtomTypes(format)" class="pl-0 mb-5 pt-3">
     <v-text-field v-model="atomsTypes" label="Atoms types"
                   placeholder="Space separated list"
                   variant="solo-filled" hide-details="auto" clearable />
