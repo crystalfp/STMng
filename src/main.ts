@@ -47,6 +47,7 @@ import {VRangeSlider} from "vuetify/components/VRangeSlider";
 // Project defined components. The registered name should begin by G (g- in use)
 import AlignLabels from "@/widgets/AlignLabels.vue";
 import ColorSelector from "@/widgets/ColorSelector.vue";
+import AtomsSelector from "@/widgets/AtomsSelector.vue";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -101,7 +102,8 @@ const app = createApp(App)
 		}
   	}))
 	.component("GAlignLabels", AlignLabels)
-	.component("GColorSelector", ColorSelector);
+	.component("GColorSelector", ColorSelector)
+	.component("GAtomsSelector", AtomsSelector);
 
 // Mount the application
 app.mount("#app");

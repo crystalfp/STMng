@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * @component
+ * Align left margin of contained sliders.
+ */
 
 import {ref} from "vue";
 

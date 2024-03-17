@@ -119,6 +119,14 @@ export const setupMenu = (): void => {
                         showDevToolsOnSecondaryWindows();
                     }
                 },
+                {
+                    label: "Show scene 3D",
+                    enabled: isDevelopment,
+                    visible: isDevelopment,
+                    click() {
+                        openMenuEntry("show-scene");
+                    }
+                },
                 {type: "separator"},
                 {role: "togglefullscreen"},
                 {

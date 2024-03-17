@@ -8,10 +8,11 @@ import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
         receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
+import {showErrorNotification} from "@/services/ErrorNotification";
+import {sm} from "@/services/SceneManager";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
-import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Normal/Expanded viewer window */
 const normalScreen = ref(true);
@@ -49,6 +50,9 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
             break;
         case "extend-viewer":
             normalScreen.value = payload === "no";
+            break;
+        case "show-scene":
+            sm.dumpScene("Scene 3D");
             break;
         default:
             showErrorNotification(`Menu entry "${menuEntry}" is not implemented`);

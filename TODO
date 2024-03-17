@@ -10,7 +10,10 @@ ToDo:
   ☐ Add project name in the Project structure
   ✔ Add transparency to the isosurface @done(2024-03-12 18:01)
   ✔ Simplify get structure look if the atoms types are already known @done(2024-03-16 08:17)
-  ☐ Disable compute bonds for num atoms > 1000
+  ✔ Disable compute bonds for num atoms > 500 @done(2024-03-16 17:52)
+  ☐ Check dispose() for labels
+  ☐ Add groups to scene only when requested first time
+  ☐ Put name to all groups
 
 Bugs:
   ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
@@ -27,6 +30,7 @@ Nice to have/Future:
   ☐ Color polyhedra by central atom color
   ☐ Shift unit cell (from STM4). The problem is shifting the volumetric data.
   ☐ Coloring of trajectories
+  ☐ Rendering spheres using sprites (as in VMD)
 
 Archive:
   ✔ Try lines as rectangle or box (or tube with small radius) Check <https://discourse.threejs.org/t/increase-width-of-lines-in-axes-helper/61869/8> @done(2024-03-10 15:49)

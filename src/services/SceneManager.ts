@@ -175,14 +175,21 @@ class SceneManager {
 	/**
 	 * Dump the scene excluding lights and scene itself (useful for debugging)
 	 *
-	 * @param label - Identifier for this dump
+	 * @param label - Title for this dump
 	 */
 	dumpScene(label: string): void {
+
 		console.log(`\n*** ${label} ***`);
-		SceneManager.scene.traverse((object) => {
-			if(["AmbientLight", "DirectionalLight", "Scene"].includes(object.type)) return;
+		for(const object of SceneManager.scene.children) {
+
 			console.log(object.type, object.name);
-		});
+			if(object.type === "Group") {
+				object.traverse((child) => {
+					if(child === object) return;
+					console.log("\t", child.type, child.name);
+				});
+			}
+		}
 	}
 
 	// > Access the singleton instance
@@ -193,7 +200,7 @@ class SceneManager {
 	 * This implementation let you subclass the Singleton class while keeping
 	 * just one instance of each subclass around.
 	 *
-	 * @returns The configuration object
+	 * @returns The Scene Manager object
 	 */
     static getInstance(): SceneManager {
 

@@ -1,3 +1,9 @@
+/**
+ * Static tables for the marching cube algorithm
+ *
+ * @packageDocumentation
+ */
+
 // ----------------------------------------------------------------------------
 // Marching cubes case functions (using triangles to complete tessellation).
 // For each case, a list of edge ids that form the triangles. A -1 marks the
@@ -263,6 +269,7 @@ const MARCHING_CUBE_CASES = [
 	[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1] /* 255 0 */,
 ];
 
+// Nodes for each edge
 const EDGES = [
 	[0, 1],
 	[1, 3],
@@ -278,12 +285,22 @@ const EDGES = [
 	[3, 7],
 ];
 
-
+/**
+ * Get case
+ *
+ * @param index - Case index
+ * @returns The line from the case table
+ */
 export const getCase = (index: number): number[] => {
   return MARCHING_CUBE_CASES[index];
 };
 
-// Define the twelve edges of the voxel by the following pairs of vertices
+/**
+ * Define the twelve edges of the voxel by the following pairs of vertices
+ *
+ * @param eid - Edge index
+ * @returns The pair of vertices tor the given edge
+ */
 export const getEdge = (eid: number): number[] => {
   return EDGES[eid];
 };

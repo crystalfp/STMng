@@ -1,3 +1,8 @@
+/**
+ * Types definitions used by the client.
+ *
+ * @packageDocumentation
+ */
 
 export interface NodeUI {
 	id: string;
@@ -65,7 +70,7 @@ export type BasisType = [
 /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
 export type BondType = "h" | "n" | "x";
 
-/** One atom in the structure or in one step in the structure */
+/** One atom in the structure or in the structure in one step */
 export interface Atom {
 
     /** Atomic number */
@@ -94,7 +99,7 @@ export interface Bond {
 /** Crystallographic data */
 export interface Crystal {
 
-    /** The unit cell basis vectors */
+    /** The unit cell basis vectors [a, b, c]*/
     basis: BasisType;
 
     /** Origin of the unit cell */
@@ -116,7 +121,7 @@ export interface AtomAppearance {
 	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
 	rVdW: number;
 
-	/** Atom color as hex string (#RRGGBB) */
+	/** Atom color as an hex string (#RRGGBB) */
 	color: string;
 }
 

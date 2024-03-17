@@ -44,17 +44,11 @@ watchEffect(() => {
 <v-container class="container">
   <v-switch v-model="showTrajectories" color="primary" label="Show trajectories"
             density="compact" class="mt-2 ml-2" />
-  <v-btn block @click="reset = true">Clear trajectories</v-btn>
-  <v-label text="Select traced atoms by" class="mb-3 mt-6" /><br>
-  <v-btn-toggle v-model="labelKind" color="primary" class="mb-6">
-    <v-btn value="symbol">Symbol</v-btn>
-    <v-btn value="label">Label</v-btn>
-    <v-btn value="index">Index</v-btn>
-  </v-btn-toggle>
-  <v-text-field v-model="atomsSelector" label="Traced atoms selector" class="mb-8"
-                placeholder="Space separated list"
-                variant="solo-filled" hide-details="auto" clearable />
-  <v-btn block @click="recording = !recording">
+  <v-btn block class="mb-6" @click="reset = true">Clear trajectories</v-btn>
+  <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
+                    title="Select traced atoms by" placeholder="Traced atoms selector" />
+
+  <v-btn block class="mt-6" @click="recording = !recording">
     {{ recording ? "Stop trajectories" : "Start trajectories" }}
   </v-btn>
 </v-container>

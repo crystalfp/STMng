@@ -1,4 +1,10 @@
-import {minLength, object, safeParse, string, optional, record, union, number, boolean} from "valibot";
+/**
+ * Validator for the project file structure.
+ *
+ * @packageDocumentation
+ */
+import {minLength, object, safeParse, string, optional,
+		record, union, number, boolean} from "valibot";
 import type {Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sb} from "@/services/Switchboard";

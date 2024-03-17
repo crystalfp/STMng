@@ -29,7 +29,7 @@ export class DrawPolyhedra {
 										polygonOffsetFactor: 1
 									});
 
-	private readonly group = new THREE.Group();
+	private group: THREE.Group | undefined;
 
 	/**
 	 * Create the node
@@ -38,9 +38,6 @@ export class DrawPolyhedra {
 	 */
 	constructor(private readonly id: string) {
 
-		this.group.clear();
-		sm.add(this.group);
-
 		sb.getUiParams(this.id, (params: UiParams) => {
 
 			this.visible = params.showPolyhedra as boolean ?? false;
@@ -48,17 +45,25 @@ export class DrawPolyhedra {
     		this.labelKind = params.labelKind as SelectorType ?? "symbol";
     		this.atomsSelector = params.atomsSelector as string ?? "";
 
-			this.group.visible = this.visible;
-			this.material.opacity = this.extractOpacity(this.color);
-			this.material.color = this.extractColor(this.color);
+			if(this.visible) {
+				if(!this.group) {
+					this.group = new THREE.Group();
+					this.group.name = `DrawPolyhedra-${this.id}`;
+					sm.add(this.group);
+				}
+				this.material.opacity = this.extractOpacity(this.color);
+				this.material.color = this.extractColor(this.color);
 
-			this.createPolyhedra();
+				this.createPolyhedra();
+				this.group.visible = true;
+			}
+			else if(this.group) this.group.visible = false;
 		});
 
 		sb.getData(this.id, (data: unknown) => {
 
 			this.structure = data as Structure;
-			this.createPolyhedra();
+			if(this.group) this.createPolyhedra();
 		});
 	}
 
@@ -86,7 +91,7 @@ export class DrawPolyhedra {
 	private createPolyhedra(): void {
 
 		// Empty the group
-		this.group.clear();
+		this.group!.clear();
 
 		// Don't compute if it is invisible or there are no atoms
 		if(!this.visible || !this.structure) return;
@@ -101,13 +106,13 @@ export class DrawPolyhedra {
 			const mesh = new THREE.Mesh();
 			mesh.geometry = new ConvexGeometry(island);
 			mesh.material = this.material;
-			this.group.add(mesh);
+			this.group!.add(mesh);
 
 			// The polyhedron edges
 			const edgeColor = this.createContrastingColor(this.material.color);
 			const edges = new THREE.EdgesGeometry(mesh.geometry);
 			const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: edgeColor}));
-			this.group.add(line);
+			this.group!.add(line);
 		}
 	}
 

@@ -5,6 +5,7 @@
  * and display them in a dialog.
  */
 import {reactive, ref} from "vue";
+import * as THREE from "three";
 import {getVersions, type Versions} from "@/services/RoutesClient";
 
 // > Events
@@ -40,6 +41,7 @@ void getVersions().then((receivedVersions) => {
         <tr><td class="w-50">Electron:</td><td>{{ versions.electron }}</td></tr>
         <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
         <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
+        <tr><td class="w-50">Three.js:</td><td>{{ THREE.REVISION }}</td></tr>
       </table>
       <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
     </v-card-text>

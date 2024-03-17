@@ -54,6 +54,11 @@ export class DrawStructure {
     		this.showBonds = params.showBonds as boolean ?? true;
     		this.showLabels = params.showLabels as boolean ?? true;
 
+			// Name the groups (useful for debugging)
+			this.atomsGroup.name = "Atoms";
+			this.bondsGroup.name = "Bonds";
+			this.labelsGroup.name = "Labels";
+
 			// Combine the groups
 			this.out.add(this.atomsGroup, this.bondsGroup, this.labelsGroup);
 

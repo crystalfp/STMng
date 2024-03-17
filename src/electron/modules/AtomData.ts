@@ -171,7 +171,7 @@ export class AtomData {
 	 * This implementation let you subclass the Singleton class while keeping
 	 * just one instance of each subclass around.
 	 *
-	 * @returns The configuration object
+	 * @returns The Atom Data object
 	 */
     static getInstance(): AtomData {
 
