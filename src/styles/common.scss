@@ -22,7 +22,7 @@ html {
 // > Vuetify specific
 // Height of the UI of the various nodes
 .container {
-  overflow-y: auto;
+  overflow: hide auto;
   // height: var(--container-height);
   height: calc(var(--container-height) - 30px);
 }

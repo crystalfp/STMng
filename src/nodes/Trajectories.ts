@@ -7,7 +7,7 @@ import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {Structure} from "@/types";
-
+import {selectAtomsByKind} from "@/services/SelectAtoms";
 
 export class Trajectories {
 
@@ -61,7 +61,7 @@ export class Trajectories {
 
 			const structure = data as Structure;
 			const {atoms} = structure;
-			const indices = this.createIndicesList(structure);
+			const indices = selectAtomsByKind(structure, this.labelKind, this.atomsSelector);
 
 			// First step, initialize set of coordinates
 			if(this.recording && !this.nextSteps) {
@@ -90,46 +90,6 @@ export class Trajectories {
 				this.group.add(line);
 			}
 		});
-	}
-
-	private createIndicesList(structure: Structure): number[] {
-
-		// Prepare selectors
-		this.atomsSelector = this.atomsSelector.trim();
-		if(this.atomsSelector === "") return [];
-		const selectors = this.atomsSelector.toLowerCase().split(/ +/);
-		const indicesList: number[] = [];
-
-		// Extract structure parts
-		const {atoms, look} = structure;
-		const natoms = atoms.length;
-		if(natoms === 0) return [];
-
-		switch(this.labelKind) {
-			case "symbol":
-				for(let idx=0; idx < natoms; ++idx) {
-					const symbol = look[atoms[idx].atomZ].symbol.toLowerCase();
-					if(selectors.includes(symbol)) indicesList.push(idx);
-				}
-				break;
-
-			case "label":
-				for(let idx=0; idx < natoms; ++idx) {
-					const label = atoms[idx].label.toLowerCase();
-					if(selectors.includes(label)) indicesList.push(idx);
-				}
-				break;
-
-			case "index":
-				for(const selector of selectors) {
-					const index = Number.parseInt(selector, 10);
-					if(Number.isNaN(index)) continue;
-					indicesList.push(index);
-				}
-				break;
-		}
-
-		return indicesList;
 	}
 
 	/**

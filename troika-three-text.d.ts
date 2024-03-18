@@ -4,6 +4,7 @@ declare module "troika-three-text" {
 	declare class Text extends THREE.Mesh {
 		constructor();
 		sync(): void;
+		dispose(): void;
 
 		public text: string;
 		public fontSize: number;

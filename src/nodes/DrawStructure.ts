@@ -9,7 +9,7 @@ import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
 import type {PositionType, Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
-import {spriteText} from "@/services/SpriteText";
+import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 
 export class DrawStructure {
 
@@ -182,15 +182,7 @@ export class DrawStructure {
 	drawLabels(data: Structure): void {
 
 		// Remove existing labels
-		const labelsToDelete: THREE.Sprite[] = [];
-		this.labelsGroup.traverse((obj) => {
-
-			if(obj.type === "Sprite") labelsToDelete.push(obj as THREE.Sprite);
-		});
-		for(const obj of labelsToDelete) {
-			this.labelsGroup.remove(obj);
-			obj.material.dispose();
-		}
+		disposeTextInGroup(this.labelsGroup);
 
 		// No atoms present or no label requested, display nothing
 		if(!data?.atoms || data.atoms.length === 0 || !this.showLabels) return;

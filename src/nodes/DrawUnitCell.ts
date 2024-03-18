@@ -57,7 +57,6 @@ export class DrawUnitCell {
 		sm.add(this.outBV);
 		sm.clearGroup(this.nameBV);
 
-
 		sb.getUiParams(this.id, (params: UiParams) => {
 
     		this.showUnitCell = params.showUnitCell as boolean ?? true;
@@ -380,7 +379,7 @@ export class DrawUnitCell {
 			}
 		}
 
-		// Remove duplicated
+		// Remove duplicates
 		const tol = 1e-5;
 		const outAtoms = atoms.length;
 		const duplicated = Array(outAtoms).fill(false) as boolean[];

@@ -15,7 +15,7 @@
       "in": "symmetry"
     },
     "draw": {
-      "label": "Render",
+      "label": "Structure",
       "type": "draw-structure",
       "in": "unit"
     },

@@ -4,7 +4,7 @@
         "symmetry":  {"label": "Symmetries",   "type": "compute-symmetries", "in": "reader"},
         "unit":      {"label": "Cell",         "type": "draw-unit-cell",     "in": "symmetry"},
         "bonds":     {"label": "Bonds",        "type": "compute-bonds",      "in": "unit"},
-        "draw":      {"label": "Structures",   "type": "draw-structure",     "in": "bonds"},
+        "draw":      {"label": "Structure",    "type": "draw-structure",     "in": "bonds"},
         "polyhedra": {"label": "Polyhedra",    "type": "draw-polyhedra",     "in": "bonds"},
         "ortho":     {"label": "Orthoslice",   "type": "orthoslice",         "in": "unit"},
         "iso":       {"label": "Isosurface",   "type": "isosurface",         "in": "unit"},

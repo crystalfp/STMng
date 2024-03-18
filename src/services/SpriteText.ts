@@ -40,3 +40,21 @@ export const spriteText = (text: string,
 
 	return sprite;
 };
+
+/**
+ * Dispose labels contained in a group
+ *
+ * @param group - Group containing Text meshes
+ */
+export const disposeTextInGroup = (group: THREE.Group): void => {
+
+	const labelsToDelete: Text[] = [];
+	group.traverse((obj) => {
+
+		if(obj.type === "Mesh") labelsToDelete.push(obj as Text);
+	});
+	for(const obj of labelsToDelete) {
+		group.remove(obj);
+		obj.dispose();
+	}
+};

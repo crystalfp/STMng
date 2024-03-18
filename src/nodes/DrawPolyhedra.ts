@@ -9,6 +9,7 @@ import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {Structure} from "@/types";
+import {selectAtomsByKind} from "@/services/SelectAtoms";
 
 type SelectorType = "symbol" | "label" | "index";
 
@@ -123,60 +124,16 @@ export class DrawPolyhedra {
 	 */
 	private createVerticeLists(): THREE.Vector3[][] {
 
-		// Prepare selectors
-		this.atomsSelector = this.atomsSelector.trim();
-		if(this.atomsSelector === "") return [];
-		const selectors = this.atomsSelector.toLowerCase().split(/ +/);
-
 		// Extract structure parts
-		const {atoms, bonds, look} = this.structure!;
+		const {atoms, bonds} = this.structure!;
 
 		// Sanity checks
 		const natoms = atoms.length;
 		if(natoms < 4) return [];
-
 		if(bonds.length === 0) return [];
 
 		// Select the polyhedra center atoms
-		const centerIdx = [];
-
-		if(this.labelKind === "symbol") {
-			const numericSelectors = [];
-			for(const selector of selectors) {
-				for(const atomZ in look) {
-					if(look[atomZ].symbol.toLowerCase() === selector) {
-						numericSelectors.push(Number(atomZ));
-						break;
-					}
-				}
-			}
-			for(let idx=0; idx < natoms; ++idx) {
-				for(const selector of numericSelectors) {
-					if(selector === atoms[idx].atomZ) {
-						centerIdx.push(idx);
-						break;
-					}
-				}
-			}
-		}
-		else if(this.labelKind === "index") {
-			for(const selector of selectors) {
-				const index = Number.parseInt(selector, 10);
-				if(Number.isNaN(index)) return [];
-				centerIdx.push(index);
-			}
-		}
-		else { // Select by "label"
-			for(let idx=0; idx < natoms; ++idx) {
-				const label = atoms[idx].label.toLowerCase();
-				for(const selector of selectors) {
-					if(label === selector) {
-						centerIdx.push(idx);
-						break;
-					}
-				}
-			}
-		}
+		const centerIdx = selectAtomsByKind(this.structure!, this.labelKind, this.atomsSelector);
 
 		// Create lists of connected atoms (island)
 		const islands: number[][] = [];

@@ -83,6 +83,7 @@ class SceneManager {
 
 	/**
 	 * Delete a mesh with the given name
+	 *
 	 * @param meshName - Name of the mesh to be deleted
 	 */
 	deleteMesh(meshName: string): void {
