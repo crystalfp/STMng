@@ -176,7 +176,7 @@ const needsAtomTypes = (fileFormat: string): boolean => {
 <v-container class="container">
   <v-row class="mt-4 mb-2">
     <v-menu open-on-hover>
-      <template #activator="{ props }">
+      <template #activator="{props}">
         <v-btn class="w-25 ml-3" size="small" color="primary" v-bind="props">
           Format
         </v-btn>

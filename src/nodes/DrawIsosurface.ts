@@ -1,103 +1,167 @@
 /**
- * Compute an orthoslice of the volumetric data. If requested show also the isolines
- *
- * @packageDocumentation
- */
+* Compute one or more isosurfaces of the volumetric data.
+*
+* @packageDocumentation
+*/
 import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
-import type {Structure} from "@/types";
+import type {Structure, PositionType, BasisType} from "@/types";
 import {IsosurfaceCore} from "@/services/Isosurface";
 
 export class Isosurface {
 
-	private showIsosurface = false;
-	private structure: Structure | undefined;
-	private dataset = 0;
-	private maxDataset = 0;
-	private isoValue = 0;
+    private showIsosurface = false;
+    private structure: Structure | undefined;
+    private dataset = 0;
+    private maxDataset = 0;
+    private isoValue = 0;
     private range: [number, number] = [-10, 10];
     private colormapName = "rainbow";
     private lut = new Lut(this.colormapName, 512);
-	private opacity = 1;
+    private opacity = 1;
 
-	private datasetPrevious = 0;
-	private isovaluePrevious = 0;
+    private datasetPrevious = -1;
+    private isovaluePrevious = Number.NEGATIVE_INFINITY;
+    private countIsosurfacesPrevious = 0;
+    private limitLowPrevious = Number.NEGATIVE_INFINITY;
+    private limitHighPrevious = Number.POSITIVE_INFINITY;
+    private rangePrevious = [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY];
 
-	private mesh: THREE.Mesh | undefined;
+    private nestedIsosurfaces = false;
+    private countIsosurfaces = 2;
+    private limitLow = -10;
+    private limitHigh = 10;
+    private limitColormap = false;
 
-	/**
-	 * Create the node
-	 *
-	 * @param id - ID of the Isosurface node
-	 */
-	constructor(private readonly id: string) {
+    private readonly group = new THREE.Group();
 
-		sb.getUiParams(this.id, (params: UiParams) => {
-    		this.showIsosurface = params.showIsosurface as boolean ?? false;
-			this.dataset = params.dataset as number ?? 0;
-    		this.isoValue = params.isoValue as number ?? 0;
+    /**
+    * Create the node
+    *
+    * @param id - ID of the Isosurface node
+    */
+    constructor(private readonly id: string) {
+
+        // Create the group that will contains one or more isosurfaces
+        this.group.name = `Isosurfaces-${this.id}`;
+        sm.clearGroup(this.group.name, true);
+        sm.add(this.group);
+
+        sb.getUiParams(this.id, (params: UiParams) => {
+
+            this.showIsosurface = params.showIsosurface as boolean ?? false;
+            this.dataset = params.dataset as number ?? 0;
+            this.isoValue = params.isoValue as number ?? 0;
             this.colormapName = params.colormapName as string ?? "rainbow";
             this.lut = new Lut(this.colormapName, 512);
-			this.opacity = params.opacity as number ?? 1;
+            this.opacity = params.opacity as number ?? 1;
 
-			// Check if needs to change only material and visibility of the surface
-			if(this.mesh &&
-			   this.dataset === this.datasetPrevious &&
-			   this.isoValue === this.isovaluePrevious) {
+            this.nestedIsosurfaces = params.nestedIsosurfaces as boolean ?? false;
+            this.countIsosurfaces = params.countIsosurfaces as number ?? 2;
+            this.limitLow = params.limitLow as number ?? -10;
+            this.limitHigh = params.limitHigh as number ?? 10;
+            this.limitColormap = params.limitColormap as boolean ?? false;
 
-				this.mesh.visible = this.showIsosurface;
-				const material = this.mesh.material as THREE.MeshStandardMaterial;
-				material.opacity = this.opacity;
-				material.transparent = this.opacity < 0.99;
-				this.lut.setColorMap(this.colormapName, 512);
-				this.lut.setMin(this.range[0]);
-				this.lut.setMax(this.range[1]);
+            // Check if needs to change only material and visibility of the surface
+            if(this.isSurfaceChanged()) {
 
-				material.color = this.lut.getColor(this.isoValue);
-			}
-			else {
-				this.datasetPrevious = this.dataset;
-				this.isovaluePrevious = this.isoValue;
-				this.createIsosurface();
-			}
-		});
+                this.createIsosurface();
+            }
+            else {
 
-		sb.getData(this.id, (data: unknown) => {
+                this.lut.setColorMap(this.colormapName, 512);
+                if(this.limitColormap) {
+                    this.lut.setMin(this.limitLow);
+                    this.lut.setMax(this.limitHigh);
+                }
+                else {
+                    this.lut.setMin(this.range[0]);
+                    this.lut.setMax(this.range[1]);
+                }
 
-			this.structure = data as Structure;
-			if(!this.structure?.volume) return;
+                this.group.visible = this.showIsosurface;
 
-			const countDatasets = this.structure.volume.length;
-			if(countDatasets === 0) {
-				this.showIsosurface = false;
-				this.dataset = 0;
-				this.maxDataset = 0;
+                this.group.traverse((mesh) => {
+                    if(mesh.type !== "Mesh") return;
+                    const {isoValue} = mesh.userData;
+                    const material = (mesh as THREE.Mesh).material as THREE.MeshStandardMaterial;
+                    material.opacity = this.opacity;
+                    material.transparent = this.opacity < 0.99;
+                    material.color = this.lut.getColor(isoValue as number);
+                });
+            }
+        });
+
+        sb.getData(this.id, (data: unknown) => {
+
+            this.structure = data as Structure;
+            if(!this.structure?.volume) return;
+
+            const countDatasets = this.structure.volume.length;
+            if(countDatasets === 0) {
+                this.showIsosurface = false;
+                this.dataset = 0;
+                this.maxDataset = 0;
                 this.range = [-10, 10];
-				this.isoValue = 0;
-			}
-			else {
-				this.dataset = 0;
-				this.maxDataset = countDatasets - 1;
-				this.range = this.getValueLimits();
-				this.isoValue = (this.range[0]+this.range[1])/2;
-				this.datasetPrevious = this.dataset;
-				this.isovaluePrevious = this.isoValue;
-			}
+                this.isoValue = 0;
+            }
+            else {
+                if(this.dataset >= countDatasets) this.dataset = 0;
+                this.maxDataset = countDatasets - 1;
+                this.range = this.getValueLimits();
+                this.isoValue = (this.range[0]+this.range[1])/2;
+            }
+            this.limitLow = this.range[0];
+            this.limitHigh = this.range[1];
 
-			sb.setUiParams(this.id, {
-				showIsosurface: this.showIsosurface,
-				dataset: 0,
-				maxDataset: this.maxDataset,
+            sb.setUiParams(this.id, {
+                showIsosurface: this.showIsosurface,
+                dataset: this.dataset,
+                maxDataset: this.maxDataset,
                 valueMin: this.range[0],
                 valueMax: this.range[1],
-				isoValue: this.isoValue
-			});
+                isoValue: this.isoValue,
+                limitLow: this.limitLow,
+                limitHigh: this.limitHigh
+            });
 
-			this.createIsosurface();
-		});
-	}
+            this.createIsosurface();
+        });
+    }
+
+    private isSurfaceChanged(): boolean {
+
+        let changed;
+        if(this.nestedIsosurfaces) {
+
+            changed = this.dataset !== this.datasetPrevious ||
+                      this.countIsosurfaces !== this.countIsosurfacesPrevious ||
+                      this.limitHigh !== this.limitHighPrevious ||
+                      this.limitLow !== this.limitLowPrevious ||
+                      this.rangePrevious[0] !== this.range[0] ||
+                      this.rangePrevious[1] !== this.range[1];
+
+            if(changed) {
+                this.datasetPrevious = this.dataset;
+                this.countIsosurfacesPrevious = this.countIsosurfaces;
+                this.limitHighPrevious = this.limitHigh;
+                this.limitLowPrevious = this.limitLow;
+                this.rangePrevious[0] = this.range[0];
+                this.rangePrevious[1] = this.range[1];
+            }
+        }
+        else {
+            changed = this.dataset !== this.datasetPrevious ||
+                      this.isoValue !== this.isovaluePrevious;
+            if(changed) {
+                this.datasetPrevious = this.dataset;
+                this.isovaluePrevious = this.isoValue;
+            }
+        }
+        return changed;
+    }
 
     /**
      * Get the volume value range for the colormap
@@ -122,70 +186,94 @@ export class Isosurface {
         return [minValue, maxValue];
     }
 
-	/**
-	 * Create a new isosurface
-	 */
-	createIsosurface(): void {
+    /**
+     * Create a new isosurface or multiple isosurfaces
+     */
+    createIsosurface(): void {
 
-        // Remove the existing surface
-        const meshName = `Isosurface-${this.id}`;
-        sm.deleteMesh(meshName);
+        // Remove existing surfaces
+        sm.clearGroup(this.group.name);
 
         // Check if the isosurface should be created
-        if(!this.showIsosurface ||
-           !this.structure?.volume ||
+        if(/* !this.showIsosurface || */
+            !this.structure?.volume ||
             this.structure.volume[this.dataset].values.length === 0) return;
 
         // Access the needed values
         const {basis, origin} = this.structure.crystal;
         const {sides, values} = this.structure.volume[this.dataset];
 
-		// If no unit cell return
-		if(basis.every((value) => value === 0)) return;
+        // If no unit cell return
+        if(basis.every((value) => value === 0)) return;
 
-		// Compute the triangulated surface
-		const iso = new IsosurfaceCore(sides, basis, origin, values);
-		iso.computeIsosurface(this.isoValue);
+        // Create one or more isosurfaces
+        if(this.nestedIsosurfaces) {
 
-		// Create and add the surface to the scene
+            const delta = (this.limitHigh - this.limitLow) / (this.countIsosurfaces-1);
+            let isoValue = this.limitLow;
+            for(let i=0; i < this.countIsosurfaces; ++i) {
+                this.createIsosurfaceMesh(sides, basis, origin, values, isoValue);
+                isoValue += delta;
+            }
+        }
+        else {
+            this.createIsosurfaceMesh(sides, basis, origin, values, this.isoValue);
+        }
+
+        // Make them visible if needed
+        this.group.visible = this.showIsosurface;
+    }
+
+    private createIsosurfaceMesh(sides: PositionType, basis: BasisType, origin: PositionType,
+                                 values: number[], isoValue: number): void {
+
+        // Compute the triangulated surface
+        const iso = new IsosurfaceCore(sides, basis, origin, values);
+        iso.computeIsosurface(isoValue);
+
+        // Create and add the surface to the scene
         const geometry = new THREE.BufferGeometry();
-		geometry.setIndex(iso.indices);
-		geometry.setAttribute("position", new THREE.Float32BufferAttribute(iso.vertices, 3));
-		geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(iso.normals, 3));
+        geometry.setIndex(iso.indices);
+        geometry.setAttribute("position", new THREE.Float32BufferAttribute(iso.vertices, 3));
+        geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(iso.normals, 3));
 
-		this.lut.setMin(this.range[0]);
-		this.lut.setMax(this.range[1]);
+        if(this.limitColormap) {
+            this.lut.setMin(this.limitLow);
+            this.lut.setMax(this.limitHigh);
+        }
+        else {
+            this.lut.setMin(this.range[0]);
+            this.lut.setMax(this.range[1]);
+        }
 
         const material = new THREE.MeshStandardMaterial({
             side: THREE.DoubleSide,
-			color: this.lut.getColor(this.isoValue).getHex(),
-			opacity: this.opacity,
-			roughness: 0.5,
-			metalness: 0.6,
-			transparent: this.opacity < 0.99,
-			// depthWrite: false,
+            color: this.lut.getColor(isoValue).getHex(),
+            opacity: this.opacity,
+            roughness: 0.5,
+            metalness: 0.6,
+            transparent: this.opacity < 0.99,
         });
 
-		this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.name = meshName;
-        this.mesh.visible = this.showIsosurface;
-        sm.add(this.mesh);
-	}
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData = {isoValue};
+        this.group.add(mesh);
+    }
 
-	/**
-	 * Save the node status
-	 *
-	 * @returns The JSON formatted status to be saved
-	 */
-	saveStatus(): string {
+    /**
+     * Save the node status
+     *
+     * @returns The JSON formatted status to be saved
+     */
+    saveStatus(): string {
 
         const statusToSave = {
-			showIsosurface: this.showIsosurface,
-			dataset: this.dataset,
-    		isoValue: this.isoValue,
+            showIsosurface: this.showIsosurface,
+            dataset: this.dataset,
+            isoValue: this.isoValue,
             colormapName: this.colormapName,
-			opacity: this.opacity,
+            opacity: this.opacity,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
-	}
+    }
 }

@@ -133,7 +133,7 @@ onMounted(() => {
     // Create cameras
     const cameraPerspective = new THREE.PerspectiveCamera(75,
                                                           cnv.value.clientWidth / cnv.value.clientHeight,
-                                                          0.1, 5000);
+                                                          0.1, 2000);
     cameraPerspective.position.set(...configStore.camera.position);
     cameraPerspective.lookAt(new THREE.Vector3(...configStore.camera.lookAt));
 

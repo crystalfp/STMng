@@ -48,6 +48,8 @@ import {VRangeSlider} from "vuetify/components/VRangeSlider";
 import AlignLabels from "@/widgets/AlignLabels.vue";
 import ColorSelector from "@/widgets/ColorSelector.vue";
 import AtomsSelector from "@/widgets/AtomsSelector.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -103,7 +105,9 @@ const app = createApp(App)
   	}))
 	.component("GAlignLabels", AlignLabels)
 	.component("GColorSelector", ColorSelector)
-	.component("GAtomsSelector", AtomsSelector);
+	.component("GAtomsSelector", AtomsSelector)
+	.component("GDebouncedSlider", DebouncedSlider)
+	.component("GDebouncedRangeSlider", DebouncedRangeSlider);
 
 // Mount the application
 app.mount("#app");

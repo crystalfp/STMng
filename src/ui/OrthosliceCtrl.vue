@@ -108,8 +108,10 @@ watchEffect(() => {
   <v-label text="Axis" class="ml-2" />
   <v-slider v-model="axis" :ticks="tickLabels" min="0" max="2" step="1"
             show-ticks="always" tick-size="5" class="ml-4 mt-1" />
-  <v-label :text="`Plane (${plane})`" class="ml-2 mt-2" />
-  <v-slider v-model="plane" min="0" :max="maxPlane" step="1" class="ml-4 mt-1" />
+  <g-debounced-slider v-slot="{value}" v-model="plane"
+                      step="1" min="0" :max="maxPlane" class="ml-4 mt-1">
+    <v-label :text="`Plane (${value})`" class="ml-2" />
+  </g-debounced-slider>
 
   <v-label :text="`Values range (${humanFormat(limitLow)} – ${humanFormat(limitHigh)})`" class="ml-2" />
   <v-range-slider v-model="limits" strict :step="step" :min="valueMin" :max="valueMax"
@@ -123,7 +125,7 @@ watchEffect(() => {
 
   <v-row class="mt-3 mb-2">
     <v-menu open-on-hover>
-      <template #activator="{ props }">
+      <template #activator="{props}">
         <v-btn class="w-25 ml-6" size="small" color="primary" v-bind="props">
           Colormap
         </v-btn>

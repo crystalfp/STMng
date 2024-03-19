@@ -279,7 +279,7 @@ export class IsosurfaceCore {
 		this.voxelGradients[7] = g[1];
 		this.voxelGradients[8] = g[2];
 		this.getPointGradient(i + 1, j + 1, k, g);
-		this.voxelGradients[9] = g[0];
+		this.voxelGradients[9]  = g[0];
 		this.voxelGradients[10] = g[1];
 		this.voxelGradients[11] = g[2];
 		this.getPointGradient(i, j, k + 1, g);
