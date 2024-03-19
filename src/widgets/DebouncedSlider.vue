@@ -21,11 +21,15 @@ const props = withDefaults(defineProps<{
     /** Timeout for debouncing (in milliseconds) */
     timeout?: number;
 
+    /** Slider disable */
+    disabled?: boolean;
+
 }>(), {
     min: 0,
     max: 10,
     step: 1,
-    timeout: 500
+    timeout: 500,
+    disabled: false
 });
 
 /** Returning the debounced slider value */
@@ -49,6 +53,6 @@ watch(valueToDebounce, () => {
 <v-container class="pa-0 ma-0">
   <!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
   <slot :value="valueToDebounce" />
-  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" />
+  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :disabled="disabled" />
 </v-container>
 </template>

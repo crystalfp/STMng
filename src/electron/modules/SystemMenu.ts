@@ -103,7 +103,11 @@ export const setupMenu = (): void => {
             label: "&View",
             submenu: [
                 {role: "reload"},
-                {role: "forceReload"},
+                {
+                    role: "forceReload",
+                    enabled: isDevelopment,
+                    visible: isDevelopment,
+                },
                 {
                     role: "toggleDevTools",
                     enabled: isDevelopment,

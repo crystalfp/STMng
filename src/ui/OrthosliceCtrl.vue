@@ -4,7 +4,7 @@
  * Controls for the orthoslice.
  */
 
-import {ref, watchEffect, computed, watch} from "vue";
+import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {humanFormat} from "@/services/HumanFormat";
 
@@ -42,18 +42,6 @@ const showIsolines = ref(false);
 const colorIsolines = ref(false);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
 
-// Debounce the isoValue so the slider becomes more reactive
-const isoValueToDebounce = ref(0);
-let debouncingTimeoutId: NodeJS.Timeout;
-watch(isoValueToDebounce, () => {
-
-    clearTimeout(debouncingTimeoutId);
-
-    debouncingTimeoutId = setTimeout(() => {
-        isoValue.value = isoValueToDebounce.value;
-    }, 500);
-});
-
 sb.getUiParams(pr.id, (params: UiParams) => {
     showOrthoslice.value = params.showOrthoslice as boolean ?? false;
     dataset.value = params.dataset as number ?? 0;
@@ -77,8 +65,6 @@ sb.getUiParams(pr.id, (params: UiParams) => {
 
     limits.value[0] = limitLow.value;
     limits.value[1] = limitHigh.value;
-
-    isoValueToDebounce.value = isoValue.value;
 });
 watchEffect(() => {
     sb.setUiParams(pr.id, {
@@ -102,15 +88,15 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice" density="compact" class="mt-2 ml-4" />
+  <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice" density="compact" class="mt-2 ml-3" />
   <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
   <v-label text="Axis" class="ml-2" />
   <v-slider v-model="axis" :ticks="tickLabels" min="0" max="2" step="1"
             show-ticks="always" tick-size="5" class="ml-4 mt-1" />
   <g-debounced-slider v-slot="{value}" v-model="plane"
-                      step="1" min="0" :max="maxPlane" class="ml-4 mt-1">
-    <v-label :text="`Plane (${value})`" class="ml-2" />
+                      step="1" min="0" :max="maxPlane" class="ml-2 mt-1">
+    <v-label :text="`Plane (${value})`" class="ml-0" />
   </g-debounced-slider>
 
   <v-label :text="`Values range (${humanFormat(limitLow)} – ${humanFormat(limitHigh)})`" class="ml-2" />
@@ -118,10 +104,11 @@ watchEffect(() => {
                   color="primary" class="ml-4 mt-1 pr-2" />
 
   <v-switch v-model="useColorClasses" color="primary"
-            :label="`Use discrete classes (${colorClasses})`"
-            density="compact" class="ml-4" />
-  <v-slider v-model="colorClasses" min="2" :max="20" step="1" :disabled="!useColorClasses"
-            class="ml-4" />
+            label="Use discrete classes" density="compact" class="ml-3" />
+  <g-debounced-slider v-slot="{value}" v-model="colorClasses" step="1" min="2" max="20"
+                      :disabled="!useColorClasses" class="ml-2 mt-1">
+    <v-label :text="`Number classes (${value})`" />
+  </g-debounced-slider>
 
   <v-row class="mt-3 mb-2">
     <v-menu open-on-hover>
@@ -145,8 +132,12 @@ watchEffect(() => {
             density="compact" class="mt-6 ml-4" />
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
-  <v-label :text="`Isoline value (${humanFormat(isoValueToDebounce)})`" class="ml-4" />
+  <!-- <v-label :text="`Isoline value (${humanFormat(isoValueToDebounce)})`" class="ml-4" />
   <v-slider v-model="isoValueToDebounce" :step="step" :min="valueMin" :max="valueMax"
-            :disabled="useColorClasses" class="ml-4 mt-1" />
+            :disabled="useColorClasses" class="ml-4 mt-1" /> -->
+  <g-debounced-slider v-slot="{value}" v-model="isoValue" :step="step" :min="valueMin" :max="valueMax"
+                      :disabled="useColorClasses" class="ml-2 mt-1">
+    <v-label :text="`Isoline value (${humanFormat(value)})`" />
+  </g-debounced-slider>
 </v-container>
 </template>
