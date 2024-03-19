@@ -46,7 +46,9 @@ watch(valueToDebounce, () => {
 
 
 <template>
-<!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
-<slot :value="valueToDebounce" />
-<v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" />
+<v-container class="pa-0 ma-0">
+  <!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
+  <slot :value="valueToDebounce" />
+  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" />
+</v-container>
 </template>

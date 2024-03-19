@@ -273,6 +273,11 @@ export class Isosurface {
             isoValue: this.isoValue,
             colormapName: this.colormapName,
             opacity: this.opacity,
+            nestedIsosurfaces: this.nestedIsosurfaces,
+            countIsosurfaces: this.countIsosurfaces,
+            limitLow: this.limitLow,
+            limitHigh: this.limitHigh,
+            limitColormap: this.limitColormap,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
     }

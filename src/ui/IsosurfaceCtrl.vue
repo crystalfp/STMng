@@ -90,8 +90,8 @@ watchEffect(() => {
 
   <v-container v-if="nestedIsosurfaces" class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="countIsosurfaces"
-                        step="1" min="2" max="10" class="ml-6">
-      <v-label :text="`Number of isosurfaces (${value})`" class="ml-2" />
+                        step="1" min="2" max="10" class="ml-2">
+      <v-label :text="`Number of isosurfaces (${value})`" />
     </g-debounced-slider>
     <g-debounced-range-slider v-slot="{values}" v-model="limits" :step="step" :min="valueMin" :max="valueMax"
                               class="ml-4 mt-1 pr-2">
@@ -103,8 +103,8 @@ watchEffect(() => {
 
   <v-container v-else class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="isoValue"
-                        :step="step" :min="valueMin" :max="valueMax" class="ml-4 mt-1">
-      <v-label :text="`Isosurface value (${humanFormat(value)})`" class="ml-2" />
+                        :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1">
+      <v-label :text="`Isosurface value (${humanFormat(value)})`" />
     </g-debounced-slider>
   </v-container>
 
@@ -125,8 +125,8 @@ watchEffect(() => {
     </v-menu>
     <v-label class="underlined-label">{{ colormapName }}</v-label>
   </v-row>
-  <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-4 mt-1">
-    <v-label :text="`Opacity (${value.toFixed(1)})`" class="ml-2 mt-6" />
+  <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-1">
+    <v-label :text="`Opacity (${value.toFixed(1)})`" class="mt-6" />
   </g-debounced-slider>
 </v-container>
 </template>

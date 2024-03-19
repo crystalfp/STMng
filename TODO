@@ -8,16 +8,12 @@ ToDo:
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
-  ✔ Add transparency to the isosurface @done(2024-03-12 18:01)
-  ✔ Simplify get structure look if the atoms types are already known @done(2024-03-16 08:17)
-  ✔ Disable compute bonds for num atoms > 500 @done(2024-03-16 17:52)
-  ✔ Check dispose() for labels @done(2024-03-18 06:03)
   ☐ Add groups to scene only when requested first time
   ☐ Put name to all groups
+  ☐ Add disable to debounced sliders and use it in isolines
+  ☐ Put debug options in a specific top level menu
 
 Bugs:
-  ☐ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation"
-  ☐ Load ZnTe.res, load diamond.res → the first unit cell does not disappear (cannot reproduce)
 
 Requests from Oganov:
   ☐ An option to specify arbitrary section plane
@@ -33,6 +29,12 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
 
 Archive:
+  ✘ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation" @cancelled(2024-03-19 06:53) @project(Bugs)
+  ✘ Load ZnTe.res, load diamond.res → the first unit cell does not disappear (cannot reproduce) @cancelled(2024-03-19 06:54) @project(Bugs)
+  ✔ Disable compute bonds for num atoms > 500 @done(2024-03-16 17:52)
+  ✔ Check dispose() for labels @done(2024-03-18 06:03)
+  ✔ Add transparency to the isosurface @done(2024-03-12 18:01)
+  ✔ Simplify get structure look if the atoms types are already known @done(2024-03-16 08:17)
   ✔ Try lines as rectangle or box (or tube with small radius) Check <https://discourse.threejs.org/t/increase-width-of-lines-in-axes-helper/61869/8> @done(2024-03-10 15:49)
   ✔ Bonding criteria different for pair of atoms types @done(2024-03-10 15:41) @project(Requests from Oganov)
   ✔ Measuring bond distances and angles @done(2024-03-07 11:31) @project(Requests from Oganov)
