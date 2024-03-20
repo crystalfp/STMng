@@ -23,6 +23,7 @@ import {StructureWriter} from "@/nodes/StructureWriter";
 import {Measures} from "@/nodes/Measures";
 import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
+import {InterpolateVolume} from "@/nodes/InterpolateVolume";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -33,20 +34,21 @@ export class NodeInfo {
 
 	// NOTE 2) Add the type, its ui component and if create graphical object
 	private static readonly typeToPartsRecord: Record<string, NodeParts> = {
-		"structure-reader":		{ui: "StructureReaderCtrl",	graphic: "none"},
-		"draw-structure":		{ui: "DrawStructureCtrl",	graphic: "out"},
-		"draw-unit-cell":		{ui: "DrawUnitCellCtrl",	graphic: "out"},
-		"chart-viewer":			{ui: "ChartViewerCtrl",		graphic: "none"},
-		"viewer-3d":   			{ui: "Viewer3DCtrl",		graphic: "in"},
-		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl",	graphic: "out"},
-		"capture-view":   		{ui: "CaptureMediaCtrl",	graphic: "none"},
-		"compute-symmetries": 	{ui: "SymmetriesCtrl",		graphic: "none"},
-		"compute-bonds": 		{ui: "ComputeBondsCtrl",	graphic: "none"},
-		"orthoslice":			{ui: "OrthosliceCtrl",		graphic: "out"},
-		"structure-writer":		{ui: "StructureWriterCtrl",	graphic: "none"},
-		"measures":				{ui: "MeasuresCtrl",		graphic: "out"},
-		"draw-trajectories":	{ui: "TrajectoriesCtrl",	graphic: "out"},
-		"isosurface":			{ui: "IsosurfaceCtrl",		graphic: "out"},
+		"structure-reader":		{ui: "StructureReaderCtrl",		graphic: "none"},
+		"draw-structure":		{ui: "DrawStructureCtrl",		graphic: "out"},
+		"draw-unit-cell":		{ui: "DrawUnitCellCtrl",		graphic: "out"},
+		"chart-viewer":			{ui: "ChartViewerCtrl",			graphic: "none"},
+		"viewer-3d":   			{ui: "Viewer3DCtrl",			graphic: "in"},
+		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl",		graphic: "out"},
+		"capture-view":   		{ui: "CaptureMediaCtrl",		graphic: "none"},
+		"compute-symmetries": 	{ui: "SymmetriesCtrl",			graphic: "none"},
+		"compute-bonds": 		{ui: "ComputeBondsCtrl",		graphic: "none"},
+		"orthoslice":			{ui: "OrthosliceCtrl",			graphic: "out"},
+		"structure-writer":		{ui: "StructureWriterCtrl",		graphic: "none"},
+		"measures":				{ui: "MeasuresCtrl",			graphic: "out"},
+		"draw-trajectories":	{ui: "TrajectoriesCtrl",		graphic: "out"},
+		"isosurface":			{ui: "IsosurfaceCtrl",			graphic: "out"},
+		"interpolate-volume":	{ui: "InterpolateVolumeCtrl",	graphic: "none"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -120,6 +122,9 @@ export class NodeInfo {
 			case "isosurface":
 				map.set(id, new Isosurface(id));
 				break;
+			case "interpolate-volume":
+				map.set(id, new InterpolateVolume(id));
+				break;
 			case "viewer-3d":
 			case "capture-view":
 				// These nodes have no runtime code like the others
@@ -146,6 +151,7 @@ export class NodeInfo {
 			case "compute-symmetries":
 			case "compute-bonds":
 			case "draw-unit-cell":
+			case "interpolate-volume":
 			case "structure-reader": {
 				const typedData = data as Structure;
 				const typedStore = dataInStore as Structure;
@@ -190,6 +196,7 @@ export class NodeInfo {
 			case "draw-unit-cell":
 			case "structure-reader":
 			case "compute-bonds":
+			case "interpolate-volume":
 			case "compute-symmetries":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
@@ -265,6 +272,10 @@ export class NodeInfo {
 				case "isosurface":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as Isosurface).saveStatus();
+					break;
+				case "interpolate-volume":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as InterpolateVolume).saveStatus();
 					break;
 			}
 			notFirst = true;

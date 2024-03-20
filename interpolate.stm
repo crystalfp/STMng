@@ -1,0 +1,10 @@
+{
+	"graph": {
+		"reader": 	   {"label": "Reader", 	    "type": "structure-reader"},
+		"unit":   	   {"label": "Cell",   	    "type": "draw-unit-cell",     "in": "reader"},
+		"draw":   	   {"label": "Structure",   "type": "draw-structure",     "in": "unit"},
+		"interpolate": {"label": "Interpolate", "type": "interpolate-volume", "in": "unit"},
+        "iso":         {"label": "Isosurface",  "type": "isosurface",         "in": "interpolate"},
+		"viewer": 	   {"label": "Viewer", 	    "type": "viewer-3d"}
+	}
+}

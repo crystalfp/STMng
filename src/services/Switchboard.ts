@@ -188,6 +188,7 @@ class Switchboard {
 
 		const switchboardStore = useSwitchboardStore();
 
+		if(!(id in switchboardStore.ui)) return; // Sanity check
 		for(const par in params) switchboardStore.ui[id][par] = params[par];
 	}
 

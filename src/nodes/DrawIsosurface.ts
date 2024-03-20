@@ -64,7 +64,7 @@ export class Isosurface {
             this.limitHigh = params.limitHigh as number ?? 10;
             this.limitColormap = params.limitColormap as boolean ?? false;
 
-            // Check if needs to change only material and visibility of the surface
+            // Check if it is need to change only material and visibility of the surfaces
             if(this.isSurfaceChanged()) {
 
                 this.createIsosurface();
@@ -131,6 +131,11 @@ export class Isosurface {
         });
     }
 
+    /**
+     * Check if the surface has changed
+     *
+     * @returns True if the surface has changed
+     */
     private isSurfaceChanged(): boolean {
 
         let changed;
@@ -194,16 +199,16 @@ export class Isosurface {
         // Remove existing surfaces
         sm.clearGroup(this.group.name);
 
-        // Check if the isosurface should be created
-        if(/* !this.showIsosurface || */
-            !this.structure?.volume ||
-            this.structure.volume[this.dataset].values.length === 0) return;
+        // Check if the isosurface could be created
+        if(!this.structure?.volume ||
+            this.structure.volume.length === 0 ||
+            this.structure.volume[this.dataset]?.values.length === 0) return;
 
         // Access the needed values
         const {basis, origin} = this.structure.crystal;
         const {sides, values} = this.structure.volume[this.dataset];
 
-        // If no unit cell return
+        // A unit cell is needed to create the isosurface
         if(basis.every((value) => value === 0)) return;
 
         // Create one or more isosurfaces
@@ -224,6 +229,15 @@ export class Isosurface {
         this.group.visible = this.showIsosurface;
     }
 
+    /**
+     * Create a single isosurface mesh
+     *
+     * @param sides - Sides of the volumetric data
+     * @param basis - Basis vectors
+     * @param origin - Unit cell origin
+     * @param values - Volumetric values to be used
+     * @param isoValue - Isosurface value at which the surface should be created
+     */
     private createIsosurfaceMesh(sides: PositionType, basis: BasisType, origin: PositionType,
                                  values: number[], isoValue: number): void {
 

@@ -95,7 +95,7 @@ watchEffect(() => {
   <v-slider v-model="axis" :ticks="tickLabels" min="0" max="2" step="1"
             show-ticks="always" tick-size="5" class="ml-4 mt-1" />
   <g-debounced-slider v-slot="{value}" v-model="plane"
-                      step="1" min="0" :max="maxPlane" class="ml-2 mt-1">
+                      :step="1" :min="0" :max="maxPlane" class="ml-2 mt-1">
     <v-label :text="`Plane (${value})`" class="ml-0" />
   </g-debounced-slider>
 
@@ -105,7 +105,7 @@ watchEffect(() => {
 
   <v-switch v-model="useColorClasses" color="primary"
             label="Use discrete classes" density="compact" class="ml-3" />
-  <g-debounced-slider v-slot="{value}" v-model="colorClasses" step="1" min="2" max="20"
+  <g-debounced-slider v-slot="{value}" v-model="colorClasses" :step="1" :min="2" :max="20"
                       :disabled="!useColorClasses" class="ml-2 mt-1">
     <v-label :text="`Number classes (${value})`" />
   </g-debounced-slider>
@@ -132,11 +132,8 @@ watchEffect(() => {
             density="compact" class="mt-6 ml-4" />
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
-  <!-- <v-label :text="`Isoline value (${humanFormat(isoValueToDebounce)})`" class="ml-4" />
-  <v-slider v-model="isoValueToDebounce" :step="step" :min="valueMin" :max="valueMax"
-            :disabled="useColorClasses" class="ml-4 mt-1" /> -->
-  <g-debounced-slider v-slot="{value}" v-model="isoValue" :step="step" :min="valueMin" :max="valueMax"
-                      :disabled="useColorClasses" class="ml-2 mt-1">
+  <g-debounced-slider v-slot="{value}" v-model="isoValue" :step="step" :min="valueMin"
+                      :max="valueMax" :disabled="useColorClasses" class="ml-2 mt-1">
     <v-label :text="`Isoline value (${humanFormat(value)})`" />
   </g-debounced-slider>
 </v-container>
