@@ -79,7 +79,7 @@ watchEffect(() => {
         <v-color-picker v-model="configStore.lights.ambientColor"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
         <v-slider v-model="configStore.lights.ambientIntensity" label="Intensity" density="comfortable"
-                  min="0" max="3" step="0.1" />
+                  min="0" max="3" step="0.1" thumb-label />
       </v-expansion-panel-text>
     </v-expansion-panel>
     <v-expansion-panel>

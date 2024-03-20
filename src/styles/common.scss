@@ -16,15 +16,16 @@ html {
 
 :root {
   --usable-height: calc(100vh - 30px); // Height of the application area (window height minus titlebar height)
-  --container-height: calc(100vh - 74px);
+  --container-height: calc(100vh - 104px);
 }
 
 // > Vuetify specific
 // Height of the UI of the various nodes
 .container {
-  overflow: hide auto;
-  // height: var(--container-height);
-  height: calc(var(--container-height) - 30px);
+  overflow: clip auto;
+  // overflow-x: clip;
+  // overflow-y: auto;
+  height: var(--container-height);
 }
 
 .underlined-label {

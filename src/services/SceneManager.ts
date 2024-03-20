@@ -154,7 +154,6 @@ class SceneManager {
 		const ambient = new THREE.AmbientLight(configStore.lights.ambientColor,
 											configStore.lights.ambientIntensity);
 		SceneManager.scene.add(ambient);
-
 		watchEffect(() => {
 			ambient.intensity = configStore.lights.ambientIntensity;
 			ambient.color = new THREE.Color(configStore.lights.ambientColor);
