@@ -313,6 +313,16 @@ class Switchboard {
 		return this.nodeInfo.checkType(type);
 	}
 
+	/**
+	 * Get node type
+	 *
+	 * @param id - ID of a node
+	 * @returns The type of the node or empty string if not existent
+	 */
+	getNodeType(id: string): string {
+		return this.mapIdToType.get(id) ?? "";
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.

@@ -317,3 +317,17 @@ export const refreshSystemMenu = (): void => {
 
     mainWin.webContents.send("APP:REFRESH-MENU");
 };
+
+/**
+ * Get the type of current node
+ *
+ * @returns The type of the current node open in the UI
+ */
+export const getCurrentNode = (): Promise<string> => {
+
+    mainWin.webContents.send("PROJECT:ASK-CURRENT-NODE");
+
+    return new Promise((resolve) => {
+        ipcMain.on("PROJECT:GET-CURRENT-NODE", (_event: unknown, answer: string): void => resolve(answer));
+    });
+};

@@ -6,8 +6,8 @@
 import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import {broadcastMessage, showDevToolsOnSecondaryWindows,
-        refreshSystemMenu, openMenuEntry} from "./WindowsUtilities";
+import {broadcastMessage, showDevToolsOnSecondaryWindows, sendErrorNotification,
+        refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {loadRememberedProject, loadProjectAndRemember, saveProject, sendProjectToEditor,
         saveProjectAs, createProjectEditor} from "./Project";
@@ -170,6 +170,26 @@ export const setupMenu = (): void => {
                             path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
                         void shell.openExternal(`file:///${url}`);
                     },
+                },
+                {
+                    label: "Current node documentation",
+                    click() {
+                        let currentNodeInError: string;
+                        getCurrentNode().then((currentNode) => {
+                            if(!currentNode) currentNode = "../index";
+                            currentNodeInError = currentNode;
+                            const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+                            const url = app.isPackaged ?
+                                path.resolve(process.resourcesPath,
+                                                `app.asar.unpacked/dist/doc/nodes/${currentNode}.html`) :
+                                path.join(mainSourceDirectory, "..", "public", "doc", "nodes",
+                                                `${currentNode}.html`);
+                            return shell.openExternal(`file:///${url}`);
+                        })
+                        .catch((error: Error) => {
+                            sendErrorNotification(`Error getting help for "${currentNodeInError}": ${error.message}`);
+                        });
+                    }
                 },
                 {
                     label: "Learn more",

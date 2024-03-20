@@ -141,6 +141,17 @@ export const sendProject = (callback: () => string): void => {
 };
 
 /**
+ * Send the current node type to main process
+ *
+ * @param callback - Routine called when the main process require the current node type
+ */
+export const sendCurrentNode = (callback: () => string): void => {
+	window.electron.ipcRenderer.on("PROJECT:ASK-CURRENT-NODE", () => {
+		window.electron.ipcRenderer.send("PROJECT:GET-CURRENT-NODE", callback());
+	});
+};
+
+/**
  * Set the title with the current loaded project path.
  *
  * @param baseTitle - The first part of the title

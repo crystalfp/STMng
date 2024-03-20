@@ -5,7 +5,7 @@
  */
 
 import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
-import {receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
+import {receiveBroadcast, getPreferenceSync, sendCurrentNode} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 import type {NodeUI} from "@/types";
 import {useConfigStore} from "@/stores/configStore";
@@ -32,6 +32,12 @@ sb.subscribeToUiNodes((nodes: NodeUI[], currentId: string) => {
         if(node.id === currentId) found = true;
     }
     selectedTabId.value = found ? currentId : graph.value[0].id;
+});
+
+// Return to the main process the type of the current node open in the UI
+sendCurrentNode(() => {
+
+    return sb.getNodeType(moduleId.value);
 });
 
 watchEffect(() => {
