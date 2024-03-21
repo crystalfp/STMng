@@ -10,8 +10,10 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ Add groups to scene only when requested first time
   ☐ Put name to all groups
-  ☐ Add disable to debounced sliders and use it in isolines
-  ☐ Put debug options in a specific top level menu
+  ✔ Add disable to debounced sliders and use it in isolines @done(2024-03-21 06:05)
+  ✘ Put debug options in a specific top level menu @cancelled(2024-03-21 06:05)
+  ☐ Better error reporting from KPLOT
+  ☐ Interpolate volume: add dataset selector
 
 Bugs:
 

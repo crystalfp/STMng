@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng interpolate-volume node">
+  <meta name="keywords" content="STMng">
+	<meta name="date" content="2024-03-20"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+	<meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+	<meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+	<link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Interpolate Volume Data</title>
+</head>
+
+<body>
+<h1>Interpolate Volume Data</h1>
+
+<h2>Description</h2>
+<p>Interpolate a given scalar volume adding points between original grid points.
+The interpolation is done using a tricubic polynomial.</p>
+<p>The input structure should have volumetric data in a grid at least 4x4x4, otherwise it is simply copied to output.</p>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Interpolate volume data</td>
+	<td class="c2">switch</td>
+	<td class="c3">Enable the interpolation, otherwise the input structure is simply copied to output.</td>
+</tr>
+<tr>
+	<td class="c1">Points to add</td>
+	<td class="c2">slider</td>
+	<td class="c3">Points (1–10) to be added between original grid points.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Type ID:</td><td>interpolate-volume</td></tr>
+<tr><td class="c1">Input:</td><td>Structure</td></tr>
+<tr><td class="c1">Output:</td><td>Structure</td></tr>
+<tr><td class="c1">Add objects to scene:</td><td>No</td></tr>
+</table>
+
+</body>
+</html>

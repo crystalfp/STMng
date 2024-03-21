@@ -58,3 +58,19 @@ code {
 .m1 {
   width: 13rem;
 }
+
+td.c1 {
+	width: 240px;
+	vertical-align: top;
+	padding-left: 20px;
+	font-weight: bold;
+}
+
+td.c2 {
+	width: 150px;
+	vertical-align: top;
+}
+
+td.c3 {
+	vertical-align: top;
+}
