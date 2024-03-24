@@ -121,10 +121,14 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 
 		if(hasErrors) return [];
 
+		// Assign the atoms types
 		if(atomsTypes && atomsTypes.length > 0) {
 
 			for(let idx=1, idxt=0; idx < correspond.length; ++idx) {
-				if(correspond[idx]) correspond[idx] = getAtomicNumber(atomsTypes[idxt++]);
+				if(correspond[idx]) {
+					correspond[idx] = getAtomicNumber(atomsTypes[idxt++]);
+					if(idxt >= atomsTypes.length) idxt = 0;
+				}
 			}
 
 			for(const structure of structures) {
@@ -135,6 +139,10 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 			}
 		}
 		else {
+			for(let idx=1; idx <= correspond.length; ++idx) {
+				if(correspond[idx]) correspond[idx] = idx+8;
+			}
+
 			for(const structure of structures) {
 				structure.look = getStructureAppearanceFromZ(correspond);
 			}

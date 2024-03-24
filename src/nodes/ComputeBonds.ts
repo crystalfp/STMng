@@ -129,7 +129,7 @@ export class ComputeBonds {
 			// Create atoms pair list
 			this.createPairData();
 
-			// Disable bonds computation if there are too much atoms
+			// Disable bonds computation if there are too many atoms
 			if((this.inputStructure?.atoms?.length ?? 0) > 500) {
 				this.enableComputeBonds = false;
 				sb.setUiParams(this.id, {

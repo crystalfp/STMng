@@ -72,7 +72,7 @@ export class Symmetries {
 
 			this.inputStructure = data as Structure;
 			if(!this.inputStructure) return;
-			const {crystal, volume} = this.inputStructure;
+			const {crystal, volume, atoms} = this.inputStructure;
 			if(crystal === undefined) return;
 
 			// If space group contains symmetry cards instead of symbol, ignore it
@@ -80,12 +80,11 @@ export class Symmetries {
 				this.ignoreInputSymmetries = true;
 			}
 
-			if(volume.length > 0) {
+			if(volume.length > 0 || atoms.length > 500) {
 				this.enableFindSymmetries = false;
 			}
 
 			sb.setUiParams(this.id, {
-				// inputSymmetry: crystal.spaceGroup,
 				ignoreInputSymmetries: this.ignoreInputSymmetries,
 				enableFindSymmetries: this.enableFindSymmetries
 			});

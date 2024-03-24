@@ -101,15 +101,23 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			}
 		}
 
+		// Assign the atoms types
 		if(atomsTypes && atomsTypes.length > 0) {
 
 			for(let idx=1, idxt=0; idx <= ntypes; ++idx) {
-				if(correspond[idx]) correspond[idx] = getAtomicNumber(atomsTypes[idxt++]);
+				if(correspond[idx]) {
+					correspond[idx] = getAtomicNumber(atomsTypes[idxt++]);
+					if(idxt >= atomsTypes.length) idxt = 0;
+				}
 			}
-
-			for(const atom of structure.atoms) {
-				atom.atomZ = correspond[atom.atomZ];
+		}
+		else {
+			for(let idx=1; idx <= ntypes; ++idx) {
+				if(correspond[idx]) correspond[idx] = idx+8;
 			}
+		}
+		for(const atom of structure.atoms) {
+			atom.atomZ = correspond[atom.atomZ];
 		}
 
 		structure.look = getStructureAppearanceFromZ(correspond);

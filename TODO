@@ -1,6 +1,6 @@
 
 ToDo:
-	☐ Add tooltips
+  ☐ Add tooltips
   ☐ Readers do not fail if the file format is invalid
   ☐ Unify naming: graph, node, project
   ☐ Finish help
@@ -10,12 +10,16 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ Add groups to scene only when requested first time
   ☐ Put name to all groups
-  ✔ Add disable to debounced sliders and use it in isolines @done(2024-03-21 06:05)
-  ✘ Put debug options in a specific top level menu @cancelled(2024-03-21 06:05)
   ☐ Better error reporting from KPLOT
   ☐ Interpolate volume: add dataset selector
+  ☐ Events 'unresponsive' and 'responsive' on web content
+  ☐ Draw base vectors: add them when requested, not when input data has it
+  ☐ Draw unit cell: add it when requested, not when input data has it
+  ✔ Try to use defineAsyncComponent for global UI components @done(2024-03-24 06:31)
 
 Bugs:
+  ☐ Understand isosurface transparency for artifacts
+  ☐ Resetting camera: put camera further
 
 Requests from Oganov:
   ☐ An option to specify arbitrary section plane
@@ -31,6 +35,8 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
 
 Archive:
+  ✔ Add disable to debounced sliders and use it in isolines @done(2024-03-21 06:05) @project(ToDo)
+  ✘ Put debug options in a specific top level menu @cancelled(2024-03-21 06:05) @project(ToDo)
   ✘ Load `nixqam_orth_fdd2_platon.res`, receive "Illegal lattice translation" @cancelled(2024-03-19 06:53) @project(Bugs)
   ✘ Load ZnTe.res, load diamond.res → the first unit cell does not disappear (cannot reproduce) @cancelled(2024-03-19 06:54) @project(Bugs)
   ✔ Disable compute bonds for num atoms > 500 @done(2024-03-16 17:52)

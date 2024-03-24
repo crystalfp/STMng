@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import {createApp} from "vue";
+import {createApp, defineAsyncComponent} from "vue";
 import log from "electron-log/renderer";
 import {createPinia} from "pinia";
 
@@ -43,13 +43,6 @@ import {VBtnToggle} from "vuetify/components/VBtnToggle";
 import {VSnackbar} from "vuetify/components/VSnackbar";
 import {VTable} from "vuetify/components/VTable";
 import {VRangeSlider} from "vuetify/components/VRangeSlider";
-
-// Project defined components. The registered name should begin by G (g- in use)
-import AlignLabels from "@/widgets/AlignLabels.vue";
-import ColorSelector from "@/widgets/ColorSelector.vue";
-import AtomsSelector from "@/widgets/AtomsSelector.vue";
-import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
-import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -103,11 +96,13 @@ const app = createApp(App)
     		},
 		}
   	}))
-	.component("GAlignLabels", AlignLabels)
-	.component("GColorSelector", ColorSelector)
-	.component("GAtomsSelector", AtomsSelector)
-	.component("GDebouncedSlider", DebouncedSlider)
-	.component("GDebouncedRangeSlider", DebouncedRangeSlider);
+
+	// Project defined components. The registered name should begin by G (g- in use)
+	.component("GAlignLabels", defineAsyncComponent(() => import("@/widgets/AlignLabels.vue")))
+	.component("GColorSelector", defineAsyncComponent(() => import("@/widgets/ColorSelector.vue")))
+	.component("GAtomsSelector", defineAsyncComponent(() => import("@/widgets/AtomsSelector.vue")))
+	.component("GDebouncedSlider", defineAsyncComponent(() => import("@/widgets/DebouncedSlider.vue")))
+	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("@/widgets/DebouncedRangeSlider.vue")));
 
 // Mount the application
 app.mount("#app");
