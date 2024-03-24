@@ -66,6 +66,15 @@ export class DrawUnitCell {
 
 			this.outUC.visible = this.showUnitCell;
 			this.outBV.visible = this.showBasisVectors;
+			if(this.structure?.crystal) {
+				if(this.showUnitCell) {
+					this.drawUnitCell(this.structure.crystal.basis, this.structure.crystal.origin);
+				}
+
+				if(this.showBasisVectors) {
+					this.drawBasisVectors(this.structure.crystal.basis, this.structure.crystal.origin);
+				}
+			}
 
     		this.repetitionsA = params.repetitionsA as number ?? 1;
     		this.repetitionsB = params.repetitionsB as number ?? 1;
@@ -112,8 +121,8 @@ export class DrawUnitCell {
 		// Clear previous cell
 		sm.clearGroup(this.nameUC);
 
-		// If no unit cell return
-		if(basis.every((value) => value === 0)) return;
+		// If no unit cell or not visible return
+		if(!this.showUnitCell || basis.every((value) => value === 0)) return;
 
 		// Vertices coordinates (bottom then top)
     	const vertices = new Float32Array([
@@ -169,6 +178,10 @@ export class DrawUnitCell {
 		// Clear basis vectors
 		sm.clearGroup(this.nameBV);
 
+		// Not visible, do nothing
+		if(!this.showBasisVectors) return;
+
+		// Basis vectors visible, create them
 		const originZero = new THREE.Vector3(...orig);
 
 		const basisA = new THREE.Vector3(basis[0], basis[1], basis[2]);
