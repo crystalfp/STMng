@@ -10,8 +10,8 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ Add groups to scene only when requested first time
   ☐ Put name to all groups
-  ☐ Better error reporting from KPLOT
-  ☐ Interpolate volume: add dataset selector
+  ✔ Better error reporting from KPLOT @done(2024-03-24 07:30)
+  ✔ Interpolate volume: add dataset selector @done(2024-03-24 07:17)
   ☐ Events 'unresponsive' and 'responsive' on web content
   ☐ Draw base vectors: add them when requested, not when input data has it
   ☐ Draw unit cell: add it when requested, not when input data has it
@@ -33,6 +33,7 @@ Nice to have/Future:
   ☐ Shift unit cell (from STM4). The problem is shifting the volumetric data.
   ☐ Coloring of trajectories
   ☐ Rendering spheres using sprites (as in VMD)
+  ☐ Better reporting from KPLOT
 
 Archive:
   ✔ Add disable to debounced sliders and use it in isolines @done(2024-03-21 06:05) @project(ToDo)

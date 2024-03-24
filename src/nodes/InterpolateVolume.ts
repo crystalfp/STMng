@@ -12,6 +12,7 @@ export class InterpolateVolume {
 	private interpolateVolume = false;
 	private pointsToAdd = 1;
 	private structure: Structure | undefined;
+	private dataset = 0;
 
 	/**
 	 * Create the node
@@ -23,6 +24,7 @@ export class InterpolateVolume {
 		sb.getUiParams(this.id, (params: UiParams) => {
 			this.interpolateVolume = params.interpolateVolume as boolean ?? false;
     		this.pointsToAdd = params.pointsToAdd as number ?? 1;
+    		this.dataset = params.dataset as number ?? 0;
 
 			this.computeInterpolation();
 		});
@@ -30,6 +32,9 @@ export class InterpolateVolume {
 		sb.getData(this.id, (data: unknown) => {
 
 			this.structure = data as Structure;
+			if(this.structure?.volume) {
+				sb.setUiParams(this.id, {maxDataset: this.structure.volume.length - 1});
+			}
 			this.computeInterpolation();
 		});
 	}
@@ -64,9 +69,9 @@ export class InterpolateVolume {
 			volume: []
 		};
 
-		// Interpolate each dataset
-		for(const dataset of volume) {
-			out.volume.push(this.interpolate(dataset));
+		// Interpolate the requested dataset
+		for(let idx=0; idx < volume.length; ++idx) {
+			out.volume.push(idx === this.dataset ? this.interpolate(volume[this.dataset]) : volume[idx]);
 		}
 
 		// Output the result

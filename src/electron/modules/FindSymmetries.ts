@@ -92,8 +92,15 @@ export const setupChannelFindSymmetries = (): void => {
 								path.join(mainSourceDirectory, "..", "public", "bin", "kplot.mingw.exe");
 
 		// Execute KPLOT
-		const stdout = execSync(`"${kplot}"`, {windowsHide: true, cwd: workingDir, input: stdin});
-		log.info(stdout.toString("utf8"));
+		try {
+			const stdout = execSync(`"${kplot}"`, {windowsHide: true, cwd: workingDir, input: stdin});
+			log.info(stdout.toString("utf8"));
+		}
+		catch(error: unknown) {
+			log.error((error as Error).message);
+			removeWorkingDir(tmpobj, workingDir);
+			return {payload: "Error", error: `KPLOT crashed: ${(error as Error).message}`};
+		}
 
 		// The structure to be filled by the recomputed one
 		const out: Structure = {

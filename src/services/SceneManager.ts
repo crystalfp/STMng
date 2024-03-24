@@ -173,23 +173,74 @@ class SceneManager {
 	}
 
 	/**
-	 * Dump the scene excluding lights and scene itself (useful for debugging)
+	 * Write an item from the scene
+	 *
+	 * @param count - Count items to dump (with zero do nothing)
+	 * @param type - Item type
+	 * @param name - Item name
+	 * @param indent - String to put at the beginning of the line
+	 * @returns The string to add to the whole dump
+	 */
+	private dumpItem(count: number, type: string, name: string, indent: string): string {
+		if(count > 0) {
+			const currentCountString = count > 1 ? ` (${count})` : "";
+			const nameString = name ? ` ${name}` : "";
+			return `${indent}${type}${nameString}${currentCountString}\n`;
+		}
+		return "";
+	}
+
+	/**
+	 * Walk over the scene3D or one Group
+	 *
+	 * @param indent - String to put at the beginning of the line
+	 * @param children - List pf item children
+	 * @returns The string to print
+	 */
+	private dumpSceneWalker(indent: string, children: THREE.Object3D[]): string {
+
+		let currentType = "";
+		let currentName = "";
+		let currentCount = 0;
+		let out = "";
+
+		for(const child of children) {
+
+			if(child.type === "Group") {
+
+				out += this.dumpItem(currentCount, currentType, currentName, indent);
+				currentType = "";
+				currentName = "";
+				currentCount = 0;
+				out += `${indent}${child.type} ${child.name}\n`;
+				out += this.dumpSceneWalker(`${indent}   `, child.children);
+			}
+			else if(child.type !== currentType || child.name !== currentName) {
+
+				out += this.dumpItem(currentCount, currentType, currentName, indent);
+				currentType = child.type;
+				currentName = child.name;
+				currentCount = 1;
+			}
+			else {
+				++currentCount;
+			}
+		}
+
+		out += this.dumpItem(currentCount, currentType, currentName, indent);
+
+		return out;
+	}
+
+	/**
+	 * Dump the 3D scene on the Dev Tools console (useful for debugging)
 	 *
 	 * @param label - Title for this dump
 	 */
 	dumpScene(label: string): void {
 
-		console.log(`\n*** ${label} ***`);
-		for(const object of SceneManager.scene.children) {
-
-			console.log(object.type, object.name);
-			if(object.type === "Group") {
-				object.traverse((child) => {
-					if(child === object) return;
-					console.log("\t", child.type, child.name);
-				});
-			}
-		}
+		const out = this.dumpSceneWalker("", SceneManager.scene.children);
+		console.log(`\n*** ${label} ***\n${out}`);
 	}
 
 	// > Access the singleton instance
