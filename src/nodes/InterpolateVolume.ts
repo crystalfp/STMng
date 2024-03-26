@@ -213,7 +213,7 @@ export class InterpolateVolume {
 	 * @param y - Coordinates of the point to compute
 	 * @param z - Coordinates of the point to compute
 	 * @param c - Interpolation matrix
-	 * @returns - The point value
+	 * @returns The point value
 	 */
 	private computePoint(x: number, y: number, z: number, c: number[]): number {
 

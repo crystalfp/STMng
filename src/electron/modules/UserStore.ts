@@ -84,7 +84,7 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 * Check if the key exists in the store
 	 *
 	 * @param key - The key to check
-	 * @returns - True if the key exists in the store
+	 * @returns True if the key exists in the store
 	 */
 	has<K extends keyof T>(key: K): boolean {
 		return this.data[key] !== undefined;

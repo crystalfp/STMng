@@ -181,7 +181,7 @@ export class Isolines {
 	 * @param nx - Index along X
 	 * @param ny - Index along Y
 	 * @param nz - Index along Z
-	 * @returns - Value in the volumetric data at the given indices
+	 * @returns Value in the volumetric data at the given indices
 	 */
 	private getValue(nx: number, ny: number, nz: number): number {
 
@@ -196,7 +196,7 @@ export class Isolines {
 	 * Return the graphic group containing the computed isolines
 	 *
 	 * @param name - Name to be given to the group of isolines
-	 * @returns - The group containing the isolines
+	 * @returns The group containing the isolines
 	 */
 	getIsolinesGroup(name: string): THREE.Group {
 

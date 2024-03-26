@@ -20,7 +20,7 @@ export const fitPerspectiveCameraToObject = (camera: THREE.PerspectiveCamera,
 	// Get bounding box of the scene - this will be used to setup controls and camera
 	const configStore = useConfigStore();
 	const {sceneCenter, sceneSides} = configStore.control;
-	const center = new THREE.Vector3(...sceneCenter);
+	const center = new THREE.Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
 
 	// Get the max side of the bounding box (fits to width OR height as needed)
 	const maxDim = Math.max(sceneSides[0], sceneSides[1]);
@@ -50,11 +50,11 @@ export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
 	const configStore = useConfigStore();
 	const {sceneCenter, sceneSides} = configStore.control;
 
-    camera.lookAt(new THREE.Vector3(...sceneCenter));
+    camera.lookAt(new THREE.Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]));
 
 	// Set camera to rotate around center of loaded object
-	controls.setOrbitPoint(...sceneCenter);
-	const maxSide = Math.max(...sceneSides);
+	controls.setOrbitPoint(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
+	const maxSide = Math.max(sceneSides[0], sceneSides[1], sceneSides[2]);
 	void controls.setLookAt(sceneCenter[0], sceneCenter[1], sceneCenter[2] + 2*maxSide,
 							sceneCenter[0], sceneCenter[1], sceneCenter[2], false);
 	void controls.zoomTo(1, true);

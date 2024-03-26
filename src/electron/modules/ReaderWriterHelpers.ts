@@ -16,7 +16,7 @@ import type {BasisType, PositionType, Atom, Look, Structure} from "../../types";
  * @param alpha - Unit cell angles (degrees)
  * @param beta - Unit cell angles (degrees)
  * @param gamma - Unit cell angles (degrees)
- * @returns - The basis vectors
+ * @returns The basis vectors
  */
 export const extractBasis = (a: number, b: number, c: number,
 							 alpha: number, beta: number, gamma: number): BasisType => {
@@ -66,7 +66,7 @@ export const extractBasis = (a: number, b: number, c: number,
  * @param fy - The fractional y coordinate
  * @param fz - The fractional z coordinate
  * @param origin - Origin of the unit cell (if missing means [0, 0, 0])
- * @returns - The corresponding cartesian coordinates
+ * @returns The corresponding cartesian coordinates
  */
 export const fractionalToCartesianCoordinates = (basis: BasisType,
 												 fx: number, fy: number, fz: number,
@@ -231,7 +231,7 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
  * Format a floating point value
  *
  * @param value - Value to be formatted
- * @returns - Value as string
+ * @returns Value as string
  */
 export const format = (value: number): string => {
 	return value.toFixed(6).padStart(10, " ");

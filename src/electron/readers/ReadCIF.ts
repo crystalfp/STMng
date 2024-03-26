@@ -117,7 +117,7 @@ export class ReaderCIF implements ReaderImplementation {
 	 * Read the structures from the file
 	 *
 	 * @param filename - File to be read
-	 * @returns - The set of structures read
+	 * @returns The set of structures read
 	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 

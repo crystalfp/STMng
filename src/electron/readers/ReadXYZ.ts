@@ -16,7 +16,7 @@ export class ReaderXYZ implements ReaderImplementation {
 	 * Read the structures from the file
 	 *
 	 * @param filename - File to be read
-	 * @returns - The set of structure read
+	 * @returns The set of structure read
 	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 

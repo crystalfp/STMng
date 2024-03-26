@@ -182,7 +182,7 @@ export class DrawUnitCell {
 		if(!this.showBasisVectors) return;
 
 		// Basis vectors visible, create them
-		const originZero = new THREE.Vector3(...orig);
+		const originZero = new THREE.Vector3(orig[0], orig[1], orig[2]);
 
 		const basisA = new THREE.Vector3(basis[0], basis[1], basis[2]);
 		const basisB = new THREE.Vector3(basis[3], basis[4], basis[5]);

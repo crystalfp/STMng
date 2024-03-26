@@ -189,7 +189,8 @@ export class Orthoslice {
                     for(let nz=0; nz <= sides[2]; ++nz) {
                         this.fractionToAbsolute(fixed, ny/sides[1], nz/sides[2],
                                                 basis, origin, vertices);
-                        colors.push(...this.colormap(this.plane, ny, nz, values, sides));
+                        const co = this.colormap(this.plane, ny, nz, values, sides);
+                        colors.push(co[0], co[1], co[2]);
                     }
                 }
                 this.generateIndices(sides[2], sides[1], indices);
@@ -202,7 +203,8 @@ export class Orthoslice {
                     for(let nz=0; nz <= sides[2]; ++nz) {
                         this.fractionToAbsolute(nx/sides[0], fixed, nz/sides[2],
                                                 basis, origin, vertices);
-                        colors.push(...this.colormap(nx, this.plane, nz, values, sides));
+                        const co = this.colormap(nx, this.plane, nz, values, sides);
+                        colors.push(co[0], co[1], co[2]);
                     }
                 }
                 this.generateIndices(sides[2], sides[0], indices);
@@ -215,7 +217,8 @@ export class Orthoslice {
                     for(let ny=0; ny <= sides[1]; ++ny) {
                         this.fractionToAbsolute(nx/sides[0], ny/sides[1], fixed,
                                                 basis, origin, vertices);
-                        colors.push(...this.colormap(nx, ny, this.plane, values, sides));
+                        const co = this.colormap(nx, ny, this.plane, values, sides);
+                        colors.push(co[0], co[1], co[2]);
                     }
                 }
                 this.generateIndices(sides[1], sides[0], indices);
@@ -302,7 +305,7 @@ export class Orthoslice {
      * @param nz - Grid node index along z
      * @param values - The grid of values
      * @param sides - The sides of the grid
-     * @returns - The RGB color of the point
+     * @returns The RGB color of the point
      */
     private colormap(nx: number, ny: number, nz: number,
                      values: number[], sides: PositionType): number[] {
