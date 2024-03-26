@@ -28,6 +28,7 @@ Nice to have/Future:
   ☐ Coloring of trajectories
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Better reporting from KPLOT
+  ☐ Optimize using Int64Array and similia
 
 Archive:
   ✔ Resetting camera: put camera further @done(2024-03-24 18:10) @project(Bugs)

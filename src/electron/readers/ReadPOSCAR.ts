@@ -18,6 +18,7 @@ const enum LineType {
     counts,
     direct,
     atoms,
+	exit
 }
 
 export class ReaderPOSCAR implements ReaderImplementation {
@@ -50,8 +51,10 @@ export class ReaderPOSCAR implements ReaderImplementation {
 				case LineType.comment:
 					lineType = LineType.scale;
 					break;
-				case LineType.scale:
-					if(line.trim() === "") break;
+				case LineType.scale: {
+					if(line.trim() === "") {lineType = LineType.exit; break;}
+					const fields = line.trim().split(/ +/);
+					if(fields.length > 1) {lineType = LineType.exit; break;}
 					structures.push({
 						crystal: {
 							basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -64,10 +67,13 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						volume: []
 					});
 					++currentStep;
-					scaleFactor = Number.parseFloat(line);
+					scaleFactor = Number.parseFloat(fields[0]);
+					if(scaleFactor === 0) {lineType = LineType.exit; break;}
 					lineType = LineType.basis;
 					break;
+				}
 				case LineType.basis: {
+
 					const fields = line.trim().split(/ +/);
 					const {basis} = structures[currentStep].crystal;
 					basis[base*3]   = Number.parseFloat(fields[0]);
@@ -183,6 +189,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 				}
 			}
+			if(lineType === LineType.exit) break;
 		}
 
 		// Add bonds and appearance to the structure
