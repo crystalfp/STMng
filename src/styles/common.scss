@@ -15,21 +15,19 @@ html {
 }
 
 :root {
-  --usable-height: calc(100vh - 30px); // Height of the application area (window height minus titlebar height)
+  --usable-height: calc(100vh - 30px); /* height of the application area (window height minus titlebar height) */
   --container-height: calc(100vh - 104px);
 }
 
 // > Vuetify specific
-// Height of the UI of the various nodes
+// Height of the various nodes UI areas
 .container {
   overflow: clip auto;
-  // overflow-x: clip;
-  // overflow-y: auto;
   height: var(--container-height);
 }
 
 .underlined-label {
   margin-left: 10px;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.3);
   width: 62%
 }

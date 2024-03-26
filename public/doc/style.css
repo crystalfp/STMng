@@ -74,3 +74,7 @@ td.c2 {
 td.c3 {
 	vertical-align: top;
 }
+
+div.description {
+	padding-left: 20px;
+}

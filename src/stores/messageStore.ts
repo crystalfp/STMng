@@ -24,6 +24,9 @@ interface MessageState {
 	system: {
 		error: string;
 	};
+	fingerprints: {
+		message: string;
+	};
 }
 
 export const useMessageStore = defineStore("MessageStore", {
@@ -38,7 +41,8 @@ export const useMessageStore = defineStore("MessageStore", {
 			typeM: undefined,
 			textM: "",
 		},
-		system: {error: ""}
+		system: {error: ""},
+		fingerprints: {message: ""},
 	} as MessageState),
 });
 

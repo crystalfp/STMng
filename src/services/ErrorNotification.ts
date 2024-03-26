@@ -20,6 +20,9 @@ export const showErrorNotification = (text: string, node?: string): void => {
 		case "structureWriter":
 			messageStore.structureWriter.message = text;
 			break;
+		case "fingerprints":
+			messageStore.fingerprints.message = text;
+			break;
 	}
 	log.error(text);
 };
@@ -37,6 +40,9 @@ export const resetErrorNotification = (node?: string): void => {
 			break;
 		case "structureWriter":
 			messageStore.structureWriter.message = "";
+			break;
+		case "fingerprints":
+			messageStore.fingerprints.message = "";
 			break;
 	}
 };

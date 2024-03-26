@@ -24,6 +24,7 @@ import {Measures} from "@/nodes/Measures";
 import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
 import {InterpolateVolume} from "@/nodes/InterpolateVolume";
+import {ComputeFingerprints} from "@/nodes/ComputeFingerprints";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -49,6 +50,7 @@ export class NodeInfo {
 		"draw-trajectories":	{ui: "TrajectoriesCtrl",		graphic: "out"},
 		"isosurface":			{ui: "IsosurfaceCtrl",			graphic: "out"},
 		"interpolate-volume":	{ui: "InterpolateVolumeCtrl",	graphic: "none"},
+		"compute-fingerprints":	{ui: "ComputeFingerprintsCtrl",	graphic: "none"}
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -124,6 +126,9 @@ export class NodeInfo {
 				break;
 			case "interpolate-volume":
 				map.set(id, new InterpolateVolume(id));
+				break;
+			case "compute-fingerprints":
+				map.set(id, new ComputeFingerprints(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":
@@ -276,6 +281,10 @@ export class NodeInfo {
 				case "interpolate-volume":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as InterpolateVolume).saveStatus();
+					break;
+				case "compute-fingerprints":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as ComputeFingerprints).saveStatus();
 					break;
 			}
 			notFirst = true;

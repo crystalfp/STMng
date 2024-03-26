@@ -43,6 +43,7 @@ import {VBtnToggle} from "vuetify/components/VBtnToggle";
 import {VSnackbar} from "vuetify/components/VSnackbar";
 import {VTable} from "vuetify/components/VTable";
 import {VRangeSlider} from "vuetify/components/VRangeSlider";
+import {VFileInput} from "vuetify/components/VFileInput";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -75,6 +76,7 @@ const app = createApp(App)
 			VSnackbar,
 			VTable,
 			VRangeSlider,
+			VFileInput,
 		},
 		theme: {
     		defaultTheme: "dark",

@@ -68,8 +68,8 @@ watchEffect(() => {
             label="Enable find symmetries" density="compact" class="mt-6 ml-4" />
   <v-switch v-model="ignoreInputSymmetries" color="primary"
             label="Ignore input symmetries" density="compact" class="mt-n5 ml-4" />
-  <v-label class="mb-2 ml-2">Tolerances:</v-label>
-  <g-align-labels label-width="3.5rem">
+  <v-label class="ml-2">Tolerances:</v-label>
+  <g-align-labels label-width="3.7rem" class="mt-n2">
     <v-slider v-model="tolS" :label="`S (${tolS.toFixed(2)})`" density="compact"
                 min="0.01" max="1" step="0.01" thumb-label />
     <v-slider v-model="tolT" :label="`T (${tolT.toFixed(2)})`" density="compact"

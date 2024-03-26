@@ -1,0 +1,10 @@
+{
+	"graph": {
+		"reader": 	   {"label": "Reader", 	     "type": "structure-reader"},
+		"unit":   	   {"label": "Cell",   	     "type": "draw-unit-cell",       "in": "reader"},
+		"bonds":	   {"label": "Bonds",		 "type": "compute-bonds",	     "in": "unit"},
+		"draw":   	   {"label": "Structure",    "type": "draw-structure",       "in": "bonds"},
+		"cfp": 		   {"label": "Fingerprints", "type": "compute-fingerprints", "in": "reader"},
+		"viewer": 	   {"label": "Viewer", 	     "type": "viewer-3d"}
+	}
+}

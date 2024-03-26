@@ -21,6 +21,7 @@ const pr = defineProps<{
 // Access the message store
 const messageStore = useMessageStore();
 messageStore.structureReader.message = "";
+const configStore = useConfigStore();
 
 /** Formats that could be loaded */
 const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "LAMMPStrj", "POSCAR", "Shel-X", "XYZ"];
@@ -83,7 +84,7 @@ const loadFile = (): void => {
 const setCaptureMovie = (capture: boolean): void => {
 
     if(captureMovie.value) {
-        const configStore = useConfigStore();
+        // const configStore = useConfigStore();
         configStore.control.movie = capture;
     }
 };
@@ -203,6 +204,8 @@ const needsAtomTypes = (fileFormat: string): boolean => {
   <v-container v-if="countSteps > 1">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mt-4 ml-2" />
     <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact" class="mt-n5 ml-2" />
+    <v-switch v-if="configStore.control.hasFingerprints" v-model="configStore.control.fingerprintsAccumulate"
+              color="primary" label="Accumulate for fingerprint" density="compact" class="mt-n5 ml-2" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
     <v-row>

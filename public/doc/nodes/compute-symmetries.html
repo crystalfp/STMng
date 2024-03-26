@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng compute-symmetries node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-03-24"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Compute Symmetries</title>
+</head>
+
+<body>
+<h1>Compute Symmetries</h1>
+
+<h2>Description</h2>
+<div class="description">
+<p>Find and apply symmetries to the input structure. This node has two parts: Find symmetries and Apply symmetries.</p>
+<h3>Find symmetries</h3>
+<p>This part tries to determine the input structure symmetries using the
+  <a href="https://www.crystalimpact.com/download/kplot.htm">KPLOT</a> program. Note that this program has limits on the size of the input structures.</p>
+<h3>Apply symmetries</h3>
+<p>This part apply the structure symmetries removing duplicated atoms and filling the unit cell if needed.</p>
+</div>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Enable find symmetries</td>
+	<td class="c2">switch</td>
+	<td class="c3">Enable the execution of the KPLOT program, otherwise the input structure is simply copied to the apply symmetries part.</td>
+</tr>
+<tr>
+	<td class="c1">Ignore input symmetries</td>
+	<td class="c2">switch</td>
+	<td class="c3">Ignore the input symmetries. Needed when the symmetries are not given with a space group.</td>
+</tr>
+<tr>
+	<td class="c1">Tolerances — S</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for symmetry centers. Input to the KPLOT program.</td>
+</tr>
+<tr>
+	<td class="c1">Tolerances — T</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for translations. Input to the KPLOT program.</td>
+</tr>
+<tr>
+	<td class="c1">Tolerances — G</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for rotations. Input to the KPLOT program.</td>
+</tr>
+<tr>
+	<td class="c1">Enable apply symmetries</td>
+	<td class="c2">switch</td>
+	<td class="c3">Apply the symmetries to the input structure, otherwise the input structure is simply copied to the output. Above this option the symmetries that will be applied are shown.</td>
+</tr>
+<tr>
+	<td class="c1">Fill unit cell</td>
+	<td class="c2">switch</td>
+	<td class="c3">Fill the unit cell with the atoms that appear on the unit cell boundaries.</td>
+</tr>
+<tr>
+	<td class="c1">Show symmetries dialog</td>
+	<td class="c2">button</td>
+	<td class="c3">Opens a dialog that show symmetries from the input structure and output structure symmetries.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>compute-symmetries</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td>Structure</td></tr>
+<tr><td class="c1">Add 3D objects to scene:</td><td>No</td></tr>
+</table>
+
+</body>
+</html>

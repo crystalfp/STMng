@@ -328,3 +328,9 @@ export const findSymmetries = (params: FindSymmetriesParams): Promise<MainRespon
 
 	return window.electron.ipcRenderer.invoke("FIND:SYMMETRIES", JSON.stringify(params)) as Promise<MainResponse>;
 };
+
+// > Fingerprints
+
+export const loadEnergyFile = (path: string): Promise<MainResponse> => {
+	return window.electron.ipcRenderer.invoke("CFP:LOAD-ENERGIES", path) as Promise<MainResponse>;
+};

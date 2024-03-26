@@ -45,6 +45,8 @@ interface Viewer3DConfiguration {
         sceneCenter: PositionType;
         sceneSides: PositionType;
         atomsSelected: number[];
+        hasFingerprints: boolean;
+        fingerprintsAccumulate: boolean;
     };
 }
 
@@ -89,7 +91,9 @@ export const useConfigStore = defineStore("ConfigStore", {
             movie: false,
             sceneCenter: [0, 0, 0],
             sceneSides: [1, 1, 1],
-            atomsSelected: []
+            atomsSelected: [],
+            hasFingerprints: false,
+            fingerprintsAccumulate: false,
         }
 	} as Viewer3DConfiguration),
 

@@ -55,7 +55,7 @@ export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
 	// Set camera to rotate around center of loaded object
 	controls.setOrbitPoint(...sceneCenter);
 	const maxSide = Math.max(...sceneSides);
-	void controls.setLookAt(sceneCenter[0], sceneCenter[1], sceneCenter[2] + maxSide,
+	void controls.setLookAt(sceneCenter[0], sceneCenter[1], sceneCenter[2] + 2*maxSide,
 							sceneCenter[0], sceneCenter[1], sceneCenter[2], false);
 	void controls.zoomTo(1, true);
 	camera.updateProjectionMatrix();
