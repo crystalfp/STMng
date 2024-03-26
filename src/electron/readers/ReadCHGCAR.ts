@@ -10,6 +10,20 @@ import {fractionalToCartesianCoordinates, getStructureAppearanceFromZ} from "../
 import type {ReaderImplementation} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
 
+/** Line read type */
+const enum LineType {
+    comment,
+    scale,
+    basis,
+    counts,
+    direct,
+    atoms,
+    blank,
+    volumeCount,
+    volumeValues,
+	exit,
+}
+
 export class ReaderCHGCAR implements ReaderImplementation {
 
 	/**
@@ -23,7 +37,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
-		let lineType = "comment";
+		let lineType: LineType = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
 		const atomsKinds: string[] = [];
@@ -40,10 +54,10 @@ export class ReaderCHGCAR implements ReaderImplementation {
 		for await (const line of stream) {
 
 			switch(lineType) {
-				case "comment":
-					lineType = "scale";
+				case LineType.comment:
+					lineType = LineType.scale;
 					break;
-				case "scale":
+				case LineType.scale:
 					if(line.trim() === "") break;
 					structures.push({
 						crystal: {
@@ -58,9 +72,9 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					});
 					++currentStep;
 					scaleFactor = Number.parseFloat(line);
-					lineType = "basis";
+					lineType = LineType.basis;
 					break;
-				case "basis": {
+				case LineType.basis: {
 					const fields = line.trim().split(/ +/);
 					const {basis} = structures[currentStep].crystal;
 					basis[base*3]   = Number.parseFloat(fields[0]);
@@ -68,7 +82,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					basis[base*3+2] = Number.parseFloat(fields[2]);
 					++base;
 					if(base === 3) {
-						lineType = "counts";
+						lineType = LineType.counts;
 						base = 0;
 
 						// If scale is negative, it is the unit cell volume, so transform it into a scale factor
@@ -92,7 +106,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					}
 					break;
 				}
-				case "counts": {
+				case LineType.counts: {
 					const fields = line.trim().split(/ +/);
 					if(/\d+/.test(fields[0])) {
 						let atomZ = 1;
@@ -116,7 +130,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 								}
 							}
 						}
-						lineType = "direct";
+						lineType = LineType.direct;
 					}
 					else {
 						for(const field of fields) {
@@ -126,16 +140,16 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					}
 					break;
 				}
-				case "direct": {
+				case LineType.direct: {
 					const kind = line.trim().toLowerCase();
 					if(kind.startsWith("dir")) {
-						lineType = "atoms";
+						lineType = LineType.atoms;
 						currentIdx = 0;
 						currentCount = atomsCount[0];
 						cartesian = false;
 					}
 					else if(kind.startsWith("car") || kind.startsWith("kar")) {
-						lineType = "atoms";
+						lineType = LineType.atoms;
 						currentIdx = 0;
 						currentCount = atomsCount[0];
 						cartesian = true;
@@ -143,7 +157,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 
 					break;
 				}
-				case "atoms": {
+				case LineType.atoms: {
 					const fields = line.trim().split(/ +/);
 
 					const position = cartesian ? [
@@ -171,18 +185,18 @@ export class ReaderCHGCAR implements ReaderImplementation {
 							currentCount = atomsCount[currentIdx];
 						}
 						else {
-							lineType = "blank";
+							lineType = LineType.blank;
 						}
 					}
 					break;
 				}
-				case "blank":
-					lineType = "volume-count";
+				case LineType.blank:
+					lineType = LineType.volumeCount;
 					break;
-				case "volume-count": {
+				case LineType.volumeCount: {
 					const fields = line.trim().split(/ +/);
 					if(fields.length < 3) {
-						lineType = "exit";
+						lineType = LineType.exit;
 						break;
 					}
 					const sides: PositionType = [
@@ -193,7 +207,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					if(Number.isNaN(sides[0]) || sides[0] <= 0 ||
 					   Number.isNaN(sides[1]) || sides[1] <= 0 ||
 					   Number.isNaN(sides[2]) || sides[2] <= 0) {
-						lineType = "exit";
+						lineType = LineType.exit;
 						break;
 					}
 					if(structures[currentStep].volume.length > 0) {
@@ -201,7 +215,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						if(sides[0] !== previousSides[0] ||
 						   sides[1] !== previousSides[1] ||
 						   sides[2] !== previousSides[2]) {
-							lineType = "exit";
+							lineType = LineType.exit;
 							break;
 						}
 					}
@@ -212,20 +226,20 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						values: Array(totalPoints).fill(0) as number[]
 					});
 					volume = structures[currentStep].volume.at(-1)!.values;
-					lineType = "volume-values";
+					lineType = LineType.volumeValues;
 					break;
 				}
-				case "volume-values": {
+				case LineType.volumeValues: {
 					const fields = line.trim().split(/ +/);
 					for(const field of fields) {
 						volume[volumeIndex++] = Number.parseFloat(field);
 					}
 					totalPoints -= fields.length;
-					if(totalPoints === 0) lineType = "volume-count";
+					if(totalPoints === 0) lineType = LineType.volumeCount;
 					break;
 				}
 			}
-			if(lineType === "exit") break;
+			if(lineType === LineType.exit) break;
 		}
 
 		// Add appearance to the structure

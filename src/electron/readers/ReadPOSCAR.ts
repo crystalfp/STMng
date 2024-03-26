@@ -10,6 +10,16 @@ import {fractionalToCartesianCoordinates, getStructureAppearanceFromZ} from "../
 import type {ReaderImplementation} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
 
+/** Line read type */
+const enum LineType {
+    comment,
+    scale,
+    basis,
+    counts,
+    direct,
+    atoms,
+}
+
 export class ReaderPOSCAR implements ReaderImplementation {
 
 	/**
@@ -23,7 +33,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
-		let lineType = "comment";
+		let lineType: LineType = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
 		const atomsKinds: string[] = [];
@@ -37,10 +47,10 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		for await (const line of stream) {
 
 			switch(lineType) {
-				case "comment":
-					lineType = "scale";
+				case LineType.comment:
+					lineType = LineType.scale;
 					break;
-				case "scale":
+				case LineType.scale:
 					if(line.trim() === "") break;
 					structures.push({
 						crystal: {
@@ -55,9 +65,9 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					});
 					++currentStep;
 					scaleFactor = Number.parseFloat(line);
-					lineType = "basis";
+					lineType = LineType.basis;
 					break;
-				case "basis": {
+				case LineType.basis: {
 					const fields = line.trim().split(/ +/);
 					const {basis} = structures[currentStep].crystal;
 					basis[base*3]   = Number.parseFloat(fields[0]);
@@ -65,7 +75,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					basis[base*3+2] = Number.parseFloat(fields[2]);
 					++base;
 					if(base === 3) {
-						lineType = "counts";
+						lineType = LineType.counts;
 						base = 0;
 
 						// If scale is negative, it is the unit cell volume, so transform it into a scale factor
@@ -89,7 +99,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					break;
 				}
-				case "counts": {
+				case LineType.counts: {
 					const fields = line.trim().split(/ +/);
 					if(/\d+/.test(fields[0])) {
 						let atomZ = 1;
@@ -113,7 +123,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 								}
 							}
 						}
-						lineType = "direct";
+						lineType = LineType.direct;
 					}
 					else {
 						for(const field of fields) {
@@ -123,16 +133,16 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					break;
 				}
-				case "direct": {
+				case LineType.direct: {
 					const kind = line.trim().toLowerCase();
 					if(kind.startsWith("dir")) {
-						lineType = "atoms";
+						lineType = LineType.atoms;
 						currentIdx = 0;
 						currentCount = atomsCount[0];
 						cartesian = false;
 					}
 					else if(kind.startsWith("car") || kind.startsWith("kar")) {
-						lineType = "atoms";
+						lineType = LineType.atoms;
 						currentIdx = 0;
 						currentCount = atomsCount[0];
 						cartesian = true;
@@ -140,7 +150,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 					break;
 				}
-				case "atoms": {
+				case LineType.atoms: {
 					const fields = line.trim().split(/ +/);
 
 					const position = cartesian ? [
@@ -168,7 +178,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 							currentCount = atomsCount[currentIdx];
 						}
 						else {
-							lineType = "comment";
+							lineType = LineType.comment;
 						}
 					}
 				}

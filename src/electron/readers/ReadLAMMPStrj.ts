@@ -10,6 +10,17 @@ import type {ReaderImplementation} from "../types";
 import type {Structure, Atom} from "../../types";
 import {getAtomicNumber} from "../modules/AtomData";
 
+/** Line read type */
+const enum LineType {
+    item,
+    step,
+    natoms,
+    box1,
+    box2,
+    box3,
+    atom,
+}
+
 export class ReaderLAMMPStrj implements ReaderImplementation {
 
 	/**
@@ -25,7 +36,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let currentStructure: Structure;
 
 		let numberAtoms = 0;
-		let lineType = "item";
+		let lineType: LineType = LineType.item;
 		let atomIdx = 0;
 		const correspond: number[] = [];
 		let origin = 0;
@@ -40,7 +51,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 			const fields = line.split(/ +/);
 
 			switch(lineType) {
-				case "item":
+				case LineType.item:
 					if(fields[0] !== "ITEM:") {
 						hasErrors = true;
 						break;
@@ -59,47 +70,47 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 							volume: []
 						};
 						structures.push(currentStructure);
-						lineType = "step";
+						lineType = LineType.step;
 						break;
 					case "NUMBER":
-						lineType = "natoms";
+						lineType = LineType.natoms;
 						break;
 					case "BOX":
-						lineType = "box1";
+						lineType = LineType.box1;
 						break;
 					case "ATOMS":
-						lineType = "atom";
+						lineType = LineType.atom;
 						break;
 					}
 					break;
-				case "step":
-					lineType = "item";
+				case LineType.step:
+					lineType = LineType.item;
 					break;
-				case "natoms":
+				case LineType.natoms:
 					numberAtoms = Number.parseInt(fields[0]);
 					currentStructure!.atoms = Array(numberAtoms) as Atom[];
 					atomIdx = 0;
-					lineType = "item";
+					lineType = LineType.item;
 					break;
-				case "box1":
+				case LineType.box1:
 					origin = Number.parseFloat(fields[0]);
 					currentStructure!.crystal.origin[0] = origin;
 					currentStructure!.crystal.basis[0] = Number.parseFloat(fields[1]) - origin;
-					lineType = "box2";
+					lineType = LineType.box2;
 					break;
-				case "box2":
+				case LineType.box2:
 					origin = Number.parseFloat(fields[0]);
 					currentStructure!.crystal.origin[1] = origin;
 					currentStructure!.crystal.basis[4] = Number.parseFloat(fields[1]) - origin;
-					lineType = "box3";
+					lineType = LineType.box3;
 					break;
-				case "box3":
+				case LineType.box3:
 					origin = Number.parseFloat(fields[0]);
 					currentStructure!.crystal.origin[2] = origin;
 					currentStructure!.crystal.basis[8] = Number.parseFloat(fields[1]) - origin;
-					lineType = "item";
+					lineType = LineType.item;
 					break;
-				case "atom":
+				case LineType.atom:
 					atomZ = Number.parseInt(fields[1]);
 					currentStructure!.atoms[atomIdx] = {
 						label: fields[0],
@@ -114,7 +125,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					correspond[atomZ] = 1;
 					--numberAtoms;
 					++atomIdx;
-					if(numberAtoms === 0) lineType = "item";
+					if(numberAtoms === 0) lineType = LineType.item;
 					break;
 			}
 		}
