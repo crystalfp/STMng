@@ -6,7 +6,7 @@
 import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {WindowsParams, FindSymmetriesParams} from "@/electron/types";
-import type {MainResponse} from "@/types";
+import type {MainResponse, Structure} from "@/types";
 import {useMessageStore} from "@/stores/messageStore";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
@@ -330,7 +330,41 @@ export const findSymmetries = (params: FindSymmetriesParams): Promise<MainRespon
 };
 
 // > Fingerprints
-
+/**
+ * Read and parse the energy file.
+ *
+ * @param path - Path of the energy file
+ * @returns Operation status
+ */
 export const loadEnergyFile = (path: string): Promise<MainResponse> => {
 	return window.electron.ipcRenderer.invoke("CFP:LOAD-ENERGIES", path) as Promise<MainResponse>;
+};
+
+/**
+ * Get the parameters for the filter
+ *
+ * @param enabled - Filtering by energy enabled
+ * @param threshold - Energy threshold
+ * @param fromMinimum - If the threshold is from minimum energy
+ * @returns The threshold energy and the number of structures selected
+ */
+export const setEnergyFilterParameters = (enabled: boolean, threshold: number, fromMinimum: boolean): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("CFP:FILTER-PARAMS",
+											  enabled, threshold, fromMinimum) as Promise<MainResponse>;
+};
+
+/**
+ * Add another structure to the list of structures for fingerprinting and filtering
+ *
+ * @param structure - The structure to add to the the list of structures for computing fingerprinting.
+ 					  If missing the routine reset the accumulator
+ * @returns The total and filtered counts
+ */
+export const accumulateStructure = (structure?: Structure): Promise<MainResponse> => {
+
+	const reset = structure === undefined;
+	const encodedStructure = reset ? "" : JSON.stringify(structure);
+	return window.electron.ipcRenderer.invoke("CFP:ACCUMULATE",
+											  encodedStructure, reset) as Promise<MainResponse>;
 };

@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import type {PositionType} from "@/types";
-import {Text} from "troika-three-text";
+import {Text as TroikaText} from "troika-three-text";
 
 import localRoboto from "../assets/Roboto-Regular.ttf";
 
@@ -23,7 +23,7 @@ export const spriteText = (text: string,
 						   position: PositionType,
 						   offset?: PositionType): THREE.Mesh => {
 
-	const sprite = new Text();
+	const sprite = new TroikaText();
 
 	sprite.font = localRoboto;
 	sprite.text = text;
@@ -48,10 +48,10 @@ export const spriteText = (text: string,
  */
 export const disposeTextInGroup = (group: THREE.Group): void => {
 
-	const labelsToDelete: Text[] = [];
+	const labelsToDelete: TroikaText[] = [];
 	group.traverse((obj) => {
 
-		if(obj.type === "Mesh") labelsToDelete.push(obj as Text);
+		if(obj.type === "Mesh") labelsToDelete.push(obj as TroikaText);
 	});
 	for(const obj of labelsToDelete) {
 		group.remove(obj);

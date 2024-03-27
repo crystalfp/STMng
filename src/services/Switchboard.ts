@@ -155,11 +155,14 @@ class Switchboard {
 
 		// Save the callback
 		this.nodesCallback = callback;
-
+/*
 		// If there is at least one node in the graph, run the callback
 		let hasNodes = false;
 		if(this.project) for(const id in this.project.graph) {void id; hasNodes = true; break;}
+		console.log("+++", hasNodes, this.project?.graph);
+		if(this.project && Object.keys(this.project.graph).length > 0) console.log("???", hasNodes); // hasNodes = true;
 		if(hasNodes) callback(this.nodesUI, this.currentId);
+		*/
 	}
 
 	/**

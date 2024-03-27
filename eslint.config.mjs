@@ -47,6 +47,7 @@ export default [{
             setTimeout: "readonly",
             setInterval: "readonly",
             clearInterval: "readonly",
+            clearTimeout: "readonly",
             console: "readonly",
             Buffer: "readonly",
             require: "readonly",

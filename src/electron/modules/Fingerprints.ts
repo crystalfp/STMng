@@ -4,11 +4,35 @@
  * @packageDocumentation
  */
 import {ipcMain} from "electron";
-// import log from "electron-log";
 import fs from "node:fs";
+import type {Structure} from "../../types";
 
 const energyPerStructure: number[] = [];
 let minEnergy = Number.POSITIVE_INFINITY;
+let thresholdEnergy = Number.POSITIVE_INFINITY;
+const structures: Structure[] = [];
+let filteringEnabled = false;
+
+/**
+ * Filter the list of accumulated structure by energy
+ *
+ * @returns The number of selected structures or -1 if the energies values are less than the number of
+ *          accumulated structures
+ */
+const filterOnEnergy = (): number => {
+
+	if(filteringEnabled) {
+
+		const len = structures.length;
+		if(energyPerStructure.length < len) return -1;
+
+		let countSelected = 0;
+		for(let i=0; i < len; ++i) if(energyPerStructure[i] <= thresholdEnergy) ++countSelected;
+
+		return countSelected;
+	}
+	return structures.length;
+};
 
 /**
  * Setup channels for fingerprints computation
@@ -28,12 +52,64 @@ export const setupChannelFingerprints = (): void => {
 				if(value < minEnergy) minEnergy = value;
 				energyPerStructure.push(value);
 			}
-			console.log("Energies:", energyPerStructure.length, minEnergy); // TBD
 		}
 		catch(error: unknown) {
 			return {error: (error as Error).message, payload: "Error"};
 		}
 
 		return {payload: "Success!"};
+	});
+
+	ipcMain.handle("CFP:FILTER-PARAMS", (_event, enabled: boolean,
+										 threshold: number, fromMinimum: boolean) => {
+
+		const returnValues = {
+			effectiveEnergy: threshold,
+			selected: structures.length
+		};
+
+		filteringEnabled = enabled;
+
+		// If energy file not loaded
+		if(enabled && minEnergy === Number.POSITIVE_INFINITY) {
+			return {error: "Energy file not loaded", payload: JSON.stringify(returnValues)};
+		}
+
+		thresholdEnergy = fromMinimum ? minEnergy+threshold : threshold;
+
+		const countSelected = filterOnEnergy();
+		if(countSelected < 0) {
+			return {error: "The energies are less than structures", payload: JSON.stringify(returnValues)};
+		}
+
+		returnValues.effectiveEnergy = thresholdEnergy;
+		returnValues.selected = countSelected;
+
+		return {payload: JSON.stringify(returnValues)};
+	});
+
+	ipcMain.handle("CFP:ACCUMULATE", (_event, encodedStructure: string, reset: boolean) => {
+
+		const counts = {
+			total: 0,
+			filtered: 0
+		};
+
+		if(reset) {
+			structures.length = 0;
+			return {payload: JSON.stringify(counts)};
+		}
+		structures.push(JSON.parse(encodedStructure) as Structure);
+
+		counts.total = structures.length;
+
+		// Do filtering
+		const countSelected = filterOnEnergy();
+		if(countSelected < 0) {
+			return {error: "The energies are less than structures", payload: JSON.stringify(counts)};
+		}
+		counts.filtered = countSelected;
+
+		return {payload: JSON.stringify(counts)};
 	});
 };

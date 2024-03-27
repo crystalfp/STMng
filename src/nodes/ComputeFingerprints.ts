@@ -3,23 +3,21 @@
  *
  * @packageDocumentation
  */
+import {watch} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {Structure} from "@/types";
-import {loadEnergyFile} from "@/services/RoutesClient";
+import {loadEnergyFile, setEnergyFilterParameters, accumulateStructure} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useConfigStore} from "@/stores/configStore";
+import type {Structure} from "@/types";
 
 export class ComputeFingerprints {
 
-	private accumulate = false;
-	private countAccumulated = 0;
-	private readonly encodedStructures: string[] = [];
     private enableEnergyThreshold = false;
-    private energyThreshold = 0;
-    private energyThresholdEffective = 0;
-    private countSelected = 0;
-	// private energyFileLoading = false;
+	private thresholdFromMinimum = false;
+    private energyThreshold = "0";
 	private energyFilePrevious = "";
+	private structure: Structure | undefined;
+	private accumulatePrevious = false;
 
 	/**
 	 * Create the node
@@ -28,78 +26,133 @@ export class ComputeFingerprints {
 	 */
 	constructor(private readonly id: string) {
 
+		const configStore = useConfigStore();
+
 		sb.getUiParams(this.id, (params: UiParams) => {
 
 			if(params.reset) {
-				this.encodedStructures.length = 0;
+
 				configStore.control.fingerprintsAccumulate = false;
 				sb.setUiParams(this.id, {
-					accumulate: false,
 					reset: false,
 					countAccumulated: 0,
 					countSelected: 0,
 				});
+				void accumulateStructure();
 				return;
 			}
 
-    		this.accumulate = params.accumulate as boolean ?? false;
 			this.loadEnergyFile(params.energyFilePath as string | undefined);
     		this.enableEnergyThreshold = params.enableEnergyThreshold as boolean ?? false;
-    		this.energyThreshold = params.energyThreshold as number ?? 0;
-    		this.energyThresholdEffective = params.energyThresholdEffective as number ?? 0;
-    		this.countSelected = params.countSelected as number ?? 0;
+    		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
+    		this.energyThreshold = params.energyThreshold as string ?? "0";
+			this.setFilterParams();
+		});
+
+		watch(configStore.control, () => {
+			if(configStore.control.fingerprintsAccumulate) {
+				if(!this.accumulatePrevious && this.structure) {
+
+					accumulateStructure(this.structure)
+						.then((status) => {
+
+							if(status.error) throw Error(status.error);
+							const {total, filtered} = JSON.parse(status.payload) as {total: number; filtered: number};
+							sb.setUiParams(this.id, {
+								countAccumulated: total,
+								countSelected: filtered
+							});
+							this.accumulatePrevious = true;
+						})
+						.catch((error: Error) => {
+							showErrorNotification(`Error accumulating structures: ${error.message}`,
+												  "fingerprints");
+						});
+				}
+			}
+			else {
+				this.accumulatePrevious = false;
+			}
 		});
 
 		sb.getData(this.id, (data: unknown) => {
 
-			const structure = data as Structure;
-			if(!structure) return;
+			this.structure = data as Structure;
+			if(!this.structure) return;
 
-			// If in accumulate mode save the structure encoded
+			// If in accumulate mode, save the structure encoded
 			if(configStore.control.fingerprintsAccumulate) {
-			// if(this.accumulate) {
-				this.encodedStructures.push(JSON.stringify(structure));
-				++this.countAccumulated;
-				sb.setUiParams(this.id, {
-					countAccumulated: this.countAccumulated
-				});
+				accumulateStructure(this.structure)
+					.then((status) => {
+
+						if(status.error) throw Error(status.error);
+						const {total, filtered} = JSON.parse(status.payload) as {total: number; filtered: number};
+						sb.setUiParams(this.id, {
+							countAccumulated: total,
+							countSelected: filtered
+						});
+					})
+					.catch((error: Error) => {
+						showErrorNotification(`Error accumulating structures: ${error.message}`,
+												"fingerprints");
+					});
 			}
 		});
 
-		const configStore = useConfigStore();
         configStore.control.hasFingerprints = true;
 	}
 
-	loadEnergyFile(energyFilePath: string | undefined): void {
+	/**
+	 * Read the energy file.
+	 *
+	 * @remarks The file should have one floating point value per line.
+	 * @param energyFilePath - File path
+	 */
+	private loadEnergyFile(energyFilePath: string | undefined): void {
 
 		resetErrorNotification("fingerprints");
-		// if(this.energyFileLoading) return;
-		if(!energyFilePath) return;
-		if(energyFilePath === this.energyFilePrevious) return;
+
+		if(!energyFilePath || energyFilePath === this.energyFilePrevious) return;
 		this.energyFilePrevious = energyFilePath;
 
 		sb.setUiParams(this.id, {energyFileLoading: true});
-		// this.energyFileLoading = true;
 
 		loadEnergyFile(energyFilePath)
 			.then((status) => {
 				if(status.error) throw Error(status.error);
 
 				sb.setUiParams(this.id, {energyFileLoading: false});
-				// this.energyFileLoading = false;
 			})
 			.catch((error: Error) => {
 				showErrorNotification(`Error reading energy file: ${error.message}`, "fingerprints");
 				sb.setUiParams(this.id, {energyFileLoading: false});
-				// this.energyFileLoading = false;
 			});
 	}
 
-	filterStructures(): void {
+	/**
+	 * Pass the filtering parameters to the main process.
+	 */
+	private setFilterParams(): void {
 
-		if(this.encodedStructures.length === 0) return;
+		if(this.energyThreshold.trim() === "") return;
 
+		const threshold = Number.parseFloat(this.energyThreshold);
+		if(Number.isNaN(threshold)) return;
 
+		setEnergyFilterParameters(this.enableEnergyThreshold,
+								  threshold, this.thresholdFromMinimum)
+			.then((status) => {
+				if(status.error) throw Error(status.error);
+				const {effectiveEnergy, selected} = JSON.parse(status.payload) as {effectiveEnergy: number; selected: number};
+
+				sb.setUiParams(this.id, {
+					countSelected: selected,
+					energyThresholdEffective: effectiveEnergy
+				});
+			})
+			.catch((error: Error) => {
+				showErrorNotification(`Error setting filter parameters: ${error.message}`, "fingerprints");
+			});
 	}
 
 	/**
@@ -110,9 +163,9 @@ export class ComputeFingerprints {
 	saveStatus(): string {
 
 		const statusToSave = {
-			accumulate: this.accumulate,
 			enableEnergyThreshold: this.enableEnergyThreshold,
 			energyThreshold: this.energyThreshold,
+			thresholdFromMinimum: this.thresholdFromMinimum,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
