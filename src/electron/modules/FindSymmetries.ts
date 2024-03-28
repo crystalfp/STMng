@@ -8,6 +8,7 @@ import tmp from "tmp";
 import log from "electron-log";
 import fs from "fs-extra";
 import * as rd from "node:readline/promises";
+import os from "node:os";
 import path from "node:path";
 import {execSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
@@ -85,11 +86,27 @@ export const setupChannelFindSymmetries = (): void => {
 		stdin += `SSI ${params.tolS} ${params.tolT} ${params.tolG}\n`;
 		stdin += "RGS\nGET RGS.OUT\nPUTC OUTPUT.DAT\nCLSE\n";
 
+
+		// Select the platform executable
+		let kplotExe;
+		const platform = os.platform();
+		switch(platform) {
+			case "win32":
+				kplotExe = "kplot.mingw.exe";
+				break;
+			case "linux":
+				kplotExe = "kplot.linux";
+				break;
+			default:
+				return {payload: "Error", error: `Platform "${platform}" not supported`};
+		}
+
 		// Find the KPLOT executable
 		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 		const kplot = app.isPackaged ?
-								path.resolve(process.resourcesPath, "app.asar.unpacked/dist/bin/kplot.mingw.exe") :
-								path.join(mainSourceDirectory, "..", "public", "bin", "kplot.mingw.exe");
+								path.resolve(process.resourcesPath,
+											 `app.asar.unpacked/dist/bin/${kplotExe}`) :
+								path.join(mainSourceDirectory, "..", "public", "bin", kplotExe);
 
 		// Execute KPLOT
 		try {

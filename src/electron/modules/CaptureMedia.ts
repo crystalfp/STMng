@@ -6,6 +6,7 @@
 import {ipcMain, dialog, app} from "electron";
 import fs from "fs-extra";
 import path from "node:path";
+import os from "node:os";
 import {execSync} from "node:child_process";
 import tmp from "tmp";
 import {fileURLToPath} from "node:url";
@@ -67,11 +68,26 @@ export const setupChannelCapture = (): void => {
 						error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
 			}
 
+			// Select the platform executable
+			let ffmpegExe;
+			const platform = os.platform();
+			switch(platform) {
+				case "win32":
+					ffmpegExe = "ffmpeg.exe";
+					break;
+				case "linux":
+					ffmpegExe = "ffmpeg";
+					break;
+				default:
+					return {payload: "Error", error: `Platform "${platform}" not supported`};
+			}
+
 			// Find the ffmpeg executable
 			const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 			const ffmpeg = app.isPackaged ?
-								path.resolve(process.resourcesPath, "app.asar.unpacked/dist/bin/ffmpeg.exe") :
-								path.join(mainSourceDirectory, "..", "public", "bin", "ffmpeg.exe");
+								path.resolve(process.resourcesPath,
+											 `app.asar.unpacked/dist/bin/${ffmpegExe}`) :
+								path.join(mainSourceDirectory, "..", "public", "bin", ffmpegExe);
 
 			// Setup movie format specific options
 			const opt = format === ".mp4" ?
