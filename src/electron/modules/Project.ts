@@ -28,7 +28,7 @@ const loadProject = (filename: string): void => {
 		sendLoadedProject(rawProject);
 		projectAsString = rawProject;
 	}
-	catch(error: unknown) {
+	catch(error) {
 		const message = `Cannot read project file "${filename}". Error: ${(error as Error).message}`;
 		log.error(message);
 		sendErrorNotification(message);

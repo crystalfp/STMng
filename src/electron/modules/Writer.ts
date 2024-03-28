@@ -84,7 +84,7 @@ export const setupChannelWriter = (): void => {
 				default: throw Error("Invalid format");
 			}
 		}
-		catch(error: unknown) {
+		catch(error) {
 			const message = `${format} format not implemented. Error: ${(error as Error).message}`;
 			log.error(message);
 			return {payload: "Error", error: message};

@@ -53,7 +53,8 @@ class Switchboard {
 	// > Setup the Switchboard
 	/**
 	 * Setup the Switchboard
-	 * @remarks Should be run after the IPC is setup
+	 *
+	 * @remarks Should be run after IPC is setup
 	 */
 	setup(): void {
 
@@ -64,7 +65,7 @@ class Switchboard {
 			try {
 				this.project = JSON.parse(rawProject) as Project;
 			}
-			catch(error: unknown) {
+			catch(error) {
 				showErrorNotification(`Invalid project file format. Error: ${(error as Error).message}`);
 				return;
 			}

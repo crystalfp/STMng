@@ -113,7 +113,7 @@ export const setupChannelFindSymmetries = (): void => {
 			const stdout = execSync(`"${kplot}"`, {windowsHide: true, cwd: workingDir, input: stdin});
 			log.info(stdout.toString("utf8"));
 		}
-		catch(error: unknown) {
+		catch(error) {
 			log.error((error as Error).message);
 			removeWorkingDir(tmpobj, workingDir);
 			return {payload: "Error", error: `KPLOT crashed: ${(error as Error).message}`};
@@ -140,7 +140,7 @@ export const setupChannelFindSymmetries = (): void => {
 			const stream = fs.createReadStream(outputFile);
 			lines = rd.createInterface(stream);
 		}
-		catch(error: unknown) {
+		catch(error) {
 			log.error((error as Error).message);
 			removeWorkingDir(tmpobj, workingDir);
 			return {payload: "Error", error: (error as Error).message};

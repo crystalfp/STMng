@@ -10,6 +10,7 @@
     "esModuleInterop": true,
     "composite": true,
     "allowSyntheticDefaultImports": true,
+    "useUnknownInCatchVariables": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

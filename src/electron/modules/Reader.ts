@@ -67,7 +67,7 @@ const readFileStructure = async (filename: string,
 			default: throw Error("Invalid format");
 		}
 	}
-	catch(error: unknown) {
+	catch(error) {
 		const message = `${requestedFormat} format not implemented. Error: ${(error as Error).message}`;
 		log.error(message);
 		return {filename: "", structures: [], error: message};

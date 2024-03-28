@@ -217,6 +217,7 @@ export default [{
         "no-else-return": "error",
         "no-throw-literal": "off",
         "@typescript-eslint/no-throw-literal": "error",
+        "@typescript-eslint/only-throw-error": "error",
         "require-await": "off",
         "@typescript-eslint/require-await": "error",
         "no-return-await": "off",

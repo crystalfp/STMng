@@ -37,7 +37,7 @@ export const setupChannelCapture = (): void => {
 			fs.writeFileSync(filename, Buffer.from(data[1], "base64"));
 			return {payload: filename};
 		}
-		catch(error: unknown) {
+		catch(error) {
 			return {payload: "Error",
 				    error: `Cannot save image file "${filename}". Error: ${(error as Error).message}`};
 		}
@@ -63,7 +63,7 @@ export const setupChannelCapture = (): void => {
 			try {
 				fs.writeFileSync(webmFile, Buffer.from(buffer));
 			}
-			catch(error: unknown) {
+			catch(error) {
 				return {payload: "Error",
 						error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
 			}
@@ -99,7 +99,7 @@ export const setupChannelCapture = (): void => {
 				void fs.remove(webmFile);
 				return {payload: filename};
 			}
-			catch(error: unknown) {
+			catch(error) {
 				return {payload: "Error",
 						error: `Cannot convert movie file. Error: ${(error as Error).message}`};
 			}
@@ -108,7 +108,7 @@ export const setupChannelCapture = (): void => {
 			fs.writeFileSync(filename, Buffer.from(buffer));
 			return {payload: filename};
 		}
-		catch(error: unknown) {
+		catch(error) {
 			return {payload: "Error",
 					error: `Cannot save movie file "${filename}". Error: ${(error as Error).message}`};
 		}

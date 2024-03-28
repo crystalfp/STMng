@@ -53,7 +53,7 @@ export const setupChannelFingerprints = (): void => {
 				energyPerStructure.push(value);
 			}
 		}
-		catch(error: unknown) {
+		catch(error) {
 			return {error: (error as Error).message, payload: "Error"};
 		}
 

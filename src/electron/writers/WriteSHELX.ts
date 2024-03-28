@@ -100,7 +100,7 @@ export class WriterSHELX implements WriterImplementation {
 
 			return {payload: "Success!"};
 		}
-		catch(error: unknown) {
+		catch(error) {
 			return {payload: "Error", error: (error as Error).message};
 		}
 	}
