@@ -44,7 +44,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 		const atomsZ: number[] = [];
 		let currentIdx = 0;
 		let currentCount = 0;
-		let currentStep = -1;
+		let currentStructure = -1;
 		let cartesian = false;
 		let totalPoints = 0;
 		let volume: number[] = [];
@@ -70,13 +70,13 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						look: {},
 						volume: []
 					});
-					++currentStep;
+					++currentStructure;
 					scaleFactor = Number.parseFloat(line);
 					lineType = LineType.basis;
 					break;
 				case LineType.basis: {
 					const fields = line.trim().split(/ +/);
-					const {basis} = structures[currentStep].crystal;
+					const {basis} = structures[currentStructure].crystal;
 					basis[base*3]   = Number.parseFloat(fields[0]);
 					basis[base*3+1] = Number.parseFloat(fields[1]);
 					basis[base*3+2] = Number.parseFloat(fields[2]);
@@ -154,11 +154,15 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						currentCount = atomsCount[0];
 						cartesian = true;
 					}
-
+					// TBD Put else to get unreadable file
 					break;
 				}
 				case LineType.atoms: {
 					const fields = line.trim().split(/ +/);
+					if(fields.length < 3) {
+						lineType = LineType.exit;
+						break;
+					}
 
 					const position = cartesian ? [
 											Number.parseFloat(fields[0]) * scaleFactor,
@@ -166,7 +170,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 											Number.parseFloat(fields[2]) * scaleFactor,
 										] as PositionType :
 										fractionalToCartesianCoordinates(
-											structures[currentStep].crystal.basis,
+											structures[currentStructure].crystal.basis,
 											Number.parseFloat(fields[0]),
 											Number.parseFloat(fields[1]),
 											Number.parseFloat(fields[2]),
@@ -177,7 +181,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						label: atomsKinds[currentIdx],
 						position
 					};
-					structures[currentStep].atoms.push(atom);
+					structures[currentStructure].atoms.push(atom);
 					--currentCount;
 					if(currentCount === 0) {
 						++currentIdx;
@@ -195,8 +199,8 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				case LineType.volumeCount: {
 					const fields = line.trim().split(/ +/);
-					if(fields.length < 3) {
-						lineType = LineType.exit;
+					if(fields.length !== 3) {
+						// lineType = LineType.exit;
 						break;
 					}
 					const sides: PositionType = [
@@ -207,25 +211,25 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					if(Number.isNaN(sides[0]) || sides[0] <= 0 ||
 					   Number.isNaN(sides[1]) || sides[1] <= 0 ||
 					   Number.isNaN(sides[2]) || sides[2] <= 0) {
-						lineType = LineType.exit;
+						// lineType = LineType.exit;
 						break;
 					}
-					if(structures[currentStep].volume.length > 0) {
-						const previousSides = structures[currentStep].volume.at(-1)!.sides;
+					if(structures[currentStructure].volume.length > 0) {
+						const previousSides = structures[currentStructure].volume.at(-1)!.sides;
 						if(sides[0] !== previousSides[0] ||
 						   sides[1] !== previousSides[1] ||
 						   sides[2] !== previousSides[2]) {
-							lineType = LineType.exit;
+							// lineType = LineType.exit;
 							break;
 						}
 					}
 					volumeIndex = 0;
 					totalPoints = sides[0]*sides[1]*sides[2];
-					structures[currentStep].volume.push({
+					structures[currentStructure].volume.push({
 						sides,
 						values: Array(totalPoints).fill(0) as number[]
 					});
-					volume = structures[currentStep].volume.at(-1)!.values;
+					volume = structures[currentStructure].volume.at(-1)!.values;
 					lineType = LineType.volumeValues;
 					break;
 				}
