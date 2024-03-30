@@ -112,4 +112,23 @@ export const setupChannelFingerprints = (): void => {
 
 		return {payload: JSON.stringify(counts)};
 	});
+
+	ipcMain.handle("CFP:COMPUTE", (_event, forceCutoff: boolean, cutoffDistance: number,
+									selectedMethod: number, binSize: number, peakWidth: number) => {
+
+		// Check structures filtered
+		const countSelected = filterOnEnergy();
+		if(countSelected <= 0) {
+			return {error: "No structure selected", payload: "0"};
+		}
+
+		// Do computation
+		console.log(forceCutoff, cutoffDistance, selectedMethod, binSize, peakWidth); // TBD
+		const resultDimensionality = 200;
+
+		// Success!
+		return {payload: resultDimensionality.toString()};
+	});
+
+
 };

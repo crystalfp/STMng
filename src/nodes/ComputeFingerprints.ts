@@ -5,7 +5,8 @@
  */
 import {watch} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {loadEnergyFile, setEnergyFilterParameters, accumulateStructure} from "@/services/RoutesClient";
+import {loadEnergyFile, setEnergyFilterParameters,
+		accumulateStructure, computeFingerprints} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useConfigStore} from "@/stores/configStore";
 import type {Structure} from "@/types";
@@ -18,6 +19,11 @@ export class ComputeFingerprints {
 	private energyFilePrevious = "";
 	private structure: Structure | undefined;
 	private accumulatePrevious = false;
+	private forceCutoff = false;
+	private manualCutoffDistance = 10;
+	private selectedMethod = 0;
+	private binSize = 0.05;
+	private peakWidth = 0.05;
 
 	/**
 	 * Create the node
@@ -27,6 +33,9 @@ export class ComputeFingerprints {
 	constructor(private readonly id: string) {
 
 		const configStore = useConfigStore();
+
+		// Start with a clean accumulator
+		void accumulateStructure();
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 
@@ -40,6 +49,32 @@ export class ComputeFingerprints {
 				});
 				void accumulateStructure();
 				return;
+			}
+
+			this.forceCutoff = params.forceCutoff as boolean ?? false;
+			this.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
+			this.selectedMethod = params.selectedMethod as number ?? 0;
+			this.binSize = params.binSize as number ?? 0.05;
+			this.peakWidth = params.peakWidth as number ?? 0.05;
+			if(params.computeFingerprints) {
+
+				sb.setUiParams(this.id, {
+					computeFingerprints: false,
+					resultDimensionality: 0
+				});
+				computeFingerprints(this.forceCutoff, this.manualCutoffDistance,
+									this.selectedMethod, this.binSize, this.peakWidth)
+					.then((status) => {
+						if(status.error) throw Error(status.error);
+						const dim = JSON.parse(status.payload) as number;
+						sb.setUiParams(this.id, {
+							resultDimensionality: dim
+						});
+					})
+					.catch((error: Error) => {
+						showErrorNotification(`Error computing fingerprints: ${error.message}`,
+											  "fingerprints");
+					});
 			}
 
 			this.loadEnergyFile(params.energyFilePath as string | undefined);

@@ -207,7 +207,7 @@ const needsAtomTypes = (fileFormat: string): boolean => {
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mt-4 ml-2" />
     <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact" class="mt-n5 ml-2" />
     <v-switch v-if="configStore.control.hasFingerprints" v-model="configStore.control.fingerprintsAccumulate"
-              color="primary" label="Accumulate for fingerprints" density="compact" class="mt-n5 ml-2" />
+              color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5 ml-2" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
     <v-row>

@@ -368,3 +368,22 @@ export const accumulateStructure = (structure?: Structure): Promise<MainResponse
 	return window.electron.ipcRenderer.invoke("CFP:ACCUMULATE",
 											  encodedStructure, reset) as Promise<MainResponse>;
 };
+
+/**
+ * Compute fingerprints
+ *
+ * @param forceCutoff - If there is a manual distance cutoff
+ * @param cutoffDistance - The manual distance cutoff
+ * @param selectedMethod - Fingerprint compute method
+ * @param binSize - Bin size for distance binning
+ * @param peakWidth - Smoother width
+ * @returns - The resulting fingerprints space dimensionality
+ */
+export const computeFingerprints = (forceCutoff: boolean, cutoffDistance: number,
+									selectedMethod: number,
+									binSize: number, peakWidth: number): Promise<MainResponse> => {
+
+	return window.electron.ipcRenderer.invoke("CFP:COMPUTE",
+											  forceCutoff, cutoffDistance, selectedMethod,
+											  binSize, peakWidth) as Promise<MainResponse>;
+};
