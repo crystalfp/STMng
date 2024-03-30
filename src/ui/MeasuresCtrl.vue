@@ -45,7 +45,7 @@ sb.getUiParams(properties.id, (params: UiParams) => {
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center mb-2 mt-2">Selected atoms</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 mt-2">Selected atoms</v-label>
   <v-table density="default">
     <tr v-for="line of details" :key="line.index">
       <td :style="`color: ${line.color}`">{{ line.label }}</td>
@@ -53,7 +53,7 @@ sb.getUiParams(properties.id, (params: UiParams) => {
     </tr>
   </v-table>
   <v-btn class="mt-4 mb-4" block @click="configStore.deselectAtoms()">Deselect</v-btn>
-  <v-label class="text-h5 w-100 justify-center mb-2">Measures</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Measures</v-label>
   <v-table density="default">
     <tr v-if="distanceAB !== ''"><td>Distance A–B:</td><td>{{ distanceAB }}</td></tr>
     <tr v-if="distanceBC !== ''"><td>Distance B–C:</td><td>{{ distanceBC }}</td></tr>

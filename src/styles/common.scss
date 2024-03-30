@@ -31,3 +31,27 @@ html {
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.3);
   width: 62%
 }
+
+@media (prefers-color-scheme: light) {
+.yellow-title {
+  color: #F57F17 !important;
+  opacity: 1 !important;
+}
+
+.green-label {
+  color: #2E7D32 !important;
+  opacity: 1 !important;
+}
+}
+
+@media (prefers-color-scheme: dark) {
+.yellow-title {
+  color: #FFF176 !important;
+  opacity: 1 !important;
+}
+
+.green-label {
+  color: #66BB6A !important;
+  opacity: 1 !important;
+}
+}

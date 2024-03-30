@@ -42,6 +42,15 @@ const peakWidth = ref(0.05);
 const resultDimensionality = ref(0);
 const computeFingerprints = ref(false);
 
+// Compute distances
+const selectedDistanceMethod = ref(0);
+const fixTriangleInequality = ref(false);
+const computeDistances = ref(false);
+
+// Classify structures
+const tolerance = ref(0.01);
+const absolute = ref(false);
+
 sb.getUiParams(props.id, (params: UiParams) => {
     reset.value = params.reset as boolean ?? false;
     countAccumulated.value = params.countAccumulated as number ?? 0;
@@ -60,6 +69,9 @@ sb.getUiParams(props.id, (params: UiParams) => {
     binSize.value = params.binSize as number ?? 0.05;
     peakWidth.value = params.peakWidth as number ?? 0.05;
     resultDimensionality.value = params.resultDimensionality as number ?? 0;
+
+    selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
+    fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
 });
 watchEffect(() => {
 
@@ -77,6 +89,10 @@ watchEffect(() => {
         computeFingerprints: computeFingerprints.value,
         binSize: binSize.value,
         peakWidth: peakWidth.value,
+
+        selectedDistanceMethod: selectedDistanceMethod.value,
+        computeDistances: computeDistances.value,
+        fixTriangleInequality: fixTriangleInequality.value,
     });
 });
 
@@ -97,24 +113,30 @@ const fpMethods = [
     {value: 7, label: "Trimmed per element diffraction"},
 ];
 
+const distanceMethods = [
+    {value: 0, label: "Cosine distance"},
+    {value: 1, label: "Euclidean distance"},
+    {value: 2, label: "Minkowski (p=1/3) distance"},
+];
+
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-label class="text-h6 w-100 justify-center mt-4">Accumulate structures</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Accumulate structures</v-label>
 
   <v-row class="mx-0 my-4">
-    <v-label class="text-green-lighten-1 font-weight-bold">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
+    <v-label class="green-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
     <v-btn density="compact" @click="reset = true">Reset</v-btn>
   </v-row>
 
   <v-divider thickness="8" />
-  <v-label class="text-h6 w-100 justify-center mt-4">Filter structures</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Filter structures</v-label>
 
   <v-file-input v-model="energyFile" label="Select energy file" :loading="energyFileLoading"
-                :clearable="false" :persistent-clear="false" class="mt-2" />
+                accept=".energy,*" :clearable="false" :persistent-clear="false" class="mt-2" />
   <v-switch v-model="enableEnergyThreshold" color="primary"
             label="Filter by energy" class="ml-2" />
   <v-switch v-model="thresholdFromMinimum" color="primary"
@@ -125,12 +147,12 @@ const fpMethods = [
   <v-text-field v-model="energyThresholdEffective" label="Max energy" readonly class="ml-2 mr-4" />
   </v-row>
 
-  <v-label class="mt-4 mb-4 text-green-lighten-1 font-weight-bold">
+  <v-label class="mt-4 mb-4 green-label">
     {{ countSelected === countAccumulated ?
       `All ${countAccumulated} structures selected` :
       `Structures selected: ${countSelected} of ${countAccumulated}` }}</v-label>
   <v-divider thickness="8" />
-  <v-label class="text-h6 w-100 justify-center mt-4">Compute fingerprints</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Compute fingerprints</v-label>
 
   <v-row class="mt-4 mx-0">
     <v-switch v-model="forceCutoff" color="primary"
@@ -139,7 +161,7 @@ const fpMethods = [
                   class="ml-2 mr-0" :rules="[rules.numeric]" />
   </v-row>
 
-  <v-label class="mt-2 mb-6 text-green-lighten-1 font-weight-bold">
+  <v-label class="mt-2 mb-6 green-label">
   {{ forceCutoff ?
     `Forced cutoff: ${manualCutoffDistance.toFixed(2)} (was: ${cutoffDistance.toFixed(2)})` :
     `Computed cutoff: ${cutoffDistance.toFixed(2)}`
@@ -161,12 +183,35 @@ const fpMethods = [
   <v-btn block :disabled="countSelected === 0" @click="computeFingerprints=true">
     Compute fingerprints
   </v-btn>
-  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 text-green-lighten-1 font-weight-bold">
+  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
     {{ `Done (dimensionality: ${resultDimensionality})` }}
   </v-label>
 
   <v-divider thickness="8" class="mt-4" />
-  <v-label class="text-h6 w-100 justify-center mt-4">Compare structures</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 mb-4">Compare structures</v-label>
+  <v-select v-model="selectedDistanceMethod"
+    :items="distanceMethods"
+    item-title="label"
+    item-value="value"
+    density="compact" />
+
+  <v-switch v-model="fixTriangleInequality" color="primary"
+            label="Fix triangle inequality" class="ml-2" />
+  <v-btn block :disabled="countSelected === 0" @click="computeDistances=true">
+    Compute distances
+  </v-btn>
+  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
+    Done
+  </v-label>
+
+  <v-divider thickness="8" class="mt-4" />
+  <v-label class="text-h5 w-100 justify-center mt-4 mb-4 yellow-title">Classify structures</v-label>
+  <v-text-field v-model="tolerance" label="Tolerance"
+                  class="ml-2 mr-0" :rules="[rules.numeric]" />
+  <v-switch v-model="absolute" color="primary"
+            label="Absolute" class="ml-2" />
+  <!-- <v-text-field v-if="" v-model="tolerance" label="Best K"
+                  class="ml-2 mr-0" :rules="[rules.numeric]" /> -->
 
   <v-alert v-if="messageStore.fingerprints.message !== ''" title="Error" class="mt-7 cursor-pointer"
            :text="messageStore.fingerprints.message" type="error" density="compact"

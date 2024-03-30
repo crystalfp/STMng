@@ -24,6 +24,8 @@ export class ComputeFingerprints {
 	private selectedMethod = 0;
 	private binSize = 0.05;
 	private peakWidth = 0.05;
+	private selectDistanceMethod = 0;
+	private fixTriangleInequality = false;
 
 	/**
 	 * Create the node
@@ -75,6 +77,15 @@ export class ComputeFingerprints {
 						showErrorNotification(`Error computing fingerprints: ${error.message}`,
 											  "fingerprints");
 					});
+				return;
+			}
+
+			this.selectDistanceMethod = params.selectDistanceMethod as number ?? 0;
+			this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+			if(params.computeDistances) {
+				sb.setUiParams(this.id, {computeDistances: false});
+				console.log("DIST", this.selectDistanceMethod, this.fixTriangleInequality); // TBD
+				return;
 			}
 
 			this.loadEnergyFile(params.energyFilePath as string | undefined);

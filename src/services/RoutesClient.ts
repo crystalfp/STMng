@@ -375,8 +375,8 @@ export const accumulateStructure = (structure?: Structure): Promise<MainResponse
  * @param forceCutoff - If there is a manual distance cutoff
  * @param cutoffDistance - The manual distance cutoff
  * @param selectedMethod - Fingerprint compute method
- * @param binSize - Bin size for distance binning
- * @param peakWidth - Smoother width
+ * @param binSize - Bin size for the pseudo-diffraction methods
+ * @param peakWidth - Peak smearing size
  * @returns - The resulting fingerprints space dimensionality
  */
 export const computeFingerprints = (forceCutoff: boolean, cutoffDistance: number,

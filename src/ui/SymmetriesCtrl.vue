@@ -63,7 +63,7 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center mt-3">Find symmetries</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-3">Find symmetries</v-label>
   <v-switch v-model="enableFindSymmetries" color="primary"
             label="Enable find symmetries" density="compact" class="mt-6 ml-4" />
   <v-switch v-model="ignoreInputSymmetries" color="primary"
@@ -79,7 +79,7 @@ watchEffect(() => {
   </g-align-labels>
 
   <v-divider thickness="8" />
-  <v-label class="text-h5 w-100 justify-center mt-3">Apply symmetries</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-3">Apply symmetries</v-label>
 
   <v-label :text="finalSymmetry" class="mt-4 w-100 justify-center show-symmetry" />
 

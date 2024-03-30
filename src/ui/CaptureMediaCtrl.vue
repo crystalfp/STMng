@@ -15,7 +15,7 @@ const messageStore = useMessageStore();
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center mt-4">Snapshot</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Snapshot</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.snapshotFormat" color="primary" class="mb-3">
@@ -30,7 +30,7 @@ const messageStore = useMessageStore();
            density="compact" class="mt-4 cursor-pointer" color="red"
            @click="messageStore.captureMedia.typeS=undefined" />
   <v-divider thickness="8" class="mt-6" />
-  <v-label class="mt-4 text-h5 w-100 justify-center">Movie</v-label>
+  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title">Movie</v-label>
   <v-btn block class="mt-3" :color="configStore.control.movie ? 'red' : 'primary'"
         @click="configStore.control.movie = !configStore.control.movie">
       {{ configStore.control.movie ? "Stop recording" : "Start recording" }}
