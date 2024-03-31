@@ -145,7 +145,6 @@ export interface Structure {
 
 // > Interfaces with main process
 export interface ReaderStructure {
-    filename: string;
     structures: Structure[];
     error?: string;
 }

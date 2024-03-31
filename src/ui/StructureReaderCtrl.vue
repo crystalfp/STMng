@@ -6,7 +6,7 @@
 
 import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
-        mdiChevronLeft, mdiChevronRight} from "@mdi/js";
+        mdiChevronLeft, mdiChevronRight, mdiFileTable} from "@mdi/js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
 import {useConfigStore} from "@/stores/configStore";
@@ -29,11 +29,10 @@ const configStore = useConfigStore();
 const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "LAMMPStrj", "POSCAR", "Shel-X", "XYZ"];
 
 // > Get and set ui parameters from the switchboard
-const fileRead     = ref("");
+const fileToRead   = ref("");
 const countSteps   = ref(1);
 const step         = ref(1);
 const running      = ref(false);
-const doLoad       = ref(false);
 const atomsTypes   = ref("");
 const loopSteps    = ref(false);
 const format       = ref("");
@@ -42,11 +41,10 @@ const captureMovie = ref(false);
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
-    fileRead.value     = params.filename as string ?? "";
+    fileToRead.value   = params.fileToRead as string ?? "";
     countSteps.value   = params.steps as number ?? 1;
     step.value         = params.step as number ?? 1;
     running.value      = params.running as boolean ?? false;
-    doLoad.value       = params.doLoad as boolean ?? false;
     loopSteps.value    = params.loopSteps as boolean ?? false;
     format.value       = params.format as string ?? "";
     atomsTypes.value   = params.atomsTypes as string ?? "";
@@ -57,26 +55,12 @@ watchEffect(() => {
     sb.setUiParams(pr.id, {
         step: step.value,
         running: running.value,
-        doLoad: doLoad.value,
         loopSteps: loopSteps.value,
         format: format.value,
         atomsTypes: atomsTypes.value,
-        filename: fileRead.value,
+        fileToRead: fileToRead.value,
     });
 });
-
-/**
- * Start loading a file
- */
-const loadFile = (): void => {
-
-    doLoad.value = true;
-    step.value = 1;
-    sb.setUiParams(pr.id, {
-        doLoad: true,
-        step: 1,
-    });
-};
 
 /**
  * Start and stop capture of a movie of the sequence
@@ -86,7 +70,7 @@ const loadFile = (): void => {
 const setCaptureMovie = (capture: boolean): void => {
 
     if(captureMovie.value) {
-        // const configStore = useConfigStore();
+
         configStore.control.movie = capture;
     }
 };
@@ -150,13 +134,10 @@ const togglePlay = (): void => {
 
 /**
  * Set the file format to load
- *
- * @param changedFormat - The new format to load
  */
-const setFormat = (changedFormat: string): void => {
+const setFormat = (): void => {
 
-    format.value = changedFormat;
-    fileRead.value = "";
+    fileToRead.value = "";
     countSteps.value = 1;
     step.value = 1;
 };
@@ -172,45 +153,67 @@ const needsAtomTypes = (fileFormat: string): boolean => {
     return formatsThatNeedsAtomTypes.has(fileFormat);
 };
 
+const filesSelected = ref<File[]>([]);
+/**
+ * Create the accept string for the given format
+ *
+ * @param fileFormat - Format to be loaded
+ * @returns The accept string for the file selector
+ */
+const acceptFile = (fileFormat: string): string => {
+
+		switch(fileFormat) {
+			case "CHGCAR":    return ".chgcar,*";
+			case "CIF":       return ".cif,*";
+			case "LAMMPS":    return ".lmp,*";
+			case "LAMMPStrj": return ".lammpstrj,*";
+			case "POSCAR":    return ".poscar,.poscars,*";
+			case "Shel-X":    return ".res,.ins,*";
+			case "XYZ":       return ".xyz,*";
+			default:          return "*";
+		}
+};
+
+/**
+ * Start loading a file
+ */
+const loadFile = (files: File[]): void => {
+
+    if(files.length === 0) return;
+
+    step.value = 1;
+    sb.setUiParams(pr.id, {
+        fileToRead: files[0].path,
+        step: 1,
+    });
+};
+
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-row class="mt-4 mb-2">
-    <v-menu open-on-hover>
-      <template #activator="{props}">
-        <v-btn class="w-25 ml-3" size="small" color="primary" v-bind="props">
-          Format
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item v-for="fmt in fileFormats" :key="fmt">
-          <v-list-item-title style="cursor: pointer" @click="setFormat(fmt)">{{ fmt }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-label class="underlined-label">{{ format }}</v-label>
-  </v-row>
-  <v-container v-if="needsAtomTypes(format)" class="pl-0 mb-5 pt-3">
-    <v-text-field v-model="atomsTypes" label="Atoms types"
-                  placeholder="Space separated list"
-                  variant="solo-filled" hide-details="auto" clearable />
-  </v-container>
-  <v-row>
-    <v-btn :disabled="format === ''" :loading="inProgress" class="w-25 ml-3" size="small" @click="loadFile">
-      Load
-    </v-btn>
-    <v-label class="underlined-label">{{ fileRead }}</v-label>
-  </v-row>
-  <v-container v-if="countSteps > 1">
-    <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mt-4 ml-2" />
-    <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact" class="mt-n5 ml-2" />
+  <v-select v-model="format" label="File format"
+    :items="fileFormats" class="mt-4"
+    density="compact" @update:model-value="setFormat" />
+
+  <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes" label="Atoms types"
+                placeholder="Space separated list" class="mb-6"
+                variant="solo-filled" hide-details="auto" clearable />
+
+  <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"
+                :prepend-icon="mdiFileTable" :accept="acceptFile(format)" :clearable="false"
+                class="mt-2" @update:model-value="loadFile" />
+
+  <v-container v-if="countSteps > 1" class="ml-2 pa-0">
+    <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
+    <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact"
+              class="mt-n5" />
     <v-switch v-if="configStore.control.hasFingerprints" v-model="configStore.control.fingerprintsAccumulate"
-              color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5 ml-2" />
+              color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" />
-    <v-row>
+    <v-row class="mr-2">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
               @click="setStep(1)" />

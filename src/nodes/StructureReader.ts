@@ -15,13 +15,13 @@ export class StructureReader {
 	private steps = 1;
 	private step = 1;
 	private running = false;
-	private doLoad = false;
 	private loopSteps = false;
 	private intervalId: ReturnType<typeof setInterval> | undefined;
 	private structures: Structure[] = [];
 	private format = "";
 	private atomsTypes = "";
 	private inProgress = false;
+	private fileToRead = "";
 
 	/**
 	 * Create the node
@@ -34,25 +34,23 @@ export class StructureReader {
 
 			const requestedStep = params.step as number ?? 1;
 			this.running    = params.running as boolean ?? false;
-			this.doLoad     = params.doLoad as boolean ?? false;
     		this.loopSteps  = params.loopSteps as boolean ?? false;
     		const requestedFormat = params.format as string ?? "";
     		this.atomsTypes = params.atomsTypes as string ?? "";
     		this.inProgress = params.inProgress as boolean ?? false;
+    		this.fileToRead = params.fileToRead as string ?? "";
 
 			if(requestedFormat !== this.format) {
 
 				this.format = requestedFormat;
 				this.step = 1;
 				this.steps = 1;
-				this.doLoad = false;
 				this.running = false;
 				sb.setUiParams(this.id, {
-					filename: "",
+					fileToRead: "",
 					steps: 1,
 					step: 1,
 					running: false,
-					doLoad: false,
 				});
         		if(this.intervalId !== undefined) {
 					clearInterval(this.intervalId);
@@ -60,10 +58,10 @@ export class StructureReader {
 				}
 			}
 
-			if(this.doLoad) {
+			if(this.fileToRead) {
 				if(this.inProgress) return;
 				this.doRead();
-				this.doLoad = false;
+				this.fileToRead = "";
 				this.running = false;
         		if(this.intervalId !== undefined) {
 					clearInterval(this.intervalId);
@@ -117,7 +115,7 @@ export class StructureReader {
 
 		this.inProgress = true;
 		sb.setUiParams(this.id, {inProgress: true});
-		readFileStructure(this.format, this.atomsTypes)
+		readFileStructure(this.fileToRead, this.format, this.atomsTypes)
 			.then((structureRaw) => {
 
 				resetErrorNotification("structureReader");
@@ -125,11 +123,10 @@ export class StructureReader {
 				if(!structureRaw) {
 					this.inProgress = false;
 					sb.setUiParams(this.id, {
-						filename: "",
+						fileToRead: "",
 						steps: 1,
 						step: 1,
 						running: false,
-						doLoad: false,
 						inProgress: false,
 					});
 
@@ -141,11 +138,10 @@ export class StructureReader {
 				if(structure.error) throw Error(structure.error);
 
 				sb.setUiParams(this.id, {
-					filename: structure.filename,
+					fileToRead: "",
 					steps: structure.structures.length,
 					step: 1,
 					running: false,
-					doLoad: false,
 					inProgress: false,
 				});
 				this.inProgress = false;
@@ -163,11 +159,10 @@ export class StructureReader {
 			.catch((error: Error) => {
 				this.inProgress = false;
 				sb.setUiParams(this.id, {
-					filename: "",
+					fileToRead: "",
 					steps: 1,
 					step: 1,
 					running: false,
-					doLoad: false,
 					format: "",
 					inProgress: false,
 				});

@@ -7,6 +7,7 @@
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
+import {mdiFileTable} from "@mdi/js";
 
 // > Properties
 const props = defineProps<{
@@ -136,7 +137,7 @@ const distanceMethods = [
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Filter structures</v-label>
 
   <v-file-input v-model="energyFile" label="Select energy file" :loading="energyFileLoading"
-                accept=".energy,*" :clearable="false" :persistent-clear="false" class="mt-2" />
+                :prepend-icon="mdiFileTable" accept=".energy,*" :clearable="false" class="mt-2" />
   <v-switch v-model="enableEnergyThreshold" color="primary"
             label="Filter by energy" class="ml-2" />
   <v-switch v-model="thresholdFromMinimum" color="primary"

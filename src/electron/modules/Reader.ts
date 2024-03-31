@@ -5,8 +5,7 @@
  *
  * @packageDocumentation
  */
-import {ipcMain, dialog} from "electron";
-import path from "node:path";
+import {ipcMain} from "electron";
 import log from "electron-log";
 import type {ReaderStructure, Structure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
@@ -70,7 +69,7 @@ const readFileStructure = async (filename: string,
 	catch(error) {
 		const message = `${requestedFormat} format not implemented. Error: ${(error as Error).message}`;
 		log.error(message);
-		return {filename: "", structures: [], error: message};
+		return {structures: [], error: message};
 	}
 
 	if(requestedFormat === "POSCAR" ||
@@ -80,17 +79,15 @@ const readFileStructure = async (filename: string,
 		const atomsTypesTrimmed = atomsTypes.trim();
 		const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
 		const structures1 = await reader.readStructure(filename, atoms);
-		const file1 = path.basename(filename);
 		return checkStructures(structures1) ?
-					{filename: file1, structures: structures1} :
-					{filename: file1, structures: [], error: `Invalid ${requestedFormat} file`};
+					{structures: structures1} :
+					{structures: [], error: `Invalid ${requestedFormat} file`};
 	}
 
 	const structures = await reader.readStructure(filename);
-	const file = path.basename(filename);
 	return checkStructures(structures) ?
-				{filename: file, structures} :
-				{filename: file, structures: [], error: `Invalid ${requestedFormat} formatted file`};
+				{structures} :
+				{structures: [], error: `Invalid ${requestedFormat} formatted file`};
 };
 
 /**
@@ -113,49 +110,10 @@ const checkStructures = (structures: Structure[]): boolean => {
  */
 export const setupChannelReader = (): void => {
 
-	ipcMain.handle("READER:READ", async (_event, format: string, atomsTypes: string) => {
+	ipcMain.handle("READER:READ", async (_event, filename: string,
+										 format: string, atomsTypes: string) => {
 
-		// Set filter
-		let filters;
-		switch(format) {
-			case "CHGCAR":
-				filters = [{name: "CHGCAR",	extensions: ["chgcar", "*"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "CIF":
-				filters = [{name: "CIF",	extensions: ["cif"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "LAMMPS":
-				filters = [{name: "LAMMPS",	extensions: ["lmp"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "LAMMPStrj":
-				filters = [{name: "LAMMPStrj", extensions: ["lammpstrj"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "POSCAR":
-				filters = [{name: "POSCAR",	extensions: ["poscar", "poscars", "*"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "Shel-X":
-				filters = [{name: "Shel-X",	extensions: ["ins", "res"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "XYZ":
-				filters = [{name: "XYZ",	extensions: ["xyz"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			default:
-				filters = [{name: "All",	extensions: ["*"]}];
-				break;
-		}
-		const file = dialog.showOpenDialogSync({
-			title: "Select input structure file",
-			properties: ["openFile"],
-			filters
-		});
-		if(file) return JSON.stringify(await readFileStructure(file[0], format, atomsTypes));
+		if(filename) return JSON.stringify(await readFileStructure(filename, format, atomsTypes));
 		return "";
 	});
 };
