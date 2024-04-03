@@ -257,8 +257,14 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 export const readFileStructure = (filename: string,
 								  format: string, atomsTypes: string): Promise<string> => {
 
-	return window.electron.ipcRenderer.invoke("READER:READ", filename,
-															 format, atomsTypes) as Promise<string>;
+	return window.electron.ipcRenderer.invoke("READER:READ",
+											  filename, format, atomsTypes) as Promise<string>;
+};
+export const readAuxFile = (filename: string,
+							format: string): Promise<string> => {
+
+	return window.electron.ipcRenderer.invoke("READER:READ-AUX",
+											  filename, format) as Promise<string>;
 };
 
 // > Structure writer

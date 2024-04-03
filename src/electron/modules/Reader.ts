@@ -55,6 +55,7 @@ const readFileStructure = async (filename: string,
 				reader = new ReaderLAMMPStrj();
 				break;
 			case "POSCAR":
+			case "POSCAR + XDATCAR":
 				reader = new ReaderPOSCAR();
 				break;
 			case "CIF":
@@ -73,6 +74,7 @@ const readFileStructure = async (filename: string,
 	}
 
 	if(requestedFormat === "POSCAR" ||
+	   requestedFormat === "POSCAR + XDATCAR" ||
 	   requestedFormat === "CHGCAR" ||
 	   requestedFormat === "LAMMPS" ||
 	   requestedFormat === "LAMMPStrj") {
@@ -106,6 +108,23 @@ const checkStructures = (structures: Structure[]): boolean => {
 };
 
 /**
+ * Read the auxiliary file and update the structures
+ *
+ * @param filename - Name of the auxiliary file
+ * @param requestedFormat - Format of the structure file
+ * @returns Structure read and eventual error message
+ */
+const readAuxFile = async (filename: string,
+						   requestedFormat: string): Promise<ReaderStructure> => {
+
+	const structures: Structure[] = [];
+	return checkStructures(structures) ?
+				{structures} :
+				{structures: [], error: `No auxiliar file for "${requestedFormat}" format`};
+
+};
+
+/**
  * Setup channels for readers
  */
 export const setupChannelReader = (): void => {
@@ -114,6 +133,14 @@ export const setupChannelReader = (): void => {
 										 format: string, atomsTypes: string) => {
 
 		if(filename) return JSON.stringify(await readFileStructure(filename, format, atomsTypes));
+		return "";
+	});
+
+	ipcMain.handle("READER:READ-AUX", async (_event, filename: string, format: string) => {
+
+		if(filename) return JSON.stringify(await readAuxFile(filename, format));
+		void filename;
+		void format;
 		return "";
 	});
 };

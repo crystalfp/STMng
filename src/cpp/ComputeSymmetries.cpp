@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
+#include <cstring>
+#include <math.h>
+
 #define SGCOREDEF__
 extern "C" {
 #include "./sginfo/sginfo.h"

@@ -17,7 +17,11 @@ asarUnpack:
   - dist/doc/**/*.*
 electronLanguages:
   - en-US
-  - it
+linux:
+  icon: resources/icon.png
+  category: Visualization
+  target:
+  - AppImage
 mac:
   artifactName: "${productName}_${version}.${ext}"
   target:

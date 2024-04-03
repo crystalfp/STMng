@@ -28,7 +28,18 @@
       },
       "msvs_settings": {
         "VCCLCompilerTool": {"ExceptionHandling": 1}
-      }
+      },
+      "conditions": [
+	      ['OS=="linux"', {
+	        "cflags": [
+				    "-Wno-sign-compare",
+			      "-Wno-implicit-fallthrough",
+			      "-Wno-misleading-indentation",
+			      "-Wno-maybe-uninitialized",
+			      "-Wno-format-overflow"
+			    ]
+	      }]
+      ]
     }
   ]
 }

@@ -6,13 +6,13 @@
 
 import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
-        mdiChevronLeft, mdiChevronRight, mdiFileTable} from "@mdi/js";
+        mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
 import {useConfigStore} from "@/stores/configStore";
 
 // > Properties
-const pr = defineProps<{
+const props = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -26,33 +26,37 @@ messageStore.structureReader.message = "";
 const configStore = useConfigStore();
 
 /** Formats that could be loaded */
-const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "LAMMPStrj", "POSCAR", "Shel-X", "XYZ"];
+const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "LAMMPStrj", "POSCAR", "POSCAR + XDATCAR", "Shel-X", "XYZ"];
 
 // > Get and set ui parameters from the switchboard
-const fileToRead   = ref("");
-const countSteps   = ref(1);
-const step         = ref(1);
-const running      = ref(false);
-const atomsTypes   = ref("");
-const loopSteps    = ref(false);
-const format       = ref("");
-const inProgress   = ref(false);
-const captureMovie = ref(false);
+const fileToRead    = ref("");
+const countSteps    = ref(1);
+const step          = ref(1);
+const running       = ref(false);
+const atomsTypes    = ref("");
+const loopSteps     = ref(false);
+const format        = ref("");
+const inProgress    = ref(false);
+const captureMovie  = ref(false);
+const auxInProgress = ref(false);
+const auxFileToRead = ref("");
 
-sb.getUiParams(pr.id, (params: UiParams) => {
+sb.getUiParams(props.id, (params: UiParams) => {
 
-    fileToRead.value   = params.fileToRead as string ?? "";
-    countSteps.value   = params.steps as number ?? 1;
-    step.value         = params.step as number ?? 1;
-    running.value      = params.running as boolean ?? false;
-    loopSteps.value    = params.loopSteps as boolean ?? false;
-    format.value       = params.format as string ?? "";
-    atomsTypes.value   = params.atomsTypes as string ?? "";
-    inProgress.value   = params.inProgress as boolean ?? false;
+    fileToRead.value    = params.fileToRead as string ?? "";
+    countSteps.value    = params.steps as number ?? 1;
+    step.value          = params.step as number ?? 1;
+    running.value       = params.running as boolean ?? false;
+    loopSteps.value     = params.loopSteps as boolean ?? false;
+    format.value        = params.format as string ?? "";
+    atomsTypes.value    = params.atomsTypes as string ?? "";
+    inProgress.value    = params.inProgress as boolean ?? false;
+    auxFileToRead.value = params.auxFileToRead as string ?? "";
+    auxInProgress.value = params.auxInProgress as boolean ?? false;
 });
 
 watchEffect(() => {
-    sb.setUiParams(pr.id, {
+    sb.setUiParams(props.id, {
         step: step.value,
         running: running.value,
         loopSteps: loopSteps.value,
@@ -85,7 +89,7 @@ const setRunning = (value: boolean): void => {
     setCaptureMovie(value);
 
     running.value = value;
-    sb.setUiParams(pr.id, {
+    sb.setUiParams(props.id, {
         running: value,
         loopSteps: loopSteps.value
     });
@@ -99,7 +103,7 @@ const setRunning = (value: boolean): void => {
 const setStep = (value: number): void => {
 
     step.value = value;
-    sb.setUiParams(pr.id, {
+    sb.setUiParams(props.id, {
         step: value
     });
 };
@@ -114,7 +118,7 @@ const deltaStep = (delta: number): void => {
     const changedStep = step.value + delta;
     if(changedStep < 1 || changedStep > countSteps.value) return;
     step.value = changedStep;
-    sb.setUiParams(pr.id, {
+    sb.setUiParams(props.id, {
         step: changedStep
     });
 };
@@ -142,7 +146,7 @@ const setFormat = (): void => {
     step.value = 1;
 };
 
-const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj"]);
+const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj", "POSCAR + XDATCAR"]);
 /**
  * Check if the format needs the atom types
  *
@@ -163,14 +167,15 @@ const filesSelected = ref<File[]>([]);
 const acceptFile = (fileFormat: string): string => {
 
 		switch(fileFormat) {
-			case "CHGCAR":    return ".chgcar,*";
-			case "CIF":       return ".cif,*";
-			case "LAMMPS":    return ".lmp,*";
-			case "LAMMPStrj": return ".lammpstrj,*";
-			case "POSCAR":    return ".poscar,.poscars,*";
-			case "Shel-X":    return ".res,.ins,*";
-			case "XYZ":       return ".xyz,*";
-			default:          return "*";
+			case "CHGCAR":            return ".chgcar,*";
+			case "CIF":               return ".cif,*";
+			case "LAMMPS":            return ".lmp,*";
+			case "LAMMPStrj":         return ".lammpstrj,*";
+			case "POSCAR":            return ".poscar,.poscars,*";
+			case "POSCAR + XDATCAR":  return ".poscar,.poscars,*";
+			case "Shel-X":            return ".res,.ins,*";
+			case "XYZ":               return ".xyz,*";
+			default:                  return "*";
 		}
 };
 
@@ -182,9 +187,20 @@ const loadFile = (files: File[]): void => {
     if(files.length === 0) return;
 
     step.value = 1;
-    sb.setUiParams(pr.id, {
+    sb.setUiParams(props.id, {
         fileToRead: files[0].path,
         step: 1,
+    });
+};
+
+// > Load auxiliary file
+const auxFileSelected = ref<File[]>([]);
+
+const loadAuxFile = (files: File[]): void => {
+
+    if(files.length === 0) return;
+    sb.setUiParams(props.id, {
+        auxFileToRead: files[0].path,
     });
 };
 
@@ -202,8 +218,13 @@ const loadFile = (files: File[]): void => {
                 variant="solo-filled" hide-details="auto" clearable />
 
   <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"
-                :prepend-icon="mdiFileTable" :accept="acceptFile(format)" :clearable="false"
+                :prepend-icon="mdiFileOutline" :accept="acceptFile(format)" :clearable="false"
                 class="mt-2" @update:model-value="loadFile" />
+
+  <v-file-input v-if="format==='POSCAR + XDATCAR'" v-model="auxFileSelected"
+                label="Select XDATCAR file" :loading="auxInProgress"
+                :prepend-icon="mdiFileOutline" accept=".xdatcar,*" :clearable="false"
+                class="mt-0" @update:model-value="loadAuxFile" />
 
   <v-container v-if="countSteps > 1" class="ml-2 pa-0">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />

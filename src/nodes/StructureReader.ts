@@ -5,7 +5,7 @@
  */
 
 import {sb, type UiParams} from "@/services/Switchboard";
-import {readFileStructure} from "@/services/RoutesClient";
+import {readFileStructure, readAuxFile} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useConfigStore} from "@/stores/configStore";
 import type {ReaderStructure, Structure} from "@/types";
@@ -22,6 +22,8 @@ export class StructureReader {
 	private atomsTypes = "";
 	private inProgress = false;
 	private fileToRead = "";
+	private auxFileToRead = "";
+	private auxInProgress = false;
 
 	/**
 	 * Create the node
@@ -39,6 +41,8 @@ export class StructureReader {
     		this.atomsTypes = params.atomsTypes as string ?? "";
     		this.inProgress = params.inProgress as boolean ?? false;
     		this.fileToRead = params.fileToRead as string ?? "";
+    		this.auxFileToRead = params.auxFileToRead as string ?? "";
+    		this.auxInProgress = params.auxInProgress as boolean ?? false;
 
 			if(requestedFormat !== this.format) {
 
@@ -68,6 +72,12 @@ export class StructureReader {
 					this.intervalId = undefined;
 				}
 				return;
+			}
+
+			if(this.auxFileToRead) {
+				if(this.auxInProgress) return;
+				this.auxFileToRead = "";
+				this.doAuxFileRead();
 			}
 
 			if(requestedStep !== this.step) {
@@ -168,6 +178,51 @@ export class StructureReader {
 				});
 
 				showErrorNotification(`Error reading structure: ${error.message}`, "structureReader");
+			});
+	}
+
+	private doAuxFileRead(): void {
+		this.auxInProgress = true;
+		readAuxFile(this.auxFileToRead, this.format)
+			.then((structureRaw) => {
+
+				resetErrorNotification("structureReader");
+
+				if(!structureRaw) {
+					this.auxInProgress = false;
+					sb.setUiParams(this.id, {
+						auxFileToRead: "",
+						auxInProgress: false,
+					});
+
+					return;
+				}
+
+				const structure = JSON.parse(structureRaw) as ReaderStructure;
+
+				if(structure.error) throw Error(structure.error);
+
+				sb.setUiParams(this.id, {
+					auxFileToRead: "",
+					steps: structure.structures.length,
+					step: 1,
+					running: false,
+					auxInProgress: false,
+				});
+				this.auxInProgress = false;
+				this.step = 1;
+				this.steps = structure.structures.length;
+				this.structures = structure.structures;
+				sb.setData(this.id, structure.structures[0]);
+			})
+			.catch((error: Error) => {
+				this.auxInProgress = false;
+				sb.setUiParams(this.id, {
+					auxFileToRead: "",
+					auxInProgress: false,
+				});
+
+				showErrorNotification(`Error reading auxiliary file: ${error.message}`, "structureReader");
 			});
 	}
 
