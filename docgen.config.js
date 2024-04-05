@@ -46,11 +46,11 @@ module.exports = {
 				// show more than one level on subcomponents
 				frontMatter.push('sidebarDepth: 2');
 			}
-			return `${frontMatter.length && !isSubComponent ? `---\n${frontMatter.join('\n')}---` : ''}
+			return `${frontMatter.length > 0 && !isSubComponent ? `---\n${frontMatter.join('\n')}---` : ''}
   ${isSubComponent || hasSubComponents ? '#' : ''}# ${deprecated ? `~~${displayName}~~` : displayName}
 
   ${deprecated ? `> **Deprecated** ${deprecated[0].description}\n` : ''}
-  ${description ? description : ''}
+  ${description ?? ''}
 
   ${functional ? renderedUsage.functionalTag : ''}
   ${author ? author.map(a => `Author: ${a.description}\n`) : ''}
@@ -65,7 +65,7 @@ module.exports = {
   ${renderedUsage.events}
   ${renderedUsage.slots}
 
-  ${requiresMd.length
+  ${requiresMd.length > 0
         ? '---\n' + requiresMd.map(component => component.content).join('\n---\n')
         : ''}
   `;

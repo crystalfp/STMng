@@ -18,13 +18,21 @@ const versions = reactive<Versions>({app: "", node: "", electron: "", chrome: ""
 const isDevelopment = import.meta.env.DEV;
 const isOpen = ref(true);
 
-void getVersions().then((receivedVersions) => {
+getVersions()
+    .then((receivedVersions) => {
 
-    versions.chrome   = receivedVersions.chrome;
-    versions.electron = receivedVersions.electron;
-    versions.app      = receivedVersions.app;
-    versions.node     = receivedVersions.node;
-});
+        versions.chrome   = receivedVersions.chrome;
+        versions.electron = receivedVersions.electron;
+        versions.app      = receivedVersions.app;
+        versions.node     = receivedVersions.node;
+    })
+    .catch((error: Error) => {
+        versions.chrome   = error.message;
+        versions.electron = error.message;
+        versions.app      = error.message;
+        versions.node     = error.message;
+    });
+
 </script>
 
 

@@ -31,7 +31,7 @@ export const extractBasis = (a: number, b: number, c: number,
 		return [a, 0, 0, 0, b, 0, 0, 0, c];
 	}
 
-	const conv = Math.PI/180.0;
+	const conv = Math.PI/180;
 	const alphaRad = alpha*conv;
 	const betaRad  = beta*conv;
 	const gammaRad = gamma*conv;
@@ -52,8 +52,8 @@ export const extractBasis = (a: number, b: number, c: number,
 
 	basis[6] = c * cosBeta;
 	basis[7] = c * (cosAlpha - cosBeta*cosGamma) / sinGamma;
-	basis[8] = c * Math.sqrt(1. - cosAlpha*cosAlpha - cosBeta*cosBeta -
-							 cosGamma*cosGamma + 2.*(cosAlpha*cosBeta*cosGamma))/sinGamma;
+	basis[8] = c * Math.sqrt(1 - cosAlpha*cosAlpha - cosBeta*cosBeta -
+							 cosGamma*cosGamma + 2*(cosAlpha*cosBeta*cosGamma))/sinGamma;
 
 	return basis;
 };

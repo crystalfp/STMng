@@ -77,13 +77,22 @@ const animate = (): void => {
     renderer.render( scene, camera );
 };
 
-window.onresize = function() {
+// window.onresize = function() {
+    // vpSize = [window.innerWidth, window.innerHeight];
+    // LINES_DASHED.material.uniforms.u_resolution.value.x = window.innerWidth;
+    // LINES_DASHED.material.uniforms.u_resolution.value.y = window.innerHeight;
+    // renderer.setSize(window.innerWidth, window.innerHeight);
+    // camera.aspect = window.innerWidth / window.innerHeight;
+    // camera.updateProjectionMatrix();
+// };
+
+window.addEventListener("resize", () => {
     vpSize = [window.innerWidth, window.innerHeight];
     LINES_DASHED.material.uniforms.u_resolution.value.x = window.innerWidth;
     LINES_DASHED.material.uniforms.u_resolution.value.y = window.innerHeight;
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-};
+});
 
 animate();
