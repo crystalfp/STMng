@@ -10,7 +10,7 @@ import fs from "fs-extra";
 import * as rd from "node:readline/promises";
 import os from "node:os";
 import path from "node:path";
-import {execSync} from "node:child_process";
+import {execSync, type ExecSyncOptionsWithBufferEncoding} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import {extractBasis, fractionalToCartesianCoordinates,
 		basisToLengthAngles, getStructureAppearance} from "./ReaderWriterHelpers";
@@ -86,7 +86,6 @@ export const setupChannelFindSymmetries = (): void => {
 		stdin += `SSI ${params.tolS} ${params.tolT} ${params.tolG}\n`;
 		stdin += "RGS\nGET RGS.OUT\nPUTC OUTPUT.DAT\nCLSE\n";
 
-
 		// Select the platform executable
 		let kplotExe;
 		const platform = os.platform();
@@ -108,9 +107,13 @@ export const setupChannelFindSymmetries = (): void => {
 											 `app.asar.unpacked/dist/bin/${kplotExe}`) :
 								path.join(mainSourceDirectory, "..", "public", "bin", kplotExe);
 
+		// Prepare exec options
+		const options: ExecSyncOptionsWithBufferEncoding = {windowsHide: true, cwd: workingDir, input: stdin};
+		if(platform === "linux") options.env = {...process.env, "LD_LIBRARY_PATH": path.dirname(kplot)};
+
 		// Execute KPLOT
 		try {
-			const stdout = execSync(`"${kplot}"`, {windowsHide: true, cwd: workingDir, input: stdin});
+			const stdout = execSync(`"${kplot}"`, options);
 			log.info(stdout.toString("utf8"));
 		}
 		catch(error) {

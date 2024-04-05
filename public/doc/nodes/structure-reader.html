@@ -25,6 +25,8 @@
 
 <p>Read structural chemical data. To specify a trajectory the file could contain a
 single structure (single frame) or a sequence of structures (Multiframe from file)</p>
+
+<p>If the format needs an auxiliary file, the module adds this file selection.</p>
 </div>
 
 <h2>Parameters</h2>
@@ -39,12 +41,17 @@ single structure (single frame) or a sequence of structures (Multiframe from fil
 	<td class="c1">Atoms types</td>
 	<td class="c2">input (space separated list)</td>
 	<td class="c3">Enter the symbols of the atoms present in the file. This field appears only for
-	POSCAR, CHGCAR, LAMMPS and LAMMPStrj formats.</td>
+	POSCAR, POSCAR + XDATCAR, CHGCAR, LAMMPS and LAMMPStrj formats.</td>
 </tr>
 <tr>
-	<td class="c1">Load</td>
+	<td class="c1">Select input file</td>
 	<td class="c2">file selector</td>
-	<td class="c3">Select the file to be read.</td>
+	<td class="c3">Select the file to be read. Works also with drag and drop.</td>
+</tr>
+<tr>
+	<td class="c1">Select &lt;auxiliary format&gt; file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">Select the auxiliary file to be read. Works also with drag and drop.</td>
 </tr>
 </table>
 <div class="description">
@@ -60,6 +67,11 @@ single structure (single frame) or a sequence of structures (Multiframe from fil
 	<td class="c1">Movie from steps</td>
 	<td class="c2">switch</td>
 	<td class="c3">Start recording a movie as soon as the steps animation starts. As soon as the animation stop, a file selector will ask for the movie file to be created.</td>
+</tr>
+<tr>
+	<td class="c1">Accumulate for fingerprinting</td>
+	<td class="c2">switch</td>
+	<td class="c3">This button appears only if the Fingerprinting module is present. Starts accumulating structures for fingerprinting.</td>
 </tr>
 <tr>
 	<td class="c1">Step</td>
@@ -82,5 +94,4 @@ single structure (single frame) or a sequence of structures (Multiframe from fil
 </table>
 
 </body>
-
 </html>

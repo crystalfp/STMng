@@ -261,10 +261,11 @@ export const readFileStructure = (filename: string,
 											  filename, format, atomsTypes) as Promise<string>;
 };
 export const readAuxFile = (filename: string,
-							format: string): Promise<string> => {
+							format: string,
+							structure: Structure): Promise<string> => {
 
 	return window.electron.ipcRenderer.invoke("READER:READ-AUX",
-											  filename, format) as Promise<string>;
+											  filename, format, JSON.stringify(structure)) as Promise<string>;
 };
 
 // > Structure writer

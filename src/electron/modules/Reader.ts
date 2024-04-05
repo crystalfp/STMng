@@ -19,6 +19,8 @@ import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
 import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
 import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
 
+import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
+
 /**
  * Read structure file in a given format
  *
@@ -111,17 +113,25 @@ const checkStructures = (structures: Structure[]): boolean => {
  * Read the auxiliary file and update the structures
  *
  * @param filename - Name of the auxiliary file
- * @param requestedFormat - Format of the structure file
+ * @param mainFormat - Format of the structure file
  * @returns Structure read and eventual error message
  */
 const readAuxFile = async (filename: string,
-						   requestedFormat: string): Promise<ReaderStructure> => {
+						   mainFormat: string,
+						   mainStructure: Structure): Promise<ReaderStructure> => {
 
-	const structures: Structure[] = [];
-	return checkStructures(structures) ?
-				{structures} :
-				{structures: [], error: `No auxiliar file for "${requestedFormat}" format`};
-
+	try {
+		// eslint-disable-next-line sonarjs/no-small-switch
+		switch(mainFormat) {
+			case "POSCAR + XDATCAR":
+				return {structures: await readAuxXDATCAR(filename, mainStructure)};
+			default:
+				throw Error(`Format "${mainFormat}" has no auxiliary file`);
+		}
+	}
+	catch(error) {
+		return {structures: [], error: (error as Error).message};
+	}
 };
 
 /**
@@ -136,11 +146,12 @@ export const setupChannelReader = (): void => {
 		return "";
 	});
 
-	ipcMain.handle("READER:READ-AUX", async (_event, filename: string, format: string) => {
+	ipcMain.handle("READER:READ-AUX", async (_event, filename: string, format: string, structureEncoded: string) => {
 
-		if(filename) return JSON.stringify(await readAuxFile(filename, format));
-		void filename;
-		void format;
+		if(filename) {
+			const structure = JSON.parse(structureEncoded) as Structure;
+			return JSON.stringify(await readAuxFile(filename, format, structure));
+		}
 		return "";
 	});
 };

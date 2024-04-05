@@ -4,8 +4,8 @@ The following instructions have been tried on Ubuntu 22.0.4 under WSL (Windows L
 
 1. Unpack the application tree under `STMng` for example in the home directory `~`
 2. Install NodeJS following the instructions here <https://nodejs.org/en/download/package-manager/current>
-3. Verify the installation running `node --version ` and `npm --version`
-4. Check the compilers are installed: `cc --version` and `g++ --version`. Install them if missing.
+3. Verify the NodeJS installation running `node --version ` and `npm --version`
+4. Check if the compilers are installed: `cc --version` and `g++ --version`. Install them if missing.
 5. Go to the application directory `cd STMng` and run `npm install`. At the end you will have the environment setup.
 6. Try to run the developer version with `npx vite`. Possibly this fails with errors due to missing libraries. In my setup the missing libraries are (in parenthesis the package to install):
 	- libnss3.so (libnss3)

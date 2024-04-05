@@ -1,0 +1,90 @@
+import fs from "node:fs";
+import * as rd from "node:readline/promises";
+import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
+
+import type {Structure, Look} from "../../types";
+
+/** Line read type */
+const enum LineType {
+    header,
+    separator,
+    position,
+}
+
+export const readAuxXDATCAR = async (filename: string, mainStructure: Structure): Promise<Structure[]> => {
+
+	// Sanity check
+	if(!mainStructure?.atoms) throw Error("Missing main structure");
+	const {crystal, look, atoms} = mainStructure;
+	const natoms = atoms.length;
+	if(natoms === 0) throw Error("Empty main structure");
+	let lineType: LineType = LineType.header;
+	let headerLines = 5;
+	let index = 0;
+	const structures: Structure[] = [];
+	let structure: Structure;
+
+	const stream = rd.createInterface(fs.createReadStream(filename));
+	for await (const line of stream) {
+
+		switch(lineType) {
+			case LineType.header:
+				--headerLines;
+				if(headerLines === 0) lineType = LineType.separator;
+				break;
+			case LineType.separator:
+				lineType = LineType.position;
+				index = 0;
+				break;
+			case LineType.position: {
+				if(index === 0) {
+					structure = {
+						crystal: {
+							basis: [
+								crystal.basis[0],
+								crystal.basis[1],
+								crystal.basis[2],
+								crystal.basis[3],
+								crystal.basis[4],
+								crystal.basis[5],
+								crystal.basis[6],
+								crystal.basis[7],
+								crystal.basis[8]
+							],
+							origin: [
+								crystal.origin[0],
+								crystal.origin[1],
+								crystal.origin[2],
+							],
+							spaceGroup: crystal.spaceGroup
+						},
+						atoms: [],
+						bonds: [],
+						look: JSON.parse(JSON.stringify(look)) as Look,
+						volume: []
+					};
+					structures.push(structure);
+				}
+				const fields = line.trim().split(/ +/);
+
+				const position = fractionalToCartesianCoordinates(
+									crystal.basis,
+									Number.parseFloat(fields[0]),
+									Number.parseFloat(fields[1]),
+									Number.parseFloat(fields[2]),
+								 );
+
+				structure!.atoms.push({
+					atomZ: atoms[index].atomZ,
+					label: atoms[index].label,
+					position
+				});
+				++index;
+				if(index === natoms) lineType = LineType.separator;
+				break;
+			}
+		}
+	}
+
+	return structures;
+};

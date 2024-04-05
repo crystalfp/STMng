@@ -76,8 +76,8 @@ export class StructureReader {
 
 			if(this.auxFileToRead) {
 				if(this.auxInProgress) return;
-				this.auxFileToRead = "";
 				this.doAuxFileRead();
+				this.auxFileToRead = "";
 			}
 
 			if(requestedStep !== this.step) {
@@ -183,7 +183,7 @@ export class StructureReader {
 
 	private doAuxFileRead(): void {
 		this.auxInProgress = true;
-		readAuxFile(this.auxFileToRead, this.format)
+		readAuxFile(this.auxFileToRead, this.format, this.structures[0])
 			.then((structureRaw) => {
 
 				resetErrorNotification("structureReader");

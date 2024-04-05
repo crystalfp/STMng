@@ -40,6 +40,8 @@ const inProgress    = ref(false);
 const captureMovie  = ref(false);
 const auxInProgress = ref(false);
 const auxFileToRead = ref("");
+const filesSelected = ref<File[]>([]);
+const auxFileSelected = ref<File[]>([]);
 
 sb.getUiParams(props.id, (params: UiParams) => {
 
@@ -53,9 +55,16 @@ sb.getUiParams(props.id, (params: UiParams) => {
     inProgress.value    = params.inProgress as boolean ?? false;
     auxFileToRead.value = params.auxFileToRead as string ?? "";
     auxInProgress.value = params.auxInProgress as boolean ?? false;
+
+    let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
+    if("path" in file) filesSelected.value[0] = file;
+
+    file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
+    if("path" in file) auxFileSelected.value[0] = file;
 });
 
 watchEffect(() => {
+
     sb.setUiParams(props.id, {
         step: step.value,
         running: running.value,
@@ -157,7 +166,6 @@ const needsAtomTypes = (fileFormat: string): boolean => {
     return formatsThatNeedsAtomTypes.has(fileFormat);
 };
 
-const filesSelected = ref<File[]>([]);
 /**
  * Create the accept string for the given format
  *
@@ -189,18 +197,18 @@ const loadFile = (files: File[]): void => {
     step.value = 1;
     sb.setUiParams(props.id, {
         fileToRead: files[0].path,
+        filesSelectedFull: JSON.stringify({name: files[0].name, path: files[0].path}),
         step: 1,
     });
 };
 
 // > Load auxiliary file
-const auxFileSelected = ref<File[]>([]);
-
 const loadAuxFile = (files: File[]): void => {
 
     if(files.length === 0) return;
     sb.setUiParams(props.id, {
         auxFileToRead: files[0].path,
+        auxSelectedFull: JSON.stringify({name: files[0].name, path: files[0].path}),
     });
 };
 
@@ -218,6 +226,7 @@ const loadAuxFile = (files: File[]): void => {
                 variant="solo-filled" hide-details="auto" clearable />
 
   <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"
+                :disabled="format===''"
                 :prepend-icon="mdiFileOutline" :accept="acceptFile(format)" :clearable="false"
                 class="mt-2" @update:model-value="loadFile" />
 
