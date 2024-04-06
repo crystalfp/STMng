@@ -9,7 +9,8 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": fileURLToPath(new URL('./src', import.meta.url))
-        }
+        },
+        preserveSymlinks: true
     },
     optimizeDeps: {
         exclude: ["doc", "release", "tests"],

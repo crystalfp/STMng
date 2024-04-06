@@ -1,0 +1,115 @@
+{
+  "graph": {
+    "reader": {
+      "label": "Reader",
+      "type": "structure-reader"
+    },
+    "unit": {
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "in": "reader"
+    },
+    "draw": {
+      "label": "Structure",
+      "type": "draw-structure",
+      "in": "reader"
+    },
+    "trace": {
+      "label": "Trajectories",
+      "type": "draw-trajectories",
+      "in": "reader"
+    },
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d"
+    }
+  },
+  "viewer": {
+    "camera": {
+      "type": "orthographic",
+      "position": [
+        -2.401275852391315,
+        7.3681111831199875,
+        30.832823782291452
+      ],
+      "lookAt": [
+        2.2275699646165004,
+        3.8582643561305,
+        4.740822209796
+      ],
+      "snapshotFormat": "png"
+    },
+    "scene": {
+      "background": "#90CEEC"
+    },
+    "lights": {
+      "ambientColor": "#FFFFFF",
+      "ambientIntensity": 0.5,
+      "directional1Color": "#FFFFFF",
+      "directional1Intensity": 1.5,
+      "directional2Color": "#FFFFFF",
+      "directional2Intensity": 1.5,
+      "directional3Color": "#FFFFFF",
+      "directional3Intensity": 1.5,
+      "directional1Position": [
+        0,
+        1,
+        0
+      ],
+      "directional2Position": [
+        0.5774,
+        0.5774,
+        0.5774
+      ],
+      "directional3Position": [
+        -0.5774,
+        -0.5774,
+        -0.5774
+      ]
+    },
+    "helpers": {
+      "showAxis": false,
+      "showGridXZ": false,
+      "showGridXY": false,
+      "showGridYZ": false,
+      "gridSize": 10,
+      "axisLength": 1
+    }
+  },
+  "ui": {
+    "reader": {
+      "loopSteps": false,
+      "step": 1,
+      "format": "LAMMPStrj",
+      "atomsTypes": "Fe"
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false
+    },
+    "draw": {
+      "drawKind": "ball-and-stick",
+      "drawQuality": 4,
+      "drawRoughness": 0.5,
+      "drawMetalness": 0.6,
+      "labelKind": "symbol",
+      "showStructure": true,
+      "showBonds": false,
+      "showLabels": false
+    },
+    "trace": {
+      "showTrajectories": false,
+      "labelKind": "symbol",
+      "atomsSelector": ""
+    }
+  },
+  "currentId": "reader"
+}

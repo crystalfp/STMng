@@ -9,7 +9,7 @@
 		"smooth":    {"label": "Interpolate",  "type": "interpolate-volume", "in": "unit"},
         "ortho":     {"label": "Orthoslice",   "type": "orthoslice",         "in": "smooth"},
         "iso":       {"label": "Isosurface",   "type": "isosurface",         "in": "smooth"},
-        "trace":     {"label": "Trajectories", "type": "draw-trajectories",  "in": "bonds" },
+        "trace":     {"label": "Trajectories", "type": "draw-trajectories",  "in": "bonds"},
 		"measure": 	 {"label": "Measures", 	   "type": "measures",           "in": "bonds"},
 		"writer": 	 {"label": "Writer", 	   "type": "structure-writer",   "in": "bonds"},
         "viewer":    {"label": "Viewer",       "type": "viewer-3d"},

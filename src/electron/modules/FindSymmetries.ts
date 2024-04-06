@@ -180,7 +180,7 @@ export const setupChannelFindSymmetries = (): void => {
 
 				// Fractional coordinates converted to cartesian coordinates
 				const fields = line.slice(32).trim().split(/ +/);
-				const fx = Number.parseFloat(fields[0]);
+				const fx = Number.parseFloat(fields[0]) - 0.5;
 				const fy = Number.parseFloat(fields[1]);
 				const fz = Number.parseFloat(fields[2]);
 

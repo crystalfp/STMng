@@ -66,7 +66,8 @@ export class Measures {
 
 				const {atomZ, position} = atoms[idx];
 				const {symbol, rCov} = look[atomZ];
-				out.push({index: idx, label: labels[i], symbol, color: colors[i]});
+				const coords = `[${position[0].toFixed(2)}, ${position[1].toFixed(2)}, ${position[2].toFixed(2)}]`;
+				out.push({index: idx, label: labels[i], symbol, color: colors[i], coords});
 
 				const geom = new THREE.IcosahedronGeometry(rCov*0.6, 4);
 				const mat = new THREE.PointsMaterial({color: colors[i], size: 6});

@@ -7,7 +7,12 @@
 import {ref, watch} from "vue";
 
 // > Properties
-const props = withDefaults(defineProps<{
+const {
+    min = 0,
+    max = 10,
+    step = 1,
+    timeout = 500
+} = defineProps<{
 
     /** Minimum value for the slider */
     min?: number;
@@ -21,17 +26,12 @@ const props = withDefaults(defineProps<{
     /** Timeout for debouncing (in milliseconds) */
     timeout?: number;
 
-}>(), {
-    min: 0,
-    max: 10,
-    step: 1,
-    timeout: 500
-});
+}>();
 
 /** Returning the debounced slider value */
 const value = defineModel<number[]>();
 
-const limitsToDebounce = ref<number[]>(value.value ?? [props.min, props.max]);
+const limitsToDebounce = ref<number[]>(value.value ?? [min, max]);
 let debouncingTimeoutId: NodeJS.Timeout;
 watch(limitsToDebounce, () => {
 
@@ -40,16 +40,15 @@ watch(limitsToDebounce, () => {
     debouncingTimeoutId = setTimeout(() => {
         value.value![0] = limitsToDebounce.value[0];
         value.value![1] = limitsToDebounce.value[1];
-    }, props.timeout);
+    }, timeout);
 });
 
 </script>
 
 
 <template>
-<!-- @slot Here add the slider label (the not yet debounced value is available as {limits}) -->
+<!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
 <slot :values="limitsToDebounce" />
 <v-range-slider v-model="limitsToDebounce" strict :step="step" :min="min" :max="max"
                 color="primary" class="ml-4 mt-1 pr-2" />
-
 </template>

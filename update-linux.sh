@@ -1,5 +1,8 @@
+#!/bin/sh
+
 d=/mnt/d/Projects/STMng
-mv STMng STMng-`date -I`
+# mv STMng STMng-`date -I`
+mv STMng STMng-$(date -I)
 mkdir STMng
 cd STMng
 

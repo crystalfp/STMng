@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the polyhedra visualizer.
+ * Controls for the atoms' trajectories visualization.
  */
 
 import {ref, watchEffect} from "vue";
@@ -48,7 +48,7 @@ watchEffect(() => {
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
 
-  <v-btn block class="mt-6" @click="recording = !recording">
+  <v-btn block class="mt-6" :disabled="atomsSelector.trim() === ''" @click="recording = !recording">
     {{ recording ? "Stop trajectories" : "Start trajectories" }}
   </v-btn>
 </v-container>

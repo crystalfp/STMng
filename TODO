@@ -9,9 +9,12 @@ ToDo:
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
   ☐ Events 'unresponsive' and 'responsive' on web content
+  ✔ Measure: show selected atoms coordinates @done(2024-04-06 10:49)
 
 Bugs:
   ☐ Energy file: fix disappearing file name
+  ✘ LAMMPStrj: if no atoms types show no atom (undefined atomZ) @cancelled(2024-04-06 10:55)
+  ☐ In select atoms, no atoms means all atoms
 
 Requests from Oganov:
   ☐ An option to specify arbitrary section plane
@@ -19,6 +22,7 @@ Requests from Oganov:
   ☐ Use of local fingerprint order parameters to color atoms
   ☐ KPLOT accepts also symbolic symmetries with SY cards.
   ☐ Lattice type for KPLOT: GTY type
+  ☐ Rename atom species after reading file
 
 Nice to have/Future:
   ☐ Label color
