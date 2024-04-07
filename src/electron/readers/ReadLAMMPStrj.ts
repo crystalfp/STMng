@@ -151,7 +151,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		}
 		else {
 			for(let idx=1; idx <= correspond.length; ++idx) {
-				if(correspond[idx]) correspond[idx] = idx+8;
+				if(correspond[idx]) correspond[idx] = idx;
 			}
 
 			for(const structure of structures) {

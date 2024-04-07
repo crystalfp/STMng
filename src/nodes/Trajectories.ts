@@ -17,6 +17,8 @@ export class Trajectories {
 	private recording = false;
 	private reset = false;
 	private nextSteps = false;
+	private maxDisplacement = 1;
+	private maxDisplacementPrevious = 1;
 	private readonly group = new THREE.Group();
 	private readonly groupName;
 	private readonly points: THREE.Vector3[][] = [];
@@ -38,6 +40,7 @@ export class Trajectories {
 			this.atomsSelector = params.atomsSelector as string ?? "";
 			this.recording = params.recording as boolean ?? false;
 			this.reset = params.reset as boolean ?? false;
+			this.maxDisplacement = params.maxDisplacement as number ?? 1;
 
 			if(this.reset) {
 				this.reset = false;
@@ -49,6 +52,12 @@ export class Trajectories {
 				sm.clearGroup(this.groupName);
 
 				this.nextSteps = false;
+			}
+
+			if(this.maxDisplacement !== this.maxDisplacementPrevious) {
+
+				this.drawLines();
+				this.maxDisplacementPrevious = this.maxDisplacement;
 			}
 
 			this.group.visible = this.showTrajectories;
@@ -82,14 +91,55 @@ export class Trajectories {
 			}
 
 			// Create lines
-			sm.clearGroup(this.groupName);
-			for(const points of this.points) {
-				const geometry = new THREE.BufferGeometry().setFromPoints(points);
+			this.drawLines();
+		});
+	}
+
+	private drawLines(): void {
+
+		sm.clearGroup(this.groupName);
+		for(const points of this.points) {
+
+			const segments = this.splitSegments(points, this.maxDisplacement);
+
+			for(const segment of segments) {
+				const geometry = new THREE.BufferGeometry().setFromPoints(segment);
 				const material = new THREE.LineBasicMaterial({color: 0x0000FF});
 				const line = new THREE.Line(geometry, material);
 				this.group.add(line);
 			}
-		});
+		}
+	}
+
+	private splitSegments(points: THREE.Vector3[], maxLength: number): THREE.Vector3[][] {
+
+		// Sanity check
+		const npoints = points.length;
+		if(npoints < 2) return [];
+
+		const segments: THREE.Vector3[][] = [];
+		let segmentStartIndex = 0;
+		for(let i=1; i < npoints; ++i) {
+
+			const length = points[i].distanceTo(points[i-1]);
+			if(length > maxLength) {
+
+				// Finish previous segment
+				if((i-segmentStartIndex) > 1) {
+					segments.push(points.slice(segmentStartIndex, i));
+				}
+
+				// Start new segment
+				segmentStartIndex = i;
+			}
+		}
+
+		// Output last segment
+		if((npoints - segmentStartIndex) > 1) {
+			segments.push(points.slice(segmentStartIndex));
+		}
+
+		return segments;
 	}
 
 	/**

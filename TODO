@@ -9,12 +9,12 @@ ToDo:
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
   ☐ Events 'unresponsive' and 'responsive' on web content
-  ✔ Measure: show selected atoms coordinates @done(2024-04-06 10:49)
+  ☐ In select atoms add an entry "all"
 
 Bugs:
   ☐ Energy file: fix disappearing file name
-  ✘ LAMMPStrj: if no atoms types show no atom (undefined atomZ) @cancelled(2024-04-06 10:55)
-  ☐ In select atoms, no atoms means all atoms
+  ✔ LAMMPStrj: if no atoms types show no atom (undefined atomZ) sometimes @done(2024-04-07 08:51)
+  ☐ Show symmetries dialog shows nothing
 
 Requests from Oganov:
   ☐ An option to specify arbitrary section plane
@@ -23,6 +23,7 @@ Requests from Oganov:
   ☐ KPLOT accepts also symbolic symmetries with SY cards.
   ☐ Lattice type for KPLOT: GTY type
   ☐ Rename atom species after reading file
+  ☐ Change Find symmetries to use the new library
 
 Nice to have/Future:
   ☐ Label color
@@ -35,6 +36,7 @@ Nice to have/Future:
   ☐ Optimize using Int64Array and similia
 
 Archive:
+  ✔ Measure: show selected atoms coordinates @done(2024-04-06 10:49) @project(ToDo)
   ✔ Try double rendering (front, back) for isosurfaces transparency for artifacts @done(2024-03-27 09:25) @project(ToDo)
   ✔ Resetting camera: put camera further @done(2024-03-24 18:10) @project(Bugs)
   ✘ Add groups to scene only when requested first time @cancelled(2024-03-24 16:56) @project(ToDo)

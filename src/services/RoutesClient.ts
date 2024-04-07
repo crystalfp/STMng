@@ -123,7 +123,6 @@ export const receiveRefreshMenu = (): void => {
 export const receiveProject = (callback: (rawProject: string) => void): void => {
 
     window.electron.ipcRenderer.invoke("PROJECT:GET")
-		// eslint-disable-next-line promise/no-callback-in-promise
 		.then((rawProject: string) => callback(rawProject))
 		.catch((error: Error) => showErrorNotification(`Cannot retrieve project first time. ${error.message}`));
     window.electron.ipcRenderer.on("PROJECT:GET-NEXT", (_event, rawProject: string) => callback(rawProject));

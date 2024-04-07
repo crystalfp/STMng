@@ -45,6 +45,7 @@ import {VTable} from "vuetify/components/VTable";
 import {VRangeSlider} from "vuetify/components/VRangeSlider";
 import {VFileInput} from "vuetify/components/VFileInput";
 import {VSelect} from "vuetify/components/VSelect";
+// import {VNumberInput} from "vuetify/labs/VNumberInput";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -79,6 +80,7 @@ const app = createApp(App)
 			VRangeSlider,
 			VFileInput,
 			VSelect,
+			// VNumberInput,
 		},
 		theme: {
     		defaultTheme: "dark",

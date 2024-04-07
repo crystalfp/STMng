@@ -113,7 +113,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 		}
 		else {
 			for(let idx=1; idx <= ntypes; ++idx) {
-				if(correspond[idx]) correspond[idx] = idx+8;
+				if(correspond[idx]) correspond[idx] = idx;
 			}
 		}
 		for(const atom of structure.atoms) {

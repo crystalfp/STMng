@@ -330,7 +330,6 @@ export default [{
         "unicorn/prefer-top-level-await": "off",
         "unicorn/no-zero-fractions": "off",
         "promise/catch-or-return": ["off", {allowFinally: true}],
-        "no-useless-assign/no-useless-assign": "warn",
         "deprecate/function": "warn",
         "deprecate/member-expression": "warn",
         "deprecate/import": "off",
@@ -359,6 +358,22 @@ export default [{
         "unicorn/switch-case-braces": "off",
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
 
-        "vue/comment-directive": "off"
+        "vue/comment-directive": "off",
+
+        // To support ESlint 9.x
+        "no-useless-assign/no-useless-assign": "off",
+        "sonarjs/no-gratuitous-expressions": "off",
+        "sonarjs/no-empty-collection": "off",
+        "sonarjs/no-unused-collection": "off",
+        "security/detect-child-process": "off",
+        "sonarjs/no-use-of-empty-return-value": "off",
+        "sonarjs/no-extra-arguments": "off",
+        "promise/no-return-wrap": "off",
+        "promise/no-promise-in-callback": "off",
+        "promise/no-nesting": "off",
+        "sonarjs/no-redundant-jump": "off",
+        "sonarjs/no-one-iteration-loop": "off",
+        "promise/no-callback-in-promise": "off",
+        "security/detect-non-literal-require": "off"
     }
 }];
