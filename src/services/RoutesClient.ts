@@ -28,12 +28,9 @@ declare global {
  *
  * @returns True if IPC is running
  */
-export const isLoaded = (): boolean => {
-
-	return window.electron?.ipcRenderer !== undefined &&
+export const isLoaded = (): boolean => window.electron?.ipcRenderer !== undefined &&
 		   window.api?.setTitle !== undefined &&
 		   window.api?.refreshMenu !== undefined;
-};
 
 
 // > Main window handling
@@ -196,10 +193,7 @@ export interface Versions {app: string; node: string; electron: string; chrome: 
  *
  * @returns The list of versions of iie, node, electron, chrome
  */
-export const getVersions = (): Promise<Versions> => {
-
-	return window.electron.ipcRenderer.invoke("APP:VERSIONS") as Promise<Versions>;
-};
+export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.invoke("APP:VERSIONS") as Promise<Versions>;
 
 // > Generic secondary windows handling
 /**
@@ -254,18 +248,23 @@ export const sendToWindow = (routerPath: string, data: string): void => {
  * @returns The structure read as JSON formatted string
  */
 export const readFileStructure = (filename: string,
-								  format: string, atomsTypes: string): Promise<string> => {
-
-	return window.electron.ipcRenderer.invoke("READER:READ",
+								  format: string, atomsTypes: string): Promise<string> => window.electron.ipcRenderer.invoke("READER:READ",
 											  filename, format, atomsTypes) as Promise<string>;
-};
+
+/**
+ * Auxiliary file read
+ *
+ * @param filename - Auxiliary file name
+ * @param format - Format of the main file
+ * @param structure - The structure read in the main file
+ * @returns The augmented structure array encoded as JSON
+ */
 export const readAuxFile = (filename: string,
 							format: string,
-							structure: Structure): Promise<string> => {
-
-	return window.electron.ipcRenderer.invoke("READER:READ-AUX",
-											  filename, format, JSON.stringify(structure)) as Promise<string>;
-};
+							structure: Structure): Promise<string> => window.electron.ipcRenderer.invoke(
+														"READER:READ-AUX",
+														filename, format, JSON.stringify(structure)
+													) as Promise<string>;
 
 // > Structure writer
 /**
@@ -274,10 +273,7 @@ export const readAuxFile = (filename: string,
  * @param format - File format to be selected
  * @returns The selected filename path
  */
-export const selectSaveStructureFile = (format: string): Promise<string> => {
-
-	return window.electron.ipcRenderer.invoke("WRITER:SELECT", format) as Promise<string>;
-};
+export const selectSaveStructureFile = (format: string): Promise<string> => window.electron.ipcRenderer.invoke("WRITER:SELECT", format) as Promise<string>;
 
 /**
  * Save the structures to the file
@@ -287,10 +283,7 @@ export const selectSaveStructureFile = (format: string): Promise<string> => {
  * @param encodedStructures - JSON encoded structures to be saved
  * @returns Response from the main process
  */
-export const saveStructureFile = (format: string, filename: string, encodedStructures: string): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("WRITER:WRITE", format, filename, encodedStructures) as Promise<MainResponse>;
-};
+export const saveStructureFile = (format: string, filename: string, encodedStructures: string): Promise<MainResponse> => window.electron.ipcRenderer.invoke("WRITER:WRITE", format, filename, encodedStructures) as Promise<MainResponse>;
 
 // > Capturer
 /**
@@ -299,10 +292,7 @@ export const saveStructureFile = (format: string, filename: string, encodedStruc
  * @param data - Data url representing an image
  * @returns Response from the main process
  */
-export const saveDataURL = (data: string): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
-};
+export const saveDataURL = (data: string): Promise<MainResponse> => window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
 
 /**
  * Save a movie
@@ -310,10 +300,7 @@ export const saveDataURL = (data: string): Promise<MainResponse> => {
  * @param buffer - Movie captured as buffer
  * @returns Response from the main process
  */
-export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("VIEWER:MOVIE", buffer) as Promise<MainResponse>;
-};
+export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> => window.electron.ipcRenderer.invoke("VIEWER:MOVIE", buffer) as Promise<MainResponse>;
 
 // > Symmetries
 /**
@@ -323,10 +310,7 @@ export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> => {
  * @param fractionalCoords - Fracional coordinates of the structure atoms
  * @returns The new fractional coordinates and error if any
  */
-export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;
-};
+export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;
 
 /**
  * Find structure symmetries in the main process
@@ -334,10 +318,7 @@ export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]
  * @param params - Data for the computation
  * @returns The new structure with found symmetries and error if any
  */
-export const findSymmetries = (params: FindSymmetriesParams): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("FIND:SYMMETRIES", JSON.stringify(params)) as Promise<MainResponse>;
-};
+export const findSymmetries = (params: FindSymmetriesParams): Promise<MainResponse> => window.electron.ipcRenderer.invoke("FIND:SYMMETRIES", JSON.stringify(params)) as Promise<MainResponse>;
 
 // > Fingerprints
 /**
@@ -346,9 +327,7 @@ export const findSymmetries = (params: FindSymmetriesParams): Promise<MainRespon
  * @param path - Path of the energy file
  * @returns Operation status
  */
-export const loadEnergyFile = (path: string): Promise<MainResponse> => {
-	return window.electron.ipcRenderer.invoke("CFP:LOAD-ENERGIES", path) as Promise<MainResponse>;
-};
+export const loadEnergyFile = (path: string): Promise<MainResponse> => window.electron.ipcRenderer.invoke("CFP:LOAD-ENERGIES", path) as Promise<MainResponse>;
 
 /**
  * Get the parameters for the filter
@@ -358,11 +337,9 @@ export const loadEnergyFile = (path: string): Promise<MainResponse> => {
  * @param fromMinimum - If the threshold is from minimum energy
  * @returns The threshold energy and the number of structures selected
  */
-export const setEnergyFilterParameters = (enabled: boolean, threshold: number, fromMinimum: boolean): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("CFP:FILTER-PARAMS",
+export const setEnergyFilterParameters = (enabled: boolean, threshold: number, fromMinimum: boolean): Promise<MainResponse> => window.electron.ipcRenderer.invoke("CFP:FILTER-PARAMS",
 											  enabled, threshold, fromMinimum) as Promise<MainResponse>;
-};
+
 
 /**
  * Add another structure to the list of structures for fingerprinting and filtering
@@ -391,9 +368,7 @@ export const accumulateStructure = (structure?: Structure): Promise<MainResponse
  */
 export const computeFingerprints = (forceCutoff: boolean, cutoffDistance: number,
 									selectedMethod: number,
-									binSize: number, peakWidth: number): Promise<MainResponse> => {
-
-	return window.electron.ipcRenderer.invoke("CFP:COMPUTE",
-											  forceCutoff, cutoffDistance, selectedMethod,
-											  binSize, peakWidth) as Promise<MainResponse>;
-};
+									binSize: number, peakWidth: number): Promise<MainResponse> =>
+										window.electron.ipcRenderer.invoke("CFP:COMPUTE",
+											forceCutoff, cutoffDistance, selectedMethod,
+											binSize, peakWidth) as Promise<MainResponse>;

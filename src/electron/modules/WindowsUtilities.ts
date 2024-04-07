@@ -196,9 +196,7 @@ const closeSecondaryWindow = (_event: unknown, routerPath: string): void => {
  * @param routerPath - The router path of the created window to check
  * @returns True if the window is open
  */
-export const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => {
-    return openedWindows.has(routerPath);
-};
+export const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => openedWindows.has(routerPath);
 
 // > Send data to a secondary window
 /**

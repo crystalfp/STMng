@@ -162,9 +162,7 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPS
  * @param fileFormat - The format to check
  * @returns The check result
  */
-const needsAtomTypes = (fileFormat: string): boolean => {
-    return formatsThatNeedsAtomTypes.has(fileFormat);
-};
+const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomTypes.has(fileFormat);
 
 /**
  * Create the accept string for the given format

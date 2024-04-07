@@ -21,9 +21,7 @@ const maxDataset = ref(0);
 const valueMin = ref(-10);
 const valueMax = ref(10);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
-const step = computed(() => {
-    return (valueMax.value - valueMin.value)/100;
-});
+const step = computed(() => (valueMax.value - valueMin.value)/100);
 const colormapName = ref("rainbow");
 const opacity = ref(1);
 

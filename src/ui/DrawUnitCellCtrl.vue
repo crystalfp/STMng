@@ -34,9 +34,7 @@ const dashedSupercell = ref(false);
  *
  * @returns True if there is a repetition
  */
-const hasSupercell = (): boolean => {
-    return repetitionsA.value > 1 || repetitionsB.value > 1 || repetitionsC.value > 1;
-};
+const hasSupercell = (): boolean => repetitionsA.value > 1 || repetitionsB.value > 1 || repetitionsC.value > 1;
 
 sb.getUiParams(props.id, (params: UiParams) => {
     showUnitCell.value = params.showUnitCell as boolean ?? true;

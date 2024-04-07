@@ -20,10 +20,7 @@ const store = new Store<PreferencesStore>({name: "preferences"});
  */
 export const setupChannelPreferences = (): void => {
 
-	ipcMain.handle("PREFERENCES:GET", (_event: IpcMainInvokeEvent, key: string) => {
-
-        return store.get(key);
-    });
+	ipcMain.handle("PREFERENCES:GET", (_event: IpcMainInvokeEvent, key: string) => store.get(key));
 
 	ipcMain.on("PREFERENCES:GET-SYNC", (event: IpcMainEvent, key: string) => {
 
@@ -60,10 +57,7 @@ export const setMainTheme = (theme: "dark" | "light", force = false): void => {
  *
  * @returns Path to the last project loaded or empty string if no path stored
  */
-export const getProjectPath = (): string => {
-
-	return store.get("LastProjectLoaded", "") as string;
-};
+export const getProjectPath = (): string => store.get("LastProjectLoaded", "") as string;
 
 /**
  * Delete the last project loaded from preferences

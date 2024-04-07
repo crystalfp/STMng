@@ -189,9 +189,7 @@ export class AtomData {
  * @param symbol - Atomic symbol as read from the structure file
  * @returns The atom Z value
  */
-export const getAtomicNumber = (symbol: string): number => {
-	return AtomData.getInstance().atomicNumber(symbol);
-};
+export const getAtomicNumber = (symbol: string): number => AtomData.getInstance().atomicNumber(symbol);
 
 /**
  * Return other information on the atom with Z value
@@ -199,9 +197,7 @@ export const getAtomicNumber = (symbol: string): number => {
  * @param atomZ - Z value of the atom that should be retrieved
  * @returns Structure containing symbol, radii and color
  */
-export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => {
-	return AtomData.getInstance().atomicRadiiAndColor(atomZ);
-};
+export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => AtomData.getInstance().atomicRadiiAndColor(atomZ);
 
 /**
  * Convert the atom Z value into atom symbol
@@ -209,9 +205,7 @@ export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => {
  * @param atomZ - Atom Z value
  * @returns The corresponding atomic symbol
  */
-export const getAtomicSymbol = (atomZ: number): string => {
-	return AtomData.getInstance().atomicSymbol(atomZ);
-};
+export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
 
 /**
  * Return a list of covalent radii for the given atoms

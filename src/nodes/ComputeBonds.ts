@@ -383,7 +383,7 @@ export class ComputeBonds {
 		// Maximum angle to form a H bond (already in maxHValenceAngle)
 
 		// Compute H bonds only if H atoms present
-		const computeHBonds = atoms.some((atom) => {return atom.atomZ === 1;});
+		const computeHBonds = atoms.some((atom) => atom.atomZ === 1);
 
 		// Visit each pair of atoms
 		for(let i=atomsCount-2; i>= 0; --i) {

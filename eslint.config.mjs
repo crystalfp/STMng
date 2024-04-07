@@ -359,6 +359,7 @@ export default [{
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
 
         "vue/comment-directive": "off",
+        "arrow-body-style": "warn",
 
         // To support ESlint 9.x
         "no-useless-assign/no-useless-assign": "off",

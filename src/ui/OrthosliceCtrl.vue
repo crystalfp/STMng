@@ -34,9 +34,7 @@ const valueMin = ref(-10);
 const valueMax = ref(10);
 const useColorClasses = ref(false);
 const colorClasses = ref(5);
-const step = computed(() => {
-    return (valueMax.value - valueMin.value)/100;
-});
+const step = computed(() => (valueMax.value - valueMin.value)/100);
 
 const showIsolines = ref(false);
 const colorIsolines = ref(false);

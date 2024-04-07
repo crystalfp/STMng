@@ -172,9 +172,7 @@ export class Orthoslice {
         else isolineValues = [this.isoValue];
 
         // Create the isoline colors
-        const isolineColors = isolineValues.map((value) => {
-            return this.lut.getColor(value).getHex();
-        });
+        const isolineColors = isolineValues.map((value) => this.lut.getColor(value).getHex());
 
         // Initialize the isolines
         const isolines = new Isolines(values, sides, isolineValues,

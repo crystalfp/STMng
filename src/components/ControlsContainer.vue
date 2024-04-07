@@ -35,10 +35,7 @@ sb.subscribeToUiNodes((nodes: NodeUI[], currentId: string) => {
 });
 
 // Return to the main process the type of the current node open in the UI
-sendCurrentNode(() => {
-
-    return sb.getNodeType(moduleId.value);
-});
+sendCurrentNode(() => sb.getNodeType(moduleId.value));
 
 watchEffect(() => {
 

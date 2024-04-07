@@ -291,9 +291,7 @@ const EDGES = [
  * @param index - Case index
  * @returns The line from the case table
  */
-export const getCase = (index: number): number[] => {
-  return MARCHING_CUBE_CASES[index];
-};
+export const getCase = (index: number): number[] => MARCHING_CUBE_CASES[index];
 
 /**
  * Define the twelve edges of the voxel by the following pairs of vertices
@@ -301,6 +299,4 @@ export const getCase = (index: number): number[] => {
  * @param eid - Edge index
  * @returns The pair of vertices tor the given edge
  */
-export const getEdge = (eid: number): number[] => {
-  return EDGES[eid];
-};
+export const getEdge = (eid: number): number[] => EDGES[eid];

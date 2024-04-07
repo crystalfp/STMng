@@ -159,20 +159,18 @@ const vectorAngle = (v0: number, v1: number, v2: number, w0: number, w1: number,
  * @param basis - Basis vectors
  * @returns Vector with in order: a, b, c, alpha, beta, gamma
  */
-export const basisToLengthAngles = (basis: BasisType): number[] => {
+export const basisToLengthAngles = (basis: BasisType): number[] => [
 
-	return [
-		// Unit cell sides
-		Math.hypot(basis[0], basis[1], basis[2]),
-		Math.hypot(basis[3], basis[4], basis[5]),
-		Math.hypot(basis[6], basis[7], basis[8]),
+	// Unit cell sides
+	Math.hypot(basis[0], basis[1], basis[2]),
+	Math.hypot(basis[3], basis[4], basis[5]),
+	Math.hypot(basis[6], basis[7], basis[8]),
 
-		// Angles
-		vectorAngle(basis[6], basis[7], basis[8], basis[3], basis[4], basis[5]),
-		vectorAngle(basis[0], basis[1], basis[2], basis[6], basis[7], basis[8]),
-		vectorAngle(basis[0], basis[1], basis[2], basis[3], basis[4], basis[5]),
-	];
-};
+	// Angles
+	vectorAngle(basis[6], basis[7], basis[8], basis[3], basis[4], basis[5]),
+	vectorAngle(basis[0], basis[1], basis[2], basis[6], basis[7], basis[8]),
+	vectorAngle(basis[0], basis[1], basis[2], basis[3], basis[4], basis[5]),
+];
 
 
 // > Compute the atoms' fractional coordinates
@@ -233,6 +231,4 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
  * @param value - Value to be formatted
  * @returns Value as string
  */
-export const format = (value: number): string => {
-	return value.toFixed(6).padStart(10, " ");
-};
+export const format = (value: number): string => value.toFixed(6).padStart(10, " ");

@@ -182,7 +182,5 @@ export const saveProject = (): void => {
  * Setup the channel to handle project requests from client
  */
 export const setupChannelProject = (): void => {
-    ipcMain.handle("PROJECT:GET",  () => {
-        return projectAsString;
-    });
+    ipcMain.handle("PROJECT:GET",  () => projectAsString);
 };

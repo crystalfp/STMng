@@ -16,15 +16,13 @@ import * as THREE from "three";
  */
 export const normalMaterial = (color: THREE.ColorRepresentation,
 						       roughness: number,
-							   metalness: number): THREE.MeshStandardMaterial => {
-
-	return new THREE.MeshStandardMaterial({
+							   metalness: number): THREE.MeshStandardMaterial =>
+	new THREE.MeshStandardMaterial({
 		color,
 		roughness,
 		metalness,
 		side: THREE.FrontSide,
 	});
-};
 
 /**
  * Compute material that interpolates between two colors
