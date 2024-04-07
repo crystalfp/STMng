@@ -7,6 +7,7 @@
 import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
+import {mdiFileOutline} from "@mdi/js";
 
 // > Properties
 const pr = defineProps<{
@@ -87,28 +88,15 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-row class="mt-4 mb-2">
-    <v-menu open-on-hover>
-      <template #activator="{props}">
-        <v-btn class="w-25 ml-3" size="small" color="primary" v-bind="props">
-          Format
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item v-for="fmt in fileFormats" :key="fmt">
-          <v-list-item-title style="cursor: pointer" @click="format = fmt">{{ fmt }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-label class="underlined-label">{{ format }}</v-label>
+  <v-select v-model="format" label="File format"
+            :items="fileFormats" class="mt-4" density="compact" />
+
+  <v-row :disabled="format === ''" class="mt-2" @click="doSelectFile = true">
+    <v-icon :icon="mdiFileOutline" size="x-large" class="ml-4 mr-2 mt-1" style="opacity: 0.4" />
+    <v-text-field :disabled="format === ''" v-model="outputFile" label="Select save file"
+                  class="mb-2 mr-2" hide-details="auto" />
   </v-row>
-  <v-row>
-    <v-btn :disabled="format === ''" :loading="inProgress" class="w-25 ml-3" size="small"
-           @click="doSelectFile = true">
-      Select
-    </v-btn>
-    <v-label class="underlined-label">{{ outputFile }}</v-label>
-  </v-row>
+
   <v-row class="mt-10">
     <v-switch v-model="continuous" color="primary" label="Continuous write"
               density="compact" class="ml-4 mr-5" />

@@ -26,12 +26,6 @@ html {
   height: var(--container-height);
 }
 
-.underlined-label {
-  margin-left: 10px;
-  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.3);
-  width: 62%
-}
-
 @media (prefers-color-scheme: light) {
 .yellow-title {
   color: #F57F17 !important;

@@ -106,25 +106,11 @@ watchEffect(() => {
     </g-debounced-slider>
   </v-container>
 
-  <v-row class="mt-3 mb-2">
-    <v-menu open-on-hover>
-      <template #activator="{props}">
-        <v-btn class="w-25 ml-6" size="small" color="primary" v-bind="props">
-          Colormap
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item v-for="colormap in colormaps" :key="colormap">
-          <v-list-item-title style="cursor: pointer" @click="colormapName = colormap">
-            {{ colormap }}
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-label class="underlined-label">{{ colormapName }}</v-label>
-  </v-row>
+  <v-select v-model="colormapName" label="Colormap"
+            :items="colormaps" class="mt-0 mx-2" density="compact" />
+
   <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-1">
-    <v-label :text="`Opacity (${value.toFixed(1)})`" class="mt-6" />
+    <v-label :text="`Opacity (${value.toFixed(1)})`" class="mt-2" />
   </g-debounced-slider>
 </v-container>
 </template>

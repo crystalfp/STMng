@@ -108,26 +108,11 @@ watchEffect(() => {
     <v-label :text="`Number classes (${value})`" />
   </g-debounced-slider>
 
-  <v-row class="mt-3 mb-2">
-    <v-menu open-on-hover>
-      <template #activator="{props}">
-        <v-btn class="w-25 ml-6" size="small" color="primary" v-bind="props">
-          Colormap
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item v-for="colormap in colormaps" :key="colormap">
-          <v-list-item-title style="cursor: pointer" @click="colormapName = colormap">
-            {{ colormap }}
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-label class="underlined-label">{{ colormapName }}</v-label>
-  </v-row>
+  <v-select v-model="colormapName" label="Colormap"
+            :items="colormaps" class="mt-0 mx-2" density="compact" />
 
   <v-switch v-model="showIsolines" color="primary" label="Show isolines"
-            density="compact" class="mt-6 ml-4" />
+            density="compact" class="mt-2 ml-4" />
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
   <g-debounced-slider v-slot="{value}" v-model="isoValue" :step="step" :min="valueMin"

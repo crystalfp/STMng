@@ -95,6 +95,9 @@ export class Trajectories {
 		});
 	}
 
+	/**
+	 * Draw trajectory lines (split in segments to avoid big jumps)
+	 */
 	private drawLines(): void {
 
 		sm.clearGroup(this.groupName);
@@ -111,6 +114,13 @@ export class Trajectories {
 		}
 	}
 
+	/**
+	 * Split a trajectory in segments with steps' lengths less than a maximum
+	 *
+	 * @param points - Points along a path
+	 * @param maxLength - Max length of each segment
+	 * @returns An array of segments points
+	 */
 	private splitSegments(points: THREE.Vector3[], maxLength: number): THREE.Vector3[][] {
 
 		// Sanity check
@@ -153,6 +163,7 @@ export class Trajectories {
 			showTrajectories: this.showTrajectories,
 			labelKind: this.labelKind,
 			atomsSelector: this.atomsSelector,
+			maxDisplacement: this.maxDisplacement,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
