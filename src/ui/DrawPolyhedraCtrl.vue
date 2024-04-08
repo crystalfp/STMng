@@ -41,7 +41,8 @@ watchEffect(() => {
 <v-container class="container">
   <v-switch v-model="showPolyhedra" color="primary" label="Show polyhedra" density="compact"
             class="mt-2 ml-4" />
-  <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector" class="ml-2 mb-6"
+  <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
+                    class="ml-2 mb-6"
                     title="Select central atoms by" placeholder="Central atoms selector" />
   <g-color-selector v-model="surfaceColor" label="Surface color" :transparency="true" />
 </v-container>

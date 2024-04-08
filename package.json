@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.17.0",
+  "version": "0.17.2",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -15,9 +15,8 @@
     "prebuild": "node-gyp rebuild && electron-builder install-app-deps",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
-    "oldlint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint -c ./eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
+    "oldlint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint -c save/eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
     "lint": "eslint -f codeframe src/**",
-    "lint0": "eslint --config eslint.config.mjs -f codeframe src/**",
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/*",
     "madge": "node ../ExtractTSfromVue/index.js",
     "start": "start ./release/%npm_package_version%/win-unpacked/STMng.exe"
@@ -68,7 +67,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-no-useless-assign": "^1.0.3",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-regexp": "^2.4.0",
+    "eslint-plugin-regexp": "^2.5.0",
     "eslint-plugin-security": "^2.1.1",
     "eslint-plugin-sonarjs": "^0.25.1",
     "eslint-plugin-tsdoc": "^0.2.17",
@@ -86,12 +85,12 @@
     "stylelint-config-standard-scss": "^13.1.0",
     "stylelint-config-standard-vue": "^1.0.0",
     "tree-kill": "^1.2.2",
-    "typedoc": "^0.25.12",
+    "typedoc": "^0.25.13",
     "typedoc-plugin-missing-exports": "^2.2.0",
     "typescript": "^5.4.4",
     "vite": "^5.2.8",
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-electron-renderer": "^0.14.5",
-    "vue-tsc": "^2.0.10"
+    "vue-tsc": "^2.0.11"
   }
 }

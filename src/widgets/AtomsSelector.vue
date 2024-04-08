@@ -30,8 +30,9 @@ const atomsSelector = defineModel<string>("selector");
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>
     <v-btn value="index">Index</v-btn>
+    <v-btn value="all">All</v-btn>
   </v-btn-toggle>
-  <v-text-field v-model="atomsSelector" :label="placeholder"
+  <v-text-field v-model="atomsSelector" :label="placeholder" :disabled="labelKind === 'all'"
                 placeholder="Space separated list"
                 variant="solo-filled" hide-details="auto" clearable />
 </v-container>

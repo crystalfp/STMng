@@ -573,7 +573,7 @@ export class Symmetries {
 	}
 
 	/**
-	 * Update chart if data changed
+	 * Update dialog if data changed
 	 *
 	 * @param outSymmetry - Output symmetry to display, if missing use the input symmetry
 	 */

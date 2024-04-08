@@ -51,12 +51,12 @@ onUnmounted(() => {
 <v-app :theme="theme">
 <v-container class="symmetry-portal">
   <v-row class="symmetry-container">
-    <v-col style="flex:1">
+    <v-col style="flex:1; overflow-y: auto">
       <v-label class="text-h5 justify-center mt-4 w-100">Input symmetry</v-label>
       <v-label :text="inSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
     <v-divider thickness="8" vertical class="mt-4" />
-    <v-col style="flex:1">
+    <v-col style="flex:1; overflow-y: auto">
       <v-label class="text-h5 justify-center mt-4 w-100">Output symmetry</v-label>
       <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
@@ -80,7 +80,7 @@ onUnmounted(() => {
 }
 
 .symmetry-container {
-  overflow-y: auto;
+  overflow-y: hidden;
   width: 100vw;
   flex: 2;
   display: flex;

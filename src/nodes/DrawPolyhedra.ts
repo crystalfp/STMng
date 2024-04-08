@@ -9,14 +9,12 @@ import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {Structure} from "@/types";
-import {selectAtomsByKind} from "@/services/SelectAtoms";
-
-type SelectorType = "symbol" | "label" | "index";
+import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 
 export class DrawPolyhedra {
 
 	private color = "#FFFFFF80";
-	private labelKind = "symbol";
+	private labelKind: SelectorType = "symbol";
 	private atomsSelector = "";
 	private structure: Structure | undefined;
 	private visible = false;

@@ -9,12 +9,10 @@ ToDo:
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
   ☐ Events 'unresponsive' and 'responsive' on web content
-  ☐ In select atoms add an entry "all"
+  ✔ In select atoms add an entry "all" @done(2024-04-08 04:57)
 
 Bugs:
   ☐ Energy file: fix disappearing file name
-  ✔ LAMMPStrj: if no atoms types show no atom (undefined atomZ) sometimes @done(2024-04-07 08:51)
-  ☐ Show symmetries dialog shows nothing
 
 Requests from Oganov:
   ☐ An option to specify arbitrary section plane
@@ -36,6 +34,8 @@ Nice to have/Future:
   ☐ Optimize using Int64Array and similia
 
 Archive:
+  ✔ LAMMPStrj: if no atoms types show no atom (undefined atomZ) sometimes @done(2024-04-07 08:51) @project(Bugs)
+  ✘ Show symmetries dialog shows nothing @cancelled(2024-04-07 19:39) @project(Bugs)
   ✔ Measure: show selected atoms coordinates @done(2024-04-06 10:49) @project(ToDo)
   ✔ Try double rendering (front, back) for isosurfaces transparency for artifacts @done(2024-03-27 09:25) @project(ToDo)
   ✔ Resetting camera: put camera further @done(2024-03-24 18:10) @project(Bugs)

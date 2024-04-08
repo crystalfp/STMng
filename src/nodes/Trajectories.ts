@@ -7,12 +7,12 @@ import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {Structure} from "@/types";
-import {selectAtomsByKind} from "@/services/SelectAtoms";
+import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 
 export class Trajectories {
 
 	private showTrajectories = false;
-	private labelKind = "symbol";
+	private labelKind: SelectorType = "symbol";
 	private atomsSelector = "";
 	private recording = false;
 	private reset = false;
@@ -36,7 +36,7 @@ export class Trajectories {
 
 		sb.getUiParams(this.id, (params: UiParams) => {
 			this.showTrajectories = params.showTrajectories as boolean ?? false;
-			this.labelKind = params.labelKind as string ?? "symbol";
+			this.labelKind = params.labelKind as SelectorType ?? "symbol";
 			this.atomsSelector = params.atomsSelector as string ?? "";
 			this.recording = params.recording as boolean ?? false;
 			this.reset = params.reset as boolean ?? false;

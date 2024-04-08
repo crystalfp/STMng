@@ -5,6 +5,8 @@
  */
 import type {Structure} from "@/types";
 
+export type SelectorType = "symbol" | "label" | "index" | "all";
+
 /**
  * Select atoms in the structure by the criteria entered in the AtomsSelector widget
  *
@@ -14,7 +16,7 @@ import type {Structure} from "@/types";
  * @returns List of atoms indices selected in the structure
  */
 export const selectAtomsByKind = (structure: Structure,
-								  kind: string,
+								  kind: SelectorType,
 								  atomsSelector: string): number[] => {
 
 	// Prepare selectors
@@ -53,6 +55,9 @@ export const selectAtomsByKind = (structure: Structure,
 				if(Number.isNaN(index)) continue;
 				selectedAtomsIdx.push(index);
 			}
+			break;
+		case "all":
+			for(let idx=0; idx < natoms; ++idx) selectedAtomsIdx.push(idx);
 			break;
 	}
 	return selectedAtomsIdx;
