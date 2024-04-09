@@ -261,10 +261,23 @@ export const readFileStructure = (filename: string,
  */
 export const readAuxFile = (filename: string,
 							format: string,
-							structure: Structure): Promise<string> => window.electron.ipcRenderer.invoke(
-														"READER:READ-AUX",
-														filename, format, JSON.stringify(structure)
-													) as Promise<string>;
+							structure: Structure): Promise<string> =>
+	window.electron.ipcRenderer.invoke("READER:READ-AUX",
+									  	filename, format, JSON.stringify(structure)
+									  ) as Promise<string>;
+
+/**
+ * Get data needed for the atoms rename
+ *
+ * @param typesBeforeString - List of atoms types before the rename
+ * @param typesAfterString - New list of atoms types
+ * @returns Encoded a RenameInfo object
+ */
+export const atomsTypeRename = (typesBeforeString: string, typesAfterString: string): Promise<string> =>
+
+	window.electron.ipcRenderer.invoke("READER:RENAME",
+										typesBeforeString, typesAfterString
+									  ) as Promise<string>;
 
 // > Structure writer
 /**

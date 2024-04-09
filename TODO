@@ -21,7 +21,7 @@ Requests from Oganov:
   ☐ Use of local fingerprint order parameters to color atoms
   ☐ KPLOT accepts also symbolic symmetries with SY cards.
   ☐ Lattice type for KPLOT: GTY type
-  ☐ Rename atom species after reading file
+  ✔ Rename atom species after reading file @done(2024-04-09 17:27)
   ☐ Change Find symmetries to use the new library
 
 Nice to have/Future:

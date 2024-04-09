@@ -7,7 +7,9 @@
  */
 import {ipcMain} from "electron";
 import log from "electron-log";
-import type {ReaderStructure, Structure} from "../../types";
+import {getAtomicNumber} from "./AtomData";
+import {getStructureAppearanceFromZ} from "./ReaderWriterHelpers";
+import type {ReaderStructure, Structure, RenameInfo} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
 
 // Import the readers
@@ -153,5 +155,50 @@ export const setupChannelReader = (): void => {
 			return JSON.stringify(await readAuxFile(filename, format, structure));
 		}
 		return "";
+	});
+
+	ipcMain.handle("READER:RENAME", async (_event, typesBeforeString: string, typesAfterString: string) => {
+
+		if(typesBeforeString === "" && typesAfterString === "") return {map: [], look: {}};
+
+		const typesBefore = typesBeforeString.split(/ +/);
+		const typesAfter = typesAfterString.split(/ +/);
+		const ZBefore: number[] = [];
+		const ZAfter: number[] = [];
+
+		if(typesBeforeString === "") {
+
+			for(let i=0; i < typesAfter.length; ++i) {
+				ZAfter.push(getAtomicNumber(typesAfter[i]));
+				ZBefore.push(i+1);
+			}
+		}
+		else if(typesAfterString === "") {
+
+			for(let i=0; i < typesBefore.length; ++i) {
+				ZBefore.push(getAtomicNumber(typesBefore[i]));
+				ZAfter.push(i+1);
+			}
+		}
+		else if(typesAfter.length < typesBefore.length) {
+			return {map: [], look: {}, error: `Missing ${typesBefore.length - typesAfter.length} atoms types in the renamed list`};
+		}
+		else {
+			for(let i=0; i < typesBefore.length; ++i) {
+				ZBefore.push(getAtomicNumber(typesBefore[i]));
+				ZAfter.push(getAtomicNumber(typesAfter[i]));
+			}
+		}
+
+		const map: [number, number][] = []
+		for(let i=0; i < typesAfter.length; ++i) {
+			map.push([ZBefore[i], ZAfter[i]]);
+		}
+
+		const renameInfo: RenameInfo = {
+			map,
+			look: getStructureAppearanceFromZ(ZAfter)
+		}
+		return JSON.stringify(renameInfo);
 	});
 };

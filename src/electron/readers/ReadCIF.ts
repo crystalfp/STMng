@@ -252,7 +252,7 @@ export class ReaderCIF implements ReaderImplementation {
 			structure.look = getStructureAppearance(structure.atoms);
 			structure.bonds = [];
 		}
-		// console.log(JSON.stringify(this.structures, undefined, 2));
+
 		return this.structures;
 	}
 

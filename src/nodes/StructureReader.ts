@@ -5,10 +5,10 @@
  */
 
 import {sb, type UiParams} from "@/services/Switchboard";
-import {readFileStructure, readAuxFile} from "@/services/RoutesClient";
+import {readFileStructure, readAuxFile, atomsTypeRename} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useConfigStore} from "@/stores/configStore";
-import type {ReaderStructure, Structure} from "@/types";
+import type {ReaderStructure, Structure, RenameInfo} from "@/types";
 
 export class StructureReader {
 
@@ -20,6 +20,7 @@ export class StructureReader {
 	private structures: Structure[] = [];
 	private format = "";
 	private atomsTypes = "";
+	private atomsTypesPrevious = "";
 	private inProgress = false;
 	private fileToRead = "";
 	private auxFileToRead = "";
@@ -43,6 +44,13 @@ export class StructureReader {
     		this.fileToRead = params.fileToRead as string ?? "";
     		this.auxFileToRead = params.auxFileToRead as string ?? "";
     		this.auxInProgress = params.auxInProgress as boolean ?? false;
+
+			// Change atoms types
+			if(this.atomsTypes !== "" && this.atomsTypes !== this.atomsTypesPrevious) {
+
+				this.changeAtomsType();
+				this.atomsTypesPrevious = this.atomsTypes;
+			}
 
 			if(requestedFormat !== this.format) {
 
@@ -181,6 +189,9 @@ export class StructureReader {
 			});
 	}
 
+	/**
+	 * Read the auxiliary file
+	 */
 	private doAuxFileRead(): void {
 		this.auxInProgress = true;
 		readAuxFile(this.auxFileToRead, this.format, this.structures[0])
@@ -224,6 +235,39 @@ export class StructureReader {
 
 				showErrorNotification(`Error reading auxiliary file: ${error.message}`, "structureReader");
 			});
+	}
+
+	/**
+	 * Change the atoms type if this is changed on the user interface
+	 */
+	private changeAtomsType(): void {
+
+		if(this.structures.length === 0) return;
+
+		atomsTypeRename(this.atomsTypesPrevious.trim(), this.atomsTypes.trim())
+			.then((renameInfoEncoded) => {
+
+				const renameInfo = JSON.parse(renameInfoEncoded) as RenameInfo;
+
+				if(renameInfo.error) throw Error(renameInfo.error);
+
+				if(renameInfo.map.length === 0) return;
+
+				const mapAtomZ = new Map<number, number>(renameInfo.map);
+				for(const structure of this.structures) {
+
+					for(const atom of structure.atoms) {
+						const renamedAtomZ = mapAtomZ.get(atom.atomZ);
+						if(renamedAtomZ === undefined) throw Error(`Invalid mapping for atomZ of ${atom.atomZ}`)
+						atom.atomZ = renamedAtomZ;
+					}
+					structure.look = renameInfo.look;
+				}
+				sb.setData(this.id, this.structures[this.step-1]);
+			})
+			.catch((error: Error) => {
+				showErrorNotification(`Error renaming atoms: ${error.message}`, "structureReader");
+			})
 	}
 
 	/**
