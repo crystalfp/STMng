@@ -581,7 +581,7 @@ export class Symmetries {
 
 		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
 		if(!outSymmetry) outSymmetry = inSymmetry;
-
+// console.log("+SYMMETRIES", inSymmetry, "->", outSymmetry);
 		const dataToSend = JSON.stringify({
 			inSymmetry,
 			outSymmetry

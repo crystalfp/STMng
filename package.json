@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.17.2",
+  "version": "0.17.3",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -92,5 +92,8 @@
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-electron-renderer": "^0.14.5",
     "vue-tsc": "^2.0.11"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-win32-x64-msvc": "4.14.1"
   }
 }

@@ -3,6 +3,7 @@
  * @component
  * Select atoms by various criteria.
  */
+import {ref} from "vue";
 
 // > Properties
 defineProps<{
@@ -20,6 +21,11 @@ const labelKind = defineModel<string>("kind");
 /** Returning selector string */
 const atomsSelector = defineModel<string>("selector");
 
+const atomsSelectorBase = ref(atomsSelector.value);
+const getSelector = (): void => {
+    atomsSelector.value = atomsSelectorBase.value;
+};
+
 </script>
 
 
@@ -32,8 +38,10 @@ const atomsSelector = defineModel<string>("selector");
     <v-btn value="index">Index</v-btn>
     <v-btn value="all">All</v-btn>
   </v-btn-toggle>
-  <v-text-field v-model="atomsSelector" :label="placeholder" :disabled="labelKind === 'all'"
+  <v-text-field v-model="atomsSelectorBase" :label="placeholder"
+                :disabled="labelKind === 'all'"
                 placeholder="Space separated list"
-                variant="solo-filled" hide-details="auto" clearable />
+                variant="solo-filled" hide-details="auto" clearable
+                @blur="getSelector" @keyup.enter.native="getSelector" />
 </v-container>
 </template>

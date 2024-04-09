@@ -7,16 +7,14 @@ import {ref} from "vue";
 import {mdiRectangle} from "@mdi/js";
 
 // > Properties
-withDefaults(defineProps<{
+const {transparency = false, label} = defineProps<{
 
     /** If true, select also transparency */
     transparency?: boolean;
 
     /** Label on the button */
     label: string;
-}>(), {
-    transparency: false
-});
+}>();
 
 const colorPickerShow = ref(false);
 const lineColor = defineModel<string>();

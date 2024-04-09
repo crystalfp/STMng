@@ -12,7 +12,7 @@ import {useMessageStore} from "@/stores/messageStore";
 import {useConfigStore} from "@/stores/configStore";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -43,7 +43,7 @@ const auxFileToRead = ref("");
 const filesSelected = ref<File[]>([]);
 const auxFileSelected = ref<File[]>([]);
 
-sb.getUiParams(props.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
 
     fileToRead.value    = params.fileToRead as string ?? "";
     countSteps.value    = params.steps as number ?? 1;
@@ -65,12 +65,11 @@ sb.getUiParams(props.id, (params: UiParams) => {
 
 watchEffect(() => {
 
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         step: step.value,
         running: running.value,
         loopSteps: loopSteps.value,
         format: format.value,
-        atomsTypes: atomsTypes.value,
         fileToRead: fileToRead.value,
     });
 });
@@ -98,7 +97,7 @@ const setRunning = (value: boolean): void => {
     setCaptureMovie(value);
 
     running.value = value;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         running: value,
         loopSteps: loopSteps.value
     });
@@ -112,7 +111,7 @@ const setRunning = (value: boolean): void => {
 const setStep = (value: number): void => {
 
     step.value = value;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         step: value
     });
 };
@@ -127,7 +126,7 @@ const deltaStep = (delta: number): void => {
     const changedStep = step.value + delta;
     if(changedStep < 1 || changedStep > countSteps.value) return;
     step.value = changedStep;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         step: changedStep
     });
 };
@@ -155,7 +154,9 @@ const setFormat = (): void => {
     step.value = 1;
 };
 
+/** Formats that needs atoms types */
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj", "POSCAR + XDATCAR"]);
+
 /**
  * Check if the format needs the atom types
  *
@@ -172,28 +173,30 @@ const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomType
  */
 const acceptFile = (fileFormat: string): string => {
 
-		switch(fileFormat) {
-			case "CHGCAR":            return ".chgcar,*";
-			case "CIF":               return ".cif,*";
-			case "LAMMPS":            return ".lmp,*";
-			case "LAMMPStrj":         return ".lammpstrj,*";
-			case "POSCAR":            return ".poscar,.poscars,*";
-			case "POSCAR + XDATCAR":  return ".poscar,.poscars,*";
-			case "Shel-X":            return ".res,.ins,*";
-			case "XYZ":               return ".xyz,*";
-			default:                  return "*";
-		}
+    switch(fileFormat) {
+        case "CHGCAR":            return ".chgcar,*";
+        case "CIF":               return ".cif,*";
+        case "LAMMPS":            return ".lmp,*";
+        case "LAMMPStrj":         return ".lammpstrj,*";
+        case "POSCAR":            return ".poscar,.poscars,*";
+        case "POSCAR + XDATCAR":  return ".poscar,.poscars,*";
+        case "Shel-X":            return ".res,.ins,*";
+        case "XYZ":               return ".xyz,*";
+        default:                  return "*";
+    }
 };
 
 /**
  * Start loading a file
+ *
+ * @param files - Output of the file selector
  */
 const loadFile = (files: File[]): void => {
 
     if(files.length === 0) return;
 
     step.value = 1;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         fileToRead: files[0].path,
         filesSelectedFull: JSON.stringify({name: files[0].name, path: files[0].path}),
         step: 1,
@@ -201,12 +204,27 @@ const loadFile = (files: File[]): void => {
 };
 
 // > Load auxiliary file
+/**
+ * Start loading an auxiliary file
+ *
+ * @param files - Output of the file selector
+ */
 const loadAuxFile = (files: File[]): void => {
 
     if(files.length === 0) return;
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         auxFileToRead: files[0].path,
         auxSelectedFull: JSON.stringify({name: files[0].name, path: files[0].path}),
+    });
+};
+
+/**
+ * Get field value on blur or ENTER pressed
+ */
+const getAtomsTypes = (): void => {
+
+    sb.setUiParams(id, {
+        atomsTypes: atomsTypes.value,
     });
 };
 
@@ -216,12 +234,13 @@ const loadAuxFile = (files: File[]): void => {
 <template>
 <v-container class="container">
   <v-select v-model="format" label="File format"
-    :items="fileFormats" class="mt-4"
-    density="compact" @update:model-value="setFormat" />
+            :items="fileFormats" class="mt-4"
+            density="compact" @update:model-value="setFormat" />
 
   <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes" label="Atoms types"
                 placeholder="Space separated list" class="mb-6"
-                variant="solo-filled" hide-details="auto" clearable />
+                variant="solo-filled" hide-details="auto" clearable
+                @blur="getAtomsTypes" @keyup.enter.native="getAtomsTypes" />
 
   <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"
                 :disabled="format===''"
