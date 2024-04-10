@@ -42,6 +42,6 @@ const getSelector = (): void => {
                 :disabled="labelKind === 'all'"
                 placeholder="Space separated list"
                 variant="solo-filled" hide-details="auto" clearable
-                @blur="getSelector" @keyup.enter.native="getSelector" />
+                @blur="getSelector" @keyup.enter="getSelector" />
 </v-container>
 </template>

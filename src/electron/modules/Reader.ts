@@ -157,7 +157,7 @@ export const setupChannelReader = (): void => {
 		return "";
 	});
 
-	ipcMain.handle("READER:RENAME", async (_event, typesBeforeString: string, typesAfterString: string) => {
+	ipcMain.handle("READER:RENAME", (_event, typesBeforeString: string, typesAfterString: string) => {
 
 		if(typesBeforeString === "" && typesAfterString === "") return {map: [], look: {}};
 
@@ -168,6 +168,7 @@ export const setupChannelReader = (): void => {
 
 		if(typesBeforeString === "") {
 
+			// eslint-disable-next-line unicorn/no-for-loop
 			for(let i=0; i < typesAfter.length; ++i) {
 				ZAfter.push(getAtomicNumber(typesAfter[i]));
 				ZBefore.push(i+1);
@@ -175,6 +176,7 @@ export const setupChannelReader = (): void => {
 		}
 		else if(typesAfterString === "") {
 
+			// eslint-disable-next-line unicorn/no-for-loop
 			for(let i=0; i < typesBefore.length; ++i) {
 				ZBefore.push(getAtomicNumber(typesBefore[i]));
 				ZAfter.push(i+1);
@@ -184,13 +186,14 @@ export const setupChannelReader = (): void => {
 			return {map: [], look: {}, error: `Missing ${typesBefore.length - typesAfter.length} atoms types in the renamed list`};
 		}
 		else {
+			// eslint-disable-next-line unicorn/no-for-loop
 			for(let i=0; i < typesBefore.length; ++i) {
 				ZBefore.push(getAtomicNumber(typesBefore[i]));
 				ZAfter.push(getAtomicNumber(typesAfter[i]));
 			}
 		}
 
-		const map: [number, number][] = []
+		const map: [number, number][] = [];
 		for(let i=0; i < typesAfter.length; ++i) {
 			map.push([ZBefore[i], ZAfter[i]]);
 		}
@@ -198,7 +201,7 @@ export const setupChannelReader = (): void => {
 		const renameInfo: RenameInfo = {
 			map,
 			look: getStructureAppearanceFromZ(ZAfter)
-		}
+		};
 		return JSON.stringify(renameInfo);
 	});
 };

@@ -258,7 +258,7 @@ export class StructureReader {
 
 					for(const atom of structure.atoms) {
 						const renamedAtomZ = mapAtomZ.get(atom.atomZ);
-						if(renamedAtomZ === undefined) throw Error(`Invalid mapping for atomZ of ${atom.atomZ}`)
+						if(renamedAtomZ === undefined) throw Error(`Invalid mapping for atomZ of ${atom.atomZ}`);
 						atom.atomZ = renamedAtomZ;
 					}
 					structure.look = renameInfo.look;
@@ -267,7 +267,7 @@ export class StructureReader {
 			})
 			.catch((error: Error) => {
 				showErrorNotification(`Error renaming atoms: ${error.message}`, "structureReader");
-			})
+			});
 	}
 
 	/**
