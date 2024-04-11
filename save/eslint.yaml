@@ -303,7 +303,7 @@ rules:
 
     promise/catch-or-return: [off, {allowFinally: true}]
 
-    no-useless-assign/no-useless-assign: warn
+    no-useless-assign/no-useless-assign: off
 
     deprecate/function: warn
     deprecate/member-expression: warn

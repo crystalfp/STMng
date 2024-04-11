@@ -1,6 +1,5 @@
 
 ToDo:
-  ☐ Add tooltips
   ☐ Readers do not fail if the file format is invalid
   ☐ Unify naming: graph, node, project
   ☐ Finish help
@@ -33,6 +32,7 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Better reporting from KPLOT
   ☐ Optimize using Int64Array and similia
+  ☐ Add tooltips
 
 Archive:
   ✔ In select atoms add an entry "all" @done(2024-04-08 04:57) @project(ToDo)

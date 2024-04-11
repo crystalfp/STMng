@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng draw-unit-cell node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-03-20"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Draw Unit Cell</title>
+</head>
+
+<body>
+<h1>Draw Unit Cell</h1>
+
+<h2>Description</h2>
+<div class="description">
+<p>Draw the unit cell and generate and draw supercell.</p>
+<p>The input structure should have basis vectors defined.</p>
+<p>The node outputs the input structure replicated if the repetitions along any basis is bigger than 1.</p>
+</div>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Show unit cell</td>
+	<td class="c2">switch</td>
+	<td class="c3">Show the unit cell borders.</td>
+</tr>
+<tr>
+	<td class="c1">Dashed lines</td>
+	<td class="c2">switch</td>
+	<td class="c3">Show the unit cell using dashed lines.</td>
+</tr>
+<tr>
+	<td class="c1">Show basis vectors</td>
+	<td class="c2">switch</td>
+	<td class="c3">Show the basis vectors as arrows.</td>
+</tr>
+<tr>
+	<td class="c1">Line color</td>
+	<td class="c2">color selector</td>
+	<td class="c3">Select the color of the unit cell lines.</td>
+</tr>
+<tr>
+	<td class="c1">Cell repetitions</td>
+	<td class="c2">sliders (3)</td>
+	<td class="c3">Repetition of the unit cell along each basis vector.</td>
+</tr>
+<tr>
+	<td class="c1">Reset</td>
+	<td class="c2">Button</td>
+	<td class="c3">Reset the supercell repetitions to 1.</td>
+</tr>
+<tr>
+	<td class="c1">Show supercell</td>
+	<td class="c2">switch</td>
+	<td class="c3">Show the supercell borders.</td>
+</tr>
+<tr>
+	<td class="c1">Dashed lines supercell</td>
+	<td class="c2">switch</td>
+	<td class="c3">Show the supercell using dashed lines.</td>
+</tr>
+<tr>
+	<td class="c1">Line color</td>
+	<td class="c2">color selector</td>
+	<td class="c3">Select the color of the supercell lines.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>draw-unit-cell</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td>Structure</td></tr>
+<tr><td class="c1">Add 3D objects to scene:</td><td>Yes</td></tr>
+</table>
+
+</body>
+</html>
