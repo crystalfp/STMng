@@ -5,7 +5,6 @@ import vuePlugin from "eslint-plugin-vue";
 import promisePlugin from "eslint-plugin-promise";
 import importPlugin from "eslint-plugin-import";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-// import uselessPlugin from "eslint-plugin-no-useless-assign";
 import commentsPlugin from "eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
@@ -72,7 +71,6 @@ export default [{
         promise: promisePlugin,
         import: importPlugin,
         "@typescript-eslint": typescriptPlugin,
-        // "no-useless-assign": uselessPlugin,
         "eslint-comments": commentsPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
@@ -248,8 +246,8 @@ export default [{
         "@typescript-eslint/no-invalid-this": ["off", {capIsConstructor: false}],
         "prefer-template": "warn",
         // "semi": "off",
-        "semi": ["error", "always"],
-        // "@typescript-eslint/semi": ["error", "always"],
+        // "semi": ["error", "always"],
+        "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/explicit-function-return-type": ["warn", {allowExpressions: true}],
         "@typescript-eslint/method-signature-style": "warn",
         "@typescript-eslint/prefer-includes": "warn",
@@ -362,7 +360,6 @@ export default [{
 
         "vue/comment-directive": "off",
         "arrow-body-style": "warn",
-        // "no-useless-assign/no-useless-assign": "off",
 
         // To support ESlint 9.x
         "sonarjs/no-gratuitous-expressions": "off",
