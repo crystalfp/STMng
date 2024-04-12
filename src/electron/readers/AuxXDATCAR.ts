@@ -2,7 +2,7 @@ import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
 
-import type {Structure, Look} from "../../types";
+import type {Structure} from "../../types";
 
 /** Line read type */
 const enum LineType {
@@ -60,7 +60,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 						},
 						atoms: [],
 						bonds: [],
-						look: JSON.parse(JSON.stringify(look)) as Look,
+						look: structuredClone(look),
 						volume: []
 					};
 					structures.push(structure);

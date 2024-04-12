@@ -5,7 +5,7 @@ import vuePlugin from "eslint-plugin-vue";
 import promisePlugin from "eslint-plugin-promise";
 import importPlugin from "eslint-plugin-import";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import uselessPlugin from "eslint-plugin-no-useless-assign";
+// import uselessPlugin from "eslint-plugin-no-useless-assign";
 import commentsPlugin from "eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
@@ -51,6 +51,7 @@ export default [{
             console: "readonly",
             Buffer: "readonly",
             require: "readonly",
+            structuredClone: "readonly",
         },
         parserOptions: {
             parser: tsParser,
@@ -71,7 +72,7 @@ export default [{
         promise: promisePlugin,
         import: importPlugin,
         "@typescript-eslint": typescriptPlugin,
-        "no-useless-assign": uselessPlugin,
+        // "no-useless-assign": uselessPlugin,
         "eslint-comments": commentsPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
@@ -246,8 +247,9 @@ export default [{
         "no-invalid-this": "off",
         "@typescript-eslint/no-invalid-this": ["off", {capIsConstructor: false}],
         "prefer-template": "warn",
-        "semi": "off",
-        "@typescript-eslint/semi": ["error", "always"],
+        // "semi": "off",
+        "semi": ["error", "always"],
+        // "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/explicit-function-return-type": ["warn", {allowExpressions: true}],
         "@typescript-eslint/method-signature-style": "warn",
         "@typescript-eslint/prefer-includes": "warn",
@@ -360,21 +362,20 @@ export default [{
 
         "vue/comment-directive": "off",
         "arrow-body-style": "warn",
+        // "no-useless-assign/no-useless-assign": "off",
 
         // To support ESlint 9.x
-        "no-useless-assign/no-useless-assign": "off",
         "sonarjs/no-gratuitous-expressions": "off",
         "sonarjs/no-empty-collection": "off",
         "sonarjs/no-unused-collection": "off",
         "security/detect-child-process": "off",
         "sonarjs/no-use-of-empty-return-value": "off",
         "sonarjs/no-extra-arguments": "off",
+        "sonarjs/no-redundant-jump": "off",
+        "sonarjs/no-one-iteration-loop": "off",
         "promise/no-return-wrap": "off",
         "promise/no-promise-in-callback": "off",
         "promise/no-nesting": "off",
-        "sonarjs/no-redundant-jump": "off",
-        "sonarjs/no-one-iteration-loop": "off",
         "promise/no-callback-in-promise": "off",
-        "security/detect-non-literal-require": "off"
     }
 }];

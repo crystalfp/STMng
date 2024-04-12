@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -33,12 +33,12 @@
     "pinia": "^2.1.7",
     "three": "^0.163.0",
     "tmp": "^0.2.3",
-    "troika-three-text": "^0.49.0",
+    "troika-three-text": "^0.49.1",
     "valibot": "^0.30.0",
     "vue": "^3.4.21",
     "vue-chartjs": "^5.3.1",
     "vue-router": "^4.3.0",
-    "vuetify": "^3.5.14"
+    "vuetify": "^3.5.15"
   },
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
@@ -56,7 +56,7 @@
     "@typescript-eslint/parser": "^7.6.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@zamiell/typedoc-plugin-not-exported": "^0.2.0",
-    "electron": "^29.2.0",
+    "electron": "^29.3.0",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^9.0.0",
@@ -69,7 +69,7 @@
     "eslint-plugin-no-useless-assign": "^1.0.3",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-regexp": "^2.5.0",
-    "eslint-plugin-security": "^2.1.1",
+    "eslint-plugin-security": "^3.0.0",
     "eslint-plugin-sonarjs": "^0.25.1",
     "eslint-plugin-tsdoc": "^0.2.17",
     "eslint-plugin-unicorn": "^52.0.0",
@@ -88,10 +88,10 @@
     "tree-kill": "^1.2.2",
     "typedoc": "^0.25.13",
     "typedoc-plugin-missing-exports": "^2.2.0",
-    "typescript": "^5.4.4",
+    "typescript": "^5.4.5",
     "vite": "^5.2.8",
     "vite-plugin-electron": "^0.28.4",
     "vite-plugin-electron-renderer": "^0.14.5",
-    "vue-tsc": "^2.0.11"
+    "vue-tsc": "^2.0.12"
   }
 }

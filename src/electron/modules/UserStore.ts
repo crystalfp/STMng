@@ -52,7 +52,8 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 			this.data = yaml.load(fs.readFileSync(this.filePath, "utf8"), {schema: yaml.CORE_SCHEMA}) as T;
 		}
 		else if(options?.defaultContent) {
-			this.data = JSON.parse(JSON.stringify(options.defaultContent)) as T;
+			this.data = structuredClone(options.defaultContent) as T;
+			// this.data = JSON.parse(JSON.stringify(options.defaultContent)) as T;
 			fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");
 		}
 		else this.data = {} as T;
