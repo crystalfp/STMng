@@ -7,11 +7,13 @@ import * as THREE from "three";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import type {BoundingBox} from "@/services/BoundingBox";
+import {STLExporter} from "three/addons/exporters/STLExporter.js";
 
 class SceneManager {
 
     private static instance: SceneManager;
 	private static readonly scene = new THREE.Scene();
+	private exporter: STLExporter | undefined;
 
 	/**
 	 * Create the scene
@@ -241,6 +243,41 @@ class SceneManager {
 
 		const out = this.dumpSceneWalker("", SceneManager.scene.children);
 		console.log(`\n*** ${label} ***\n${out}`);
+	}
+
+	/**
+	 * Export as STL encoded file the scene content
+	 *
+	 * @param format - STL file format
+	 * @returns A blob with the content of the STL file to be written
+	 */
+	createSTL(format: "ascii" | "binary"): Blob {
+
+		// Instance the exporter if not already instanced
+		if(!this.exporter) this.exporter = new STLExporter();
+
+		// Create a group with only atoms and bonds
+		const structure = new THREE.Group();
+		const atoms = this.scene.getObjectByName("Atoms");
+		if(atoms) {
+			const atoms2 = atoms.clone(true);
+			structure.add(atoms2);
+		}
+		const bonds = this.scene.getObjectByName("Bonds");
+		if(bonds) {
+			const bonds2 = bonds.clone(true);
+			structure.add(bonds2);
+		}
+
+		// Parse the structure and generate the STL encoded output
+		const result = this.exporter.parse(structure, {binary: format === "binary"});
+
+		// Clean the temporary structure
+		structure.clear();
+
+		return format === "ascii" ?
+									new Blob([result], {type: "text/plain"}) :
+									new Blob([result], {type: "application/octet-stream"});
 	}
 
 	// > Access the singleton instance

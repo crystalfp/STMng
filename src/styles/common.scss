@@ -26,26 +26,13 @@ html {
   height: var(--container-height);
 }
 
-@media (prefers-color-scheme: light) {
-.yellow-title {
-  color: #F57F17 !important;
-  opacity: 1 !important;
-}
-
+// Colors to be made visible changing application theme
 .green-label {
-  color: #2E7D32 !important;
+  color: light-dark(#2E7D32, #66BB6A) !important;
   opacity: 1 !important;
 }
-}
 
-@media (prefers-color-scheme: dark) {
 .yellow-title {
-  color: #FFF176 !important;
+  color: light-dark(#F57F17, #FFF176) !important;
   opacity: 1 !important;
-}
-
-.green-label {
-  color: #66BB6A !important;
-  opacity: 1 !important;
-}
 }

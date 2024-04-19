@@ -10,6 +10,8 @@ ToDo:
   ☐ Events 'unresponsive' and 'responsive' on web content
   ☐ In builder copy only platform specific exe files
   ☐ Add on blur and on enter to remaining text fields
+  ☐ Check the order of entries in objects
+  ✔ Use the function `light-dark()` Try when Chromium is at 123 @done(2024-04-19 14:17)
 
 Bugs:
   ☐ Energy file: fix disappearing file name

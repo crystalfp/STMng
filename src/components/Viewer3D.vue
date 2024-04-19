@@ -7,6 +7,7 @@
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
+import {saveAs} from "file-saver";
 import {useConfigStore} from "@/stores/configStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
@@ -278,6 +279,17 @@ onMounted(() => {
                     messageStore.captureMedia.typeS = "error";
                     messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
                 });
+        }
+    });
+
+    watchEffect(() => {
+
+        if(configStore.control.stl) {
+
+            configStore.control.stl = false;
+
+            const blob = sm.createSTL(configStore.camera.stlFormat);
+            saveAs(blob, "structure.stl");
         }
     });
 

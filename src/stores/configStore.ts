@@ -13,6 +13,7 @@ interface Viewer3DConfiguration {
         position: PositionType;
         lookAt: PositionType;
         snapshotFormat: string;
+        stlFormat: "ascii" | "binary";
     };
     scene: {
         background: string;
@@ -42,6 +43,7 @@ interface Viewer3DConfiguration {
         reset: boolean;
         snapshot: boolean;
         movie: boolean;
+        stl: boolean;
         sceneCenter: PositionType;
         sceneSides: PositionType;
         atomsSelected: number[];
@@ -60,6 +62,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             position: [5, 3, 5],
             lookAt: [0, 0, 0],
             snapshotFormat: "png",
+            stlFormat: "binary",
 		},
 		scene: {
 			background: "#90CEEC",
@@ -89,6 +92,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             reset: false,
             snapshot: false,
             movie: false,
+            stl: false,
             sceneCenter: [0, 0, 0],
             sceneSides: [1, 1, 1],
             atomsSelected: [],
