@@ -298,7 +298,7 @@ export class StructureReader {
 
 		if(this.structures.length === 0) return;
 
-		atomsTypeRename(this.atomsTypesPrevious.trim(), this.atomsTypes.trim())
+		atomsTypeRename(Object.keys(this.structures[0].look).join(" "), this.atomsTypes.trim())
 			.then((renameInfoEncoded) => {
 
 				const renameInfo = JSON.parse(renameInfoEncoded) as RenameInfo;

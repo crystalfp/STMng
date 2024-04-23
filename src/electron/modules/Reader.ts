@@ -162,28 +162,20 @@ export const setupChannelReader = (): void => {
 		return "";
 	});
 
-	ipcMain.handle("READER:RENAME", (_event, typesBeforeString: string, typesAfterString: string) => {
+	ipcMain.handle("READER:RENAME", (_event, atomsZBefore: string, typesAfterString: string) => {
 
-		if(typesBeforeString === "" && typesAfterString === "") return {map: [], look: {}};
+		if(atomsZBefore === "" && typesAfterString === "") return {map: [], look: {}};
 
-		const typesBefore = typesBeforeString.split(/ +/);
+		const typesBefore = atomsZBefore.split(/ +/);
 		const typesAfter = typesAfterString.split(/ +/);
 		const ZBefore: number[] = [];
 		const ZAfter: number[] = [];
 
-		if(typesBeforeString === "") {
-
-			// eslint-disable-next-line unicorn/no-for-loop
-			for(let i=0; i < typesAfter.length; ++i) {
-				ZAfter.push(getAtomicNumber(typesAfter[i]));
-				ZBefore.push(i+1);
-			}
-		}
-		else if(typesAfterString === "") {
+		if(typesAfterString === "") {
 
 			// eslint-disable-next-line unicorn/no-for-loop
 			for(let i=0; i < typesBefore.length; ++i) {
-				ZBefore.push(getAtomicNumber(typesBefore[i]));
+				ZBefore.push(Number.parseInt(typesBefore[i]));
 				ZAfter.push(i+1);
 			}
 		}
@@ -193,7 +185,7 @@ export const setupChannelReader = (): void => {
 		else {
 			// eslint-disable-next-line unicorn/no-for-loop
 			for(let i=0; i < typesBefore.length; ++i) {
-				ZBefore.push(getAtomicNumber(typesBefore[i]));
+				ZBefore.push(Number.parseInt(typesBefore[i]));
 				ZAfter.push(getAtomicNumber(typesAfter[i]));
 			}
 		}
