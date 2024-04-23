@@ -29,15 +29,15 @@ export class IsosurfaceCore {
 			    private readonly values: number[]) {
 
 		this.cellSides = [
-			basis[0] / dims[0],
-			basis[1] / dims[0],
-			basis[2] / dims[0],
-			basis[3] / dims[1],
-			basis[4] / dims[1],
-			basis[5] / dims[1],
-			basis[6] / dims[2],
-			basis[7] / dims[2],
-			basis[8] / dims[2],
+			basis[0] / (dims[0]-1),
+			basis[1] / (dims[0]-1),
+			basis[2] / (dims[0]-1),
+			basis[3] / (dims[1]-1),
+			basis[4] / (dims[1]-1),
+			basis[5] / (dims[1]-1),
+			basis[6] / (dims[2]-1),
+			basis[7] / (dims[2]-1),
+			basis[8] / (dims[2]-1),
 		];
 
 		this.cellLengths = [

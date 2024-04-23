@@ -20,6 +20,7 @@ import {ReaderCIF} from "../readers/ReadCIF";
 import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
 import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
 import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
+import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
 
 import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
 
@@ -33,7 +34,8 @@ import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
  */
 const readFileStructure = async (filename: string,
 								 requestedFormat: string,
-								 atomsTypes: string): Promise<ReaderStructure> => {
+								 atomsTypes: string,
+								 useBohr: boolean): Promise<ReaderStructure> => {
 
 	// const associatedFilename = getAssociatedFile(filename, type);
 
@@ -68,6 +70,9 @@ const readFileStructure = async (filename: string,
 			case "CHGCAR":
 				reader = new ReaderCHGCAR();
 				break;
+			case "Gaussian Cube":
+				reader = new ReaderGAUSSIAN();
+				break;
 			default: throw Error("Invalid format");
 		}
 	}
@@ -84,13 +89,13 @@ const readFileStructure = async (filename: string,
 	   requestedFormat === "LAMMPStrj") {
 		const atomsTypesTrimmed = atomsTypes.trim();
 		const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
-		const structures1 = await reader.readStructure(filename, atoms);
+		const structures1 = await reader.readStructure(filename, {atomsTypes: atoms});
 		return checkStructures(structures1) ?
 					{structures: structures1} :
 					{structures: [], error: `Invalid ${requestedFormat} file`};
 	}
 
-	const structures = await reader.readStructure(filename);
+	const structures = await reader.readStructure(filename, {useBohr});
 	return checkStructures(structures) ?
 				{structures} :
 				{structures: [], error: `Invalid ${requestedFormat} formatted file`};
@@ -142,9 +147,9 @@ const readAuxFile = async (filename: string,
 export const setupChannelReader = (): void => {
 
 	ipcMain.handle("READER:READ", async (_event, filename: string,
-										 format: string, atomsTypes: string) => {
+										 format: string, atomsTypes: string, useBohr: boolean) => {
 
-		if(filename) return JSON.stringify(await readFileStructure(filename, format, atomsTypes));
+		if(filename) return JSON.stringify(await readFileStructure(filename, format, atomsTypes, useBohr));
 		return "";
 	});
 

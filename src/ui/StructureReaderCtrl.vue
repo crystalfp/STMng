@@ -26,7 +26,17 @@ messageStore.structureReader.message = "";
 const configStore = useConfigStore();
 
 /** Formats that could be loaded */
-const fileFormats = ["CHGCAR", "CIF", "LAMMPS", "LAMMPStrj", "POSCAR", "POSCAR + XDATCAR", "Shel-X", "XYZ"];
+const fileFormats = [
+    "CHGCAR",
+    "CIF",
+    "Gaussian Cube",
+    "LAMMPS",
+    "LAMMPStrj",
+    "POSCAR",
+    "POSCAR + XDATCAR",
+    "Shel-X",
+    "XYZ"
+];
 
 // > Get and set ui parameters from the switchboard
 const fileToRead    = ref("");
@@ -42,6 +52,7 @@ const auxInProgress = ref(false);
 const auxFileToRead = ref("");
 const filesSelected = ref<File[]>([]);
 const auxFileSelected = ref<File[]>([]);
+const useBohr       = ref(true);
 
 sb.getUiParams(id, (params: UiParams) => {
 
@@ -55,6 +66,7 @@ sb.getUiParams(id, (params: UiParams) => {
     inProgress.value    = params.inProgress as boolean ?? false;
     auxFileToRead.value = params.auxFileToRead as string ?? "";
     auxInProgress.value = params.auxInProgress as boolean ?? false;
+    useBohr.value       = params.useBohr as boolean ?? true;
 
     let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
     if("path" in file) filesSelected.value[0] = file;
@@ -71,6 +83,7 @@ watchEffect(() => {
         loopSteps: loopSteps.value,
         format: format.value,
         fileToRead: fileToRead.value,
+        useBohr: useBohr.value,
     });
 });
 
@@ -176,6 +189,7 @@ const acceptFile = (fileFormat: string): string => {
     switch(fileFormat) {
         case "CHGCAR":            return ".chgcar,*";
         case "CIF":               return ".cif,*";
+        case "Gaussian Cube":     return ".cube,*";
         case "LAMMPS":            return ".lmp,*";
         case "LAMMPStrj":         return ".lammpstrj,*";
         case "POSCAR":            return ".poscar,.poscars,*";
@@ -251,7 +265,8 @@ const getAtomsTypes = (): void => {
                 label="Select XDATCAR file" :loading="auxInProgress"
                 :prepend-icon="mdiFileOutline" accept=".xdatcar,*" :clearable="false"
                 class="mt-0" @update:model-value="loadAuxFile" />
-
+  <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
+                label="Use Bohr units" density="compact" class="ml-2" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact"
@@ -280,14 +295,3 @@ const getAtomsTypes = (): void => {
            color="red" @click="messageStore.structureReader.message=''" />
 </v-container>
 </template>
-
-
-<style scoped>
-
-.show-symmetry {
-  overflow-wrap: break-word;
-  white-space: break-spaces;
-  font-family: monospace;
-}
-
-</style>

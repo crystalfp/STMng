@@ -25,6 +25,9 @@ export class StructureReader {
 	private fileToRead = "";
 	private auxFileToRead = "";
 	private auxInProgress = false;
+	private useBohr = true;
+	private useBohrPrevious = true;
+	private static readonly BOHR_TO_ANGSTROM = 0.529177;
 
 	/**
 	 * Create the node
@@ -44,6 +47,7 @@ export class StructureReader {
     		this.fileToRead = params.fileToRead as string ?? "";
     		this.auxFileToRead = params.auxFileToRead as string ?? "";
     		this.auxInProgress = params.auxInProgress as boolean ?? false;
+    		this.useBohr       = params.useBohr as boolean ?? true;
 
 			// Change atoms types
 			if(this.atomsTypes !== "" && this.atomsTypes !== this.atomsTypesPrevious) {
@@ -68,6 +72,12 @@ export class StructureReader {
 					clearInterval(this.intervalId);
 					this.intervalId = undefined;
 				}
+			}
+
+			if(this.useBohr !== this.useBohrPrevious) {
+
+				this.changeBohrUnits();
+				this.useBohrPrevious = this.useBohr;
 			}
 
 			if(this.fileToRead) {
@@ -133,7 +143,7 @@ export class StructureReader {
 
 		this.inProgress = true;
 		sb.setUiParams(this.id, {inProgress: true});
-		readFileStructure(this.fileToRead, this.format, this.atomsTypes)
+		readFileStructure(this.fileToRead, this.format, this.atomsTypes, this.useBohr)
 			.then((structureRaw) => {
 
 				resetErrorNotification("structureReader");
@@ -187,6 +197,50 @@ export class StructureReader {
 
 				showErrorNotification(`Error reading structure: ${error.message}`, "structureReader");
 			});
+	}
+
+	/**
+	 * Change the unit between angstrom and Bohr
+	 */
+	private changeBohrUnits(): void {
+
+		if(!this.structures[0]) return;
+		const {crystal, atoms, look, volume} = this.structures[0];
+		if(!crystal) return;
+		const {basis, origin, spaceGroup} = crystal;
+
+		if(this.useBohr) {
+			for(let i=0; i < 9; ++i) basis[i]  *= StructureReader.BOHR_TO_ANGSTROM;
+			for(let i=0; i < 3; ++i) origin[i] *= StructureReader.BOHR_TO_ANGSTROM;
+			for(const atom of atoms) {
+				atom.position[0] *= StructureReader.BOHR_TO_ANGSTROM;
+				atom.position[1] *= StructureReader.BOHR_TO_ANGSTROM;
+				atom.position[2] *= StructureReader.BOHR_TO_ANGSTROM;
+			}
+		}
+		else {
+			for(let i=0; i < 9; ++i) basis[i]  /= StructureReader.BOHR_TO_ANGSTROM;
+			for(let i=0; i < 3; ++i) origin[i] /= StructureReader.BOHR_TO_ANGSTROM;
+			for(const atom of atoms) {
+				atom.position[0] /= StructureReader.BOHR_TO_ANGSTROM;
+				atom.position[1] /= StructureReader.BOHR_TO_ANGSTROM;
+				atom.position[2] /= StructureReader.BOHR_TO_ANGSTROM;
+			}
+		}
+
+		const structure: Structure = {
+			crystal: {
+				basis,
+				origin,
+				spaceGroup
+			},
+			atoms,
+			bonds: [],
+			look,
+			volume
+		};
+
+		sb.setData(this.id, structure);
 	}
 
 	/**
@@ -282,6 +336,7 @@ export class StructureReader {
 			step: 1,
 			format: this.format,
       		atomsTypes: this.atomsTypes,
+			useBohr: this.useBohr,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

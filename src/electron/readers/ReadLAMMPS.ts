@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
-import type {ReaderImplementation} from "../types";
+import type {ReaderImplementation, ReaderOptions} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
 import {getAtomicNumber} from "../modules/AtomData";
 
@@ -19,7 +19,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 	 * @param atomsTypes - Optional atoms types to be used (normally they are not in the file)
 	 * @returns The set of structure read
 	 */
-	async readStructure(filename: string, atomsTypes?: string[]): Promise<Structure[]> {
+	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 
 		const crystal: Crystal = {
 			basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -102,12 +102,12 @@ export class ReaderLAMMPS implements ReaderImplementation {
 		}
 
 		// Assign the atoms types
-		if(atomsTypes && atomsTypes.length > 0) {
+		if(options?.atomsTypes && options.atomsTypes.length > 0) {
 
 			for(let idx=1, idxt=0; idx <= ntypes; ++idx) {
 				if(correspond[idx]) {
-					correspond[idx] = getAtomicNumber(atomsTypes[idxt++]);
-					if(idxt >= atomsTypes.length) idxt = 0;
+					correspond[idx] = getAtomicNumber(options.atomsTypes[idxt++]);
+					if(idxt >= options.atomsTypes.length) idxt = 0;
 				}
 			}
 		}

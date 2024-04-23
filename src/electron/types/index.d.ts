@@ -21,9 +21,14 @@ export interface WindowsParams {
 
 // export type Constructable<T> = new() => T;
 
+interface ReaderOptions {
+	atomsTypes?: string[];
+	useBohr?: boolean;
+}
+
 /** Interface exposed by all format readers */
 export interface ReaderImplementation {
-	readStructure: (filename: string, atomsTypes?: string[]) => Promise<Structure[]>;
+	readStructure: (filename: string, options?: ReaderOptions) => Promise<Structure[]>;
 }
 
 /** Type of the parameters passed to FindSymmetries compute module */

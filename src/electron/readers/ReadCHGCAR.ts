@@ -7,7 +7,7 @@ import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates, getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
-import type {ReaderImplementation} from "../types";
+import type {ReaderImplementation, ReaderOptions} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
 
 /** Line read type */
@@ -33,7 +33,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 	 * @param atomsTypes - Optional atoms types to be used (normally they are not in the file)
 	 * @returns The set of structure read
 	 */
-	async readStructure(filename: string, atomsTypes?: string[]): Promise<Structure[]> {
+	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
@@ -117,7 +117,8 @@ export class ReaderCHGCAR implements ReaderImplementation {
 							const count = Number.parseInt(field);
 							atomsCount.push(count);
 							if(!hasSymbols) {
-								if(atomsTypes?.length) {
+								if(options?.atomsTypes?.length) {
+									const {atomsTypes} = options;
 									atomsZ.push(getAtomicNumber(atomsTypes[idx]));
 									atomsKinds.push(atomsTypes[idx]);
 									++idx;
