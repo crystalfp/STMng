@@ -76,7 +76,7 @@ receiveNotifications((type: "error" | "success", text: string) => {
 
 <template>
 <div class="layout-top">
-  <div v-if="normalScreen" class="layout-west">
+  <div v-show="normalScreen" class="layout-west">
     <controls-container />
   </div>
   <div class="layout-gutter" @click="normalScreen = !normalScreen" />

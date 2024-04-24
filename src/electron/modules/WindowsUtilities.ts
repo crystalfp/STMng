@@ -293,10 +293,10 @@ export const sendProjectPath = (projectPath?: string): void => {
  * @param type - Kind of notification
  * @param text - Text of the notification
  */
-export const sendNotification = (type: "error" | "success", text: string): void => {
+// export const sendNotification = (type: "error" | "success", text: string): void => {
 
-    mainWin.webContents.send("APP:NOTIFICATION", type, text);
-};
+//     mainWin.webContents.send("APP:NOTIFICATION", type, text);
+// };
 
 /**
  * Send error notification from main process

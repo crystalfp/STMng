@@ -35,13 +35,6 @@ export const isLoaded = (): boolean => window.electron?.ipcRenderer !== undefine
 
 // > Main window handling
 /**
- * Set main window title
- *
- * @param title - The title to set on the main window
- */
-export const setTitle = (title: string): void => window.api.setTitle(title);
-
-/**
  * Handle full screen view
  *
  * @param callback - Function to call on full screen status change
@@ -262,6 +255,7 @@ export const readFileStructure = (filename: string,
 export const readAuxFile = (filename: string,
 							format: string,
 							structure: Structure): Promise<string> =>
+
 	window.electron.ipcRenderer.invoke("READER:READ-AUX",
 									  	filename, format, JSON.stringify(structure)
 									  ) as Promise<string>;
@@ -352,7 +346,6 @@ export const loadEnergyFile = (path: string): Promise<MainResponse> => window.el
  */
 export const setEnergyFilterParameters = (enabled: boolean, threshold: number, fromMinimum: boolean): Promise<MainResponse> => window.electron.ipcRenderer.invoke("CFP:FILTER-PARAMS",
 											  enabled, threshold, fromMinimum) as Promise<MainResponse>;
-
 
 /**
  * Add another structure to the list of structures for fingerprinting and filtering

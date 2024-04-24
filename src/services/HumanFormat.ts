@@ -7,7 +7,6 @@
 const formatPrecision = 4;
 const tenToN = Math.pow(10, formatPrecision);
 const tenToMinusN = 1/tenToN;
-// const tenToMinusN = Math.pow(10, -formatPrecision);
 const formatZero = `0.${"0".repeat(formatPrecision)}`;
 
 /**

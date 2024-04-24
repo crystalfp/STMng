@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {app} from "electron";
-import type {Atom} from "../../types";
+// import type {Atom} from "../../types";
 
 // ##############################################################################
 // #                                                                            #
@@ -72,7 +72,7 @@ interface OneAtomData {
 	name: string;
 }
 
-export interface OneAtomRendering {
+interface OneAtomRendering {
 
 	/** Element symbol */
 	symbol: string;
@@ -87,7 +87,7 @@ export interface OneAtomRendering {
 	color: string;
 }
 
-export class AtomData {
+class AtomData {
 
     private static instance: AtomData;
 	private readonly data;
@@ -213,15 +213,15 @@ export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance()
  * @param atoms - List of atom structures
  * @returns List of covalent radii for the given atoms
  */
-export const getCovalentRadii = (atoms: Atom[]): number[] => {
+// export const getCovalentRadii = (atoms: Atom[]): number[] => {
 
-	const rCov: number[] = [];
-	for(const atom of atoms) {
+// 	const rCov: number[] = [];
+// 	for(const atom of atoms) {
 
-		rCov.push(AtomData.getInstance().atomicRadiiAndColor(atom.atomZ).rCov);
-	}
-	return rCov;
-};
+// 		rCov.push(AtomData.getInstance().atomicRadiiAndColor(atom.atomZ).rCov);
+// 	}
+// 	return rCov;
+// };
 
 /**
  * Return a list of max bonds number for the given atoms
@@ -229,12 +229,12 @@ export const getCovalentRadii = (atoms: Atom[]): number[] => {
  * @param atoms - List of atom structures
  * @returns List of max bonds for the given atoms
  */
-export const getMaxBonds = (atoms: Atom[]): number[] => {
+// export const getMaxBonds = (atoms: Atom[]): number[] => {
 
-	const maxBonds: number[] = [];
-	for(const atom of atoms) {
+// 	const maxBonds: number[] = [];
+// 	for(const atom of atoms) {
 
-		maxBonds.push(AtomData.getInstance().atomMaxBonds(atom.atomZ));
-	}
-	return maxBonds;
-};
+// 		maxBonds.push(AtomData.getInstance().atomMaxBonds(atom.atomZ));
+// 	}
+// 	return maxBonds;
+// };
