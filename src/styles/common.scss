@@ -14,8 +14,11 @@ html {
   overflow: hidden !important;
 }
 
+.cet-container {
+  overflow: hidden !important;
+}
+
 :root {
-  --usable-height: calc(100vh - 30px); /* height of the application area (window height minus titlebar height) */
   --container-height: calc(100vh - 104px);
 }
 

@@ -5,7 +5,7 @@
  */
 
 import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
-import {receiveBroadcast, getPreferenceSync, sendCurrentNode} from "@/services/RoutesClient";
+import {sendCurrentNode} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 import type {NodeUI} from "@/types";
 import {useConfigStore} from "@/stores/configStore";
@@ -50,17 +50,10 @@ watchEffect(() => {
     }
 });
 
-/** Receive the theme change */
-const theme = ref(getPreferenceSync("Theme", "dark"));
-receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
-    if(eventType === "theme-change") theme.value = params[0] as string;
-});
-
 </script>
 
 
 <template>
-<v-app :theme="theme">
   <v-tabs v-model="selectedTabId" center-active density="comfortable">
     <v-tab v-for="item of graph" :key="item.id" :value="item.id" size="small">{{ item.label }}</v-tab>
   </v-tabs>
@@ -68,5 +61,4 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
   <v-btn density="comfortable" variant="tonal" rounded="0" @click="configStore.control.reset = true">
     Reset camera
   </v-btn>
-</v-app>
 </template>

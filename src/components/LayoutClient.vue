@@ -6,7 +6,8 @@
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
-        receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
+        receiveBroadcast, getPreferenceSync, receiveMenuSelection,
+        receiveNotifications} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "@/services/SceneManager";
@@ -30,7 +31,6 @@ window.addEventListener("DOMContentLoaded", () => {
             clearInterval(timer);
             handleFullscreen((isFullScreen: boolean) => {
                 const root = document.documentElement;
-                root.style.setProperty("--usable-height",    isFullScreen ? "100vh" : "calc(100vh - 30px)");
                 root.style.setProperty("--container-height", isFullScreen ? "calc(100vh - 74px)" :
                                                                             "calc(100vh - 104px)");
             });
@@ -72,9 +72,16 @@ receiveNotifications((type: "error" | "success", text: string) => {
     showNotification.value = true;
 });
 
+// > Receive the theme change
+const theme = ref(getPreferenceSync("Theme", "dark"));
+receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
+    if(eventType === "theme-change") theme.value = params[0] as string;
+});
+
 </script>
 
 <template>
+<v-app :theme="theme" class="app-top">
 <div class="layout-top">
   <div v-show="normalScreen" class="layout-west">
     <controls-container />
@@ -87,18 +94,22 @@ receiveNotifications((type: "error" | "success", text: string) => {
   </v-snackbar>
 </div>
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
+</v-app>
 </template>
 
 
 <style scoped>
 
+.app-top {
+  height: 100vh;
+}
+
 .layout-top {
-  height: var(--usable-height);
+  height: 100%;
   display: flex;
   flex-direction: row;
   margin: 0;
   overflow: hidden;
-  width: 99.9vw; /* width: 100vw; */
 }
 
 .layout-west {
