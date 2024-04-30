@@ -41,10 +41,15 @@ export class Orthoslice {
 			this.showOrthoslice = params.showOrthoslice as boolean ?? false;
 			this.dataset = params.dataset as number ?? 0;
 			this.axis = params.axis as number ?? 0;
+            if(this.structure?.volume?.[this.dataset]) {
+                this.maxPlane = this.structure.volume[this.dataset].sides[this.axis];
+                sb.setUiParams(this.id, {maxPlane: this.maxPlane});
+            }
 			this.plane = params.plane as number ?? 0;
             this.colormapName = params.colormapName as string ?? "rainbow";
             this.useColorClasses = params.useColorClasses as boolean ?? false;
             this.colorClasses = params.colorClasses as number ?? 5;
+                console.log("===", this.axis);
 
             this.lut = new Lut(this.colormapName, this.useColorClasses ? this.colorClasses : 512);
 
@@ -85,7 +90,7 @@ export class Orthoslice {
 				this.maxDataset = countDatasets - 1;
 
 				// The number of planes is one more the sides. The last plane is equal to the first one
-				this.maxPlane = this.structure.volume[0].sides[0];
+				this.maxPlane = this.structure.volume[0].sides[this.axis];
 
                 this.range = this.getValueLimits();
                 this.limitLow = this.range[0];
