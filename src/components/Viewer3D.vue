@@ -272,6 +272,7 @@ onMounted(() => {
             saveDataURL(renderer.domElement.toDataURL(mimeType))
                 .then((response: MainResponse) => {
                     if(response.error) throw Error(response.error);
+                    if(response.payload === "") return;
                     messageStore.captureMedia.typeS = "success";
                     messageStore.captureMedia.textS = response.payload;
                 })

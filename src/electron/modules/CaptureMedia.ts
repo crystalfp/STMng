@@ -16,6 +16,8 @@ import {fileURLToPath} from "node:url";
  */
 export const setupChannelCapture = (): void => {
 
+	const homedir = os.homedir();
+
     ipcMain.handle("VIEWER:SNAPSHOT", (_event, dataURI: string) => {
 
 		// Split the dataURI and extract the image format
@@ -23,14 +25,13 @@ export const setupChannelCapture = (): void => {
 		let format = data[0].replace(/data:image\/([^;]*);base64/, "$1"); // data:image/jpeg;base64
 		if(format === "jpeg") format = "jpg";
 
-		// Find the first free filename
-		let idx = 0;
-		let filename;
-		do {
-			filename = `./snapshot${idx.toString().padStart(3, "0")}.${format}`;
-			++idx;
-			if(idx > 999) return {payload: "Error", error: "Cannot find free image file name"};
-		} while(fs.existsSync(filename));
+		// Select the save file
+		const filename = dialog.showSaveDialogSync({
+			title: "Save snapshot file",
+			defaultPath: `${homedir}/snapshot.${format}`,
+			filters: [{name: format, extensions: [format]}]
+		});
+		if(!filename) return {payload: ""};
 
 		// Save the image
 		try {
