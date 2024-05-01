@@ -253,7 +253,7 @@ const getAtomsTypes = (): void => {
 
   <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes" label="Atoms types"
                 placeholder="Space separated list" class="mb-6"
-                variant="solo-filled" hide-details="auto" clearable
+                variant="solo-filled" hide-details="auto" clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
 
   <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"

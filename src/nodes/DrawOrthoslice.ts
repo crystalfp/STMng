@@ -49,7 +49,6 @@ export class Orthoslice {
             this.colormapName = params.colormapName as string ?? "rainbow";
             this.useColorClasses = params.useColorClasses as boolean ?? false;
             this.colorClasses = params.colorClasses as number ?? 5;
-                console.log("===", this.axis);
 
             this.lut = new Lut(this.colormapName, this.useColorClasses ? this.colorClasses : 512);
 

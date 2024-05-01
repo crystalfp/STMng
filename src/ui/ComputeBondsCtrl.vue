@@ -93,11 +93,11 @@ const resetSliders = (): void => {
   <v-switch v-model="perPairScale" color="primary"
             label="Multiplier per atom pair" density="compact" class="ml-2 mt-2" />
   <v-container v-if="perPairScale" class="pa-0">
-    <v-table density="comfortable">
-      <tr v-for="item of perPairData" :key="item.label" style="height: 2.3rem;">
-        <td style="width: 3.7rem" class="ml-2 pl-1">{{ item.label }}</td>
+    <v-table class="px-2 py-1">
+      <tr v-for="item of perPairData" :key="item.label">
+        <td style="width: 4.5rem">{{ item.label }}</td>
         <td style="width: 3rem">{{ `(${item.scale.toFixed(2)})` }}</td>
-        <td><v-slider v-model="item.scale" min="0.5" max="2.0" step="0.01" hide-details /></td>
+        <td><v-slider v-model="item.scale" min="0.5" max="2.0" step="0.01" hide-details class="mr-0"/></td>
       </tr>
     </v-table>
   </v-container>
@@ -116,3 +116,9 @@ const resetSliders = (): void => {
 
 </v-container>
 </template>
+
+<style>
+.v-table__wrapper {
+  overflow-y: hidden
+}
+</style>

@@ -1,3 +1,8 @@
+/**
+ * Reader for XDATCAR auxiliary files
+ *
+ * @packageDocumentation
+ */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
