@@ -205,14 +205,16 @@ const acceptFile = (fileFormat: string): string => {
  *
  * @param files - Output of the file selector
  */
-const loadFile = (files: File[]): void => {
+const loadFile = (files: File[] | File): void => {
 
-    if(files.length === 0) return;
+    const isArray = Array.isArray(files);
+    if(!files || (isArray && files.length === 0)) return;
+    const file = isArray ? files[0] : files;
 
     step.value = 1;
     sb.setUiParams(id, {
-        fileToRead: files[0].path,
-        filesSelectedFull: JSON.stringify({name: files[0].name, path: files[0].path}),
+        fileToRead: file.path,
+        filesSelectedFull: JSON.stringify({name: file.name, path: file.path}),
         step: 1,
     });
 };
@@ -223,12 +225,15 @@ const loadFile = (files: File[]): void => {
  *
  * @param files - Output of the file selector
  */
-const loadAuxFile = (files: File[]): void => {
+const loadAuxFile = (files: File[] | File): void => {
 
-    if(files.length === 0) return;
+    const isArray = Array.isArray(files);
+    if(!files || (isArray && files.length === 0)) return;
+    const file = isArray ? files[0] : files;
+
     sb.setUiParams(id, {
-        auxFileToRead: files[0].path,
-        auxSelectedFull: JSON.stringify({name: files[0].name, path: files[0].path}),
+        auxFileToRead: file.path,
+        auxSelectedFull: JSON.stringify({name: file.name, path: file.path}),
     });
 };
 
