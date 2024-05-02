@@ -9,7 +9,7 @@ import {ipcMain} from "electron";
 import log from "electron-log";
 import {getAtomicNumber} from "./AtomData";
 import {getStructureAppearanceFromZ} from "./ReaderWriterHelpers";
-import type {ReaderStructure, Structure, RenameInfo} from "../../types";
+import type {ReaderStructure, Structure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
 
 // Import the readers
@@ -164,7 +164,7 @@ export const setupChannelReader = (): void => {
 
 	ipcMain.handle("READER:RENAME", (_event, atomsZBefore: string, typesAfterString: string) => {
 
-		if(atomsZBefore === "" && typesAfterString === "") return {map: [], look: {}};
+		if(atomsZBefore === "" && typesAfterString === "") return JSON.stringify({map: [], look: {}});
 
 		const typesBefore = atomsZBefore.split(/ +/);
 		const typesAfter = typesAfterString.split(/ +/);
@@ -180,7 +180,7 @@ export const setupChannelReader = (): void => {
 			}
 		}
 		else if(typesAfter.length < typesBefore.length) {
-			return {map: [], look: {}, error: `Missing ${typesBefore.length - typesAfter.length} atoms types in the renamed list`};
+			return JSON.stringify({map: [], look: {}, error: `Missing ${typesBefore.length - typesAfter.length} atoms types in the renamed list`});
 		}
 		else {
 			// eslint-disable-next-line unicorn/no-for-loop
@@ -195,10 +195,6 @@ export const setupChannelReader = (): void => {
 			map.push([ZBefore[i], ZAfter[i]]);
 		}
 
-		const renameInfo: RenameInfo = {
-			map,
-			look: getStructureAppearanceFromZ(ZAfter)
-		};
-		return JSON.stringify(renameInfo);
+		return JSON.stringify({map, look: getStructureAppearanceFromZ(ZAfter)});
 	});
 };

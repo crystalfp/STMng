@@ -113,12 +113,13 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
 }
 
 .layout-west {
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   margin: 0;
   width: 500px;
+  padding: 0;
 }
 
 .layout-gutter {

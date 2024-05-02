@@ -265,7 +265,7 @@ export const readAuxFile = (filename: string,
  *
  * @param atomsZBefore - List of atoms Z before the rename
  * @param typesAfterString - New list of atoms types
- * @returns Encoded a RenameInfo object
+ * @returns A RenameInfo object encoded as JSON
  */
 export const atomsTypeRename = (atomsZBefore: string, typesAfterString: string): Promise<string> =>
 

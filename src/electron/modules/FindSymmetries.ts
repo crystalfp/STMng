@@ -60,7 +60,8 @@ export const setupChannelFindSymmetries = (): void => {
 		// Compute lena, lenb, lenc, alpha, beta, gamma
 		// Put them in the script
 		const la = basisToLengthAngles(params.basis);
-		stdin += `Z ${la[0]} ${la[1]} ${la[2]} ${la[3]} ${la[4]} ${la[5]}\n`;
+		stdin += `Z ${la[0].toFixed(4)} ${la[1].toFixed(4)} ${la[2].toFixed(4)} `;
+		stdin += `${la[3].toFixed(4)} ${la[4].toFixed(4)} ${la[5].toFixed(4)}\n`;
 
 		// Space group
 		const sg = params.spaceGroup.replaceAll(" ", "");
