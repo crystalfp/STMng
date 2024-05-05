@@ -9,9 +9,7 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ Events 'unresponsive' and 'responsive' on web content
   ☐ In builder copy only platform specific exe files
-  ☐ Add on blur and on enter to remaining text fields
   ☐ Check the order of entries in objects
-  ✔ Use the function `light-dark()` Try when Chromium is at 123 @done(2024-04-19 14:17)
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -22,7 +20,6 @@ Requests from Oganov:
   ☐ Use of local fingerprint order parameters to color atoms
   ☐ KPLOT accepts also symbolic symmetries with SY cards.
   ☐ Lattice type for KPLOT: GTY type
-  ✔ Rename atom species after reading file @done(2024-04-09 17:27)
   ☐ Change Find symmetries to use the new library
 
 Nice to have/Future:
@@ -37,6 +34,9 @@ Nice to have/Future:
   ☐ Add tooltips
 
 Archive:
+  ✘ Add on blur and on enter to remaining text fields @cancelled(2024-05-02 19:39) @project(ToDo)
+  ✔ Use the function `light-dark()` Try when Chromium is at 123 @done(2024-04-19 14:17) @project(ToDo)
+  ✔ Rename atom species after reading file @done(2024-04-09 17:27) @project(Requests from Oganov)
   ✔ In select atoms add an entry "all" @done(2024-04-08 04:57) @project(ToDo)
   ✔ LAMMPStrj: if no atoms types show no atom (undefined atomZ) sometimes @done(2024-04-07 08:51) @project(Bugs)
   ✘ Show symmetries dialog shows nothing @cancelled(2024-04-07 19:39) @project(Bugs)

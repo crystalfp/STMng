@@ -361,15 +361,17 @@ export default [{
         "vue/comment-directive": "off",
         "arrow-body-style": "warn",
 
+        // Fixed for ESlint 9.x
+        "sonarjs/no-gratuitous-expressions": "warn",
+        "sonarjs/no-empty-collection": "warn",
+        "sonarjs/no-unused-collection": "warn",
+        "sonarjs/no-use-of-empty-return-value": "warn",
+        "sonarjs/no-extra-arguments": "warn",
+        "sonarjs/no-redundant-jump": "warn",
+        "sonarjs/no-one-iteration-loop": "warn",
+
         // To support ESlint 9.x
-        "sonarjs/no-gratuitous-expressions": "off",
-        "sonarjs/no-empty-collection": "off",
-        "sonarjs/no-unused-collection": "off",
         "security/detect-child-process": "off",
-        "sonarjs/no-use-of-empty-return-value": "off",
-        "sonarjs/no-extra-arguments": "off",
-        "sonarjs/no-redundant-jump": "off",
-        "sonarjs/no-one-iteration-loop": "off",
         "promise/no-return-wrap": "off",
         "promise/no-promise-in-callback": "off",
         "promise/no-nesting": "off",

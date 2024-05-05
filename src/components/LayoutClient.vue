@@ -117,9 +117,9 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin: 0;
   width: 500px;
   padding: 0;
+  margin: 12px; /* For vuetify VSelect dropdown menu */
 }
 
 .layout-gutter {

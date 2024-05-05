@@ -20,14 +20,18 @@ const atomsSelector = ref("");
 const recording = ref(false);
 const reset = ref(false);
 const maxDisplacement = ref(1);
+const showPositionClouds = ref(false);
+const positionCloudsSide = ref(10);
 
 sb.getUiParams(props.id, (params: UiParams) => {
-    showTrajectories.value = params.showTrajectories as boolean ?? false;
-    labelKind.value = params.labelKind as string ?? "symbol";
-    atomsSelector.value = params.atomsSelector as string ?? "";
-    recording.value = params.recording as boolean ?? false;
-    reset.value = params.reset as boolean ?? false;
-    maxDisplacement.value = params.maxDisplacement as number ?? 1;
+    showTrajectories.value    = params.showTrajectories as boolean ?? false;
+    labelKind.value           = params.labelKind as string ?? "symbol";
+    atomsSelector.value       = params.atomsSelector as string ?? "";
+    recording.value           = params.recording as boolean ?? false;
+    reset.value               = params.reset as boolean ?? false;
+    maxDisplacement.value     = params.maxDisplacement as number ?? 1;
+    showPositionClouds.value  = params.showPositionClouds as boolean ?? false;
+    positionCloudsSide.value  = params.positionCloudsSide as number ?? 10;
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
@@ -37,6 +41,8 @@ watchEffect(() => {
         recording: recording.value,
         reset: reset.value,
         maxDisplacement: maxDisplacement.value,
+        showPositionClouds: showPositionClouds.value,
+        positionCloudsSide: positionCloudsSide.value,
     });
 });
 
@@ -56,6 +62,11 @@ watchEffect(() => {
                       :step="0.01" :min="0.01" :max="3" class="ml-1 mt-4">
     <v-label :text="`Max displacement (${value})`" />
   </g-debounced-slider>
+  <!-- <v-switch v-model="showPositionClouds" color="primary" label="Show position clouds"
+            density="compact" class="ml-2" />
+  <v-container v-if="showPositionClouds" class="pa-0">
+    <v-number-input v-model="positionCloudsSide" :min="2" :step="1" label="Cloud volume subdivisions" />
+  </v-container> -->
   <v-btn block :disabled="atomsSelector.trim() === ''" @click="recording = !recording">
     {{ recording ? "Stop trajectories" : "Start trajectories" }}
   </v-btn>
