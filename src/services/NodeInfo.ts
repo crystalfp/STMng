@@ -25,6 +25,7 @@ import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
 import {InterpolateVolume} from "@/nodes/InterpolateVolume";
 import {ComputeFingerprints} from "@/nodes/ComputeFingerprints";
+import {SymmetriesSPG} from "@/nodes/SymmetriesSPG";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -50,7 +51,8 @@ export class NodeInfo {
 		"draw-trajectories":	{ui: "TrajectoriesCtrl",		graphic: "out"},
 		"isosurface":			{ui: "IsosurfaceCtrl",			graphic: "out"},
 		"interpolate-volume":	{ui: "InterpolateVolumeCtrl",	graphic: "none"},
-		"compute-fingerprints":	{ui: "ComputeFingerprintsCtrl",	graphic: "none"}
+		"compute-fingerprints":	{ui: "ComputeFingerprintsCtrl",	graphic: "none"},
+		"compute-symmetries-spg": {ui: "SymmetriesSPGCtrl",		graphic: "none"},
 	};
 	private readonly typeToParts = new Map<string, NodeParts>();
 
@@ -130,6 +132,9 @@ export class NodeInfo {
 			case "compute-fingerprints":
 				map.set(id, new ComputeFingerprints(id));
 				break;
+			case "compute-symmetries-spg":
+				map.set(id, new SymmetriesSPG(id));
+				break;
 			case "viewer-3d":
 			case "capture-view":
 				// These nodes have no runtime code like the others
@@ -154,6 +159,7 @@ export class NodeInfo {
 
 			// Nodes that have an output
 			case "compute-symmetries":
+			case "compute-symmetries-spg":
 			case "compute-bonds":
 			case "draw-unit-cell":
 			case "interpolate-volume":
@@ -203,6 +209,7 @@ export class NodeInfo {
 			case "compute-bonds":
 			case "interpolate-volume":
 			case "compute-symmetries":
+			case "compute-symmetries-spg":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
 				break;
@@ -285,6 +292,10 @@ export class NodeInfo {
 				case "compute-fingerprints":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as ComputeFingerprints).saveStatus();
+					break;
+				case "compute-symmetries-spg":
+					if(notFirst) uiStatus += ",";
+					uiStatus += (node as SymmetriesSPG).saveStatus();
 					break;
 			}
 			notFirst = true;

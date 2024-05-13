@@ -59,7 +59,6 @@ onUnmounted(() => {
   <v-container class="chart-button-strip">
     <v-btn @click="closeWindow('/chart')">
       Close
-      <v-tooltip activator="parent" location="top">Close chart</v-tooltip>
     </v-btn>
   </v-container>
 </div>

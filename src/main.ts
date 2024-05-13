@@ -32,7 +32,7 @@ import {VSwitch} from "vuetify/components/VSwitch";
 import {VTextField} from "vuetify/components/VTextField";
 import {VDialog} from "vuetify/components/VDialog";
 import {VCard, VCardText, VCardActions} from "vuetify/components/VCard";
-import {VTooltip} from "vuetify/components/VTooltip";
+// import {VTooltip} from "vuetify/components/VTooltip";
 import {VTabs, VTab} from "vuetify/components/VTabs";
 import {VApp} from "vuetify/components/VApp";
 import {VRow, VContainer, VSpacer, VCol} from "vuetify/components/VGrid";
@@ -67,7 +67,7 @@ const app = createApp(App)
 			VTextField,
 			VDialog,
 			VCard, VCardText, VCardActions,
-			VTooltip,
+			// VTooltip,
 			VTabs, VTab,
 			VApp,
 			VRow, VContainer, VSpacer, VCol,
@@ -103,7 +103,7 @@ const app = createApp(App)
 		}
   	}))
 
-	// Project defined components. The registered name should begin by G (g- in use)
+	// Project defined components. The registered name should begin by G (g- when used)
 	.component("GAlignLabels", defineAsyncComponent(() => import("@/widgets/AlignLabels.vue")))
 	.component("GColorSelector", defineAsyncComponent(() => import("@/widgets/ColorSelector.vue")))
 	.component("GAtomsSelector", defineAsyncComponent(() => import("@/widgets/AtomsSelector.vue")))

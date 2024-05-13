@@ -1,0 +1,134 @@
+{
+  "graph": {
+    "reader": {
+      "label": "Reader",
+      "type": "structure-reader"
+    },
+    "symmetry": {
+      "label": "Symmetries",
+      "type": "compute-symmetries-spg",
+      "in": "reader"
+    },
+    "unit": {
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "in": "symmetry"
+    },
+    "bonds": {
+      "label": "Bonds",
+      "type": "compute-bonds",
+      "in": "unit"
+    },
+    "draw": {
+      "label": "Structure",
+      "type": "draw-structure",
+      "in": "bonds"
+    },
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d"
+    }
+  },
+  "viewer": {
+    "camera": {
+      "type": "orthographic",
+      "position": [
+        5,
+        3,
+        5.000000000000001
+      ],
+      "lookAt": [
+        0,
+        0,
+        0
+      ],
+      "snapshotFormat": "png",
+      "stlFormat": "binary"
+    },
+    "scene": {
+      "background": "#90CEEC"
+    },
+    "lights": {
+      "ambientColor": "#FFFFFF",
+      "ambientIntensity": 0.5,
+      "directional1Color": "#FFFFFF",
+      "directional1Intensity": 1.5,
+      "directional2Color": "#FFFFFF",
+      "directional2Intensity": 1.5,
+      "directional3Color": "#FFFFFF",
+      "directional3Intensity": 1.5,
+      "directional1Position": [
+        0,
+        1,
+        0
+      ],
+      "directional2Position": [
+        0.5774,
+        0.5774,
+        0.5774
+      ],
+      "directional3Position": [
+        -0.5774,
+        -0.5774,
+        -0.5774
+      ]
+    },
+    "helpers": {
+      "showAxis": false,
+      "showGridXZ": false,
+      "showGridXY": false,
+      "showGridYZ": false,
+      "gridSize": 10,
+      "axisLength": 1
+    }
+  },
+  "ui": {
+    "reader": {
+      "loopSteps": false,
+      "step": 1,
+      "format": "",
+      "atomsTypes": "",
+      "useBohr": true
+    },
+    "symmetry": {
+      "applyInputSymmetries": true,
+      "enableFindSymmetries": true,
+      "standardizeCell": true,
+      "symprecStandardize": -5,
+      "symprecDataset": -5,
+      "fillUnitCell": true
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "enlargeCell": false
+    },
+    "draw": {
+      "drawKind": "ball-and-stick",
+      "drawQuality": 4,
+      "drawRoughness": 0.5,
+      "drawMetalness": 0.6,
+      "labelKind": "symbol",
+      "showStructure": true,
+      "showBonds": true,
+      "showLabels": true
+    }
+  },
+  "currentId": "reader"
+}

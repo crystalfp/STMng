@@ -58,9 +58,6 @@ watchEffect(() => {
     <v-select v-model="selectedTabId" :items="graph" item-title="label" item-value="id"
               variant="solo-filled" density="compact" hide-details rounded="0" />
   </v-container>
-  <!-- <v-tabs v-model="selectedTabId" center-active density="comfortable">
-    <v-tab v-for="item of graph" :key="item.id" :value="item.id" size="small">{{ item.label }}</v-tab>
-  </v-tabs> -->
   <component :is="loadedPanel" :id="moduleId" />
   <v-btn density="comfortable" variant="tonal" rounded="0" @click="configStore.control.reset = true">
     Reset camera
@@ -69,7 +66,6 @@ watchEffect(() => {
 
 <style>
 .v-select__selection-text {
-  /* padding-left: 5px; */
   font-size: 140%;
 }
 </style>

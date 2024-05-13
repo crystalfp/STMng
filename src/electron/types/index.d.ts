@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import type {Structure, BasisType, MainResponse} from "../../types";
+import type {Structure, BasisType, MainResponse, Look} from "../../types";
 
 /** Parameters for the window creation */
 export interface WindowsParams {
@@ -41,6 +41,36 @@ export interface FindSymmetriesParams {
 	tolS: number;
 	tolT: number;
 	tolG: number;
+}
+
+/** Type of the parameters passed to ComputeSymmetries compute module */
+export interface ComputeSymmetriesParams {
+
+	// Structure
+	basis: BasisType;
+	spaceGroup: string;
+	atomsZ: number[];
+	fractionalCoordinates: number[];
+
+	// Operations
+	applyInputSymmetries: boolean;
+	enableFindSymmetries: boolean;
+	standardizeCell: boolean;
+
+	// Tolerances
+	symprecStandardize: number;
+	symprecDataset: number;
+}
+
+export interface ComputeSymmetriesOutput {
+
+	basis: BasisType;
+	spaceGroup: string;
+	atomsZ: number[];
+	labels: string[];
+	fractionalCoordinates: number[];
+	noCellChanges: boolean;
+	look: Look;
 }
 
 /** Interface exposed by all format writers */
