@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation is a chemical structure visualizer that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.19.8",
+  "version": "0.20.0",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -27,7 +27,7 @@
     "chart.js": "^4.4.2",
     "commander": "^12.0.0",
     "custom-electron-titlebar": "^4.2.8",
-    "electron-log": "^5.1.2",
+    "electron-log": "^5.1.4",
     "file-saver": "^2.0.5",
     "fs-extra": "^11.2.0",
     "js-yaml": "^4.1.0",
@@ -39,7 +39,7 @@
     "vue": "^3.4.27",
     "vue-chartjs": "^5.3.1",
     "vue-router": "^4.3.2",
-    "vuetify": "^3.6.4"
+    "vuetify": "^3.6.6"
   },
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
@@ -53,11 +53,11 @@
     "@types/js-yaml": "^4.0.9",
     "@types/three": "^0.164.0",
     "@types/tmp": "^0.2.6",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^7.9.0",
+    "@typescript-eslint/parser": "^7.9.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@zamiell/typedoc-plugin-not-exported": "^0.2.0",
-    "electron": "^30.0.2",
+    "electron": "^30.0.4",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^9.2.0",
@@ -72,12 +72,12 @@
     "eslint-plugin-security": "^3.0.0",
     "eslint-plugin-sonarjs": "^1.0.3",
     "eslint-plugin-tsdoc": "^0.2.17",
-    "eslint-plugin-unicorn": "^52.0.0",
-    "eslint-plugin-vue": "^9.25.0",
+    "eslint-plugin-unicorn": "^53.0.0",
+    "eslint-plugin-vue": "^9.26.0",
     "node-addon-api": "^8.0.0",
     "node-gyp": "^10.1.0",
-    "postcss-html": "^1.6.0",
-    "sass": "^1.77.0",
+    "postcss-html": "^1.7.0",
+    "sass": "^1.77.1",
     "stylelint": "^16.5.0",
     "stylelint-config-recommended-scss": "^14.0.0",
     "stylelint-config-recommended-vue": "^1.5.0",
@@ -92,6 +92,6 @@
     "vite-plugin-electron": "^0.28.7",
     "vite-plugin-electron-renderer": "^0.14.5",
     "vue-eslint-parser": "^9.4.2",
-    "vue-tsc": "^2.0.16"
+    "vue-tsc": "^2.0.17"
   }
 }

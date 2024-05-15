@@ -7,12 +7,21 @@ import {ipcMain} from "electron";
 import type {ComputeSymmetriesParams} from "@/electron/types";
 import {getStructureAppearanceFromZ} from "./ReaderWriterHelpers";
 
+interface NativeOutput {
+	spaceGroup: string;
+	basis: Float64Array;
+	atomsZ: Int32Array;
+	fractionalCoordinates: Float64Array;
+	noCellChanges: boolean;
+	status: string;
+}
+
 interface NativeModule {
 	computeSymmetries: (spaceGroup: string, fractionalCoords: Float64Array) => string;
-	findAndApplySymmetries: (basis:  Float64Array, spaceGroup: string, atomsZ: Int8Array,
+	findAndApplySymmetries: (basis: Float64Array, spaceGroup: string, atomsZ: Int32Array,
 							 fractionalCoordinates: Float64Array, applyInputSymmetries: boolean,
 							 enableFindSymmetries: boolean, standardizeCell: boolean,
-							 symprecStandardize: number, symprecDataset: number) => string;
+							 symprecStandardize: number, symprecDataset: number) => NativeOutput;
 }
 
 /**
@@ -28,46 +37,40 @@ export const setupChannelSymmetries = (): void => {
 		const out = addon.computeSymmetries(spaceGroup, new Float64Array(fractionalCoords));
 		return {payload: out};
 	});
-/*
-	basis: BasisType;
-	spaceGroup: string;
-	atomsZ: number[];
-	fractionalCoordinates: number[];
 
-	// Operations
-	applyInputSymmetries: boolean;
-	enableFindSymmetries: boolean;
-	standardizeCell: boolean;
-
-	// Tolerances
-	symprecStandardize: number;
-	symprecDataset: number;
-*/
 	ipcMain.handle("SYMMETRIES:COMPUTE", (_event, paramsEncoded: string) => {
 
+		// Prepare parameters
 		const params = JSON.parse(paramsEncoded) as ComputeSymmetriesParams;
 
-		// const basis = new Float64Array(params.basis);
-		// const atomsZ = new Int8Array(params.atomsZ);
-		// const fractionalCoordinates = new Float64Array(params.fractionalCoordinates);
-		// const out = addon.findAndApplySymmetries(basis, params.spaceGroup, atomsZ,
-		// 					 fractionalCoordinates, params.applyInputSymmetries,
-		// 					 params.enableFindSymmetries, params.standardizeCell,
-		// 					 params.symprecStandardize, params.symprecDataset);
+		const basis = new Float64Array(params.basis);
+		const natoms = params.atomsZ.length;
+		const atomsZ = new Int32Array(natoms);
+		for(let i=0; i < natoms; ++i) atomsZ[i] = params.atomsZ[i];
+		const fractionalCoordinates = new Float64Array(params.fractionalCoordinates);
 
-		// TBD
-		const look = getStructureAppearanceFromZ(params.atomsZ);
+		// Do the computation
+		const computed = addon.findAndApplySymmetries(basis, params.spaceGroup, atomsZ,
+													  fractionalCoordinates, params.applyInputSymmetries,
+													  params.enableFindSymmetries, params.standardizeCell,
+													  params.symprecStandardize, params.symprecDataset);
+
+		// Reformat the returned values
+		const atomsZOut = [...computed.atomsZ];
+		const look = getStructureAppearanceFromZ(atomsZOut);
 		const labels = [];
-		for(const atomZ of params.atomsZ) labels.push(look[atomZ].symbol);
+		for(const atomZ of atomsZOut) labels.push(look[atomZ].symbol);
 
+		// Return results to the client
 		const out = {
-			basis: params.basis,
-			spaceGroup: params.spaceGroup,
-			atomsZ: params.atomsZ,
+			basis: [...computed.basis],
+			spaceGroup: computed.spaceGroup,
+			atomsZ: atomsZOut,
 			labels,
-			fractionalCoordinates: params.fractionalCoordinates,
-			noCellChanges: false,
-			look
+			fractionalCoordinates: [...computed.fractionalCoordinates],
+			noCellChanges: computed.noCellChanges,
+			look,
+			status: computed.status
 		};
 		return {payload: JSON.stringify(out)};
 	});

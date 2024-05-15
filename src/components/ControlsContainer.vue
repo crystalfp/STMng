@@ -54,7 +54,7 @@ watchEffect(() => {
 
 
 <template>
-  <v-container class="pa-0">
+  <v-container class="pa-0 title-container">
     <v-select v-model="selectedTabId" :items="graph" item-title="label" item-value="id"
               variant="solo-filled" density="compact" hide-details rounded="0" />
   </v-container>
@@ -65,7 +65,7 @@ watchEffect(() => {
 </template>
 
 <style>
-.v-select__selection-text {
+.title-container .v-select__selection-text {
   font-size: 140%;
 }
 </style>

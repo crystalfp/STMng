@@ -5,10 +5,11 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {sb, type UiParams} from "@/services/Switchboard";
-import {createWindow, findAndApplySymmetries} from "@/services/RoutesClient";
+import {createWindow, findAndApplySymmetries, sendToWindow} from "@/services/RoutesClient";
 import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
 import type {Structure} from "@/types";
 import type {ComputeSymmetriesParams, ComputeSymmetriesOutput} from "@/electron/types";
+import {useConfigStore} from "@/stores/configStore";
 
 // > Kind of directions for filling unit cell
 const X_MIN = 0x010;
@@ -28,7 +29,6 @@ export class SymmetriesSPG {
 	private standardizeCell = true;
 	private symprecStandardize = -5;
 	private symprecDataset = -5;
-	// private finalSymmetry = "";
 	private fillUnitCell  = true;
 	private showSymmetriesDialog = false;
 	private inputStructure: Structure | undefined;
@@ -58,8 +58,9 @@ export class SymmetriesSPG {
 				sb.setUiParams(this.id, {showSymmetriesDialog: false});
 				this.openSymmetriesDialog();
 			}
-
-			this.computeSymmetries();
+			else {
+				this.computeSymmetries();
+			}
 		});
 
 		sb.getData(this.id, (data: unknown) => {
@@ -70,6 +71,10 @@ export class SymmetriesSPG {
 		});
 	}
 
+	// > Compute new structure after finding and applying symmetries
+	/**
+	 * Compute new structure after finding and applying symmetries
+	 */
 	private computeSymmetries(): void {
 
 		// If no structure do nothing
@@ -80,12 +85,14 @@ export class SymmetriesSPG {
 		// If no unit cell or no atoms, copy input structure to output
 		if(crystal.basis.every((value) => value === 0) || atoms.length === 0) {
 			sb.setData(this.id, this.inputStructure);
+			this.showComputedSymmetry();
 			return;
 		}
 
 		// If no symmetry computation to do, copy input structure to output
 		if(!this.applyInputSymmetries && !this.enableFindSymmetries) {
 			sb.setData(this.id, this.inputStructure);
+			this.showComputedSymmetry();
 			return;
 		}
 
@@ -93,6 +100,7 @@ export class SymmetriesSPG {
 		const noSymmetries = ["", "P1", "P 1"].includes(crystal.spaceGroup);
 		if(this.applyInputSymmetries && !this.enableFindSymmetries && noSymmetries) {
 			sb.setData(this.id, this.inputStructure);
+			this.showComputedSymmetry();
 			return;
 		}
 
@@ -103,6 +111,7 @@ export class SymmetriesSPG {
 		const fractionalCoordinates = this.computeFractionalCoordinates(this.inputStructure);
 		if(fractionalCoordinates.length === 0) {
 			sb.setData(this.id, this.inputStructure);
+			this.showComputedSymmetry();
 			return;
 		}
 
@@ -111,40 +120,67 @@ export class SymmetriesSPG {
 			spaceGroup: crystal.spaceGroup,
 			atomsZ,
 			fractionalCoordinates,
-
 			applyInputSymmetries: this.applyInputSymmetries && !noSymmetries,
 			enableFindSymmetries: this.enableFindSymmetries,
 			standardizeCell: this.standardizeCell,
-
 			symprecStandardize: Math.pow(10, this.symprecStandardize),
 			symprecDataset: Math.pow(10, this.symprecDataset),
 		};
 
 		findAndApplySymmetries(params)
 			.then((response) => {
+
 				if(response.error) throw Error(response.error);
 
 				const out = JSON.parse(response.payload) as ComputeSymmetriesOutput;
 
+				if(out.status !== "") throw Error(out.status);
+
 				const structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
+
 				// eslint-disable-next-line unicorn/consistent-destructuring
 				if(out.noCellChanges && this.inputStructure) structure.volume = this.inputStructure.volume ?? [];
 				sb.setData(this.id, structure);
+
+				this.showComputedSymmetry(structure.crystal.spaceGroup);
 			})
 			.catch((error: Error) => {
 				showErrorNotification(error.message, "symmetries");
 				sb.setData(this.id, this.inputStructure);
+				this.showComputedSymmetry();
 			});
+	}
+
+	private showComputedSymmetry(outSymmetry?: string): void {
+
+		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
+		if(outSymmetry === undefined) outSymmetry = inSymmetry;
+
+		// Update the UI
+		const configStore = useConfigStore();
+		configStore.control.computedSpaceGroup = outSymmetry;
+
+		// Update the dialog if it is open
+		const dataToSend = JSON.stringify({
+			inSymmetry,
+			outSymmetry
+		});
+
+		sendToWindow("/symmetries", dataToSend);
 	}
 
 	// > Compute the atoms' fractional coordinates
 	/**
 	 * Compute the structure atoms' fractional coordinates
+	 *
+	 * @param structure - The structure whose atoms' coordinates should be transformed into fractional coordinates
+	 * @returns The array of fractional coordinates
 	 */
 	private computeFractionalCoordinates(structure: Structure): number[] {
 
-		// Get the basis
-		const b = structure.crystal.basis;
+		// Access the structure basis and atoms cartesian coordinates
+		const {crystal, atoms} = structure;
+		const b = crystal.basis;
 
 		// Compute the determinant of the matrix
 		const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
@@ -172,14 +208,14 @@ export class SymmetriesSPG {
         ];
 
 		// For each atom compute the fractional coordinates
-		const natoms = structure.atoms.length;
+		const natoms = atoms.length;
 		const fractionalCoords = Array(natoms*3).fill(0) as number[];
 
-		const {origin} = structure.crystal;
+		const {origin} = crystal;
 
 		for(let i=0; i < natoms; ++i) {
 
-			const {position} = structure.atoms[i];
+			const {position} = atoms[i];
 			const cx = position[0] - origin[0];
 			const cy = position[1] - origin[1];
 			const cz = position[2] - origin[2];
@@ -192,14 +228,17 @@ export class SymmetriesSPG {
 		return fractionalCoords;
 	}
 
+	// > Collect the symmetries and open the show symmetries window
 	/**
 	 * Collect the symmetries and open the show symmetries window
 	 */
 	private openSymmetriesDialog(): void {
 
+		const configStore = useConfigStore();
+
 		const dataToSend = JSON.stringify({
 			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
-			outSymmetry: ""
+			outSymmetry: configStore.control.computedSpaceGroup
 		});
 
 		createWindow({
@@ -211,11 +250,18 @@ export class SymmetriesSPG {
 					});
 	}
 
+	// > Fill unit cell
+	/**
+	 * Fill unit cell
+	 *
+	 * @param out - Structure data just computed
+	 * @returns Complete structure with unit cell filled
+	 */
 	private fillCell(out: ComputeSymmetriesOutput): Structure {
 
 		const idx: number[] = [];
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, look} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, look, labels} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -245,6 +291,8 @@ export class SymmetriesSPG {
 			else if(yf > 1-tol && yf < 1+tol)	direction[i] |= Y_MAX|Y_ANY;
 			if(zf < tol && zf > -tol)			direction[i] |= Z_MIN|Z_ANY;
 			else if(zf > 1-tol && zf < 1+tol)	direction[i] |= Z_MAX|Z_ANY;
+
+			idx.push(i);
 		}
 
 		// No atoms to add. Do nothing
@@ -258,14 +306,13 @@ export class SymmetriesSPG {
 
 				structure.atoms.push({
 					atomZ: atomsZ[i],
-					label: `${look[atomsZ[i]].symbol}${i}`,
+					label: `${labels[i]}${i}`,
 					position: [
 						fx*basis[0] + fy*basis[3] + fz*basis[6],
 						fx*basis[1] + fy*basis[4] + fz*basis[7],
 						fx*basis[2] + fy*basis[5] + fz*basis[8],
 					]
 				});
-				idx.push(i);
 			}
 			return structure;
 		}
@@ -399,7 +446,8 @@ export class SymmetriesSPG {
 
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
-				label: `${look[atomsZ[idx[i]]].symbol}${i}`,
+				label: `${labels[idx[i]]}${i}`,
+				// label: `${look[atomsZ[idx[i]]].symbol}${i}`,
 				position: [
 					fx*basis[0] + fy*basis[3] + fz*basis[6],
 					fx*basis[1] + fy*basis[4] + fz*basis[7],
@@ -410,6 +458,13 @@ export class SymmetriesSPG {
 		return structure;
 	}
 
+	// > Build structure from the output of the symmetries computation
+	/**
+	 * Build structure from the output of the symmetries computation
+	 *
+	 * @param out - Structure data just computed
+	 * @returns Complete structure
+	 */
 	private buildStructure(out: ComputeSymmetriesOutput): Structure {
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ, look} = out;

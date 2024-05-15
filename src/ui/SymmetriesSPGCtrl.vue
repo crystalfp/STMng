@@ -7,6 +7,7 @@
 import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
+import {useConfigStore} from "@/stores/configStore";
 
 // > Properties
 const pr = defineProps<{
@@ -15,8 +16,9 @@ const pr = defineProps<{
     id: string;
 }>();
 
-// > Access the messages store
+// > Access the stores
 const messageStore = useMessageStore();
+const configStore = useConfigStore();
 
 // > Get and set ui parameters from the switchboard
 const applyInputSymmetries = ref(true);
@@ -26,7 +28,6 @@ const symprecStandardize = ref(-5);
 const symprecStandardizeExp = computed(() => Math.pow(10, symprecStandardize.value));
 const symprecDataset = ref(-5);
 const symprecDatasetExp = computed(() => Math.pow(10, symprecDataset.value));
-const finalSymmetry = ref("P -1");
 const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
 
@@ -37,7 +38,6 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     standardizeCell.value = params.standardizeCell as boolean ?? true;
     symprecStandardize.value = params.symprecStandardize as number ?? -5;
     symprecDataset.value = params.symprecDataset as number ?? -5;
-    finalSymmetry.value = params.finalSymmetry as string ?? "P -1";
     fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
     showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
 });
@@ -68,15 +68,22 @@ watchEffect(() => {
               label="Standardize cell" density="compact" class="mt-2 ml-2" />
     <v-label v-if="standardizeCell"
              :text="`Standardize cell tolerance (${symprecStandardizeExp.toExponential(2)})`" />
-    <v-slider v-if="standardizeCell" v-model="symprecStandardize"
+    <v-slider v-if="standardizeCell" v-model="symprecStandardize" class="mr-4"
               density="compact" min="-5" max="-1" step="0.5" reverse />
     <v-label :text="`Find symmetries tolerance (${symprecDatasetExp.toExponential(2)})`" />
-    <v-slider v-model="symprecDataset"
+    <v-slider v-model="symprecDataset" class="mr-4"
               density="compact" min="-5" max="-1" step="0.5" reverse />
   </v-container>
 
-  <v-label :text="finalSymmetry" class="w-100 justify-center show-symmetry" />
-  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-2" />
+  <v-row class="pl-2 align-center">
+    <v-col cols="5">
+      <v-label text="Final symmetry:" class="text-green font-weight-bold" />
+    </v-col>
+    <v-col cols="7">
+      <v-label :text="configStore.control.computedSpaceGroup" class="show-symmetry" />
+    </v-col>
+  </v-row>
+  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-4" />
 
   <v-btn block class="mb-4" @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
 
@@ -91,5 +98,6 @@ watchEffect(() => {
   overflow-wrap: break-word;
   white-space: break-spaces;
   font-family: monospace;
+  font-size: 110%;
 }
 </style>

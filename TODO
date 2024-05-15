@@ -20,7 +20,7 @@ Requests from Oganov:
   ☐ Use of local fingerprint order parameters to color atoms
   ☐ KPLOT accepts also symbolic symmetries with SY cards.
   ☐ Lattice type for KPLOT: GTY type
-  ☐ Change Find symmetries to use the new library
+  ✔ Change Find symmetries to use the new library @done(2024-05-15 09:04)
 
 Nice to have/Future:
   ☐ Label color
@@ -32,6 +32,9 @@ Nice to have/Future:
   ☐ Better reporting from KPLOT
   ☐ Optimize using Int64Array and similia
   ☐ Add tooltips
+  ☐ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage>
+  ☐ Can the panel selection be done with router?
+  ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
 
 Archive:
   ✘ Add on blur and on enter to remaining text fields @cancelled(2024-05-02 19:39) @project(ToDo)

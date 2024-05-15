@@ -33,14 +33,14 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        5,
-        3,
-        5.000000000000001
+        0.6275000000000004,
+        1.0868618817494715,
+        16.724999999999998
       ],
       "lookAt": [
-        0,
-        0,
-        0
+        0.6275000000000005,
+        1.0868618817494708,
+        3.3450000000000006
       ],
       "snapshotFormat": "png",
       "stlFormat": "binary"
@@ -86,7 +86,7 @@
     "reader": {
       "loopSteps": false,
       "step": 1,
-      "format": "",
+      "format": "Shel-X",
       "atomsTypes": "",
       "useBohr": true
     },

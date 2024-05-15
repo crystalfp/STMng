@@ -71,6 +71,7 @@ export interface ComputeSymmetriesOutput {
 	fractionalCoordinates: number[];
 	noCellChanges: boolean;
 	look: Look;
+	status: string;
 }
 
 /** Interface exposed by all format writers */

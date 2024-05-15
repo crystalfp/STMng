@@ -18,6 +18,9 @@ asarUnpack:
   - dist/bin/kplot.linux
   - dist/bin/libf2c.so
   - dist/doc/**/*.*
+extraFiles:
+  - from: build/Release/symspg.dll
+    to: .
 electronLanguages:
   - en-US
 linux:

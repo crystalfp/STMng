@@ -27,6 +27,7 @@ html {
 .container {
   overflow: clip auto;
   height: var(--container-height);
+  padding: 10px 0 0 0 !important
 }
 
 // Colors to be made visible changing application theme

@@ -49,6 +49,7 @@ interface Viewer3DConfiguration {
         atomsSelected: number[];
         hasFingerprints: boolean;
         fingerprintsAccumulate: boolean;
+        computedSpaceGroup: string;
     };
 }
 
@@ -98,6 +99,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             atomsSelected: [],
             hasFingerprints: false,
             fingerprintsAccumulate: false,
+            computedSpaceGroup: "",
         }
 	} as Viewer3DConfiguration),
 
