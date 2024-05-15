@@ -75,7 +75,7 @@ watchEffect(() => {
               density="compact" min="-5" max="-1" step="0.5" reverse />
   </v-container>
 
-  <v-row class="pl-2 align-center">
+  <v-row v-if="configStore.control.computedSpaceGroup !== ''" class="pl-2 align-center">
     <v-col cols="5">
       <v-label text="Final symmetry:" class="text-green font-weight-bold" />
     </v-col>
@@ -83,6 +83,7 @@ watchEffect(() => {
       <v-label :text="configStore.control.computedSpaceGroup" class="show-symmetry" />
     </v-col>
   </v-row>
+
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-4" />
 
   <v-btn block class="mb-4" @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>

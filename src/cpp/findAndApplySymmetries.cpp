@@ -1,4 +1,8 @@
+// #define DEBUG
+
+#ifdef DEBUG
 #include <iostream>
+#endif
 #include <stdlib.h>
 #include <string>
 #include <vector>
@@ -409,12 +413,8 @@ static void applyTransformations(SpglibDataset* dataset,
 	bool different = true;
 
 	int nops = dataset->n_operations;
-cout << "Apply transformations " << nops << endl;
 	for(size_t j=0; j < natoms; ++j)
 	{
-cout << "Atom " << j << endl;
-cout << positions[j][0] << ' ' << positions[j][1] << ' ' << positions[j][2] << endl;
-
 		for(int i = 0; i < nops; i++)
 		{
 			// Apply symmetry transformation
