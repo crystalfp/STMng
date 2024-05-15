@@ -22,7 +22,7 @@ const X_ANY = 0x001;
 const Y_ANY = 0x002;
 const Z_ANY = 0x004;
 
-export class SymmetriesSPG {
+export class Symmetries {
 
 	private applyInputSymmetries = true;
 	private enableFindSymmetries = true;

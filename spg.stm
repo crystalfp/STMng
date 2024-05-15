@@ -6,7 +6,7 @@
     },
     "symmetry": {
       "label": "Symmetries",
-      "type": "compute-symmetries-spg",
+      "type": "compute-symmetries",
       "in": "reader"
     },
     "unit": {
