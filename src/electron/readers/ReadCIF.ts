@@ -84,7 +84,7 @@ class Table {
 	private split(line: string): string[] {
 
 		let result: string[] = [];
-		line = line.replaceAll(/['"]/g, "|").replaceAll("\\|", "'");
+		line = line.replaceAll(/['"]/g, "|").replaceAll(String.raw`\|`, "'");
 		const special = line.split("|");
 
 		let odd = true;

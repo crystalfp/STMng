@@ -16,7 +16,6 @@ import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
-import {Symmetries} from "@/nodes/Symmetries";
 import {ComputeBonds} from "@/nodes/ComputeBonds";
 import {Orthoslice} from "@/nodes/DrawOrthoslice";
 import {StructureWriter} from "@/nodes/StructureWriter";
@@ -43,7 +42,6 @@ export class NodeInfo {
 		"viewer-3d":   			{ui: "Viewer3DCtrl",			graphic: "in"},
 		"draw-polyhedra":   	{ui: "DrawPolyhedraCtrl",		graphic: "out"},
 		"capture-view":   		{ui: "CaptureMediaCtrl",		graphic: "none"},
-		"compute-symmetries": 	{ui: "SymmetriesCtrl",			graphic: "none"},
 		"compute-bonds": 		{ui: "ComputeBondsCtrl",		graphic: "none"},
 		"orthoslice":			{ui: "OrthosliceCtrl",			graphic: "out"},
 		"structure-writer":		{ui: "StructureWriterCtrl",		graphic: "none"},
@@ -105,9 +103,6 @@ export class NodeInfo {
 			case "draw-polyhedra":
 				map.set(id, new DrawPolyhedra(id));
 				break;
-			case "compute-symmetries":
-				map.set(id, new Symmetries(id));
-				break;
 			case "compute-bonds":
 				map.set(id, new ComputeBonds(id));
 				break;
@@ -158,7 +153,6 @@ export class NodeInfo {
 		switch(type) {
 
 			// Nodes that have an output
-			case "compute-symmetries":
 			case "compute-symmetries-spg":
 			case "compute-bonds":
 			case "draw-unit-cell":
@@ -208,7 +202,6 @@ export class NodeInfo {
 			case "structure-reader":
 			case "compute-bonds":
 			case "interpolate-volume":
-			case "compute-symmetries":
 			case "compute-symmetries-spg":
 				watch(dataFrom as Structure, () => callback(dataFrom, idFrom), {deep: true});
 				callback(dataFrom, idFrom);
@@ -260,10 +253,6 @@ export class NodeInfo {
 				case "draw-polyhedra":
 					if(notFirst) uiStatus += ",";
 					uiStatus += (node as DrawPolyhedra).saveStatus();
-					break;
-				case "compute-symmetries":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as Symmetries).saveStatus();
 					break;
 				case "compute-bonds":
 					if(notFirst) uiStatus += ",";

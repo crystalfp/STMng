@@ -31,18 +31,6 @@ export interface ReaderImplementation {
 	readStructure: (filename: string, options?: ReaderOptions) => Promise<Structure[]>;
 }
 
-/** Type of the parameters passed to FindSymmetries compute module */
-export interface FindSymmetriesParams {
-	ignoreSymmetries: boolean;
-	basis: BasisType;
-	spaceGroup: string;
-	atomsZ: number[];
-	fractionalCoordinates: number[];
-	tolS: number;
-	tolT: number;
-	tolG: number;
-}
-
 /** Type of the parameters passed to ComputeSymmetries compute module */
 export interface ComputeSymmetriesParams {
 

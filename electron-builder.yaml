@@ -14,9 +14,6 @@ files:
 asarUnpack:
   - dist/bin/ffmpeg.exe
   - dist/bin/ffmpeg
-  - dist/bin/kplot.mingw.exe
-  - dist/bin/kplot.linux
-  - dist/bin/libf2c.so
   - dist/doc/**/*.*
 extraFiles:
   - from: build/Release/symspg.dll

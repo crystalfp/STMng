@@ -6,7 +6,6 @@
       "cflags_cc!": [ "-fno-exceptions" ],
       "sources": [
 		    "src/cpp/native.cpp",
-        "src/cpp/ComputeSymmetries.cpp",
         "src/cpp/sginfo/sgclib.c",
         "src/cpp/sginfo/sgfind.c",
         "src/cpp/sginfo/sghkl.c",

@@ -5,7 +5,7 @@
  */
 import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {WindowsParams, FindSymmetriesParams, ComputeSymmetriesParams} from "@/electron/types";
+import type {WindowsParams, ComputeSymmetriesParams} from "@/electron/types";
 import type {MainResponse, Structure} from "@/types";
 import {useMessageStore} from "@/stores/messageStore";
 import {showErrorNotification} from "@/services/ErrorNotification";
@@ -311,22 +311,11 @@ export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> => window.
 
 // > Symmetries
 /**
- * Compute symmetries in the main process
- *
- * @param spaceGroup - Space group of the structure
- * @param fractionalCoords - Fracional coordinates of the structure atoms
- * @returns The new fractional coordinates and error if any
- */
-export const computeSymmetries = (spaceGroup: string, fractionalCoords: number[]): Promise<MainResponse> => window.electron.ipcRenderer.invoke("COMPUTE:SYMMETRIES", spaceGroup, fractionalCoords) as Promise<MainResponse>;
-
-/**
- * Find structure symmetries in the main process
+ * Find and apply structure symmetries in the main process
  *
  * @param params - Data for the computation
  * @returns The new structure with found symmetries and error if any
  */
-export const findSymmetries = (params: FindSymmetriesParams): Promise<MainResponse> => window.electron.ipcRenderer.invoke("FIND:SYMMETRIES", JSON.stringify(params)) as Promise<MainResponse>;
-
 export const findAndApplySymmetries = (params: ComputeSymmetriesParams): Promise<MainResponse> =>
 	window.electron.ipcRenderer.invoke("SYMMETRIES:COMPUTE", JSON.stringify(params)) as Promise<MainResponse>;
 
