@@ -66,9 +66,9 @@ watchEffect(() => {
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
     <v-switch v-model="standardizeCell" color="primary"
               label="Standardize cell" density="compact" class="mt-2 ml-2" />
-    <v-label v-if="standardizeCell" class="ml-2"
+    <v-label v-show="standardizeCell" class="ml-2"
              :text="`Standardize cell tolerance (${symprecStandardizeExp.toExponential(2)})`" />
-    <v-slider v-if="standardizeCell" v-model="symprecStandardize" class="mr-4 ml-4"
+    <v-slider v-show="standardizeCell" v-model="symprecStandardize" class="mr-4 ml-4"
               density="compact" min="-5" max="-1" step="0.5" reverse />
     <v-label :text="`Find symmetries tolerance (${symprecDatasetExp.toExponential(2)})`" class="ml-2" />
     <v-slider v-model="symprecDataset" class="mr-4 ml-4"

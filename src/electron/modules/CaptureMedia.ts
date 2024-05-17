@@ -44,7 +44,7 @@ export const setupChannelCapture = (): void => {
 		}
     });
 
-	ipcMain.handle("VIEWER:MOVIE",  (_event, buffer: ArrayBuffer) => {
+	ipcMain.handle("VIEWER:MOVIE", (_event, buffer: ArrayBuffer) => {
 
 		const filename = dialog.showSaveDialogSync({
 			title: "Save movie",

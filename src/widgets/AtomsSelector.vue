@@ -41,7 +41,7 @@ const getSelector = (): void => {
   <v-text-field v-model="atomsSelectorBase" :label="placeholder"
                 :disabled="labelKind === 'all'"
                 placeholder="Space separated list"
-                variant="solo-filled" hide-details="auto" clearable
+                variant="solo-filled" hide-details="auto" clearable spellcheck="false"
                 @blur="getSelector" @keyup.enter="getSelector" />
 </v-container>
 </template>

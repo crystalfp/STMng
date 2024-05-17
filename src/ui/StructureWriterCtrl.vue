@@ -94,7 +94,7 @@ watchEffect(() => {
   <v-row :disabled="format === ''" class="mt-2" @click="doSelectFile = true">
     <v-icon :icon="mdiFileOutline" size="x-large" class="ml-4 mr-2 mt-1" style="opacity: 0.4" />
     <v-text-field v-model="outputFile" :disabled="format === ''" label="Select save file"
-                  class="mb-2 mr-2" hide-details="auto" :loading="inProgress"/>
+                  class="mb-2 mr-2" hide-details="auto" :loading="inProgress" spellcheck="false" />
   </v-row>
 
   <v-row class="mt-10">

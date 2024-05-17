@@ -31,6 +31,7 @@ Nice to have/Future:
   ☐ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage>
   ☐ Can the panel selection be done with router?
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
+  ☐ Define global error handler `app.config.errorHandler = (err) => {}`
 
 Archive:
   ✘ KPLOT accepts also symbolic symmetries with SY cards. @cancelled(2024-05-15 10:06) @project(Requests from Oganov)

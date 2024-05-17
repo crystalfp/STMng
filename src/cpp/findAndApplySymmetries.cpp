@@ -20,7 +20,7 @@ using namespace std;
 #define DUPLICATED_TOL 1e-3
 #define FOLD_TOL 1e-5
 
-// Return fractional coordinate to the unit cube
+// Fold fractional coordinate to the unit cube
 // Was:
 // if(fc >= 1.0) fc -= 1.0;
 // else if(fc < 0.0) fc += 1.0;
@@ -398,8 +398,6 @@ static void applySymmetriesInput(string& spaceGroup,
 	std::cout << "Input len: " << fractionalCoordinates.size() << "\n";
 	// for(auto v : fractionalCoordinates) std::cout << " " << v;
 	// std::cout << "\n";
-
-	std::cout << "Output len: " << fcOut.size() << "\n";
 #endif
 }
 
@@ -470,6 +468,28 @@ static void applyTransformations(SpglibDataset* dataset,
 	}
 }
 
+#ifdef DEBUG
+void dump(double lattice[3][3], double position[][3], int types[], const int num_atom, string title)
+{
+	cout << '\n' << title << endl;
+	cout << "\nBasis:" << endl;
+	cout << lattice[0][0] << ' ' << lattice[0][1] << ' ' << lattice[0][2] << endl;
+	cout << lattice[1][0] << ' ' << lattice[1][1] << ' ' << lattice[1][2] << endl;
+	cout << lattice[2][0] << ' ' << lattice[2][1] << ' ' << lattice[2][2] << endl;
+
+	cout << "\nAtoms:" << endl;
+	for(int i=0; i < num_atom; ++i) {
+		cout << types[i] << ": " << position[i][0] << ' ' << position[i][1] << ' ' << position[i][2];
+
+		double x = position[i][0]*lattice[0][0]+position[i][1]*lattice[0][1]+position[i][2]*lattice[0][2];
+		double y = position[i][0]*lattice[1][0]+position[i][1]*lattice[1][1]+position[i][2]*lattice[1][2];
+		double z = position[i][0]*lattice[2][0]+position[i][1]*lattice[2][1]+position[i][2]*lattice[2][2];
+
+		cout << " -> " << x << ' ' << y << ' ' << z << endl;
+	}
+}
+#endif
+
 string doFindAndApplySymmetries(
 	vector<double_t>& basis,
 	string& spaceGroup,
@@ -538,8 +558,14 @@ string doFindAndApplySymmetries(
 		// Standardize the cell before finding symmetries
 		if(standardizeCell)
 		{
+#ifdef DEBUG
+		dump(lattice, positions, types, natoms, "Before standardizing");
+#endif
 			num_primitive_atom = spg_standardize_cell(lattice, positions, types,
 													  natoms, 0, 0, symprecStandardize);
+#ifdef DEBUG
+		dump(lattice, positions, types, num_primitive_atom, "After standardizing");
+#endif
 			if(num_primitive_atom == 0)
 			{
 				SpglibError code = spg_get_error_code();
@@ -573,6 +599,13 @@ string doFindAndApplySymmetries(
 			spaceGroup = dataset->international_symbol;
 			atomsZ = outTypes;
 			fractionalCoordinates = outPositions;
+			for(int i=0; i < 3; ++i)
+			{
+				for(int j=0; j < 3; ++j)
+				{
+					basis[3*i+j] = lattice[i][j];
+				}
+			}
 
 			// Release the dataset
 			spg_free_dataset(dataset);
