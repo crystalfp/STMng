@@ -28,7 +28,7 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Optimize using Int64Array and similia
   ☐ Add tooltips
-  ☐ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage>
+  ✘ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage> @cancelled(2024-05-17 15:02)
   ☐ Can the panel selection be done with router?
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Define global error handler `app.config.errorHandler = (err) => {}`
