@@ -134,7 +134,7 @@ export const getStructureAppearanceFromZ = (atomsZ: number[]): Look => {
 };
 
 /**
- * Compute the angle between two vectore.
+ * Compute the angle between two vectors.
  *
  * @param v0 - First vector x
  * @param v1 - First vector y
@@ -142,7 +142,7 @@ export const getStructureAppearanceFromZ = (atomsZ: number[]): Look => {
  * @param w0 - Second vector x
  * @param w1 - Second vector y
  * @param w2 - Second vector z
- * @returns Angle in degrees betwen the two vectors
+ * @returns Angle in degrees between the two vectors
  */
 const vectorAngle = (v0: number, v1: number, v2: number, w0: number, w1: number, w2: number): number => {
 

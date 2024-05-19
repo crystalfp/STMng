@@ -107,6 +107,7 @@ const app = createApp(App)
 	.component("GAlignLabels", defineAsyncComponent(() => import("@/widgets/AlignLabels.vue")))
 	.component("GColorSelector", defineAsyncComponent(() => import("@/widgets/ColorSelector.vue")))
 	.component("GAtomsSelector", defineAsyncComponent(() => import("@/widgets/AtomsSelector.vue")))
+	.component("GSliderWithSteppers", defineAsyncComponent(() => import("@/widgets/SliderWithSteppers.vue")))
 	.component("GDebouncedSlider", defineAsyncComponent(() => import("@/widgets/DebouncedSlider.vue")))
 	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("@/widgets/DebouncedRangeSlider.vue")));
 

@@ -8,6 +8,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {BasisType, PositionType, Structure, Atom, Volume} from "@/types";
 import {spriteText} from "@/services/SpriteText";
+import {adjustOrigin} from "@/services/AdjustOrigin";
 
 export class DrawUnitCell {
 
@@ -32,7 +33,17 @@ export class DrawUnitCell {
 	private showSupercell = false;
 	private supercellColor = "#02A502";
 	private dashedSupercell = false;
+	private inputStructure: Structure | undefined;
 	private structure: Structure | undefined;
+	private percentA = 0;
+	private percentB = 0;
+	private percentC = 0;
+	private shrink = true;
+	private previousPercentA = 0;
+	private previousPercentB = 0;
+	private previousPercentC = 0;
+	private previousShrink = true;
+	private cellHasChanged = false;
 
 	/**
 	 * Create the node
@@ -64,16 +75,39 @@ export class DrawUnitCell {
 			this.dashedLine = params.dashedLine as boolean ?? false;
 			this.showBasisVectors = params.showBasisVectors as boolean ?? false;
 
+    		this.percentA = params.percentA as number ?? 0;
+    		this.percentB = params.percentB as number ?? 0;
+    		this.percentC = params.percentC as number ?? 0;
+    		this.shrink = params.shrink as boolean ?? true;
+
+			if(this.inputStructure?.crystal) {
+				if(this.percentA !== this.previousPercentA ||
+				   this.percentB !== this.previousPercentB ||
+				   this.percentC !== this.previousPercentC ||
+				   this.shrink   !== this.previousShrink) {
+
+					this.structure = adjustOrigin(this.inputStructure,
+												this.percentA/100,
+												this.percentB/100,
+												this.percentC/100,
+												this.shrink);
+
+					this.previousPercentA = this.percentA;
+					this.previousPercentB = this.percentB;
+					this.previousPercentC = this.percentC;
+					this.previousShrink = this.shrink;
+					this.cellHasChanged = true;
+				}
+				else {
+					this.cellHasChanged = false;
+				}
+			}
+
 			this.outUC.visible = this.showUnitCell;
 			this.outBV.visible = this.showBasisVectors;
 			if(this.structure?.crystal) {
-				if(this.showUnitCell) {
-					this.drawUnitCell(this.structure.crystal.basis, this.structure.crystal.origin);
-				}
-
-				if(this.showBasisVectors) {
-					this.drawBasisVectors(this.structure.crystal.basis, this.structure.crystal.origin);
-				}
+				this.drawUnitCell(this.structure.crystal.basis, this.structure.crystal.origin);
+				this.drawBasisVectors(this.structure.crystal.basis, this.structure.crystal.origin);
 			}
 
     		this.repetitionsA = params.repetitionsA as number ?? 1;
@@ -82,15 +116,20 @@ export class DrawUnitCell {
     		this.showSupercell = params.showSupercell as boolean ?? false;
     		this.supercellColor = params.supercellColor as string ?? "#02A502";
     		this.dashedSupercell = params.dashedSupercell as boolean ?? false;
-
+			if(this.structure?.crystal && this.cellHasChanged) {
+				this.drawSupercell(this.structure!.crystal.basis, this.structure!.crystal.origin);
+				this.replicateUnitCell();
+			}
 			if(this.repetitionsA !== this.previousRepetitionsA ||
 			   this.repetitionsB !== this.previousRepetitionsB ||
 			   this.repetitionsC !== this.previousRepetitionsC) {
-				this.drawSupercell(this.structure!.crystal.basis, this.structure!.crystal.origin);
 				this.previousRepetitionsA = this.repetitionsA;
 				this.previousRepetitionsB = this.repetitionsB;
 				this.previousRepetitionsC = this.repetitionsC;
-				this.replicateUnitCell();
+				if(this.structure?.crystal && !this.cellHasChanged) {
+					this.drawSupercell(this.structure.crystal.basis, this.structure.crystal.origin);
+					this.replicateUnitCell();
+				}
 			}
 			this.outSC.visible = this.showSupercell;
 			this.changeMaterials();
@@ -98,10 +137,25 @@ export class DrawUnitCell {
 
 		sb.getData(this.id, (data: unknown) => {
 
-			this.structure = data as Structure;
+			this.inputStructure = data as Structure;
+			if(!this.inputStructure?.crystal) {
+				this.structure = undefined;
+				return;
+			}
+
+			this.structure = adjustOrigin(this.inputStructure,
+										  this.percentA/100,
+										  this.percentB/100,
+										  this.percentC/100,
+										  this.shrink);
 			if(!this.structure) return;
 			const {crystal} = this.structure;
 			if(!crystal) return;
+
+			this.previousPercentA = this.percentA;
+			this.previousPercentB = this.percentB;
+			this.previousPercentC = this.percentC;
+			this.previousShrink   = this.shrink;
 
 			this.drawUnitCell(crystal.basis, crystal.origin);
 			this.drawSupercell(crystal.basis, crystal.origin);
@@ -506,7 +560,11 @@ export class DrawUnitCell {
         	repetitionsC: this.repetitionsC,
         	showSupercell: this.showSupercell,
         	supercellColor: this.supercellColor,
-        	dashedSupercell: this.dashedSupercell
+        	dashedSupercell: this.dashedSupercell,
+			percentA: this.percentA,
+			percentB: this.percentB,
+			percentC: this.percentC,
+			shrink: this.shrink,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
