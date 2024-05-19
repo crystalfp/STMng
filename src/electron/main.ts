@@ -10,7 +10,6 @@ import {Command, Option} from "commander";
 import pkg from "../../package.json";
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
-// import installExtension, {VUEJS_DEVTOOLS} from "electron-devtools-installer";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {loadRememberedProject, loadProjectAndRemember, setupChannelProject} from "./modules/Project";
 import {createMainWindow} from "./modules/WindowsUtilities";
@@ -96,11 +95,7 @@ app.whenReady().then(() => {
         const loadedDefaultProject = loadRememberedProject(false);
         disableSaveProjectEntry(loadedDefaultProject);
     }
-
-    // if(import.meta.env.DEV) return installExtension(VUEJS_DEVTOOLS);
-    // return "";
 })
-// .then((extensionName) => {if(extensionName) log.info(`Added Extension: ${extensionName}`);})
 .catch((error: Error) => {
     log.error(`Cannot create main window. Error ${error.message}`);
     app.quit();

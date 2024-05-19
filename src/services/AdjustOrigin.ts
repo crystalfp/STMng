@@ -15,7 +15,7 @@ const FOLD_TOL = 1e-5;
  * @param fc - One fractal coordinate that can go outside the unit cell
  * @returns The fractal coordinate folded to the unit cell
  */
-export const foldIntoUnitCell = (fc: number): number => {
+const foldIntoUnitCell = (fc: number): number => {
 
 	if(fc > 1) return fc - 1;
 	if(fc < FOLD_TOL && fc > -FOLD_TOL) return 0;
