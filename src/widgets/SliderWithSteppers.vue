@@ -4,7 +4,7 @@
  * Slider with increment/decrement buttons and debouncing
  */
 import {mdiMinus, mdiPlus} from "@mdi/js";
-import {ref, watch} from "vue";
+import {watch} from "vue";
 
 // > Properties
 const {
@@ -38,6 +38,10 @@ const {
 /** Returning the slider value */
 const value = defineModel<number>();
 
+/** Returning the not yet debounced value for display slider position */
+const valueToDebounce = defineModel<number>("raw");
+valueToDebounce.value = value.value ?? min;
+
 /**
  * Decrement the value
  */
@@ -60,7 +64,6 @@ const increment = (): void => {
 };
 
 // Debounce the value
-const valueToDebounce = ref(value.value ?? min);
 let debouncingTimeoutId: NodeJS.Timeout;
 watch(valueToDebounce, () => {
 
