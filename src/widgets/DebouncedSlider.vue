@@ -5,6 +5,7 @@
  */
 
 import {ref, watch} from "vue";
+import {mdiMinus, mdiPlus} from "@mdi/js";
 
 // > Properties
 const {
@@ -46,6 +47,28 @@ watch(valueToDebounce, () => {
     }, timeout);
 });
 
+/**
+ * Decrement the value
+ */
+const decrement = (): void => {
+
+    let vv = valueToDebounce.value ?? min;
+    vv -= step;
+    if(vv < min) vv = min;
+    valueToDebounce.value = vv;
+};
+
+/**
+ * Increment the value
+ */
+const increment = (): void => {
+  console.log(step);
+    let vv = valueToDebounce.value ?? min;
+    vv += step;
+    if(vv > max) vv = max;
+    valueToDebounce.value = vv;
+};
+
 </script>
 
 
@@ -53,6 +76,13 @@ watch(valueToDebounce, () => {
 <v-container class="pa-0 ma-0 pr-2">
   <!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
   <slot :value="valueToDebounce" />
-  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :disabled="disabled" />
+  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :disabled="disabled">
+    <template v-slot:prepend>
+    <v-btn :icon="mdiMinus" size="small" variant="text" class="ml-n2 mr-n2" @click="decrement" />
+  </template>
+  <template v-slot:append>
+    <v-btn :icon="mdiPlus" size="small" variant="text" class="mr-n2" @click="increment" />
+  </template>
+</v-slider>
 </v-container>
 </template>

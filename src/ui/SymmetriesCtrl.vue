@@ -4,7 +4,7 @@
  * Controls for the symmetry (find and apply) node.
  */
 
-import {ref, watchEffect, computed} from "vue";
+import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
 import {useConfigStore} from "@/stores/configStore";
@@ -25,11 +25,12 @@ const applyInputSymmetries = ref(true);
 const enableFindSymmetries = ref(true);
 const standardizeCell = ref(true);
 const symprecStandardize = ref(-5);
-const symprecStandardizeExp = computed(() => Math.pow(10, symprecStandardize.value));
 const symprecDataset = ref(-5);
-const symprecDatasetExp = computed(() => Math.pow(10, symprecDataset.value));
 const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
+
+const showExponential = (value: number): string => Math.pow(10, value).toExponential(2);
+
 
 sb.getUiParams(pr.id, (params: UiParams) => {
 
@@ -60,22 +61,22 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="applyInputSymmetries" color="primary"
-            label="Apply input symmetries" density="compact" class="mt-2 ml-2" />
+            label="Apply input symmetries" density="compact" class="mt-2 ml-3" />
   <v-switch v-model="enableFindSymmetries" color="primary"
-            label="Enable find symmetries" density="compact" class="ml-2" />
+            label="Enable find symmetries" density="compact" class="ml-3" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
     <v-switch v-model="standardizeCell" color="primary"
-              label="Standardize cell" density="compact" class="mt-2 ml-2" />
-    <v-label v-show="standardizeCell" class="ml-2"
-             :text="`Standardize cell tolerance (${symprecStandardizeExp.toExponential(2)})`" />
-    <v-slider v-show="standardizeCell" v-model="symprecStandardize" class="mr-4 ml-4"
-              density="compact" min="-5" max="-1" step="0.5" reverse />
-    <v-label :text="`Find symmetries tolerance (${symprecDatasetExp.toExponential(2)})`" class="ml-2" />
-    <v-slider v-model="symprecDataset" class="mr-4 ml-4"
-              density="compact" min="-5" max="-1" step="0.5" reverse />
+              label="Standardize cell" density="compact" class="mt-2 ml-3" />
+    <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
+                        :min="-5" :max="-1" :step="0.2" class="mb-n4">
+      <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="ml-2" />
+    </g-debounced-slider>
+    <g-debounced-slider v-slot="{value}" v-model="symprecDataset" :min="-5" :max="-1" :step="0.2">
+      <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="ml-2" />
+    </g-debounced-slider>
   </v-container>
 
-  <v-row v-if="configStore.control.computedSpaceGroup !== ''" class="pl-2 align-center">
+  <v-row class="pl-2 align-center">
     <v-col cols="5">
       <v-label text="Final symmetry:" class="text-green" />
     </v-col>
@@ -84,7 +85,7 @@ watchEffect(() => {
     </v-col>
   </v-row>
 
-  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-2 mt-4" />
+  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-3 mt-4" />
 
   <v-btn block class="mb-4" @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
 

@@ -81,14 +81,18 @@ const resetSliders = (): void => {
   <v-switch v-model="enableComputeBonds" color="primary"
             label="Enable compute bonds" density="compact" class="mt-4 ml-2" />
 
-  <v-label :text="`Bonding min distance (${minBondingDistance.toFixed(2)})`" class="ml-0 mt-1" />
-  <v-slider v-model="minBondingDistance" density="compact" min="0.6" max="1" step="0.01" class="ml-0" />
-  <v-label :text="`Bonding max distance (${maxBondingDistance.toFixed(2)})`" class="ml-0" />
-  <v-slider v-model="maxBondingDistance" density="compact" min="2.0" max="5.0" step="0.01" class="ml-0" />
-  <v-label :text="`H Bonding max distance (${maxHBondingDistance.toFixed(2)})`" class="ml-0" />
-  <v-slider v-model="maxHBondingDistance" density="compact" min="2.5" max="4.0" step="0.01" class="ml-0" />
-  <v-label :text="`H Bonding max valence angle (${maxHValenceAngle.toFixed(2)})`" class="ml-0" />
-  <v-slider v-model="maxHValenceAngle" density="compact" min="0" max="45" step="1" class="ml-0" />
+  <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01" class="ml-0">
+    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="ml-0 mt-1" />
+  </g-debounced-slider>
+  <g-debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01" class="ml-0">
+    <v-label :text="`Bonding max distance (${value.toFixed(2)})`" class="ml-0" />
+  </g-debounced-slider>
+  <g-debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01" class="ml-0">
+    <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" class="ml-0" />
+  </g-debounced-slider>
+  <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-0">
+    <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" class="ml-0" />
+  </g-debounced-slider>
   <v-label>Sum covalent radii multiplier</v-label>
   <v-switch v-model="perPairScale" color="primary"
             label="Multiplier per atom pair" density="compact" class="ml-2 mt-2" />
@@ -102,8 +106,9 @@ const resetSliders = (): void => {
     </v-table>
   </v-container>
   <v-container v-else class="pa-0">
-    <v-label :text="`For all atom pairs (${bondScale.toFixed(2)})`" class="ml-0" />
-    <v-slider v-model="bondScale" density="compact" min="0.5" max="2.0" step="0.01" class="ml-0" />
+    <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0.5" :max="2.0" :step="0.01" class="ml-0">
+      <v-label :text="`For all atom pairs (${value.toFixed(2)})`" class="ml-0" />
+    </g-debounced-slider>
   </v-container>
   <v-switch v-model="enlargeCell" color="primary"
             label="Add bonded atoms outside unit cell" density="compact" class="mt-2 ml-2" />
