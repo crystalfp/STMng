@@ -129,13 +129,13 @@ const resetSliders = (): void => {
   <v-divider thickness="8" class="mb-4" />
   <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-3 yellow-title" />
   <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
-                          :label="`Along a (${showPercentA}%)`" label-width="6.3rem"
+                          :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />
   <g-slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
-                          :label="`Along b (${showPercentB}%)`" label-width="6.3rem"
+                          :label="`Along b (${showPercentB}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />
   <g-slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
-                          :label="`Along c (${showPercentC}%)`" label-width="6.3rem"
+                          :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />
   <v-switch v-model="shrink" color="primary" label="Shrink cell" class="ml-4 mt-2" />
 

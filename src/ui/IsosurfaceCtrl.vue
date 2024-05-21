@@ -109,8 +109,8 @@ watchEffect(() => {
   <v-select v-model="colormapName" label="Colormap"
             :items="colormaps" class="mt-0 mx-2" density="compact" />
 
-  <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-1">
-    <v-label :text="`Opacity (${value.toFixed(1)})`" class="mt-2" />
+  <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-2">
+    <v-label :text="`Opacity (${value.toFixed(1)})`" />
   </g-debounced-slider>
 </v-container>
 </template>

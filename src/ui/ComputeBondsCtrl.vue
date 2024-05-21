@@ -91,21 +91,21 @@ const resetSliders = (): void => {
             label="Enable compute bonds" density="compact" class="mt-4 ml-2" />
 
   <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
-                      class="ml-0 mb-2">
-    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="mt-1" />
+                      class="ml-2 mb-2 mt-1">
+    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01"
-                      class="ml-0 mb-2">
+                      class="ml-2 mb-2">
     <v-label :text="`Bonding max distance (${value.toFixed(2)})`" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01"
-                      class="ml-0 mb-2">
+                      class="ml-2 mb-2">
     <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" />
   </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-0 mb-4">
+  <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-2 mb-4">
     <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" />
   </g-debounced-slider>
-  <v-label>Sum of covalent radii multiplier</v-label>
+  <v-label class="ml-2">Sum of covalent radii multiplier</v-label>
   <v-switch v-model="perPairScale" color="primary" :disabled="perPairData.length < 2"
             label="Multiplier per atom pair" density="compact" class="ml-2 mt-2" />
   <v-container v-if="perPairScale" class="pa-0">
@@ -119,8 +119,8 @@ const resetSliders = (): void => {
     </v-table>
   </v-container>
   <v-container v-else class="pa-0">
-    <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0.5" :max="2.0" :step="0.01" class="ml-0">
-      <v-label :text="`For all atom pairs (${value.toFixed(2)})`" class="ml-0" />
+    <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0.5" :max="2.0" :step="0.01" class="ml-2">
+      <v-label :text="`For all atom pairs (${value.toFixed(2)})`" />
     </g-debounced-slider>
   </v-container>
   <v-switch v-model="enlargeCell" color="primary"
