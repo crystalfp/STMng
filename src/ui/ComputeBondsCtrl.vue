@@ -16,10 +16,10 @@ const props = defineProps<{
 }>();
 
 interface PairData {
-    label: string;
+    label:  string;
     atomZi: number;
     atomZj: number;
-    scale: number;
+    scale:  number;
 }
 
 const minBondingDistance  = ref(0.64);
@@ -31,6 +31,7 @@ const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
 const perPairData         = ref<PairData[]>([]);
 const enlargeCell         = ref(false);
+const showScale           = ref<number[]>([]);
 
 sb.getUiParams(props.id, (params: UiParams) => {
     minBondingDistance.value  = params.minBondingDistance as number ?? 0.64;
@@ -44,7 +45,10 @@ sb.getUiParams(props.id, (params: UiParams) => {
 
     perPairData.value.length = 0;
     const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
-    for(const item of pairData) perPairData.value.push(item);
+    for(const item of pairData) {
+        perPairData.value.push(item);
+        showScale.value.push(item.scale);
+    }
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
@@ -69,7 +73,12 @@ const resetSliders = (): void => {
     maxHBondingDistance.value = 3.00;
     maxHValenceAngle.value    = 30;
     bondScale.value           = 1.1;
-    for(const item of perPairData.value) item.scale = 1.1;
+    let i = 0;
+    for(const item of perPairData.value) {
+        item.scale = 1.1;
+        showScale.value[i] = 1.1;
+        ++i;
+    }
 };
 
 </script>
@@ -81,27 +90,31 @@ const resetSliders = (): void => {
   <v-switch v-model="enableComputeBonds" color="primary"
             label="Enable compute bonds" density="compact" class="mt-4 ml-2" />
 
-  <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01" class="ml-0">
-    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="ml-0 mt-1" />
+  <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
+                      class="ml-0 mb-2">
+    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="mt-1" />
   </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01" class="ml-0">
-    <v-label :text="`Bonding max distance (${value.toFixed(2)})`" class="ml-0" />
+  <g-debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01"
+                      class="ml-0 mb-2">
+    <v-label :text="`Bonding max distance (${value.toFixed(2)})`" />
   </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01" class="ml-0">
-    <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" class="ml-0" />
+  <g-debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01"
+                      class="ml-0 mb-2">
+    <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" />
   </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-0">
-    <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" class="ml-0" />
+  <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-0 mb-4">
+    <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" />
   </g-debounced-slider>
-  <v-label>Sum covalent radii multiplier</v-label>
-  <v-switch v-model="perPairScale" color="primary"
+  <v-label>Sum of covalent radii multiplier</v-label>
+  <v-switch v-model="perPairScale" color="primary" :disabled="perPairData.length < 2"
             label="Multiplier per atom pair" density="compact" class="ml-2 mt-2" />
   <v-container v-if="perPairScale" class="pa-0">
     <v-table class="px-2 py-1">
-      <tr v-for="item of perPairData" :key="item.label">
-        <td style="width: 4.5rem">{{ item.label }}</td>
-        <td style="width: 3rem">{{ `(${item.scale.toFixed(2)})` }}</td>
-        <td><v-slider v-model="item.scale" min="0.5" max="2.0" step="0.01" hide-details class="mr-0"/></td>
+      <tr v-for="(item, idx) of perPairData" :key="item.label">
+        <td style="width: 4rem">{{ item.label }}</td>
+        <td><g-slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"
+                                    :label="`(${showScale[idx].toFixed(2)})`" label-width="3rem"
+                                    :min="0.5" :max="2.0" :step="0.01" class="mr-0"/></td>
       </tr>
     </v-table>
   </v-container>

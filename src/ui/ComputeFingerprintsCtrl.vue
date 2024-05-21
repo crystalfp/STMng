@@ -127,7 +127,7 @@ const distanceMethods = [
 <v-container class="container">
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Accumulate structures</v-label>
 
-  <v-row class="mx-0 my-4">
+  <v-row class="mx-0 my-4 mr-2">
     <v-label class="green-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
     <v-btn density="compact" @click="reset = true">Reset</v-btn>
@@ -137,7 +137,7 @@ const distanceMethods = [
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Filter structures</v-label>
 
   <v-file-input v-model="energyFile" label="Select energy file" :loading="energyFileLoading"
-                :prepend-icon="mdiFileOutline" accept=".energy,*" :clearable="false" class="mt-2" />
+                :prepend-icon="mdiFileOutline" accept=".energy,*" :clearable="false" class="mt-2 mr-2" />
   <v-switch v-model="enableEnergyThreshold" color="primary"
             label="Filter by energy" class="ml-2" />
   <v-switch v-model="thresholdFromMinimum" color="primary"
@@ -145,21 +145,20 @@ const distanceMethods = [
   <v-row>
   <v-text-field v-model="energyThreshold" :rules="[rules.numeric]"
                 :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" class="ml-4 mr-2" />
-  <v-text-field v-model="energyThresholdEffective" label="Max energy" readonly class="ml-2 mr-4" />
+  <v-text-field v-model="energyThresholdEffective" label="Max energy" readonly class="ml-2 mr-5" />
   </v-row>
-
   <v-label class="mt-4 mb-4 green-label">
     {{ countSelected === countAccumulated ?
       `All ${countAccumulated} structures selected` :
       `Structures selected: ${countSelected} of ${countAccumulated}` }}</v-label>
+
   <v-divider thickness="8" />
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Compute fingerprints</v-label>
 
   <v-row class="mt-4 mx-0">
-    <v-switch v-model="forceCutoff" color="primary"
-            label="Force cutoff at:" class="ml-2" />
+    <v-switch v-model="forceCutoff" color="primary" label="Force cutoff at:" class="ml-2" />
     <v-text-field v-model="manualCutoffDistance" label="Cutoff distance" :disabled="!forceCutoff"
-                  class="ml-2 mr-0" :rules="[rules.numeric]" />
+                  class="ml-2 mr-2" :rules="[rules.numeric]" />
   </v-row>
 
   <v-label class="mt-2 mb-6 green-label">
@@ -173,9 +172,9 @@ const distanceMethods = [
     :items="fpMethods"
     item-title="label"
     item-value="value"
-    density="compact" />
+    density="compact" class="mr-2" />
 
-  <v-row v-if="selectedMethod < 4 || selectedMethod === 6" class="mx-0">
+  <v-row v-if="selectedMethod < 4 || selectedMethod === 6" class="ml-0 mr-2">
     <v-text-field v-model="binSize" label="Bin size"
                     class="mr-2" :rules="[rules.numeric]" />
     <v-text-field v-model="peakWidth" label="Peak width"
@@ -194,7 +193,7 @@ const distanceMethods = [
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    density="compact" />
+    density="compact" class="mr-2" />
 
   <v-switch v-model="fixTriangleInequality" color="primary"
             label="Fix triangle inequality" class="ml-2" />
@@ -208,7 +207,7 @@ const distanceMethods = [
   <v-divider thickness="8" class="mt-4" />
   <v-label class="text-h5 w-100 justify-center mt-4 mb-4 yellow-title">Classify structures</v-label>
   <v-text-field v-model="tolerance" label="Tolerance"
-                  class="ml-2 mr-0" :rules="[rules.numeric]" />
+                  class="ml-2 mr-2" :rules="[rules.numeric]" />
   <v-switch v-model="absolute" color="primary"
             label="Absolute" class="ml-2" />
   <!-- <v-text-field v-if="" v-model="tolerance" label="Best K"

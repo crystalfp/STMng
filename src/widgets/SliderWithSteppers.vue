@@ -77,7 +77,8 @@ watch(valueToDebounce, () => {
 
 
 <template>
-<v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :label="label" class="slider-with-stepper">
+<v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :label="label"
+          hide-details class="slider-with-stepper">
   <template v-slot:prepend>
     <v-btn :icon="mdiMinus" size="small" variant="text" class="ml-n2" @click="decrement" />
   </template>

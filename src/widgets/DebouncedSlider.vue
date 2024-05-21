@@ -76,7 +76,7 @@ const increment = (): void => {
 <v-container class="pa-0 ma-0 pr-2">
   <!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
   <slot :value="valueToDebounce" />
-  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :disabled="disabled">
+  <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :disabled="disabled" hide-details>
     <template v-slot:prepend>
     <v-btn :icon="mdiMinus" size="small" variant="text" class="ml-n2 mr-n2" @click="decrement" />
   </template>

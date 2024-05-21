@@ -110,14 +110,14 @@ const resetSliders = (): void => {
   <v-label text="Cell repetitions" class="ml-2 mb-1 yellow-title" />
   <g-slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
                           :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
-                          :min="1" :max="10" :step="1" class="mt-0" />
+                          :min="1" :max="10" :step="1" />
   <g-slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB"
                           :label="`Along b (${showRepetitionsB})`" label-width="5.5rem"
-                          :min="1" :max="10" :step="1" class="mt-n3" />
+                          :min="1" :max="10" :step="1" />
   <g-slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
-                          :min="1" :max="10" :step="1" class="mt-n3" />
-  <v-btn :disabled="!hasSupercell()" class="mt-n3 mb-4 ml-2 w-50" @click="resetSliders">
+                          :min="1" :max="10" :step="1" />
+  <v-btn :disabled="!hasSupercell()" class="mt-2 mb-4 ml-2 w-50" @click="resetSliders">
     <template #append>
       <v-icon :icon="mdiRestore" size="x-large" />
     </template>
@@ -127,17 +127,17 @@ const resetSliders = (): void => {
   <v-switch v-model="dashedSupercell" color="primary" label="Dashed lines supercell" class="ml-4 mt-n5" />
   <g-color-selector v-model="supercellColor" label="Line color" />
   <v-divider thickness="8" class="mb-4" />
-  <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-5 yellow-title" />
+  <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-3 yellow-title" />
   <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="6.3rem"
-                          :min="0" :max="50" :step="1" class="mt-n2" />
+                          :min="0" :max="50" :step="1" />
   <g-slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
                           :label="`Along b (${showPercentB}%)`" label-width="6.3rem"
-                          :min="0" :max="50" :step="1" class="mt-n4" />
+                          :min="0" :max="50" :step="1" />
   <g-slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
                           :label="`Along c (${showPercentC}%)`" label-width="6.3rem"
-                          :min="0" :max="50" :step="1" class="mt-n4" />
-  <v-switch v-model="shrink" color="primary" label="Shrink cell" class="ml-4 mt-n5" />
+                          :min="0" :max="50" :step="1" />
+  <v-switch v-model="shrink" color="primary" label="Shrink cell" class="ml-4 mt-2" />
 
 </v-container>
 </template>

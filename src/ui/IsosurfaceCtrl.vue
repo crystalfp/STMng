@@ -88,7 +88,7 @@ watchEffect(() => {
 
   <v-container v-if="nestedIsosurfaces" class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="countIsosurfaces"
-                        :step="1" :min="2" :max="10" class="ml-2">
+                        :step="1" :min="2" :max="10" class="ml-2 mb-4">
       <v-label :text="`Number of isosurfaces (${value})`" />
     </g-debounced-slider>
     <g-debounced-range-slider v-slot="{values}" v-model="limits" :step="step" :min="valueMin" :max="valueMax"
@@ -101,7 +101,7 @@ watchEffect(() => {
 
   <v-container v-else class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="isoValue"
-                        :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1">
+                        :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1 mb-4">
       <v-label :text="`Isosurface value (${humanFormat(value)})`" />
     </g-debounced-slider>
   </v-container>

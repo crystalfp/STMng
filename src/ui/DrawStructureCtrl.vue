@@ -81,7 +81,7 @@ const tickLabels = {1: "Low", 2: "Medium", 3: "Good", 4: "Best"};
     <v-label :text="`Roughness (${value.toFixed(2)})`" class="ml-2 mt-5" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="drawMetalness" density="compact" min="0" max="1" step="0.1">
-    <v-label :text="`Metalness (${value.toFixed(2)})`" class="ml-2" />
+    <v-label :text="`Metalness (${value.toFixed(2)})`" class="ml-2 mt-4" />
   </g-debounced-slider>
 </v-container>
 </template>
