@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation is a chemical structure visualizer that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.21.1",
+  "version": "0.21.2",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -18,7 +18,8 @@
     "oldlint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint -c save/eslint.yaml --color -f codeframe src/**/*.ts src/**/*.vue",
     "lint": "eslint -f codeframe src/**",
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/*",
-    "madge": "node ../ExtractTSfromVue/index.js",
+    "madge-old": "node ../ExtractTSfromVue/index.js ./src",
+    "madge": "madge --extensions ts,vue --ts-config tsconfig.json -i madge.png --warning src",
     "start": "start ./release/%npm_package_version%/win-unpacked/STMng.exe"
   },
   "dependencies": {

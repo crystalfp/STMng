@@ -7,7 +7,7 @@ import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation, ReaderOptions} from "../types";
-import type {Structure, Atom} from "../../types";
+import type {Structure, Atom, BasisType} from "../../types";
 import {getAtomicNumber} from "../modules/AtomData";
 
 /** Line read type */
@@ -19,6 +19,12 @@ const enum LineType {
     box2,
     box3,
     atom,
+}
+
+const enum BoxType {
+	unknown,
+	restrictedTriclinic,
+	rectangular
 }
 
 export class ReaderLAMMPStrj implements ReaderImplementation {
@@ -39,9 +45,10 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let lineType: LineType = LineType.item;
 		let atomIdx = 0;
 		const correspond: number[] = [];
-		let origin = 0;
 		let atomZ = 0;
 		let hasErrors = false;
+		let boxType: BoxType = BoxType.unknown;
+		const boxValues: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 		const reader = rd.createInterface(fs.createReadStream(filename));
 		for await (const lineRaw of reader) {
@@ -77,6 +84,8 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 						break;
 					case "BOX":
 						lineType = LineType.box1;
+						if(fields[3] === "xy") boxType = BoxType.restrictedTriclinic;
+						else if(fields[3] === "xlo") boxType = BoxType.rectangular;
 						break;
 					case "ATOMS":
 						lineType = LineType.atom;
@@ -93,21 +102,44 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					lineType = LineType.item;
 					break;
 				case LineType.box1:
-					origin = Number.parseFloat(fields[0]);
-					currentStructure!.crystal.origin[0] = origin;
-					currentStructure!.crystal.basis[0] = Number.parseFloat(fields[1]) - origin;
+					boxValues[0] = Number.parseFloat(fields[0]);
+					boxValues[1] = Number.parseFloat(fields[1]);
+					if(fields.length > 2) boxValues[2] = Number.parseFloat(fields[2]);
 					lineType = LineType.box2;
 					break;
 				case LineType.box2:
-					origin = Number.parseFloat(fields[0]);
-					currentStructure!.crystal.origin[1] = origin;
-					currentStructure!.crystal.basis[4] = Number.parseFloat(fields[1]) - origin;
+					boxValues[3] = Number.parseFloat(fields[0]);
+					boxValues[4] = Number.parseFloat(fields[1]);
+					if(fields.length > 2) boxValues[5] = Number.parseFloat(fields[2]);
 					lineType = LineType.box3;
 					break;
 				case LineType.box3:
-					origin = Number.parseFloat(fields[0]);
-					currentStructure!.crystal.origin[2] = origin;
-					currentStructure!.crystal.basis[8] = Number.parseFloat(fields[1]) - origin;
+					boxValues[6] = Number.parseFloat(fields[0]);
+					boxValues[7] = Number.parseFloat(fields[1]);
+					if(fields.length > 2) boxValues[8] = Number.parseFloat(fields[2]);
+
+ 					if(boxType === BoxType.rectangular) {
+						currentStructure!.crystal.origin[0] = boxValues[0];
+						currentStructure!.crystal.origin[1] = boxValues[3];
+						currentStructure!.crystal.origin[2] = boxValues[6];
+
+						currentStructure!.crystal.basis[0]  = boxValues[1] - boxValues[0];
+						currentStructure!.crystal.basis[4]  = boxValues[4] - boxValues[3];
+						currentStructure!.crystal.basis[8]  = boxValues[7] - boxValues[6];
+					}
+ 					else if(boxType === BoxType.restrictedTriclinic) {
+						// currentStructure!.crystal.origin[0] = boxValues[0];
+						// currentStructure!.crystal.origin[1] = boxValues[3];
+						// currentStructure!.crystal.origin[2] = boxValues[6];
+
+						currentStructure!.crystal.basis[0]  = boxValues[1]; // - boxValues[0];
+						currentStructure!.crystal.basis[3]  = boxValues[2];
+						currentStructure!.crystal.basis[4]  = boxValues[4]; // - boxValues[3];
+						currentStructure!.crystal.basis[6]  = boxValues[5];
+						currentStructure!.crystal.basis[7]  = boxValues[8];
+						currentStructure!.crystal.basis[8]  = boxValues[7]; // - boxValues[6];
+					}
+
 					lineType = LineType.item;
 					break;
 				case LineType.atom:

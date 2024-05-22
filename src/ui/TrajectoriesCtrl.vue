@@ -56,8 +56,6 @@ watchEffect(() => {
   <v-btn block class="mb-6" @click="reset = true">Clear trajectories</v-btn>
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
-  <!-- <v-number-input v-model="maxDisplacement" :min="0.01" :max="10" :step="0.01"
-                  label="Max displacement" class="mt-6" /> -->
   <g-debounced-slider v-slot="{value}" v-model="maxDisplacement"
                       :step="0.01" :min="0.01" :max="3" class="ml-1 my-4">
     <v-label :text="`Max displacement (${value})`" />
