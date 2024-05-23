@@ -31,7 +31,7 @@ static double foldIntoUnitCell(double fc)
 	if(fc < FOLD_TOL && fc > -FOLD_TOL) return 0.0;
 
 	if(fc < 0.0) return 1 - (long)fc + fc;
-	if(fc < (1+FOLD_TOL) && fc > (1-FOLD_TOL)) return 0.0;
+	if(fc < (1+FOLD_TOL) && fc > (1-FOLD_TOL)) return 1.0;
 
 	return fc;
 }

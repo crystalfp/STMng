@@ -65,7 +65,7 @@ watchEffect(() => {
   <v-container v-if="showPositionClouds" class="pa-0">
     <v-number-input v-model="positionCloudsSide" :min="2" :step="1" label="Cloud volume subdivisions" />
   </v-container> -->
-  <v-btn block :disabled="atomsSelector.trim() === ''" @click="recording = !recording">
+  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" @click="recording = !recording">
     {{ recording ? "Stop trajectories" : "Start trajectories" }}
   </v-btn>
 </v-container>

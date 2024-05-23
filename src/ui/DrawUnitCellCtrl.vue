@@ -95,6 +95,10 @@ const resetSliders = (): void => {
     repetitionsB.value = 1;
     repetitionsC.value = 1;
     showSupercell.value = false;
+
+    showRepetitionsA.value = 1;
+    showRepetitionsB.value = 1;
+    showRepetitionsC.value = 1;
 };
 
 </script>
