@@ -54,7 +54,7 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-label class="mb-2 mt-3 w-100 justify-center">Camera type</v-label><br>
+  <v-label class="mb-3 mt-3 w-100 text-h6 justify-center yellow-title">Camera type</v-label><br>
   <v-btn-toggle v-model="configStore.camera.type" color="primary" class="mb-8 w-100 justify-center">
     <v-btn value="perspective">Perspective</v-btn>
     <v-btn value="orthographic">Orthographic</v-btn>
@@ -65,7 +65,7 @@ watchEffect(() => {
         Scene
       </v-expansion-panel-title>
       <v-expansion-panel-text>
-        <v-label text="Background color" />
+        <v-label text="Background color" class="mb-2" />
         <v-color-picker v-model="configStore.scene.background"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
       </v-expansion-panel-text>
@@ -75,7 +75,7 @@ watchEffect(() => {
         Ambient light
       </v-expansion-panel-title>
       <v-expansion-panel-text>
-        <v-label text="Light color" />
+        <v-label text="Light color" class="mb-2" />
         <v-color-picker v-model="configStore.lights.ambientColor"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
         <v-slider v-model="configStore.lights.ambientIntensity" label="Intensity" density="comfortable"
@@ -87,7 +87,7 @@ watchEffect(() => {
         Directional lights
       </v-expansion-panel-title>
       <v-expansion-panel-text>
-        <v-label text="Directional light 1" />
+        <v-label text="Directional light 1" class="mb-2" />
         <v-color-picker v-model="configStore.lights.directional1Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
         <g-align-labels label-width="4.5rem">
@@ -98,7 +98,7 @@ watchEffect(() => {
           <v-slider v-model="beta1" label="Along X" density="compact"
                     min="-90" max="90" step="1" thumb-label />
         </g-align-labels>
-        <v-label text="Directional light 2" />
+        <v-label text="Directional light 2" class="mb-2" />
         <v-color-picker v-model="configStore.lights.directional2Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
         <g-align-labels label-width="4.5rem">
@@ -109,7 +109,7 @@ watchEffect(() => {
           <v-slider v-model="beta2" label="Along Y" density="compact"
                     min="-90" max="90" step="1" thumb-label />
         </g-align-labels>
-        <v-label text="Directional light 3" />
+        <v-label text="Directional light 3" class="mb-2" />
         <v-color-picker v-model="configStore.lights.directional3Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
         <g-align-labels label-width="4.5rem">

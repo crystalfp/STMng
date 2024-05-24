@@ -7,7 +7,7 @@
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Properties
 const pr = defineProps<{
@@ -18,7 +18,7 @@ const pr = defineProps<{
 
 // > Access the stores
 const messageStore = useMessageStore();
-const configStore = useConfigStore();
+const controlStore = useControlStore();
 
 // > Get and set ui parameters from the switchboard
 const applyInputSymmetries = ref(true);
@@ -63,16 +63,16 @@ watchEffect(() => {
   <v-switch v-model="applyInputSymmetries" color="primary"
             label="Apply input symmetries" density="compact" class="mt-2 ml-3" />
   <v-switch v-model="enableFindSymmetries" color="primary"
-            label="Enable find symmetries" density="compact" class="ml-3" />
+            label="Enable find symmetries" density="compact" class="ml-3 mt-n5 mb-n6" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
     <v-switch v-model="standardizeCell" color="primary"
-              label="Standardize cell" density="compact" class="mt-2 ml-3" />
+              label="Standardize cell" density="compact" class="mt-n5 ml-3" />
     <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
-                        :min="-5" :max="-1" :step="0.2" class="mb-2">
-      <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="ml-2" />
+                        :min="-5" :max="-1" :step="0.2" class="ml-2 mb-2">
+      <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
-    <g-debounced-slider v-slot="{value}" v-model="symprecDataset" :min="-5" :max="-1" :step="0.2">
-      <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="ml-2" />
+    <g-debounced-slider v-slot="{value}" v-model="symprecDataset" :min="-5" :max="-1" :step="0.2" class="ml-2">
+      <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
   </v-container>
 
@@ -81,7 +81,7 @@ watchEffect(() => {
       <v-label text="Final symmetry:" class="text-green" />
     </v-col>
     <v-col cols="7">
-      <v-label :text="configStore.control.computedSpaceGroup" class="show-symmetry" />
+      <v-label :text="controlStore.computedSpaceGroup" class="show-symmetry" />
     </v-col>
   </v-row>
 

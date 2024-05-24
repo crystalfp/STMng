@@ -79,24 +79,25 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="showIsosurface" color="primary" label="Show isosurface"
-            density="compact" class="mt-4 ml-4" />
+            density="compact" class="mt-4 ml-3" />
   <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
 
   <v-switch v-model="nestedIsosurfaces" color="primary" label="Nested isosurfaces"
-            density="compact" class="mt-1 ml-4" />
+            density="compact" class="mt-1 ml-3" />
 
-  <v-container v-if="nestedIsosurfaces" class="pa-0">
+  <v-container v-if="nestedIsosurfaces" class="pa-0 pl-2">
     <g-debounced-slider v-slot="{value}" v-model="countIsosurfaces"
-                        :step="1" :min="2" :max="10" class="ml-2 mb-4">
+                        :step="1" :min="2" :max="10" class="mb-4">
       <v-label :text="`Number of isosurfaces (${value})`" />
     </g-debounced-slider>
-    <g-debounced-range-slider v-slot="{values}" v-model="limits" :step="step" :min="valueMin" :max="valueMax"
-                              class="ml-4 mt-1 pr-2">
-      <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`" class="ml-2" />
+    <g-debounced-range-slider v-slot="{values}" v-model="limits"
+                              :step="step" :min="valueMin" :max="valueMax"
+                              class="mt-1 pr-2">
+      <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`" class="ml-2"/>
     </g-debounced-range-slider>
     <v-switch v-model="limitColormap" color="primary" label="Limit colormap to range"
-              density="compact" class="mt-1 ml-4" />
+              density="compact" class="mt-1 ml-3" />
   </v-container>
 
   <v-container v-else class="pa-0">

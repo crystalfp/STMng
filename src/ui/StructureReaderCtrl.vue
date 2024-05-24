@@ -9,7 +9,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {useMessageStore} from "@/stores/messageStore";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Properties
 const {id} = defineProps<{
@@ -23,7 +23,7 @@ const messageStore = useMessageStore();
 messageStore.structureReader.message = "";
 
 // Access the global control area
-const configStore = useConfigStore();
+const controlStore = useControlStore();
 
 /** Formats that could be loaded */
 const fileFormats = [
@@ -96,7 +96,7 @@ const setCaptureMovie = (capture: boolean): void => {
 
     if(captureMovie.value) {
 
-        configStore.control.movie = capture;
+        controlStore.movie = capture;
     }
 };
 
@@ -276,10 +276,10 @@ const getAtomsTypes = (): void => {
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact"
               class="mt-n5" />
-    <v-switch v-if="configStore.control.hasFingerprints" v-model="configStore.control.fingerprintsAccumulate"
+    <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
               color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
-    <v-slider v-model="step" min="1" :max="countSteps" step="1" />
+    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-6" />
     <v-row class="mr-2">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"

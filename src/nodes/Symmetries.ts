@@ -9,7 +9,7 @@ import {createWindow, findAndApplySymmetries, sendToWindow} from "@/services/Rou
 import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
 import type {Structure} from "@/types";
 import type {ComputeSymmetriesParams, ComputeSymmetriesOutput} from "@/electron/types";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Kind of directions for filling unit cell
 const X_MIN = 0x010;
@@ -157,8 +157,8 @@ export class Symmetries {
 		if(outSymmetry === undefined) outSymmetry = inSymmetry;
 
 		// Update the UI
-		const configStore = useConfigStore();
-		configStore.control.computedSpaceGroup = outSymmetry;
+		const controlStore = useControlStore();
+		controlStore.computedSpaceGroup = outSymmetry;
 
 		// Update the dialog if it is open
 		const dataToSend = JSON.stringify({
@@ -234,11 +234,11 @@ export class Symmetries {
 	 */
 	private openSymmetriesDialog(): void {
 
-		const configStore = useConfigStore();
+		const controlStore = useControlStore();
 
 		const dataToSend = JSON.stringify({
 			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
-			outSymmetry: configStore.control.computedSpaceGroup
+			outSymmetry: controlStore.computedSpaceGroup
 		});
 
 		createWindow({

@@ -208,22 +208,6 @@ export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => AtomD
 export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
 
 /**
- * Return a list of covalent radii for the given atoms
- *
- * @param atoms - List of atom structures
- * @returns List of covalent radii for the given atoms
- */
-// export const getCovalentRadii = (atoms: Atom[]): number[] => {
-
-// 	const rCov: number[] = [];
-// 	for(const atom of atoms) {
-
-// 		rCov.push(AtomData.getInstance().atomicRadiiAndColor(atom.atomZ).rCov);
-// 	}
-// 	return rCov;
-// };
-
-/**
  * Return a list of max bonds number for the given atoms
  *
  * @param atoms - List of atom structures

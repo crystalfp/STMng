@@ -6,6 +6,7 @@
  */
 import * as THREE from "three";
 import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import type CameraControls from "camera-controls";
 
 /**
@@ -19,7 +20,8 @@ export const fitPerspectiveCameraToObject = (camera: THREE.PerspectiveCamera,
 
 	// Get bounding box of the scene - this will be used to setup controls and camera
 	const configStore = useConfigStore();
-	const {sceneCenter, sceneSides} = configStore.control;
+	const controlStore = useControlStore();
+	const {sceneCenter, sceneSides} = controlStore;
 	const center = new THREE.Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
 
 	// Get the max side of the bounding box (fits to width OR height as needed)
@@ -48,7 +50,8 @@ export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
 
 	// Get bounding box of the scene - this will be used to setup controls and camera
 	const configStore = useConfigStore();
-	const {sceneCenter, sceneSides} = configStore.control;
+	const controlStore = useControlStore();
+	const {sceneCenter, sceneSides} = controlStore;
 
     camera.lookAt(new THREE.Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]));
 

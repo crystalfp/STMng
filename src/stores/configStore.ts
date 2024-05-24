@@ -39,18 +39,6 @@ interface Viewer3DConfiguration {
         gridSize: number;
         axisLength: number;
     };
-    control: {
-        reset: boolean;
-        snapshot: boolean;
-        movie: boolean;
-        stl: boolean;
-        sceneCenter: PositionType;
-        sceneSides: PositionType;
-        atomsSelected: number[];
-        hasFingerprints: boolean;
-        fingerprintsAccumulate: boolean;
-        computedSpaceGroup: string;
-    };
 }
 
 
@@ -88,18 +76,6 @@ export const useConfigStore = defineStore("ConfigStore", {
             showGridYZ: false,
             gridSize: 10,
             axisLength: 1,
-        },
-        control: {
-            reset: false,
-            snapshot: false,
-            movie: false,
-            stl: false,
-            sceneCenter: [0, 0, 0],
-            sceneSides: [1, 1, 1],
-            atomsSelected: [],
-            hasFingerprints: false,
-            fingerprintsAccumulate: false,
-            computedSpaceGroup: "",
         }
 	} as Viewer3DConfiguration),
 
@@ -113,29 +89,6 @@ export const useConfigStore = defineStore("ConfigStore", {
                 helpers: state.helpers,
             };
             return JSON.stringify(statusToSave);
-        }
-    },
-
-    // > Actions
-    actions: {
-        addSelectedAtom(index: number) {
-
-            // If index already there remove it
-            const existing = this.control.atomsSelected.indexOf(index);
-            if(existing >= 0) {
-                this.control.atomsSelected.splice(existing, 1);
-            }
-            else if(this.control.atomsSelected.length < 3) {
-                this.control.atomsSelected.push(index);
-            }
-            else {
-                this.control.atomsSelected[0] = this.control.atomsSelected[1];
-                this.control.atomsSelected[1] = this.control.atomsSelected[2];
-                this.control.atomsSelected[2] = index;
-            }
-        },
-        deselectAtoms() {
-            this.control.atomsSelected.length = 0;
         }
     }
 });

@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import type {BoundingBox} from "@/services/BoundingBox";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 
@@ -123,7 +124,7 @@ class SceneManager {
 
 		// Add directional lights
 		const light1 = new THREE.DirectionalLight(configStore.lights.directional1Color,
-												configStore.lights.directional1Intensity);
+												  configStore.lights.directional1Intensity);
 		light1.position.set(...configStore.lights.directional1Position);
 		SceneManager.scene.add(light1);
 		watchEffect(() => {
@@ -133,7 +134,7 @@ class SceneManager {
 		});
 
 		const light2 = new THREE.DirectionalLight(configStore.lights.directional2Color,
-												configStore.lights.directional2Intensity);
+												  configStore.lights.directional2Intensity);
 		light2.position.set(...configStore.lights.directional2Position);
 		SceneManager.scene.add(light2);
 		watchEffect(() => {
@@ -143,7 +144,7 @@ class SceneManager {
 		});
 
 		const light3 = new THREE.DirectionalLight(configStore.lights.directional3Color,
-												configStore.lights.directional3Intensity);
+												  configStore.lights.directional3Intensity);
 		light3.position.set(...configStore.lights.directional3Position);
 		SceneManager.scene.add(light3);
 		watchEffect(() => {
@@ -169,9 +170,9 @@ class SceneManager {
 	 */
 	setBoundingBox(boundingBox: BoundingBox): void {
 
-		const configStore = useConfigStore();
-		configStore.control.sceneCenter = boundingBox.center;
-		configStore.control.sceneSides = boundingBox.side;
+		const controlStore = useControlStore();
+		controlStore.sceneCenter = boundingBox.center;
+		controlStore.sceneSides  = boundingBox.side;
 	}
 
 	/**

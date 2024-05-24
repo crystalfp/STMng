@@ -8,10 +8,10 @@ import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
 import {sendCurrentNode} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 import type {NodeUI} from "@/types";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Access the store
-const configStore = useConfigStore();
+const controlStore = useControlStore();
 
 const graph = ref<NodeUI[]>([]);
 const selectedTabId = ref("");
@@ -59,7 +59,7 @@ watchEffect(() => {
               variant="solo-filled" density="compact" hide-details rounded="0" />
   </v-container>
   <component :is="loadedPanel" :id="moduleId" />
-  <v-btn density="comfortable" variant="tonal" rounded="0" @click="configStore.control.reset = true">
+  <v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true">
     Reset camera
   </v-btn>
 </template>

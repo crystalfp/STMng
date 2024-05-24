@@ -4,10 +4,12 @@
  * Controls for the capture media node.
  */
 import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 
 // > Access the stores
 const configStore = useConfigStore();
+const controlStore = useControlStore();
 const messageStore = useMessageStore();
 
 </script>
@@ -23,7 +25,7 @@ const messageStore = useMessageStore();
     <v-btn value="png">PNG</v-btn>
   </v-btn-toggle>
   </v-row>
-  <v-btn block class="mt-3" @click="configStore.control.snapshot = true">Capture snapshot</v-btn>
+  <v-btn block class="mt-3" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
   <v-alert v-if="messageStore.captureMedia.typeS !== undefined"
            :title="messageStore.captureMedia.typeS === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
@@ -32,9 +34,9 @@ const messageStore = useMessageStore();
   <v-divider thickness="8" class="mt-6" />
 
   <v-label class="mt-4 text-h5 w-100 justify-center yellow-title">Movie</v-label>
-  <v-btn block class="mt-3" :color="configStore.control.movie ? 'red' : 'primary'"
-        @click="configStore.control.movie = !configStore.control.movie">
-      {{ configStore.control.movie ? "Stop recording" : "Start recording" }}
+  <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
+        @click="controlStore.movie = !controlStore.movie">
+      {{ controlStore.movie ? "Stop recording" : "Start recording" }}
   </v-btn>
   <v-alert v-if="messageStore.captureMedia.typeM !== undefined"
            :title="messageStore.captureMedia.typeM === 'error' ? 'Error' : 'Success!'"
@@ -51,7 +53,7 @@ const messageStore = useMessageStore();
     <v-btn value="binary">Binary</v-btn>
   </v-btn-toggle>
   </v-row>
-  <v-btn block class="mt-3" @click="configStore.control.stl = true">Capture geometry</v-btn>
+  <v-btn block class="mt-3" @click="controlStore.stl = true">Capture geometry</v-btn>
   <v-alert v-if="messageStore.captureMedia.typeT !== undefined"
            :title="messageStore.captureMedia.typeT === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textT" :type="messageStore.captureMedia.typeT"

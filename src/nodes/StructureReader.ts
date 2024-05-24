@@ -7,7 +7,7 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import {readFileStructure, readAuxFile, atomsTypeRename} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import type {ReaderStructure, Structure, RenameInfo} from "@/types";
 
 export class StructureReader {
@@ -180,8 +180,8 @@ export class StructureReader {
 
 				// Try to reset the camera
 				setTimeout(() => {
-					const configStore = useConfigStore();
-					configStore.control.reset = true;
+					const controlStore = useControlStore();
+					controlStore.reset = true;
 				}, 400);
 			})
 			.catch((error: Error) => {

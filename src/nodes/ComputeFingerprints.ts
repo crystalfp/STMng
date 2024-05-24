@@ -8,7 +8,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {loadEnergyFile, setEnergyFilterParameters,
 		accumulateStructure, computeFingerprints} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import type {Structure} from "@/types";
 
 export class ComputeFingerprints {
@@ -34,7 +34,7 @@ export class ComputeFingerprints {
 	 */
 	constructor(private readonly id: string) {
 
-		const configStore = useConfigStore();
+		const controlStore = useControlStore();
 
 		// Start with a clean accumulator
 		void accumulateStructure();
@@ -43,7 +43,7 @@ export class ComputeFingerprints {
 
 			if(params.reset) {
 
-				configStore.control.fingerprintsAccumulate = false;
+				controlStore.fingerprintsAccumulate = false;
 				sb.setUiParams(this.id, {
 					reset: false,
 					countAccumulated: 0,
@@ -95,8 +95,8 @@ export class ComputeFingerprints {
 			this.setFilterParams();
 		});
 
-		watch(configStore.control, () => {
-			if(configStore.control.fingerprintsAccumulate) {
+		watch(controlStore, () => {
+			if(controlStore.fingerprintsAccumulate) {
 				if(!this.accumulatePrevious && this.structure) {
 
 					accumulateStructure(this.structure)
@@ -127,7 +127,7 @@ export class ComputeFingerprints {
 			if(!this.structure) return;
 
 			// If in accumulate mode, save the structure encoded
-			if(configStore.control.fingerprintsAccumulate) {
+			if(controlStore.fingerprintsAccumulate) {
 				accumulateStructure(this.structure)
 					.then((status) => {
 
@@ -145,7 +145,7 @@ export class ComputeFingerprints {
 			}
 		});
 
-        configStore.control.hasFingerprints = true;
+        controlStore.hasFingerprints = true;
 	}
 
 	/**

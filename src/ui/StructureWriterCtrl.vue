@@ -99,7 +99,7 @@ watchEffect(() => {
 
   <v-row class="mt-10">
     <v-switch v-model="continuous" color="primary" label="Continuous write"
-              density="compact" class="ml-4 mr-5" />
+              density="compact" class="ml-6 mr-5" />
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>

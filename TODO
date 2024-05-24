@@ -3,13 +3,12 @@ ToDo:
   ☐ Readers do not fail if the file format is invalid
   ☐ Unify naming: graph, node, project
   ☐ Finish help
-  ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
-  ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
-  ☐ Events 'unresponsive' and 'responsive' on web content
   ☐ In builder copy only platform specific exe files
   ☐ Check the order of entries in objects
+  ☐ Use the `maxBonds` value to limit the number of bonds on an atom
+  ☐ Put start trajectory switch on the reader
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -28,12 +27,16 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Optimize using Int64Array and similia
   ☐ Add tooltips
-  ✘ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage> @cancelled(2024-05-17 15:02)
   ☐ Can the panel selection be done with router?
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Define global error handler `app.config.errorHandler = (err) => {}`
+  ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
+  ☐ Manage multiple output from node (eg. reader has structure and structures)
+  ☐ Events 'unresponsive' and 'responsive' on web content (if useful)
 
 Archive:
+  ✔ Move `configStore.control` to another store @done(2024-05-24 17:25) @project(ToDo)
+  ✘ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage> @cancelled(2024-05-17 15:02) @project(Nice to have/Future)
   ✘ KPLOT accepts also symbolic symmetries with SY cards. @cancelled(2024-05-15 10:06) @project(Requests from Oganov)
   ✘ Lattice type for KPLOT: GTY type @cancelled(2024-05-15 10:06) @project(Requests from Oganov)
   ✔ Change Find symmetries to use the new library @done(2024-05-15 09:04) @project(Requests from Oganov)

@@ -6,7 +6,7 @@
 
 import {ref} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Properties
 const properties = defineProps<{
@@ -16,7 +16,7 @@ const properties = defineProps<{
 }>();
 
 // > Access the stores
-const configStore = useConfigStore();
+const controlStore = useControlStore();
 
 interface SelectedAtoms {
     index: number;
@@ -54,7 +54,7 @@ sb.getUiParams(properties.id, (params: UiParams) => {
       <td>{{ line.coords }}</td>
     </tr>
   </v-table>
-  <v-btn class="mt-4 mb-4" block @click="configStore.deselectAtoms()">Deselect</v-btn>
+  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAtoms()">Deselect</v-btn>
   <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Measures</v-label>
   <v-table v-if="distanceAB !== ''" density="default" class="pa-1">
     <tr><td>Distance A–B:</td><td>{{ distanceAB }}</td></tr>

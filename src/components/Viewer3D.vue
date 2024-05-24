@@ -8,6 +8,7 @@ import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
 import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
@@ -19,6 +20,7 @@ import {setupSceneHelpers} from "@/services/SceneHelpers";
 
 // > Access the stores
 const configStore = useConfigStore();
+const controlStore = useControlStore();
 const messageStore = useMessageStore();
 
 // > Properties
@@ -213,10 +215,10 @@ onMounted(() => {
         const intersects = raycaster.intersectObjects(objects);
 
         if(intersects.length > 0) {
-            configStore.addSelectedAtom(intersects[0].object.userData.index as number);
+            controlStore.addSelectedAtom(intersects[0].object.userData.index as number);
         }
         else {
-            configStore.deselectAtoms();
+            controlStore.deselectAtoms();
         }
     });
 
@@ -243,9 +245,9 @@ onMounted(() => {
     // Reset camera on request or when the scene objects change
     watchEffect(() => {
 
-        if(configStore.control.reset) {
+        if(controlStore.reset) {
 
-            configStore.control.reset = false;
+            controlStore.reset = false;
 
             if(configStore.camera.type === "perspective") {
 
@@ -257,14 +259,13 @@ onMounted(() => {
                 fitOrthographicCameraToObject(cameraOrthographic, controls);
             }
         }
-
     });
 
     // Take snapshot
     watchEffect(() => {
-        if(configStore.control.snapshot) {
+        if(controlStore.snapshot) {
 
-            configStore.control.snapshot = false;
+            controlStore.snapshot = false;
 
             const mimeType = `image/${configStore.camera.snapshotFormat}`;
             saveDataURL(renderer.domElement.toDataURL(mimeType))
@@ -284,9 +285,9 @@ onMounted(() => {
     // Export geometry as STL file
     watchEffect(() => {
 
-        if(configStore.control.stl) {
+        if(controlStore.stl) {
 
-            configStore.control.stl = false;
+            controlStore.stl = false;
 
             const result = sm.createSTL(configStore.camera.stlFormat);
             saveSTL(result, configStore.camera.stlFormat === "binary")
@@ -308,7 +309,7 @@ onMounted(() => {
     let mediaRecorder: MediaRecorder;
     let stream: MediaStream;
     watchEffect(() => {
-        if(configStore.control.movie) {
+        if(controlStore.movie) {
 
             movieCaptureRunning = true;
 

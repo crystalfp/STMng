@@ -7,7 +7,7 @@ import * as THREE from "three";
 import {watchEffect} from "vue";
 import {sm} from "@/services/SceneManager";
 import {sb} from "@/services/Switchboard";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import type {Structure} from "@/types";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
@@ -32,8 +32,8 @@ export class Measures {
 
 		sb.getData(this.id, (data: unknown) => {
 
-			const configStore = useConfigStore();
-			configStore.deselectAtoms();
+			const controlStore = useControlStore();
+			controlStore.deselectAtoms();
 			sm.clearGroup(this.groupName);
 
 			this.inputStructure = data as Structure;
@@ -43,8 +43,8 @@ export class Measures {
 
 			sm.clearGroup(this.groupName);
 
-			const configStore = useConfigStore();
-			const selections = configStore.control.atomsSelected;
+			const controlStore = useControlStore();
+			const selections = controlStore.atomsSelected;
 			if(!this.inputStructure ||
 				this.inputStructure.atoms.length === 0 ||
 				selections.length === 0) {
