@@ -16,8 +16,6 @@ import {fileURLToPath} from "node:url";
  */
 export const setupChannelCapture = (): void => {
 
-	const homedir = os.homedir();
-
     ipcMain.handle("VIEWER:SNAPSHOT", (_event, dataURI: string) => {
 
 		// Split the dataURI and extract the image format
@@ -28,7 +26,7 @@ export const setupChannelCapture = (): void => {
 		// Select the save file
 		const filename = dialog.showSaveDialogSync({
 			title: "Save snapshot file",
-			defaultPath: `${homedir}/snapshot.${format}`,
+			defaultPath: `snapshot.${format}`,
 			filters: [{name: format, extensions: [format]}]
 		});
 		if(!filename) return {payload: ""};
@@ -115,4 +113,24 @@ export const setupChannelCapture = (): void => {
 		}
 	});
 
+	ipcMain.handle("VIEWER:STL", (_event, content: string | ArrayBuffer, binary: boolean) => {
+
+		// Select the save file
+		const filename = dialog.showSaveDialogSync({
+			title: "Save STL geometry file",
+			defaultPath: "geometry.stl",
+			filters: [{name: "STL", extensions: ["stl"]}]
+		});
+		if(!filename) return {payload: ""};
+
+		try {
+			if(binary) fs.writeFileSync(filename, Buffer.from(content as ArrayBuffer));
+			else       fs.writeFileSync(filename, content as string, "utf8");
+			return {payload: filename};
+		}
+		catch(error) {
+			return {payload: "Error",
+					error: `Cannot save STL file "${filename}". Error: ${(error as Error).message}`};
+		}
+	});
 };

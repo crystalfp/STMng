@@ -7,12 +7,11 @@
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
-import {saveAs} from "file-saver";
 import {useConfigStore} from "@/stores/configStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
-import {saveDataURL, saveMovie} from "@/services/RoutesClient";
+import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import type {MainResponse} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
@@ -27,7 +26,6 @@ const props = defineProps<{
 
     /** True if the viewer part is expanded */
     expanded: boolean;
-
 }>();
 
 /**
@@ -283,14 +281,25 @@ onMounted(() => {
         }
     });
 
+    // Export geometry as STL file
     watchEffect(() => {
 
         if(configStore.control.stl) {
 
             configStore.control.stl = false;
 
-            const blob = sm.createSTL(configStore.camera.stlFormat);
-            saveAs(blob, "structure.stl");
+            const result = sm.createSTL(configStore.camera.stlFormat);
+            saveSTL(result, configStore.camera.stlFormat === "binary")
+                .then((response: MainResponse) => {
+                    if(response.error) throw Error(response.error);
+                    if(response.payload === "") return;
+                    messageStore.captureMedia.typeT = "success";
+                    messageStore.captureMedia.textT = response.payload;
+                })
+                .catch((error: Error) => {
+                    messageStore.captureMedia.typeT = "error";
+                    messageStore.captureMedia.textT = `Error saving STL file. Error: ${error.message}`;
+                });
         }
     });
 

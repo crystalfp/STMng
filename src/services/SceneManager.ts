@@ -249,9 +249,9 @@ class SceneManager {
 	 * Export as STL encoded file the scene content
 	 *
 	 * @param format - STL file format
-	 * @returns A blob with the content of the STL file to be written
+	 * @returns A string (format: ascii) or an ArrayBuffer (format: binary) with the content of the STL file to be written
 	 */
-	createSTL(format: "ascii" | "binary"): Blob {
+	createSTL(format: "ascii" | "binary"): string | ArrayBuffer {
 
 		// Instance the exporter if not already instanced
 		if(!this.exporter) this.exporter = new STLExporter();
@@ -275,9 +275,8 @@ class SceneManager {
 		// Clean the temporary structure
 		structure.clear();
 
-		return format === "ascii" ?
-									new Blob([result], {type: "text/plain"}) :
-									new Blob([result], {type: "application/octet-stream"});
+		// Return the results
+		return format === "ascii" ? result as string : (result as DataView).buffer;
 	}
 
 	// > Access the singleton instance

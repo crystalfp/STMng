@@ -191,6 +191,15 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 			}
 		}
 
+		for(const structure of structures) {
+			structure.atoms.sort((a: Atom, b: Atom): number => {
+				const delta = a.atomZ - b.atomZ;
+				if(delta !== 0) return delta;
+				if(a.label === b.label) return 0;
+				if(a.label > b.label) return 1;
+				return -1;
+			});
+		}
 		return structures;
 	}
 }

@@ -30,19 +30,19 @@ const messageStore = useMessageStore();
            density="compact" class="mt-4 cursor-pointer"
            @click="messageStore.captureMedia.typeS=undefined" />
   <v-divider thickness="8" class="mt-6" />
+
   <v-label class="mt-4 text-h5 w-100 justify-center yellow-title">Movie</v-label>
   <v-btn block class="mt-3" :color="configStore.control.movie ? 'red' : 'primary'"
         @click="configStore.control.movie = !configStore.control.movie">
       {{ configStore.control.movie ? "Stop recording" : "Start recording" }}
   </v-btn>
-
   <v-alert v-if="messageStore.captureMedia.typeM !== undefined"
            :title="messageStore.captureMedia.typeM === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textM" :type="messageStore.captureMedia.typeM"
            density="compact" class="mt-4 cursor-pointer"
            @click="messageStore.captureMedia.typeM=undefined" />
-
   <v-divider thickness="8" class="mt-6" />
+
   <v-label class="mt-4 text-h5 w-100 justify-center yellow-title">STL</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4">Format:</v-label>
@@ -52,6 +52,10 @@ const messageStore = useMessageStore();
   </v-btn-toggle>
   </v-row>
   <v-btn block class="mt-3" @click="configStore.control.stl = true">Capture geometry</v-btn>
-
+  <v-alert v-if="messageStore.captureMedia.typeT !== undefined"
+           :title="messageStore.captureMedia.typeT === 'error' ? 'Error' : 'Success!'"
+           :text="messageStore.captureMedia.textT" :type="messageStore.captureMedia.typeT"
+           density="compact" class="mt-4 cursor-pointer"
+           @click="messageStore.captureMedia.typeT=undefined" />
 </v-container>
 </template>
