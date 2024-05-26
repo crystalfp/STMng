@@ -111,5 +111,10 @@ const app = createApp(App)
 	.component("GDebouncedSlider", defineAsyncComponent(() => import("@/widgets/DebouncedSlider.vue")))
 	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("@/widgets/DebouncedRangeSlider.vue")));
 
+// Add global error handler
+app.config.errorHandler = (error: unknown) => {
+	log.error("Global error handler", (error as Error).message);
+};
+
 // Mount the application
 app.mount("#app");

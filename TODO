@@ -7,8 +7,7 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ In builder copy only platform specific exe files
   ☐ Check the order of entries in objects
-  ☐ Use the `maxBonds` value to limit the number of bonds on an atom
-  ✔ Put start trajectory switch on the reader @done(2024-05-26 06:48)
+  ☐ Use the `maxBonds` value to limit the number of bonds for an atom
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -21,21 +20,22 @@ Requests from Oganov:
 Nice to have/Future:
   ☐ Label color
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
-  ☐ Color polyhedra by central atom color
   ☐ Shift unit cell (from STM4). The problem is shifting the volumetric data.
-  ☐ Coloring of trajectories
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Optimize using Int64Array and similia
   ☐ Add tooltips
   ☐ Can the panel selection be done with router?
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
-  ☐ Define global error handler `app.config.errorHandler = (err) => {}`
   ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Events 'unresponsive' and 'responsive' on web content (if useful)
   ☐ Move to WebGPURenderer
 
 Archive:
+  ✔ Color polyhedra by central atom color @done(2024-05-26 10:55) @project(Nice to have/Future)
+  ✔ Define global error handler `app.config.errorHandler = (err) => {}` @done(2024-05-26 06:55) @project(Nice to have/Future)
+  ✔ Put start trajectory switch on the reader @done(2024-05-26 06:48) @project(ToDo)
+  ✔ Coloring of trajectories @done(2024-05-26 06:55) @project(Nice to have/Future)
   ✔ Move `configStore.control` to another store @done(2024-05-24 17:25) @project(ToDo)
   ✘ Try to use ffmpeg.wasm <https://ffmpegwasm.netlify.app/docs/getting-started/usage> @cancelled(2024-05-17 15:02) @project(Nice to have/Future)
   ✘ KPLOT accepts also symbolic symmetries with SY cards. @cancelled(2024-05-15 10:06) @project(Requests from Oganov)

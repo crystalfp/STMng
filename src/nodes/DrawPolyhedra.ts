@@ -18,6 +18,9 @@ export class DrawPolyhedra {
 	private atomsSelector = "";
 	private structure: Structure | undefined;
 	private visible = false;
+	private colorByCenterAtom = true;
+	private readonly centerAtomsColor: string[] = [];
+	private opacityByCenterAtom = 0.5;
 
 	private readonly material = new THREE.MeshLambertMaterial({
 										color: "#FFFFFF",
@@ -43,6 +46,8 @@ export class DrawPolyhedra {
 			this.color = params.surfaceColor as string ?? "#FFFFFF80";
     		this.labelKind = params.labelKind as SelectorType ?? "symbol";
     		this.atomsSelector = params.atomsSelector as string ?? "";
+			this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? false;
+			this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
 
 			if(this.visible) {
 				if(!this.group) {
@@ -50,8 +55,10 @@ export class DrawPolyhedra {
 					this.group.name = `DrawPolyhedra-${this.id}`;
 					sm.add(this.group);
 				}
-				this.material.opacity = this.extractOpacity(this.color);
 				this.material.color = this.extractColor(this.color);
+				this.material.opacity = this.colorByCenterAtom ?
+												this.opacityByCenterAtom :
+												this.extractOpacity(this.color);
 
 				this.createPolyhedra();
 				this.group.visible = true;
@@ -99,12 +106,22 @@ export class DrawPolyhedra {
 		const islands = this.createVerticeLists();
 		if(islands.length === 0) return;
 
+		let idx = 0;
 		for(const island of islands) {
 
 			// The polyhedron
 			const mesh = new THREE.Mesh();
 			mesh.geometry = new ConvexGeometry(island);
-			mesh.material = this.material;
+			if(this.colorByCenterAtom) {
+				const material = this.material.clone();
+				material.color = new THREE.Color(this.centerAtomsColor[idx]);
+				mesh.material = material;
+
+				++idx;
+			}
+			else {
+				mesh.material = this.material;
+			}
 			this.group!.add(mesh);
 
 			// The polyhedron edges
@@ -135,6 +152,7 @@ export class DrawPolyhedra {
 
 		// Create lists of connected atoms (island)
 		const islands: number[][] = [];
+		this.centerAtomsColor.length = 0;
 
 		for(const idx of centerIdx) {
 			const connected = [];
@@ -149,6 +167,11 @@ export class DrawPolyhedra {
 
 			if(connected.length > 3) {
 				islands.push(connected);
+
+				if(this.colorByCenterAtom) {
+					const {atomZ} = this.structure!.atoms[idx];
+					this.centerAtomsColor.push(this.structure!.look[atomZ].color);
+				}
 			}
 		}
 
@@ -203,6 +226,8 @@ export class DrawPolyhedra {
 			color: this.color,
 			labelKind: this.labelKind,
 			atomsSelector: this.atomsSelector,
+			colorByCenterAtom: this.colorByCenterAtom,
+			opacityByCenterAtom: this.opacityByCenterAtom
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
