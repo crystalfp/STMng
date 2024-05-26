@@ -68,7 +68,7 @@ export class Trajectories {
 
 			if(this.maxDisplacement !== this.maxDisplacementPrevious) {
 
-				this.drawLines();
+				this.drawLines(this.traceColor.length);
 				this.maxDisplacementPrevious = this.maxDisplacement;
 			}
 
@@ -88,25 +88,38 @@ export class Trajectories {
 
 			this.setTraceColor(structure, indices, this.traceColor);
 
-			// First step, initialize set of coordinates
-			if(controlStore.trajectoriesRecording && !this.nextSteps) {
-				this.nextSteps = true;
-
-				this.points.length = 0;
+			if(controlStore.trajectoriesRecording) {
 				const len = indices.length;
-				for(let i=0; i < len; ++i) this.points.push([]);
+				if(this.nextSteps) {
+					// After the first step increase the points size if the number of atoms traced increases
+					if(len > this.points.length) {
+						const previousLength = this.points.length;
+						this.points.length = len;
+						for(let i=previousLength; i < len; ++i) this.points[i] = [];
+					}
+				}
+				else {
 
-				if(this.showPositionClouds) {
-					this.positionCloud.fill(0);
-					const {origin, basis} = crystal;
-					this.computeLimits(origin, basis);
+					this.nextSteps = true;
+
+					// First step, initialize set of coordinates
+					this.points.length = len;
+					for(let i=0; i < len; ++i) this.points[i] = [];
+
+					if(this.showPositionClouds) {
+						this.positionCloud.fill(0);
+						const {origin, basis} = crystal;
+						this.computeLimits(origin, basis);
+					}
 				}
 			}
 
 			// Record coordinates
 			let trajectoryIndex = 0;
 			for(const idx of indices) {
+
 				const {position} = atoms[idx];
+
 				this.points[trajectoryIndex]
 					.push(new THREE.Vector3(position[0], position[1], position[2]));
 				++trajectoryIndex;
@@ -114,7 +127,7 @@ export class Trajectories {
 			}
 
 			// Create lines
-			this.drawLines();
+			this.drawLines(indices.length);
 
 			// Create volume
 			if(this.showPositionClouds) this.drawPositionClouds();
@@ -177,19 +190,20 @@ export class Trajectories {
 
 	private drawPositionClouds(): void {
 		// console.log(this.positionCloud);
+		// console.log("drawPositionClouds");
 	}
 
 	/**
 	 * Draw trajectory lines (split in segments to avoid big jumps)
 	 */
-	private drawLines(): void {
+	private drawLines(atomsCount: number): void {
 
 		sm.clearGroup(this.groupName);
-		let idx = 0;
-		for(const points of this.points) {
 
+		for(let i=0; i < atomsCount; ++i) {
+			const points = this.points[i];
 			const segments = this.splitSegments(points, this.maxDisplacement);
-			const color = this.traceColor[idx++];
+			const color = this.traceColor[i];
 			for(const segment of segments) {
 				const geometry = new THREE.BufferGeometry().setFromPoints(segment);
 				const material = new THREE.LineBasicMaterial({color});
@@ -248,11 +262,13 @@ export class Trajectories {
 						  indices: number[],
 						  traceColor: string[]): void {
 
-		traceColor.length = 0;
+		const len = indices.length;
+		traceColor.length = len;
 		const {atoms, look} = structure;
+		let i = 0;
 		for(const idx of indices) {
 			const {atomZ} = atoms[idx];
-			traceColor.push(look[atomZ].color);
+			traceColor[i++] = look[atomZ].color;
 		}
 	}
 
