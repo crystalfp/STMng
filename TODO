@@ -33,6 +33,7 @@ Nice to have/Future:
   ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Events 'unresponsive' and 'responsive' on web content (if useful)
+  ☐ Move to WebGPURenderer
 
 Archive:
   ✔ Move `configStore.control` to another store @done(2024-05-24 17:25) @project(ToDo)

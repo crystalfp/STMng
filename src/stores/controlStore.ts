@@ -17,6 +17,8 @@ interface GlobalControls {
 	computedSpaceGroup: string;
 	sceneCenter: PositionType;
 	sceneSides: PositionType;
+	hasTrajectory: boolean;
+	trajectoriesRecording: boolean;
 }
 
 export const useControlStore = defineStore("ControlStore", {
@@ -32,6 +34,9 @@ export const useControlStore = defineStore("ControlStore", {
 		computedSpaceGroup: "",
 		sceneCenter: [0, 0, 0],
 		sceneSides: [1, 1, 1],
+		hasTrajectory: false,
+		trajectoriesRecording: false,
+
 	} as GlobalControls),
 
     // > Actions

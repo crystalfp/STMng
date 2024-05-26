@@ -8,6 +8,8 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {Structure, PositionType, BasisType} from "@/types";
 import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
+import {useControlStore} from "@/stores/controlStore";
+import {watchEffect} from "vue";
 
 export class Trajectories {
 
@@ -118,6 +120,16 @@ export class Trajectories {
 			// Create volume
 			if(this.showPositionClouds) this.drawPositionClouds();
 		});
+
+		const controlStore = useControlStore();
+
+		watchEffect(() => {
+			this.recording = controlStore.trajectoriesRecording;
+			sb.setUiParams(this.id, {recording: this.recording});
+		});
+
+		// Show this module has been mounted
+		controlStore.hasTrajectory = true;
 	}
 
 	private computeLimits(orig: PositionType, basis: BasisType): void {

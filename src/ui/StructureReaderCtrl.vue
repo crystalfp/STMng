@@ -276,6 +276,8 @@ const getAtomsTypes = (): void => {
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact"
               class="mt-n5" />
+    <v-switch v-if="controlStore.hasTrajectory" v-model="controlStore.trajectoriesRecording"
+              color="primary" label="Record trajectories" density="compact" class="mt-n5" />
     <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
               color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5" />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
