@@ -6,6 +6,7 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Properties
 const props = defineProps<{
@@ -14,10 +15,12 @@ const props = defineProps<{
     id: string;
 }>();
 
+// Access the global control area
+const controlStore = useControlStore();
+
 const showTrajectories = ref(false);
 const labelKind = ref("symbol");
 const atomsSelector = ref("");
-const recording = ref(false);
 const reset = ref(false);
 const maxDisplacement = ref(1);
 const showPositionClouds = ref(false);
@@ -27,7 +30,6 @@ sb.getUiParams(props.id, (params: UiParams) => {
     showTrajectories.value    = params.showTrajectories as boolean ?? false;
     labelKind.value           = params.labelKind as string ?? "symbol";
     atomsSelector.value       = params.atomsSelector as string ?? "";
-    recording.value           = params.recording as boolean ?? false;
     reset.value               = params.reset as boolean ?? false;
     maxDisplacement.value     = params.maxDisplacement as number ?? 1;
     showPositionClouds.value  = params.showPositionClouds as boolean ?? false;
@@ -38,7 +40,6 @@ watchEffect(() => {
         showTrajectories: showTrajectories.value,
         labelKind: labelKind.value,
         atomsSelector: atomsSelector.value,
-        recording: recording.value,
         reset: reset.value,
         maxDisplacement: maxDisplacement.value,
         showPositionClouds: showPositionClouds.value,
@@ -65,8 +66,9 @@ watchEffect(() => {
   <v-container v-if="showPositionClouds" class="pa-0">
     <v-number-input v-model="positionCloudsSide" :min="2" :step="1" label="Cloud volume subdivisions" />
   </v-container> -->
-  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" @click="recording = !recording">
-    {{ recording ? "Stop trajectories" : "Start trajectories" }}
+  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
+    @click="controlStore.trajectoriesRecording = !controlStore.trajectoriesRecording">
+    {{ controlStore.trajectoriesRecording ? "Stop trajectories" : "Start trajectories" }}
   </v-btn>
 </v-container>
 </template>

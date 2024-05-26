@@ -16,7 +16,6 @@ export class Trajectories {
 	private showTrajectories = false;
 	private labelKind: SelectorType = "symbol";
 	private atomsSelector = "";
-	private recording = false;
 	private reset = false;
 	private nextSteps = false;
 	private maxDisplacement = 1;
@@ -43,11 +42,12 @@ export class Trajectories {
 		this.group.name = this.groupName;
 		sm.add(this.group);
 
+		const controlStore = useControlStore();
+
 		sb.getUiParams(this.id, (params: UiParams) => {
 			this.showTrajectories = params.showTrajectories as boolean ?? false;
 			this.labelKind = params.labelKind as SelectorType ?? "symbol";
 			this.atomsSelector = params.atomsSelector as string ?? "";
-			this.recording = params.recording as boolean ?? false;
 			this.reset = params.reset as boolean ?? false;
 			this.maxDisplacement = params.maxDisplacement as number ?? 1;
 
@@ -73,7 +73,6 @@ export class Trajectories {
 			}
 
 			this.group.visible = this.showTrajectories;
-			if(!this.recording) this.nextSteps = false;
 
 			this.showPositionClouds = params.showPositionClouds as boolean ?? false;
 			this.positionCloudsSide = params.positionCloudsSide as number ?? 10;
@@ -81,7 +80,7 @@ export class Trajectories {
 
 		sb.getData(this.id, (data: unknown) => {
 
-			if(!this.recording) return;
+			if(!controlStore.trajectoriesRecording) return;
 
 			const structure = data as Structure;
 			const {atoms, crystal} = structure;
@@ -90,7 +89,7 @@ export class Trajectories {
 			this.setTraceColor(structure, indices, this.traceColor);
 
 			// First step, initialize set of coordinates
-			if(this.recording && !this.nextSteps) {
+			if(controlStore.trajectoriesRecording && !this.nextSteps) {
 				this.nextSteps = true;
 
 				this.points.length = 0;
@@ -121,11 +120,8 @@ export class Trajectories {
 			if(this.showPositionClouds) this.drawPositionClouds();
 		});
 
-		const controlStore = useControlStore();
-
 		watchEffect(() => {
-			this.recording = controlStore.trajectoriesRecording;
-			sb.setUiParams(this.id, {recording: this.recording});
+			if(!controlStore.trajectoriesRecording) this.nextSteps = false;
 		});
 
 		// Show this module has been mounted
