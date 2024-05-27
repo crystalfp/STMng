@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 import log from "electron-log";
-import {getAtomicRadiiAndColor} from "./AtomData";
+import {getAtomicData} from "./AtomData";
 import type {BasisType, PositionType, Atom, Look, Structure} from "../../types";
 
 /**
@@ -109,7 +109,7 @@ export const getStructureAppearance = (atoms: Atom[]): Look => {
 	const out: Look = {};
 	for(const atomZ of distinctAtoms) {
 
-		out[atomZ] = getAtomicRadiiAndColor(atomZ);
+		out[atomZ] = getAtomicData(atomZ);
 	}
 
 	return out;
@@ -127,7 +127,7 @@ export const getStructureAppearanceFromZ = (atomsZ: number[]): Look => {
 	for(const atomZ of atomsZ) {
 
 		if(!atomZ) continue;
-		out[atomZ] = getAtomicRadiiAndColor(atomZ);
+		out[atomZ] = getAtomicData(atomZ);
 	}
 
 	return out;

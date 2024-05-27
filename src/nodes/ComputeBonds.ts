@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {Structure, Atom, Bond} from "@/types";
+import type {Structure, Atom, Bond, Look} from "@/types";
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
 interface PairData {
@@ -261,7 +261,7 @@ export class ComputeBonds {
 
 	// > Clear outside atoms
 	/**
-	 *  added that are not bonded to inside atoms
+	 *  Remove added atoms that are not bonded to inside atoms
 	 *
 	 * @param structure - The extended structure to be cleaned
 	 */
@@ -492,6 +492,9 @@ export class ComputeBonds {
 			   valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = "x";
 		}
 
+		// Remove bonds between atoms that have too many bonds
+		this.removeOverBonding(bonds, atoms, look, addType);
+
 		// Clean up bonds list removing invalid bonds
 		const outBonds: Bond[] = [];
 		for(let i=0; i < countBonds; ++i) {
@@ -499,6 +502,61 @@ export class ComputeBonds {
 		}
 
 		return outBonds;
+	}
+
+	// > Remove bonds between atoms that have too many bonds
+	/**
+	 * Remove bonds between atoms that have too many bonds
+	 *
+	 * @param bonds - The current list of bonds (not yet cleaned from deleted bonds). Will be modified
+	 * @param atoms - Structure atoms list
+	 * @param look - Structure look to extract the maximum number of bonds for each atom type
+	 * @param addType - If the atom is external to the unit cell the value is 2
+	 */
+	private removeOverBonding(bonds: Bond[], atoms: Atom[], look: Look, addType: number[]): void {
+
+		// Count bonds for each atom
+		const bondsCount = new Map<number, number>();
+		for(const bond of bonds) {
+
+			if(bond.type !== "n") continue;
+			const {from, to} = bond;
+
+			if(addType[from] !== 2) {
+				const count = bondsCount.get(from) ?? 0;
+				bondsCount.set(from, count+1);
+			}
+
+			if(addType[to] !== 2) {
+				const count = bondsCount.get(to) ?? 0;
+				bondsCount.set(to, count+1);
+			}
+		}
+
+		// For each bond see if both atoms have an excess of bonds
+		for(const bond of bonds) {
+
+			if(bond.type !== "n") continue;
+			const {from, to} = bond;
+
+			// Get bonds count at both sides of the bond
+			const countFrom = bondsCount.get(from);
+			if(countFrom === undefined) continue;
+			const countTo = bondsCount.get(to);
+			if(countTo === undefined) continue;
+
+			const fromAtomZ = atoms[from].atomZ;
+			const toAtomZ   = atoms[to].atomZ;
+
+			const maxFrom = look[fromAtomZ].maxBonds;
+			const maxTo   = look[toAtomZ].maxBonds;
+
+			if(countFrom > maxFrom && countTo > maxTo) {
+				bond.type = "x";
+				bondsCount.set(from, countFrom-1);
+				bondsCount.set(to, countTo-1);
+			}
+		}
 	}
 
 	// > Bonding scale by type

@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {app} from "electron";
-// import type {Atom} from "../../types";
+import type {AtomAppearance} from "../../types";
 
 // ##############################################################################
 // #                                                                            #
@@ -72,21 +72,6 @@ interface OneAtomData {
 	name: string;
 }
 
-interface OneAtomRendering {
-
-	/** Element symbol */
-	symbol: string;
-
-	/** Covalent radii (in Angstrom). 1.6 if unknown */
-	rCov: number;
-
-	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
-	rVdW: number;
-
-	/** Atom color as hex string (#RRGGBB) */
-	color: string;
-}
-
 class AtomData {
 
     private static instance: AtomData;
@@ -137,30 +122,21 @@ class AtomData {
 	 * Return other information on the atom with Z value
 	 *
 	 * @param atomZ - Z value of the atom that should be retrieved
-	 * @returns Structure containing symbol, radii and color
+	 * @returns Structure containing symbol, radii, max number of bonds and color
 	 */
-	atomicRadiiAndColor(atomZ: number): OneAtomRendering {
+	atomicData(atomZ: number): AtomAppearance {
 
 		const rs = this.data[atomZ].red.toString(16).toUpperCase().padStart(2, "0");
 		const gs = this.data[atomZ].green.toString(16).toUpperCase().padStart(2, "0");
 		const bs = this.data[atomZ].blue.toString(16).toUpperCase().padStart(2, "0");
 
 		return {
-			symbol: this.data[atomZ].symbol,
-			rCov: 	this.data[atomZ].rCov,
-			rVdW:	this.data[atomZ].rVdW,
-			color:	`#${rs}${gs}${bs}`
+			symbol:   this.data[atomZ].symbol,
+			rCov: 	  this.data[atomZ].rCov,
+			rVdW:	  this.data[atomZ].rVdW,
+			color:	  `#${rs}${gs}${bs}`,
+			maxBonds: this.data[atomZ].maxBonds
 		};
-	}
-
-	/**
-	 * Return the max number of bonds for the given atom
-	 *
-	 * @param atomZ - Atom for which the max number of bonds should be returned
-	 * @returns The max number of bonds for the given atom
-	 */
-	atomMaxBonds(atomZ: number): number {
-		return this.data[atomZ].maxBonds;
 	}
 
 	// > Access the singleton instance
@@ -197,7 +173,7 @@ export const getAtomicNumber = (symbol: string): number => AtomData.getInstance(
  * @param atomZ - Z value of the atom that should be retrieved
  * @returns Structure containing symbol, radii and color
  */
-export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => AtomData.getInstance().atomicRadiiAndColor(atomZ);
+export const getAtomicData = (atomZ: number): AtomAppearance => AtomData.getInstance().atomicData(atomZ);
 
 /**
  * Convert the atom Z value into atom symbol
@@ -206,19 +182,3 @@ export const getAtomicRadiiAndColor = (atomZ: number): OneAtomRendering => AtomD
  * @returns The corresponding atomic symbol
  */
 export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
-
-/**
- * Return a list of max bonds number for the given atoms
- *
- * @param atoms - List of atom structures
- * @returns List of max bonds for the given atoms
- */
-// export const getMaxBonds = (atoms: Atom[]): number[] => {
-
-// 	const maxBonds: number[] = [];
-// 	for(const atom of atoms) {
-
-// 		maxBonds.push(AtomData.getInstance().atomMaxBonds(atom.atomZ));
-// 	}
-// 	return maxBonds;
-// };

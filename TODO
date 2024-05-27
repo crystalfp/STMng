@@ -7,7 +7,7 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ In builder copy only platform specific exe files
   ☐ Check the order of entries in objects
-  ☐ Use the `maxBonds` value to limit the number of bonds for an atom
+  ☐ Remove look from structure and add a cached atom data in the client
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -32,6 +32,7 @@ Nice to have/Future:
   ☐ Move to WebGPURenderer
 
 Archive:
+  ✔ Use the `maxBonds` value to limit the number of bonds for an atom @done(2024-05-27 17:03) @project(ToDo)
   ✔ Color polyhedra by central atom color @done(2024-05-26 10:55) @project(Nice to have/Future)
   ✔ Define global error handler `app.config.errorHandler = (err) => {}` @done(2024-05-26 06:55) @project(Nice to have/Future)
   ✔ Put start trajectory switch on the reader @done(2024-05-26 06:48) @project(ToDo)

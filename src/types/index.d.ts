@@ -123,6 +123,9 @@ export interface AtomAppearance {
 
 	/** Atom color as an hex string (#RRGGBB) */
 	color: string;
+
+    /** Maximum number of bonds for the element type */
+    maxBonds: number;
 }
 
 /** Index is atomZ */
