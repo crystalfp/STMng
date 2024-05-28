@@ -110,9 +110,6 @@ export class ReaderSHELX implements ReaderImplementation {
 		}
 		structures[0].crystal.spaceGroup = spaceGroup || "P 1";
 
-		// Build the rest of the structure
-		structures[0].bonds = [];
-
 		return structures;
 	}
 }

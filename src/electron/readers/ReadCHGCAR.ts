@@ -199,10 +199,8 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				case LineType.volumeCount: {
 					const fields = line.trim().split(/ +/);
-					if(fields.length !== 3) {
-						// lineType = LineType.exit;
-						break;
-					}
+					if(fields.length !== 3) break;
+
 					const sides: PositionType = [
 						Number.parseInt(fields[0]),
 						Number.parseInt(fields[1]),
@@ -211,7 +209,6 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					if(Number.isNaN(sides[0]) || sides[0] <= 0 ||
 					   Number.isNaN(sides[1]) || sides[1] <= 0 ||
 					   Number.isNaN(sides[2]) || sides[2] <= 0) {
-						// lineType = LineType.exit;
 						break;
 					}
 					if(structures[currentStructure].volume.length > 0) {
@@ -219,7 +216,6 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						if(sides[0] !== previousSides[0] ||
 						   sides[1] !== previousSides[1] ||
 						   sides[2] !== previousSides[2]) {
-							// lineType = LineType.exit;
 							break;
 						}
 					}

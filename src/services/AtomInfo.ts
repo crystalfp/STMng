@@ -51,6 +51,18 @@ class AtomInfo {
 /** Access to the atom info */
 export const ai = AtomInfo.getInstance();
 
+/**
+ * Return the atom color
+ *
+ * @param atomZ - Atomic number for which the atom color should be returned
+ * @returns Color as a #RRGGBB string
+ */
 export const atomColor = (atomZ: number): string => AtomInfo.getInstance().atomData(atomZ).color;
 
+/**
+ * Return the atom symbol
+ *
+ * @param atomZ - Atomic number for which the atom symbol should be returned
+ * @returns The atom symbol
+ */
 export const atomSymbol = (atomZ: number): string => AtomInfo.getInstance().atomData(atomZ).symbol;

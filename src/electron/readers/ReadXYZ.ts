@@ -55,11 +55,6 @@ export class ReaderXYZ implements ReaderImplementation {
 			}
 		}
 
-		// Build the structure
-		for(const structure of structures) {
-			structure.bonds = [];
-		}
-
 		return structures;
 	}
 }

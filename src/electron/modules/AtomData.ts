@@ -193,6 +193,9 @@ export const getAtomicNumber = (symbol: string): number => AtomData.getInstance(
  */
 export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
 
+/**
+ * Setup the channel to pass atom data to the client
+ */
 export const setupChannelAtomData = (): void => {
     ipcMain.handle("ATOM:GET-ALL",  () => JSON.stringify(AtomData.getInstance().allAtomicData()));
 };

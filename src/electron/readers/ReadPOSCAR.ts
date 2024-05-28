@@ -191,11 +191,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 			if(lineType === LineType.exit) break;
 		}
 
-		// Add bonds and appearance to the structure
-		for(const structure of structures) {
-			structure.bonds = [];
-		}
-
 		return structures;
 	}
 }
