@@ -489,7 +489,6 @@ export class DrawUnitCell {
 			},
 			atoms: [],
 			bonds: [],
-			look: this.structure!.look,
 			volume: this.replicateVolume(this.structure!.volume)
 		};
 

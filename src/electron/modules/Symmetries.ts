@@ -5,7 +5,7 @@
  */
 import {ipcMain} from "electron";
 import type {ComputeSymmetriesParams} from "@/electron/types";
-import {getStructureAppearanceFromZ} from "./ReaderWriterHelpers";
+import {getAtomicSymbol} from "./AtomData";
 
 interface NativeOutput {
 	spaceGroup: string;
@@ -50,9 +50,8 @@ export const setupChannelSymmetries = (): void => {
 
 		// Reformat the returned values
 		const atomsZOut = [...computed.atomsZ];
-		const look = getStructureAppearanceFromZ(atomsZOut);
 		const labels = [];
-		for(const atomZ of atomsZOut) labels.push(look[atomZ].symbol);
+		for(const atomZ of atomsZOut) labels.push(getAtomicSymbol(atomZ));
 
 		// Return results to the client
 		const out = {
@@ -62,7 +61,6 @@ export const setupChannelSymmetries = (): void => {
 			labels,
 			fractionalCoordinates: [...computed.fractionalCoordinates],
 			noCellChanges: computed.noCellChanges,
-			look,
 			status: computed.status
 		};
 		return {payload: JSON.stringify(out)};

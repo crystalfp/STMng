@@ -128,9 +128,6 @@ export interface AtomAppearance {
     maxBonds: number;
 }
 
-/** Index is atomZ */
-export type Look = Record<number, AtomAppearance>;
-
 /** Volumetric data */
 export interface Volume {
     sides: PositionType;
@@ -142,7 +139,6 @@ export interface Structure {
     crystal:    Crystal;
     atoms:      Atom[];
     bonds:      Bond[];
-    look:       Look;
     volume:     Volume[];
 }
 
@@ -159,7 +155,6 @@ export interface MainResponse {
 
 export interface RenameInfo {
     map: [number, number][];
-    look: Look;
     error?: string;
 }
 

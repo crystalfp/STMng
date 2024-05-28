@@ -8,6 +8,7 @@ import fs from "node:fs";
 import {format} from "../modules/ReaderWriterHelpers";
 import type {Structure, MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
+import {getAtomicSymbol} from "../modules/AtomData";
 
 export class WriterXYZ implements WriterImplementation {
 
@@ -17,12 +18,12 @@ export class WriterXYZ implements WriterImplementation {
 			const fd = fs.openSync(filename, "w");
 			for(const structure of structures) {
 
-				const {look, atoms} = structure;
+				const {atoms} = structure;
 
 				fs.writeSync(fd, `  ${atoms.length}\n\n`);
 
 				for(const atom of atoms) {
-					const symbol = look[atom.atomZ].symbol.padEnd(2, " ");
+					const symbol = getAtomicSymbol(atom.atomZ).padEnd(2, " ");
 					const x = format(atom.position[0]);
 					const y = format(atom.position[1]);
 					const z = format(atom.position[2]);

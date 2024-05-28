@@ -5,7 +5,6 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation, ReaderOptions} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
 import {getAtomicNumber} from "../modules/AtomData";
@@ -31,7 +30,6 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			crystal,
 			atoms: [],
 			bonds: [],
-			look: {},
 			volume: []
 		};
 		let numberAtoms = 0;
@@ -119,8 +117,6 @@ export class ReaderLAMMPS implements ReaderImplementation {
 		for(const atom of structure.atoms) {
 			atom.atomZ = correspond[atom.atomZ];
 		}
-
-		structure.look = getStructureAppearanceFromZ(correspond);
 
 		return [structure];
 	}

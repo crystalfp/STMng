@@ -3,6 +3,7 @@
  *
  * @packageDocumentation
  */
+import {atomSymbol} from "@/services/AtomInfo";
 import type {Structure} from "@/types";
 
 export type SelectorType = "symbol" | "label" | "index" | "all";
@@ -29,7 +30,7 @@ export const selectAtomsByKind = (structure: Structure,
 	}
 
 	// Extract structure parts
-	const {atoms, look} = structure;
+	const {atoms} = structure;
 	const natoms = atoms.length;
 	if(natoms === 0) return [];
 
@@ -39,7 +40,8 @@ export const selectAtomsByKind = (structure: Structure,
 		case "symbol":
 			selectors = new Set<string>(selectorsList);
 			for(let idx=0; idx < natoms; ++idx) {
-				const symbol = look[atoms[idx].atomZ].symbol.toLowerCase();
+				const {atomZ} = atoms[idx];
+				const symbol = atomSymbol(atomZ).toLowerCase();
 				if(selectors.has(symbol)) selectedAtomsIdx.push(idx);
 			}
 			break;

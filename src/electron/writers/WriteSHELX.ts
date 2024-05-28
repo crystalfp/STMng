@@ -9,6 +9,7 @@ import {cartesianToFractionalCoordinates,
 		basisToLengthAngles, format} from "../modules/ReaderWriterHelpers";
 import type {Structure, MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
+import {getAtomicSymbol} from "../modules/AtomData";
 
 export class WriterSHELX implements WriterImplementation {
 
@@ -17,7 +18,7 @@ export class WriterSHELX implements WriterImplementation {
 			const fd = fs.openSync(filename, "w");
 
 			// Access the structure
-			const {crystal, atoms, look} = structures[0];
+			const {crystal, atoms} = structures[0];
 			const {basis, spaceGroup} = crystal;
 
 			// Comment line
@@ -69,7 +70,7 @@ export class WriterSHELX implements WriterImplementation {
     		// The SFAC line
 			let line = "SFAC";
 			for(const item of atomCounts) {
-				line += ` ${look[item[0]].symbol}`;
+				line += ` ${getAtomicSymbol(item[0])}`;
 			}
 			line += "\n";
 			fs.writeSync(fd, line);
@@ -87,7 +88,7 @@ export class WriterSHELX implements WriterImplementation {
 
 			idx = 0;
 			for(const atom of atoms) {
-				const name = look[atom.atomZ].symbol;
+				const name = getAtomicSymbol(atom.atomZ);
 				const pos = atomIndices.get(atom.atomZ)!;
 				fs.writeSync(fd, `${name.padEnd(4)} ${pos.toString().padEnd(4)} ` +
 							 	 `${format(fc[3*idx])} ${format(fc[3*idx+1])} ` +

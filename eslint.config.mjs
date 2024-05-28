@@ -369,12 +369,10 @@ export default [{
         "sonarjs/no-extra-arguments": "warn",
         "sonarjs/no-redundant-jump": "warn",
         "sonarjs/no-one-iteration-loop": "warn",
-
-        // To support ESlint 9.x
-        "security/detect-child-process": "off",
-        "promise/no-return-wrap": "off",
-        "promise/no-promise-in-callback": "off",
-        "promise/no-nesting": "off",
-        "promise/no-callback-in-promise": "off",
+        "promise/no-return-wrap": "warn",
+        "promise/no-promise-in-callback": "warn",
+        "promise/no-nesting": "warn",
+        "promise/no-callback-in-promise": "warn",
+        "security/detect-child-process": "warn",
     }
 }];

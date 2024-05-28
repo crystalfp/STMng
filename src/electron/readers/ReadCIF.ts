@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {extractBasis, fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderWriterHelpers";
+import {extractBasis, fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
 import {getAtomicNumber} from "../modules/AtomData";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
@@ -180,7 +180,6 @@ export class ReaderCIF implements ReaderImplementation {
 					this.structures.push({crystal,
 										  atoms: [],
 										  bonds: [],
-										  look: {},
 										  volume: []});
 				}
 				basisSides  = [0, 0, 0];
@@ -249,7 +248,6 @@ export class ReaderCIF implements ReaderImplementation {
 
 		// Build the structure
 		for(const structure of this.structures) {
-			structure.look = getStructureAppearance(structure.atoms);
 			structure.bonds = [];
 		}
 

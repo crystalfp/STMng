@@ -9,6 +9,7 @@ import {cartesianToFractionalCoordinates,
 		basisToLengthAngles, format} from "../modules/ReaderWriterHelpers";
 import type {Structure, MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
+import {getAtomicSymbol} from "../modules/AtomData";
 
 export class WriterCIF implements WriterImplementation {
 
@@ -27,7 +28,7 @@ export class WriterCIF implements WriterImplementation {
 			for(const structure of structures) {
 
 				// Access the structure
-				const {crystal, atoms, look} = structure;
+				const {crystal, atoms} = structure;
 				const {basis, spaceGroup} = crystal;
 
 				// Start data block
@@ -79,7 +80,7 @@ export class WriterCIF implements WriterImplementation {
 				const fc = cartesianToFractionalCoordinates(structure);
 				let idx = 0;
 				for(const atom of atoms) {
-					const name = look[atom.atomZ].symbol;
+					const name = getAtomicSymbol(atom.atomZ);
 					fs.writeSync(fd, `${name.padEnd(4)} ${atom.label.padEnd(4)} ` +
 									 `${format(fc[3*idx])} ${format(fc[3*idx+1])} ` +
 									 `${format(fc[3*idx+2])}\n`);

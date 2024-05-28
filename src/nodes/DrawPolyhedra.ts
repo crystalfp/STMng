@@ -10,6 +10,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "@/services/SceneManager";
 import type {Structure} from "@/types";
 import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
+import {atomColor} from "@/services/AtomInfo";
 
 export class DrawPolyhedra {
 
@@ -170,7 +171,7 @@ export class DrawPolyhedra {
 
 				if(this.colorByCenterAtom) {
 					const {atomZ} = this.structure!.atoms[idx];
-					this.centerAtomsColor.push(this.structure!.look[atomZ].color);
+					this.centerAtomsColor.push(atomColor(atomZ));
 				}
 			}
 		}

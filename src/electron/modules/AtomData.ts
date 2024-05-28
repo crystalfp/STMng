@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {app} from "electron";
+import {ipcMain, app} from "electron";
 import type {AtomAppearance} from "../../types";
 
 // ##############################################################################
@@ -139,6 +139,24 @@ class AtomData {
 		};
 	}
 
+	/**
+	 * Return data for all atoms
+	 *
+	 * @returns The array of atom data to be used in client
+	 */
+	allAtomicData(): AtomAppearance[] {
+
+		const out: AtomAppearance[] = [];
+
+		const len = this.data.length;
+		for(let atomZ=0; atomZ < len; ++atomZ) {
+
+			out.push(this.atomicData(atomZ));
+		}
+
+		return out;
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
@@ -168,17 +186,13 @@ class AtomData {
 export const getAtomicNumber = (symbol: string): number => AtomData.getInstance().atomicNumber(symbol);
 
 /**
- * Return other information on the atom with Z value
- *
- * @param atomZ - Z value of the atom that should be retrieved
- * @returns Structure containing symbol, radii and color
- */
-export const getAtomicData = (atomZ: number): AtomAppearance => AtomData.getInstance().atomicData(atomZ);
-
-/**
  * Convert the atom Z value into atom symbol
  *
  * @param atomZ - Atom Z value
  * @returns The corresponding atomic symbol
  */
 export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
+
+export const setupChannelAtomData = (): void => {
+    ipcMain.handle("ATOM:GET-ALL",  () => JSON.stringify(AtomData.getInstance().allAtomicData()));
+};

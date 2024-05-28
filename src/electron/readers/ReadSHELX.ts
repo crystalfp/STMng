@@ -8,7 +8,7 @@ import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure, Atom} from "../../types";
-import {extractBasis, fractionalToCartesianCoordinates, getStructureAppearance} from "../modules/ReaderWriterHelpers";
+import {extractBasis, fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
 
 export class ReaderSHELX implements ReaderImplementation {
 
@@ -28,7 +28,6 @@ export class ReaderSHELX implements ReaderImplementation {
 		const structures: Structure[] = [{crystal,
 										  atoms: [],
 										  bonds: [],
-										  look: {},
 										  volume: []}];
 		let spaceGroup = "";
 		let latticeType = 0;
@@ -112,7 +111,6 @@ export class ReaderSHELX implements ReaderImplementation {
 		structures[0].crystal.spaceGroup = spaceGroup || "P 1";
 
 		// Build the rest of the structure
-		structures[0].look  = getStructureAppearance(structures[0].atoms);
 		structures[0].bonds = [];
 
 		return structures;

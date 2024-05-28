@@ -10,6 +10,7 @@ import type {Structure, PositionType, BasisType} from "@/types";
 import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 import {useControlStore} from "@/stores/controlStore";
 import {watchEffect} from "vue";
+import {atomColor} from "@/services/AtomInfo";
 
 export class Trajectories {
 
@@ -264,11 +265,11 @@ export class Trajectories {
 
 		const len = indices.length;
 		traceColor.length = len;
-		const {atoms, look} = structure;
+		const {atoms} = structure;
 		let i = 0;
 		for(const idx of indices) {
 			const {atomZ} = atoms[idx];
-			traceColor[i++] = look[atomZ].color;
+			traceColor[i++] = atomColor(atomZ);
 		}
 	}
 

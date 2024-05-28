@@ -6,7 +6,6 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import {getStructureAppearance} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation} from "../types";
 import type {Crystal, Structure} from "../../types";
 
@@ -37,7 +36,7 @@ export class ReaderXYZ implements ReaderImplementation {
 					origin: [0, 0, 0],
 					spaceGroup: ""
 				};
-				structures.push({crystal, atoms: [], bonds: [], look: {}, volume: []});
+				structures.push({crystal, atoms: [], bonds: [], volume: []});
 				atoms = structures[step].atoms;
 			}
 			else if(commentLine) {
@@ -58,7 +57,6 @@ export class ReaderXYZ implements ReaderImplementation {
 
 		// Build the structure
 		for(const structure of structures) {
-			structure.look = getStructureAppearance(structure.atoms);
 			structure.bonds = [];
 		}
 

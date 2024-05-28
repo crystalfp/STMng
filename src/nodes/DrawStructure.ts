@@ -10,6 +10,7 @@ import type {PositionType, Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
+import {ai, atomColor, atomSymbol} from "@/services/AtomInfo";
 
 export class DrawStructure {
 
@@ -32,8 +33,7 @@ export class DrawStructure {
 	private readonly rCovScale = 0.5;
 	private loadedData: Structure = {crystal: {basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 											   origin: [0, 0, 0], spaceGroup: ""},
-											   atoms: [], bonds: [], look: {},
-											   volume: []};
+											   atoms: [], bonds: [], volume: []};
 
 	/**
 	 * Create the node
@@ -111,23 +111,23 @@ export class DrawStructure {
 		switch(this.drawKind) {
 			case "ball-and-stick":
 				for(const atom of data.atoms) {
-					const {color} = data.look[atom.atomZ];
-					const radius = data.look[atom.atomZ].rCov * this.rCovScale;
+					const color = atomColor(atom.atomZ);
+					const radius = ai.atomData(atom.atomZ).rCov * this.rCovScale;
 					this.addSphere(radius, color, atom.position, index, this.atomsGroup);
 					++index;
 				}
 				break;
 			case "van-der-walls":
 				for(const atom of data.atoms) {
-					const {color} = data.look[atom.atomZ];
-					const radius = data.look[atom.atomZ].rVdW;
+					const color = atomColor(atom.atomZ);
+					const radius = ai.atomData(atom.atomZ).rVdW;
 					this.addSphere(radius, color, atom.position, index, this.atomsGroup);
 					++index;
 				}
 				break;
 			case "licorice":
 				for(const atom of data.atoms) {
-					const {color} = data.look[atom.atomZ];
+					const color = atomColor(atom.atomZ);
 					this.addSphere(this.bondRadius, color, atom.position, index, this.atomsGroup);
 					++index;
 				}
@@ -144,8 +144,8 @@ export class DrawStructure {
 					const atomTo   = data.atoms[bond.to];
 					if(bond.type === "h") this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else {
-						const colorFrom = data.look[atomFrom.atomZ].color;
-						const colorTo   = data.look[atomTo.atomZ].color;
+						const colorFrom = atomColor(atomFrom.atomZ);
+						const colorTo   = atomColor(atomTo.atomZ);
 						this.addCylinder(atomFrom.position, atomTo.position,
 										 this.bondRadius, colorFrom, colorTo, this.bondsGroup);
 					}
@@ -157,12 +157,12 @@ export class DrawStructure {
 					const atomTo    = data.atoms[bond.to];
 					if(bond.type === "h") this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else if(atomFrom.atomZ === atomTo.atomZ) {
-						const {color} = data.look[atomFrom.atomZ];
+						const color = atomColor(atomFrom.atomZ);
 						this.addNormalBondSameAtoms(atomFrom.position, atomTo.position, color, this.bondsGroup);
 					}
 					else {
-						const colorFrom = data.look[atomFrom.atomZ].color;
-						const colorTo   = data.look[atomTo.atomZ].color;
+						const colorFrom = atomColor(atomFrom.atomZ);
+						const colorTo   = atomColor(atomTo.atomZ);
 						this.addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo, this.bondsGroup);
 					}
 				}
@@ -195,10 +195,10 @@ export class DrawStructure {
 			let offset = 0;
 			switch(this.drawKind) {
 				case "ball-and-stick":
-					offset = data.look[atom.atomZ].rCov * this.rCovScale * 1.3;
+					offset = ai.atomData(atom.atomZ).rCov * this.rCovScale * 1.3;
 					break;
 				case "van-der-walls":
-					offset = data.look[atom.atomZ].rVdW * 1.3;
+					offset = ai.atomData(atom.atomZ).rVdW * 1.3;
 					break;
 				case "licorice":
 					offset = this.bondRadius * 2.5;
@@ -211,7 +211,7 @@ export class DrawStructure {
 			let labelText;
 			switch(this.labelKind) {
 				case "symbol":
-					labelText = data.look[atom.atomZ].symbol;
+					labelText = atomSymbol(atom.atomZ);
 					break;
 				case "label":
 					labelText = atom.label;

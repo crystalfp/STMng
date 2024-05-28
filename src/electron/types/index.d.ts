@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  */
-import type {Structure, BasisType, MainResponse, Look} from "../../types";
+import type {Structure, BasisType, MainResponse} from "../../types";
 
 /** Parameters for the window creation */
 export interface WindowsParams {
@@ -58,7 +58,6 @@ export interface ComputeSymmetriesOutput {
 	labels: string[];
 	fractionalCoordinates: number[];
 	noCellChanges: boolean;
-	look: Look;
 	status: string;
 }
 

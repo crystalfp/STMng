@@ -6,7 +6,6 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
-import {getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation, ReaderOptions} from "../types";
 import type {Structure, Crystal, Atom} from "../../types";
 
@@ -41,7 +40,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		let useBohr = false;
 		const sides = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		const BOHR_TO_ANGSTROM = 0.529177;
-		const atomicNumbers = new Set<number>();
 		let voxels: number[] = [];
 		let nvoxels = 0;
 		let nv1=0, nv2=0, nv3=0;
@@ -59,7 +57,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 			crystal,
 			atoms: [],
 			bonds: [],
-			look: {},
 			volume: [{sides: [0, 0, 0], values: []}]
 		};
 
@@ -157,7 +154,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 					if(fields.length !== 5) throw Error(`Malformed file (atoms line ${idxBasis+1})`);
 
 					const atomZ = Number.parseInt(fields[0]);
-					atomicNumbers.add(atomZ);
 					const atom: Atom = {
 						atomZ,
 						label: getAtomicSymbol(atomZ),
@@ -231,8 +227,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 			if(lineType === LineType.exit) break;
 		}
-
-		structure.look = getStructureAppearanceFromZ([...atomicNumbers]);
 
 		return [structure];
 	}

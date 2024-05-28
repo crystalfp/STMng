@@ -20,7 +20,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 
 	// Sanity check
 	if(!mainStructure?.atoms) throw Error("Missing main structure");
-	const {crystal, look, atoms} = mainStructure;
+	const {crystal, atoms} = mainStructure;
 	const natoms = atoms.length;
 	if(natoms === 0) throw Error("Empty main structure");
 	let lineType: LineType = LineType.header;
@@ -65,7 +65,6 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 						},
 						atoms: [],
 						bonds: [],
-						look: structuredClone(look),
 						volume: []
 					};
 					structures.push(structure);

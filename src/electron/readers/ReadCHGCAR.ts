@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
-import {fractionalToCartesianCoordinates, getStructureAppearanceFromZ} from "../modules/ReaderWriterHelpers";
+import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation, ReaderOptions} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
 
@@ -67,7 +67,6 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						},
 						atoms: [],
 						bonds: [],
-						look: {},
 						volume: []
 					});
 					++currentStructure;
@@ -245,11 +244,6 @@ export class ReaderCHGCAR implements ReaderImplementation {
 				}
 			}
 			if(lineType === LineType.exit) break;
-		}
-
-		// Add appearance to the structure
-		for(const structure of structures) {
-			structure.look  = getStructureAppearanceFromZ(atomsZ);
 		}
 
 		return structures;

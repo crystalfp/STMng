@@ -10,6 +10,7 @@ import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNot
 import type {Structure} from "@/types";
 import type {ComputeSymmetriesParams, ComputeSymmetriesOutput} from "@/electron/types";
 import {useControlStore} from "@/stores/controlStore";
+import {atomSymbol} from "@/services/AtomInfo";
 
 // > Kind of directions for filling unit cell
 const X_MIN = 0x010;
@@ -261,7 +262,7 @@ export class Symmetries {
 
 		const idx: number[] = [];
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, look, labels} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -270,7 +271,6 @@ export class Symmetries {
 			},
 			atoms: [],
 			bonds: [],
-			look,
 			volume: []
 		};
 
@@ -447,7 +447,6 @@ export class Symmetries {
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
 				label: `${labels[idx[i]]}${i}`,
-				// label: `${look[atomsZ[idx[i]]].symbol}${i}`,
 				position: [
 					fx*basis[0] + fy*basis[3] + fz*basis[6],
 					fx*basis[1] + fy*basis[4] + fz*basis[7],
@@ -467,7 +466,7 @@ export class Symmetries {
 	 */
 	private buildStructure(out: ComputeSymmetriesOutput): Structure {
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, look} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -476,7 +475,6 @@ export class Symmetries {
 			},
 			atoms: [],
 			bonds: [],
-			look,
 			volume: []
 		};
 
@@ -489,7 +487,7 @@ export class Symmetries {
 
 			structure.atoms.push({
 				atomZ: atomsZ[i],
-				label: `${look[atomsZ[i]].symbol}${i}`,
+				label: `${atomSymbol(atomsZ[i])}${i}`,
 				position: [
 					fx*basis[0] + fy*basis[3] + fz*basis[6],
 					fx*basis[1] + fy*basis[4] + fz*basis[7],

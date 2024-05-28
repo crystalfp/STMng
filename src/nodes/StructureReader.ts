@@ -9,6 +9,7 @@ import {readFileStructure, readAuxFile, atomsTypeRename} from "@/services/Routes
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useControlStore} from "@/stores/controlStore";
 import type {ReaderStructure, Structure, RenameInfo} from "@/types";
+import {atomSymbol} from "@/services/AtomInfo";
 
 export class StructureReader {
 
@@ -205,7 +206,7 @@ export class StructureReader {
 	private changeBohrUnits(): void {
 
 		if(!this.structures[0]) return;
-		const {crystal, atoms, look, volume} = this.structures[0];
+		const {crystal, atoms, volume} = this.structures[0];
 		if(!crystal) return;
 		const {basis, origin, spaceGroup} = crystal;
 
@@ -236,7 +237,6 @@ export class StructureReader {
 			},
 			atoms,
 			bonds: [],
-			look,
 			volume
 		};
 
@@ -298,7 +298,10 @@ export class StructureReader {
 
 		if(this.structures.length === 0) return;
 
-		atomsTypeRename(Object.keys(this.structures[0].look).join(" "), this.atomsTypes.trim())
+		const atomsTypes = new Set<string>();
+		for(const atom of this.structures[0].atoms) atomsTypes.add(atomSymbol(atom.atomZ));
+
+		atomsTypeRename([...atomsTypes].join(" "), this.atomsTypes.trim())
 			.then((renameInfoEncoded) => {
 
 				const renameInfo = JSON.parse(renameInfoEncoded) as RenameInfo;
@@ -315,7 +318,6 @@ export class StructureReader {
 						if(renamedAtomZ === undefined) throw Error(`Invalid mapping for atomZ of ${atom.atomZ}`);
 						atom.atomZ = renamedAtomZ;
 					}
-					structure.look = renameInfo.look;
 				}
 				sb.setData(this.id, this.structures[this.step-1]);
 			})

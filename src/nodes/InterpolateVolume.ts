@@ -50,7 +50,7 @@ export class InterpolateVolume {
 			return;
 		}
 
-		const {volume, crystal, atoms, bonds, look} = this.structure;
+		const {volume, crystal, atoms, bonds} = this.structure;
 
 		// If no volumetric data or no unit cell return the input structure
 		if(!this.interpolateVolume ||
@@ -65,7 +65,6 @@ export class InterpolateVolume {
 			crystal,
 			atoms,
 			bonds,
-			look,
 			volume: []
 		};
 
@@ -263,7 +262,6 @@ export class InterpolateVolume {
 			},
 			atoms: [],
 			bonds: [],
-			look: {},
 			volume: []
 		});
 	}

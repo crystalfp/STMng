@@ -4,8 +4,7 @@
  * @packageDocumentation
  */
 import log from "electron-log";
-import {getAtomicData} from "./AtomData";
-import type {BasisType, PositionType, Atom, Look, Structure} from "../../types";
+import type {BasisType, PositionType, Structure} from "../../types";
 
 /**
  * Extract the basis vectors from basis lengths and angles
@@ -92,45 +91,6 @@ export const fractionalToCartesianCoordinates = (basis: BasisType,
 		fx*basis[1] + fy*basis[4] + fz*basis[7],
 		fx*basis[2] + fy*basis[5] + fz*basis[8],
 	];
-};
-
-/**
- * Compute the "look" part of the structure
- *
- * @param atoms - Atoms in the structure
- * @returns The "look" component of the structure
- */
-export const getStructureAppearance = (atoms: Atom[]): Look => {
-
-	// Find distinct atom species
-	const distinctAtoms = new Set<number>();
-	for(const atom of atoms) distinctAtoms.add(atom.atomZ);
-
-	const out: Look = {};
-	for(const atomZ of distinctAtoms) {
-
-		out[atomZ] = getAtomicData(atomZ);
-	}
-
-	return out;
-};
-
-/**
- * Compute the "look" part of the structure from the list of atoms Z values
- *
- * @param atomsZ - Atom Z values of the atoms in the structure
- * @returns The "look" component of the structure
- */
-export const getStructureAppearanceFromZ = (atomsZ: number[]): Look => {
-
-	const out: Look = {};
-	for(const atomZ of atomsZ) {
-
-		if(!atomZ) continue;
-		out[atomZ] = getAtomicData(atomZ);
-	}
-
-	return out;
 };
 
 /**

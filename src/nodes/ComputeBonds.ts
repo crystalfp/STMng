@@ -4,14 +4,15 @@
  * @packageDocumentation
  */
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {Structure, Atom, Bond, Look} from "@/types";
+import type {Structure, Atom, Bond} from "@/types";
+import {ai, atomSymbol} from "@/services/AtomInfo";
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
 interface PairData {
-    label: string;
+    label:  string;
 	atomZi: number;
 	atomZj: number;
-    scale: number;
+    scale:  number;
 }
 
 /** Multiplicative coefficients for basis to get atoms adjacent to the unit cell */
@@ -154,23 +155,25 @@ export class ComputeBonds {
 	private createPairData(): void {
 
 		// Get the structure atoms
-		if(!this.inputStructure?.look || this.inputStructure.atoms.length === 0) {
+		if(!this.inputStructure?.atoms?.length) {
 			this.perPairData = [];
 			return;
 		}
-		const {look} = this.inputStructure;
+		const {atoms} = this.inputStructure;
+
+		const atomsZ = new Set<number>();
+		for(const atom of atoms) atomsZ.add(atom.atomZ);
 
 		// Remove previous entries not existing in the current structure
 		let len = this.perPairData.length;
 		for(let i=len-1; i >= 0; --i) {
-			if(!look[this.perPairData[i].atomZi] || !look[this.perPairData[i].atomZj]) {
+			if(!atomsZ.has(this.perPairData[i].atomZi) || !atomsZ.has(this.perPairData[i].atomZj)) {
 				this.perPairData.splice(i, 1);
 			}
 		}
 
 		// Get the type of atoms in the structure
-		const z: number[] = [];
-		for(const atomZ in look) z.push(Number.parseInt(atomZ));
+		const z = [...atomsZ];
 
 		// Add missing pairs
 		len = z.length;
@@ -190,10 +193,10 @@ export class ComputeBonds {
 
 				if(add) {
 					this.perPairData.push({
-						label: `${look[z[i]].symbol} – ${look[z[j]].symbol}`,
+						label:  `${atomSymbol(z[i])} – ${atomSymbol(z[j])}`,
 						atomZi: z[i],
 						atomZj: z[j],
-						scale: 1.1
+						scale:  1.1
 					});
 				}
 			}
@@ -210,7 +213,7 @@ export class ComputeBonds {
 
 		const natoms = this.inputStructure!.atoms.length;
 		this.inputNumAtoms = natoms;
-		const {crystal, atoms, look, volume} = this.inputStructure!;
+		const {crystal, atoms, volume} = this.inputStructure!;
 		const {basis} = crystal;
 
 		// Add the input atoms
@@ -254,7 +257,6 @@ export class ComputeBonds {
 			crystal,
 			atoms: outAtoms,
 			bonds: [],
-			look,
 			volume
 		};
 	}
@@ -332,7 +334,6 @@ export class ComputeBonds {
 					crystal: this.inputStructure.crystal,
 					atoms: this.inputStructure.atoms,
 					bonds: this.computeBonds(this.inputStructure),
-					look: this.inputStructure.look,
 					volume: this.inputStructure.volume
 				};
 				sb.setData(this.id, out);
@@ -352,12 +353,12 @@ export class ComputeBonds {
 	 */
 	private computeBonds(structure: Structure): Bond[] {
 
-		const {atoms, look} = structure;
+		const {atoms} = structure;
 
 		const radii: number[] = [];
 		for(const atom of atoms) {
 			const {atomZ} = atom;
-			radii.push(look[atomZ].rCov);
+			radii.push(ai.atomData(atomZ).rCov);
 		}
 
 		// No bonds possible
@@ -493,7 +494,7 @@ export class ComputeBonds {
 		}
 
 		// Remove bonds between atoms that have too many bonds
-		this.removeOverBonding(bonds, atoms, look, addType);
+		this.removeOverBonding(bonds, atoms, addType);
 
 		// Clean up bonds list removing invalid bonds
 		const outBonds: Bond[] = [];
@@ -510,10 +511,9 @@ export class ComputeBonds {
 	 *
 	 * @param bonds - The current list of bonds (not yet cleaned from deleted bonds). Will be modified
 	 * @param atoms - Structure atoms list
-	 * @param look - Structure look to extract the maximum number of bonds for each atom type
 	 * @param addType - If the atom is external to the unit cell the value is 2
 	 */
-	private removeOverBonding(bonds: Bond[], atoms: Atom[], look: Look, addType: number[]): void {
+	private removeOverBonding(bonds: Bond[], atoms: Atom[], addType: number[]): void {
 
 		// Count bonds for each atom
 		const bondsCount = new Map<number, number>();
@@ -548,8 +548,8 @@ export class ComputeBonds {
 			const fromAtomZ = atoms[from].atomZ;
 			const toAtomZ   = atoms[to].atomZ;
 
-			const maxFrom = look[fromAtomZ].maxBonds;
-			const maxTo   = look[toAtomZ].maxBonds;
+			const maxFrom = ai.atomData(fromAtomZ).maxBonds;
+			const maxTo   = ai.atomData(toAtomZ).maxBonds;
 
 			if(countFrom > maxFrom && countTo > maxTo) {
 				bond.type = "x";
@@ -596,7 +596,6 @@ export class ComputeBonds {
 			},
 			atoms: [],
 			bonds: [],
-			look: {},
 			volume: []
 		});
 	}

@@ -163,7 +163,6 @@ export class NodeInfo {
 				typedStore.crystal = typedData.crystal;
 				typedStore.atoms   = typedData.atoms;
 				typedStore.bonds   = typedData.bonds;
-				typedStore.look    = typedData.look;
 				typedStore.volume  = typedData.volume;
 
 				break;

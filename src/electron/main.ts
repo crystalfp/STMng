@@ -20,6 +20,7 @@ import {setupChannelCapture} from "./modules/CaptureMedia";
 import {setupChannelSymmetries} from "./modules/Symmetries";
 import {setupChannelWriter} from "./modules/Writer";
 import {setupChannelFingerprints} from "./modules/Fingerprints";
+import {setupChannelAtomData} from "./modules/AtomData";
 
 // > Command line parsing
 const program = new Command("STMng");
@@ -60,6 +61,7 @@ setupChannelCapture();
 setupChannelSymmetries();
 setupChannelWriter();
 setupChannelFingerprints();
+setupChannelAtomData();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");
