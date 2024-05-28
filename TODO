@@ -14,7 +14,6 @@ Bugs:
 Requests from Oganov:
   ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ Use of local fingerprint order parameters to color atoms
-  ☐ Add external atoms that have a chain of bonds to inside the cell
 
 Nice to have/Future:
   ☐ Label color
@@ -32,6 +31,7 @@ Nice to have/Future:
   ☐ An option to specify arbitrary section plane
 
 Archive:
+  ✔ Add external atoms that have a chain of bonds to inside the cell @done(2024-05-28 14:20) @project(Requests from Oganov)
   ✔ Remove look from structure and add a cached atom data in the client @done(2024-05-28 09:16) @project(ToDo)
   ✔ Use the `maxBonds` value to limit the number of bonds for an atom @done(2024-05-27 17:03) @project(ToDo)
   ✔ Color polyhedra by central atom color @done(2024-05-26 10:55) @project(Nice to have/Future)

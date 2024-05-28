@@ -30,8 +30,8 @@ const maxHValenceAngle    = ref(30);
 const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
 const perPairData         = ref<PairData[]>([]);
-const enlargeCell         = ref(false);
 const showScale           = ref<number[]>([]);
+const enlargementKind     = ref("none");
 
 sb.getUiParams(props.id, (params: UiParams) => {
     minBondingDistance.value  = params.minBondingDistance as number ?? 0.64;
@@ -41,7 +41,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
     bondScale.value      		  = params.bondScale as number ?? 1.1;
     perPairScale.value        = params.perPairScale as boolean ?? false;
-    enlargeCell.value         = params.enlargeCell as boolean ?? false;
+    enlargementKind.value     = params.enlargementKind as string ?? "none";
 
     perPairData.value.length = 0;
     const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
@@ -60,7 +60,7 @@ watchEffect(() => {
         bondScale:           bondScale.value,
         perPairScale:        perPairScale.value,
         perPairData:         JSON.stringify(perPairData.value),
-        enlargeCell:         enlargeCell.value
+        enlargementKind:     enlargementKind.value
     });
 });
 
@@ -123,8 +123,13 @@ const resetSliders = (): void => {
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" />
     </g-debounced-slider>
   </v-container>
-  <v-switch v-model="enlargeCell" color="primary"
-            label="Add bonded atoms outside unit cell" density="compact" class="mt-2 ml-2" />
+  <v-label class="ml-2 mb-2">Add bonded atoms outside unit cell</v-label>
+  <v-btn-toggle v-model="enlargementKind" color="primary" class="mb-6 ml-2">
+    <v-btn value="none">None</v-btn>
+    <v-btn value="outside">Neighbors</v-btn>
+    <v-btn value="connected">Connected</v-btn>
+  </v-btn-toggle>
+
   <v-btn block class="mt-4" @click="resetSliders">
     <template #append>
       <v-icon :icon="mdiRestore" size="x-large" />

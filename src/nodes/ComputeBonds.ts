@@ -94,9 +94,9 @@ export class ComputeBonds {
 	private bondScale           = 1.1;
 	private perPairScale		= false;
 	private perPairData: PairData[] = [];
-	private enlargeCell         = false;
 	private addType: number[]   = []; // 1: atom in unit cell; 2: atom outside unit cell
 	private inputNumAtoms		= 0;
+	private enlargementKind		= "none";
 
 	// > Create the node
 	/**
@@ -116,7 +116,7 @@ export class ComputeBonds {
     		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
     		this.bondScale    		 = params.bondScale as number ?? 1.1;
 			this.perPairScale		 = params.perPairScale as boolean ?? false;
-			this.enlargeCell	     = params.enlargeCell as boolean ?? false;
+    		this.enlargementKind     = params.enlargementKind as string ?? "none";
 
 			this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
@@ -253,6 +253,36 @@ export class ComputeBonds {
 			}
 		}
 
+		// Mark coincident atoms
+		const fullCount = outAtoms.length;
+		const tol = 1e-5;
+
+		for(let i=0; i < fullCount-1; ++i) {
+			if(this.addType[i] < 0) continue;
+			for(let j=i+1; j < fullCount; ++j) {
+				if(this.addType[j] < 0) continue;
+
+				const fdx = outAtoms[i].position[0] - outAtoms[j].position[0];
+				if(fdx < tol && fdx > -tol) {
+					const fdy = outAtoms[i].position[1] - outAtoms[j].position[1];
+					if(fdy < tol && fdy > -tol) {
+						const fdz = outAtoms[i].position[2] - outAtoms[j].position[2];
+						if(fdz < tol && fdz > -tol) {
+							this.addType[j] = -1;
+						}
+					}
+				}
+			}
+		}
+
+		// Remove coincident atoms
+		for(let i=fullCount-1; i >= 0; --i) {
+			if(this.addType[i] < 0) {
+				this.addType.splice(i, 1);
+				outAtoms.splice(i, 1);
+			}
+		}
+
 		return {
 			crystal,
 			atoms: outAtoms,
@@ -316,32 +346,129 @@ export class ComputeBonds {
 		}
 		else if(this.enableComputeBonds) {
 
-			if(this.enlargeCell) {
-
-				// If no unit cell, do nothing
-				if(this.inputStructure.crystal.basis.every((value) => value === 0)) {
-					sb.setData(this.id, this.inputStructure);
-					return;
+			switch(this.enlargementKind) {
+				case "none": {
+					const out: Structure = {
+						crystal: this.inputStructure.crystal,
+						atoms: this.inputStructure.atoms,
+						bonds: this.computeBonds(this.inputStructure),
+						volume: this.inputStructure.volume
+					};
+					sb.setData(this.id, out);
+					break;
 				}
+				case "outside": {
+					// If no unit cell, do nothing
+					if(this.inputStructure.crystal.basis.every((value) => value === 0)) {
+						sb.setData(this.id, this.inputStructure);
+						return;
+					}
 
-				const enlargedStructure = this.addOutsideAtoms();
-				enlargedStructure.bonds = this.computeBonds(enlargedStructure);
-				this.clearOutsideAtoms(enlargedStructure);
-				sb.setData(this.id, enlargedStructure);
-			}
-			else {
-				const out: Structure = {
-					crystal: this.inputStructure.crystal,
-					atoms: this.inputStructure.atoms,
-					bonds: this.computeBonds(this.inputStructure),
-					volume: this.inputStructure.volume
-				};
-				sb.setData(this.id, out);
+					const enlargedStructure = this.addOutsideAtoms();
+					enlargedStructure.bonds = this.computeBonds(enlargedStructure);
+					this.clearOutsideAtoms(enlargedStructure);
+					sb.setData(this.id, enlargedStructure);
+					break;
+				}
+				case "connected": {
+					// If no unit cell, do nothing
+					if(this.inputStructure.crystal.basis.every((value) => value === 0)) {
+						sb.setData(this.id, this.inputStructure);
+						return;
+					}
+
+					const enlargedStructure = this.addOutsideAtoms();
+					enlargedStructure.bonds = this.computeBonds(enlargedStructure);
+					this.leaveConnectedAtoms(enlargedStructure);
+					sb.setData(this.id, enlargedStructure);
+					break;
+				}
 			}
 		}
 		else {
 
 			sb.setData(this.id, this.inputStructure);
+		}
+	}
+
+	/**
+	 * Recursively find the connected atoms
+	 *
+	 * @param bonds - The bonds part of the augmented structure
+	 * @param startIdx - Starting index for the serie
+	 */
+	private markingConnected(bonds: Bond[], startIdx: number): void {
+
+		for(const bond of bonds) {
+
+			const {from, to, type} = bond;
+			if(type !== "n") continue;
+			if(from === startIdx) {
+				if(this.addType[to] === 2) {
+					this.addType[to] = 22;
+					this.markingConnected(bonds, to);
+				}
+			}
+			else if(to === startIdx && this.addType[from] === 2) {
+				this.markingConnected(bonds, from);
+				this.addType[from] = 22;
+			}
+		}
+	}
+
+	/**
+	 * Start finding connected atoms outside the unit cell
+	 *
+	 * @param structure - The augmented structure with the 26 cell replicas
+	 */
+	private leaveConnectedAtoms(structure: Structure): void {
+
+		// The starting points are the outside atoms connected to one inside atom
+		for(const bond of structure.bonds) {
+
+			const {from, to, type} = bond;
+			if(type !== "n") continue;
+			if(this.addType[from] === 1 && this.addType[to] === 2) {
+				this.addType[to] = 22;
+				this.markingConnected(structure.bonds, to);
+			}
+			else if(this.addType[to] === 1 && this.addType[from] === 2) {
+				this.addType[from] = 22;
+				this.markingConnected(structure.bonds, from);
+			}
+		}
+
+		// Remove unneeded bonds
+		for(let i=structure.bonds.length-1; i >= 0; --i) {
+			const {from, to, type} = structure.bonds[i];
+			if(type !== "n") continue;
+			if(this.addType[from] === 2 || this.addType[to] === 2) {
+				structure.bonds.splice(i, 1);
+			}
+		}
+
+		// Preparing the atoms index mapping before removing outside not connected atoms
+		const mapIdx = new Map<number, number>();
+		const len = this.addType.length;
+		for(let i=0, j=0; i < len; ++i) {
+			if(this.addType[i] === 1 || this.addType[i] === 22) {
+				mapIdx.set(i, j);
+				++j;
+			}
+		}
+
+		// Remove unmarked atoms
+		for(let i=len-1; i >= 0; --i) {
+			if(this.addType[i] === 2) {
+				this.addType.splice(i, 1);
+				structure.atoms.splice(i, 1);
+			}
+		}
+
+		// Remap indices of atoms in the bonds
+		for(let i=structure.bonds.length-1; i >= 0; --i) {
+			structure.bonds[i].from = mapIdx.get(structure.bonds[i].from)!;
+			structure.bonds[i].to = mapIdx.get(structure.bonds[i].to)!;
 		}
 	}
 
@@ -370,7 +497,7 @@ export class ComputeBonds {
 
 		const {maxHValenceAngle, minBondingDistance,
 			   maxBondingDistance, maxHBondingDistance,
-			   enlargeCell, addType} = this;
+			   enlargementKind, addType} = this;
 
 		// Minimum covalent radius is 0.32 for He, so no bond shorter than .64 could exist
 		const minDistanceSquared = minBondingDistance*minBondingDistance;
@@ -400,7 +527,7 @@ export class ComputeBonds {
 				const positionJ = atoms[j].position;
 
 				// Don't compute bonds between external atoms
-				if(enlargeCell && addType[i] === 2 && addType[j] === 2) continue;
+				if(enlargementKind === "outside" && addType[i] === 2 && addType[j] === 2) continue;
 
 				// Never bond hydrogens to each other...
 				if(atomZi === 1 && atomZj === 1) continue;
@@ -615,7 +742,7 @@ export class ComputeBonds {
 			maxHValenceAngle:    this.maxHValenceAngle,
 			bondScale:			 this.bondScale,
 			perPairScale: 		 this.perPairScale,
-			enlargeCell:	 	 this.enlargeCell
+			enlargementKind:	 this.enlargementKind
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
