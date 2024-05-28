@@ -562,7 +562,7 @@ string doFindAndApplySymmetries(
 		dump(lattice, positions, types, natoms, "Before standardizing");
 #endif
 			num_primitive_atom = spg_standardize_cell(lattice, positions, types,
-													  natoms, 0, 0, symprecStandardize);
+													  natoms, 1, 0, symprecStandardize);
 #ifdef DEBUG
 		dump(lattice, positions, types, num_primitive_atom, "After standardizing");
 #endif
