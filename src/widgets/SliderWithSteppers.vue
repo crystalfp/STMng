@@ -92,6 +92,7 @@ watch(valueToDebounce, () => {
 <style>
 /* stylelint-disable selector-class-pattern */
 .slider-with-stepper .v-slider__label {
+  /* stylelint-disable value-keyword-case */
   width: v-bind(labelWidth);
 }
 </style>

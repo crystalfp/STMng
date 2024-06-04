@@ -9,8 +9,8 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	Napi::Env env = info.Env();
 
 	// Check arguments
-	if(info.Length() != 9) {
-    	Napi::TypeError::New(env, "Expecting exactly nine arguments").ThrowAsJavaScriptException();
+	if(info.Length() != 10) {
+    	Napi::TypeError::New(env, "Expecting exactly ten arguments").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -56,15 +56,21 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 		return info.Env().Undefined();
 	}
 
-	// Argument 7: symprecStandardize
-	if(!info[7].IsNumber()) {
-    	Napi::TypeError::New(env, "Seventh argument should be a number").ThrowAsJavaScriptException();
+	// Argument 7: standardizeOnly
+	if(!info[7].IsBoolean()) {
+    	Napi::TypeError::New(env, "Eighth argument should be a boolean").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
-	// Argument 8: symprecDataset
+	// Argument 8: symprecStandardize
 	if(!info[8].IsNumber()) {
-    	Napi::TypeError::New(env, "Eighth argument should be a number").ThrowAsJavaScriptException();
+    	Napi::TypeError::New(env, "Nineth argument should be a number").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 9: symprecDataset
+	if(!info[9].IsNumber()) {
+    	Napi::TypeError::New(env, "Tenth argument should be a number").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -104,7 +110,8 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	Napi::Float64Array fractionalCoordinatesArray = typedArray.As<Napi::Float64Array>();
 	size_t fractionalCoordinatesLength = fractionalCoordinatesArray.ElementLength();
 	std::vector<double_t> fractionalCoordinates(fractionalCoordinatesArray.Data(),
-												fractionalCoordinatesArray.Data() + fractionalCoordinatesLength);
+												fractionalCoordinatesArray.Data() +
+												fractionalCoordinatesLength);
 
 	// Argument 4: boolean
 	bool applyInputSymmetries = static_cast<bool>(info[4].As<Napi::Boolean>());
@@ -115,11 +122,14 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	// Argument 6: boolean
 	bool standardizeCell = static_cast<bool>(info[6].As<Napi::Boolean>());
 
-	// Argument 7: float
-	float symprecStandardize = static_cast<float>(info[7].As<Napi::Number>());
+	// Argument 7: boolean
+	bool standardizeOnly = static_cast<bool>(info[7].As<Napi::Boolean>());
 
 	// Argument 8: float
-	float symprecDataset = static_cast<float>(info[8].As<Napi::Number>());
+	double symprecStandardize = static_cast<double>(info[8].As<Napi::Number>());
+
+	// Argument 9: float
+	double symprecDataset = static_cast<double>(info[9].As<Napi::Number>());
 
 	bool unitCellModified;
 
@@ -131,6 +141,7 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 		applyInputSymmetries,
 		enableFindSymmetries,
 		standardizeCell,
+		standardizeOnly,
 		symprecStandardize,
 		symprecDataset,
 		unitCellModified

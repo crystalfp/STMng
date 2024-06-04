@@ -33,6 +33,7 @@ export class Symmetries {
 	private fillUnitCell  = true;
 	private showSymmetriesDialog = false;
 	private inputStructure: Structure | undefined;
+	private standardizeOnly = false;
 
 	// > Create the node
 	/**
@@ -54,6 +55,7 @@ export class Symmetries {
 			this.symprecDataset = params.symprecDataset as number ?? -5;
 			this.fillUnitCell = params.fillUnitCell as boolean ?? true;
 			this.showSymmetriesDialog = params.showSymmetriesDialog as boolean ?? false;
+			this.standardizeOnly = params.standardizeOnly as boolean ?? false;
 
 			if(this.showSymmetriesDialog) {
 				sb.setUiParams(this.id, {showSymmetriesDialog: false});
@@ -124,6 +126,7 @@ export class Symmetries {
 			applyInputSymmetries: this.applyInputSymmetries && !noSymmetries,
 			enableFindSymmetries: this.enableFindSymmetries,
 			standardizeCell: this.standardizeCell,
+			standardizeOnly: this.standardizeOnly,
 			symprecStandardize: Math.pow(10, this.symprecStandardize),
 			symprecDataset: Math.pow(10, this.symprecDataset),
 		};

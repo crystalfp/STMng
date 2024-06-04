@@ -355,6 +355,7 @@ const selectNode = (key: string): void => {
 
 
 <style scoped lang="scss">
+@use "sass:color";
 
 .graph-editor-portal {
   display: flex;
@@ -378,7 +379,7 @@ const selectNode = (key: string): void => {
 }
 
 // > Colors
-$node-selected-color: #FF0;
+$node-selected-color: #FFFF00;
 
 // > Node
 .border {
@@ -392,7 +393,8 @@ $node-selected-color: #FF0;
 }
 
 .selected {
-  fill: darken($node-selected-color, 25%) {
+//   fill: darken($node-selected-color, 25%) {
+  fill: color.adjust($node-selected-color, $lightness: -25%) {
     opacity: 0.8;
   }
   stroke: $node-selected-color {

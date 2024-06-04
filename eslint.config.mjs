@@ -20,10 +20,7 @@ import jsPlugin from "@eslint/js"
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [{
     ignores: [
-        "vite.config.mts",
-        "dist-electron/**/*.js",
         "src/vite-env.d.ts",
-        "save/**/*.*"
     ]}, {
     files: [
         "src/**/*.ts",
@@ -102,9 +99,10 @@ export default [{
         ...securityPlugin.configs["recommended-legacy"].rules,
         ...sonarjsPlugin.configs.recommended.rules,
         ...regexpPlugin.configs.recommended.rules,
-        ...vuePlugin.configs.base.rules,
-        ...vuePlugin.configs["vue3-essential"].rules,
-        ...vuePlugin.configs["vue3-recommended"].rules,
+        ...vuePlugin.configs["flat/base"].rules,
+        ...vuePlugin.configs["flat/essential"].rules,
+        ...vuePlugin.configs["flat/strongly-recommended"].rules,
+        ...vuePlugin.configs["flat/recommended"].rules,
         ...typescriptPlugin.configs.recommended.rules,
         ...typescriptPlugin.configs["recommended-type-checked"].rules,
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
@@ -358,7 +356,6 @@ export default [{
         "unicorn/switch-case-braces": "off",
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
 
-        "vue/comment-directive": "off",
         "arrow-body-style": "warn",
 
         // Fixed for ESlint 9.x

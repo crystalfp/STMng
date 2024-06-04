@@ -2,6 +2,7 @@
 
 #ifdef DEBUG
 #include <iostream>
+#include <set>
 #endif
 #include <stdlib.h>
 #include <string>
@@ -488,6 +489,37 @@ void dump(double lattice[3][3], double position[][3], int types[], const int num
 		cout << " -> " << x << ' ' << y << ' ' << z << endl;
 	}
 }
+void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const int num_atom, string title)
+{
+	cout << title << endl << "1.0" << endl;
+	cout << lattice[0][0] << ' ' << lattice[0][1] << ' ' << lattice[0][2] << endl;
+	cout << lattice[1][0] << ' ' << lattice[1][1] << ' ' << lattice[1][2] << endl;
+	cout << lattice[2][0] << ' ' << lattice[2][1] << ' ' << lattice[2][2] << endl;
+
+	cout << " O Fe" << endl;
+	set<int> z;
+	for(int i=0; i < num_atom; ++i) z.insert(types[i]);
+
+	for(auto x : z)
+	{
+		int cnt = 0;
+		for(int i=0; i < num_atom; ++i)
+		{
+			if(types[i] == x) ++cnt;
+		}
+		cout << ' ' << cnt;
+	}
+	cout << endl << "Direct" << endl;
+
+	for(auto x : z)
+	{
+		for(int i=0; i < num_atom; ++i)
+		{
+			if(types[i] != x) continue;
+			cout << position[i][0] << ' ' << position[i][1] << ' ' << position[i][2] << endl;
+		}
+	}
+}
 #endif
 
 string doFindAndApplySymmetries(
@@ -498,8 +530,9 @@ string doFindAndApplySymmetries(
 	bool applyInputSymmetries,
 	bool enableFindSymmetries,
 	bool standardizeCell,
-	float symprecStandardize,
-	float symprecDataset,
+	bool standardizeOnly,
+	double symprecStandardize,
+	double symprecDataset,
 	bool& unitCellModified)
 {
 	// Status to be returned
@@ -542,7 +575,7 @@ string doFindAndApplySymmetries(
 
 		// Prepare the mutable list of atoms' atomic numbers
 		size_t natoms = atomsZ.size();
-		int *types = (int *)malloc(4*natoms*sizeof(int));
+		int32_t *types = (int32_t *)malloc(4*natoms*sizeof(int32_t));
 		for(size_t i=0; i < natoms; ++i) types[i] = atomsZ[i];
 		int num_primitive_atom = natoms;
 
@@ -559,12 +592,12 @@ string doFindAndApplySymmetries(
 		if(standardizeCell)
 		{
 #ifdef DEBUG
-		dump(lattice, positions, types, natoms, "Before standardizing");
+		dumpPOSCAR(lattice, positions, types, natoms, "Before standardizing");
 #endif
 			num_primitive_atom = spg_standardize_cell(lattice, positions, types,
 													  natoms, 1, 0, symprecStandardize);
 #ifdef DEBUG
-		dump(lattice, positions, types, num_primitive_atom, "After standardizing");
+		dumpPOSCAR(lattice, positions, types, num_primitive_atom, "After standardizing");
 #endif
 			if(num_primitive_atom == 0)
 			{
@@ -576,6 +609,37 @@ string doFindAndApplySymmetries(
 				num_primitive_atom = natoms;
 			}
 			else unitCellModified = true;
+		}
+
+		if(standardizeOnly)
+		{
+			// basis
+			for(int i=0; i < 3; ++i)
+			{
+				for(int j=0; j < 3; ++j)
+				{
+					basis[3*i+j] = lattice[i][j];
+				}
+			}
+			// atomsZ
+			atomsZ.resize(num_primitive_atom);
+			for(size_t i=0; i < num_primitive_atom; ++i) atomsZ[i] = types[i];
+
+			// fractionalCoordinates
+			fractionalCoordinates.resize(3*num_primitive_atom);
+			for(size_t j=0; j < num_primitive_atom; ++j)
+			{
+				fractionalCoordinates[3*j+0] = positions[j][0];
+				fractionalCoordinates[3*j+1] = positions[j][1];
+				fractionalCoordinates[3*j+2] = positions[j][2];
+			}
+
+			unitCellModified = true;
+
+			free(types);
+			free(positions);
+
+			return status;
 		}
 
 		// Find symmetries

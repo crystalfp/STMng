@@ -44,6 +44,7 @@ export interface ComputeSymmetriesParams {
 	applyInputSymmetries: boolean;
 	enableFindSymmetries: boolean;
 	standardizeCell: boolean;
+	standardizeOnly: boolean;
 
 	// Tolerances
 	symprecStandardize: number;

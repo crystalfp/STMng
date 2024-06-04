@@ -84,6 +84,9 @@ export const createMainWindow = (width = 1000, height = 675): void => {
     mainWin.on("leave-full-screen", () => {
         mainWin.webContents.mainFrame.send("WINDOW:FULLSCREEN", false);
     });
+    mainWin.webContents.on("unresponsive", () => {
+        log.error("Main window unresponsive");
+    });
 
     // To avoid garbage collection problems
     openedWindows.set("/", mainWin);

@@ -10,6 +10,8 @@ import {sb} from "@/services/Switchboard";
 import type {NodeUI} from "@/types";
 import {useControlStore} from "@/stores/controlStore";
 
+import LoadingComponent from "@/components/Loading.vue";
+
 // > Access the store
 const controlStore = useControlStore();
 
@@ -43,7 +45,12 @@ watchEffect(() => {
         if(selectedTabId.value === item.id) {
             loadedPanel.value = item.ui === "" ?
                                         undefined :
-                                        defineAsyncComponent(() => import(`../ui/${item.ui}.vue`));
+                                        // defineAsyncComponent(() => import(`../ui/${item.ui}.vue`));
+                                        defineAsyncComponent({
+                                            loader: () => import(`../ui/${item.ui}.vue`),
+                                            loadingComponent: LoadingComponent,
+                                            delay: 200,
+                                        });
             moduleId.value = item.id;
             break;
         }
@@ -65,6 +72,7 @@ watchEffect(() => {
 </template>
 
 <style>
+/* stylelint-disable selector-class-pattern */
 .title-container .v-select__selection-text {
   font-size: 140%;
 }

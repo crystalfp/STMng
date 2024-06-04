@@ -28,6 +28,8 @@ const symprecStandardize = ref(-5);
 const symprecDataset = ref(-5);
 const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
+const standardizeOnly = ref(false);
+
 
 const showExponential = (value: number): string => Math.pow(10, value).toExponential(2);
 
@@ -41,6 +43,7 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     symprecDataset.value = params.symprecDataset as number ?? -5;
     fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
     showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
+    standardizeOnly.value = params.standardizeOnly as boolean ?? false;
 });
 
 watchEffect(() => {
@@ -52,6 +55,7 @@ watchEffect(() => {
         symprecDataset: symprecDataset.value,
         fillUnitCell: fillUnitCell.value,
         showSymmetriesDialog: showSymmetriesDialog.value,
+        standardizeOnly: standardizeOnly.value,
     });
 });
 
@@ -67,11 +71,13 @@ watchEffect(() => {
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
     <v-switch v-model="standardizeCell" color="primary"
               label="Standardize cell" density="compact" class="mt-n5 ml-3" />
-    <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
+    <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
+  <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-5" :max="-1" :step="0.2" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
-    <g-debounced-slider v-slot="{value}" v-model="symprecDataset" :min="-5" :max="-1" :step="0.2" class="ml-2">
+    <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
+                        :min="-5" :max="-1" :step="0.2" class="ml-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
   </v-container>

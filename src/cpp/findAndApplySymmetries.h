@@ -10,7 +10,8 @@ extern std::string doFindAndApplySymmetries(
 	bool applyInputSymmetries,
 	bool enableFindSymmetries,
 	bool standardizeCell,
-	float symprecStandardize,
-	float symprecDataset,
+	bool standardizeOnly,
+	double symprecStandardize,
+	double symprecDataset,
 	bool& unitCellModified
 );													// Returns error message or empty string

@@ -141,6 +141,7 @@ const resetSliders = (): void => {
 </template>
 
 <style>
+/* stylelint-disable selector-class-pattern */
 .v-table__wrapper {
   overflow-y: hidden
 }

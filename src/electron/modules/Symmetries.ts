@@ -20,6 +20,7 @@ interface NativeModule {
 	findAndApplySymmetries: (basis: Float64Array, spaceGroup: string, atomsZ: Int32Array,
 							 fractionalCoordinates: Float64Array, applyInputSymmetries: boolean,
 							 enableFindSymmetries: boolean, standardizeCell: boolean,
+							 standardizeOnly: boolean,
 							 symprecStandardize: number, symprecDataset: number) => NativeOutput;
 }
 
@@ -46,6 +47,7 @@ export const setupChannelSymmetries = (): void => {
 		const computed = addon.findAndApplySymmetries(basis, params.spaceGroup, atomsZ,
 													  fractionalCoordinates, params.applyInputSymmetries,
 													  params.enableFindSymmetries, params.standardizeCell,
+													  params.standardizeOnly,
 													  params.symprecStandardize, params.symprecDataset);
 
 		// Reformat the returned values
