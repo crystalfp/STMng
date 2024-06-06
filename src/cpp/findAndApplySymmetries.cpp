@@ -2,6 +2,7 @@
 
 #ifdef DEBUG
 #include <iostream>
+#include <iomanip>
 #include <set>
 #endif
 #include <stdlib.h>
@@ -220,7 +221,7 @@ static void applySymmetriesInput(string& spaceGroup,
 		// Prepare parsing of the multiline Seitz matrix in XYZ form
 		int len = spaceGroup.size();
 		char *SymXYZ = (char *)malloc(len+1);
-		strcpy(SymXYZ, spaceGroup.c_str());
+		strncpy(SymXYZ, spaceGroup.c_str(), len+1);
 		char *SymXYZstart = SymXYZ;
 		int n = 0;
 		bool success = false;
@@ -492,9 +493,9 @@ void dump(double lattice[3][3], double position[][3], int types[], const int num
 void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const int num_atom, string title)
 {
 	cout << title << endl << "1.0" << endl;
-	cout << lattice[0][0] << ' ' << lattice[0][1] << ' ' << lattice[0][2] << endl;
-	cout << lattice[1][0] << ' ' << lattice[1][1] << ' ' << lattice[1][2] << endl;
-	cout << lattice[2][0] << ' ' << lattice[2][1] << ' ' << lattice[2][2] << endl;
+	cout << fixed << showpoint << setprecision(5) << lattice[0][0] << ' ' << lattice[0][1] << ' ' << lattice[0][2] << endl;
+	cout << fixed << showpoint << setprecision(5) << lattice[1][0] << ' ' << lattice[1][1] << ' ' << lattice[1][2] << endl;
+	cout << fixed << showpoint << setprecision(5) << lattice[2][0] << ' ' << lattice[2][1] << ' ' << lattice[2][2] << endl;
 
 	cout << " O Fe" << endl;
 	set<int> z;
@@ -516,7 +517,7 @@ void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const i
 		for(int i=0; i < num_atom; ++i)
 		{
 			if(types[i] != x) continue;
-			cout << position[i][0] << ' ' << position[i][1] << ' ' << position[i][2] << endl;
+			cout << fixed << showpoint << setprecision(5) << position[i][0] << ' ' << position[i][1] << ' ' << position[i][2] << endl;
 		}
 	}
 }
@@ -575,12 +576,12 @@ string doFindAndApplySymmetries(
 
 		// Prepare the mutable list of atoms' atomic numbers
 		size_t natoms = atomsZ.size();
-		int32_t *types = (int32_t *)malloc(4*natoms*sizeof(int32_t));
+		int *types = (int *)malloc(4*natoms*sizeof(int));
 		for(size_t i=0; i < natoms; ++i) types[i] = atomsZ[i];
 		int num_primitive_atom = natoms;
 
 		// Prepare the mutable list of atoms positions
-		double (*positions)[3] = (double (*)[3])malloc(4*natoms*sizeof *positions);
+		double (*positions)[3] { new double[4*natoms][3] };
 		for(size_t j=0; j < natoms; ++j)
 		{
 			positions[j][0] = fractionalCoordinates[3*j+0];
@@ -592,12 +593,12 @@ string doFindAndApplySymmetries(
 		if(standardizeCell)
 		{
 #ifdef DEBUG
-		dumpPOSCAR(lattice, positions, types, natoms, "Before standardizing");
+			dumpPOSCAR(lattice, positions, types, natoms, "Before standardizing");
 #endif
 			num_primitive_atom = spg_standardize_cell(lattice, positions, types,
 													  natoms, 1, 0, symprecStandardize);
 #ifdef DEBUG
-		dumpPOSCAR(lattice, positions, types, num_primitive_atom, "After standardizing");
+			dumpPOSCAR(lattice, positions, types, num_primitive_atom, "After standardizing");
 #endif
 			if(num_primitive_atom == 0)
 			{
@@ -637,7 +638,7 @@ string doFindAndApplySymmetries(
 			unitCellModified = true;
 
 			free(types);
-			free(positions);
+			delete [] positions;
 
 			return status;
 		}
@@ -676,7 +677,7 @@ string doFindAndApplySymmetries(
 		}
 
 		free(types);
-		free(positions);
+		delete [] positions;
 	}
 
 	// Return the operation status

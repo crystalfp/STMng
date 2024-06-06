@@ -52,9 +52,7 @@ export default [{
         parserOptions: {
             parser: tsParser,
             ecmaFeatures: {impliedStrict: true},
-            project: [
-                "tsconfig.json"
-            ],
+            project: ["tsconfig.json"],
             warnOnUnsupportedTypeScriptVersion: false,
             extraFileExtensions: ['.vue'],
             vueFeatures: {filter: false},
@@ -99,7 +97,6 @@ export default [{
         ...securityPlugin.configs["recommended-legacy"].rules,
         ...sonarjsPlugin.configs.recommended.rules,
         ...regexpPlugin.configs.recommended.rules,
-        ...vuePlugin.configs["flat/base"].rules,
         ...vuePlugin.configs["flat/essential"].rules,
         ...vuePlugin.configs["flat/strongly-recommended"].rules,
         ...vuePlugin.configs["flat/recommended"].rules,

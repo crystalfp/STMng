@@ -73,11 +73,11 @@ watchEffect(() => {
               label="Standardize cell" density="compact" class="mt-n5 ml-3" />
     <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
   <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
-                        :min="-5" :max="-1" :step="0.2" class="ml-2 mb-2">
+                        :min="-6" :max="0" :step="0.2" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
     <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
-                        :min="-5" :max="-1" :step="0.2" class="ml-2">
+                        :min="-6" :max="0" :step="0.2" class="ml-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
   </v-container>
