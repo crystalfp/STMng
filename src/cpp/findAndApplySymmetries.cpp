@@ -566,12 +566,16 @@ string doFindAndApplySymmetries(
 	if(enableFindSymmetries)
 	{
 		// Prepare the mutable unit cell basis
+		// It is transposed to make the results equal to the Python version of the library
 		double lattice[3][3];
 		for(size_t j=0; j < 3; ++j)
 		{
-			lattice[j][0] = basis[3*j+0];
-			lattice[j][1] = basis[3*j+1];
-			lattice[j][2] = basis[3*j+2];
+			lattice[0][j] = basis[3*j+0];
+			lattice[1][j] = basis[3*j+1];
+			lattice[2][j] = basis[3*j+2];
+			// lattice[j][0] = basis[3*j+0];
+			// lattice[j][1] = basis[3*j+1];
+			// lattice[j][2] = basis[3*j+2];
 		}
 
 		// Prepare the mutable list of atoms' atomic numbers
@@ -619,7 +623,8 @@ string doFindAndApplySymmetries(
 			{
 				for(int j=0; j < 3; ++j)
 				{
-					basis[3*i+j] = lattice[i][j];
+					basis[3*i+j] = lattice[j][i];
+					// basis[3*i+j] = lattice[i][j];
 				}
 			}
 			// atomsZ
@@ -661,6 +666,7 @@ string doFindAndApplySymmetries(
 								 types, outTypes, outPositions);
 
 			// Copy back the values
+			// Transpose the lattice to cancel the input transposition
 			spaceGroup = dataset->international_symbol;
 			atomsZ = outTypes;
 			fractionalCoordinates = outPositions;
@@ -668,7 +674,8 @@ string doFindAndApplySymmetries(
 			{
 				for(int j=0; j < 3; ++j)
 				{
-					basis[3*i+j] = lattice[i][j];
+					basis[3*i+j] = lattice[j][i];
+					// basis[3*i+j] = lattice[i][j];
 				}
 			}
 
