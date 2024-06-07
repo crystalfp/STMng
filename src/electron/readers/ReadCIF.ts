@@ -166,7 +166,7 @@ export class ReaderCIF implements ReaderImplementation {
 
 			// Start data block or loop block
 			if(lineLC.startsWith("data_")) {
-				// console.log(`......\nBlock start [${lineNC.slice(5)}]\n......`);
+
 				isInDataBlock = true;
 
 				// Check last block valid

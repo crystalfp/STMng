@@ -7,11 +7,9 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ In builder copy only platform specific exe files
   ☐ Check the order of entries in objects
-  ✘ Can the panel selection be done with router? See <https://router.vuejs.org/guide/essentials/named-views> @cancelled(2024-06-06 17:27)
 
 Bugs:
   ☐ Energy file: fix disappearing file name
-  ☐ Fix `spg_standardize_cell()`
 
 Requests from Oganov:
   ☐ Computation of fingerprints and their use to remove duplicate structures.
@@ -31,6 +29,8 @@ Nice to have/Future:
   ☐ An option to specify arbitrary section plane
 
 Archive:
+  ✘ Can the panel selection be done with router? See <https://router.vuejs.org/guide/essentials/named-views> @cancelled(2024-06-06 17:27) @project(ToDo)
+  ✔ Fix `spg_standardize_cell()` @done(2024-06-07 18:18) @project(Bugs)
   ✔ In defineAsyncComponent add a Loading object @done(2024-05-30 06:05) @project(ToDo)
   ✔ Events 'unresponsive' and 'responsive' on web content (if useful) @done(2024-05-30 06:06) @project(Nice to have/Future)
   ✔ Add external atoms that have a chain of bonds to inside the cell @done(2024-05-28 14:20) @project(Requests from Oganov)

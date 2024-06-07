@@ -23,7 +23,6 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
     }
 });
 receiveInWindow((data) => {
-// console.log("SYMMETRIES", data);
 
     void nextTick().then(() => {
         const decodedData = JSON.parse(data) as SymmetriesData;
