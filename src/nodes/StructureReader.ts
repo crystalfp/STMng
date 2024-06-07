@@ -5,11 +5,11 @@
  */
 
 import {sb, type UiParams} from "@/services/Switchboard";
-import {readFileStructure, readAuxFile, atomsTypeRename} from "@/services/RoutesClient";
+import {readFileStructure, readAuxFile} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useControlStore} from "@/stores/controlStore";
-import type {ReaderStructure, Structure, RenameInfo} from "@/types";
-import {atomSymbol} from "@/services/AtomInfo";
+import {symbolToZ} from "@/services/AtomInfo";
+import type {ReaderStructure, Structure} from "@/types";
 
 export class StructureReader {
 
@@ -37,6 +37,9 @@ export class StructureReader {
 	 */
 	constructor(private readonly id: string) {
 
+		// Reset error notification
+		resetErrorNotification("structureReader");
+
 		sb.getUiParams(this.id, (params: UiParams) => {
 
 			const requestedStep = params.step as number ?? 1;
@@ -51,10 +54,11 @@ export class StructureReader {
     		this.useBohr       = params.useBohr as boolean ?? true;
 
 			// Change atoms types
-			if(this.atomsTypes !== "" && this.atomsTypes !== this.atomsTypesPrevious) {
+			const at = this.atomsTypes.trim();
+			if(at !== "" && at !== this.atomsTypesPrevious) {
 
-				this.changeAtomsType();
-				this.atomsTypesPrevious = this.atomsTypes;
+				this.changeAtomsType(at);
+				this.atomsTypesPrevious = at;
 			}
 
 			if(requestedFormat !== this.format) {
@@ -293,37 +297,58 @@ export class StructureReader {
 
 	/**
 	 * Change the atoms type if this is changed on the user interface
+	 *
+	 * @param renamedAtomTypes - The space separated list of atom types to rename to
 	 */
-	private changeAtomsType(): void {
+	private changeAtomsType(renamedAtomTypes: string): void {
 
-		if(this.structures.length === 0) return;
+		if(this.structures.length === 0 || renamedAtomTypes === "") return;
 
-		const atomsTypes = new Set<string>();
-		for(const atom of this.structures[0].atoms) atomsTypes.add(atomSymbol(atom.atomZ));
+		// Array of the renamed atom types
+		const typesAfter = renamedAtomTypes.split(/ +/);
 
-		atomsTypeRename([...atomsTypes].join(" "), this.atomsTypes.trim())
-			.then((renameInfoEncoded) => {
+		// Mapping from the current atomZ to the renamed atomZ
+		const mapAtomZ = new Map<number, number>();
 
-				const renameInfo = JSON.parse(renameInfoEncoded) as RenameInfo;
+		// Get the current atomic numbers
+		const currentAtomsZ = new Set<number>();
+		for(const atom of this.structures[0].atoms) currentAtomsZ.add(atom.atomZ);
 
-				if(renameInfo.error) throw Error(renameInfo.error);
+		if(currentAtomsZ.size > typesAfter.length) {
+			const missing = currentAtomsZ.size - typesAfter.length;
+			const plural = missing === 1 ? "" : "s";
+			showErrorNotification(`Missing ${missing} atom symbol${plural} in the renamed list`, "structureReader");
+			return;
+		}
 
-				if(renameInfo.map.length === 0) return;
+		// Prepare the mapping
+		let idx = 0;
+		for(const from of currentAtomsZ) {
 
-				const mapAtomZ = new Map<number, number>(renameInfo.map);
-				for(const structure of this.structures) {
+			const to = symbolToZ(typesAfter[idx]);
+			if(to === 0) {
+				showErrorNotification(`Invalid symbol "${typesAfter[idx]}" in the renamed list`, "structureReader");
+				return;
+			}
+			mapAtomZ.set(from, to);
+			++idx;
+		}
 
-					for(const atom of structure.atoms) {
-						const renamedAtomZ = mapAtomZ.get(atom.atomZ);
-						if(renamedAtomZ === undefined) throw Error(`Invalid mapping for atomZ of ${atom.atomZ}`);
-						atom.atomZ = renamedAtomZ;
-					}
+		// Do the mapping
+		for(const structure of this.structures) {
+
+			for(const atom of structure.atoms) {
+				const renamedAtomZ = mapAtomZ.get(atom.atomZ);
+				if(renamedAtomZ === undefined) {
+
+					showErrorNotification(`Invalid mapping for atomZ of ${atom.atomZ}`, "structureReader");
+					return;
 				}
-				sb.setData(this.id, this.structures[this.step-1]);
-			})
-			.catch((error: Error) => {
-				showErrorNotification(`Error renaming atoms: ${error.message}`, "structureReader");
-			});
+				atom.atomZ = renamedAtomZ;
+			}
+		}
+
+		sb.setData(this.id, structuredClone(this.structures[this.step-1]));
 	}
 
 	/**

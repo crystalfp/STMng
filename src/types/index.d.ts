@@ -153,11 +153,6 @@ export interface MainResponse {
     error?: string;
 }
 
-export interface RenameInfo {
-    map: [number, number][];
-    error?: string;
-}
-
 // > The project structure
 export interface GraphNode {
 

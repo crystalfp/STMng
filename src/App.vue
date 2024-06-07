@@ -3,7 +3,6 @@
  * @component
  * Where the windows are anchored. It also load the global CSS styles
  */
-import {RouterView} from "vue-router";
 </script>
 
 <template>

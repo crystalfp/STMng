@@ -7,7 +7,7 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ In builder copy only platform specific exe files
   ☐ Check the order of entries in objects
-  ☐ Can the panel selection be done with router? See <https://router.vuejs.org/guide/essentials/named-views>
+  ✘ Can the panel selection be done with router? See <https://router.vuejs.org/guide/essentials/named-views> @cancelled(2024-06-06 17:27)
 
 Bugs:
   ☐ Energy file: fix disappearing file name

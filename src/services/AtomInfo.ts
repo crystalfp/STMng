@@ -11,20 +11,49 @@ class AtomInfo {
 
     private static instance: AtomInfo;
 	private data: AtomAppearance[] = [];
+	private readonly symbol2an = new Map<string, number>();
 
+	/**
+	 * Copy the atoms data from the main process to the client
+	 */
 	init(): void {
 
 		getAtomData()
 			.then((dataRaw) => {
 				this.data = JSON.parse(dataRaw) as AtomAppearance[];
+
+				const len = this.data.length;
+				for(let i=1; i < len; ++i) {
+					const {symbol} = this.data[i];
+					this.symbol2an.set(symbol, i);
+					this.symbol2an.set(symbol.toLowerCase(), i);
+					this.symbol2an.set(symbol.toUpperCase(), i);
+				}
 			})
 			.catch((error: Error) => {
 				log.error("Cannot initialize atom's data. Error:", error.message);
 			});
 	}
 
+	/**
+	 * Retrieve all data pertaining to the given atomic number
+	 *
+	 * @param atomZ - Atom for which the data should be retrieves
+	 * @returns All data pertaining to the given atomic number
+	 */
 	atomData(atomZ: number): AtomAppearance {
 		return this.data[atomZ];
+	}
+
+	/**
+	 * Retrieve the atomic number for a given atomic symbol
+	 *
+	 * @param symbol - Atomic symbol for which the atomic number should be retrieved
+	 * @returns The corresponding atomic number
+	 */
+	getAtomZ(symbol: string): number {
+
+		return this.symbol2an.get(symbol.toLowerCase()) ?? 0;
 	}
 
 	// > Access the singleton instance
@@ -47,8 +76,8 @@ class AtomInfo {
     }
 }
 
-// > Access to the atom info
-/** Access to the atom info */
+// > Access the atom info
+/** Access the atom info */
 export const ai = AtomInfo.getInstance();
 
 /**
@@ -66,3 +95,11 @@ export const atomColor = (atomZ: number): string => AtomInfo.getInstance().atomD
  * @returns The atom symbol
  */
 export const atomSymbol = (atomZ: number): string => AtomInfo.getInstance().atomData(atomZ).symbol;
+
+/**
+ * Convert an atomic symbol into the corresponding atomic number
+ *
+ * @param symbol - Atomic symbol for which the atomic number should be retrieved
+ * @returns The corresponding atomic number
+ */
+export const symbolToZ = (symbol: string): number => AtomInfo.getInstance().getAtomZ(symbol);

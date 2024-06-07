@@ -261,19 +261,6 @@ export const readAuxFile = (filename: string,
 									  	filename, format, JSON.stringify(structure)
 									  ) as Promise<string>;
 
-/**
- * Get data needed for the atoms rename
- *
- * @param atomsZBefore - List of atoms Z before the rename
- * @param typesAfterString - New list of atoms types
- * @returns A RenameInfo object encoded as JSON
- */
-export const atomsTypeRename = (atomsZBefore: string, typesAfterString: string): Promise<string> =>
-
-	window.electron.ipcRenderer.invoke("READER:RENAME",
-										atomsZBefore, typesAfterString
-									  ) as Promise<string>;
-
 // > Structure writer
 /**
  * Select the file where the structure will be saved

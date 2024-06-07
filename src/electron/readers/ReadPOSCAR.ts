@@ -5,7 +5,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
+import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
 import type {ReaderImplementation, ReaderOptions} from "../types";
 import type {Structure, Atom, PositionType} from "../../types";
@@ -37,7 +37,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let lineType: LineType = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
-		const atomsKinds: string[] = [];
 		const atomsZ: number[] = [];
 		let currentIdx = 0;
 		let currentCount = 0;
@@ -117,13 +116,11 @@ export class ReaderPOSCAR implements ReaderImplementation {
 							if(!hasSymbols) {
 								if(options?.atomsTypes?.length) {
 									atomsZ.push(getAtomicNumber(options.atomsTypes[idx]));
-									atomsKinds.push(options.atomsTypes[idx]);
 									++idx;
 									if(idx === options.atomsTypes.length) idx = 0;
 								}
 								else {
 									atomsZ.push(atomZ);
-									atomsKinds.push(getAtomicSymbol(atomZ));
 									++atomZ;
 								}
 							}
@@ -132,7 +129,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					else {
 						for(const field of fields) {
-							atomsKinds.push(field);
 							atomsZ.push(getAtomicNumber(field));
 						}
 					}
@@ -172,7 +168,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					const atomZ = atomsZ[currentIdx];
 					const atom: Atom = {
 						atomZ,
-						label: atomsKinds[currentIdx],
+						label: `Atom${currentIdx}`,
 						position
 					};
 					structures[currentStep].atoms.push(atom);
