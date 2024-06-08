@@ -7,11 +7,11 @@ extern std::string doFindAndApplySymmetries(
 	std::string& spaceGroup,						// Space group or empty string if none (in/out)
 	std::vector<int32_t>& atomsZ,					// Atomic numbers (in/out)
 	std::vector<double_t>& fractionalCoordinates,	// Fractional coordinates (in/out)
-	bool applyInputSymmetries,
-	bool enableFindSymmetries,
-	bool standardizeCell,
-	bool standardizeOnly,
-	double symprecStandardize,
-	double symprecDataset,
-	bool& unitCellModified
+	bool applyInputSymmetries,						// Apply symmetries from input structure
+	bool enableFindSymmetries,						// Enable find symmetries and standardize cell
+	bool standardizeCell,							// Enable standardize cell
+	bool standardizeOnly,							// Don't compute symmetry after standardization
+	double symprecStandardize,						// Tolerance for the standardize cell step
+	double symprecDataset,							// Tolerance for find symmetries
+	bool& unitCellModified							// True if the cell has been modified (out)
 );													// Returns error message or empty string

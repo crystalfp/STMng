@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the orthoslice.
+ * Controls for the orthoslice node.
  */
 
 import {ref, watchEffect, computed} from "vue";

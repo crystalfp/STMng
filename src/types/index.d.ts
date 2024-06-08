@@ -99,7 +99,7 @@ export interface Bond {
 /** Crystallographic data */
 export interface Crystal {
 
-    /** The unit cell basis vectors [a, b, c]*/
+    /** The unit cell basis vectors [a, b, c] */
     basis: BasisType;
 
     /** Origin of the unit cell */

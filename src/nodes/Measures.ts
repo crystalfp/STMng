@@ -9,7 +9,7 @@ import {sm} from "@/services/SceneManager";
 import {sb} from "@/services/Switchboard";
 import {useControlStore} from "@/stores/controlStore";
 import type {Structure} from "@/types";
-import {ai} from "@/services/AtomInfo";
+import {atomData} from "@/services/AtomInfo";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
 const colors = ["#FF0000", "#00FF00", "#4263FF"];
@@ -66,7 +66,7 @@ export class Measures {
 			for(const idx of selections) {
 
 				const {atomZ, position} = atoms[idx];
-				const {symbol, rCov} = ai.atomData(atomZ);
+				const {symbol, rCov} = atomData(atomZ);
 				const coords = `[${position[0].toFixed(2)}, ${position[1].toFixed(2)}, ${position[2].toFixed(2)}]`;
 				out.push({index: idx, label: labels[i], symbol, color: colors[i], coords});
 

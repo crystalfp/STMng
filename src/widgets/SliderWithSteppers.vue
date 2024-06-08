@@ -57,6 +57,7 @@ const decrement = (): void => {
  * Increment the value
  */
 const increment = (): void => {
+
     let vv = valueToDebounce.value ?? min;
     vv += step;
     if(vv > max) vv = max;

@@ -15,7 +15,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 	 * Read the structures from the file
 	 *
 	 * @param filename - File to be read
-	 * @param atomsTypes - Optional atoms types to be used (normally they are not in the file)
+	 * @param options - Options for the reader
 	 * @returns The set of structure read
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {

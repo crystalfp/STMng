@@ -20,7 +20,7 @@ export class WriterCIF implements WriterImplementation {
 
 			// Banner
 			fs.writeSync(fd, "####################### " +
-							 "Written by STMng toolkit " +
+							 "Written by STMng " +
 							 "#######################\n\n");
 
 			let step = 0;

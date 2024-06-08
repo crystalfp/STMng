@@ -5,7 +5,7 @@
  */
 import {sb, type UiParams} from "@/services/Switchboard";
 import type {Structure, Atom, Bond} from "@/types";
-import {ai, atomSymbol} from "@/services/AtomInfo";
+import {atomData, atomSymbol} from "@/services/AtomInfo";
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
 interface PairData {
@@ -54,7 +54,7 @@ const displacementCoefficients = [
 	[1, -1, -1],
 ];
 
-// The H bonds form when X___H...Y and X, Y are N, O, F (maybe also S)
+// The H bonds form when X___H...Y and X, Y are N, O, F (and also S)
 const atomForHBond = (atomZ: number): boolean => [7, 8, 9, 16].includes(atomZ);
 
 // > Compute the valence angle
@@ -180,6 +180,7 @@ export class ComputeBonds {
 		for(let i=0; i < len; ++i) {
 			for(let j=i; j < len; ++j) {
 
+				// No H-H bonds
 				if(z[i] === 1 && z[j] === 1) continue;
 
 				let add = true;
@@ -485,7 +486,7 @@ export class ComputeBonds {
 		const radii: number[] = [];
 		for(const atom of atoms) {
 			const {atomZ} = atom;
-			radii.push(ai.atomData(atomZ).rCov);
+			radii.push(atomData(atomZ).rCov);
 		}
 
 		// No bonds possible
@@ -675,8 +676,8 @@ export class ComputeBonds {
 			const fromAtomZ = atoms[from].atomZ;
 			const toAtomZ   = atoms[to].atomZ;
 
-			const maxFrom = ai.atomData(fromAtomZ).maxBonds;
-			const maxTo   = ai.atomData(toAtomZ).maxBonds;
+			const maxFrom = atomData(fromAtomZ).maxBonds;
+			const maxTo   = atomData(toAtomZ).maxBonds;
 
 			if(countFrom > maxFrom && countTo > maxTo) {
 				bond.type = "x";

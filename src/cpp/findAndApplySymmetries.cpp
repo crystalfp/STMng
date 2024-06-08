@@ -149,6 +149,7 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 	atomsZ = typesOut;
 }
 
+// Apply symmetries from the input space group
 static void applySymmetriesInput(string& spaceGroup,
 								 vector<double_t>& fractionalCoordinates,
 								 vector<int32_t>& atomsZ,
@@ -403,6 +404,7 @@ static void applySymmetriesInput(string& spaceGroup,
 #endif
 }
 
+// Apply transformation from SPGLIB find symmetries
 static void applyTransformations(SpglibDataset* dataset,
 								 size_t natoms,
 								 double (*positions)[3],
@@ -471,25 +473,6 @@ static void applyTransformations(SpglibDataset* dataset,
 }
 
 #ifdef DEBUG
-void dump(double lattice[3][3], double position[][3], int types[], const int num_atom, string title)
-{
-	cout << '\n' << title << endl;
-	cout << "\nBasis:" << endl;
-	cout << lattice[0][0] << ' ' << lattice[0][1] << ' ' << lattice[0][2] << endl;
-	cout << lattice[1][0] << ' ' << lattice[1][1] << ' ' << lattice[1][2] << endl;
-	cout << lattice[2][0] << ' ' << lattice[2][1] << ' ' << lattice[2][2] << endl;
-
-	cout << "\nAtoms:" << endl;
-	for(int i=0; i < num_atom; ++i) {
-		cout << types[i] << ": " << position[i][0] << ' ' << position[i][1] << ' ' << position[i][2];
-
-		double x = position[i][0]*lattice[0][0]+position[i][1]*lattice[0][1]+position[i][2]*lattice[0][2];
-		double y = position[i][0]*lattice[1][0]+position[i][1]*lattice[1][1]+position[i][2]*lattice[1][2];
-		double z = position[i][0]*lattice[2][0]+position[i][1]*lattice[2][1]+position[i][2]*lattice[2][2];
-
-		cout << " -> " << x << ' ' << y << ' ' << z << endl;
-	}
-}
 void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const int num_atom, string title)
 {
 	cout << title << endl << "1.0" << endl;
@@ -523,6 +506,7 @@ void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const i
 }
 #endif
 
+// Entry point
 string doFindAndApplySymmetries(
 	vector<double_t>& basis,
 	string& spaceGroup,

@@ -21,6 +21,7 @@ export interface WindowsParams {
 
 // export type Constructable<T> = new() => T;
 
+/** Options object for the readers */
 interface ReaderOptions {
 	atomsTypes?: string[];
 	useBohr?: boolean;

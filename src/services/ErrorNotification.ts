@@ -6,6 +6,12 @@
 import log from "electron-log";
 import {useMessageStore} from "@/stores/messageStore";
 
+/**
+ * Show error notification
+ *
+ * @param text - The error message
+ * @param node - Node on which the message should be shown. If missing simply log the message
+ */
 export const showErrorNotification = (text: string, node?: string): void => {
 
 	const messageStore = useMessageStore();
@@ -27,7 +33,12 @@ export const showErrorNotification = (text: string, node?: string): void => {
 	log.error(text);
 };
 
-export const resetErrorNotification = (node?: string): void => {
+/**
+ * Initialize the error message for a given node
+ *
+ * @param node - Node on which the message should be initialized.
+ */
+export const resetErrorNotification = (node: string): void => {
 
 	const messageStore = useMessageStore();
 	messageStore.system.error = "";

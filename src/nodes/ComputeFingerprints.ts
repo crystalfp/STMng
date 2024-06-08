@@ -1,5 +1,5 @@
 /**
- * Write structures to file.
+ * Compute fingerprints for an accumulated set of structures.
  *
  * @packageDocumentation
  */

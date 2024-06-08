@@ -236,8 +236,8 @@ export class ReaderCIF implements ReaderImplementation {
 					basisAngles[2] = Number.parseFloat(value);
 					if(basisSides[0] !== 0 && basisSides[1] !== 0 && basisSides[2] !== 0) {
 					this.structures[this.step].crystal.basis =
-													extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
-																 basisAngles[0], basisAngles[1], basisAngles[2]);
+							extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
+										 basisAngles[0], basisAngles[1], basisAngles[2]);
 					}
 					break;
 			}

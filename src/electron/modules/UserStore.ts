@@ -13,7 +13,7 @@ import yaml from "js-yaml";
  */
 interface StoreOptions {
 	path?: string;				/** Path to the store backing file.
-									If present should have an extension of .yaml.
+									If present should have an extension of .yaml
 									If absent the backing store will be under userData */
 	name?: string;				/** Name of the store. If absent defaults to "config" */
 	defaultContent?: unknown;	/** Default initial content of the store */

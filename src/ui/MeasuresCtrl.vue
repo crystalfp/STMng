@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the symmetry (find and apply) node.
+ * Controls for the measure atoms positions, distances and angles node.
  */
 
 import {ref} from "vue";

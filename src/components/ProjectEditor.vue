@@ -7,8 +7,8 @@
 import {ref, onMounted, onUnmounted} from "vue";
 import {closeWindow, receiveInWindow,
         receiveBroadcast, getPreferenceSync} from "@/services/RoutesClient";
-import type {Project, ProjectGraph} from "@/types";
 import {sb} from "@/services/Switchboard";
+import type {Project, ProjectGraph} from "@/types";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 150;
@@ -393,7 +393,6 @@ $node-selected-color: #FFFF00;
 }
 
 .selected {
-//   fill: darken($node-selected-color, 25%) {
   fill: color.adjust($node-selected-color, $lightness: -25%) {
     opacity: 0.8;
   }

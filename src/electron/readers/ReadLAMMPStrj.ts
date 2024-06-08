@@ -32,7 +32,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 	 * Read the structures from the file
 	 *
 	 * @param filename - File to be read
-	 * @param atomsTypes - Optional atoms types to be used (normally they are not in the file)
+	 * @param options - Options for the reader
 	 * @returns The set of structure read
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
@@ -126,16 +126,24 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 						currentStructure!.crystal.basis[8]  = boxValues[7] - boxValues[6];
 					}
  					else if(boxType === BoxType.restrictedTriclinic) {
+						// The format is different from the documentation. This is the documentation:
 						// currentStructure!.crystal.origin[0] = boxValues[0];
 						// currentStructure!.crystal.origin[1] = boxValues[3];
 						// currentStructure!.crystal.origin[2] = boxValues[6];
 
-						currentStructure!.crystal.basis[0]  = boxValues[1]; // - boxValues[0];
+						// currentStructure!.crystal.basis[0]  = boxValues[1] - boxValues[0];
+						// currentStructure!.crystal.basis[3]  = boxValues[2];
+						// currentStructure!.crystal.basis[4]  = boxValues[4] - boxValues[3];
+						// currentStructure!.crystal.basis[6]  = boxValues[5];
+						// currentStructure!.crystal.basis[7]  = boxValues[8];
+						// currentStructure!.crystal.basis[8]  = boxValues[7] - boxValues[6];
+
+						currentStructure!.crystal.basis[0]  = boxValues[1];
 						currentStructure!.crystal.basis[3]  = boxValues[2];
-						currentStructure!.crystal.basis[4]  = boxValues[4]; // - boxValues[3];
+						currentStructure!.crystal.basis[4]  = boxValues[4];
 						currentStructure!.crystal.basis[6]  = boxValues[5];
 						currentStructure!.crystal.basis[7]  = boxValues[8];
-						currentStructure!.crystal.basis[8]  = boxValues[7]; // - boxValues[6];
+						currentStructure!.crystal.basis[8]  = boxValues[7];
 					}
 
 					lineType = LineType.item;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * @component
- * Ask the main process for the versions of the application, Node, Electron and Chrome
- * and display them in a dialog.
+ * Ask the main process for the versions of the application, Node, Electron
+ * and Chrome and display them in a dialog.
  */
 import {reactive, ref} from "vue";
 import * as THREE from "three";

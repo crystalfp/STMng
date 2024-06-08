@@ -146,7 +146,7 @@ export class InterpolateVolume {
 								const fii = ii * 1/(pa+1) + i - oi;
 
 								outValues[((k*(pa+1)+kk)*syo+j*(pa+1)+jj)*sxo+i*(pa+1)+ii] =
-																				this.computePoint(fii, fjj, fkk, c);
+																this.computePoint(fii, fjj, fkk, c);
 							}
 						}
 					}

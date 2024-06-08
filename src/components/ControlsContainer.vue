@@ -36,21 +36,21 @@ sb.subscribeToUiNodes((nodes: NodeUI[], currentId: string) => {
     selectedTabId.value = found ? currentId : graph.value[0].id;
 });
 
-// Return to the main process the type of the current node open in the UI
+/* Return to the main process the type of the current node open in the UI */
 sendCurrentNode(() => sb.getNodeType(moduleId.value));
 
 watchEffect(() => {
 
     for(const item of graph.value) {
         if(selectedTabId.value === item.id) {
-            loadedPanel.value = item.ui === "" ?
-                                        undefined :
-                                        // defineAsyncComponent(() => import(`../ui/${item.ui}.vue`));
-                                        defineAsyncComponent({
-                                            loader: () => import(`../ui/${item.ui}.vue`),
-                                            loadingComponent: LoadingComponent,
-                                            delay: 200,
-                                        });
+            loadedPanel.value =
+                item.ui === "" ?
+                    undefined :
+                    defineAsyncComponent({
+                        loader: () => import(`../ui/${item.ui}.vue`),
+                        loadingComponent: LoadingComponent,
+                        delay: 200,
+                    });
             moduleId.value = item.id;
             break;
         }

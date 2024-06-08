@@ -11,7 +11,7 @@ import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
 import {sb} from "@/services/Switchboard";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "@/services/SceneManager";
-import {ai} from "@/services/AtomInfo";
+import {atomInfoInit} from "@/services/AtomInfo";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
@@ -19,7 +19,7 @@ import ControlsContainer from "@/components/ControlsContainer.vue";
 /** Normal/Expanded viewer window */
 const normalScreen = ref(true);
 
-// > React to fullscreen requests and set title
+// > Answer fullscreen requests and set title
 window.addEventListener("DOMContentLoaded", () => {
     let count = 0;
     const timer = setInterval(() => {
@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
             setProjectPathInTitle("See the Molecole new generation");
             sb.setup();
             receiveRefreshMenu();
-            ai.init();
+            atomInfoInit();
         }
     }, 20);
 });

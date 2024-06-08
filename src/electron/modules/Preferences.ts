@@ -9,6 +9,7 @@ import type {IpcMainInvokeEvent, IpcMainEvent} from "electron";
 
 /** The accepted preference types */
 type PreferenceEntry = string | number | string[];
+
 /** The type of the store */
 type PreferencesStore = Record<string, PreferenceEntry>;
 

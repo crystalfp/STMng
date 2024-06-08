@@ -10,7 +10,7 @@ import type {PositionType, Structure} from "@/types";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
-import {ai, atomColor, atomSymbol} from "@/services/AtomInfo";
+import {atomData, atomColor, atomSymbol} from "@/services/AtomInfo";
 
 export class DrawStructure {
 
@@ -112,7 +112,7 @@ export class DrawStructure {
 			case "ball-and-stick":
 				for(const atom of data.atoms) {
 					const color = atomColor(atom.atomZ);
-					const radius = ai.atomData(atom.atomZ).rCov * this.rCovScale;
+					const radius = atomData(atom.atomZ).rCov * this.rCovScale;
 					this.addSphere(radius, color, atom.position, index, this.atomsGroup);
 					++index;
 				}
@@ -120,7 +120,7 @@ export class DrawStructure {
 			case "van-der-walls":
 				for(const atom of data.atoms) {
 					const color = atomColor(atom.atomZ);
-					const radius = ai.atomData(atom.atomZ).rVdW;
+					const radius = atomData(atom.atomZ).rVdW;
 					this.addSphere(radius, color, atom.position, index, this.atomsGroup);
 					++index;
 				}
@@ -195,10 +195,10 @@ export class DrawStructure {
 			let offset = 0;
 			switch(this.drawKind) {
 				case "ball-and-stick":
-					offset = ai.atomData(atom.atomZ).rCov * this.rCovScale * 1.3;
+					offset = atomData(atom.atomZ).rCov * this.rCovScale * 1.3;
 					break;
 				case "van-der-walls":
-					offset = ai.atomData(atom.atomZ).rVdW * 1.3;
+					offset = atomData(atom.atomZ).rVdW * 1.3;
 					break;
 				case "licorice":
 					offset = this.bondRadius * 2.5;

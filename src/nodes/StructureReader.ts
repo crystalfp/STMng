@@ -348,6 +348,7 @@ export class StructureReader {
 			}
 		}
 
+		// Needs deep clone otherwise the change does not activate reactivity
 		sb.setData(this.id, structuredClone(this.structures[this.step-1]));
 	}
 

@@ -3,8 +3,7 @@
  *
  * @packageDocumentation
  */
-import {minLength, object, safeParse, string, optional,
-		record, union, number, boolean} from "valibot";
+import * as v from "valibot";
 import type {Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sb} from "@/services/Switchboard";
@@ -14,17 +13,22 @@ import {sb} from "@/services/Switchboard";
 // 	"reader": 	 {"label": "Reader", 	"type": "structure-reader"},
 // 	"findsymm":  {"label": "Find symm", "type": "find-symmetries",  "in": "reader"},
 
-const projectSchema = object({
-	graph: record(string([minLength(1, "Missing id")]), object({
-			label: string([minLength(1, "Missing label")]),
-			type: string([minLength(1, "Missing type")]),
-			in: optional(string())
-		}),
+const projectSchema = v.object({
+	graph: v.record(
+				v.pipe(v.string(), v.minLength(1, "Missing id")),
+				v.object({
+					label: v.pipe(v.string(), v.minLength(1, "Missing label")),
+					type: v.pipe(v.string(), v.minLength(1, "Missing type")),
+					in: v.optional(v.string())
+				}),
 	),
-	currentId: optional(string([minLength(1, "Invalid currentId")])),
-	ui: optional(record(string([minLength(1, "Missing id")]),
-						record(string([minLength(1, "Missing id")]),
-							   union([string(), number(), boolean()]))
+	currentId: v.optional(v.pipe(v.string(), v.minLength(1, "Invalid currentId"))),
+	ui: v.optional(v.record(
+						v.pipe(v.string(), v.minLength(1, "Missing id")),
+						v.record(
+							v.pipe(v.string(), v.minLength(1, "Missing id")),
+							v.union([v.string(), v.number(), v.boolean()])
+						)
 	))
 });
 
@@ -40,14 +44,14 @@ export const projectIsValid = (prj: Project): boolean => {
 	if(!prj) return false;
 
 	// Check against the schema
-	const result = safeParse(projectSchema, prj);
+	const result = v.safeParse(projectSchema, prj);
 
 	if(!result.success) {
 
 		for(const issue of result.issues) {
-			showErrorNotification(`Error from project validator "${issue.reason}": ${issue.message}`);
+			showErrorNotification(`Error from project validator "${issue.type}": ${issue.message}`);
 			if(issue.input) showErrorNotification(`Input: ${issue.input as string}`);
-			else showErrorNotification(`Missing key "${issue.path![0].key as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
+			else showErrorNotification(`Missing key "${issue.path![0].value as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
 		}
 		return false;
 	}

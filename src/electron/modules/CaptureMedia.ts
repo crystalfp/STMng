@@ -1,5 +1,5 @@
 /**
- * Save a screen capture
+ * Save a screen capture as an image or a movie. Save the displayed structure as STL file
  *
  * @packageDocumentation
  */
@@ -12,7 +12,7 @@ import tmp from "tmp";
 import {fileURLToPath} from "node:url";
 
 /**
- * Setup the channels to save a scene snapshot or a movie
+ * Setup the channels to save a scene snapshot or a movie or a STL file
  */
 export const setupChannelCapture = (): void => {
 

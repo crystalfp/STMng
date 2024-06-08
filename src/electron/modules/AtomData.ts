@@ -119,7 +119,7 @@ class AtomData {
 	}
 
 	/**
-	 * Return other information on the atom with Z value
+	 * Return other information on the atom with given Z value
 	 *
 	 * @param atomZ - Z value of the atom that should be retrieved
 	 * @returns Structure containing symbol, radii, max number of bonds and color

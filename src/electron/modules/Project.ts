@@ -9,8 +9,9 @@ import log from "electron-log";
 import fs from "fs-extra";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {sendLoadedProject, requestLoadedProject, sendToSecondaryWindow, createSecondaryWindow,
-		isSecondaryWindowOpen, sendProjectPath, sendErrorNotification} from "./WindowsUtilities";
+import {sendLoadedProject, requestLoadedProject, sendToSecondaryWindow,
+		createSecondaryWindow, isSecondaryWindowOpen, sendProjectPath,
+		sendErrorNotification} from "./WindowsUtilities";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 
 let projectAsString = "";
@@ -182,5 +183,5 @@ export const saveProject = (): void => {
  * Setup the channel to handle project requests from client
  */
 export const setupChannelProject = (): void => {
-    ipcMain.handle("PROJECT:GET",  () => projectAsString);
+    ipcMain.handle("PROJECT:GET", () => projectAsString);
 };
