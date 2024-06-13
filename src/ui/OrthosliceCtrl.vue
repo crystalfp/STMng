@@ -15,8 +15,6 @@ const pr = defineProps<{
     id: string;
 }>();
 
-const tickLabels: Record<number, string> = {0: "X", 1: "Y", 2: "Z"};
-
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
@@ -89,9 +87,13 @@ watchEffect(() => {
   <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice" density="compact" class="mt-2 ml-3" />
   <v-label :text="`Dataset (${dataset})`" class="ml-2" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4" />
-  <v-label text="Axis" class="ml-2" />
-  <v-slider v-model="axis" :ticks="tickLabels" min="0" max="2" step="1"
-            show-ticks="always" tick-size="5" class="mx-4" />
+  <v-label text="Axis" class="ml-2 mb-3" /><br>
+  <v-btn-toggle v-model="axis" color="primary" class="mb-6 ml-2">
+    <v-btn :value="0">X</v-btn>
+    <v-btn :value="1">Y</v-btn>
+    <v-btn :value="2">Z</v-btn>
+  </v-btn-toggle><br>
+
   <g-debounced-slider v-slot="{value}" v-model="plane"
                       :step="1" :min="0" :max="maxPlane" class="ml-2 my-4">
     <v-label :text="`Plane (${value})`" />

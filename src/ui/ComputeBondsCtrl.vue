@@ -123,7 +123,7 @@ const resetSliders = (): void => {
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" />
     </g-debounced-slider>
   </v-container>
-  <v-label class="ml-2 mb-2">Add bonded atoms outside unit cell</v-label>
+  <v-label class="ml-2 mb-2 mt-4">Add bonded atoms outside unit cell</v-label>
   <v-btn-toggle v-model="enlargementKind" color="primary" class="mb-6 ml-2">
     <v-btn value="none">None</v-btn>
     <v-btn value="outside">Neighbors</v-btn>
