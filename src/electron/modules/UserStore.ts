@@ -53,7 +53,6 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 		}
 		else if(options?.defaultContent) {
 			this.data = structuredClone(options.defaultContent) as T;
-			// this.data = JSON.parse(JSON.stringify(options.defaultContent)) as T;
 			fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");
 		}
 		else this.data = {} as T;
@@ -97,7 +96,13 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 * @param key - Key to be deleted
 	 */
 	delete<K extends keyof T>(key: K): void {
+		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete this.data[key];
-		fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");
+		fs.writeFileSync(this.filePath,
+						 yaml.dump(this.data, {
+							schema: yaml.CORE_SCHEMA,
+							lineWidth: 256,
+							flowLevel: 1
+						 }), "utf8");
 	}
 }

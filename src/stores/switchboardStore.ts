@@ -22,7 +22,9 @@ export const useSwitchboardStore = defineStore("SwitchboardStore", {
     // > Actions
     actions: {
         clear() {
+			// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 			for(const key in this.ui) delete this.ui[key];
+			// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 			for(const key in this.data) delete this.data[key];
         },
         initNode(id: string) {

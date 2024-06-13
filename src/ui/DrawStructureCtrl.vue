@@ -4,7 +4,7 @@
  * Controls for the converter from Structure data to graphical objects
  */
 
-import {ref, watchEffect} from "vue";
+import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 
 // > Properties
@@ -48,15 +48,28 @@ watchEffect(() => {
     });
 });
 
-// Labels for the quality slider
-const tickLabels = {1: "Low", 2: "Medium", 3: "Good", 4: "Best"};
+// To convert the button toggle into three booleans
+const showCombined = computed({
+    get: () => {
+        const result = [];
+        if(showStructure.value) result.push("structure");
+        if(showBonds.value) result.push("bonds");
+        if(showLabels.value) result.push("labels");
+        return result;
+    },
+    set: (values) => {
+        showStructure.value = values.includes("structure");
+        showBonds.value = values.includes("bonds");
+        showLabels.value = values.includes("labels");
+    }
+});
 
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-label text="Structure rendering mode" class="mb-3 ml-2" /><br>
+  <v-label text="Structure rendering mode" class="mb-3 ml-2 mt-4" /><br>
   <v-btn-toggle v-model="drawKind" color="primary" class="mb-6 ml-2">
     <v-btn value="ball-and-stick">CPK</v-btn>
     <v-btn value="van-der-walls">VdW</v-btn>
@@ -64,21 +77,30 @@ const tickLabels = {1: "Low", 2: "Medium", 3: "Good", 4: "Best"};
     <v-btn value="lines">Lines</v-btn>
   </v-btn-toggle>
 
-  <v-label text="Label mode" class="mb-3 ml-2" /><br>
+  <v-label text="Label is" class="mb-3 ml-2" /><br>
   <v-btn-toggle v-model="labelKind" color="primary" class="mb-6 ml-2">
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>
     <v-btn value="index">Index</v-btn>
+  </v-btn-toggle><br>
+
+  <v-label text="Visibility" class="ml-2 mb-3" /><br>
+  <v-btn-toggle v-model="showCombined" multiple color="primary" class="ml-2 mb-4">
+    <v-btn value="structure">Structure</v-btn>
+    <v-btn value="bonds">Bonds</v-btn>
+    <v-btn value="labels">Labels</v-btn>
   </v-btn-toggle>
 
-  <v-switch v-model="showStructure" color="primary" label="Show structure" class="ml-3" />
-  <v-switch v-model="showBonds" color="primary" label="Show bonds" class="mt-n5 ml-3" />
-  <v-switch v-model="showLabels" color="primary" label="Show labels" class="mt-n5 ml-3" />
-  <v-label text="Quality" class="ml-2" />
-  <v-slider v-model="drawQuality" :ticks="tickLabels" min="1" max="4" step="1"
-            show-ticks="always" tick-size="5" class="ml-4 mr-4"/>
+  <v-label text="Quality" class="ml-2" /><br>
+  <v-btn-toggle v-model="drawQuality" color="primary" class="mt-2 ml-2">
+    <v-btn :value="1">Low</v-btn>
+    <v-btn :value="2">Medium</v-btn>
+    <v-btn :value="3">Good</v-btn>
+    <v-btn :value="4">Best</v-btn>
+  </v-btn-toggle>
+
   <g-debounced-slider v-slot="{value}" v-model="drawRoughness"
-                      :min="0" :max="1" :step="0.1" class="ml-2 mt-5">
+                      :min="0" :max="1" :step="0.1" class="ml-2 mt-6">
     <v-label :text="`Roughness (${value.toFixed(2)})`" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="drawMetalness"

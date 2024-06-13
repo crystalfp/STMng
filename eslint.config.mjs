@@ -103,9 +103,14 @@ export default [{
         ...typescriptPlugin.configs.recommended.rules,
         ...typescriptPlugin.configs["recommended-type-checked"].rules,
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
+        ...typescriptPlugin.configs["strict-type-checked"].rules,
 
         "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
         "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
+
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
 
         "max-len": ["off", 130],
         "@alasdair/max-len/max-len": ["warn", {

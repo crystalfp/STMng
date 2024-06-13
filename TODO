@@ -1,26 +1,27 @@
 
 ToDo:
   ☐ Readers do not fail if the file format is invalid
-  ☐ Unify naming: graph, node, project
   ☐ Finish help
   ☐ Put the project name in the project viewer
   ☐ Add project name in the Project structure
-  ☐ In builder copy only platform specific exe files
-  ☐ Check the order of entries in objects
-  ☐ Try `renderer.setAnimationLoop(animate)` instead of `requestAnimationFrame(animate)`
-  ☐ Use Suspense component for controls loading <https://vueschool.io/articles/vuejs-tutorials/suspense-everything-you-need-to-know/>
 
 Bugs:
   ☐ Energy file: fix disappearing file name
 
+Study:
+  ☐ Check the order of entries in objects
+  ☐ Use Suspense component for controls loading <https://vueschool.io/articles/vuejs-tutorials/suspense-everything-you-need-to-know/>
+  ☐ In builder copy only platform specific exe files
+  ☐ Unify naming: graph, node, project
+
 Requests from Oganov:
   ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ Use of local fingerprint order parameters to color atoms
+  ☐ An option to specify arbitrary section plane
 
 Nice to have/Future:
-  ☐ Label color
+  ☐ Label color (contrasting with atom color)
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
-  ☐ Shift unit cell (from STM4). The problem is shifting the volumetric data.
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Optimize using Int64Array and similia
   ☐ Add tooltips
@@ -28,9 +29,12 @@ Nice to have/Future:
   ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Move to WebGPURenderer
-  ☐ An option to specify arbitrary section plane
+  ☐ Rewrite UserStore using Map()
 
 Archive:
+  ✔ Quality slider to `v-btn-toggle` @done(2024-06-13 16:04) @project(ToDo)
+  ✔ Try `renderer.setAnimationLoop(animate)` instead of `requestAnimationFrame(animate)` @done(2024-06-13 11:29) @project(ToDo)
+  ✘ Shift unit cell (from STM4). The problem is shifting the volumetric data. @cancelled(2024-06-13 11:30) @project(Nice to have/Future)
   ✔ Explore valibot `flatten()` method to format errors (results in bugs/valibot.ts) @done(2024-06-13 11:12) @project(ToDo)
   ✘ Can the panel selection be done with router? See <https://router.vuejs.org/guide/essentials/named-views> @cancelled(2024-06-06 17:27) @project(ToDo)
   ✔ Fix `spg_standardize_cell()` @done(2024-06-07 18:18) @project(Bugs)

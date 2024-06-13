@@ -214,7 +214,7 @@ onMounted(() => {
         });
         const intersects = raycaster.intersectObjects(objects);
 
-        if(intersects.length > 0) {
+        if(intersects.length > 0 && intersects[0]) {
             controlStore.addSelectedAtom(intersects[0].object.userData.index as number);
         }
         else {
@@ -371,12 +371,11 @@ onMounted(() => {
     // Start run
     const clock = new THREE.Clock();
     const animate = (): void => {
-        requestAnimationFrame(animate);
         renderer.render(scene, camera);
         // viewHelper.render(renderer);
         controls.update(clock.getDelta());
     };
-    animate();
+    renderer.setAnimationLoop(animate);
 });
 
 </script>
