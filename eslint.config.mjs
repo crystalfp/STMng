@@ -206,7 +206,7 @@ export default [{
         "camelcase": ["warn", {properties: "never"}],
         "max-depth": ["warn", 8],
         "arrow-parens": "error",
-        "no-confusing-arrow": ["error", {allowParens: false}],
+        "no-confusing-arrow": ["error", {allowParens: true}],
         "dot-location": ["error", "property"],
         "no-else-return": "error",
         "no-throw-literal": "off",

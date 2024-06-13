@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation is a chemical structure visualizer that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "0.23.2",
+  "version": "0.23.4",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -33,11 +33,11 @@
     "three": "^0.165.0",
     "tmp": "^0.2.3",
     "troika-three-text": "^0.49.1",
-    "valibot": "^0.31.0",
+    "valibot": "^0.31.1",
     "vue": "^3.4.27",
     "vue-chartjs": "^5.3.1",
-    "vue-router": "^4.3.2",
-    "vuetify": "^3.6.8"
+    "vue-router": "^4.3.3",
+    "vuetify": "^3.6.9"
   },
   "devDependencies": {
     "@alasdair/eslint-plugin-max-len": "^1.1.0",
@@ -49,11 +49,11 @@
     "@types/js-yaml": "^4.0.9",
     "@types/three": "^0.165.0",
     "@types/tmp": "^0.2.6",
-    "@typescript-eslint/eslint-plugin": "^7.12.0",
-    "@typescript-eslint/parser": "^7.12.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "@zamiell/typedoc-plugin-not-exported": "^0.2.0",
-    "electron": "^30.1.0",
+    "electron": "^31.0.0",
     "electron-builder": "^24.13.3",
     "eslint": "^9.4.0",
     "eslint-formatter-codeframe": "^7.32.1",
@@ -72,7 +72,7 @@
     "node-addon-api": "^8.0.0",
     "node-gyp": "^10.1.0",
     "postcss-html": "^1.7.0",
-    "sass": "^1.77.4",
+    "sass": "^1.77.5",
     "stylelint": "^16.6.1",
     "stylelint-config-recommended-scss": "^14.0.0",
     "stylelint-config-recommended-vue": "^1.5.0",
@@ -87,6 +87,6 @@
     "vite-plugin-electron": "^0.28.7",
     "vite-plugin-electron-renderer": "^0.14.5",
     "vue-eslint-parser": "^9.4.3",
-    "vue-tsc": "^2.0.19"
+    "vue-tsc": "^2.0.21"
   }
 }

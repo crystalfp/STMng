@@ -11,6 +11,7 @@ import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 import {useControlStore} from "@/stores/controlStore";
 import {watchEffect} from "vue";
 import {atomColor} from "@/services/AtomInfo";
+// import {VolumeRenderShader1} from "three/addons/shaders/VolumeShader.js";
 
 export class Trajectories {
 
@@ -25,12 +26,14 @@ export class Trajectories {
 	private readonly groupName;
 	private readonly points: THREE.Vector3[][] = [];
 	private showPositionClouds = false;
+	private showPositionCloudsPrevious = false;
 	private positionCloudsSide = 10;
-	private readonly positionCloud = Array(this.positionCloudsSide*
-										   this.positionCloudsSide*
-										   this.positionCloudsSide).fill(0) as number[];
+	private positionCloudsSidePrevious = 10;
+	private positionCloud: Float32Array | undefined;
 	private positionLimits: number[] = [];
+	private positionCloudsGrow = 0.1;
 	private readonly traceColor: string[] = [];
+	private volumeMesh: THREE.Mesh | undefined;
 
 	/**
 	 * Create the node
@@ -64,7 +67,7 @@ export class Trajectories {
 
 				this.nextSteps = false;
 
-				this.positionCloud.fill(0);
+				if(this.positionCloud) this.positionCloud.fill(0);
 			}
 
 			if(this.maxDisplacement !== this.maxDisplacementPrevious) {
@@ -77,14 +80,68 @@ export class Trajectories {
 
 			this.showPositionClouds = params.showPositionClouds as boolean ?? false;
 			this.positionCloudsSide = params.positionCloudsSide as number ?? 10;
+			this.positionCloudsGrow = params.positionCloudsGrow as number ?? 0.1;
+
+			if(this.showPositionClouds !== this.showPositionCloudsPrevious) {
+
+				// TBD
+				if(this.showPositionClouds) {
+					if(this.volumeMesh) {
+						this.volumeMesh.visible = true;
+					}
+					else {
+
+						this.positionCloud = new Float32Array(this.positionCloudsSide*
+															  this.positionCloudsSide*
+															  this.positionCloudsSide);
+						this.positionCloud.fill(0);
+
+						const sx = this.positionLimits[3]*(1+this.positionCloudsGrow);
+						const sy = this.positionLimits[4]*(1+this.positionCloudsGrow);
+						const sz = this.positionLimits[5]*(1+this.positionCloudsGrow);
+						const geometry = new THREE.BoxGeometry(sx, sy, sz);
+						const ox = sx/2 + this.positionLimits[0] - this.positionLimits[3]*this.positionCloudsGrow/2;
+						const oy = sy/2 + this.positionLimits[1] - this.positionLimits[4]*this.positionCloudsGrow/2;
+						const oz = sz/2 + this.positionLimits[2] - this.positionLimits[5]*this.positionCloudsGrow/2;
+						geometry.translate(ox, oy, oz);
+
+						// TBD Temporary solution
+						const material = new THREE.MeshLambertMaterial({
+											color: "#FFFFFF",
+											opacity: 0.7,
+											side: THREE.FrontSide,
+											transparent: true,
+										});
+
+						this.volumeMesh = new THREE.Mesh(geometry, material);
+						sm.add(this.volumeMesh);
+						console.log(this.positionLimits);
+					}
+				}
+				else {
+					if(this.volumeMesh) this.volumeMesh.visible = true;
+				}
+
+
+				this.showPositionCloudsPrevious = this.showPositionClouds;
+			}
+
+			if(this.positionCloudsSide !== this.positionCloudsSidePrevious) {
+				// TBD
+				this.positionCloudsSidePrevious = this.positionCloudsSide;
+			}
 		});
 
 		sb.getData(this.id, (data: unknown) => {
 
+			const structure = data as Structure;
+			if(!structure) return;
+			const {atoms, crystal} = structure;
+			const {origin, basis} = crystal;
+			this.computeLimits(origin, basis);
+
 			if(!controlStore.trajectoriesRecording) return;
 
-			const structure = data as Structure;
-			const {atoms, crystal} = structure;
 			const indices = selectAtomsByKind(structure, this.labelKind, this.atomsSelector);
 
 			this.setTraceColor(structure, indices, this.traceColor);
@@ -107,11 +164,7 @@ export class Trajectories {
 					this.points.length = len;
 					for(let i=0; i < len; ++i) this.points[i] = [];
 
-					if(this.showPositionClouds) {
-						this.positionCloud.fill(0);
-						const {origin, basis} = crystal;
-						this.computeLimits(origin, basis);
-					}
+					if(this.showPositionClouds && this.positionCloud) this.positionCloud.fill(0);
 				}
 			}
 
@@ -143,6 +196,8 @@ export class Trajectories {
 	}
 
 	private computeLimits(orig: PositionType, basis: BasisType): void {
+
+		if(basis.every((value) => value === 0)) return;
 
 		const vv: number[] = [
 /* 0 */ orig[0],                            orig[1],                            orig[2],
@@ -186,12 +241,27 @@ export class Trajectories {
 		const iy = Math.floor((y-this.positionLimits[1])/this.positionLimits[4]);
 		const iz = Math.floor((z-this.positionLimits[2])/this.positionLimits[5]);
 
-		++this.positionCloud[ix+this.positionCloudsSide*(iy+this.positionCloudsSide*iz)];
+		++this.positionCloud![ix+this.positionCloudsSide*(iy+this.positionCloudsSide*iz)];
 	}
 
 	private drawPositionClouds(): void {
-		// console.log(this.positionCloud);
-		// console.log("drawPositionClouds");
+
+		console.log("drawPositionClouds");
+		/*
+					const texture = new THREE.Data3DTexture(this.positionCloud,
+															this.positionCloudsSide,
+															this.positionCloudsSide,
+															this.positionCloudsSide);
+					texture.format = THREE.RedFormat;
+					texture.type = THREE.FloatType;
+					texture.minFilter = texture.magFilter = THREE.LinearFilter;
+					texture.unpackAlignment = 1;
+					texture.needsUpdate = true;
+
+					const shader = VolumeRenderShader1;
+
+					void shader;
+		*/
 	}
 
 	/**
@@ -285,6 +355,9 @@ export class Trajectories {
 			labelKind: this.labelKind,
 			atomsSelector: this.atomsSelector,
 			maxDisplacement: this.maxDisplacement,
+			showPositionClouds: this.showPositionClouds,
+			positionCloudsSide: this.positionCloudsSide,
+			positionCloudsGrow: this.positionCloudsGrow,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

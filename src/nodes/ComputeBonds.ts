@@ -622,7 +622,7 @@ export class ComputeBonds {
 		}
 
 		// Remove bonds between atoms that have too many bonds
-		this.removeOverBonding(bonds, atoms, addType);
+		// this.removeOverBonding(bonds, atoms, addType);
 
 		// Clean up bonds list removing invalid bonds
 		const outBonds: Bond[] = [];
@@ -641,51 +641,51 @@ export class ComputeBonds {
 	 * @param atoms - Structure atoms list
 	 * @param addType - If the atom is external to the unit cell the value is 2
 	 */
-	private removeOverBonding(bonds: Bond[], atoms: Atom[], addType: number[]): void {
+	// private removeOverBonding(bonds: Bond[], atoms: Atom[], addType: number[]): void {
 
-		// Count bonds for each atom
-		const bondsCount = new Map<number, number>();
-		for(const bond of bonds) {
+	// 	// Count bonds for each atom
+	// 	const bondsCount = new Map<number, number>();
+	// 	for(const bond of bonds) {
 
-			if(bond.type !== "n") continue;
-			const {from, to} = bond;
+	// 		if(bond.type !== "n") continue;
+	// 		const {from, to} = bond;
 
-			if(addType[from] !== 2) {
-				const count = bondsCount.get(from) ?? 0;
-				bondsCount.set(from, count+1);
-			}
+	// 		if(addType[from] !== 2) {
+	// 			const count = bondsCount.get(from) ?? 0;
+	// 			bondsCount.set(from, count+1);
+	// 		}
 
-			if(addType[to] !== 2) {
-				const count = bondsCount.get(to) ?? 0;
-				bondsCount.set(to, count+1);
-			}
-		}
+	// 		if(addType[to] !== 2) {
+	// 			const count = bondsCount.get(to) ?? 0;
+	// 			bondsCount.set(to, count+1);
+	// 		}
+	// 	}
 
-		// For each bond see if both atoms have an excess of bonds
-		for(const bond of bonds) {
+	// 	// For each bond see if both atoms have an excess of bonds
+	// 	for(const bond of bonds) {
 
-			if(bond.type !== "n") continue;
-			const {from, to} = bond;
+	// 		if(bond.type !== "n") continue;
+	// 		const {from, to} = bond;
 
-			// Get bonds count at both sides of the bond
-			const countFrom = bondsCount.get(from);
-			if(countFrom === undefined) continue;
-			const countTo = bondsCount.get(to);
-			if(countTo === undefined) continue;
+	// 		// Get bonds count at both sides of the bond
+	// 		const countFrom = bondsCount.get(from);
+	// 		if(countFrom === undefined) continue;
+	// 		const countTo = bondsCount.get(to);
+	// 		if(countTo === undefined) continue;
 
-			const fromAtomZ = atoms[from].atomZ;
-			const toAtomZ   = atoms[to].atomZ;
+	// 		const fromAtomZ = atoms[from].atomZ;
+	// 		const toAtomZ   = atoms[to].atomZ;
 
-			const maxFrom = atomData(fromAtomZ).maxBonds;
-			const maxTo   = atomData(toAtomZ).maxBonds;
+	// 		const maxFrom = atomData(fromAtomZ).maxBonds;
+	// 		const maxTo   = atomData(toAtomZ).maxBonds;
 
-			if(countFrom > maxFrom && countTo > maxTo) {
-				bond.type = "x";
-				bondsCount.set(from, countFrom-1);
-				bondsCount.set(to, countTo-1);
-			}
-		}
-	}
+	// 		if(countFrom > maxFrom && countTo > maxTo) {
+	// 			bond.type = "x";
+	// 			bondsCount.set(from, countFrom-1);
+	// 			bondsCount.set(to, countTo-1);
+	// 		}
+	// 	}
+	// }
 
 	// > Bonding scale by type
 	/**

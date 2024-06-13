@@ -48,11 +48,13 @@ export const projectIsValid = (prj: Project): boolean => {
 
 	if(!result.success) {
 
-		for(const issue of result.issues) {
-			showErrorNotification(`Error from project validator "${issue.type}": ${issue.message}`);
-			if(issue.input) showErrorNotification(`Input: ${issue.input as string}`);
-			else showErrorNotification(`Missing key "${issue.path![0].value as string}" in ${JSON.stringify(issue.path![0].input, undefined, 2)}`);
+		const {nested} = v.flatten(result.issues);
+		let errorMessage = "Error from project validator\n";
+		for(const entry in nested) {
+			errorMessage += `  ${entry}: "${nested[entry]!.join("; ")}"\n`;
 		}
+		showErrorNotification(errorMessage);
+
 		return false;
 	}
 

@@ -7,6 +7,8 @@ ToDo:
   ☐ Add project name in the Project structure
   ☐ In builder copy only platform specific exe files
   ☐ Check the order of entries in objects
+  ☐ Try `renderer.setAnimationLoop(animate)` instead of `requestAnimationFrame(animate)`
+  ☐ Use Suspense component for controls loading <https://vueschool.io/articles/vuejs-tutorials/suspense-everything-you-need-to-know/>
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -29,6 +31,7 @@ Nice to have/Future:
   ☐ An option to specify arbitrary section plane
 
 Archive:
+  ✔ Explore valibot `flatten()` method to format errors (results in bugs/valibot.ts) @done(2024-06-13 11:12) @project(ToDo)
   ✘ Can the panel selection be done with router? See <https://router.vuejs.org/guide/essentials/named-views> @cancelled(2024-06-06 17:27) @project(ToDo)
   ✔ Fix `spg_standardize_cell()` @done(2024-06-07 18:18) @project(Bugs)
   ✔ In defineAsyncComponent add a Loading object @done(2024-05-30 06:05) @project(ToDo)

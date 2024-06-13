@@ -8,6 +8,7 @@ import {watchEffect} from "vue";
 import {sm} from "@/services/SceneManager";
 import {sb} from "@/services/Switchboard";
 import {useControlStore} from "@/stores/controlStore";
+import {useConfigStore} from "@/stores/configStore";
 import type {Structure} from "@/types";
 import {atomData} from "@/services/AtomInfo";
 
@@ -62,6 +63,8 @@ export class Measures {
 			const out = [];
 			const {atoms} = this.inputStructure;
 
+			const configStore = useConfigStore();
+			const isPerspective = configStore.camera.type === "perspective";
 			let i = 0;
 			for(const idx of selections) {
 
@@ -71,7 +74,8 @@ export class Measures {
 				out.push({index: idx, label: labels[i], symbol, color: colors[i], coords});
 
 				const geom = new THREE.IcosahedronGeometry(rCov*0.6, 4);
-				const mat = new THREE.PointsMaterial({color: colors[i], size: 6});
+				const size = isPerspective ? 0.3 : 6;
+				const mat = new THREE.PointsMaterial({color: colors[i], size});
 				const points = new THREE.Points(geom, mat);
 				points.position.set(position[0], position[1], position[2]);
 				this.group.add(points);

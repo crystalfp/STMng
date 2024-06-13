@@ -25,6 +25,7 @@ const reset = ref(false);
 const maxDisplacement = ref(1);
 const showPositionClouds = ref(false);
 const positionCloudsSide = ref(10);
+const positionCloudsGrow = ref(0.1);
 
 sb.getUiParams(props.id, (params: UiParams) => {
     showTrajectories.value    = params.showTrajectories as boolean ?? false;
@@ -34,6 +35,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     maxDisplacement.value     = params.maxDisplacement as number ?? 1;
     showPositionClouds.value  = params.showPositionClouds as boolean ?? false;
     positionCloudsSide.value  = params.positionCloudsSide as number ?? 10;
+    positionCloudsGrow.value  = params.positionCloudsGrow as number ?? 0.1;
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
@@ -44,6 +46,7 @@ watchEffect(() => {
         maxDisplacement: maxDisplacement.value,
         showPositionClouds: showPositionClouds.value,
         positionCloudsSide: positionCloudsSide.value,
+        positionCloudsGrow: positionCloudsGrow.value,
     });
 });
 
@@ -61,11 +64,15 @@ watchEffect(() => {
                       :step="0.01" :min="0.01" :max="3" class="ml-1 my-4">
     <v-label :text="`Max displacement (${value})`" />
   </g-debounced-slider>
-  <!-- <v-switch v-model="showPositionClouds" color="primary" label="Show position clouds"
+  <v-switch v-model="showPositionClouds" color="primary" label="Show position clouds"
             density="compact" class="ml-2" />
   <v-container v-if="showPositionClouds" class="pa-0">
     <v-number-input v-model="positionCloudsSide" :min="2" :step="1" label="Cloud volume subdivisions" />
-  </v-container> -->
+    <g-debounced-slider v-slot="{value}" v-model="positionCloudsGrow"
+                        :step="0.1" :min="0" :max="1" class="ml-1 my-4">
+      <v-label :text="`Volume grow (${value*100}%)`" />
+    </g-debounced-slider>
+  </v-container>
   <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
     @click="controlStore.trajectoriesRecording = !controlStore.trajectoriesRecording">
     {{ controlStore.trajectoriesRecording ? "Stop trajectories" : "Start trajectories" }}
