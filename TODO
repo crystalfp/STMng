@@ -18,6 +18,8 @@ Requests from Oganov:
   ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ Use of local fingerprint order parameters to color atoms
   ☐ An option to specify arbitrary section plane
+  ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf>
+  ☐ Polyhedra volume
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

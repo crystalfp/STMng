@@ -181,7 +181,7 @@ export class ComputeBonds {
 			for(let j=i; j < len; ++j) {
 
 				// No H-H bonds
-				if(z[i] === 1 && z[j] === 1) continue;
+				// if(z[i] === 1 && z[j] === 1) continue;
 
 				let add = true;
 				for(const pair of this.perPairData) {
@@ -531,7 +531,7 @@ export class ComputeBonds {
 				if(enlargementKind === "outside" && addType[i] === 2 && addType[j] === 2) continue;
 
 				// Never bond hydrogens to each other...
-				if(atomZi === 1 && atomZj === 1) continue;
+				// if(atomZi === 1 && atomZj === 1) continue;
 
 				// Compute distance between atoms
 				const dx = positionI[0] - positionJ[0];
