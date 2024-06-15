@@ -31,6 +31,7 @@ const distanceBC = ref("");
 const distanceAC = ref("");
 const angleABC   = ref("");
 const details    = ref<SelectedAtoms[]>([]);
+const volume     = ref(0);
 
 sb.getUiParams(properties.id, (params: UiParams) => {
 
@@ -39,6 +40,7 @@ sb.getUiParams(properties.id, (params: UiParams) => {
     distanceAC.value = params.distanceAC as string ?? "";
     angleABC.value   = params.angleABC as string ?? "";
     details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtoms[];
+    volume.value     = params.volume as number ?? 0;
 });
 
 </script>
@@ -62,5 +64,10 @@ sb.getUiParams(properties.id, (params: UiParams) => {
     <tr v-if="distanceAC !== ''"><td>Distance A–C:</td><td>{{ distanceAC }}</td></tr>
     <tr v-if="angleABC !== ''"><td>Angle A–B–C:</td><td>{{ angleABC }}</td></tr>
   </v-table>
+  <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Volume</v-label>
+  <v-table v-if="volume > 0" density="default" class="pa-1">
+    <tr><td>Polyhedra volume:</td><td>{{ volume.toFixed(4) }}</td></tr>
+  </v-table>
+  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectPolyhedron()">Deselect</v-btn>
 </v-container>
 </template>

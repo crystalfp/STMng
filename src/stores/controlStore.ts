@@ -19,6 +19,10 @@ interface GlobalControls {
 	sceneSides: PositionType;
 	hasTrajectory: boolean;
 	trajectoriesRecording: boolean;
+	polyhedronCurrentIdx: number | undefined;
+	polyhedronNewIdx: number | undefined;
+	polyhedronCurrentColor: number;
+	polyhedronNewColor: number;
 }
 
 export const useControlStore = defineStore("ControlStore", {
@@ -36,6 +40,10 @@ export const useControlStore = defineStore("ControlStore", {
 		sceneSides: [1, 1, 1],
 		hasTrajectory: false,
 		trajectoriesRecording: false,
+		polyhedronCurrentIdx: undefined,
+		polyhedronNewIdx: undefined,
+		polyhedronCurrentColor: 0,
+		polyhedronNewColor: 0,
 
 	} as GlobalControls),
 
@@ -59,7 +67,15 @@ export const useControlStore = defineStore("ControlStore", {
         },
         deselectAtoms() {
             this.atomsSelected.length = 0;
-        }
+        },
+		selectPolyhedron(index: number, color: number) {
+
+			this.polyhedronNewIdx = index;
+			this.polyhedronNewColor = color;
+		},
+		deselectPolyhedron() {
+			this.polyhedronNewIdx = this.polyhedronCurrentIdx;
+		}
     }});
 
 // > Support HMR during development

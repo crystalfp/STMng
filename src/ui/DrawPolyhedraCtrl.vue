@@ -55,7 +55,7 @@ watchEffect(() => {
                     title="Select central atoms by" placeholder="Central atoms selector" />
   <g-slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom" v-model:raw="showOpacity"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
-                          min="0" max="1" step="0.1" />
+                          :min="0" :max="1" :step="0.1" />
   <g-color-selector v-else v-model="surfaceColor" label="Surface color" :transparency="true" />
 </v-container>
 </template>

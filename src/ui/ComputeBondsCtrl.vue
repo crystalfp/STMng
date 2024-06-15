@@ -114,12 +114,12 @@ const resetSliders = (): void => {
         <td style="width: 4rem">{{ item.label }}</td>
         <td><g-slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"
                                     :label="`(${showScale[idx].toFixed(2)})`" label-width="3rem"
-                                    :min="0.5" :max="2.0" :step="0.01" class="mr-0"/></td>
+                                    :min="0" :max="3.0" :step="0.01" class="mr-0"/></td>
       </tr>
     </v-table>
   </v-container>
   <v-container v-else class="pa-0">
-    <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0.5" :max="2.0" :step="0.01" class="ml-2">
+    <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01" class="ml-2">
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" />
     </g-debounced-slider>
   </v-container>

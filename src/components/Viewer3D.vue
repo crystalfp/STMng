@@ -199,7 +199,6 @@ onMounted(() => {
     // Pick atoms by Ctrl+MouseLeft
     renderer.domElement.addEventListener("mousedown", (event: MouseEvent): void => {
 
-        // if(!event.ctrlKey || !event.shiftKey) return;
         if(!event.ctrlKey) return;
         event.preventDefault();
 
@@ -210,15 +209,26 @@ onMounted(() => {
 
         const objects: THREE.Object3D[] = [];
         scene.traverse((object) => {
-            if(object.name === "Atom") objects.push(object);
+            if(object.name === "Atom" || object.name === "Polyhedron") objects.push(object);
         });
         const intersects = raycaster.intersectObjects(objects);
 
         if(intersects.length > 0 && intersects[0]) {
-            controlStore.addSelectedAtom(intersects[0].object.userData.index as number);
+
+            const {object} = intersects[0];
+            if(object.name === "Atom") {
+                controlStore.addSelectedAtom(object.userData.index as number);
+            }
+            else if(object.name === "Polyhedron") {
+                controlStore.deselectAtoms();
+                const color = ((object as THREE.Mesh).material as
+                                THREE.MeshLambertMaterial).color.getHex();
+                controlStore.selectPolyhedron(object.userData.idx as number, color);
+            }
         }
         else {
             controlStore.deselectAtoms();
+            controlStore.deselectPolyhedron();
         }
     });
 

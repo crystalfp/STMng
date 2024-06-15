@@ -107,12 +107,14 @@ export class DrawPolyhedra {
 		const islands = this.createVerticeLists();
 		if(islands.length === 0) return;
 
+		let polyhedronIdx = 0;
 		let idx = 0;
 		for(const island of islands) {
 
 			// The polyhedron
 			const mesh = new THREE.Mesh();
 			mesh.geometry = new ConvexGeometry(island);
+			mesh.name = "Polyhedron";
 			if(this.colorByCenterAtom) {
 				const material = this.material.clone();
 				material.color = new THREE.Color(this.centerAtomsColor[idx]);
@@ -121,9 +123,13 @@ export class DrawPolyhedra {
 				++idx;
 			}
 			else {
-				mesh.material = this.material;
+				mesh.material = this.material.clone();
 			}
 			this.group!.add(mesh);
+
+			// Identify the polyhedron
+			mesh.userData = {idx: polyhedronIdx};
+			++polyhedronIdx;
 
 			// The polyhedron edges
 			const edgeColor = this.createContrastingColor(this.material.color);
