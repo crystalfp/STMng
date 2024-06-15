@@ -15,18 +15,18 @@ import {sb} from "@/services/Switchboard";
 
 const projectSchema = v.object({
 	graph: v.record(
-				v.pipe(v.string(), v.minLength(1, "Missing id")),
+				v.pipe(v.string(), v.nonEmpty("Missing id")),
 				v.object({
-					label: v.pipe(v.string(), v.minLength(1, "Missing label")),
-					type: v.pipe(v.string(), v.minLength(1, "Missing type")),
+					label: v.pipe(v.string(), v.nonEmpty("Missing label")),
+					type: v.pipe(v.string(), v.nonEmpty("Missing type")),
 					in: v.optional(v.string())
 				}),
 	),
-	currentId: v.optional(v.pipe(v.string(), v.minLength(1, "Invalid currentId"))),
+	currentId: v.optional(v.pipe(v.string(), v.nonEmpty("Invalid currentId"))),
 	ui: v.optional(v.record(
-						v.pipe(v.string(), v.minLength(1, "Missing id")),
+						v.pipe(v.string(), v.nonEmpty("Missing id")),
 						v.record(
-							v.pipe(v.string(), v.minLength(1, "Missing id")),
+							v.pipe(v.string(), v.nonEmpty("Missing id")),
 							v.union([v.string(), v.number(), v.boolean()])
 						)
 	))
