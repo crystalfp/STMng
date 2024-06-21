@@ -15,7 +15,12 @@ import maxlenPlugin from "@alasdair/eslint-plugin-max-len";
 import tsdocPlugin from "eslint-plugin-tsdoc";
 import electronPlugin from "eslint-plugin-electron-extension";
 import jsPlugin from "@eslint/js"
+import vuetifyPlugin from "eslint-plugin-vuetify";
+import {FlatCompat} from "@eslint/eslintrc"
 
+const compat = new FlatCompat({
+    config: vuetifyPlugin.configs.recommended.rules,
+});
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [{
@@ -31,7 +36,6 @@ export default [{
         globals: {
             document: "readonly",
             window: "readonly",
-            navigator: "readonly",
             NodeJS: "readonly",
             expect: "readonly",
             test: "readonly",
@@ -75,6 +79,7 @@ export default [{
         "@alasdair/max-len": maxlenPlugin,
         tsdoc: tsdocPlugin,
         "electron-extension": electronPlugin,
+        vuetify: vuetifyPlugin,
     },
     settings: {
         "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx"]},
@@ -104,6 +109,7 @@ export default [{
         ...typescriptPlugin.configs["recommended-type-checked"].rules,
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
         ...typescriptPlugin.configs["strict-type-checked"].rules,
+        ...compat.extends("plugin:vue/base", "plugin:vuetify/base").rules,
 
         "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
         "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],

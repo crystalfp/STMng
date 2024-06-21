@@ -1,5 +1,5 @@
 /**
- * Draw atom trajectories
+ * Draw atom trajectories as lines or as position clouds
  *
  * @packageDocumentation
  */
@@ -11,7 +11,7 @@ import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 import {useControlStore} from "@/stores/controlStore";
 import {watchEffect} from "vue";
 import {atomColor} from "@/services/AtomInfo";
-// import {VolumeRenderShader1} from "three/addons/shaders/VolumeShader.js";
+import {VolumeRenderShader} from "@/services/VolumeShader";
 
 export class Trajectories {
 
@@ -27,18 +27,22 @@ export class Trajectories {
 	private readonly points: THREE.Vector3[][] = [];
 	private showPositionClouds = false;
 	private showPositionCloudsPrevious = false;
-	private positionCloudsSide = 10;
-	private positionCloudsSidePrevious = 10;
+	private positionCloudsSide = 32; // It is 2**positionCloudsSideExp
+	private positionCloudsSideExp = 5;
+	private positionCloudsSideExpPrevious = 5;
+	private positionCloudsGrow = 0.1;
+	private positionCloudsGrowPrevious = 0.1;
 	private positionCloud: Float32Array | undefined;
 	private positionLimits: number[] = [];
-	private positionCloudsGrow = 0.1;
 	private readonly traceColor: string[] = [];
 	private volumeMesh: THREE.Mesh | undefined;
+	private readonly colormap = this.generateColormap();
+	private maxCount = 0;
 
 	/**
 	 * Create the node
 	 *
-	 * @param id - ID of the Ortho Plane node
+	 * @param id - ID of the Trajectories node
 	 */
 	constructor(private readonly id: string) {
 
@@ -79,56 +83,35 @@ export class Trajectories {
 			this.group.visible = this.showTrajectories;
 
 			this.showPositionClouds = params.showPositionClouds as boolean ?? false;
-			this.positionCloudsSide = params.positionCloudsSide as number ?? 10;
+			this.positionCloudsSideExp = params.positionCloudsSideExp as number ?? 5;
+			this.positionCloudsSide = 2**this.positionCloudsSideExp;
 			this.positionCloudsGrow = params.positionCloudsGrow as number ?? 0.1;
 
 			if(this.showPositionClouds !== this.showPositionCloudsPrevious) {
 
-				// TBD
 				if(this.showPositionClouds) {
 					if(this.volumeMesh) {
-						this.volumeMesh.visible = true;
+						this.removePositionClouds();
 					}
-					else {
-
-						this.positionCloud = new Float32Array(this.positionCloudsSide*
-															  this.positionCloudsSide*
-															  this.positionCloudsSide);
-						this.positionCloud.fill(0);
-
-						const sx = this.positionLimits[3]*(1+this.positionCloudsGrow);
-						const sy = this.positionLimits[4]*(1+this.positionCloudsGrow);
-						const sz = this.positionLimits[5]*(1+this.positionCloudsGrow);
-						const geometry = new THREE.BoxGeometry(sx, sy, sz);
-						const ox = sx/2 + this.positionLimits[0] - this.positionLimits[3]*this.positionCloudsGrow/2;
-						const oy = sy/2 + this.positionLimits[1] - this.positionLimits[4]*this.positionCloudsGrow/2;
-						const oz = sz/2 + this.positionLimits[2] - this.positionLimits[5]*this.positionCloudsGrow/2;
-						geometry.translate(ox, oy, oz);
-
-						// TBD Temporary solution
-						const material = new THREE.MeshLambertMaterial({
-											color: "#FFFFFF",
-											opacity: 0.7,
-											side: THREE.FrontSide,
-											transparent: true,
-										});
-
-						this.volumeMesh = new THREE.Mesh(geometry, material);
-						sm.add(this.volumeMesh);
-						console.log(this.positionLimits);
-					}
+					this.setupPositionClouds();
 				}
-				else {
-					if(this.volumeMesh) this.volumeMesh.visible = true;
-				}
-
+				else if(this.volumeMesh) this.removePositionClouds();
 
 				this.showPositionCloudsPrevious = this.showPositionClouds;
 			}
 
-			if(this.positionCloudsSide !== this.positionCloudsSidePrevious) {
-				// TBD
-				this.positionCloudsSidePrevious = this.positionCloudsSide;
+			if(this.positionCloudsSideExp !== this.positionCloudsSideExpPrevious) {
+
+				if(this.volumeMesh) this.updateCloudVolume();
+
+				this.positionCloudsSideExpPrevious = this.positionCloudsSideExp;
+			}
+
+			if(this.positionCloudsGrow !== this.positionCloudsGrowPrevious) {
+
+				if(this.volumeMesh) this.updateCloudVolume();
+
+				this.positionCloudsGrowPrevious = this.positionCloudsGrow;
 			}
 		});
 
@@ -139,6 +122,7 @@ export class Trajectories {
 			const {atoms, crystal} = structure;
 			const {origin, basis} = crystal;
 			this.computeLimits(origin, basis);
+			if(this.showPositionClouds) this.setupPositionClouds();
 
 			if(!controlStore.trajectoriesRecording) return;
 
@@ -177,7 +161,9 @@ export class Trajectories {
 				this.points[trajectoryIndex]
 					.push(new THREE.Vector3(position[0], position[1], position[2]));
 				++trajectoryIndex;
-				if(this.showPositionClouds) this.accumulatePosition(position[0], position[1], position[2]);
+				if(this.showPositionClouds && this.positionCloud) {
+					this.accumulatePosition(position[0], position[1], position[2]);
+				}
 			}
 
 			// Create lines
@@ -195,6 +181,64 @@ export class Trajectories {
 		controlStore.hasTrajectory = true;
 	}
 
+	private setupPositionClouds(): void {
+
+		if(this.positionLimits.length === 0 || this.volumeMesh) return;
+
+		// Create volume data
+		this.createCloudVolume();
+	}
+
+	private removePositionClouds(): void {
+		sm.deleteMesh("PositionCloudVolume");
+		sm.deleteMesh("PositionCloudBorders");
+		this.volumeMesh = undefined;
+	}
+
+	/**
+	 * Create a colormap
+	 *
+	 * @returns The texture 256x1 with the colormap
+	 * @remarks Use lut {@link https://threejs.org/docs/#examples/en/math/Lut}
+	 *			then .lut and convert list of colors into Uint8Array
+	 *			or createCanvas() method
+	 */
+	private generateColormap(): THREE.Texture {
+
+		const width = 256;
+		const height = 1;
+
+		const data = new Uint8Array(4 * width);
+
+		for(let i = 0; i < width; i ++) {
+			const stride = i * 4;
+			data[stride]   = i;
+			data[stride+1] = i;
+			data[stride+2] = i;
+			data[stride+3] = 255;
+		}
+
+		// Used the buffer to create a DataTexture
+		const texture = new THREE.DataTexture(data, width, height);
+		texture.needsUpdate = true;
+
+		// Specify the texture format to match the stored data.
+		texture.format = THREE.RGBAFormat;
+		texture.type = THREE.UnsignedByteType;
+		texture.minFilter = THREE.LinearFilter; // Linear interpolation of colors.
+		texture.magFilter = THREE.LinearFilter; // Linear interpolation of colors.
+		texture.wrapS = THREE.ClampToEdgeWrapping;
+		texture.wrapT = THREE.ClampToEdgeWrapping;
+
+		return texture;
+	}
+
+	/**
+	 * Compute the limits for the volume enclosing the unit cell
+	 *
+	 * @param orig - Unit cell origin
+	 * @param basis - Unit cell basis
+	 */
 	private computeLimits(orig: PositionType, basis: BasisType): void {
 
 		if(basis.every((value) => value === 0)) return;
@@ -225,43 +269,134 @@ export class Trajectories {
 			if(vv[3*i+2] < minZ) minZ = vv[3*i+2];
 		}
 
+		const growHalf = this.positionCloudsGrow/2;
+		const growPlus1 = 1+this.positionCloudsGrow;
+		const sideX = maxX-minX;
+		const sideY = maxY-minY;
+		const sideZ = maxZ-minZ;
+
 		this.positionLimits = [
-			minX,
-			minY,
-			minZ,
-			maxX-minX,
-			maxY-minY,
-			maxZ-minZ,
+			minX-sideX*growHalf,	// Volume origin
+			minY-sideY*growHalf,
+			minZ-sideZ*growHalf,
+			sideX*growPlus1,		// Volume sides
+			sideY*growPlus1,
+			sideZ*growPlus1,
 		];
 	}
 
-	private accumulatePosition(x: number, y: number, z: number): void {
+	/**
+	 * Create the volume that will enclose the position clouds
+	 */
+	private createCloudVolume(): void {
 
-		const ix = Math.floor((x-this.positionLimits[0])/this.positionLimits[3]);
-		const iy = Math.floor((y-this.positionLimits[1])/this.positionLimits[4]);
-		const iz = Math.floor((z-this.positionLimits[2])/this.positionLimits[5]);
+		if(this.positionLimits.length === 0) return;
 
-		++this.positionCloud![ix+this.positionCloudsSide*(iy+this.positionCloudsSide*iz)];
+		this.positionCloud = new Float32Array(this.positionCloudsSide*
+											  this.positionCloudsSide*
+											  this.positionCloudsSide);
+		this.positionCloud.fill(0);
+
+		const sx = this.positionLimits[3];
+		const sy = this.positionLimits[4];
+		const sz = this.positionLimits[5];
+
+		const geometry = new THREE.BoxGeometry(sx, sy, sz);
+		const tx = sx/2 + this.positionLimits[0];
+		const ty = sy/2 + this.positionLimits[1];
+		const tz = sz/2 + this.positionLimits[2];
+		geometry.translate(tx, ty, tz);
+
+		// TBD Show the volume limits for debugging
+		const edges = new THREE.EdgesGeometry(geometry);
+		const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: "#00FF00"}));
+		line.name = "PositionCloudBorders";
+		sm.add(line);
+
+		this.volumeMesh = new THREE.Mesh(geometry, this.createCloudsMaterial());
+		this.volumeMesh.name = "PositionCloudVolume";
+		sm.add(this.volumeMesh);
 	}
 
+	/**
+	 * Update the position cloud volume regenerating the volume
+	 */
+	private updateCloudVolume(): void {
+
+		this.removePositionClouds();
+		this.createCloudVolume();
+	}
+
+	/**
+	 * Record a new position in the position cloud volume
+	 *
+	 * @param x - Position X for the atom
+	 * @param y - Position Y for the atom
+	 * @param z - Position Z for the atom
+	 */
+	private accumulatePosition(x: number, y: number, z: number): void {
+
+		const ix = Math.floor(this.positionCloudsSide*(x-this.positionLimits[0])/this.positionLimits[3]);
+		const iy = Math.floor(this.positionCloudsSide*(y-this.positionLimits[1])/this.positionLimits[4]);
+		const iz = Math.floor(this.positionCloudsSide*(z-this.positionLimits[2])/this.positionLimits[5]);
+
+		const max = ++this.positionCloud![ix+this.positionCloudsSide*(iy+this.positionCloudsSide*iz)];
+		if(max > this.maxCount) this.maxCount = max;
+	}
+
+	private createCloudsMaterial(): THREE.ShaderMaterial {
+
+		// TBD Debug
+		this.positionCloud?.fill(2);
+
+		const texture = new THREE.Data3DTexture(this.positionCloud,
+												this.positionCloudsSide,
+												this.positionCloudsSide,
+												this.positionCloudsSide);
+		texture.format = THREE.RedFormat;
+		texture.type = THREE.FloatType;
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+		texture.unpackAlignment = 1;
+		texture.needsUpdate = true;
+
+		texture.wrapS = THREE.ClampToEdgeWrapping;
+		texture.wrapT = THREE.ClampToEdgeWrapping;
+		texture.wrapR = THREE.ClampToEdgeWrapping;
+
+		const shader = VolumeRenderShader;
+
+		const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+
+		uniforms["u_data"].value = texture;
+		uniforms["u_size"].value.set(this.positionLimits[3],
+									 this.positionLimits[4],
+									 this.positionLimits[5]);
+		uniforms["u_origin"].value.set(this.positionLimits[0],
+									   this.positionLimits[1],
+									   this.positionLimits[2]);
+		// uniforms["u_size"].value.set(this.positionCloudsSide,
+		// 							 this.positionCloudsSide,
+		// 							 this.positionCloudsSide);
+		// uniforms["u_clim"].value.set(128, this.maxCount);
+		uniforms["u_clim"].value.set(0, 1);
+		uniforms["u_renderstyle"].value = 1; // 0: MIP, 1: ISO
+		uniforms["u_renderthreshold"].value = 1; // For ISO renderstyle
+		uniforms["u_cmdata"].value = this.colormap;
+
+		return new THREE.ShaderMaterial({
+			uniforms,
+			vertexShader: shader.vertexShader,
+			fragmentShader: shader.fragmentShader,
+			side: THREE.BackSide // The volume shader uses the backface as its "reference point"
+		});
+	}
+
+	/**
+	 * Generate the 3D volumetric texture
+	 */
 	private drawPositionClouds(): void {
 
-		console.log("drawPositionClouds");
-		/*
-					const texture = new THREE.Data3DTexture(this.positionCloud,
-															this.positionCloudsSide,
-															this.positionCloudsSide,
-															this.positionCloudsSide);
-					texture.format = THREE.RedFormat;
-					texture.type = THREE.FloatType;
-					texture.minFilter = texture.magFilter = THREE.LinearFilter;
-					texture.unpackAlignment = 1;
-					texture.needsUpdate = true;
-
-					const shader = VolumeRenderShader1;
-
-					void shader;
-		*/
+		if(this.volumeMesh) this.volumeMesh.material = this.createCloudsMaterial();
 	}
 
 	/**
@@ -356,7 +491,7 @@ export class Trajectories {
 			atomsSelector: this.atomsSelector,
 			maxDisplacement: this.maxDisplacement,
 			showPositionClouds: this.showPositionClouds,
-			positionCloudsSide: this.positionCloudsSide,
+			positionCloudsSideExp: this.positionCloudsSideExp,
 			positionCloudsGrow: this.positionCloudsGrow,
         };
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;

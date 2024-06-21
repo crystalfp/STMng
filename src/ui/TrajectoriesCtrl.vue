@@ -24,18 +24,18 @@ const atomsSelector = ref("");
 const reset = ref(false);
 const maxDisplacement = ref(1);
 const showPositionClouds = ref(false);
-const positionCloudsSide = ref(10);
 const positionCloudsGrow = ref(0.1);
+const positionCloudsSideExp = ref(5);
 
 sb.getUiParams(props.id, (params: UiParams) => {
-    showTrajectories.value    = params.showTrajectories as boolean ?? false;
-    labelKind.value           = params.labelKind as string ?? "symbol";
-    atomsSelector.value       = params.atomsSelector as string ?? "";
-    reset.value               = params.reset as boolean ?? false;
-    maxDisplacement.value     = params.maxDisplacement as number ?? 1;
-    showPositionClouds.value  = params.showPositionClouds as boolean ?? false;
-    positionCloudsSide.value  = params.positionCloudsSide as number ?? 10;
-    positionCloudsGrow.value  = params.positionCloudsGrow as number ?? 0.1;
+    showTrajectories.value      = params.showTrajectories as boolean ?? false;
+    labelKind.value             = params.labelKind as string ?? "symbol";
+    atomsSelector.value         = params.atomsSelector as string ?? "";
+    reset.value                 = params.reset as boolean ?? false;
+    maxDisplacement.value       = params.maxDisplacement as number ?? 1;
+    showPositionClouds.value    = params.showPositionClouds as boolean ?? false;
+    positionCloudsSideExp.value = params.positionCloudsSideExp as number ?? 5;
+    positionCloudsGrow.value    = params.positionCloudsGrow as number ?? 0.1;
 });
 watchEffect(() => {
     sb.setUiParams(props.id, {
@@ -45,10 +45,18 @@ watchEffect(() => {
         reset: reset.value,
         maxDisplacement: maxDisplacement.value,
         showPositionClouds: showPositionClouds.value,
-        positionCloudsSide: positionCloudsSide.value,
+        positionCloudsSideExp: positionCloudsSideExp.value,
         positionCloudsGrow: positionCloudsGrow.value,
     });
 });
+
+/**
+ * Convert the exponent to the power of 2
+ *
+ * @param value - Exponent
+ */
+// const showPowerOf2 = (value: number): string => Math.pow(2, value).toFixed(0);
+const showPowerOf2 = (value: number): string => (2**value).toFixed(0);
 
 </script>
 
@@ -67,10 +75,13 @@ watchEffect(() => {
   <v-switch v-model="showPositionClouds" color="primary" label="Show position clouds"
             density="compact" class="ml-2" />
   <v-container v-if="showPositionClouds" class="pa-0">
-    <v-number-input v-model="positionCloudsSide" :min="2" :step="1" label="Cloud volume subdivisions" />
+    <g-debounced-slider v-slot="{value}" v-model="positionCloudsSideExp"
+                        :step="1" :min="2" :max="8" class="ml-1">
+      <v-label :text="`Cloud volume subdivisions (${showPowerOf2(value)})`" />
+    </g-debounced-slider>
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsGrow"
                         :step="0.1" :min="0" :max="1" class="ml-1 my-4">
-      <v-label :text="`Volume grow (${value*100}%)`" />
+      <v-label :text="`Enlarge volume (${value*100}%)`" />
     </g-debounced-slider>
   </v-container>
   <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
