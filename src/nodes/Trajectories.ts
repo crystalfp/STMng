@@ -36,7 +36,7 @@ export class Trajectories {
 	private positionLimits: number[] = [];
 	private readonly traceColor: string[] = [];
 	private volumeMesh: THREE.Mesh | undefined;
-	private readonly colormap = this.generateColormap();
+	private readonly colormap = this.generateColormap(false);
 	private maxCount = 0;
 
 	/**
@@ -203,19 +203,35 @@ export class Trajectories {
 	 *			then .lut and convert list of colors into Uint8Array
 	 *			or createCanvas() method
 	 */
-	private generateColormap(): THREE.Texture {
+	private generateColormap(bw: boolean): THREE.Texture {
 
 		const width = 256;
 		const height = 1;
 
 		const data = new Uint8Array(4 * width);
 
-		for(let i = 0; i < width; i ++) {
-			const stride = i * 4;
-			data[stride]   = i;
-			data[stride+1] = i;
-			data[stride+2] = i;
-			data[stride+3] = 255;
+		if(bw) {
+			for(let i = 0; i < width; i ++) {
+				const stride = i * 4;
+				data[stride]   = i;
+				data[stride+1] = i;
+				data[stride+2] = i;
+				data[stride+3] = 255;
+			}
+		}
+		else {
+			const startColor = new THREE.Color("red");
+			const endColor   = new THREE.Color("green");
+			const lerpIncr = 1/width;
+			for(let i = 0; i < width; i ++) {
+				const lerpColor = new THREE.Color(startColor);
+				lerpColor.lerpHSL(endColor, i * lerpIncr);
+				const stride = i * 4;
+				data[stride]   = lerpColor.r*255;
+				data[stride+1] = lerpColor.g*255;
+				data[stride+2] = lerpColor.b*255;
+				data[stride+3] = 255;
+			}
 		}
 
 		// Used the buffer to create a DataTexture
@@ -347,7 +363,11 @@ export class Trajectories {
 	private createCloudsMaterial(): THREE.ShaderMaterial {
 
 		// TBD Debug
-		this.positionCloud?.fill(2);
+		// this.positionCloud?.fill(0);
+		// for(let i=0; i < this.positionCloudsSide; ++i) this.positionCloud![i] = 2;
+		// for(let i=0; i < this.positionCloudsSide; ++i) this.positionCloud![i*this.positionCloudsSide] = 2;
+		// for(let i=0; i < this.positionCloudsSide; ++i) this.positionCloud![i*this.positionCloudsSide
+		//																	   *this.positionCloudsSide] = 2;
 
 		const texture = new THREE.Data3DTexture(this.positionCloud,
 												this.positionCloudsSide,
@@ -374,12 +394,8 @@ export class Trajectories {
 		uniforms["u_origin"].value.set(this.positionLimits[0],
 									   this.positionLimits[1],
 									   this.positionLimits[2]);
-		// uniforms["u_size"].value.set(this.positionCloudsSide,
-		// 							 this.positionCloudsSide,
-		// 							 this.positionCloudsSide);
-		// uniforms["u_clim"].value.set(128, this.maxCount);
-		uniforms["u_clim"].value.set(0, 1);
-		uniforms["u_renderstyle"].value = 1; // 0: MIP, 1: ISO
+		uniforms["u_clim"].value.set(0, this.maxCount);
+		// uniforms["u_clim"].value.set(0, 1);
 		uniforms["u_renderthreshold"].value = 1; // For ISO renderstyle
 		uniforms["u_cmdata"].value = this.colormap;
 

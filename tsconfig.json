@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
@@ -11,6 +10,7 @@
     "composite": true,
     "allowSyntheticDefaultImports": true,
     "useUnknownInCatchVariables": true,
+    "useDefineForClassFields": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -26,7 +26,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "strictNullChecks": true,
     "noImplicitReturns": true,
 
     "baseUrl": ".",
@@ -34,6 +33,6 @@
       "@/*": ["src/*"]
     },
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.mts", "troika-three-text.d.ts"],
-  "exclude": ["node_modules", "dist", "dist-electron", "doc", "release", "save", "bugs"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.mts", "troika-three-text.d.ts"] /*,
+  "exclude": ["node_modules", "dist", "dist-electron", "doc", "release", "save", "bugs"]*/
 }
