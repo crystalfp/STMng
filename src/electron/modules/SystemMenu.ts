@@ -2,6 +2,8 @@
  * Defines the main window menu
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";

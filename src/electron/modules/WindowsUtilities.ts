@@ -2,6 +2,8 @@
  * Creating/closing windows and setup communications to them
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {app, BrowserWindow, nativeImage, ipcMain /* dialog */} from "electron";
 import path from "node:path";
@@ -309,7 +311,7 @@ export const refreshSystemMenu = (): void => {
 };
 
 /**
- * Get the type of current node
+ * Get the type of the current node
  *
  * @returns The type of the current node open in the UI
  */

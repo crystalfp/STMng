@@ -2,6 +2,8 @@
  * Support routines for the readers.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import log from "electron-log";
 import type {BasisType, PositionType, Structure} from "../../types";
@@ -39,22 +41,21 @@ export const extractBasis = (a: number, b: number, c: number,
 	const cosGamma = Math.cos(gammaRad);
 	const sinGamma = Math.sin(gammaRad);
 
-	// Compute the basis vectors
-	const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-	basis[0] = a;
-	// basis[1] = 0;
-	// basis[2] = 0;
+	// Compute and return the basis vectors
+	return [
+		a,
+		0,
+		0,
 
-	basis[3] = b * cosGamma;
-	basis[4] = b * sinGamma;
-	// basis[5] = 0;
+		b * cosGamma,
+		b * sinGamma,
+		0,
 
-	basis[6] = c * cosBeta;
-	basis[7] = c * (cosAlpha - cosBeta*cosGamma) / sinGamma;
-	basis[8] = c * Math.sqrt(1 - cosAlpha*cosAlpha - cosBeta*cosBeta -
-							 cosGamma*cosGamma + 2*(cosAlpha*cosBeta*cosGamma))/sinGamma;
-
-	return basis;
+		c * cosBeta,
+		c * (cosAlpha - cosBeta*cosGamma) / sinGamma,
+		c * Math.sqrt(1 - cosAlpha*cosAlpha - cosBeta*cosBeta -
+					  cosGamma*cosGamma + 2*(cosAlpha*cosBeta*cosGamma))/sinGamma
+	];
 };
 
 /**
@@ -136,6 +137,9 @@ export const basisToLengthAngles = (basis: BasisType): number[] => [
 // > Compute the atoms' fractional coordinates
 /**
  * Compute the structure atoms' fractional coordinates
+ *
+ * @param structure - The structure from which the atoms coordinates should be converted to fractional
+ * @returns The array of fractional coordinates
  */
 export const cartesianToFractionalCoordinates = (structure: Structure): number[] => {
 

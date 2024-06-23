@@ -1,7 +1,9 @@
 /**
- * Write atomic structure file.
+ * Compute the fingerprint of a series of structures.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain} from "electron";
 import fs from "node:fs";
@@ -129,6 +131,4 @@ export const setupChannelFingerprints = (): void => {
 		// Success!
 		return {payload: resultDimensionality.toString()};
 	});
-
-
 };

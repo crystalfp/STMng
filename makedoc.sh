@@ -17,15 +17,15 @@ fi
 if [ $c != "v" ]
 then
 echo "--- Extract typescript documentation"
-npx typedoc \
+node_modules/.bin/typedoc \
 --name "See the Molecule new generation" \
 --out "doc/typedoc" \
 --readme none \
 --plugin typedoc-plugin-missing-exports \
---plugin @mxssfd/typedoc-theme --theme my-theme \
+--plugin typedoc-plugin-vue \
 --plugin @zamiell/typedoc-plugin-not-exported \
 --disableGit \
---sourceLinkTemplate "vscode://file/D:/Projects/IIE/{path}:{line}:1" \
+--sourceLinkTemplate "vscode://file/D:/Projects/STMng/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
 `/bin/find src -name "*.ts" -type f | grep -v "/tests/" | grep -v "/node_modules/" | grep -v "vite-env"`
 fi
@@ -33,7 +33,7 @@ fi
 if [ $c != "t" ]
 then
 echo "--- Extract Vue documentation"
-npx vue-docgen
+node_modules/.bin/vue-docgen
 if [ $? = 1 ]
 then
 	echo "\nError creating documentation. Quitting.\n"

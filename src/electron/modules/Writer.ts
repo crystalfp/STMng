@@ -2,6 +2,8 @@
  * Write atomic structure file.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain, dialog} from "electron";
 import log from "electron-log";

@@ -1,7 +1,9 @@
 /**
- * Save a screen capture as an image or a movie. Save the displayed structure as STL file
+ * Save a screen capture as an image or a movie or save the displayed structure as a STL file.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain, dialog, app} from "electron";
 import fs from "fs-extra";

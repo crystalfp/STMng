@@ -1,9 +1,11 @@
 /**
  * Read atomic structure file.
- * @remarks The original idea was to dynamically load the format reader, but this does not work
- * in production (does not find the reader code)
  *
  * @packageDocumentation
+ * @remarks The original idea was to dynamically load the format reader, but this does not work
+ * in production (does not find the reader code).
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain} from "electron";
 import log from "electron-log";

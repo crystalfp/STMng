@@ -2,9 +2,10 @@
  * Setup the channel to visualize application, Chrome, node and electron versions
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain} from "electron";
-
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import fs from "node:fs";

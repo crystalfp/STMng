@@ -1,7 +1,9 @@
 /**
- * Draw atom trajectories as lines or as position clouds
+ * Draw atom trajectories as lines or as position clouds.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
@@ -191,17 +193,18 @@ export class Trajectories {
 
 	private removePositionClouds(): void {
 		sm.deleteMesh("PositionCloudVolume");
-		sm.deleteMesh("PositionCloudBorders");
+		// sm.deleteMesh("PositionCloudBorders");
 		this.volumeMesh = undefined;
 	}
 
 	/**
 	 * Create a colormap
 	 *
-	 * @returns The texture 256x1 with the colormap
 	 * @remarks Use lut {@link https://threejs.org/docs/#examples/en/math/Lut}
 	 *			then .lut and convert list of colors into Uint8Array
 	 *			or createCanvas() method
+	 * @param bw - True for a Black&White colormap
+	 * @returns The texture 256x1 with the colormap
 	 */
 	private generateColormap(bw: boolean): THREE.Texture {
 
@@ -324,10 +327,10 @@ export class Trajectories {
 		geometry.translate(tx, ty, tz);
 
 		// TBD Show the volume limits for debugging
-		const edges = new THREE.EdgesGeometry(geometry);
-		const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: "#00FF00"}));
-		line.name = "PositionCloudBorders";
-		sm.add(line);
+		// const edges = new THREE.EdgesGeometry(geometry);
+		// const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: "#00FF00"}));
+		// line.name = "PositionCloudBorders";
+		// sm.add(line);
 
 		this.volumeMesh = new THREE.Mesh(geometry, this.createCloudsMaterial());
 		this.volumeMesh.name = "PositionCloudVolume";

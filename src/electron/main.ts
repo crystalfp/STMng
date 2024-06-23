@@ -1,8 +1,10 @@
 /**
  * Entry point for the main process.
- * It initializes all the channels between main processes and client windows.
+ * It parse command line parameters and initializes all the channels between main processes and client windows.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";

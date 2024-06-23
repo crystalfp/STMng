@@ -1,7 +1,9 @@
 /**
- * Load atoms info
+ * Load atoms info.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -36,7 +38,7 @@ import type {AtomAppearance} from "../../types";
 // #   - element name (in English)                                              #
 // #                                                                            #
 // ##############################################################################
-
+/** Data from file */
 interface OneAtomData {
 
 	/** Element symbol */
@@ -79,7 +81,7 @@ class AtomData {
 	private readonly symbol2an = new Map<string, number>();
 
 	/**
-	 * Build the class by loading the atomic data
+	 * Build the class by loading the atomic data from file
 	 */
 	private constructor() {
 		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));

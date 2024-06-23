@@ -2,6 +2,8 @@
  * Compute symmetries on the main process.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain} from "electron";
 import type {ComputeSymmetriesParams} from "@/electron/types";

@@ -1,7 +1,9 @@
 /**
- * Prepare channel and store to save and read user preferences
+ * Prepare the channel and the store to save and read user preferences.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {ipcMain, nativeTheme} from "electron";
 import {Store} from "./UserStore";

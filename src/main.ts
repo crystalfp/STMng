@@ -105,7 +105,7 @@ const app = createApp(App)
 		}
   	}))
 
-	// Project defined components. The registered name should begin by G (g- when used)
+	// Project defined components. The registered name should begin by G (g- in templates)
 	.component("GAlignLabels", defineAsyncComponent(() => import("@/widgets/AlignLabels.vue")))
 	.component("GColorSelector", defineAsyncComponent(() => import("@/widgets/ColorSelector.vue")))
 	.component("GAtomsSelector", defineAsyncComponent(() => import("@/widgets/AtomsSelector.vue")))

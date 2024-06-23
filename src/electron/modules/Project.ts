@@ -2,6 +2,8 @@
  * Load and store the visualized project
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 
 import {ipcMain, app} from "electron";

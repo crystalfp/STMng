@@ -1,9 +1,11 @@
 /**
  * Setup IPC between main process and client windows.
- * Create titlebar and export set title function.
+ * Create titlebar and export set title and refresh menu functions.
  *
  * @packageDocumentation
- */
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
+*/
 import {exposeElectronAPI} from "@electron-toolkit/preload";
 import {contextBridge, nativeImage} from "electron";
 import {TitlebarColor, CustomTitlebar} from "custom-electron-titlebar";

@@ -2,6 +2,8 @@
  * General storage for preferences
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle {@link "mvalle@ikmail.com"}
  */
 import {app} from "electron";
 import path from "node:path";
@@ -12,11 +14,13 @@ import yaml from "js-yaml";
  * Store parameters
  */
 interface StoreOptions {
-	path?: string;				/** Path to the store backing file.
-									If present should have an extension of .yaml
-									If absent the backing store will be under userData */
-	name?: string;				/** Name of the store. If absent defaults to "config" */
-	defaultContent?: unknown;	/** Default initial content of the store */
+	/** Path to the store backing file.
+	    If present should have an extension of .yaml else the backing store will be under userData */
+	path?: string;
+	/** Name of the store. If absent defaults to "config" */
+	name?: string;
+	/** Default initial content of the store */
+	defaultContent?: unknown;
 }
 
 /**
@@ -59,12 +63,12 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	}
 
 	/**
-	* Retrieve content for the given key
-	*
-	* @param key - Key of the value to retrieve
-	* @param defaultValue - default value for the retrieved value
-	* @returns The retrieved value
-	*/
+	 * Retrieve content for the given key
+	 *
+	 * @param key - Key of the value to retrieve
+	 * @param defaultValue - default value for the retrieved value
+	 * @returns The retrieved value
+	 */
 	get<K extends keyof T>(key: K, defaultValue?: T[K]): T[K] {
 		return this.data[key] ?? defaultValue;
 	}
