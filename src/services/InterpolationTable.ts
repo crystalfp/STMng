@@ -3,6 +3,8 @@
  * The matrix is M[64][64]
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 /* eslint-disable eslint-comments/disable-enable-pair, @alasdair/max-len/max-len, id-length */
 

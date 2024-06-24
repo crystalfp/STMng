@@ -2,6 +2,8 @@
  * Manage the connection between modules and inside modules with their GUI.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {watch} from "vue";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
@@ -349,5 +351,5 @@ class Switchboard {
 }
 
 // > Access to the switchboard
-/** Access to the switchboard */
+/** Access the switchboard */
 export const sb = Switchboard.getInstance();

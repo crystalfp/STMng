@@ -5,6 +5,8 @@
  *
  * @remarks
  * The points to modify to add a new node are marked using a NOTE comment.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {watch} from "vue";
 import type {NodeUI, Structure, GraphNode} from "@/types";

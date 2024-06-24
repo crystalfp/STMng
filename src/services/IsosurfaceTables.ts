@@ -1,7 +1,9 @@
 /**
- * Static tables for the marching cube algorithm
+ * Static tables for the marching cube algorithm.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 
 // ----------------------------------------------------------------------------

@@ -1,8 +1,11 @@
 /**
  * Move the camera to have all the scene bounding box visible.
- * @remarks It uses the bounding box stored in the configStore. Currently it covers a single structure.
+ * @remarks It uses the bounding box stored in the configStore.
+ *			Currently it covers a single structure.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
 import {useConfigStore} from "@/stores/configStore";
@@ -10,7 +13,7 @@ import {useControlStore} from "@/stores/controlStore";
 import type CameraControls from "camera-controls";
 
 /**
- * Fit the camera to look at the whole scene
+ * Fit the perspective camera to look at the whole scene
  *
  * @param camera - The perspective camera to be moved
  * @param controls - The orbit control to have the rotation center updated
@@ -45,6 +48,12 @@ export const fitPerspectiveCameraToObject = (camera: THREE.PerspectiveCamera,
 	configStore.camera.lookAt = [center.x, center.y, center.z];
 };
 
+/**
+ * Fit the orthographic camera to look at the whole scene
+ *
+ * @param camera - The orthographic camera to be moved
+ * @param controls - The orbit control to have the rotation center updated
+ */
 export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
 											  controls: CameraControls): void => {
 

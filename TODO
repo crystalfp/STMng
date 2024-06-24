@@ -7,6 +7,7 @@ ToDo:
   ☐ Finish trajectories position clouds
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
+  ☐ Resolve why alias @ does not work in electron files (now they are "../../")
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -35,8 +36,9 @@ Nice to have/Future:
   ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Move to WebGPURenderer
   ☐ Rewrite UserStore using Map() and not object
-  ☐ Experiment with NodeJS text formatting <https://pawelgrzybek.com/node-js-added-utility-for-text-formatting-you-may-not-need-chalk-anymore/>
   ☐ Experiment with command line parser of NodeJS: <https://pawelgrzybek.com/til-node-js-18-3-comes-with-command-line-arguments-parser/>
+  ☐ Try to use KeepAlive component in user interface
+  ☐ Used shaded cylinders for bonds using shaders
 
 Archive:
   ✔ Polyhedra volume @done(2024-06-15 08:19) @project(Requests from Oganov)

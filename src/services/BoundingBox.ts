@@ -2,6 +2,8 @@
  * Compute bounding box of the given structure.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 /* eslint-disable eslint-comments/disable-enable-pair, @typescript-eslint/no-shadow */
 

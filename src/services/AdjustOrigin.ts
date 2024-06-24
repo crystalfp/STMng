@@ -2,6 +2,8 @@
  * Translate the cell origin with or without changing the cell size.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import log from "electron-log";
 import type {BasisType, PositionType, Structure, Atom} from "@/types";

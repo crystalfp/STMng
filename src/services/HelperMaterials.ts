@@ -1,8 +1,11 @@
 /**
  * Compute materials.
- * @remarks The color interpolated bonds should be implemented (an idea is in the commented part).
+ * @remarks The color interpolated bonds should be implemented
+ *			(an idea is in the commented part).
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
 

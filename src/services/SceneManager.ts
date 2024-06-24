@@ -2,6 +2,8 @@
  * Manage the scene to be show.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
 import {watchEffect} from "vue";
@@ -250,7 +252,8 @@ class SceneManager {
 	 * Export as STL encoded file the scene content
 	 *
 	 * @param format - STL file format
-	 * @returns A string (format: ascii) or an ArrayBuffer (format: binary) with the content of the STL file to be written
+	 * @returns A string (format: ascii) or an ArrayBuffer (format: binary)
+	 *			with the content of the STL file to be written
 	 */
 	createSTL(format: "ascii" | "binary"): string | ArrayBuffer {
 

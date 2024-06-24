@@ -2,6 +2,8 @@
  * Transform a text into a 3D object to be added to the scene.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
 import type {PositionType} from "@/types";

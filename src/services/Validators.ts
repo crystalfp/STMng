@@ -2,6 +2,8 @@
  * Validator for the project file structure.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as v from "valibot";
 import type {Project} from "@/types";
@@ -10,8 +12,8 @@ import {sb} from "@/services/Switchboard";
 
 // {
 // "graph": {
-// 	"reader": 	 {"label": "Reader", 	"type": "structure-reader"},
-// 	"findsymm":  {"label": "Find symm", "type": "find-symmetries",  "in": "reader"},
+// 	"reader": 	{"label": "Reader", 	"type": "structure-reader"},
+//  "symmetry": {"label": "Symmetries", "type": "compute-symmetries", "in": "reader"},
 
 const projectSchema = v.object({
 	graph: v.record(

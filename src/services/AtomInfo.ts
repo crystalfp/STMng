@@ -2,6 +2,8 @@
  * Cache the atom data on the client.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {getAtomData} from "@/services/RoutesClient";
 import type {AtomAppearance} from "@/types";

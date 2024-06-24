@@ -3,6 +3,8 @@
  * @remarks Code adapted from https://kitware.github.io/vtk-js/api/Filters_General_ImageMarchingCubes.html
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 
 import type {PositionType, BasisType} from "@/types";
@@ -163,7 +165,13 @@ export class IsosurfaceCore {
 		}
 	}
 
-	// Retrieve voxel coordinates. i-j-k is origin of voxel.
+	/**
+	 * Retrieve the voxel coordinates
+	 *
+	 * @param i - Fast index of the origin of the voxel
+	 * @param j - Intermediate index of the origin of the voxel
+	 * @param k - Slow index of the origin of the voxel
+	 */
 	private getVoxelPoints(i: number, j: number, k: number): void {
 
 		// (i,i+1),(j,j+1),(k,k+1) - i varies fastest; then j; then k
@@ -200,7 +208,14 @@ export class IsosurfaceCore {
 		this.voxelPts[23] = this.voxelPts[11] + this.cellSides[8];
 	}
 
-  	// Compute point gradient at i-j-k location
+	/**
+	 * Compute point gradient
+	 *
+	 * @param i - Fast index of the voxel vertex
+	 * @param j - Intermediate index of the voxel vertex
+	 * @param k - Slow index of the voxel vertex
+	 * @param g - Computed gradient
+	 */
   	private getPointGradient(i: number, j: number, k: number, g: number[]): void {
 
 		let sp;
@@ -262,6 +277,14 @@ export class IsosurfaceCore {
     	}
   	}
 
+	/**
+	 * Compute voxel gradient
+	 *
+	 * @param i - Fast index of the voxel origin
+	 * @param j - Intermediate index of the voxel origin
+	 * @param k - Slow index of the voxel origin
+	 * @param g - Computed gradient
+	 */
 	getVoxelGradients(i: number, j: number, k: number): void {
 
 	    const g = [0, 0, 0];
@@ -300,14 +323,17 @@ export class IsosurfaceCore {
 		this.voxelGradients[23] = g[2];
 	}
 
+	/** Access face indices */
 	get indices(): number[] {
 		return this.faceIndices;
 	}
 
+	/** Access face vertices */
 	get vertices(): number[] {
 		return this.faceVertices;
 	}
 
+	/** Access vertex normals */
 	get normals(): number[] {
 		return this.vertexNormals;
 	}

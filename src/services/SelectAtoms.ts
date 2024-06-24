@@ -2,6 +2,8 @@
  * Select the atoms from AtomsSelector widget output
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {atomSymbol} from "@/services/AtomInfo";
 import type {Structure} from "@/types";

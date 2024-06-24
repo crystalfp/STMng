@@ -2,6 +2,8 @@
  * Show helper objects: axis and axis aligned grids.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 
 import * as THREE from "three";
@@ -13,6 +15,9 @@ import {spriteText} from "@/services/SpriteText";
 let sidePrevious = 10;
 let axisLengthPrevious = 1;
 
+/**
+ * Create the helpers
+ */
 export const setupSceneHelpers = (): void => {
 
 	// Access the stores

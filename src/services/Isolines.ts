@@ -2,6 +2,8 @@
  * Compute isolines on an orthoslice of the volumetric data.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 
 import * as THREE from "three";

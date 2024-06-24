@@ -3,9 +3,14 @@
  * Copied and adapted from three/examples/jsm/shaders/VolumeShader.js
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {Vector2, Vector3, Texture} from "three";
 
+/**
+ * Volume shaders for THREE.ShaderMaterial
+ */
 export const VolumeRenderShader = {
 
 	uniforms: {

@@ -2,6 +2,8 @@
  * Format in an human readable way a numerical value.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 
 const formatPrecision = 4;

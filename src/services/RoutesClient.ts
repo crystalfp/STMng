@@ -2,6 +2,8 @@
  * Interfaces to the channels to the main process.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";

@@ -2,6 +2,8 @@
  * Prepare error notification for the snackbar component and error log.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import log from "electron-log";
 import {useMessageStore} from "@/stores/messageStore";
