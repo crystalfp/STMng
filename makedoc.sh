@@ -21,10 +21,11 @@ node_modules/.bin/typedoc \
 --name "See the Molecule new generation" \
 --out "doc/typedoc" \
 --readme none \
---plugin typedoc-plugin-missing-exports \
+--suppressCommentWarningsInDeclarationFiles \
 --plugin typedoc-plugin-vue \
 --plugin @zamiell/typedoc-plugin-not-exported \
 --disableGit \
+--excludeInternal \
 --sourceLinkTemplate "vscode://file/D:/Projects/STMng/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
 `/bin/find src -name "*.ts" -type f | grep -v "/tests/" | grep -v "/node_modules/" | grep -v "vite-env"`

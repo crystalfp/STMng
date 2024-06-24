@@ -81,13 +81,13 @@
     "stylelint-config-standard-scss": "^13.1.0",
     "stylelint-config-standard-vue": "^1.0.0",
     "tree-kill": "^1.2.2",
-    "typedoc": "^0.26.1",
-    "typedoc-plugin-missing-exports": "^3.0.0",
+    "typedoc": "^0.26.2",
     "typedoc-plugin-vue": "^1.2.0",
     "typescript": "^5.5.2",
     "vite": "^5.3.1",
     "vite-plugin-electron": "^0.28.7",
     "vite-plugin-electron-renderer": "^0.14.5",
+    "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^2.0.22"
   }

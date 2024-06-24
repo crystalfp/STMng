@@ -76,7 +76,7 @@ const showPowerOf2 = (value: number): string => (2**value).toFixed(0);
             density="compact" class="ml-2" />
   <v-container v-if="showPositionClouds" class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsSideExp"
-                        :step="1" :min="2" :max="8" class="ml-1">
+                        :step="1" :min="2" :max="10" class="ml-1">
       <v-label :text="`Cloud volume subdivisions (${showPowerOf2(value)})`" />
     </g-debounced-slider>
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsGrow"

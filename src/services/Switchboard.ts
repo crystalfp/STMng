@@ -13,6 +13,7 @@ import type {NodeUI, Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "@/services/SceneManager";
 
+/** Type of the parameters */
 export type UiParams = Record<string, string | number | boolean>;
 
 class Switchboard {

@@ -2,6 +2,8 @@
  * Reader for LAMMPS trajectory formatted files
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
@@ -20,6 +22,7 @@ const enum LineType {
     atom,
 }
 
+/** Types of unit cells */
 const enum BoxType {
 	unknown,
 	restrictedTriclinic,

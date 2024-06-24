@@ -2,6 +2,8 @@
  * Reader for CHGCAR formatted files
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
@@ -31,7 +33,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 	 *
 	 * @param filename - File to be read
 	 * @param options - Options for the reader
-	 * @returns The set of structure read
+	 * @returns The set of structures read
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 

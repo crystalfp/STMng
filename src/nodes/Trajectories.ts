@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle {@link "mvalle@ikmail.com"}
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";

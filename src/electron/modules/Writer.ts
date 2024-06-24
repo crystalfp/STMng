@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle {@link "mvalle@ikmail.com"}
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {ipcMain, dialog} from "electron";
 import log from "electron-log";

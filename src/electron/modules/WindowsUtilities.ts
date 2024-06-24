@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle {@link "mvalle@ikmail.com"}
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {app, BrowserWindow, nativeImage, ipcMain /* dialog */} from "electron";
 import path from "node:path";

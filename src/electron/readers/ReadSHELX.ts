@@ -2,6 +2,8 @@
  * Reader for Shel-X formatted files
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
@@ -16,7 +18,7 @@ export class ReaderSHELX implements ReaderImplementation {
 	 * Read the structures from the file
 	 *
 	 * @param filename - File to be read
-	 * @returns The set of structure read
+	 * @returns The set of structures read
 	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 

@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle {@link "mvalle@ikmail.com"}
+ * @author Mario Valle "mvalle\@ikmail.com"
 */
 import {exposeElectronAPI} from "@electron-toolkit/preload";
 import {contextBridge, nativeImage} from "electron";

@@ -4,7 +4,7 @@
  * @remarks It is still the original from IIE. Adapt it.
  * @packageDocumentation
  *
- * @author Mario Valle {@link "mvalle@ikmail.com"}
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import type {BrowserWindow} from "electron";
 // import {ipcMain, type BrowserWindow} from "electron";

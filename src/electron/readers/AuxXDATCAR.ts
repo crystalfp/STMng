@@ -2,6 +2,8 @@
  * Reader for XDATCAR auxiliary files
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
@@ -16,6 +18,13 @@ const enum LineType {
     position,
 }
 
+/**
+ * Read the auxiliary file XDATCAR
+ *
+ * @param filename - Filename to be read as XDATCAR
+ * @param mainStructure - The already read main structure
+ * @returns Main structures trajectory
+ */
 export const readAuxXDATCAR = async (filename: string, mainStructure: Structure): Promise<Structure[]> => {
 
 	// Sanity check

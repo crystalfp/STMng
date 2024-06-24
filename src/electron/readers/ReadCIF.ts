@@ -2,6 +2,8 @@
  * Reader for CIF formatted files
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
