@@ -22,7 +22,7 @@ const lineColor = defineModel<string>();
 
 
 <template>
-<v-btn class="mb-6 ml-2 px-4" @click="colorPickerShow = !colorPickerShow">
+<v-btn class="mb-6 ml-2 px-4 w-50" @click="colorPickerShow = !colorPickerShow">
   <template #append>
     <v-icon :icon="mdiRectangle" :color="lineColor" size="x-large" />
   </template>

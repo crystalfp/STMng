@@ -2,6 +2,8 @@
  * Global control variables not saved as status.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "@/types";
@@ -49,6 +51,11 @@ export const useControlStore = defineStore("ControlStore", {
 
     // > Actions
     actions: {
+		/**
+		 * Add an atom to the list of interactively selected atoms
+		 *
+		 * @param index - Index of the atom selected on the screen
+		 */
         addSelectedAtom(index: number) {
 
             // If index already there remove it
@@ -65,14 +72,26 @@ export const useControlStore = defineStore("ControlStore", {
                 this.atomsSelected[2] = index;
             }
         },
+		/**
+		 * Empty the list of selected atoms
+		 */
         deselectAtoms() {
             this.atomsSelected.length = 0;
         },
+		/**
+		 * Interactively select a polyhedron
+		 *
+		 * @param index - Index of the selected polyhedron
+		 * @param color - Original color of the selected polyhedron
+		 */
 		selectPolyhedron(index: number, color: number) {
 
 			this.polyhedronNewIdx = index;
 			this.polyhedronNewColor = color;
 		},
+		/**
+		 * Deselect the selected polyhedron
+		 */
 		deselectPolyhedron() {
 			this.polyhedronNewIdx = this.polyhedronCurrentIdx;
 		}

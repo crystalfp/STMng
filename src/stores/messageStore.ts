@@ -2,6 +2,8 @@
  * Messages that flow from computations to the UI.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 

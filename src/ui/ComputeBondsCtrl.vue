@@ -6,7 +6,6 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {mdiRestore} from "@mdi/js";
 
 // > Properties
 const props = defineProps<{
@@ -118,7 +117,7 @@ const resetSliders = (): void => {
       </tr>
     </v-table>
   </v-container>
-  <v-container v-else class="pa-0">
+  <v-container v-else class="pa-0 mt-n3">
     <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01" class="ml-2">
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" />
     </g-debounced-slider>
@@ -131,10 +130,7 @@ const resetSliders = (): void => {
   </v-btn-toggle>
 
   <v-btn block class="mt-4" @click="resetSliders">
-    <template #append>
-      <v-icon :icon="mdiRestore" size="x-large" />
-    </template>
-    Reset
+    Reset parameters
   </v-btn>
 
 </v-container>

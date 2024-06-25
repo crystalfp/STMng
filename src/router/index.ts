@@ -2,6 +2,8 @@
  * Setup router. Besides main entry, one for each independent window to be created
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {createWebHashHistory, createRouter} from "vue-router";
 
@@ -10,6 +12,7 @@ import ChartViewer from "@/components/ChartViewer.vue";
 import ProjectEditor from "@/components/ProjectEditor.vue";
 import ShowSymmetries from "@/components/ShowSymmetries.vue";
 
+/** Routes for the external windows created */
 export const router = createRouter({
     history: createWebHashHistory(),
     routes:  [

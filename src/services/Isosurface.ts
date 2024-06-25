@@ -283,7 +283,6 @@ export class IsosurfaceCore {
 	 * @param i - Fast index of the voxel origin
 	 * @param j - Intermediate index of the voxel origin
 	 * @param k - Slow index of the voxel origin
-	 * @param g - Computed gradient
 	 */
 	getVoxelGradients(i: number, j: number, k: number): void {
 

@@ -6,7 +6,6 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {mdiRestore} from "@mdi/js";
 
 // > Properties
 const props = defineProps<{
@@ -122,9 +121,6 @@ const resetSliders = (): void => {
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
   <v-btn :disabled="!hasSupercell()" class="mt-2 mb-4 ml-2 w-50" @click="resetSliders">
-    <template #append>
-      <v-icon :icon="mdiRestore" size="x-large" />
-    </template>
     Reset
   </v-btn>
   <v-switch v-model="showSupercell" color="primary" :disabled="!hasSupercell()" label="Show supercell" class="ml-4" />

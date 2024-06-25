@@ -2,6 +2,8 @@
  * The shared state of the viewer.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "@/types";
@@ -81,6 +83,12 @@ export const useConfigStore = defineStore("ConfigStore", {
 
     // > Getters
     getters: {
+        /**
+         * Return the status to be saved in a project
+         *
+         * @param state - The store state
+         * @returns JSON formatted content of the store to be saved
+         */
         statusToSave(state: Viewer3DConfiguration) {
             const statusToSave = {
                 camera: state.camera,

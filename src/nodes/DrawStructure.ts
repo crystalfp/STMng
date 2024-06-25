@@ -23,6 +23,8 @@ export class DrawStructure {
 	private showStructure = true;
 	private showBonds = true;
 	private showLabels = true;
+	private shadedBonds = false;
+	private shadedBondsPrevious = false;
 	private readonly out = new THREE.Group();
 	private readonly atomsGroup = new THREE.Group();
 	private readonly bondsGroup = new THREE.Group();
@@ -53,6 +55,7 @@ export class DrawStructure {
     		this.showStructure = params.showStructure as boolean ?? true;
     		this.showBonds = params.showBonds as boolean ?? true;
     		this.showLabels = params.showLabels as boolean ?? true;
+    		this.shadedBonds = params.shadedBonds as boolean ?? false;
 
 			// Name the groups (useful for debugging)
 			this.atomsGroup.name = "Atoms";
@@ -71,6 +74,12 @@ export class DrawStructure {
 				this.previousDrawKind = this.drawKind;
 			}
 			this.drawLabels(this.loadedData);
+
+			// Redraw the structure if bonds shading changes
+			if(this.shadedBonds !== this.shadedBondsPrevious) {
+				this.drawStructure(this.loadedData);
+				this.shadedBondsPrevious = this.shadedBonds;
+			}
 
 			// Structure parts visibility
 			this.out.visible = this.showStructure;
@@ -397,8 +406,12 @@ export class DrawStructure {
 		const dz = end[2] - start[2];
 		const len = Math.hypot(dx, dy, dz);
 		const geometry = new THREE.CylinderGeometry(radius, radius, len, subdivisions, 1, true);
-		const meshMaterial = colorTextureMaterial(new THREE.Color(colorStart), new THREE.Color(colorEnd),
-												  this.drawRoughness, this.drawMetalness, subdivisions);
+		const meshMaterial = colorTextureMaterial(new THREE.Color(colorStart),
+												  new THREE.Color(colorEnd),
+												  this.drawRoughness,
+												  this.drawMetalness,
+												  subdivisions,
+												  this.shadedBonds);
 		const cylinder = new THREE.Mesh(geometry, meshMaterial);
 
 		this.setDirection(dx/len, dy/len, dz/len, cylinder.quaternion);

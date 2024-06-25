@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the converter from Structure data to graphical objects
+ * Controls for the converter from structure data to graphical objects.
  */
 
 import {ref, watchEffect, computed} from "vue";
@@ -23,6 +23,7 @@ const labelKind = ref("symbol");
 const showStructure = ref(true);
 const showBonds = ref(true);
 const showLabels = ref(true);
+const shadedBonds = ref(false);
 
 sb.getUiParams(props.id, (params: UiParams) => {
     drawKind.value = params.drawKind as string ?? "ball-and-stick";
@@ -33,6 +34,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     showStructure.value = params.showStructure as boolean ?? true;
     showBonds.value = params.showBonds as boolean ?? true;
     showLabels.value = params.showLabels as boolean ?? true;
+    shadedBonds.value = params.shadedBonds as boolean ?? false;
 });
 
 watchEffect(() => {
@@ -44,7 +46,8 @@ watchEffect(() => {
         labelKind: labelKind.value,
         showBonds: showBonds.value,
         showStructure: showStructure.value,
-        showLabels: showLabels.value
+        showLabels: showLabels.value,
+        shadedBonds: shadedBonds.value,
     });
 });
 
@@ -76,6 +79,9 @@ const showCombined = computed({
     <v-btn value="licorice">Licorice</v-btn>
     <v-btn value="lines">Lines</v-btn>
   </v-btn-toggle>
+
+  <v-switch v-model="shadedBonds" color="primary"
+            label="Smooth color bonds" density="compact" class="mt-2 ml-2" />
 
   <v-label text="Label is" class="mb-3 ml-2" /><br>
   <v-btn-toggle v-model="labelKind" color="primary" class="mb-6 ml-2">
