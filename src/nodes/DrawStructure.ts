@@ -2,6 +2,8 @@
  * Transform the chemical structure in a set of 3D objects in the scene.
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
@@ -73,13 +75,15 @@ export class DrawStructure {
 				this.drawStructure(this.loadedData);
 				this.previousDrawKind = this.drawKind;
 			}
-			this.drawLabels(this.loadedData);
 
 			// Redraw the structure if bonds shading changes
 			if(this.shadedBonds !== this.shadedBondsPrevious) {
 				this.drawStructure(this.loadedData);
 				this.shadedBondsPrevious = this.shadedBonds;
 			}
+
+			// Redraw the labels
+			this.drawLabels(this.loadedData);
 
 			// Structure parts visibility
 			this.out.visible = this.showStructure;
@@ -460,6 +464,7 @@ export class DrawStructure {
 			showStructure: this.showStructure,
 			showBonds: this.showBonds,
 			showLabels: this.showLabels,
+			shadedBonds: this.shadedBonds,
 		};
 		return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

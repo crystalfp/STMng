@@ -15,8 +15,6 @@ export class DrawUnitCell {
 	private readonly nameUC: string;
 	private readonly nameSC: string;
 	private readonly nameBV: string;
-	private readonly outUC = new THREE.Group();
-	private readonly outSC = new THREE.Group();
 	private readonly outBV = new THREE.Group();
 	private lineUC: THREE.LineSegments | undefined;
 	private lineSC: THREE.LineSegments | undefined;
@@ -52,18 +50,12 @@ export class DrawUnitCell {
 	 */
 	constructor(private readonly id: string) {
 
-		// Prepare the groups and add to the scene
+		// Prepare the names of the various graphical objects
 		this.nameUC = `DrawUnitCell-${this.id}`;
-		this.outUC.name = this.nameUC;
-		sm.add(this.outUC);
-		sm.clearGroup(this.nameUC);
-
 		this.nameSC = `DrawSupercell-${this.id}`;
-		this.outSC.name = this.nameSC;
-		sm.add(this.outSC);
-		sm.clearGroup(this.nameSC);
-
 		this.nameBV = `DrawBasisVectors-${this.id}`;
+
+		// Prepare the group and add it to the scene
 		this.outBV.name = this.nameBV;
 		sm.add(this.outBV);
 		sm.clearGroup(this.nameBV);
@@ -103,7 +95,7 @@ export class DrawUnitCell {
 				}
 			}
 
-			this.outUC.visible = this.showUnitCell;
+			if(this.lineUC) this.lineUC.visible = this.showUnitCell;
 			this.outBV.visible = this.showBasisVectors;
 			if(this.structure?.crystal) {
 				this.drawUnitCell(this.structure.crystal.basis, this.structure.crystal.origin);
@@ -131,11 +123,13 @@ export class DrawUnitCell {
 					this.replicateUnitCell();
 				}
 			}
-			this.outSC.visible = this.showSupercell;
+			if(this.lineSC) this.lineSC.visible = this.showSupercell;
 			this.changeMaterials();
 		});
 
 		sb.getData(this.id, (data: unknown) => {
+
+			sm.deleteMesh(this.nameUC);
 
 			this.inputStructure = data as Structure;
 			if(!this.inputStructure?.crystal) {
@@ -173,7 +167,7 @@ export class DrawUnitCell {
 	private drawUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// Clear previous cell
-		sm.clearGroup(this.nameUC);
+		sm.deleteMesh(this.nameUC);
 
 		// If no unit cell or not visible return
 		if(!this.showUnitCell || basis.every((value) => value === 0)) return;
@@ -218,7 +212,8 @@ export class DrawUnitCell {
 
         this.lineUC = new THREE.LineSegments(edges, this.setMaterial(this.lineColor, this.dashedLine));
         if(this.dashedLine) this.lineUC.computeLineDistances();
-        this.outUC.add(this.lineUC);
+		this.lineUC.name = this.nameUC;
+        sm.add(this.lineUC);
 	}
 
 	/**
@@ -318,8 +313,8 @@ export class DrawUnitCell {
 	 */
 	private drawSupercell(basis: BasisType, orig: PositionType): void {
 
-		// Clear previous cell
-		sm.clearGroup(this.nameSC);
+		// Clear previous supercell
+		sm.deleteMesh(this.nameSC);
 
 		// If no unit cell return
 		if(basis.every((value) => value === 0)) return;
@@ -380,7 +375,8 @@ export class DrawUnitCell {
 
         this.lineSC = new THREE.LineSegments(edges, this.setMaterial(this.supercellColor, this.dashedSupercell));
         if(this.dashedSupercell) this.lineSC.computeLineDistances();
-        this.outSC.add(this.lineSC);
+		this.lineSC.name = this.nameSC;
+        sm.add(this.lineSC);
 	}
 
 	/**

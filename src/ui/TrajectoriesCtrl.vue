@@ -28,6 +28,7 @@ const positionCloudsGrow = ref(0.1);
 const positionCloudsSideExp = ref(5);
 
 sb.getUiParams(props.id, (params: UiParams) => {
+
     showTrajectories.value      = params.showTrajectories as boolean ?? false;
     labelKind.value             = params.labelKind as string ?? "symbol";
     atomsSelector.value         = params.atomsSelector as string ?? "";
@@ -38,6 +39,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
     positionCloudsGrow.value    = params.positionCloudsGrow as number ?? 0.1;
 });
 watchEffect(() => {
+
     sb.setUiParams(props.id, {
         showTrajectories: showTrajectories.value,
         labelKind: labelKind.value,
@@ -55,7 +57,6 @@ watchEffect(() => {
  *
  * @param value - Exponent
  */
-// const showPowerOf2 = (value: number): string => Math.pow(2, value).toFixed(0);
 const showPowerOf2 = (value: number): string => (2**value).toFixed(0);
 
 </script>
@@ -76,7 +77,7 @@ const showPowerOf2 = (value: number): string => (2**value).toFixed(0);
             density="compact" class="ml-2" />
   <v-container v-if="showPositionClouds" class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsSideExp"
-                        :step="1" :min="2" :max="10" class="ml-1">
+                        :step="1" :min="3" :max="10" class="ml-1">
       <v-label :text="`Cloud volume subdivisions (${showPowerOf2(value)})`" />
     </g-debounced-slider>
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsGrow"

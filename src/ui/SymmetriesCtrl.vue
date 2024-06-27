@@ -24,8 +24,8 @@ const controlStore = useControlStore();
 const applyInputSymmetries = ref(true);
 const enableFindSymmetries = ref(true);
 const standardizeCell = ref(true);
-const symprecStandardize = ref(-5);
-const symprecDataset = ref(-5);
+const symprecStandardize = ref(-1);
+const symprecDataset = ref(-1);
 const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
 const standardizeOnly = ref(false);
@@ -39,8 +39,8 @@ sb.getUiParams(pr.id, (params: UiParams) => {
     applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
     enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
     standardizeCell.value = params.standardizeCell as boolean ?? true;
-    symprecStandardize.value = params.symprecStandardize as number ?? -5;
-    symprecDataset.value = params.symprecDataset as number ?? -5;
+    symprecStandardize.value = params.symprecStandardize as number ?? -1;
+    symprecDataset.value = params.symprecDataset as number ?? -1;
     fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
     showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
     standardizeOnly.value = params.standardizeOnly as boolean ?? false;
@@ -73,11 +73,11 @@ watchEffect(() => {
               label="Standardize cell" density="compact" class="mt-n5 ml-3" />
     <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
   <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
-                        :min="-6" :max="0" :step="0.2" class="ml-2 mb-2">
+                        :min="-3" :max="0" :step="0.05" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
     <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
-                        :min="-6" :max="0" :step="0.2" class="ml-2">
+                        :min="-3" :max="0" :step="0.05" class="ml-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" />
     </g-debounced-slider>
   </v-container>
