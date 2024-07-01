@@ -86,6 +86,7 @@ export class StructureReader {
 			}
 
 			if(this.fileToRead) {
+
 				if(this.inProgress) return;
 				this.doRead();
 				this.fileToRead = "";

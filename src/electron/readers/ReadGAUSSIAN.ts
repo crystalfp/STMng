@@ -76,7 +76,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 					break;
 				case LineType.origin: {
 
-					if(fields.length !== 4) throw Error("Malformed file (origin line)");
+					if(fields.length < 4) throw Error("Malformed file (origin line)");
 					natoms = Number.parseInt(fields[0]);
 					if(natoms === 0) throw Error("No atoms in the file");
 					if(natoms < 0) {
@@ -95,7 +95,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 				}
 				case LineType.basis: {
 
-					if(fields.length !== 4) throw Error(`Malformed file (basis line ${idxBasis+1})`);
+					if(fields.length < 4) throw Error(`Malformed file (basis line ${idxBasis+1})`);
 					subdivisions[idxBasis] = Number.parseInt(fields[0]);
 					sides[3*idxBasis]   = Number.parseFloat(fields[1]);
 					sides[3*idxBasis+1] = Number.parseFloat(fields[2]);
@@ -153,7 +153,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 					break;
 				}
 				case LineType.atoms: {
-					if(fields.length !== 5) throw Error(`Malformed file (atoms line ${idxBasis+1})`);
+					if(fields.length < 5) throw Error(`Malformed file (atoms line ${idxBasis+1})`);
 
 					const atomZ = Number.parseInt(fields[0]);
 					const atom: Atom = {

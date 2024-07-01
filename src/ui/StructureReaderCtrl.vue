@@ -212,6 +212,7 @@ const loadFile = (files: File[] | File): void => {
     const file = isArray ? files[0] : files;
 
     step.value = 1;
+    fileToRead.value = file.path;
     sb.setUiParams(id, {
         fileToRead: file.path,
         filesSelectedFull: JSON.stringify({name: file.name, path: file.path}),
