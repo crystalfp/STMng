@@ -37,6 +37,8 @@ const {
 const value = defineModel<number>();
 
 const valueToDebounce = ref(value.value ?? min);
+watch(value, () => valueToDebounce.value = value.value ?? min);
+
 let debouncingTimeoutId: NodeJS.Timeout;
 watch(valueToDebounce, () => {
 

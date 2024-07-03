@@ -38,9 +38,10 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
   ☐ Experiment with command line parser of NodeJS: <https://pawelgrzybek.com/til-node-js-18-3-comes-with-command-line-arguments-parser/>
   ☐ Try to use KeepAlive component in user interface
-  ☐ Used shaded cylinders for bonds using shaders
 
 Archive:
+  ✔ In compute bonds, reset parameters does nothing @done(2024-07-03 05:19) @project(Bugs)
+  ✔ Used shaded cylinders for bonds using shaders @done(2024-07-01 15:26) @project(Nice to have/Future)
   ✔ Polyhedra volume @done(2024-06-15 08:19) @project(Requests from Oganov)
   ✔ Quality slider to `v-btn-toggle` @done(2024-06-13 16:04) @project(ToDo)
   ✔ Try `renderer.setAnimationLoop(animate)` instead of `requestAnimationFrame(animate)` @done(2024-06-13 11:29) @project(ToDo)

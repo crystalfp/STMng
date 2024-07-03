@@ -32,6 +32,18 @@ const {
 const value = defineModel<number[]>();
 
 const limitsToDebounce = ref<number[]>(value.value ?? [min, max]);
+watch(value, () => {
+
+    if(value.value) {
+        limitsToDebounce.value[0] = value.value[0];
+        limitsToDebounce.value[1] = value.value[1];
+    }
+    else {
+        limitsToDebounce.value[0] = min;
+        limitsToDebounce.value[1] = max;
+    }
+});
+
 let debouncingTimeoutId: NodeJS.Timeout;
 watch(limitsToDebounce, () => {
 

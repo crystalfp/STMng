@@ -1,8 +1,10 @@
 /**
-* Compute one or more isosurfaces of the volumetric data.
-*
-* @packageDocumentation
-*/
+ * Compute one or more isosurfaces of the volumetric data.
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ */
 import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";

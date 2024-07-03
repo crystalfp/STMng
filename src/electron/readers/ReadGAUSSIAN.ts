@@ -44,10 +44,9 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const BOHR_TO_ANGSTROM = 0.529177;
 		let voxels: number[] = [];
 		let nvoxels = 0;
-		let nv1=0, nv2=0, nv3=0;
 		let idxVoxels = 0;
 
-		let nvy=0, nvz=0;
+		// let nvy=0, nvz=0;
 
 		const crystal: Crystal = {
 			basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -118,8 +117,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 							crystal.basis[3*i+1] = sides[3*i+1]*subdivisions[i];
 							crystal.basis[3*i+2] = sides[3*i+2]*subdivisions[i];
 
-							crystal.origin[i] -= (sides[i]+sides[i+3]+sides[i+6])/2;
-
 							structure.volume[0].sides[i] = subdivisions[i]+1;
 						}
 
@@ -139,12 +136,9 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 							crystal.origin[2] *= BOHR_TO_ANGSTROM;
 						}
 
-						nv1 = subdivisions[0];
-						nv2 = subdivisions[1];
-						nv3 = subdivisions[2];
-
-						nvy = subdivisions[1];
-						nvz = subdivisions[2];
+						const nv1 = subdivisions[0];
+						const nv2 = subdivisions[1];
+						const nv3 = subdivisions[2];
 
 						nvoxels = nv1*nv2*nv3;
 						voxels = Array(nvoxels).fill(0) as number[];
@@ -153,6 +147,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 					break;
 				}
 				case LineType.atoms: {
+
 					if(fields.length < 5) throw Error(`Malformed file (atoms line ${idxBasis+1})`);
 
 					const atomZ = Number.parseInt(fields[0]);
@@ -193,35 +188,43 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 					if(nvoxels === 0) {
 
-						const n1 = subdivisions[0]+1;
-						const n2 = subdivisions[1]+1;
-						const n3 = subdivisions[2]+1;
-						structure.volume[0].values = Array(n1*n2*n3).fill(52) as number[];
+						const nvx = subdivisions[0];
+						const nvy = subdivisions[1];
+						const nvz = subdivisions[2];
 
-						for(let i = 0; i < n1; i++) {
-							let x0 = i - 1; if(x0 < 0)    x0 = nv1-1;
-							let x1 = i;     if(x1 >= nv1) x1 = 0;
+						const nx = subdivisions[0]+1;
+						const ny = subdivisions[1]+1;
+						const nz = subdivisions[2]+1;
+						structure.volume[0].values = Array(nx*ny*nz).fill(0) as number[];
 
-							for(let j = 0; j < n2; j++) {
-								let y0 = j - 1; if(y0 < 0)    y0 = nv2-1;
-								let y1 = j;     if(y1 >= nv2) y1 = 0;
+						for(let iz=0; iz < nz; ++iz) {
 
-								for(let k = 0; k < n3; k++) {
-									let z0 = k - 1; if(z0 < 0)    z0 = nv3-1;
-									let z1 = k;     if(z1 >= nv3) z1 = 0;
+							const z0 = iz === 0 ? nvz-1 : iz-1;
+							const z1 = iz === nz-1 ? 0 : iz;
 
-									structure.volume[0].values[k*n1*n2+j*n1+i] = (
-										voxels[z0+nvz*(y0+nvy*x0)] +
-										voxels[z0+nvz*(y0+nvy*x1)] +
-										voxels[z0+nvz*(y1+nvy*x0)] +
-										voxels[z0+nvz*(y1+nvy*x1)] +
-										voxels[z1+nvz*(y0+nvy*x0)] +
-										voxels[z1+nvz*(y0+nvy*x1)] +
-										voxels[z1+nvz*(y1+nvy*x0)] +
-										voxels[z1+nvz*(y1+nvy*x1)])/8;
+							for(let iy=0; iy < ny; ++iy) {
+
+								const y0 = iy === 0 ? nvy-1 : iy-1;
+								const y1 = iy === ny-1 ? 0 : iy;
+
+								for(let ix=0; ix < nx; ++ix) {
+
+									const x0 = ix === 0 ? nvx-1 : ix-1;
+									const x1 = ix === nx-1 ? 0 : ix;
+
+									structure.volume[0].values[ix+(iy+iz*ny)*nx] = (
+										voxels[z0 + (y0 + x0 * nvy) * nvz] +
+										voxels[z1 + (y0 + x0 * nvy) * nvz] +
+										voxels[z0 + (y1 + x0 * nvy) * nvz] +
+										voxels[z1 + (y1 + x0 * nvy) * nvz] +
+										voxels[z0 + (y0 + x1 * nvy) * nvz] +
+										voxels[z1 + (y0 + x1 * nvy) * nvz] +
+										voxels[z0 + (y1 + x1 * nvy) * nvz] +
+										voxels[z1 + (y1 + x1 * nvy) * nvz])/8;
 								}
 							}
 						}
+
 						lineType = LineType.exit;
 					}
 					break;

@@ -41,6 +41,7 @@ const value = defineModel<number>();
 /** Returning the not yet debounced value for display slider position */
 const valueToDebounce = defineModel<number>("raw");
 valueToDebounce.value = value.value ?? min;
+watch(value, () => valueToDebounce.value = value.value ?? min);
 
 /**
  * Decrement the value

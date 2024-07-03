@@ -176,8 +176,8 @@ export class IsosurfaceCore {
 
 		// (i,i+1),(j,j+1),(k,k+1) - i varies fastest; then j; then k
 		this.voxelPts[0] = this.origin[0]+i*this.cellSides[0]+j*this.cellSides[3]+k*this.cellSides[6]; // 0
-		this.voxelPts[1] = this.origin[0]+i*this.cellSides[1]+j*this.cellSides[4]+k*this.cellSides[7];
-		this.voxelPts[2] = this.origin[0]+i*this.cellSides[2]+j*this.cellSides[5]+k*this.cellSides[8];
+		this.voxelPts[1] = this.origin[1]+i*this.cellSides[1]+j*this.cellSides[4]+k*this.cellSides[7];
+		this.voxelPts[2] = this.origin[2]+i*this.cellSides[2]+j*this.cellSides[5]+k*this.cellSides[8];
 
 		this.voxelPts[3] = this.voxelPts[0] + this.cellSides[0]; // 1
 		this.voxelPts[4] = this.voxelPts[1] + this.cellSides[1];

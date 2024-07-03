@@ -178,27 +178,26 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPS
  */
 const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomTypes.has(fileFormat);
 
+/** Accept string for each file format */
+const acceptStringByFormat: Record<string, string> = {
+    "CHGCAR":            ".chgcar,*",
+    "CIF":               ".cif,*",
+    "Gaussian Cube":     ".cube,*",
+    "LAMMPS":            ".lmp,*",
+    "LAMMPStrj":         ".lammpstrj,*",
+    "POSCAR":            ".poscar,.poscars,*",
+    "POSCAR + XDATCAR":  ".poscar,.poscars,*",
+    "Shel-X":            ".res,.ins,*",
+    "XYZ":               ".xyz,*",
+};
+
 /**
  * Create the accept string for the given format
  *
  * @param fileFormat - Format to be loaded
  * @returns The accept string for the file selector
  */
-const acceptFile = (fileFormat: string): string => {
-
-    switch(fileFormat) {
-        case "CHGCAR":            return ".chgcar,*";
-        case "CIF":               return ".cif,*";
-        case "Gaussian Cube":     return ".cube,*";
-        case "LAMMPS":            return ".lmp,*";
-        case "LAMMPStrj":         return ".lammpstrj,*";
-        case "POSCAR":            return ".poscar,.poscars,*";
-        case "POSCAR + XDATCAR":  return ".poscar,.poscars,*";
-        case "Shel-X":            return ".res,.ins,*";
-        case "XYZ":               return ".xyz,*";
-        default:                  return "*";
-    }
-};
+const acceptFile = (fileFormat: string): string => acceptStringByFormat[fileFormat] ?? "*";
 
 /**
  * Start loading a file
@@ -213,6 +212,7 @@ const loadFile = (files: File[] | File): void => {
 
     step.value = 1;
     fileToRead.value = file.path;
+
     sb.setUiParams(id, {
         fileToRead: file.path,
         filesSelectedFull: JSON.stringify({name: file.name, path: file.path}),
