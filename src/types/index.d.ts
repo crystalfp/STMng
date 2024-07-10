@@ -59,8 +59,10 @@ export interface ChartParams {
 
 // > Type of a collection of atomic structures
 // >> Base types
+/** An [x, y, z] position */
 export type PositionType = [number, number, number];
 
+/** The unit cell basis vectors [a, b, c] where e.g, a = [ax, ay, az] */
 export type BasisType = [
     number, number, number,
     number, number, number,

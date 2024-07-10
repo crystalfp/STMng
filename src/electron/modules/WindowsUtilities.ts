@@ -14,6 +14,7 @@ import {setupMenu} from "./SystemMenu";
 import {setupRelayToMainWin, setupRelayFromMainWin} from "./RelayForMainWin";
 import favicon from "../../assets/favicon.png";
 import type {WindowsParams} from "../types";
+import type {ClientProjectInfo} from "../../../new/types";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();
@@ -323,3 +324,21 @@ export const getCurrentNode = (): Promise<string> => {
         ipcMain.on("PROJECT:GET-CURRENT-NODE", (_event: unknown, answer: string): void => resolve(answer));
     });
 };
+
+// TEST Routines for the new architecture
+let firstSendProjectUI = true;
+/**
+ * Update the main window project
+ *
+ * @param clientProjectInfo - Project info to be passes to the client to setup UI etc.
+ */
+export const sendProjectUI = (clientProjectInfo: Record<string, ClientProjectInfo>): void => {
+
+    if(firstSendProjectUI) {
+        ipcMain.handle("PROJECT:SEND:INFO-FIRST", () => {
+            firstSendProjectUI = false;
+            return clientProjectInfo;
+        });
+    }
+    else mainWin.webContents.send("PROJECT:SEND:INFO-NEXT", clientProjectInfo);
+}

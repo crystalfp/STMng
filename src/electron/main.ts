@@ -24,6 +24,9 @@ import {setupChannelWriter} from "./modules/Writer";
 import {setupChannelFingerprints} from "./modules/Fingerprints";
 import {setupChannelAtomData} from "./modules/AtomData";
 
+// TEST
+import {pm} from "../../new/electron/modules/ProjectManager";
+
 // > Command line parsing
 const program = new Command("STMng");
 program
@@ -89,14 +92,18 @@ app.whenReady().then(() => {
     if(options.default) {
         // Load default project
         loadRememberedProject(true);
+        pm.loadRememberedProject(true);
         disableSaveProjectEntry(true);
     }
     else if(program.args.length > 0) {
         loadProjectAndRemember(program.args[0]);
+        pm.loadProjectAndRemember(program.args[0]);
         disableSaveProjectEntry(false);
     }
     else {
         const loadedDefaultProject = loadRememberedProject(false);
+        pm.loadRememberedProject(false);
+
         disableSaveProjectEntry(loadedDefaultProject);
     }
 })

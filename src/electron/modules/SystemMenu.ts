@@ -16,6 +16,11 @@ import {loadRememberedProject, loadProjectAndRemember, saveProject, sendProjectT
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
+// TEST
+import {pm} from "../../../new/electron/modules/ProjectManager";
+
+
+
 let systemMenu: Menu;
 
 // > Prepare the application menu
@@ -53,6 +58,34 @@ export const setupMenu = (): void => {
                     accelerator: "CommandOrControl+D",
                     click() {
                         loadRememberedProject(true);
+                        disableSaveProjectEntry(true);
+                        sendProjectToEditor();
+                    }
+                },
+                {type: "separator"},
+                {
+                    label: "Load project (new)",
+                    accelerator: "CommandOrControl+O",
+                    click() {
+                        const file = dialog.showOpenDialogSync({
+                            title: "Load project",
+                            properties: ["openFile"],
+                            filters: [
+                                {name: "STMng project", extensions: ["stm"]},
+                            ]
+                        });
+                        if(file) {
+                            const loadedDefaultProject = pm.loadProjectAndRemember(file[0]);
+                            disableSaveProjectEntry(loadedDefaultProject);
+                            sendProjectToEditor();
+                        }
+                    }
+                },
+                {
+                    label: "Load default project (new)",
+                    accelerator: "CommandOrControl+D",
+                    click() {
+                        pm.loadRememberedProject(true);
                         disableSaveProjectEntry(true);
                         sendProjectToEditor();
                     }
