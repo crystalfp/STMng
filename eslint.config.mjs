@@ -29,7 +29,9 @@ export default [{
     ]}, {
     files: [
         "src/**/*.ts",
-        "src/**/*.vue"
+        "src/**/*.vue",
+        "new/**/*.ts",
+        "new/**/*.vue"
     ],
     languageOptions: {
         parser: vueParser,
@@ -251,8 +253,6 @@ export default [{
         "no-invalid-this": "off",
         "@typescript-eslint/no-invalid-this": ["off", {capIsConstructor: false}],
         "prefer-template": "warn",
-        // "semi": "off",
-        // "semi": ["error", "always"],
         "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/explicit-function-return-type": ["warn", {allowExpressions: true}],
         "@typescript-eslint/method-signature-style": "warn",

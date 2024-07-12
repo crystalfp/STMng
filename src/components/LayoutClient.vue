@@ -13,10 +13,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "@/services/SceneManager";
 import {atomInfoInit} from "@/services/AtomInfo";
 
-// TEST
-import {receiveProjectUI} from "../../new/services/RoutesClient";
-import type {ClientProjectInfo} from "../../new/types";
-
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "@/components/ControlsContainer.vue";
 
@@ -43,11 +39,6 @@ window.addEventListener("DOMContentLoaded", () => {
             sb.setup();
             receiveRefreshMenu();
             atomInfoInit();
-
-            // TEST
-            receiveProjectUI((clientProjectInfo: Record<string, ClientProjectInfo>) => {
-                console.log("RCV", JSON.stringify(clientProjectInfo, undefined, 2));
-            });
         }
     }, 20);
 });

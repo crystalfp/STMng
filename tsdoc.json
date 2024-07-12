@@ -41,6 +41,7 @@
         "@deprecated": true,
         "@typeParam": true,
         "@packageDocumentation": true,
+        "@since": true,
         "@todo": true,
         "@link": true
     }

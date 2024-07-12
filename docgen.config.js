@@ -10,33 +10,45 @@ module.exports = {
                 astPath,
                 opt
             ) {
-                const componentDoc = astPath.tokens
-											.filter(
+
+                const cd = astPath.tokens.filter(
 												token => token.type === 'CommentBlock' &&
 												token.value.includes('@component')
 											)
-											.find(() => true);
-                if(componentDoc) {
-					const text = componentDoc.value
+				const rawValue = cd[0].value
 						.replaceAll("\r", "")
-						.replace(/^\*\n/, "\n")
-						.replace(/\n +\* +@component */, "")
-						.replace(/\n +\* +@remarks */, "\n\n**Note:** ")
-						.replaceAll(/\n +\* +([^-])/g, " $1")
-						.replaceAll(/\n +\* -/g, "\n-")
+						.replace(/^[*\n ]+/, "")
 						.replace(/[*\n ]+$/, "")
-						.replace(/^[\n ]+/, "")
-						.replaceAll(" *", "")
-                    documentation.set('description', text);
-                }
+						.replace(/^\*\n/, "")
+						.replaceAll(/\n *\* */g, "\n")
+						.replaceAll(/\\@/g, "#$%")
+				const values = rawValue.split(/ *@/).map((item) => item.trim());
+
+				for(const vv of values) {
+					if(vv === "") continue;
+					vv1 = vv.replaceAll("#$%", "@");
+					if(vv1.startsWith("component")) {
+						const text = vv1.replace(/^component[ \n]+/, "")
+                    	documentation.set('description', text);
+					}
+					else if(vv1.startsWith("author")) {
+						const text = vv1.replace(/^author[ \n]+/, "")
+                    	documentation.set('author', text);
+					}
+					else if(vv1.startsWith("since")) {
+						const text = vv1.replace(/^since[ \n]+/, "")
+                    	documentation.set('since', text);
+					}
+				}
             }
         ]
 	},
 	templates: {
 		component: (renderedUsage, doc, config, fileName, requiresMd, { isSubComponent, hasSubComponents }) => {
-			const { displayName, description, docsBlocks, tags, functional } = doc;
-			const { deprecated, author, since, version, see, link } = tags || {};
+			const { displayName, description, docsBlocks, tags, functional, since, author } = doc;
+			const { deprecated, version, see, link } = tags || {};
 			const frontMatter = [];
+
 			if (!config.outFile && deprecated) {
 				// to avoid having the squiggles in the left menu for deprecated items
 				// use the frontmatter feature of vuepress
@@ -46,6 +58,7 @@ module.exports = {
 				// show more than one level on subcomponents
 				frontMatter.push('sidebarDepth: 2');
 			}
+
 			return `${frontMatter.length > 0 && !isSubComponent ? `---\n${frontMatter.join('\n')}---` : ''}
   ${isSubComponent || hasSubComponents ? '#' : ''}# ${deprecated ? `~~${displayName}~~` : displayName}
 
@@ -53,8 +66,8 @@ module.exports = {
   ${description ?? ''}
 
   ${functional ? renderedUsage.functionalTag : ''}
-  ${author ? author.map(a => `Author: ${a.description}\n`) : ''}
-  ${since ? `Since: ${since[0].description}\n` : ''}
+  ${author ? `Author: ${author}` : ""}
+  ${since ? `Since: ${since}` : ""}
   ${version ? `Version: ${version[0].description}\n` : ''}
   ${see ? see.map(s => `[See](${s.description})\n`) : ''}
   ${link ? link.map(l => `[See](${l.description})\n`) : ''}

@@ -17,7 +17,7 @@ import {errorNotification, sendProjectPath} from "./MockFunctions";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI} from "../../../src/electron/modules/WindowsUtilities";
-import type {Project, ClientProjectInfo} from "../../types";
+import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
 
 // NOTE 1) Add here the classes that defines the nodes
 import {ChartViewer} from "../nodes/ChartViewer";
@@ -198,7 +198,7 @@ class ProjectManager {
 			return;
 		}
 
-		const clientProjectInfo: Record<string, ClientProjectInfo> = {};
+		const clientProjectInfo: ClientProjectInfo = {};
 
 		for(const entry in this.project.graph) {
 
@@ -209,7 +209,7 @@ class ProjectManager {
 			const inNodes = inString ? inString.replaceAll(" ", "").split(",") : [];
 
 			const uiInfo = node.getUiInfo();
-			const info: ClientProjectInfo = {
+			const info: ClientProjectInfoItem = {
 				id: entry,
 				label,
 				type,

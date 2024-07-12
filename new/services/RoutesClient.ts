@@ -4,8 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file RoutesClient.ts
- * @since Fri Jul 10 2024
+ * @since 2024-07-10
  */
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {ClientProjectInfo} from "../types";
@@ -23,13 +22,13 @@ declare global {
 }
 
 // > Project
-export const receiveProjectUI = (callback: (clientProjectInfo: Record<string, ClientProjectInfo>) => void) => {
+export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo) => void) => {
 
     window.electron.ipcRenderer.invoke("PROJECT:SEND:INFO-FIRST")
 		// eslint-disable-next-line promise/no-callback-in-promise
-		.then((clientProjectInfo: Record<string, ClientProjectInfo>) => callback(clientProjectInfo))
+		.then((clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo))
 		.catch((error: Error) => errorNotification(`Cannot retrieve project first time. ${error.message}`));
 
     window.electron.ipcRenderer.on("PROJECT:SEND:INFO-NEXT",
-					(_event, clientProjectInfo: Record<string, ClientProjectInfo>) => callback(clientProjectInfo));
+					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
 }

@@ -2,78 +2,90 @@
 /**
  * @component
  * Manage the load of the elements' user interfaces
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-11
  */
 
-import {ref, shallowRef, watchEffect, defineAsyncComponent} from "vue";
-import {sendCurrentNode} from "@/services/RoutesClient";
-import {sb} from "@/services/Switchboard";
-import type {NodeUI} from "@/types";
+import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {useControlStore} from "@/stores/controlStore";
+import {receiveProjectUI} from "../../new/services/RoutesClient";
+import type {ClientProjectInfo, ClientProjectInfoItem} from "../../new/types";
 
 import LoadingComponent from "@/components/Loading.vue";
 
 // > Access the store
 const controlStore = useControlStore();
 
-const graph = ref<NodeUI[]>([]);
 const selectedTabId = ref("");
 const loadedPanel = shallowRef<unknown>();
-const moduleId = ref("");
+const uiList = ref<ClientProjectInfoItem[]>([]);
 
 /** When the project is loaded */
-sb.subscribeToUiNodes((nodes: NodeUI[], currentId: string) => {
+receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 
-    graph.value.length = 0;
-    selectedTabId.value = "";
-
-    if(nodes.length === 0) return;
-
-    let found = false;
-    for(const node of nodes) {
-        graph.value.push(node);
-        if(node.id === currentId) found = true;
+	// Get the node UI list and select the first one
+    uiList.value.length = 0;
+    for(const id in clientProjectInfo) {
+        uiList.value.push(clientProjectInfo[id]);
     }
-    selectedTabId.value = found ? currentId : graph.value[0].id;
+	  selectedTabId.value = uiList.value[0].id;
+
+	// Select and load the first panel
+	const {ui} = clientProjectInfo[selectedTabId.value];
+	loadedPanel.value = ui === "" ?
+							undefined :
+							defineAsyncComponent({
+									loader: () => import(`../../new/ui/${ui}.vue`),
+									loadingComponent: LoadingComponent,
+									delay: 200,
+							});
 });
 
-/* Return to the main process the type of the current node open in the UI */
-sendCurrentNode(() => sb.getNodeType(moduleId.value));
+/**
+ * Select a panel
+ *
+ * @param id - ID of the node selected with the selector
+ */
+const selectPanel = (id: string): void => {
 
-watchEffect(() => {
+    for(const item of uiList.value) {
 
-    for(const item of graph.value) {
-        if(selectedTabId.value === item.id) {
-            loadedPanel.value =
-                item.ui === "" ?
-                    undefined :
-                    defineAsyncComponent({
-                        loader: () => import(`../ui/${item.ui}.vue`),
-                        loadingComponent: LoadingComponent,
-                        delay: 200,
-                    });
-            moduleId.value = item.id;
-            break;
+        if(id === item.id) {
+
+            loadedPanel.value = item.ui === "" ?
+									undefined :
+									defineAsyncComponent({
+											loader: () => import(`../../new/ui/${item.ui}.vue`),
+											loadingComponent: LoadingComponent,
+											delay: 200,
+									});
+			      break;
         }
     }
-});
+};
 
 </script>
 
 
 <template>
-  <v-container class="pa-0 title-container">
-    <v-select v-model="selectedTabId" :items="graph" item-title="label" item-value="id"
-              variant="solo-filled" density="compact" hide-details rounded="0" />
-  </v-container>
-  <component :is="loadedPanel" :id="moduleId" />
-  <v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true">
-    Reset camera
-  </v-btn>
+	<v-container class="pa-0 title-container">
+		<v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
+							variant="solo-filled" density="compact" hide-details rounded="0"
+							@update:model-value="selectPanel" />
+	</v-container>
+	<keep-alive>
+		<component :is="loadedPanel" :id="selectedTabId" />
+	</keep-alive>
+	<v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true">
+		Reset camera
+	</v-btn>
 </template>
+
 
 <style>
 /* stylelint-disable selector-class-pattern */
 .title-container .v-select__selection-text {
-  font-size: 140%;
+	font-size: 140%;
 }
 </style>

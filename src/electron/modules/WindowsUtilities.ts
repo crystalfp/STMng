@@ -332,7 +332,7 @@ let firstSendProjectUI = true;
  *
  * @param clientProjectInfo - Project info to be passes to the client to setup UI etc.
  */
-export const sendProjectUI = (clientProjectInfo: Record<string, ClientProjectInfo>): void => {
+export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
 
     if(firstSendProjectUI) {
         ipcMain.handle("PROJECT:SEND:INFO-FIRST", () => {

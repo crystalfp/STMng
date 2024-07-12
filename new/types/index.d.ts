@@ -166,7 +166,7 @@ export interface UiInfo {
 
 // > Project information to the client
 /** Project information to the client */
-export interface ClientProjectInfo {
+export interface ClientProjectInfoItem {
 
     /** ID of the node */
     id: string;
@@ -186,3 +186,5 @@ export interface ClientProjectInfo {
 	/** "out" generates graphical output, "in" the viewer, "none" is pure computation */
 	graphic: "none" | "in" | "out";
 }
+
+export type ClientProjectInfo = Record<string, ClientProjectInfoItem>;
