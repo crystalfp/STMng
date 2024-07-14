@@ -5,8 +5,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file main.ts.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {Command, Option} from "commander";
 import log from "electron-log";

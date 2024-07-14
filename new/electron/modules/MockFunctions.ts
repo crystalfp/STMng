@@ -1,11 +1,10 @@
 /**
- * <<DESCRIPTION>>
+ * Dummy functions needed during the transition.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file Dummy.ts
- * @since Sun Jul 07 2024
+ * @since 2024-07-07
  */
 export const errorNotification = (message: string): void => {
 	console.log("errorNotification", message);

@@ -1,18 +1,18 @@
 /**
- * <<DESCRIPTION>>
+ * Compute an orthoslice of the volumetric data.
+ * If requested show also the isolines on it.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file DrawOrthoslice.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class DrawOrthoslice extends NodeCore {
 
-	private readonly name = "DrawOrthoslice";
+	protected readonly name = "DrawOrthoslice";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +38,17 @@ export class DrawOrthoslice extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "DrawOrthosliceCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "DrawOrthosliceCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

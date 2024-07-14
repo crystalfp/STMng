@@ -4,8 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file ProjectManager.ts
- * @since Sat Jul 06 2024
+ * @since 2024-07-06
  */
 import fs from "node:fs";
 import {app} from "electron";
@@ -193,7 +192,6 @@ class ProjectManager {
 
 		if(!this.project) {
 
-			// TBD Simulated send to client
 			sendProjectUI({});
 			return;
 		}
@@ -215,7 +213,8 @@ class ProjectManager {
 				type,
 				input: inNodes,
 				ui: uiInfo.ui,
-				graphic: uiInfo.graphic
+				graphic: uiInfo.graphic,
+				channels: uiInfo.channels
 			}
 			clientProjectInfo[entry] = info;
 		}

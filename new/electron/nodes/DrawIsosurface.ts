@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Compute one or more isosurfaces of the volumetric data.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file DrawIsosurface.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class DrawIsosurface extends NodeCore {
 
-	private readonly name = "DrawIsosurface";
+	protected readonly name = "DrawIsosurface";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class DrawIsosurface extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "DrawIsosurfaceCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "DrawIsosurfaceCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

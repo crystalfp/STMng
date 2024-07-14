@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Add bonds to the input structure.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file ComputeBonds.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class ComputeBonds extends NodeCore {
 
-	private readonly name = "ComputeBonds";
+	protected readonly name = "ComputeBonds";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class ComputeBonds extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "ComputeBondsCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "ComputeBondsCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

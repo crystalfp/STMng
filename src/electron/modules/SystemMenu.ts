@@ -20,7 +20,6 @@ import {fileURLToPath} from "node:url";
 import {pm} from "../../../new/electron/modules/ProjectManager";
 
 
-
 let systemMenu: Menu;
 
 // > Prepare the application menu

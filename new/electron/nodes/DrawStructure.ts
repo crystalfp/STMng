@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Transform the chemical structure in a set of 3D objects in the scene.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file DrawStructure.ts
- * @since Fri Jul 05 2024
+ * @since 2024-07-05
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class DrawStructure extends NodeCore {
 
-	private readonly name = "DrawStructure";
+	protected readonly name = "DrawStructure";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class DrawStructure extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "DrawStructureCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "DrawStructureCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Display the structure unit cell and replicate structure for a supercell.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file DrawUnitCell.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class DrawUnitCell extends NodeCore {
 
-	private readonly name = "DrawUnitCell";
+	protected readonly name = "DrawUnitCell";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class DrawUnitCell extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "DrawUnitCellCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "DrawUnitCellCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

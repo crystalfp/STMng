@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Write structures to file.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file StructureWriter.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class StructureWriter extends NodeCore {
 
-	private readonly name = "StructureWriter";
+	protected readonly name = "StructureWriter";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class StructureWriter extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "StructureWriterCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "StructureWriterCtrl",
+			graphic: "none",
+			channels: [":1"]
+		};
 	}
 }

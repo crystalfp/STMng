@@ -7,9 +7,11 @@
 import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
-import {sb, type UiParams} from "@/services/Switchboard";
-import {useMessageStore} from "@/stores/messageStore";
-import {useControlStore} from "@/stores/controlStore";
+import {sb} from "../../src/services/Switchboard";
+import {useMessageStore} from "../../src/stores/messageStore";
+import {useControlStore} from "../../src/stores/controlStore";
+import {getFromNode} from "../services/RoutesClient";
+import type {CtrlParams} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -54,7 +56,11 @@ const filesSelected = ref<File[]>([]);
 const auxFileSelected = ref<File[]>([]);
 const useBohr       = ref(true);
 
-sb.getUiParams(id, (params: UiParams) => {
+getFromNode(id, "STRUCTURE-READER:1",  (params: CtrlParams) => {
+    console.log("Received", params);
+});
+
+sb.getUiParams(id, (params: CtrlParams) => {
 
     fileToRead.value    = params.fileToRead as string ?? "";
     countSteps.value    = params.steps as number ?? 1;
@@ -179,17 +185,17 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPS
 const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomTypes.has(fileFormat);
 
 /** Accept string for each file format */
-const acceptStringByFormat: Record<string, string> = {
-    "CHGCAR":            ".chgcar,*",
-    "CIF":               ".cif,*",
-    "Gaussian Cube":     ".cube,*",
-    "LAMMPS":            ".lmp,*",
-    "LAMMPStrj":         ".lammpstrj,*",
-    "POSCAR":            ".poscar,.poscars,*",
-    "POSCAR + XDATCAR":  ".poscar,.poscars,*",
-    "Shel-X":            ".res,.ins,*",
-    "XYZ":               ".xyz,*",
-};
+const acceptStringByFormat = new Map<string, string>([
+    ["CHGCAR",            ".chgcar,*"],
+    ["CIF",               ".cif,*"],
+    ["Gaussian Cube",     ".cube,*"],
+    ["LAMMPS",            ".lmp,*"],
+    ["LAMMPStrj",         ".lammpstrj,*"],
+    ["POSCAR",            ".poscar,.poscars,*"],
+    ["POSCAR + XDATCAR",  ".poscar,.poscars,*"],
+    ["Shel-X",            ".res,.ins,*"],
+    ["XYZ",               ".xyz,*"],
+]);
 
 /**
  * Create the accept string for the given format
@@ -197,7 +203,7 @@ const acceptStringByFormat: Record<string, string> = {
  * @param fileFormat - Format to be loaded
  * @returns The accept string for the file selector
  */
-const acceptFile = (fileFormat: string): string => acceptStringByFormat[fileFormat] ?? "*";
+const acceptFile = (fileFormat: string): string => acceptStringByFormat.get(fileFormat) ?? "*";
 
 /**
  * Start loading a file

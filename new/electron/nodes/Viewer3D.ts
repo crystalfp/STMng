@@ -1,19 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Interface to the Viewer3D component.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file Viewer3D.ts
- * @since Mon Jul 08 2024
+ * @since 2024-07-08
  */
-
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, ViewerState} from "../../types";
+import type {UiInfo, ViewerState} from "../../types";
 
 export class Viewer3D extends NodeCore {
 
-	private readonly name = "Viewer3D";
+	protected readonly name = "Viewer3D";
 
 	constructor(private readonly id: string) {
 		super();
@@ -22,10 +20,6 @@ export class Viewer3D extends NodeCore {
 
 	run() {
 
-	}
-
-	notifier(_data: Structure): void {
-		console.log("Never called");
 	}
 
 	saveStatus(): string {
@@ -41,6 +35,11 @@ export class Viewer3D extends NodeCore {
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "Viewer3DCtrl", graphic: "in"};
+		return {
+			id: this.id,
+			ui: "Viewer3DCtrl",
+			graphic: "in",
+			channels: [":1"]
+		};
 	}
 }

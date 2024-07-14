@@ -74,9 +74,7 @@ const selectPanel = (id: string): void => {
 							variant="solo-filled" density="compact" hide-details rounded="0"
 							@update:model-value="selectPanel" />
 	</v-container>
-	<keep-alive>
-		<component :is="loadedPanel" :id="selectedTabId" />
-	</keep-alive>
+	<component :is="loadedPanel" :id="selectedTabId" />
 	<v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true">
 		Reset camera
 	</v-btn>

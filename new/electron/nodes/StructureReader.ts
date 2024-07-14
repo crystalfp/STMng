@@ -1,19 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Read a structure from file.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file ComputeSymmetries.ts
- * @since Fri Jul 05 2024
+ * @since 2024-07-05
  */
-
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class StructureReader extends NodeCore {
 
-	private readonly name = "StructureReader";
+	protected readonly name = "StructureReader";
 	private loopSteps = false;
 	private step = 1;
 	private format = "";
@@ -26,7 +24,10 @@ export class StructureReader extends NodeCore {
 		super();
 		console.log(`Instantiated ${this.name}`);
 
-		// Create the channel to the UI name ${id}:${direction}:${specifier}
+		// Create the channel to the UI named ${id}:${direction}:${specifier}
+		for(const channel of this.getUiInfo().channels) {
+			console.log(`\tCreate channel ${this.id}${channel}`);
+		}
 	}
 
 	run(): void {
@@ -46,10 +47,6 @@ export class StructureReader extends NodeCore {
 		this.notify(this.structures[this.step-1]);
 	}
 
-	notifier(_data: Structure): void {
-		console.log("Never called");
-	}
-
 	saveStatus(): string {
         const statusToSave = {
 			loopSteps: this.loopSteps,
@@ -60,7 +57,7 @@ export class StructureReader extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		this.loopSteps  = params.loopSteps as boolean ?? false;
 		this.format     = params.format as string ?? "";
     	this.atomsTypes = params.atomsTypes as string ?? "";
@@ -69,6 +66,11 @@ export class StructureReader extends NodeCore {
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "StructureReaderCtrl", graphic: "none"};
+		return {
+			id: this.id,
+			ui: "StructureReaderCtrl",
+			graphic: "none",
+			channels: [":1"]
+		};
 	}
 }

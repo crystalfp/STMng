@@ -7,7 +7,7 @@
  * @since 2024-07-10
  */
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {ClientProjectInfo} from "../types";
+import type {ClientProjectInfo, CtrlParams} from "../types";
 import {errorNotification} from "../electron/modules/MockFunctions";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -32,3 +32,19 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
     window.electron.ipcRenderer.on("PROJECT:SEND:INFO-NEXT",
 					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
 }
+
+// > Communication
+/**
+* Receive the parameters from the main process node
+*
+* @param id - ID of the node receiving the parameters
+* @param channel - Specify the channel inside the id related group
+* @param onReceive - Function to be called when the parameters from the node change
+*/
+export const getFromNode = (id: string, channel: string, onReceive: (params: CtrlParams) => void): void => {
+
+	// TBD
+	void id
+	void channel;
+	onReceive({});
+};

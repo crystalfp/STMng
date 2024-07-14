@@ -4,10 +4,9 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file NodeCore.ts
- * @since Fri Jul 05 2024
+ * @since 2024-07-05
  */
-import type {Structure, UiInfo, UiParams, ViewerState} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ViewerState} from "../../types";
 
 type Observer = (data: Structure) => void;
 
@@ -18,6 +17,7 @@ interface ObserverEntry {
 
 export abstract class NodeCore {
 
+	protected abstract readonly name: string;
 	private readonly observersList: ObserverEntry[] = [];
 
 	/**
@@ -51,7 +51,9 @@ export abstract class NodeCore {
 	 *
 	 * @param data - The structure received by the subscribed node
 	 */
-	abstract notifier(data: Structure): void;
+	notifier(_data: Structure): void {
+		throw Error(`Notifier should not be called for "${this.name}"`);
+	}
 
     /**
      * Save the node status
@@ -61,9 +63,9 @@ export abstract class NodeCore {
 	abstract saveStatus(): string;
 
     /**
-     * Load the node status
+     * Load the node status retrieved from project file into this node
      */
-	abstract loadStatus(params: UiParams | ViewerState): void;
+	abstract loadStatus(params: CtrlParams | ViewerState): void;
 
 	/**
 	 * Return the info needed to build the client part of the node

@@ -1,19 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Find and apply symmetries to input structure.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file ComputeSymmetries.ts
- * @since Fri Jul 05 2024
+ * @since 2024-07-05
  */
-
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class ComputeSymmetries extends NodeCore {
 
-	private readonly name = "ComputeSymmetries";
+	protected readonly name = "ComputeSymmetries";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -41,12 +39,17 @@ export class ComputeSymmetries extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "SymmetriesCtrl", graphic: "none"};
+		return {
+			id: this.id,
+			ui: "SymmetriesCtrl",
+			graphic: "none",
+			channels: [":1"]
+		};
 	}
 }

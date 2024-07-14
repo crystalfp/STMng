@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Compute fingerprints for an accumulated set of structures.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file ComputeFingerprints.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class ComputeFingerprints extends NodeCore {
 
-	private readonly name = "ComputeFingerprints";
+	protected readonly name = "ComputeFingerprints";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class ComputeFingerprints extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "ComputeFingerprintsCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "ComputeFingerprintsCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

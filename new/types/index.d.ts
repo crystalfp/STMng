@@ -4,8 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file index.d.ts
- * @since Sun Jul 07 2024
+ * @since 2024-07-07
  */
 
 // > Type of a collection of atomic structures
@@ -106,7 +105,7 @@ export interface GraphNode {
 export type ProjectGraph = Record<string, GraphNode>; // The key is the node id
 
 /** Type of the node state variables */
-export type UiParams = Record<string, string | number | boolean>;
+export type CtrlParams = Record<string, string | number | boolean>;
 
 /** Viewer 3D state */
 export interface ViewerState {
@@ -147,7 +146,7 @@ export interface Project {
     graph: ProjectGraph;
     currentId?: string;
     viewer?: ViewerState;
-    ui?: Record<string, UiParams>;
+    ui?: Record<string, CtrlParams>;
 }
 
 // > User interface info
@@ -162,10 +161,13 @@ export interface UiInfo {
 
 	/** "out" generates graphical output, "in" the viewer, "none" is pure computation */
 	graphic: "none" | "in" | "out";
+
+    /** Channels names to communicate with the node */
+    channels: string[];
 }
 
 // > Project information to the client
-/** Project information to the client */
+/** One UI module description */
 export interface ClientProjectInfoItem {
 
     /** ID of the node */
@@ -185,6 +187,10 @@ export interface ClientProjectInfoItem {
 
 	/** "out" generates graphical output, "in" the viewer, "none" is pure computation */
 	graphic: "none" | "in" | "out";
+
+    /** Channels names to communicate with the node */
+    channels: string[];
 }
 
+/** List of ui modules descriptions to the client */
 export type ClientProjectInfo = Record<string, ClientProjectInfoItem>;

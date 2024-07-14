@@ -1,19 +1,18 @@
 /**
- * <<DESCRIPTION>>
+ * Save a screen capture as an image or a movie or save the displayed structure
+ * as a STL file.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file CaptureView.ts
- * @since Mon Jul 08 2024
+ * @since 2024-07-08
  */
-
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, ViewerState} from "../../types";
+import type {UiInfo, ViewerState} from "../../types";
 
 export class CaptureView extends NodeCore {
 
-	private readonly name = "CaptureView";
+	protected readonly name = "CaptureView";
 
 	constructor(private readonly id: string) {
 		super();
@@ -22,10 +21,6 @@ export class CaptureView extends NodeCore {
 
 	run() {
 
-	}
-
-	notifier(_data: Structure): void {
-		console.log("Never called");
 	}
 
 	saveStatus(): string {
@@ -41,6 +36,11 @@ export class CaptureView extends NodeCore {
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "CaptureViewCtrl", graphic: "in"};
+		return {
+			id: this.id,
+			ui: "CaptureViewCtrl",
+			graphic: "none",
+			channels: [":1"]
+		};
 	}
 }

@@ -1,18 +1,17 @@
 /**
- * <<DESCRIPTION>>
+ * Measure interatomic distances and angles and polyhedra volume.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
- * @file Measures.ts
- * @since Tue Jul 09 2024
+ * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, UiParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams} from "../../types";
 
 export class Measures extends NodeCore {
 
-	private readonly name = "Measures";
+	protected readonly name = "Measures";
 	private structure: Structure | undefined;
 
 	constructor(private readonly id: string) {
@@ -38,12 +37,17 @@ export class Measures extends NodeCore {
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
-	loadStatus(params: UiParams): void {
+	loadStatus(params: CtrlParams): void {
 		console.log("Loading", this.name, "with", params);
 	}
 
 	getUiInfo(): UiInfo {
 
-		return {id: this.id, ui: "MeasuresCtrl", graphic: "out"};
+		return {
+			id: this.id,
+			ui: "MeasuresCtrl",
+			graphic: "out",
+			channels: [":1"]
+		};
 	}
 }

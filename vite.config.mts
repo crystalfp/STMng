@@ -1,6 +1,7 @@
 import {defineConfig} from "vite";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
+import vuetify from "vite-plugin-vuetify";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from 'node:url'
 
@@ -21,6 +22,7 @@ export default defineConfig({
     },
     plugins: [
         vue(),
+        vuetify(),
         electron([
             {
                 // Main-Process entry file of the Electron App.

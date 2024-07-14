@@ -341,4 +341,4 @@ export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
         });
     }
     else mainWin.webContents.send("PROJECT:SEND:INFO-NEXT", clientProjectInfo);
-}
+};
