@@ -1,7 +1,7 @@
 import * as THREE from "three";
 declare module "troika-three-text" {
 
-	declare class Text extends THREE.Mesh {
+	class Text extends THREE.Mesh {
 		constructor();
 		sync(): void;
 		dispose(): void;

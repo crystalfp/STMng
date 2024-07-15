@@ -22,6 +22,11 @@ declare global {
 }
 
 // > Project
+/**
+ * Receive the project information to build the controls/ui
+ *
+ * @param callback - Routines called to receive the project information to build the controls/ui
+ */
 export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo) => void) => {
 
     window.electron.ipcRenderer.invoke("PROJECT:SEND:INFO-FIRST")
@@ -35,16 +40,16 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
 
 // > Communication
 /**
-* Receive the parameters from the main process node
+* Ask to receive the parameters from the main process node
 *
 * @param id - ID of the node receiving the parameters
 * @param channel - Specify the channel inside the id related group
-* @param onReceive - Function to be called when the parameters from the node change
+* @param params - Parameters to send to the main process node
+* @returns Parameters from the main process node
 */
-export const getFromNode = (id: string, channel: string, onReceive: (params: CtrlParams) => void): void => {
+export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> => {
 
-	// TBD
-	void id
-	void channel;
-	onReceive({});
+	return params?
+		window.electron.ipcRenderer.invoke(`${id}${channel}`, params) as Promise<CtrlParams> :
+		window.electron.ipcRenderer.invoke(`${id}${channel}`) as Promise<CtrlParams>;
 };

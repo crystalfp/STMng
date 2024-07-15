@@ -6,6 +6,6 @@ declare module "*.vue" {
     const component: DefineComponent<{}, {}, any>;
     export default component;
 
-    declare const __VUE_OPTIONS_API__: string;
-    declare const __VUE_PROD_DEVTOOLS__: string;
+    const __VUE_OPTIONS_API__: string;
+    const __VUE_PROD_DEVTOOLS__: string;
 }

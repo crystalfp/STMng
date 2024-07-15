@@ -20,14 +20,15 @@ export class StructureReader extends NodeCore {
 
 	private structures: Structure[] = [];
 
+	private readonly channels = [
+		{name: ":1", callback: this.channel1}
+	];
+
 	constructor(private readonly id: string) {
 		super();
 		console.log(`Instantiated ${this.name}`);
 
-		// Create the channel to the UI named ${id}:${direction}:${specifier}
-		for(const channel of this.getUiInfo().channels) {
-			console.log(`\tCreate channel ${this.id}${channel}`);
-		}
+		this.setupChannels(this.id, this.channels);
 	}
 
 	run(): void {
@@ -70,7 +71,17 @@ export class StructureReader extends NodeCore {
 			id: this.id,
 			ui: "StructureReaderCtrl",
 			graphic: "none",
-			channels: [":1"]
+			channels: this.channels.map((channel) => channel.name)
+		};
+	}
+
+	private channel1(): CtrlParams {
+
+		return {
+			loopSteps: this.loopSteps,
+			format: this.format,
+			atomsTypes: this.atomsTypes,
+			useBohr: this.useBohr
 		};
 	}
 }

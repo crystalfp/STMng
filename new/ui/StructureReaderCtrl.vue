@@ -10,7 +10,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
 import {sb} from "../../src/services/Switchboard";
 import {useMessageStore} from "../../src/stores/messageStore";
 import {useControlStore} from "../../src/stores/controlStore";
-import {getFromNode} from "../services/RoutesClient";
+import {askNode} from "../services/RoutesClient";
 import type {CtrlParams} from "../types";
 
 // > Properties
@@ -56,9 +56,11 @@ const filesSelected = ref<File[]>([]);
 const auxFileSelected = ref<File[]>([]);
 const useBohr       = ref(true);
 
-getFromNode(id, "STRUCTURE-READER:1",  (params: CtrlParams) => {
-    console.log("Received", params);
-});
+askNode(id, ":1")
+    .then((params) => {
+        console.log("Received in client", params);
+    })
+    .catch((error: Error) => console.log("ERROR!", error.message));
 
 sb.getUiParams(id, (params: CtrlParams) => {
 
