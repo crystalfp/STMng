@@ -7,9 +7,25 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-09
  */
-import {Command, Option} from "commander";
+import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
+import {Command, Option} from "commander";
 import pkg from "../../package.json";
+
+import {setupTitlebar} from "custom-electron-titlebar/main";
+import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
+import {createMainWindow} from "../../src/electron/modules/WindowsUtilities";
+import {disableSaveProjectEntry} from "../../src/electron/modules/SystemMenu";
+import {setupChannelVersions} from "../../src/electron/modules/Versions";
+import {setupChannelReader} from "../../src/electron/modules/Reader";
+import {setupChannelCapture} from "../../src/electron/modules/CaptureMedia";
+import {setupChannelSymmetries} from "../../src/electron/modules/Symmetries";
+import {setupChannelWriter} from "../../src/electron/modules/Writer";
+import {setupChannelFingerprints} from "../../src/electron/modules/Fingerprints";
+import {setupChannelAtomData} from "../../src/electron/modules/AtomData";
+
+// TEST
+import {pm} from "../../new/electron/modules/ProjectManager";
 
 // > Command line parsing
 const program = new Command("STMng");
@@ -40,3 +56,60 @@ log.transports.console.level = options.verbose ? "silly" : "warn";
 log.transports.file.level = options.verbose ? "silly" : "warn";
 log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
+
+// Initialize the channels between main process and client
+setupChannelPreferences();
+setupChannelVersions();
+// setupChannelProject();
+setupChannelReader();
+setupChannelCapture();
+setupChannelSymmetries();
+setupChannelWriter();
+setupChannelFingerprints();
+setupChannelAtomData();
+
+// Initialize the theme to use
+if(!options.theme) setMainTheme("dark");
+else if(options.theme === "dark" || options.theme === "light") setMainTheme(options.theme, true);
+else setMainTheme("dark", true);
+
+// Setup the titlebar main process
+setupTitlebar();
+
+// > Start application
+app.whenReady().then(() => {
+
+    // Create an initial window that fills the screen's available work area.
+    const {width, height} = electronScreen.getPrimaryDisplay().workAreaSize;
+
+    createMainWindow(width, height);
+
+    app.on("activate", () => {
+        if(BrowserWindow.getAllWindows().length === 0) createMainWindow(width, height);
+    });
+
+    // Load project
+    if(options.default) {
+        // Load default project
+        pm.loadRememberedProject(true);
+        disableSaveProjectEntry(true);
+    }
+    else if(program.args.length > 0) {
+        pm.loadProjectAndRemember(program.args[0]);
+        disableSaveProjectEntry(false);
+    }
+    else {
+        const loadedDefaultProject = pm.loadRememberedProject(false);
+
+        disableSaveProjectEntry(loadedDefaultProject);
+    }
+})
+.catch((error: Error) => {
+    log.error(`Cannot create main window. Error ${error.message}`);
+    app.quit();
+});
+
+// > Close application
+app.on("window-all-closed", () => {
+    if(process.platform !== "darwin") app.quit();
+});

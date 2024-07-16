@@ -9,10 +9,10 @@
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {useControlStore} from "@/stores/controlStore";
-import {receiveProjectUI} from "../../new/services/RoutesClient";
-import type {ClientProjectInfo, ClientProjectInfoItem} from "../../new/types";
+import {receiveProjectUI} from "../services/RoutesClient";
+import type {ClientProjectInfo, ClientProjectInfoItem} from "../types";
 
-import LoadingComponent from "@/components/Loading.vue";
+import LoadingComponent from "./Loading.vue";
 
 // > Access the store
 const controlStore = useControlStore();
@@ -29,7 +29,7 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
     for(const id in clientProjectInfo) {
         uiList.value.push(clientProjectInfo[id]);
     }
-	  selectedTabId.value = uiList.value[0].id;
+	selectedTabId.value = uiList.value[0].id;
 
 	// Select and load the first panel
 	const {ui} = clientProjectInfo[selectedTabId.value];
@@ -56,7 +56,7 @@ const selectPanel = (id: string): void => {
             loadedPanel.value = item.ui === "" ?
 									undefined :
 									defineAsyncComponent({
-											loader: () => import(`../../new/ui/${item.ui}.vue`),
+											loader: () => import(`../ui/${item.ui}.vue`),
 											loadingComponent: LoadingComponent,
 											delay: 200,
 									});

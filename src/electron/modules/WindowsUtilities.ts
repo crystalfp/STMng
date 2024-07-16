@@ -342,3 +342,14 @@ export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
     }
     else mainWin.webContents.send("PROJECT:SEND:INFO-NEXT", clientProjectInfo);
 };
+
+
+/**
+ * Send error notification from main process
+ *
+ * @param text - Text of the notification
+ */
+export const sendAlertMessage = (text: string): void => {
+
+    mainWin.webContents.send("APP:NOTIFICATION", "error", text);
+};

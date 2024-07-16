@@ -4,10 +4,11 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import * as v from "valibot";
 import type {Project} from "../../types";
-import {errorNotification} from "./MockFunctions";
+import {sendAlertMessage} from "../../../src/electron/modules/WindowsUtilities";
 
 // {
 // "graph": {
@@ -54,7 +55,7 @@ export const projectIsValid = (prj: Project): boolean => {
 		for(const entry in nested) {
 			errorMessage += `  ${entry}: "${nested[entry]!.join("; ")}"\n`;
 		}
-		errorNotification(errorMessage);
+		sendAlertMessage(errorMessage);
 
 		return false;
 	}
@@ -76,7 +77,7 @@ const checkIds = (prj: Project): boolean => {
 
 	for(const id in prj.graph) {
 		if(ids.has(id)) {
-			errorNotification(`Duplicated id "${id}"`);
+			sendAlertMessage(`Duplicated id "${id}"`);
 			return false;
 		}
 		ids.add(id);
@@ -90,7 +91,7 @@ const checkIds = (prj: Project): boolean => {
 
 		for(const input of inputs) {
 			if(ids.has(input)) continue;
-			errorNotification(`Invalid input to node "${id}": ${input}`);
+			sendAlertMessage(`Invalid input to node "${id}": ${input}`);
 			return false;
 		}
 	}

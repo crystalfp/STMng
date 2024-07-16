@@ -11,7 +11,7 @@ import {createPinia} from "pinia";
 import App from "./App.vue";
 
 // Plugins
-import {router} from "@/router";
+import {router} from "./router";
 
 // Vuetify
 import "vuetify/styles";

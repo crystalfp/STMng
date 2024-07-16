@@ -12,10 +12,9 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {NodeCore} from "./NodeCore";
-import {errorNotification, sendProjectPath} from "./MockFunctions";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
-import {sendProjectUI} from "../../../src/electron/modules/WindowsUtilities";
+import {sendProjectUI, sendAlertMessage, sendProjectPath} from "../../../src/electron/modules/WindowsUtilities";
 import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
 
 // NOTE 1) Add here the classes that defines the nodes
@@ -64,7 +63,7 @@ class ProjectManager {
 			this.parseProject();
 		}
 		catch(error) {
-			errorNotification(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
+			sendAlertMessage(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
 		}
 
 		// Send the needed parts of the project to the client
@@ -266,7 +265,7 @@ class ProjectManager {
 
 		const filename = getProjectPath();
 		if(filename) this.saveProjectAs(filename);
-		else errorNotification("Cannot save project. Filename not set");
+		else sendAlertMessage("Cannot save project. Filename not set");
 	};
 
 	/**
@@ -298,7 +297,7 @@ class ProjectManager {
 			sendProjectPath(filename);
 		}
 		else {
-			errorNotification(`Project file "${filename}" does not exist. Loading default project`);
+			sendAlertMessage(`Project file "${filename}" does not exist. Loading default project`);
 
 			removeProjectPath();
 			filename = this.getDefaultProject();
@@ -334,8 +333,7 @@ class ProjectManager {
 			}
 			if(fs.existsSync(filename)) sendProjectPath(filename);
 			else {
-				const message = `Project file "${filename}" does not exist. Loading default project`;
-				errorNotification(message);
+				sendAlertMessage(`Project file "${filename}" does not exist. Loading default project`);
 				removeProjectPath();
 				filename = this.getDefaultProject();
 				sendProjectPath();

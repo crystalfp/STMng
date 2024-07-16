@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {app} from "electron";
 import path from "node:path";
@@ -17,8 +18,10 @@ interface StoreOptions {
 	/** Path to the store backing file.
 	    If present should have an extension of .yaml else the backing store will be under userData */
 	path?: string;
+
 	/** Name of the store. If absent defaults to "config" */
 	name?: string;
+
 	/** Default initial content of the store */
 	defaultContent?: unknown;
 }

@@ -15,7 +15,7 @@ import ShowSymmetries from "@/components/ShowSymmetries.vue";
 /** Routes for the external windows created */
 export const router = createRouter({
     history: createWebHashHistory(),
-    routes:  [
+    routes: [
         {
             path: "/",
             component: LayoutClient

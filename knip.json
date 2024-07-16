@@ -1,5 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/main.ts", "src/electron/main.ts", "src/electron/preload.ts", "eslint.config.mjs"],
+  "entry": [
+    "new/main.ts",
+    "new/electron/main.ts",
+    "new/electron/preload.ts",
+    "eslint.config.mjs",
+    "new/ui/*.vue"
+  ],
   "project": ["src/**/*.{js,ts,vue}", "new/**/*.{js,ts,vue}"]
 }

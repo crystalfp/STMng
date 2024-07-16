@@ -2,16 +2,20 @@
 /**
  * @component
  * Controls for the structure data reader.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-16
  */
 
 import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {sb} from "../../src/services/Switchboard";
-import {useMessageStore} from "../../src/stores/messageStore";
 import {useControlStore} from "../../src/stores/controlStore";
 import {askNode} from "../services/RoutesClient";
 import type {CtrlParams} from "../types";
+import {showAlertMessage, resetAlertMessage,
+        hasAlertMessage, getAlertMessage} from "../services/AlertMessage";
 
 // > Properties
 const {id} = defineProps<{
@@ -19,10 +23,6 @@ const {id} = defineProps<{
     /** Its own module id */
     id: string;
 }>();
-
-// Access the message store
-const messageStore = useMessageStore();
-messageStore.structureReader.message = "";
 
 // Access the global control area
 const controlStore = useControlStore();
@@ -56,11 +56,13 @@ const filesSelected = ref<File[]>([]);
 const auxFileSelected = ref<File[]>([]);
 const useBohr       = ref(true);
 
+// Initialize the control
+resetAlertMessage("structureReader");
 askNode(id, ":1")
     .then((params) => {
         console.log("Received in client", params);
     })
-    .catch((error: Error) => console.log("ERROR!", error.message));
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
 
 sb.getUiParams(id, (params: CtrlParams) => {
 
@@ -306,8 +308,8 @@ const getAtomsTypes = (): void => {
       <v-spacer />
     </v-row>
   </v-container>
-  <v-alert v-if="messageStore.structureReader.message !== ''" title="Error" class="mt-7 cursor-pointer"
-           :text="messageStore.structureReader.message" type="error" density="compact"
-           color="red" @click="messageStore.structureReader.message=''" />
+  <v-alert v-if="hasAlertMessage('structureReader')" title="Error" class="mt-7 cursor-pointer"
+           :text="getAlertMessage('structureReader')" type="error" density="compact"
+           color="red" @click="resetAlertMessage('structureReader')" />
 </v-container>
 </template>

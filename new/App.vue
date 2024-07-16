@@ -10,5 +10,5 @@
 </template>
 
 <style lang="scss">
-@use "@/styles/common";
+@use "./styles/common";
 </style>

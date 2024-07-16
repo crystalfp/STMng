@@ -14,7 +14,7 @@ import {sm} from "@/services/SceneManager";
 import {atomInfoInit} from "@/services/AtomInfo";
 
 import Viewer3D from "@/components/Viewer3D.vue";
-import ControlsContainer from "@/components/ControlsContainer.vue";
+import ControlsContainer from "../../new/components/ControlsContainer.vue";
 
 /** Normal/Expanded viewer window */
 const normalScreen = ref(true);
