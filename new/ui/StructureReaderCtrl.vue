@@ -7,13 +7,13 @@
  * @since 2024-07-16
  */
 
-import {ref, watchEffect} from "vue";
+import {ref} from "vue";
+// import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {sb} from "../../src/services/Switchboard";
 import {useControlStore} from "../../src/stores/controlStore";
 import {askNode} from "../services/RoutesClient";
-import type {CtrlParams} from "../types";
 import {showAlertMessage, resetAlertMessage,
         hasAlertMessage, getAlertMessage} from "../services/AlertMessage";
 
@@ -51,7 +51,7 @@ const format        = ref("");
 const inProgress    = ref(false);
 const captureMovie  = ref(false);
 const auxInProgress = ref(false);
-const auxFileToRead = ref("");
+// const auxFileToRead = ref("");
 const filesSelected = ref<File[]>([]);
 const auxFileSelected = ref<File[]>([]);
 const useBohr       = ref(true);
@@ -63,7 +63,7 @@ askNode(id, ":1")
         console.log("Received in client", params);
     })
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
-
+/*
 sb.getUiParams(id, (params: CtrlParams) => {
 
     fileToRead.value    = params.fileToRead as string ?? "";
@@ -96,7 +96,7 @@ watchEffect(() => {
         useBohr: useBohr.value,
     });
 });
-
+*/
 /**
  * Start and stop capture of a movie of the sequence
  *

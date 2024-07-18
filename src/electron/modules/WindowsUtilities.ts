@@ -12,7 +12,7 @@ import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
 import {setupRelayToMainWin, setupRelayFromMainWin} from "./RelayForMainWin";
-import favicon from "../../assets/favicon.png";
+import favicon from "../../../new/assets/favicon.png";
 import type {WindowsParams} from "../types";
 import type {ClientProjectInfo} from "../../../new/types";
 

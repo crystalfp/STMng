@@ -8,7 +8,6 @@ import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
         receiveBroadcast, getPreferenceSync, receiveMenuSelection,
         receiveNotifications} from "@/services/RoutesClient";
-import {sb} from "@/services/Switchboard";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "@/services/SceneManager";
 import {atomInfoInit} from "@/services/AtomInfo";
@@ -36,7 +35,6 @@ window.addEventListener("DOMContentLoaded", () => {
                                                                             "calc(100vh - 104px)");
             });
             setProjectPathInTitle("See the Molecole new generation");
-            sb.setup();
             receiveRefreshMenu();
             atomInfoInit();
         }

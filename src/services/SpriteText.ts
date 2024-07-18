@@ -4,12 +4,13 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-17
  */
 import * as THREE from "three";
 import type {PositionType} from "@/types";
 import {Text as TroikaText} from "troika-three-text";
 
-import localRoboto from "../assets/Roboto-Regular.ttf";
+import localRoboto from "../../new/assets/Roboto-Regular.ttf";
 
 /**
  * Create a text sprite

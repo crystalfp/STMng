@@ -8,7 +8,7 @@
  */
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {ClientProjectInfo, CtrlParams} from "../types";
-import {sendAlertMessage} from "../../src/electron/modules/WindowsUtilities";
+import {showAlertMessage} from "./AlertMessage";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -32,7 +32,7 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
     window.electron.ipcRenderer.invoke("PROJECT:SEND:INFO-FIRST")
 		// eslint-disable-next-line promise/no-callback-in-promise
 		.then((clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo))
-		.catch((error: Error) => sendAlertMessage(`Cannot retrieve project first time. ${error.message}`));
+		.catch((error: Error) => showAlertMessage(`Cannot retrieve project first time. ${error.message}`));
 
     window.electron.ipcRenderer.on("PROJECT:SEND:INFO-NEXT",
 					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
