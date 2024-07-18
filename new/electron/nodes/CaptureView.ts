@@ -40,7 +40,7 @@ export class CaptureView extends NodeCore {
 			id: this.id,
 			ui: "CaptureViewCtrl",
 			graphic: "none",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

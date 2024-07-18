@@ -50,6 +50,18 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
 export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> => {
 
 	return params?
-		window.electron.ipcRenderer.invoke(`${id}${channel}`, params) as Promise<CtrlParams> :
-		window.electron.ipcRenderer.invoke(`${id}${channel}`) as Promise<CtrlParams>;
+		window.electron.ipcRenderer.invoke(`${id}:${channel}`, params) as Promise<CtrlParams> :
+		window.electron.ipcRenderer.invoke(`${id}:${channel}`) as Promise<CtrlParams>;
+};
+
+/**
+* Send parameters to the main process node
+*
+* @param id - ID of the node receiving the parameters
+* @param channel - Specify the channel inside the id related group
+* @param params - Parameters to send to the main process node
+*/
+export const sendToNode = (id: string, channel: string, params: CtrlParams): void => {
+
+	window.electron.ipcRenderer.send(`${id}:${channel}`, params);
 };

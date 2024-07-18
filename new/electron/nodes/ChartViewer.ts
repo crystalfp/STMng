@@ -47,7 +47,7 @@ export class ChartViewer extends NodeCore {
 			id: this.id,
 			ui: "ChartViewerCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

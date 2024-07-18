@@ -47,7 +47,7 @@ export class ComputeBonds extends NodeCore {
 			id: this.id,
 			ui: "ComputeBondsCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

@@ -47,7 +47,7 @@ export class InterpolateVolume extends NodeCore {
 			id: this.id,
 			ui: "InterpolateVolumeCtrl",
 			graphic: "none",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

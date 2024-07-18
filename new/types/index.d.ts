@@ -194,3 +194,15 @@ export interface ClientProjectInfoItem {
 
 /** List of ui modules descriptions to the client */
 export type ClientProjectInfo = Record<string, ClientProjectInfoItem>;
+
+export type ChannelDefinition =
+    {
+        name: string;
+        type: "invoke";
+        callback: (params: CtrlParams) => CtrlParams;
+    } |
+    {
+        name: string;
+        type: "send";
+        callback: (params: CtrlParams) => void;
+    };

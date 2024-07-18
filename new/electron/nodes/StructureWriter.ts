@@ -47,7 +47,7 @@ export class StructureWriter extends NodeCore {
 			id: this.id,
 			ui: "StructureWriterCtrl",
 			graphic: "none",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

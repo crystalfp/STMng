@@ -48,7 +48,7 @@ export class DrawOrthoslice extends NodeCore {
 			id: this.id,
 			ui: "DrawOrthosliceCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

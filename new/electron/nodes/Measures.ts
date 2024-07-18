@@ -47,7 +47,7 @@ export class Measures extends NodeCore {
 			id: this.id,
 			ui: "MeasuresCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

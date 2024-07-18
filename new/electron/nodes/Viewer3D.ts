@@ -39,7 +39,7 @@ export class Viewer3D extends NodeCore {
 			id: this.id,
 			ui: "Viewer3DCtrl",
 			graphic: "in",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

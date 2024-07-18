@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {ipcMain} from "electron";
-import type {Structure, UiInfo, CtrlParams, ViewerState} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ViewerState, ChannelDefinition} from "../../types";
 
 /** Observer routine provided by another node */
 type Observer = (data: Structure) => void;
@@ -81,11 +81,16 @@ export abstract class NodeCore {
 	 * @param id - ID of the node
 	 * @param channels - Array of channels definitions
 	 */
-	protected setupChannels(id: string, channels: {name: string, callback: (params: CtrlParams) => CtrlParams}[]): void {
+	protected setupChannels(id: string, channels: ChannelDefinition[]): void {
 		for(const channel of channels) {
-			const channelName = `${id}${channel.name}`;
+			const channelName = `${id}:${channel.name}`;
 			ipcMain.removeHandler(channelName);
-			ipcMain.handle(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+			if(channel.type === "invoke") {
+				ipcMain.handle(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+			}
+			else if(channel.type === "send") {
+				ipcMain.on(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+			}
 		}
 	}
 }

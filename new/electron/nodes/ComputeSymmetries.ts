@@ -49,7 +49,7 @@ export class ComputeSymmetries extends NodeCore {
 			id: this.id,
 			ui: "SymmetriesCtrl",
 			graphic: "none",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

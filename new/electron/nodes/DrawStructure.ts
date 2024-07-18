@@ -47,7 +47,7 @@ export class DrawStructure extends NodeCore {
 			id: this.id,
 			ui: "DrawStructureCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

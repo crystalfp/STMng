@@ -47,7 +47,7 @@ export class DrawIsosurface extends NodeCore {
 			id: this.id,
 			ui: "DrawIsosurfaceCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

@@ -47,7 +47,7 @@ export class ComputeFingerprints extends NodeCore {
 			id: this.id,
 			ui: "ComputeFingerprintsCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

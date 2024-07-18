@@ -47,7 +47,7 @@ export class DrawPolyhedra extends NodeCore {
 			id: this.id,
 			ui: "DrawPolyhedraCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

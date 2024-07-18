@@ -47,7 +47,7 @@ export class DrawUnitCell extends NodeCore {
 			id: this.id,
 			ui: "DrawUnitCellCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }

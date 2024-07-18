@@ -47,7 +47,7 @@ export class Trajectories extends NodeCore {
 			id: this.id,
 			ui: "StructureWriterCtrl",
 			graphic: "out",
-			channels: [":1"]
+			channels: ["1"]
 		};
 	}
 }
