@@ -6,10 +6,10 @@
 
 import fs from "node:fs";
 import {cartesianToFractionalCoordinates,
-		basisToLengthAngles, format} from "../modules/ReaderWriterHelpers";
+		basisToLengthAngles, format} from "../../../new/electron/modules/Helpers";
 import type {Structure, MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
-import {getAtomicSymbol} from "../modules/AtomData";
+import {getAtomicSymbol} from "../../../new/electron/modules/AtomData";
 
 export class WriterCIF implements WriterImplementation {
 

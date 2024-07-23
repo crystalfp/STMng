@@ -7,7 +7,7 @@
  */
 import {ipcMain} from "electron";
 import type {ComputeSymmetriesParams} from "@/electron/types";
-import {getAtomicSymbol} from "./AtomData";
+import {getAtomicSymbol} from "../../../new/electron/modules/AtomData";
 
 interface NativeOutput {
 	spaceGroup: string;

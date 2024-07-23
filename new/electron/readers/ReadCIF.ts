@@ -7,10 +7,9 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {extractBasis, fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
+import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {ReaderImplementation} from "../types";
-import type {Crystal, Structure, Atom} from "../../types";
+import type {Crystal, Structure, Atom, ReaderImplementation} from "../../types";
 
 /** Collect lines from "loop_" constructs */
 class Table {

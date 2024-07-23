@@ -41,26 +41,34 @@ const fileFormats = [
 ];
 
 // > Get and set ui parameters from the switchboard
-const fileToRead    = ref("");
-const countSteps    = ref(1);
-const step          = ref(1);
+const fileToRead    = ref("");              // Path of the file to be read
+const countSteps    = ref(1);               // Total steps read
+const step          = ref(1);               // Current step
 const running       = ref(false);
-const atomsTypes    = ref("");
-const loopSteps     = ref(false);
-const format        = ref("");
-const inProgress    = ref(false);
+const atomsTypes    = ref("");              // Atom types in the structure read
+const loopSteps     = ref(false);           // If the sequence should loop
+const format        = ref("");              // File format to be read
+const inProgress    = ref(false);           // True during file load
 const captureMovie  = ref(false);
 const auxInProgress = ref(false);
 // const auxFileToRead = ref("");
-const filesSelected = ref<File[]>([]);
+const filesSelected = ref<File[]>([]);      // Status of the file selector
 const auxFileSelected = ref<File[]>([]);
-const useBohr       = ref(true);
+const useBohr       = ref(true);            // Use Bohr units
 
 // Initialize the control
 resetAlertMessage("structureReader");
-askNode(id, ":1")
+askNode(id, "init")
     .then((params) => {
-        console.log("Received in client", params);
+
+        loopSteps.value     = params.loopSteps as boolean ?? false;
+        format.value        = params.format as string ?? "";
+        atomsTypes.value    = params.atomsTypes as string ?? "";
+        useBohr.value       = params.useBohr as boolean ?? true;
+        fileToRead.value    = params.fileToRead as string ?? "";
+
+        const file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
+        if("path" in file) filesSelected.value[0] = file;
     })
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
 /*
@@ -216,18 +224,28 @@ const acceptFile = (fileFormat: string): string => acceptStringByFormat.get(file
  */
 const loadFile = (files: File[] | File): void => {
 
+    if(!files) return;
     const isArray = Array.isArray(files);
-    if(!files || (isArray && files.length === 0)) return;
+    if(isArray && files.length === 0) return;
     const file = isArray ? files[0] : files;
 
     step.value = 1;
     fileToRead.value = file.path;
+    inProgress.value = true;
 
-    sb.setUiParams(id, {
-        fileToRead: file.path,
-        filesSelectedFull: JSON.stringify({name: file.name, path: file.path}),
-        step: 1,
-    });
+    askNode(id, "read", {
+            format: format.value,
+            fileToRead: file.path,
+            filesSelectedFull: JSON.stringify(file),
+            atomsTypes: atomsTypes.value,
+            useBohr: useBohr.value,
+        })
+        .then((params) => {
+            if("error" in params) throw Error(params.error as string);
+            countSteps.value = params.countSteps as number ?? 1;
+            inProgress.value = false;
+        })
+        .catch((error: Error) => showAlertMessage(`Error from load file: ${error.message}`, "structureReader"));
 };
 
 // > Load auxiliary file

@@ -68,7 +68,7 @@ export interface Volume {
     sides: PositionType;
 
     /** The list of values (x the quickest index) */
-    values: Float32Array[];
+    values: number[];
 }
 
 /** The whole atomic structure */
@@ -199,10 +199,49 @@ export type ChannelDefinition =
     {
         name: string;
         type: "invoke";
-        callback: (params: CtrlParams) => CtrlParams;
+        callback: ((params: CtrlParams) => CtrlParams) | ((params: CtrlParams) => Promise<CtrlParams>);
     } |
     {
         name: string;
         type: "send";
         callback: (params: CtrlParams) => void;
     };
+
+/** Appearance of the various atoms types */
+export interface AtomAppearance {
+
+	/** Element symbol */
+	symbol: string;
+
+	/** Covalent radii (in Angstrom). 1.6 if unknown */
+	rCov: number;
+
+	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
+	rVdW: number;
+
+	/** Atom color as an hex string (#RRGGBB) */
+	color: string;
+
+    /** Maximum number of bonds for the element type */
+    maxBonds: number;
+}
+
+/** Options object for the readers */
+interface ReaderOptions {
+	/** Optional list of atoms types from the user */
+	atomsTypes?: string[];
+	/** Use Bohr measurement units instead of Angstroms */
+	useBohr?: boolean;
+}
+
+/** Interface exposed by all format readers */
+export interface ReaderImplementation {
+	/**
+	 * Read structure file
+	 *
+	 * @param filename - Structure file to be read
+	 * @param options - Options for the reader
+	 * @returns - List of structures read
+	 */
+	readStructure: (filename: string, options?: ReaderOptions) => Promise<Structure[]>;
+}

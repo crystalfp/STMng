@@ -8,8 +8,8 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
-import type {ReaderImplementation, ReaderOptions} from "../types";
-import type {Structure, Crystal, Atom} from "../../types";
+import type {Structure, Crystal, Atom,
+			 ReaderImplementation, ReaderOptions} from "../../types";
 
 /** Line read type */
 const enum LineType {

@@ -13,16 +13,16 @@ import type {ReaderStructure, Structure} from "../../types";
 // import type {ReaderImplementation, Constructable} from "../types";
 
 // Import the readers
-import {ReaderXYZ} from "../readers/ReadXYZ";
-import {ReaderSHELX} from "../readers/ReadSHELX";
-import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
-import {ReaderCIF} from "../readers/ReadCIF";
-import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
-import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
-import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
-import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
+import {ReaderXYZ} from "../../../new/electron/readers/ReadXYZ";
+import {ReaderSHELX} from "../../../new/electron/readers/ReadSHELX";
+import {ReaderPOSCAR} from "../../../new/electron/readers/ReadPOSCAR";
+import {ReaderCIF} from "../../../new/electron/readers/ReadCIF";
+import {ReaderCHGCAR} from "../../../new/electron/readers/ReadCHGCAR";
+import {ReaderLAMMPS} from "../../../new/electron/readers/ReadLAMMPS";
+import {ReaderLAMMPStrj} from "../../../new/electron/readers/ReadLAMMPStrj";
+import {ReaderGAUSSIAN} from "../../../new/electron/readers/ReadGAUSSIAN";
 
-import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
+import {readAuxXDATCAR} from "../../../new/electron/readers/AuxXDATCAR";
 
 /**
  * Read structure file in a given format

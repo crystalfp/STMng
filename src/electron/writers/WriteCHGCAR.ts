@@ -5,7 +5,7 @@
  */
 
 import fs from "node:fs";
-import {cartesianToFractionalCoordinates, format} from "../modules/ReaderWriterHelpers";
+import {cartesianToFractionalCoordinates, format} from "../../../new/electron/modules/Helpers";
 import type {Structure, MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
 

@@ -8,9 +8,9 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
-import type {ReaderImplementation, ReaderOptions} from "../types";
-import type {Structure, Atom, PositionType} from "../../types";
+import {fractionalToCartesianCoordinates} from "../modules/Helpers";
+import type {Structure, Atom, PositionType,
+			 ReaderImplementation, ReaderOptions} from "../../types";
 
 /** Line read type */
 const enum LineType {

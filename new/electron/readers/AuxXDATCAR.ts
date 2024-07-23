@@ -7,7 +7,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {fractionalToCartesianCoordinates} from "../modules/ReaderWriterHelpers";
+import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 
 import type {Structure} from "../../types";
 

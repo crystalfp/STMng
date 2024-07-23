@@ -22,7 +22,7 @@ import {setupChannelCapture} from "../../src/electron/modules/CaptureMedia";
 import {setupChannelSymmetries} from "../../src/electron/modules/Symmetries";
 import {setupChannelWriter} from "../../src/electron/modules/Writer";
 import {setupChannelFingerprints} from "../../src/electron/modules/Fingerprints";
-import {setupChannelAtomData} from "../../src/electron/modules/AtomData";
+// import {setupChannelAtomData} from "../../src/electron/modules/AtomData";
 
 // TEST
 import {pm} from "../../new/electron/modules/ProjectManager";
@@ -66,7 +66,7 @@ setupChannelCapture();
 setupChannelSymmetries();
 setupChannelWriter();
 setupChannelFingerprints();
-setupChannelAtomData();
+// setupChannelAtomData();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");
@@ -100,7 +100,6 @@ app.whenReady().then(() => {
     }
     else {
         const loadedDefaultProject = pm.loadRememberedProject(false);
-
         disableSaveProjectEntry(loadedDefaultProject);
     }
 })
