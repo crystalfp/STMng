@@ -19,7 +19,10 @@ interface ObserverEntry {
 
 export abstract class NodeCore {
 
+	/** Name of the child class */
 	protected abstract readonly name: string;
+
+	/** List of observers from subscribe to this node */
 	private readonly observersList: ObserverEntry[] = [];
 
 	/**
@@ -41,12 +44,6 @@ export abstract class NodeCore {
 	protected notify(data: Structure): void {
 		for(const entry of this.observersList) entry.observer.call(entry.node, data);
 	}
-
-	/**
-	 * The computation of this node
-	 * @remarks Verify if makes sense to have it exposed
-	 */
-	abstract run(): void;
 
 	/**
 	 * Routine called when another node notifies the current one
@@ -85,11 +82,17 @@ export abstract class NodeCore {
 		for(const channel of channels) {
 			const channelName = `${id}:${channel.name}`;
 			ipcMain.removeHandler(channelName);
-			if(channel.type === "invoke") {
-				ipcMain.handle(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
-			}
-			else if(channel.type === "send") {
-				ipcMain.on(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+
+			switch(channel.type) {
+				case "invoke":
+					ipcMain.handle(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+					break;
+				case "invokeAsync":
+					ipcMain.handle(channelName, async (_event, params: CtrlParams) => channel.callback.call(this, params));
+					break;
+				case "send":
+					ipcMain.on(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+					break;
 			}
 		}
 	}

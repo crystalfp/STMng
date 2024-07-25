@@ -65,3 +65,15 @@ export const sendToNode = (id: string, channel: string, params: CtrlParams): voi
 
 	window.electron.ipcRenderer.send(`${id}:${channel}`, params);
 };
+
+/**
+* Receive parameters as push message
+*
+* @param id - ID of the node sending the parameters
+* @param channel - Specify the channel inside the id related group
+* @param callback - Callback function called when a message is received
+*/
+export const receiveFromNode = (id: string, channel: string, callback: (params: CtrlParams) => void): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`, (_event, params: CtrlParams) => callback(params));
+};

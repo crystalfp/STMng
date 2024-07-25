@@ -7,13 +7,12 @@
  * @since 2024-07-16
  */
 
-import {ref} from "vue";
-// import {ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {sb} from "../../src/services/Switchboard";
 import {useControlStore} from "../../src/stores/controlStore";
-import {askNode} from "../services/RoutesClient";
+import {askNode, sendToNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage,
         hasAlertMessage, getAlertMessage} from "../services/AlertMessage";
 
@@ -44,14 +43,14 @@ const fileFormats = [
 const fileToRead    = ref("");              // Path of the file to be read
 const countSteps    = ref(1);               // Total steps read
 const step          = ref(1);               // Current step
-const running       = ref(false);
+const running       = ref(false);           // The steps are playing
 const atomsTypes    = ref("");              // Atom types in the structure read
 const loopSteps     = ref(false);           // If the sequence should loop
 const format        = ref("");              // File format to be read
 const inProgress    = ref(false);           // True during file load
 const captureMovie  = ref(false);
 const auxInProgress = ref(false);
-// const auxFileToRead = ref("");
+const auxFileToRead = ref("");              // Path to the auxiliary file to read
 const filesSelected = ref<File[]>([]);      // Status of the file selector
 const auxFileSelected = ref<File[]>([]);
 const useBohr       = ref(true);            // Use Bohr units
@@ -66,9 +65,13 @@ askNode(id, "init")
         atomsTypes.value    = params.atomsTypes as string ?? "";
         useBohr.value       = params.useBohr as boolean ?? true;
         fileToRead.value    = params.fileToRead as string ?? "";
+        auxFileToRead.value = params.auxFileToRead as string ?? "";
 
-        const file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
+        let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
         if("path" in file) filesSelected.value[0] = file;
+
+        file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
+        if("path" in file) auxFileSelected.value[0] = file;
     })
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
 /*
@@ -92,19 +95,30 @@ sb.getUiParams(id, (params: CtrlParams) => {
     file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
     if("path" in file) auxFileSelected.value[0] = file;
 });
+*/
 
+// Manage the steps selection
 watchEffect(() => {
 
     sb.setUiParams(id, {
-        step: step.value,
-        running: running.value,
-        loopSteps: loopSteps.value,
         format: format.value,
         fileToRead: fileToRead.value,
         useBohr: useBohr.value,
     });
+
+    askNode(id, "step", {
+        step: step.value,
+        running: running.value,
+        loopSteps: loopSteps.value,
+    })
+    .then((params) => {
+        console.log(params);
+    })
+    .catch((error: Error) => {
+        showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
+    });
 });
-*/
+
 /**
  * Start and stop capture of a movie of the sequence
  *
@@ -180,6 +194,8 @@ const togglePlay = (): void => {
  */
 const setFormat = (): void => {
 
+    sendToNode(id, "formats", {format: format.value});
+
     fileToRead.value = "";
     countSteps.value = 1;
     step.value = 1;
@@ -245,7 +261,10 @@ const loadFile = (files: File[] | File): void => {
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
         })
-        .catch((error: Error) => showAlertMessage(`Error from load file: ${error.message}`, "structureReader"));
+        .catch((error: Error) => {
+            inProgress.value = false;
+            showAlertMessage(`Error from load file: ${error.message}`, "structureReader");
+        });
 };
 
 // > Load auxiliary file
@@ -256,14 +275,27 @@ const loadFile = (files: File[] | File): void => {
  */
 const loadAuxFile = (files: File[] | File): void => {
 
+    if(!files) return;
     const isArray = Array.isArray(files);
-    if(!files || (isArray && files.length === 0)) return;
+    if(isArray && files.length === 0) return;
     const file = isArray ? files[0] : files;
 
-    sb.setUiParams(id, {
-        auxFileToRead: file.path,
-        auxSelectedFull: JSON.stringify({name: file.name, path: file.path}),
-    });
+	auxInProgress.value = true;
+
+    askNode(id, "aux", {
+            format: format.value,
+            auxFileToRead: file.path,
+            auxSelectedFull: JSON.stringify(file),
+        })
+        .then((params) => {
+            if("error" in params) throw Error(params.error as string);
+            countSteps.value = params.countSteps as number ?? 1;
+            auxInProgress.value = false;
+        })
+        .catch((error: Error) => {
+            auxInProgress.value = false;
+            showAlertMessage(`Error from load aux file: ${error.message}`, "structureReader");
+        });
 };
 
 /**
@@ -271,9 +303,12 @@ const loadAuxFile = (files: File[] | File): void => {
  */
 const getAtomsTypes = (): void => {
 
-    sb.setUiParams(id, {
-        atomsTypes: atomsTypes.value,
-    });
+    sendToNode(id, "types", {atomsTypes: atomsTypes.value});
+};
+
+const setUseBohr = (): void => {
+
+    sendToNode(id, "bohr", {useBohr: useBohr.value});
 };
 
 </script>
@@ -281,6 +316,7 @@ const getAtomsTypes = (): void => {
 
 <template>
 <v-container class="container">
+
   <v-select v-model="format" label="File format"
             :items="fileFormats" class="mt-4"
             density="compact" @update:model-value="setFormat" />
@@ -300,7 +336,7 @@ const getAtomsTypes = (): void => {
                 :prepend-icon="mdiFileOutline" accept=".xdatcar,*" :clearable="false"
                 class="mt-0" @update:model-value="loadAuxFile" />
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
-                label="Use Bohr units" density="compact" class="ml-2" />
+                label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact"

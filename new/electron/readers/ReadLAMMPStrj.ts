@@ -200,8 +200,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 				const delta = a.atomZ - b.atomZ;
 				if(delta !== 0) return delta;
 				if(a.label === b.label) return 0;
-				if(a.label > b.label) return 1;
-				return -1;
+				return a.label > b.label ? 1 : -1;
 			});
 		}
 		return structures;

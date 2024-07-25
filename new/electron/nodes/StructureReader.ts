@@ -9,6 +9,9 @@
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import {sendAlertMessage, sendToClient} from "../../../src/electron/modules/WindowsUtilities";
+import {getAtomicNumber} from "../modules/AtomData";
+
 // Import the readers
 import {ReaderXYZ} from "../readers/ReadXYZ";
 import {ReaderSHELX} from "../readers/ReadSHELX";
@@ -19,23 +22,36 @@ import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
 import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
 import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
 
+import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
+
+const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj", "POSCAR + XDATCAR"]);
+
 export class StructureReader extends NodeCore {
 
 	protected readonly name = "StructureReader";
 	private loopSteps = false;
+	private running = false;
 	private step = 1;
+	private countSteps = 1;
 	private format = "";
     private atomsTypes = "";
-	private useBohr = false;
+	private useBohr = true;
 	private fileToRead = "";
+	private auxFileToRead = "";
 	private filesSelectedFull = "{}";
+	private auxSelectedFull = "{}";
+	private intervalId: ReturnType<typeof setInterval> | undefined;
 
 	private structures: Structure[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init", type: "invoke", callback: this.channelInit},
-		{name: "read", type: "invoke", callback: this.channelRead},
-		// {name: "3", type: "send",   callback: this.channel2},
+		{name: "init",		type: "invoke",      callback: this.channelInit},
+		{name: "read",		type: "invokeAsync", callback: this.channelRead},
+		{name: "types",		type: "send",        callback: this.channelTypes},
+		{name: "formats",	type: "send",        callback: this.channelFormats},
+		{name: "bohr",		type: "send",        callback: this.channelUseBohr},
+		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead},
+		{name: "step",		type: "invoke",		 callback: this.channelStep},
 	];
 
 	constructor(private readonly id: string) {
@@ -43,23 +59,6 @@ export class StructureReader extends NodeCore {
 		console.log(`Instantiated ${this.name}`);
 
 		this.setupChannels(this.id, this.channels);
-	}
-
-	run(): void {
-		console.log(`RUN ${this.name}`);
-
-		this.structures = [{
-				crystal: {
-				basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-				origin: [0, 0, 0],
-				spaceGroup: "P1"
-			},
-			atoms: [],
-			bonds: [],
-			volume: []
-		}];
-		this.step = 1;
-		this.notify(this.structures[this.step-1]);
 	}
 
 	saveStatus(): string {
@@ -89,6 +88,12 @@ export class StructureReader extends NodeCore {
 		};
 	}
 
+	// > Channel handlers
+	/**
+	 * Channel handler for UI initialization
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
 	private channelInit(): CtrlParams {
 
 		return {
@@ -97,32 +102,24 @@ export class StructureReader extends NodeCore {
 			atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
 			fileToRead: this.fileToRead,
+			auxFileToRead: this.auxFileToRead,
 			filesSelectedFull: this.filesSelectedFull,
+			auxSelectedFull: this.auxSelectedFull,
 		};
 	}
 
-	// private channel2(params: CtrlParams): void {
-	// 	console.log(params);
-	// }
-
 	/**
-	* Sanity check for the structures read
-	*
-	* @param structures - Structures read
-	* @returns True if the structures are valid
-	*/
-	private checkStructures(structures: Structure[]): boolean {
-
-		if(structures.length === 0) return false;
-		for(const structure of structures) {
-			if(structure.atoms.length === 0) return false;
-		}
-		return true;
-	};
-
+	 * Channel handler for read request
+	 *
+	 * @param params Params from the client
+	 * @returns Params with the operation status
+	 */
 	private async channelRead(params: CtrlParams): Promise<CtrlParams> {
 
-		const requestedFormat = params.format;
+		this.filesSelectedFull = params.filesSelectedFull as string ?? "{}";
+		const requestedFormat = params.format as string;
+		const filename = params.fileToRead as string
+		this.fileToRead = filename;
 		let reader;
 		try {
 
@@ -161,19 +158,14 @@ export class StructureReader extends NodeCore {
 			return {error: message};
 		}
 
-		if(requestedFormat === "POSCAR" ||
-		requestedFormat === "POSCAR + XDATCAR" ||
-		requestedFormat === "CHGCAR" ||
-		requestedFormat === "LAMMPS" ||
-		requestedFormat === "LAMMPStrj") {
+		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
+
 			const atomsTypesTrimmed = this.atomsTypes.trim();
 			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
-			this.structures = await reader.readStructure(this.fileToRead, {atomsTypes: atoms});
+			this.structures = await reader.readStructure(filename, {atomsTypes: atoms});
 			if(this.checkStructures(this.structures)) {
 				this.notify(this.structures[0]);
-				return {
-					countSteps: this.structures.length,
-				}
+				return {countSteps: this.structures.length}
 			}
 			else {
 				const message = `Invalid "${requestedFormat}" file content`;
@@ -182,17 +174,266 @@ export class StructureReader extends NodeCore {
 			}
 		}
 
-		this.structures = await reader.readStructure(this.fileToRead, {useBohr: this.useBohr});
+		this.structures = await reader.readStructure(filename, {useBohr: this.useBohr});
 		if(this.checkStructures(this.structures)) {
 			this.notify(this.structures[0]);
-			return {
-				countSteps: this.structures.length,
-			}
+			return {countSteps: this.structures.length}
 		}
 		else {
 			const message = `Invalid "${requestedFormat}" file content`;
 			log.error(message);
 			return {error: message};
 		}
+	}
+
+	/**
+	 * Channel handler for the change of atom types
+	 *
+	 * @param params Parameters from the client
+	 */
+	private channelTypes(params: CtrlParams): void {
+
+		const at = (params.atomsTypes as string).trim();
+		this.changeAtomsType(at);
+	}
+
+	/**
+	 * Channel handler for the change of file format
+	 *
+	 * @param params Parameters from the client
+	 */
+	private channelFormats(params: CtrlParams): void {
+
+		this.format = params.format as string;
+	}
+
+	/**
+	 * Channel handler for the change of Bohr units
+	 *
+	 * @param params Parameters from the client
+	 */
+	private channelUseBohr(params: CtrlParams): void {
+
+		this.useBohr = params.useBohr as boolean;
+		this.changeBohrUnits();
+	}
+
+	/**
+	 * Channel handler for the auxiliary file read
+	 *
+	 * @param params Parameters from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelAuxRead(params: CtrlParams): Promise<CtrlParams> {
+
+		this.auxSelectedFull = params.auxSelectedFull as string ?? "{}";
+		const mainFormat = params.format as string ?? "";
+		const filename = params.auxFileToRead as string;
+
+		try {
+
+			// If the number of formats increases, change this into a switch statement
+			if(mainFormat === "POSCAR + XDATCAR") {
+				this.structures = await readAuxXDATCAR(filename, this.structures[0]);
+			}
+			else throw Error(`Format "${mainFormat}" has no auxiliary file`);
+		}
+		catch(error) {
+			const message = `Error reading auxiliary file: ${(error as Error).message}`;
+			log.error(message);
+			return {error: message};
+		}
+
+		// Send the updated structure down the pipeline
+		this.notify(this.structures[0]);
+
+		return {countSteps: this.structures.length};
+	}
+
+	/**
+	 * Channel handler for the step request
+	 *
+	 * @param params Parameters from the client
+	 * @returns Params with the operation status
+	 */
+	private channelStep(params: CtrlParams): CtrlParams {
+
+		const requestedStep = params.step as number ?? 1;
+		this.running = params.running as boolean ?? false;
+		this.loopSteps = params.loopSteps as boolean ?? false;
+
+		if(requestedStep !== this.step) {
+
+			this.step = requestedStep;
+
+			if(requestedStep < 1 || requestedStep > this.structures.length) {
+				const message = `Requested step ${requestedStep} is out of range 1-${this.structures.length}`;
+				log.error(message);
+				return {error: message};
+			}
+
+			// Send the updated structure down the pipeline
+			this.notify(this.structures[requestedStep-1]);
+		}
+
+		if(this.running) {
+
+			if(this.intervalId === undefined && this.step < this.countSteps) {
+
+				this.intervalId = setInterval(() => {
+					++this.step;
+					if(this.step > this.countSteps) {
+						this.step = 1;
+					}
+					if(this.step === this.countSteps && !this.loopSteps) {
+						clearInterval(this.intervalId);
+						this.intervalId = undefined;
+						this.running = false;
+					}
+
+					// Send the updated structure down the pipeline
+					this.notify(this.structures[this.step-1]);
+
+					sendToClient(this.id, "", {
+						step: this.step,
+						running: this.running,
+					});
+
+				}, 100);
+			}
+			return {
+				step: this.step,
+				running: this.running,
+			};
+		}
+		else if(this.intervalId !== undefined) {
+			clearInterval(this.intervalId);
+			this.intervalId = undefined;
+		}
+
+		// Send the updated structure down the pipeline
+		this.notify(this.structures[this.step-1]);
+
+		return {step: this.step};
+	}
+
+	// > Helper functions
+	/**
+	 * Change the atoms type if this is changed on the user interface
+	 *
+	 * @param renamedAtomTypes - The space separated list of atom types to rename to
+	 */
+	private changeAtomsType(renamedAtomTypes: string): void {
+
+		if(this.structures.length === 0 || renamedAtomTypes === "") return;
+
+		// Array of the renamed atom types
+		const typesAfter = renamedAtomTypes.split(/ +/);
+
+		// Mapping from the current atomZ to the renamed atomZ
+		const mapAtomZ = new Map<number, number>();
+
+		// Get the current atomic numbers
+		const currentAtomsZ = new Set<number>();
+		for(const atom of this.structures[0].atoms) currentAtomsZ.add(atom.atomZ);
+
+		if(currentAtomsZ.size > typesAfter.length) {
+			const missing = currentAtomsZ.size - typesAfter.length;
+			const plural = missing === 1 ? "" : "s";
+			sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`);
+			return;
+		}
+
+		// Prepare the mapping
+		let idx = 0;
+		for(const from of currentAtomsZ) {
+
+			const to = getAtomicNumber(typesAfter[idx]);
+			if(to === 0) {
+				sendAlertMessage(`Invalid symbol "${typesAfter[idx]}" in the renamed list`);
+				return;
+			}
+			mapAtomZ.set(from, to);
+			++idx;
+		}
+
+		// Do the mapping
+		for(const structure of this.structures) {
+
+			for(const atom of structure.atoms) {
+				const renamedAtomZ = mapAtomZ.get(atom.atomZ);
+				if(renamedAtomZ === undefined) {
+
+					sendAlertMessage(`Invalid mapping for atomZ of ${atom.atomZ}`);
+					return;
+				}
+				atom.atomZ = renamedAtomZ;
+			}
+		}
+
+		// Send the updated structure down the pipeline
+		this.notify(this.structures[this.step-1]);
+	}
+
+	/**
+	 * Sanity check for the structures read
+	 *
+	 * @param structures - Structures read
+	 * @returns True if the structures are valid
+	 */
+	private checkStructures(structures: Structure[]): boolean {
+
+		if(structures.length === 0) return false;
+		for(const structure of structures) {
+			if(structure.atoms.length === 0) return false;
+		}
+		return true;
+	};
+
+	/**
+	 * Change the unit between Angstrom and Bohr
+	 */
+	private changeBohrUnits(): void {
+
+		if(!this.structures[0]) return;
+		const {crystal, atoms, volume} = this.structures[0];
+		if(!crystal) return;
+		const {basis, origin, spaceGroup} = crystal;
+
+		// Value from https://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0
+		const BOHR_TO_ANGSTROM = 0.529177210544;
+
+		if(this.useBohr) {
+			for(let i=0; i < 9; ++i) basis[i]  *= BOHR_TO_ANGSTROM;
+			for(let i=0; i < 3; ++i) origin[i] *= BOHR_TO_ANGSTROM;
+			for(const atom of atoms) {
+				atom.position[0] *= BOHR_TO_ANGSTROM;
+				atom.position[1] *= BOHR_TO_ANGSTROM;
+				atom.position[2] *= BOHR_TO_ANGSTROM;
+			}
+		}
+		else {
+			for(let i=0; i < 9; ++i) basis[i]  /= BOHR_TO_ANGSTROM;
+			for(let i=0; i < 3; ++i) origin[i] /= BOHR_TO_ANGSTROM;
+			for(const atom of atoms) {
+				atom.position[0] /= BOHR_TO_ANGSTROM;
+				atom.position[1] /= BOHR_TO_ANGSTROM;
+				atom.position[2] /= BOHR_TO_ANGSTROM;
+			}
+		}
+
+		const structure: Structure = {
+			crystal: {
+				basis,
+				origin,
+				spaceGroup
+			},
+			atoms,
+			bonds: [],
+			volume
+		};
+
+		// Send the updated structure down the pipeline
+		this.notify(structure);
 	}
 }

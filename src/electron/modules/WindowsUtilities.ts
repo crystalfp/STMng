@@ -14,7 +14,7 @@ import {setupMenu} from "./SystemMenu";
 import {setupRelayToMainWin, setupRelayFromMainWin} from "./RelayForMainWin";
 import favicon from "../../../new/assets/favicon.png";
 import type {WindowsParams} from "../types";
-import type {ClientProjectInfo} from "../../../new/types";
+import type {ClientProjectInfo, CtrlParams} from "../../../new/types";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();
@@ -343,7 +343,6 @@ export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
     else mainWin.webContents.send("PROJECT:SEND:INFO-NEXT", clientProjectInfo);
 };
 
-
 /**
  * Send error notification from main process
  *
@@ -353,3 +352,15 @@ export const sendAlertMessage = (text: string): void => {
 
     mainWin.webContents.send("APP:NOTIFICATION", "error", text);
 };
+
+/**
+ * Push data to the client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param params - Parameters to send to the client process
+ */
+export const sendToClient = (id: string, channel: string, params: CtrlParams): void => {
+
+    mainWin.webContents.send(`${id}:${channel}`, params);
+}

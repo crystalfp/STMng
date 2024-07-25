@@ -199,7 +199,12 @@ export type ChannelDefinition =
     {
         name: string;
         type: "invoke";
-        callback: ((params: CtrlParams) => CtrlParams) | ((params: CtrlParams) => Promise<CtrlParams>);
+        callback: ((params: CtrlParams) => CtrlParams);
+    } |
+    {
+        name: string;
+        type: "invokeAsync";
+        callback: ((params: CtrlParams) => Promise<CtrlParams>);
     } |
     {
         name: string;

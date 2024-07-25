@@ -4,15 +4,10 @@
       "label": "Reader",
       "type": "structure-reader"
     },
-    "unit": {
-      "label": "Cell",
-      "type": "draw-unit-cell",
-      "in": "reader"
-    },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
-      "in": "unit"
+      "in": "reader"
     },
     "viewer": {
       "label": "Viewer",
@@ -78,18 +73,6 @@
       "format": "LAMMPStrj",
       "atomsTypes": "Fe O"
     },
-    "unit": {
-      "showUnitCell": true,
-      "dashedLine": false,
-      "lineColor": "#0000FF",
-      "showBasisVectors": false,
-      "repetitionsA": 1,
-      "repetitionsB": 1,
-      "repetitionsC": 1,
-      "showSupercell": false,
-      "supercellColor": "#16A004",
-      "dashedSupercell": false
-    },
     "draw": {
       "drawKind": "ball-and-stick",
       "drawQuality": 1,
@@ -100,6 +83,5 @@
       "showBonds": false,
       "showLabels": false
     }
-  },
-  "currentId": "reader"
+  }
 }
