@@ -20,7 +20,7 @@ export class DrawOrthoslice extends NodeCore {
 		console.log(`Instantiated ${this.name}`);
 	}
 
-	run() {
+	run(): void {
 		if(!this.structure) return;
 		console.log(`RUN ${this.name}`, this.structure.crystal.spaceGroup);
 	}

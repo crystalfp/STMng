@@ -7,10 +7,10 @@
  */
 import {createWebHashHistory, createRouter} from "vue-router";
 
-import LayoutClient from "../../src/components/LayoutClient.vue";
-import ChartViewer from "../../src/components/ChartViewer.vue";
-import ProjectEditor from "../../src/components/ProjectEditor.vue";
-import ShowSymmetries from "../../src/components/ShowSymmetries.vue";
+import LayoutClient from "../../old/components/LayoutClient.vue";
+import ChartViewer from "../../old/components/ChartViewer.vue";
+import ProjectEditor from "../../old/components/ProjectEditor.vue";
+import ShowSymmetries from "../../old/components/ShowSymmetries.vue";
 
 /** Routes for the external windows created */
 export const router = createRouter({

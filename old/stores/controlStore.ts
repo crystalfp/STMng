@@ -25,6 +25,8 @@ interface GlobalControls {
 	polyhedronNewIdx: number | undefined;
 	polyhedronCurrentColor: number;
 	polyhedronNewColor: number;
+	hasCapture: boolean;
+	captureMovie: boolean; // Same as movie?
 }
 
 export const useControlStore = defineStore("ControlStore", {
@@ -46,6 +48,8 @@ export const useControlStore = defineStore("ControlStore", {
 		polyhedronNewIdx: undefined,
 		polyhedronCurrentColor: 0,
 		polyhedronNewColor: 0,
+		hasCapture: false,
+		captureMovie: false,
 
 	} as GlobalControls),
 

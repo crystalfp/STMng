@@ -2,13 +2,18 @@
 /**
  * @component
  * Controls for the converter from structure data to graphical objects.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-27
  */
 
-import {ref, watchEffect, computed} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import {ref, /* watchEffect, */ computed} from "vue";
+import {askNode, receiveFromNodeForRendering} from "../services/RoutesClient";
+import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
+import type {StructureRenderInfo} from "../types";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -25,31 +30,52 @@ const showBonds = ref(true);
 const showLabels = ref(true);
 const shadedBonds = ref(false);
 
-sb.getUiParams(props.id, (params: UiParams) => {
-    drawKind.value = params.drawKind as string ?? "ball-and-stick";
-    drawQuality.value = params.drawQuality as number ?? 4;
-    drawRoughness.value = params.drawRoughness as number ?? 0.5;
-    drawMetalness.value = params.drawMetalness as number ?? 0.6;
-    labelKind.value = params.labelKind as string ?? "symbol";
-    showStructure.value = params.showStructure as boolean ?? true;
-    showBonds.value = params.showBonds as boolean ?? true;
-    showLabels.value = params.showLabels as boolean ?? true;
-    shadedBonds.value = params.shadedBonds as boolean ?? false;
+resetAlertMessage("system");
+askNode(id, "init")
+    .then((params) => {
+
+		    drawKind.value = params.drawKind as string ?? "ball-and-stick";
+		    drawQuality.value = params.drawQuality as number ?? 4;
+		    drawRoughness.value = params.drawRoughness as number ?? 0.5;
+		    drawMetalness.value = params.drawMetalness as number ?? 0.6;
+		    labelKind.value = params.labelKind as string ?? "symbol";
+		    showBonds.value = params.showBonds as boolean ?? true;
+		    showStructure.value = params.showStructure as boolean ?? true;
+		    showLabels.value = params.showLabels as boolean ?? true;
+		    shadedBonds.value = params.shadedBonds as boolean ?? false;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "system"));
+
+receiveFromNodeForRendering(id, "structure", (renderInfo: StructureRenderInfo) => {
+    console.log("*** render info");
+    console.log(renderInfo);
 });
 
-watchEffect(() => {
-    sb.setUiParams(props.id, {
-        drawKind: drawKind.value,
-        drawQuality: drawQuality.value,
-        drawRoughness: drawRoughness.value,
-        drawMetalness: drawMetalness.value,
-        labelKind: labelKind.value,
-        showBonds: showBonds.value,
-        showStructure: showStructure.value,
-        showLabels: showLabels.value,
-        shadedBonds: shadedBonds.value,
-    });
-});
+// sb.getUiParams(id, (params: UiParams) => {
+//     drawKind.value = params.drawKind as string ?? "ball-and-stick";
+//     drawQuality.value = params.drawQuality as number ?? 4;
+//     drawRoughness.value = params.drawRoughness as number ?? 0.5;
+//     drawMetalness.value = params.drawMetalness as number ?? 0.6;
+//     labelKind.value = params.labelKind as string ?? "symbol";
+//     showStructure.value = params.showStructure as boolean ?? true;
+//     showBonds.value = params.showBonds as boolean ?? true;
+//     showLabels.value = params.showLabels as boolean ?? true;
+//     shadedBonds.value = params.shadedBonds as boolean ?? false;
+// });
+
+// watchEffect(() => {
+//     sb.setUiParams(id, {
+//         drawKind: drawKind.value,
+//         drawQuality: drawQuality.value,
+//         drawRoughness: drawRoughness.value,
+//         drawMetalness: drawMetalness.value,
+//         labelKind: labelKind.value,
+//         showBonds: showBonds.value,
+//         showStructure: showStructure.value,
+//         showLabels: showLabels.value,
+//         shadedBonds: shadedBonds.value,
+//     });
+// });
 
 // To convert the button toggle into three booleans
 const showCombined = computed({

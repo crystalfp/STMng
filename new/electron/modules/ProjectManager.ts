@@ -14,7 +14,7 @@ import {fileURLToPath} from "node:url";
 import {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
-import {sendProjectUI, sendAlertMessage, sendProjectPath} from "../../../src/electron/modules/WindowsUtilities";
+import {sendProjectUI, sendAlertMessage, sendProjectPath} from "../../../old/electron/modules/WindowsUtilities";
 import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
 
 // NOTE 1) Add here the classes that defines the nodes
@@ -41,10 +41,6 @@ class ProjectManager {
 
 	private readonly nodes = new Map<string, NodeCore>();
 	private project: Project | undefined;
-
-	constructor() {
-		// TBD
-	}
 
 	/**
 	* Read the given project, parse it and send it to client
@@ -112,7 +108,9 @@ class ProjectManager {
 
 				const nodeIn = this.nodes.get(inNode);
 				if(!nodeIn) throw Error(`Invalid input id "${inNode}" for "${entry}"`);
+				// eslint-disable-next-line @typescript-eslint/unbound-method
 				nodeIn.subscribe(node.notifier, node);
+				// nodeIn.subscribe(node.notifier.bind(node), node);
 			}
 		}
 
@@ -214,7 +212,7 @@ class ProjectManager {
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
 				channels: uiInfo.channels
-			}
+			};
 			clientProjectInfo[entry] = info;
 		}
 
@@ -252,8 +250,9 @@ class ProjectManager {
 		const graphAsString = JSON.stringify(this.project.graph);
 
 		// Prepare the output and write it
-		const out = viewerStatus ? `{"graph":${graphAsString},"viewer":{${viewerStatus}},"ui":{${uiStatus}}}` :
-								   `{"graph":${graphAsString},"ui":{${uiStatus}}}`
+		const out = viewerStatus ?
+					`{"graph":${graphAsString},"viewer":{${viewerStatus}},"ui":{${uiStatus}}}` :
+					`{"graph":${graphAsString},"ui":{${uiStatus}}}`;
 		const formattedOut = JSON.stringify(JSON.parse(out), undefined, 2);
 		fs.writeFileSync(filename, formattedOut, "utf8");
 	}
@@ -261,7 +260,7 @@ class ProjectManager {
 	/**
 	 * Save a loaded project
 	 */
-	saveProject = (): void => {
+	saveProject(): void {
 
 		const filename = getProjectPath();
 		if(filename) this.saveProjectAs(filename);

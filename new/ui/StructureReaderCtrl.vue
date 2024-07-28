@@ -10,11 +10,11 @@
 import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
-import {sb} from "../../src/services/Switchboard";
-import {useControlStore} from "../../src/stores/controlStore";
-import {askNode, sendToNode} from "../services/RoutesClient";
+import {useControlStore} from "../../old/stores/controlStore";
+import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage,
         hasAlertMessage, getAlertMessage} from "../services/AlertMessage";
+import type {CtrlParams} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -39,21 +39,21 @@ const fileFormats = [
     "XYZ"
 ];
 
-// > Get and set ui parameters from the switchboard
-const fileToRead    = ref("");              // Path of the file to be read
-const countSteps    = ref(1);               // Total steps read
-const step          = ref(1);               // Current step
-const running       = ref(false);           // The steps are playing
-const atomsTypes    = ref("");              // Atom types in the structure read
-const loopSteps     = ref(false);           // If the sequence should loop
-const format        = ref("");              // File format to be read
-const inProgress    = ref(false);           // True during file load
-const captureMovie  = ref(false);
-const auxInProgress = ref(false);
-const auxFileToRead = ref("");              // Path to the auxiliary file to read
-const filesSelected = ref<File[]>([]);      // Status of the file selector
-const auxFileSelected = ref<File[]>([]);
-const useBohr       = ref(true);            // Use Bohr units
+// > UI parameters
+const fileToRead      = ref("");            // Path of the file to be read
+const countSteps      = ref(1);             // Total steps read
+const step            = ref(1);             // Current step
+const running         = ref(false);         // The steps are playing
+const atomsTypes      = ref("");            // Atom types in the structure read
+const loopSteps       = ref(false);         // If the sequence should loop
+const format          = ref("");            // File format to be read
+const inProgress      = ref(false);         // True during file load
+const captureMovie    = ref(false);
+const auxInProgress   = ref(false);         // True during aux file load
+const auxFileToRead   = ref("");            // Path to the auxiliary file to read
+const filesSelected   = ref<File[]>([]);    // Status of the file selector
+const auxFileSelected = ref<File[]>([]);    // Status of the aux file selector
+const useBohr         = ref(true);          // Use Bohr units
 
 // Initialize the control
 resetAlertMessage("structureReader");
@@ -74,37 +74,9 @@ askNode(id, "init")
         if("path" in file) auxFileSelected.value[0] = file;
     })
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
-/*
-sb.getUiParams(id, (params: CtrlParams) => {
-
-    fileToRead.value    = params.fileToRead as string ?? "";
-    countSteps.value    = params.steps as number ?? 1;
-    step.value          = params.step as number ?? 1;
-    running.value       = params.running as boolean ?? false;
-    loopSteps.value     = params.loopSteps as boolean ?? false;
-    format.value        = params.format as string ?? "";
-    atomsTypes.value    = params.atomsTypes as string ?? "";
-    inProgress.value    = params.inProgress as boolean ?? false;
-    auxFileToRead.value = params.auxFileToRead as string ?? "";
-    auxInProgress.value = params.auxInProgress as boolean ?? false;
-    useBohr.value       = params.useBohr as boolean ?? true;
-
-    let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
-    if("path" in file) filesSelected.value[0] = file;
-
-    file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
-    if("path" in file) auxFileSelected.value[0] = file;
-});
-*/
 
 // Manage the steps selection
 watchEffect(() => {
-
-    sb.setUiParams(id, {
-        format: format.value,
-        fileToRead: fileToRead.value,
-        useBohr: useBohr.value,
-    });
 
     askNode(id, "step", {
         step: step.value,
@@ -112,54 +84,18 @@ watchEffect(() => {
         loopSteps: loopSteps.value,
     })
     .then((params) => {
-        console.log(params);
+        step.value = params.step as number ?? 1;
     })
     .catch((error: Error) => {
         showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
     });
 });
 
-/**
- * Start and stop capture of a movie of the sequence
- *
- * @param capture - The running value (true starts capture, false stop it)
- */
-const setCaptureMovie = (capture: boolean): void => {
+receiveFromNode(id, "runningStep", (params: CtrlParams) => {
 
-    if(captureMovie.value) {
-
-        controlStore.movie = capture;
-    }
-};
-
-/**
- * Set the running status
- *
- * @param value - The running value to set
- */
-const setRunning = (value: boolean): void => {
-
-    setCaptureMovie(value);
-
-    running.value = value;
-    sb.setUiParams(id, {
-        running: value,
-        loopSteps: loopSteps.value
-    });
-};
-
-/**
- * Manually change the step visualized
- *
- * @param value - New step value
- */
-const setStep = (value: number): void => {
-
-    step.value = value;
-    sb.setUiParams(id, {
-        step: value
-    });
-};
+    step.value = params.step as number ?? 1;
+    running.value = params.running as boolean ?? true;
+});
 
 /**
  * Change the current step by delta steps
@@ -171,9 +107,6 @@ const deltaStep = (delta: number): void => {
     const changedStep = step.value + delta;
     if(changedStep < 1 || changedStep > countSteps.value) return;
     step.value = changedStep;
-    sb.setUiParams(id, {
-        step: changedStep
-    });
 };
 
 /**
@@ -181,11 +114,11 @@ const deltaStep = (delta: number): void => {
  */
 const togglePlay = (): void => {
 
-    if(running.value) setRunning(false);
-    else if(step.value < countSteps.value) setRunning(true);
+    if(running.value) running.value = false;
+    else if(step.value < countSteps.value) running.value = true;
     else if(loopSteps.value) {
         step.value = 1;
-        setRunning(true);
+        running.value = true;
     }
 };
 
@@ -299,13 +232,16 @@ const loadAuxFile = (files: File[] | File): void => {
 };
 
 /**
- * Get field value on blur or ENTER pressed
+ * Get atoms types field value on blur or ENTER pressed
  */
 const getAtomsTypes = (): void => {
 
     sendToNode(id, "types", {atomsTypes: atomsTypes.value});
 };
 
+/**
+ * On change of the measurement unit
+ */
 const setUseBohr = (): void => {
 
     sendToNode(id, "bohr", {useBohr: useBohr.value});
@@ -339,8 +275,8 @@ const setUseBohr = (): void => {
                 label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
-    <v-switch v-model="captureMovie" color="primary" label="Movie from steps" density="compact"
-              class="mt-n5" />
+    <v-switch v-if="controlStore.hasCapture" v-model="captureMovie"
+              color="primary" label="Movie from steps" density="compact" class="mt-n5" />
     <v-switch v-if="controlStore.hasTrajectory" v-model="controlStore.trajectoriesRecording"
               color="primary" label="Record trajectories" density="compact" class="mt-n5" />
     <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
@@ -350,7 +286,7 @@ const setUseBohr = (): void => {
     <v-row class="mr-2">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
-              @click="setStep(1)" />
+              @click="step = 1" />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft" class="mr-1"
               @click="deltaStep(-1)" />
       <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" class="mr-1"
@@ -358,7 +294,7 @@ const setUseBohr = (): void => {
       <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight" class="mr-1"
               @click="deltaStep(1)" />
       <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
-              @click="setStep(countSteps); setRunning(false)" />
+              @click="step = countSteps; running = false" />
       <v-spacer />
     </v-row>
   </v-container>

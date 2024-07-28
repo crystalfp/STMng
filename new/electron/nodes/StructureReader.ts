@@ -9,7 +9,7 @@
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
-import {sendAlertMessage, sendToClient} from "../../../src/electron/modules/WindowsUtilities";
+import {sendAlertMessage, sendToClient} from "../../../old/electron/modules/WindowsUtilities";
 import {getAtomicNumber} from "../modules/AtomData";
 
 // Import the readers
@@ -44,6 +44,7 @@ export class StructureReader extends NodeCore {
 
 	private structures: Structure[] = [];
 
+	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",      callback: this.channelInit},
 		{name: "read",		type: "invokeAsync", callback: this.channelRead},
@@ -53,11 +54,10 @@ export class StructureReader extends NodeCore {
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead},
 		{name: "step",		type: "invoke",		 callback: this.channelStep},
 	];
+	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();
-		console.log(`Instantiated ${this.name}`);
-
 		this.setupChannels(this.id, this.channels);
 	}
 
@@ -111,15 +111,16 @@ export class StructureReader extends NodeCore {
 	/**
 	 * Channel handler for read request
 	 *
-	 * @param params Params from the client
+	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
 	private async channelRead(params: CtrlParams): Promise<CtrlParams> {
 
 		this.filesSelectedFull = params.filesSelectedFull as string ?? "{}";
 		const requestedFormat = params.format as string;
-		const filename = params.fileToRead as string
+		const filename = params.fileToRead as string;
 		this.fileToRead = filename;
+		let message = "";
 		let reader;
 		try {
 
@@ -153,9 +154,14 @@ export class StructureReader extends NodeCore {
 			}
 		}
 		catch(error) {
-			const message = `Format "${requestedFormat}" error: ${(error as Error).message}`;
+			message = `Format "${requestedFormat}" error: ${(error as Error).message}`;
 			log.error(message);
 			return {error: message};
+		}
+
+		if(this.intervalId !== undefined) {
+			clearInterval(this.intervalId);
+			this.intervalId = undefined;
 		}
 
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
@@ -165,31 +171,31 @@ export class StructureReader extends NodeCore {
 			this.structures = await reader.readStructure(filename, {atomsTypes: atoms});
 			if(this.checkStructures(this.structures)) {
 				this.notify(this.structures[0]);
-				return {countSteps: this.structures.length}
+				this.countSteps = this.structures.length;
+				return {countSteps: this.countSteps};
 			}
-			else {
-				const message = `Invalid "${requestedFormat}" file content`;
-				log.error(message);
-				return {error: message};
-			}
+
+			message = `Invalid "${requestedFormat}" file content`;
+			log.error(message);
+			return {error: message};
 		}
 
 		this.structures = await reader.readStructure(filename, {useBohr: this.useBohr});
 		if(this.checkStructures(this.structures)) {
 			this.notify(this.structures[0]);
-			return {countSteps: this.structures.length}
+			this.countSteps = this.structures.length;
+			return {countSteps: this.countSteps};
 		}
-		else {
-			const message = `Invalid "${requestedFormat}" file content`;
-			log.error(message);
-			return {error: message};
-		}
+
+		message = `Invalid "${requestedFormat}" file content`;
+		log.error(message);
+		return {error: message};
 	}
 
 	/**
 	 * Channel handler for the change of atom types
 	 *
-	 * @param params Parameters from the client
+	 * @param params - Parameters from the client
 	 */
 	private channelTypes(params: CtrlParams): void {
 
@@ -200,17 +206,21 @@ export class StructureReader extends NodeCore {
 	/**
 	 * Channel handler for the change of file format
 	 *
-	 * @param params Parameters from the client
+	 * @param params - Parameters from the client
 	 */
 	private channelFormats(params: CtrlParams): void {
 
 		this.format = params.format as string;
+		if(this.intervalId !== undefined) {
+			clearInterval(this.intervalId);
+			this.intervalId = undefined;
+		}
 	}
 
 	/**
 	 * Channel handler for the change of Bohr units
 	 *
-	 * @param params Parameters from the client
+	 * @param params - Parameters from the client
 	 */
 	private channelUseBohr(params: CtrlParams): void {
 
@@ -221,7 +231,7 @@ export class StructureReader extends NodeCore {
 	/**
 	 * Channel handler for the auxiliary file read
 	 *
-	 * @param params Parameters from the client
+	 * @param params - Parameters from the client
 	 * @returns Params with the operation status
 	 */
 	private async channelAuxRead(params: CtrlParams): Promise<CtrlParams> {
@@ -229,6 +239,7 @@ export class StructureReader extends NodeCore {
 		this.auxSelectedFull = params.auxSelectedFull as string ?? "{}";
 		const mainFormat = params.format as string ?? "";
 		const filename = params.auxFileToRead as string;
+		this.auxFileToRead = filename;
 
 		try {
 
@@ -247,13 +258,14 @@ export class StructureReader extends NodeCore {
 		// Send the updated structure down the pipeline
 		this.notify(this.structures[0]);
 
-		return {countSteps: this.structures.length};
+		this.countSteps = this.structures.length;
+		return {countSteps: this.countSteps};
 	}
 
 	/**
 	 * Channel handler for the step request
 	 *
-	 * @param params Parameters from the client
+	 * @param params - Parameters from the client
 	 * @returns Params with the operation status
 	 */
 	private channelStep(params: CtrlParams): CtrlParams {
@@ -267,7 +279,7 @@ export class StructureReader extends NodeCore {
 			this.step = requestedStep;
 
 			if(requestedStep < 1 || requestedStep > this.structures.length) {
-				const message = `Requested step ${requestedStep} is out of range 1-${this.structures.length}`;
+				const message = `Requested step ${requestedStep} is not in range 1-${this.structures.length}`;
 				log.error(message);
 				return {error: message};
 			}
@@ -294,7 +306,7 @@ export class StructureReader extends NodeCore {
 					// Send the updated structure down the pipeline
 					this.notify(this.structures[this.step-1]);
 
-					sendToClient(this.id, "", {
+					sendToClient(this.id, "runningStep", {
 						step: this.step,
 						running: this.running,
 					});
@@ -310,9 +322,6 @@ export class StructureReader extends NodeCore {
 			clearInterval(this.intervalId);
 			this.intervalId = undefined;
 		}
-
-		// Send the updated structure down the pipeline
-		this.notify(this.structures[this.step-1]);
 
 		return {step: this.step};
 	}

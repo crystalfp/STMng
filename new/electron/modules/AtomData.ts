@@ -196,6 +196,14 @@ export const getAtomicNumber = (symbol: string): number => AtomData.getInstance(
 export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
 
 /**
+ * Return other information on the atom with given Z value
+ *
+ * @param atomZ - Z value of the atom that should be retrieved
+ * @returns Structure containing symbol, radii, max number of bonds and color
+ */
+export const getAtomData = (atomZ: number): AtomAppearance => AtomData.getInstance().atomicData(atomZ);
+
+/**
  * Setup the channel to pass atom data to the client
  */
 export const setupChannelAtomData = (): void => {

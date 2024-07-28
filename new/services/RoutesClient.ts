@@ -7,7 +7,7 @@
  * @since 2024-07-10
  */
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {ClientProjectInfo, CtrlParams} from "../types";
+import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "../types";
 import {showAlertMessage} from "./AlertMessage";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -27,7 +27,7 @@ declare global {
  *
  * @param callback - Routines called to receive the project information to build the controls/ui
  */
-export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo) => void) => {
+export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo) => void): void => {
 
     window.electron.ipcRenderer.invoke("PROJECT:SEND:INFO-FIRST")
 		// eslint-disable-next-line promise/no-callback-in-promise
@@ -36,7 +36,7 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
 
     window.electron.ipcRenderer.on("PROJECT:SEND:INFO-NEXT",
 					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
-}
+};
 
 // > Communication
 /**
@@ -47,12 +47,10 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
 * @param params - Parameters to send to the main process node
 * @returns Parameters from the main process node
 */
-export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> => {
-
-	return params?
+export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> =>
+	(params?
 		window.electron.ipcRenderer.invoke(`${id}:${channel}`, params) as Promise<CtrlParams> :
-		window.electron.ipcRenderer.invoke(`${id}:${channel}`) as Promise<CtrlParams>;
-};
+		window.electron.ipcRenderer.invoke(`${id}:${channel}`) as Promise<CtrlParams>);
 
 /**
 * Send parameters to the main process node
@@ -76,4 +74,19 @@ export const sendToNode = (id: string, channel: string, params: CtrlParams): voi
 export const receiveFromNode = (id: string, channel: string, callback: (params: CtrlParams) => void): void => {
 
     window.electron.ipcRenderer.on(`${id}:${channel}`, (_event, params: CtrlParams) => callback(params));
+};
+
+/**
+* Receive parameters as push message
+*
+* @param id - ID of the node sending the parameters
+* @param channel - Specify the channel inside the id related group
+* @param callback - Callback function called when a message is received
+*/
+export const receiveFromNodeForRendering = (id: string,
+											channel: string,
+											callback: (renderInfo: StructureRenderInfo) => void): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`,
+								   (_event, renderInfo: StructureRenderInfo) => callback(renderInfo));
 };

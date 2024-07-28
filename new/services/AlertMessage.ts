@@ -73,7 +73,7 @@ export const hasAlertMessage = (node: string): boolean => {
 			return messageStore.fingerprints.message !== "";
 	}
 	return false;
-}
+};
 
 export const getAlertMessage = (node: string): string => {
 	const messageStore = useMessageStore();
@@ -88,4 +88,4 @@ export const getAlertMessage = (node: string): string => {
 			return messageStore.fingerprints.message;
 	}
 	return "?";
-}
+};

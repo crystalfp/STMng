@@ -18,10 +18,6 @@ export class Viewer3D extends NodeCore {
 		console.log(`Instantiated ${this.name}`);
 	}
 
-	run() {
-
-	}
-
 	saveStatus(): string {
         const statusToSave = {
 			showTrajectories: false,

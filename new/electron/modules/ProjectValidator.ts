@@ -8,7 +8,7 @@
  */
 import * as v from "valibot";
 import type {Project} from "../../types";
-import {sendAlertMessage} from "../../../src/electron/modules/WindowsUtilities";
+import {sendAlertMessage} from "../../../old/electron/modules/WindowsUtilities";
 
 // {
 // "graph": {

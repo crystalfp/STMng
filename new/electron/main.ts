@@ -14,18 +14,18 @@ import pkg from "../../package.json";
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
-import {createMainWindow} from "../../src/electron/modules/WindowsUtilities";
-import {disableSaveProjectEntry} from "../../src/electron/modules/SystemMenu";
-import {setupChannelVersions} from "../../src/electron/modules/Versions";
-import {setupChannelReader} from "../../src/electron/modules/Reader";
-import {setupChannelCapture} from "../../src/electron/modules/CaptureMedia";
-import {setupChannelSymmetries} from "../../src/electron/modules/Symmetries";
-import {setupChannelWriter} from "../../src/electron/modules/Writer";
-import {setupChannelFingerprints} from "../../src/electron/modules/Fingerprints";
+import {createMainWindow} from "../../old/electron/modules/WindowsUtilities";
+import {disableSaveProjectEntry} from "../../old/electron/modules/SystemMenu";
+import {setupChannelVersions} from "../../old/electron/modules/Versions";
+import {setupChannelReader} from "../../old/electron/modules/Reader";
+import {setupChannelCapture} from "../../old/electron/modules/CaptureMedia";
+import {setupChannelSymmetries} from "../../old/electron/modules/Symmetries";
+import {setupChannelWriter} from "../../old/electron/modules/Writer";
+import {setupChannelFingerprints} from "../../old/electron/modules/Fingerprints";
 import {setupChannelAtomData} from "./modules/AtomData";
 
 // TEST
-import {pm} from "../../new/electron/modules/ProjectManager";
+import {pm} from "./modules/ProjectManager";
 
 // > Command line parsing
 const program = new Command("STMng");

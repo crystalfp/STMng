@@ -250,3 +250,30 @@ export interface ReaderImplementation {
 	 */
 	readStructure: (filename: string, options?: ReaderOptions) => Promise<Structure[]>;
 }
+
+/** Data to render an atom */
+export interface AtomRenderInfo {
+
+	/** Element symbol */
+	symbol: string;
+
+    /** Label of the atom */
+    label: string;
+
+    /** Position of the atom */
+    position: PositionType;
+
+	/** Atom color as an hex string (#RRGGBB) */
+	color: string;
+
+	/** Covalent radii (in Angstrom). 1.6 if unknown */
+	rCov: number;
+
+	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
+	rVdW: number;
+}
+
+export interface StructureRenderInfo {
+    atoms: AtomRenderInfo[];
+    bonds: Bond[];
+}

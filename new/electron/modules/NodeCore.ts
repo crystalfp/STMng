@@ -50,7 +50,8 @@ export abstract class NodeCore {
 	 *
 	 * @param data - The structure received by the subscribed node
 	 */
-	notifier(_data: Structure): void {
+	notifier(data: Structure): void {
+		void data;
 		throw Error(`Notifier should not be called for "${this.name}"`);
 	}
 

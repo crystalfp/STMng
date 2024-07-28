@@ -22,14 +22,14 @@ const compat = new FlatCompat({
     config: vuetifyPlugin.configs.recommended.rules,
 });
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
+/// @type {import('eslint').Linter.FlatConfig[]} */
 export default [{
     ignores: [
-        "src/vite-env.d.ts",
+        "new/vite-env.d.ts",
     ]}, {
     files: [
-        "src/**/*.ts",
-        "src/**/*.vue",
+        "old/**/*.ts",
+        "old/**/*.vue",
         "new/**/*.ts",
         "new/**/*.vue"
     ],
@@ -89,7 +89,7 @@ export default [{
         "import/ignore": ["node_modules"],
         "import/resolver": {
             "typescript": {"alwaysTryTypes": true},
-            "alias": {"map": {"@/": "./src/"},
+            "alias": {"map": {"@/": "./old/"},
             "extensions": [".vue", ".ts"]}
         }
     },
