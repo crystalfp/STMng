@@ -7,5 +7,5 @@
     "eslint.config.mjs",
     "new/ui/*.vue"
   ],
-  "project": ["src/**/*.{js,ts,vue}", "new/**/*.{js,ts,vue}"]
+  "project": ["old/**/*.{js,ts,vue}", "new/**/*.{js,ts,vue}"]
 }

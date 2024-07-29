@@ -17,7 +17,6 @@ import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {createMainWindow} from "../../old/electron/modules/WindowsUtilities";
 import {disableSaveProjectEntry} from "../../old/electron/modules/SystemMenu";
 import {setupChannelVersions} from "../../old/electron/modules/Versions";
-import {setupChannelReader} from "../../old/electron/modules/Reader";
 import {setupChannelCapture} from "../../old/electron/modules/CaptureMedia";
 import {setupChannelSymmetries} from "../../old/electron/modules/Symmetries";
 import {setupChannelWriter} from "../../old/electron/modules/Writer";
@@ -60,8 +59,6 @@ log.eventLogger.startLogging();
 // Initialize the channels between main process and client
 setupChannelPreferences();
 setupChannelVersions();
-// setupChannelProject();
-setupChannelReader();
 setupChannelCapture();
 setupChannelSymmetries();
 setupChannelWriter();

@@ -13,7 +13,6 @@ import type {NodeUI, Structure, GraphNode} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
-import {StructureReader} from "@/nodes/StructureReader";
 import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
@@ -91,7 +90,6 @@ export class NodeInfo {
 		// NOTE 3) Add node class instantiation
 		switch(type) {
 			case "structure-reader":
-				map.set(id, new StructureReader(id));
 				break;
 			case "draw-structure":
 				map.set(id, new DrawStructure(id));
@@ -236,8 +234,6 @@ export class NodeInfo {
 			// NOTE 6) Add here the node UI status save. Viewer-3d and capture-view don't belong here.
 			switch(type) {
 				case "structure-reader":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as StructureReader).saveStatus();
 					break;
 				case "draw-structure":
 					if(notFirst) uiStatus += ",";

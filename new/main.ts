@@ -106,12 +106,12 @@ const app = createApp(App)
   	}))
 
 	// Project defined components. The registered name should begin by G (g- in templates)
-	.component("GAlignLabels", defineAsyncComponent(() => import("@/widgets/AlignLabels.vue")))
-	.component("GColorSelector", defineAsyncComponent(() => import("@/widgets/ColorSelector.vue")))
-	.component("GAtomsSelector", defineAsyncComponent(() => import("@/widgets/AtomsSelector.vue")))
-	.component("GSliderWithSteppers", defineAsyncComponent(() => import("@/widgets/SliderWithSteppers.vue")))
-	.component("GDebouncedSlider", defineAsyncComponent(() => import("@/widgets/DebouncedSlider.vue")))
-	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("@/widgets/DebouncedRangeSlider.vue")));
+	.component("GAlignLabels", defineAsyncComponent(() => import("./widgets/AlignLabels.vue")))
+	.component("GColorSelector", defineAsyncComponent(() => import("./widgets/ColorSelector.vue")))
+	.component("GAtomsSelector", defineAsyncComponent(() => import("./widgets/AtomsSelector.vue")))
+	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
+	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
+	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")));
 
 // Add global error handler
 app.config.errorHandler = (error: unknown) => {
