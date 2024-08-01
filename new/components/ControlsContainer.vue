@@ -1,69 +1,39 @@
 <script setup lang="ts">
 /**
- * @component
- * Manage the load of the elements' user interfaces
- *
- * @author Mario Valle "mvalle\@ikmail.com"
- * @since 2024-07-11
- */
+* @component
+* Manage the load of the elements' user interfaces
+*
+* @author Mario Valle "mvalle\@ikmail.com"
+* @since 2024-07-11
+*/
 
-import {ref, shallowRef, defineAsyncComponent} from "vue";
+import {ref, defineAsyncComponent, markRaw} from "vue";
 import {useControlStore} from "@/stores/controlStore";
 import {receiveProjectUI} from "../services/RoutesClient";
 import type {ClientProjectInfo, ClientProjectInfoItem} from "../types";
-
-import LoadingComponent from "./Loading.vue";
 
 // > Access the store
 const controlStore = useControlStore();
 
 const selectedTabId = ref("");
-const loadedPanel = shallowRef<unknown>();
 const uiList = ref<ClientProjectInfoItem[]>([]);
+const panelList = ref<unknown[]>([]);
 
 /** When the project is loaded */
 receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 
 	// Get the node UI list and select the first one
-    uiList.value.length = 0;
-    for(const id in clientProjectInfo) {
-        uiList.value.push(clientProjectInfo[id]);
-    }
+	uiList.value.length = 0;
+	panelList.value.length = 0;
+	for(const id in clientProjectInfo) {
+
+		uiList.value.push(clientProjectInfo[id]);
+		const {ui} = clientProjectInfo[id];
+
+		panelList.value.push(markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`))));
+	}
 	selectedTabId.value = uiList.value[0].id;
-
-	// Select and load the first panel
-	const {ui} = clientProjectInfo[selectedTabId.value];
-	loadedPanel.value = ui === "" ?
-							undefined :
-							defineAsyncComponent({
-									loader: () => import(`../../new/ui/${ui}.vue`),
-									loadingComponent: LoadingComponent,
-									delay: 200,
-							});
 });
-
-/**
- * Select a panel
- *
- * @param id - ID of the node selected with the selector
- */
-const selectPanel = (id: string): void => {
-
-    for(const item of uiList.value) {
-
-        if(id === item.id) {
-
-            loadedPanel.value = item.ui === "" ?
-									undefined :
-									defineAsyncComponent({
-											loader: () => import(`../ui/${item.ui}.vue`),
-											loadingComponent: LoadingComponent,
-											delay: 200,
-									});
-			      break;
-        }
-    }
-};
 
 </script>
 
@@ -71,10 +41,11 @@ const selectPanel = (id: string): void => {
 <template>
 	<v-container class="pa-0 title-container">
 		<v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
-							variant="solo-filled" density="compact" hide-details rounded="0"
-							@update:model-value="selectPanel" />
+		variant="solo-filled" density="compact" hide-details rounded="0" />
 	</v-container>
-	<component :is="loadedPanel" :id="selectedTabId" />
+	<v-container v-for="(panel, index) of panelList" class="pa-0">
+		<component :is="panel" :id="uiList[index].id" v-show="uiList[index].id === selectedTabId" />
+	</v-container>
 	<v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true">
 		Reset camera
 	</v-btn>

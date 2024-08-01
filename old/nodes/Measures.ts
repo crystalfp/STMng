@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import {watch} from "vue";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 import {sb} from "@/services/Switchboard";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
@@ -52,7 +52,7 @@ export class Measures {
 
 				let objectCurrent: THREE.Mesh;
 				let objectNew: THREE.Mesh;
-				sm.scene.traverse((object) => {
+				sm.scene.traverse((object: THREE.Object3D) => {
 					if(object.name === "Polyhedron") {
 						if(object.userData.idx === controlStore.polyhedronNewIdx) {
 							objectNew = object as THREE.Mesh;

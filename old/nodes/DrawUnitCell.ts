@@ -5,9 +5,9 @@
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 import type {BasisType, PositionType, Structure, Atom, Volume} from "@/types";
-import {spriteText} from "@/services/SpriteText";
+import {spriteText} from "../../new/services/SpriteText";
 import {adjustOrigin} from "@/services/AdjustOrigin";
 
 export class DrawUnitCell {

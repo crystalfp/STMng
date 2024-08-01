@@ -6,11 +6,17 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-27
  */
-
-import {ref, /* watchEffect, */ computed} from "vue";
+import * as THREE from "three";
+import {ref, watch, computed} from "vue";
 import {askNode, receiveFromNodeForRendering} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import type {StructureRenderInfo} from "../types";
+import {spriteText, disposeTextInGroup} from "../services/SpriteText";
+import {normalMaterial, colorTextureMaterial} from "../services/HelperMaterials";
+
+import {sm} from "../services/SceneManager";
+import {getBoundingBox} from "../services/BoundingBox";
+
+import type {StructureRenderInfo, PositionType} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -29,53 +35,358 @@ const showStructure = ref(true);
 const showBonds = ref(true);
 const showLabels = ref(true);
 const shadedBonds = ref(false);
+const out = new THREE.Group();
+const atomsGroup = new THREE.Group();
+const bondsGroup = new THREE.Group();
+const labelsGroup = new THREE.Group();
+const bondRadius = 0.1;
+const sphereSubdivisions   = [0, 0, 1, 3,  9];
+const cylinderSubdivisions = [0, 3, 5, 8, 16];
+const rCovScale = 0.5;
+let renderInfo: StructureRenderInfo;
 
 resetAlertMessage("system");
 askNode(id, "init")
     .then((params) => {
 
-		    drawKind.value = params.drawKind as string ?? "ball-and-stick";
-		    drawQuality.value = params.drawQuality as number ?? 4;
-		    drawRoughness.value = params.drawRoughness as number ?? 0.5;
-		    drawMetalness.value = params.drawMetalness as number ?? 0.6;
-		    labelKind.value = params.labelKind as string ?? "symbol";
-		    showBonds.value = params.showBonds as boolean ?? true;
-		    showStructure.value = params.showStructure as boolean ?? true;
-		    showLabels.value = params.showLabels as boolean ?? true;
-		    shadedBonds.value = params.shadedBonds as boolean ?? false;
+        drawKind.value = params.drawKind as string ?? "ball-and-stick";
+        drawQuality.value = params.drawQuality as number ?? 4;
+        drawRoughness.value = params.drawRoughness as number ?? 0.5;
+        drawMetalness.value = params.drawMetalness as number ?? 0.6;
+        labelKind.value = params.labelKind as string ?? "symbol";
+        showBonds.value = params.showBonds as boolean ?? true;
+        showStructure.value = params.showStructure as boolean ?? true;
+        showLabels.value = params.showLabels as boolean ?? true;
+        shadedBonds.value = params.shadedBonds as boolean ?? false;
     })
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "system"));
 
-receiveFromNodeForRendering(id, "structure", (renderInfo: StructureRenderInfo) => {
-    console.log("*** render info");
-    console.log(renderInfo);
+/**
+ * Draw a sphere
+ *
+ * @param radius - Sphere radius
+ * @param color - Sphere color
+ * @param position - Center of the sphere
+ * @param index - Index of the atom in the structure atom list
+ * @param out - The output group where to add the sphere
+ */
+const addSphere = (radius: number,
+				   color: THREE.ColorRepresentation,
+				   position: PositionType,
+				   index: number,
+				   group: THREE.Group): void => {
+
+    const subdivisions = sphereSubdivisions[drawQuality.value];
+    const geometry = new THREE.IcosahedronGeometry(radius, subdivisions);
+    const meshMaterial = normalMaterial(color, drawRoughness.value, drawMetalness.value);
+    const sphere = new THREE.Mesh(geometry, meshMaterial);
+    sphere.position.set(position[0], position[1], position[2]);
+    sphere.name = "Atom";
+    sphere.userData = {index};
+    group.add(sphere);
+};
+
+/**
+ * Create an hydrogen bond (dashed line)
+ *
+ * @param from - Position of the bond start
+ * @param to - Position of the bond end
+ * @param group - The output group where to add the bond
+ */
+const addHBond = (from: PositionType, to: PositionType, group: THREE.Group): void => {
+
+    const material = new THREE.LineDashedMaterial({
+                            color: 0x777777,
+                            scale: 20,
+                            dashSize: 1,
+                            gapSize: 1,
+                        });
+
+    const points = [
+        new THREE.Vector3(from[0], from[1], from[2]),
+        new THREE.Vector3(to[0], to[1], to[2]),
+    ];
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, material);
+    line.computeLineDistances();
+    group.add(line);
+};
+
+/**
+ * Draw a line bond between two atoms of different type
+ *
+ * @param from - Position of the bond start
+ * @param to - Position of the bond end
+ * @param colorFrom - Color of the bond start
+ * @param colorTo - Color of the bond end
+ * @param group - The output group where to add the bond
+ */
+const addNormalBond = (from: PositionType, to: PositionType,
+					   colorFrom: string, colorTo: string, group: THREE.Group): void => {
+
+    const midX = (from[0]+to[0])/2;
+    const midY = (from[1]+to[1])/2;
+    const midZ = (from[2]+to[2])/2;
+
+    const vertices = [
+        from[0], from[1], from[2],
+        midX, midY, midZ,
+        midX, midY, midZ,
+        to[0], to[1], to[2]
+    ];
+
+    const c1 = new THREE.Color(colorFrom);
+    const c2 = new THREE.Color(colorTo);
+    const colors = [
+        c1.r, c1.g, c1.b,
+        c1.r, c1.g, c1.b,
+        c2.r, c2.g, c2.b,
+        c2.r, c2.g, c2.b,
+    ];
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+
+    const material = new THREE.LineBasicMaterial({vertexColors: true});
+
+    group.add(new THREE.LineSegments(geometry, material));
+};
+
+/**
+ * Draw a line bond between two atoms of same type
+ *
+ * @param from - Position of the bond start
+ * @param to - Position of the bond end
+ * @param color - Common color of the bonded atoms
+ * @param group - The output group where to add the bond
+ */
+const addNormalBondSameAtoms = (from: PositionType, to: PositionType, color: string, group: THREE.Group): void => {
+
+    const start = new THREE.Vector3(from[0], from[1], from[2]);
+    const end   = new THREE.Vector3(to[0], to[1], to[2]);
+
+    const material = new THREE.LineBasicMaterial({color});
+    const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+    group.add(new THREE.Line(geometry, material));
+};
+
+/**
+ * Create a cylinder bond
+ *
+ * @remarks Till now it is not shaded with a color gradient
+ * @param from - Position of the bond start
+ * @param to - Position of the bond end
+ * @param radius - Radius of the bond
+ * @param colorStart - Color of the bond start
+ * @param colorEnd - Color of the bond end
+ * @param group - The output group where to add the bond
+ */
+const addCylinder = (start: PositionType, end: PositionType,
+                     radius: number, colorStart: THREE.ColorRepresentation,
+                     colorEnd: THREE.ColorRepresentation, group: THREE.Group): void => {
+
+    const subdivisions = cylinderSubdivisions[drawQuality.value];
+
+    const dx = end[0] - start[0];
+    const dy = end[1] - start[1];
+    const dz = end[2] - start[2];
+    const len = Math.hypot(dx, dy, dz);
+    const geometry = new THREE.CylinderGeometry(radius, radius, len, subdivisions, 1, true);
+    const meshMaterial = colorTextureMaterial(new THREE.Color(colorStart),
+                                                new THREE.Color(colorEnd),
+                                                drawRoughness.value,
+                                                drawMetalness.value,
+                                                subdivisions,
+                                                shadedBonds.value);
+    const cylinder = new THREE.Mesh(geometry, meshMaterial);
+
+    setDirection(dx/len, dy/len, dz/len, cylinder.quaternion);
+
+    const midx = (start[0] + end[0])/2;
+    const midy = (start[1] + end[1])/2;
+    const midz = (start[2] + end[2])/2;
+    cylinder.position.set(midx, midy, midz);
+
+    group.add(cylinder);
+};
+
+/**
+ * Set a quaternion from a direction vector (versor)
+ *
+ * @param nx - Versor x component
+ * @param ny - Versor y component
+ * @param nz - Versor z component
+ * @param quaternion - The computed quaternion
+ */
+const setDirection = (nx: number, ny: number, nz: number, quaternion: THREE.Quaternion): void => {
+
+    // Versor is assumed to be normalized
+    if(ny > 0.99999) quaternion.set(0, 0, 0, 1);
+    else if(ny < -0.99999) quaternion.set(1, 0, 0, 0);
+    else {
+        const rotationAxis = new THREE.Vector3(nz, 0, -nx).normalize();
+        const radians = Math.acos(ny);
+        quaternion.setFromAxisAngle(rotationAxis, radians);
+    }
+};
+
+/**
+ * Convert the structure data into 3D objects
+ */
+const drawStructure = (): void => {
+
+    // Clear previous structure
+    sm.clearGroup(`DrawStructure-${id}`);
+    atomsGroup.clear();
+    bondsGroup.clear();
+    labelsGroup.clear();
+    out.add(atomsGroup, bondsGroup, labelsGroup);
+
+    // No atoms present, display nothing
+    if(!renderInfo.atoms) return;
+
+    // Render atoms
+    let index = 0;
+    switch(drawKind.value) {
+        case "ball-and-stick":
+            for(const atom of renderInfo.atoms) {
+                const {color, rCov, position} = atom;
+                const radius = rCov * rCovScale;
+                addSphere(radius, color, position, index, atomsGroup);
+                ++index;
+            }
+            break;
+        case "van-der-walls":
+            for(const atom of renderInfo.atoms) {
+                const {color, rVdW, position} = atom;
+                addSphere(rVdW, color, position, index, atomsGroup);
+                ++index;
+            }
+            break;
+        case "licorice":
+            for(const atom of renderInfo.atoms) {
+                const {color, position} = atom;
+                addSphere(bondRadius, color, position, index, atomsGroup);
+                ++index;
+            }
+            break;
+    }
+
+    // Render bonds
+    switch(drawKind.value) {
+        case "ball-and-stick":
+        case "licorice":
+            for(const bond of renderInfo.bonds) {
+
+                const atomFrom = renderInfo.atoms[bond.from];
+                const atomTo   = renderInfo.atoms[bond.to];
+                if(bond.type === "h") addHBond(atomFrom.position, atomTo.position, bondsGroup);
+                else {
+                    const colorFrom = atomFrom.color;
+                    const colorTo   = atomTo.color;
+                    addCylinder(atomFrom.position, atomTo.position,
+                                     bondRadius, colorFrom, colorTo, bondsGroup);
+                }
+            }
+            break;
+        case "lines":
+            for(const bond of renderInfo.bonds) {
+
+                const atomFrom = renderInfo.atoms[bond.from];
+                const atomTo   = renderInfo.atoms[bond.to];
+                if(bond.type === "h") addHBond(atomFrom.position, atomTo.position, bondsGroup);
+                else if(atomFrom.atomZ === atomTo.atomZ) {
+                    const {color, position} = atomFrom;
+                    addNormalBondSameAtoms(position, atomTo.position, color, bondsGroup);
+                }
+                else {
+                    const colorFrom = atomFrom.color;
+                    const colorTo   = atomTo.color;
+                    addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo, bondsGroup);
+                }
+            }
+            break;
+    }
+
+    // Find the camera rotation center and position based
+    // on the structure bounding box
+    sm.setBoundingBox(getBoundingBox(renderInfo));
+};
+
+/**
+ * Draw the atoms labels
+ *
+ * @param data - The structure data
+ */
+const drawLabels = (): void => {
+
+    // Remove existing labels
+    disposeTextInGroup(labelsGroup);
+
+    const {atoms} = renderInfo;
+
+    // No atoms present or no label requested, display nothing
+    if(!atoms || atoms.length === 0 || !showLabels.value) return;
+
+    // Render labels
+    const color = "#FFFFFF";
+    let idx = 0;
+    for(const atom of atoms) {
+
+        let offset = 0;
+        switch(drawKind.value) {
+            case "ball-and-stick":
+                offset = atom.rCov * rCovScale * 1.3;
+                break;
+            case "van-der-walls":
+                offset = atom.rVdW * 1.3;
+                break;
+            case "licorice":
+                offset = bondRadius * 2.5;
+                break;
+            case "lines":
+                offset = 0.1;
+                break;
+        }
+
+        let labelText;
+        switch(labelKind.value) {
+            case "symbol":
+                labelText = atom.symbol;
+                break;
+            case "label":
+                labelText = atom.label;
+                break;
+            case "index":
+                labelText = idx.toString();
+                break;
+            default:
+                labelText = "?";
+                break;
+        }
+
+        const label = spriteText(labelText, color, atom.position, [0, 0, offset]);
+        labelsGroup.add(label);
+
+        ++idx;
+    }
+};
+
+receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRenderInfo) => {
+
+    renderInfo = updatedRenderInfo;
+    drawStructure();
+    drawLabels();
 });
 
-// sb.getUiParams(id, (params: UiParams) => {
-//     drawKind.value = params.drawKind as string ?? "ball-and-stick";
-//     drawQuality.value = params.drawQuality as number ?? 4;
-//     drawRoughness.value = params.drawRoughness as number ?? 0.5;
-//     drawMetalness.value = params.drawMetalness as number ?? 0.6;
-//     labelKind.value = params.labelKind as string ?? "symbol";
-//     showStructure.value = params.showStructure as boolean ?? true;
-//     showBonds.value = params.showBonds as boolean ?? true;
-//     showLabels.value = params.showLabels as boolean ?? true;
-//     shadedBonds.value = params.shadedBonds as boolean ?? false;
-// });
+watch([showLabels, labelKind, drawKind], () => {
 
-// watchEffect(() => {
-//     sb.setUiParams(id, {
-//         drawKind: drawKind.value,
-//         drawQuality: drawQuality.value,
-//         drawRoughness: drawRoughness.value,
-//         drawMetalness: drawMetalness.value,
-//         labelKind: labelKind.value,
-//         showBonds: showBonds.value,
-//         showStructure: showStructure.value,
-//         showLabels: showLabels.value,
-//         shadedBonds: shadedBonds.value,
-//     });
-// });
+    if(renderInfo) {
+        drawLabels();
+        drawStructure();
+    }
+});
 
 // To convert the button toggle into three booleans
 const showCombined = computed({
@@ -92,6 +403,16 @@ const showCombined = computed({
         showLabels.value = values.includes("labels");
     }
 });
+
+
+// Name the groups (useful for debugging)
+atomsGroup.name = "Atoms";
+bondsGroup.name = "Bonds";
+labelsGroup.name = "Labels";
+
+// Combine the groups
+out.add(atomsGroup, bondsGroup, labelsGroup);
+
 
 </script>
 

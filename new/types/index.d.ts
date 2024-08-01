@@ -190,6 +190,9 @@ export interface ClientProjectInfoItem {
 
     /** Channels names to communicate with the node */
     channels: string[];
+
+    /** Project name (empty string for default project). It is redundant, but it is the simplest way to send it */
+    project: string;
 }
 
 /** List of ui modules descriptions to the client */
@@ -254,6 +257,9 @@ export interface ReaderImplementation {
 /** Data to render an atom */
 export interface AtomRenderInfo {
 
+    /** Atomic number */
+    atomZ: number;
+
 	/** Element symbol */
 	symbol: string;
 
@@ -273,7 +279,12 @@ export interface AtomRenderInfo {
 	rVdW: number;
 }
 
+/** Data for structure rendering */
 export interface StructureRenderInfo {
     atoms: AtomRenderInfo[];
     bonds: Bond[];
+    cell: {
+        origin: PositionType;
+        basis: BasisType;
+    };
 }

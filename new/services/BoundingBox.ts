@@ -4,10 +4,11 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 /* eslint-disable eslint-comments/disable-enable-pair, @typescript-eslint/no-shadow */
 
-import type {PositionType, Structure} from "@/types";
+import type {PositionType, StructureRenderInfo} from "../types";
 
 /** Type of the returning data */
 export interface BoundingBox {
@@ -21,10 +22,10 @@ export interface BoundingBox {
  * @param structure - Structure for which the bounding box should be computed
  * @returns Center and sides of the bounding box
  */
-export const getBoundingBox = (structure: Structure): BoundingBox => {
+export const getBoundingBox = (renderInfo: StructureRenderInfo): BoundingBox => {
 
-	const {atoms, crystal} = structure;
-	const {basis, origin} = crystal;
+	const {atoms, cell} = renderInfo;
+	const {basis, origin} = cell;
 
 	const center: PositionType = [0, 0, 0];
 

@@ -8,7 +8,7 @@
 import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 import type {Structure, PositionType, BasisType} from "@/types";
 import {IsosurfaceCore} from "@/services/Isosurface";
 

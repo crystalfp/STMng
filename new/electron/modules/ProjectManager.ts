@@ -41,16 +41,19 @@ class ProjectManager {
 
 	private readonly nodes = new Map<string, NodeCore>();
 	private project: Project | undefined;
+	private projectName = "";
 
 	/**
 	* Read the given project, parse it and send it to client
 	*
 	* @param filename - Project file to be read
 	*/
-	loadProject(filename: string): void {
+	loadProject(filename: string, isDefaultProject: boolean): void {
 
 		// Clear a previous loaded project
 		this.clearProject();
+
+		this.projectName = isDefaultProject ? "" : path.basename(filename);
 
 		try {
 			const rawProject = fs.readFileSync(filename, "utf8");
@@ -211,7 +214,8 @@ class ProjectManager {
 				input: inNodes,
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
-				channels: uiInfo.channels
+				channels: uiInfo.channels,
+				project: this.projectName,
 			};
 			clientProjectInfo[entry] = info;
 		}
@@ -303,7 +307,7 @@ class ProjectManager {
 			sendProjectPath();
 			loadedDefaultProject = true;
 		}
-		this.loadProject(filename);
+		this.loadProject(filename, loadedDefaultProject);
 		return loadedDefaultProject;
 	};
 
@@ -339,7 +343,7 @@ class ProjectManager {
 				loadedDefaultProject = true;
 			}
 		}
-		this.loadProject(filename);
+		this.loadProject(filename, loadedDefaultProject);
 		return loadedDefaultProject;
 	}
 

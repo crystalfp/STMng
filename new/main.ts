@@ -115,7 +115,7 @@ const app = createApp(App)
 
 // Add global error handler
 app.config.errorHandler = (error: unknown) => {
-	log.error("Global error handler:", (error as Error).message);
+	log.error("Global error handler:", (error as Error).message, "\n", (error as Error).stack);
 };
 
 // Mount the application

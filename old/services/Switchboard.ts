@@ -13,7 +13,7 @@ import {projectIsValid} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 
 /** Type of the parameters */
 export type UiParams = Record<string, string | number | boolean>;

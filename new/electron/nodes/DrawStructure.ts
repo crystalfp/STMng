@@ -15,7 +15,6 @@ import {getAtomData} from "../modules/AtomData";
 export class DrawStructure extends NodeCore {
 
 	protected readonly name = "DrawStructure";
-	private structure: Structure | undefined;
 	private drawKind = "";
 	private drawQuality = 4;
 	private drawRoughness = 0.5;
@@ -40,17 +39,19 @@ export class DrawStructure extends NodeCore {
 	notifier(data: Structure): void {
 
 		if(!data) return;
-		this.structure = data;
-		console.log("----");
-		console.log(JSON.stringify(this.structure.atoms[0], undefined, 2));
 
-		const renderInfo: StructureRenderInfo = {atoms: [], bonds: []};
+		const renderInfo: StructureRenderInfo = {
+			atoms: [],
+			bonds: [],
+			cell: {origin: data.crystal.origin, basis: data.crystal.basis}
+		};
 
 		for(const atom of data.atoms) {
 
 			const atomData = getAtomData(atom.atomZ);
 
 			const atomInfo: AtomRenderInfo = {
+				atomZ: atom.atomZ,
 				symbol: atomData.symbol,
 				label: atom.label,
 				position: atom.position,

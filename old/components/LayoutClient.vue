@@ -9,7 +9,7 @@ import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
         receiveBroadcast, getPreferenceSync, receiveMenuSelection,
         receiveNotifications} from "@/services/RoutesClient";
 import {showErrorNotification} from "@/services/ErrorNotification";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 import {atomInfoInit} from "@/services/AtomInfo";
 
 import Viewer3D from "@/components/Viewer3D.vue";

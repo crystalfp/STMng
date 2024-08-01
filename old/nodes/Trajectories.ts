@@ -7,7 +7,7 @@
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 import type {Structure, PositionType, BasisType} from "@/types";
 import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 import {useControlStore} from "@/stores/controlStore";

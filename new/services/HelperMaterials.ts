@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-08-01
  */
 import * as THREE from "three";
 

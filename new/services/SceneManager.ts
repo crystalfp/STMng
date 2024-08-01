@@ -4,12 +4,13 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import * as THREE from "three";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
-import type {BoundingBox} from "@/services/BoundingBox";
+import type {BoundingBox} from "./BoundingBox";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 
 class SceneManager {

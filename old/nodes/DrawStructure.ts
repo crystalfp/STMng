@@ -7,11 +7,11 @@
  */
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
+import {normalMaterial, colorTextureMaterial} from "../../new/services/HelperMaterials";
 import type {PositionType, Structure} from "@/types";
-import {sm} from "@/services/SceneManager";
-import {getBoundingBox} from "@/services/BoundingBox";
-import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
+import {sm} from "../../new/services/SceneManager";
+// import {getBoundingBox} from "../../new/services/BoundingBox";
+import {spriteText, disposeTextInGroup} from "../../new/services/SpriteText";
 import {atomData, atomColor, atomSymbol} from "@/services/AtomInfo";
 
 export class DrawStructure {
@@ -184,7 +184,7 @@ export class DrawStructure {
 
 		// Find the camera rotation center and position based
 		// on the structure bounding box
-		sm.setBoundingBox(getBoundingBox(data));
+		// sm.setBoundingBox(getBoundingBox(data));
 	}
 
 	/**

@@ -11,7 +11,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
-import {sm} from "@/services/SceneManager";
+import {sm} from "../../new/services/SceneManager";
 import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import type {MainResponse} from "@/types";
@@ -208,7 +208,7 @@ onMounted(() => {
         raycaster.setFromCamera(mouse2D, camera);
 
         const objects: THREE.Object3D[] = [];
-        scene.traverse((object) => {
+        scene.traverse((object: THREE.Object3D) => {
             if(object.name === "Atom" || object.name === "Polyhedron") objects.push(object);
         });
         const intersects = raycaster.intersectObjects(objects);
