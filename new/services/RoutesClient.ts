@@ -38,6 +38,17 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
 					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
 };
 
+// > Preferences
+
+/** Versions of the various application components */
+export interface Versions {app: string; node: string; electron: string; chrome: string}
+/**
+ * Return system components versions.
+ *
+ * @returns The list of versions of iie, node, electron, chrome
+ */
+export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.invoke("APP:VERSIONS") as Promise<Versions>;
+
 // > Communication
 /**
 * Ask to receive the parameters from the main process node

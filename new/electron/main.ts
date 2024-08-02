@@ -16,7 +16,7 @@ import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {createMainWindow} from "../../old/electron/modules/WindowsUtilities";
 import {disableSaveProjectEntry} from "../../old/electron/modules/SystemMenu";
-import {setupChannelVersions} from "../../old/electron/modules/Versions";
+import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelCapture} from "../../old/electron/modules/CaptureMedia";
 import {setupChannelSymmetries} from "../../old/electron/modules/Symmetries";
 import {setupChannelWriter} from "../../old/electron/modules/Writer";

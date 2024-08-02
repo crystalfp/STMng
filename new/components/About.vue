@@ -6,7 +6,7 @@
  */
 import {reactive, ref, version as VueVersion} from "vue";
 import * as THREE from "three";
-import {getVersions, type Versions} from "@/services/RoutesClient";
+import {getVersions, type Versions} from "../services/RoutesClient";
 
 // > Events
 const emit = defineEmits<{
