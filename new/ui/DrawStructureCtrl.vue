@@ -62,6 +62,40 @@ askNode(id, "init")
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "system"));
 
 /**
+ * Adjust 3D objects characteristics
+ */
+const adjustMaterials = (): void => {
+
+    const detail = sphereSubdivisions[drawQuality.value];
+    const segments = cylinderSubdivisions[drawQuality.value];
+    out.traverse((object) => {
+        if(object.type !== "Mesh") return;
+        const mesh = object as THREE.Mesh;
+        const material = mesh.material as THREE.MeshStandardMaterial;
+        material.roughness = drawRoughness.value;
+        material.metalness = drawMetalness.value;
+
+        const {geometry} = mesh;
+        if(geometry.type === "IcosahedronGeometry") {
+            const sphere = geometry as THREE.IcosahedronGeometry;
+            if(sphere.parameters.detail !== detail) {
+                const {radius} = sphere.parameters;
+                mesh.geometry = new THREE.IcosahedronGeometry(radius, detail);
+            }
+        }
+        else if(geometry.type === "CylinderGeometry") {
+            const cylinder = geometry as THREE.CylinderGeometry;
+            if(cylinder.parameters.radialSegments !== segments) {
+                const {radiusTop, radiusBottom, height} = cylinder.parameters;
+
+                mesh.geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom,
+                                                            height, segments, 1, true);
+            }
+        }
+    });
+};
+
+/**
  * Draw a sphere
  *
  * @param radius - Sphere radius
@@ -373,14 +407,17 @@ const drawLabels = (): void => {
     }
 };
 
+// Receive new structure from main process
 receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRenderInfo) => {
 
     renderInfo = updatedRenderInfo;
+    adjustMaterials();
     drawStructure();
     drawLabels();
 });
 
-watch([showLabels, labelKind, drawKind], () => {
+// Change draw parameters
+watch([labelKind, drawKind, shadedBonds], () => {
 
     if(renderInfo) {
         drawLabels();
@@ -388,7 +425,21 @@ watch([showLabels, labelKind, drawKind], () => {
     }
 });
 
-// To convert the button toggle into three booleans
+// Change visibility
+watch([showStructure, showBonds, showLabels], () => {
+
+    labelsGroup.visible = showLabels.value;
+    bondsGroup.visible = showBonds.value;
+    out.visible = showStructure.value;
+});
+
+// Change material parameters
+watch([drawRoughness, drawMetalness, drawQuality], () => {
+
+    adjustMaterials();
+});
+
+// Convert the button toggle into three booleans
 const showCombined = computed({
     get: () => {
         const result = [];
@@ -403,7 +454,6 @@ const showCombined = computed({
         showLabels.value = values.includes("labels");
     }
 });
-
 
 // Name the groups (useful for debugging)
 atomsGroup.name = "Atoms";

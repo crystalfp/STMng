@@ -79,11 +79,6 @@ class AtomInfo {
 }
 
 /**
- * Initialize the atom info cache
- */
-export const atomInfoInit = (): void => AtomInfo.getInstance().init();
-
-/**
  * Return the atom color
  *
  * @param atomZ - Atomic number for which the atom color should be returned
@@ -98,14 +93,6 @@ export const atomColor = (atomZ: number): string => AtomInfo.getInstance().atomD
  * @returns The atom symbol
  */
 export const atomSymbol = (atomZ: number): string => AtomInfo.getInstance().atomData(atomZ).symbol;
-
-/**
- * Convert an atomic symbol into the corresponding atomic number
- *
- * @param symbol - Atomic symbol for which the atomic number should be retrieved
- * @returns The corresponding atomic number
- */
-export const symbolToZ = (symbol: string): number => AtomInfo.getInstance().getAtomZ(symbol);
 
 /**
  * Retrieve all data pertaining to the given atomic number

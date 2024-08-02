@@ -115,8 +115,12 @@ const app = createApp(App)
 
 // Add global error handler
 app.config.errorHandler = (error: unknown) => {
-	log.error("Global error handler:", (error as Error).message, "\n", (error as Error).stack);
+	log.error("Global error:", (error as Error).message, "\n", (error as Error).stack);
 };
+
+addEventListener("unhandledrejection", (event) => {
+	log.error("Unhandled rejection:", event.reason);
+});
 
 // Mount the application
 app.mount("#app");

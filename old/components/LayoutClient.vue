@@ -10,7 +10,6 @@ import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
         receiveNotifications} from "@/services/RoutesClient";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "../../new/services/SceneManager";
-import {atomInfoInit} from "@/services/AtomInfo";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "../../new/components/ControlsContainer.vue";
@@ -36,7 +35,6 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             setProjectPathInTitle("See the Molecole new generation");
             receiveRefreshMenu();
-            atomInfoInit();
         }
     }, 20);
 });
