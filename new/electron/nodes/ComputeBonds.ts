@@ -439,7 +439,14 @@ export class ComputeBonds extends NodeCore {
 		}
 	}
 
-	// The H bonds form when X___H...Y and X, Y are N, O, F (and also S)
+	// > Possible H bond
+	/**
+	 * Check if an H bond could form.
+	 * The H bonds form when X___H...Y and X, Y are N, O, F (and also S)
+	 *
+	 * @param atomZ - Atomic number of the X or Y atoms
+	 * @returns True if an H bond could form
+	 */
 	atomForHBond(atomZ: number): boolean {return [7, 8, 9, 16].includes(atomZ);}
 
 	// > Compute the valence angle
@@ -670,13 +677,30 @@ export class ComputeBonds extends NodeCore {
 
 	saveStatus(): string {
         const statusToSave = {
-			showTrajectories: false,
+			minBondingDistance: this.minBondingDistance,
+			maxBondingDistance: this.maxBondingDistance,
+			maxHBondingDistance: this.maxHBondingDistance,
+			maxHValenceAngle: this.maxHValenceAngle,
+			enableComputeBonds: this.enableComputeBonds,
+			bondScale: this.bondScale,
+			perPairScale: this.perPairScale,
+			perPairData: JSON.stringify(this.perPairData),
+			enlargementKind: this.enlargementKind,
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {
-		console.log("Loading", this.name, "with", params);
+
+		this.enableComputeBonds  = params.enableComputeBonds as boolean ?? true;
+		this.minBondingDistance  = params.minBondingDistance as number ?? 0.64;
+		this.maxBondingDistance  = params.maxBondingDistance as number ?? 4.50;
+		this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
+		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
+		this.bondScale    		 = params.bondScale as number ?? 1.1;
+		this.perPairScale		 = params.perPairScale as boolean ?? false;
+		this.enlargementKind     = params.enlargementKind as string ?? "none";
+		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 	}
 
 	getUiInfo(): UiInfo {
@@ -717,17 +741,17 @@ export class ComputeBonds extends NodeCore {
 	 */
 	private channelChanges(params: CtrlParams): void {
 
-    		this.enableComputeBonds  = params.enableComputeBonds as boolean ?? true;
-    		this.minBondingDistance  = params.minBondingDistance as number ?? 0.64;
-    		this.maxBondingDistance  = params.maxBondingDistance as number ?? 4.50;
-    		this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
-    		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
-    		this.bondScale    		 = params.bondScale as number ?? 1.1;
-			this.perPairScale		 = params.perPairScale as boolean ?? false;
-    		this.enlargementKind     = params.enlargementKind as string ?? "none";
+		this.enableComputeBonds  = params.enableComputeBonds as boolean ?? true;
+		this.minBondingDistance  = params.minBondingDistance as number ?? 0.64;
+		this.maxBondingDistance  = params.maxBondingDistance as number ?? 4.50;
+		this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
+		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
+		this.bondScale    		 = params.bondScale as number ?? 1.1;
+		this.perPairScale		 = params.perPairScale as boolean ?? false;
+		this.enlargementKind     = params.enlargementKind as string ?? "none";
 
-			this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
+		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
-			this.addBonds();
+		this.addBonds();
 	}
 }

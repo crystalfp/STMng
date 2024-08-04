@@ -5,11 +5,9 @@
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  */
-import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {WindowsParams, ComputeSymmetriesParams} from "@/electron/types";
 import type {MainResponse, Structure} from "@/types";
-import {useMessageStore} from "@/stores/messageStore";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -23,76 +21,6 @@ declare global {
 	}
 }
 
-
-// > Main window handling
-/**
- * Handle full screen view
- *
- * @param callback - Function to call on full screen status change
- */
-export const handleFullscreen = (callback: (isFullscreen: boolean) => void): void => {
-
-    window.electron.ipcRenderer.on("WINDOW:FULLSCREEN", (_event, isFullscreen: boolean) => callback(isFullscreen));
-};
-
-/**
- * Setup of a receiver for broadcast messages.
- *
- * @param callback - Function to be called on receiving a broadcast message
- */
-export const receiveBroadcast = (callback: (eventType: string, params: (boolean | string)[]) => void): void => {
-
-	window.electron.ipcRenderer.on("APP:BROADCAST",
-								   (_event, {eventType, eventData}) =>
-								   		callback(
-											eventType as string,
-											eventData as (boolean | string)[]
-								   		)
-	);
-};
-
-/**
- * Receive system menu selection.
- *
- * @param callback - Function to be called when an entry in the system menu is selected
- */
-export const receiveMenuSelection = (callback: (menuEntry: string, payload: string) => void): void => {
-
-	window.electron.ipcRenderer.on("APP:MENU", (_event, entryName: string, payload: string) =>
-														callback(entryName, payload));
-};
-
-/**
- * Receive notifications from main process.
- *
- * @param callback - Function to be called when a notification arrives
- */
-export const receiveNotifications = (callback: (type: "error" | "success",
-												text: string) => void): void => {
-
-	// Notifications from main process
-	window.electron.ipcRenderer.on("APP:NOTIFICATION", (_event, type: string, text: string) =>
-														callback(type as "error" | "success", text));
-
-	// Notifications from main window
-	watchEffect(() => {
-		const messageStore = useMessageStore();
-
-		const message = messageStore.system.error;
-		if(message) {
-			callback("error", message);
-			messageStore.system.error = "";
-		}
-	});
-};
-
-/**
- * Refresh the system menu that has been changed in the main process
- */
-export const receiveRefreshMenu = (): void => {
-
-	window.electron.ipcRenderer.on("APP:REFRESH-MENU", window.api.refreshMenu);
-};
 
 
 // > Project
@@ -129,31 +57,6 @@ export const sendProject = (callback: () => string): void => {
 export const sendCurrentNode = (callback: () => string): void => {
 	window.electron.ipcRenderer.on("PROJECT:ASK-CURRENT-NODE", () => {
 		window.electron.ipcRenderer.send("PROJECT:GET-CURRENT-NODE", callback());
-	});
-};
-
-/**
- * Set the title with the current loaded project path.
- *
- * @param baseTitle - The first part of the title
- */
-export const setProjectPathInTitle = (baseTitle: string): void => {
-
-	// Set the title the first time
-	const project = window.electron.ipcRenderer
-							.sendSync("PREFERENCES:GET-SYNC", "LastProjectLoaded") as string;
-
-	if(project) {
-		let idx = project.lastIndexOf("\\");
-		if(idx < 0) idx = project.lastIndexOf("/");
-    	window.api.setTitle(`${baseTitle} — ${project.slice(idx+1)}`);
-	}
-    else window.api.setTitle(`${baseTitle} — default project`);
-
-	// Receive title updates
-	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
-
-		window.api.setTitle(`${baseTitle} — ${projectPath || "default project"}`);
 	});
 };
 

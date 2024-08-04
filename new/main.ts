@@ -113,9 +113,9 @@ const app = createApp(App)
 	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
 	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")));
 
-// Add global error handler
+// Add global error handlers
 app.config.errorHandler = (error: unknown) => {
-	log.error("Global error:", (error as Error).message, "\n", (error as Error).stack);
+	log.error("Unhandled exception:", (error as Error).message, "\n", (error as Error).stack);
 };
 
 addEventListener("unhandledrejection", (event) => {

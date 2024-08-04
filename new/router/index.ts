@@ -7,7 +7,7 @@
  */
 import {createWebHashHistory, createRouter} from "vue-router";
 
-import LayoutClient from "../../old/components/LayoutClient.vue";
+import LayoutClient from "../components/LayoutClient.vue";
 import ChartViewer from "../../old/components/ChartViewer.vue";
 import ProjectEditor from "../../old/components/ProjectEditor.vue";
 import ShowSymmetries from "../../old/components/ShowSymmetries.vue";

@@ -35,7 +35,7 @@ export const setupMenu = (): void => {
             label: "&File",
             submenu: [
                 {
-                    label: "Load project (new)",
+                    label: "Load project",
                     accelerator: "CommandOrControl+O",
                     click() {
                         const file = dialog.showOpenDialogSync({
@@ -53,7 +53,7 @@ export const setupMenu = (): void => {
                     }
                 },
                 {
-                    label: "Load default project (new)",
+                    label: "Load default project",
                     accelerator: "CommandOrControl+D",
                     click() {
                         pm.loadRememberedProject(true);

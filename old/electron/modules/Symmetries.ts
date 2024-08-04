@@ -31,7 +31,7 @@ interface NativeModule {
  */
 export const setupChannelSymmetries = (): void => {
 
-	/* eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module */
+	/* eslint-disable-next-line @typescript-eslint/no-require-imports, unicorn/prefer-module */
 	const addon = require("../build/Release/native") as NativeModule;
 
 	ipcMain.handle("SYMMETRIES:COMPUTE", (_event, paramsEncoded: string) => {

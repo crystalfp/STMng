@@ -5,11 +5,10 @@
  */
 
 import {ref, onMounted, onUnmounted} from "vue";
-import {closeWindow, receiveInWindow,
-        receiveBroadcast} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {sb} from "@/services/Switchboard";
 import type {Project, ProjectGraph} from "@/types";
-import {getPreferenceSync} from "../../new/services/RoutesClient";
+import {getPreferenceSync, receiveBroadcast} from "../../new/services/RoutesClient";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 150;

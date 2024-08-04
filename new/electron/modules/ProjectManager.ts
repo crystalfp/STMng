@@ -257,7 +257,7 @@ class ProjectManager {
 		const out = viewerStatus ?
 					`{"graph":${graphAsString},"viewer":{${viewerStatus}},"ui":{${uiStatus}}}` :
 					`{"graph":${graphAsString},"ui":{${uiStatus}}}`;
-		const formattedOut = JSON.stringify(JSON.parse(out), undefined, 2);
+		const formattedOut = `${JSON.stringify(JSON.parse(out), undefined, 2)}\n`;
 		fs.writeFileSync(filename, formattedOut, "utf8");
 	}
 

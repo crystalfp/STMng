@@ -5,15 +5,13 @@
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
-import {handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
-        receiveBroadcast, receiveMenuSelection,
-        receiveNotifications} from "@/services/RoutesClient";
-import {showErrorNotification} from "@/services/ErrorNotification";
-import {sm} from "../../new/services/SceneManager";
-import {isLoaded, getPreferenceSync} from "../../new/services/RoutesClient";
+import {sm} from "../services/SceneManager";
+import {isLoaded, getPreferenceSync, handleFullscreen, receiveRefreshMenu, setProjectPathInTitle,
+        receiveBroadcast, receiveMenuSelection, receiveNotifications} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
 
 import Viewer3D from "@/components/Viewer3D.vue";
-import ControlsContainer from "../../new/components/ControlsContainer.vue";
+import ControlsContainer from "./ControlsContainer.vue";
 
 /** Normal/Expanded viewer window */
 const normalScreen = ref(true);
@@ -25,7 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
         ++count;
         if(count > 50) {
           clearInterval(timer);
-          showErrorNotification("Waiting too long for IPC to setup");
+          showAlertMessage("Waiting too long for IPC to setup");
         }
         if(isLoaded()) {
             clearInterval(timer);
@@ -55,7 +53,7 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
             sm.dumpScene("Scene 3D");
             break;
         default:
-            showErrorNotification(`Menu entry "${menuEntry}" is not implemented`);
+            showAlertMessage(`Menu entry "${menuEntry}" is not implemented`);
             break;
     }
 });

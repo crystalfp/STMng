@@ -105,6 +105,7 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 * @param key - The key to check
 	 * @returns True if the key exists in the store
 	 */
+	 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 	has<K extends keyof T>(key: K): boolean {
 		return this.data[key] !== undefined;
 	}
@@ -114,6 +115,7 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 *
 	 * @param key - Key to be deleted
 	 */
+	 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 	delete<K extends keyof T>(key: K): void {
 		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete this.data[key];

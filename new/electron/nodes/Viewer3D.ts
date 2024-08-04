@@ -15,12 +15,11 @@ export class Viewer3D extends NodeCore {
 
 	constructor(private readonly id: string) {
 		super();
-		console.log(`Instantiated ${this.name}`);
 	}
 
 	saveStatus(): string {
         const statusToSave = {
-			showTrajectories: false,
+			notExistent: true,
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}

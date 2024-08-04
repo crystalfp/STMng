@@ -17,6 +17,7 @@ import electronPlugin from "eslint-plugin-electron-extension";
 import jsPlugin from "@eslint/js"
 import vuetifyPlugin from "eslint-plugin-vuetify";
 import {FlatCompat} from "@eslint/eslintrc"
+import stylistic from "@stylistic/eslint-plugin";
 
 const compat = new FlatCompat({
     config: vuetifyPlugin.configs.recommended.rules,
@@ -54,6 +55,7 @@ export default [{
             Buffer: "readonly",
             require: "readonly",
             structuredClone: "readonly",
+            addEventListener: "readonly",
         },
         parserOptions: {
             parser: tsParser,
@@ -82,6 +84,7 @@ export default [{
         tsdoc: tsdocPlugin,
         "electron-extension": electronPlugin,
         vuetify: vuetifyPlugin,
+        "@stylistic": stylistic,
     },
     settings: {
         "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx"]},
@@ -144,13 +147,13 @@ export default [{
         "lines-between-class-members": "off",
         "@typescript-eslint/lines-between-class-members": "off",
         "quotes": ["off", "double", {avoidEscape: true}],
-        "@typescript-eslint/quotes": ["warn", "double", {avoidEscape: true}],
+        "@stylistic/quotes": ["warn", "double", {avoidEscape: true}],
         "no-loop-func": "off",
         "@typescript-eslint/no-loop-func": "error",
         "no-unused-expressions": "off",
         "@typescript-eslint/no-unused-expressions": "warn",
         "space-before-function-paren": "off",
-        "@typescript-eslint/space-before-function-paren": [
+        "@stylistic/space-before-function-paren": [
             "error", {anonymous: "never", named: "never", asyncArrow: "always"}
         ],
         "no-shadow": "off",
@@ -158,7 +161,7 @@ export default [{
             "error", {hoist: "all", builtinGlobals: true, allow: ["event", "self", "window"]}
         ],
         "comma-spacing": "off",
-        "@typescript-eslint/comma-spacing": ["error", {before: false, after: true}],
+        "@stylistic/comma-spacing": ["error", {before: false, after: true}],
         "keyword-spacing": "off",
         "@typescript-eslint/keyword-spacing": ["off",
             {before: true, after: false, overrides: {
@@ -182,9 +185,9 @@ export default [{
             }
         ],
         "object-curly-spacing": "off",
-        "@typescript-eslint/object-curly-spacing": ["warn"],
+        "@stylistic/object-curly-spacing": ["warn"],
         "brace-style": "off",
-        "@typescript-eslint/brace-style": ["warn", "stroustrup", {allowSingleLine: true}],
+        "@stylistic/brace-style": ["warn", "stroustrup", {allowSingleLine: true}],
         "comma-dangle": ["off", "never"],
         "@typescript-eslint/comma-dangle": ["off", {arrays: "only-multiline", objects: "only-multiline"}],
         "no-implicit-coercion": "error",
@@ -223,7 +226,6 @@ export default [{
         "dot-location": ["error", "property"],
         "no-else-return": "error",
         "no-throw-literal": "off",
-        "@typescript-eslint/no-throw-literal": "error",
         "@typescript-eslint/only-throw-error": "error",
         "require-await": "off",
         "@typescript-eslint/require-await": "error",
@@ -249,11 +251,11 @@ export default [{
             {enforceForRenamedProperties: false}
         ],
         "no-extra-parens": "off",
-        "@typescript-eslint/no-extra-parens": ["warn", "functions"],
+        "@stylistic/no-extra-parens": ["warn", "functions"],
         "no-invalid-this": "off",
         "@typescript-eslint/no-invalid-this": ["off", {capIsConstructor: false}],
         "prefer-template": "warn",
-        "@typescript-eslint/semi": ["error", "always"],
+        "@stylistic/semi": ["error", "always"],
         "@typescript-eslint/explicit-function-return-type": ["warn", {allowExpressions: true}],
         "@typescript-eslint/method-signature-style": "warn",
         "@typescript-eslint/prefer-includes": "warn",
@@ -284,7 +286,7 @@ export default [{
         "init-declarations": "off",
         "@typescript-eslint/init-declarations": "off",
         "func-call-spacing": "off",
-        "@typescript-eslint/func-call-spacing": "warn",
+        "@stylistic/func-call-spacing": "warn",
         "default-param-last": "off",
         "@typescript-eslint/default-param-last": "warn",
         "vue/first-attribute-linebreak": "off",
@@ -339,7 +341,7 @@ export default [{
         "deprecate/function": "warn",
         "deprecate/member-expression": "warn",
         "deprecate/import": "off",
-        "@typescript-eslint/member-delimiter-style": "warn",
+        "@stylistic/member-delimiter-style": "warn",
         "tsdoc/syntax": "warn",
         "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],
         "electron-extension/no-incompatible-api": "warn",

@@ -74,18 +74,20 @@
   "ui": {
     "reader": {
       "loopSteps": false,
-      "step": 1,
       "format": "LAMMPStrj",
-      "atomsTypes": "Fe O"
+      "atomsTypes": "Fe O",
+      "useBohr": true
     },
     "bonds": {
       "minBondingDistance": 0.64,
       "maxBondingDistance": 4.5,
       "maxHBondingDistance": 3,
       "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
       "bondScale": 1.1,
       "perPairScale": false,
-      "enlargeCell": false
+      "perPairData": "[]",
+      "enlargementKind": "none"
     },
     "draw": {
       "drawKind": "ball-and-stick",
@@ -93,9 +95,10 @@
       "drawRoughness": 0.5,
       "drawMetalness": 0.6,
       "labelKind": "symbol",
-      "showStructure": true,
       "showBonds": false,
-      "showLabels": false
+      "showStructure": true,
+      "showLabels": false,
+      "shadedBonds": true
     }
   }
 }

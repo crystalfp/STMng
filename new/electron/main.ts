@@ -56,6 +56,15 @@ log.transports.file.level = options.verbose ? "silly" : "warn";
 log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
 
+// Handle uncaught errors
+process.on("uncaughtException", (event) => {
+	log.error("Unhandled exception:", event.message);
+});
+
+process.on("unhandledRejection", (event: PromiseRejectionEvent) => {
+	log.error("Unhandled rejection:", event.reason);
+});
+
 // Initialize the channels between main process and client
 setupChannelPreferences();
 setupChannelVersions();
