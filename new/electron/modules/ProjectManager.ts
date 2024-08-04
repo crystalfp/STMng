@@ -7,6 +7,7 @@
  * @since 2024-07-06
  */
 import fs from "node:fs";
+import {writeFile} from "node:fs/promises";
 import {app} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -228,7 +229,7 @@ class ProjectManager {
 	 *
 	 * @param filename - Where the current project should be saved
 	 */
-	saveProjectAs(filename: string): void {
+	async saveProjectAs(filename: string): Promise<void> {
 
 		if(!this.project) return;
 
@@ -241,7 +242,7 @@ class ProjectManager {
 
 			const node = this.nodes.get(entry)!;
 
-			if(this.project.graph[entry].type === "viewer-3d") viewerStatus = node.saveStatus();
+			if(this.project.graph[entry].type === "viewer-3d") viewerStatus = await node.saveStatus();
 			else {
 				if(notFirst) uiStatus += ",";
 				else notFirst = true;
@@ -258,7 +259,7 @@ class ProjectManager {
 					`{"graph":${graphAsString},"viewer":{${viewerStatus}},"ui":{${uiStatus}}}` :
 					`{"graph":${graphAsString},"ui":{${uiStatus}}}`;
 		const formattedOut = `${JSON.stringify(JSON.parse(out), undefined, 2)}\n`;
-		fs.writeFileSync(filename, formattedOut, "utf8");
+		await writeFile(filename, formattedOut, "utf8");
 	}
 
 	/**

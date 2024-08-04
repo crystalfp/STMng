@@ -9,15 +9,15 @@ import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendErrorNotification,
-        refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
-import {setMainTheme, isExtended, setExtended} from "../../../new/electron/modules/Preferences";
+        refreshSystemMenu, openMenuEntry, getCurrentNode} from "../../../old/electron/modules/WindowsUtilities";
+import {setMainTheme, isExtended, setExtended} from "./Preferences";
 // import {loadRememberedProject, loadProjectAndRemember, saveProject, sendProjectToEditor,
 //         saveProjectAs, createProjectEditor} from "./ProjectX";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 // TEST
-import {pm} from "../../../new/electron/modules/ProjectManager";
+import {pm} from "./ProjectManager";
 
 
 let systemMenu: Menu;

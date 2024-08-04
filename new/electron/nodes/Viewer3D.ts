@@ -7,25 +7,34 @@
  * @since 2024-07-08
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {UiInfo, ViewerState} from "../../types";
+import type {UiInfo, ViewerState, ChannelDefinition, CtrlParams} from "../../types";
+import {askClient} from "../../../old/electron/modules/WindowsUtilities";
 
 export class Viewer3D extends NodeCore {
 
 	protected readonly name = "Viewer3D";
+	protected rawStatus = "{}";
+
+	/* eslint-disable @typescript-eslint/unbound-method */
+	private readonly channels: ChannelDefinition[] = [
+		{name: "init",		type: "invoke", 	callback: this.channelInit},
+	];
+	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();
+		this.setupChannels(this.id, this.channels);
 	}
 
-	saveStatus(): string {
-        const statusToSave = {
-			notExistent: true,
-		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+	async saveStatus(): Promise<string> {
+
+		this.rawStatus = await askClient(this.id, "state")
+        return `"${this.id}": ${this.rawStatus}`;
 	}
 
 	loadStatus(params: ViewerState): void {
-		console.log("Loading", this.name, "with", params);
+
+		this.rawStatus = JSON.stringify(params);
 	}
 
 	getUiInfo(): UiInfo {
@@ -34,7 +43,20 @@ export class Viewer3D extends NodeCore {
 			id: this.id,
 			ui: "Viewer3DCtrl",
 			graphic: "in",
-			channels: ["1"]
+			channels: this.channels.map((channel) => channel.name)
+		};
+	}
+
+	// > Channel handlers
+	/**
+	 * Channel handler for UI initialization
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelInit(): CtrlParams {
+
+		return {
+			rawStatus: this.rawStatus
 		};
 	}
 }

@@ -146,13 +146,11 @@ export default [{
         "@typescript-eslint/no-useless-constructor": "warn",
         "lines-between-class-members": "off",
         "@typescript-eslint/lines-between-class-members": "off",
-        "quotes": ["off", "double", {avoidEscape: true}],
         "@stylistic/quotes": ["warn", "double", {avoidEscape: true}],
         "no-loop-func": "off",
         "@typescript-eslint/no-loop-func": "error",
         "no-unused-expressions": "off",
         "@typescript-eslint/no-unused-expressions": "warn",
-        "space-before-function-paren": "off",
         "@stylistic/space-before-function-paren": [
             "error", {anonymous: "never", named: "never", asyncArrow: "always"}
         ],
@@ -160,7 +158,6 @@ export default [{
         "@typescript-eslint/no-shadow": [
             "error", {hoist: "all", builtinGlobals: true, allow: ["event", "self", "window"]}
         ],
-        "comma-spacing": "off",
         "@stylistic/comma-spacing": ["error", {before: false, after: true}],
         "keyword-spacing": "off",
         "@typescript-eslint/keyword-spacing": ["off",
@@ -184,9 +181,7 @@ export default [{
                 }
             }
         ],
-        "object-curly-spacing": "off",
         "@stylistic/object-curly-spacing": ["warn"],
-        "brace-style": "off",
         "@stylistic/brace-style": ["warn", "stroustrup", {allowSingleLine: true}],
         "comma-dangle": ["off", "never"],
         "@typescript-eslint/comma-dangle": ["off", {arrays: "only-multiline", objects: "only-multiline"}],
@@ -250,7 +245,6 @@ export default [{
             },
             {enforceForRenamedProperties: false}
         ],
-        "no-extra-parens": "off",
         "@stylistic/no-extra-parens": ["warn", "functions"],
         "no-invalid-this": "off",
         "@typescript-eslint/no-invalid-this": ["off", {capIsConstructor: false}],
@@ -285,7 +279,6 @@ export default [{
 
         "init-declarations": "off",
         "@typescript-eslint/init-declarations": "off",
-        "func-call-spacing": "off",
         "@stylistic/func-call-spacing": "warn",
         "default-param-last": "off",
         "@typescript-eslint/default-param-last": "warn",

@@ -11,15 +11,15 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
-import {sm} from "../../new/services/SceneManager";
+import {sm} from "../services/SceneManager";
 import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";
-import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
+import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "../services/FitCamera";
 import type {MainResponse} from "@/types";
-import {showErrorNotification} from "@/services/ErrorNotification";
-import {setupSceneHelpers} from "@/services/SceneHelpers";
+import {setupSceneHelpers} from "../services/SceneHelpers";
+import {showAlertMessage} from "../services/AlertMessage";
 
 // > Access the stores
-const configStore = useConfigStore();
+const configStore  = useConfigStore();
 const controlStore = useControlStore();
 const messageStore = useMessageStore();
 
@@ -127,7 +127,7 @@ const scene = sm.createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        showErrorNotification("Cannot create canvas. Quitting.");
+        showAlertMessage("Cannot create canvas. Quitting.");
         return;
     }
 

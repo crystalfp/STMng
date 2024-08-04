@@ -10,7 +10,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
-import {setupMenu} from "./SystemMenu";
+import {setupMenu} from "../../../new/electron/modules/SystemMenu";
 import {setupRelayToMainWin, setupRelayFromMainWin} from "./RelayForMainWin";
 import favicon from "../../../new/assets/favicon.png";
 import type {WindowsParams} from "../types";
@@ -377,4 +377,19 @@ export const sendToClientForRendering = (id: string,
                                          renderInfo: StructureRenderInfo): void => {
 
     mainWin.webContents.send(`${id}:${channel}`, renderInfo);
+};
+
+/**
+ * Ask the client to receive a string
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @returns The viewer3D state stringified
+ */
+export const askClient = (id: string, channel: string): Promise<string> => {
+
+    mainWin.webContents.send(`${id}:${channel}`);
+    return new Promise((resolve) => {
+        ipcMain.on(`${id}:${channel}-res`, (_event: unknown, answer: string): void => resolve(answer));
+    });
 };

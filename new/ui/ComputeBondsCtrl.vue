@@ -54,7 +54,7 @@ askNode(id, "init")
             showScale.value.push(item.scale);
         }
     })
-    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
 
 watchEffect(() => {
     sendToNode(id, "changes", {

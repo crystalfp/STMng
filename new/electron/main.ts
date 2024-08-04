@@ -15,15 +15,13 @@ import pkg from "../../package.json";
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {createMainWindow} from "../../old/electron/modules/WindowsUtilities";
-import {disableSaveProjectEntry} from "../../old/electron/modules/SystemMenu";
+import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelCapture} from "../../old/electron/modules/CaptureMedia";
 import {setupChannelSymmetries} from "../../old/electron/modules/Symmetries";
 import {setupChannelWriter} from "../../old/electron/modules/Writer";
 import {setupChannelFingerprints} from "../../old/electron/modules/Fingerprints";
 import {setupChannelAtomData} from "./modules/AtomData";
-
-// TEST
 import {pm} from "./modules/ProjectManager";
 
 // > Command line parsing
@@ -48,11 +46,14 @@ interface ProgramOptions {
 }
 const options = program.opts<ProgramOptions>();
 
+// Verbose can be set also with the "STM_NG_VERBOSE" environment variable set to any value
+const verbose = options.verbose || process.env.STM_NG_VERBOSE !== undefined;
+
 // > Setup the main process
 // Initialize the logger
 log.initialize();
-log.transports.console.level = options.verbose ? "silly" : "warn";
-log.transports.file.level = options.verbose ? "silly" : "warn";
+log.transports.console.level = verbose ? "silly" : "warn";
+log.transports.file.level = verbose ? "silly" : "warn";
 log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
 

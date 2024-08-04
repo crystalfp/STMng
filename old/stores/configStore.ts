@@ -98,6 +98,52 @@ export const useConfigStore = defineStore("ConfigStore", {
             };
             return JSON.stringify(statusToSave);
         }
+    },
+
+    // > Actions
+    actions: {
+        restoreState(rawState: string | undefined) {
+
+            if(!rawState) return;
+            const state = JSON.parse(rawState) as Viewer3DConfiguration;
+
+            this.camera.type = state.camera.type;
+            this.camera.position[0] = state.camera.position[0];
+            this.camera.position[1] = state.camera.position[1];
+            this.camera.position[2] = state.camera.position[2];
+            this.camera.lookAt[0] = state.camera.lookAt[0];
+            this.camera.lookAt[1] = state.camera.lookAt[1];
+            this.camera.lookAt[2] = state.camera.lookAt[2];
+            this.camera.snapshotFormat = state.camera.snapshotFormat;
+            this.camera.stlFormat = state.camera.stlFormat;
+
+            this.scene.background = state.scene.background;
+
+            this.lights.ambientColor = state.lights.ambientColor;
+            this.lights.ambientIntensity = state.lights.ambientIntensity;
+            this.lights.directional1Color = state.lights.directional1Color;
+            this.lights.directional1Intensity = state.lights.directional1Intensity;
+            this.lights.directional2Color = state.lights.directional2Color;
+            this.lights.directional2Intensity = state.lights.directional2Intensity;
+            this.lights.directional3Color = state.lights.directional3Color;
+            this.lights.directional3Intensity = state.lights.directional3Intensity;
+            this.lights.directional1Position[0] = state.lights.directional1Position[0];
+            this.lights.directional1Position[1] = state.lights.directional1Position[1];
+            this.lights.directional1Position[2] = state.lights.directional1Position[2];
+            this.lights.directional2Position[0] = state.lights.directional2Position[0];
+            this.lights.directional2Position[1] = state.lights.directional2Position[1];
+            this.lights.directional2Position[2] = state.lights.directional2Position[2];
+            this.lights.directional3Position[0] = state.lights.directional3Position[0];
+            this.lights.directional3Position[1] = state.lights.directional3Position[1];
+            this.lights.directional3Position[2] = state.lights.directional3Position[2];
+
+            this.helpers.showAxis = state.helpers.showAxis;
+            this.helpers.showGridXZ = state.helpers.showGridXZ;
+            this.helpers.showGridXY = state.helpers.showGridXY;
+            this.helpers.showGridYZ = state.helpers.showGridYZ;
+            this.helpers.gridSize = state.helpers.gridSize;
+            this.helpers.axisLength = state.helpers.axisLength;
+        }
     }
 });
 

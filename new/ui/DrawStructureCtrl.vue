@@ -59,7 +59,7 @@ askNode(id, "init")
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "system"));
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
 
 /**
  * Adjust 3D objects characteristics

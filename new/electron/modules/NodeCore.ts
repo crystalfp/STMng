@@ -60,7 +60,7 @@ export abstract class NodeCore {
      *
      * @returns The JSON formatted status to be saved
      */
-	abstract saveStatus(): string;
+	abstract saveStatus(): string | Promise<string>;
 
     /**
      * Load the node status retrieved from project file into this node

@@ -8,9 +8,9 @@
 
 import * as THREE from "three";
 import {watchEffect} from "vue";
-import {sm} from "../../new/services/SceneManager";
+import {sm} from "./SceneManager";
 import {useConfigStore} from "@/stores/configStore";
-import {spriteText} from "../../new/services/SpriteText";
+import {spriteText} from "./SpriteText";
 
 let sidePrevious = 10;
 let axisLengthPrevious = 1;

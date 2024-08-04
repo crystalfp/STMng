@@ -8,6 +8,8 @@ Porting:
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Avoid Blocking the Event Loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
   ☐ Is there any way to avoid callbacks for repetitive call?
+  ☐ Add color to log messages (e.g., `%cRed`)
+  ☐ Add more `log.info()` or `log.debug()` messages
 
 ToDo:
   ☐ Readers do not fail if the file format is invalid

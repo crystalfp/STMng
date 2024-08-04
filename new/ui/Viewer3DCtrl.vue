@@ -6,9 +6,29 @@
 
 import {ref, watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
+import {askNode, sendViewer3DState} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
+
+// > Properties
+const {id} = defineProps<{
+
+    /** Its own module id */
+    id: string;
+}>();
 
 // > Access the store
 const configStore = useConfigStore();
+
+// Initialize the parameters
+askNode(id, "init")
+    .then((params) => {
+
+        configStore.restoreState(params.rawStatus as string);
+    })
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
+
+// Send state on request from main process
+sendViewer3DState(id, "state", () => configStore.statusToSave);
 
 // > First directional light
 const alpha1 = ref(0);  // Around X on YZ plane

@@ -172,49 +172,49 @@ export function getPreferenceSync<T>(key: string, defaultValue: T): T {
 
 // > Communication
 /**
-* Ask to receive the parameters from the main process node
-*
-* @param id - ID of the node receiving the parameters
-* @param channel - Specify the channel inside the id related group
-* @param params - Parameters to send to the main process node
-* @returns Parameters from the main process node
-*/
+ * Ask to receive the parameters from the main process node
+ *
+ * @param id - ID of the node receiving the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param params - Parameters to send to the main process node
+ * @returns Parameters from the main process node
+ */
 export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> =>
 	(params?
 		window.electron.ipcRenderer.invoke(`${id}:${channel}`, params) as Promise<CtrlParams> :
 		window.electron.ipcRenderer.invoke(`${id}:${channel}`) as Promise<CtrlParams>);
 
 /**
-* Send parameters to the main process node
-*
-* @param id - ID of the node receiving the parameters
-* @param channel - Specify the channel inside the id related group
-* @param params - Parameters to send to the main process node
-*/
+ * Send parameters to the main process node
+ *
+ * @param id - ID of the node receiving the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param params - Parameters to send to the main process node
+ */
 export const sendToNode = (id: string, channel: string, params: CtrlParams): void => {
 
 	window.electron.ipcRenderer.send(`${id}:${channel}`, params);
 };
 
 /**
-* Receive parameters as push message
-*
-* @param id - ID of the node sending the parameters
-* @param channel - Specify the channel inside the id related group
-* @param callback - Callback function called when a message is received
-*/
+ * Receive parameters as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Callback function called when a message is received
+ */
 export const receiveFromNode = (id: string, channel: string, callback: (params: CtrlParams) => void): void => {
 
     window.electron.ipcRenderer.on(`${id}:${channel}`, (_event, params: CtrlParams) => callback(params));
 };
 
 /**
-* Receive parameters as push message
-*
-* @param id - ID of the node sending the parameters
-* @param channel - Specify the channel inside the id related group
-* @param callback - Callback function called when a message is received
-*/
+ * Receive parameters as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Callback function called when a message is received
+ */
 export const receiveFromNodeForRendering = (id: string,
 											channel: string,
 											callback: (renderInfo: StructureRenderInfo) => void): void => {
@@ -222,3 +222,20 @@ export const receiveFromNodeForRendering = (id: string,
     window.electron.ipcRenderer.on(`${id}:${channel}`,
 								   (_event, renderInfo: StructureRenderInfo) => callback(renderInfo));
 };
+
+/**
+ * Send the viewer3D state to the main process
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param getState - Function that returns the viewer3D status stringified
+ */
+export const sendViewer3DState = (id: string,
+								  channel: string,
+								  getState: () => string): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`, () => {
+
+		window.electron.ipcRenderer.send(`${id}:${channel}-res`, getState());
+	});
+}
