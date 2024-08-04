@@ -5,10 +5,12 @@
  */
 
 import {ref, watchEffect} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
+import type {CtrlParams} from "../types";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -32,25 +34,30 @@ const perPairData         = ref<PairData[]>([]);
 const showScale           = ref<number[]>([]);
 const enlargementKind     = ref("none");
 
-sb.getUiParams(props.id, (params: UiParams) => {
-    minBondingDistance.value  = params.minBondingDistance as number ?? 0.64;
-    maxBondingDistance.value  = params.maxBondingDistance as number ?? 4.50;
-    maxHBondingDistance.value = params.maxHBondingDistance as number ?? 3.00;
-    maxHValenceAngle.value    = params.maxHValenceAngle as number ?? 30;
-    enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
-    bondScale.value      		  = params.bondScale as number ?? 1.1;
-    perPairScale.value        = params.perPairScale as boolean ?? false;
-    enlargementKind.value     = params.enlargementKind as string ?? "none";
+// Initialize the control
+askNode(id, "init")
+    .then((params) => {
 
-    perPairData.value.length = 0;
-    const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
-    for(const item of pairData) {
-        perPairData.value.push(item);
-        showScale.value.push(item.scale);
-    }
-});
+        minBondingDistance.value  = params.minBondingDistance as number ?? 0.64;
+        maxBondingDistance.value  = params.maxBondingDistance as number ?? 4.50;
+        maxHBondingDistance.value = params.maxHBondingDistance as number ?? 3.00;
+        maxHValenceAngle.value    = params.maxHValenceAngle as number ?? 30;
+        enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
+        bondScale.value      	  = params.bondScale as number ?? 1.1;
+        perPairScale.value        = params.perPairScale as boolean ?? false;
+        enlargementKind.value     = params.enlargementKind as string ?? "none";
+
+        perPairData.value.length = 0;
+        const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
+        for(const item of pairData) {
+            perPairData.value.push(item);
+            showScale.value.push(item.scale);
+        }
+    })
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
+
 watchEffect(() => {
-    sb.setUiParams(props.id, {
+    sendToNode(id, "changes", {
         minBondingDistance:  minBondingDistance.value,
         maxBondingDistance:  maxBondingDistance.value,
         maxHBondingDistance: maxHBondingDistance.value,
@@ -61,6 +68,11 @@ watchEffect(() => {
         perPairData:         JSON.stringify(perPairData.value),
         enlargementKind:     enlargementKind.value
     });
+});
+
+receiveFromNode(id, "params", (params: CtrlParams) => {
+
+	enableComputeBonds.value = params.enableComputeBonds as boolean ?? false;
 });
 
 /**

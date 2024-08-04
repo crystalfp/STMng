@@ -24,17 +24,6 @@ declare global {
 }
 
 
-// > General system functions
-/**
- * Verify IPC is up and running.
- *
- * @returns True if IPC is running
- */
-export const isLoaded = (): boolean => window.electron?.ipcRenderer !== undefined &&
-		   window.api?.setTitle !== undefined &&
-		   window.api?.refreshMenu !== undefined;
-
-
 // > Main window handling
 /**
  * Handle full screen view
@@ -167,20 +156,6 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 		window.api.setTitle(`${baseTitle} — ${projectPath || "default project"}`);
 	});
 };
-
-// > Preferences
-/**
- * Synchronously return a preference
- *
- * @param key - Key to retrieve
- * @param defaultValue - Default value for the preference if not in the store
- * @returns The preference value or the default
- */
-export function getPreferenceSync<T>(key: string, defaultValue: T): T {
-
-    const value = window.electron.ipcRenderer.sendSync("PREFERENCES:GET-SYNC", key) as T;
-	return value ?? defaultValue;
-}
 
 // > Generic secondary windows handling
 /**

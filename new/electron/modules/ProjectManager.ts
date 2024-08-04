@@ -18,6 +18,7 @@ import {sendProjectUI, sendAlertMessage, sendProjectPath} from "../../../old/ele
 import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
 
 // NOTE 1) Add here the classes that defines the nodes
+import {CaptureView} from "../nodes/CaptureView";
 import {ChartViewer} from "../nodes/ChartViewer";
 import {ComputeBonds} from "../nodes/ComputeBonds";
 import {ComputeFingerprints} from "../nodes/ComputeFingerprints";
@@ -33,7 +34,6 @@ import {StructureReader} from "../nodes/StructureReader";
 import {StructureWriter} from "../nodes/StructureWriter";
 import {Trajectories} from "../nodes/Trajectories";
 import {Viewer3D} from "../nodes/Viewer3D";
-import {CaptureView} from "../nodes/CaptureView";
 
 class ProjectManager {
 

@@ -5,11 +5,12 @@
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
-import {isLoaded, handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
-        receiveBroadcast, getPreferenceSync, receiveMenuSelection,
+import {handleFullscreen, setProjectPathInTitle, receiveRefreshMenu,
+        receiveBroadcast, receiveMenuSelection,
         receiveNotifications} from "@/services/RoutesClient";
 import {showErrorNotification} from "@/services/ErrorNotification";
 import {sm} from "../../new/services/SceneManager";
+import {isLoaded, getPreferenceSync} from "../../new/services/RoutesClient";
 
 import Viewer3D from "@/components/Viewer3D.vue";
 import ControlsContainer from "../../new/components/ControlsContainer.vue";

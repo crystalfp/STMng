@@ -13,11 +13,9 @@ import type {NodeUI, Structure, GraphNode} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
-import {DrawStructure} from "@/nodes/DrawStructure";
 import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
-import {ComputeBonds} from "@/nodes/ComputeBonds";
 import {Orthoslice} from "@/nodes/DrawOrthoslice";
 import {StructureWriter} from "@/nodes/StructureWriter";
 import {Measures} from "@/nodes/Measures";
@@ -92,7 +90,6 @@ export class NodeInfo {
 			case "structure-reader":
 				break;
 			case "draw-structure":
-				map.set(id, new DrawStructure(id));
 				break;
 			case "chart-viewer":
 				map.set(id, new ChartViewer(id));
@@ -104,7 +101,6 @@ export class NodeInfo {
 				map.set(id, new DrawPolyhedra(id));
 				break;
 			case "compute-bonds":
-				map.set(id, new ComputeBonds(id));
 				break;
 			case "orthoslice":
 				map.set(id, new Orthoslice(id));
@@ -236,8 +232,6 @@ export class NodeInfo {
 				case "structure-reader":
 					break;
 				case "draw-structure":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as DrawStructure).saveStatus();
 					break;
 				case "chart-viewer":
 					if(notFirst) uiStatus += ",";
@@ -252,8 +246,6 @@ export class NodeInfo {
 					uiStatus += (node as DrawPolyhedra).saveStatus();
 					break;
 				case "compute-bonds":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as ComputeBonds).saveStatus();
 					break;
 				case "orthoslice":
 					if(notFirst) uiStatus += ",";

@@ -4,8 +4,7 @@ Porting:
   ☐ Remove multiple invoke to the nodes
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
   ☐ Memory Leak Detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
-  ✔ Add `unhandledRejection` global handler @done(2024-07-31 06:41)
-  ☐ Check error return from main process
+  ☐ Check error return from main process to client
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Avoid Blocking the Event Loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
   ☐ Is there any way to avoid callbacks for repetitive call?
@@ -14,7 +13,6 @@ ToDo:
   ☐ Readers do not fail if the file format is invalid
   ☐ Finish help
   ☐ Put the project name in the project viewer
-  ✔ Add project name in the Project structure @done(2024-07-31 08:20)
   ☐ Finish trajectories position clouds
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
@@ -22,6 +20,7 @@ ToDo:
 
 Bugs:
   ☐ Energy file: fix disappearing file name
+  ☐ Control side height not ok changing to fullscreen (use flex?)
 
 Study:
   ☐ Check the order of entries in objects
@@ -51,6 +50,8 @@ Nice to have/Future:
   ☐ Try to use KeepAlive component in user interface
 
 Archive:
+  ✔ Add `unhandledRejection` global handler @done(2024-07-31 06:41) @project(Porting)
+  ✔ Add project name in the Project structure @done(2024-07-31 08:20) @project(ToDo)
   ✔ In compute bonds, reset parameters does nothing @done(2024-07-03 05:19) @project(Bugs)
   ✔ Used shaded cylinders for bonds using shaders @done(2024-07-01 15:26) @project(Nice to have/Future)
   ✔ Polyhedra volume @done(2024-06-15 08:19) @project(Requests from Oganov)

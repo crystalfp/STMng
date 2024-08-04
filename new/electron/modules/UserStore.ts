@@ -16,7 +16,8 @@ import yaml from "js-yaml";
  */
 interface StoreOptions {
 	/** Path to the store backing file.
-	    If present should have an extension of .yaml else the backing store will be under userData */
+	    If present should have an extension of .yaml
+		else the backing store will be under userData */
 	path?: string;
 
 	/** Name of the store. If absent defaults to "config" */
@@ -48,7 +49,7 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 			this.filePath = options.path;
 		}
 		else {
-			const filename = options?.name ? `${options.name}.yaml` : "config.yaml";
+			const filename = `${options?.name ?? "config"}.yaml`;
 			const directory = app.getPath("userData");
 			const userDataDir = path.join(directory, "UserData");
 			fs.ensureDirSync(userDataDir);
@@ -56,11 +57,17 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 		}
 
 		if(fs.existsSync(this.filePath)) {
-			this.data = yaml.load(fs.readFileSync(this.filePath, "utf8"), {schema: yaml.CORE_SCHEMA}) as T;
+			this.data = yaml.load(fs.readFileSync(this.filePath, "utf8"),
+								  {schema: yaml.CORE_SCHEMA}) as T;
 		}
 		else if(options?.defaultContent) {
 			this.data = structuredClone(options.defaultContent) as T;
-			fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");
+			fs.writeFileSync(this.filePath,
+							 yaml.dump(this.data, {
+								schema: yaml.CORE_SCHEMA,
+								lineWidth: 256,
+								flowLevel: 1
+							 }), "utf8");
 		}
 		else this.data = {} as T;
 	}
@@ -84,7 +91,12 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 */
 	set<K extends keyof T>(key: K, value: T[K]): void {
 		this.data[key] = value;
-		fs.writeFileSync(this.filePath, yaml.dump(this.data, {schema: yaml.CORE_SCHEMA, lineWidth: 256, flowLevel: 1}), "utf8");
+		fs.writeFileSync(this.filePath,
+						 yaml.dump(this.data, {
+							schema: yaml.CORE_SCHEMA,
+							lineWidth: 256,
+							flowLevel: 1
+						 }), "utf8");
 	}
 
 	/**

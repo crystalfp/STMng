@@ -4,10 +4,15 @@
       "label": "Reader",
       "type": "structure-reader"
     },
+    "bonds": {
+      "label": "Bonds",
+      "type": "compute-bonds",
+      "in": "reader"
+    },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
-      "in": "reader"
+      "in": "bonds"
     },
     "viewer": {
       "label": "Viewer",
@@ -72,6 +77,15 @@
       "step": 1,
       "format": "LAMMPStrj",
       "atomsTypes": "Fe O"
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "enlargeCell": false
     },
     "draw": {
       "drawKind": "ball-and-stick",

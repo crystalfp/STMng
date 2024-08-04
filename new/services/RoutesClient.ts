@@ -21,6 +21,16 @@ declare global {
 	}
 }
 
+// > General system functions
+/**
+ * Verify if IPC is up and running.
+ *
+ * @returns True if IPC is running
+ */
+export const isLoaded = (): boolean => window.electron?.ipcRenderer !== undefined &&
+		   window.api?.setTitle !== undefined &&
+		   window.api?.refreshMenu !== undefined;
+
 // > Project
 /**
  * Receive the project information to build the controls/ui
@@ -48,6 +58,19 @@ export interface Versions {app: string; node: string; electron: string; chrome: 
  * @returns The list of versions of iie, node, electron, chrome
  */
 export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.invoke("APP:VERSIONS") as Promise<Versions>;
+
+/**
+ * Synchronously return a preference
+ *
+ * @param key - Key to retrieve
+ * @param defaultValue - Default value for the preference if not in the store
+ * @returns The preference value or the default
+ */
+export function getPreferenceSync<T>(key: string, defaultValue: T): T {
+
+    const value = window.electron.ipcRenderer.sendSync("PREFERENCES:GET-SYNC", key) as T;
+	return value ?? defaultValue;
+}
 
 // > Communication
 /**
