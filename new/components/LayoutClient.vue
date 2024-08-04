@@ -10,7 +10,7 @@ import {isLoaded, getPreferenceSync, handleFullscreen, receiveRefreshMenu, setPr
         receiveBroadcast, receiveMenuSelection, receiveNotifications} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
 
-import Viewer3D from "@/components/Viewer3D.vue";
+import Viewer3D from "./Viewer3D.vue";
 import ControlsContainer from "./ControlsContainer.vue";
 
 /** Normal/Expanded viewer window */

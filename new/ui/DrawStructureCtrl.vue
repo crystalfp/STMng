@@ -456,13 +456,16 @@ const showCombined = computed({
 });
 
 // Name the groups (useful for debugging)
-atomsGroup.name = "Atoms";
-bondsGroup.name = "Bonds";
+atomsGroup.name  = "Atoms";
+bondsGroup.name  = "Bonds";
 labelsGroup.name = "Labels";
+out.name         = `DrawStructure-${id}`;
 
 // Combine the groups
 out.add(atomsGroup, bondsGroup, labelsGroup);
 
+// Add to the scene
+sm.add(out);
 
 </script>
 

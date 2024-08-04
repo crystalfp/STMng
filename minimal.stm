@@ -91,13 +91,13 @@
     },
     "draw": {
       "drawKind": "ball-and-stick",
-      "drawQuality": 1,
+      "drawQuality": 4,
       "drawRoughness": 0.5,
       "drawMetalness": 0.6,
       "labelKind": "symbol",
-      "showBonds": false,
+      "showBonds": true,
       "showStructure": true,
-      "showLabels": false,
+      "showLabels": true,
       "shadedBonds": true
     }
   }

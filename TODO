@@ -21,6 +21,7 @@ ToDo:
 Bugs:
   ☐ Energy file: fix disappearing file name
   ☐ Control side height not ok changing to fullscreen (use flex?)
+  ☐ "Save as..." don't change the project name in the main bar
 
 Study:
   ☐ Check the order of entries in objects
