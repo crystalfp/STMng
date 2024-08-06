@@ -9,7 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, Bond, Atom, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
-import {sendToClient} from "../../../old/electron/modules/WindowsUtilities";
+import {sendToClient} from "../modules/WindowsUtilities";
 
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */

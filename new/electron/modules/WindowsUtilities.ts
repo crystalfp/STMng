@@ -10,11 +10,11 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
-import {setupMenu} from "../../../new/electron/modules/SystemMenu";
-import {setupRelayToMainWin, setupRelayFromMainWin} from "./RelayForMainWin";
+import {setupMenu} from "./SystemMenu";
+import {setupRelayToMainWin, setupRelayFromMainWin} from "../../../old/electron/modules/RelayForMainWin";
 import favicon from "../../../new/assets/favicon.png";
-import type {WindowsParams} from "../types";
-import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "../../../new/types";
+import type {WindowsParams} from "../../../old/electron/types";
+import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "../../types";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();
@@ -366,7 +366,7 @@ export const sendToClient = (id: string, channel: string, params: CtrlParams): v
 };
 
 /**
- * Push data to the client
+ * Push structure data to the client
  *
  * @param id - ID of the node sending the parameters
  * @param channel - Specify the channel inside the id related group
@@ -392,4 +392,16 @@ export const askClient = (id: string, channel: string): Promise<string> => {
     return new Promise((resolve) => {
         ipcMain.on(`${id}:${channel}-res`, (_event: unknown, answer: string): void => resolve(answer));
     });
+};
+
+/**
+ * Push structure data to the client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param vertices - Parameters to send to the client process
+ */
+export const sendVerticesToClient = (id: string, channel: string, vertices: number[]): void => {
+
+    mainWin.webContents.send(`${id}:${channel}`, vertices);
 };

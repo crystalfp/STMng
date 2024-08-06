@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation is a chemical structure visualizer that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -17,7 +17,7 @@
     "preview": "vite preview",
     "lint": "eslint -f codeframe new/** old/**",
     "stylelint": "stylelint ./new/App.vue ./new/**/*.vue ./new/styles/* ./old/**/*.vue ./old/styles/*",
-    "madge": "madge --extensions ts,vue --ts-config tsconfig.json -i madge.png --warning new old",
+    "madge": "madge --file-extensions ts,vue --ts-config tsconfig.json -i madge.png --warning new old",
     "start": "start ./release/%npm_package_version%/win-unpacked/STMng.exe"
   },
   "dependencies": {
@@ -50,8 +50,8 @@
     "@types/js-yaml": "^4.0.9",
     "@types/three": "^0.167.1",
     "@types/tmp": "^0.2.6",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.1",
+    "@typescript-eslint/parser": "^8.0.1",
     "@vitejs/plugin-vue": "^5.1.2",
     "@zamiell/typedoc-plugin-not-exported": "^0.3.0",
     "electron": "^31.3.1",

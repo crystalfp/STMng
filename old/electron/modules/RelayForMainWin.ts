@@ -8,7 +8,7 @@
  */
 import type {BrowserWindow} from "electron";
 // import {ipcMain, type BrowserWindow} from "electron";
-// import {broadcastMessage} from "./WindowsUtilities";
+// import {broadcastMessage} from "../../../new/electron/WindowsUtilities";
 
 /**
  * Setup the relay between secondary windows and main window.

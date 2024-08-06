@@ -13,7 +13,6 @@ import type {NodeUI, Structure, GraphNode} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
-import {DrawUnitCell} from "@/nodes/DrawUnitCell";
 import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Orthoslice} from "@/nodes/DrawOrthoslice";
@@ -95,7 +94,6 @@ export class NodeInfo {
 				map.set(id, new ChartViewer(id));
 				break;
 			case "draw-unit-cell":
-				map.set(id, new DrawUnitCell(id));
 				break;
 			case "draw-polyhedra":
 				map.set(id, new DrawPolyhedra(id));
@@ -238,8 +236,6 @@ export class NodeInfo {
 					uiStatus += (node as ChartViewer).saveStatus();
 					break;
 				case "draw-unit-cell":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as DrawUnitCell).saveStatus();
 					break;
 				case "draw-polyhedra":
 					if(notFirst) uiStatus += ",";

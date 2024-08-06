@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import type {UiInfo, ViewerState, ChannelDefinition, CtrlParams} from "../../types";
-import {askClient} from "../../../old/electron/modules/WindowsUtilities";
+import {askClient} from "../modules/WindowsUtilities";
 
 export class Viewer3D extends NodeCore {
 
@@ -28,8 +28,8 @@ export class Viewer3D extends NodeCore {
 
 	async saveStatus(): Promise<string> {
 
-		this.rawStatus = await askClient(this.id, "state")
-        return `"${this.id}": ${this.rawStatus}`;
+		this.rawStatus = await askClient(this.id, "state");
+        return this.rawStatus;
 	}
 
 	loadStatus(params: ViewerState): void {

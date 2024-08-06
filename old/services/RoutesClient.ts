@@ -21,8 +21,6 @@ declare global {
 	}
 }
 
-
-
 // > Project
 /**
  * Receive a loaded project

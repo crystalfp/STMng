@@ -238,4 +238,19 @@ export const sendViewer3DState = (id: string,
 
 		window.electron.ipcRenderer.send(`${id}:${channel}-res`, getState());
 	});
-}
+};
+
+/**
+ * Receive parameters as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Callback function called when a message is received
+ */
+export const receiveVerticesFromNode = (id: string,
+										channel: string,
+										callback: (vertices: number[]) => void): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`,
+								   (_event, vertices: number[]) => callback(vertices));
+};

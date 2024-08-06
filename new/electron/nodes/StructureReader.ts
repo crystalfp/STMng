@@ -9,7 +9,7 @@
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
-import {sendAlertMessage, sendToClient} from "../../../old/electron/modules/WindowsUtilities";
+import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {getAtomicNumber} from "../modules/AtomData";
 
 // Import the readers

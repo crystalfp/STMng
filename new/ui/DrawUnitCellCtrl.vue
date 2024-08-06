@@ -4,11 +4,15 @@
  * Controls for the unit cell / supercell visualization.
  */
 
-import {ref, watchEffect} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import * as THREE from "three";
+import {ref, watch} from "vue";
+import {askNode, receiveVerticesFromNode} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
+import {sm} from "../services/SceneManager";
+import {spriteText} from "../services/SpriteText";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -42,6 +46,11 @@ const showPercentA = ref(0);
 const showPercentB = ref(0);
 const showPercentC = ref(0);
 
+// 3D Objects
+const outBV = new THREE.Group();
+let lineUC: THREE.LineSegments | undefined;
+let lineSC: THREE.LineSegments | undefined;
+
 /**
  * Check if a supercell has been requested
  *
@@ -49,41 +58,202 @@ const showPercentC = ref(0);
  */
 const hasSupercell = (): boolean => repetitionsA.value > 1 || repetitionsB.value > 1 || repetitionsC.value > 1;
 
-sb.getUiParams(props.id, (params: UiParams) => {
-    showUnitCell.value = params.showUnitCell as boolean ?? true;
-    lineColor.value = params.lineColor as string ?? "#0000FF";
-    dashedLine.value = params.dashedLine as boolean ?? false;
-    showBasisVectors.value = params.showBasisVectors as boolean ?? false;
+// > Initialize ui
+askNode(id, "init")
+    .then((params) => {
 
-    repetitionsA.value = params.repetitionsA as number ?? 1;
-    repetitionsB.value = params.repetitionsB as number ?? 1;
-    repetitionsC.value = params.repetitionsC as number ?? 1;
-    showSupercell.value = params.showSupercell as boolean ?? hasSupercell();
-    supercellColor.value = params.supercellColor as string ?? "#16A004";
-    dashedSupercell.value = params.dashedSupercell as boolean ?? false;
+        repetitionsA.value = params.repetitionsA as number ?? 1;
+        repetitionsB.value = params.repetitionsB as number ?? 1;
+        repetitionsC.value = params.repetitionsC as number ?? 1;
+        lineColor.value = params.lineColor as string ?? "#0000FF";
+        showBasisVectors.value = params.showBasisVectors as boolean ?? false;
+        dashedLine.value = params.dashedLine as boolean ?? false;
+        showUnitCell.value = params.showUnitCell as boolean ?? true;
+        showSupercell.value = params.showSupercell as boolean ?? hasSupercell();
+        supercellColor.value = params.supercellColor as string ?? "#16A004";
+        dashedSupercell.value = params.dashedSupercell as boolean ?? false;
 
-    percentA.value = params.percentA as number ?? 0;
-    percentB.value = params.percentB as number ?? 0;
-    percentC.value = params.percentC as number ?? 0;
-    shrink.value = params.shrink as boolean ?? true;
+        percentA.value = params.percentA as number ?? 0;
+        percentB.value = params.percentB as number ?? 0;
+        percentC.value = params.percentC as number ?? 0;
+        shrink.value = params.shrink as boolean ?? true;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
+
+// Triangles. Top and bottom facies are not needed
+const indices = [
+    // 0, 1, 2,
+    // 0, 2, 3,
+
+    4, 5, 1,
+    4, 1, 0,
+
+    3, 2, 6,
+    3, 6, 7,
+
+    4, 0, 3,
+    4, 3, 7,
+
+    1, 5, 6,
+    1, 6, 2,
+
+    // 5, 4, 7,
+    // 5, 7, 6,
+];
+
+// Prepare the names of the various graphical objects
+const nameUC = `DrawUnitCell-${id}`;
+const nameSC = `DrawSupercell-${id}`;
+const nameBV = `DrawBasisVectors-${id}`;
+
+// Prepare the group and add it to the scene
+outBV.name = nameBV;
+sm.add(outBV);
+sm.clearGroup(nameBV);
+
+/**
+ * Define the material to be used to draw the lines
+ *
+ * @param color - Color of the lines
+ * @param dashed - If the line should be dashed
+ * @returns The material to apply to the lines
+ */
+const setMaterial = (color: string, dashed: boolean): THREE.Material =>
+    (dashed ? new THREE.LineDashedMaterial({
+                    color,
+                    scale: 5,
+                    dashSize: 1,
+                    gapSize: 1,
+                }) :
+                new THREE.LineBasicMaterial({
+                    color
+                })
+    );
+
+// Render the unit cell
+receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
+
+    // Clear previous cell
+    sm.deleteMesh(nameUC);
+
+    // If no unit cell or not visible return
+    if(!showUnitCell.value || vertices.length === 0) return;
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setIndex(indices);
+    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
+    const edges = new THREE.EdgesGeometry(geometry);
+
+    lineUC = new THREE.LineSegments(edges, setMaterial(lineColor.value, dashedLine.value));
+    if(dashedLine.value) lineUC.computeLineDistances();
+    lineUC.name = nameUC;
+    sm.add(lineUC);
 });
-watchEffect(() => {
-    sb.setUiParams(props.id, {
-        showUnitCell: showUnitCell.value,
-        lineColor: lineColor.value,
-        dashedLine: dashedLine.value,
-        showBasisVectors: showBasisVectors.value,
-        repetitionsA: repetitionsA.value,
-        repetitionsB: repetitionsB.value,
-        repetitionsC: repetitionsC.value,
-        showSupercell: showSupercell.value,
-        supercellColor: supercellColor.value,
-        dashedSupercell: dashedSupercell.value,
-        percentA: percentA.value,
-        percentB: percentB.value,
-        percentC: percentC.value,
-        shrink: shrink.value,
-    });
+
+// Render the supercell
+receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
+
+    // Clear previous supercell
+    sm.deleteMesh(nameSC);
+
+    // If no unit cell or no repetition return
+    if(vertices.length === 0) return;
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setIndex(indices);
+    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
+    const edges = new THREE.EdgesGeometry(geometry);
+
+    lineSC = new THREE.LineSegments(edges, setMaterial(supercellColor.value, dashedSupercell.value));
+    if(dashedSupercell.value) lineSC.computeLineDistances();
+    lineSC.name = nameSC;
+    sm.add(lineSC);
+});
+
+/**
+ * From a direction extract needed rotation
+ *
+ * @param versor - Direction versor
+ * @param quaternion - Resulting rotation quaternion
+ */
+const setDirection = (versor: THREE.Vector3, quaternion: THREE.Quaternion): void => {
+
+    // Versor is assumed to be normalized
+    if(versor.y > 0.99999) quaternion.set(0, 0, 0, 1);
+    else if(versor.y < -0.99999) quaternion.set(1, 0, 0, 0);
+    else {
+        const rotationAxis = new THREE.Vector3(versor.z, 0, -versor.x).normalize();
+        const radians = Math.acos(versor.y);
+        quaternion.setFromAxisAngle(rotationAxis, radians);
+    }
+};
+
+/**
+* Create an arrow in the direction of the basis vector
+*
+* @param basis - Basis vector to be show
+* @param origin - Unit cell origin
+* @param color - Color of the arrow and the label
+* @param label - Label of the vector
+* @param group - The arrow is added to this group
+*/
+const basisVectorArrow = (basis: THREE.Vector3, origin: THREE.Vector3,
+                          color: string, label: string, group: THREE.Group): void => {
+
+    const versor = basis.clone().normalize();
+    const basisLen = basis.length();
+
+    const size = 0.05;
+    const coneSize = 2*size;
+    const coneLen = 5*size;
+
+    const cylinder = new THREE.Mesh(
+        new THREE.CylinderGeometry(size, size, basisLen-coneLen, 10),
+        new THREE.MeshBasicMaterial({color})
+    );
+
+    setDirection(versor, cylinder.quaternion);
+    cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
+
+    // Arrow tips
+    const cone = new THREE.Mesh(
+        new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
+        new THREE.MeshBasicMaterial({color})
+    );
+
+    cone.quaternion.copy(cylinder.quaternion);
+    cone.position.addVectors(basis, origin);
+    cone.position.addScaledVector(versor, -coneLen/2);
+
+    // Label
+    const sprite = spriteText(label,
+                              color,
+                              [basis.x+origin.x, basis.y+origin.y, basis.z+origin.z],
+                              [versor.x*0.1, versor.y*0.1, versor.z*0.1]);
+
+    group.add(cylinder, cone, sprite);
+};
+
+// Render the basis vectors
+receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
+
+    // Clear basis vectors
+    sm.clearGroup(nameBV);
+
+    // Not visible, do nothing
+    if(!showBasisVectors.value || vertices.length < 12) return;
+
+    // vertices[0-8]: basis; vertices[9-11]: origin
+    // Basis vectors visible, create them
+    const originZero = new THREE.Vector3(vertices[9], vertices[10], vertices[11]);
+
+    const basisA = new THREE.Vector3(vertices[0], vertices[1], vertices[2]);
+    const basisB = new THREE.Vector3(vertices[3], vertices[4], vertices[5]);
+    const basisC = new THREE.Vector3(vertices[6], vertices[7], vertices[8]);
+
+    basisVectorArrow(basisA, originZero, "#FF0000", "a", outBV);
+    basisVectorArrow(basisB, originZero, "#79FF00", "b", outBV);
+    basisVectorArrow(basisC, originZero, "#0000FF", "c", outBV);
 });
 
 /**
@@ -100,6 +270,11 @@ const resetSliders = (): void => {
     showRepetitionsC.value = 1;
 };
 
+watch([showUnitCell, showBasisVectors], () => {
+    if(lineUC) lineUC.visible = showUnitCell.value;
+    if(lineSC) lineSC.visible = showSupercell.value;
+
+});
 </script>
 
 

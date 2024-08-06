@@ -15,7 +15,7 @@ import {fileURLToPath} from "node:url";
 import {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
-import {sendProjectUI, sendAlertMessage, sendProjectPath} from "../../../old/electron/modules/WindowsUtilities";
+import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
 import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
 
 // NOTE 1) Add here the classes that defines the nodes
@@ -247,7 +247,7 @@ class ProjectManager {
 				if(notFirst) uiStatus += ",";
 				else notFirst = true;
 
-				uiStatus += node.saveStatus();
+				uiStatus += node.saveStatus() as string;
 			}
 		}
 
@@ -256,10 +256,13 @@ class ProjectManager {
 
 		// Prepare the output and write it
 		const out = viewerStatus ?
-					`{"graph":${graphAsString},"viewer":{${viewerStatus}},"ui":{${uiStatus}}}` :
+					`{"graph":${graphAsString},"viewer":${viewerStatus},"ui":{${uiStatus}}}` :
 					`{"graph":${graphAsString},"ui":{${uiStatus}}}`;
 		const formattedOut = `${JSON.stringify(JSON.parse(out), undefined, 2)}\n`;
 		await writeFile(filename, formattedOut, "utf8");
+
+		sendProjectPath(filename);
+		setProjectPath(filename);
 	}
 
 	/**
@@ -268,7 +271,7 @@ class ProjectManager {
 	saveProject(): void {
 
 		const filename = getProjectPath();
-		if(filename) this.saveProjectAs(filename);
+		if(filename) void this.saveProjectAs(filename);
 		else sendAlertMessage("Cannot save project. Filename not set");
 	};
 

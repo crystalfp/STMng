@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import log from "electron-log";
-import type {BasisType, PositionType, Structure, Atom} from "@/types";
+import type {BasisType, PositionType, Structure, Atom} from "../../types";
 
 /** Tolerance to check fractal coordinate on the cell border */
 const FOLD_TOL = 1e-5;
@@ -40,9 +40,7 @@ const foldIntoUnitCell = (fc: number): number => {
  */
 export const adjustOrigin = (structure: Structure,
 							 pa: number, pb: number, pc: number,
-							 shrink: boolean): Structure | undefined => {
-
-	if(!structure?.crystal) return undefined;
+							 shrink: boolean): Structure => {
 
 	// No adjustment, do nothing
 	if(pa === 0 && pb === 0 && pc === 0) return structure;

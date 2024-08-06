@@ -9,7 +9,7 @@ import {Menu, shell, app, nativeTheme, dialog} from "electron";
 import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendErrorNotification,
-        refreshSystemMenu, openMenuEntry, getCurrentNode} from "../../../old/electron/modules/WindowsUtilities";
+        refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 // import {loadRememberedProject, loadProjectAndRemember, saveProject, sendProjectToEditor,
 //         saveProjectAs, createProjectEditor} from "./ProjectX";
@@ -82,7 +82,7 @@ export const setupMenu = (): void => {
                             ]
                         });
                         if(file) {
-                            pm.saveProjectAs(file);
+                            void pm.saveProjectAs(file);
                             disableSaveProjectEntry(false);
                             // sendProjectToEditor();
                         }

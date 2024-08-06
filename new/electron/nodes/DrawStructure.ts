@@ -9,7 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, AtomRenderInfo,
 			 StructureRenderInfo} from "../../types";
-import {sendToClientForRendering} from "../../../old/electron/modules/WindowsUtilities";
+import {sendToClientForRendering} from "../modules/WindowsUtilities";
 import {getAtomData} from "../modules/AtomData";
 
 export class DrawStructure extends NodeCore {

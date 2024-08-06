@@ -14,7 +14,7 @@ import pkg from "../../package.json";
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
-import {createMainWindow} from "../../old/electron/modules/WindowsUtilities";
+import {createMainWindow} from "./modules/WindowsUtilities";
 import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelCapture} from "../../old/electron/modules/CaptureMedia";
@@ -47,7 +47,7 @@ interface ProgramOptions {
 const options = program.opts<ProgramOptions>();
 
 // Verbose can be set also with the "STM_NG_VERBOSE" environment variable set to any value
-const verbose = options.verbose || process.env.STM_NG_VERBOSE !== undefined;
+const verbose = options.verbose ?? process.env.STM_NG_VERBOSE !== undefined;
 
 // > Setup the main process
 // Initialize the logger
