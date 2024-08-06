@@ -7,7 +7,7 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import {createWindow, findAndApplySymmetries, sendToWindow} from "@/services/RoutesClient";
 import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
-import type {Structure} from "@/types";
+import type {Structure} from "../../new/types";
 import type {ComputeSymmetriesParams, ComputeSymmetriesOutput} from "@/electron/types";
 import {useControlStore} from "@/stores/controlStore";
 import {atomSymbol} from "@/services/AtomInfo";
@@ -86,7 +86,7 @@ export class Symmetries {
 		if(crystal === undefined) return;
 
 		// If no unit cell or no atoms, copy input structure to output
-		if(crystal.basis.every((value) => value === 0) || atoms.length === 0) {
+		if(crystal.basis.every((value: number) => value === 0) || atoms.length === 0) {
 			sb.setData(this.id, this.inputStructure);
 			this.showComputedSymmetry();
 			return;

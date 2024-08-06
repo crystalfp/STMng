@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
-import type {PositionType} from "@/types";
+import type {PositionType} from "../../new/types";
 
 interface GlobalControls {
 	reset: boolean;

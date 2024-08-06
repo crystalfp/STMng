@@ -8,7 +8,7 @@
 import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "../../new/services/SceneManager";
-import type {Structure, PositionType, BasisType} from "@/types";
+import type {Structure, PositionType, BasisType} from "../../new/types";
 import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 import {useControlStore} from "@/stores/controlStore";
 import {watchEffect} from "vue";
@@ -260,7 +260,7 @@ export class Trajectories {
 	 */
 	private computeLimits(orig: PositionType, basis: BasisType): void {
 
-		if(basis.every((value) => value === 0)) return;
+		if(basis.every((value: number) => value === 0)) return;
 
 		const vv: number[] = [
 /* 0 */ orig[0],                            orig[1],                            orig[2],

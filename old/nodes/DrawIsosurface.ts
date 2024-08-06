@@ -9,7 +9,7 @@ import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "../../new/services/SceneManager";
-import type {Structure, PositionType, BasisType} from "@/types";
+import type {Structure, PositionType, BasisType} from "../../new/types";
 import {IsosurfaceCore} from "@/services/Isosurface";
 
 export class Isosurface {
@@ -211,7 +211,7 @@ export class Isosurface {
         const {sides, values} = this.structure.volume[this.dataset];
 
         // A unit cell is needed to create the isosurface
-        if(basis.every((value) => value === 0)) return;
+        if(basis.every((value: number) => value === 0)) return;
 
         // Create one or more isosurfaces
         if(this.nestedIsosurfaces) {

@@ -4,7 +4,8 @@
  * @packageDocumentation
  */
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {Structure, Volume, PositionType} from "@/types";
+import type {Structure, Volume, PositionType} from "../../new/types";
+
 import {M} from "@/services/InterpolationTable";
 
 export class InterpolateVolume {
@@ -55,7 +56,7 @@ export class InterpolateVolume {
 		// If no volumetric data or no unit cell return the input structure
 		if(!this.interpolateVolume ||
 		   volume.length === 0 ||
-		   crystal.basis.every((value) => value === 0)) {
+		   crystal.basis.every((value: number) => value === 0)) {
 			sb.setData(this.id, this.structure);
 			return;
 		}

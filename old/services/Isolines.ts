@@ -7,7 +7,8 @@
  */
 
 import * as THREE from "three";
-import type {PositionType} from "@/types";
+import type {PositionType} from "../../new/types";
+
 
 export class Isolines {
 

@@ -8,7 +8,7 @@ import * as THREE from "three";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "../../new/services/SceneManager";
-import type {Structure} from "@/types";
+import type {Structure} from "../../new/types";
 import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
 import {atomColor} from "@/services/AtomInfo";
 

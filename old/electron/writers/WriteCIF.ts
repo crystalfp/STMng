@@ -7,7 +7,8 @@
 import fs from "node:fs";
 import {cartesianToFractionalCoordinates,
 		basisToLengthAngles, format} from "../../../new/electron/modules/Helpers";
-import type {Structure, MainResponse} from "../../types";
+import type {Structure} from "../../../new/types";
+import type {MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
 import {getAtomicSymbol} from "../../../new/electron/modules/AtomData";
 
@@ -35,7 +36,7 @@ export class WriterCIF implements WriterImplementation {
 				fs.writeSync(fd, numberSteps === 1 ? "data_structure\n\n" : `data_step_${step}\n\n`);
 
 				// Output the unit cell, if any
-				if(basis.some((value) => value !== 0)) {
+				if(basis.some((value: number) => value !== 0)) {
 
 					const cell = basisToLengthAngles(basis);
 

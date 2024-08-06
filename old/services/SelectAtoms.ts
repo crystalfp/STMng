@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {atomSymbol} from "@/services/AtomInfo";
-import type {Structure} from "@/types";
+import type {Structure} from "../../new/types";
 
 export type SelectorType = "symbol" | "label" | "index" | "all";
 

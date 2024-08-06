@@ -6,7 +6,7 @@
 import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
-import type {PositionType, Structure, BasisType} from "@/types";
+import type {PositionType, Structure, BasisType} from "../../new/types";
 import {sm} from "../../new/services/SceneManager";
 import {Isolines} from "@/services/Isolines";
 

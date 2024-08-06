@@ -6,8 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {WindowsParams, ComputeSymmetriesParams} from "@/electron/types";
-import type {MainResponse, Structure} from "@/types";
+import type {WindowsParams, Structure} from "../../new/types";
+import type {MainResponse} from "@/types";
+import type {ComputeSymmetriesParams} from "@/electron/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Global definitions of the interfaces exported by preload.js */

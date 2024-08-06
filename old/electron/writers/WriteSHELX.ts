@@ -7,7 +7,8 @@
 import fs from "node:fs";
 import {cartesianToFractionalCoordinates,
 		basisToLengthAngles, format} from "../../../new/electron/modules/Helpers";
-import type {Structure, MainResponse} from "../../types";
+import type {Structure} from "../../../new/types";
+import type {MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
 import {getAtomicSymbol} from "../../../new/electron/modules/AtomData";
 
@@ -25,7 +26,7 @@ export class WriterSHELX implements WriterImplementation {
     		fs.writeSync(fd, "TITL Created by STMng\n");
 
 			// Output the unit cell, if any
-			if(basis.some((value) => value !== 0)) {
+			if(basis.some((value: number) => value !== 0)) {
 
 				const cell = basisToLengthAngles(basis);
 

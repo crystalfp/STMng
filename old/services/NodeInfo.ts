@@ -9,7 +9,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {watch} from "vue";
-import type {NodeUI, Structure, GraphNode} from "@/types";
+import type {NodeUI, GraphNode} from "@/types";
+import type {Structure} from "../../new/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node

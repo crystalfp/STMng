@@ -6,7 +6,8 @@
 
 import fs from "node:fs";
 import {cartesianToFractionalCoordinates, format} from "../../../new/electron/modules/Helpers";
-import type {Structure, MainResponse} from "../../types";
+import type {Structure} from "../../../new/types";
+import type {MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
 
 export class WriterPOSCAR implements WriterImplementation {
@@ -22,7 +23,7 @@ export class WriterPOSCAR implements WriterImplementation {
 				const {basis} = crystal;
 
 				// If no unit cell return error
-				if(basis.every((value) => value === 0)) {
+				if(basis.every((value: number) => value === 0)) {
 					fs.closeSync(fd);
 					return {payload: "Error", error: "Cannot write POSCAR if unit cell missing"};
 				}

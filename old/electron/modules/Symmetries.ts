@@ -39,7 +39,7 @@ export const setupChannelSymmetries = (): void => {
 		// Prepare parameters
 		const params = JSON.parse(paramsEncoded) as ComputeSymmetriesParams;
 
-		const basis = new Float64Array(params.basis);
+		const basis = new Float64Array(params.basis as number[]);
 		const natoms = params.atomsZ.length;
 		const atomsZ = new Int32Array(natoms);
 		for(let i=0; i < natoms; ++i) atomsZ[i] = params.atomsZ[i];

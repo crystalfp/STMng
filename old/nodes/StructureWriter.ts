@@ -6,7 +6,7 @@
 import {sb, type UiParams} from "@/services/Switchboard";
 import {selectSaveStructureFile, saveStructureFile} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
-import type {Structure} from "@/types";
+import type {Structure} from "../../new/types";
 
 export class StructureWriter {
 

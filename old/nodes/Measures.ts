@@ -9,7 +9,7 @@ import {sm} from "../../new/services/SceneManager";
 import {sb} from "@/services/Switchboard";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
-import type {Structure} from "@/types";
+import type {Structure} from "../../new/types";
 import {atomData} from "@/services/AtomInfo";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];

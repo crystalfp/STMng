@@ -7,7 +7,7 @@
  */
 import {ipcMain} from "electron";
 import fs from "node:fs";
-import type {Structure} from "../../types";
+import type {Structure} from "../../../new/types";
 
 const energyPerStructure: number[] = [];
 let minEnergy = Number.POSITIVE_INFINITY;

@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {getAtomData} from "@/services/RoutesClient";
-import type {AtomAppearance} from "@/types";
+import type {AtomAppearance} from "../../new/types";
 import log from "electron-log";
 
 class AtomInfo {

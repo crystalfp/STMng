@@ -57,93 +57,6 @@ export interface ChartParams {
     type: string;
 }
 
-// > Type of a collection of atomic structures
-// >> Base types
-/** An [x, y, z] position */
-export type PositionType = [number, number, number];
-
-/** The unit cell basis vectors [a, b, c] where e.g, a = [ax, ay, az] */
-export type BasisType = [
-    number, number, number,
-    number, number, number,
-    number, number, number
-];
-
-/** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
-export type BondType = "h" | "n" | "x";
-
-/** One atom in the structure or in the structure in one step */
-export interface Atom {
-
-    /** Atomic number */
-    atomZ:  number;
-
-    /** Label for the atom */
-    label: string;
-
-    /** Absolute coordinates of the atom (in Å) [x, y, z] */
-    position: PositionType;
-}
-
-/** Definition of a bond */
-export interface Bond {
-
-    /** Index in the list of atoms where the bond starts */
-    from: number;
-
-    /** Index in the list of atoms where the bond ends */
-    to:   number;
-
-    /** Kind of bond */
-    type: BondType;
-}
-
-/** Crystallographic data */
-export interface Crystal {
-
-    /** The unit cell basis vectors [a, b, c] */
-    basis: BasisType;
-
-    /** Origin of the unit cell */
-    origin: PositionType;
-
-    /** Space group */
-    spaceGroup: string;
-}
-
-/** Appearance of the various atoms types */
-export interface AtomAppearance {
-
-	/** Element symbol */
-	symbol: string;
-
-	/** Covalent radii (in Angstrom). 1.6 if unknown */
-	rCov: number;
-
-	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
-	rVdW: number;
-
-	/** Atom color as an hex string (#RRGGBB) */
-	color: string;
-
-    /** Maximum number of bonds for the element type */
-    maxBonds: number;
-}
-
-/** Volumetric data */
-export interface Volume {
-    sides: PositionType;
-    values: number[];
-}
-
-/** The whole atomic structure */
-export interface Structure {
-    crystal:    Crystal;
-    atoms:      Atom[];
-    bonds:      Bond[];
-    volume:     Volume[];
-}
-
 // > Interfaces with main process
 export interface ReaderStructure {
     structures: Structure[];
@@ -169,6 +82,7 @@ export interface GraphNode {
 }
 
 import type {UiParams} from "@/services/Switchboard";
+import type {Structure, PositionType} from "../../new/types";
 
 export type ProjectGraph = Record<string, GraphNode>; // The key is the node id
 

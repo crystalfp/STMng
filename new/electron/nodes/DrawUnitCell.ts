@@ -182,6 +182,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Output the result
+		// eslint-disable-next-line @typescript-eslint/consistent-return
 		return out;
 	}
 

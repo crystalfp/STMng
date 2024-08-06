@@ -5,16 +5,15 @@
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  */
-import {app, BrowserWindow, nativeImage, ipcMain /* dialog */} from "electron";
+import {app, BrowserWindow, nativeImage, ipcMain} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
 import {setupRelayToMainWin, setupRelayFromMainWin} from "../../../old/electron/modules/RelayForMainWin";
-import favicon from "../../../new/assets/favicon.png";
-import type {WindowsParams} from "../../../old/electron/types";
-import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "../../types";
+import favicon from "../../assets/favicon.png";
+import type {ClientProjectInfo, CtrlParams, StructureRenderInfo, WindowsParams} from "../../types";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();

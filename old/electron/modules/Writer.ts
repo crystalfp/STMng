@@ -7,7 +7,7 @@
  */
 import {ipcMain, dialog} from "electron";
 import log from "electron-log";
-import type {Structure} from "../../types";
+import type {Structure} from "../../../new/types";
 
 import {WriterXYZ} from "../writers/WriteXYZ";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";

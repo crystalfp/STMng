@@ -9,7 +9,7 @@ import {loadEnergyFile, setEnergyFilterParameters,
 		accumulateStructure, computeFingerprints} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
 import {useControlStore} from "@/stores/controlStore";
-import type {Structure} from "@/types";
+import type {Structure} from "../../new/types";
 
 export class ComputeFingerprints {
 

@@ -6,7 +6,8 @@
 
 import fs from "node:fs";
 import {format} from "../../../new/electron/modules/Helpers";
-import type {Structure, MainResponse} from "../../types";
+import type {Structure} from "../../../new/types";
+import type {MainResponse} from "../../types";
 import type {WriterImplementation} from "../types";
 import {getAtomicSymbol} from "../../../new/electron/modules/AtomData";
 
