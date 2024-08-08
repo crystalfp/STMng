@@ -48,17 +48,6 @@ export const sendProject = (callback: () => string): void => {
 	});
 };
 
-/**
- * Send the current node type to main process
- *
- * @param callback - Routine called when the main process require the current node type
- */
-export const sendCurrentNode = (callback: () => string): void => {
-	window.electron.ipcRenderer.on("PROJECT:ASK-CURRENT-NODE", () => {
-		window.electron.ipcRenderer.send("PROJECT:GET-CURRENT-NODE", callback());
-	});
-};
-
 // > Generic secondary windows handling
 /**
  * Create a secondary window.
@@ -101,35 +90,6 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 
 	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
 };
-
-// > Structure reader
-/**
- * Structure read
- *
- * @param filename - Filename to be read
- * @param format - Format to be read
- * @param atomsTypes - Atoms types to use (if not present in the file)
- * @returns The structure read as JSON formatted string
- */
-export const readFileStructure = (filename: string,
-								  format: string, atomsTypes: string, useBohr: boolean): Promise<string> => window.electron.ipcRenderer.invoke("READER:READ",
-											  filename, format, atomsTypes, useBohr) as Promise<string>;
-
-/**
- * Auxiliary file read
- *
- * @param filename - Auxiliary file name
- * @param format - Format of the main file
- * @param structure - The structure read in the main file
- * @returns The augmented structure array encoded as JSON
- */
-export const readAuxFile = (filename: string,
-							format: string,
-							structure: Structure): Promise<string> =>
-
-	window.electron.ipcRenderer.invoke("READER:READ-AUX",
-									  	filename, format, JSON.stringify(structure)
-									  ) as Promise<string>;
 
 // > Structure writer
 /**

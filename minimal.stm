@@ -9,10 +9,15 @@
       "type": "compute-bonds",
       "in": "reader"
     },
+    "unit": {
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "in": "reader"
+    },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
-      "in": "bonds"
+      "in": "unit"
     },
     "viewer": {
       "label": "Viewer",
@@ -88,6 +93,18 @@
       "perPairScale": false,
       "perPairData": "[]",
       "enlargementKind": "none"
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false
     },
     "draw": {
       "drawKind": "ball-and-stick",

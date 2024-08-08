@@ -6,7 +6,7 @@
 
 import * as THREE from "three";
 import {ref, watch} from "vue";
-import {askNode, receiveVerticesFromNode} from "../services/RoutesClient";
+import {askNode, receiveVerticesFromNode, sendToNode} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
 import {sm} from "../services/SceneManager";
 import {spriteText} from "../services/SpriteText";
@@ -137,7 +137,7 @@ receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
     sm.deleteMesh(nameUC);
 
     // If no unit cell or not visible return
-    if(!showUnitCell.value || vertices.length === 0) return;
+    if(vertices.length === 0) return;
 
     const geometry = new THREE.BufferGeometry();
     geometry.setIndex(indices);
@@ -147,6 +147,7 @@ receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
     lineUC = new THREE.LineSegments(edges, setMaterial(lineColor.value, dashedLine.value));
     if(dashedLine.value) lineUC.computeLineDistances();
     lineUC.name = nameUC;
+    lineUC.visible = showUnitCell.value;
     sm.add(lineUC);
 });
 
@@ -167,6 +168,7 @@ receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
     lineSC = new THREE.LineSegments(edges, setMaterial(supercellColor.value, dashedSupercell.value));
     if(dashedSupercell.value) lineSC.computeLineDistances();
     lineSC.name = nameSC;
+    lineSC.visible = showSupercell.value;
     sm.add(lineSC);
 });
 
@@ -241,7 +243,7 @@ receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
     sm.clearGroup(nameBV);
 
     // Not visible, do nothing
-    if(!showBasisVectors.value || vertices.length < 12) return;
+    if(vertices.length < 12) return;
 
     // vertices[0-8]: basis; vertices[9-11]: origin
     // Basis vectors visible, create them
@@ -254,12 +256,30 @@ receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
     basisVectorArrow(basisA, originZero, "#FF0000", "a", outBV);
     basisVectorArrow(basisB, originZero, "#79FF00", "b", outBV);
     basisVectorArrow(basisC, originZero, "#0000FF", "c", outBV);
+
+    outBV.visible = showBasisVectors.value;
 });
+
+
+/**
+ * Change the materials
+ */
+const changeMaterials = (): void => {
+    if(lineUC) {
+        lineUC.material = setMaterial(lineColor.value, dashedLine.value);
+        if(dashedLine.value) lineUC.computeLineDistances();
+    }
+    if(lineSC) {
+        lineSC.material = setMaterial(supercellColor.value, dashedSupercell.value);
+        if(dashedSupercell.value) lineSC.computeLineDistances();
+    }
+};
 
 /**
  * Reset repetition sliders to default values
  */
 const resetSliders = (): void => {
+
     repetitionsA.value = 1;
     repetitionsB.value = 1;
     repetitionsC.value = 1;
@@ -270,11 +290,50 @@ const resetSliders = (): void => {
     showRepetitionsC.value = 1;
 };
 
-watch([showUnitCell, showBasisVectors], () => {
+watch([showUnitCell, showSupercell, showBasisVectors], () => {
+
     if(lineUC) lineUC.visible = showUnitCell.value;
     if(lineSC) lineSC.visible = showSupercell.value;
+    outBV.visible = showBasisVectors.value;
 
+    sendToNode(id, "visible", {
+        showUnitCell: showUnitCell.value,
+        showSupercell: showSupercell.value,
+        showBasisVectors: showBasisVectors.value
+    });
 });
+
+watch([repetitionsA, repetitionsB, repetitionsC], () => {
+
+    showSupercell.value = hasSupercell();
+    sendToNode(id, "repeat", {
+        repetitionsA: repetitionsA.value,
+        repetitionsB: repetitionsB.value,
+        repetitionsC: repetitionsC.value
+    });
+});
+
+watch([dashedLine, lineColor, dashedSupercell, supercellColor], () => {
+
+    changeMaterials();
+    sendToNode(id, "appear", {
+		dashedLine: dashedLine.value,
+		lineColor: lineColor.value,
+        supercellColor: supercellColor.value,
+        dashedSupercell: dashedSupercell.value,
+   });
+});
+
+watch([percentA, percentB, percentC, shrink], () => {
+
+    sendToNode(id, "origin", {
+        percentA: percentA.value,
+        percentB: percentB.value,
+        percentC: percentC.value,
+        shrink: shrink.value
+    });
+});
+
 </script>
 
 

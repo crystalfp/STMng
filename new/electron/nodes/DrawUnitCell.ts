@@ -34,7 +34,10 @@ export class DrawUnitCell extends NodeCore {
 
 	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke", 	callback: this.channelInit},
+		{name: "init",		type: "invoke", callback: this.channelInit},
+		{name: "visible",	type: "send", 	callback: this.channelVisible},
+		{name: "repeat",	type: "send", 	callback: this.channelRepetitions},
+		{name: "origin",	type: "send", 	callback: this.channelOrigin},
 	];
 	/* eslint-enable @typescript-eslint/unbound-method */
 
@@ -98,6 +101,15 @@ export class DrawUnitCell extends NodeCore {
 		this.computeUnitCell(basis, origin);
 		this.computeSupercell(basis, origin);
 		this.computeBasisVectors(basis, origin);
+	}
+
+	/**
+	 * Check if a supercell has been requested
+	 *
+	 * @returns True if there is a repetition
+	 */
+	private hasSupercell(): boolean {
+		return this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1;
 	}
 
 	/**
@@ -249,7 +261,21 @@ export class DrawUnitCell extends NodeCore {
 	}
 
 	loadStatus(params: CtrlParams): void {
-		console.log("Loading", this.name, "with", params);
+
+        this.repetitionsA = params.repetitionsA as number ?? 1;
+        this.repetitionsB = params.repetitionsB as number ?? 1;
+        this.repetitionsC = params.repetitionsC as number ?? 1;
+        this.lineColor = params.lineColor as string ?? "#0000FF";
+        this.showBasisVectors = params.showBasisVectors as boolean ?? false;
+        this.dashedLine = params.dashedLine as boolean ?? false;
+        this.showUnitCell = params.showUnitCell as boolean ?? true;
+        this.showSupercell = params.showSupercell as boolean ?? this.hasSupercell();
+        this.supercellColor = params.supercellColor as string ?? "#16A004";
+        this.dashedSupercell = params.dashedSupercell as boolean ?? false;
+        this.percentA = params.percentA as number ?? 0;
+        this.percentB = params.percentB as number ?? 0;
+        this.percentC = params.percentC as number ?? 0;
+        this.shrink = params.shrink as boolean ?? true;
 	}
 
 	getUiInfo(): UiInfo {
@@ -289,7 +315,7 @@ export class DrawUnitCell extends NodeCore {
 	private computeUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// If no unit cell or not visible send an empty coords array
-		if(!this.showUnitCell || basis.every((value: number) => value === 0)) {
+		if(basis.every((value: number) => value === 0)) {
 			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
@@ -367,12 +393,6 @@ export class DrawUnitCell extends NodeCore {
 	 */
 	private computeBasisVectors(basis: BasisType, orig: PositionType): void {
 
-		// Not visible, do nothing
-		if(!this.showBasisVectors) {
-			sendVerticesToClient(this.id, "vectors", []);
-			return;
-		}
-
 		// No unit cell, do nothing
 		if(basis.every((value: number) => value === 0))  {
 			sendVerticesToClient(this.id, "vectors", []);
@@ -423,4 +443,93 @@ export class DrawUnitCell extends NodeCore {
 			shrink: this.shrink,
 		};
 	}
+
+	/**
+	 * Channel handler for the change of visibility
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelVisible(params: CtrlParams): void {
+        this.showBasisVectors = params.showBasisVectors as boolean;
+        this.showUnitCell = params.showUnitCell as boolean;
+        this.showSupercell = params.showSupercell as boolean;
+	}
+
+	/**
+	 * Channel handler for the change repetitions
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelRepetitions(params: CtrlParams): void {
+        this.repetitionsA = params.repetitionsA as number ?? 1;
+        this.repetitionsB = params.repetitionsB as number ?? 1;
+        this.repetitionsC = params.repetitionsC as number ?? 1;
+
+		if(!this.inputStructure) return;
+		const {basis, origin} = this.inputStructure.crystal;
+
+		// If there are replications
+		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
+
+			this.structure = this.replicateUnitCell();
+		}
+		this.computeSupercell(basis, origin);
+
+		// Pass the structure to next node
+		if(this.structure) this.notify(this.structure);
+		else this.outputEmptyStructure();
+	}
+
+	/**
+	 * Channel handler for the change adjust origin
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelOrigin(params: CtrlParams): void {
+        this.percentA = params.percentA as number ?? 0;
+        this.percentB = params.percentB as number ?? 0;
+        this.percentC = params.percentC as number ?? 0;
+        this.shrink = params.shrink as boolean ?? true;
+
+		if(!this.inputStructure) return;
+
+		const {crystal} = this.inputStructure;
+		const {basis, origin} = crystal;
+		const {atoms} = this.inputStructure;
+
+		// Adjust origin if any of the percentages is greather than zero
+		this.structure = (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
+			adjustOrigin(this.inputStructure,
+						 this.percentA/100,
+						 this.percentB/100,
+						 this.percentC/100,
+						 this.shrink)
+			:
+			{
+				crystal,
+				atoms,
+				bonds: [],
+				volume: []
+			};
+
+		// If there are replications
+		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
+
+			this.structure = this.replicateUnitCell();
+		}
+
+		// Pass the structure to next node
+		if(this.structure) this.notify(this.structure);
+		else this.outputEmptyStructure();
+
+		this.computeUnitCell(basis, origin);
+		this.computeSupercell(basis, origin);
+		this.computeBasisVectors(basis, origin);
+	};
+
+	    // lineColor.value = params.lineColor as string ?? "#0000FF";
+        // dashedLine.value = params.dashedLine as boolean ?? false;
+        // supercellColor.value = params.supercellColor as string ?? "#16A004";
+        // dashedSupercell.value = params.dashedSupercell as boolean ?? false;
+
 }

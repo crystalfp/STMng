@@ -375,5 +375,9 @@ export default [{
         "promise/no-nesting": "warn",
         "promise/no-callback-in-promise": "warn",
         "security/detect-child-process": "warn",
+
+        "@stylistic/array-bracket-newline": ["warn", "consistent"],
+        "@stylistic/array-bracket-spacing": ["warn", "never"],
+        "@stylistic/arrow-parens": ["warn", "always"],
     }
 }];
