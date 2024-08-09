@@ -62,16 +62,21 @@ export class DrawUnitCell extends NodeCore {
 			return;
 		}
 
+		const {basis, origin, spaceGroup} = crystal;
+		const {atoms} = this.inputStructure;
+
 		// Nothing to be changed in the structure
 		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1 &&
 		   this.percentA === 0 && this.percentB === 0 && this.percentC === 0) {
 
 			this.notify(this.inputStructure);
+
+			this.computeUnitCell(basis, origin);
+			this.computeSupercell(basis, origin);
+			this.computeBasisVectors(basis, origin);
+
 			return;
 		}
-
-		const {basis, origin, spaceGroup} = crystal;
-		const {atoms} = this.inputStructure;
 
 		// Adjust origin if any of the percentages is greather than zero
 		this.structure = (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
@@ -91,7 +96,7 @@ export class DrawUnitCell extends NodeCore {
 		// If there are replications
 		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
 
-			this.structure = this.replicateUnitCell();
+			this.structure = this.replicateUnitCell(this.structure);
 		}
 
 		// Pass the structure to next node
@@ -115,27 +120,27 @@ export class DrawUnitCell extends NodeCore {
 	/**
 	 * Replicate the structure to fill the supercell
 	 */
-	private replicateUnitCell(): Structure | undefined {
+	private replicateUnitCell(structure: Structure): Structure | undefined {
 
-		if(!this.structure) return;
-		const natoms = this.structure.atoms.length;
+		if(!structure) return;
+		const natoms = structure.atoms.length;
 		if(natoms === 0) return;
-		const bs = this.structure.crystal.basis;
+		const bs = structure.crystal.basis;
 		const atoms: Atom[] = [];
 		for(let a=0; a < this.repetitionsA; ++a) {
 			for(let b=0; b < this.repetitionsB; ++b) {
 				for(let c=0; c < this.repetitionsC; ++c) {
 					for(let i=0; i < natoms; ++i) {
 						const position: PositionType = [
-							this.structure.atoms[i].position[0] + a*bs[0] + b*bs[3] + c*bs[6],
-							this.structure.atoms[i].position[1] + a*bs[1] + b*bs[4] + c*bs[7],
-							this.structure.atoms[i].position[2] + a*bs[2] + b*bs[5] + c*bs[8],
+							structure.atoms[i].position[0] + a*bs[0] + b*bs[3] + c*bs[6],
+							structure.atoms[i].position[1] + a*bs[1] + b*bs[4] + c*bs[7],
+							structure.atoms[i].position[2] + a*bs[2] + b*bs[5] + c*bs[8],
 						];
 
 						atoms.push({
 							position,
-							atomZ: this.structure.atoms[i].atomZ,
-							label: this.structure.atoms[i].label,
+							atomZ: structure.atoms[i].atomZ,
+							label: structure.atoms[i].label,
 						});
 					}
 				}
@@ -165,7 +170,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Create out
-		const {crystal} = this.structure!;
+		const {crystal} = structure;
 		const out: Structure = {
 
 			crystal: {
@@ -185,7 +190,7 @@ export class DrawUnitCell extends NodeCore {
 			},
 			atoms: [],
 			bonds: [],
-			volume: this.replicateVolume(this.structure!.volume)
+			volume: this.replicateVolume(structure.volume)
 		};
 
 		for(let i=0; i < outAtoms; ++i) {
@@ -461,6 +466,7 @@ export class DrawUnitCell extends NodeCore {
 	 * @param params - Parameters from the client
 	 */
 	private channelRepetitions(params: CtrlParams): void {
+
         this.repetitionsA = params.repetitionsA as number ?? 1;
         this.repetitionsB = params.repetitionsB as number ?? 1;
         this.repetitionsC = params.repetitionsC as number ?? 1;
@@ -471,7 +477,7 @@ export class DrawUnitCell extends NodeCore {
 		// If there are replications
 		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
 
-			this.structure = this.replicateUnitCell();
+			this.structure = this.replicateUnitCell(this.inputStructure);
 		}
 		this.computeSupercell(basis, origin);
 
@@ -515,7 +521,7 @@ export class DrawUnitCell extends NodeCore {
 		// If there are replications
 		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
 
-			this.structure = this.replicateUnitCell();
+			this.structure = this.replicateUnitCell(this.structure);
 		}
 
 		// Pass the structure to next node

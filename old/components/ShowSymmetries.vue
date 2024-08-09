@@ -5,8 +5,7 @@
  */
 
 import {ref, onUnmounted, nextTick} from "vue";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
-import {getPreferenceSync, receiveBroadcast} from "../../new/services/RoutesClient";
+import {getPreferenceSync, receiveBroadcast, closeWindow, receiveInWindow} from "../../new/services/RoutesClient";
 
 const inSymmetry = ref("");
 const outSymmetry = ref("");

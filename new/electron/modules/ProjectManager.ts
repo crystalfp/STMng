@@ -187,22 +187,20 @@ class ProjectManager {
 	}
 
 	/**
-	 * Send the loaded project to the client that should setup the UI
+	 * Build a description of the project graph
+	 *
+	 * @returns Description of the project graph
 	 */
-	private sendLoadedProject(): void {
-
-		if(!this.project) {
-
-			sendProjectUI({});
-			return;
-		}
+	private buildProjectInfo(): ClientProjectInfo {
 
 		const clientProjectInfo: ClientProjectInfo = {};
+
+		if(!this.project) return {};
 
 		for(const entry in this.project.graph) {
 
 			const node = this.nodes.get(entry);
-			if(!node) throw Error(`Invalid type "${entry}" in sendLoadedProject`);
+			if(!node) throw Error(`Invalid type "${entry}" in buildProjectInfo`);
 
 			const {label, type, in: inString} = this.project.graph[entry];
 			const inNodes = inString ? inString.replaceAll(" ", "").split(",") : [];
@@ -221,7 +219,25 @@ class ProjectManager {
 			clientProjectInfo[entry] = info;
 		}
 
-		sendProjectUI(clientProjectInfo);
+		return clientProjectInfo;
+	}
+
+	/**
+	 * Send the loaded project to the client that should setup the UI
+	 */
+	private sendLoadedProject(): void {
+
+		if(this.project) sendProjectUI(this.buildProjectInfo());
+		else sendProjectUI({});
+	}
+
+	/**
+	 * Prepare the project description for the project editor
+	 *
+	 * @returns JSON encoded project graph info
+	 */
+	projectGraphForEditor(): string {
+		return JSON.stringify(this.buildProjectInfo());
 	}
 
 	/**

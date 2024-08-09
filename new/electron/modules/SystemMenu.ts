@@ -11,12 +11,9 @@ import type {MenuItemConstructorOptions} from "electron";
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendErrorNotification,
         refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
-// import {loadRememberedProject, loadProjectAndRemember, saveProject, sendProjectToEditor,
-//         saveProjectAs, createProjectEditor} from "./ProjectX";
+import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-
-// TEST
 import {pm} from "./ProjectManager";
 
 
@@ -48,7 +45,7 @@ export const setupMenu = (): void => {
                         if(file) {
                             const loadedDefaultProject = pm.loadProjectAndRemember(file[0]);
                             disableSaveProjectEntry(loadedDefaultProject);
-                            // sendProjectToEditor();
+                            sendProjectToEditor();
                         }
                     }
                 },
@@ -58,7 +55,7 @@ export const setupMenu = (): void => {
                     click() {
                         pm.loadRememberedProject(true);
                         disableSaveProjectEntry(true);
-                        // sendProjectToEditor();
+                        sendProjectToEditor();
                     }
                 },
                 {type: "separator"},
@@ -68,7 +65,7 @@ export const setupMenu = (): void => {
                     accelerator: "CommandOrControl+S",
                     click() {
                         pm.saveProject();
-                        // sendProjectToEditor();
+                        sendProjectToEditor();
                     }
                 },
                 {
@@ -84,7 +81,7 @@ export const setupMenu = (): void => {
                         if(file) {
                             void pm.saveProjectAs(file);
                             disableSaveProjectEntry(false);
-                            // sendProjectToEditor();
+                            sendProjectToEditor();
                         }
                     }
                 },
@@ -92,7 +89,7 @@ export const setupMenu = (): void => {
                 {
                     label: "Show project",
                     click() {
-                        // createProjectEditor();
+                        createProjectEditor();
                     }
                 },
                 {type: "separator"},

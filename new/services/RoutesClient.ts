@@ -254,3 +254,25 @@ export const receiveVerticesFromNode = (id: string,
     window.electron.ipcRenderer.on(`${id}:${channel}`,
 								   (_event, vertices: number[]) => callback(vertices));
 };
+
+// > Communication to windows
+/**
+ * Close a secondary window.
+ *
+ * @param routerPath - Route path of the window to be closed
+ */
+export const closeWindow = (routerPath: string): void => {
+
+	window.electron.ipcRenderer.send("WINDOW:CLOSE", routerPath);
+};
+
+/**
+ * Receive a message sent by sendToWindow() routine.
+ *
+ * @param callback - Routine to be called when a message to this window is received
+ * @remarks Should use a callback and not a Promise because should be always active
+ */
+export const receiveInWindow = (callback: (data: string) => void): void => {
+
+    window.electron.ipcRenderer.on("APP:DATA", (_event, payload: string) => callback(payload));
+};

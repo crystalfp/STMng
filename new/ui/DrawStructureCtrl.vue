@@ -405,6 +405,9 @@ const drawLabels = (): void => {
 
         ++idx;
     }
+
+    // Without this the labels do not appear on redraw
+    labelsGroup.updateMatrix();
 };
 
 // Receive new structure from main process
@@ -420,8 +423,8 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 watch([labelKind, drawKind, shadedBonds], () => {
 
     if(renderInfo) {
-        drawLabels();
         drawStructure();
+        drawLabels();
     }
 });
 

@@ -98,15 +98,9 @@ export class ComputeBonds extends NodeCore {
 		if((this.inputStructure?.atoms?.length ?? 0) > 500) {
 			this.enableComputeBonds = false;
 			sendToClient(this.id, "params", {
-				// perPairData: JSON.stringify(this.perPairData),
 				enableComputeBonds: false
 			});
 		}
-		// else {
-		// 	sendToClient(this.id, "params", {
-		// 		perPairData: JSON.stringify(this.perPairData)
-		// 	});
-		// }
 
 		this.addBonds();
 	}
@@ -676,6 +670,8 @@ export class ComputeBonds extends NodeCore {
 	}
 
 	saveStatus(): string {
+
+		const pd = this.perPairData.some((entry) => entry.scale !== 1.1) ? JSON.stringify(this.perPairData) : "[]";
         const statusToSave = {
 			minBondingDistance: this.minBondingDistance,
 			maxBondingDistance: this.maxBondingDistance,
@@ -684,7 +680,7 @@ export class ComputeBonds extends NodeCore {
 			enableComputeBonds: this.enableComputeBonds,
 			bondScale: this.bondScale,
 			perPairScale: this.perPairScale,
-			perPairData: JSON.stringify(this.perPairData),
+			perPairData: pd,
 			enlargementKind: this.enlargementKind,
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;

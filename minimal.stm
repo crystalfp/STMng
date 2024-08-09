@@ -4,20 +4,20 @@
       "label": "Reader",
       "type": "structure-reader"
     },
-    "bonds": {
-      "label": "Bonds",
-      "type": "compute-bonds",
-      "in": "reader"
-    },
     "unit": {
       "label": "Cell",
       "type": "draw-unit-cell",
       "in": "reader"
     },
+    "bonds": {
+      "label": "Bonds",
+      "type": "compute-bonds",
+      "in": "unit"
+    },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
-      "in": "unit"
+      "in": "bonds"
     },
     "viewer": {
       "label": "Viewer",

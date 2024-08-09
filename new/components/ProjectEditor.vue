@@ -5,10 +5,8 @@
  */
 
 import {ref, onMounted, onUnmounted} from "vue";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
-import {sb} from "@/services/Switchboard";
-import type {Project, ProjectGraph} from "../types";
-import {getPreferenceSync, receiveBroadcast} from "../services/RoutesClient";
+import {closeWindow, receiveInWindow, getPreferenceSync, receiveBroadcast} from "../services/RoutesClient";
+import type {ClientProjectInfo} from "../types";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 150;
@@ -31,7 +29,7 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
     }
 });
 
-let graph: ProjectGraph;
+let graph: ClientProjectInfo;
 
 /** Information about a node */
 interface NodeType {
@@ -58,16 +56,15 @@ interface EdgeType {
  * @param projectGraph - The project graph
  * @returns The array of nodes to display
  */
-const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
+const createNodes = (projectGraph: ClientProjectInfo): NodeType[] => {
 
     // Select nodes that have connections
     const keysWithConnections = new Set<string>();
     for(const key in projectGraph) {
         for(const otherKey in projectGraph) {
             if(otherKey === key) continue;
-            if(!projectGraph[otherKey].in) continue;
-            const inputs = projectGraph[otherKey].in!.split(/, */);
-            if(inputs.includes(key)) {
+            if(!projectGraph[otherKey].input) continue;
+            if(projectGraph[otherKey].input.includes(key)) {
                 keysWithConnections.add(key);
                 keysWithConnections.add(otherKey);
             }
@@ -76,7 +73,7 @@ const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
 
     // Add nodes that have graphical output
     for(const key in projectGraph) {
-        if(sb.generatesGraphics(projectGraph[key].type)) keysWithConnections.add(key);
+        if(projectGraph[key].graphic === "out") keysWithConnections.add(key);
     }
 
     // Nodes to display
@@ -89,7 +86,7 @@ const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
 
         if(!keysWithConnections.has(key)) continue;
 
-        const graphicsOut = sb.generatesGraphics(projectGraph[key].type) ? "out" : "";
+        const graphicsOut = projectGraph[key].graphic === "out" ? "out" : "";
 
         out.push({x, y, w: NODE_WIDTH, h: NODE_HEIGHT,
                   id: key, label: projectGraph[key].label, selected: false, graphics: graphicsOut});
@@ -98,9 +95,8 @@ const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
     }
 
     // Add the viewer at the end
-    const viewerType = sb.getViewerType();
     for(const key in projectGraph) {
-        if(projectGraph[key].type === viewerType) {
+        if(projectGraph[key].graphic === "in") {
             out.push({x, y, w: NODE_WIDTH, h: NODE_HEIGHT,
                       id: key, label: projectGraph[key].label, selected: false, graphics: "in"});
             keysWithConnections.add(key);
@@ -131,15 +127,15 @@ const createNodes = (projectGraph: ProjectGraph): NodeType[] => {
  * @param nodesList - The already computed nodes
  * @returns The list of edges for the chart
  */
-const createEdges = (projectGraph: ProjectGraph, nodesList: NodeType[]): EdgeType[] => {
+const createEdges = (projectGraph: ClientProjectInfo, nodesList: NodeType[]): EdgeType[] => {
 
     // Get the connections between nodes
     const connections = [];
     for(const key in projectGraph) {
 
-        if(!projectGraph[key].in) continue;
+        if(!projectGraph[key].input) continue;
 
-        const inputs = projectGraph[key].in!.split(/, */);
+        const inputs = projectGraph[key].input;
         for(const input of inputs) {
             const from = input;
             const to = key;
@@ -257,8 +253,7 @@ onMounted(() => {
     // When the loaded project changes
     receiveInWindow((data) => {
 
-        const project = JSON.parse(data) as Project;
-        graph = project.graph;
+        graph = JSON.parse(data) as ClientProjectInfo;
 
         const nodesList = createNodes(graph);
         nodes.value = nodesList;
