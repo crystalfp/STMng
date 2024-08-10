@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
-import type {PositionType} from "../../new/types";
+import type {PositionType} from "../types";
 
 interface Viewer3DConfiguration {
 

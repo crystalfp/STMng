@@ -8,7 +8,7 @@
 */
 
 import {ref, defineAsyncComponent, markRaw} from "vue";
-import {useControlStore} from "@/stores/controlStore";
+import {useControlStore} from "../stores/controlStore";
 import {receiveProjectUI} from "../services/RoutesClient";
 import type {ClientProjectInfo, ClientProjectInfoItem} from "../types";
 

@@ -5,7 +5,7 @@
  */
 
 import {ref, watchEffect} from "vue";
-import {useConfigStore} from "@/stores/configStore";
+import {useConfigStore} from "../stores/configStore";
 import {askNode, sendViewer3DState} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
 

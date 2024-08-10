@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import log from "electron-log";
-import {useMessageStore} from "@/stores/messageStore";
+import {useMessageStore} from "../stores/messageStore";
 
 /**
  * Show error notification

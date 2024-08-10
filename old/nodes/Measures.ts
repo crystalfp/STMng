@@ -7,8 +7,8 @@ import * as THREE from "three";
 import {watch} from "vue";
 import {sm} from "../../new/services/SceneManager";
 import {sb} from "@/services/Switchboard";
-import {useControlStore} from "@/stores/controlStore";
-import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "../../new/stores/controlStore";
+import {useConfigStore} from "../../new/stores/configStore";
 import type {Structure} from "../../new/types";
 import {atomData} from "@/services/AtomInfo";
 

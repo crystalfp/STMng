@@ -6,7 +6,7 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {useControlStore} from "@/stores/controlStore";
+import {useControlStore} from "../stores/controlStore";
 
 // > Properties
 const props = defineProps<{

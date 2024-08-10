@@ -22,6 +22,10 @@
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
+    },
+    "capture": {
+      "label": "Capture",
+      "type": "capture-view"
     }
   },
   "viewer": {
@@ -37,7 +41,8 @@
         0,
         0
       ],
-      "snapshotFormat": "png"
+      "snapshotFormat": "png",
+      "stlFormat": "binary"
     },
     "scene": {
       "background": "#90CEEC"

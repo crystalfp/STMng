@@ -7,9 +7,9 @@
 import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
-import {useConfigStore} from "@/stores/configStore";
-import {useControlStore} from "@/stores/controlStore";
-import {useMessageStore} from "@/stores/messageStore";
+import {useConfigStore} from "../stores/configStore";
+import {useControlStore} from "../stores/controlStore";
+import {useMessageStore} from "../stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "../services/SceneManager";
 import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";

@@ -3,14 +3,17 @@
  * @component
  * Controls for the capture media node.
  */
-import {useConfigStore} from "@/stores/configStore";
-import {useControlStore} from "@/stores/controlStore";
-import {useMessageStore} from "@/stores/messageStore";
+import {useConfigStore} from "../stores/configStore";
+import {useControlStore} from "../stores/controlStore";
+import {useMessageStore} from "../stores/messageStore";
 
 // > Access the stores
 const configStore = useConfigStore();
 const controlStore = useControlStore();
 const messageStore = useMessageStore();
+
+// Show this module has been loaded
+controlStore.hasCapture = true;
 
 </script>
 

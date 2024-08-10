@@ -10,7 +10,7 @@ import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "../types";
 import {showAlertMessage} from "./AlertMessage";
-import {useMessageStore} from "@/stores/messageStore";
+import {useMessageStore} from "../stores/messageStore";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -276,3 +276,33 @@ export const receiveInWindow = (callback: (data: string) => void): void => {
 
     window.electron.ipcRenderer.on("APP:DATA", (_event, payload: string) => callback(payload));
 };
+
+
+// > Capturer
+/**
+ * Save an image given as data url
+ *
+ * @param data - Data url representing an image
+ * @returns Response from the main process
+ */
+export const saveDataURL = (data: string): Promise<CtrlParams> =>
+							window.electron.ipcRenderer.invoke("SYSTEM:snapshot", data) as Promise<CtrlParams>;
+
+/**
+ * Save a movie
+ *
+ * @param buffer - Movie captured as buffer
+ * @returns Response from the main process
+ */
+export const saveMovie = (buffer: ArrayBuffer): Promise<CtrlParams> =>
+							window.electron.ipcRenderer.invoke("SYSTEM:movie", buffer) as Promise<CtrlParams>;
+
+/**
+ * Save structure as a STL formatted file
+ *
+ * @param content - The scene content (only atoms and bonds) to be saved
+ * @param binary - Save in a binary file
+ * @returns Response from the main process
+ */
+export const saveSTL = (content: string | ArrayBuffer, binary: boolean): Promise<CtrlParams> =>
+							window.electron.ipcRenderer.invoke("SYSTEM:stl", content, binary) as Promise<CtrlParams>;

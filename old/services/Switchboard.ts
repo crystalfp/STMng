@@ -8,7 +8,7 @@
 import {watch} from "vue";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
-import {useConfigStore} from "@/stores/configStore";
+import {useConfigStore} from "../../new/stores/configStore";
 import {projectIsValid} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";

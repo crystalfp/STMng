@@ -105,7 +105,7 @@ export interface GraphNode {
 export type ProjectGraph = Record<string, GraphNode>; // The key is the node id
 
 /** Type of the node state variables */
-export type CtrlParams = Record<string, string | number | boolean>;
+export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>;
 
 /** Viewer 3D state */
 export interface ViewerState {

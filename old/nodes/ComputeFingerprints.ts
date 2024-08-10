@@ -8,7 +8,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {loadEnergyFile, setEnergyFilterParameters,
 		accumulateStructure, computeFingerprints} from "@/services/RoutesClient";
 import {showErrorNotification, resetErrorNotification} from "@/services/ErrorNotification";
-import {useControlStore} from "@/stores/controlStore";
+import {useControlStore} from "../../new/stores/controlStore";
 import type {Structure} from "../../new/types";
 
 export class ComputeFingerprints {

@@ -257,31 +257,6 @@ export const openMenuEntry = (entryName: string, payload=""): void => {
     mainWin.webContents.send("APP:MENU", entryName, payload);
 };
 
-// > Update the main window project
-/**
- * Update the main window project
- *
- * @param projectAsString - JSON encoded project to update the main window project
- */
-export const sendLoadedProject = (projectAsString: string): void => {
-
-    mainWin.webContents.send("PROJECT:GET-NEXT", projectAsString);
-};
-
-/**
- * Get the current loaded project with its parameters for save.
- *
- * @returns The current loaded project as JSON formatted string
- */
-export const requestLoadedProject = (): Promise<string> => {
-
-    mainWin.webContents.send("PROJECT:REQUEST");
-
-    return new Promise((resolve) => {
-        ipcMain.on("PROJECT:ANSWER", (_event: unknown, answer: string): void => resolve(answer));
-    });
-};
-
 /**
  * Send the current project path to main window to put it in the title.
  *

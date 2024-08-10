@@ -6,7 +6,7 @@
 
 import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {useMessageStore} from "@/stores/messageStore";
+import {useMessageStore} from "../stores/messageStore";
 import {mdiFileOutline} from "@mdi/js";
 
 // > Properties

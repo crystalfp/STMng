@@ -6,8 +6,8 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {useMessageStore} from "@/stores/messageStore";
-import {useControlStore} from "@/stores/controlStore";
+import {useMessageStore} from "../stores/messageStore";
+import {useControlStore} from "../stores/controlStore";
 
 // > Properties
 const pr = defineProps<{

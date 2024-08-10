@@ -9,7 +9,7 @@ import {createWindow, findAndApplySymmetries, sendToWindow} from "@/services/Rou
 import {resetErrorNotification, showErrorNotification} from "@/services/ErrorNotification";
 import type {Structure} from "../../new/types";
 import type {ComputeSymmetriesParams, ComputeSymmetriesOutput} from "@/electron/types";
-import {useControlStore} from "@/stores/controlStore";
+import {useControlStore} from "../../new/stores/controlStore";
 import {atomSymbol} from "@/services/AtomInfo";
 
 // > Kind of directions for filling unit cell

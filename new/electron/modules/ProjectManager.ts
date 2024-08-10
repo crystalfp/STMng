@@ -19,7 +19,7 @@ import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtiliti
 import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
 
 // NOTE 1) Add here the classes that defines the nodes
-import {CaptureView} from "../nodes/CaptureView";
+import {CaptureView} from "../nodes/CaptureMedia";
 import {ChartViewer} from "../nodes/ChartViewer";
 import {ComputeBonds} from "../nodes/ComputeBonds";
 import {ComputeFingerprints} from "../nodes/ComputeFingerprints";

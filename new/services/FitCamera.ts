@@ -8,8 +8,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import * as THREE from "three";
-import {useConfigStore} from "@/stores/configStore";
-import {useControlStore} from "@/stores/controlStore";
+import {useConfigStore} from "../stores/configStore";
+import {useControlStore} from "../stores/controlStore";
 import type CameraControls from "camera-controls";
 
 /**

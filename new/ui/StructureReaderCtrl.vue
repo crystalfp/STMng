@@ -10,7 +10,7 @@
 import {ref, watchEffect} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
-import {useControlStore} from "../../old/stores/controlStore";
+import {useControlStore} from "../stores/controlStore";
 import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage,
         hasAlertMessage, getAlertMessage} from "../services/AlertMessage";
