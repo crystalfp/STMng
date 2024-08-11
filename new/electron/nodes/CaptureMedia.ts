@@ -39,8 +39,8 @@ export class CaptureView extends NodeCore {
 		return "";
 	}
 
-	loadStatus(_params: CtrlParams): void {
-	}
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
+	loadStatus(_params: CtrlParams): void {}
 
 	getUiInfo(): UiInfo {
 
@@ -173,7 +173,7 @@ export class CaptureView extends NodeCore {
 	private channelSTL(params: CtrlParams): CtrlParams {
 
 		const binary = params.binary as boolean ?? false;
-		const content = params.content;
+		const {content} = params;
 		if(!content) return {payload: ""};
 
 		// Select the save file

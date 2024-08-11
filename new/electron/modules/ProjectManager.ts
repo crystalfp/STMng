@@ -260,10 +260,12 @@ class ProjectManager {
 
 			if(this.project.graph[entry].type === "viewer-3d") viewerStatus = await node.saveStatus();
 			else {
+				const statusToSave = node.saveStatus() as string;
+				if(!statusToSave) continue;
 				if(notFirst) uiStatus += ",";
 				else notFirst = true;
 
-				uiStatus += node.saveStatus() as string;
+				uiStatus += statusToSave;
 			}
 		}
 

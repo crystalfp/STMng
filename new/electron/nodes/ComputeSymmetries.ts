@@ -36,7 +36,7 @@ export class ComputeSymmetries extends NodeCore {
         const statusToSave = {
 			showTrajectories: false,
 		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+        return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {

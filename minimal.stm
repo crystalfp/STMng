@@ -84,20 +84,9 @@
   "ui": {
     "reader": {
       "loopSteps": false,
-      "format": "LAMMPStrj",
+      "format": "XYZ",
       "atomsTypes": "Fe O",
       "useBohr": true
-    },
-    "bonds": {
-      "minBondingDistance": 0.64,
-      "maxBondingDistance": 4.5,
-      "maxHBondingDistance": 3,
-      "maxHValenceAngle": 30,
-      "enableComputeBonds": true,
-      "bondScale": 1.1,
-      "perPairScale": false,
-      "perPairData": "[]",
-      "enlargementKind": "none"
     },
     "unit": {
       "showUnitCell": true,
@@ -109,7 +98,22 @@
       "repetitionsC": 1,
       "showSupercell": false,
       "supercellColor": "#02A502",
-      "dashedSupercell": false
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": true
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "perPairData": "[]",
+      "enlargementKind": "none"
     },
     "draw": {
       "drawKind": "ball-and-stick",

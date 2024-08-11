@@ -10,13 +10,13 @@
 // > Type of a collection of atomic structures
 // >> Base types
 /** An [x, y, z] position */
-export type PositionType = [number, number, number];
+export type PositionType = [x: number, y: number, z: number];
 
 /** The unit cell basis vectors [a, b, c] where e.g, a = [ax, ay, az] */
 export type BasisType = [
-    number, number, number,
-    number, number, number,
-    number, number, number
+    ax: number, ay: number, az: number,
+    bx: number, by: number, bz: number,
+    cx: number, cy: number, cz: number
 ];
 
 /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */

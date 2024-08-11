@@ -7,7 +7,7 @@
  * @since 2024-07-16
  */
 
-import {ref, watchEffect} from "vue";
+import {ref, watch} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {useControlStore} from "../stores/controlStore";
@@ -76,7 +76,7 @@ askNode(id, "init")
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
 
 // Manage the steps selection
-watchEffect(() => {
+watch([step, running, loopSteps], () => {
 
     askNode(id, "step", {
         step: step.value,
@@ -84,7 +84,7 @@ watchEffect(() => {
         loopSteps: loopSteps.value,
     })
     .then((params) => {
-        step.value = params.step as number ?? 1;
+        running.value = params.running as boolean ?? false;
     })
     .catch((error: Error) => {
         showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
@@ -94,7 +94,13 @@ watchEffect(() => {
 receiveFromNode(id, "runningStep", (params: CtrlParams) => {
 
     step.value = params.step as number ?? 1;
-    running.value = params.running as boolean ?? true;
+
+    if(running.value) {
+        const updatedRunning = params.running as boolean;
+        if(updatedRunning !== undefined && !updatedRunning) {
+            running.value = false;
+        }
+    }
 });
 
 /**
@@ -263,11 +269,11 @@ const setUseBohr = (): void => {
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
 
   <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"
-                :disabled="format===''"
+                :disabled="format === ''"
                 :prepend-icon="mdiFileOutline" :accept="acceptFile(format)" :clearable="false"
                 class="mt-2" @update:model-value="loadFile" />
 
-  <v-file-input v-if="format==='POSCAR + XDATCAR'" v-model="auxFileSelected"
+  <v-file-input v-if="format === 'POSCAR + XDATCAR'" v-model="auxFileSelected"
                 label="Select XDATCAR file" :loading="auxInProgress"
                 :prepend-icon="mdiFileOutline" accept=".xdatcar,*" :clearable="false"
                 class="mt-0" @update:model-value="loadAuxFile" />

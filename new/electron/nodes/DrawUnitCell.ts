@@ -170,7 +170,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Create out
-		const {crystal} = structure;
+		const {crystal, volume} = structure;
 		const out: Structure = {
 
 			crystal: {
@@ -190,7 +190,7 @@ export class DrawUnitCell extends NodeCore {
 			},
 			atoms: [],
 			bonds: [],
-			volume: this.replicateVolume(structure.volume)
+			volume: this.replicateVolume(volume)
 		};
 
 		for(let i=0; i < outAtoms; ++i) {
@@ -262,7 +262,7 @@ export class DrawUnitCell extends NodeCore {
 			percentC: this.percentC,
 			shrink: this.shrink,
 		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+        return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {

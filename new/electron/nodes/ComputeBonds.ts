@@ -683,7 +683,7 @@ export class ComputeBonds extends NodeCore {
 			perPairData: pd,
 			enlargementKind: this.enlargementKind,
 		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+        return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {

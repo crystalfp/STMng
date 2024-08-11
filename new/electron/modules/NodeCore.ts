@@ -58,7 +58,7 @@ export abstract class NodeCore {
     /**
      * Save the node status
      *
-     * @returns The JSON formatted status to be saved
+     * @returns The JSON formatted status to be saved. If empty string, no status is saved
      */
 	abstract saveStatus(): string | Promise<string>;
 

@@ -68,7 +68,7 @@ export class StructureReader extends NodeCore {
       		atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
 		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+        return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -311,19 +311,17 @@ export class StructureReader extends NodeCore {
 						running: this.running,
 					});
 
-				}, 100);
+				}, 170);
 			}
-			return {
-				step: this.step,
-				running: this.running,
-			};
+			return {running: this.running};
 		}
 		else if(this.intervalId !== undefined) {
 			clearInterval(this.intervalId);
 			this.intervalId = undefined;
+			this.running = false;
 		}
 
-		return {step: this.step};
+		return {running: this.running};
 	}
 
 	// > Helper functions

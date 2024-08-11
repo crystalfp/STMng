@@ -81,7 +81,7 @@ export class DrawStructure extends NodeCore {
 			showLabels: this.showLabels,
 			shadedBonds: this.shadedBonds,
 		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+        return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {
