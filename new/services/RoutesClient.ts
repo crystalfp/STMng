@@ -224,6 +224,22 @@ export const receiveFromNodeForRendering = (id: string,
 };
 
 /**
+ * Receive polyhedra data for rendering as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Callback function called when a message is received
+ */
+export const receivePolyhedraFromNode = (id: string,
+										 channel: string,
+										 callback: (vertices: number[][],
+										 			centerAtomsColor: string[]) => void): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`,
+				(_event, vertices: number[][], centerAtomsColor: string[]) => callback(vertices, centerAtomsColor));
+};
+
+/**
  * Send the viewer3D state to the main process
  *
  * @param id - ID of the node sending the parameters

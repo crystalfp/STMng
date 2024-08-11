@@ -299,7 +299,7 @@ export const getCurrentNode = (): Promise<string> => {
     });
 };
 
-// TEST Routines for the new architecture
+// Routines for the new architecture
 let firstSendProjectUI = true;
 /**
  * Update the main window project
@@ -344,13 +344,29 @@ export const sendToClient = (id: string, channel: string, params: CtrlParams): v
  *
  * @param id - ID of the node sending the parameters
  * @param channel - Specify the channel inside the id related group
- * @param params - Parameters to send to the client process
+ * @param renderInfo - Parameters to send to the client process
  */
 export const sendToClientForRendering = (id: string,
                                          channel: string,
                                          renderInfo: StructureRenderInfo): void => {
 
     mainWin.webContents.send(`${id}:${channel}`, renderInfo);
+};
+
+/**
+ * Push polyhedra data to the client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param vertices - List of vertices coordinates for each polyhedron
+ * @param centerAtomsColor - List of center atoms colors
+ */
+export const sendPolyhedraToClient = (id: string,
+                                      channel: string,
+                                      vertices: number[][],
+                                      centerAtomsColor: string[]): void => {
+
+    mainWin.webContents.send(`${id}:${channel}`, vertices, centerAtomsColor);
 };
 
 /**

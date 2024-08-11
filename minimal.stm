@@ -19,6 +19,11 @@
       "type": "draw-structure",
       "in": "bonds"
     },
+    "polyhedra": {
+      "label": "Polyhedra",
+      "type": "draw-polyhedra",
+      "in": "bonds"
+    },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
@@ -125,6 +130,14 @@
       "showStructure": true,
       "showLabels": true,
       "shadedBonds": true
+    },
+    "polyhedra": {
+      "showPolyhedra": true,
+      "color": "#FFFFFF80",
+      "labelKind": "symbol",
+	    "atomsSelector": "",
+	    "colorByCenterAtom": true,
+	    "opacityByCenterAtom": 0.5
     }
   }
 }

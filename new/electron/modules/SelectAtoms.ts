@@ -5,8 +5,8 @@
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  */
-import {atomSymbol} from "@/services/AtomInfo";
-import type {Structure} from "../../new/types";
+import {getAtomicSymbol} from "./AtomData";
+import type {Structure} from "../../types";
 
 export type SelectorType = "symbol" | "label" | "index" | "all";
 
@@ -43,7 +43,7 @@ export const selectAtomsByKind = (structure: Structure,
 			selectors = new Set<string>(selectorsList);
 			for(let idx=0; idx < natoms; ++idx) {
 				const {atomZ} = atoms[idx];
-				const symbol = atomSymbol(atomZ).toLowerCase();
+				const symbol = getAtomicSymbol(atomZ).toLowerCase();
 				if(selectors.has(symbol)) selectedAtomsIdx.push(idx);
 			}
 			break;
