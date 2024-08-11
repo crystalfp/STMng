@@ -14,7 +14,6 @@ import type {Structure} from "../../new/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
-import {DrawPolyhedra} from "@/nodes/DrawPolyhedra";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Orthoslice} from "@/nodes/DrawOrthoslice";
 import {StructureWriter} from "@/nodes/StructureWriter";
@@ -97,7 +96,6 @@ export class NodeInfo {
 			case "draw-unit-cell":
 				break;
 			case "draw-polyhedra":
-				map.set(id, new DrawPolyhedra(id));
 				break;
 			case "compute-bonds":
 				break;
@@ -239,8 +237,6 @@ export class NodeInfo {
 				case "draw-unit-cell":
 					break;
 				case "draw-polyhedra":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as DrawPolyhedra).saveStatus();
 					break;
 				case "compute-bonds":
 					break;

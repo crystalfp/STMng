@@ -9,7 +9,7 @@ import * as THREE from "three";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "../../new/services/SceneManager";
 import type {Structure, PositionType, BasisType} from "../../new/types";
-import {selectAtomsByKind, type SelectorType} from "@/services/SelectAtoms";
+import {selectAtomsByKind, type SelectorType} from "../../new/electron/modules/SelectAtoms";
 import {useControlStore} from "../../new/stores/controlStore";
 import {watchEffect} from "vue";
 import {atomColor} from "@/services/AtomInfo";

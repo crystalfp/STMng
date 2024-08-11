@@ -89,35 +89,6 @@ export const selectSaveStructureFile = (format: string): Promise<string> => wind
  */
 export const saveStructureFile = (format: string, filename: string, encodedStructures: string): Promise<MainResponse> => window.electron.ipcRenderer.invoke("WRITER:WRITE", format, filename, encodedStructures) as Promise<MainResponse>;
 
-// > Capturer
-/**
- * Save an image given as data url
- *
- * @param data - Data url representing an image
- * @returns Response from the main process
- */
-export const saveDataURL = (data: string): Promise<MainResponse> =>
-							window.electron.ipcRenderer.invoke("VIEWER:SNAPSHOT", data) as Promise<MainResponse>;
-
-/**
- * Save a movie
- *
- * @param buffer - Movie captured as buffer
- * @returns Response from the main process
- */
-export const saveMovie = (buffer: ArrayBuffer): Promise<MainResponse> =>
-							window.electron.ipcRenderer.invoke("VIEWER:MOVIE", buffer) as Promise<MainResponse>;
-
-/**
- * Save structure as a STL formatted file
- *
- * @param content - The scene content (only atoms and bonds) to be saved
- * @param binary - Save in a binary file
- * @returns Response from the main process
- */
-export const saveSTL = (content: string | ArrayBuffer, binary: boolean): Promise<MainResponse> =>
-							window.electron.ipcRenderer.invoke("VIEWER:STL", content, binary) as Promise<MainResponse>;
-
 // > Symmetries
 /**
  * Find and apply structure symmetries in the main process

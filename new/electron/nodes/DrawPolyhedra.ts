@@ -9,8 +9,8 @@
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
+import {sendPolyhedraToClient} from "../modules/WindowsUtilities";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
-import { sendPolyhedraToClient } from "../modules/WindowsUtilities";
 
 export class DrawPolyhedra extends NodeCore {
 
@@ -63,12 +63,12 @@ export class DrawPolyhedra extends NodeCore {
 
 	loadStatus(params: CtrlParams): void {
 
-		this.color = params.color as string ?? "#FFFFFF80",
-		this.labelKind = params.labelKind as SelectorType ?? "symbol",
-		this.atomsSelector = params.atomsSelector as string ?? "",
-		this.showPolyhedra = params.showPolyhedra as boolean ?? true,
-		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true,
-		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5
+		this.color = params.color as string ?? "#FFFFFF80";
+		this.labelKind = params.labelKind as SelectorType ?? "symbol";
+		this.atomsSelector = params.atomsSelector as string ?? "";
+		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
+		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
+		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
 	}
 
 	getUiInfo(): UiInfo {

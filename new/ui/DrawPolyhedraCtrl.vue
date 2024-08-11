@@ -51,6 +51,30 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
 
+/**
+ * Extract the color from a string containing alpha
+ *
+ * @param color - Color in #RRGGBBAA format
+ * @returns The color part
+ */
+const extractColor = (color: string): THREE.Color => {
+
+    const colorString = color.slice(0, 7);
+    return new THREE.Color(colorString);
+};
+
+/**
+ * Extract the opacity from a string containing alpha
+ *
+ * @param color - Color in #RRGGBBAA format
+ * @returns The opacity value
+ */
+const extractOpacity = (color: string): number => {
+
+    if(color.length < 9) return 1;
+    return Number.parseInt(color.slice(7, 9), 16) / 255;
+};
+
 watch([showPolyhedra, surfaceColor, colorByCenterAtom, showOpacity], () => {
 
     sendToNode(id, "look", {
@@ -61,7 +85,20 @@ watch([showPolyhedra, surfaceColor, colorByCenterAtom, showOpacity], () => {
     });
 
     group.visible = showPolyhedra.value;
-    // TBD
+
+    // Change materials on meshes
+    group.traverse((object) => {
+
+        if(object.type !== "Mesh") return;
+		const mesh = object as THREE.Mesh;
+        if(colorByCenterAtom.value) {
+            (mesh.material as THREE.MeshLambertMaterial).opacity = opacityByCenterAtom.value;
+        }
+        else {
+	        (mesh.material as THREE.MeshLambertMaterial).color = extractColor(surfaceColor.value);
+            (mesh.material as THREE.MeshLambertMaterial).opacity = extractOpacity(surfaceColor.value);
+        }
+    });
 });
 
 watch([labelKind, atomsSelector], () => {

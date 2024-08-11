@@ -9,7 +9,7 @@ import {watch} from "vue";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {useConfigStore} from "../../new/stores/configStore";
-import {projectIsValid} from "@/services/Validators";
+// import {projectIsValid} from "@/services/Validators";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
@@ -74,10 +74,10 @@ class Switchboard {
 			}
 
 			// Check the project
-			if(!projectIsValid(this.project)) {
-				showErrorNotification("Invalid project content. Project not loaded");
-				return;
-			}
+			// if(!projectIsValid(this.project)) {
+			// 	showErrorNotification("Invalid project content. Project not loaded");
+			// 	return;
+			// }
 
 			// Clean the previous project content
 			this.nodesUI.length = 0;

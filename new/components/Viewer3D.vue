@@ -12,11 +12,11 @@ import {useControlStore} from "../stores/controlStore";
 import {useMessageStore} from "../stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "../services/SceneManager";
-import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";
+import {saveDataURL, saveMovie, saveSTL} from "../services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "../services/FitCamera";
-import type {MainResponse} from "@/types";
 import {setupSceneHelpers} from "../services/SceneHelpers";
 import {showAlertMessage} from "../services/AlertMessage";
+import type {CtrlParams} from "../types";
 
 // > Access the stores
 const configStore  = useConfigStore();
@@ -99,11 +99,11 @@ async function handleStop(): Promise<void> {
     const sts = await saveMovie(buffer);
     if(sts.error) {
         messageStore.captureMedia.typeM = "error";
-        messageStore.captureMedia.textM = sts.error;
+        messageStore.captureMedia.textM = sts.error as string;
     }
     else if(sts.payload) {
         messageStore.captureMedia.typeM = "success";
-        messageStore.captureMedia.textM = sts.payload;
+        messageStore.captureMedia.textM = sts.payload as string;
     }
 }
 
@@ -279,11 +279,11 @@ onMounted(() => {
 
             const mimeType = `image/${configStore.camera.snapshotFormat}`;
             saveDataURL(renderer.domElement.toDataURL(mimeType))
-                .then((response: MainResponse) => {
-                    if(response.error) throw Error(response.error);
+                .then((response: CtrlParams) => {
+                    if(response.error) throw Error(response.error as string);
                     if(response.payload === "") return;
                     messageStore.captureMedia.typeS = "success";
-                    messageStore.captureMedia.textS = response.payload;
+                    messageStore.captureMedia.textS = response.payload as string;
                 })
                 .catch((error: Error) => {
                     messageStore.captureMedia.typeS = "error";
@@ -301,11 +301,11 @@ onMounted(() => {
 
             const result = sm.createSTL(configStore.camera.stlFormat);
             saveSTL(result, configStore.camera.stlFormat === "binary")
-                .then((response: MainResponse) => {
-                    if(response.error) throw Error(response.error);
+                .then((response: CtrlParams) => {
+                    if(response.error) throw Error(response.error as string);
                     if(response.payload === "") return;
                     messageStore.captureMedia.typeT = "success";
-                    messageStore.captureMedia.textT = response.payload;
+                    messageStore.captureMedia.textT = response.payload as string;
                 })
                 .catch((error: Error) => {
                     messageStore.captureMedia.typeT = "error";
