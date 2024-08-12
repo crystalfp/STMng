@@ -78,7 +78,7 @@ askNode(id, "init")
         percentC.value = params.percentC as number ?? 0;
         shrink.value = params.shrink as boolean ?? true;
     })
-    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for DrawUnitCell: ${error.message}`));
 
 // Triangles. Top and bottom facies are not needed
 const indices = [

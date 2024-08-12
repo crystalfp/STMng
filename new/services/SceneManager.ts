@@ -19,6 +19,10 @@ class SceneManager {
 	private static readonly scene = new THREE.Scene();
 	private exporter: STLExporter | undefined;
 
+	private constructor() {
+		this.clearScene();
+	}
+
 	/**
 	 * Create the scene
 	 *
@@ -40,11 +44,13 @@ class SceneManager {
 	 */
 	clearScene(): void {
 
-		SceneManager.scene.traverse((object) => {
+		const lights = ["AmbientLight", "DirectionalLight"];
+		for(const object of SceneManager.scene.children) {
+			if(lights.includes(object.type)) continue;
 
-			if(["AmbientLight", "DirectionalLight", "Scene"].includes(object.type)) return;
 			object.clear();
-		});
+			object.remove();
+		}
 	}
 
 	/**

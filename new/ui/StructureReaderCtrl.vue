@@ -73,9 +73,9 @@ askNode(id, "init")
         file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
         if("path" in file) auxFileSelected.value[0] = file;
     })
-    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`, "structureReader"));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
 
-// Manage the steps selection
+// Manage the step selection
 watch([step, running, loopSteps], () => {
 
     askNode(id, "step", {
@@ -84,7 +84,7 @@ watch([step, running, loopSteps], () => {
         loopSteps: loopSteps.value,
     })
     .then((params) => {
-        running.value = params.running as boolean ?? false;
+        if(running.value && params.running === false) running.value = false;
     })
     .catch((error: Error) => {
         showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");

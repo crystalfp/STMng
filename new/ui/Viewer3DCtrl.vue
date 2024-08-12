@@ -25,7 +25,7 @@ askNode(id, "init")
 
         configStore.restoreState(params.rawStatus as string);
     })
-    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for Viewer3D: ${error.message}`));
 
 // Send state on request from main process
 sendViewer3DState(id, "state", () => configStore.statusToSave);

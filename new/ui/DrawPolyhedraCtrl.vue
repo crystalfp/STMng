@@ -18,6 +18,7 @@ const {id} = defineProps<{
     id: string;
 }>();
 
+// > Initialization
 const showPolyhedra = ref(true);
 const surfaceColor = ref("#FFFFFF80");
 const labelKind = ref("symbol");
@@ -49,8 +50,9 @@ askNode(id, "init")
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
     })
-    .catch((error: Error) => showAlertMessage(`Error from ask node: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for DrawPolyhedra: ${error.message}`));
 
+// > Utility functions
 /**
  * Extract the color from a string containing alpha
  *
@@ -75,47 +77,13 @@ const extractOpacity = (color: string): number => {
     return Number.parseInt(color.slice(7, 9), 16) / 255;
 };
 
-watch([showPolyhedra, surfaceColor, colorByCenterAtom, showOpacity], () => {
-
-    sendToNode(id, "look", {
-        showPolyhedra: showPolyhedra.value,
-        color: surfaceColor.value,
-        colorByCenterAtom: colorByCenterAtom.value,
-        opacityByCenterAtom: opacityByCenterAtom.value
-    });
-
-    group.visible = showPolyhedra.value;
-
-    // Change materials on meshes
-    group.traverse((object) => {
-
-        if(object.type !== "Mesh") return;
-		const mesh = object as THREE.Mesh;
-        if(colorByCenterAtom.value) {
-            (mesh.material as THREE.MeshLambertMaterial).opacity = opacityByCenterAtom.value;
-        }
-        else {
-	        (mesh.material as THREE.MeshLambertMaterial).color = extractColor(surfaceColor.value);
-            (mesh.material as THREE.MeshLambertMaterial).opacity = extractOpacity(surfaceColor.value);
-        }
-    });
-});
-
-watch([labelKind, atomsSelector], () => {
-
-    sendToNode(id, "select", {
-        atomsSelector: atomsSelector.value,
-        labelKind: labelKind.value
-    });
-});
-
 /**
-    * Find a contrasting color
-    *
-    * @param materialColor - Polyhedra color
-    * @param bw - True (default) to create contrasting black and white color
-    * @returns Color for the polyhedra edges
-    */
+ * Find a contrasting color
+ *
+ * @param materialColor - Polyhedra color
+ * @param bw - True (default) to create contrasting black and white color
+ * @returns Color for the polyhedra edges
+ */
 const createContrastingColor = (materialColor: THREE.Color, bw=true): number => {
 
     const {r, g, b} = materialColor;
@@ -127,36 +95,31 @@ const createContrastingColor = (materialColor: THREE.Color, bw=true): number => 
     return (((1-r)*255 + (1-g))*255 + (1-b))*255;
 };
 
-receivePolyhedraFromNode(id, "vertices",
-                         (vertices: number[][], centerAtomsColor: string[]) => {
+/** Received vertex coordinates and colors */
+const polyhedraVertices: THREE.Vector3[][] = [];
+const centerAtomColorList: string[] = [];
+let countPolyhedra = 0;
+
+/**
+ * Create the graphical objects
+ */
+const drawPolyhedra = (): void => {
 
 	// Empty the group
 	group.clear();
 
-    let polyhedronIdx = 0;
-    let idx = 0;
-    for(const island of vertices) {
-
-        // Convert the list of numbers into a THREE.Vector3 list
-        const points: THREE.Vector3[] = [];
-        const len = island.length;
-        for(let i=0; i < len; i += 3) {
-            const point = new THREE.Vector3(island[i], island[i+1], island[i+2]);
-            points.push(point);
-        }
+    for(let i=0; i < countPolyhedra; ++i) {
 
         // The polyhedron
         const mesh = new THREE.Mesh();
-        mesh.geometry = new ConvexGeometry(points);
+        mesh.geometry = new ConvexGeometry(polyhedraVertices[i]);
         mesh.name = "Polyhedron";
         let color;
         if(colorByCenterAtom.value) {
             const polyhedraMaterial = material.clone();
-            color = new THREE.Color(centerAtomsColor[idx]);
+            color = new THREE.Color(centerAtomColorList[i]);
             polyhedraMaterial.color = color;
             mesh.material = polyhedraMaterial;
-
-            ++idx;
         }
         else {
             mesh.material = material.clone();
@@ -165,8 +128,7 @@ receivePolyhedraFromNode(id, "vertices",
         group.add(mesh);
 
         // Identify the polyhedron
-        mesh.userData = {idx: polyhedronIdx};
-        ++polyhedronIdx;
+        mesh.userData = {idx: i};
 
         // The polyhedron edges
         const edgeColor = createContrastingColor(color);
@@ -176,6 +138,69 @@ receivePolyhedraFromNode(id, "vertices",
     }
 
     group.visible = showPolyhedra.value;
+};
+
+// > React to changes
+watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () => {
+
+    sendToNode(id, "look", {
+        showPolyhedra: showPolyhedra.value,
+        color: surfaceColor.value,
+        colorByCenterAtom: colorByCenterAtom.value,
+        opacityByCenterAtom: opacityByCenterAtom.value
+    });
+
+    // If only visibility changes
+    if(group.visible !== showPolyhedra.value) {
+        group.visible = showPolyhedra.value;
+        return;
+    }
+
+    // Change material
+    if(colorByCenterAtom.value) {
+        material.opacity = opacityByCenterAtom.value;
+    }
+    else {
+        material.color = extractColor(surfaceColor.value);
+        material.opacity = extractOpacity(surfaceColor.value);
+    }
+
+    // Redraw polyhedron
+    drawPolyhedra();
+});
+
+watch([labelKind, atomsSelector], () => {
+
+    sendToNode(id, "select", {
+        atomsSelector: atomsSelector.value,
+        labelKind: labelKind.value
+    });
+});
+
+receivePolyhedraFromNode(id, "vertices",
+                         (vertices: number[][], centerAtomsColor: string[]) => {
+
+    // Format the received data
+    polyhedraVertices.length = 0;
+    centerAtomColorList.length = 0;
+    countPolyhedra = vertices.length;
+    for(let i=0; i < countPolyhedra; ++i) {
+
+        // Convert the list of coordinates into a THREE.Vector3 list
+        const points: THREE.Vector3[] = [];
+        const len = vertices[i].length;
+        for(let j=0; j < len; j += 3) {
+            const point = new THREE.Vector3(vertices[i][j], vertices[i][j+1], vertices[i][j+2]);
+            points.push(point);
+        }
+        polyhedraVertices.push(points);
+
+        // Save the list of center atoms colors
+        centerAtomColorList.push(centerAtomsColor[i]);
+    }
+
+    // Render the polyhedron
+    drawPolyhedra();
 });
 
 </script>
