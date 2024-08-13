@@ -91,6 +91,11 @@ export class ComputeBonds extends NodeCore {
 
 		this.inputStructure = data as Structure;
 
+		if(!this.inputStructure || this.inputStructure.atoms.length === 0) {
+			this.outputEmptyStructure();
+			return;
+		}
+
 		// Create atoms pair list
 		this.createPairData();
 

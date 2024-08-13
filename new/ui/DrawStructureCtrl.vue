@@ -278,7 +278,7 @@ const drawStructure = (): void => {
     out.add(atomsGroup, bondsGroup, labelsGroup);
 
     // No atoms present, display nothing
-    if(!renderInfo.atoms) return;
+    if(renderInfo.atoms.length === 0) return;
 
     // Render atoms
     let index = 0;

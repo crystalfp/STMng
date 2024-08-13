@@ -38,7 +38,16 @@ export class DrawStructure extends NodeCore {
 
 	notifier(data: Structure): void {
 
-		if(!data) return;
+		if(!data || data.atoms.length === 0) {
+
+			sendToClientForRendering(this.id, "structure", {
+				atoms: [],
+				bonds: [],
+				cell: {origin: [0, 0, 0], basis: [0, 0, 0, 0, 0, 0, 0, 0, 0]}
+			});
+
+			return;
+		}
 
 		const renderInfo: StructureRenderInfo = {
 			atoms: [],

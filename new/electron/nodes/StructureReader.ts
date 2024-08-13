@@ -59,6 +59,16 @@ export class StructureReader extends NodeCore {
 	constructor(private readonly id: string) {
 		super();
 		this.setupChannels(this.id, this.channels);
+		this.notify({
+			crystal: {
+				basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+				origin: [0, 0, 0],
+				spaceGroup: ""
+			},
+			atoms: [],
+			bonds: [],
+			volume: []
+		});
 	}
 
 	saveStatus(): string {

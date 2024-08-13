@@ -13,7 +13,7 @@ import {useConfigStore} from "../../new/stores/configStore";
 import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
-import {sm} from "../../new/services/SceneManager";
+// import {sm} from "../../new/services/SceneManager";
 
 /** Type of the parameters */
 export type UiParams = Record<string, string | number | boolean>;
@@ -86,7 +86,7 @@ class Switchboard {
 			this.mapIdToInputs.clear();
 
 			// Clear the scene
-			sm.clearScene();
+			// sm.clearScene();
 
 			// Access the store
 			const switchboardStore = useSwitchboardStore();

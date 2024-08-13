@@ -40,11 +40,17 @@ export class DrawPolyhedra extends NodeCore {
 	notifier(data: Structure): void {
 
 		this.structure = data;
-		if(!data || data.atoms.length === 0 || data.bonds.length === 0) return;
+		if(!data || data.atoms.length === 0 || data.bonds.length === 0) {
+			sendPolyhedraToClient(this.id, "vertices", [], []);
+			return;
+		}
 
 		// Extract the polyhedrons vertices
 		const islands = this.createVerticeLists();
-		if(islands.length === 0) return;
+		if(islands.length === 0) {
+			sendPolyhedraToClient(this.id, "vertices", [], []);
+			return;
+		}
 
 		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
 	}

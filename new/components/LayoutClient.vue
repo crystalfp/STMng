@@ -34,7 +34,6 @@ window.addEventListener("DOMContentLoaded", () => {
             });
             setProjectPathInTitle("See the Molecole new generation");
             receiveRefreshMenu();
-            sm.clearScene();
         }
     }, 20);
 });

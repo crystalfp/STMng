@@ -40,16 +40,43 @@ class SceneManager {
 	}
 
 	/**
+	 * Remove objects with children
+	 *
+	 * @param object - The object to remove
+	 */
+	private removeObjectsWithChildren(object: THREE.Object3D): void {
+
+        if(object.children.length > 0) {
+            for(let idx = object.children.length - 1; idx >= 0; idx--) {
+                this.removeObjectsWithChildren(object.children[idx]);
+            }
+        }
+
+		if(object.type === "Mesh") {
+			const mesh =  object as THREE.Mesh;
+
+			if(mesh.geometry) {
+				mesh.geometry.dispose();
+			}
+			if(mesh.material) {
+				(mesh.material as THREE.Material).dispose();
+			}
+        }
+
+        object.removeFromParent();
+	}
+
+	private readonly lights: string[] = ["AmbientLight", "DirectionalLight"];
+
+	/**
 	 * Clear the scene of all graphical objects
 	 */
 	clearScene(): void {
 
-		const lights = ["AmbientLight", "DirectionalLight"];
 		for(const object of SceneManager.scene.children) {
-			if(lights.includes(object.type)) continue;
 
-			object.clear();
-			object.remove();
+			if(this.lights.includes(object.type)) continue;
+			this.removeObjectsWithChildren(object);
 		}
 	}
 

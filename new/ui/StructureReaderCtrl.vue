@@ -172,6 +172,18 @@ const acceptStringByFormat = new Map<string, string>([
  */
 const acceptFile = (fileFormat: string): string => acceptStringByFormat.get(fileFormat) ?? "*";
 
+const saveFileObject = (file: File): string => {
+    const clone = {
+        lastModified: file.lastModified,
+        name: file.name,
+        path: file.path,
+        size: file.size,
+        type: file.type,
+    };
+
+    return JSON.stringify(clone);
+};
+
 /**
  * Start loading a file
  *
@@ -191,7 +203,7 @@ const loadFile = (files: File[] | File): void => {
     askNode(id, "read", {
             format: format.value,
             fileToRead: file.path,
-            filesSelectedFull: JSON.stringify(file),
+            filesSelectedFull: saveFileObject(file),
             atomsTypes: atomsTypes.value,
             useBohr: useBohr.value,
         })
@@ -224,7 +236,7 @@ const loadAuxFile = (files: File[] | File): void => {
     askNode(id, "aux", {
             format: format.value,
             auxFileToRead: file.path,
-            auxSelectedFull: JSON.stringify(file),
+            auxSelectedFull: saveFileObject(file),
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
