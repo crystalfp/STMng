@@ -302,3 +302,16 @@ export interface WindowsParams {
     /** Data to be passed to the window when it is ready */
     data?: string;
 }
+
+/** Interface exposed by all format writers */
+export interface WriterImplementation {
+
+	/**
+	 * Write structure file
+	 *
+	 * @param filename - Output filename
+	 * @param structures - List of structures to be written
+	 * @returns Standard response object
+	 */
+	writeStructure: (filename: string, structures: Structure[]) => CtrlParams;
+}

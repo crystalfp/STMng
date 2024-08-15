@@ -24,6 +24,11 @@
       "type": "draw-polyhedra",
       "in": "bonds"
     },
+    "writer": {
+      "label": "Writer",
+      "type": "structure-writer",
+      "in": "bonds"
+    },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
@@ -138,6 +143,10 @@
 	    "atomsSelector": "",
 	    "colorByCenterAtom": true,
 	    "opacityByCenterAtom": 0.5
+    },
+    "writer": {
+      "format": "XYZ",
+      "continuous": false
     }
   }
 }

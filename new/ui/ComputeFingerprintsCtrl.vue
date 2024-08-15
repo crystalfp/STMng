@@ -6,8 +6,8 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {useMessageStore} from "../stores/messageStore";
 import {mdiFileOutline} from "@mdi/js";
+import {resetAlertMessage} from "../services/AlertMessage";
 
 // > Properties
 const props = defineProps<{
@@ -16,9 +16,8 @@ const props = defineProps<{
     id: string;
 }>();
 
-// Access the message store
-const messageStore = useMessageStore();
-messageStore.fingerprints.message = "";
+// Prepare the error messages
+resetAlertMessage("fingerprints");
 
 // Accumulate structures
 const reset = ref(false);
@@ -213,9 +212,6 @@ const distanceMethods = [
   <!-- <v-text-field v-if="" v-model="tolerance" label="Best K"
                   class="ml-2 mr-0" :rules="[rules.numeric]" /> -->
 
-  <v-alert v-if="messageStore.fingerprints.message !== ''" title="Error" class="mt-7 cursor-pointer"
-           :text="messageStore.fingerprints.message" type="error" density="compact"
-           color="red" @click="messageStore.fingerprints.message=''" />
-
+  <g-error-alert kind="fingerprints" />
 </v-container>
 </template>

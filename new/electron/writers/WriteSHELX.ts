@@ -5,16 +5,13 @@
  */
 
 import fs from "node:fs";
-import {cartesianToFractionalCoordinates,
-		basisToLengthAngles, format} from "../../../new/electron/modules/Helpers";
-import type {Structure} from "../../../new/types";
-import type {MainResponse} from "../../types";
-import type {WriterImplementation} from "../types";
-import {getAtomicSymbol} from "../../../new/electron/modules/AtomData";
+import {getAtomicSymbol} from "../modules/AtomData";
+import {cartesianToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
+import type {Structure, WriterImplementation, CtrlParams} from "../../types";
 
 export class WriterSHELX implements WriterImplementation {
 
-	writeStructure(filename: string, structures: Structure[]): MainResponse {
+	writeStructure(filename: string, structures: Structure[]): CtrlParams {
 		try {
 			const fd = fs.openSync(filename, "w");
 
@@ -103,7 +100,7 @@ export class WriterSHELX implements WriterImplementation {
 			return {payload: "Success!"};
 		}
 		catch(error) {
-			return {payload: "Error", error: (error as Error).message};
+			return {error: (error as Error).message};
 		}
 	}
 }

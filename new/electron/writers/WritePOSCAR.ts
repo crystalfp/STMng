@@ -5,14 +5,12 @@
  */
 
 import fs from "node:fs";
-import {cartesianToFractionalCoordinates, format} from "../../../new/electron/modules/Helpers";
-import type {Structure} from "../../../new/types";
-import type {MainResponse} from "../../types";
-import type {WriterImplementation} from "../types";
+import {cartesianToFractionalCoordinates, format} from "../modules/Helpers";
+import type {Structure, WriterImplementation, CtrlParams} from "../../types";
 
 export class WriterPOSCAR implements WriterImplementation {
 
-	writeStructure(filename: string, structures: Structure[]): MainResponse {
+	writeStructure(filename: string, structures: Structure[]): CtrlParams {
 
 		try {
 			const fd = fs.openSync(filename, "w");
@@ -73,7 +71,7 @@ export class WriterPOSCAR implements WriterImplementation {
 			return {payload: "Success!"};
 		}
 		catch(error) {
-			return {payload: "Error", error: (error as Error).message};
+			return {error: (error as Error).message};
 		}
 	}
 }

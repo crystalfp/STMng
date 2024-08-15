@@ -37,7 +37,7 @@ export class DrawPolyhedra extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	notifier(data: Structure): void {
+	override notifier(data: Structure): void {
 
 		this.structure = data;
 		if(!data || data.atoms.length === 0 || data.bonds.length === 0) {

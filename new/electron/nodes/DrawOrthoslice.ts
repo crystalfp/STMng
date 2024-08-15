@@ -25,7 +25,7 @@ export class DrawOrthoslice extends NodeCore {
 		console.log(`RUN ${this.name}`, this.structure.crystal.spaceGroup);
 	}
 
-	notifier(data: Structure): void {
+	override notifier(data: Structure): void {
 		console.log(`NOTIFIED ${this.name}`);
 		this.structure = data;
 		this.run();

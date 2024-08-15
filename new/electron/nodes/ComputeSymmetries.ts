@@ -26,7 +26,7 @@ export class ComputeSymmetries extends NodeCore {
 		this.notify(this.structure!);
 	}
 
-	notifier(data: Structure): void {
+	override notifier(data: Structure): void {
 		console.log(`NOTIFIED ${this.name}`);
 		this.structure = data;
 		this.run();

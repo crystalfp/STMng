@@ -16,7 +16,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 // NOTE 1) Add here the class that defines the node
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Orthoslice} from "@/nodes/DrawOrthoslice";
-import {StructureWriter} from "@/nodes/StructureWriter";
 import {Measures} from "@/nodes/Measures";
 import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
@@ -103,7 +102,6 @@ export class NodeInfo {
 				map.set(id, new Orthoslice(id));
 				break;
 			case "structure-writer":
-				map.set(id, new StructureWriter(id));
 				break;
 			case "measures":
 				map.set(id, new Measures(id));
@@ -245,8 +243,6 @@ export class NodeInfo {
 					uiStatus += (node as Orthoslice).saveStatus();
 					break;
 				case "structure-writer":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as StructureWriter).saveStatus();
 					break;
 				case "draw-trajectories":
 					if(notFirst) uiStatus += ",";

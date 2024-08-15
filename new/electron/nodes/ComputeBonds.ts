@@ -87,7 +87,7 @@ export class ComputeBonds extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	notifier(data: Structure): void {
+	override notifier(data: Structure): void {
 
 		this.inputStructure = data as Structure;
 

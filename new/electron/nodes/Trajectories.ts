@@ -19,7 +19,7 @@ export class Trajectories extends NodeCore {
 		console.log(`Instantiated ${this.name}`);
 	}
 
-	notifier(data: Structure): void {
+	override notifier(data: Structure): void {
 		console.log(`NOTIFIED ${this.name}`);
 		this.structure = data;
 		if(!this.structure) return;

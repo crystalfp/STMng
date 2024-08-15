@@ -4,13 +4,14 @@
  * Controls for the structure data writer.
  */
 
-import {ref, watchEffect, computed} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
-import {useMessageStore} from "../stores/messageStore";
+import {ref, computed} from "vue";
 import {mdiFileOutline} from "@mdi/js";
+import {useMessageStore} from "../stores/messageStore";
+import {askNode} from "../services/RoutesClient";
+import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
 
 // > Properties
-const pr = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -28,16 +29,29 @@ const outputFile     = ref("");
 const outputFileFull = ref("");
 const inProgress     = ref(false);
 const continuous     = ref(false);
-const doSelectFile   = ref(false);
 const finish         = ref(false);
+
+// Initialize the control
+resetAlertMessage("structureWriter");
+askNode(id, "init").then((params) => {
+
+    format.value = params.format as string ?? "";
+    continuous.value = params.continuous as boolean ?? false;
+    outputFileFull.value = params.outputFilename as string ?? "";
+    if(outputFileFull.value === "") outputFile.value = "";
+    else {
+        const pos = outputFileFull.value.lastIndexOf("/");
+        outputFile.value = outputFileFull.value.slice(pos+1);
+    }
+})
+.catch((error: Error) => showAlertMessage(`Error from UI init for StructureWriter: ${error.message}`,
+                                          "structureWriter"));
 
 /** Define the label for the capture button */
 const captureButtonLabel = computed(() => {
 
-     if(continuous.value) {
-        return inProgress.value ? "Stop" : "Start";
-     }
-     return "Capture";
+    if(continuous.value) return inProgress.value ? "Stop" : "Start";
+    return "Capture";
 });
 
 /**
@@ -48,40 +62,52 @@ const startStopCapture = (): void => {
     if(continuous.value) {
 
         inProgress.value = !inProgress.value;
-        sb.setUiParams(pr.id, {
-            inProgress: inProgress.value
-        });
+        askNode(id, "write", {continuous: true, inProgress: inProgress.value})
+            .then((params) => {
+                if("error" in params) throw Error(params.error as string);
+                finish.value = !inProgress.value;
+            })
+            .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
+                                                      "structureWriter"));
     }
     else {
-        sb.setUiParams(pr.id, {
-            inProgress: true
-        });
+        inProgress.value = true;
+        askNode(id, "write", {continuous: false})
+            .then((params) => {
+                if("error" in params) throw Error(params.error as string);
+                finish.value = true;
+            })
+            .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
+                                                      "structureWriter"))
+            .finally(() => inProgress.value = false);
     }
 };
 
-sb.getUiParams(pr.id, (params: UiParams) => {
-    format.value = params.format as string ?? "";
-    doSelectFile.value = params.selectFile as boolean ?? false;
-    outputFileFull.value = params.outputFile as string ?? "";
-    continuous.value = params.continuous as boolean ?? false;
-    inProgress.value = params.inProgress as boolean ?? false;
-    finish.value = params.finish as boolean ?? false;
+/**
+ * Send selection request to main process and receive the selected file full path
+ */
+const selectSaveFile = (): void => {
 
-    if(outputFileFull.value === "") outputFile.value = "";
-    else {
-        const pos = outputFileFull.value.lastIndexOf("/");
-        outputFile.value = outputFileFull.value.slice(pos+1);
-    }
-});
-watchEffect(() => {
-    sb.setUiParams(pr.id, {
-        format: format.value,
-        selectFile: doSelectFile.value,
-        continuous: continuous.value,
-        inProgress: inProgress.value,
-        finish: finish.value
-    });
-});
+    inProgress.value = true;
+    askNode(id, "select", {format: format.value})
+        .then((params) => {
+
+            const filename = params.filename as string;
+
+            if(filename) {
+                outputFileFull.value = filename;
+                const pos = filename.lastIndexOf("/");
+                outputFile.value = filename.slice(pos+1);
+            }
+            else {
+                outputFile.value = "";
+                outputFileFull.value = "";
+            }
+        })
+        .catch((error: Error) => showAlertMessage(`Error from save file select: ${error.message}`,
+                                          "structureWriter"))
+        .finally(() => inProgress.value = false);
+};
 
 </script>
 
@@ -91,15 +117,15 @@ watchEffect(() => {
   <v-select v-model="format" label="File format"
             :items="fileFormats" class="mt-4" density="compact" />
 
-  <v-row :disabled="format === ''" class="mt-2" @click="doSelectFile = true">
+  <v-row :disabled="format === ''" class="mt-2" @click="selectSaveFile">
     <v-icon :icon="mdiFileOutline" size="x-large" class="ml-4 mr-2 mt-1" style="opacity: 0.4" />
-    <v-text-field v-model="outputFile" :disabled="format === ''" label="Select save file"
+    <v-text-field v-model="outputFile" :disabled="format === ''" label="Select save file" readonly
                   class="mb-2 mr-2" hide-details="auto" :loading="inProgress" spellcheck="false" />
   </v-row>
 
   <v-row class="mt-10">
     <v-switch v-model="continuous" color="primary" label="Continuous write"
-              density="compact" class="ml-6 mr-5" />
+              density="compact" class="ml-6 mr-5" :disabled="inProgress" />
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>
@@ -107,8 +133,6 @@ watchEffect(() => {
   <v-alert v-if="finish" title="Done" class="mt-7 cursor-pointer"
            :text="`File written to: ${outputFileFull}`" type="success" density="compact"
            @click="finish=false" />
-  <v-alert v-if="messageStore.structureWriter.message !== ''" title="Error" class="mt-7 cursor-pointer"
-           :text="messageStore.structureWriter.message" type="error" density="compact"
-           color="red" @click="messageStore.structureWriter.message=''" />
+  <g-error-alert kind="structureWriter"/>
   </v-container>
 </template>

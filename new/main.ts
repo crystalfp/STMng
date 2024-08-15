@@ -111,11 +111,12 @@ const app = createApp(App)
 	.component("GAtomsSelector", defineAsyncComponent(() => import("./widgets/AtomsSelector.vue")))
 	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
 	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
-	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")));
+	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")))
+	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")));
 
 // Add global error handlers
 app.config.errorHandler = (error: unknown) => {
-	log.error("Unhandled exception:", (error as Error).message, "\n", (error as Error).stack);
+	log.error(`Unhandled exception: ${(error as Error).message}\n`, (error as Error).stack);
 };
 
 addEventListener("unhandledrejection", (event) => {

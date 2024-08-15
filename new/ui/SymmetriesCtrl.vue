@@ -6,18 +6,16 @@
 
 import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {useMessageStore} from "../stores/messageStore";
 import {useControlStore} from "../stores/controlStore";
 
 // > Properties
-const pr = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
 }>();
 
 // > Access the stores
-const messageStore = useMessageStore();
 const controlStore = useControlStore();
 
 // > Get and set ui parameters from the switchboard
@@ -34,7 +32,7 @@ const standardizeOnly = ref(false);
 const showExponential = (value: number): string => Math.pow(10, value).toExponential(2);
 
 
-sb.getUiParams(pr.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
 
     applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
     enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
@@ -47,7 +45,7 @@ sb.getUiParams(pr.id, (params: UiParams) => {
 });
 
 watchEffect(() => {
-    sb.setUiParams(pr.id, {
+    sb.setUiParams(id, {
         applyInputSymmetries: applyInputSymmetries.value,
         enableFindSymmetries: enableFindSymmetries.value,
         standardizeCell: standardizeCell.value,
@@ -95,9 +93,7 @@ watchEffect(() => {
 
   <v-btn block class="mb-4" @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
 
-  <v-alert v-if="messageStore.symmetries.message !== ''" title="Error"
-           :text="messageStore.symmetries.message" type="error" density="compact" color="red"
-           class="cursor-pointer" @click="messageStore.symmetries.message=''" />
+  <g-error-alert kind="symmetries"/>
 </v-container>
 </template>
 

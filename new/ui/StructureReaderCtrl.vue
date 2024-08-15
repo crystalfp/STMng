@@ -12,8 +12,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
 import {useControlStore} from "../stores/controlStore";
 import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
-import {showAlertMessage, resetAlertMessage,
-        hasAlertMessage, getAlertMessage} from "../services/AlertMessage";
+import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
 import type {CtrlParams} from "../types";
 
 // > Properties
@@ -316,8 +315,6 @@ const setUseBohr = (): void => {
       <v-spacer />
     </v-row>
   </v-container>
-  <v-alert v-if="hasAlertMessage('structureReader')" title="Error" class="mt-7 cursor-pointer"
-           :text="getAlertMessage('structureReader')" type="error" density="compact"
-           color="red" @click="resetAlertMessage('structureReader')" />
+  <g-error-alert kind="structureReader" />
 </v-container>
 </template>

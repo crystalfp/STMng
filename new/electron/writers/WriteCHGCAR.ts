@@ -5,14 +5,12 @@
  */
 
 import fs from "node:fs";
-import {cartesianToFractionalCoordinates, format} from "../../../new/electron/modules/Helpers";
-import type {Structure} from "../../../new/types";
-import type {MainResponse} from "../../types";
-import type {WriterImplementation} from "../types";
+import {cartesianToFractionalCoordinates, format} from "../modules/Helpers";
+import type {Structure, WriterImplementation, CtrlParams} from "../../types";
 
 export class WriterCHGCAR implements WriterImplementation {
 
-	writeStructure(filename: string, structures: Structure[]): MainResponse {
+	writeStructure(filename: string, structures: Structure[]): CtrlParams {
 
 		try {
 			const fd = fs.openSync(filename, "w");
@@ -25,7 +23,7 @@ export class WriterCHGCAR implements WriterImplementation {
 				// If no unit cell return error
 				if(basis.every((value: number) => value === 0)) {
 					fs.closeSync(fd);
-					return {payload: "Error", error: "Cannot write CHGCAR if unit cell missing"};
+					return {error: "Cannot write CHGCAR if unit cell missing"};
 				}
 
 				// Comment line
@@ -91,7 +89,7 @@ export class WriterCHGCAR implements WriterImplementation {
 			return {payload: "Success!"};
 		}
 		catch(error) {
-			return {payload: "Error", error: (error as Error).message};
+			return {error: (error as Error).message};
 		}
 	}
 }

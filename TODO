@@ -23,7 +23,8 @@ ToDo:
 Bugs:
   ☐ Energy file: fix disappearing file name
   ☐ Control side height not ok changing to fullscreen (use flex?)
-  ☐ "Save as..." don't change the project name in the main bar
+  ✔ "Save as..." don't change the project name in the main bar @done(2024-08-15 17:29)
+  ☐ In structure writer, writing filename with extension gives filename with duplicated extension
 
 Study:
   ☐ Check the order of entries in objects

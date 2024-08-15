@@ -46,7 +46,7 @@ export class DrawUnitCell extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	notifier(data: Structure): void {
+	override notifier(data: Structure): void {
 
 		// No data, output an empty structure
 		this.inputStructure = data;
