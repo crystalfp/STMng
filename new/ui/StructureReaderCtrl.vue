@@ -47,7 +47,6 @@ const atomsTypes      = ref("");            // Atom types in the structure read
 const loopSteps       = ref(false);         // If the sequence should loop
 const format          = ref("");            // File format to be read
 const inProgress      = ref(false);         // True during file load
-const captureMovie    = ref(false);
 const auxInProgress   = ref(false);         // True during aux file load
 const auxFileToRead   = ref("");            // Path to the auxiliary file to read
 const filesSelected   = ref<File[]>([]);    // Status of the file selector
@@ -292,7 +291,7 @@ const setUseBohr = (): void => {
                 label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
-    <v-switch v-if="controlStore.hasCapture" v-model="captureMovie"
+    <v-switch v-if="controlStore.hasCapture" v-model="controlStore.movie"
               color="primary" label="Movie from steps" density="compact" class="mt-n5" />
     <v-switch v-if="controlStore.hasTrajectory" v-model="controlStore.trajectoriesRecording"
               color="primary" label="Record trajectories" density="compact" class="mt-n5" />

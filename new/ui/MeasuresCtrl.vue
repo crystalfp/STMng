@@ -2,14 +2,23 @@
 /**
  * @component
  * Controls for the measure atoms positions, distances and angles node.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-08-09
  */
 
-import {ref} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import * as THREE from "three";
+import {ref, watch} from "vue";
+import {storeToRefs} from "pinia";
+import {sm} from "../services/SceneManager";
 import {useControlStore} from "../stores/controlStore";
+import {useConfigStore} from "../stores/configStore";
+import {askNode, receiveFromNode} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
+import type {SelectedAtoms} from "../types";
 
 // > Properties
-const properties = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -17,30 +26,149 @@ const properties = defineProps<{
 
 // > Access the stores
 const controlStore = useControlStore();
+const configStore = useConfigStore();
 
-interface SelectedAtoms {
-    index: number;
-    label: string;
-    symbol: string;
-    color: string;
-    coords: string;
-}
-
-const distanceAB = ref("");
-const distanceBC = ref("");
-const distanceAC = ref("");
-const angleABC   = ref("");
+// The measures to be visualized
+const distanceAB = ref(-1);
+const distanceBC = ref(-1);
+const distanceAC = ref(-1);
+const angleABC   = ref(-1);
+const volume     = ref(-1);
 const details    = ref<SelectedAtoms[]>([]);
-const volume     = ref(0);
 
-sb.getUiParams(properties.id, (params: UiParams) => {
+// Prepare the graphical part
+const group = new THREE.Group();
+const groupName = `AtomSelectors-${id}`;
+group.name = groupName;
+sm.add(group);
 
-    distanceAB.value = params.distanceAB as string ?? "";
-    distanceBC.value = params.distanceBC as string ?? "";
-    distanceAC.value = params.distanceAC as string ?? "";
-    angleABC.value   = params.angleABC as string ?? "";
-    details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtoms[];
-    volume.value     = params.volume as number ?? 0;
+/**
+ * Compute the polyhedron volume using the formula found here:
+ * https://mathworld.wolfram.com/PolyhedronVolume.html
+ *
+ * @param vertices - Polyhedron geometry vertices coordinates.
+ *					 Each three consecutive vertices form a triangle
+ * @param numberVertices - Total number of vertices
+ * @returns The polyhedron volume
+ */
+const computeVolume = (vertices: THREE.TypedArray, numberVertices: number): number => {
+
+    let computedVolume = 0;
+    for(let i=0; i < numberVertices/3; ++i) {
+
+        const startIdx = i*9;
+
+        const vu = [
+            vertices[startIdx+3] - vertices[startIdx],
+            vertices[startIdx+4] - vertices[startIdx+1],
+            vertices[startIdx+5] - vertices[startIdx+2]
+        ];
+        const vv = [
+            vertices[startIdx+6] - vertices[startIdx],
+            vertices[startIdx+7] - vertices[startIdx+1],
+            vertices[startIdx+8] - vertices[startIdx+2]
+        ];
+        const normal = [
+            vu[1] * vv[2] - vu[2] * vv[1],
+            vu[2] * vv[0] - vu[0] * vv[2],
+            vu[0] * vv[1] - vu[1] * vv[0]
+        ];
+
+        computedVolume += vertices[startIdx]*normal[0] +
+                          vertices[startIdx+1]*normal[1] +
+                          vertices[startIdx+2]*normal[2];
+    }
+
+    // Compute volume
+    return computedVolume/6;
+};
+
+// Watch atoms selection
+watch(controlStore.atomsSelected, () => {
+
+    const atsel = controlStore.atomsSelected;
+    askNode(id, "compute", {
+        idx1: atsel[0],
+        idx2: atsel[1],
+        idx3: atsel[2],
+    })
+    .then((params) => {
+
+        distanceAB.value = params.distanceAB as number ?? -1;
+        distanceBC.value = params.distanceBC as number ?? -1;
+        distanceAC.value = params.distanceAC as number ?? -1;
+        angleABC.value   = params.angleABC as number ?? -1;
+        details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtoms[];
+
+        const pointSize = configStore.isPerspectiveCamera ? 0.3 : 6;
+		sm.clearGroup(groupName);
+        for(const detail of details.value) {
+            const geom = new THREE.IcosahedronGeometry(detail.radius*0.6, 4);
+            const mat = new THREE.PointsMaterial({color: detail.color, size: pointSize});
+            const points = new THREE.Points(geom, mat);
+            points.position.set(detail.position[0], detail.position[1], detail.position[2]);
+            group.add(points);
+        }
+    })
+    .catch((error: Error) => showAlertMessage(`Error from computing measures: ${error.message}`));
+});
+
+// Remove selection on structure change
+receiveFromNode(id, "reset", () => {
+    controlStore.deselectAll();
+    sm.clearGroup(groupName);
+});
+
+// Watch polyhedra selection
+const {polyhedronNewIdx} = storeToRefs(controlStore);
+watch(polyhedronNewIdx, () => {
+
+    // No polyhedra selected
+    if(controlStore.polyhedronNewIdx === undefined) return;
+
+    let objectCurrent: THREE.Mesh;
+    let objectNew: THREE.Mesh;
+    sm.scene.traverse((object) => {
+        if(object.name === "Polyhedron") {
+            if(object.userData.idx === controlStore.polyhedronNewIdx) {
+                objectNew = object as THREE.Mesh;
+            }
+            if(object.userData.idx === controlStore.polyhedronCurrentIdx) {
+                objectCurrent = object as THREE.Mesh;
+            }
+        }
+    });
+
+    // Click on the same poly deselects it
+    if(controlStore.polyhedronNewIdx === controlStore.polyhedronCurrentIdx) {
+
+        (objectCurrent!.material as THREE.MeshLambertMaterial).color =
+            new THREE.Color(controlStore.polyhedronCurrentColor);
+        controlStore.polyhedronCurrentIdx = undefined;
+        controlStore.polyhedronNewIdx = undefined;
+
+        volume.value = -1;
+    }
+    else {
+        // Deselect current selection
+        if(controlStore.polyhedronCurrentIdx !== undefined) {
+
+            (objectCurrent!.material as THREE.MeshLambertMaterial).color =
+                new THREE.Color(controlStore.polyhedronCurrentColor);
+            controlStore.polyhedronCurrentIdx = undefined;
+        }
+
+        // Select new poly
+        (objectNew!.material as THREE.MeshLambertMaterial).color = new THREE.Color("#FF0000");
+
+        // Move the control to the new poly
+        controlStore.polyhedronCurrentIdx = controlStore.polyhedronNewIdx;
+        controlStore.polyhedronCurrentColor = controlStore.polyhedronNewColor;
+        controlStore.polyhedronNewIdx = undefined;
+
+        const positions = objectNew!.geometry.getAttribute("position");
+        volume.value = computeVolume(positions.array, positions.count);
+    }
 });
 
 </script>
@@ -49,25 +177,27 @@ sb.getUiParams(properties.id, (params: UiParams) => {
 <template>
 <v-container class="container">
   <v-label class="text-h5 w-100 justify-center yellow-title mb-2 mt-2">Selected atoms</v-label>
-  <v-table v-if="details.length > 0" density="default" class="pa-1">
+  <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
     <tr v-for="line of details" :key="line.index">
-      <td :style="`color: ${line.color}`">{{ line.label }}</td>
-      <td>{{ line.symbol }}</td>
-      <td>{{ line.coords }}</td>
+      <td :style="`color: ${line.color};width:3rem`">{{ line.label }}</td>
+      <td style="width: 1rem">{{ line.symbol }}</td>
+      <td style="width: 3rem;text-align:right">[</td>
+      <td style="width: 1rem;text-align:right">{{ `${line.position[0].toFixed(2)},` }}</td>
+      <td style="width: 2rem;text-align:right">{{ `${line.position[1].toFixed(2)},` }}</td>
+      <td style="width: 2rem;text-align:right">{{ `${line.position[0].toFixed(2)}` }}</td>
+      <td style="width: 0.5rem;text-align:right">]</td>
     </tr>
   </v-table>
-  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAtoms()">Deselect</v-btn>
   <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Measures</v-label>
-  <v-table v-if="distanceAB !== ''" density="default" class="pa-1">
-    <tr><td>Distance A–B:</td><td>{{ distanceAB }}</td></tr>
-    <tr v-if="distanceBC !== ''"><td>Distance B–C:</td><td>{{ distanceBC }}</td></tr>
-    <tr v-if="distanceAC !== ''"><td>Distance A–C:</td><td>{{ distanceAC }}</td></tr>
-    <tr v-if="angleABC !== ''"><td>Angle A–B–C:</td><td>{{ angleABC }}</td></tr>
+  <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
+    <tr><td style="width:9rem">Distance A–B:</td><td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
+    <tr v-if="distanceBC > 0"><td>Distance B–C:</td><td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>
+    <tr v-if="distanceAC > 0"><td>Distance A–C:</td><td style="text-align:right">{{ distanceAC.toFixed(5) }}</td></tr>
+    <tr v-if="angleABC >= 0"><td>Angle A–B–C:</td><td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
   </v-table>
-  <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Volume</v-label>
-  <v-table v-if="volume > 0" density="default" class="pa-1">
-    <tr><td>Polyhedra volume:</td><td>{{ volume.toFixed(4) }}</td></tr>
+  <v-table v-if="volume > 0" density="default" class="pa-1 mt-n1 pr-5">
+    <tr><td style="width:9rem">Polyhedra volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
   </v-table>
-  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectPolyhedron()">Deselect</v-btn>
+  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
 </v-container>
 </template>

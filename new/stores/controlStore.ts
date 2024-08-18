@@ -21,12 +21,12 @@ interface GlobalControls {
 	sceneSides: PositionType;
 	hasTrajectory: boolean;
 	trajectoriesRecording: boolean;
+	hasCapture: boolean;
+
 	polyhedronCurrentIdx: number | undefined;
 	polyhedronNewIdx: number | undefined;
 	polyhedronCurrentColor: number;
 	polyhedronNewColor: number;
-	hasCapture: boolean;
-	captureMovie: boolean; // Same as movie?
 }
 
 export const useControlStore = defineStore("ControlStore", {
@@ -44,12 +44,12 @@ export const useControlStore = defineStore("ControlStore", {
 		sceneSides: [1, 1, 1],
 		hasTrajectory: false,
 		trajectoriesRecording: false,
+		hasCapture: false,
+
 		polyhedronCurrentIdx: undefined,
 		polyhedronNewIdx: undefined,
 		polyhedronCurrentColor: 0,
 		polyhedronNewColor: 0,
-		hasCapture: false,
-		captureMovie: false,
 
 	} as GlobalControls),
 
@@ -77,12 +77,6 @@ export const useControlStore = defineStore("ControlStore", {
             }
         },
 		/**
-		 * Empty the list of selected atoms
-		 */
-        deselectAtoms() {
-            this.atomsSelected.length = 0;
-        },
-		/**
 		 * Interactively select a polyhedron
 		 *
 		 * @param index - Index of the selected polyhedron
@@ -98,8 +92,20 @@ export const useControlStore = defineStore("ControlStore", {
 		 */
 		deselectPolyhedron() {
 			this.polyhedronNewIdx = this.polyhedronCurrentIdx;
+		},
+		/**
+		 * Deselect the selected polyhedron and atoms
+		 */
+		deselectAll() {
+
+			// Deselect atoms
+            this.atomsSelected.length = 0;
+
+			// Deselect polyhedra
+			this.polyhedronNewIdx = this.polyhedronCurrentIdx;
 		}
-    }});
+    }
+});
 
 // > Support HMR during development
 if(import.meta.hot) {

@@ -24,14 +24,19 @@
       "type": "draw-polyhedra",
       "in": "bonds"
     },
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d"
+    },
     "writer": {
       "label": "Writer",
       "type": "structure-writer",
       "in": "bonds"
     },
-    "viewer": {
-      "label": "Viewer",
-      "type": "viewer-3d"
+    "measure": {
+      "label": "Measures",
+      "type": "measures",
+      "in": "bonds"
     },
     "capture": {
       "label": "Capture",

@@ -186,7 +186,7 @@ export class StructureWriter extends NodeCore {
 		const sts = writer.writeStructure(this.outputFilename, structures);
 		if(sts.error) {
 			const message = `Error writing "${this.outputFilename}" file` +
-							`in "${this.format}" format. Error: ${sts.error}`;
+							`in "${this.format}" format. Error: ${sts.error as string}`;
 			log.error(message);
 			return {error: message};
 		}

@@ -70,25 +70,6 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
 };
 
-// > Structure writer
-/**
- * Select the file where the structure will be saved
- *
- * @param format - File format to be selected
- * @returns The selected filename path
- */
-export const selectSaveStructureFile = (format: string): Promise<string> => window.electron.ipcRenderer.invoke("WRITER:SELECT", format) as Promise<string>;
-
-/**
- * Save the structures to the file
- *
- * @param format - File format to be selected
- * @param filename - File path where to save the structures
- * @param encodedStructures - JSON encoded structures to be saved
- * @returns Response from the main process
- */
-export const saveStructureFile = (format: string, filename: string, encodedStructures: string): Promise<MainResponse> => window.electron.ipcRenderer.invoke("WRITER:WRITE", format, filename, encodedStructures) as Promise<MainResponse>;
-
 // > Symmetries
 /**
  * Find and apply structure symmetries in the main process

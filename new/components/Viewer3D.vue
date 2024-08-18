@@ -220,15 +220,14 @@ onMounted(() => {
                 controlStore.addSelectedAtom(object.userData.index as number);
             }
             else if(object.name === "Polyhedron") {
-                controlStore.deselectAtoms();
+                controlStore.deselectPolyhedron();
                 const color = ((object as THREE.Mesh).material as
                                 THREE.MeshLambertMaterial).color.getHex();
                 controlStore.selectPolyhedron(object.userData.idx as number, color);
             }
         }
         else {
-            controlStore.deselectAtoms();
-            controlStore.deselectPolyhedron();
+            controlStore.deselectAll();
         }
     });
 

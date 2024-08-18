@@ -334,7 +334,7 @@ export const sendAlertMessage = (text: string): void => {
  * @param channel - Specify the channel inside the id related group
  * @param params - Parameters to send to the client process
  */
-export const sendToClient = (id: string, channel: string, params: CtrlParams): void => {
+export const sendToClient = (id: string, channel: string, params: CtrlParams={}): void => {
 
     mainWin.webContents.send(`${id}:${channel}`, params);
 };

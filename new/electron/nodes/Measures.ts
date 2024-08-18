@@ -1,5 +1,6 @@
 /**
- * Measure interatomic distances and angles and polyhedra volume.
+ * Measure interatomic distances and angles.
+ * The polyhedra volume is computed on the client.
  *
  * @packageDocumentation
  *
@@ -7,39 +8,45 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, SelectedAtoms} from "../../types";
+import {getAtomData} from "../modules/AtomData";
+import {sendToClient} from "../modules/WindowsUtilities";
+
+const labels = ["Atom A:", "Atom B:", "Atom C:"];
+const colors = ["#FF0000", "#00FF00", "#4263FF"];
 
 export class Measures extends NodeCore {
 
 	protected readonly name = "Measures";
 	private structure: Structure | undefined;
+    private distanceAB = -1;
+    private distanceBC = -1;
+    private distanceAC = -1;
+    private angleABC = -1;
+    private readonly details: SelectedAtoms[] = [];
+
+	/* eslint-disable @typescript-eslint/unbound-method */
+	private readonly channels: ChannelDefinition[] = [
+		{name: "compute", type: "invoke", callback: this.channelCompute},
+	];
+	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();
-		console.log(`Instantiated ${this.name}`);
-	}
-
-	run(): void {
-		if(!this.structure) return;
-		console.log(`RUN ${this.name}`, this.structure.crystal.spaceGroup);
+		this.setupChannels(this.id, this.channels);
 	}
 
 	override notifier(data: Structure): void {
-		console.log(`NOTIFIED ${this.name}`);
+
+		sendToClient(this.id, "reset");
+		if(!data || data.atoms.length === 0) return;
 		this.structure = data;
-		this.run();
 	}
 
-	saveStatus(): string {
-        const statusToSave = {
-			showTrajectories: false,
-		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
-	}
+	saveStatus(): string {return "";}
 
-	loadStatus(params: CtrlParams): void {
-		console.log("Loading", this.name, "with", params);
-	}
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
+	loadStatus(_params: CtrlParams): void {}
 
 	getUiInfo(): UiInfo {
 
@@ -47,7 +54,121 @@ export class Measures extends NodeCore {
 			id: this.id,
 			ui: "MeasuresCtrl",
 			graphic: "out",
-			channels: ["1"]
+			channels: this.channels.map((channel) => channel.name)
+		};
+	}
+
+	/**
+	 * Compute distances and angles between the 0 to 3 atoms selected
+	 *
+	 * @param idx1 - Index of the first atom selected
+	 * @param idx2 - Index of the second atom selected
+	 * @param idx3 - Index of the third atom selected
+	 */
+	private computeDistancesAndAngles(idx1: number | undefined,
+									  idx2: number | undefined,
+									  idx3: number | undefined): void {
+
+		const {atoms} = this.structure!;
+
+		if(idx1 !== undefined && idx2 !== undefined) {
+
+			// Compute distance between A and B atoms
+			const dx1 = atoms[idx1].position[0] - atoms[idx2].position[0];
+			const dy1 = atoms[idx1].position[1] - atoms[idx2].position[1];
+			const dz1 = atoms[idx1].position[2] - atoms[idx2].position[2];
+
+			this.distanceAB = Math.hypot(dx1, dy1, dz1);
+
+			if(idx3 !== undefined) {
+
+				// Compute distance between C and B atoms
+				const dx = atoms[idx3].position[0] - atoms[idx2].position[0];
+				const dy = atoms[idx3].position[1] - atoms[idx2].position[1];
+				const dz = atoms[idx3].position[2] - atoms[idx2].position[2];
+
+				this.distanceBC = Math.hypot(dx, dy, dz);
+
+				// Compute distance between A and C atoms
+				const dx3 = atoms[idx1].position[0] - atoms[idx3].position[0];
+				const dy3 = atoms[idx1].position[1] - atoms[idx3].position[1];
+				const dz3 = atoms[idx1].position[2] - atoms[idx3].position[2];
+
+				this.distanceAC = Math.hypot(dx3, dy3, dz3);
+
+				// Compute angle ABC
+				const dotProduct = dx1*dx+dy1*dy+dz1*dz;
+				this.angleABC = Math.acos(dotProduct/(this.distanceAB*this.distanceBC))*180/Math.PI;
+			}
+		}
+		else {
+			this.distanceAB = -1;
+			this.distanceBC = -1;
+			this.distanceAC = -1;
+			this.angleABC = -1;
+		}
+	}
+
+	/**
+	 * Compute list of selected atoms details
+	 *
+	 * @param idx1 - Index of the first atom selected
+	 * @param idx2 - Index of the second atom selected
+	 * @param idx3 - Index of the third atom selected
+	 */
+	private computeDetails(idx1: number | undefined,
+						   idx2: number | undefined,
+						   idx3: number | undefined): void {
+
+		const {atoms} = this.structure!;
+		this.details.length = 0;
+
+		if(idx1 !== undefined) {
+			const {position, atomZ} = atoms[idx1];
+			const {symbol, rCov} = getAtomData(atomZ);
+			this.details.push({index: idx1, label: labels[0], symbol, color: colors[0], position, radius: rCov});
+		}
+		if(idx2 !== undefined) {
+			const {position, atomZ} = atoms[idx2];
+			const {symbol, rCov} = getAtomData(atomZ);
+			this.details.push({index: idx2, label: labels[1], symbol, color: colors[1], position, radius: rCov});
+		}
+		if(idx3 !== undefined) {
+			const {position, atomZ} = atoms[idx3];
+			const {symbol, rCov} = getAtomData(atomZ);
+			this.details.push({index: idx3, label: labels[2], symbol, color: colors[2], position, radius: rCov});
+		}
+	}
+
+	// > Channel handlers
+	/**
+	 * Channel handler for compute distances and angles
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelCompute(params: CtrlParams): CtrlParams {
+
+		if(!this.structure || this.structure.atoms.length === 0) return {
+        	distanceAB: -1,
+        	distanceBC: -1,
+        	distanceAC: -1,
+        	angleABC: -1,
+        	details: "[]",
+		};
+
+		const idx1 = params.idx1 as number;
+		const idx2 = params.idx2 as number;
+		const idx3 = params.idx3 as number;
+
+		this.computeDistancesAndAngles(idx1, idx2, idx3);
+		this.computeDetails(idx1, idx2, idx3);
+
+		return {
+        	distanceAB: this.distanceAB,
+        	distanceBC: this.distanceBC,
+        	distanceAC: this.distanceAC,
+        	angleABC: this.angleABC,
+        	details: JSON.stringify(this.details),
 		};
 	}
 }

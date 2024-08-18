@@ -315,3 +315,19 @@ export interface WriterImplementation {
 	 */
 	writeStructure: (filename: string, structures: Structure[]) => CtrlParams;
 }
+
+/** Selected atoms data for measure */
+interface SelectedAtoms {
+    /** Atom index in the structure */
+    index: number;
+    /** Label for the selected atom */
+    label: string;
+    /** Atomic symbol */
+    symbol: string;
+    /** Color to distinguish the selected atom */
+    color: string;
+    /** Position of the atom */
+    position: PositionType;
+    /** Covalent radius of the atom */
+    radius: number;
+}

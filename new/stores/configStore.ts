@@ -97,6 +97,15 @@ export const useConfigStore = defineStore("ConfigStore", {
                 helpers: state.helpers,
             };
             return JSON.stringify(statusToSave);
+        },
+        /**
+         * Check if the camera is perspective
+         *
+         * @param state - The store state
+         * @returns True if the camera is set to perspective
+         */
+        isPerspectiveCamera(state: Viewer3DConfiguration) {
+            return state.camera.type === "perspective";
         }
     },
 

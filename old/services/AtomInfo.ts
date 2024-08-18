@@ -93,11 +93,3 @@ export const atomColor = (atomZ: number): string => AtomInfo.getInstance().atomD
  * @returns The atom symbol
  */
 export const atomSymbol = (atomZ: number): string => AtomInfo.getInstance().atomData(atomZ).symbol;
-
-/**
- * Retrieve all data pertaining to the given atomic number
- *
- * @param atomZ - Atom number for which the data should be retrieved
- * @returns All data pertaining to the given atomic number
- */
-export const atomData = (atomZ: number): AtomAppearance => AtomInfo.getInstance().atomData(atomZ);
