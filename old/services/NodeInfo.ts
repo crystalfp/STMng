@@ -20,7 +20,6 @@ import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
 import {InterpolateVolume} from "@/nodes/InterpolateVolume";
 import {ComputeFingerprints} from "@/nodes/ComputeFingerprints";
-import {Symmetries} from "@/nodes/Symmetries";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -117,7 +116,6 @@ export class NodeInfo {
 				map.set(id, new ComputeFingerprints(id));
 				break;
 			case "compute-symmetries":
-				map.set(id, new Symmetries(id));
 				break;
 			case "viewer-3d":
 			case "capture-view":
@@ -259,8 +257,6 @@ export class NodeInfo {
 					uiStatus += (node as ComputeFingerprints).saveStatus();
 					break;
 				case "compute-symmetries":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as Symmetries).saveStatus();
 					break;
 			}
 			notFirst = true;

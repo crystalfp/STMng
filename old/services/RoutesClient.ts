@@ -8,7 +8,6 @@
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {WindowsParams, Structure} from "../../new/types";
 import type {MainResponse} from "@/types";
-import type {ComputeSymmetriesParams} from "@/electron/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -69,16 +68,6 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 
 	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
 };
-
-// > Symmetries
-/**
- * Find and apply structure symmetries in the main process
- *
- * @param params - Data for the computation
- * @returns The new structure with found symmetries and error if any
- */
-export const findAndApplySymmetries = (params: ComputeSymmetriesParams): Promise<MainResponse> =>
-	window.electron.ipcRenderer.invoke("SYMMETRIES:COMPUTE", JSON.stringify(params)) as Promise<MainResponse>;
 
 // > Fingerprints
 /**

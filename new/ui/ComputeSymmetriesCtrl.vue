@@ -4,9 +4,10 @@
  * Controls for the symmetry (find and apply) node.
  */
 
-import {ref, watchEffect} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import {ref} from "vue";
 import {useControlStore} from "../stores/controlStore";
+import {askNode} from "../services/RoutesClient";
+import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
 
 // > Properties
 const {id} = defineProps<{
@@ -28,34 +29,24 @@ const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
 const standardizeOnly = ref(false);
 
-
 const showExponential = (value: number): string => Math.pow(10, value).toExponential(2);
 
+// Initialize the control
+resetAlertMessage("symmetries");
+askNode(id, "init")
+    .then((params) => {
 
-sb.getUiParams(id, (params: UiParams) => {
-
-    applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
-    enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
-    standardizeCell.value = params.standardizeCell as boolean ?? true;
-    symprecStandardize.value = params.symprecStandardize as number ?? -1;
-    symprecDataset.value = params.symprecDataset as number ?? -1;
-    fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
-    showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
-    standardizeOnly.value = params.standardizeOnly as boolean ?? false;
-});
-
-watchEffect(() => {
-    sb.setUiParams(id, {
-        applyInputSymmetries: applyInputSymmetries.value,
-        enableFindSymmetries: enableFindSymmetries.value,
-        standardizeCell: standardizeCell.value,
-        symprecStandardize: symprecStandardize.value,
-        symprecDataset: symprecDataset.value,
-        fillUnitCell: fillUnitCell.value,
-        showSymmetriesDialog: showSymmetriesDialog.value,
-        standardizeOnly: standardizeOnly.value,
-    });
-});
+        applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
+        enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
+        standardizeCell.value = params.standardizeCell as boolean ?? true;
+        symprecStandardize.value = params.symprecStandardize as number ?? -1;
+        symprecDataset.value = params.symprecDataset as number ?? -1;
+        fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
+        showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
+        standardizeOnly.value = params.standardizeOnly as boolean ?? false;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ComputeSymmetries: ${error.message}`,
+                                              "symmetries"));
 
 </script>
 

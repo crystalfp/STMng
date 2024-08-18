@@ -4,10 +4,15 @@
       "label": "Reader",
       "type": "structure-reader"
     },
+    "symmetry": {
+      "label": "Symmetries",
+      "type": "compute-symmetries",
+      "in": "reader"
+    },
     "unit": {
       "label": "Cell",
       "type": "draw-unit-cell",
-      "in": "reader"
+      "in": "symmetry"
     },
     "bonds": {
       "label": "Bonds",

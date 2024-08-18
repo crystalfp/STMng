@@ -17,7 +17,6 @@ import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {createMainWindow} from "./modules/WindowsUtilities";
 import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
-import {setupChannelSymmetries} from "../../old/electron/modules/Symmetries";
 import {setupChannelFingerprints} from "../../old/electron/modules/Fingerprints";
 import {setupChannelAtomData} from "./modules/AtomData";
 import {pm} from "./modules/ProjectManager";
@@ -67,7 +66,6 @@ process.on("unhandledRejection", (event: PromiseRejectionEvent) => {
 // Initialize the channels between main process and client
 setupChannelPreferences();
 setupChannelVersions();
-setupChannelSymmetries();
 setupChannelFingerprints();
 setupChannelAtomData();
 
