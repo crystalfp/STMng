@@ -23,11 +23,9 @@ export class ComputeSymmetries extends NodeCore {
 	// private inputStructure: Structure | undefined;
 	private standardizeOnly = false;
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",      callback: this.channelInit},
+		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();
@@ -91,4 +89,5 @@ export class ComputeSymmetries extends NodeCore {
 			fillUnitCell: this.fillUnitCell,
 			standardizeOnly: this.standardizeOnly,
 		};
-	}}
+	}
+}

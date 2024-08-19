@@ -27,13 +27,11 @@ export class StructureWriter extends NodeCore {
 	private captureData = false;
 	private readonly capturedStructures: Structure[] = [];
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",		callback: this.channelInit},
-		{name: "select",	type: "invoke",  	callback: this.channelSelect},
-		{name: "write",		type: "invoke",  	callback: this.channelWrite},
+		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
+		{name: "select",	type: "invoke",	callback: this.channelSelect.bind(this)},
+		{name: "write",		type: "invoke",	callback: this.channelWrite.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

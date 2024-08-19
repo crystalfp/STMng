@@ -9,20 +9,28 @@ import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "../types";
 
 interface GlobalControls {
+
+	/** Reset camera */
 	reset: boolean;
+	sceneCenter: PositionType;
+	sceneSides: PositionType;
+
+	/** Capture media controls */
 	snapshot: boolean;
 	movie: boolean;
 	stl: boolean;
-	atomsSelected: number[];
-	hasFingerprints: boolean;
+
 	fingerprintsAccumulate: boolean;
 	computedSpaceGroup: string;
-	sceneCenter: PositionType;
-	sceneSides: PositionType;
-	hasTrajectory: boolean;
 	trajectoriesRecording: boolean;
-	hasCapture: boolean;
 
+	/** Functionalities present for adding control in StructureReader */
+	hasCapture: boolean;
+	hasTrajectory: boolean;
+	hasFingerprints: boolean;
+
+	/** Atoms/polyhedra selection */
+	atomsSelected: number[];
 	polyhedronCurrentIdx: number | undefined;
 	polyhedronNewIdx: number | undefined;
 	polyhedronCurrentColor: number;
@@ -33,19 +41,22 @@ export const useControlStore = defineStore("ControlStore", {
 
     state: () => ({
 		reset: false,
+		sceneCenter: [0, 0, 0],
+		sceneSides: [1, 1, 1],
+
 		snapshot: false,
 		movie: false,
 		stl: false,
-		atomsSelected: [],
-		hasFingerprints: false,
+
 		fingerprintsAccumulate: false,
 		computedSpaceGroup: "",
-		sceneCenter: [0, 0, 0],
-		sceneSides: [1, 1, 1],
-		hasTrajectory: false,
 		trajectoriesRecording: false,
-		hasCapture: false,
 
+		hasCapture: false,
+		hasFingerprints: false,
+		hasTrajectory: false,
+
+		atomsSelected: [],
 		polyhedronCurrentIdx: undefined,
 		polyhedronNewIdx: undefined,
 		polyhedronCurrentColor: 0,

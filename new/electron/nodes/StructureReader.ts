@@ -44,17 +44,15 @@ export class StructureReader extends NodeCore {
 
 	private structures: Structure[] = [];
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",      callback: this.channelInit},
-		{name: "read",		type: "invokeAsync", callback: this.channelRead},
-		{name: "types",		type: "send",        callback: this.channelTypes},
-		{name: "formats",	type: "send",        callback: this.channelFormats},
-		{name: "bohr",		type: "send",        callback: this.channelUseBohr},
-		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead},
-		{name: "step",		type: "invoke",		 callback: this.channelStep},
+		{name: "init",		type: "invoke",      callback: this.channelInit.bind(this)},
+		{name: "read",		type: "invokeAsync", callback: this.channelRead.bind(this)},
+		{name: "types",		type: "send",        callback: this.channelTypes.bind(this)},
+		{name: "formats",	type: "send",        callback: this.channelFormats.bind(this)},
+		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
+		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
+		{name: "step",		type: "invoke",		 callback: this.channelStep.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

@@ -22,13 +22,11 @@ export class CaptureView extends NodeCore {
 
 	protected readonly name = "CaptureView";
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "snapshot",	type: "invoke", 	callback: this.channelSnapshot},
-		{name: "movie",		type: "invoke", 	callback: this.channelMovie},
-		{name: "stl",		type: "invoke", 	callback: this.channelSTL},
+		{name: "snapshot",	type: "invoke", 	callback: this.channelSnapshot.bind(this)},
+		{name: "movie",		type: "invoke", 	callback: this.channelMovie.bind(this)},
+		{name: "stl",		type: "invoke", 	callback: this.channelSTL.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

@@ -24,13 +24,11 @@ export class DrawPolyhedra extends NodeCore {
 	private opacityByCenterAtom = 0.5;
 	private readonly centerAtomsColor: string[] = [];
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke", callback: this.channelInit},
-		{name: "look",		type: "send", 	callback: this.channelLook},
-		{name: "select",	type: "send", 	callback: this.channelSelect},
+		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "look",		type: "send", 	callback: this.channelLook.bind(this)},
+		{name: "select",	type: "send", 	callback: this.channelSelect.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

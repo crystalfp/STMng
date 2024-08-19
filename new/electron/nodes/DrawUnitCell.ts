@@ -32,14 +32,12 @@ export class DrawUnitCell extends NodeCore {
 	private supercellColor = "#02A502";
 	private dashedSupercell = false;
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke", callback: this.channelInit},
-		{name: "visible",	type: "send", 	callback: this.channelVisible},
-		{name: "repeat",	type: "send", 	callback: this.channelRepetitions},
-		{name: "origin",	type: "send", 	callback: this.channelOrigin},
+		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "visible",	type: "send", 	callback: this.channelVisible.bind(this)},
+		{name: "repeat",	type: "send", 	callback: this.channelRepetitions.bind(this)},
+		{name: "origin",	type: "send", 	callback: this.channelOrigin.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

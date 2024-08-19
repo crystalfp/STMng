@@ -64,17 +64,23 @@ export abstract class NodeCore {
 
     /**
      * Load the node status retrieved from project file into this node
-     */
+	 *
+	 * @param params - The parameters from the project file
+	 */
 	abstract loadStatus(params: CtrlParams | ViewerState): void;
 
 	/**
 	 * Return the info needed to build the client part of the node
+	 *
+	 * @returns Info needed to build the client part of the node
 	 */
 	abstract getUiInfo(): UiInfo;
 
 	/**
 	 * Setup channels for the node to communicate with
 	 * the control/ui part in the renderer
+	 *
+	 * @remarks The channel callbacks should have `.bind(this)`
 	 *
 	 * @param id - ID of the node
 	 * @param channels - Array of channels definitions
@@ -86,13 +92,13 @@ export abstract class NodeCore {
 
 			switch(channel.type) {
 				case "invoke":
-					ipcMain.handle(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+					ipcMain.handle(channelName, (_event, params: CtrlParams) => channel.callback(params));
 					break;
 				case "invokeAsync":
-					ipcMain.handle(channelName, async (_event, params: CtrlParams) => channel.callback.call(this, params));
+					ipcMain.handle(channelName, async (_event, params: CtrlParams) => channel.callback(params));
 					break;
 				case "send":
-					ipcMain.on(channelName, (_event, params: CtrlParams) => channel.callback.call(this, params));
+					ipcMain.on(channelName, (_event, params: CtrlParams) => channel.callback(params));
 					break;
 			}
 		}

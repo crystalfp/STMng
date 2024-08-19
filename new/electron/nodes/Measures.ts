@@ -25,11 +25,9 @@ export class Measures extends NodeCore {
     private angleABC = -1;
     private readonly details: SelectedAtoms[] = [];
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "compute", type: "invoke", callback: this.channelCompute},
+		{name: "compute", type: "invoke", callback: this.channelCompute.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

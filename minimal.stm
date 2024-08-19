@@ -52,14 +52,14 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        5,
-        2.9999999999999996,
-        5.000000000000001
+        5.687036044637823,
+        12.856248860518217,
+        25.97911505650934
       ],
       "lookAt": [
-        0,
-        0,
-        0
+        1.1957678058252426,
+        5.252638194174756,
+        1.6637902330097079
       ],
       "snapshotFormat": "png",
       "stlFormat": "binary"
@@ -108,6 +108,15 @@
       "atomsTypes": "Fe O",
       "useBohr": true
     },
+    "symmetry": {
+      "applyInputSymmetries": true,
+      "enableFindSymmetries": true,
+      "standardizeCell": true,
+      "symprecStandardize": -5,
+      "symprecDataset": -5,
+      "fillUnitCell": true,
+      "standardizeOnly": false
+    },
     "unit": {
       "showUnitCell": true,
       "dashedLine": false,
@@ -147,12 +156,12 @@
       "shadedBonds": true
     },
     "polyhedra": {
-      "showPolyhedra": true,
       "color": "#FFFFFF80",
       "labelKind": "symbol",
-	    "atomsSelector": "",
-	    "colorByCenterAtom": true,
-	    "opacityByCenterAtom": 0.5
+      "atomsSelector": "",
+      "showPolyhedra": true,
+      "colorByCenterAtom": true,
+      "opacityByCenterAtom": 0.5
     },
     "writer": {
       "format": "XYZ",

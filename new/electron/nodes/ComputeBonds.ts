@@ -75,12 +75,10 @@ export class ComputeBonds extends NodeCore {
 	private inputNumAtoms		= 0;
 	private enlargementKind		= "none";
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",      callback: this.channelInit},
-		{name: "changes",	type: "send",        callback: this.channelChanges},
+		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
+		{name: "changes",	type: "send",	callback: this.channelChanges.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();

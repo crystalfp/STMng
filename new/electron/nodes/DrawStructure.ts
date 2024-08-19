@@ -25,11 +25,9 @@ export class DrawStructure extends NodeCore {
 	private showLabels = true;
 	private shadedBonds = false;
 
-	/* eslint-disable @typescript-eslint/unbound-method */
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",      callback: this.channelInit},
+		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
 	];
-	/* eslint-enable @typescript-eslint/unbound-method */
 
 	constructor(private readonly id: string) {
 		super();
