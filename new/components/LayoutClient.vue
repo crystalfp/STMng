@@ -62,11 +62,13 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
 const showNotification = ref(false);
 const notificationText = ref("");
 const notificationColor = ref("red-darken-4");
-receiveNotifications((type: "error" | "success", text: string) => {
+receiveNotifications((type: "error" | "success", text: string, from: string) => {
 
     notificationText.value = text;
     notificationColor.value = type === "error" ? "red-darken-4" : "success";
     showNotification.value = true;
+
+    showAlertMessage(text, from);
 });
 
 // > Receive the theme change

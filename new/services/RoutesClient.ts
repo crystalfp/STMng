@@ -78,11 +78,12 @@ export const receiveMenuSelection = (callback: (menuEntry: string, payload: stri
  * @param callback - Function to be called when a notification arrives
  */
 export const receiveNotifications = (callback: (type: "error" | "success",
-												text: string) => void): void => {
+												text: string,
+												from: string) => void): void => {
 
 	// Notifications from main process
-	window.electron.ipcRenderer.on("APP:NOTIFICATION", (_event, type: string, text: string) =>
-														callback(type as "error" | "success", text));
+	window.electron.ipcRenderer.on("APP:NOTIFICATION", (_event, type: string, text: string, from: string) =>
+														callback(type as "error" | "success", text, from));
 
 	// Notifications from main window
 	watchEffect(() => {
@@ -90,7 +91,7 @@ export const receiveNotifications = (callback: (type: "error" | "success",
 
 		const message = messageStore.system.error;
 		if(message) {
-			callback("error", message);
+			callback("error", message, "");
 			messageStore.system.error = "";
 		}
 	});
@@ -191,7 +192,7 @@ export const askNode = (id: string, channel: string, params?: CtrlParams): Promi
  * @param channel - Specify the channel inside the id related group
  * @param params - Parameters to send to the main process node
  */
-export const sendToNode = (id: string, channel: string, params: CtrlParams): void => {
+export const sendToNode = (id: string, channel: string, params: CtrlParams={}): void => {
 
 	window.electron.ipcRenderer.send(`${id}:${channel}`, params);
 };

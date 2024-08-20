@@ -2,6 +2,9 @@
 /**
  * @component
  * Controls for bonds computation.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-08-20
  */
 
 import {ref, watchEffect} from "vue";

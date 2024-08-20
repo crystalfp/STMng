@@ -198,6 +198,7 @@ export interface ClientProjectInfoItem {
 /** List of ui modules descriptions to the client */
 export type ClientProjectInfo = Record<string, ClientProjectInfoItem>;
 
+/** Definition of the channels */
 export type ChannelDefinition =
     {
         name: string;

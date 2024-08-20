@@ -133,7 +133,7 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
         }
     });
     if(!secondaryWin) {
-        sendErrorNotification("Cannot create secondary window");
+        sendAlertMessage("Cannot create secondary window");
         return;
     }
     secondaryWin.removeMenu();
@@ -268,16 +268,6 @@ export const sendProjectPath = (projectPath?: string): void => {
 };
 
 /**
- * Send error notification from main process
- *
- * @param text - Text of the notification
- */
-export const sendErrorNotification = (text: string): void => {
-
-    mainWin.webContents.send("APP:NOTIFICATION", "error", text);
-};
-
-/**
  * Request a system menu refresh in the client process
  */
 export const refreshSystemMenu = (): void => {
@@ -322,9 +312,9 @@ export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
  *
  * @param text - Text of the notification
  */
-export const sendAlertMessage = (text: string): void => {
+export const sendAlertMessage = (text: string, from?: string): void => {
 
-    mainWin.webContents.send("APP:NOTIFICATION", "error", text);
+    mainWin.webContents.send("APP:NOTIFICATION", "error", text, from ?? "");
 };
 
 /**

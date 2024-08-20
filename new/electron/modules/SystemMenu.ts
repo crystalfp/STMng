@@ -6,15 +6,15 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import {Menu, shell, app, nativeTheme, dialog} from "electron";
-import type {MenuItemConstructorOptions} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import {broadcastMessage, showDevToolsOnSecondaryWindows, sendErrorNotification,
+import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
         refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {pm} from "./ProjectManager";
+import type {MenuItemConstructorOptions} from "electron";
 
 
 let systemMenu: Menu;
@@ -190,7 +190,7 @@ export const setupMenu = (): void => {
                             return shell.openExternal(`file:///${url}`);
                         })
                         .catch((error: Error) => {
-                            sendErrorNotification(`Error getting help for "${currentNodeInError}": ${error.message}`);
+                            sendAlertMessage(`Error getting help for "${currentNodeInError}": ${error.message}`);
                         });
                     }
                 },

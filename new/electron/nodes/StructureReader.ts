@@ -355,7 +355,7 @@ export class StructureReader extends NodeCore {
 		if(currentAtomsZ.size > typesAfter.length) {
 			const missing = currentAtomsZ.size - typesAfter.length;
 			const plural = missing === 1 ? "" : "s";
-			sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`);
+			sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`, "structureReader");
 			return;
 		}
 
@@ -365,7 +365,7 @@ export class StructureReader extends NodeCore {
 
 			const to = getAtomicNumber(typesAfter[idx]);
 			if(to === 0) {
-				sendAlertMessage(`Invalid symbol "${typesAfter[idx]}" in the renamed list`);
+				sendAlertMessage(`Invalid symbol "${typesAfter[idx]}" in the renamed list`, "structureReader");
 				return;
 			}
 			mapAtomZ.set(from, to);
@@ -379,7 +379,7 @@ export class StructureReader extends NodeCore {
 				const renamedAtomZ = mapAtomZ.get(atom.atomZ);
 				if(renamedAtomZ === undefined) {
 
-					sendAlertMessage(`Invalid mapping for atomZ of ${atom.atomZ}`);
+					sendAlertMessage(`Invalid mapping for atomZ of ${atom.atomZ}`, "structureReader");
 					return;
 				}
 				atom.atomZ = renamedAtomZ;

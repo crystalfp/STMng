@@ -21,7 +21,6 @@ interface GlobalControls {
 	stl: boolean;
 
 	fingerprintsAccumulate: boolean;
-	computedSpaceGroup: string;
 	trajectoriesRecording: boolean;
 
 	/** Functionalities present for adding control in StructureReader */
@@ -49,7 +48,6 @@ export const useControlStore = defineStore("ControlStore", {
 		stl: false,
 
 		fingerprintsAccumulate: false,
-		computedSpaceGroup: "",
 		trajectoriesRecording: false,
 
 		hasCapture: false,

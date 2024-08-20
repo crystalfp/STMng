@@ -2,12 +2,15 @@
 /**
  * @component
  * Controls for the symmetry (find and apply) node.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-08-20
  */
 
-import {ref} from "vue";
-import {useControlStore} from "../stores/controlStore";
-import {askNode} from "../services/RoutesClient";
+import {ref, watch} from "vue";
+import {askNode, receiveFromNode, sendToNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
+import type {CtrlParams} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -15,9 +18,6 @@ const {id} = defineProps<{
     /** Its own module id */
     id: string;
 }>();
-
-// > Access the stores
-const controlStore = useControlStore();
 
 // > Get and set ui parameters from the switchboard
 const applyInputSymmetries = ref(true);
@@ -28,7 +28,15 @@ const symprecDataset = ref(-1);
 const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
 const standardizeOnly = ref(false);
+const inputSpaceGroup = ref("");
+const computedSpaceGroup = ref("");
 
+/**
+ * Convert in human readable format the exponent of 10
+ *
+ * @param value - Power of 10 to convert in human readable format
+ * @returns The value converted to string (value -3 → 1.00e-3)
+ */
 const showExponential = (value: number): string => Math.pow(10, value).toExponential(2);
 
 // Initialize the control
@@ -47,6 +55,36 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ComputeSymmetries: ${error.message}`,
                                               "symmetries"));
+
+watch([applyInputSymmetries,
+       enableFindSymmetries,
+       standardizeCell,
+       symprecStandardize,
+       symprecDataset,
+       fillUnitCell,
+       standardizeOnly], () => {
+
+    askNode(id, "compute", {
+        applyInputSymmetries: applyInputSymmetries.value,
+        enableFindSymmetries: enableFindSymmetries.value,
+        standardizeCell: standardizeCell.value,
+        symprecStandardize: symprecStandardize.value,
+        symprecDataset: symprecDataset.value,
+        fillUnitCell: fillUnitCell.value,
+        standardizeOnly: standardizeOnly.value
+    })
+    .then((params) => {
+        computedSpaceGroup.value = params.computedSpaceGroup as string ?? "";
+    })
+    .catch((error: Error) => showAlertMessage(`Error from ComputeSymmetries: ${error.message}`,
+                                              "symmetries"));
+});
+
+receiveFromNode(id, "show", (params: CtrlParams) => {
+
+    inputSpaceGroup.value = params.inSymmetry as string ?? "";
+    computedSpaceGroup.value = params.outSymmetry as string ?? "";
+});
 
 </script>
 
@@ -73,16 +111,24 @@ askNode(id, "init")
 
   <v-row class="pl-2 mt-2 align-center">
     <v-col cols="5">
+      <v-label text="Input symmetry:" class="text-green" />
+    </v-col>
+    <v-col cols="7">
+      <v-label :text="inputSpaceGroup" class="show-symmetry" />
+    </v-col>
+  </v-row>
+  <v-row class="pl-2 mt-2 align-center">
+    <v-col cols="5">
       <v-label text="Final symmetry:" class="text-green" />
     </v-col>
     <v-col cols="7">
-      <v-label :text="controlStore.computedSpaceGroup" class="show-symmetry" />
+      <v-label :text="computedSpaceGroup" class="show-symmetry" />
     </v-col>
   </v-row>
 
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-3 mt-4" />
 
-  <v-btn block class="mb-4" @click="showSymmetriesDialog=true">Show symmetries dialog</v-btn>
+  <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 
   <g-error-alert kind="symmetries"/>
 </v-container>
