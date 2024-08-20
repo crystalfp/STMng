@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import log from "electron-log";
 import type {BasisType, PositionType, Structure} from "../../types";

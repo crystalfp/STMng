@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {getAtomicSymbol} from "./AtomData";
 import type {Structure} from "../../types";

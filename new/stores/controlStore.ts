@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "../types";
@@ -23,7 +24,7 @@ interface GlobalControls {
 	fingerprintsAccumulate: boolean;
 	trajectoriesRecording: boolean;
 
-	/** Functionalities present for adding control in StructureReader */
+	/** Set if a functionality is present to add its control in StructureReader */
 	hasCapture: boolean;
 	hasTrajectory: boolean;
 	hasFingerprints: boolean;

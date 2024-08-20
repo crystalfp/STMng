@@ -2,6 +2,9 @@
 /**
  * @component
  * Show symmetries in a secondary window.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 
 import {ref, onUnmounted, nextTick} from "vue";

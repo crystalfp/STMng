@@ -2,6 +2,9 @@
 /**
  * @component
  * Generates a chart in a new windows with the structure of the loaded project
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 
 import {ref, onMounted, onUnmounted} from "vue";

@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {app, BrowserWindow, nativeImage, ipcMain} from "electron";
 import path from "node:path";
@@ -154,25 +155,7 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
 
     // Manage the list of opened windows
     openedWindows.set(params.routerPath, secondaryWin);
-    secondaryWin.on("close", (/* evt */) => {
-        // TBD Intercept closure from [X] button
-        // evt.preventDefault();
-
-        // const choice = dialog.showMessageBox(secondaryWin, {
-        //     type: "question",
-        //     buttons: ["Yes", "No"],
-        //     title: "Confirm",
-        //     message: "Are you sure you want to quit?"
-        // });
-
-        // void choice.then((response) => {
-
-        //     if(response.response === 0) {
-
-        //         openedWindows.delete(params.routerPath);
-        //         secondaryWin.destroy();
-        //     }
-        // });
+    secondaryWin.on("close", () => {
         openedWindows.delete(params.routerPath);
     });
 };

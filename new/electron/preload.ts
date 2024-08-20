@@ -5,7 +5,8 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
-*/
+ * @since 2024-07-05
+ */
 import {exposeElectronAPI} from "@electron-toolkit/preload";
 import {contextBridge, nativeImage} from "electron";
 import {TitlebarColor, CustomTitlebar} from "custom-electron-titlebar";

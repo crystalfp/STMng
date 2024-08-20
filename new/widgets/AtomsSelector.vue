@@ -2,6 +2,9 @@
 /**
  * @component
  * Select atoms by various criteria.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {ref} from "vue";
 

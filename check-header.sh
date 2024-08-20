@@ -1,16 +1,17 @@
-for i in `/bin/find src -name "*.vue"`
+root="new"
+for i in `/bin/find $root -name "*.vue"`
 do
-n=`grep -c @component $i`
-if [ $n != 1 ]
+n=`grep -c -E "@component|@author|@since" $i`
+if [ $n != 3 ]
 then
 echo $i
 fi
 done
 
-for i in `/bin/find src -name "*.ts"`
+for i in `/bin/find $root -name "*.ts"`
 do
-n=`grep -c @packageDocumentation $i`
-if [ $n != 1 ]
+n=`grep -c -E "@packageDocumentation|@author|@since" $i`
+if [ $n != 3 ]
 then
 echo $i
 fi

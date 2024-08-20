@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {Menu, shell, app, nativeTheme, dialog} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
@@ -15,7 +16,6 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {pm} from "./ProjectManager";
 import type {MenuItemConstructorOptions} from "electron";
-
 
 let systemMenu: Menu;
 

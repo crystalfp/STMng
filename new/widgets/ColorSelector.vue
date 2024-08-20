@@ -2,6 +2,9 @@
 /**
  * @component
  * Show a button to change a color
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {ref} from "vue";
 import {mdiRectangle} from "@mdi/js";

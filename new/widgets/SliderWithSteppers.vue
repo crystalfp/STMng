@@ -2,6 +2,9 @@
 /**
  * @component
  * Slider with increment/decrement buttons and debouncing
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {mdiMinus, mdiPlus} from "@mdi/js";
 import {watch} from "vue";

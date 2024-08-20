@@ -4,11 +4,12 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {ipcMain, app} from "electron";
+import {app} from "electron";
 import type {AtomAppearance} from "../../types";
 
 // ##############################################################################
@@ -141,24 +142,6 @@ class AtomData {
 		};
 	}
 
-	/**
-	 * Return data for all atoms
-	 *
-	 * @returns The array of atom data to be used in client
-	 */
-	allAtomicData(): AtomAppearance[] {
-
-		const out: AtomAppearance[] = [];
-
-		const len = this.data.length;
-		for(let atomZ=0; atomZ < len; ++atomZ) {
-
-			out.push(this.atomicData(atomZ));
-		}
-
-		return out;
-	}
-
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
@@ -202,10 +185,3 @@ export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance()
  * @returns Structure containing symbol, radii, max number of bonds and color
  */
 export const getAtomData = (atomZ: number): AtomAppearance => AtomData.getInstance().atomicData(atomZ);
-
-/**
- * Setup the channel to pass atom data to the client
- */
-export const setupChannelAtomData = (): void => {
-    ipcMain.handle("ATOM:GET-ALL",  () => JSON.stringify(AtomData.getInstance().allAtomicData()));
-};

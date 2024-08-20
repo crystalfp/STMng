@@ -2,8 +2,10 @@
 /**
  * @component
  * Align left margin of contained sliders.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
-
 
 // > Properties
 const {labelWidth = "2rem"} = defineProps<{

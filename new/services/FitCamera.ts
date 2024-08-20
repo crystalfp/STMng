@@ -6,6 +6,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import * as THREE from "three";
 import {useConfigStore} from "../stores/configStore";

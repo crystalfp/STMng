@@ -3,6 +3,9 @@
  * @component
  * Ask the main process for the versions of the application, Node, Electron
  * and Chrome and display them in a dialog.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {reactive, ref, version as VueVersion} from "vue";
 import * as THREE from "three";

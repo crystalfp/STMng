@@ -2,6 +2,9 @@
 /**
  * @component
  * Controls for the orthoslice node.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 
 import {ref, watchEffect, computed} from "vue";

@@ -2,6 +2,9 @@
  * Writer for CHGCAR formatted files
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 
 import fs from "node:fs";

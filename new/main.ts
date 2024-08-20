@@ -2,6 +2,9 @@
  * Entry point for the renderer (client) part of the application
  *
  * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-07-05
  */
 import {createApp, defineAsyncComponent} from "vue";
 import log from "electron-log/renderer";
@@ -32,7 +35,6 @@ import {VSwitch} from "vuetify/components/VSwitch";
 import {VTextField} from "vuetify/components/VTextField";
 import {VDialog} from "vuetify/components/VDialog";
 import {VCard, VCardText, VCardActions} from "vuetify/components/VCard";
-// import {VTooltip} from "vuetify/components/VTooltip";
 import {VTabs, VTab} from "vuetify/components/VTabs";
 import {VApp} from "vuetify/components/VApp";
 import {VRow, VContainer, VSpacer, VCol} from "vuetify/components/VGrid";
@@ -68,7 +70,6 @@ const app = createApp(App)
 			VTextField,
 			VDialog,
 			VCard, VCardText, VCardActions,
-			// VTooltip,
 			VTabs, VTab,
 			VApp,
 			VRow, VContainer, VSpacer, VCol,

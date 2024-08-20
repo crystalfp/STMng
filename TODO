@@ -19,7 +19,8 @@ ToDo:
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
-  ☐ Use `bind()` in observer functions definitions
+  ✔ Use `bind()` in observer functions definitions @done(2024-08-20 18:19)
+  ☐ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines
 
 Bugs:
   ☐ Energy file: fix disappearing file name
