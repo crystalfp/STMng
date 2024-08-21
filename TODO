@@ -1,13 +1,12 @@
 Porting:
-  ☐ Review debouncing (see <https://dev.to/dipakahirav/top-20-javascript-tricks-and-tips-for-every-developer-3apb> section 14)
   ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
-  ☐ Remove multiple invoke to the nodes
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
-  ☐ Memory Leak Detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
+  ☐ Memory leak detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
   ☐ Check error return from main process to client
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
   ☐ Is there any way to avoid callbacks for repetitive call?
+  ☐ Remove multiple invoke to the nodes
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
 
@@ -19,7 +18,6 @@ ToDo:
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
-  ✔ Use `bind()` in observer functions definitions @done(2024-08-20 18:19)
   ☐ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines
 
 Bugs:
@@ -52,6 +50,9 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ Review debouncing (see <https://dev.to/dipakahirav/top-20-javascript-tricks-and-tips-for-every-developer-3apb> section 14) @done(2024-08-21 05:23) @project(Porting)
+  ✔ Use `bind()` in observer functions definitions @done(2024-08-20 18:19) @project(ToDo)
+  ✔ Load struct with unit cell, load one without → The cell remains @done(2024-08-21 05:16) @project(Bugs)
   ✘ Try to use KeepAlive component in user interface @cancelled(2024-08-19 07:44) @project(Nice to have/Future)
   ✔ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4> @done(2024-08-19 07:43) @project(Study)
   ✘ Experiment with command line parser of NodeJS: <https://pawelgrzybek.com/til-node-js-18-3-comes-with-command-line-arguments-parser/> @cancelled(2024-08-19 07:44) @project(Nice to have/Future)

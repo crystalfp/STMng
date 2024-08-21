@@ -50,6 +50,7 @@ export class DrawUnitCell extends NodeCore {
 		this.inputStructure = data;
 		if(!this.inputStructure|| this.inputStructure.atoms.length === 0) {
 			this.outputEmptyStructure();
+			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
 
@@ -57,6 +58,7 @@ export class DrawUnitCell extends NodeCore {
 		const {crystal} = this.inputStructure;
 		if(!crystal || crystal.basis.every((value) => value === 0)) {
 			this.notify(this.inputStructure);
+			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
 
@@ -530,10 +532,4 @@ export class DrawUnitCell extends NodeCore {
 		this.computeSupercell(basis, origin);
 		this.computeBasisVectors(basis, origin);
 	};
-
-	    // lineColor.value = params.lineColor as string ?? "#0000FF";
-        // dashedLine.value = params.dashedLine as boolean ?? false;
-        // supercellColor.value = params.supercellColor as string ?? "#16A004";
-        // dashedSupercell.value = params.dashedSupercell as boolean ?? false;
-
 }

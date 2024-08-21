@@ -39,19 +39,21 @@ const fileFormats = [
 ];
 
 // > UI parameters
-const fileToRead      = ref("");            // Path of the file to be read
-const countSteps      = ref(1);             // Total steps read
-const step            = ref(1);             // Current step
-const running         = ref(false);         // The steps are playing
-const atomsTypes      = ref("");            // Atom types in the structure read
-const loopSteps       = ref(false);         // If the sequence should loop
-const format          = ref("");            // File format to be read
-const inProgress      = ref(false);         // True during file load
-const auxInProgress   = ref(false);         // True during aux file load
-const auxFileToRead   = ref("");            // Path to the auxiliary file to read
-const filesSelected   = ref<File[]>([]);    // Status of the file selector
-const auxFileSelected = ref<File[]>([]);    // Status of the aux file selector
-const useBohr         = ref(true);          // Use Bohr units
+const fileToRead       = ref("");           // Path of the file to be read
+const countSteps       = ref(1);            // Total steps read
+const step             = ref(1);            // Current step
+const running          = ref(false);        // The steps are playing
+const atomsTypes       = ref("");           // Atom types in the structure read
+const loopSteps        = ref(false);        // If the sequence should loop
+const format           = ref("");           // File format to be read
+const inProgress       = ref(false);        // True during file load
+const auxInProgress    = ref(false);        // True during aux file load
+const auxFileToRead    = ref("");           // Path to the auxiliary file to read
+const filesSelected    = ref<File[]>([]);   // Status of the file selector
+const filesSelectedT   = ref<File[]>([]);   // Temporary status of the file selector
+const auxFileSelected  = ref<File[]>([]);   // Status of the aux file selector
+const auxFileSelectedT = ref<File[]>([]);   // Status of the aux file selector
+const useBohr          = ref(true);         // Use Bohr units
 
 // Initialize the control
 resetAlertMessage("structureReader");
@@ -133,6 +135,7 @@ const setFormat = (): void => {
 
     sendToNode(id, "formats", {format: format.value});
 
+    filesSelectedT.value = [];
     fileToRead.value = "";
     countSteps.value = 1;
     step.value = 1;
@@ -189,14 +192,21 @@ const saveFileObject = (file: File): string => {
  */
 const loadFile = (files: File[] | File): void => {
 
-    if(!files) return;
+    if(!files) {
+        filesSelectedT.value = filesSelected.value;
+        return;
+    }
     const isArray = Array.isArray(files);
-    if(isArray && files.length === 0) return;
+    if(isArray && files.length === 0) {
+        filesSelectedT.value = filesSelected.value;
+        return;
+    }
     const file = isArray ? files[0] : files;
 
     step.value = 1;
     fileToRead.value = file.path;
     inProgress.value = true;
+    filesSelected.value = filesSelectedT.value;
 
     askNode(id, "read", {
             format: format.value,
@@ -224,10 +234,18 @@ const loadFile = (files: File[] | File): void => {
  */
 const loadAuxFile = (files: File[] | File): void => {
 
-    if(!files) return;
+    if(!files) {
+        auxFileSelectedT.value = auxFileSelected.value;
+        return;
+    }
     const isArray = Array.isArray(files);
-    if(isArray && files.length === 0) return;
+    if(isArray && files.length === 0) {
+        auxFileSelectedT.value = auxFileSelected.value;
+        return;
+    }
     const file = isArray ? files[0] : files;
+
+    auxFileSelected.value = auxFileSelectedT.value;
 
 	auxInProgress.value = true;
 
@@ -278,7 +296,7 @@ const setUseBohr = (): void => {
                 variant="solo-filled" hide-details="auto" clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
 
-  <v-file-input v-model="filesSelected" label="Select input file" :loading="inProgress"
+  <v-file-input v-model="filesSelectedT" label="Select input file" :loading="inProgress"
                 :disabled="format === ''"
                 :prepend-icon="mdiFileOutline" :accept="acceptFile(format)" :clearable="false"
                 class="mt-2" @update:model-value="loadFile" />
