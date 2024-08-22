@@ -15,7 +15,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
 import {ChartViewer} from "@/nodes/ChartViewer";
-import {Orthoslice} from "@/nodes/DrawOrthoslice";
 import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
 import {InterpolateVolume} from "@/nodes/InterpolateVolume";
@@ -97,7 +96,6 @@ export class NodeInfo {
 			case "compute-bonds":
 				break;
 			case "orthoslice":
-				map.set(id, new Orthoslice(id));
 				break;
 			case "structure-writer":
 				break;
@@ -235,8 +233,6 @@ export class NodeInfo {
 				case "compute-bonds":
 					break;
 				case "orthoslice":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as Orthoslice).saveStatus();
 					break;
 				case "structure-writer":
 					break;

@@ -29,6 +29,11 @@
       "type": "draw-polyhedra",
       "in": "bonds"
     },
+    "ortho": {
+      "label": "Orthoslice",
+      "type": "orthoslice",
+      "in": "unit"
+    },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
@@ -162,6 +167,20 @@
       "showPolyhedra": true,
       "colorByCenterAtom": true,
       "opacityByCenterAtom": 0.5
+    },
+    "ortho": {
+      "dataset": 0,
+      "axis": 0,
+      "plane": 0,
+      "showOrthoslice": false,
+      "colormapName": "rainbow",
+      "limitLow": -10,
+      "limitHigh": 10,
+      "useColorClasses": false,
+      "colorClasses": 5,
+      "showIsolines": false,
+      "isoValue": 0,
+      "colorIsolines": false
     },
     "writer": {
       "format": "XYZ",

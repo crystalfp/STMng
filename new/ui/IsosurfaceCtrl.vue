@@ -9,7 +9,7 @@
 
 import {ref, watchEffect, computed} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
-import {humanFormat} from "@/services/HumanFormat";
+import {humanFormat} from "../services/HumanFormat";
 
 // > Properties
 const properties = defineProps<{

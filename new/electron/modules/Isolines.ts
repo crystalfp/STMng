@@ -6,9 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 
-import * as THREE from "three";
-import type {PositionType} from "../../new/types";
-
+import type {PositionType} from "../../types";
 
 export class Isolines {
 
@@ -38,7 +36,7 @@ export class Isolines {
 		[0, 1, 0, 3],					// 	[0, 3],
 		[]								// 	[]
 	];
-	private readonly group = new THREE.Group();
+	private isolinesVertices: number[][] = [];
 
 	/**
 	 * Initialize the isolines computation
@@ -50,8 +48,7 @@ export class Isolines {
 	 */
 	constructor(private readonly volume: number[],
 				private readonly sides: PositionType,
-				private readonly isoValues: number[],
-				private readonly colors?: number[]) {}
+				private readonly isoValues: number[]) {}
 
 	/**
 	 * Compute isolines on the orthoslice
@@ -65,18 +62,14 @@ export class Isolines {
 	computeIsolines(sideFast: number, sideSlow: number, sideFixed: number, idxFixed: number,
 				    positions: number[]): void {
 
+		this.isolinesVertices = [];
 		const len = this.isoValues.length;
 		for(let i=0; i < len; ++i) {
 
 			const isolineVertices = this.computeOneIsoline(sideFast, sideSlow, sideFixed, idxFixed,
 														   positions, this.isoValues[i]);
 
-			const geometry = new THREE.BufferGeometry();
-        	geometry.setAttribute("position", new THREE.Float32BufferAttribute(isolineVertices, 3));
-
-			const color = this.colors ? this.colors[i] : 0x000000;
-        	const line = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({color}));
-			this.group.add(line);
+			this.isolinesVertices.push(isolineVertices);
 		}
 	}
 
@@ -195,15 +188,7 @@ export class Isolines {
         return this.volume[nx + (ny + nz*this.sides[1])*this.sides[0]];
 	}
 
-	/**
-	 * Return the graphic group containing the computed isolines
-	 *
-	 * @param name - Name to be given to the group of isolines
-	 * @returns The group containing the isolines
-	 */
-	getIsolinesGroup(name: string): THREE.Group {
-
-		this.group.name = name;
-		return this.group;
+	getIsolinesVertices(): number[][] {
+		return this.isolinesVertices;
 	}
 }

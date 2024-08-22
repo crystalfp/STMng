@@ -49,8 +49,8 @@ const format           = ref("");           // File format to be read
 const inProgress       = ref(false);        // True during file load
 const auxInProgress    = ref(false);        // True during aux file load
 const auxFileToRead    = ref("");           // Path to the auxiliary file to read
-const filesSelected    = ref<File[]>([]);   // Status of the file selector
-const filesSelectedT   = ref<File[]>([]);   // Temporary status of the file selector
+const fileSelected     = ref<File>();       // Status of the file selector
+// const filesSelectedT   = ref<File[]>([]);   // Temporary status of the file selector
 const auxFileSelected  = ref<File[]>([]);   // Status of the aux file selector
 const auxFileSelectedT = ref<File[]>([]);   // Status of the aux file selector
 const useBohr          = ref(true);         // Use Bohr units
@@ -67,10 +67,10 @@ askNode(id, "init")
         fileToRead.value    = params.fileToRead as string ?? "";
         auxFileToRead.value = params.auxFileToRead as string ?? "";
 
-        let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
-        if("path" in file) filesSelected.value[0] = file;
+        // let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
+        // if("path" in file) filesSelected.value = file;
 
-        file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
+        const file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
         if("path" in file) auxFileSelected.value[0] = file;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
@@ -135,7 +135,7 @@ const setFormat = (): void => {
 
     sendToNode(id, "formats", {format: format.value});
 
-    filesSelectedT.value = [];
+    // filesSelectedT.value = [];
     fileToRead.value = "";
     countSteps.value = 1;
     step.value = 1;
@@ -192,13 +192,17 @@ const saveFileObject = (file: File): string => {
  */
 const loadFile = (files: File[] | File): void => {
 
+console.log("111", files);
+// console.log("222", fileSelected2.value.path);
+
+/*
     if(!files) {
-        filesSelectedT.value = filesSelected.value;
+        // filesSelectedT.value = filesSelected.value;
         return;
     }
     const isArray = Array.isArray(files);
     if(isArray && files.length === 0) {
-        filesSelectedT.value = filesSelected.value;
+        // filesSelectedT.value = filesSelected.value;
         return;
     }
     const file = isArray ? files[0] : files;
@@ -206,7 +210,7 @@ const loadFile = (files: File[] | File): void => {
     step.value = 1;
     fileToRead.value = file.path;
     inProgress.value = true;
-    filesSelected.value = filesSelectedT.value;
+    // filesSelected.value = filesSelectedT.value;
 
     askNode(id, "read", {
             format: format.value,
@@ -224,6 +228,7 @@ const loadFile = (files: File[] | File): void => {
             inProgress.value = false;
             showAlertMessage(`Error from load file: ${error.message}`, "structureReader");
         });
+        */
 };
 
 // > Load auxiliary file
@@ -281,6 +286,10 @@ const setUseBohr = (): void => {
     sendToNode(id, "bohr", {useBohr: useBohr.value});
 };
 
+// const fise = ref<File>();
+const lfise = (a: any): void => {
+    console.log(">>>", a.path);
+};
 </script>
 
 
@@ -296,10 +305,14 @@ const setUseBohr = (): void => {
                 variant="solo-filled" hide-details="auto" clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
 
-  <v-file-input v-model="filesSelectedT" label="Select input file" :loading="inProgress"
+  <v-file-input label="Select input file3"
+                :prepend-icon="mdiFileOutline"
+                class="mt-2" @update:model-value="lfise" />
+<!--
+  <v-file-input v-model="fileSelected" label="Select input file" :loading="inProgress"
                 :disabled="format === ''"
                 :prepend-icon="mdiFileOutline" :accept="acceptFile(format)" :clearable="false"
-                class="mt-2" @update:model-value="loadFile" />
+                class="mt-2" @update:model-value="loadFile" /> -->
 
   <v-file-input v-if="format === 'POSCAR + XDATCAR'" v-model="auxFileSelected"
                 label="Select XDATCAR file" :loading="auxInProgress"

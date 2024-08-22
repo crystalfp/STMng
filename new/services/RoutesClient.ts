@@ -240,6 +240,27 @@ export const receivePolyhedraFromNode = (id: string,
 				(_event, vertices: number[][], centerAtomsColor: string[]) => callback(vertices, centerAtomsColor));
 };
 
+export const receiveIsoOrthoFromNode = (id: string,
+										channel: string,
+										callback: (
+											sides: number[],
+											vertices: number[],
+											values: number[],
+											isolineVertices: number[][],
+											isolineValues: number[],
+											params: CtrlParams) => void
+										): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`,
+				(_event, sides: number[],
+						 vertices: number[],
+						 values: number[],
+						 isolineVertices: number[][],
+						 isolineValues: number[],
+						 params: CtrlParams) => callback(sides, vertices, values, isolineVertices,
+						 								 isolineValues, params));
+};
+
 /**
  * Send the viewer3D state to the main process
  *

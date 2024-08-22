@@ -4,6 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-08-21
  */
 
 const formatPrecision = 4;
