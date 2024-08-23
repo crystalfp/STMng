@@ -240,6 +240,13 @@ export const receivePolyhedraFromNode = (id: string,
 				(_event, vertices: number[][], centerAtomsColor: string[]) => callback(vertices, centerAtomsColor));
 };
 
+/**
+ * Receive parameters to draw the orthoslice and isolines
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Function called with the parameters to draw the orthoslice and isolines
+ */
 export const receiveIsoOrthoFromNode = (id: string,
 										channel: string,
 										callback: (
@@ -257,6 +264,7 @@ export const receiveIsoOrthoFromNode = (id: string,
 						 values: number[],
 						 isolineVertices: number[][],
 						 isolineValues: number[],
+						 // eslint-disable-next-line max-params
 						 params: CtrlParams) => callback(sides, vertices, values, isolineVertices,
 						 								 isolineValues, params));
 };

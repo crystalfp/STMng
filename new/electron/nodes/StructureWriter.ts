@@ -8,7 +8,6 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
-import {dialog} from "electron";
 import log from "electron-log";
 
 import {WriterXYZ} from "../writers/WriteXYZ";
@@ -29,7 +28,6 @@ export class StructureWriter extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
-		{name: "select",	type: "invoke",	callback: this.channelSelect.bind(this)},
 		{name: "write",		type: "invoke",	callback: this.channelWrite.bind(this)},
 	];
 
@@ -85,64 +83,19 @@ export class StructureWriter extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for save file selection
-	 *
-	 * @returns Parameters with the filename selected
-	 */
-	private channelSelect(params: CtrlParams): CtrlParams {
-
-		// Save the format
-		this.format = params.format as string ?? "";
-		if(!this.format) return {filename: ""};
-
-		// Set filter
-		let filters;
-		switch(this.format) {
-			case "CHGCAR":
-				filters = [{name: "CHGCAR",	extensions: ["chgcar"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "CIF":
-				filters = [{name: "CIF",	extensions: ["cif"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "POSCAR":
-				filters = [{name: "POSCAR",	extensions: ["poscar"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "Shel-X":
-				filters = [{name: "Shel-X",	extensions: ["res"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			case "XYZ":
-				filters = [{name: "XYZ",	extensions: ["xyz"]},
-						   {name: "All",	extensions: ["*"]}];
-				break;
-			default:
-				filters = [{name: "All",	extensions: ["*"]}];
-				break;
-		}
-		const file = dialog.showSaveDialogSync({
-			title: "Select output structure file",
-			filters
-		});
-
-		this.outputFilename = file ? file.replaceAll("\\", "/") : "";
-		return {filename: this.outputFilename};
-	}
-
-	/**
 	 * Channel handler for capture and write structures
 	 *
 	 * @returns Parameters to initialize the user interface
 	 */
 	private channelWrite(params: CtrlParams): CtrlParams {
 
-		const continuous = params.continuous as boolean ?? false;
+		this.continuous = params.continuous as boolean ?? false;
 		const running = params.inProgress as boolean ?? false;
+		this.format = params.format as string ?? "";
+		this.outputFilename = params.filename as string ?? "";
 
 		// If continuous capture requested
-		if(continuous && running) {
+		if(this.continuous && running) {
 			this.capturedStructures.length = 0;
 			this.capturedStructures.push(this.structure!);
 			this.captureData = true;
@@ -178,13 +131,13 @@ export class StructureWriter extends NodeCore {
 			return {error: message};
 		}
 
-		const structures: Structure[] = continuous ? this.capturedStructures : [this.structure!];
+		const structures: Structure[] = this.continuous ? this.capturedStructures : [this.structure!];
 		this.captureData = false;
 
 		const sts = writer.writeStructure(this.outputFilename, structures);
 		if(sts.error) {
 			const message = `Error writing "${this.outputFilename}" file` +
-							`in "${this.format}" format. Error: ${sts.error as string}`;
+							`with "${this.format}" format. Error: ${sts.error as string}`;
 			log.error(message);
 			return {error: message};
 		}

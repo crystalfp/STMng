@@ -8,7 +8,6 @@
  */
 
 import {ref, computed} from "vue";
-import {mdiFileOutline} from "@mdi/js";
 import {useMessageStore} from "../stores/messageStore";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
@@ -65,7 +64,12 @@ const startStopCapture = (): void => {
     if(continuous.value) {
 
         inProgress.value = !inProgress.value;
-        askNode(id, "write", {continuous: true, inProgress: inProgress.value})
+        askNode(id, "write", {
+                        continuous: true,
+                        inProgress: inProgress.value,
+                        format: format.value,
+                        filename: outputFileFull.value
+            })
             .then((params) => {
                 if("error" in params) throw Error(params.error as string);
                 finish.value = !inProgress.value;
@@ -75,7 +79,11 @@ const startStopCapture = (): void => {
     }
     else {
         inProgress.value = true;
-        askNode(id, "write", {continuous: false})
+        askNode(id, "write", {
+                        continuous: false,
+                        format: format.value,
+                        filename: outputFileFull.value
+            })
             .then((params) => {
                 if("error" in params) throw Error(params.error as string);
                 finish.value = true;
@@ -86,30 +94,59 @@ const startStopCapture = (): void => {
     }
 };
 
+// > Set filters
 /**
- * Send selection request to main process and receive the selected file full path
+ * Create the file selector filter for the given format
+ *
+ * @param fileFormat - Format for which a file selector filter should be retrieved
+ * @returns JSON encoded filter
  */
-const selectSaveFile = (): void => {
+const filterFromFormat = (fileFormat: string): string => {
 
-    inProgress.value = true;
-    askNode(id, "select", {format: format.value})
-        .then((params) => {
+    let filters = [{name: "All",	extensions: ["*"]}];
+	switch(fileFormat) {
+        case "CHGCAR":
+            filters = [{name: "CHGCAR",	extensions: ["chgcar"]},
+                       {name: "All",	extensions: ["*"]}];
+            break;
+        case "CIF":
+            filters = [{name: "CIF",	extensions: ["cif"]},
+                       {name: "All",	extensions: ["*"]}];
+            break;
+        case "POSCAR":
+            filters = [{name: "POSCAR",	extensions: ["poscar"]},
+                       {name: "All",	extensions: ["*"]}];
+            break;
+        case "Shel-X":
+            filters = [{name: "Shel-X",	extensions: ["res"]},
+                       {name: "All",	extensions: ["*"]}];
+            break;
+        case "XYZ":
+            filters = [{name: "XYZ",	extensions: ["xyz"]},
+                       {name: "All",	extensions: ["*"]}];
+            break;
+	}
 
-            const filename = params.filename as string;
+    return JSON.stringify(filters);
+};
 
-            if(filename) {
-                outputFileFull.value = filename;
-                const pos = filename.lastIndexOf("/");
-                outputFile.value = filename.slice(pos+1);
-            }
-            else {
-                outputFile.value = "";
-                outputFileFull.value = "";
-            }
-        })
-        .catch((error: Error) => showAlertMessage(`Error from save file select: ${error.message}`,
-                                          "structureWriter"))
-        .finally(() => inProgress.value = false);
+// > Save the selected file name
+/**
+ * Save the selected file name
+ *
+ * @param filename - Selected filename
+ */
+const selectedSaveFile = (filename: string): void => {
+
+    if(filename) {
+        outputFileFull.value = filename;
+        const pos = filename.lastIndexOf("/");
+        outputFile.value = filename.slice(pos+1);
+    }
+    else {
+        outputFile.value = "";
+        outputFileFull.value = "";
+    }
 };
 
 </script>
@@ -120,11 +157,8 @@ const selectSaveFile = (): void => {
   <v-select v-model="format" label="File format"
             :items="fileFormats" class="mt-4" density="compact" />
 
-  <v-row :disabled="format === ''" class="mt-2" @click="selectSaveFile">
-    <v-icon :icon="mdiFileOutline" size="x-large" class="ml-4 mr-2 mt-1" style="opacity: 0.4" />
-    <v-text-field v-model="outputFile" :disabled="format === ''" label="Select save file" readonly
-                  class="mb-2 mr-2" hide-details="auto" :loading="inProgress" spellcheck="false" />
-  </v-row>
+  <g-select-file class="mt-2" :disabled="format === ''" title="Select save file" :filter="filterFromFormat(format)"
+                 kind="save" :format="format" @selected="selectedSaveFile" />
 
   <v-row class="mt-10">
     <v-switch v-model="continuous" color="primary" label="Continuous write"

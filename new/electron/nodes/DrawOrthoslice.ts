@@ -34,7 +34,7 @@ export class DrawOrthoslice extends NodeCore {
     private colorIsolines = false;
 	private isolineValues: number[] = [];
 	private isolinesVertices: number[][] = [];
-	private orthoValues: number[] = [];
+	private readonly orthoValues: number[] = [];
 
 
 	private readonly channels: ChannelDefinition[] = [
@@ -63,22 +63,24 @@ export class DrawOrthoslice extends NodeCore {
 
 			sendIsoOrthoToClient(this.id,
                                  "computed",
-                                 [],
-                                 [],
-                                 [],
-                                 [],
-                                 [],
                                  {
-									dataset: this.dataset,
-									axis: this.axis,
-									plane: this.plane,
-									maxDataset: this.maxDataset,
-									maxPlane: this.maxPlane,
-									limitLow: this.limitLow,
-									limitHigh: this.limitHigh,
-									valueMin: this.limitLow,
-									valueMax: this.limitHigh,
-								 });
+                                    sides: [],
+                                    vertices: [],
+                                    values: [],
+                                    isolineVertices: [],
+                                    isolineValues: [],
+                                    params: {
+                                        dataset: this.dataset,
+                                        axis: this.axis,
+                                        plane: this.plane,
+                                        maxDataset: this.maxDataset,
+                                        maxPlane: this.maxPlane,
+                                        limitLow: this.limitLow,
+                                        limitHigh: this.limitHigh,
+                                        valueMin: this.limitLow,
+                                        valueMax: this.limitHigh,
+								    }
+                                 });
 		}
 		else {
 			this.dataset = 0;
@@ -96,22 +98,24 @@ export class DrawOrthoslice extends NodeCore {
 
 			sendIsoOrthoToClient(this.id,
                                  "computed",
-                                 this.structure.volume[0].sides,
-                                 [],
-                                 this.orthoValues,
-                                 this.isolinesVertices,
-								 this.isolineValues,
-                                 {
-									dataset: this.dataset,
-									axis: this.axis,
-									plane: this.plane,
-									maxDataset: this.maxDataset,
-									maxPlane: this.maxPlane,
-									limitLow: this.limitLow,
-									limitHigh: this.limitHigh,
-									valueMin: this.valueRange[0],
-									valueMax: this.valueRange[1],
-								 });
+                                                                  {
+                                    sides: this.structure.volume[0].sides,
+                                    vertices: [],
+                                    values: this.orthoValues,
+                                    isolineVertices: this.isolinesVertices,
+                                    isolineValues: this.isolineValues,
+                                    params: {
+                                        dataset: this.dataset,
+                                        axis: this.axis,
+                                        plane: this.plane,
+                                        maxDataset: this.maxDataset,
+                                        maxPlane: this.maxPlane,
+                                        limitLow: this.limitLow,
+                                        limitHigh: this.limitHigh,
+                                        valueMin: this.limitLow,
+                                        valueMax: this.limitHigh,
+								    }
+                                 });
 		}
 	}
 

@@ -1,5 +1,5 @@
 /**
- * <<DESCRIPTION>>
+ * Select a file as requested by the client file selector widget.
  *
  * @packageDocumentation
  *
@@ -9,6 +9,9 @@
 import {ipcMain, dialog} from "electron";
 import type {CtrlParams, FileFilter} from "../../types";
 
+/**
+ * Setup the channel to the client
+ */
 export const setupChannelFileSelector = (): void => {
 
 	ipcMain.handle("SYSTEM:select", (_event, params: CtrlParams) => {
@@ -19,10 +22,10 @@ export const setupChannelFileSelector = (): void => {
 
 		if(kind === "load") {
 			const file = dialog.showOpenDialogSync({
-					title,
-					properties: ["openFile"],
-					filters: filter,
-				})
+				title,
+				properties: ["openFile"],
+				filters: filter,
+			});
 			if(file) return {
 				filename: file[0].replaceAll("\\", "/")
 			};

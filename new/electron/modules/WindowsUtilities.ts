@@ -369,14 +369,29 @@ export const sendVerticesToClient = (id: string, channel: string, vertices: numb
     mainWin.webContents.send(`${id}:${channel}`, vertices);
 };
 
+/**
+ * Push orthoslice and isolines data to the client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param data - Data to draw orthoslice and isolines
+ */
 export const sendIsoOrthoToClient = (id: string,
                                      channel: string,
-                                     sides: number[],
-                                     vertices: number[],
-                                     values: number[],
-                                     isolineVertices: number[][],
-                                     isolineValues: number[],
-                                     params: CtrlParams): void => {
+                                     data: {
+                                        sides: number[];
+                                        vertices: number[];
+                                        values: number[];
+                                        isolineVertices: number[][];
+                                        isolineValues: number[];
+                                        params: CtrlParams;
+                                     }): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, sides, vertices, values, isolineVertices, isolineValues, params);
+    mainWin.webContents.send(`${id}:${channel}`,
+                             data.sides,
+                             data.vertices,
+                             data.values,
+                             data.isolineVertices,
+                             data.isolineValues,
+                             data.params);
 };

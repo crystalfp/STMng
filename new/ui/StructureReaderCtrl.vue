@@ -214,6 +214,7 @@ const selectedAuxFile = (filename: string, fileFormat: string): void => {
  * Create the file selector filter for the given format
  *
  * @param fileFormat - Format for which a file selector filter should be retrieved
+ * @returns JSON encoded filter
  */
 const filterFromFormat = (fileFormat: string): string => {
 
@@ -259,6 +260,8 @@ const filterFromFormat = (fileFormat: string): string => {
 
 /**
  * Return the JSON encoded filter for XDATCAR auxiliary file
+ *
+ * @returns JSON encoded filter
  */
 const filterForXDATCAR = (): string => JSON.stringify([{name: "XDATCAR", extensions: ["xdatcar"]},
 					                                   {name: "All",     extensions: ["*"]}]);
