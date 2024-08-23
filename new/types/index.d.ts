@@ -332,3 +332,13 @@ interface SelectedAtoms {
     /** Covalent radius of the atom */
     radius: number;
 }
+
+/** Accept string for file selector */
+export interface FileFilter {
+
+    /** Name of the filter */
+	name: string;
+
+    /** List of accepted extensions */
+	extensions: string[];
+}

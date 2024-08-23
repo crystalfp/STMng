@@ -38,8 +38,6 @@ export class StructureReader extends NodeCore {
 	private useBohr = true;
 	private fileToRead = "";
 	private auxFileToRead = "";
-	private filesSelectedFull = "{}";
-	private auxSelectedFull = "{}";
 	private intervalId: ReturnType<typeof setInterval> | undefined;
 
 	private structures: Structure[] = [];
@@ -111,8 +109,6 @@ export class StructureReader extends NodeCore {
 			useBohr: this.useBohr,
 			fileToRead: this.fileToRead,
 			auxFileToRead: this.auxFileToRead,
-			filesSelectedFull: this.filesSelectedFull,
-			auxSelectedFull: this.auxSelectedFull,
 		};
 	}
 
@@ -124,7 +120,6 @@ export class StructureReader extends NodeCore {
 	 */
 	private async channelRead(params: CtrlParams): Promise<CtrlParams> {
 
-		this.filesSelectedFull = params.filesSelectedFull as string ?? "{}";
 		const requestedFormat = params.format as string;
 		const filename = params.fileToRead as string;
 		this.fileToRead = filename;
@@ -244,7 +239,6 @@ export class StructureReader extends NodeCore {
 	 */
 	private async channelAuxRead(params: CtrlParams): Promise<CtrlParams> {
 
-		this.auxSelectedFull = params.auxSelectedFull as string ?? "{}";
 		const mainFormat = params.format as string ?? "";
 		const filename = params.auxFileToRead as string;
 		this.auxFileToRead = filename;

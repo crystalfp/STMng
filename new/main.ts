@@ -113,7 +113,8 @@ const app = createApp(App)
 	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
 	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
 	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")))
-	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")));
+	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")))
+	.component("GSelectFile", defineAsyncComponent(() => import("./widgets/SelectFile.vue")));
 
 // Add global error handlers
 app.config.errorHandler = (error: unknown) => {

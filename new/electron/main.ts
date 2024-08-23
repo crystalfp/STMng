@@ -18,6 +18,7 @@ import {createMainWindow} from "./modules/WindowsUtilities";
 import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFingerprints} from "../../old/electron/modules/Fingerprints";
+import {setupChannelFileSelector} from "./modules/SelectFile";
 import {pm} from "./modules/ProjectManager";
 
 // > Command line parsing
@@ -66,6 +67,7 @@ process.on("unhandledRejection", (event: PromiseRejectionEvent) => {
 setupChannelPreferences();
 setupChannelVersions();
 setupChannelFingerprints();
+setupChannelFileSelector();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

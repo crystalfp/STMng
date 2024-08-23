@@ -9,7 +9,7 @@
 
 import {ref, watch} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
-        mdiChevronLeft, mdiChevronRight, mdiFileOutline} from "@mdi/js";
+        mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {useControlStore} from "../stores/controlStore";
 import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
@@ -47,12 +47,7 @@ const atomsTypes       = ref("");           // Atom types in the structure read
 const loopSteps        = ref(false);        // If the sequence should loop
 const format           = ref("");           // File format to be read
 const inProgress       = ref(false);        // True during file load
-const auxInProgress    = ref(false);        // True during aux file load
 const auxFileToRead    = ref("");           // Path to the auxiliary file to read
-const fileSelected     = ref<File>();       // Status of the file selector
-// const filesSelectedT   = ref<File[]>([]);   // Temporary status of the file selector
-const auxFileSelected  = ref<File[]>([]);   // Status of the aux file selector
-const auxFileSelectedT = ref<File[]>([]);   // Status of the aux file selector
 const useBohr          = ref(true);         // Use Bohr units
 
 // Initialize the control
@@ -66,12 +61,6 @@ askNode(id, "init")
         useBohr.value       = params.useBohr as boolean ?? true;
         fileToRead.value    = params.fileToRead as string ?? "";
         auxFileToRead.value = params.auxFileToRead as string ?? "";
-
-        // let file = JSON.parse(params.filesSelectedFull as string ?? "{}") as File;
-        // if("path" in file) filesSelected.value = file;
-
-        const file = JSON.parse(params.auxSelectedFull as string ?? "{}") as File;
-        if("path" in file) auxFileSelected.value[0] = file;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
 
@@ -135,7 +124,6 @@ const setFormat = (): void => {
 
     sendToNode(id, "formats", {format: format.value});
 
-    // filesSelectedT.value = [];
     fileToRead.value = "";
     countSteps.value = 1;
     step.value = 1;
@@ -151,124 +139,6 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPS
  * @returns The check result
  */
 const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomTypes.has(fileFormat);
-
-/** Accept string for each file format */
-const acceptStringByFormat = new Map<string, string>([
-    ["CHGCAR",            ".chgcar,*"],
-    ["CIF",               ".cif,*"],
-    ["Gaussian Cube",     ".cube,*"],
-    ["LAMMPS",            ".lmp,*"],
-    ["LAMMPStrj",         ".lammpstrj,*"],
-    ["POSCAR",            ".poscar,.poscars,*"],
-    ["POSCAR + XDATCAR",  ".poscar,.poscars,*"],
-    ["Shel-X",            ".res,.ins,*"],
-    ["XYZ",               ".xyz,*"],
-]);
-
-/**
- * Create the accept string for the given format
- *
- * @param fileFormat - Format to be loaded
- * @returns The accept string for the file selector
- */
-const acceptFile = (fileFormat: string): string => acceptStringByFormat.get(fileFormat) ?? "*";
-
-const saveFileObject = (file: File): string => {
-    const clone = {
-        lastModified: file.lastModified,
-        name: file.name,
-        path: file.path,
-        size: file.size,
-        type: file.type,
-    };
-
-    return JSON.stringify(clone);
-};
-
-/**
- * Start loading a file
- *
- * @param files - Output of the file selector
- */
-const loadFile = (files: File[] | File): void => {
-
-console.log("111", files);
-// console.log("222", fileSelected2.value.path);
-
-/*
-    if(!files) {
-        // filesSelectedT.value = filesSelected.value;
-        return;
-    }
-    const isArray = Array.isArray(files);
-    if(isArray && files.length === 0) {
-        // filesSelectedT.value = filesSelected.value;
-        return;
-    }
-    const file = isArray ? files[0] : files;
-
-    step.value = 1;
-    fileToRead.value = file.path;
-    inProgress.value = true;
-    // filesSelected.value = filesSelectedT.value;
-
-    askNode(id, "read", {
-            format: format.value,
-            fileToRead: file.path,
-            filesSelectedFull: saveFileObject(file),
-            atomsTypes: atomsTypes.value,
-            useBohr: useBohr.value,
-        })
-        .then((params) => {
-            if("error" in params) throw Error(params.error as string);
-            countSteps.value = params.countSteps as number ?? 1;
-            inProgress.value = false;
-        })
-        .catch((error: Error) => {
-            inProgress.value = false;
-            showAlertMessage(`Error from load file: ${error.message}`, "structureReader");
-        });
-        */
-};
-
-// > Load auxiliary file
-/**
- * Start loading an auxiliary file
- *
- * @param files - Output of the file selector
- */
-const loadAuxFile = (files: File[] | File): void => {
-
-    if(!files) {
-        auxFileSelectedT.value = auxFileSelected.value;
-        return;
-    }
-    const isArray = Array.isArray(files);
-    if(isArray && files.length === 0) {
-        auxFileSelectedT.value = auxFileSelected.value;
-        return;
-    }
-    const file = isArray ? files[0] : files;
-
-    auxFileSelected.value = auxFileSelectedT.value;
-
-	auxInProgress.value = true;
-
-    askNode(id, "aux", {
-            format: format.value,
-            auxFileToRead: file.path,
-            auxSelectedFull: saveFileObject(file),
-        })
-        .then((params) => {
-            if("error" in params) throw Error(params.error as string);
-            countSteps.value = params.countSteps as number ?? 1;
-            auxInProgress.value = false;
-        })
-        .catch((error: Error) => {
-            auxInProgress.value = false;
-            showAlertMessage(`Error from load aux file: ${error.message}`, "structureReader");
-        });
-};
 
 /**
  * Get atoms types field value on blur or ENTER pressed
@@ -286,10 +156,113 @@ const setUseBohr = (): void => {
     sendToNode(id, "bohr", {useBohr: useBohr.value});
 };
 
-// const fise = ref<File>();
-const lfise = (a: any): void => {
-    console.log(">>>", a.path);
+// > Load structure file
+/**
+ * Start loading a structure file
+ *
+ * @param filename - Selected filename
+ * @param fileFormat - Format of the file to be read
+ */
+const selectedFile = (filename: string, fileFormat: string): void => {
+
+    step.value = 1;
+    fileToRead.value = filename;
+    inProgress.value = true;
+
+    askNode(id, "read", {
+            format: fileFormat,
+            fileToRead: filename,
+            atomsTypes: atomsTypes.value,
+            useBohr: useBohr.value,
+        })
+        .then((params) => {
+            if("error" in params) throw Error(params.error as string);
+            countSteps.value = params.countSteps as number ?? 1;
+            inProgress.value = false;
+        })
+        .catch((error: Error) => {
+            inProgress.value = false;
+            showAlertMessage(`Error from load file: ${error.message}`, "structureReader");
+        });
 };
+
+// > Load auxiliary file
+/**
+ * Start loading an auxiliary file
+ *
+ * @param filename - Selected filename
+ * @param fileFormat - Format of the file to be read
+ */
+const selectedAuxFile = (filename: string, fileFormat: string): void => {
+
+    askNode(id, "aux", {
+            format: fileFormat,
+            auxFileToRead: filename,
+        })
+        .then((params) => {
+            if("error" in params) throw Error(params.error as string);
+            countSteps.value = params.countSteps as number ?? 1;
+        })
+        .catch((error: Error) => {
+            showAlertMessage(`Error from load aux file: ${error.message}`, "structureReader");
+        });
+};
+
+
+// > Set filters
+/**
+ * Create the file selector filter for the given format
+ *
+ * @param fileFormat - Format for which a file selector filter should be retrieved
+ */
+const filterFromFormat = (fileFormat: string): string => {
+
+    let filter = [{name: "All",	extensions: ["*"]}];
+	switch(fileFormat) {
+		case "CHGCAR":
+			filter = [{name: "CHGCAR",	        extensions: ["chgcar"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+		case "CIF":
+			filter = [{name: "CIF",		        extensions: ["cif"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+    	case "Gaussian Cube":
+			filter = [{name: "Gaussian Cube",	extensions: ["cube"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+    	case "LAMMPS":
+			filter = [{name: "LAMMPS",	        extensions: ["lmp"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+    	case "LAMMPStrj":
+			filter = [{name: "LAMMPStrj",	    extensions: ["lammpstrj"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+		case "POSCAR":
+		case "POSCAR + XDATCAR":
+			filter = [{name: "POSCAR",	        extensions: ["poscar", "poscars"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+		case "Shel-X":
+			filter = [{name: "Shel-X",	        extensions: ["res", "ins"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+		case "XYZ":
+			filter = [{name: "XYZ",		        extensions: ["xyz"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+	}
+
+    return JSON.stringify(filter);
+};
+
+/**
+ * Return the JSON encoded filter for XDATCAR auxiliary file
+ */
+const filterForXDATCAR = (): string => JSON.stringify([{name: "XDATCAR", extensions: ["xdatcar"]},
+					                                   {name: "All",     extensions: ["*"]}]);
+
 </script>
 
 
@@ -305,19 +278,12 @@ const lfise = (a: any): void => {
                 variant="solo-filled" hide-details="auto" clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
 
-  <v-file-input label="Select input file3"
-                :prepend-icon="mdiFileOutline"
-                class="mt-2" @update:model-value="lfise" />
-<!--
-  <v-file-input v-model="fileSelected" label="Select input file" :loading="inProgress"
-                :disabled="format === ''"
-                :prepend-icon="mdiFileOutline" :accept="acceptFile(format)" :clearable="false"
-                class="mt-2" @update:model-value="loadFile" /> -->
+  <g-select-file class="mt-2" :disabled="format === ''" title="Select input file" :filter="filterFromFormat(format)"
+                 :format="format" @selected="selectedFile" />
 
-  <v-file-input v-if="format === 'POSCAR + XDATCAR'" v-model="auxFileSelected"
-                label="Select XDATCAR file" :loading="auxInProgress"
-                :prepend-icon="mdiFileOutline" accept=".xdatcar,*" :clearable="false"
-                class="mt-0" @update:model-value="loadAuxFile" />
+  <g-select-file v-if="format === 'POSCAR + XDATCAR'" class="mt-2" :filter="filterForXDATCAR()"
+                 title="Select XDATCAR file" format="XDATCAR" @selected="selectedAuxFile"/>
+
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
                 label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0">
