@@ -10,10 +10,11 @@
 import {ref, watch} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
-import {useControlStore} from "../stores/controlStore";
 import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
 import type {CtrlParams} from "../types";
+
+import EnableCapture from "../components/EnableCapture.vue";
 
 // > Properties
 const {id} = defineProps<{
@@ -21,9 +22,6 @@ const {id} = defineProps<{
     /** Its own module id */
     id: string;
 }>();
-
-// Access the global control area
-const controlStore = useControlStore();
 
 /** Formats that could be loaded */
 const fileFormats = [
@@ -289,14 +287,9 @@ const filterForXDATCAR = (): string => JSON.stringify([{name: "XDATCAR", extensi
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
                 label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
-  <v-container v-if="countSteps > 1" class="ml-2 pa-0">
+  <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
-    <v-switch v-if="controlStore.hasCapture" v-model="controlStore.movie"
-              color="primary" label="Movie from steps" density="compact" class="mt-n5" />
-    <v-switch v-if="controlStore.hasTrajectory" v-model="controlStore.trajectoriesRecording"
-              color="primary" label="Record trajectories" density="compact" class="mt-n5" />
-    <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
-              color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5" />
+    <enable-capture />
     <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-6" />
     <v-row class="mr-2">
