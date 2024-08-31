@@ -11,7 +11,7 @@ import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 
 // > Properties
-const properties = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -22,14 +22,14 @@ const pointsToAdd = ref(1);
 const dataset = ref(0);
 const maxDataset = ref(0);
 
-sb.getUiParams(properties.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
     interpolateVolume.value = params.interpolateVolume as boolean ?? false;
     pointsToAdd.value = params.pointsToAdd as number ?? 1;
     dataset.value = params.dataset as number ?? 0;
     maxDataset.value = params.maxDataset as number ?? 0;
 });
 watchEffect(() => {
-    sb.setUiParams(properties.id, {
+    sb.setUiParams(id, {
         interpolateVolume: interpolateVolume.value,
         pointsToAdd: pointsToAdd.value,
         dataset: dataset.value,

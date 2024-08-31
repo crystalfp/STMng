@@ -12,7 +12,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {useControlStore} from "../stores/controlStore";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -30,7 +30,7 @@ const showPositionClouds = ref(false);
 const positionCloudsGrow = ref(0.1);
 const positionCloudsSideExp = ref(5);
 
-sb.getUiParams(props.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
 
     showTrajectories.value      = params.showTrajectories as boolean ?? false;
     labelKind.value             = params.labelKind as string ?? "symbol";
@@ -43,7 +43,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
 });
 watchEffect(() => {
 
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         showTrajectories: showTrajectories.value,
         labelKind: labelKind.value,
         atomsSelector: atomsSelector.value,

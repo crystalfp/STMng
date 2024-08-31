@@ -66,6 +66,7 @@ export default [{
             vueFeatures: {filter: false},
         }
     },
+    processor: vuePlugin.processors['.vue'],
     linterOptions: {
         reportUnusedDisableDirectives: "error"
     },
@@ -291,6 +292,7 @@ export default [{
         "vue/singleline-html-element-content-newline": "off",
         "vue/no-v-html": "off",
         "vue/multi-word-component-names": "off",
+        "vue/comment-directive": "warn",
         "import/namespace": "off",
         "import/default": "off",
         "import/no-named-as-default": "off",

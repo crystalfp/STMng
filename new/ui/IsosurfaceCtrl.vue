@@ -12,7 +12,7 @@ import {sb, type UiParams} from "@/services/Switchboard";
 import {humanFormat} from "../services/HumanFormat";
 
 // > Properties
-const properties = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -38,7 +38,7 @@ const limitColormap = ref(false);
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
-sb.getUiParams(properties.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
     showIsosurface.value = params.showIsosurface as boolean ?? false;
     maxDataset.value = params.maxDataset as number ?? 0;
     dataset.value = params.dataset as number ?? 0;
@@ -62,7 +62,7 @@ watchEffect(() => {
     limitLow.value = limits.value[0];
     limitHigh.value = limits.value[1];
 
-    sb.setUiParams(properties.id, {
+    sb.setUiParams(id, {
         showIsosurface: showIsosurface.value,
         dataset: dataset.value,
         isoValue: isoValue.value,

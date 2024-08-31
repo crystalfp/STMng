@@ -6,25 +6,16 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-22
  */
-import {ref} from "vue";
+import {ref, toRefs} from "vue";
 import {mdiFileOutline} from "@mdi/js";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
 
 // > Properties and emits
-const {
-    disabled=false,
-    format,
-    kind="load",
-    title,
-    filter
-} = defineProps<{
+const props = defineProps<{
 
     /** Disable the widget */
     disabled?: boolean;
-
-    /** Format string */
-    format: string;
 
     /** If the selector is for an existing file to be read or a new file to be saved */
     kind?: "load" | "save";
@@ -36,9 +27,16 @@ const {
     filter: string;
 }>();
 
+const {
+    disabled=false,
+    title,
+    filter
+} = toRefs(props);
+const kind = props.kind ?? "load";
+
 const emit = defineEmits<{
     /** The file has been selected */
-    "selected": [filename: string, fileFormat: string];
+    "selected": [filename: string];
 }>();
 
 /** Label to be show (the file selected) */
@@ -46,17 +44,17 @@ const label = ref("");
 /** True if the file is loading */
 const inProgress = ref(false);
 
-const openSelector = ():void => {
+const openSelector = (): void => {
 
     inProgress.value = true;
-    askNode("SYSTEM", "select", {kind, title, filter})
+    askNode("SYSTEM", "select", {kind, title: title.value, filter: filter.value})
         .then((params) => {
 
             const filename = params.filename as string;
             if(filename) {
                 const pos = filename.lastIndexOf("/");
                 label.value = filename.slice(pos+1);
-                emit("selected", filename, format);
+                emit("selected", filename);
             }
         })
         .catch((error: Error) => showAlertMessage(`Error from file select: ${error.message}`))

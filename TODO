@@ -1,3 +1,14 @@
+To do:
+  ☐ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines
+  ☐ Finish help
+  ☐ Put the project name in the project viewer
+  ☐ Structure writer: unify `continuous` and start button. Put it in EnableCapture.
+  ☐ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}`
+
+Bugs:
+  ☐ Energy file: fix disappearing file name
+  ☐ Control side height not ok changing to fullscreen (use flex?)
+
 Porting:
   ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -10,20 +21,12 @@ Porting:
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
 
-ToDo:
+ToDo eventually:
   ☐ Readers do not fail if the file format is invalid
-  ☐ Finish help
-  ☐ Put the project name in the project viewer
   ☐ Finish trajectories position clouds
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
-  ☐ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines
-
-Bugs:
-  ☐ Energy file: fix disappearing file name
-  ☐ Control side height not ok changing to fullscreen (use flex?)
-  ☐ In structure writer, writing filename with extension gives filename with duplicated extension
 
 Study:
   ☐ Check the order of entries in objects
@@ -41,7 +44,7 @@ Nice to have/Future:
   ☐ Label color (contrasting with atom color)
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Rendering spheres using sprites (as in VMD)
-  ☐ Optimize using Int64Array and similia
+  ✘ Optimize using Int64Array and similia @cancelled(2024-08-26 19:14)
   ☐ Add tooltips
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
@@ -50,6 +53,7 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ In structure writer, writing filename with extension gives filename with duplicated extension @done(2024-08-26 19:10) @project(Bugs)
   ✔ Review debouncing (see <https://dev.to/dipakahirav/top-20-javascript-tricks-and-tips-for-every-developer-3apb> section 14) @done(2024-08-21 05:23) @project(Porting)
   ✔ Use `bind()` in observer functions definitions @done(2024-08-20 18:19) @project(ToDo)
   ✔ Load struct with unit cell, load one without → The cell remains @done(2024-08-21 05:16) @project(Bugs)

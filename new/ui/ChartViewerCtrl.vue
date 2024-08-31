@@ -11,7 +11,7 @@ import {ref, watchEffect} from "vue";
 import {sb, type UiParams} from "@/services/Switchboard";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -20,12 +20,12 @@ const props = defineProps<{
 // > Get and set ui parameters from the switchboard
 const chartType = ref("line");
 const openChart = ref(false);
-sb.getUiParams(props.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
     chartType.value = params.chartType as string ?? "line";
 });
 
 watchEffect(() => {
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         chartType: chartType.value,
         openChart: openChart.value
     });

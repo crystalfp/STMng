@@ -13,7 +13,7 @@ import {mdiFileOutline} from "@mdi/js";
 import {resetAlertMessage} from "../services/AlertMessage";
 
 // > Properties
-const props = defineProps<{
+const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -54,7 +54,7 @@ const computeDistances = ref(false);
 const tolerance = ref(0.01);
 const absolute = ref(false);
 
-sb.getUiParams(props.id, (params: UiParams) => {
+sb.getUiParams(id, (params: UiParams) => {
     reset.value = params.reset as boolean ?? false;
     countAccumulated.value = params.countAccumulated as number ?? 0;
 
@@ -78,7 +78,7 @@ sb.getUiParams(props.id, (params: UiParams) => {
 });
 watchEffect(() => {
 
-    sb.setUiParams(props.id, {
+    sb.setUiParams(id, {
         reset: reset.value,
 
         energyFilePath: energyFile.value[0]?.path ?? "",

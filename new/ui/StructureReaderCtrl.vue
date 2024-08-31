@@ -159,16 +159,15 @@ const setUseBohr = (): void => {
  * Start loading a structure file
  *
  * @param filename - Selected filename
- * @param fileFormat - Format of the file to be read
  */
-const selectedFile = (filename: string, fileFormat: string): void => {
+const selectedFile = (filename: string): void => {
 
     step.value = 1;
     fileToRead.value = filename;
     inProgress.value = true;
 
     askNode(id, "read", {
-            format: fileFormat,
+            format: format.value,
             fileToRead: filename,
             atomsTypes: atomsTypes.value,
             useBohr: useBohr.value,
@@ -186,15 +185,14 @@ const selectedFile = (filename: string, fileFormat: string): void => {
 
 // > Load auxiliary file
 /**
- * Start loading an auxiliary file
+ * Start loading a XDATCAR auxiliary file
  *
  * @param filename - Selected filename
- * @param fileFormat - Format of the file to be read
  */
-const selectedAuxFile = (filename: string, fileFormat: string): void => {
+const selectedAuxFile = (filename: string): void => {
 
     askNode(id, "aux", {
-            format: fileFormat,
+            format: "XDATCAR",
             auxFileToRead: filename,
         })
         .then((params) => {
@@ -279,11 +277,11 @@ const filterForXDATCAR = (): string => JSON.stringify([{name: "XDATCAR", extensi
                 variant="solo-filled" hide-details="auto" clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
 
-  <g-select-file class="mt-2" :disabled="format === ''" title="Select input file" :filter="filterFromFormat(format)"
-                 :format="format" @selected="selectedFile" />
+  <g-select-file class="mt-2" :disabled="format === ''" title="Select input file"
+                 :filter="filterFromFormat(format)" @selected="selectedFile" />
 
   <g-select-file v-if="format === 'POSCAR + XDATCAR'" class="mt-2" :filter="filterForXDATCAR()"
-                 title="Select XDATCAR file" format="XDATCAR" @selected="selectedAuxFile"/>
+                 title="Select XDATCAR file" @selected="selectedAuxFile"/>
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
                 label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
