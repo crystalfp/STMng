@@ -6,13 +6,13 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-22
  */
-import {ref, toRefs} from "vue";
+import {ref} from "vue";
 import {mdiFileOutline} from "@mdi/js";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
 
 // > Properties and emits
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 
     /** Disable the widget */
     disabled?: boolean;
@@ -25,14 +25,10 @@ const props = defineProps<{
 
     /** JSON encoded filter for the file selector */
     filter: string;
-}>();
-
-const {
-    disabled=false,
-    title,
-    filter
-} = toRefs(props);
-const kind = props.kind ?? "load";
+}>(), {
+    disabled: false,
+    kind: "load"
+});
 
 const emit = defineEmits<{
     /** The file has been selected */
@@ -41,13 +37,17 @@ const emit = defineEmits<{
 
 /** Label to be show (the file selected) */
 const label = ref("");
+
 /** True if the file is loading */
 const inProgress = ref(false);
 
+/**
+ * Start selecting file by clicking on the widget
+ */
 const openSelector = (): void => {
 
     inProgress.value = true;
-    askNode("SYSTEM", "select", {kind, title: title.value, filter: filter.value})
+    askNode("SYSTEM", "select", {kind: props.kind, title: props.title, filter: props.filter})
         .then((params) => {
 
             const filename = params.filename as string;

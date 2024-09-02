@@ -16,8 +16,6 @@ overrides:
   - "**/*.vue"
   customSyntax: postcss-html
 
-ignoreFiles:
-  - src/styles/splitpanes.css
 
 reportNeedlessDisables: true
 

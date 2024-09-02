@@ -28,7 +28,7 @@ node_modules/.bin/typedoc \
 --excludeInternal \
 --sourceLinkTemplate "vscode://file/D:/Projects/STMng/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
-`/bin/find src -name "*.ts" -type f | grep -v "vite-env"`
+`/bin/find new -name "*.ts" -type f | grep -v "vite-env"`
 fi
 
 if [ $c != "t" ]

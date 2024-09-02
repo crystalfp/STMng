@@ -1,14 +1,13 @@
 module.exports = {
 
-	componentsRoot: "src",
+	componentsRoot: "new",
 	outDir: "doc/vue",
 	apiOptions: {
 		addScriptHandlers: [
             function (
                 documentation,
-                componentDefinition,
-                astPath,
-                opt
+                _componentDefinition,
+                astPath
             ) {
 
                 const cd = astPath.tokens.filter(

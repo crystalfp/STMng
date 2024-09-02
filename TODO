@@ -44,7 +44,6 @@ Nice to have/Future:
   ☐ Label color (contrasting with atom color)
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Rendering spheres using sprites (as in VMD)
-  ✘ Optimize using Int64Array and similia @cancelled(2024-08-26 19:14)
   ☐ Add tooltips
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
@@ -53,6 +52,8 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ In SelectFile use `withDefaults` @done(2024-09-02 04:14) @project(To do)
+  ✘ Optimize using Int64Array and similia @cancelled(2024-08-26 19:14) @project(Nice to have/Future)
   ✔ In structure writer, writing filename with extension gives filename with duplicated extension @done(2024-08-26 19:10) @project(Bugs)
   ✔ Review debouncing (see <https://dev.to/dipakahirav/top-20-javascript-tricks-and-tips-for-every-developer-3apb> section 14) @done(2024-08-21 05:23) @project(Porting)
   ✔ Use `bind()` in observer functions definitions @done(2024-08-20 18:19) @project(ToDo)

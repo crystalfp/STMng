@@ -236,9 +236,11 @@ export interface AtomAppearance {
 }
 
 /** Options object for the readers */
-interface ReaderOptions {
+export interface ReaderOptions {
+
 	/** Optional list of atoms types from the user */
 	atomsTypes?: string[];
+
 	/** Use Bohr measurement units instead of Angstroms */
 	useBohr?: boolean;
 }
@@ -255,7 +257,7 @@ export interface ReaderImplementation {
 	readStructure: (filename: string, options?: ReaderOptions) => Promise<Structure[]>;
 }
 
-/** Data to render an atom */
+/** Data needed to render an atom */
 export interface AtomRenderInfo {
 
     /** Atomic number */
@@ -292,14 +294,19 @@ export interface StructureRenderInfo {
 
 /** Parameters for the window creation */
 export interface WindowsParams {
-    /** The router path for the created window (should also be in src/router/index.ts) */
+
+    /** The router path for the created window (should also be in new/router/index.ts) */
     routerPath: string;
+
     /** Width of the window */
     width: number;
+
     /** Height of the window */
     height: number;
+
     /** Title of the window */
     title: string;
+
     /** Data to be passed to the window when it is ready */
     data?: string;
 }
@@ -318,22 +325,28 @@ export interface WriterImplementation {
 }
 
 /** Selected atoms data for measure */
-interface SelectedAtoms {
+export interface SelectedAtoms {
+
     /** Atom index in the structure */
     index: number;
+
     /** Label for the selected atom */
     label: string;
+
     /** Atomic symbol */
     symbol: string;
+
     /** Color to distinguish the selected atom */
     color: string;
+
     /** Position of the atom */
     position: PositionType;
+
     /** Covalent radius of the atom */
     radius: number;
 }
 
-/** Accept string for file selector */
+/** Accept string for the file selector */
 export interface FileFilter {
 
     /** Name of the filter */
