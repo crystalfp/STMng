@@ -109,31 +109,50 @@ export class ReaderPOSCAR implements ReaderImplementation {
 				case LineType.counts: {
 					const fields = line.trim().split(/ +/);
 					if(/\d+/.test(fields[0])) {
-						let atomZ = 1;
-						const hasSymbols = atomsZ.length > 0;
-						atomsCount.length = 0;
-						let idx = 0;
+						// Line with atoms count. Put them in an array
 						for(const field of fields) {
 							const count = Number.parseInt(field);
 							atomsCount.push(count);
-							if(!hasSymbols) {
-								if(options?.atomsTypes?.length) {
-									atomsZ.push(getAtomicNumber(options.atomsTypes[idx]));
-									++idx;
-									if(idx === options.atomsTypes.length) idx = 0;
-								}
-								else {
-									atomsZ.push(atomZ);
-									++atomZ;
+						}
+
+						// Already has the atoms types
+						if(atomsZ.length > 0) {
+							lineType = LineType.direct;
+							break;
+						}
+
+						// If has types from the UI
+						const countAtomsTypes = atomsCount.length;
+						if(options?.atomsTypes?.length) {
+							const {atomsTypes} = options;
+							for(const atomType of atomsTypes) {
+								atomsZ.push(getAtomicNumber(atomType));
+							}
+
+							// Not sufficient substitutes
+							const countSubstituteTypes = atomsTypes.length;
+							if(countSubstituteTypes < countAtomsTypes) {
+								let nextAtomZ = Math.max(...atomsZ) + 1;
+								for(let i=countSubstituteTypes; i < countAtomsTypes; ++i) {
+									atomsZ.push(nextAtomZ);
+									++nextAtomZ;
 								}
 							}
 						}
+						else {
+							// Has no types from the UI
+							for(let atomZ=1; atomZ <= countAtomsTypes; ++atomZ) {
+								atomsZ.push(atomZ);
+							}
+						}
+
 						lineType = LineType.direct;
 					}
 					else {
 						for(const field of fields) {
 							atomsZ.push(getAtomicNumber(field));
 						}
+						// No new lineType. Read the number of atoms per type
 					}
 					break;
 				}

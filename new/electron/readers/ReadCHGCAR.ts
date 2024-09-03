@@ -8,7 +8,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
+import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "../../types";
@@ -43,7 +43,6 @@ export class ReaderCHGCAR implements ReaderImplementation {
 		let lineType: LineType = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
-		const atomsKinds: string[] = [];
 		const atomsZ: number[] = [];
 		let currentIdx = 0;
 		let currentCount = 0;
@@ -111,35 +110,50 @@ export class ReaderCHGCAR implements ReaderImplementation {
 				case LineType.counts: {
 					const fields = line.trim().split(/ +/);
 					if(/\d+/.test(fields[0])) {
-						let atomZ = 1;
-						const hasSymbols = atomsZ.length > 0;
-						atomsCount.length = 0;
-						let idx = 0;
+						// Line with atoms count. Put them in an array
 						for(const field of fields) {
 							const count = Number.parseInt(field);
 							atomsCount.push(count);
-							if(!hasSymbols) {
-								if(options?.atomsTypes?.length) {
-									const {atomsTypes} = options;
-									atomsZ.push(getAtomicNumber(atomsTypes[idx]));
-									atomsKinds.push(atomsTypes[idx]);
-									++idx;
-									if(idx === atomsTypes.length) idx = 0;
-								}
-								else {
-									atomsZ.push(atomZ);
-									atomsKinds.push(getAtomicSymbol(atomZ));
-									++atomZ;
+						}
+
+						// Already has the atoms types
+						if(atomsZ.length > 0) {
+							lineType = LineType.direct;
+							break;
+						}
+
+						// If has types from the UI
+						const countAtomsTypes = atomsCount.length;
+						if(options?.atomsTypes?.length) {
+							const {atomsTypes} = options;
+							for(const atomType of atomsTypes) {
+								atomsZ.push(getAtomicNumber(atomType));
+							}
+
+							// Not sufficient substitutes
+							const countSubstituteTypes = atomsTypes.length;
+							if(countSubstituteTypes < countAtomsTypes) {
+								let nextAtomZ = Math.max(...atomsZ) + 1;
+								for(let i=countSubstituteTypes; i < countAtomsTypes; ++i) {
+									atomsZ.push(nextAtomZ);
+									++nextAtomZ;
 								}
 							}
 						}
+						else {
+							// Has no types from the UI
+							for(let atomZ=1; atomZ <= countAtomsTypes; ++atomZ) {
+								atomsZ.push(atomZ);
+							}
+						}
+
 						lineType = LineType.direct;
 					}
 					else {
 						for(const field of fields) {
-							atomsKinds.push(field);
 							atomsZ.push(getAtomicNumber(field));
 						}
+						// No new line type. Read the number of atoms per type
 					}
 					break;
 				}
@@ -183,7 +197,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					const atomZ = atomsZ[currentIdx];
 					const atom: Atom = {
 						atomZ,
-						label: atomsKinds[currentIdx],
+						label: `Atom${currentIdx}`,
 						position
 					};
 					structures[currentStructure].atoms.push(atom);

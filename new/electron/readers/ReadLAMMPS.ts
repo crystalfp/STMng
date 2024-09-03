@@ -103,12 +103,19 @@ export class ReaderLAMMPS implements ReaderImplementation {
 		}
 
 		// Assign the atoms types
-		if(options?.atomsTypes && options.atomsTypes.length > 0) {
+		if(options?.atomsTypes?.length) {
 
+			let maxAtomZ = 0;
 			for(let idx=1, idxt=0; idx <= ntypes; ++idx) {
 				if(correspond[idx]) {
-					correspond[idx] = getAtomicNumber(options.atomsTypes[idxt++]);
-					if(idxt >= options.atomsTypes.length) idxt = 0;
+
+					if(idxt < options.atomsTypes.length) {
+						correspond[idx] = getAtomicNumber(options.atomsTypes[idxt++]);
+						if(correspond[idx] > maxAtomZ) maxAtomZ = correspond[idx];
+					}
+					else {
+						correspond[idx] = ++maxAtomZ;
+					}
 				}
 			}
 		}

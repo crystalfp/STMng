@@ -11,13 +11,7 @@ import {ref, watch} from "vue";
 import {mdiMinus, mdiPlus} from "@mdi/js";
 
 // > Properties
-const {
-    min = 0,
-    max = 10,
-    step = 1,
-    timeout = 500,
-    disabled = false
-} = defineProps<{
+const props = withDefaults(defineProps<{
 
     /** Minimum value for the slider */
     min?: number;
@@ -34,13 +28,19 @@ const {
     /** Slider disable */
     disabled?: boolean;
 
-}>();
+}>(), {
+    min: 0,
+    max: 10,
+    step: 1,
+    timeout: 500,
+    disabled: false
+});
 
 /** Returning the debounced slider value */
 const value = defineModel<number>();
 
-const valueToDebounce = ref(value.value ?? min);
-watch(value, () => valueToDebounce.value = value.value ?? min);
+const valueToDebounce = ref(value.value ?? props.min);
+watch(value, () => valueToDebounce.value = value.value ?? props.min);
 
 let debouncingTimeoutId: NodeJS.Timeout;
 watch(valueToDebounce, () => {
@@ -49,7 +49,7 @@ watch(valueToDebounce, () => {
 
     debouncingTimeoutId = setTimeout(() => {
         value.value = valueToDebounce.value;
-    }, timeout);
+    }, props.timeout);
 });
 
 /**
@@ -57,9 +57,9 @@ watch(valueToDebounce, () => {
  */
 const decrement = (): void => {
 
-    let vv = valueToDebounce.value ?? min;
-    vv -= step;
-    if(vv < min) vv = min;
+    let vv = valueToDebounce.value ?? props.min;
+    vv -= props.step;
+    if(vv < props.min) vv = props.min;
     valueToDebounce.value = vv;
 };
 
@@ -68,9 +68,9 @@ const decrement = (): void => {
  */
 const increment = (): void => {
 
-    let vv = valueToDebounce.value ?? min;
-    vv += step;
-    if(vv > max) vv = max;
+    let vv = valueToDebounce.value ?? props.min;
+    vv += props.step;
+    if(vv > props.max) vv = props.max;
     valueToDebounce.value = vv;
 };
 

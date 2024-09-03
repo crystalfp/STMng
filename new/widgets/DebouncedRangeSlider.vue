@@ -10,12 +10,7 @@
 import {ref, watch} from "vue";
 
 // > Properties
-const {
-    min = 0,
-    max = 10,
-    step = 1,
-    timeout = 500
-} = defineProps<{
+const props = withDefaults(defineProps<{
 
     /** Minimum value for the slider */
     min?: number;
@@ -29,12 +24,17 @@ const {
     /** Timeout for debouncing (in milliseconds) */
     timeout?: number;
 
-}>();
+}>(), {
+    min: 0,
+    max: 10,
+    step: 1,
+    timeout: 500
+});
 
 /** Returning the debounced slider value */
 const value = defineModel<number[]>();
 
-const limitsToDebounce = ref<number[]>(value.value ?? [min, max]);
+const limitsToDebounce = ref<number[]>(value.value ?? [props.min, props.max]);
 watch(value, () => {
 
     if(value.value) {
@@ -42,8 +42,8 @@ watch(value, () => {
         limitsToDebounce.value[1] = value.value[1];
     }
     else {
-        limitsToDebounce.value[0] = min;
-        limitsToDebounce.value[1] = max;
+        limitsToDebounce.value[0] = props.min;
+        limitsToDebounce.value[1] = props.max;
     }
 });
 
@@ -55,7 +55,7 @@ watch(limitsToDebounce, () => {
     debouncingTimeoutId = setTimeout(() => {
         value.value![0] = limitsToDebounce.value[0];
         value.value![1] = limitsToDebounce.value[1];
-    }, timeout);
+    }, props.timeout);
 });
 
 </script>
