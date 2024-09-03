@@ -7,9 +7,10 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition, PositionType, BasisType, Volume} from "../../types";
 import {adjustOrigin} from "../modules/AdjustOrigin";
 import {sendVerticesToClient} from "../modules/WindowsUtilities";
+import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
+			 PositionType, BasisType, Volume} from "../../types";
 
 export class DrawUnitCell extends NodeCore {
 

@@ -89,7 +89,7 @@ export const setupMenu = (): void => {
                 {
                     label: "Show project",
                     click() {
-                        createProjectEditor();
+                        createProjectEditor(pm.getProjectName());
                     }
                 },
                 {type: "separator"},

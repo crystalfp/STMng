@@ -6,7 +6,6 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import log from "electron-log";
 import type {BasisType, PositionType, Structure} from "../../types";
 
 /**
@@ -154,10 +153,7 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
 				b[2] * (b[3] * b[7] - b[4] * b[6]);
 
 	// Check if the determinant is zero, which means the matrix is not invertible
-	if(det === 0) {
-		log.error("Basis matrix is not invertible");
-		return [];
-	}
+	if(det === 0) throw Error("Basis matrix is not invertible");
 
 	// Compute the inverse basis matrix
 	const invDet = 1 / det;

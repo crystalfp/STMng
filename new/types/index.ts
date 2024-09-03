@@ -20,13 +20,13 @@ export type BasisType = [
 ];
 
 /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
-export type BondType = "h" | "n" | "x";
+type BondType = "h" | "n" | "x";
 
 /** One atom in the structure or in the structure of one step */
 export interface Atom {
 
     /** Atomic number */
-    atomZ:  number;
+    atomZ: number;
 
     /** Label for the atom */
     label: string;
@@ -89,12 +89,12 @@ export interface Structure {
 
 // > The project structure
 /** Project structure */
-export interface GraphNode {
+interface GraphNode {
 
     /** The label that appears on the node selector */
 	label: string;
 
-    /** The type of the node (valid values in NodeInfo.ts) */
+    /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
 	type: string;
 
     /** Comma separated list of node ids from which the node takes inputs */
@@ -102,7 +102,7 @@ export interface GraphNode {
 }
 
 /** The graph structure as read from file */
-export type ProjectGraph = Record<string, GraphNode>; // The key is the node id
+type ProjectGraph = Record<string, GraphNode>; // The key is the node id
 
 /** Type of the node state variables */
 export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>;
@@ -159,7 +159,7 @@ export interface UiInfo {
 	/** The name of the node ui component */
 	ui: string;
 
-	/** "out" generates graphical output, "in" the viewer, "none" is pure computation */
+	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
 	graphic: "none" | "in" | "out";
 
     /** Channels names to communicate with the node */
@@ -176,7 +176,7 @@ export interface ClientProjectInfoItem {
     /** The label that appears on the node selector */
 	label: string;
 
-    /** The type of the node (valid values in NodeInfo.ts) */
+    /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
 	type: string;
 
     /** Comma separated list of node ids from which the node takes inputs */
@@ -185,14 +185,11 @@ export interface ClientProjectInfoItem {
 	/** The name of the node ui component */
 	ui: string;
 
-	/** "out" generates graphical output, "in" the viewer, "none" is pure computation */
+	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
 	graphic: "none" | "in" | "out";
 
     /** Channels names to communicate with the node */
     channels: string[];
-
-    /** Project name (empty string for default project). It is redundant, but it is the simplest way to send it */
-    project: string;
 }
 
 /** List of ui modules descriptions to the client */

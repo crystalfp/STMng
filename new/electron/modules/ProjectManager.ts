@@ -214,7 +214,6 @@ class ProjectManager {
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
 				channels: uiInfo.channels,
-				project: this.projectName,
 			};
 			clientProjectInfo[entry] = info;
 		}
@@ -367,6 +366,15 @@ class ProjectManager {
 		}
 		this.loadProject(filename, loadedDefaultProject);
 		return loadedDefaultProject;
+	}
+
+	/**
+	 * Return the project name
+	 *
+	 * @returns The project name or an empty string for the default project
+	 */
+	getProjectName(): string {
+		return this.projectName;
 	}
 
 	// > Access the singleton instance

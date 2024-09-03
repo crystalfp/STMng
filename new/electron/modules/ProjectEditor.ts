@@ -13,13 +13,15 @@ import {createSecondaryWindow, isSecondaryWindowOpen, sendToSecondaryWindow} fro
 /**
  * Create the project editor/viewer window
  */
-export const createProjectEditor = (): void => {
+export const createProjectEditor = (projectName: string): void => {
+
+	const title = projectName === "" ? "View default project" : `View "${projectName}" project`;
 
 	createSecondaryWindow(undefined, {
 		routerPath: "/editor",
 		width: 1700,
 		height: 900,
-		title: "View loaded project",
+		title,
 		data: pm.projectGraphForEditor()
 	});
 };

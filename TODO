@@ -1,9 +1,7 @@
 To do:
-  ☐ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines
   ☐ Finish help
-  ☐ Put the project name in the project viewer
-  ☐ Structure writer: unify `continuous` and start button. Put it in EnableCapture.
-  ☐ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}`
+  ☐ Structure writer: unify `continuous` and start button. Put it in EnableCapture
+  ☐ Disable find symmetries if the structure contains volumetric data
 
 Bugs:
   ☐ Energy file: fix disappearing file name
@@ -27,6 +25,7 @@ ToDo eventually:
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
+  ☐ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}`
 
 Study:
   ☐ Check the order of entries in objects
@@ -52,6 +51,8 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ Put the project name in the project viewer @done(2024-09-03 16:28) @project(To do)
+  ✔ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines @done(2024-09-03 15:39) @project(To do)
   ✔ In SelectFile use `withDefaults` @done(2024-09-02 04:14) @project(To do)
   ✘ Optimize using Int64Array and similia @cancelled(2024-08-26 19:14) @project(Nice to have/Future)
   ✔ In structure writer, writing filename with extension gives filename with duplicated extension @done(2024-08-26 19:10) @project(Bugs)

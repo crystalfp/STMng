@@ -8,10 +8,13 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType} from "../../types";
-import {createSecondaryWindow, isSecondaryWindowOpen, sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {createSecondaryWindow, isSecondaryWindowOpen,
+		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
+import {cartesianToFractionalCoordinates} from "../modules/Helpers";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType} from "../../types";
 
+/** Type of the native code output */
 interface NativeOutput {
 	spaceGroup: string;
 	basis: Float64Array;
@@ -161,7 +164,14 @@ export class ComputeSymmetries extends NodeCore {
 		}
 
 		// Prepare parameters for the computational part
-		const fractionalCoordinates = this.computeFractionalCoordinates(this.inputStructure);
+		let fractionalCoordinates: number[] = [];
+		try {
+			fractionalCoordinates = cartesianToFractionalCoordinates(this.inputStructure);
+		}
+		catch {
+			sendAlertMessage("Basis matrix is not invertible", "symmetries");
+			fractionalCoordinates = [];
+		}
 		if(fractionalCoordinates.length === 0) {
 			this.notify(this.inputStructure);
 			this.showComputedSymmetry();
@@ -227,65 +237,6 @@ export class ComputeSymmetries extends NodeCore {
 			outSymmetry
 		});
 		sendToSecondaryWindow(undefined, {routerPath: "/symmetries", data: dataToSend});
-	}
-
-	// > Compute the atoms' fractional coordinates
-	/**
-	 * Compute the structure atoms' fractional coordinates
-	 *
-	 * @param structure - The structure whose atoms' coordinates should be transformed into fractional coordinates
-	 * @returns The array of fractional coordinates
-	 */
-	private computeFractionalCoordinates(structure: Structure): number[] {
-
-		// Access the structure basis and atoms cartesian coordinates
-		const {crystal, atoms} = structure;
-		const b = crystal.basis;
-
-		// Compute the determinant of the matrix
-		const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
-					b[1] * (b[3] * b[8] - b[5] * b[6]) +
-					b[2] * (b[3] * b[7] - b[4] * b[6]);
-
-		// Check if the determinant is zero, which means the matrix is not invertible
-		if(det === 0) {
-			sendAlertMessage("Basis matrix is not invertible", "symmetries");
-			return [];
-		}
-
-		// Compute the inverse basis matrix
-		const invDet = 1 / det;
-		const inverse = [
-            (b[4] * b[8] - b[5] * b[7]) * invDet,
-            (b[2] * b[7] - b[1] * b[8]) * invDet,
-            (b[1] * b[5] - b[2] * b[4]) * invDet,
-            (b[5] * b[6] - b[3] * b[8]) * invDet,
-            (b[0] * b[8] - b[2] * b[6]) * invDet,
-            (b[2] * b[3] - b[0] * b[5]) * invDet,
-            (b[3] * b[7] - b[4] * b[6]) * invDet,
-            (b[1] * b[6] - b[0] * b[7]) * invDet,
-            (b[0] * b[4] - b[1] * b[3]) * invDet
-        ];
-
-		// For each atom compute the fractional coordinates
-		const natoms = atoms.length;
-		const fractionalCoords = Array(natoms*3).fill(0) as number[];
-
-		const {origin} = crystal;
-
-		for(let i=0; i < natoms; ++i) {
-
-			const {position} = atoms[i];
-			const cx = position[0] - origin[0];
-			const cy = position[1] - origin[1];
-			const cz = position[2] - origin[2];
-
-			fractionalCoords[i*3]   = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
-			fractionalCoords[i*3+1] = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
-			fractionalCoords[i*3+2] = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
-		}
-
-		return fractionalCoords;
 	}
 
 	// > Fill unit cell
