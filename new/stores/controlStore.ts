@@ -21,13 +21,16 @@ interface GlobalControls {
 	movie: boolean;
 	stl: boolean;
 
+	/** Capture for multistep structures */
 	fingerprintsAccumulate: boolean;
 	trajectoriesRecording: boolean;
+	writerAccumulate: boolean;
 
 	/** Set if a functionality is present to add its control in StructureReader */
 	hasCapture: boolean;
 	hasTrajectory: boolean;
 	hasFingerprints: boolean;
+	hasWriter: boolean;
 
 	/** Atoms/polyhedra selection */
 	atomsSelected: number[];
@@ -50,10 +53,12 @@ export const useControlStore = defineStore("ControlStore", {
 
 		fingerprintsAccumulate: false,
 		trajectoriesRecording: false,
+		writerAccumulate: false,
 
 		hasCapture: false,
 		hasFingerprints: false,
 		hasTrajectory: false,
+		hasWriter: false,
 
 		atomsSelected: [],
 		polyhedronCurrentIdx: undefined,

@@ -9,6 +9,7 @@
 
 import {ref, computed} from "vue";
 import {useMessageStore} from "../stores/messageStore";
+import {useControlStore} from "../stores/controlStore";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
 
@@ -23,13 +24,16 @@ const {id} = defineProps<{
 const messageStore = useMessageStore();
 messageStore.structureWriter.message = "";
 
-/** Formats that could be loaded */
-const fileFormats = ["CHGCAR", "CIF", "POSCAR", "XYZ"];
+// Show this module has been loaded and access the control store
+const controlStore = useControlStore();
+controlStore.hasWriter = true;
+
+/** Formats that could be saved */
+const fileFormats = ["CHGCAR", "CIF", "POSCAR", "Shel-X", "XYZ"];
 
 const format         = ref("");
 const outputFile     = ref("");
 const outputFileFull = ref("");
-const inProgress     = ref(false);
 const continuous     = ref(false);
 const finish         = ref(false);
 
@@ -52,7 +56,7 @@ askNode(id, "init").then((params) => {
 /** Define the label for the capture button */
 const captureButtonLabel = computed(() => {
 
-    if(continuous.value) return inProgress.value ? "Stop" : "Start";
+    if(continuous.value) return controlStore.writerAccumulate ? "Stop" : "Start";
     return "Capture";
 });
 
@@ -63,22 +67,22 @@ const startStopCapture = (): void => {
 
     if(continuous.value) {
 
-        inProgress.value = !inProgress.value;
+        controlStore.writerAccumulate = !controlStore.writerAccumulate;
         askNode(id, "write", {
                         continuous: true,
-                        inProgress: inProgress.value,
+                        inProgress: controlStore.writerAccumulate,
                         format: format.value,
                         filename: outputFileFull.value
             })
             .then((params) => {
                 if("error" in params) throw Error(params.error as string);
-                finish.value = !inProgress.value;
+                finish.value = !controlStore.writerAccumulate;
             })
             .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
                                                       "structureWriter"));
     }
     else {
-        inProgress.value = true;
+        controlStore.writerAccumulate = true;
         askNode(id, "write", {
                         continuous: false,
                         format: format.value,
@@ -90,7 +94,7 @@ const startStopCapture = (): void => {
             })
             .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
                                                       "structureWriter"))
-            .finally(() => inProgress.value = false);
+            .finally(() => controlStore.writerAccumulate = false);
     }
 };
 
@@ -163,7 +167,7 @@ const selectedSaveFile = (filename: string): void => {
 
   <v-row class="mt-10">
     <v-switch v-model="continuous" color="primary" label="Continuous write"
-              density="compact" class="ml-6 mr-5" :disabled="inProgress" />
+              density="compact" class="ml-6 mr-5" :disabled="controlStore.writerAccumulate" />
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>

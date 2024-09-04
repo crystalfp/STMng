@@ -1,6 +1,5 @@
 To do:
   ☐ Finish help
-  ☐ Structure writer: unify `continuous` and start button. Put it in EnableCapture
   ☐ Disable find symmetries if the structure contains volumetric data
 
 Bugs:
@@ -51,6 +50,7 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ Structure writer: unify `continuous` and start button. Put it in EnableCapture @done(2024-09-04 05:42) @project(To do)
   ✔ Put the project name in the project viewer @done(2024-09-03 16:28) @project(To do)
   ✔ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines @done(2024-09-03 15:39) @project(To do)
   ✔ In SelectFile use `withDefaults` @done(2024-09-02 04:14) @project(To do)

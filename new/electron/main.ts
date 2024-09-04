@@ -10,7 +10,7 @@
 import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
 import {Command, Option} from "commander";
-import pkg from "../../package.json";
+import {version, description} from "../../package.json";
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
@@ -24,8 +24,8 @@ import {pm} from "./modules/ProjectManager";
 // > Command line parsing
 const program = new Command("STMng");
 program
-    .version(pkg.version)
-    .description(pkg.description)
+    .version(version)
+    .description(description)
     .usage("[options] [project-file]")
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
@@ -56,7 +56,7 @@ log.eventLogger.startLogging();
 
 // Handle uncaught errors
 process.on("uncaughtException", (event) => {
-	log.error("Unhandled exception:", event.message);
+	log.error(`Unhandled exception: ${event.message}\n`, event.stack);
 });
 
 process.on("unhandledRejection", (event: PromiseRejectionEvent) => {

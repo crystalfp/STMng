@@ -115,7 +115,6 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
 }
 
 .layout-west {
-  /* box-sizing: border-box; */
   overflow: hidden;
   display: flex;
   flex-direction: column;

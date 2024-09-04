@@ -23,5 +23,7 @@ const controlStore = useControlStore();
             color="primary" label="Record trajectories" density="compact" class="mt-n5" />
   <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
             color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5" />
+  <v-switch v-if="controlStore.hasWriter" v-model="controlStore.writerAccumulate"
+            color="primary" label="Collect for structure writer" density="compact" class="mt-n5" />
 </v-container>
 </template>
