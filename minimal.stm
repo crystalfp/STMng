@@ -29,10 +29,15 @@
       "type": "draw-polyhedra",
       "in": "bonds"
     },
+		"smooth": {
+      "label": "Interpolate",
+      "type": "interpolate-volume",
+      "in": "unit"
+    },
     "ortho": {
       "label": "Orthoslice",
       "type": "orthoslice",
-      "in": "unit"
+      "in": "smooth"
     },
     "viewer": {
       "label": "Viewer",
@@ -109,8 +114,8 @@
   "ui": {
     "reader": {
       "loopSteps": false,
-      "format": "XYZ",
-      "atomsTypes": "Fe O",
+      "format": "CHGCAR",
+      "atomsTypes": "Mg C O",
       "useBohr": true
     },
     "symmetry": {
@@ -167,6 +172,10 @@
       "showPolyhedra": true,
       "colorByCenterAtom": true,
       "opacityByCenterAtom": 0.5
+    },
+    "smooth": {
+      "interpolateVolume": true,
+      "pointsToAdd": 1
     },
     "ortho": {
       "dataset": 0,

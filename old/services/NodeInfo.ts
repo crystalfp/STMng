@@ -17,7 +17,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
-import {InterpolateVolume} from "@/nodes/InterpolateVolume";
 import {ComputeFingerprints} from "@/nodes/ComputeFingerprints";
 
 interface NodeParts {
@@ -108,7 +107,6 @@ export class NodeInfo {
 				map.set(id, new Isosurface(id));
 				break;
 			case "interpolate-volume":
-				map.set(id, new InterpolateVolume(id));
 				break;
 			case "compute-fingerprints":
 				map.set(id, new ComputeFingerprints(id));
@@ -245,8 +243,6 @@ export class NodeInfo {
 					uiStatus += (node as Isosurface).saveStatus();
 					break;
 				case "interpolate-volume":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as InterpolateVolume).saveStatus();
 					break;
 				case "compute-fingerprints":
 					if(notFirst) uiStatus += ",";

@@ -8,7 +8,9 @@
  */
 
 import {ref, watchEffect} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
+import type {CtrlParams} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -22,14 +24,20 @@ const pointsToAdd = ref(1);
 const dataset = ref(0);
 const maxDataset = ref(0);
 
-sb.getUiParams(id, (params: UiParams) => {
-    interpolateVolume.value = params.interpolateVolume as boolean ?? false;
-    pointsToAdd.value = params.pointsToAdd as number ?? 1;
-    dataset.value = params.dataset as number ?? 0;
+askNode(id, "init")
+    .then((params) => {
+
+		interpolateVolume.value = params.interpolateVolume as boolean ?? false;
+		pointsToAdd.value = params.pointsToAdd as number ?? 1;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for InterpolateVolume: ${error.message}`));
+
+receiveFromNode(id, "maxDataset", (params: CtrlParams) => {
     maxDataset.value = params.maxDataset as number ?? 0;
 });
+
 watchEffect(() => {
-    sb.setUiParams(id, {
+    sendToNode(id, "change", {
         interpolateVolume: interpolateVolume.value,
         pointsToAdd: pointsToAdd.value,
         dataset: dataset.value,

@@ -5,6 +5,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-09-05
  */
 /* eslint-disable eslint-comments/disable-enable-pair, @alasdair/max-len/max-len, id-length */
 
