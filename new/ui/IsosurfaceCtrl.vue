@@ -96,8 +96,8 @@ watchEffect(() => {
     </g-debounced-slider>
     <g-debounced-range-slider v-slot="{values}" v-model="limits"
                               :step="step" :min="valueMin" :max="valueMax"
-                              class="mt-1 pr-2">
-      <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`" class="ml-2"/>
+                              class="ml-4 mt-1 pr-4">
+      <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`" class="ml-n2"/>
     </g-debounced-range-slider>
     <v-switch v-model="limitColormap" color="primary" label="Limit colormap to range"
               density="compact" class="mt-1 ml-3" />

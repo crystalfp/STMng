@@ -95,7 +95,12 @@ export class DrawOrthoslice extends NodeCore {
 			this.limitLow = this.valueRange[0];
 			this.limitHigh = this.valueRange[1];
 
-			this.computeOrthoslice();
+            // Check if the plane should be created
+            if((this.showOrthoslice || this.showIsolines) &&
+                this.structure.volume[this.dataset].values.length > 0) {
+
+                this.computeOrthoslice();
+            }
 
 			sendIsoOrthoToClient(this.id, "computed",
                                 {
@@ -251,14 +256,9 @@ export class DrawOrthoslice extends NodeCore {
      */
 	private computeOrthoslice(): void {
 
-        // Check if the plane should be created
-        if((!this.showOrthoslice && !this.showIsolines) ||
-           !this.structure?.volume ||
-            this.structure.volume[this.dataset].values.length === 0) return;
-
         // Access the needed values
-        const {basis, origin} = this.structure.crystal;
-        const {sides, values} = this.structure.volume[this.dataset];
+        const {basis, origin} = this.structure!.crystal;
+        const {sides, values} = this.structure!.volume[this.dataset];
 
         // Create the isolines values
         if(this.useColorClasses) {
@@ -367,7 +367,13 @@ export class DrawOrthoslice extends NodeCore {
         this.limitLow = params.limitLow as number ?? -10;
         this.limitHigh = params.limitHigh as number ?? 10;
 
-		this.computeOrthoslice();
+        // Check if the plane should be created
+        if((this.showOrthoslice || this.showIsolines) &&
+            this.structure &&
+            this.structure.volume[this.dataset].values.length > 0) {
+
+            this.computeOrthoslice();
+        }
 
         sendIsoOrthoToClient(this.id, "computed",
                             {

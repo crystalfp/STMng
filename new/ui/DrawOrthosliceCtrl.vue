@@ -196,9 +196,6 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
     currentIsolineVertices = isolineVertices;
     currentIsolineValues = isolineValues;
 
-    console.log("RECV", vertices?.length, indices?.length, values?.length,
-                isolineVertices?.length, isolineValues?.length); // TBD
-
     // Draw orthoslice and isolines
     drawOrthoIso(vertices, indices, values, isolineVertices, isolineValues);
 });
@@ -229,9 +226,6 @@ watchEffect(() => {
         colorIsolines: colorIsolines.value,
     });
 
-    console.log("SHOW", currentVertices?.length, currentIndices?.length, currentValues?.length,
-                currentIsolineVertices?.length, currentIsolineValues?.length); // TBD
-
     // Draw orthoslice and isolines
     drawOrthoIso(currentVertices, currentIndices, currentValues,
                  currentIsolineVertices, currentIsolineValues);
@@ -261,9 +255,11 @@ watchEffect(() => {
     <v-label :text="`Plane (${value})`" />
   </g-debounced-slider>
 
-  <v-label :text="`Values range (${humanFormat(limits[0])} – ${humanFormat(limits[1])})`" class="ml-2" />
-  <v-range-slider v-model="limits" strict :step="step" :min="valueMin" :max="valueMax"
-                  color="primary" class="ml-4 mt-1 pr-2" />
+  <g-debounced-range-slider v-slot="{values}" v-model="limits"
+                            :step="step" :min="valueMin" :max="valueMax"
+                            class="ml-4 mt-1 pr-4">
+    <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`" class="ml-n2" />
+  </g-debounced-range-slider>
 
   <v-switch v-model="useColorClasses" color="primary"
             label="Use discrete classes" density="compact" class="ml-3" />
