@@ -27,8 +27,9 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 	panelList.value.length = 0;
 	for(const id in clientProjectInfo) {
 
-		uiList.value.push(clientProjectInfo[id]);
-		const {ui} = clientProjectInfo[id];
+		const info = clientProjectInfo[id];
+		uiList.value.push(info);
+		const {ui} = info;
 
 		panelList.value.push(markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`))));
 	}

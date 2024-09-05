@@ -44,7 +44,6 @@ export class Isolines {
 	 * @param volume - The volumetric data
 	 * @param sides - The dimensions of the volumetric data
 	 * @param isoValues - The list of isoValues for which the isolines should be computed
-	 * @param colors - Colors of the isolines. If missing the isolines will be black
 	 */
 	constructor(private readonly volume: number[],
 				private readonly sides: PositionType,

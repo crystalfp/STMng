@@ -379,8 +379,8 @@ export const sendVerticesToClient = (id: string, channel: string, vertices: numb
 export const sendIsoOrthoToClient = (id: string,
                                      channel: string,
                                      data: {
-                                        sides: number[];
                                         vertices: number[];
+                                        indices: number[];
                                         values: number[];
                                         isolineVertices: number[][];
                                         isolineValues: number[];
@@ -388,8 +388,8 @@ export const sendIsoOrthoToClient = (id: string,
                                      }): void => {
 
     mainWin.webContents.send(`${id}:${channel}`,
-                             data.sides,
                              data.vertices,
+                             data.indices,
                              data.values,
                              data.isolineVertices,
                              data.isolineValues,

@@ -1,6 +1,6 @@
 /**
  * Compute an orthoslice of the volumetric data.
- * If requested show also the isolines on it.
+ * If requested show also isolines on it.
  *
  * @packageDocumentation
  *
@@ -11,7 +11,8 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendIsoOrthoToClient} from "../modules/WindowsUtilities";
 import {Isolines} from "../modules/Isolines";
 
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, PositionType, BasisType} from "../../types";
+import type {Structure, UiInfo, CtrlParams,
+             ChannelDefinition, PositionType, BasisType} from "../../types";
 
 export class DrawOrthoslice extends NodeCore {
 
@@ -35,10 +36,13 @@ export class DrawOrthoslice extends NodeCore {
 	private isolineValues: number[] = [];
 	private isolinesVertices: number[][] = [];
 	private readonly orthoValues: number[] = [];
-
+	private readonly orthoVertices: number[] = [];
+	private readonly orthoIndices: number[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "change",    type: "send",   callback: this.channelChange.bind(this)},
+		{name: "show",      type: "send",   callback: this.channelShow.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -50,6 +54,7 @@ export class DrawOrthoslice extends NodeCore {
 
 		this.structure = data;
 		const countDatasets = this.structure?.volume ? this.structure.volume.length : 0;
+
 		if(countDatasets === 0) {
 
 			this.dataset = 0;
@@ -61,26 +66,22 @@ export class DrawOrthoslice extends NodeCore {
 			this.limitLow = -10;
 			this.limitHigh = 10;
 
-			sendIsoOrthoToClient(this.id,
-                                 "computed",
-                                 {
-                                    sides: [],
+			sendIsoOrthoToClient(this.id, "computed",
+                                {
                                     vertices: [],
+                                    indices: [],
                                     values: [],
                                     isolineVertices: [],
                                     isolineValues: [],
                                     params: {
-                                        dataset: this.dataset,
-                                        axis: this.axis,
-                                        plane: this.plane,
                                         maxDataset: this.maxDataset,
                                         maxPlane: this.maxPlane,
+                                        valueMin: this.valueRange[0],
+                                        valueMax: this.valueRange[1],
                                         limitLow: this.limitLow,
                                         limitHigh: this.limitHigh,
-                                        valueMin: this.limitLow,
-                                        valueMax: this.limitHigh,
 								    }
-                                 });
+                                });
 		}
 		else {
 			this.dataset = 0;
@@ -96,26 +97,22 @@ export class DrawOrthoslice extends NodeCore {
 
 			this.computeOrthoslice();
 
-			sendIsoOrthoToClient(this.id,
-                                 "computed",
-                                                                  {
-                                    sides: this.structure.volume[0].sides,
-                                    vertices: [],
+			sendIsoOrthoToClient(this.id, "computed",
+                                {
+                                    vertices: this.orthoVertices,
+                                    indices: this.orthoIndices,
                                     values: this.orthoValues,
                                     isolineVertices: this.isolinesVertices,
                                     isolineValues: this.isolineValues,
                                     params: {
-                                        dataset: this.dataset,
-                                        axis: this.axis,
-                                        plane: this.plane,
                                         maxDataset: this.maxDataset,
                                         maxPlane: this.maxPlane,
+                                        valueMin: this.valueRange[0],
+                                        valueMax: this.valueRange[1],
                                         limitLow: this.limitLow,
                                         limitHigh: this.limitHigh,
-                                        valueMin: this.limitLow,
-                                        valueMax: this.limitHigh,
 								    }
-                                 });
+                                });
 		}
 	}
 
@@ -127,8 +124,6 @@ export class DrawOrthoslice extends NodeCore {
 			plane: this.plane,
 			showOrthoslice: this.showOrthoslice,
 			colormapName: this.colormapName,
-			limitLow: this.limitLow,
-			limitHigh: this.limitHigh,
 			useColorClasses: this.useColorClasses,
 			colorClasses: this.colorClasses,
 			showIsolines: this.showIsolines,
@@ -145,8 +140,6 @@ export class DrawOrthoslice extends NodeCore {
         this.plane = params.plane as number ?? 0;
 		this.showOrthoslice = params.showOrthoslice as boolean ?? false;
         this.colormapName = params.colormapName as string ?? "rainbow";
-        this.limitLow = params.limitLow as number ?? -10;
-        this.limitHigh = params.limitHigh as number ?? 10;
         this.useColorClasses = params.useColorClasses as boolean ?? false;
         this.colorClasses = params.colorClasses as number ?? 5;
         this.showIsolines = params.showIsolines as boolean ?? false;
@@ -267,11 +260,6 @@ export class DrawOrthoslice extends NodeCore {
         const {basis, origin} = this.structure.crystal;
         const {sides, values} = this.structure.volume[this.dataset];
 
-        // Create the orthoslice depending on the axis requested
-        let fixed;
-        const vertices: number[] = [];
-        const indices: number[]  = [];
-
         // Create the isolines values
         if(this.useColorClasses) {
             const delta = (this.limitHigh - this.limitLow) / this.colorClasses;
@@ -284,7 +272,11 @@ export class DrawOrthoslice extends NodeCore {
         // Initialize the isolines
         const isolines = new Isolines(values, sides, this.isolineValues);
 
-        // Compute the orthoslice
+        // Create the orthoslice depending on the axis requested
+        let fixed;
+        this.orthoIndices.length = 0;
+        this.orthoVertices.length = 0;
+        this.orthoValues.length = 0;
         switch(this.axis) {
 
             case 0: // X
@@ -292,13 +284,13 @@ export class DrawOrthoslice extends NodeCore {
                 for(let ny=0; ny <= sides[1]; ++ny) {
                     for(let nz=0; nz <= sides[2]; ++nz) {
                         this.fractionToAbsolute(fixed, ny/sides[1], nz/sides[2],
-                                                basis, origin, vertices);
+                                                basis, origin, this.orthoVertices);
                         const co = this.getValue(this.plane, ny, nz, values, sides);
 						this.orthoValues.push(co);
                     }
                 }
-                this.generateIndices(sides[2], sides[1], indices);
-                isolines.computeIsolines(2, 1, 0, this.plane, vertices);
+                this.generateIndices(sides[2], sides[1], this.orthoIndices);
+                isolines.computeIsolines(2, 1, 0, this.plane, this.orthoVertices);
                 break;
 
             case 1: // Y
@@ -306,13 +298,13 @@ export class DrawOrthoslice extends NodeCore {
                 for(let nx=0; nx <= sides[0]; ++nx) {
                     for(let nz=0; nz <= sides[2]; ++nz) {
                         this.fractionToAbsolute(nx/sides[0], fixed, nz/sides[2],
-                                                basis, origin, vertices);
+                                                basis, origin, this.orthoVertices);
                         const co = this.getValue(nx, this.plane, nz, values, sides);
 						this.orthoValues.push(co);
                     }
                 }
-                this.generateIndices(sides[2], sides[0], indices);
-                isolines.computeIsolines(2, 0, 1, this.plane, vertices);
+                this.generateIndices(sides[2], sides[0], this.orthoIndices);
+                isolines.computeIsolines(2, 0, 1, this.plane, this.orthoVertices);
                 break;
 
             case 2: // Z
@@ -320,13 +312,13 @@ export class DrawOrthoslice extends NodeCore {
                 for(let nx=0; nx <= sides[0]; ++nx) {
                     for(let ny=0; ny <= sides[1]; ++ny) {
                         this.fractionToAbsolute(nx/sides[0], ny/sides[1], fixed,
-                                                basis, origin, vertices);
+                                                basis, origin, this.orthoVertices);
                         const co = this.getValue(nx, ny, this.plane, values, sides);
 						this.orthoValues.push(co);
                    }
                 }
-                this.generateIndices(sides[1], sides[0], indices);
-                isolines.computeIsolines(1, 0, 2, this.plane, vertices);
+                this.generateIndices(sides[1], sides[0], this.orthoIndices);
+                isolines.computeIsolines(1, 0, 2, this.plane, this.orthoVertices);
                 break;
         }
 
@@ -347,8 +339,8 @@ export class DrawOrthoslice extends NodeCore {
 			axis: this.axis,
 			plane: this.plane,
 			colormapName: this.colormapName,
-			limitLow: this.limitLow,
-			limitHigh: this.limitHigh,
+            valueMin: this.valueRange[0],
+            valueMax: this.valueRange[1],
 			colorClasses: this.colorClasses,
 			useColorClasses: this.useColorClasses,
 			showIsolines: this.showIsolines,
@@ -356,4 +348,50 @@ export class DrawOrthoslice extends NodeCore {
 			colorIsolines: this.colorIsolines,
 		};
 	}
+
+	/**
+	 * Channel handler for parameters change
+     *
+     * @param params - All parameters
+	 */
+	private channelChange(params: CtrlParams): void {
+
+        this.dataset = params.dataset as number ?? 0;
+        this.axis = params.axis as number ?? 0;
+        this.plane = params.plane as number ?? 0;
+        this.useColorClasses = params.useColorClasses as boolean ?? false;
+        this.colorClasses = params.colorClasses as number ?? 5;
+        this.isoValue = params.isoValue as number ?? 0;
+		this.showOrthoslice = params.showOrthoslice as boolean ?? false;
+        this.showIsolines = params.showIsolines as boolean ?? false;
+        this.limitLow = params.limitLow as number ?? -10;
+        this.limitHigh = params.limitHigh as number ?? 10;
+
+		this.computeOrthoslice();
+
+        sendIsoOrthoToClient(this.id, "computed",
+                            {
+                                vertices: this.orthoVertices,
+                                indices: this.orthoIndices,
+                                values: this.orthoValues,
+                                isolineVertices: this.isolinesVertices,
+                                isolineValues: this.isolineValues,
+                                params: {
+                                    maxDataset: this.maxDataset,
+                                    maxPlane: this.maxPlane,
+                                    valueMin: this.valueRange[0],
+                                    valueMax: this.valueRange[1],
+                                }
+                            });
+    }
+
+	/**
+	 * Channel handler for parameters change
+     *
+     * @param params - All parameters that do not need recomputation
+	 */
+	private channelShow(params: CtrlParams): void {
+        this.colormapName = params.colormapName as string ?? "rainbow";
+        this.colorIsolines = params.colorIsolines as boolean ?? false;
+    }
 }

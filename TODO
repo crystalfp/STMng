@@ -50,6 +50,7 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ The atoms types reading a new file are not updated from the saved ones @done(2024-09-05 06:23) @project(Bugs)
   ✔ Structure writer: unify `continuous` and start button. Put it in EnableCapture @done(2024-09-04 05:42) @project(To do)
   ✔ Put the project name in the project viewer @done(2024-09-03 16:28) @project(To do)
   ✔ Check if it is possible to unify `cartesianToFractionalCoordinates()` routines @done(2024-09-03 15:39) @project(To do)

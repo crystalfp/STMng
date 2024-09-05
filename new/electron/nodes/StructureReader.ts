@@ -204,6 +204,7 @@ export class StructureReader extends NodeCore {
 
 		const at = (params.atomsTypes as string).trim();
 		this.changeAtomsType(at);
+		this.atomsTypes = at;
 	}
 
 	/**

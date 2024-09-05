@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "module": "Preserve",
+    // "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "noErrorTruncation": true,
@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "useUnknownInCatchVariables": true,
     "useDefineForClassFields": true,
+    "moduleDetection": "force",
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -250,8 +250,8 @@ export const receivePolyhedraFromNode = (id: string,
 export const receiveIsoOrthoFromNode = (id: string,
 										channel: string,
 										callback: (
-											sides: number[],
 											vertices: number[],
+											indices: number[],
 											values: number[],
 											isolineVertices: number[][],
 											isolineValues: number[],
@@ -259,14 +259,15 @@ export const receiveIsoOrthoFromNode = (id: string,
 										): void => {
 
     window.electron.ipcRenderer.on(`${id}:${channel}`,
-				(_event, sides: number[],
-						 vertices: number[],
-						 values: number[],
-						 isolineVertices: number[][],
-						 isolineValues: number[],
-						 // eslint-disable-next-line max-params
-						 params: CtrlParams) => callback(sides, vertices, values, isolineVertices,
-						 								 isolineValues, params));
+				(_event,
+				 vertices: number[],
+				 indices: number[],
+				 values: number[],
+				 isolineVertices: number[][],
+				 isolineValues: number[],
+				 // eslint-disable-next-line max-params
+				 params: CtrlParams) => callback(vertices, indices, values,
+								 				 isolineVertices, isolineValues, params));
 };
 
 /**

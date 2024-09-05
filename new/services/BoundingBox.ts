@@ -19,7 +19,7 @@ export interface BoundingBox {
 /**
  * Compute center and sides of the axis aligned bounding box for the given atoms
  *
- * @param structure - Structure for which the bounding box should be computed
+ * @param renderInfo - Structure  and other data for which the bounding box should be computed
  * @returns Center and sides of the bounding box
  */
 export const getBoundingBox = (renderInfo: StructureRenderInfo): BoundingBox => {
