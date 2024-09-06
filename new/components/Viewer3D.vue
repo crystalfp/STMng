@@ -122,6 +122,7 @@ const handleError = (event: Event): void => {
 
 // Reference to the view
 const cnv = ref<HTMLElement | null>(null);
+// const cnv = useTemplateRef("cnv"); // TBD
 
 // Create the scene
 const scene = sm.createScene();

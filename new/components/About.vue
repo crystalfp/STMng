@@ -48,12 +48,14 @@ getVersions()
       <div class="mb-4 ml-2 mt-3 text-body-1">Author: Mario Valle
            (<a href="mailto:mvalle@ikmail.com">mvalle@ikmail.com</a>).</div>
       <table class="text-body-2 ml-2">
-        <tr><td class="w-50">STMng:</td><td>{{ versions.app }}</td></tr>
-        <tr><td class="w-50">Electron:</td><td>{{ versions.electron }}</td></tr>
-        <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
-        <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
-        <tr><td class="w-50">Three.js:</td><td>{{ THREE.REVISION }}</td></tr>
-        <tr><td class="w-50">Vue:</td><td>{{ VueVersion }}</td></tr>
+        <tbody>
+          <tr><td class="w-50">STMng:</td><td>{{ versions.app }}</td></tr>
+          <tr><td class="w-50">Electron:</td><td>{{ versions.electron }}</td></tr>
+          <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
+          <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
+          <tr><td class="w-50">Three.js:</td><td>{{ THREE.REVISION }}</td></tr>
+          <tr><td class="w-50">Vue:</td><td>{{ VueVersion }}</td></tr>
+        </tbody>
       </table>
       <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
     </v-card-text>

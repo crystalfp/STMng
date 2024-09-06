@@ -1,6 +1,7 @@
 To do:
   ☐ Finish help
   ☐ Disable find symmetries if the structure contains volumetric data
+  ☐ Check `useTemplateRef()` in Viewer3D (already in comment)
 
 Bugs:
   ☐ Energy file: fix disappearing file name
