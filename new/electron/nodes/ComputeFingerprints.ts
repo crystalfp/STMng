@@ -37,6 +37,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "energy",    type: "invoke", callback: this.channelEnergy.bind(this)},
 		{name: "threshold", type: "invoke", callback: this.channelThreshold.bind(this)},
+		{name: "fp",		type: "invoke", callback: this.channelFP.bind(this)},
 		{name: "change",    type: "send",   callback: this.channelChange.bind(this)},
 		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 	];
@@ -151,7 +152,7 @@ export class ComputeFingerprints extends NodeCore {
 	 * @returns Computed symmetry
 	 */
 	private channelChange(params: CtrlParams): void {
-		void params;
+		void params; // TBD
 	}
 
 	/**
@@ -278,6 +279,19 @@ export class ComputeFingerprints extends NodeCore {
 			countSelected: this.accumulator.length,
 			countAccumulated: this.accumulator.length,
 			energyThresholdEffective: threshold,
+		};
+	}
+
+	/**
+	 * Channel handler for UI initialization
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelFP(params: CtrlParams): CtrlParams {
+
+		void params;
+		return {
+			resultDimensionality: 123 // TBD
 		};
 	}
 }

@@ -67,7 +67,7 @@ class ProjectManager {
 		}
 
 		// Send the needed parts of the project to the client
-		this.sendLoadedProject();
+		sendProjectUI(this.project ? this.buildProjectInfo() : {});
 	}
 
 	/**
@@ -219,15 +219,6 @@ class ProjectManager {
 		}
 
 		return clientProjectInfo;
-	}
-
-	/**
-	 * Send the loaded project to the client that should setup the UI
-	 */
-	private sendLoadedProject(): void {
-
-		if(this.project) sendProjectUI(this.buildProjectInfo());
-		else sendProjectUI({});
 	}
 
 	/**

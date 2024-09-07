@@ -280,7 +280,8 @@ let firstSendProjectUI = true;
  * @param clientProjectInfo - Project info to be passes to the client to setup UI etc.
  */
 export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
-
+console.log("+++++ SEND", firstSendProjectUI); // TBD
+console.log(clientProjectInfo);
     if(firstSendProjectUI) {
         ipcMain.handle("PROJECT:SEND:INFO-FIRST", () => {
             firstSendProjectUI = false;

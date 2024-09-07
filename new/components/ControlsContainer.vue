@@ -21,7 +21,7 @@ const panelList = ref<unknown[]>([]);
 
 /** When the project is loaded */
 receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
-
+console.log("RECV ---------------"); // TBD
 	// Get the node UI list and select the first one
 	uiList.value.length = 0;
 	panelList.value.length = 0;
@@ -29,8 +29,8 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 
 		const info = clientProjectInfo[id];
 		uiList.value.push(info);
-		const {ui} = info;
-
+		const {ui, label} = info; // TBD label added
+console.log(label);
 		panelList.value.push(markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`))));
 	}
 	selectedTabId.value = uiList.value[0].id;

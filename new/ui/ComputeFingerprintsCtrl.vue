@@ -42,7 +42,6 @@ const selectedMethod = ref(0);
 const binSize = ref(0.05);
 const peakWidth = ref(0.05);
 const resultDimensionality = ref(0);
-const computeFingerprints = ref(false);
 
 // Compute distances
 const selectedDistanceMethod = ref(0);
@@ -120,7 +119,6 @@ watchEffect(() => {
         forceCutoff: forceCutoff.value,
         manualCutoffDistance: manualCutoffDistance.value,
         selectedMethod: selectedMethod.value,
-        computeFingerprints: computeFingerprints.value,
         binSize: binSize.value,
         peakWidth: peakWidth.value,
 
@@ -179,6 +177,25 @@ const accumulatedLabel = computed(() => {
     if(countSelected.value === countAccumulated.value) return `All ${countAccumulated.value} structures selected`;
     return `Structures selected: ${countSelected.value} of ${countAccumulated.value}`;
 });
+
+/**
+ * Start computing fingerprints
+ */
+const computeFingerprints = (): void => {
+
+    askNode(id, "fp", {
+        forceCutoff: forceCutoff.value,
+        manualCutoffDistance: manualCutoffDistance.value,
+		selectedMethod: selectedMethod.value,
+        binSize: binSize.value,
+        peakWidth: peakWidth.value
+    })
+    .then((params: CtrlParams) => {
+        resultDimensionality.value = params.resultDimensionality as number ?? 0;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from fingerprint computation: ${error.message}`,
+                                              "fingerprints"));
+};
 
 </script>
 
@@ -241,7 +258,7 @@ const accumulatedLabel = computed(() => {
     <v-text-field v-model="peakWidth" label="Peak width"
                     :rules="[rules.numeric]" />
   </v-row>
-  <v-btn block :disabled="countSelected === 0" @click="computeFingerprints=true">
+  <v-btn block :disabled="countSelected === 0" @click="computeFingerprints">
     Compute fingerprints
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
