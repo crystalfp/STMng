@@ -254,13 +254,8 @@ const filterFromFormat = (fileFormat: string): string => {
     return JSON.stringify(filter);
 };
 
-/**
- * Return the JSON encoded filter for XDATCAR auxiliary file
- *
- * @returns JSON encoded filter
- */
-const filterForXDATCAR = (): string => JSON.stringify([{name: "XDATCAR", extensions: ["xdatcar"]},
-					                                   {name: "All",     extensions: ["*"]}]);
+/** The JSON encoded filter for XDATCAR auxiliary file */
+const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"All","extensions":["*"]}]';
 
 </script>
 
@@ -280,11 +275,12 @@ const filterForXDATCAR = (): string => JSON.stringify([{name: "XDATCAR", extensi
   <g-select-file class="mt-2" :disabled="format === ''" title="Select input file"
                  :filter="filterFromFormat(format)" @selected="selectedFile" />
 
-  <g-select-file v-if="format === 'POSCAR + XDATCAR'" class="mt-2" :filter="filterForXDATCAR()"
+  <g-select-file v-if="format === 'POSCAR + XDATCAR'" class="mt-2"
+                 :filter="filterForXDATCAR"
                  title="Select XDATCAR file" @selected="selectedAuxFile"/>
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
-                label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
+            label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <enable-capture />

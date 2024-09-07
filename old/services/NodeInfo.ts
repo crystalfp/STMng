@@ -17,7 +17,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 import {ChartViewer} from "@/nodes/ChartViewer";
 import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
-import {ComputeFingerprints} from "@/nodes/ComputeFingerprints";
 
 interface NodeParts {
 	ui: string;						// The name of the node ui component
@@ -109,7 +108,6 @@ export class NodeInfo {
 			case "interpolate-volume":
 				break;
 			case "compute-fingerprints":
-				map.set(id, new ComputeFingerprints(id));
 				break;
 			case "compute-symmetries":
 				break;
@@ -245,8 +243,6 @@ export class NodeInfo {
 				case "interpolate-volume":
 					break;
 				case "compute-fingerprints":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as ComputeFingerprints).saveStatus();
 					break;
 				case "compute-symmetries":
 					break;

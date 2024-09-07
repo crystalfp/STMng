@@ -7,10 +7,12 @@
  * @since 2024-07-05
  */
 
-import {ref, watchEffect} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
-import {mdiFileOutline} from "@mdi/js";
-import {resetAlertMessage} from "../services/AlertMessage";
+import {ref, watchEffect, computed, watch} from "vue";
+import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
+import {askNode, receiveFromNode, sendToNode} from "../services/RoutesClient";
+import {useControlStore} from "../stores/controlStore";
+import {storeToRefs} from "pinia";
+import type {CtrlParams} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -23,15 +25,12 @@ const {id} = defineProps<{
 resetAlertMessage("fingerprints");
 
 // Accumulate structures
-const reset = ref(false);
 const countAccumulated = ref(0);
 
 // Filter structures
-const energyFile = ref<File[]>([]);
-const energyFileLoading = ref(false);
 const enableEnergyThreshold = ref(false);
 const thresholdFromMinimum = ref(false);
-const energyThreshold = ref("");
+const energyThreshold = ref(0);
 const energyThresholdEffective = ref("0");
 const countSelected = ref(0);
 
@@ -54,37 +53,69 @@ const computeDistances = ref(false);
 const tolerance = ref(0.01);
 const absolute = ref(false);
 
-sb.getUiParams(id, (params: UiParams) => {
-    reset.value = params.reset as boolean ?? false;
-    countAccumulated.value = params.countAccumulated as number ?? 0;
+// Show this module has been loaded and access the control store
+const controlStore = useControlStore();
+controlStore.hasFingerprints = true;
 
-    energyFileLoading.value = params.energyFileLoading as boolean ?? false;
-    enableEnergyThreshold.value = params.enableEnergyThreshold as boolean ?? false;
-    thresholdFromMinimum.value = params.thresholdFromMinimum as boolean ?? false;
-    energyThreshold.value = params.energyThreshold as string ?? "0";
-    energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+// > Initialize the ui
+askNode(id, "init")
+    .then((params) => {
+
+        enableEnergyThreshold.value = params.enableEnergyThreshold as boolean ?? false;
+        thresholdFromMinimum.value = params.thresholdFromMinimum as boolean ?? false;
+        energyThreshold.value = params.energyThreshold as number ?? 0;
+        energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+
+        forceCutoff.value = params.forceCutoff as boolean ?? false;
+        cutoffDistance.value = params.cutoffDistance as number ?? 12;
+        manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
+        selectedMethod.value = params.selectedMethod as number ?? 0;
+        binSize.value = params.binSize as number ?? 0.05;
+        peakWidth.value = params.peakWidth as number ?? 0.05;
+        resultDimensionality.value = params.resultDimensionality as number ?? 0;
+
+        selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
+        fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for Fingerprinting: ${error.message}`,
+                                              "fingerprints"));
+
+receiveFromNode(id, "load", (params) => {
+
     countSelected.value = params.countSelected as number ?? 0;
-
-    forceCutoff.value = params.forceCutoff as boolean ?? false;
-    cutoffDistance.value = params.cutoffDistance as number ?? 12;
-    manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
-    selectedMethod.value = params.selectedMethod as number ?? 0;
-    binSize.value = params.binSize as number ?? 0.05;
-    peakWidth.value = params.peakWidth as number ?? 0.05;
-    resultDimensionality.value = params.resultDimensionality as number ?? 0;
-
-    selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
-    fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
+    countAccumulated.value = params.countAccumulated as number ?? 0;
 });
-watchEffect(() => {
 
-    sb.setUiParams(id, {
-        reset: reset.value,
+const resetAccumulator = (): void => {
 
-        energyFilePath: energyFile.value[0]?.path ?? "",
+    sendToNode(id, "reset");
+    countSelected.value = 0;
+    countAccumulated.value = 0;
+};
+
+const {fingerprintsAccumulate} = storeToRefs(controlStore);
+
+watch([enableEnergyThreshold, thresholdFromMinimum, energyThreshold, fingerprintsAccumulate], () => {
+
+    askNode(id, "threshold", {
+
         enableEnergyThreshold: enableEnergyThreshold.value,
         thresholdFromMinimum: thresholdFromMinimum.value,
         energyThreshold: energyThreshold.value,
+        fingerprintsAccumulate: fingerprintsAccumulate.value,
+    })
+    .then((params: CtrlParams) => {
+        countSelected.value = params.countSelected as number ?? 0;
+        countAccumulated.value = params.countAccumulated as number ?? 0;
+        energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+    })
+    .catch((error: Error) => showAlertMessage(`Error from energy settings for Fingerprinting: ${error.message}`,
+                                              "fingerprints"));
+});
+
+watchEffect(() => {
+
+      sendToNode(id, "change", {
 
         forceCutoff: forceCutoff.value,
         manualCutoffDistance: manualCutoffDistance.value,
@@ -122,6 +153,33 @@ const distanceMethods = [
     {value: 2, label: "Minkowski (p=1/3) distance"},
 ];
 
+const selectEnergyFile = (filename: string): void => {
+
+    askNode(id, "energy", {
+        filename,
+        enableEnergyThreshold: enableEnergyThreshold.value,
+        thresholdFromMinimum: thresholdFromMinimum.value,
+        energyThreshold: energyThreshold.value,
+    })
+    .then((params) => {
+        countSelected.value = params.countSelected as number ?? 0;
+        countAccumulated.value = params.countAccumulated as number ?? 0;
+        energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+    })
+    .catch((error: Error) => {
+        showAlertMessage(`Error reading energy file: ${error.message}`, "fingerprints");
+    });
+};
+
+/** The JSON encoded filter for the energy file */
+const energyFileFilter = '[{"name":"Energies","extensions":["energy"]},{"name":"All","extensions":["*"]}]';
+
+const accumulatedLabel = computed(() => {
+    if(countSelected.value === 0) return "No structure selected";
+    if(countSelected.value === countAccumulated.value) return `All ${countAccumulated.value} structures selected`;
+    return `Structures selected: ${countSelected.value} of ${countAccumulated.value}`;
+});
+
 </script>
 
 
@@ -132,27 +190,28 @@ const distanceMethods = [
   <v-row class="mx-0 my-4 mr-2">
     <v-label class="green-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
-    <v-btn density="compact" @click="reset = true">Reset</v-btn>
+    <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
   </v-row>
 
   <v-divider thickness="8" />
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Filter structures</v-label>
 
-  <v-file-input v-model="energyFile" label="Select energy file" :loading="energyFileLoading"
-                :prepend-icon="mdiFileOutline" accept=".energy,*" :clearable="false" class="mt-2 mr-2" />
+  <g-select-file class="mt-2 mr-2" title="Select energy file"
+                 :filter="energyFileFilter" @selected="selectEnergyFile" />
+
   <v-switch v-model="enableEnergyThreshold" color="primary"
             label="Filter by energy" class="ml-2" />
   <v-switch v-model="thresholdFromMinimum" color="primary"
             label="Threshold from minimum energy" class="ml-2 mt-n5" />
   <v-row>
-  <v-text-field v-model="energyThreshold" :rules="[rules.numeric]"
-                :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" class="ml-4 mr-2" />
-  <v-text-field v-model="energyThresholdEffective" label="Max energy" readonly class="ml-2 mr-5" />
+    <v-number-input controlVariant="stacked" variant="filled" v-model="energyThreshold"
+                    :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
+                    class="ml-4 mr-2" />
+    <v-text-field controlVariant="stacked" variant="filled" v-model="energyThresholdEffective"
+                    label="Max energy" readonly class="ml-2 mr-5" />
   </v-row>
-  <v-label class="mt-4 mb-4 green-label">
-    {{ countSelected === countAccumulated ?
-      `All ${countAccumulated} structures selected` :
-      `Structures selected: ${countSelected} of ${countAccumulated}` }}</v-label>
+
+  <v-label class="mt-4 mb-4 green-label"> {{ accumulatedLabel }}</v-label>
 
   <v-divider thickness="8" />
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Compute fingerprints</v-label>

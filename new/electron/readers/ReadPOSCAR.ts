@@ -110,6 +110,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					const fields = line.trim().split(/ +/);
 					if(/\d+/.test(fields[0])) {
 						// Line with atoms count. Put them in an array
+						atomsCount.length = 0;
 						for(const field of fields) {
 							const count = Number.parseInt(field);
 							atomsCount.push(count);

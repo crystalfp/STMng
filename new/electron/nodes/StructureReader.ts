@@ -340,9 +340,6 @@ export class StructureReader extends NodeCore {
 		// Array of the renamed atom types
 		const typesAfter = renamedAtomTypes.split(/ +/);
 
-		// Mapping from the current atomZ to the renamed atomZ
-		const mapAtomZ = new Map<number, number>();
-
 		// Get the current atomic numbers
 		const currentAtomsZ = new Set<number>();
 		for(const atom of this.structures[0].atoms) currentAtomsZ.add(atom.atomZ);
@@ -354,7 +351,8 @@ export class StructureReader extends NodeCore {
 			return;
 		}
 
-		// Prepare the mapping
+		// Prepare the mapping from the current atomZ to the renamed atomZ
+		const mapAtomZ = new Map<number, number>();
 		let idx = 0;
 		for(const from of currentAtomsZ) {
 
@@ -371,6 +369,7 @@ export class StructureReader extends NodeCore {
 		for(const structure of this.structures) {
 
 			for(const atom of structure.atoms) {
+
 				const renamedAtomZ = mapAtomZ.get(atom.atomZ);
 				if(renamedAtomZ === undefined) {
 

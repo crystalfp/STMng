@@ -34,28 +34,3 @@ export const showErrorNotification = (text: string, node?: string): void => {
 	}
 	log.error(text);
 };
-
-/**
- * Initialize the error message for a given node
- *
- * @param node - Node on which the message should be initialized.
- */
-export const resetErrorNotification = (node: string): void => {
-
-	const messageStore = useMessageStore();
-	messageStore.system.error = "";
-	switch(node) {
-		case "symmetries":
-			messageStore.symmetries.message = "";
-			break;
-		case "structureReader":
-			messageStore.structureReader.message = "";
-			break;
-		case "structureWriter":
-			messageStore.structureWriter.message = "";
-			break;
-		case "fingerprints":
-			messageStore.fingerprints.message = "";
-			break;
-	}
-};

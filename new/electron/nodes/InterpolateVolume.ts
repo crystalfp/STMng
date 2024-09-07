@@ -39,7 +39,7 @@ export class InterpolateVolume extends NodeCore {
 		else {
 			sendToClient(this.id, "maxDataset", {
 				maxDataset: countDatasets - 1
-			})
+			});
 			this.computeInterpolation();
 		}
 	}

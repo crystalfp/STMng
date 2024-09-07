@@ -203,7 +203,7 @@ export default [{
         "no-trailing-spaces": "warn",
         "id-length": ["warn", {exceptions: [
                                     "i", "j", "k", "x", "y", "z",
-                                    "w", "h", "r", "g", "a", "b", "c", "t"
+                                    "w", "h", "r", "g", "a", "b", "c", "t", "v"
                                ]}],
         "prefer-const": "warn",
         "for-direction": "error",

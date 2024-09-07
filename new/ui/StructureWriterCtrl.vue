@@ -8,7 +8,6 @@
  */
 
 import {ref, computed} from "vue";
-import {useMessageStore} from "../stores/messageStore";
 import {useControlStore} from "../stores/controlStore";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
@@ -19,10 +18,6 @@ const {id} = defineProps<{
     /** Its own module id */
     id: string;
 }>();
-
-// Access the message store
-const messageStore = useMessageStore();
-messageStore.structureWriter.message = "";
 
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();

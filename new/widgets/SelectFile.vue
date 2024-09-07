@@ -65,9 +65,7 @@ const openSelector = (): void => {
 
 
 <template>
-<v-row :disabled="disabled" @click="openSelector">
-  <v-icon :icon="mdiFileOutline" size="large" class="ml-4 mr-2 mt-1" style="opacity: 0.6" />
-  <v-text-field :model-value="label" :disabled="disabled" :label="title" readonly
-                class="mb-2 mr-2" hide-details="auto" :loading="inProgress" spellcheck="false" />
-</v-row>
+<v-text-field :model-value="label" :disabled="disabled" :label="title" readonly :prepend-icon="mdiFileOutline"
+              class="mb-2 mr-0 ml-2 cursor-pointer" hide-details="auto" :loading="inProgress" spellcheck="false"
+              @click="openSelector"/>
 </template>
