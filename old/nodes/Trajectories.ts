@@ -12,8 +12,8 @@ import type {Structure, PositionType, BasisType} from "../../new/types";
 import {selectAtomsByKind, type SelectorType} from "../../new/electron/modules/SelectAtoms";
 import {useControlStore} from "../../new/stores/controlStore";
 import {watchEffect} from "vue";
-import {atomColor} from "@/services/AtomInfo";
 import {VolumeRenderShader} from "@/services/VolumeShader";
+import {getAtomData} from "../../new/electron/modules/AtomData";
 
 export class Trajectories {
 
@@ -493,7 +493,7 @@ export class Trajectories {
 		let i = 0;
 		for(const idx of indices) {
 			const {atomZ} = atoms[idx];
-			traceColor[i++] = atomColor(atomZ);
+			traceColor[i++] = getAtomData(atomZ).color;
 		}
 	}
 

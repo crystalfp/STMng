@@ -17,7 +17,7 @@ import fs from "node:fs";
  */
 export const setupChannelVersions = (): void => {
 
-	ipcMain.handle("APP:VERSIONS", () => {
+	ipcMain.handle("SYSTEM:VERSIONS", () => {
 
 		let appVersion = "0.0.0";
 		const projectDir = path.dirname(fileURLToPath(import.meta.url));

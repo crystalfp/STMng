@@ -41,7 +41,7 @@ export const setupRelayToMainWin = (win: BrowserWindow): void => {
  */
 export const setupRelayFromMainWin = (): void => {
 
-	// ipcMain.on("APP:BROADCAST-RELAY", (_event, payload: BroadcastMessage) => {
+	// ipcMain.on("SYSTEM:BROADCAST-RELAY", (_event, payload: BroadcastMessage) => {
 
 	// 	const {eventType, data} = payload;
 	// 	broadcastMessage(eventType, ...data);

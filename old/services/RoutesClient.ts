@@ -67,12 +67,3 @@ export const sendToWindow = (routerPath: string, data: string): void => {
 
 	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
 };
-
-// > Atomic data
-/**
- * Get the atomic data from main to the client
- *
- * @returns JSON encoded table of atom data
- */
-export const getAtomData = (): Promise<string> =>
-	window.electron.ipcRenderer.invoke("ATOM:GET-ALL") as Promise<string>;

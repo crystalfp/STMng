@@ -9,7 +9,7 @@
 
 import {ref, defineAsyncComponent, markRaw} from "vue";
 import {useControlStore} from "../stores/controlStore";
-import {receiveProjectUI} from "../services/RoutesClient";
+import {receiveProjectUI, sendToNode} from "../services/RoutesClient";
 import type {ClientProjectInfo, ClientProjectInfoItem} from "../types";
 
 // > Access the store
@@ -19,9 +19,11 @@ const selectedTabId = ref("");
 const uiList = ref<ClientProjectInfoItem[]>([]);
 const panelList = ref<unknown[]>([]);
 
-/** When the project is loaded */
+/** When the project is loaded require the project data */
+sendToNode("SYSTEM", "project");
+
 receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
-console.log("RECV ---------------"); // TBD
+
 	// Get the node UI list and select the first one
 	uiList.value.length = 0;
 	panelList.value.length = 0;
@@ -29,8 +31,7 @@ console.log("RECV ---------------"); // TBD
 
 		const info = clientProjectInfo[id];
 		uiList.value.push(info);
-		const {ui, label} = info; // TBD label added
-console.log(label);
+		const {ui} = info;
 		panelList.value.push(markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`))));
 	}
 	selectedTabId.value = uiList.value[0].id;

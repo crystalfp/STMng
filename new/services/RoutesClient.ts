@@ -9,7 +9,6 @@
 import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "../types";
-import {showAlertMessage} from "./AlertMessage";
 import {useMessageStore} from "../stores/messageStore";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -52,7 +51,7 @@ export const handleFullscreen = (callback: (isFullscreen: boolean) => void): voi
  */
 export const receiveBroadcast = (callback: (eventType: string, params: (boolean | string)[]) => void): void => {
 
-	window.electron.ipcRenderer.on("APP:BROADCAST",
+	window.electron.ipcRenderer.on("SYSTEM:BROADCAST",
 								   (_event, {eventType, eventData}) =>
 								   		callback(
 											eventType as string,
@@ -68,7 +67,7 @@ export const receiveBroadcast = (callback: (eventType: string, params: (boolean 
  */
 export const receiveMenuSelection = (callback: (menuEntry: string, payload: string) => void): void => {
 
-	window.electron.ipcRenderer.on("APP:MENU", (_event, entryName: string, payload: string) =>
+	window.electron.ipcRenderer.on("SYSTEM:MENU", (_event, entryName: string, payload: string) =>
 														callback(entryName, payload));
 };
 
@@ -82,7 +81,7 @@ export const receiveNotifications = (callback: (type: "error" | "success",
 												from: string) => void): void => {
 
 	// Notifications from main process
-	window.electron.ipcRenderer.on("APP:NOTIFICATION", (_event, type: string, text: string, from: string) =>
+	window.electron.ipcRenderer.on("SYSTEM:notification", (_event, type: string, text: string, from: string) =>
 														callback(type as "error" | "success", text, from));
 
 	// Notifications from main window
@@ -102,7 +101,7 @@ export const receiveNotifications = (callback: (type: "error" | "success",
  */
 export const receiveRefreshMenu = (): void => {
 
-	window.electron.ipcRenderer.on("APP:REFRESH-MENU", window.api.refreshMenu);
+	window.electron.ipcRenderer.on("SYSTEM:REFRESH-MENU", window.api.refreshMenu);
 };
 
 // > Project
@@ -113,12 +112,7 @@ export const receiveRefreshMenu = (): void => {
  */
 export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo) => void): void => {
 
-    window.electron.ipcRenderer.invoke("PROJECT:SEND:INFO-FIRST")
-		// eslint-disable-next-line promise/no-callback-in-promise
-		.then((clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo))
-		.catch((error: Error) => showAlertMessage(`Cannot retrieve project first time. ${error.message}`));
-
-    window.electron.ipcRenderer.on("PROJECT:SEND:INFO-NEXT",
+    window.electron.ipcRenderer.on("SYSTEM:project-send",
 					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
 };
 
@@ -156,7 +150,7 @@ export interface Versions {app: string; node: string; electron: string; chrome: 
  *
  * @returns The list of versions of iie, node, electron, chrome
  */
-export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.invoke("APP:VERSIONS") as Promise<Versions>;
+export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.invoke("SYSTEM:VERSIONS") as Promise<Versions>;
 
 /**
  * Synchronously return a preference
@@ -321,7 +315,7 @@ export const closeWindow = (routerPath: string): void => {
  */
 export const receiveInWindow = (callback: (data: string) => void): void => {
 
-    window.electron.ipcRenderer.on("APP:DATA", (_event, payload: string) => callback(payload));
+    window.electron.ipcRenderer.on("SYSTEM:DATA", (_event, payload: string) => callback(payload));
 };
 
 

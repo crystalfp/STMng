@@ -150,7 +150,7 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
         secondaryWin!.show();
     });
     if(params.data) secondaryWin.once("show", () => {
-        secondaryWin.webContents.send("APP:DATA", params.data);
+        secondaryWin.webContents.send("SYSTEM:DATA", params.data);
     });
 
     // Manage the list of opened windows
@@ -197,7 +197,7 @@ export const sendToSecondaryWindow = (_event: unknown,
                                       payload: {routerPath: string; data: string}): void => {
 
     const win = openedWindows.get(payload.routerPath);
-    if(win) win.webContents.send("APP:DATA", payload.data);
+    if(win) win.webContents.send("SYSTEM:DATA", payload.data);
 };
 
 // > Broadcast message
@@ -210,7 +210,7 @@ export const sendToSecondaryWindow = (_event: unknown,
 export const broadcastMessage = (eventType: string, ...params: (boolean | string)[]): void => {
 
     for(const win of openedWindows) {
-        win[1].webContents.send("APP:BROADCAST", {eventType, eventData: [...params]});
+        win[1].webContents.send("SYSTEM:BROADCAST", {eventType, eventData: [...params]});
     }
 };
 
@@ -237,7 +237,7 @@ export const showDevToolsOnSecondaryWindows = (): void => {
  */
 export const openMenuEntry = (entryName: string, payload=""): void => {
 
-    mainWin.webContents.send("APP:MENU", entryName, payload);
+    mainWin.webContents.send("SYSTEM:MENU", entryName, payload);
 };
 
 /**
@@ -255,7 +255,7 @@ export const sendProjectPath = (projectPath?: string): void => {
  */
 export const refreshSystemMenu = (): void => {
 
-    mainWin.webContents.send("APP:REFRESH-MENU");
+    mainWin.webContents.send("SYSTEM:REFRESH-MENU");
 };
 
 /**
@@ -272,23 +272,14 @@ export const getCurrentNode = (): Promise<string> => {
     });
 };
 
-// Routines for the new architecture
-let firstSendProjectUI = true;
 /**
  * Update the main window project
  *
  * @param clientProjectInfo - Project info to be passes to the client to setup UI etc.
  */
 export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
-console.log("+++++ SEND", firstSendProjectUI); // TBD
-console.log(clientProjectInfo);
-    if(firstSendProjectUI) {
-        ipcMain.handle("PROJECT:SEND:INFO-FIRST", () => {
-            firstSendProjectUI = false;
-            return clientProjectInfo;
-        });
-    }
-    else mainWin.webContents.send("PROJECT:SEND:INFO-NEXT", clientProjectInfo);
+
+    mainWin.webContents.send("SYSTEM:project-send", clientProjectInfo);
 };
 
 /**
@@ -298,7 +289,7 @@ console.log(clientProjectInfo);
  */
 export const sendAlertMessage = (text: string, from?: string): void => {
 
-    mainWin.webContents.send("APP:NOTIFICATION", "error", text, from ?? "");
+    mainWin.webContents.send("SYSTEM:notification", "error", text, from ?? "");
 };
 
 /**

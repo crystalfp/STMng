@@ -18,7 +18,7 @@ import {createMainWindow} from "./modules/WindowsUtilities";
 import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFileSelector} from "./modules/SelectFile";
-import {pm} from "./modules/ProjectManager";
+import {pm, setupChannelProject} from "./modules/ProjectManager";
 
 // > Command line parsing
 const program = new Command("STMng");
@@ -66,6 +66,7 @@ process.on("unhandledRejection", (event: PromiseRejectionEvent) => {
 setupChannelPreferences();
 setupChannelVersions();
 setupChannelFileSelector();
+setupChannelProject();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

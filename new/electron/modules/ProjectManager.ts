@@ -8,7 +8,7 @@
  */
 import fs from "node:fs";
 import {writeFile} from "node:fs/promises";
-import {app} from "electron";
+import {app, ipcMain} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -67,6 +67,14 @@ class ProjectManager {
 		}
 
 		// Send the needed parts of the project to the client
+		this.sendProject();
+	}
+
+	/**
+	 * Send the needed parts of the project to the client
+	 */
+	sendProject(): void {
+
 		sendProjectUI(this.project ? this.buildProjectInfo() : {});
 	}
 
@@ -391,3 +399,13 @@ class ProjectManager {
 // > Access to the Project Manager
 /** Access the Project Manager */
 export const pm = ProjectManager.getInstance();
+
+/**
+ * Setup channel to request project data
+ */
+export const setupChannelProject = (): void => {
+
+	ipcMain.on("SYSTEM:project", () => {
+		pm.sendProject();
+	});
+};
