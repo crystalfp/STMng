@@ -85,6 +85,9 @@ receiveFromNode(id, "load", (params) => {
     countAccumulated.value = params.countAccumulated as number ?? 0;
 });
 
+/**
+ * Clear the accumulated structures
+ */
 const resetAccumulator = (): void => {
 
     sendToNode(id, "reset");

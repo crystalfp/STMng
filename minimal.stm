@@ -39,6 +39,11 @@
       "type": "orthoslice",
       "in": "smooth"
     },
+    "trace": {
+      "label": "Trajectories",
+      "type": "draw-trajectories",
+      "in": "unit"
+    },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
@@ -190,6 +195,15 @@
       "showIsolines": false,
       "isoValue": 0,
       "colorIsolines": false
+    },
+    "trace": {
+      "showTrajectories": false,
+      "labelKind": "symbol",
+      "atomsSelector": "",
+			"maxDisplacement": 0,
+			"showPositionClouds": false,
+			"positionCloudsSideExp": 2,
+			"positionCloudsGrow": 0
     },
     "writer": {
       "format": "XYZ",
