@@ -475,7 +475,7 @@ sm.add(out);
 
 <template>
 <v-container class="container">
-  <v-label text="Structure rendering mode" class="mb-3 ml-2 mt-4" /><br>
+  <v-label text="Structure rendering mode" class="mb-3 ml-2 mt-4 no-select" /><br>
   <v-btn-toggle v-model="drawKind" color="primary" class="mb-6 ml-2">
     <v-btn value="ball-and-stick">CPK</v-btn>
     <v-btn value="van-der-walls">VdW</v-btn>
@@ -486,21 +486,21 @@ sm.add(out);
   <v-switch v-model="shadedBonds" color="primary"
             label="Smooth color bonds" density="compact" class="mt-2 ml-2" />
 
-  <v-label text="Label is" class="mb-3 ml-2" /><br>
+  <v-label text="Label is" class="mb-3 ml-2 no-select" /><br>
   <v-btn-toggle v-model="labelKind" color="primary" class="mb-6 ml-2">
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>
     <v-btn value="index">Index</v-btn>
   </v-btn-toggle><br>
 
-  <v-label text="Visibility" class="ml-2 mb-3" /><br>
+  <v-label text="Visibility" class="ml-2 mb-3 no-select" /><br>
   <v-btn-toggle v-model="showCombined" multiple color="primary" class="ml-2 mb-4">
     <v-btn value="structure">Structure</v-btn>
     <v-btn value="bonds">Bonds</v-btn>
     <v-btn value="labels">Labels</v-btn>
   </v-btn-toggle>
 
-  <v-label text="Quality" class="ml-2" /><br>
+  <v-label text="Quality" class="ml-2 no-select" /><br>
   <v-btn-toggle v-model="drawQuality" color="primary" class="mt-2 ml-2">
     <v-btn :value="1">Low</v-btn>
     <v-btn :value="2">Medium</v-btn>
@@ -510,11 +510,11 @@ sm.add(out);
 
   <g-debounced-slider v-slot="{value}" v-model="drawRoughness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-6">
-    <v-label :text="`Roughness (${value.toFixed(2)})`" />
+    <v-label :text="`Roughness (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="drawMetalness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-4">
-    <v-label :text="`Metalness (${value.toFixed(2)})`" />
+    <v-label :text="`Metalness (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
 </v-container>
 </template>

@@ -176,7 +176,7 @@ watch(polyhedronNewIdx, () => {
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 mt-2">Selected atoms</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 mt-2 no-select">Selected atoms</v-label>
   <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
     <tr v-for="line of details" :key="line.index">
       <td :style="`color: ${line.color};width:3rem`">{{ line.label }}</td>
@@ -188,7 +188,7 @@ watch(polyhedronNewIdx, () => {
       <td style="width: 0.5rem;text-align:right">]</td>
     </tr>
   </v-table>
-  <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Measures</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measures</v-label>
   <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
     <tr><td style="width:9rem">Distance A–B:</td><td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
     <tr v-if="distanceBC > 0"><td>Distance B–C:</td><td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>

@@ -284,7 +284,7 @@ const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"
   <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <enable-capture />
-    <v-label>{{ `Step ${step}/${countSteps}` }}</v-label>
+    <v-label class="no-select">{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-6" />
     <v-row class="mr-2">
       <v-spacer />

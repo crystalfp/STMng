@@ -347,7 +347,7 @@ watch([percentA, percentB, percentC, shrink], () => {
   <v-switch v-model="showBasisVectors" color="primary" label="Show basis vectors" class="ml-4 mt-n5" />
   <g-color-selector v-model="lineColor" label="Line color" />
   <v-divider thickness="8" class="mb-4" />
-  <v-label text="Cell repetitions" class="ml-2 mb-1 yellow-title" />
+  <v-label text="Cell repetitions" class="ml-2 mb-1 yellow-title no-select" />
   <g-slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
                           :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
@@ -364,7 +364,7 @@ watch([percentA, percentB, percentC, shrink], () => {
   <v-switch v-model="dashedSupercell" color="primary" label="Dashed lines supercell" class="ml-4 mt-n5" />
   <g-color-selector v-model="supercellColor" label="Line color" />
   <v-divider thickness="8" class="mb-4" />
-  <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-3 yellow-title" />
+  <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-3 yellow-title no-select" />
   <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />

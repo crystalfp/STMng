@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<{
     max: 10,
     step: 1,
     label: "",
-    labelWidth: "0",
+    labelWidth: "7rem",
     timeout: 500,
 });
 
@@ -99,5 +99,6 @@ watch(valueToDebounce, () => {
 .slider-with-stepper .v-slider__label {
   /* stylelint-disable value-keyword-case */
   width: v-bind(labelWidth);
+  user-select: none;
 }
 </style>

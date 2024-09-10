@@ -41,6 +41,21 @@ html {
   opacity: 1 !important;
 }
 
+.no-select {
+  user-select: none !important;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.v-label--clickable {
+  user-select: none !important;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.v-slider__label {
+  user-select: none !important;
+}
+
+
 /*
 @use "sass:color";
 

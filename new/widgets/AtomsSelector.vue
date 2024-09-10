@@ -34,7 +34,7 @@ const getSelector = (): void => {
 
 <template>
 <v-container class="pa-0">
-  <v-label :text="title" class="mb-3" /><br>
+  <v-label :text="title" class="mb-3 no-select" /><br>
   <v-btn-toggle v-model="labelKind" color="primary" class="mb-6">
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>

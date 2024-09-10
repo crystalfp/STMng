@@ -99,18 +99,18 @@ const toggleRecording = (): void => {
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
   <g-debounced-slider v-slot="{value}" v-model="maxDisplacement"
                       :step="0.01" :min="0.01" :max="3" class="ml-1 my-4">
-    <v-label :text="`Max displacement (${value})`" />
+    <v-label :text="`Max displacement (${value})`" class="no-select" />
   </g-debounced-slider>
   <v-switch v-model="showPositionClouds" color="primary" label="Show position clouds"
             density="compact" class="ml-2" />
   <v-container v-if="showPositionClouds" class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsSideExp"
                         :step="1" :min="3" :max="10" class="ml-1">
-      <v-label :text="`Cloud volume subdivisions (${showPowerOf2(value)})`" />
+      <v-label :text="`Cloud volume subdivisions (${showPowerOf2(value)})`" class="no-select" />
     </g-debounced-slider>
     <g-debounced-slider v-slot="{value}" v-model="positionCloudsGrow"
                         :step="0.1" :min="0" :max="1" class="ml-1 my-4">
-      <v-label :text="`Enlarge volume (${value*100}%)`" />
+      <v-label :text="`Enlarge volume (${value*100}%)`" class="no-select" />
     </g-debounced-slider>
   </v-container>
   <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"

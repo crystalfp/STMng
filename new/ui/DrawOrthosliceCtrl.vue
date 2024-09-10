@@ -239,11 +239,11 @@ watchEffect(() => {
   <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice"
             density="compact" class="mt-2 ml-3" />
 
-  <v-label :text="`Dataset (${dataset})`" class="ml-2" />
+  <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1"
             :disabled="maxDataset === 0" class="ml-4" />
 
-  <v-label text="Axis" class="ml-2 mb-3" /><br>
+  <v-label text="Axis" class="ml-2 mb-3 no-select" /><br>
   <v-btn-toggle v-model="axis" color="primary" class="mb-6 ml-2">
     <v-btn :value="0">X</v-btn>
     <v-btn :value="1">Y</v-btn>
@@ -252,20 +252,21 @@ watchEffect(() => {
 
   <g-debounced-slider v-slot="{value}" v-model="plane"
                       :step="1" :min="0" :max="maxPlane" class="ml-2 my-4">
-    <v-label :text="`Plane (${value})`" />
+    <v-label :text="`Plane (${value})`" class="no-select"/>
   </g-debounced-slider>
 
   <g-debounced-range-slider v-slot="{values}" v-model="limits"
                             :step="step" :min="valueMin" :max="valueMax"
                             class="ml-4 mt-1 pr-4">
-    <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`" class="ml-n2" />
+    <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
+             class="ml-n2 no-select" />
   </g-debounced-range-slider>
 
   <v-switch v-model="useColorClasses" color="primary"
             label="Use discrete classes" density="compact" class="ml-3" />
   <g-debounced-slider v-slot="{value}" v-model="colorClasses" :step="1" :min="2" :max="20"
                       :disabled="!useColorClasses" class="ml-2 mt-1 mb-4">
-    <v-label :text="`Number of classes (${value})`" />
+    <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </g-debounced-slider>
 
   <v-select v-model="colormapName" label="Colormap"
@@ -278,7 +279,7 @@ watchEffect(() => {
 
   <g-debounced-slider v-slot="{value}" v-model="isoValue" :step="step" :min="valueMin"
                       :max="valueMax" :disabled="useColorClasses" class="ml-2 mt-1">
-    <v-label :text="`Isoline value (${humanFormat(value)})`" />
+    <v-label :text="`Isoline value (${humanFormat(value)})`" class="no-select"/>
   </g-debounced-slider>
 </v-container>
 </template>

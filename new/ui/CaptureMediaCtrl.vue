@@ -23,9 +23,9 @@ controlStore.hasCapture = true;
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Snapshot</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 no-select">Snapshot</v-label>
   <v-row class="mt-4">
-  <v-label class="pb-3 ml-3 mr-4">Format:</v-label>
+  <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.snapshotFormat" color="primary" class="mb-3">
     <v-btn value="jpeg">JPEG</v-btn>
     <v-btn value="png">PNG</v-btn>
@@ -39,7 +39,7 @@ controlStore.hasCapture = true;
            @click="messageStore.captureMedia.typeS=undefined" />
   <v-divider thickness="8" class="mt-6" />
 
-  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title">Movie</v-label>
+  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title no-select">Movie</v-label>
   <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
         @click="controlStore.movie = !controlStore.movie">
       {{ controlStore.movie ? "Stop recording" : "Start recording" }}
@@ -51,9 +51,9 @@ controlStore.hasCapture = true;
            @click="messageStore.captureMedia.typeM=undefined" />
   <v-divider thickness="8" class="mt-6" />
 
-  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title">STL</v-label>
+  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title no-select">STL</v-label>
   <v-row class="mt-4">
-  <v-label class="pb-3 ml-3 mr-4">Format:</v-label>
+  <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.stlFormat" color="primary" class="mb-3">
     <v-btn value="ascii">ASCII</v-btn>
     <v-btn value="binary">Binary</v-btn>

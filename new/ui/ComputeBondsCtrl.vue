@@ -106,20 +106,20 @@ const resetSliders = (): void => {
 
   <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
                       class="ml-2 mb-2 mt-1">
-    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" />
+    <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01"
                       class="ml-2 mb-2">
-    <v-label :text="`Bonding max distance (${value.toFixed(2)})`" />
+    <v-label :text="`Bonding max distance (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01"
                       class="ml-2 mb-2">
-    <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" />
+    <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
   <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-2 mb-4">
-    <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" />
+    <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
-  <v-label class="ml-2">Sum of covalent radii multiplier</v-label>
+  <v-label class="ml-2 no-select">Sum of covalent radii multiplier</v-label>
   <v-switch v-model="perPairScale" color="primary" :disabled="perPairData.length < 2"
             label="Multiplier per atom pair" density="compact" class="ml-2 mt-2" />
   <v-container v-if="perPairScale" class="pa-0">
@@ -134,10 +134,10 @@ const resetSliders = (): void => {
   </v-container>
   <v-container v-else class="pa-0 mt-n3">
     <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01" class="ml-2">
-      <v-label :text="`For all atom pairs (${value.toFixed(2)})`" />
+      <v-label :text="`For all atom pairs (${value.toFixed(2)})`" class="no-select" />
     </g-debounced-slider>
   </v-container>
-  <v-label class="ml-2 mb-2 mt-4">Add bonded atoms outside unit cell</v-label>
+  <v-label class="ml-2 mb-2 mt-4 no-select">Add bonded atoms outside unit cell</v-label>
   <v-btn-toggle v-model="enlargementKind" color="primary" class="mb-6 ml-2">
     <v-btn value="none">None</v-btn>
     <v-btn value="outside">Neighbors</v-btn>

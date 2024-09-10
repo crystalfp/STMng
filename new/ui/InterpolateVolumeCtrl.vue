@@ -51,12 +51,12 @@ watchEffect(() => {
 <v-container class="container">
   <v-switch v-model="interpolateVolume" color="primary"
             label="Interpolate volume data" class="mt-4 ml-4" />
-  <v-label :text="`Dataset (${dataset})`" class="ml-2" />
+  <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
   <v-slider v-model="dataset" min="0" :max="maxDataset" step="1"
             :disabled="maxDataset === 0" class="ml-4 mt-1" />
   <g-debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
                       :disabled="!interpolateVolume" class="ml-2 mt-1">
-    <v-label :text="`Points to add (${value})`" />
+    <v-label :text="`Points to add (${value})`" class="no-select" />
   </g-debounced-slider>
 </v-container>
 </template>

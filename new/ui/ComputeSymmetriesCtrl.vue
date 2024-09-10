@@ -101,17 +101,17 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
   <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.05" class="ml-2 mb-2">
-      <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" />
+      <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
     </g-debounced-slider>
     <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
                         :min="-3" :max="0" :step="0.05" class="ml-2">
-      <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" />
+      <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="no-select" />
     </g-debounced-slider>
   </v-container>
 
   <v-row class="pl-2 mt-2 align-center">
     <v-col cols="5">
-      <v-label text="Input symmetry:" class="text-green" />
+      <v-label text="Input symmetry:" class="text-green no-select" />
     </v-col>
     <v-col cols="7">
       <v-label :text="inputSpaceGroup" class="show-symmetry" />
@@ -119,7 +119,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
   </v-row>
   <v-row class="pl-2 mt-2 align-center">
     <v-col cols="5">
-      <v-label text="Final symmetry:" class="text-green" />
+      <v-label text="Final symmetry:" class="text-green no-select" />
     </v-col>
     <v-col cols="7">
       <v-label :text="computedSpaceGroup" class="show-symmetry" />
