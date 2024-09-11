@@ -76,6 +76,12 @@ const checkIds = (prj: Project): boolean => {
 	const ids = new Set<string>();
 
 	for(const id in prj.graph) {
+
+		if(["SYSTEM", "PROJECT", "PREFERENCES", "WINDOW"].includes(id)) {
+			sendAlertMessage(`Reserved id "${id}" cannot be used`);
+			return false;
+		}
+
 		if(ids.has(id)) {
 			sendAlertMessage(`Duplicated id "${id}"`);
 			return false;

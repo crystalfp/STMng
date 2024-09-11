@@ -1,6 +1,7 @@
 To do:
   ☐ Finish help
   ☐ Disable find symmetries if the structure contains volumetric data
+  ☐ Remove `this.name`
 
 Bugs:
   ☐ Control side height not ok changing to fullscreen (use flex?)

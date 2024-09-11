@@ -19,15 +19,11 @@ export class ChartViewer extends NodeCore {
 		console.log(`Instantiated ${this.name}`);
 	}
 
-	run(): void {
-		if(!this.structure) return;
-		console.log(`RUN ${this.name}`, this.structure.crystal.spaceGroup);
-	}
-
 	override notifier(data: Structure): void {
 		console.log(`NOTIFIED ${this.name}`);
 		this.structure = data;
-		this.run();
+		if(!this.structure) return;
+		console.log(`RUN ${this.name}`, this.structure.crystal.spaceGroup);
 	}
 
 	saveStatus(): string {
