@@ -24,6 +24,7 @@ ToDo eventually:
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}`
+  ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
 
 Study:
   ☐ Check the order of entries in objects

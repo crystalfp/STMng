@@ -18,6 +18,7 @@ import jsPlugin from "@eslint/js"
 import vuetifyPlugin from "eslint-plugin-vuetify";
 import {FlatCompat} from "@eslint/eslintrc"
 import stylistic from "@stylistic/eslint-plugin";
+import * as depend from "eslint-plugin-depend";
 
 const compat = new FlatCompat({
     config: vuetifyPlugin.configs.recommended.rules,
@@ -86,6 +87,7 @@ export default [{
         "electron-extension": electronPlugin,
         vuetify: vuetifyPlugin,
         "@stylistic": stylistic,
+        depend: depend,
     },
     settings: {
         "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx"]},
@@ -116,6 +118,7 @@ export default [{
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
         ...typescriptPlugin.configs["strict-type-checked"].rules,
         ...compat.extends("plugin:vue/base", "plugin:vuetify/base").rules,
+        ...depend.configs["flat/recommended"].rules,
 
         "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
         "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
@@ -383,5 +386,9 @@ export default [{
         "@stylistic/array-bracket-newline": ["warn", "consistent"],
         "@stylistic/array-bracket-spacing": ["warn", "never"],
         "@stylistic/arrow-parens": ["warn", "always"],
+
+        "depend/ban-dependencies": ["error", {
+                                    "presets": ["native", "microutilities", "preferred"]
+        }]
     }
 }];

@@ -87,7 +87,7 @@ export class ComputeBonds extends NodeCore {
 
 	override notifier(data: Structure): void {
 
-		this.inputStructure = data as Structure;
+		this.inputStructure = data;
 
 		if(!this.inputStructure || this.inputStructure.atoms.length === 0) {
 			this.outputEmptyStructure();

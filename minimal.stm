@@ -200,10 +200,10 @@
       "showTrajectories": false,
       "labelKind": "symbol",
       "atomsSelector": "",
-			"maxDisplacement": 0,
+			"maxDisplacement": 1,
 			"showPositionClouds": false,
-			"positionCloudsSideExp": 2,
-			"positionCloudsGrow": 0
+			"positionCloudsSideExp": 5,
+			"positionCloudsGrow": 0.1
     },
     "writer": {
       "format": "XYZ",
