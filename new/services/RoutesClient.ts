@@ -165,7 +165,7 @@ export function getPreferenceSync<T>(key: string, defaultValue: T): T {
 	return value ?? defaultValue;
 }
 
-// > Communication
+// > Communication from main process
 /**
  * Ask to receive the parameters from the main process node
  *
@@ -294,6 +294,44 @@ export const receiveVerticesFromNode = (id: string,
 
     window.electron.ipcRenderer.on(`${id}:${channel}`,
 								   (_event, vertices: number[]) => callback(vertices));
+};
+
+/**
+ * Receive traces coordinates and colors as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Callback function called when a message is received
+ */
+export const receiveTracesFromNode = (id: string,
+									  channel: string,
+									  callback: (segments: number[][],
+									  			 colors: string[]) => void): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`,
+								   (_event,
+								    segments: number[][],
+								    colors: string[]) => callback(segments, colors));
+};
+
+/**
+ * Receive position clouds volumetric data as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Callback function called when a message is received
+ */
+export const receivePositionCloudsFromNode = (id: string,
+									  		  channel: string,
+											  callback: (positionCloud: number[],
+											  			 limits: number[],
+														 count: number) => void): void => {
+
+    window.electron.ipcRenderer.on(`${id}:${channel}`,
+								   (_event,
+								    positionCloud: number[],
+									limits: number[],
+									count: number) => callback(positionCloud, limits, count));
 };
 
 // > Communication to windows

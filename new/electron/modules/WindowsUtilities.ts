@@ -350,7 +350,7 @@ export const askClient = (id: string, channel: string): Promise<string> => {
 };
 
 /**
- * Push structure data to the client
+ * Push structure data to client
  *
  * @param id - ID of the node sending the parameters
  * @param channel - Specify the channel inside the id related group
@@ -362,7 +362,7 @@ export const sendVerticesToClient = (id: string, channel: string, vertices: numb
 };
 
 /**
- * Push orthoslice and isolines data to the client
+ * Push orthoslice and isolines data to client
  *
  * @param id - ID of the node sending the parameters
  * @param channel - Specify the channel inside the id related group
@@ -386,4 +386,37 @@ export const sendIsoOrthoToClient = (id: string,
                              data.isolineVertices,
                              data.isolineValues,
                              data.params);
+};
+
+/**
+ * Push traces data to client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param segments - List of segments coordinates
+ * @param colors - Colors of each segment
+ */
+export const sendTracesToClient = (id: string,
+                                   channel: string,
+                                   segments: number[][],
+                                   colors: string[]): void => {
+
+    mainWin.webContents.send(`${id}:${channel}`, segments, colors);
+};
+
+/**
+ * Push position clouds volumetric data to client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param volume - The volumetric data
+ * @param limits - The limits of the volumetric data
+ */
+export const sendPositionCloudsToClient = (id: string,
+                                           channel: string,
+                                           volume: number[],
+                                           limits: number[],
+                                           count: number): void => {
+
+    mainWin.webContents.send(`${id}:${channel}`, volume, limits, count);
 };

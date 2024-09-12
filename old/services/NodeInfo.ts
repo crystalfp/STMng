@@ -15,7 +15,6 @@ import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
 import {ChartViewer} from "@/nodes/ChartViewer";
-import {Trajectories} from "@/nodes/Trajectories";
 import {Isosurface} from "@/nodes/DrawIsosurface";
 
 interface NodeParts {
@@ -100,7 +99,6 @@ export class NodeInfo {
 			case "measures":
 				break;
 			case "draw-trajectories":
-				map.set(id, new Trajectories(id));
 				break;
 			case "isosurface":
 				map.set(id, new Isosurface(id));
@@ -233,8 +231,6 @@ export class NodeInfo {
 				case "structure-writer":
 					break;
 				case "draw-trajectories":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as Trajectories).saveStatus();
 					break;
 				case "isosurface":
 					if(notFirst) uiStatus += ",";
