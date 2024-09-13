@@ -87,7 +87,7 @@ export abstract class NodeCore {
 	 */
 	protected setupChannels(id: string, channels: ChannelDefinition[]): void {
 		for(const channel of channels) {
-			const channelName = `${id}:${channel.name}`;
+			const channelName = id + ":" + channel.name;
 			ipcMain.removeHandler(channelName);
 
 			switch(channel.type) {

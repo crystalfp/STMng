@@ -198,7 +198,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					const atomZ = atomsZ[currentIdx];
 					const atom: Atom = {
 						atomZ,
-						label: `Atom${currentIdx}`,
+						label: "Atom" + currentIdx.toString(),
 						position
 					};
 					structures[currentStructure].atoms.push(atom);

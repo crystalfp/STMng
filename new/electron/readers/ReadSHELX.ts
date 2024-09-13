@@ -62,7 +62,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			// Get the lines to be used
 			if(lineUC.startsWith("SYMM")) {
 				const sg = lineUC.replace(/\s+\(.+$/, "").replace(/^SYMM\s+/, "");
-				if(spaceGroup) spaceGroup += `\n${sg}`;
+				if(spaceGroup) spaceGroup += "\n" + sg;
 				else spaceGroup = sg;
 			}
 			else if(lineUC.startsWith("LATT")) {

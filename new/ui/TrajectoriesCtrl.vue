@@ -43,12 +43,12 @@ let maxCount = 0;
 
 // > Graphical objects
 const group = new THREE.Group();
-const groupName = `Trajectories-${id}`;
+const groupName = "Trajectories-" + id;
 group.name = groupName;
 group.visible = showTrajectories.value;
 sm.add(group);
 
-const volumeName = `PositionCloudVolume-${id}`;
+const volumeName = "PositionCloudVolume-" + id;
 let volumeMesh: THREE.Mesh | undefined;
 
 // > Initialize the ui

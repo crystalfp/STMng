@@ -92,9 +92,9 @@ export class WriterSHELX implements WriterImplementation {
 				const name = getAtomicSymbol(atom.atomZ);
 				const pos = atomIndices.get(atom.atomZ)!;
 				fs.writeSync(fd, `${name.padEnd(4)} ${pos.toString().padEnd(4)} ` +
-							 	 `${format(fc[3*idx])} ${format(fc[3*idx+1])} ` +
-								 `${format(fc[3*idx+2])}   11.00000   0\n`);
-				++idx;
+							 	 `${format(fc[idx])} ${format(fc[idx+1])} ` +
+								 `${format(fc[idx+2])}   11.00000   0\n`);
+				idx += 3;
 			}
 
 			fs.writeSync(fd, "END\n");

@@ -129,16 +129,20 @@ class AtomData {
 	 */
 	atomicData(atomZ: number): AtomAppearance {
 
-		const rs = this.data[atomZ].red.toString(16).toUpperCase().padStart(2, "0");
-		const gs = this.data[atomZ].green.toString(16).toUpperCase().padStart(2, "0");
-		const bs = this.data[atomZ].blue.toString(16).toUpperCase().padStart(2, "0");
+		const {red, green, blue, symbol, rCov, rVdW, maxBonds} = this.data[atomZ];
+
+		const rs = red.toString(16).toUpperCase().padStart(2, "0");
+		const gs = green.toString(16).toUpperCase().padStart(2, "0");
+		const bs = blue.toString(16).toUpperCase().padStart(2, "0");
+
+		const color = "#" + rs + gs + bs;
 
 		return {
-			symbol:   this.data[atomZ].symbol,
-			rCov: 	  this.data[atomZ].rCov,
-			rVdW:	  this.data[atomZ].rVdW,
-			color:	  `#${rs}${gs}${bs}`,
-			maxBonds: this.data[atomZ].maxBonds
+			symbol,
+			rCov,
+			rVdW,
+			color,
+			maxBonds
 		};
 	}
 

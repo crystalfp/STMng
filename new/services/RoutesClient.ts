@@ -130,14 +130,14 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 	if(project) {
 		let idx = project.lastIndexOf("\\");
 		if(idx < 0) idx = project.lastIndexOf("/");
-    	window.api.setTitle(`${baseTitle} — ${project.slice(idx+1)}`);
+    	window.api.setTitle(baseTitle + " — " + project.slice(idx+1));
 	}
-    else window.api.setTitle(`${baseTitle} — default project`);
+    else window.api.setTitle(baseTitle + " — default project");
 
 	// Receive title updates
 	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
 
-		window.api.setTitle(`${baseTitle} — ${projectPath || "default project"}`);
+		window.api.setTitle(baseTitle + " — " + (projectPath || "default project"));
 	});
 };
 
@@ -174,10 +174,13 @@ export function getPreferenceSync<T>(key: string, defaultValue: T): T {
  * @param params - Parameters to send to the main process node
  * @returns Parameters from the main process node
  */
-export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> =>
-	(params?
-		window.electron.ipcRenderer.invoke(`${id}:${channel}`, params) as Promise<CtrlParams> :
-		window.electron.ipcRenderer.invoke(`${id}:${channel}`) as Promise<CtrlParams>);
+export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> => {
+
+	const channelName = id + ":" + channel;
+	return params?
+		window.electron.ipcRenderer.invoke(channelName, params) as Promise<CtrlParams> :
+		window.electron.ipcRenderer.invoke(channelName) as Promise<CtrlParams>;
+};
 
 /**
  * Send parameters to the main process node
@@ -188,7 +191,8 @@ export const askNode = (id: string, channel: string, params?: CtrlParams): Promi
  */
 export const sendToNode = (id: string, channel: string, params: CtrlParams={}): void => {
 
-	window.electron.ipcRenderer.send(`${id}:${channel}`, params);
+	const channelName = id + ":" + channel;
+	window.electron.ipcRenderer.send(channelName, params);
 };
 
 /**
@@ -200,7 +204,8 @@ export const sendToNode = (id: string, channel: string, params: CtrlParams={}): 
  */
 export const receiveFromNode = (id: string, channel: string, callback: (params: CtrlParams) => void): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`, (_event, params: CtrlParams) => callback(params));
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName, (_event, params: CtrlParams) => callback(params));
 };
 
 /**
@@ -214,7 +219,8 @@ export const receiveFromNodeForRendering = (id: string,
 											channel: string,
 											callback: (renderInfo: StructureRenderInfo) => void): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`,
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
 								   (_event, renderInfo: StructureRenderInfo) => callback(renderInfo));
 };
 
@@ -230,7 +236,8 @@ export const receivePolyhedraFromNode = (id: string,
 										 callback: (vertices: number[][],
 										 			centerAtomsColor: string[]) => void): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`,
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
 				(_event, vertices: number[][], centerAtomsColor: string[]) => callback(vertices, centerAtomsColor));
 };
 
@@ -252,7 +259,8 @@ export const receiveIsoOrthoFromNode = (id: string,
 											params: CtrlParams) => void
 										): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`,
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
 				(_event,
 				 vertices: number[],
 				 indices: number[],
@@ -275,9 +283,10 @@ export const sendViewer3DState = (id: string,
 								  channel: string,
 								  getState: () => string): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`, () => {
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName, () => {
 
-		window.electron.ipcRenderer.send(`${id}:${channel}-res`, getState());
+		window.electron.ipcRenderer.send(channelName + "-res", getState());
 	});
 };
 
@@ -292,7 +301,8 @@ export const receiveVerticesFromNode = (id: string,
 										channel: string,
 										callback: (vertices: number[]) => void): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`,
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
 								   (_event, vertices: number[]) => callback(vertices));
 };
 
@@ -308,7 +318,8 @@ export const receiveTracesFromNode = (id: string,
 									  callback: (segments: number[][],
 									  			 colors: string[]) => void): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`,
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
 								   (_event,
 								    segments: number[][],
 								    colors: string[]) => callback(segments, colors));
@@ -327,7 +338,8 @@ export const receivePositionCloudsFromNode = (id: string,
 											  			 limits: number[],
 														 count: number) => void): void => {
 
-    window.electron.ipcRenderer.on(`${id}:${channel}`,
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
 								   (_event,
 								    positionCloud: number[],
 									limits: number[],

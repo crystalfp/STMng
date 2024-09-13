@@ -58,10 +58,10 @@ const lut = computed(() => {
 
 // > The resulting graphical objects
 let orthosliceMesh: THREE.Mesh | undefined;
-const meshName = `Orthoslice-${id}`;
+const meshName = "Orthoslice-" + id;
 
 let isolinesGroup: THREE.Group | undefined;
-const isolinesName = `Isolines-${id}`;
+const isolinesName = "Isolines-" + id;
 
 // > Initialize the ui
 askNode(id, "init")

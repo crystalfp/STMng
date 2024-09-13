@@ -131,7 +131,7 @@ export const setupSceneHelpers = (): void => {
 const gridHelper = (plane: "XZ" | "XY" | "YZ", gridSide: number): THREE.GridHelper => {
 
 	const grid = new THREE.GridHelper(gridSide, gridSide, "#FF0000");
-	grid.name = `GridHelper${plane}`;
+	grid.name = "GridHelper" + plane;
 
 	if(plane === "XY") {
 		grid.rotateX(Math.PI / 2);

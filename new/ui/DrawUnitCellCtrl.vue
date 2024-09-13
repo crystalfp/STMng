@@ -105,9 +105,9 @@ const indices = [
 ];
 
 // Prepare the names of the various graphical objects
-const nameUC = `DrawUnitCell-${id}`;
-const nameSC = `DrawSupercell-${id}`;
-const nameBV = `DrawBasisVectors-${id}`;
+const nameUC = "DrawUnitCell-" + id;
+const nameSC = "DrawSupercell-" + id;
+const nameBV = "DrawBasisVectors-" + id;
 
 // Prepare the group and add it to the scene
 outBV.name = nameBV;

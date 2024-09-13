@@ -38,7 +38,7 @@ const details    = ref<SelectedAtoms[]>([]);
 
 // Prepare the graphical part
 const group = new THREE.Group();
-const groupName = `AtomSelectors-${id}`;
+const groupName = "AtomSelectors-" + id;
 group.name = groupName;
 sm.add(group);
 

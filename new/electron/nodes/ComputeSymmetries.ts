@@ -294,7 +294,7 @@ export class ComputeSymmetries extends NodeCore {
 
 				structure.atoms.push({
 					atomZ: atomsZ[i],
-					label: `${labels[i]}${i}`,
+					label: labels[i] + i.toString(),
 					position: [
 						fx*basis[0] + fy*basis[3] + fz*basis[6],
 						fx*basis[1] + fy*basis[4] + fz*basis[7],
@@ -310,79 +310,80 @@ export class ComputeSymmetries extends NodeCore {
 		for(let i=0; i < natoms; ++i) {
 
 			const dir = direction[i];
+			const k = 3*i;
 
 			if(dir === 0) continue;
 
 			switch(dir & (X_ANY|Y_ANY|Z_ANY)) {
 
 			case X_ANY:
-				fc.push(dir & X_MIN ? 1 : 0, fc[3*i+1], fc[3*i+2]);
+				fc.push(dir & X_MIN ? 1 : 0, fc[k+1], fc[k+2]);
 				idx.push(idx[i]);
 				break;
 
 			case Y_ANY:
-				fc.push(fc[3*i], dir & Y_MIN ? 1 : 0, fc[3*i+2]);
+				fc.push(fc[k], dir & Y_MIN ? 1 : 0, fc[k+2]);
 				idx.push(idx[i]);
 				break;
 
 			case Z_ANY:
-				fc.push(fc[3*i], fc[3*i+1], dir & Z_MIN ? 1 : 0);
+				fc.push(fc[k], fc[k+1], dir & Z_MIN ? 1 : 0);
 				idx.push(idx[i]);
 				break;
 
 			case X_ANY|Y_ANY:
 				if((dir & (X_MIN|Y_MIN)) !== (X_MIN|Y_MIN)) {
-					fc.push(0, 0, fc[3*i+2]);
+					fc.push(0, 0, fc[k+2]);
 					idx.push(idx[i]);
 				}
 				if((dir & (X_MAX|Y_MIN)) !== (X_MAX|Y_MIN)) {
-					fc.push(1, 0, fc[3*i+2]);
+					fc.push(1, 0, fc[k+2]);
 					idx.push(idx[i]);
 				}
 				if((dir & (X_MIN|Y_MAX)) !== (X_MIN|Y_MAX)) {
-					fc.push(0, 1, fc[3*i+2]);
+					fc.push(0, 1, fc[k+2]);
 					idx.push(idx[i]);
 				}
 				if((dir & (X_MAX|Y_MAX)) !== (X_MAX|Y_MAX)) {
-					fc.push(1, 1, fc[3*i+2]);
+					fc.push(1, 1, fc[k+2]);
 					idx.push(idx[i]);
 				}
 				break;
 
 			case X_ANY|Z_ANY:
 				if((dir & (X_MIN|Z_MIN)) !== (X_MIN|Z_MIN)) {
-					fc.push(0, fc[3*i+1], 0);
+					fc.push(0, fc[k+1], 0);
 					idx.push(idx[i]);
 				}
 				if((dir & (X_MAX|Z_MIN)) !== (X_MAX|Z_MIN)) {
-					fc.push(1, fc[3*i+1], 0);
+					fc.push(1, fc[k+1], 0);
 					idx.push(idx[i]);
 				}
 				if((dir & (X_MIN|Z_MAX)) !== (X_MIN|Z_MAX)) {
-					fc.push(0, fc[3*i+1], 1);
+					fc.push(0, fc[k+1], 1);
 					idx.push(idx[i]);
 				}
 				if((dir & (X_MAX|Z_MAX)) !== (X_MAX|Z_MAX)) {
-					fc.push(1, fc[3*i+1], 1);
+					fc.push(1, fc[k+1], 1);
 					idx.push(idx[i]);
 				}
 				break;
 
 			case Y_ANY|Z_ANY:
 				if((dir & (Y_MIN|Z_MIN)) !== (Y_MIN|Z_MIN)) {
-					fc.push(fc[3*i], 0, 0);
+					fc.push(fc[k], 0, 0);
 					idx.push(idx[i]);
 				}
 				if((dir & (Y_MAX|Z_MIN)) !== (Y_MAX|Z_MIN)) {
-					fc.push(fc[3*i], 1, 0);
+					fc.push(fc[k], 1, 0);
 					idx.push(idx[i]);
 				}
 				if((dir & (Y_MIN|Z_MAX)) !== (Y_MIN|Z_MAX)) {
-					fc.push(fc[3*i], 0, 1);
+					fc.push(fc[k], 0, 1);
 					idx.push(idx[i]);
 				}
 				if((dir & (Y_MAX|Z_MAX)) !== (Y_MAX|Z_MAX)) {
-					fc.push(fc[3*i], 1, 1);
+					fc.push(fc[k], 1, 1);
 					idx.push(idx[i]);
 				}
 				break;
@@ -434,7 +435,7 @@ export class ComputeSymmetries extends NodeCore {
 
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
-				label: `${labels[idx[i]]}${i}`,
+				label: labels[idx[i]] + i.toString(),
 				position: [
 					fx*basis[0] + fy*basis[3] + fz*basis[6],
 					fx*basis[1] + fy*basis[4] + fz*basis[7],
@@ -475,7 +476,7 @@ export class ComputeSymmetries extends NodeCore {
 
 			structure.atoms.push({
 				atomZ: atomsZ[i],
-				label: `${getAtomicSymbol(atomsZ[i])}${i}`,
+				label: getAtomicSymbol(atomsZ[i]) + i.toString(),
 				position: [
 					fx*basis[0] + fy*basis[3] + fz*basis[6],
 					fx*basis[1] + fy*basis[4] + fz*basis[7],

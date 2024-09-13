@@ -60,12 +60,12 @@ export class WriterPOSCAR implements WriterImplementation {
 					let idx = 0;
 					for(const atom of atoms) {
 						if(atom.atomZ === item[0]) {
-							const x = format(fc[3*idx]);
-							const y = format(fc[3*idx+1]);
-							const z = format(fc[3*idx+2]);
+							const x = format(fc[idx]);
+							const y = format(fc[idx+1]);
+							const z = format(fc[idx+2]);
 							fs.writeSync(fd, `${x} ${y} ${z}\n`);
 						}
-						++idx;
+						idx += 3;
 					}
 				}
 			}

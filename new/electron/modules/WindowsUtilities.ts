@@ -301,7 +301,8 @@ export const sendAlertMessage = (text: string, from?: string): void => {
  */
 export const sendToClient = (id: string, channel: string, params: CtrlParams={}): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, params);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName, params);
 };
 
 /**
@@ -315,7 +316,8 @@ export const sendToClientForRendering = (id: string,
                                          channel: string,
                                          renderInfo: StructureRenderInfo): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, renderInfo);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName, renderInfo);
 };
 
 /**
@@ -331,7 +333,8 @@ export const sendPolyhedraToClient = (id: string,
                                       vertices: number[][],
                                       centerAtomsColor: string[]): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, vertices, centerAtomsColor);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName, vertices, centerAtomsColor);
 };
 
 /**
@@ -343,9 +346,10 @@ export const sendPolyhedraToClient = (id: string,
  */
 export const askClient = (id: string, channel: string): Promise<string> => {
 
-    mainWin.webContents.send(`${id}:${channel}`);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName);
     return new Promise((resolve) => {
-        ipcMain.on(`${id}:${channel}-res`, (_event: unknown, answer: string): void => resolve(answer));
+        ipcMain.on(channelName + "-res", (_event: unknown, answer: string): void => resolve(answer));
     });
 };
 
@@ -358,7 +362,8 @@ export const askClient = (id: string, channel: string): Promise<string> => {
  */
 export const sendVerticesToClient = (id: string, channel: string, vertices: number[]): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, vertices);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName, vertices);
 };
 
 /**
@@ -379,7 +384,8 @@ export const sendIsoOrthoToClient = (id: string,
                                         params: CtrlParams;
                                      }): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`,
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName,
                              data.vertices,
                              data.indices,
                              data.values,
@@ -401,7 +407,8 @@ export const sendTracesToClient = (id: string,
                                    segments: number[][],
                                    colors: string[]): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, segments, colors);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName, segments, colors);
 };
 
 /**
@@ -418,5 +425,6 @@ export const sendPositionCloudsToClient = (id: string,
                                            limits: number[],
                                            count: number): void => {
 
-    mainWin.webContents.send(`${id}:${channel}`, volume, limits, count);
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName, volume, limits, count);
 };

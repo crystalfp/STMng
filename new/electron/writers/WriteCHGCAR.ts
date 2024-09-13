@@ -60,9 +60,10 @@ export class WriterCHGCAR implements WriterImplementation {
 					let idx = 0;
 					for(const atom of atoms) {
 						if(atom.atomZ === item[0]) {
-							const x = format(fc[3*idx]);
-							const y = format(fc[3*idx+1]);
-							const z = format(fc[3*idx+2]);
+							const j = 3*idx;
+							const x = format(fc[j]);
+							const y = format(fc[j+1]);
+							const z = format(fc[j+2]);
 							fs.writeSync(fd, `${x} ${y} ${z}\n`);
 						}
 						++idx;

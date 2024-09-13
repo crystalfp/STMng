@@ -40,7 +40,7 @@ const material = new THREE.MeshLambertMaterial({
 									});
 
 const group: THREE.Group = new THREE.Group();
-group.name = `DrawPolyhedra-${id}`;
+group.name = "DrawPolyhedra-" + id;
 sm.add(group);
 
 askNode(id, "init")

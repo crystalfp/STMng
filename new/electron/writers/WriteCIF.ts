@@ -83,9 +83,9 @@ export class WriterCIF implements WriterImplementation {
 				for(const atom of atoms) {
 					const name = getAtomicSymbol(atom.atomZ);
 					fs.writeSync(fd, `${name.padEnd(4)} ${atom.label.padEnd(4)} ` +
-									 `${format(fc[3*idx])} ${format(fc[3*idx+1])} ` +
-									 `${format(fc[3*idx+2])}\n`);
-					++idx;
+									 `${format(fc[idx])} ${format(fc[idx+1])} ` +
+									 `${format(fc[idx+2])}\n`);
+					idx += 3;
 				}
 
 				++step;

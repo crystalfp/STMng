@@ -183,7 +183,7 @@ export class ComputeFingerprints extends NodeCore {
         this.energyThreshold = params.energyThreshold as number ?? 0;
 
 		try {
-			const energiesRaw = `${fs.readFileSync(filename, "utf8")}\n`;
+			const energiesRaw = fs.readFileSync(filename, "utf8") + "\n";
 			this.energyPerStructure = energiesRaw
 											.replaceAll(/\s+/g, "\n")
 											.split("\n")

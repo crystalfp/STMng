@@ -253,7 +253,7 @@ export default [{
         "@stylistic/no-extra-parens": ["warn", "functions"],
         "no-invalid-this": "off",
         "@typescript-eslint/no-invalid-this": ["off", {capIsConstructor: false}],
-        "prefer-template": "warn",
+        "prefer-template": "off",
         "@stylistic/semi": ["error", "always"],
         "@typescript-eslint/explicit-function-return-type": ["warn", {allowExpressions: true}],
         "@typescript-eslint/method-signature-style": "warn",

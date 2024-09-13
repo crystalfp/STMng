@@ -47,7 +47,7 @@ export class Isosurface {
     constructor(private readonly id: string) {
 
         // Create the group that will contains one or more isosurfaces
-        this.group.name = `Isosurfaces-${this.id}`;
+        this.group.name = "Isosurfaces-" + this.id;
         sm.clearGroup(this.group.name, true);
         sm.add(this.group);
 

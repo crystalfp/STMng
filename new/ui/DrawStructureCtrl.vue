@@ -44,6 +44,7 @@ const sphereSubdivisions   = [0, 0, 1, 3,  9];
 const cylinderSubdivisions = [0, 3, 5, 8, 16];
 const rCovScale = 0.5;
 let renderInfo: StructureRenderInfo;
+const outName = "DrawStructure-" + id;
 
 resetAlertMessage("system");
 askNode(id, "init")
@@ -271,7 +272,7 @@ const setDirection = (nx: number, ny: number, nz: number, quaternion: THREE.Quat
 const drawStructure = (): void => {
 
     // Clear previous structure
-    sm.clearGroup(`DrawStructure-${id}`);
+    sm.clearGroup(outName);
     atomsGroup.clear();
     bondsGroup.clear();
     labelsGroup.clear();
@@ -462,7 +463,7 @@ const showCombined = computed({
 atomsGroup.name  = "Atoms";
 bondsGroup.name  = "Bonds";
 labelsGroup.name = "Labels";
-out.name         = `DrawStructure-${id}`;
+out.name         = outName;
 
 // Combine the groups
 out.add(atomsGroup, bondsGroup, labelsGroup);

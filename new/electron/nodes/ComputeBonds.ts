@@ -154,7 +154,7 @@ export class ComputeBonds extends NodeCore {
 
 				if(add) {
 					this.perPairData.push({
-						label:  `${getAtomicSymbol(z[i])} – ${getAtomicSymbol(z[j])}`,
+						label:  getAtomicSymbol(z[i]) + " – " + getAtomicSymbol(z[j]),
 						atomZi: z[i],
 						atomZj: z[j],
 						scale:  1.1

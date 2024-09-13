@@ -97,9 +97,10 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 					if(fields.length < 4) throw Error(`Malformed file (basis line ${idxBasis+1})`);
 					subdivisions[idxBasis] = Number.parseInt(fields[0]);
-					sides[3*idxBasis]   = Number.parseFloat(fields[1]);
-					sides[3*idxBasis+1] = Number.parseFloat(fields[2]);
-					sides[3*idxBasis+2] = Number.parseFloat(fields[3]);
+					const j = 3*idxBasis;
+					sides[j]   = Number.parseFloat(fields[1]);
+					sides[j+1] = Number.parseFloat(fields[2]);
+					sides[j+2] = Number.parseFloat(fields[3]);
 
 					++idxBasis;
 					if(idxBasis === 3) {
@@ -114,9 +115,10 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 						// Compute the unit cell and adjust the origin
 						for(let i=0; i < 3; ++i) {
-							crystal.basis[3*i]   = sides[3*i]*subdivisions[i];
-							crystal.basis[3*i+1] = sides[3*i+1]*subdivisions[i];
-							crystal.basis[3*i+2] = sides[3*i+2]*subdivisions[i];
+							const k = 3*i;
+							crystal.basis[k]   = sides[k]*subdivisions[i];
+							crystal.basis[k+1] = sides[k+1]*subdivisions[i];
+							crystal.basis[k+2] = sides[k+2]*subdivisions[i];
 
 							structure.volume[0].sides[i] = subdivisions[i]+1;
 						}
