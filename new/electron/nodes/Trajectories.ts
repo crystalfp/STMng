@@ -43,6 +43,7 @@ export class Trajectories extends NodeCore {
 	];
 
 	constructor(private readonly id: string) {
+
 		super();
 		this.setupChannels(this.id, this.channels);
 	}
@@ -137,7 +138,6 @@ export class Trajectories extends NodeCore {
 	}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "TrajectoriesCtrl",
@@ -180,13 +180,14 @@ export class Trajectories extends NodeCore {
 		let segmentStartIndex = 0;
 		for(let i=1; i < npoints; ++i) {
 
+			// Compute segment length
 			const j = i*3;
 			const k = (i-1)*3;
 			const dx = points[j]   - points[k];
 			const dy = points[j+1] - points[k+1];
 			const dz = points[j+2] - points[k+2];
-
 			const length = Math.hypot(dx, dy, dz);
+
 			if(length > maxLength) {
 
 				// Finish previous segment

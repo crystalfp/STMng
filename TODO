@@ -26,6 +26,8 @@ ToDo eventually:
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}`
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
+  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
+  ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Study:
   ☐ Check the order of entries in objects

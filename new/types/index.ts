@@ -19,9 +19,6 @@ export type BasisType = [
     cx: number, cy: number, cz: number
 ];
 
-/** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
-type BondType = "h" | "n" | "x";
-
 /** One atom in the structure or in the structure of one step */
 export interface Atom {
 
@@ -42,10 +39,10 @@ export interface Bond {
     from: number;
 
     /** Index in the list of atoms where the bond ends */
-    to:   number;
+    to: number;
 
-    /** Kind of bond */
-    type: BondType;
+    /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
+    type: "h" | "n" | "x";
 }
 
 /** Crystallographic data */
@@ -101,9 +98,6 @@ interface GraphNode {
 	in?: string;
 }
 
-/** The graph structure as read from file */
-type ProjectGraph = Record<string, GraphNode>; // The key is the node id
-
 /** Type of the node state variables */
 export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>;
 
@@ -143,9 +137,17 @@ export interface ViewerState {
 
 /** The project structure on disk */
 export interface Project {
-    graph: ProjectGraph;
+
+    /** The graph structure as read from file (The key is the node id) */
+    graph: Record<string, GraphNode>;
+
+    /** The id of the selected node */
     currentId?: string;
+
+    /** The state of the viewer */
     viewer?: ViewerState;
+
+    /** The state of the other nodes (The key is the node id) */
     ui?: Record<string, CtrlParams>;
 }
 
@@ -212,25 +214,6 @@ export type ChannelDefinition =
         type: "send";
         callback: (params: CtrlParams) => void;
     };
-
-/** Appearance of the various atoms types */
-export interface AtomAppearance {
-
-	/** Element symbol */
-	symbol: string;
-
-	/** Covalent radii (in Angstrom). 1.6 if unknown */
-	rCov: number;
-
-	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
-	rVdW: number;
-
-	/** Atom color as an hex string (#RRGGBB) */
-	color: string;
-
-    /** Maximum number of bonds for the element type */
-    maxBonds: number;
-}
 
 /** Options object for the readers */
 export interface ReaderOptions {

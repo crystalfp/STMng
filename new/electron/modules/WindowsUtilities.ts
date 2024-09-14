@@ -12,7 +12,6 @@ import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
-import {setupRelayToMainWin, setupRelayFromMainWin} from "../../../old/electron/modules/RelayForMainWin";
 import favicon from "../../assets/favicon.png";
 import type {ClientProjectInfo, CtrlParams, StructureRenderInfo, WindowsParams} from "../../types";
 
@@ -33,8 +32,9 @@ const DIST = path.join(mainSourceDirectory, "..", "dist");
  *
  * @param width - Default width of the main window
  * @param height - Default height of the main window
+ * @param isDevelopment - If the developer tools should be shown on the main window
  */
-export const createMainWindow = (width = 1000, height = 675): void => {
+export const createMainWindow = (width: number, height: number, isDevelopment: boolean): void => {
 
     mainWin = new BrowserWindow({
         webPreferences: {
@@ -67,10 +67,6 @@ export const createMainWindow = (width = 1000, height = 675): void => {
     mainWin.once("ready-to-show", () => {
 
         mainWin.maximize();
-
-        // Setup relay between windows
-        setupRelayToMainWin(mainWin);
-        setupRelayFromMainWin();
     });
 
     if(VITE_DEV_SERVER_URL) {
@@ -101,7 +97,7 @@ export const createMainWindow = (width = 1000, height = 675): void => {
     ipcMain.on("WINDOW:SEND", sendToSecondaryWindow);
 
     // Setup the system menu
-    setupMenu();
+    setupMenu(isDevelopment);
 };
 
 // > Create a secondary window

@@ -23,9 +23,7 @@ let systemMenu: Menu;
 /**
  * Prepare the application menu
  */
-export const setupMenu = (): void => {
-
-    const isDevelopment = import.meta.env.DEV;
+export const setupMenu = (isDevelopment: boolean): void => {
 
     const template: MenuItemConstructorOptions[] = [
         {

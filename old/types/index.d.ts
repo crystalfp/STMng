@@ -84,9 +84,9 @@ export interface GraphNode {
 import type {UiParams} from "@/services/Switchboard";
 import type {Structure, PositionType} from "../../new/types";
 
-export type ProjectGraph = Record<string, GraphNode>; // The key is the node id
+type ProjectGraph = Record<string, GraphNode>; // The key is the node id
 
-export interface Project {
+interface Project {
     graph: ProjectGraph;
     currentId?: string;
     viewer?: {

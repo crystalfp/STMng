@@ -10,7 +10,6 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {app} from "electron";
-import type {AtomAppearance} from "../../types";
 
 // ##############################################################################
 // #                                                                            #
@@ -73,6 +72,25 @@ interface OneAtomData {
 
 	/** Element name (in English) */
 	name: string;
+}
+
+/** Appearance of the various atoms types */
+interface AtomAppearance {
+
+	/** Element symbol */
+	symbol: string;
+
+	/** Covalent radii (in Angstrom). 1.6 if unknown */
+	rCov: number;
+
+	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
+	rVdW: number;
+
+	/** Atom color as an hex string (#RRGGBB) */
+	color: string;
+
+    /** Maximum number of bonds for the element type */
+    maxBonds: number;
 }
 
 class AtomData {

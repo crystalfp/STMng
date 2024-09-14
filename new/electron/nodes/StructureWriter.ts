@@ -53,8 +53,8 @@ export class StructureWriter extends NodeCore {
 
 	loadStatus(params: CtrlParams): void {
 
-    	this.format = params.format as string ?? ""; //
-    	this.continuous = params.continuous as boolean ?? false; //
+    	this.format = params.format as string ?? "";
+    	this.continuous = params.continuous as boolean ?? false;
 	}
 
 	getUiInfo(): UiInfo {

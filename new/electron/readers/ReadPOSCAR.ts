@@ -77,11 +77,11 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 					const fields = line.trim().split(/ +/);
 					const {basis} = structures[currentStep].crystal;
-					basis[base*3]   = Number.parseFloat(fields[0]);
-					basis[base*3+1] = Number.parseFloat(fields[1]);
-					basis[base*3+2] = Number.parseFloat(fields[2]);
-					++base;
-					if(base === 3) {
+					basis[base]   = Number.parseFloat(fields[0]);
+					basis[base+1] = Number.parseFloat(fields[1]);
+					basis[base+2] = Number.parseFloat(fields[2]);
+					base += 3;
+					if(base === 9) {
 						lineType = LineType.counts;
 						base = 0;
 

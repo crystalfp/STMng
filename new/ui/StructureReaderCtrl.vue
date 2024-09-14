@@ -12,7 +12,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import type {CtrlParams} from "../types";
+import type {CtrlParams, FileFilter} from "../types";
 
 import EnableCapture from "../components/EnableCapture.vue";
 
@@ -214,7 +214,7 @@ const selectedAuxFile = (filename: string): void => {
  */
 const filterFromFormat = (fileFormat: string): string => {
 
-    let filter = [{name: "All",	extensions: ["*"]}];
+    let filter: FileFilter[] = [{name: "All",	extensions: ["*"]}];
 	switch(fileFormat) {
 		case "CHGCAR":
 			filter = [{name: "CHGCAR",	        extensions: ["chgcar"]},

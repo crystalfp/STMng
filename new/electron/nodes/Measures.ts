@@ -43,8 +43,8 @@ export class Measures extends NodeCore {
 
 	saveStatus(): string {return "";}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
-	loadStatus(_params: CtrlParams): void {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	loadStatus(): void {}
 
 	getUiInfo(): UiInfo {
 

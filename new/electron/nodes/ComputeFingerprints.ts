@@ -98,18 +98,16 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	loadStatus(params: CtrlParams): void {
-
 		this.enableEnergyThreshold = params.enableEnergyThreshold as boolean ?? false;
 		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
 		this.energyThreshold = params.energyThreshold as number ?? 0;
 	}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "ComputeFingerprintsCtrl",
-			graphic: "out",
+			graphic: "none",
 			channels: this.channels.map((channel) => channel.name)
 		};
 	}

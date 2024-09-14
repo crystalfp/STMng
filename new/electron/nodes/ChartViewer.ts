@@ -38,11 +38,10 @@ export class ChartViewer extends NodeCore {
 	}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "ChartViewerCtrl",
-			graphic: "out",
+			graphic: "none",
 			channels: ["1"]
 		};
 	}

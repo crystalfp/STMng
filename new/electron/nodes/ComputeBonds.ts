@@ -59,6 +59,9 @@ const displacementCoefficients = [
 	[1, -1, -1],
 ];
 
+/** Possible atoms Z value to form a H bond */
+const atomZForH = new Set([7, 8, 9, 16]);
+
 export class ComputeBonds extends NodeCore {
 
 	protected readonly name = "ComputeBonds";
@@ -444,7 +447,7 @@ export class ComputeBonds extends NodeCore {
 	 * @param atomZ - Atomic number of the X or Y atoms
 	 * @returns True if an H bond could form
 	 */
-	atomForHBond(atomZ: number): boolean {return [7, 8, 9, 16].includes(atomZ);}
+	private atomForHBond(atomZ: number): boolean {return atomZForH.has(atomZ);}
 
 	// > Compute the valence angle
 	/**
@@ -455,7 +458,7 @@ export class ComputeBonds extends NodeCore {
 	* @param atomY - Atom at the other side
 	* @returns Valence angle in degrees
 	*/
-	valenceAngle(atomH: Atom, atomX: Atom, atomY: Atom): number {
+	private valenceAngle(atomH: Atom, atomX: Atom, atomY: Atom): number {
 
 		const v0 = atomH.position[0] - atomX.position[0];
 		const w0 = atomY.position[0] - atomX.position[0];
@@ -549,8 +552,10 @@ export class ComputeBonds extends NodeCore {
 
 				// Check for H-bond
 				if(computeHBonds &&
-				   ((atomZi === 1 && this.atomForHBond(atomZj)) || (atomZj === 1 && this.atomForHBond(atomZi))) &&
-				   (distSquared <= maxDistanceHbondSquared) && (distSquared > sumRcovSquared)) {
+				   ((atomZi === 1 && this.atomForHBond(atomZj)) ||
+				    (atomZj === 1 && this.atomForHBond(atomZi))) &&
+				   (distSquared <= maxDistanceHbondSquared) &&
+				   (distSquared > sumRcovSquared)) {
 
 					bonds.push({from: i, to: j, type: "h"});
 				}
@@ -703,11 +708,10 @@ export class ComputeBonds extends NodeCore {
 	}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "ComputeBondsCtrl",
-			graphic: "out",
+			graphic: "none",
 			channels: this.channels.map((channel) => channel.name)
 		};
 	}

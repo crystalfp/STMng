@@ -11,6 +11,7 @@ import {ref, computed} from "vue";
 import {useControlStore} from "../stores/controlStore";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
+import type {FileFilter} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -102,7 +103,7 @@ const startStopCapture = (): void => {
  */
 const filterFromFormat = (fileFormat: string): string => {
 
-    let filters = [{name: "All",	extensions: ["*"]}];
+    let filters: FileFilter[] = [{name: "All",	extensions: ["*"]}];
 	switch(fileFormat) {
         case "CHGCAR":
             filters = [{name: "CHGCAR",	extensions: ["chgcar"]},

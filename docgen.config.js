@@ -66,7 +66,7 @@ module.exports = {
 
   ${functional ? renderedUsage.functionalTag : ''}
   ${author ? `Author: ${author}` : ""}
-  ${since ? `Since: ${since}` : ""}
+  ${since ? `\nCreated: ${since}` : ""}
   ${version ? `Version: ${version[0].description}\n` : ''}
   ${see ? see.map(s => `[See](${s.description})\n`) : ''}
   ${link ? link.map(l => `[See](${l.description})\n`) : ''}
@@ -87,6 +87,10 @@ module.exports = {
 		{
 		  components: "components/*.vue",
 		  outFile: "components.md"
+		},
+		{
+		  components: "ui/*.vue",
+		  outFile: "ui.md"
 		},
 		{
 		  components: "widgets/*.vue",

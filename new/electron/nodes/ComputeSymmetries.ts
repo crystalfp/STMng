@@ -65,6 +65,9 @@ const X_ANY = 0x001;
 const Y_ANY = 0x002;
 const Z_ANY = 0x004;
 
+/** Space groups that are no symmetries */
+const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1"]);
+
 export class ComputeSymmetries extends NodeCore {
 
 	protected readonly name = "ComputeSymmetries";
@@ -122,7 +125,6 @@ export class ComputeSymmetries extends NodeCore {
 	}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "ComputeSymmetriesCtrl",
@@ -156,7 +158,7 @@ export class ComputeSymmetries extends NodeCore {
 		}
 
 		// If only apply symmetries, but no symmetry, copy input structure to output
-		const noSymmetries = ["", "P1", "P 1"].includes(crystal.spaceGroup);
+		const noSymmetries = noSymmetriesSpaceGroup.has(crystal.spaceGroup);
 		if(this.applyInputSymmetries && !this.enableFindSymmetries && noSymmetries) {
 			this.notify(this.inputStructure);
 			this.showComputedSymmetry();
@@ -268,9 +270,10 @@ export class ComputeSymmetries extends NodeCore {
 		const direction = Array(natoms).fill(0) as number[];
 		for(let i=0; i < natoms; ++i) {
 
-			const xf = fractionalCoordinates[i*3];
-			const yf = fractionalCoordinates[i*3+1];
-			const zf = fractionalCoordinates[i*3+2];
+			const k = i*3;
+			const xf = fractionalCoordinates[k];
+			const yf = fractionalCoordinates[k+1];
+			const zf = fractionalCoordinates[k+2];
 
 			// Mark atoms exactly on the border
 			if(xf < tol && xf > -tol)          	direction[i]  = X_MIN|X_ANY;
@@ -288,9 +291,10 @@ export class ComputeSymmetries extends NodeCore {
 
 			for(let i=0; i < natoms; ++i) {
 
-				const fx = fractionalCoordinates[i*3];
-				const fy = fractionalCoordinates[i*3+1];
-				const fz = fractionalCoordinates[i*3+2];
+				const k = i*3;
+				const fx = fractionalCoordinates[k];
+				const fy = fractionalCoordinates[k+1];
+				const fz = fractionalCoordinates[k+2];
 
 				structure.atoms.push({
 					atomZ: atomsZ[i],
@@ -429,9 +433,10 @@ export class ComputeSymmetries extends NodeCore {
 		natoms = fractionalCoordinates.length / 3;
 		for(let i=0; i < natoms; ++i) {
 
-			const fx = fractionalCoordinates[i*3];
-			const fy = fractionalCoordinates[i*3+1];
-			const fz = fractionalCoordinates[i*3+2];
+			const k = i*3;
+			const fx = fractionalCoordinates[k];
+			const fy = fractionalCoordinates[k+1];
+			const fz = fractionalCoordinates[k+2];
 
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
@@ -470,9 +475,10 @@ export class ComputeSymmetries extends NodeCore {
 		const natoms = atomsZ.length;
 		for(let i=0; i < natoms; ++i) {
 
-			const fx = fractionalCoordinates[i*3];
-			const fy = fractionalCoordinates[i*3+1];
-			const fz = fractionalCoordinates[i*3+2];
+			const k = i*3;
+			const fx = fractionalCoordinates[k];
+			const fy = fractionalCoordinates[k+1];
+			const fz = fractionalCoordinates[k+2];
 
 			structure.atoms.push({
 				atomZ: atomsZ[i],

@@ -29,6 +29,7 @@ program
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
+	.option("-e, --enable", "enable developer tools in production")
     .addHelpText("before", " ")
     .addHelpText("after", " ");
 
@@ -39,11 +40,16 @@ interface ProgramOptions {
     theme?: "dark" | "light";
     default?: boolean;
     verbose?: boolean;
+    enable?: boolean;
 }
 const options = program.opts<ProgramOptions>();
 
 // Verbose can be set also with the "STM_NG_VERBOSE" environment variable set to any value
 const verbose = options.verbose ?? process.env.STM_NG_VERBOSE !== undefined;
+
+// Tools can be enabled in production also with the "STM_NG_ENABLE" environment variable set to any value
+const enable = options.enable ?? process.env.STM_NG_ENABLED !== undefined;
+const isDevelopment = import.meta.env.DEV || enable;
 
 // > Setup the main process
 // Initialize the logger
@@ -82,10 +88,10 @@ app.whenReady().then(() => {
     // Create an initial window that fills the screen's available work area.
     const {width, height} = electronScreen.getPrimaryDisplay().workAreaSize;
 
-    createMainWindow(width, height);
+    createMainWindow(width, height, isDevelopment);
 
     app.on("activate", () => {
-        if(BrowserWindow.getAllWindows().length === 0) createMainWindow(width, height);
+        if(BrowserWindow.getAllWindows().length === 0) createMainWindow(width, height, isDevelopment);
     });
 
     // Load project

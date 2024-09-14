@@ -66,7 +66,7 @@ class SceneManager {
         object.removeFromParent();
 	}
 
-	private readonly lights: string[] = ["AmbientLight", "DirectionalLight"];
+	private readonly lights = new Set(["AmbientLight", "DirectionalLight"]);
 
 	/**
 	 * Clear the scene of all graphical objects
@@ -75,7 +75,7 @@ class SceneManager {
 
 		for(const object of SceneManager.scene.children) {
 
-			if(this.lights.includes(object.type)) continue;
+			if(this.lights.has(object.type)) continue;
 			this.removeObjectsWithChildren(object);
 		}
 	}

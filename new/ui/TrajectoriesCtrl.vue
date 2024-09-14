@@ -288,11 +288,9 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
     for(const segment of segments) {
 
         const points: THREE.Vector3[] = [];
-        const len = segment.length/3;
-
-        for(let i=0; i < len; ++i) {
-            const j = i*3;
-            points.push(new THREE.Vector3(segment[j], segment[j+1], segment[j+2]));
+        const len = segment.length;
+        for(let i=0; i < len; i+=3) {
+            points.push(new THREE.Vector3(segment[i], segment[i+1], segment[i+2]));
         }
 
         const geometry = new THREE.BufferGeometry().setFromPoints(points);

@@ -37,11 +37,10 @@ export class CaptureView extends NodeCore {
 		return "";
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
-	loadStatus(_params: CtrlParams): void {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	loadStatus(): void {}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "CaptureMediaCtrl",

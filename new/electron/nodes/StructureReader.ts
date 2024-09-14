@@ -24,7 +24,8 @@ import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
 
 import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
 
-const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj", "POSCAR + XDATCAR"]);
+const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
+										   "LAMMPStrj", "POSCAR + XDATCAR"]);
 
 export class StructureReader extends NodeCore {
 

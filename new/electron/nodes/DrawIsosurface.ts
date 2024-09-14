@@ -38,7 +38,6 @@ export class DrawIsosurface extends NodeCore {
 	}
 
 	getUiInfo(): UiInfo {
-
 		return {
 			id: this.id,
 			ui: "DrawIsosurfaceCtrl",

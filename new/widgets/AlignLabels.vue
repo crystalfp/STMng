@@ -19,6 +19,7 @@ const {labelWidth = "2rem"} = defineProps<{
 
 <template>
 <v-container class="pl-1">
+  <!-- @slot Here add the sliders whose labels should have the same width -->
   <slot />
 </v-container>
 </template>
