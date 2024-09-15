@@ -36,7 +36,7 @@ const showPositionClouds = ref(false);
 
 const positionCloudsGrow = ref(0.1);
 const positionCloudsSideExp = ref(5);
-let positionCloudsSide = 32;
+let positionCloudsSide = 32; // This is 2**positionCloudsSideExp
 let positionCloud: Float32Array | undefined;
 const positionLimits: number[] = [];
 let maxCount = 0;
@@ -167,15 +167,22 @@ const createCloudsMaterial = (): THREE.ShaderMaterial => {
 
 /**
  * Create the volume that will enclose the position clouds
+ *
+ * @param volume - The volumetric data
  */
-const createCloudVolume = (): void => {
+const createCloudVolume = (volume?: number[]): void => {
 
     if(positionLimits.length === 0) return;
 
-    positionCloud = new Float32Array(positionCloudsSide*
-                                     positionCloudsSide*
-                                     positionCloudsSide);
-    positionCloud.fill(0);
+    if(volume) {
+        positionCloud = new Float32Array(volume);
+    }
+    else {
+        positionCloud = new Float32Array(positionCloudsSide*
+                                         positionCloudsSide*
+                                         positionCloudsSide);
+        positionCloud.fill(0);
+    }
 
     const sx = positionLimits[3];
     const sy = positionLimits[4];
@@ -192,6 +199,9 @@ const createCloudVolume = (): void => {
     sm.add(volumeMesh);
 };
 
+/**
+ * Clear the volumetric mesh
+ */
 const removePositionClouds = (): void => {
 
     sm.deleteMesh(volumeName);
@@ -249,7 +259,7 @@ watch([labelKind, atomsSelector], () => {
     });
 });
 
-/** Capture selection of atoms to trace */
+/** Max displacement to consider a single trace */
 watch([maxDisplacement], () => {
 
     sendToNode(id, "gap", {
@@ -280,7 +290,13 @@ watch([showPositionClouds, positionCloudsSideExp, positionCloudsGrow],
     });
 });
 
-receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): void => {
+/**
+ * Receive a set of traces
+ *
+ * @param segments - List of coordinates arrays for each trace segment
+ * @param colors - Color of each segment
+ */
+const receiveTraces = (segments: number[][], colors: string[]): void => {
 
 	sm.clearGroup(groupName);
 
@@ -299,16 +315,27 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
         group.add(line);
         ++idx;
     }
-});
+};
+receiveTracesFromNode(id, "traces", receiveTraces);
 
-receivePositionCloudsFromNode(id, "volume", (volume: number[], limits: number[], count: number): void => {
+/**
+ * Receive volumetric data
+ *
+ * @param volume - Volumetric data
+ * @param limits - Limits of the volumetric data [volume origin (x3), volume sides (x3)]
+ * @param count - Max count of presence in the volume cells
+ */
+const receivePositionClouds = (volume: number[], limits: number[], count: number): void => {
 
     maxCount = count;
     for(let i=0; i < 6; ++i) positionLimits[i] = limits[i];
 
-    // TBD
-    void volume;
-});
+    if(volumeMesh) removePositionClouds();
+    if(showPositionClouds.value) {
+        createCloudVolume(volume);
+    }
+};
+receivePositionCloudsFromNode(id, "volume", receivePositionClouds);
 
 </script>
 

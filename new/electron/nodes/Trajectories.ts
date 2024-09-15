@@ -25,7 +25,7 @@ export class Trajectories extends NodeCore {
 	private showPositionClouds = false;
 	private positionCloudsSideExp = 5;
 	private positionCloudsGrow = 0.1;
-	private positionCloudsSide = 2**this.positionCloudsSideExp;
+	private positionCloudsSide = 32; // This is 2**this.positionCloudsSideExp;
 	private readonly traces: number[][] = [];
 	private readonly tracesColor: string[] = [];
 	private nextSteps = false;
@@ -146,6 +146,7 @@ export class Trajectories extends NodeCore {
 		};
 	}
 
+	// > Trace lines methods
 	/**
 	 * Draw trajectory lines (split in segments to avoid big jumps)
 	 */

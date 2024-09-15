@@ -13,6 +13,7 @@ import yaml from "js-yaml";
 
 /**
  * Store parameters
+ * @notExported
  */
 interface StoreOptions {
 	/** Path to the store backing file.

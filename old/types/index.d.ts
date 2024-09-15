@@ -57,19 +57,8 @@ export interface ChartParams {
     type: string;
 }
 
-// > Interfaces with main process
-export interface ReaderStructure {
-    structures: Structure[];
-    error?: string;
-}
-
-export interface MainResponse {
-    payload: string;
-    error?: string;
-}
-
 // > The project structure
-export interface GraphNode {
+interface GraphNode {
 
     /** The label that appears on the node selector */
 	label: string;
@@ -82,11 +71,11 @@ export interface GraphNode {
 }
 
 import type {UiParams} from "@/services/Switchboard";
-import type {Structure, PositionType} from "../../new/types";
+import type {PositionType} from "../../new/types";
 
 type ProjectGraph = Record<string, GraphNode>; // The key is the node id
 
-interface Project {
+export interface Project {
     graph: ProjectGraph;
     currentId?: string;
     viewer?: {

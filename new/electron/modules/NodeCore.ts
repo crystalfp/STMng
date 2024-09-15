@@ -9,7 +9,10 @@
 import {ipcMain} from "electron";
 import type {Structure, UiInfo, CtrlParams, ViewerState, ChannelDefinition} from "../../types";
 
-/** Observer routine provided by another node */
+/**
+ * Observer routine provided by another node
+ * @notExported
+ */
 type Observer = (data: Structure) => void;
 
 interface ObserverEntry {

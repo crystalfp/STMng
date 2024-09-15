@@ -36,6 +36,9 @@ import {StructureWriter} from "../nodes/StructureWriter";
 import {Trajectories} from "../nodes/Trajectories";
 import {Viewer3D} from "../nodes/Viewer3D";
 
+/**
+ * @notExported
+ */
 class ProjectManager {
 
     private static instance: ProjectManager;

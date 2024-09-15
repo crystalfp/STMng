@@ -11,7 +11,7 @@ import {resetAlertMessage, hasAlertMessage, getAlertMessage} from "../services/A
 // > Properties
 const {kind} = defineProps<{
 
-    /** Module that generates messages */
+    /** Module that had generated the message */
     kind: string;
 }>();
 

@@ -5,7 +5,20 @@
     "new/electron/main.ts",
     "new/electron/preload.ts",
     "eslint.config.mjs",
-    "new/ui/*.vue"
+    "new/ui/*.vue",
+    "new/router/index.ts"
   ],
-  "project": ["old/**/*.{js,ts,vue}", "new/**/*.{js,ts,vue}"]
+  "project": ["old/**/*.{js,ts,vue}", "new/**/*.{js,ts,vue}"],
+  "ignoreBinaries": ["madge", "start"],
+  "ignoreDependencies": [
+    "vue-docgen-cli",
+    "@mdi/svg",
+    "@zamiell/typedoc-plugin-not-exported",
+    "eslint-formatter-codeframe",
+    "eslint-import-resolver-typescript",
+    "node-addon-api",
+    "typedoc",
+    "typedoc-plugin-vue"
+  ],
+  "includeEntryExports": true
 }

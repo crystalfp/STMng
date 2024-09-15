@@ -13,6 +13,9 @@ import {useControlStore} from "../stores/controlStore";
 import type {BoundingBox} from "./BoundingBox";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 
+/**
+ * @notExported
+ */
 class SceneManager {
 
     private static instance: SceneManager;

@@ -38,7 +38,10 @@ import {app} from "electron";
 // #   - element name (in English)                                              #
 // #                                                                            #
 // ##############################################################################
-/** Data from file */
+/**
+ * Data from file
+ * @notExported
+ */
 interface OneAtomData {
 
 	/** Element symbol */
@@ -74,7 +77,10 @@ interface OneAtomData {
 	name: string;
 }
 
-/** Appearance of the various atoms types */
+/**
+ * Appearance of the various atoms types
+ * @notExported
+ */
 interface AtomAppearance {
 
 	/** Element symbol */

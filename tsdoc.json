@@ -25,6 +25,10 @@
         {
             "tagName": "@todo",
             "syntaxKind": "block"
+        },
+        {
+            "tagName": "@notExported",
+            "syntaxKind": "modifier"
         }
     ],
     "supportForTags": {
@@ -43,6 +47,7 @@
         "@packageDocumentation": true,
         "@since": true,
         "@todo": true,
-        "@link": true
+        "@link": true,
+        "@notExported": true
     }
 }

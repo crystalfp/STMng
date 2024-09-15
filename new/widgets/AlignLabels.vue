@@ -10,7 +10,7 @@
 // > Properties
 const {labelWidth = "2rem"} = defineProps<{
 
-    /** Width for all the labels */
+    /** Width for all the labels (CSS units) */
     labelWidth?: string;
 }>();
 

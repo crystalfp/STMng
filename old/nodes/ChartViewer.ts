@@ -5,6 +5,7 @@
  */
 import {sb, type UiParams} from "@/services/Switchboard";
 import {createWindow, sendToWindow} from "@/services/RoutesClient";
+import type {ChartData, ChartOptions} from "@/types";
 
 export class ChartViewer {
 
@@ -14,7 +15,7 @@ export class ChartViewer {
 	// TEST Hardcoded chart data
 	private readonly chartTitle = "New test chart";
 
-	private readonly chartData = {
+	private readonly chartData: ChartData = {
 			labels: [
 				"January",
 				"February",
@@ -45,7 +46,7 @@ export class ChartViewer {
 			]
 		};
 
-	private readonly chartOptions = {
+	private readonly chartOptions: ChartOptions = {
 		responsive: true,
 		maintainAspectRatio: false,
 		plugins: {

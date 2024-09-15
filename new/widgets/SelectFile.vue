@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
     /** Disable the widget */
     disabled?: boolean;
 
-    /** If the selector is for an existing file to be read or a new file to be saved */
+    /** If the selector is for an existing file to be read ("load") or a new file to be saved ("save") */
     kind?: "load" | "save";
 
     /** Title for the display field */
@@ -31,8 +31,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-    /** The file has been selected */
-    "selected": [filename: string];
+    /** The filename that has been selected */
+    selected: [filename: string];
 }>();
 
 /** Label to be show (the file selected) */

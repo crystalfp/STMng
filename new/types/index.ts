@@ -85,7 +85,10 @@ export interface Structure {
 }
 
 // > The project structure
-/** Project structure */
+/**
+ * Project structure
+ * @notExported
+ */
 interface GraphNode {
 
     /** The label that appears on the node selector */

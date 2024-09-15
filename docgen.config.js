@@ -48,12 +48,12 @@ module.exports = {
 			const { deprecated, version, see, link } = tags || {};
 			const frontMatter = [];
 
-			if (!config.outFile && deprecated) {
+			if(!config.outFile && deprecated) {
 				// to avoid having the squiggles in the left menu for deprecated items
 				// use the frontmatter feature of vuepress
 				frontMatter.push(`title: ${displayName}`);
 			}
-			if (hasSubComponents) {
+			if(hasSubComponents) {
 				// show more than one level on subcomponents
 				frontMatter.push('sidebarDepth: 2');
 			}
@@ -66,7 +66,7 @@ module.exports = {
 
   ${functional ? renderedUsage.functionalTag : ''}
   ${author ? `Author: ${author}` : ""}
-  ${since ? `\nCreated: ${since}` : ""}
+  ${since ? `\\\nCreated: ${since}` : ""}
   ${version ? `Version: ${version[0].description}\n` : ''}
   ${see ? see.map(s => `[See](${s.description})\n`) : ''}
   ${link ? link.map(l => `[See](${l.description})\n`) : ''}
