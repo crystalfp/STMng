@@ -14,7 +14,6 @@ import type {Structure} from "../../new/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 // NOTE 1) Add here the class that defines the node
-import {ChartViewer} from "@/nodes/ChartViewer";
 import {Isosurface} from "@/nodes/DrawIsosurface";
 
 interface NodeParts {
@@ -84,7 +83,6 @@ export class NodeInfo {
 			case "draw-structure":
 				break;
 			case "chart-viewer":
-				map.set(id, new ChartViewer(id));
 				break;
 			case "draw-unit-cell":
 				break;
@@ -217,8 +215,6 @@ export class NodeInfo {
 				case "draw-structure":
 					break;
 				case "chart-viewer":
-					if(notFirst) uiStatus += ",";
-					uiStatus += (node as ChartViewer).saveStatus();
 					break;
 				case "draw-unit-cell":
 					break;

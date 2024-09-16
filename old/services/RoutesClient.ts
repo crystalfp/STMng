@@ -6,7 +6,6 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {WindowsParams} from "../../new/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -44,26 +43,4 @@ export const sendProject = (callback: () => string): void => {
 	window.electron.ipcRenderer.on("PROJECT:REQUEST", () => {
 		window.electron.ipcRenderer.send("PROJECT:ANSWER", callback());
 	});
-};
-
-// > Generic secondary windows handling
-/**
- * Create a secondary window.
- *
- * @param params - Params for the newly created window
- */
-export const createWindow = (params: WindowsParams): void => {
-
-	window.electron.ipcRenderer.send("WINDOW:NEW", params);
-};
-
-/**
- * Send a string to a specific window
- *
- * @param routerPath - Route path of the receiving window
- * @param data - Data to send to the window
- */
-export const sendToWindow = (routerPath: string, data: string): void => {
-
-	window.electron.ipcRenderer.send("WINDOW:SEND", {routerPath, data});
 };

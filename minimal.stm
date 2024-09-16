@@ -29,7 +29,7 @@
       "type": "draw-polyhedra",
       "in": "bonds"
     },
-		"smooth": {
+    "smooth": {
       "label": "Interpolate",
       "type": "interpolate-volume",
       "in": "unit"
@@ -61,6 +61,10 @@
     "capture": {
       "label": "Capture",
       "type": "capture-view"
+    },
+    "chart": {
+      "label": "Chart",
+      "type": "chart-viewer"
     }
   },
   "viewer": {
@@ -188,8 +192,6 @@
       "plane": 0,
       "showOrthoslice": false,
       "colormapName": "rainbow",
-      "limitLow": -10,
-      "limitHigh": 10,
       "useColorClasses": false,
       "colorClasses": 5,
       "showIsolines": false,
@@ -200,14 +202,17 @@
       "showTrajectories": false,
       "labelKind": "symbol",
       "atomsSelector": "",
-			"maxDisplacement": 1,
-			"showPositionClouds": false,
-			"positionCloudsSideExp": 5,
-			"positionCloudsGrow": 0.1
+      "maxDisplacement": 1,
+      "showPositionClouds": false,
+      "positionCloudsSideExp": 5,
+      "positionCloudsGrow": 0.1
     },
     "writer": {
       "format": "XYZ",
       "continuous": false
+    },
+    "chart": {
+      "chartType": "line"
     }
   }
 }

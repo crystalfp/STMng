@@ -338,3 +338,49 @@ export interface FileFilter {
     /** List of accepted extensions */
 	extensions: string[];
 }
+
+// TBD Definition of the chart data
+export interface ChartOptions {
+    responsive: boolean;
+    maintainAspectRatio: boolean;
+    plugins: {
+      title: {
+          text: string;
+          display: boolean;
+          font: Record<string, number | string>;
+      };
+    };
+    scales: {
+      x: {
+        title: {
+          color: string;
+          display: boolean;
+          text: string;
+        };
+        grid: Record<string, string>;
+      };
+      y: {
+        title: {
+          color: string;
+          display: boolean;
+          text: string;
+        };
+        grid: Record<string, string>;
+      };
+    };
+}
+
+export interface ChartData {
+    labels: string[];
+    datasets: {
+            label: string;
+            backgroundColor: string;
+            data: number[];
+            borderColor: string;
+    }[];
+}
+export interface ChartParams {
+    data: ChartData;
+    options: ChartOptions;
+    type: string;
+}

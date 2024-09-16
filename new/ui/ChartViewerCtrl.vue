@@ -7,8 +7,9 @@
  * @since 2024-07-05
  */
 
-import {ref, watchEffect} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import {ref, watch} from "vue";
+import {askNode} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
 
 // > Properties
 const {id} = defineProps<{
@@ -17,18 +18,26 @@ const {id} = defineProps<{
     id: string;
 }>();
 
-// > Get and set ui parameters from the switchboard
 const chartType = ref("line");
 const openChart = ref(false);
-sb.getUiParams(id, (params: UiParams) => {
-    chartType.value = params.chartType as string ?? "line";
-});
 
-watchEffect(() => {
-    sb.setUiParams(id, {
+askNode(id, "init")
+    .then((params) => {
+        chartType.value = params.chartType as string ?? "line";
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ChartViewer: ${error.message}`));
+
+
+watch([chartType, openChart], () => {
+    askNode(id, "show", {
         chartType: chartType.value,
         openChart: openChart.value
-    });
+    })
+    .then((params) => {
+        chartType.value = params.chartType as string ?? "line";
+        openChart.value = params.openChart as boolean ?? false;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from show chart for ChartViewer: ${error.message}`));
 });
 
 </script>
