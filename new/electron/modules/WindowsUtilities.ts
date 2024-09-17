@@ -424,3 +424,21 @@ export const sendPositionCloudsToClient = (id: string,
     const channelName = id + ":" + channel;
     mainWin.webContents.send(channelName, volume, limits, count);
 };
+
+/**
+ * Push isosurfaces data to client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param data - Data to draw isosurfaces
+ */
+export const sendIsosurfacesToClient = (id: string,
+                                     channel: string,
+                                     data: {
+                                        params: CtrlParams;
+                                     }): void => {
+
+    const channelName = id + ":" + channel;
+    mainWin.webContents.send(channelName,
+                             data.params);
+};

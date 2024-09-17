@@ -7,8 +7,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 
-import type {PositionType, BasisType} from "../../new/types";
-import {getCase, getEdge} from "@/services/IsosurfaceTables";
+import type {PositionType, BasisType} from "../../types";
+import {getCase, getEdge} from "./IsosurfaceTables";
 
 export class IsosurfaceCore {
 

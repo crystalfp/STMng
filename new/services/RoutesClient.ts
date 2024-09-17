@@ -273,6 +273,25 @@ export const receiveIsoOrthoFromNode = (id: string,
 };
 
 /**
+ * Receive parameters to draw isosurfaces
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param callback - Function called with the parameters to draw the orthoslice and isolines
+ */
+export const receiveIsosurfacesFromNode = (id: string,
+										   channel: string,
+										   callback: (
+												params: CtrlParams) => void
+										  ): void => {
+
+	const channelName = id + ":" + channel;
+    window.electron.ipcRenderer.on(channelName,
+				(_event,
+				 params: CtrlParams) => callback(params));
+};
+
+/**
  * Send the viewer3D state to the main process
  *
  * @param id - ID of the node sending the parameters

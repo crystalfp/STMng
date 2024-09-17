@@ -199,14 +199,15 @@ export class ReaderCIF implements ReaderImplementation {
 			if(!isInDataBlock) continue;
 
 			// Extract key and value inline
-			const ws = lineNC.split(/(?<=^\S+)\s/);
+			const ws = lineLC.split(/(?<=^\S+)\s/);
 			const key = ws[0];
 			const value = ws[1] ? ws[1].trim() : "";
 
 			switch(key) {
 				case "_symmetry.space_group_name_h-m":
 				case "_symmetry_space_group_name_h-m":
-					this.structures[this.step].crystal.spaceGroup = value.replace(/^['"]([^'"]+)['"]/, "$1");
+					this.structures[this.step].crystal.spaceGroup =
+						value.replace(/^['"]([^'"]+)['"]/, "$1");
 					break;
 				case "_cell_length_a":
 				case "_cell.length_a":
@@ -221,8 +222,8 @@ export class ReaderCIF implements ReaderImplementation {
 					basisSides[2] = Number.parseFloat(value);
 					if(basisAngles[0] !== 0 && basisAngles[1] !== 0 && basisAngles[2] !== 0) {
 					this.structures[this.step].crystal.basis =
-													extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
-																 basisAngles[0], basisAngles[1], basisAngles[2]);
+						extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
+									 basisAngles[0], basisAngles[1], basisAngles[2]);
 					}
 					break;
 				case "_cell_angle_alpha":
@@ -279,7 +280,8 @@ export class ReaderCIF implements ReaderImplementation {
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: label.length > 0 ? label[i] : symbol[i],
-					position: fractionalToCartesianCoordinates(this.structures[this.step].crystal.basis, fx, fy, fz)
+					position: fractionalToCartesianCoordinates(this.structures[this.step].crystal.basis,
+															   fx, fy, fz)
 				};
 				this.structures[this.step].atoms.push(atom);
 			}
@@ -287,7 +289,7 @@ export class ReaderCIF implements ReaderImplementation {
 		else if(this.tbl.hasColumn("_symmetry_equiv_pos_as_xyz")) {
 
 			this.structures[this.step].crystal.spaceGroup =
-											this.tbl.getColumn("_symmetry_equiv_pos_as_xyz").join("\n");
+				this.tbl.getColumn("_symmetry_equiv_pos_as_xyz").join("\n");
 		}
 		else if(this.tbl.hasColumn("_atom_site.cartn_x")) {
 
@@ -308,6 +310,11 @@ export class ReaderCIF implements ReaderImplementation {
 				};
 				this.structures[this.step].atoms.push(atom);
 			}
+		}
+		else if(this.tbl.hasColumn("_space_group_symop_operation_xyz")) {
+
+			this.structures[this.step].crystal.spaceGroup =
+				this.tbl.getColumn("_space_group_symop_operation_xyz").join("\n");
 		}
 	}
 }

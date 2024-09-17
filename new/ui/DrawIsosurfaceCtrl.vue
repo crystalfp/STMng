@@ -1,15 +1,19 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for Isosurfaces computation.
+ * Controls for isosurfaces computation.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
 
-import {ref, watchEffect, computed} from "vue";
-import {sb, type UiParams} from "@/services/Switchboard";
+import * as THREE from "three";
+import {Lut} from "three/addons/math/Lut.js";
+import {ref, computed} from "vue";
 import {humanFormat} from "../services/HumanFormat";
+import {askNode, receiveIsosurfacesFromNode} from "../services/RoutesClient";
+import {showAlertMessage} from "../services/AlertMessage";
+import type {CtrlParams} from "../types";
 
 // > Properties
 const {id} = defineProps<{
@@ -38,25 +42,55 @@ const limitColormap = ref(false);
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
-sb.getUiParams(id, (params: UiParams) => {
-    showIsosurface.value = params.showIsosurface as boolean ?? false;
+const group = new THREE.Group();
+const groupName = "Isosurface" + id;
+group.name = groupName;
+
+// > Colormap creation
+const lut = computed(() => {
+
+    const thatLut = new Lut(colormapName.value,
+                            nestedIsosurfaces.value ? countIsosurfaces.value : 512);
+
+    thatLut.setMax(limits.value[1]);
+    thatLut.setMin(limits.value[0]);
+
+    return thatLut;
+});
+
+void lut; // TBD
+
+// > Initialize the ui
+askNode(id, "init")
+    .then((params) => {
+        showIsosurface.value = params.showIsosurface as boolean ?? false;
+        dataset.value = params.dataset as number ?? 0;
+        isoValue.value = params.isoValue as number ?? 0;
+        colormapName.value = params.colormapName as string ?? "rainbow";
+        opacity.value = params.opacity as number ?? 1;
+
+        nestedIsosurfaces.value = params.nestedIsosurfaces as boolean ?? false;
+        countIsosurfaces.value = params.countIsosurfaces as number ?? 2;
+        limitLow.value = params.limitLow as number ?? -10;
+        limitHigh.value = params.limitHigh as number ?? 10;
+        limitColormap.value = params.limitColormap as boolean ?? false;
+
+        limits.value[0] = limitLow.value;
+        limits.value[1] = limitHigh.value;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for Isosurface: ${error.message}`));
+
+receiveIsosurfacesFromNode(id, "iso", (params: CtrlParams) => {
+
     maxDataset.value = params.maxDataset as number ?? 0;
-    dataset.value = params.dataset as number ?? 0;
     valueMin.value = params.valueMin as number ?? -10;
     valueMax.value = params.valueMax as number ?? 10;
-    isoValue.value = params.isoValue as number ?? 0;
-    colormapName.value = params.colormapName as string ?? "rainbow";
-    opacity.value = params.opacity as number ?? 1;
 
-    nestedIsosurfaces.value = params.nestedIsosurfaces as boolean ?? false;
-    countIsosurfaces.value = params.countIsosurfaces as number ?? 2;
-    limitLow.value = params.limitLow as number ?? -10;
-    limitHigh.value = params.limitHigh as number ?? 10;
-    limitColormap.value = params.limitColormap as boolean ?? false;
-
-    limits.value[0] = limitLow.value;
-    limits.value[1] = limitHigh.value;
+    limits.value[0] = valueMin.value;
+    limits.value[1] = valueMax.value;
 });
+
+/*
 watchEffect(() => {
 
     limitLow.value = limits.value[0];
@@ -75,6 +109,7 @@ watchEffect(() => {
         limitColormap: limitColormap.value,
     });
 });
+*/
 
 </script>
 

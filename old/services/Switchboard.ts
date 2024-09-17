@@ -9,8 +9,6 @@ import {watch} from "vue";
 import {receiveProject, sendProject} from "@/services/RoutesClient";
 import {useSwitchboardStore} from "@/stores/switchboardStore";
 import {useConfigStore} from "../../new/stores/configStore";
-// import {projectIsValid} from "@/services/Validators";
-import {NodeInfo} from "@/services/NodeInfo";
 import type {NodeUI, Project} from "@/types";
 import {showErrorNotification} from "@/services/ErrorNotification";
 // import {sm} from "../../new/services/SceneManager";
@@ -28,14 +26,6 @@ class Switchboard {
 	private readonly mapIdToType = new Map<string, string>();
 	private readonly mapIdToCode = new Map<string, unknown>();
 	private readonly mapIdToInputs = new Map<string, string[]>();
-	private readonly nodeInfo;
-
-	/**
-	 * At switchboard creation, access the node specific functionalities
-	 */
-	private constructor() {
-		this.nodeInfo = new NodeInfo();
-	}
 
 	/**
 	 * Parse the inputs from the graph
@@ -103,9 +93,6 @@ class Switchboard {
 				// Set mapping from module to its type
 				this.mapIdToType.set(id, node.type);
 
-				// Access the UI for the module
-				const nodeUI = this.nodeInfo.getNodeUI(id, node);
-				if(nodeUI) this.nodesUI.push(nodeUI);
 
 				// Prepare the params area for the module
 				switchboardStore.initNode(id);
@@ -114,7 +101,6 @@ class Switchboard {
 				this.setupInputs(id, node.in, this.mapIdToInputs);
 
 				// Setup the mapping to the runtime code
-				this.nodeInfo.setupRuntime(node.type, id, this.mapIdToCode);
 			}
 
 			// Setup the current module
@@ -140,7 +126,6 @@ class Switchboard {
 			project += `"viewer":${configStore.statusToSave},`;
 
 			// Save the modules' UI status
-			project += this.nodeInfo.saveUiStatus(this.mapIdToCode, this.mapIdToType);
 
 			// Save the current selected node and close the project structure
 			project += `,"currentId":"${this.currentId}"}`;
@@ -259,14 +244,7 @@ class Switchboard {
 	 * @param id - ID of the node that sets the data
 	 * @param data - Data to transmit
 	 */
-	setData(id: string, data: unknown): void {
 
-		const switchboardStore = useSwitchboardStore();
-
-		const type = this.mapIdToType.get(id);
-
-		this.nodeInfo.setDataOutputs(id, type, data, switchboardStore.data[id]);
-	}
 
 	/**
 	 * Get data from other nodes
@@ -278,15 +256,8 @@ class Switchboard {
 
 		const inputs = this.mapIdToInputs.get(id);
 		if(!inputs) return;
+		void callback;
 
-		const switchboardStore = useSwitchboardStore();
-
-		for(const idFrom of inputs) {
-
-			const type = this.mapIdToType.get(idFrom);
-
-			this.nodeInfo.getDataInputs(id, type, idFrom, switchboardStore.data[idFrom], callback);
-		}
 	}
 
 	/**
@@ -295,30 +266,13 @@ class Switchboard {
 	 * @param type - Type of the node
 	 * @returns True if this node type generates graphical output
 	 */
-	generatesGraphics(type: string): boolean {
 
-		return this.nodeInfo.generatesGraphics(type);
-	}
 
 	/**
 	 * Get the viewer type
 	 *
 	 * @returns The type of the viewer 3D
 	 */
-	getViewerType(): string {
-
-		return this.nodeInfo.getViewerType();
-	}
-
-	/**
-	 * Check node type existence
-	 *
-	 * @param type - Node type to check
-	 * @returns True if the node type exists
-	 */
-	checkType(type: string): boolean {
-		return this.nodeInfo.checkType(type);
-	}
 
 	/**
 	 * Get node type

@@ -10,7 +10,7 @@ import {Lut} from "three/addons/math/Lut.js";
 import {sb, type UiParams} from "@/services/Switchboard";
 import {sm} from "../../new/services/SceneManager";
 import type {Structure, PositionType, BasisType} from "../../new/types";
-import {IsosurfaceCore} from "@/services/Isosurface";
+import {IsosurfaceCore} from "../../new/electron/modules/IsosurfaceCore";
 
 export class Isosurface {
 

@@ -39,6 +39,11 @@
       "type": "orthoslice",
       "in": "smooth"
     },
+    "iso": {
+      "label": "Isosurface",
+      "type": "isosurface",
+      "in": "smooth"
+    },
     "trace": {
       "label": "Trajectories",
       "type": "draw-trajectories",
@@ -197,6 +202,14 @@
       "showIsolines": false,
       "isoValue": 0,
       "colorIsolines": false
+    },
+    "iso": {
+      "showIsosurface": false,
+      "colormapName": "rainbow",
+      "opacity": 1,
+      "nestedIsosurfaces": false,
+      "countIsosurfaces": 2,
+      "limitColormap": false
     },
     "trace": {
       "showTrajectories": false,
