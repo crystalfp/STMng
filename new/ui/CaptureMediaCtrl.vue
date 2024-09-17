@@ -26,7 +26,7 @@ controlStore.hasCapture = true;
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4 no-select">Snapshot</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
-  <v-btn-toggle v-model="configStore.camera.snapshotFormat" color="primary" class="mb-3">
+  <v-btn-toggle v-model="configStore.camera.snapshotFormat" color="primary" mandatory class="mb-3">
     <v-btn value="jpeg">JPEG</v-btn>
     <v-btn value="png">PNG</v-btn>
   </v-btn-toggle>
@@ -54,7 +54,7 @@ controlStore.hasCapture = true;
   <v-label class="mt-4 text-h5 w-100 justify-center yellow-title no-select">STL</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
-  <v-btn-toggle v-model="configStore.camera.stlFormat" color="primary" class="mb-3">
+  <v-btn-toggle v-model="configStore.camera.stlFormat" color="primary" mandatory class="mb-3">
     <v-btn value="ascii">ASCII</v-btn>
     <v-btn value="binary">Binary</v-btn>
   </v-btn-toggle>

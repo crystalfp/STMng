@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {onMounted, ref, watch, watchEffect, nextTick} from "vue";
+import {onMounted, watch, watchEffect, nextTick, useTemplateRef} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
 import {useConfigStore} from "../stores/configStore";
@@ -121,7 +121,7 @@ const handleError = (event: Event): void => {
 };
 
 // Reference to the view
-const cnv = ref<HTMLElement | null>(null);
+const cnv = useTemplateRef<HTMLElement>("cnv");
 
 // Create the scene
 const scene = sm.createScene();

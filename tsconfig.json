@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "Preserve",
-    // "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "noErrorTruncation": true,
@@ -37,7 +36,6 @@
   },
   "include": [
     "old/**/*.ts",
-    "old/**/*.vue",
     "vite.config.mts",
     "troika-three-text.d.ts",
     "new/**/*.ts",

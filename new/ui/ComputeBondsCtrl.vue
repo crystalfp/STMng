@@ -46,7 +46,7 @@ askNode(id, "init")
         maxHBondingDistance.value = params.maxHBondingDistance as number ?? 3.00;
         maxHValenceAngle.value    = params.maxHValenceAngle as number ?? 30;
         enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
-        bondScale.value      	  = params.bondScale as number ?? 1.1;
+        bondScale.value      	    = params.bondScale as number ?? 1.1;
         perPairScale.value        = params.perPairScale as boolean ?? false;
         enlargementKind.value     = params.enlargementKind as string ?? "none";
 
@@ -138,7 +138,7 @@ const resetSliders = (): void => {
     </g-debounced-slider>
   </v-container>
   <v-label class="ml-2 mb-2 mt-4 no-select">Add bonded atoms outside unit cell</v-label>
-  <v-btn-toggle v-model="enlargementKind" color="primary" class="mb-6 ml-2">
+  <v-btn-toggle v-model="enlargementKind" color="primary" mandatory class="mb-6 ml-2">
     <v-btn value="none">None</v-btn>
     <v-btn value="outside">Neighbors</v-btn>
     <v-btn value="connected">Connected</v-btn>

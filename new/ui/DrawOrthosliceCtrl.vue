@@ -244,7 +244,7 @@ watchEffect(() => {
             :disabled="maxDataset === 0" class="ml-4" />
 
   <v-label text="Axis" class="ml-2 mb-3 no-select" /><br>
-  <v-btn-toggle v-model="axis" color="primary" class="mb-6 ml-2">
+  <v-btn-toggle v-model="axis" color="primary" mandatory class="mb-6 ml-2">
     <v-btn :value="0">X</v-btn>
     <v-btn :value="1">Y</v-btn>
     <v-btn :value="2">Z</v-btn>

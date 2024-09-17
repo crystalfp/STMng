@@ -477,7 +477,7 @@ sm.add(out);
 <template>
 <v-container class="container">
   <v-label text="Structure rendering mode" class="mb-3 ml-2 mt-4 no-select" /><br>
-  <v-btn-toggle v-model="drawKind" color="primary" class="mb-6 ml-2">
+  <v-btn-toggle v-model="drawKind" color="primary" mandatory class="mb-6 ml-2">
     <v-btn value="ball-and-stick">CPK</v-btn>
     <v-btn value="van-der-walls">VdW</v-btn>
     <v-btn value="licorice">Licorice</v-btn>
@@ -488,21 +488,21 @@ sm.add(out);
             label="Smooth color bonds" density="compact" class="mt-2 ml-2" />
 
   <v-label text="Label is" class="mb-3 ml-2 no-select" /><br>
-  <v-btn-toggle v-model="labelKind" color="primary" class="mb-6 ml-2">
+  <v-btn-toggle v-model="labelKind" color="primary" mandatory class="mb-6 ml-2">
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>
     <v-btn value="index">Index</v-btn>
   </v-btn-toggle><br>
 
   <v-label text="Visibility" class="ml-2 mb-3 no-select" /><br>
-  <v-btn-toggle v-model="showCombined" multiple color="primary" class="ml-2 mb-4">
+  <v-btn-toggle v-model="showCombined" multiple color="primary" mandatory class="ml-2 mb-4">
     <v-btn value="structure">Structure</v-btn>
     <v-btn value="bonds">Bonds</v-btn>
     <v-btn value="labels">Labels</v-btn>
   </v-btn-toggle>
 
   <v-label text="Quality" class="ml-2 no-select" /><br>
-  <v-btn-toggle v-model="drawQuality" color="primary" class="mt-2 ml-2">
+  <v-btn-toggle v-model="drawQuality" color="primary" mandatory class="mt-2 ml-2">
     <v-btn :value="1">Low</v-btn>
     <v-btn :value="2">Medium</v-btn>
     <v-btn :value="3">Good</v-btn>
