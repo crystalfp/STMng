@@ -1,6 +1,6 @@
 module.exports = {
 
-	componentsRoot: "new",
+	componentsRoot: "src",
 	outDir: "doc/vue",
 	apiOptions: {
 		addScriptHandlers: [

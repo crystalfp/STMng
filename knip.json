@@ -1,14 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
-    "new/main.ts",
-    "new/electron/main.ts",
-    "new/electron/preload.ts",
+    "src/main.ts",
+    "src/electron/main.ts",
+    "src/electron/preload.ts",
     "eslint.config.mjs",
-    "new/ui/*.vue",
-    "new/router/index.ts"
+    "src/ui/*.vue",
+    "src/router/index.ts"
   ],
-  "project": ["old/**/*.{js,ts,vue}", "new/**/*.{js,ts,vue}"],
+  "project": ["src/**/*.{js,ts,vue}"],
   "ignoreBinaries": ["madge", "start"],
   "ignoreDependencies": [
     "vue-docgen-cli",

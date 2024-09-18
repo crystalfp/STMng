@@ -27,13 +27,11 @@ const compat = new FlatCompat({
 /// @type {import('eslint').Linter.FlatConfig[]} */
 export default [{
     ignores: [
-        "new/vite-env.d.ts",
+        "src/vite-env.d.ts",
     ]}, {
     files: [
-        "old/**/*.ts",
-        "old/**/*.vue",
-        "new/**/*.ts",
-        "new/**/*.vue"
+        "src/**/*.ts",
+        "src/**/*.vue"
     ],
     languageOptions: {
         parser: vueParser,
@@ -95,7 +93,7 @@ export default [{
         "import/ignore": ["node_modules"],
         "import/resolver": {
             "typescript": {"alwaysTryTypes": true},
-            "alias": {"map": {"@/": "./old/"},
+            "alias": {"map": {"@/": "./src/"},
             "extensions": [".vue", ".ts"]}
         }
     },

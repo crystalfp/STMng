@@ -31,14 +31,13 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["old/*"]
+      "@/*": ["src/*"]
     },
   },
   "include": [
-    "old/**/*.ts",
     "vite.config.mts",
     "troika-three-text.d.ts",
-    "new/**/*.ts",
-    "new/**/*.vue"
+    "src/**/*.ts",
+    "src/**/*.vue"
   ]
 }

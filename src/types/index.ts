@@ -278,7 +278,7 @@ export interface StructureRenderInfo {
 /** Parameters for the window creation */
 export interface WindowsParams {
 
-    /** The router path for the created window (should also be in new/router/index.ts) */
+    /** The router path for the created window (should also be in src/router/index.ts) */
     routerPath: string;
 
     /** Width of the window */

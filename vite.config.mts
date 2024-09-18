@@ -8,7 +8,7 @@ import {fileURLToPath, URL} from 'node:url'
 export default defineConfig({
     resolve: {
         alias: {
-            "@": fileURLToPath(new URL('./old', import.meta.url))
+            "@": fileURLToPath(new URL('./src', import.meta.url))
         },
         preserveSymlinks: true
     },
@@ -24,10 +24,10 @@ export default defineConfig({
         electron([
             {
                 // Main-Process entry file of the Electron App.
-                entry: "new/electron/main.ts",
+                entry: "src/electron/main.ts",
             },
             {
-                entry: "new/electron/preload.ts",
+                entry: "src/electron/preload.ts",
                 onstart(options) {
                     // Notify the Renderer-Process to reload the page when the Preload-Scripts build
                     // is complete, instead of restarting the entire Electron App.

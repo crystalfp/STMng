@@ -5,18 +5,18 @@
 			"cflags!": [ "-fno-exceptions" ],
 			"cflags_cc!": [ "-fno-exceptions" ],
 			"sources": [
-				"new/cpp/native.cpp",
-				"new/cpp/sginfo/sgclib.c",
-				"new/cpp/sginfo/sgfind.c",
-				"new/cpp/sginfo/sghkl.c",
-				"new/cpp/sginfo/sginfo.c",
-				"new/cpp/sginfo/sgio.c",
-				"new/cpp/sginfo/sgsi.c",
-				"new/cpp/FindAndApplySymmetries.cpp"
+				"src/cpp/native.cpp",
+				"src/cpp/sginfo/sgclib.c",
+				"src/cpp/sginfo/sgfind.c",
+				"src/cpp/sginfo/sghkl.c",
+				"src/cpp/sginfo/sginfo.c",
+				"src/cpp/sginfo/sgio.c",
+				"src/cpp/sginfo/sgsi.c",
+				"src/cpp/FindAndApplySymmetries.cpp"
 			],
 			"include_dirs": [
 				"<!@(node -p \"require('node-addon-api').include\")",
-				"new/cpp/spglib-develop/include"
+				"src/cpp/spglib-develop/include"
 			],
 			"dependencies": [
 				"<!(node -p \"require('node-addon-api').gyp\")"
@@ -70,12 +70,12 @@
 						},
 					},
 					"libraries": [
-						"<(module_root_dir)/new/cpp/spglib-develop/Release/symspg.lib"
+						"<(module_root_dir)/src/cpp/spglib-develop/Release/symspg.lib"
 					],
 					"copies": [
 						{
 							"destination": "<(module_root_dir)/build/Release",
-							"files": ["<(module_root_dir)/new/cpp/spglib-develop/Release/symspg.dll"]
+							"files": ["<(module_root_dir)/src/cpp/spglib-develop/Release/symspg.dll"]
 						}
 					]
 				}],

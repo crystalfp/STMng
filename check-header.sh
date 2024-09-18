@@ -1,4 +1,4 @@
-root="new"
+root="src"
 for i in `/bin/find $root -name "*.vue"`
 do
 n=`grep -c -E "@component|@author|@since" $i`
