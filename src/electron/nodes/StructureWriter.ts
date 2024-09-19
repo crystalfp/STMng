@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 import log from "electron-log";
 
 import {WriterXYZ} from "../writers/WriteXYZ";
@@ -18,7 +18,6 @@ import {WriterCIF} from "../writers/WriteCIF";
 
 export class StructureWriter extends NodeCore {
 
-	protected readonly name = "StructureWriter";
 	private structure: Structure | undefined;
 	private format = "";			// Format of the save file
 	private continuous = false;

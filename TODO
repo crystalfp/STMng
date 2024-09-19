@@ -1,7 +1,7 @@
 To do:
   ☐ Finish help
   ☐ Disable find symmetries if the structure contains volumetric data
-  ☐ Remove `this.name`
+  ☐ Add camera reset on new structure read
 
 Bugs:
   ☐ Control side height not ok changing to fullscreen (use flex?)
@@ -53,8 +53,9 @@ Nice to have/Future:
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ Remove `this.name` @done(2024-09-19 14:39) @project(To do)
   ✔ Add class `no-select` to labels that should not selected @done(2024-09-10 14:04) @project(To do)
-  ✘ Check `useTemplateRef()` in Viewer3D (already in comment) @cancelled(2024-09-07 05:43) @project(To do)
+  ✔ Check `useTemplateRef()` in Viewer3D (already in comment) @project(To do) @done(2024-09-18 17:56)
   ✔ Energy file: fix disappearing file name @done(2024-09-07 05:42) @project(Bugs)
   ✘ Check `useTemplateRef()` in Viewer3D (already in comment) @project(To do) @cancelled(2024-09-07 05:42)
   ✔ The atoms types reading a new file are not updated from the saved ones @done(2024-09-05 06:23) @project(Bugs)

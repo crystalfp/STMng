@@ -7,7 +7,7 @@
  * @since 2024-08-22
  */
 import {ipcMain, dialog} from "electron";
-import type {CtrlParams, FileFilter} from "../../types";
+import type {CtrlParams, FileFilter} from "@/types";
 
 /**
  * Setup the channel to the client

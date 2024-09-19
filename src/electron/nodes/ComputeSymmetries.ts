@@ -12,7 +12,7 @@ import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates} from "../modules/Helpers";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType} from "@/types";
 
 /** Type of the native code output */
 interface NativeOutput {
@@ -73,7 +73,6 @@ const TOL = 10e-5;
 
 export class ComputeSymmetries extends NodeCore {
 
-	protected readonly name = "ComputeSymmetries";
 	private inputStructure: Structure | undefined;
 	private structure: Structure | undefined;
 	private applyInputSymmetries = true;

@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, Bond, Atom, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import type {Structure, Bond, Atom, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 
@@ -64,7 +64,6 @@ const atomZForH = new Set([7, 8, 9, 16]);
 
 export class ComputeBonds extends NodeCore {
 
-	protected readonly name = "ComputeBonds";
 	private inputStructure: Structure | undefined;
 	private minBondingDistance  = 0.64;
 	private maxBondingDistance  = 4.50;

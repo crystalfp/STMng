@@ -7,13 +7,12 @@
  * @since 2024-07-08
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {UiInfo, ViewerState, ChannelDefinition, CtrlParams} from "../../types";
+import type {UiInfo, ViewerState, ChannelDefinition, CtrlParams} from "@/types";
 import {askClient} from "../modules/WindowsUtilities";
 
 export class Viewer3D extends NodeCore {
 
-	protected readonly name = "Viewer3D";
-	protected rawStatus = "{}";
+	private rawStatus = "";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},

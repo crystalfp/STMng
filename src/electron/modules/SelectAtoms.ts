@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {getAtomicSymbol} from "./AtomData";
-import type {Structure} from "../../types";
+import type {Structure} from "@/types";
 
 export type SelectorType = "symbol" | "label" | "index" | "all";
 

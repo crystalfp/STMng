@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import log from "electron-log";
-import type {BasisType, PositionType, Structure, Atom} from "../../types";
+import type {BasisType, PositionType, Structure, Atom} from "@/types";
 
 /** Tolerance to check fractal coordinate on the cell border */
 const FOLD_TOL = 1e-5;

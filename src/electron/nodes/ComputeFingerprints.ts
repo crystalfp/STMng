@@ -9,11 +9,9 @@
 import fs from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
-
-	protected readonly name = "ComputeFingerprints";
 
 	private structure: Structure | undefined;
 	private readonly accumulator: Structure[] = [];

@@ -16,11 +16,9 @@ import {fileURLToPath} from "node:url";
 import {execSync} from "node:child_process";
 
 import {NodeCore} from "../modules/NodeCore";
-import type {UiInfo, ChannelDefinition, CtrlParams} from "../../types";
+import type {UiInfo, ChannelDefinition, CtrlParams} from "@/types";
 
 export class CaptureView extends NodeCore {
-
-	protected readonly name = "CaptureView";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "snapshot",	type: "invoke", 	callback: this.channelSnapshot.bind(this)},

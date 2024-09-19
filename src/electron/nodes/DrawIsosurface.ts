@@ -10,11 +10,10 @@ import {NodeCore} from "../modules/NodeCore";
 import {IsosurfaceCore} from "../modules/IsosurfaceCore";
 import {sendIsosurfacesToClient} from "../modules/WindowsUtilities";
 
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawIsosurface extends NodeCore {
 
-	protected readonly name = "DrawIsosurface";
 	private structure: Structure | undefined;
 
     private showIsosurface = false;

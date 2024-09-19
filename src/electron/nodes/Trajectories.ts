@@ -11,11 +11,10 @@ import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient, sendPositionCloudsToClient} from "../modules/WindowsUtilities";
 import type {Structure, PositionType, BasisType,
-			 UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+			 UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
 export class Trajectories extends NodeCore {
 
-	protected readonly name = "Trajectories";
 	private structure: Structure | undefined;
 	private showTrajectories = false;
 	private createTrajectories = false;

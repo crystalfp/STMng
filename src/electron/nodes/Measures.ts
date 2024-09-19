@@ -8,7 +8,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, SelectedAtoms} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, SelectedAtoms} from "@/types";
 import {getAtomData} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 
@@ -17,7 +17,6 @@ const colors = ["#FF0000", "#00FF00", "#4263FF"];
 
 export class Measures extends NodeCore {
 
-	protected readonly name = "Measures";
 	private structure: Structure | undefined;
     private distanceAB = -1;
     private distanceBC = -1;

@@ -8,7 +8,7 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {getAtomicNumber} from "../modules/AtomData";
 
@@ -29,7 +29,6 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 
 export class StructureReader extends NodeCore {
 
-	protected readonly name = "StructureReader";
 	private loopSteps = false;
 	private running = false;
 	private step = 1;

@@ -10,11 +10,9 @@ import {NodeCore} from "../modules/NodeCore";
 import {adjustOrigin} from "../modules/AdjustOrigin";
 import {sendVerticesToClient} from "../modules/WindowsUtilities";
 import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
-			 PositionType, BasisType, Volume} from "../../types";
+			 PositionType, BasisType, Volume} from "@/types";
 
 export class DrawUnitCell extends NodeCore {
-
-	protected readonly name = "DrawUnitCell";
 
 	private inputStructure: Structure | undefined;
 	private structure: Structure | undefined;

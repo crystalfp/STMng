@@ -9,11 +9,10 @@
 import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindow, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import type {UiInfo, CtrlParams, ChannelDefinition,
-			 ChartData, ChartOptions} from "../../types";
+			 ChartData, ChartOptions} from "@/types";
 
 export class ChartViewer extends NodeCore {
 
-	protected readonly name = "ChartViewer";
 	private chartType = "line";
 	private previousChartType = "line";
 	private openChart = false;

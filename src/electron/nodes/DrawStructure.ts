@@ -8,13 +8,12 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, AtomRenderInfo,
-			 StructureRenderInfo} from "../../types";
+			 StructureRenderInfo} from "@/types";
 import {sendToClientForRendering} from "../modules/WindowsUtilities";
 import {getAtomData} from "../modules/AtomData";
 
 export class DrawStructure extends NodeCore {
 
-	protected readonly name = "DrawStructure";
 	private drawKind = "";
 	private drawQuality = 4;
 	private drawRoughness = 0.5;

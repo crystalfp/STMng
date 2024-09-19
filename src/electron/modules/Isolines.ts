@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  */
 
-import type {PositionType} from "../../types";
+import type {PositionType} from "@/types";
 
 export class Isolines {
 

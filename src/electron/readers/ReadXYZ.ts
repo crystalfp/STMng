@@ -9,7 +9,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Crystal, Structure, ReaderImplementation} from "../../types";
+import type {Crystal, Structure, ReaderImplementation} from "@/types";
 
 export class ReaderXYZ implements ReaderImplementation {
 

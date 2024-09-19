@@ -9,11 +9,10 @@
 import {NodeCore} from "../modules/NodeCore";
 import {M} from "../modules/InterpolationTable";
 import {sendToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, Volume} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, Volume} from "@/types";
 
 export class InterpolateVolume extends NodeCore {
 
-	protected readonly name = "InterpolateVolume";
 	private structure: Structure | undefined;
 	private interpolateVolume = false;
 	private pointsToAdd = 1;

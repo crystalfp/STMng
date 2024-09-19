@@ -12,11 +12,10 @@ import {sendIsoOrthoToClient} from "../modules/WindowsUtilities";
 import {Isolines} from "../modules/Isolines";
 
 import type {Structure, UiInfo, CtrlParams,
-             ChannelDefinition, PositionType, BasisType} from "../../types";
+             ChannelDefinition, PositionType, BasisType} from "@/types";
 
 export class DrawOrthoslice extends NodeCore {
 
-	protected readonly name = "DrawOrthoslice";
 	private structure: Structure | undefined;
 	private dataset = 0;
 	private axis = 0;

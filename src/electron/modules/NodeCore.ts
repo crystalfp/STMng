@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {ipcMain} from "electron";
-import type {Structure, UiInfo, CtrlParams, ViewerState, ChannelDefinition} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ViewerState, ChannelDefinition} from "@/types";
 
 /**
  * Observer routine provided by another node
@@ -21,9 +21,6 @@ interface ObserverEntry {
 }
 
 export abstract class NodeCore {
-
-	/** Name of the child class */
-	protected abstract readonly name: string;
 
 	/** List of observers from subscribe to this node */
 	private readonly observersList: ObserverEntry[] = [];
@@ -55,7 +52,7 @@ export abstract class NodeCore {
 	 */
 	notifier(data: Structure): void {
 		void data;
-		throw Error(`Notifier should not be called for "${this.name}"`);
+		throw Error("Notifier should not be called for this node");
 	}
 
     /**

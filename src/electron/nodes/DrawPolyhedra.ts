@@ -10,11 +10,10 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendPolyhedraToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "../../types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawPolyhedra extends NodeCore {
 
-	protected readonly name = "DrawPolyhedra";
 	private structure: Structure | undefined;
 	private color = "#FFFFFF80";
 	private labelKind: SelectorType = "symbol";

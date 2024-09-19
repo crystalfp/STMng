@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import type {BasisType, PositionType, Structure} from "../../types";
+import type {BasisType, PositionType, Structure} from "@/types";
 
 /**
  * Extract the basis vectors from basis lengths and angles

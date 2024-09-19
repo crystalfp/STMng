@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {format} from "../modules/Helpers";
-import type {Structure, WriterImplementation, CtrlParams} from "../../types";
+import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterXYZ implements WriterImplementation {
 

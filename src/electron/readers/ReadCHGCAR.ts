@@ -11,7 +11,7 @@ import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure, Atom, PositionType,
-			 ReaderImplementation, ReaderOptions} from "../../types";
+			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
 const enum LineType {

@@ -9,7 +9,7 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import type {Structure, Atom, BasisType,
-			 ReaderImplementation, ReaderOptions} from "../../types";
+			 ReaderImplementation, ReaderOptions} from "@/types";
 import {getAtomicNumber} from "../modules/AtomData";
 
 /** Line read type */

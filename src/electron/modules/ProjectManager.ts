@@ -16,7 +16,7 @@ import {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
-import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "../../types";
+import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "@/types";
 
 // NOTE 1) Add here the classes that defines the nodes
 import {CaptureView} from "../nodes/CaptureMedia";

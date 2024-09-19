@@ -9,7 +9,7 @@
 
 import fs from "node:fs";
 import {cartesianToFractionalCoordinates, format} from "../modules/Helpers";
-import type {Structure, WriterImplementation, CtrlParams} from "../../types";
+import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterPOSCAR implements WriterImplementation {
 

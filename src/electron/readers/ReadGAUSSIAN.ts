@@ -10,7 +10,7 @@ import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Crystal, Atom,
-			 ReaderImplementation, ReaderOptions} from "../../types";
+			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
 const enum LineType {
