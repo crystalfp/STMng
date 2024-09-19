@@ -7,8 +7,9 @@
  * @since 2024-07-05
  */
 
-import {ref, onUnmounted, nextTick} from "vue";
+import {ref, nextTick} from "vue";
 import {getPreferenceSync, receiveBroadcast, closeWindow, receiveInWindow} from "../services/RoutesClient";
+import {closeWithEscape} from "../services/CaptureEscape";
 
 const inSymmetry = ref("");
 const outSymmetry = ref("");
@@ -34,18 +35,8 @@ receiveInWindow((data) => {
     });
 });
 
-const captureEscape = (event: KeyboardEvent): void => {
-    if(event.key === "Escape") {
-        closeWindow("/symmetries");
-        event.preventDefault();
-        document.removeEventListener("keydown", captureEscape);
-    }
-};
-document.addEventListener("keydown", captureEscape);
-
-onUnmounted(() => {
-    document.removeEventListener("keydown", captureEscape);
-});
+/** Close the window on Esc press */
+closeWithEscape("/symmetries");
 
 </script>
 

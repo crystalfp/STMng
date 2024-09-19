@@ -7,9 +7,10 @@
  * @since 2024-07-05
  */
 
-import {ref, onMounted, onUnmounted} from "vue";
+import {ref, onMounted} from "vue";
 import {closeWindow, receiveInWindow, getPreferenceSync, receiveBroadcast} from "../services/RoutesClient";
 import type {ClientProjectInfo} from "../types";
+import {closeWithEscape} from "../services/CaptureEscape";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 150;
@@ -265,23 +266,8 @@ onMounted(() => {
     });
 });
 
-/**
- * Close the window on Esc press
- *
- * @param event - The keyboard event to select ESC key
- */
-const captureEscape = (event: KeyboardEvent): void => {
-    if(event.key === "Escape") {
-        closeWindow("/editor");
-        event.preventDefault();
-        document.removeEventListener("keydown", captureEscape);
-    }
-};
-document.addEventListener("keydown", captureEscape);
-
-onUnmounted(() => {
-    document.removeEventListener("keydown", captureEscape);
-});
+/** Close the window on Esc press */
+closeWithEscape("/editor");
 
 const showInfo = ref(false);
 const infoContent = ref<{label: string; value: string}[]>([]);

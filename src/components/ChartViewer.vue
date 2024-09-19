@@ -3,12 +3,13 @@
  * @component
  * Show a chart in a secondary window.
  */
-import {ref, onUnmounted} from "vue";
+import {ref} from "vue";
 import {Bar, Line} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
 import {closeWindow, receiveInWindow} from "../services/RoutesClient";
 import type {ChartParams} from "../types";
+import {closeWithEscape} from "../services/CaptureEscape";
 
 ChartJS.register(
     CategoryScale,
@@ -28,18 +29,8 @@ receiveInWindow((data) => {
     chartType.value = decodedData.type;
 });
 
-const captureEscape = (event: KeyboardEvent): void => {
-    if(event.key === "Escape") {
-        closeWindow("/chart");
-        event.preventDefault();
-        document.removeEventListener("keydown", captureEscape);
-    }
-};
-document.addEventListener("keydown", captureEscape);
-
-onUnmounted(() => {
-    document.removeEventListener("keydown", captureEscape);
-});
+/** Close the window on Esc press */
+closeWithEscape("/chart");
 
 </script>
 

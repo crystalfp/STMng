@@ -7,9 +7,7 @@
  * @since 2024-07-05
  */
 import fs from "node:fs";
-import path from "node:path";
-import {fileURLToPath} from "node:url";
-import {app} from "electron";
+import {publicDirPath} from "./GetPublicPath";
 
 // ##############################################################################
 // #                                                                            #
@@ -109,11 +107,8 @@ class AtomData {
 	 * Build the class by loading the atomic data from file
 	 */
 	private constructor() {
-		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-		const DIST = path.join(mainSourceDirectory, "..", "dist");
-		const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-		const filename = path.join(publicDir, "atom-data.json");
 
+		const filename = publicDirPath("atom-data.json");
 		this.data = JSON.parse(fs.readFileSync(filename, "utf8")) as OneAtomData[];
 
 		const len = this.data.length;

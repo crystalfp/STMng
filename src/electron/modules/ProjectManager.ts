@@ -8,9 +8,9 @@
  */
 import fs from "node:fs";
 import {writeFile} from "node:fs/promises";
-import {app, ipcMain} from "electron";
+import {ipcMain} from "electron";
 import path from "node:path";
-import {fileURLToPath} from "node:url";
+import {publicDirPath} from "./GetPublicPath";
 
 import {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
@@ -301,10 +301,7 @@ class ProjectManager {
 	 */
 	private getDefaultProject(): string {
 
-		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-		const DIST = path.join(mainSourceDirectory, "..", "dist");
-		const publicDir = app.isPackaged ? DIST : path.join(mainSourceDirectory, "..", "public");
-		return path.join(publicDir, "default-project.stm");
+		return publicDirPath("default-project.stm");
 	}
 
 	/**
