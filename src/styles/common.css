@@ -1,5 +1,5 @@
 
-// > Globals
+/* > Globals */
 body {
   margin: 0;
   padding: 0;
@@ -9,7 +9,7 @@ body {
   overflow: hidden;
 }
 
-// For vuetify
+/* For vuetify */
 html {
   overflow: hidden !important;
 }
@@ -22,15 +22,16 @@ html {
   --container-height: calc(100vh - 121px);
 }
 
-// > Vuetify specific
-// Height of the various nodes UI areas
+/* > Vuetify specific */
+
+/* Height of the various nodes UI areas */
 .container {
   overflow: clip auto;
   height: var(--container-height);
   padding: 10px 0 0 0 !important;
 }
 
-// Colors to be made visible changing application theme
+/* Colors to be made visible changing application theme */
 .green-label {
   color: light-dark(#2E7D32, #66BB6A) !important;
   opacity: 1 !important;

@@ -19,7 +19,7 @@ import {saveDataURL, saveMovie, saveSTL} from "../services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "../services/FitCamera";
 import {setupSceneHelpers} from "../services/SceneHelpers";
 import {showAlertMessage} from "../services/AlertMessage";
-import type {CtrlParams} from "../types";
+import type {CtrlParams} from "@/types";
 
 // > Access the stores
 const configStore  = useConfigStore();

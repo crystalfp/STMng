@@ -15,7 +15,7 @@ import {useControlStore} from "../stores/controlStore";
 import {useConfigStore} from "../stores/configStore";
 import {askNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
-import type {SelectedAtoms} from "../types";
+import type {SelectedAtoms} from "@/types";
 
 // > Properties
 const {id} = defineProps<{

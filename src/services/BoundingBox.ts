@@ -8,7 +8,7 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, @typescript-eslint/no-shadow */
 
-import type {PositionType, StructureRenderInfo} from "../types";
+import type {PositionType, StructureRenderInfo} from "@/types";
 
 /** Type of the returning data */
 export interface BoundingBox {

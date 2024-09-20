@@ -11,7 +11,7 @@ import {ref, computed} from "vue";
 import {useControlStore} from "../stores/controlStore";
 import {askNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import type {FileFilter} from "../types";
+import type {FileFilter} from "@/types";
 
 // > Properties
 const {id} = defineProps<{

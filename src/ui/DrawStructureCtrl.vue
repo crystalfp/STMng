@@ -16,7 +16,7 @@ import {normalMaterial, colorTextureMaterial} from "../services/HelperMaterials"
 import {sm} from "../services/SceneManager";
 import {getBoundingBox} from "../services/BoundingBox";
 
-import type {StructureRenderInfo, PositionType} from "../types";
+import type {StructureRenderInfo, PositionType} from "@/types";
 
 // > Properties
 const {id} = defineProps<{

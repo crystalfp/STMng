@@ -7,7 +7,7 @@
  * @since 2024-07-17
  */
 import * as THREE from "three";
-import type {PositionType} from "../types";
+import type {PositionType} from "@/types";
 import {Text as TroikaText} from "troika-three-text";
 
 import localRoboto from "../assets/Roboto-Regular.ttf";

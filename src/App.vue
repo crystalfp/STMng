@@ -6,12 +6,10 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
+import "./styles/common.css";
+
 </script>
 
 <template>
 <router-view />
 </template>
-
-<style lang="scss">
-@use "./styles/common";
-</style>

@@ -8,7 +8,7 @@ import {Bar, Line} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
 import {closeWindow, receiveInWindow} from "../services/RoutesClient";
-import type {ChartParams} from "../types";
+import type {ChartParams} from "@/types";
 import {closeWithEscape} from "../services/CaptureEscape";
 
 ChartJS.register(

@@ -12,7 +12,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import type {CtrlParams, FileFilter} from "../types";
+import type {CtrlParams, FileFilter} from "@/types";
 
 import EnableCapture from "../components/EnableCapture.vue";
 

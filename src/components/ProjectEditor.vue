@@ -9,7 +9,7 @@
 
 import {ref, onMounted} from "vue";
 import {closeWindow, receiveInWindow, getPreferenceSync, receiveBroadcast} from "../services/RoutesClient";
-import type {ClientProjectInfo} from "../types";
+import type {ClientProjectInfo} from "@/types";
 import {closeWithEscape} from "../services/CaptureEscape";
 
 /** Dimensions of the node on screen */
@@ -279,10 +279,14 @@ const infoContent = ref<{label: string; value: string}[]>([]);
  */
 const selectNode = (key: string): void => {
 
-    if(showInfo.value) {
-        showInfo.value = false;
-        return;
+    // Change node selected indicator
+    const nnodes = nodes.value.length;
+    for(let i=0; i < nnodes; ++i) {
+        if(nodes.value[i].selected) nodes.value[i].selected = false;
+        if(nodes.value[i].id === key) nodes.value[i].selected = true;
     }
+
+    // Fill and show the info section
     showInfo.value = true;
     const node = graph[key];
     infoContent.value.length = 0;
@@ -291,6 +295,24 @@ const selectNode = (key: string): void => {
         {label: "Label:",     value: node.label},
         {label: "Node type:", value: node.type},
     );
+};
+
+/**
+ * Close the info section and deselect the selected node
+ */
+const closeInfo = (): void => {
+
+    // Close the info section
+    showInfo.value = false;
+
+    // Remove the selection indicator
+    const nnodes = nodes.value.length;
+    for(let i=0; i < nnodes; ++i) {
+        if(nodes.value[i].selected) {
+            nodes.value[i].selected = false;
+            break;
+        }
+    }
 };
 
 </script>
@@ -330,7 +352,7 @@ const selectNode = (key: string): void => {
     </v-table>
   </v-container>
   <v-container class="graph-editor-button-strip">
-    <v-btn v-if="showInfo" class="mr-2" @click="showInfo=false">Close info</v-btn>
+    <v-btn v-if="showInfo" class="mr-2" @click="closeInfo">Close info</v-btn>
     <v-btn @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>
@@ -338,8 +360,7 @@ const selectNode = (key: string): void => {
 </template>
 
 
-<style scoped lang="scss">
-@use "sass:color";
+<style scoped>
 
 .graph-editor-portal {
   display: flex;
@@ -362,10 +383,7 @@ const selectNode = (key: string): void => {
   max-width: 2000px;
 }
 
-// > Colors
-$node-selected-color: #FFFF00;
-
-// > Node
+/* > Node */
 .border {
   stroke: v-bind(fg);
   stroke-width: 2;
@@ -377,16 +395,15 @@ $node-selected-color: #FFFF00;
 }
 
 .selected {
-  fill: color.adjust($node-selected-color, $lightness: -25%) {
-    opacity: 0.8;
-  }
-  stroke: $node-selected-color {
-    width: 2;
-    opacity: 1;
-  }
+  --node-selected-color: #FFFF00FF;
+  --node-selected-fill: #BFBF00CD; /* Is SCSS color.adjust($node-selected-color, $lightness: -25%) */
+
+  fill: var(--node-selected-fill);
+  stroke: var(--node-selected-color);
+  stroke-width: 2;
 }
 
-// > Text field
+/* > Text field */
 .label {
   fill: v-bind(fg);
   font-size: 1.1rem;

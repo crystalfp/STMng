@@ -13,7 +13,7 @@ import {ref, computed} from "vue";
 import {humanFormat} from "../services/HumanFormat";
 import {askNode, receiveIsosurfacesFromNode} from "../services/RoutesClient";
 import {showAlertMessage} from "../services/AlertMessage";
-import type {CtrlParams} from "../types";
+import type {CtrlParams} from "@/types";
 
 // > Properties
 const {id} = defineProps<{

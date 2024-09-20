@@ -10,7 +10,7 @@
 import {ref, watch} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "../services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import type {CtrlParams} from "../types";
+import type {CtrlParams} from "@/types";
 
 // > Properties
 const {id} = defineProps<{

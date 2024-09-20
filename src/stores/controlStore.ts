@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
-import type {PositionType} from "../types";
+import type {PositionType} from "@/types";
 
 interface GlobalControls {
 

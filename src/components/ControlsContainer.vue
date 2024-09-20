@@ -10,7 +10,7 @@
 import {ref, defineAsyncComponent, markRaw} from "vue";
 import {useControlStore} from "../stores/controlStore";
 import {receiveProjectUI, sendToNode} from "../services/RoutesClient";
-import type {ClientProjectInfo, ClientProjectInfoItem} from "../types";
+import type {ClientProjectInfo, ClientProjectInfoItem} from "@/types";
 
 // > Access the store
 const controlStore = useControlStore();
