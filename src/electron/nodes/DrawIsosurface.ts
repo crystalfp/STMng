@@ -23,14 +23,6 @@ export class DrawIsosurface extends NodeCore {
     private range: [number, number] = [-10, 10];
     private colormapName = "rainbow";
     private opacity = 1;
-
-    // private datasetPrevious = -1;
-    // private isovaluePrevious = Number.NEGATIVE_INFINITY;
-    // private countIsosurfacesPrevious = 0;
-    // private limitLowPrevious = Number.NEGATIVE_INFINITY;
-    // private limitHighPrevious = Number.POSITIVE_INFINITY;
-    // private rangePrevious = [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY];
-
     private nestedIsosurfaces = false;
     private countIsosurfaces = 2;
     private limitLow = -10;
@@ -39,6 +31,8 @@ export class DrawIsosurface extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "change",    type: "send",   callback: this.channelChange.bind(this)},
+		{name: "show",      type: "send",   callback: this.channelShow.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -53,21 +47,19 @@ export class DrawIsosurface extends NodeCore {
 
 		const countDatasets = this.structure.volume.length;
 		if(countDatasets === 0) {
-			this.dataset = 0;
 			this.maxDataset = 0;
 			this.range = [-10, 10];
-			this.isoValue = 0;
 		}
 		else {
-			if(this.dataset >= countDatasets) this.dataset = 0;
 			this.maxDataset = countDatasets - 1;
 			this.range = this.getValueLimits();
-			this.isoValue = (this.range[0]+this.range[1])/2;
 		}
+
+        this.isoValue = (this.range[0]+this.range[1])/2;
 		this.limitLow = this.range[0];
 		this.limitHigh = this.range[1];
 
-		this.createIsosurface();
+		this.createIsosurface(true);
 	}
 
 	saveStatus(): string {
@@ -109,15 +101,73 @@ export class DrawIsosurface extends NodeCore {
 		};
 	}
 
-	private createIsosurface(): void {
-		// TBD
-		void IsosurfaceCore;
+    /**
+     * Create isosurfaces and return them to the rendering process
+     *
+     * @param changedStructure - True if isosurfaces are created by structure change
+     */
+	private createIsosurface(changedStructure: boolean): void {
+
+        // Check if the isosurface could be created
+        if(!this.structure?.volume ||
+            this.structure.volume.length === 0 ||
+            this.structure.volume[this.dataset]?.values.length === 0) {
+                this.sendNoIsosurface();
+                return;
+        }
+
+        // Access the needed values
+        const {basis, origin} = this.structure.crystal;
+        const {sides, values} = this.structure.volume[this.dataset];
+
+        // A unit cell is needed to create the isosurface
+        if(basis.every((value) => value === 0)) {
+            this.sendNoIsosurface();
+            return;
+        }
+
+        // Initialize the isosurface computation
+        const iso = new IsosurfaceCore(sides, basis, origin, values);
+
+		const indices: number[][] = [];
+		const vertices: number[][] = [];
+		const normals: number[][] = [];
+		const isoValues: number[] = [];
+
+        if(this.nestedIsosurfaces) {
+
+            const delta = (this.limitHigh - this.limitLow) / (this.countIsosurfaces-1);
+            let isoValue = this.limitLow;
+            for(let i=0; i < this.countIsosurfaces; ++i) {
+
+                iso.computeIsosurface(isoValue);
+
+                indices[i] = iso.indices;
+                vertices[i] = iso.vertices;
+                normals[i] = iso.normals;
+                isoValues[i] = isoValue;
+
+                isoValue += delta;
+            }
+        }
+        else {
+            // Compute the triangulated surface for a single value
+            iso.computeIsosurface(this.isoValue);
+            indices[0] = iso.indices;
+            vertices[0] = iso.vertices;
+            normals[0] = iso.normals;
+            isoValues[0] = this.isoValue;
+        }
 
 		// Send the results to client
 		sendIsosurfacesToClient(this.id, "iso", {
+            indices,
+            vertices,
+            normals,
+            isoValues,
 			params: {
+                changedStructure,
 				maxDataset: this.maxDataset,
-				dataset: this.dataset,
 				valueMin: this.range[0],
 				valueMax: this.range[1],
 			}
@@ -125,7 +175,21 @@ export class DrawIsosurface extends NodeCore {
 	}
 
     /**
-     * Get the volume value range for the colormap
+     * Send to client no isosurface
+     */
+    private sendNoIsosurface(): void {
+
+		sendIsosurfacesToClient(this.id, "iso", {
+            indices: [],
+            vertices: [],
+            normals: [],
+            isoValues: [],
+			params: {}
+		});
+    }
+
+    /**
+     * Get the volume value range
      *
      * @returns [min volume value, max volume value]
      */
@@ -168,4 +232,34 @@ export class DrawIsosurface extends NodeCore {
             limitColormap: this.limitColormap,
 		};
 	}
+
+	/**
+	 * Channel handler for parameters change
+     *
+     * @param params - All parameters
+	 */
+	private channelChange(params: CtrlParams): void {
+
+        this.dataset = params.dataset as number ?? 0;
+        this.nestedIsosurfaces = params.nestedIsosurfaces as boolean ?? false;
+        this.countIsosurfaces = params.countIsosurfaces as number ?? 2;
+        this.limitLow = params.limitLow as number ?? -10;
+        this.limitHigh = params.limitHigh as number ?? 10;
+        this.isoValue = params.isoValue as number ?? 0;
+
+        this.createIsosurface(false);
+    }
+
+	/**
+	 * Channel handler for parameters change
+     *
+     * @param params - All parameters that do not need recomputation
+	 */
+	private channelShow(params: CtrlParams): void {
+
+        this.colormapName = params.colormapName as string ?? "rainbow";
+        this.showIsosurface = params.showIsosurface as boolean ?? false;
+        this.limitColormap = params.limitColormap as boolean ?? false;
+        this.opacity = params.opacity as number ?? 1;
+    }
 }

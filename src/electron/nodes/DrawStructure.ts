@@ -14,7 +14,7 @@ import {getAtomData} from "../modules/AtomData";
 
 export class DrawStructure extends NodeCore {
 
-	private drawKind = "";
+	private drawKind = "ball-and-stick";
 	private drawQuality = 4;
 	private drawRoughness = 0.5;
 	private drawMetalness = 0.6;

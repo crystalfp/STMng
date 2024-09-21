@@ -433,12 +433,20 @@ export const sendPositionCloudsToClient = (id: string,
  * @param data - Data to draw isosurfaces
  */
 export const sendIsosurfacesToClient = (id: string,
-                                     channel: string,
-                                     data: {
-                                        params: CtrlParams;
-                                     }): void => {
+                                        channel: string,
+                                        data: {
+                                            indices: number[][];
+                                            vertices: number[][];
+                                            normals: number[][];
+                                            isoValues: number[];
+                                            params: CtrlParams;
+                                        }): void => {
 
     const channelName = id + ":" + channel;
     mainWin.webContents.send(channelName,
+                             data.indices,
+                             data.vertices,
+                             data.normals,
+                             data.isoValues,
                              data.params);
 };

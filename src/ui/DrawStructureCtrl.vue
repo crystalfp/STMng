@@ -26,7 +26,7 @@ const {id} = defineProps<{
 }>();
 
 // > Get and set ui parameters from the switchboard
-const drawKind = ref("");
+const drawKind = ref("ball-and-stick");
 const drawQuality = ref(4);
 const drawRoughness = ref(0.5);
 const drawMetalness = ref(0.6);

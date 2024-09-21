@@ -45,8 +45,8 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 		<v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
 		variant="solo-filled" density="compact" hide-details rounded="0" />
 	</v-container>
-	<v-container v-for="(panel, index) of panelList" class="pa-0">
-		<component :is="panel" :id="uiList[index].id" v-show="uiList[index].id === selectedTabId" />
+	<v-container v-for="(panel, index) of panelList" :key="uiList[index].id" class="pa-0">
+		<component v-show="uiList[index].id === selectedTabId" :is="panel" :id="uiList[index].id" />
 	</v-container>
 	<v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true">
 		Reset camera

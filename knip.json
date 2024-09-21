@@ -18,7 +18,8 @@
     "eslint-import-resolver-typescript",
     "node-addon-api",
     "typedoc",
-    "typedoc-plugin-vue"
+    "typedoc-plugin-vue",
+    "dependency-cruiser"
   ],
   "includeEntryExports": true
 }

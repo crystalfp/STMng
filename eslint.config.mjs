@@ -334,6 +334,7 @@ export default [{
 
         "unicorn/prefer-top-level-await": "off",
         "unicorn/no-zero-fractions": "off",
+        "unicorn/no-for-loop": "off",
         "promise/catch-or-return": ["off", {allowFinally: true}],
         "deprecate/function": "warn",
         "deprecate/member-expression": "warn",

@@ -282,13 +282,21 @@ export const receiveIsoOrthoFromNode = (id: string,
 export const receiveIsosurfacesFromNode = (id: string,
 										   channel: string,
 										   callback: (
+												indices: number[][],
+												vertices: number[][],
+												normals: number[][],
+												isoValues: number[],
 												params: CtrlParams) => void
 										  ): void => {
 
 	const channelName = id + ":" + channel;
     window.electron.ipcRenderer.on(channelName,
 				(_event,
-				 params: CtrlParams) => callback(params));
+				 indices: number[][],
+				 vertices: number[][],
+				 normals: number[][],
+				 isoValues: number[],
+				 params: CtrlParams) => callback(indices, vertices, normals, isoValues, params));
 };
 
 /**

@@ -9,10 +9,12 @@
 
 import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
-import {ref, computed} from "vue";
-import {humanFormat} from "../services/HumanFormat";
-import {askNode, receiveIsosurfacesFromNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+import {ref, computed, watch} from "vue";
+import {humanFormat} from "@/services/HumanFormat";
+import {askNode, receiveIsosurfacesFromNode, sendToNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
+import {sm} from "@/services/SceneManager";
+
 import type {CtrlParams} from "@/types";
 
 // > Properties
@@ -34,17 +36,16 @@ const opacity = ref(1);
 
 const nestedIsosurfaces = ref(false);
 const countIsosurfaces = ref(2);
-const limits = ref<number[]>([]);
-const limitLow = ref(-10);
-const limitHigh = ref(10);
+const limits = ref<number[]>([-10, 10]);
 const limitColormap = ref(false);
 
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
 const group = new THREE.Group();
-const groupName = "Isosurface" + id;
+const groupName = "Isosurface-" + id;
 group.name = groupName;
+sm.add(group);
 
 // > Colormap creation
 const lut = computed(() => {
@@ -52,64 +53,123 @@ const lut = computed(() => {
     const thatLut = new Lut(colormapName.value,
                             nestedIsosurfaces.value ? countIsosurfaces.value : 512);
 
-    thatLut.setMax(limits.value[1]);
-    thatLut.setMin(limits.value[0]);
+    if(limitColormap.value) {
+        thatLut.setMax(limits.value[1]);
+        thatLut.setMin(limits.value[0]);
+    }
+    else {
+        thatLut.setMax(valueMax.value);
+        thatLut.setMin(valueMin.value);
+    }
 
     return thatLut;
 });
-
-void lut; // TBD
 
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
         showIsosurface.value = params.showIsosurface as boolean ?? false;
         dataset.value = params.dataset as number ?? 0;
+
+        nestedIsosurfaces.value = params.nestedIsosurfaces as boolean ?? false;
+
         isoValue.value = params.isoValue as number ?? 0;
+
         colormapName.value = params.colormapName as string ?? "rainbow";
         opacity.value = params.opacity as number ?? 1;
 
-        nestedIsosurfaces.value = params.nestedIsosurfaces as boolean ?? false;
         countIsosurfaces.value = params.countIsosurfaces as number ?? 2;
-        limitLow.value = params.limitLow as number ?? -10;
-        limitHigh.value = params.limitHigh as number ?? 10;
+        limits.value[0] = params.limitLow as number ?? -10;
+        limits.value[1] = params.limitHigh as number ?? 10;
         limitColormap.value = params.limitColormap as boolean ?? false;
-
-        limits.value[0] = limitLow.value;
-        limits.value[1] = limitHigh.value;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for Isosurface: ${error.message}`));
 
-receiveIsosurfacesFromNode(id, "iso", (params: CtrlParams) => {
+receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
+                                       vertices: number[][],
+                                       normals: number[][],
+                                       isoValues: number[],
+                                       params: CtrlParams) => {
+
+    // Remove existing surfaces
+    sm.clearGroup(groupName);
+
+    if(indices.length === 0) return;
 
     maxDataset.value = params.maxDataset as number ?? 0;
     valueMin.value = params.valueMin as number ?? -10;
     valueMax.value = params.valueMax as number ?? 10;
 
-    limits.value[0] = valueMin.value;
-    limits.value[1] = valueMax.value;
+    if(params.changedStructure) {
+        limits.value[0] = valueMin.value;
+        limits.value[1] = valueMax.value;
+
+        if(dataset.value > maxDataset.value) dataset.value = maxDataset.value;
+
+        isoValue.value = (valueMin.value+valueMax.value)/2;
+    }
+
+    // Add single or nested isosurfaces
+    for(let i=0; i < indices.length; ++i) {
+
+        // Create and add the surface to the scene
+        const geometry = new THREE.BufferGeometry();
+        geometry.setIndex(indices[i]);
+        geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices[i], 3));
+        geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(normals[i], 3));
+
+        const material = new THREE.MeshStandardMaterial({
+            side: THREE.DoubleSide,
+            color: lut.value.getColor(isoValues[i]).getHex(),
+            opacity: opacity.value,
+            roughness: 0.5,
+            metalness: 0.6,
+            transparent: opacity.value < 0.99,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData = {isoValue: isoValues[i]};
+        group.add(mesh);
+    }
+
+    group.visible = showIsosurface.value;
 });
 
-/*
-watchEffect(() => {
+// To recompute the isosurfaces
+watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
 
-    limitLow.value = limits.value[0];
-    limitHigh.value = limits.value[1];
+    sendToNode(id, "change", {
 
-    sb.setUiParams(id, {
-        showIsosurface: showIsosurface.value,
         dataset: dataset.value,
-        isoValue: isoValue.value,
-        colormapName: colormapName.value,
-        opacity: opacity.value,
         nestedIsosurfaces: nestedIsosurfaces.value,
         countIsosurfaces: countIsosurfaces.value,
-        limitLow: limitLow.value,
-        limitHigh: limitHigh.value,
-        limitColormap: limitColormap.value,
+        limitLow: limits.value[0],
+        limitHigh: limits.value[1],
+        isoValue: isoValue.value,
     });
 });
-*/
+
+// To change locally
+watch([showIsosurface, limitColormap, colormapName, opacity], () => {
+
+    sendToNode(id, "show", {
+        showIsosurface: showIsosurface.value,
+        limitColormap: limitColormap.value,
+        colormapName: colormapName.value,
+        opacity: opacity.value
+    });
+
+    group.visible = showIsosurface.value;
+
+    group.traverse((mesh) => {
+        if(mesh.type !== "Mesh") return;
+        const {isoValue: value} = mesh.userData;
+        const material = (mesh as THREE.Mesh).material as THREE.MeshStandardMaterial;
+        material.opacity = opacity.value;
+        material.transparent = opacity.value < 0.99;
+        material.color = lut.value.getColor(value as number);
+    });
+});
 
 </script>
 
