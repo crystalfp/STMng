@@ -66,10 +66,8 @@ interface OneAtomData {
 	/** Electron affinity (in eV). 0.0 if unknown */
 	elAffinity: number;
 
-	/** RGB color for visualization */
-	red: number;
-	green: number;
-	blue: number;
+	/** RGB color for visualization (format: "#RRGGBB") */
+	color: string;
 
 	/** Element name (in English) */
 	name: string;
@@ -148,13 +146,7 @@ class AtomData {
 	 */
 	atomicData(atomZ: number): AtomAppearance {
 
-		const {red, green, blue, symbol, rCov, rVdW, maxBonds} = this.data[atomZ];
-
-		const rs = red.toString(16).toUpperCase().padStart(2, "0");
-		const gs = green.toString(16).toUpperCase().padStart(2, "0");
-		const bs = blue.toString(16).toUpperCase().padStart(2, "0");
-
-		const color = "#" + rs + gs + bs;
+		const {symbol, rCov, rVdW, maxBonds, color} = this.data[atomZ];
 
 		return {
 			symbol,
