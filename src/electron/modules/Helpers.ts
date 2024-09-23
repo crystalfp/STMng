@@ -140,6 +140,8 @@ export const basisToLengthAngles = (basis: BasisType): number[] => [
  *
  * @param structure - The structure from which the atoms coordinates should be converted to fractional
  * @returns The array of fractional coordinates
+ * @throws Error
+ * The basis matrix is not invertible
  */
 export const cartesianToFractionalCoordinates = (structure: Structure): number[] => {
 

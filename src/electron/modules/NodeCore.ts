@@ -49,6 +49,8 @@ export abstract class NodeCore {
 	 * Routine called when another node notifies the current one
 	 *
 	 * @param data - The structure received by the subscribed node
+	 * @throws Error
+	 * If the node call notifier without overriding it
 	 */
 	notifier(data: Structure): void {
 		void data;

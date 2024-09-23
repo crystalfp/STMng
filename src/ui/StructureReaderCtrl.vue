@@ -143,7 +143,7 @@ const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomType
  */
 const getAtomsTypes = (): void => {
 
-    sendToNode(id, "types", {atomsTypes: atomsTypes.value});
+    sendToNode(id, "types", {atomsTypes: atomsTypes.value ?? ""});
 };
 
 /**
@@ -267,10 +267,13 @@ const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"
             :items="fileFormats" class="mt-4"
             density="compact" @update:model-value="setFormat" />
 
-  <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes" label="Atoms types"
+  <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes"
+                label="Atoms types"
                 placeholder="Space separated list" class="mb-6"
-                variant="solo-filled" hide-details="auto" clearable spellcheck="false"
-                @blur="getAtomsTypes" @keyup.enter="getAtomsTypes" />
+                variant="solo-filled" hide-details="auto"
+                clearable spellcheck="false"
+                @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
+                @click:clear="getAtomsTypes"/>
 
   <g-select-file class="mt-2" :disabled="format === ''" title="Select input file"
                  :filter="filterFromFormat(format)" @selected="selectedFile" />

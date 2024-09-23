@@ -45,11 +45,13 @@ watch([chartType, openChart], () => {
 
 <template>
 <v-container class="container">
-  <v-label class="ml-1 mb-3 no-select">Chart type</v-label><br>
-  <v-btn-toggle v-model="chartType" color="primary" mandatory class="mb-6">
-    <v-btn value="line">Line</v-btn>
-    <v-btn value="bar">Bar</v-btn>
-  </v-btn-toggle>
+  <v-row class="mt-4 mb-1">
+    <v-label class="ml-4 mb-3 mr-4 pb-3 no-select">Chart type:</v-label><br>
+    <v-btn-toggle v-model="chartType" color="primary" mandatory class="mb-6">
+      <v-btn value="line">Line</v-btn>
+      <v-btn value="bar">Bar</v-btn>
+    </v-btn-toggle>
+  </v-row>
   <v-btn block @click="openChart=true">Open chart</v-btn>
 </v-container>
 </template>

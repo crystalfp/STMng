@@ -185,7 +185,6 @@ export class DrawPolyhedra extends NodeCore {
 		// Extract the polyhedrons vertices and send to client
 		if(!this.structure) return;
 		const islands = this.createVerticeLists();
-		if(islands.length === 0) return;
 
 		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
 	}

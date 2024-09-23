@@ -48,6 +48,7 @@
         "@since": true,
         "@todo": true,
         "@link": true,
-        "@notExported": true
+        "@notExported": true,
+        "@throws": true
     }
 }

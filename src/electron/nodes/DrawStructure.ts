@@ -26,6 +26,7 @@ export class DrawStructure extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "save", type: "send",   callback: this.channelSave.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -100,7 +101,7 @@ export class DrawStructure extends NodeCore {
 		this.showBonds = params.showBonds as boolean ?? true;
 		this.showStructure = params.showStructure as boolean ?? true;
 		this.showLabels = params.showLabels as boolean ?? true;
-		this.shadedBonds = params.shadedBonds as boolean ?? true;
+		this.shadedBonds = params.shadedBonds as boolean ?? false;
 	}
 
 	getUiInfo(): UiInfo {
@@ -132,5 +133,23 @@ export class DrawStructure extends NodeCore {
 			showLabels: this.showLabels,
 			shadedBonds: this.shadedBonds,
 		};
+	}
+
+	/**
+	 * Channel handler for the change of parameters
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelSave(params: CtrlParams): void {
+
+		if(params.drawKind)	     this.drawKind = params.drawKind as string;
+		if(params.drawQuality)   this.drawQuality = params.drawQuality as number;
+		if(params.drawRoughness) this.drawRoughness = params.drawRoughness as number;
+		if(params.drawMetalness) this.drawMetalness = params.drawMetalness as number;
+		if(params.labelKind)     this.labelKind = params.labelKind as string;
+		if(params.showBonds)     this.showBonds = params.showBonds as boolean;
+		if(params.showStructure) this.showStructure = params.showStructure as boolean;
+		if(params.showLabels)    this.showLabels = params.showLabels as boolean;
+		if(params.shadedBonds)   this.shadedBonds = params.shadedBonds as boolean;
 	}
 }

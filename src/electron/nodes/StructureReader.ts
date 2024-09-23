@@ -10,7 +10,7 @@ import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
-import {getAtomicNumber} from "../modules/AtomData";
+import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 
 // Import the readers
 import {ReaderXYZ} from "../readers/ReadXYZ";
@@ -335,20 +335,30 @@ export class StructureReader extends NodeCore {
 	 */
 	private changeAtomsType(renamedAtomTypes: string): void {
 
-		if(this.structures.length === 0 || renamedAtomTypes === "") return;
-
-		// Array of the renamed atom types
-		const typesAfter = renamedAtomTypes.split(/ +/);
+		if(this.structures.length === 0) return;
 
 		// Get the current atomic numbers
 		const currentAtomsZ = new Set<number>();
 		for(const atom of this.structures[0].atoms) currentAtomsZ.add(atom.atomZ);
 
-		if(currentAtomsZ.size > typesAfter.length) {
-			const missing = currentAtomsZ.size - typesAfter.length;
-			const plural = missing === 1 ? "" : "s";
-			sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`, "structureReader");
-			return;
+		// Array of the renamed atom types
+		let typesAfter: string[] = [];
+
+		if(renamedAtomTypes === "") {
+
+			for(let i=0; i < currentAtomsZ.size; ++i) {
+				typesAfter.push(getAtomicSymbol(i+1));
+			}
+		}
+		else {
+
+			typesAfter = renamedAtomTypes.split(/ +/);
+			if(currentAtomsZ.size > typesAfter.length) {
+				const missing = currentAtomsZ.size - typesAfter.length;
+				const plural = missing === 1 ? "" : "s";
+				sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`, "structureReader");
+				return;
+			}
 		}
 
 		// Prepare the mapping from the current atomZ to the renamed atomZ

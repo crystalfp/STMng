@@ -8,15 +8,17 @@
  */
 import * as THREE from "three";
 import {ref, watch, computed} from "vue";
-import {askNode, receiveFromNodeForRendering} from "../services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import {spriteText, disposeTextInGroup} from "../services/SpriteText";
-import {normalMaterial, colorTextureMaterial} from "../services/HelperMaterials";
-
-import {sm} from "../services/SceneManager";
-import {getBoundingBox} from "../services/BoundingBox";
+import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/RoutesClient";
+import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
+import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
+import {useControlStore} from "@/stores/controlStore";
+import {sm} from "@/services/SceneManager";
+import {getBoundingBox} from "@/services/BoundingBox";
 
 import type {StructureRenderInfo, PositionType} from "@/types";
+
+const controlStore = useControlStore();
 
 // > Properties
 const {id} = defineProps<{
@@ -418,6 +420,9 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
     adjustMaterials();
     drawStructure();
     drawLabels();
+
+    // Reset the camera
+    controlStore.reset = true;
 });
 
 // Change draw parameters
@@ -427,6 +432,11 @@ watch([labelKind, drawKind, shadedBonds], () => {
         drawStructure();
         drawLabels();
     }
+    sendToNode(id, "save", {
+        labelKind: labelKind.value,
+        drawKind: drawKind.value,
+        shadedBonds: shadedBonds.value
+    });
 });
 
 // Change visibility
@@ -435,12 +445,22 @@ watch([showStructure, showBonds, showLabels], () => {
     labelsGroup.visible = showLabels.value;
     bondsGroup.visible = showBonds.value;
     out.visible = showStructure.value;
+    sendToNode(id, "save", {
+        showStructure: showStructure.value,
+        showBonds: showBonds.value,
+        showLabels: showLabels.value
+    });
 });
 
 // Change material parameters
 watch([drawRoughness, drawMetalness, drawQuality], () => {
 
     adjustMaterials();
+    sendToNode(id, "save", {
+        drawRoughness: drawRoughness.value,
+        drawMetalness: drawMetalness.value,
+        drawQuality: drawQuality.value
+    });
 });
 
 // Convert the button toggle into three booleans

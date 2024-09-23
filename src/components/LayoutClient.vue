@@ -32,8 +32,8 @@ window.addEventListener("DOMContentLoaded", () => {
             clearInterval(timer);
             handleFullscreen((isFullScreen: boolean) => {
                 const root = document.documentElement;
-                root.style.setProperty("--container-height", isFullScreen ? "calc(100vh - 74px)" :
-                                                                            "calc(100vh - 104px)");
+                root.style.setProperty("--container-height", isFullScreen ? "calc(100vh - 90px)" :
+                                                                            "calc(100vh - 121px)");
             });
             setProjectPathInTitle("See the Molecole new generation");
             receiveRefreshMenu();
@@ -120,7 +120,7 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
   flex-direction: column;
   width: 500px;
   padding: 0;
-  margin: 12px; /* For vuetify VSelect dropdown menu */
+  margin: 12px 12px 0 12px; /* For vuetify VSelect dropdown menu */
 }
 
 .layout-gutter {

@@ -29,7 +29,7 @@ const atomsSelector = defineModel<string>("selector");
 
 const atomsSelectorBase = ref(atomsSelector.value);
 const getSelector = (): void => {
-    atomsSelector.value = atomsSelectorBase.value;
+    atomsSelector.value = atomsSelectorBase.value ?? "";
 };
 
 </script>
@@ -48,6 +48,6 @@ const getSelector = (): void => {
                 :disabled="labelKind === 'all' || disabled"
                 placeholder="Space separated list"
                 variant="solo-filled" hide-details="auto" clearable spellcheck="false"
-                @blur="getSelector" @keyup.enter="getSelector" />
+                @blur="getSelector" @keyup.enter="getSelector" @click:clear="getSelector"/>
 </v-container>
 </template>
