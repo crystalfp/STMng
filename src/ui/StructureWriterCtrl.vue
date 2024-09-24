@@ -8,9 +8,9 @@
  */
 
 import {ref, computed} from "vue";
-import {useControlStore} from "../stores/controlStore";
-import {askNode} from "../services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
+import {useControlStore} from "@/stores/controlStore";
+import {askNode} from "@/services/RoutesClient";
+import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import type {FileFilter} from "@/types";
 
 // > Properties

@@ -10,11 +10,12 @@
 import {ref, watch} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
-import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
+import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
+import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams, FileFilter} from "@/types";
 
-import EnableCapture from "../components/EnableCapture.vue";
+import EnableCapture from "@/components/EnableCapture.vue";
 
 // > Properties
 const {id} = defineProps<{
@@ -47,6 +48,8 @@ const format           = ref("");           // File format to be read
 const inProgress       = ref(false);        // True during file load
 const auxFileToRead    = ref("");           // Path to the auxiliary file to read
 const useBohr          = ref(true);         // Use Bohr units
+
+const controlStore = useControlStore();
 
 // Initialize the control
 resetAlertMessage("structureReader");
@@ -176,6 +179,7 @@ const selectedFile = (filename: string): void => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
+            controlStore.reset = true;
         })
         .catch((error: Error) => {
             inProgress.value = false;
@@ -283,7 +287,7 @@ const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"
                  title="Select XDATCAR file" @selected="selectedAuxFile"/>
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
-            label="Use Bohr units" density="compact" class="ml-2" @update:model-value="setUseBohr" />
+            label="Use Bohr units" density="compact" class="ml-2 mt-4" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <enable-capture />

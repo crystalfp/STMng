@@ -10,12 +10,12 @@
 import * as THREE from "three";
 import {ref, watch} from "vue";
 import {storeToRefs} from "pinia";
-import {useControlStore} from "../stores/controlStore";
+import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveTracesFromNode, sendToNode,
-        receivePositionCloudsFromNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
-import {sm} from "../services/SceneManager";
-import {VolumeRenderShader} from "../services/VolumeShader";
+        receivePositionCloudsFromNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
+import {sm} from "@/services/SceneManager";
+import {VolumeRenderShader} from "@/services/VolumeShader";
 
 // > Properties
 const {id} = defineProps<{

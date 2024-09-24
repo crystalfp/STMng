@@ -8,10 +8,10 @@
  */
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
-import {sm} from "../services/SceneManager";
+import {sm} from "@/services/SceneManager";
 import {isLoaded, getPreferenceSync, handleFullscreen, receiveRefreshMenu, setProjectPathInTitle,
-        receiveBroadcast, receiveMenuSelection, receiveNotifications} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+        receiveBroadcast, receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
 
 import Viewer3D from "./Viewer3D.vue";
 import ControlsContainer from "./ControlsContainer.vue";

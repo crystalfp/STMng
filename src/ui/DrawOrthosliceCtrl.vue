@@ -10,11 +10,11 @@
 import {ref, computed, watchEffect} from "vue";
 import * as THREE from "three";
 import {Lut} from "three/addons/math/Lut.js";
-import {humanFormat} from "../services/HumanFormat";
-import {askNode, receiveIsoOrthoFromNode, sendToNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+import {humanFormat} from "@/services/HumanFormat";
+import {askNode, receiveIsoOrthoFromNode, sendToNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
+import {sm} from "@/services/SceneManager";
 import type {CtrlParams} from "@/types";
-import {sm} from "../services/SceneManager";
 
 // > Properties
 const {id} = defineProps<{

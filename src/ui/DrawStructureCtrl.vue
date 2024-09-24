@@ -12,13 +12,10 @@ import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/Route
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
-import {useControlStore} from "@/stores/controlStore";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
 
 import type {StructureRenderInfo, PositionType} from "@/types";
-
-const controlStore = useControlStore();
 
 // > Properties
 const {id} = defineProps<{
@@ -420,9 +417,6 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
     adjustMaterials();
     drawStructure();
     drawLabels();
-
-    // Reset the camera
-    controlStore.reset = true;
 });
 
 // Change draw parameters

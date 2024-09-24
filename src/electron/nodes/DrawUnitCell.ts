@@ -11,6 +11,7 @@ import {adjustOrigin} from "../modules/AdjustOrigin";
 import {sendVerticesToClient} from "../modules/WindowsUtilities";
 import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
 			 PositionType, BasisType, Volume} from "@/types";
+import {computeCellVertices} from "./ComputeCellVertices";
 
 export class DrawUnitCell extends NodeCore {
 
@@ -324,17 +325,7 @@ export class DrawUnitCell extends NodeCore {
 			return;
 		}
 
-		// Vertices coordinates (bottom then top)
-    	const vertices = [
-/* 0 */ orig[0],                            orig[1],                            orig[2],
-/* 1 */ orig[0]+basis[0],                   orig[1]+basis[1],                   orig[2]+basis[2],
-/* 2 */ orig[0]+basis[0]+basis[3],          orig[1]+basis[1]+basis[4],          orig[2]+basis[2]+basis[5],
-/* 3 */ orig[0]+basis[3],                   orig[1]+basis[4],                   orig[2]+basis[5],
-/* 4 */ orig[0]+basis[6],                   orig[1]+basis[7],                   orig[2]+basis[8],
-/* 5 */ orig[0]+basis[0]+basis[6],          orig[1]+basis[1]+basis[7],          orig[2]+basis[2]+basis[8],
-/* 6 */ orig[0]+basis[0]+basis[3]+basis[6], orig[1]+basis[1]+basis[4]+basis[7], orig[2]+basis[2]+basis[5]+basis[8],
-/* 7 */ orig[0]+basis[3]+basis[6],          orig[1]+basis[4]+basis[7],          orig[2]+basis[5]+basis[8],
-    	];
+		const vertices = computeCellVertices(orig, basis);
 
 		// Send vertices
 		sendVerticesToClient(this.id, "cell", vertices);
@@ -361,7 +352,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Supercell basis
-		const scb = [
+		const scb: BasisType = [
 			basis[0]*this.repetitionsA,
 			basis[1]*this.repetitionsA,
 			basis[2]*this.repetitionsA,
@@ -373,17 +364,8 @@ export class DrawUnitCell extends NodeCore {
 			basis[8]*this.repetitionsC,
 		];
 
-		// Vertices coordinates (bottom then top)
-    	const vertices = [
-/* 0 */ orig[0],                      orig[1],                      orig[2],
-/* 1 */ orig[0]+scb[0],               orig[1]+scb[1],               orig[2]+scb[2],
-/* 2 */ orig[0]+scb[0]+scb[3],        orig[1]+scb[1]+scb[4],        orig[2]+scb[2]+scb[5],
-/* 3 */ orig[0]+scb[3],               orig[1]+scb[4],               orig[2]+scb[5],
-/* 4 */ orig[0]+scb[6],               orig[1]+scb[7],               orig[2]+scb[8],
-/* 5 */ orig[0]+scb[0]+scb[6],        orig[1]+scb[1]+scb[7],        orig[2]+scb[2]+scb[8],
-/* 6 */ orig[0]+scb[0]+scb[3]+scb[6], orig[1]+scb[1]+scb[4]+scb[7], orig[2]+scb[2]+scb[5]+scb[8],
-/* 7 */ orig[0]+scb[3]+scb[6],        orig[1]+scb[4]+scb[7],        orig[2]+scb[5]+scb[8],
-    	];
+		// Supercell vertices coordinates
+		const vertices = computeCellVertices(orig, scb);
 
 		// Send vertices
 		sendVerticesToClient(this.id, "supercell", vertices);

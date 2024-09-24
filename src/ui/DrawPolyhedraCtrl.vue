@@ -7,12 +7,12 @@
  * @since 2024-07-05
  */
 
-import {ref, watch} from "vue";
-import {askNode, sendToNode, receivePolyhedraFromNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
 import * as THREE from "three";
+import {ref, watch} from "vue";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
-import {sm} from "../services/SceneManager";
+import {askNode, sendToNode, receivePolyhedraFromNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
+import {sm} from "@/services/SceneManager";
 
 // > Properties
 const {id} = defineProps<{

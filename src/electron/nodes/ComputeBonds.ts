@@ -743,17 +743,17 @@ export class ComputeBonds extends NodeCore {
 	 */
 	private channelChanges(params: CtrlParams): void {
 
-		this.enableComputeBonds  = params.enableComputeBonds as boolean ?? true;
-		this.minBondingDistance  = params.minBondingDistance as number ?? 0.64;
-		this.maxBondingDistance  = params.maxBondingDistance as number ?? 4.50;
-		this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
-		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
-		this.bondScale    		 = params.bondScale as number ?? 1.1;
-		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "none";
+		// this.enableComputeBonds  = params.enableComputeBonds as boolean ?? true;
+		// this.minBondingDistance  = params.minBondingDistance as number ?? 0.64;
+		// this.maxBondingDistance  = params.maxBondingDistance as number ?? 4.50;
+		// this.maxHBondingDistance = params.maxHBondingDistance as number ?? 3.00;
+		// this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
+		// this.bondScale    		 = params.bondScale as number ?? 1.1;
+		// this.perPairScale		 = params.perPairScale as boolean ?? false;
+		// this.enlargementKind     = params.enlargementKind as string ?? "none";
 
-		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
-
+		// this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
+		this.loadStatus(params); // This does the exact same settings
 		this.addBonds();
 	}
 }

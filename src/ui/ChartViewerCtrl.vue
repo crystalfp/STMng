@@ -8,8 +8,8 @@
  */
 
 import {ref, watch} from "vue";
-import {askNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+import {askNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
 
 // > Properties
 const {id} = defineProps<{
@@ -46,7 +46,7 @@ watch([chartType, openChart], () => {
 <template>
 <v-container class="container">
   <v-row class="mt-4 mb-1">
-    <v-label class="ml-4 mb-3 mr-4 pb-3 no-select">Chart type:</v-label><br>
+    <v-label class="ml-4 mb-3 mr-4 pb-3 no-select">Chart type:</v-label>
     <v-btn-toggle v-model="chartType" color="primary" mandatory class="mb-6">
       <v-btn value="line">Line</v-btn>
       <v-btn value="bar">Bar</v-btn>

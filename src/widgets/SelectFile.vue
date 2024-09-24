@@ -8,8 +8,8 @@
  */
 import {ref} from "vue";
 import {mdiFileOutline} from "@mdi/js";
-import {askNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+import {askNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
 
 // > Properties and emits
 const props = withDefaults(defineProps<{

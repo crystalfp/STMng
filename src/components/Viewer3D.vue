@@ -10,15 +10,15 @@
 import {onMounted, watch, watchEffect, nextTick, useTemplateRef} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
-import {useConfigStore} from "../stores/configStore";
-import {useControlStore} from "../stores/controlStore";
-import {useMessageStore} from "../stores/messageStore";
+import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
+import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
-import {sm} from "../services/SceneManager";
-import {saveDataURL, saveMovie, saveSTL} from "../services/RoutesClient";
-import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "../services/FitCamera";
-import {setupSceneHelpers} from "../services/SceneHelpers";
-import {showAlertMessage} from "../services/AlertMessage";
+import {sm} from "@/services/SceneManager";
+import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";
+import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
+import {setupSceneHelpers} from "@/services/SceneHelpers";
+import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Access the stores
@@ -42,14 +42,9 @@ const props = defineProps<{
 const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
                                orthographicCamera: THREE.OrthographicCamera): void => {
 
-    const vFov = (perspectiveCamera.fov * Math.PI) / 180;
-    const distance = perspectiveCamera.position.distanceTo(new THREE.Vector3(0, 0, 0));
-    const halfHeight = Math.tan(vFov / 2) * distance;
-    const halfWidth = halfHeight * perspectiveCamera.aspect;
-    orthographicCamera.top = halfHeight;
-    orthographicCamera.bottom = -halfHeight;
-    orthographicCamera.left = -halfWidth;
-    orthographicCamera.right = halfWidth;
+
+    setOrthographicAspect(perspectiveCamera, orthographicCamera, perspectiveCamera.aspect);
+
     orthographicCamera.zoom = 1;
     orthographicCamera.lookAt(new THREE.Vector3(0, 0, 0));
     orthographicCamera.near = 0.1;

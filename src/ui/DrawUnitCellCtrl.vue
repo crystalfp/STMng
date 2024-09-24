@@ -9,10 +9,10 @@
 
 import * as THREE from "three";
 import {ref, watch} from "vue";
-import {askNode, receiveVerticesFromNode, sendToNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
-import {sm} from "../services/SceneManager";
-import {spriteText} from "../services/SpriteText";
+import {askNode, receiveVerticesFromNode, sendToNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
+import {sm} from "@/services/SceneManager";
+import {spriteText} from "@/services/SpriteText";
 
 // > Properties
 const {id} = defineProps<{
@@ -133,13 +133,21 @@ const setMaterial = (color: string, dashed: boolean): THREE.Material =>
                 })
     );
 
-// Render the unit cell
-receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
+/**
+ * Prepare the cell mesh (Unit Cell or Supercell)
+ *
+ * @param vertices - Vertices of the cell
+ * @param name - Name of the mesh
+ * @param color - Color of the line mesh
+ * @param dashed - If line should be dashed
+ * @returns The mesh or undefined if nno vertices present
+ */
+const drawCell = (vertices: number[], name: string, color: string, dashed: boolean): THREE.LineSegments | undefined => {
 
     // Clear previous cell
-    sm.deleteMesh(nameUC);
+    sm.deleteMesh(name);
 
-    // If no unit cell or not visible return
+    // If no unit cell return
     if(vertices.length === 0) return;
 
     const geometry = new THREE.BufferGeometry();
@@ -147,32 +155,36 @@ receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
     const edges = new THREE.EdgesGeometry(geometry);
 
-    lineUC = new THREE.LineSegments(edges, setMaterial(lineColor.value, dashedLine.value));
-    if(dashedLine.value) lineUC.computeLineDistances();
-    lineUC.name = nameUC;
-    lineUC.visible = showUnitCell.value;
-    sm.add(lineUC);
+    const line = new THREE.LineSegments(edges, setMaterial(color, dashed));
+    if(dashed) line.computeLineDistances();
+    line.name = name;
+
+    // eslint-disable-next-line @typescript-eslint/consistent-return
+    return line;
+};
+
+// Render the unit cell
+receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
+
+    const line = drawCell(vertices, nameUC, lineColor.value, dashedLine.value);
+    if(line) {
+
+        lineUC = line;
+        lineUC.visible = showUnitCell.value;
+        sm.add(lineUC);
+    }
 });
 
 // Render the supercell
 receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
 
-    // Clear previous supercell
-    sm.deleteMesh(nameSC);
+    const line = drawCell(vertices, nameSC, supercellColor.value, dashedSupercell.value);
+    if(line) {
 
-    // If no unit cell or no repetition return
-    if(vertices.length === 0) return;
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setIndex(indices);
-    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
-    const edges = new THREE.EdgesGeometry(geometry);
-
-    lineSC = new THREE.LineSegments(edges, setMaterial(supercellColor.value, dashedSupercell.value));
-    if(dashedSupercell.value) lineSC.computeLineDistances();
-    lineSC.name = nameSC;
-    lineSC.visible = showSupercell.value;
-    sm.add(lineSC);
+        lineSC = line;
+        lineSC.visible = showSupercell.value;
+        sm.add(lineSC);
+    }
 });
 
 /**

@@ -7,7 +7,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-26
  */
-import {useControlStore} from "../stores/controlStore";
+import {useControlStore} from "@/stores/controlStore";
 
 // Access the global control area
 const controlStore = useControlStore();

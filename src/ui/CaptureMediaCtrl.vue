@@ -6,9 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {useConfigStore} from "../stores/configStore";
-import {useControlStore} from "../stores/controlStore";
-import {useMessageStore} from "../stores/messageStore";
+import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
+import {useMessageStore} from "@/stores/messageStore";
 
 // > Access the stores
 const configStore = useConfigStore();

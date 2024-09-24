@@ -35,7 +35,7 @@ export const getBoundingBox = (renderInfo: StructureRenderInfo): BoundingBox => 
 		const minCoordinates: PositionType = [0, 0, 0];
 		const maxCoordinates: PositionType = [0, 0, 0];
 
-		// Get bounding box from the unit cell
+		// Get bounding box from the unit cell (the ignored vertex is [0, 0, 0])
 		const vertices = [
 			basis[0],                   basis[1],                   basis[2],
 			basis[0]+basis[3],          basis[1]+basis[4],          basis[2]+basis[5],

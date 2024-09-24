@@ -12,6 +12,7 @@ import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient, sendPositionCloudsToClient} from "../modules/WindowsUtilities";
 import type {Structure, PositionType, BasisType,
 			 UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import {computeCellVertices} from "./ComputeCellVertices";
 
 export class Trajectories extends NodeCore {
 
@@ -255,16 +256,8 @@ export class Trajectories extends NodeCore {
 
 		if(basis.every((value) => value === 0)) return;
 
-		const vv: number[] = [
-/* 0 */ orig[0],                            orig[1],                            orig[2],
-/* 1 */ orig[0]+basis[0],                   orig[1]+basis[1],                   orig[2]+basis[2],
-/* 2 */ orig[0]+basis[0]+basis[3],          orig[1]+basis[1]+basis[4],          orig[2]+basis[2]+basis[5],
-/* 3 */ orig[0]+basis[3],                   orig[1]+basis[4],                   orig[2]+basis[5],
-/* 4 */ orig[0]+basis[6],                   orig[1]+basis[7],                   orig[2]+basis[8],
-/* 5 */ orig[0]+basis[0]+basis[6],          orig[1]+basis[1]+basis[7],          orig[2]+basis[2]+basis[8],
-/* 6 */ orig[0]+basis[0]+basis[3]+basis[6], orig[1]+basis[1]+basis[4]+basis[7], orig[2]+basis[2]+basis[5]+basis[8],
-/* 7 */ orig[0]+basis[3]+basis[6],          orig[1]+basis[4]+basis[7],          orig[2]+basis[5]+basis[8],
-		];
+		// Unit cell coordinates
+		const vv = computeCellVertices(orig, basis);
 
 		let minX = Number.POSITIVE_INFINITY;
 		let minY = Number.POSITIVE_INFINITY;

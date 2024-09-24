@@ -8,9 +8,9 @@
  */
 
 import {ref, onMounted} from "vue";
-import {closeWindow, receiveInWindow, getPreferenceSync, receiveBroadcast} from "../services/RoutesClient";
+import {closeWindow, receiveInWindow, getPreferenceSync, receiveBroadcast} from "@/services/RoutesClient";
+import {closeWithEscape} from "@/services/CaptureEscape";
 import type {ClientProjectInfo} from "@/types";
-import {closeWithEscape} from "../services/CaptureEscape";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 150;

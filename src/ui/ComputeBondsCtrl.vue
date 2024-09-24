@@ -8,8 +8,8 @@
  */
 
 import {ref, watchEffect} from "vue";
-import {askNode, sendToNode, receiveFromNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Properties

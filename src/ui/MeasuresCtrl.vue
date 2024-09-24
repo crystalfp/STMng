@@ -10,11 +10,11 @@
 import * as THREE from "three";
 import {ref, watch} from "vue";
 import {storeToRefs} from "pinia";
-import {sm} from "../services/SceneManager";
-import {useControlStore} from "../stores/controlStore";
-import {useConfigStore} from "../stores/configStore";
-import {askNode, receiveFromNode} from "../services/RoutesClient";
-import {showAlertMessage} from "../services/AlertMessage";
+import {sm} from "@/services/SceneManager";
+import {useControlStore} from "@/stores/controlStore";
+import {useConfigStore} from "@/stores/configStore";
+import {askNode, receiveFromNode} from "@/services/RoutesClient";
+import {showAlertMessage} from "@/services/AlertMessage";
 import type {SelectedAtoms} from "@/types";
 
 // > Properties

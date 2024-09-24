@@ -8,10 +8,10 @@
  */
 
 import {ref, watchEffect, computed, watch} from "vue";
-import {showAlertMessage, resetAlertMessage} from "../services/AlertMessage";
-import {askNode, receiveFromNode, sendToNode} from "../services/RoutesClient";
-import {useControlStore} from "../stores/controlStore";
 import {storeToRefs} from "pinia";
+import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
+import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams} from "@/types";
 
 // > Properties

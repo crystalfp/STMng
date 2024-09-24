@@ -8,8 +8,8 @@
  */
 
 import {ref, nextTick} from "vue";
-import {getPreferenceSync, receiveBroadcast, closeWindow, receiveInWindow} from "../services/RoutesClient";
-import {closeWithEscape} from "../services/CaptureEscape";
+import {getPreferenceSync, receiveBroadcast, closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWithEscape} from "@/services/CaptureEscape";
 
 const inSymmetry = ref("");
 const outSymmetry = ref("");
