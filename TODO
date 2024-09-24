@@ -1,11 +1,8 @@
 To do:
   ☐ Finish help
-  ☐ Disable find symmetries if the structure contains volumetric data
-  ☐ Add camera reset on new structure read
   ☐ Check if `.bind()` should be added to ProjectManager line 128
 
 Bugs:
-  ✔ Control side height not ok changing to fullscreen (use flex?) @done(2024-09-23 14:08)
 
 Porting:
   ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
@@ -48,12 +45,15 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Add tooltips
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
-  ☐ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log")
-  ☐ Manage multiple output from node (eg. reader has structure and structures)
   ☐ Move to WebGPURenderer
   ☐ Rewrite UserStore using Map() and not object
 
 Archive:
+  ✔ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log") @done(2024-09-24 14:08) @project(Nice to have/Future)
+  ✘ Manage multiple output from node (eg. reader has structure and structures) @cancelled(2024-09-24 14:09) @project(Nice to have/Future)
+  ✔ Disable find symmetries if the structure contains volumetric data @done(2024-09-24 07:40) @project(To do)
+  ✔ Add camera reset on new structure read @done(2024-09-24 07:01) @project(To do)
+  ✔ Control side height not ok changing to fullscreen (use flex?) @done(2024-09-23 14:08) @project(Bugs)
   ✔ Remove `this.name` @done(2024-09-19 14:39) @project(To do)
   ✔ Add class `no-select` to labels that should not selected @done(2024-09-10 14:04) @project(To do)
   ✔ Check `useTemplateRef()` in Viewer3D (already in comment) @project(To do) @done(2024-09-18 17:56)

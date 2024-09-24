@@ -82,8 +82,9 @@ watch([applyInputSymmetries,
 
 receiveFromNode(id, "show", (params: CtrlParams) => {
 
-    inputSpaceGroup.value = params.inSymmetry as string ?? "";
-    computedSpaceGroup.value = params.outSymmetry as string ?? "";
+    if(params.inSymmetry) inputSpaceGroup.value = params.inSymmetry as string;
+    if(params.outSymmetry) computedSpaceGroup.value = params.outSymmetry as string;
+    if(params.enableFindSymmetries) enableFindSymmetries.value = params.enableFindSymmetries as boolean;
 });
 
 </script>

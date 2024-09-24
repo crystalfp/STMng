@@ -143,7 +143,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		// If no structure do nothing
 		if(!this.inputStructure) return;
-		const {crystal, atoms} = this.inputStructure;
+		const {crystal, atoms, volume} = this.inputStructure;
 
 		// If no unit cell or no atoms, copy input structure to output
 		if(crystal === undefined || crystal.basis.every((value) => value === 0) || atoms.length === 0) {
@@ -165,6 +165,13 @@ export class ComputeSymmetries extends NodeCore {
 			this.notify(this.inputStructure);
 			this.showComputedSymmetry();
 			return;
+		}
+
+		// If input has volume data, disable find symmetries
+		if(volume.length > 0) {
+
+			this.enableFindSymmetries = false;
+			sendToClient(this.id, "show", {enableFindSymmetries: false});
 		}
 
 		// Prepare parameters for the computational part

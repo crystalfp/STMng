@@ -9,13 +9,40 @@
 import {Menu, shell, app, nativeTheme, dialog} from "electron";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
-        refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
+        refreshSystemMenu, openMenuEntry, getCurrentNode,
+        createSecondaryWindow} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import path from "node:path";
+import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {pm} from "./ProjectManager";
 import type {MenuItemConstructorOptions} from "electron";
+
+/**
+ * Open documentation
+ *
+ * @param node - Node name for which the documentation should be shown. If missing show general STMng documentation
+ * @returns Promise from openExternal
+ */
+const openDocumentation = (node?: string): Promise<void> => {
+
+    const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+    let url;
+    if(node) {
+        url = app.isPackaged ?
+            path.resolve(process.resourcesPath, `app.asar.unpacked/dist/doc/nodes/${node}.html`) :
+            path.join(mainSourceDirectory, "..", "public", "doc", "nodes", `${node}.html`);
+
+    }
+    else {
+        url = app.isPackaged ?
+            path.resolve(process.resourcesPath, "app.asar.unpacked/dist/doc/index.html") :
+            path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
+    }
+
+    return shell.openExternal(`file:///${url}`);
+};
 
 let systemMenu: Menu;
 
@@ -88,6 +115,26 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     label: "Show project",
                     click() {
                         createProjectEditor(pm.getProjectName());
+                    }
+                },
+                {
+                    label: "Show application log",
+                    click() {
+                        const directory = app.getPath("userData");
+                        const logPath = path.join(directory, "logs", "main.log");
+                        try {
+                            const log = fs.readFileSync(logPath, "utf8");
+                            createSecondaryWindow(undefined, {
+                                routerPath: "/log",
+                                width: 1700,
+                                height: 900,
+                                title: "Application log",
+                                data: log
+                            });
+                        }
+                        catch(error: unknown) {
+                            sendAlertMessage(`Error getting log file: ${(error as Error).message}`);
+                        }
                     }
                 },
                 {type: "separator"},
@@ -164,12 +211,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     label: "STMng documentation",
                     accelerator: "F1",
                     click() {
-
-                        const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-		                const url = app.isPackaged ?
-                            path.resolve(process.resourcesPath, "app.asar.unpacked/dist/doc/index.html") :
-                            path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
-                        void shell.openExternal(`file:///${url}`);
+                        void openDocumentation();
                     },
                 },
                 {
@@ -179,13 +221,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                         getCurrentNode().then((currentNode) => {
                             if(!currentNode) currentNode = "../index";
                             currentNodeInError = currentNode;
-                            const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-                            const url = app.isPackaged ?
-                                path.resolve(process.resourcesPath,
-                                                `app.asar.unpacked/dist/doc/nodes/${currentNode}.html`) :
-                                path.join(mainSourceDirectory, "..", "public", "doc", "nodes",
-                                                `${currentNode}.html`);
-                            return shell.openExternal(`file:///${url}`);
+                            return openDocumentation(currentNode);
                         })
                         .catch((error: Error) => {
                             sendAlertMessage(`Error getting help for "${currentNodeInError}": ${error.message}`);
