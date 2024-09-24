@@ -14,6 +14,8 @@ then
 	c=v
 fi
 
+root=`pwd | sed "s@/d/@/d:/@"`
+
 if [ $c != "v" ]
 then
 echo "--- Extract typescript documentation"
@@ -26,7 +28,7 @@ node_modules/.bin/typedoc \
 --plugin @zamiell/typedoc-plugin-not-exported \
 --disableGit \
 --excludeInternal \
---sourceLinkTemplate "vscode://file/D:/Projects/STMng/{path}:{line}:1" \
+--sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env"`
 fi

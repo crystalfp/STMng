@@ -2,6 +2,9 @@
 /**
  * @component
  * Show a chart in a secondary window.
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-09-05
  */
 import {ref} from "vue";
 import {Bar, Line} from "vue-chartjs";
