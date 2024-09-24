@@ -424,3 +424,9 @@ export const saveMovie = (buffer: ArrayBuffer): Promise<CtrlParams> =>
  */
 export const saveSTL = (content: string | ArrayBuffer, binary: boolean): Promise<CtrlParams> =>
 							window.electron.ipcRenderer.invoke("SYSTEM:stl", content, binary) as Promise<CtrlParams>;
+
+// > Log file
+/**
+ * Ask to clear the application log file
+ */
+export const clearLog = (): void => window.electron.ipcRenderer.send("LOGFILE:CLEAR");

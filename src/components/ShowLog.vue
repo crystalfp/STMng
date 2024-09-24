@@ -6,9 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-24
  */
-import {ref} from "vue";
+import {ref, shallowRef} from "vue";
 import {closeWithEscape} from "@/services/CaptureEscape";
-import {getPreferenceSync, receiveBroadcast, receiveInWindow, closeWindow} from "@/services/RoutesClient";
+import {getPreferenceSync, receiveBroadcast, receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
 
 /** Receive the theme change */
 const theme = ref(getPreferenceSync("Theme", "dark"));
@@ -24,15 +24,23 @@ receiveInWindow((data: string) => {
 
     text.value = data;
 
-    const element = document.querySelector<HTMLTextAreaElement>(".log-text .v-field__input");
-    console.log(element);
+    const element = document.querySelector<HTMLTextAreaElement>(".log-text-container");
+
     if(element) {
-        element.scrollTop = element.scrollHeight;
+        setTimeout(() => {element.scrollTop = element.scrollHeight;}, 10);
     }
 });
 
 /** Close the window on Esc press */
 closeWithEscape("/log");
+
+const showConfirm = shallowRef(false);
+const confirmDeletion = (): void => {
+
+    showConfirm.value = false;
+    clearLog();
+    text.value = "";
+};
 
 </script>
 
@@ -41,13 +49,24 @@ closeWithEscape("/log");
 <v-app :theme="theme">
   <v-row class="log-box pa-0">
     <v-container class="log-text-container">
-      <v-textarea :model-value="text" readonly auto-grow hide-details variant="solo-filled" width="100%" class="log-text" />
+      <v-textarea :model-value="text" readonly auto-grow hide-details variant="underlined" width="100%" class="log-text pl-2" />
     </v-container>
     <v-container class="log-button-strip">
+      <v-btn @click="showConfirm=true">Empty Log</v-btn>
       <v-btn @click="closeWindow('/log')">Close</v-btn>
     </v-container>
   </v-row>
 </v-app>
+
+<v-dialog v-model="showConfirm">
+  <v-card title="Confirm" text="Do you want to clear the application log file?"
+          class="mx-auto" elevation="16" max-width="500">
+   <v-card-actions>
+      <v-btn @click="showConfirm=false">Dismiss</v-btn>
+      <v-btn @click="confirmDeletion">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </template>
 
 <style scoped>
@@ -74,6 +93,7 @@ closeWithEscape("/log");
   padding: 10px;
   width: 100vw;
   max-width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
+  gap: 10px
 }
 </style>

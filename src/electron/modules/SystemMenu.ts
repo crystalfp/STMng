@@ -6,18 +6,16 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {Menu, shell, app, nativeTheme, dialog} from "electron";
+import {Menu, shell, app, nativeTheme, dialog, type MenuItemConstructorOptions} from "electron";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
-        refreshSystemMenu, openMenuEntry, getCurrentNode,
-        createSecondaryWindow} from "./WindowsUtilities";
+        refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
-import path from "node:path";
-import fs from "node:fs";
-import {fileURLToPath} from "node:url";
 import {pm} from "./ProjectManager";
-import type {MenuItemConstructorOptions} from "electron";
+import {showLogFile} from "./AccessLog.ts";
 
 /**
  * Open documentation
@@ -120,21 +118,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                 {
                     label: "Show application log",
                     click() {
-                        const directory = app.getPath("userData");
-                        const logPath = path.join(directory, "logs", "main.log");
-                        try {
-                            const log = fs.readFileSync(logPath, "utf8");
-                            createSecondaryWindow(undefined, {
-                                routerPath: "/log",
-                                width: 1700,
-                                height: 900,
-                                title: "Application log",
-                                data: log
-                            });
-                        }
-                        catch(error: unknown) {
-                            sendAlertMessage(`Error getting log file: ${(error as Error).message}`);
-                        }
+                        showLogFile();
                     }
                 },
                 {type: "separator"},

@@ -77,7 +77,7 @@ const checkIds = (prj: Project): boolean => {
 
 	for(const id in prj.graph) {
 
-		if(["SYSTEM", "PROJECT", "PREFERENCES", "WINDOW"].includes(id)) {
+		if(["SYSTEM", "PROJECT", "PREFERENCES", "WINDOW", "LOGFILE"].includes(id)) {
 			sendAlertMessage(`Reserved id "${id}" cannot be used`);
 			return false;
 		}

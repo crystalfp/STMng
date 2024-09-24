@@ -1,6 +1,6 @@
 /**
  * Entry point for the main process.
- * It parse command line parameters and initializes all the channels between main processes and client windows.
+ * It parses the command line parameters and initializes all the channels between main processes and client windows.
  *
  * @packageDocumentation
  *
@@ -19,6 +19,7 @@ import {disableSaveProjectEntry} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFileSelector} from "./modules/SelectFile";
 import {pm, setupChannelProject} from "./modules/ProjectManager";
+import {setupChannelLogFile} from "./modules/AccessLog.ts";
 
 // > Command line parsing
 const program = new Command("STMng");
@@ -73,6 +74,7 @@ setupChannelPreferences();
 setupChannelVersions();
 setupChannelFileSelector();
 setupChannelProject();
+setupChannelLogFile();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");
