@@ -47,6 +47,7 @@ Nice to have/Future:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Move to WebGPURenderer
   ☐ Rewrite UserStore using Map() and not object
+  ☐ Add drag and drop for input file
 
 Archive:
   ✔ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log") @done(2024-09-24 14:08) @project(Nice to have/Future)

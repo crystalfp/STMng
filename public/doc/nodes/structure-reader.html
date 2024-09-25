@@ -6,7 +6,7 @@
   <meta name="author" content="Mario Valle">
   <meta name="description" content="Documentation for the STMng structure-reader node">
   <meta name="keywords" content="STMng">
-  <meta name="date" content="2024-02-20"/>
+  <meta name="date" content="2024-09-25"/>
   <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
   <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
   <meta name="geo.position" content="46.019440;8.974010"/>
@@ -14,28 +14,27 @@
   <link rel="stylesheet" href="../style.css" type="text/css">
   <link rel="icon" href="../favicon.ico" type="image/x-icon" />
 
-  <title>STMng — Structure Reader</title>
+  <title>STMng — Reader</title>
 </head>
 
 <body>
-<h1>Structure Reader</h1>
+<h1 class="title">Reader</h1>
+<h1 class="subh1">Structure Reader</h1>
 
-<h2>Description</h2>
 <div class="description">
-
 <p>Read structural chemical data. To specify a trajectory the file could contain a
 single structure (single frame) or a sequence of structures (Multiframe from file)</p>
 
-<p>If the format needs an auxiliary file, the module adds this file selection.</p>
+<p>If the format needs an auxiliary file, the module adds this file selector.</p>
 </div>
 
-<h2>Parameters</h2>
+<h2>Controls</h2>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Select file format</td>
+	<td class="c1">File format</td>
 	<td class="c2">list</td>
 	<td class="c3">Select the format of the file to be read.
-		The <a href="../general/formats.html">available formats</a>.</td>
+		The list of <a href="../general/formats.html">available formats</a>.</td>
 </tr>
 <tr>
 	<td class="c1">Atoms types</td>
@@ -46,51 +45,66 @@ single structure (single frame) or a sequence of structures (Multiframe from fil
 <tr>
 	<td class="c1">Select input file</td>
 	<td class="c2">file selector</td>
-	<td class="c3">Select the file to be read. Works also with drag and drop.</td>
+	<td class="c3">Select the file to be read.</td>
 </tr>
 <tr>
 	<td class="c1">Select &lt;auxiliary format&gt; file</td>
 	<td class="c2">file selector</td>
-	<td class="c3">Select the auxiliary file to be read. Works also with drag and drop.</td>
+	<td class="c3">Select the auxiliary file to be read. Show the auxiliary file format name. Appears only if needed.</td>
+</tr>
+<tr>
+	<td class="c1">Use Bohr units</td>
+	<td class="c2">toggle</td>
+	<td class="c3">For Gaussian cube format selects the measurement unit to be used: Bohr or Å.</td>
 </tr>
 </table>
 <div class="description">
-<p>The following fields appears if the format contains multiple steps:</p>
+<p>The following fields appear if the format contains multiple steps:</p>
 </div>
 <table cellpadding="2" cellspacing="2">
 <tr>
 	<td class="c1">Loop</td>
-	<td class="c2">switch</td>
+	<td class="c2">toggle</td>
 	<td class="c3">Play the steps in a loop.</td>
 </tr>
 <tr>
 	<td class="c1">Movie from steps</td>
-	<td class="c2">switch</td>
-	<td class="c3">Start recording a movie as soon as the steps animation starts. As soon as the animation stop, a file selector will ask for the movie file to be created.</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This switch appears only if the Capture module is present. Start recording a movie as soon as the steps animation starts. As soon as the animation stop, a file selector will ask for the movie file to be created.</td>
+</tr>
+<tr>
+	<td class="c1">Record trajectories</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This switch appears only if the Trajectories module is present. Starts recording trajectories.</td>
 </tr>
 <tr>
 	<td class="c1">Accumulate for fingerprinting</td>
-	<td class="c2">switch</td>
-	<td class="c3">This button appears only if the Fingerprinting module is present. Starts accumulating structures for fingerprinting.</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This switch appears only if the Fingerprinting module is present. Starts accumulating structures for fingerprinting.</td>
+</tr>
+<tr>
+	<td class="c1">Collect for structure writer</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This switch appears only if the Writer module is present. Starts accumulating structures to be saved in a single file.</td>
 </tr>
 <tr>
 	<td class="c1">Step</td>
 	<td class="c2">slider</td>
-	<td class="c3">Move between the steps and show the actual step.</td>
+	<td class="c3">Move between the steps and show the actual step and the total number of steps.</td>
 </tr>
 <tr>
 	<td class="c1">Control buttons</td>
 	<td class="c2">buttons</td>
-	<td class="c3">Standard control buttons for the steps playback. From left: go to beginning, go to previous step, play/stop, co to next step, go to last step.</td>
+	<td class="c3">Standard control buttons for the steps playback. From left: go to beginning, go to previous step, play/stop, go to next step, go to last step.</td>
 </tr>
 </table>
 
 <h2>Development</h2>
 <table cellpadding="2" cellspacing="2">
 <tr><td class="c1">Node type ID:</td><td>structure-reader</td></tr>
-<tr><td class="c1">Input type:</td><td>—</td></tr>
+<tr><td class="c1">Input type:</td><td>None</td></tr>
 <tr><td class="c1">Output type:</td><td>Structure</td></tr>
-<tr><td class="c1">Add 3D objects to scene:</td><td>No</td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>No</td></tr>
 </table>
 
 </body>

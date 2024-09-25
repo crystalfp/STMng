@@ -9,7 +9,8 @@
 
 import {ref, defineAsyncComponent, markRaw} from "vue";
 import {useControlStore} from "@/stores/controlStore";
-import {receiveProjectUI, sendToNode} from "@/services/RoutesClient";
+import {receiveProjectUI, sendToNode, sendCurrentNode} from "@/services/RoutesClient";
+
 import type {ClientProjectInfo, ClientProjectInfoItem} from "@/types";
 
 // > Access the store
@@ -35,6 +36,15 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 		panelList.value.push(markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`))));
 	}
 	selectedTabId.value = uiList.value[0].id;
+});
+
+/* Return to the main process the type of the current node open in the UI */
+sendCurrentNode(() => {
+
+	for(const item of uiList.value) {
+		if(item.id === selectedTabId.value) return item.type;
+	}
+	return "";
 });
 
 </script>

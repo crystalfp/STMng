@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng compute-symmetries node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Symmetries</title>
+</head>
+
+<body>
+<h1 class="title">Symmetries</h1>
+<h1 class="subh1">Compute and apply symmetries</h1>
+
+<div class="description">
+<p>Apply the symmetries present in the input structure.</p>
+<p>Then search for symmetries using SPGLIB. This step could also standardize the structure cell.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Apply input symmetries</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Apply or ignore the symmetries contained in the input structure.</td>
+</tr>
+<tr>
+	<td class="c1">Enable find symmetries</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Search for symmetries.</td>
+</tr>
+<tr>
+	<td class="c1">Standardize cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Standardize the structure cell.</td>
+</tr>
+<tr>
+	<td class="c1">Only standardize cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Standardize the structure cell without searching for symmetries.</td>
+</tr>
+<tr>
+	<td class="c1">Standardize cell tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the standardization process.</td>
+</tr>
+<tr>
+	<td class="c1">Find symmetries tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the search of symmetries.</td>
+</tr>
+<tr>
+	<td class="c1">Input symmetry</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Input structure symmetry.</td>
+</tr>
+<tr>
+	<td class="c1">Final symmetry</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Output structure symmetry.</td>
+</tr>
+<tr>
+	<td class="c1">Fill unit cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Copies atoms that are on the cell borders and sides to the other side of the cell.</td>
+</tr>
+<tr>
+	<td class="c1">Show symmetries dialog</td>
+	<td class="c2">button</td>
+	<td class="c3">Open a window to show input and output symmetries.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>compute-symmetries</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td>Structure</td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>No</td></tr>
+</table>
+
+</body>
+</html>

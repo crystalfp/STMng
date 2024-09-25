@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng draw-structure node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Structure</title>
+</head>
+
+<body>
+<h1 class="title">Structure</h1>
+<h1 class="subh1">Draw structure</h1>
+
+<div class="description">
+<p>Render a structure to the screen.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Structure rendering mode</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">How to render the structure.
+  <dl>
+  <dt>CPK</dt>
+  <dd>Atoms are represented with a radius proportional to their covalent radii.</dd>
+  <dt>VdW</dt>
+  <dd>Atoms are represented with a radius proportional to their Van der Waals radii. No bonds are rendered.</dd>
+  <dt>Licorice</dt>
+  <dd>Atoms are represented with a radius equal to the bond radius.</dd>
+  <dt>Lines</dt>
+  <dd>Bonds are rendered by lines. Atoms are not rendered.</dd>
+  </dl></td>
+</tr>
+<tr>
+	<td class="c1">Smooth color bonds</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Bonds are colored by a smooth transition between the bonded atoms colors. Otherwise there are only two color bands. This not applies to line rendering.</td>
+</tr>
+<tr>
+	<td class="c1">Label is</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">What represents the label on each atom.
+  <dl>
+  <dt>Symbol</dt>
+  <dd>The atom type symbol.</dd>
+  <dt>Label</dt>
+  <dd>The atom label eventually present in the input structure.</dd>
+  <dt>Index</dt>
+  <dd>Index of the atom inside the structure. The index starts from zero.</dd>
+  </dl></td>
+</tr>
+<tr>
+	<td class="c1">Visibility</td>
+	<td class="c2">toggle buttons</td>
+	<td class="c3">Selects what is rendered.
+  <ul>
+  <li>Structure</li>
+  <li>Bonds</li>
+  <li>Labels</li>
+  </ul></td>
+</tr>
+<tr>
+	<td class="c1">Quality</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select the quality of the rendering by varying the subdivisions of spheres and cylinders.
+  <ul>
+  <li>Low</li>
+  <li>Medium</li>
+  <li>Good</li>
+  <li>Best</li>
+  </ul></td>
+</tr>
+<tr>
+	<td class="c1">Roughness</td>
+	<td class="c2">slider</td>
+	<td class="c3">Roughness of the surfaces.</td>
+</tr>
+<tr>
+	<td class="c1">Metalness</td>
+	<td class="c2">slider</td>
+	<td class="c3">Metal-like shining of the surfaces.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>draw-structure</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td></td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>Yes</td></tr>
+</table>
+
+</body>
+</html>

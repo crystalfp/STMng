@@ -104,6 +104,17 @@ export const receiveRefreshMenu = (): void => {
 	window.electron.ipcRenderer.on("SYSTEM:REFRESH-MENU", window.api.refreshMenu);
 };
 
+/**
+ * Send the current node type to main process
+ *
+ * @param callback - Routine called when the main process require the current node type
+ */
+export const sendCurrentNode = (callback: () => string): void => {
+	window.electron.ipcRenderer.on("PROJECT:ASK-CURRENT-NODE", () => {
+		window.electron.ipcRenderer.send("PROJECT:GET-CURRENT-NODE", callback());
+	});
+};
+
 // > Project
 /**
  * Receive the project information to build the controls/ui

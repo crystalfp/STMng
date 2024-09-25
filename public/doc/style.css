@@ -17,6 +17,14 @@ h1.title {
   font-size: 220%;
 }
 
+h1.subh1 {
+	font-style: italic;
+	font-size: 110%;
+	margin: -2rem 0 1.8rem 0;
+	color: #6a87aa;
+  font-weight: normal;
+}
+
 h2 {
   font-size: 160%;
   color: #FF6400;
@@ -77,4 +85,9 @@ td.c3 {
 
 div.description {
 	padding-left: 20px;
+}
+
+dt {
+  font-weight: bold;
+  margin-top: 0.5rem;
 }

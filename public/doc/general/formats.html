@@ -28,6 +28,14 @@
     <th style="width:4.5em;text-align:left">Notes</th>
 </tr>
 <tr>
+    <td>CHGCAR</td>
+    <td>*CHG*</td>
+    <td>RW</td>
+    <td>Yes</td>
+    <td>VASP format containing also volume data</td>
+    <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/vaspplugin.html">ref</a> <a href="#note1">1</a></td>
+</tr>
+<tr>
     <td>CIF</td>
     <td>*.cif</td>
     <td>RW</td>
@@ -36,28 +44,13 @@
     <td><a href="http://www.iucr.org/iucr-top/cif/">ref</a></td>
 </tr>
 <tr>
-    <td>VASP Poscar</td>
-    <td>*POSCAR*</td>
-    <td>RW</td>
-    <td></td>
-    <td>VASP, also as concatenated file</td>
-    <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a> <a href="#note7">7</a></td>
-</tr>
-<tr>
-    <td>Shel-X</td>
-    <td>*.res</td>
+    <td>Gaussian cube</td>
+    <td>*.cube</td>
     <td>R</td>
-    <td></td>
-    <td>Shel-X crystallography program</td>
-    <td><a href="http://shelx.uni-ac.gwdg.de/SHELX/index.php">site</a></td>
-</tr>
-<tr>
-    <td>XYZ (Kino)</td>
-    <td>*.xyz</td>
-    <td>RW</td>
-    <td></td>
-    <td>The simple xyz format, animated also</td>
-    <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/xyzplugin.html">ref</a></td>
+    <td>Yes</td>
+    <td>Gaussian format containing also volume data</td>
+    <td><a href="http://www.gaussian.com/g_tech/g_ur/u_cubegen.htm">ref</a>
+	<a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/cubeplugin.html">note</a></td>
 </tr>
 <tr>
     <td>LAMMPS</td>
@@ -72,16 +65,16 @@
     <td>*.lammpstrj</td>
     <td>R</td>
     <td></td>
-    <td>A LAMMPS trajectory dump</td>
+    <td>LAMMPS trajectory dump</td>
     <td><a href="https://docs.lammps.org/dump.html">ref</a></td>
 </tr>
 <tr>
-    <td>CHGCAR</td>
-    <td>*CHG*</td>
+    <td>Poscar</td>
+    <td>*POSCAR*</td>
     <td>RW</td>
-    <td>Yes</td>
-    <td>VASP format containing also volume data</td>
-    <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/vaspplugin.html">ref</a> <a href="#note1">1</a></td>
+    <td></td>
+    <td>From VASP, also as concatenated file</td>
+    <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a> <a href="#note7">7</a></td>
 </tr>
 <tr>
     <td>POSCAR + XDATCAR</td>
@@ -90,6 +83,22 @@
     <td></td>
     <td>Another VASP animated format</td>
     <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a></td>
+</tr>
+<tr>
+    <td>Shel-X</td>
+    <td>*.res</td>
+    <td>R</td>
+    <td></td>
+    <td>Shel-X crystallography program</td>
+    <td><a href="http://shelx.uni-ac.gwdg.de/SHELX/index.php">site</a></td>
+</tr>
+<tr>
+    <td>XYZ</td>
+    <td>*.xyz</td>
+    <td>RW</td>
+    <td></td>
+    <td>The simple xyz format (also know as Kino), animated also</td>
+    <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/xyzplugin.html">ref</a></td>
 </tr>
 </table>
 
@@ -108,17 +117,8 @@
     <td>*.cel</td>
     <td>RW</td>
     <td></td>
-    <td>Powdercell's structure file</td>
+    <td>Powdercell’s structure file</td>
     <td><a href="ftp://ftp.bam.de/Powder_Cell/">ref</a></td>
-</tr>
-<tr>
-    <td>Gaussian cube</td>
-    <td>*.cube</td>
-    <td>R</td>
-    <td>Yes</td>
-    <td>Gaussian format containing also volume data</td>
-    <td><a href="http://www.gaussian.com/g_tech/g_ur/u_cubegen.htm">ref</a>
-	<a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/cubeplugin.html">note</a></td>
 </tr>
 <tr>
     <td>DCD</td>
@@ -229,7 +229,7 @@
     <td>*.xyz + *</td>
     <td>R </td>
     <td></td>
-    <td>Idem plus a supporting file containing the unit cell</td>
+    <td>Simple xyz file plus a supporting file containing the unit cell</td>
     <td><a href="#note6">6</a></td>
 </tr>
 </table>
@@ -239,7 +239,7 @@
 <li><a id="note1"></a>The real format derives from the source code of the VMD plugin</li>
 <li><a id="note2"></a>I remember a difference between what has been described and the real file format</li>
 <li><a id="note3"></a>The plugin read only coordinates from a <code>$DATA</code> section with symmetry <code>C1</code></li>
-<li><a id="note4"></a>An old version of PDB, prior to 1992. The 'Temperature factor' field starts at colum 71 instead of 61. Should be documented somewhere&hellip;</li>
+<li><a id="note4"></a>An old version of PDB, prior to 1992. The ‘Temperature factor’ field starts at colum 71 instead of 61. Should be documented somewhere&hellip;</li>
 <li><a id="note5"></a>Seems no more active</li>
 <li><a id="note6"></a>In the unit cell file each block of three lines contains three floats and refers to one frame. The nine numbers define the three base vectors (one by line).</li>
 <li><a id="note7"></a>Read the old and new versions (the one with element names). Write only the new version.</li>

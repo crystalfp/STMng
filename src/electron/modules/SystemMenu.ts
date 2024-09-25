@@ -8,6 +8,7 @@
  */
 import {Menu, shell, app, nativeTheme, dialog, type MenuItemConstructorOptions} from "electron";
 import path from "node:path";
+import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
@@ -18,10 +19,12 @@ import {pm} from "./ProjectManager";
 import {showLogFile} from "./AccessLog.ts";
 
 /**
- * Open documentation
+ * Open documentation file
  *
  * @param node - Node name for which the documentation should be shown. If missing show general STMng documentation
  * @returns Promise from openExternal
+ * @throws Error
+ * If the help file is not found
  */
 const openDocumentation = (node?: string): Promise<void> => {
 
@@ -39,6 +42,7 @@ const openDocumentation = (node?: string): Promise<void> => {
             path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
     }
 
+    if(!fs.existsSync(url)) throw Error("Help file not found");
     return shell.openExternal(`file:///${url}`);
 };
 
