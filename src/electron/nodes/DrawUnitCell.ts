@@ -12,6 +12,7 @@ import {sendVerticesToClient} from "../modules/WindowsUtilities";
 import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
 			 PositionType, BasisType, Volume} from "@/types";
 import {computeCellVertices} from "./ComputeCellVertices";
+import {EmptyStructure} from "../modules/EmptyStructure";
 
 export class DrawUnitCell extends NodeCore {
 
@@ -49,7 +50,7 @@ export class DrawUnitCell extends NodeCore {
 		// No data, output an empty structure
 		this.inputStructure = data;
 		if(!this.inputStructure|| this.inputStructure.atoms.length === 0) {
-			this.outputEmptyStructure();
+			this.notify(new EmptyStructure());
 			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
@@ -101,7 +102,7 @@ export class DrawUnitCell extends NodeCore {
 
 		// Pass the structure to next node
 		if(this.structure) this.notify(this.structure);
-		else this.outputEmptyStructure();
+		else this.notify(new EmptyStructure());
 
 		this.computeUnitCell(basis, origin);
 		this.computeSupercell(basis, origin);
@@ -293,24 +294,6 @@ export class DrawUnitCell extends NodeCore {
 		};
 	}
 
-	// > Output an empty structure
-	/**
-	 * Output an empty structure
-	 */
-	private outputEmptyStructure(): void {
-
-		this.notify({
-			crystal: {
-				basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-				origin: [0, 0, 0],
-				spaceGroup: ""
-			},
-			atoms: [],
-			bonds: [],
-			volume: []
-		});
-	}
-
 	/**
 	 * Send data to draw the unit cell
 	 *
@@ -464,7 +447,7 @@ export class DrawUnitCell extends NodeCore {
 
 		// Pass the structure to next node
 		if(this.structure) this.notify(this.structure);
-		else this.outputEmptyStructure();
+		else this.notify(new EmptyStructure());
 	}
 
 	/**
@@ -507,7 +490,7 @@ export class DrawUnitCell extends NodeCore {
 
 		// Pass the structure to next node
 		if(this.structure) this.notify(this.structure);
-		else this.outputEmptyStructure();
+		else this.notify(new EmptyStructure());
 
 		this.computeUnitCell(basis, origin);
 		this.computeSupercell(basis, origin);

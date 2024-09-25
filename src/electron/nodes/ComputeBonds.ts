@@ -10,6 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import type {Structure, Bond, Atom, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
+import {EmptyStructure} from "../modules/EmptyStructure";
 
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
@@ -92,7 +93,7 @@ export class ComputeBonds extends NodeCore {
 		this.inputStructure = data;
 
 		if(!this.inputStructure || this.inputStructure.atoms.length === 0) {
-			this.outputEmptyStructure();
+			this.notify(new EmptyStructure());
 			return;
 		}
 
@@ -387,7 +388,7 @@ export class ComputeBonds extends NodeCore {
 		// If no input structure, output an empty structure
 		if(!this.inputStructure?.atoms || this.inputStructure.atoms.length === 0) {
 
-			this.outputEmptyStructure();
+			this.notify(new EmptyStructure());
 		}
 		else if(this.enableComputeBonds) {
 
@@ -656,24 +657,6 @@ export class ComputeBonds extends NodeCore {
 
 		// Return the default value for all atoms pairs
 		return this.bondScale;
-	}
-
-	// > Output an empty structure
-	/**
-	 * Output an empty structure
-	 */
-	private outputEmptyStructure(): void {
-
-		this.notify({
-			crystal: {
-				basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-				origin: [0, 0, 0],
-				spaceGroup: ""
-			},
-			atoms: [],
-			bonds: [],
-			volume: []
-		});
 	}
 
 	saveStatus(): string {

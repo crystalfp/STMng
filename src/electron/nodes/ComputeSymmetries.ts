@@ -12,7 +12,7 @@ import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates} from "../modules/Helpers";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType} from "@/types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType, PositionType} from "@/types";
 
 /** Type of the native code output */
 interface NativeOutput {
@@ -250,6 +250,28 @@ export class ComputeSymmetries extends NodeCore {
 		sendToSecondaryWindow(undefined, {routerPath: "/symmetries", data: dataToSend});
 	}
 
+	/**
+	 * Transform fractional to cartesian coordinates
+	 *
+	 * @param idx - Atom index
+	 * @param fractionalCoordinates - Atoms fractional coordinates
+	 * @param basis - Structure basis vectors
+	 * @returns Atom position in cartesian coordinates
+	 */
+	private fractionalToPosition(idx: number, fractionalCoordinates: number[], basis: BasisType): PositionType {
+
+		const k = idx*3;
+		const fx = fractionalCoordinates[k];
+		const fy = fractionalCoordinates[k+1];
+		const fz = fractionalCoordinates[k+2];
+
+		return [
+			fx*basis[0] + fy*basis[3] + fz*basis[6],
+			fx*basis[1] + fy*basis[4] + fz*basis[7],
+			fx*basis[2] + fy*basis[5] + fz*basis[8],
+		];
+	}
+
 	// > Fill unit cell
 	/**
 	 * Fill unit cell
@@ -298,19 +320,10 @@ export class ComputeSymmetries extends NodeCore {
 
 			for(let i=0; i < natoms; ++i) {
 
-				const k = i*3;
-				const fx = fractionalCoordinates[k];
-				const fy = fractionalCoordinates[k+1];
-				const fz = fractionalCoordinates[k+2];
-
 				structure.atoms.push({
 					atomZ: atomsZ[i],
 					label: labels[i] + i.toString(),
-					position: [
-						fx*basis[0] + fy*basis[3] + fz*basis[6],
-						fx*basis[1] + fy*basis[4] + fz*basis[7],
-						fx*basis[2] + fy*basis[5] + fz*basis[8],
-					]
+					position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 				});
 			}
 			return structure;
@@ -443,19 +456,10 @@ export class ComputeSymmetries extends NodeCore {
 
 			if(this.isDuplicated(i, natoms, fractionalCoordinates)) continue;
 
-			const k = i*3;
-			const fx = fractionalCoordinates[k];
-			const fy = fractionalCoordinates[k+1];
-			const fz = fractionalCoordinates[k+2];
-
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
 				label: labels[idx[i]] + labelIdx.toString(),
-				position: [
-					fx*basis[0] + fy*basis[3] + fz*basis[6],
-					fx*basis[1] + fy*basis[4] + fz*basis[7],
-					fx*basis[2] + fy*basis[5] + fz*basis[8],
-				]
+				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 
 			++labelIdx;
@@ -517,19 +521,10 @@ export class ComputeSymmetries extends NodeCore {
 		const natoms = atomsZ.length;
 		for(let i=0; i < natoms; ++i) {
 
-			const k = i*3;
-			const fx = fractionalCoordinates[k];
-			const fy = fractionalCoordinates[k+1];
-			const fz = fractionalCoordinates[k+2];
-
 			structure.atoms.push({
 				atomZ: atomsZ[i],
 				label: getAtomicSymbol(atomsZ[i]) + i.toString(),
-				position: [
-					fx*basis[0] + fy*basis[3] + fz*basis[6],
-					fx*basis[1] + fy*basis[4] + fz*basis[7],
-					fx*basis[2] + fy*basis[5] + fz*basis[8],
-				]
+				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 		}
 

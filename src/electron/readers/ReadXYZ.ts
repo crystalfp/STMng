@@ -9,7 +9,8 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Crystal, Structure, ReaderImplementation} from "@/types";
+import {EmptyStructure} from "../modules/EmptyStructure";
+import type {Structure, ReaderImplementation} from "@/types";
 
 export class ReaderXYZ implements ReaderImplementation {
 
@@ -33,12 +34,7 @@ export class ReaderXYZ implements ReaderImplementation {
 				numberAtoms = Number.parseInt(line, 10);
 				commentLine = true;
 				++step;
-				const crystal: Crystal = {
-					basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-					origin: [0, 0, 0],
-					spaceGroup: ""
-				};
-				structures.push({crystal, atoms: [], bonds: [], volume: []});
+				structures.push(new EmptyStructure());
 				atoms = structures[step].atoms;
 			}
 			else if(commentLine) {

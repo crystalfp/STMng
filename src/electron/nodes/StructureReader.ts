@@ -11,6 +11,7 @@ import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
+import {EmptyStructure} from "../modules/EmptyStructure";
 
 // Import the readers
 import {ReaderXYZ} from "../readers/ReadXYZ";
@@ -55,16 +56,7 @@ export class StructureReader extends NodeCore {
 	constructor(private readonly id: string) {
 		super();
 		this.setupChannels(this.id, this.channels);
-		this.notify({
-			crystal: {
-				basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-				origin: [0, 0, 0],
-				spaceGroup: ""
-			},
-			atoms: [],
-			bonds: [],
-			volume: []
-		});
+		this.notify(new EmptyStructure());
 	}
 
 	saveStatus(): string {

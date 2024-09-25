@@ -12,6 +12,7 @@ import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
+import {EmptyStructure} from "../modules/EmptyStructure";
 
 /** Line read type */
 const enum LineType {
@@ -61,16 +62,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				case LineType.scale:
 					if(line.trim() === "") break;
-					structures.push({
-						crystal: {
-							basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-							origin: [0, 0, 0],
-							spaceGroup: ""
-						},
-						atoms: [],
-						bonds: [],
-						volume: []
-					});
+					structures.push(new EmptyStructure());
 					++currentStructure;
 					scaleFactor = Number.parseFloat(line);
 					lineType = LineType.basis;

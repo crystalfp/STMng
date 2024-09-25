@@ -10,6 +10,7 @@ import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
+import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
@@ -57,16 +58,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					if(line.trim() === "") {lineType = LineType.exit; break;}
 					const fields = line.trim().split(/ +/);
 					if(fields.length > 1) {lineType = LineType.exit; break;}
-					structures.push({
-						crystal: {
-							basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-							origin: [0, 0, 0],
-							spaceGroup: ""
-						},
-						atoms: [],
-						bonds: [],
-						volume: []
-					});
+					structures.push(new EmptyStructure());
 					++currentStep;
 					scaleFactor = Number.parseFloat(fields[0]);
 					if(scaleFactor === 0) {lineType = LineType.exit; break;}

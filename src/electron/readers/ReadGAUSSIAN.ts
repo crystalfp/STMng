@@ -9,7 +9,8 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
-import type {Structure, Crystal, Atom,
+import {EmptyStructure} from "../modules/EmptyStructure";
+import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
@@ -47,20 +48,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		let nvoxels = 0;
 		let idxVoxels = 0;
 
-		// let nvy=0, nvz=0;
-
-		const crystal: Crystal = {
-			basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-			origin: [0, 0, 0],
-			spaceGroup: ""
-		};
-
-		const structure: Structure = 	{
-			crystal,
-			atoms: [],
-			bonds: [],
-			volume: [{sides: [0, 0, 0], values: []}]
-		};
+		const structure: Structure = new EmptyStructure();
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -84,7 +72,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 						natoms = -natoms;
 					}
 
-					crystal.origin = [
+					structure.crystal.origin = [
 						Number.parseFloat(fields[1]),
 						Number.parseFloat(fields[2]),
 						Number.parseFloat(fields[3]),
@@ -116,27 +104,27 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 						// Compute the unit cell and adjust the origin
 						for(let i=0; i < 3; ++i) {
 							const k = 3*i;
-							crystal.basis[k]   = sides[k]*subdivisions[i];
-							crystal.basis[k+1] = sides[k+1]*subdivisions[i];
-							crystal.basis[k+2] = sides[k+2]*subdivisions[i];
+							structure.crystal.basis[k]   = sides[k]*subdivisions[i];
+							structure.crystal.basis[k+1] = sides[k+1]*subdivisions[i];
+							structure.crystal.basis[k+2] = sides[k+2]*subdivisions[i];
 
 							structure.volume[0].sides[i] = subdivisions[i]+1;
 						}
 
 						if(useBohr) {
-							crystal.basis[0] *= BOHR_TO_ANGSTROM;
-							crystal.basis[1] *= BOHR_TO_ANGSTROM;
-							crystal.basis[2] *= BOHR_TO_ANGSTROM;
-							crystal.basis[3] *= BOHR_TO_ANGSTROM;
-							crystal.basis[4] *= BOHR_TO_ANGSTROM;
-							crystal.basis[5] *= BOHR_TO_ANGSTROM;
-							crystal.basis[6] *= BOHR_TO_ANGSTROM;
-							crystal.basis[7] *= BOHR_TO_ANGSTROM;
-							crystal.basis[8] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[0] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[1] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[2] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[3] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[4] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[5] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[6] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[7] *= BOHR_TO_ANGSTROM;
+							structure.crystal.basis[8] *= BOHR_TO_ANGSTROM;
 
-							crystal.origin[0] *= BOHR_TO_ANGSTROM;
-							crystal.origin[1] *= BOHR_TO_ANGSTROM;
-							crystal.origin[2] *= BOHR_TO_ANGSTROM;
+							structure.crystal.origin[0] *= BOHR_TO_ANGSTROM;
+							structure.crystal.origin[1] *= BOHR_TO_ANGSTROM;
+							structure.crystal.origin[2] *= BOHR_TO_ANGSTROM;
 						}
 
 						const nv1 = subdivisions[0];

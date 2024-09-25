@@ -8,9 +8,10 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
+import {getAtomicNumber} from "../modules/AtomData";
+import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, BasisType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
-import {getAtomicNumber} from "../modules/AtomData";
 
 /** Line read type */
 const enum LineType {
@@ -68,16 +69,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					}
 					switch(fields[1]) {
 					case "TIMESTEP":
-						currentStructure = {
-							crystal: {
-								basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-								origin: [0, 0, 0],
-								spaceGroup: ""
-							},
-							atoms: [],
-							bonds: [],
-							volume: []
-						};
+						currentStructure = new EmptyStructure();
 						structures.push(currentStructure);
 						lineType = LineType.step;
 						break;

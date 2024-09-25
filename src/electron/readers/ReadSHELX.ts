@@ -9,8 +9,9 @@
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Crystal, Structure, Atom, ReaderImplementation} from "@/types";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
+import {EmptyStructure} from "../modules/EmptyStructure";
+import type {Structure, Atom, ReaderImplementation} from "@/types";
 
 export class ReaderSHELX implements ReaderImplementation {
 
@@ -22,15 +23,7 @@ export class ReaderSHELX implements ReaderImplementation {
 	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 
-		const crystal: Crystal = {
-			basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-			origin: [0, 0, 0],
-			spaceGroup: ""
-		};
-		const structures: Structure[] = [{crystal,
-										  atoms: [],
-										  bonds: [],
-										  volume: []}];
+		const structures: Structure[] = [new EmptyStructure()];
 		let spaceGroup = "";
 		let latticeType = 0;
 		let ignoreNext = false;

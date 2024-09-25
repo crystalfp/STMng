@@ -8,9 +8,10 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import type {Crystal, Structure, Atom,
-			 ReaderImplementation, ReaderOptions} from "@/types";
 import {getAtomicNumber} from "../modules/AtomData";
+import {EmptyStructure} from "../modules/EmptyStructure";
+import type {Structure, Atom,
+			 ReaderImplementation, ReaderOptions} from "@/types";
 
 export class ReaderLAMMPS implements ReaderImplementation {
 
@@ -23,18 +24,8 @@ export class ReaderLAMMPS implements ReaderImplementation {
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 
-		const crystal: Crystal = {
-			basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-			origin: [0, 0, 0],
-			spaceGroup: ""
-		};
+		const structure: Structure = new EmptyStructure();
 
-		const structure: Structure = 	{
-			crystal,
-			atoms: [],
-			bonds: [],
-			volume: []
-		};
 		let numberAtoms = 0;
 		let lineType = "";
 		let atomIdx = 0;
@@ -87,16 +78,16 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			else {
 				switch(fields[2]) {
 					case "xlo":
-						crystal.origin[0] = Number.parseFloat(fields[0]);
-						crystal.basis[0] = Number.parseFloat(fields[1]) - crystal.origin[0];
+						structure.crystal.origin[0] = Number.parseFloat(fields[0]);
+						structure.crystal.basis[0] = Number.parseFloat(fields[1]) - structure.crystal.origin[0];
 						break;
 					case "ylo":
-						crystal.origin[1] = Number.parseFloat(fields[0]);
-						crystal.basis[4] = Number.parseFloat(fields[1]) - crystal.origin[1];
+						structure.crystal.origin[1] = Number.parseFloat(fields[0]);
+						structure.crystal.basis[4] = Number.parseFloat(fields[1]) - structure.crystal.origin[1];
 						break;
 					case "zlo":
-						crystal.origin[2] = Number.parseFloat(fields[0]);
-						crystal.basis[8] = Number.parseFloat(fields[1]) - crystal.origin[2];
+						structure.crystal.origin[2] = Number.parseFloat(fields[0]);
+						structure.crystal.basis[8] = Number.parseFloat(fields[1]) - structure.crystal.origin[2];
 						break;
 				}
 			}

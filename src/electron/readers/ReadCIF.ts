@@ -10,7 +10,8 @@ import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Crystal, Structure, Atom, ReaderImplementation} from "@/types";
+import type {Structure, Atom, ReaderImplementation} from "@/types";
+import {EmptyStructure} from "../modules/EmptyStructure";
 
 /** Collect lines from "loop_" constructs */
 class Table {
@@ -174,15 +175,7 @@ export class ReaderCIF implements ReaderImplementation {
 				// Check last block valid
 				if(this.step < 0 || this.structures[this.step].atoms.length > 0) {
 					++this.step;
-					const crystal: Crystal = {
-						basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-						origin: [0, 0, 0],
-						spaceGroup: ""
-					};
-					this.structures.push({crystal,
-										  atoms: [],
-										  bonds: [],
-										  volume: []});
+					this.structures.push(new EmptyStructure());
 				}
 				basisSides  = [0, 0, 0];
 				basisAngles = [0, 0, 0];
