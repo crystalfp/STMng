@@ -50,8 +50,7 @@ sm.add(group);
 // > Colormap creation
 const lut = computed(() => {
 
-    const thatLut = new Lut(colormapName.value,
-                            nestedIsosurfaces.value ? countIsosurfaces.value : 512);
+    const thatLut = new Lut(colormapName.value, 512);
 
     if(limitColormap.value) {
         thatLut.setMax(limits.value[1]);
@@ -147,7 +146,7 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
         limitHigh: limits.value[1],
         isoValue: isoValue.value,
     });
-});
+}, {deep: true});
 
 // To change locally
 watch([showIsosurface, limitColormap, colormapName, opacity], () => {

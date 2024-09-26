@@ -379,8 +379,16 @@ export interface ChartData {
             borderColor: string;
     }[];
 }
+
+/** Parameters to draw the chart passed to the component */
 export interface ChartParams {
+
+    /** Data to be charted */
     data: ChartData;
+
+    /** Options to draw the chart */
     options: ChartOptions;
+
+    /** Type of chart to be shown */
     type: string;
 }
