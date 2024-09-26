@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng measures node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Measures</title>
+</head>
+
+<body>
+<h1 class="title">Measures</h1>
+<h1 class="subh1">Measure distance and angles</h1>
+
+<div class="description">
+<p>By clicking on one to three atoms (using Ctrl-Click), this module provides:</p>
+<table>
+<tr><td>Atoms type and their coordinates.
+These lines are colored like the atoms selection marker.</td></tr>
+<tr><td>Distances between pair or atoms.</td></tr>
+<tr><td>Angle (in degrees) created by the three atoms.</td></tr>
+</table>
+<p>The information provided depends on the number of atoms selected. If more than three atoms are selected the first entered will be deselected.</p>
+<p>Selecting again a selected atom deselects it.</p>
+<p>If a polyhedra is selected, its color changes and its volume is computed.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Selected atoms</td>
+	<td class="c2">table</td>
+	<td class="c3">The selected atoms color, symbol and coordinates.</td>
+</tr>
+<tr>
+	<td class="c1">Measures</td>
+	<td class="c2">table</td>
+	<td class="c3">The distances and angles. If a polyhedron is selected, its volume appears.</td>
+</tr>
+<tr>
+	<td class="c1">Deselect</td>
+	<td class="c2">button</td>
+	<td class="c3">Deselect selected atoms.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>measures</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td>—</td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>Yes</td></tr>
+</table>
+
+</body>
+</html>

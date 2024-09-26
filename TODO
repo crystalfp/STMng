@@ -1,8 +1,8 @@
 To do:
-  ☐ Finish help
   ☐ Check if `.bind()` should be added to ProjectManager line 128
 
 Bugs:
+  ☐ Nested isosurfaces does not work. But touching number of isosurfaces makes them appears.
 
 Porting:
   ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
@@ -50,6 +50,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Finish help @done(2024-09-26 07:03) @project(To do)
   ✔ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log") @done(2024-09-24 14:08) @project(Nice to have/Future)
   ✘ Manage multiple output from node (eg. reader has structure and structures) @cancelled(2024-09-24 14:09) @project(Nice to have/Future)
   ✔ Disable find symmetries if the structure contains volumetric data @done(2024-09-24 07:40) @project(To do)

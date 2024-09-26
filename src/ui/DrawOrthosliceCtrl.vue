@@ -264,8 +264,8 @@ watchEffect(() => {
 
   <v-switch v-model="useColorClasses" color="primary"
             label="Use discrete classes" density="compact" class="ml-3" />
-  <g-debounced-slider v-slot="{value}" v-model="colorClasses" :step="1" :min="2" :max="20"
-                      :disabled="!useColorClasses" class="ml-2 mt-1 mb-4">
+  <g-debounced-slider v-if="useColorClasses" v-slot="{value}" v-model="colorClasses"
+                      :step="1" :min="2" :max="20" class="ml-2 mt-1 mb-4">
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </g-debounced-slider>
 
@@ -277,8 +277,8 @@ watchEffect(() => {
   <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
             density="compact" class="ml-4 mt-n5" />
 
-  <g-debounced-slider v-slot="{value}" v-model="isoValue" :step="step" :min="valueMin"
-                      :max="valueMax" :disabled="useColorClasses" class="ml-2 mt-1">
+  <g-debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
+                      :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1">
     <v-label :text="`Isoline value (${humanFormat(value)})`" class="no-select"/>
   </g-debounced-slider>
 </v-container>

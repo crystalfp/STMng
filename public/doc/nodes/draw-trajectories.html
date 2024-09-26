@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng draw-trajectories node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Trajectories</title>
+</head>
+
+<body>
+<h1 class="title">Trajectories</h1>
+<h1 class="subh1">Draw trajectories of atoms</h1>
+
+<div class="description">
+<p>⚠ Work in progress! ⚠</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Show trajectories</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Made trajectories visible.</td>
+</tr>
+<tr>
+	<td class="c1">Clear trajectories</td>
+	<td class="c2">button</td>
+	<td class="c3">Clear the accumulated atoms positions.</td>
+</tr>
+<tr></tr>
+	<td class="c1">Select traced atoms by</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select the traced atoms by one of the following items.
+  <dl>
+  <dt>Symbol</dt>
+  <dd>The atom type symbol.</dd>
+  <dt>Label</dt>
+  <dd>The atom label eventually present in the input structure.</dd>
+  <dt>Index</dt>
+  <dd>Index of the atom inside the structure. The index starts from zero.</dd>
+  <dt>All</dt>
+  <dd>Select all atoms.</dd>
+  </dl></td>
+</tr>
+<tr>
+	<td class="c1">Traced atoms selector</td>
+	<td class="c2">text</td>
+	<td class="c3">Space separated list of atoms selectors.</td>
+</tr>
+<tr>
+	<td class="c1">Max displacement</td>
+	<td class="c2">slider</td>
+	<td class="c3">Maximum displacement between two atoms positions to consider them a single trace.</td>
+</tr>
+<tr>
+	<td class="c1">Show position clouds</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Draw cloud of positions visited by the atoms. It is still experimental.</td>
+</tr>
+<tr>
+	<td class="c1">Cloud volume subdivisions</td>
+	<td class="c2">slider</td>
+	<td class="c3">Side subdivisions of the volume containing the position clouds.</td>
+</tr>
+<tr>
+	<td class="c1">Enlarge volume</td>
+	<td class="c2">slider</td>
+	<td class="c3">How much the cloud volume is enlarged to contain the whole cell.</td>
+</tr>
+<tr>
+	<td class="c1">Start trajectories</td>
+	<td class="c2">button</td>
+	<td class="c3">Start accumulating trajectories.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>draw-trajectories</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td>—</td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>Yes</td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng viewer-3d node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
+  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Viewer</title>
+</head>
+
+<body>
+<h1 class="title">Viewer</h1>
+<h1 class="subh1">Viewer 3D controls</h1>
+
+<div class="description">
+<p>Interface to the 3D viewer. Its parameters are grouped under 4 categories:</p>
+<ul>
+<li>Scene</li>
+<li>Ambient light</li>
+<li>Directional lights</li>
+<li>Helper objects</li>
+</ul>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Camera type</td>
+	<td class="c2">radio button</td>
+	<td class="c3">Selects the type of camera: Perspective or Orthographic.</td>
+</tr>
+<tr>
+	<td class="c1">Scene</td>
+	<td class="c2">group</td>
+	<td class="c3">Select the viewer background color.</td>
+</tr>
+<tr>
+	<td class="c1">Ambient light</td>
+	<td class="c2">group</td>
+	<td class="c3">Select the ambient light color and intensity.</td>
+</tr>
+<tr>
+	<td class="c1">Directional lights</td>
+	<td class="c2">group</td>
+	<td class="c3">Select color, intensity and direction for three directional lights. The direction is specified by rotation around X, Y, Z axis and around a direction perpendicular to the given axis.</td>
+</tr>
+<tr>
+	<td class="c1">Helper objects</td>
+	<td class="c2">group</td>
+	<td class="c3">Enable four helper object:
+  <ul>
+  <li>Axis: the cartesian axis from the space origin with setting of the axis length.</li>
+  <li>Grids: along XZ, XY and YZ planes with setting of their side.</li>
+  </ul>
+  </td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>viewer-3d</td></tr>
+<tr><td class="c1">Input type:</td><td>—</td></tr>
+<tr><td class="c1">Output type:</td><td>—</td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>No</td></tr>
+</table>
+
+</body>
+</html>
