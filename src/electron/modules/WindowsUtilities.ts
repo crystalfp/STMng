@@ -143,7 +143,7 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
         void secondaryWin.loadURL(`file://${mainSourceDirectory}/../dist/index.html#${params.routerPath}`);
     }
     secondaryWin.once("ready-to-show", () => {
-        secondaryWin!.show();
+        secondaryWin?.show();
     });
     if(params.data) secondaryWin.once("show", () => {
         secondaryWin.webContents.send("SYSTEM:DATA", params.data);

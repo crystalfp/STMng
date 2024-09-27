@@ -53,7 +53,7 @@ export const projectIsValid = (prj: Project): boolean => {
 		const {nested} = v.flatten(result.issues);
 		let errorMessage = "Error from project validator\n";
 		for(const entry in nested) {
-			errorMessage += `  ${entry}: "${nested[entry]!.join("; ")}"\n`;
+			errorMessage += `  ${entry}: "${nested[entry]?.join("; ")}"\n`;
 		}
 		sendAlertMessage(errorMessage);
 

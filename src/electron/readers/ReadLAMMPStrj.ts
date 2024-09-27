@@ -90,7 +90,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					lineType = LineType.item;
 					break;
 				case LineType.natoms:
-					numberAtoms = Number.parseInt(fields[0]);
+					numberAtoms = Number.parseInt(fields[0], 10);
 					currentStructure!.atoms = Array(numberAtoms) as Atom[];
 					atomIdx = 0;
 					lineType = LineType.item;
@@ -145,7 +145,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					lineType = LineType.item;
 					break;
 				case LineType.atom:
-					atomZ = Number.parseInt(fields[1]);
+					atomZ = Number.parseInt(fields[1], 10);
 					currentStructure!.atoms[atomIdx] = {
 						label: fields[0],
 						atomZ,

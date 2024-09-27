@@ -105,7 +105,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 						// Line with atoms count. Put them in an array
 						atomsCount.length = 0;
 						for(const field of fields) {
-							const count = Number.parseInt(field);
+							const count = Number.parseInt(field, 10);
 							atomsCount.push(count);
 						}
 
@@ -214,9 +214,9 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					if(fields.length !== 3) break;
 
 					const sides: PositionType = [
-						Number.parseInt(fields[0]),
-						Number.parseInt(fields[1]),
-						Number.parseInt(fields[2])
+						Number.parseInt(fields[0], 10),
+						Number.parseInt(fields[1], 10),
+						Number.parseInt(fields[2], 10)
 					];
 					if(Number.isNaN(sides[0]) || sides[0] <= 0 ||
 					   Number.isNaN(sides[1]) || sides[1] <= 0 ||

@@ -43,7 +43,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			if(lineType === "Atoms") {
 
 				const nf = fields.length; // To check if line has atom charge before coordinates
-				const atomZ = Number.parseInt(fields[1]);
+				const atomZ = Number.parseInt(fields[1], 10);
 				structure.atoms[atomIdx] = {
 					label: fields[0],
 					atomZ,
@@ -66,12 +66,12 @@ export class ReaderLAMMPS implements ReaderImplementation {
 				if(numberAtoms === 0) break;
 			}
 			else if(fields[1] === "atoms") {
-				numberAtoms = Number.parseInt(fields[0]);
+				numberAtoms = Number.parseInt(fields[0], 10);
 				structure.atoms = Array(numberAtoms) as Atom[];
 				atomIdx = 0;
 			}
 			else if(fields[1] === "atom" && fields[2] === "types") {
-				ntypes = Number.parseInt(fields[0]);
+				ntypes = Number.parseInt(fields[0], 10);
 				correspond = Array(ntypes+1).fill(0) as number[];
 			}
 			else if(fields[0] === "Atoms") lineType = "Atoms";

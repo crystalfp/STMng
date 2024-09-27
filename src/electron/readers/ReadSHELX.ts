@@ -59,7 +59,7 @@ export class ReaderSHELX implements ReaderImplementation {
 				else spaceGroup = sg;
 			}
 			else if(lineUC.startsWith("LATT")) {
-				latticeType = Number.parseInt(lineUC.slice(5));
+				latticeType = Number.parseInt(lineUC.slice(5), 10);
 			}
 			else if(lineUC.startsWith("CELL")) {
 				const fields = lineUC.split(/ +/);

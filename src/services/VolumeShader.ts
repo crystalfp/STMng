@@ -7,7 +7,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-09
  */
-import {Vector2, Vector3, Texture} from "three";
+import {Vector2, Vector3, type Texture} from "three";
 
 /**
  * Volume shaders for THREE.ShaderMaterial

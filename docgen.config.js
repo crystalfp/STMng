@@ -20,12 +20,12 @@ module.exports = {
 						.replace(/[*\n ]+$/, "")
 						.replace(/^\*\n/, "")
 						.replaceAll(/\n *\* */g, "\n")
-						.replaceAll(/\\@/g, "#$%")
+						.replaceAll("\\@", "#$%")
 				const values = rawValue.split(/ *@/).map((item) => item.trim());
 
 				for(const vv of values) {
 					if(vv === "") continue;
-					vv1 = vv.replaceAll("#$%", "@");
+					const vv1 = vv.replaceAll("#$%", "@");
 					if(vv1.startsWith("component")) {
 						const text = vv1.replace(/^component[ \n]+/, "")
                     	documentation.set('description', text);

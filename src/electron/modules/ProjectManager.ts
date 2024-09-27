@@ -12,7 +12,7 @@ import {ipcMain} from "electron";
 import path from "node:path";
 import {publicDirPath} from "./GetPublicPath";
 
-import {NodeCore} from "./NodeCore";
+import type {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";

@@ -104,7 +104,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						// Line with atoms count. Put them in an array
 						atomsCount.length = 0;
 						for(const field of fields) {
-							const count = Number.parseInt(field);
+							const count = Number.parseInt(field, 10);
 							atomsCount.push(count);
 						}
 
