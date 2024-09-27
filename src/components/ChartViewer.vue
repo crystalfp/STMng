@@ -10,7 +10,7 @@ import {ref} from "vue";
 import {Bar, Line} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, getPreferenceSync, receiveBroadcast, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import type {ChartParams} from "@/types";
 
@@ -35,27 +35,37 @@ receiveInWindow((data) => {
 /** Close the window on Esc press */
 closeWithEscape("/chart");
 
+/** Receive the theme change */
+const theme = ref(getPreferenceSync("Theme", "dark"));
+receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
+    if(eventType === "theme-change") {
+        theme.value = params[0] as string;
+    }
+});
+
 </script>
 
 
 <template>
-<div class="chart-portal">
-  <div class="chart-container">
-    <Bar v-if="chartType === 'bar'"
-      :options="decodedData.options"
-      :data="decodedData.data"
-    />
-    <Line v-else-if="chartType === 'line'"
-      :options="decodedData.options"
-      :data="decodedData.data"
-    />
+<v-app :theme="theme">
+  <div class="chart-portal">
+    <div class="chart-container">
+      <Bar v-if="chartType === 'bar'"
+        :options="decodedData.options"
+        :data="decodedData.data"
+      />
+      <Line v-else-if="chartType === 'line'"
+        :options="decodedData.options"
+        :data="decodedData.data"
+      />
+    </div>
+    <v-container class="chart-button-strip">
+      <v-btn @click="closeWindow('/chart')">
+        Close
+      </v-btn>
+    </v-container>
   </div>
-  <v-container class="chart-button-strip">
-    <v-btn @click="closeWindow('/chart')">
-      Close
-    </v-btn>
-  </v-container>
-</div>
+</v-app>
 </template>
 
 

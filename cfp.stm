@@ -27,6 +27,10 @@
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
+    },
+    "chart": {
+      "label": "Chart",
+      "type": "chart-viewer"
     }
   },
   "viewer": {
@@ -123,6 +127,9 @@
       "showStructure": true,
       "showBonds": true,
       "showLabels": true
+    },
+    "chart": {
+      "chartType": "line"
     }
   },
   "currentId": "reader"

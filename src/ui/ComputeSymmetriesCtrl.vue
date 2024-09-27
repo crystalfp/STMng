@@ -112,7 +112,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
 
   <v-row class="pl-2 mt-2 align-center">
     <v-col cols="5">
-      <v-label text="Input symmetry:" class="text-green no-select" />
+      <v-label text="Input symmetry:" class="green-label no-select" />
     </v-col>
     <v-col cols="7">
       <v-label :text="inputSpaceGroup" class="show-symmetry" />
@@ -120,7 +120,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
   </v-row>
   <v-row class="pl-2 mt-2 align-center">
     <v-col cols="5">
-      <v-label text="Final symmetry:" class="text-green no-select" />
+      <v-label text="Final symmetry:" class="green-label no-select" />
     </v-col>
     <v-col cols="7">
       <v-label :text="computedSpaceGroup" class="show-symmetry" />

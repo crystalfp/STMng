@@ -19,7 +19,8 @@
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
-    "dependency-cruiser"
+    "dependency-cruiser",
+    "@types/eslint"
   ],
   "includeEntryExports": true
 }

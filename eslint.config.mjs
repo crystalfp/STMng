@@ -24,14 +24,15 @@ const compat = new FlatCompat({
     config: vuetifyPlugin.configs.recommended.rules,
 });
 
-/// @type {import('eslint').Linter.FlatConfig[]} */
+/* @type {import('eslint').Linter.Config[]} */
 export default [{
     ignores: [
         "src/vite-env.d.ts",
     ]}, {
     files: [
         "src/**/*.ts",
-        "src/**/*.vue"
+        "src/**/*.vue",
+        "eslint.config.mjs"
     ],
     languageOptions: {
         parser: vueParser,

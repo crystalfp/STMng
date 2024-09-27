@@ -13,7 +13,6 @@
 		"measure": 	 {"label": "Measures", 	   "type": "measures",           "in": "bonds"},
 		"writer": 	 {"label": "Writer", 	   "type": "structure-writer",   "in": "bonds"},
         "viewer":    {"label": "Viewer",       "type": "viewer-3d"},
-        "capture":   {"label": "Capture",      "type": "capture-view"},
-        "chart":     {"label": "Chart",        "type": "chart-viewer"}
+        "capture":   {"label": "Capture",      "type": "capture-view"}
     }
 }
