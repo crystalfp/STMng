@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {Menu, shell, app, nativeTheme, dialog, type MenuItemConstructorOptions} from "electron";
+import {Menu, shell, app, nativeTheme, dialog, ipcMain, type MenuItemConstructorOptions} from "electron";
 import path from "node:path";
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
@@ -17,6 +17,7 @@ import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import {pm} from "./ProjectManager";
 import {showLogFile} from "./AccessLog.ts";
+import type {CtrlParams} from "@/types/index.ts";
 
 /**
  * Open documentation file
@@ -184,6 +185,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     label: "Extended viewer",
                     type: "checkbox",
                     accelerator: "CommandOrControl+E",
+                    id: "toggleExtended",
                     checked: isExtended(),
                     click(event) {
                         setExtended(event.checked);
@@ -250,4 +252,20 @@ export const disableSaveProjectEntry = (disable: boolean): void => {
         entry.enabled = !disable;
         refreshSystemMenu();
     }
+};
+
+/**
+ * Setup channel to toggle extended view from client
+ */
+export const setupMenuChannel = (): void => {
+
+    ipcMain.on("SYSTEM:extended", (_event: unknown, params: CtrlParams) => {
+
+        setExtended(!params.normalScreen as boolean);
+        const entry = systemMenu.getMenuItemById("toggleExtended");
+        if(entry) {
+            entry.checked = !params.normalScreen as boolean;
+            refreshSystemMenu();
+        }
+    });
 };

@@ -8,15 +8,8 @@
  */
 import {ref, shallowRef} from "vue";
 import {closeWithEscape} from "@/services/CaptureEscape";
-import {getPreferenceSync, receiveBroadcast, receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
-
-/** Receive the theme change */
-const theme = ref(getPreferenceSync("Theme", "dark"));
-receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
-    if(eventType === "theme-change") {
-        theme.value = params[0] as string;
-    }
-});
+import {receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
+import {theme} from "@/services/ReceiveTheme";
 
 const text = ref("");
 

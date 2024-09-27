@@ -8,8 +8,9 @@
  */
 
 import {ref, nextTick} from "vue";
-import {getPreferenceSync, receiveBroadcast, closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
+import {theme} from "@/services/ReceiveTheme";
 
 const inSymmetry = ref("");
 const outSymmetry = ref("");
@@ -19,13 +20,6 @@ interface SymmetriesData {
     outSymmetry: string;
 }
 
-/** Receive the theme change */
-const theme = ref(getPreferenceSync("Theme", "dark"));
-receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
-    if(eventType === "theme-change") {
-        theme.value = params[0] as string;
-    }
-});
 receiveInWindow((data) => {
 
     void nextTick().then(() => {

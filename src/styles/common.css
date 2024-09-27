@@ -31,7 +31,7 @@ html {
   padding: 10px 0 0 0 !important;
 }
 
-/* Colors to be made visible changing application theme */
+/* Colors to be made visible when changing application theme */
 .green-label {
   color: light-dark(#2E7D32, #66BB6A) !important;
   opacity: 1 !important;

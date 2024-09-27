@@ -10,8 +10,9 @@ import {ref} from "vue";
 import {Bar, Line} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
-import {closeWindow, getPreferenceSync, receiveBroadcast, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
+import {theme} from "@/services/ReceiveTheme";
 import type {ChartParams} from "@/types";
 
 ChartJS.register(
@@ -34,14 +35,6 @@ receiveInWindow((data) => {
 
 /** Close the window on Esc press */
 closeWithEscape("/chart");
-
-/** Receive the theme change */
-const theme = ref(getPreferenceSync("Theme", "dark"));
-receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
-    if(eventType === "theme-change") {
-        theme.value = params[0] as string;
-    }
-});
 
 </script>
 

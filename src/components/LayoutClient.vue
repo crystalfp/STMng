@@ -9,9 +9,11 @@
 
 import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {sm} from "@/services/SceneManager";
-import {isLoaded, getPreferenceSync, handleFullscreen, receiveRefreshMenu, setProjectPathInTitle,
-        receiveBroadcast, receiveMenuSelection, receiveNotifications} from "@/services/RoutesClient";
+import {isLoaded, handleFullscreen, receiveRefreshMenu,
+        setProjectPathInTitle, receiveMenuSelection,
+        receiveNotifications, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
+import {theme} from "@/services/ReceiveTheme";
 
 import Viewer3D from "./Viewer3D.vue";
 import ControlsContainer from "./ControlsContainer.vue";
@@ -68,17 +70,20 @@ const notificationColor = ref("red-darken-4");
 receiveNotifications((type: "error" | "success", text: string, from: string) => {
 
     notificationText.value = text;
-    notificationColor.value = type === "error" ? "red-darken-4" : "success";
+    notificationColor.value = type === "error" ? notificationColor.value : "success";
     showNotification.value = true;
 
     showAlertMessage(text, from);
 });
 
-// > Receive the theme change
-const theme = ref(getPreferenceSync("Theme", "dark"));
-receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
-    if(eventType === "theme-change") theme.value = params[0] as string;
-});
+/**
+ * Toggle normal screen by clicking on the layout separator.
+ */
+const toggleNormalScreen = (): void => {
+
+    normalScreen.value = !normalScreen.value;
+    sendToNode("SYSTEM", "extended", {normalScreen: normalScreen.value});
+};
 
 </script>
 
@@ -88,7 +93,7 @@ receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
   <div v-show="normalScreen" class="layout-west">
     <controls-container />
   </div>
-  <div class="layout-gutter" @click="normalScreen = !normalScreen" />
+  <div class="layout-gutter" @click="toggleNormalScreen" />
   <viewer3-d :expanded="!normalScreen" />
   <v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info"
               close-on-content-click :color="notificationColor">

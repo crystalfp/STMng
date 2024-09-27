@@ -9,8 +9,8 @@
  * @since 2024-07-05
  */
 import * as THREE from "three";
-import {useConfigStore} from "../stores/configStore";
-import {useControlStore} from "../stores/controlStore";
+import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import type CameraControls from "camera-controls";
 
 /**

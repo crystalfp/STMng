@@ -7,9 +7,10 @@
  * @since 2024-07-05
  */
 
-import {ref, onMounted} from "vue";
-import {closeWindow, receiveInWindow, getPreferenceSync, receiveBroadcast} from "@/services/RoutesClient";
+import {ref, onMounted, computed} from "vue";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
+import {theme} from "@/services/ReceiveTheme";
 import type {ClientProjectInfo} from "@/types";
 
 /** Dimensions of the node on screen */
@@ -18,20 +19,7 @@ const NODE_HEIGHT =  50;
 const NODE_GAP    =  10;
 
 /** Set the foreground color */
-const fg = ref("#FFF");
-const setColors = (): void => {
-    fg.value = theme.value === "dark" ? "#FFF" : "#000";
-};
-
-/** Receive the theme change */
-const theme = ref(getPreferenceSync("Theme", "dark"));
-setColors();
-receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
-    if(eventType === "theme-change") {
-        theme.value = params[0] as string;
-        setColors();
-    }
-});
+const fg = computed(() => (theme.value === "dark" ? "#FFF" : "#000"));
 
 let graph: ClientProjectInfo;
 

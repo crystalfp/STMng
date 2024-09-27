@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import log from "electron-log";
-import {useMessageStore} from "../stores/messageStore";
+import {useMessageStore} from "@/stores/messageStore";
 
 /**
  * Show error notification
