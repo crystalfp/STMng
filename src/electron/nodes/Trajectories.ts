@@ -10,9 +10,10 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient, sendPositionCloudsToClient} from "../modules/WindowsUtilities";
+import {computeCellVertices} from "./ComputeCellVertices";
+import {hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, PositionType, BasisType,
 			 UiInfo, CtrlParams, ChannelDefinition} from "@/types";
-import {computeCellVertices} from "./ComputeCellVertices";
 
 export class Trajectories extends NodeCore {
 
@@ -254,7 +255,7 @@ export class Trajectories extends NodeCore {
 	 */
 	private computeLimits(orig: PositionType, basis: BasisType): void {
 
-		if(basis.every((value) => value === 0)) return;
+		if(hasNoUnitCell(basis)) return;
 
 		// Unit cell coordinates
 		const vv = computeCellVertices(orig, basis);

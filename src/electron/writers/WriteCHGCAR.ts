@@ -8,7 +8,7 @@
  */
 
 import fs from "node:fs";
-import {cartesianToFractionalCoordinates, format} from "../modules/Helpers";
+import {cartesianToFractionalCoordinates, format, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterCHGCAR implements WriterImplementation {
@@ -24,7 +24,7 @@ export class WriterCHGCAR implements WriterImplementation {
 				const {basis} = crystal;
 
 				// If no unit cell return error
-				if(basis.every((value: number) => value === 0)) {
+				if(hasNoUnitCell(basis)) {
 					fs.closeSync(fd);
 					return {error: "Cannot write CHGCAR if unit cell missing"};
 				}

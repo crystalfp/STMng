@@ -195,3 +195,11 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
  * @returns Value as string
  */
 export const format = (value: number): string => value.toFixed(6).padStart(10, " ");
+
+/**
+ * Check if the basis matrix is empty
+ *
+ * @param basis - The basis matrix to test
+ * @returns True if the basis has no vector defined
+ */
+export const hasNoUnitCell = (basis: BasisType): boolean => basis.every((value) => value === 0);

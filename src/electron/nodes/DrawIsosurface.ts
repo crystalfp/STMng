@@ -9,6 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {IsosurfaceCore} from "../modules/IsosurfaceCore";
 import {sendIsosurfacesToClient} from "../modules/WindowsUtilities";
+import {hasNoUnitCell} from "../modules/Helpers";
 
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
@@ -121,7 +122,7 @@ export class DrawIsosurface extends NodeCore {
         const {sides, values} = this.structure.volume[this.dataset];
 
         // A unit cell is needed to create the isosurface
-        if(basis.every((value) => value === 0)) {
+        if(hasNoUnitCell(basis)) {
             this.sendNoIsosurface();
             return;
         }

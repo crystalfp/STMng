@@ -13,6 +13,7 @@ import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
 			 PositionType, BasisType, Volume} from "@/types";
 import {computeCellVertices} from "./ComputeCellVertices";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import {hasNoUnitCell} from "../modules/Helpers";
 
 export class DrawUnitCell extends NodeCore {
 
@@ -57,7 +58,7 @@ export class DrawUnitCell extends NodeCore {
 
 		// Structure should have the unit cell
 		const {crystal} = this.inputStructure;
-		if(!crystal || crystal.basis.every((value) => value === 0)) {
+		if(!crystal || hasNoUnitCell(crystal.basis)) {
 			this.notify(this.inputStructure);
 			sendVerticesToClient(this.id, "cell", []);
 			return;
@@ -303,7 +304,7 @@ export class DrawUnitCell extends NodeCore {
 	private computeUnitCell(basis: BasisType, orig: PositionType): void {
 
 		// If no unit cell or not visible send an empty coords array
-		if(basis.every((value: number) => value === 0)) {
+		if(hasNoUnitCell(basis)) {
 			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
@@ -323,7 +324,7 @@ export class DrawUnitCell extends NodeCore {
 	private computeSupercell(basis: BasisType, orig: PositionType): void {
 
 		// If no unit cell send an empty coords array
-		if(basis.every((value: number) => value === 0))  {
+		if(hasNoUnitCell(basis))  {
 			sendVerticesToClient(this.id, "supercell", []);
 			return;
 		}
@@ -363,7 +364,7 @@ export class DrawUnitCell extends NodeCore {
 	private computeBasisVectors(basis: BasisType, orig: PositionType): void {
 
 		// No unit cell, do nothing
-		if(basis.every((value: number) => value === 0))  {
+		if(hasNoUnitCell(basis))  {
 			sendVerticesToClient(this.id, "vectors", []);
 			return;
 		}

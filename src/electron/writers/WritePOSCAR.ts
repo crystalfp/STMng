@@ -8,7 +8,7 @@
  */
 
 import fs from "node:fs";
-import {cartesianToFractionalCoordinates, format} from "../modules/Helpers";
+import {cartesianToFractionalCoordinates, format, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterPOSCAR implements WriterImplementation {
@@ -24,7 +24,7 @@ export class WriterPOSCAR implements WriterImplementation {
 				const {basis} = crystal;
 
 				// If no unit cell return error
-				if(basis.every((value: number) => value === 0)) {
+				if(hasNoUnitCell(basis)) {
 					fs.closeSync(fd);
 					return {payload: "Error", error: "Cannot write POSCAR if unit cell missing"};
 				}

@@ -11,7 +11,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
-import {cartesianToFractionalCoordinates} from "../modules/Helpers";
+import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType, PositionType} from "@/types";
 
 /** Type of the native code output */
@@ -146,7 +146,7 @@ export class ComputeSymmetries extends NodeCore {
 		const {crystal, atoms, volume} = this.inputStructure;
 
 		// If no unit cell or no atoms, copy input structure to output
-		if(crystal === undefined || crystal.basis.every((value) => value === 0) || atoms.length === 0) {
+		if(crystal === undefined || hasNoUnitCell(crystal.basis) || atoms.length === 0) {
 			this.notify(this.inputStructure);
 			this.showComputedSymmetry();
 			return;

@@ -11,6 +11,7 @@ import type {Structure, Bond, Atom, UiInfo, CtrlParams, ChannelDefinition} from 
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import {hasNoUnitCell} from "../modules/Helpers";
 
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
@@ -404,7 +405,7 @@ export class ComputeBonds extends NodeCore {
 				}
 				case "outside": {
 					// If no unit cell, do nothing
-					if(this.inputStructure.crystal.basis.every((value) => value === 0)) {
+					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
 
 						// Send the input structure down the pipeline
 						this.notify(this.inputStructure);
@@ -420,7 +421,7 @@ export class ComputeBonds extends NodeCore {
 				}
 				case "connected": {
 					// If no unit cell, do nothing
-					if(this.inputStructure.crystal.basis.every((value) => value === 0)) {
+					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
 						this.notify(this.inputStructure);
 						return;
 					}
