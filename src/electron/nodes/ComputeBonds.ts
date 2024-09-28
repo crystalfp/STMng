@@ -64,6 +64,10 @@ const displacementCoefficients = [
 /** Possible atoms Z value to form a H bond */
 const atomZForH = new Set([7, 8, 9, 16]);
 
+/** Convert radiants to degrees */
+const RAD2DEG = 180/Math.PI;
+
+
 export class ComputeBonds extends NodeCore {
 
 	private inputStructure: Structure | undefined;
@@ -472,7 +476,7 @@ export class ComputeBonds extends NodeCore {
 		const lv2 = v0*v0 + v1*v1 + v2*v2;
 		const lw2 = w0*w0 + w1*w1 + w2*w2;
 
-		return Math.acos(dotProduct/Math.sqrt(lv2*lw2))*180/Math.PI;
+		return Math.acos(dotProduct/Math.sqrt(lv2*lw2))*RAD2DEG;
 	};
 
 	// > Compute bonds

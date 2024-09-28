@@ -15,6 +15,9 @@ import {sendToClient} from "../modules/WindowsUtilities";
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
 const colors = ["#FF0000", "#00FF00", "#4263FF"];
 
+/** Convert radiants to degrees */
+const RAD2DEG = 180/Math.PI;
+
 export class Measures extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -95,7 +98,7 @@ export class Measures extends NodeCore {
 
 				// Compute angle ABC
 				const dotProduct = dx1*dx+dy1*dy+dz1*dz;
-				this.angleABC = Math.acos(dotProduct/(this.distanceAB*this.distanceBC))*180/Math.PI;
+				this.angleABC = Math.acos(dotProduct/(this.distanceAB*this.distanceBC))*RAD2DEG;
 			}
 		}
 		else {

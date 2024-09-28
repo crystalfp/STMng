@@ -8,6 +8,10 @@
  */
 import type {BasisType, PositionType, Structure} from "@/types";
 
+/** Convert degrees to radiants and viceversa */
+const DEG2RAD = Math.PI/180;
+const RAD2DEG = 180/Math.PI;
+
 /**
  * Extract the basis vectors from basis lengths and angles
  *
@@ -32,10 +36,9 @@ export const extractBasis = (a: number, b: number, c: number,
 		return [a, 0, 0, 0, b, 0, 0, 0, c];
 	}
 
-	const conv = Math.PI/180;
-	const alphaRad = alpha*conv;
-	const betaRad  = beta*conv;
-	const gammaRad = gamma*conv;
+	const alphaRad = alpha*DEG2RAD;
+	const betaRad  = beta*DEG2RAD;
+	const gammaRad = gamma*DEG2RAD;
 	const cosAlpha = Math.cos(alphaRad);
 	const cosBeta  = Math.cos(betaRad);
 	const cosGamma = Math.cos(gammaRad);
@@ -111,7 +114,7 @@ const vectorAngle = (v0: number, v1: number, v2: number, w0: number, w1: number,
 	const lv2 = v0*v0 + v1*v1 + v2*v2;
 	const lw2 = w0*w0 + w1*w1 + w2*w2;
 
-	return Math.acos(dotProduct/Math.sqrt(lv2*lw2))*180/Math.PI;
+	return Math.acos(dotProduct/Math.sqrt(lv2*lw2))*RAD2DEG;
 };
 
 /**

@@ -19,6 +19,9 @@ const {id} = defineProps<{
     id: string;
 }>();
 
+/** Convert degrees to radiants */
+const DEG2RAD = Math.PI/180;
+
 // > Access the store
 const configStore = useConfigStore();
 
@@ -38,8 +41,8 @@ const alpha1 = ref(0);  // Around X on YZ plane
 const beta1 = ref(0);   // Angle with X axis
 
 watchEffect(() => {
-    const alphaRad = alpha1.value * Math.PI / 180;
-    const betaRad  = beta1.value * Math.PI / 180;
+    const alphaRad = alpha1.value * DEG2RAD;
+    const betaRad  = beta1.value * DEG2RAD;
     const lenYZ = Math.sin(betaRad);
     configStore.lights.directional1Position[0] = Math.cos(betaRad);
     configStore.lights.directional1Position[1] = lenYZ*Math.cos(alphaRad);
@@ -51,8 +54,8 @@ const alpha2 = ref(0);
 const beta2 = ref(0);
 
 watchEffect(() => {
-    const alphaRad = alpha2.value * Math.PI / 180;
-    const betaRad  = beta2.value * Math.PI / 180;
+    const alphaRad = alpha2.value * DEG2RAD;
+    const betaRad  = beta2.value * DEG2RAD;
     const lenXZ = Math.sin(betaRad);
     configStore.lights.directional2Position[0] = lenXZ*Math.sin(alphaRad);
     configStore.lights.directional2Position[1] = Math.cos(betaRad);
@@ -64,8 +67,8 @@ const alpha3 = ref(0);
 const beta3 = ref(0);
 
 watchEffect(() => {
-    const alphaRad = alpha3.value * Math.PI / 180;
-    const betaRad  = beta3.value * Math.PI / 180;
+    const alphaRad = alpha3.value * DEG2RAD;
+    const betaRad  = beta3.value * DEG2RAD;
     const lenXY = Math.sin(betaRad);
     configStore.lights.directional3Position[0] = lenXY*Math.cos(alphaRad);
     configStore.lights.directional3Position[1] = lenXY*Math.sin(alphaRad);

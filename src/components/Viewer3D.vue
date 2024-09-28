@@ -21,6 +21,9 @@ import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
+/** Convert degrees to radiants */
+const DEG2RAD = Math.PI/180;
+
 // > Access the stores
 const configStore  = useConfigStore();
 const controlStore = useControlStore();
@@ -63,7 +66,7 @@ const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
 const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
                                orthographicCamera: THREE.OrthographicCamera, aspect: number): void => {
 
-    const vFov = (perspectiveCamera.fov * Math.PI) / 180;
+    const vFov = perspectiveCamera.fov * DEG2RAD;
     const distance = perspectiveCamera.position.distanceTo(new THREE.Vector3(0, 0, 0));
     const halfHeight = Math.tan(vFov / 2) * distance;
     const halfWidth = halfHeight * aspect;
@@ -152,31 +155,29 @@ onMounted(() => {
     const controls = new CameraControls(camera, renderer.domElement);
 
     // Add keyboard controls to camera positioning
-    // const body = document.querySelector("body");
     window.addEventListener("keydown", (event: KeyboardEvent): void => {
-        // if(event.target !== body) return;
 
         switch(event.code) {
             case "ArrowLeft":
-                if(event.ctrlKey) void controls.rotate(THREE.MathUtils.DEG2RAD, 0, true);
+                if(event.ctrlKey) void controls.rotate(DEG2RAD, 0, true);
                 else if(event.altKey) void controls.forward(-0.1, false);
                 else if(event.shiftKey) void controls.zoom(-0.05, false);
                 else void controls.truck(.1, 0, false);
                 break;
             case "ArrowRight":
-                if(event.ctrlKey) void controls.rotate(-THREE.MathUtils.DEG2RAD, 0, true);
+                if(event.ctrlKey) void controls.rotate(-DEG2RAD, 0, true);
                 else if(event.altKey) void controls.forward(0.1, false);
                 else if(event.shiftKey) void controls.zoom(0.05, false);
                 else void controls.truck(-.1, 0, false);
                 break;
             case "ArrowUp":
-                if(event.ctrlKey) void controls.rotate(0, THREE.MathUtils.DEG2RAD, true);
+                if(event.ctrlKey) void controls.rotate(0, DEG2RAD, true);
                 else if(event.altKey) void controls.forward(0.1, false);
                 else if(event.shiftKey) void controls.zoom(0.05, false);
                 else void controls.truck(0, .1, false);
                 break;
             case "ArrowDown":
-                if(event.ctrlKey) void controls.rotate(0, -THREE.MathUtils.DEG2RAD, true);
+                if(event.ctrlKey) void controls.rotate(0, -DEG2RAD, true);
                 else if(event.altKey) void controls.forward(-0.1, false);
                 else if(event.shiftKey) void controls.zoom(-0.05, false);
                 else void controls.truck(0, -.1, false);
