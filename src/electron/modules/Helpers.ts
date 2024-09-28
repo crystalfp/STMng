@@ -206,3 +206,28 @@ export const format = (value: number): string => value.toFixed(6).padStart(10, "
  * @returns True if the basis has no vector defined
  */
 export const hasNoUnitCell = (basis: BasisType): boolean => basis.every((value) => value === 0);
+
+/**
+ * Get the volume value range
+ *
+ * @param structure - The structure with volumetric data
+ * @param dataset - Which volumetric dataset to analyze
+ * @returns If there is volumetric data returns [min volume value, max volume value], otherwise [-10, 10]
+ */
+export const getValueLimits = (structure: Structure, dataset: number): [number, number] => {
+
+	// Check if there is the volumetric data to analyze
+	if(!structure?.volume) return [-10, 10];
+	const {values} = structure.volume[dataset];
+	if(values.length === 0) return [-10, 10];
+
+	// Get the value range
+	let minValue = Number.POSITIVE_INFINITY;
+	let maxValue = Number.NEGATIVE_INFINITY;
+	for(const value of values) {
+		if(value < minValue) minValue = value;
+		if(value > maxValue) maxValue = value;
+	}
+
+	return [minValue, maxValue];
+};

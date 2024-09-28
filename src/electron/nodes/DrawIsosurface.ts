@@ -9,8 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {IsosurfaceCore} from "../modules/IsosurfaceCore";
 import {sendIsosurfacesToClient} from "../modules/WindowsUtilities";
-import {hasNoUnitCell} from "../modules/Helpers";
-
+import {getValueLimits, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawIsosurface extends NodeCore {
@@ -53,7 +52,7 @@ export class DrawIsosurface extends NodeCore {
 		}
 		else {
 			this.maxDataset = countDatasets - 1;
-			this.range = this.getValueLimits();
+			this.range = getValueLimits(this.structure, this.dataset);
 		}
 
         this.isoValue = (this.range[0]+this.range[1])/2;
@@ -187,29 +186,6 @@ export class DrawIsosurface extends NodeCore {
             isoValues: [],
 			params: {}
 		});
-    }
-
-    /**
-     * Get the volume value range
-     *
-     * @returns [min volume value, max volume value]
-     */
-    private getValueLimits(): [number, number] {
-
-        // Check if the plane should be created
-        if(!this.structure?.volume) return [-10, 10];
-        const {values} = this.structure.volume[this.dataset];
-        if(values.length === 0) return [-10, 10];
-
-        // Set the value range for the color map
-        let minValue = Number.POSITIVE_INFINITY;
-        let maxValue = Number.NEGATIVE_INFINITY;
-        for(const value of values) {
-            if(value < minValue) minValue = value;
-            if(value > maxValue) maxValue = value;
-        }
-
-        return [minValue, maxValue];
     }
 
 	// > Channel handlers

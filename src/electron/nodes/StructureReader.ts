@@ -8,7 +8,7 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -159,23 +159,18 @@ export class StructureReader extends NodeCore {
 			this.intervalId = undefined;
 		}
 
+		let readerOptions: ReaderOptions;
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
 
 			const atomsTypesTrimmed = this.atomsTypes.trim();
 			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
-			this.structures = await reader.readStructure(filename, {atomsTypes: atoms});
-			if(this.checkStructures(this.structures)) {
-				this.notify(this.structures[0]);
-				this.countSteps = this.structures.length;
-				return {countSteps: this.countSteps};
-			}
-
-			message = `Invalid "${requestedFormat}" file content`;
-			log.error(message);
-			return {error: message};
+			readerOptions = {atomsTypes: atoms};
+		}
+		else {
+			readerOptions = {useBohr: this.useBohr};
 		}
 
-		this.structures = await reader.readStructure(filename, {useBohr: this.useBohr});
+		this.structures = await reader.readStructure(filename, readerOptions);
 		if(this.checkStructures(this.structures)) {
 			this.notify(this.structures[0]);
 			this.countSteps = this.structures.length;

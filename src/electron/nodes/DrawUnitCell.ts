@@ -64,8 +64,7 @@ export class DrawUnitCell extends NodeCore {
 			return;
 		}
 
-		const {basis, origin, spaceGroup} = crystal;
-		const {atoms} = this.inputStructure;
+		const {basis, origin} = crystal;
 
 		// Nothing to be changed in the structure
 		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1 &&
@@ -81,19 +80,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Adjust origin if any of the percentages is greather than zero
-		this.structure = (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
-			adjustOrigin(this.inputStructure,
-						 this.percentA/100,
-						 this.percentB/100,
-						 this.percentC/100,
-						 this.shrink)
-			:
-			{
-				crystal: {basis, origin, spaceGroup},
-				atoms,
-				bonds: [],
-				volume: []
-			};
+		this.structure = this.adjustStructureOrigin();
 
 		// If there are replications
 		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
@@ -108,6 +95,28 @@ export class DrawUnitCell extends NodeCore {
 		this.computeUnitCell(basis, origin);
 		this.computeSupercell(basis, origin);
 		this.computeBasisVectors(basis, origin);
+	}
+
+	/**
+	 * Adjust origin if any of the percentages is greather than zero
+	 */
+	private adjustStructureOrigin(): Structure {
+
+		const {crystal, atoms} = this.inputStructure!;
+
+		return (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
+			adjustOrigin(this.inputStructure!,
+						 this.percentA/100,
+						 this.percentB/100,
+						 this.percentC/100,
+						 this.shrink)
+			:
+			{
+				crystal,
+				atoms,
+				bonds: [],
+				volume: []
+			};
 	}
 
 	/**
@@ -466,22 +475,9 @@ export class DrawUnitCell extends NodeCore {
 
 		const {crystal} = this.inputStructure;
 		const {basis, origin} = crystal;
-		const {atoms} = this.inputStructure;
 
 		// Adjust origin if any of the percentages is greather than zero
-		this.structure = (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
-			adjustOrigin(this.inputStructure,
-						 this.percentA/100,
-						 this.percentB/100,
-						 this.percentC/100,
-						 this.shrink)
-			:
-			{
-				crystal,
-				atoms,
-				bonds: [],
-				volume: []
-			};
+		this.structure = this.adjustStructureOrigin();
 
 		// If there are replications
 		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {

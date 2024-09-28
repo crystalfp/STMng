@@ -10,7 +10,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {sendIsoOrthoToClient} from "../modules/WindowsUtilities";
 import {Isolines} from "../modules/Isolines";
-
+import {getValueLimits} from "../modules/Helpers";
 import type {Structure, UiInfo, CtrlParams,
              ChannelDefinition, PositionType, BasisType} from "@/types";
 
@@ -90,7 +90,7 @@ export class DrawOrthoslice extends NodeCore {
 			// The number of planes is one more the sides. The last plane is equal to the first one
 			this.maxPlane = this.structure.volume[0].sides[this.axis];
 
-			this.valueRange = this.getValueLimits();
+			this.valueRange = getValueLimits(this.structure, this.dataset);
 			this.limitLow = this.valueRange[0];
 			this.limitHigh = this.valueRange[1];
 
@@ -160,29 +160,6 @@ export class DrawOrthoslice extends NodeCore {
 			channels: this.channels.map((channel) => channel.name)
 		};
 	}
-
-    /**
-     * Get the volume value range for the colormap
-     *
-     * @returns [min volume value, max volume value]
-     */
-    private getValueLimits(): [number, number] {
-
-        // Check if the plane should be created
-        if(!this.structure?.volume) return [-10, 10];
-        const {values} = this.structure.volume[this.dataset];
-        if(values.length === 0) return [-10, 10];
-
-        // Set the value range for the color map
-        let minValue = Number.POSITIVE_INFINITY;
-        let maxValue = Number.NEGATIVE_INFINITY;
-        for(const value of values) {
-            if(value < minValue) minValue = value;
-            if(value > maxValue) maxValue = value;
-        }
-
-        return [minValue, maxValue];
-    }
 
     /**
      * Change grid vertice fraction to absolute coordinates
