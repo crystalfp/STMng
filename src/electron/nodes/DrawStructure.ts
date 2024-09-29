@@ -34,7 +34,7 @@ export class DrawStructure extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		if(!data || data.atoms.length === 0) {
 

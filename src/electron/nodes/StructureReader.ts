@@ -56,7 +56,7 @@ export class StructureReader extends NodeCore {
 	constructor(private readonly id: string) {
 		super();
 		this.setupChannels(this.id, this.channels);
-		this.notify(new EmptyStructure());
+		this.toNextNode(new EmptyStructure());
 	}
 
 	saveStatus(): string {
@@ -172,7 +172,7 @@ export class StructureReader extends NodeCore {
 
 		this.structures = await reader.readStructure(filename, readerOptions);
 		if(this.checkStructures(this.structures)) {
-			this.notify(this.structures[0]);
+			this.toNextNode(this.structures[0]);
 			this.countSteps = this.structures.length;
 			return {countSteps: this.countSteps};
 		}
@@ -246,7 +246,7 @@ export class StructureReader extends NodeCore {
 		}
 
 		// Send the updated structure down the pipeline
-		this.notify(this.structures[0]);
+		this.toNextNode(this.structures[0]);
 
 		this.countSteps = this.structures.length;
 		return {countSteps: this.countSteps};
@@ -275,7 +275,7 @@ export class StructureReader extends NodeCore {
 			}
 
 			// Send the updated structure down the pipeline
-			this.notify(this.structures[requestedStep-1]);
+			this.toNextNode(this.structures[requestedStep-1]);
 		}
 
 		if(this.running) {
@@ -294,7 +294,7 @@ export class StructureReader extends NodeCore {
 					}
 
 					// Send the updated structure down the pipeline
-					this.notify(this.structures[this.step-1]);
+					this.toNextNode(this.structures[this.step-1]);
 
 					sendToClient(this.id, "runningStep", {
 						step: this.step,
@@ -378,7 +378,7 @@ export class StructureReader extends NodeCore {
 		}
 
 		// Send the updated structure down the pipeline
-		this.notify(this.structures[this.step-1]);
+		this.toNextNode(this.structures[this.step-1]);
 	}
 
 	/**
@@ -440,6 +440,6 @@ export class StructureReader extends NodeCore {
 		};
 
 		// Send the updated structure down the pipeline
-		this.notify(structure);
+		this.toNextNode(structure);
 	}
 }

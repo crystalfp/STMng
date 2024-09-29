@@ -45,7 +45,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
 		if(!this.structure) return;

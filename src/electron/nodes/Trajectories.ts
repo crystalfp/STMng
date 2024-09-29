@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient, sendPositionCloudsToClient} from "../modules/WindowsUtilities";
-import {computeCellVertices} from "./ComputeCellVertices";
+import {computeCellVertices} from "../modules/ComputeCellVertices";
 import {hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, PositionType, BasisType,
 			 UiInfo, CtrlParams, ChannelDefinition} from "@/types";
@@ -49,7 +49,7 @@ export class Trajectories extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
 		if(!this.structure) return;

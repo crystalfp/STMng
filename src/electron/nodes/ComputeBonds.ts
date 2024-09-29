@@ -93,12 +93,12 @@ export class ComputeBonds extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		this.inputStructure = data;
 
 		if(!this.inputStructure || this.inputStructure.atoms.length === 0) {
-			this.notify(new EmptyStructure());
+			this.toNextNode(new EmptyStructure());
 			return;
 		}
 
@@ -393,13 +393,13 @@ export class ComputeBonds extends NodeCore {
 		// If no input structure, output an empty structure
 		if(!this.inputStructure?.atoms || this.inputStructure.atoms.length === 0) {
 
-			this.notify(new EmptyStructure());
+			this.toNextNode(new EmptyStructure());
 		}
 		else if(this.enableComputeBonds) {
 
 			switch(this.enlargementKind) {
 				case "none": {
-					this.notify({
+					this.toNextNode({
 						crystal: this.inputStructure.crystal,
 						atoms: this.inputStructure.atoms,
 						bonds: this.computeBonds(this.inputStructure),
@@ -412,7 +412,7 @@ export class ComputeBonds extends NodeCore {
 					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
 
 						// Send the input structure down the pipeline
-						this.notify(this.inputStructure);
+						this.toNextNode(this.inputStructure);
 
 						return;
 					}
@@ -420,27 +420,27 @@ export class ComputeBonds extends NodeCore {
 					const enlargedStructure = this.addOutsideAtoms();
 					enlargedStructure.bonds = this.computeBonds(enlargedStructure);
 					this.clearOutsideAtoms(enlargedStructure);
-					this.notify(enlargedStructure);
+					this.toNextNode(enlargedStructure);
 					break;
 				}
 				case "connected": {
 					// If no unit cell, do nothing
 					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
-						this.notify(this.inputStructure);
+						this.toNextNode(this.inputStructure);
 						return;
 					}
 
 					const enlargedStructure = this.addOutsideAtoms();
 					enlargedStructure.bonds = this.computeBonds(enlargedStructure);
 					this.leaveConnectedAtoms(enlargedStructure);
-					this.notify(enlargedStructure);
+					this.toNextNode(enlargedStructure);
 					break;
 				}
 			}
 		}
 		else {
 
-			this.notify(this.inputStructure);
+			this.toNextNode(this.inputStructure);
 		}
 	}
 

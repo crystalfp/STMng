@@ -28,13 +28,13 @@ export class InterpolateVolume extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
 		if(!this.structure) return;
 
 		const countDatasets = this.structure.volume ? this.structure.volume.length : 0;
-		if(countDatasets === 0 || !this.interpolateVolume) this.notify(this.structure);
+		if(countDatasets === 0 || !this.interpolateVolume) this.toNextNode(this.structure);
 		else {
 			sendToClient(this.id, "maxDataset", {
 				maxDataset: countDatasets - 1
@@ -76,7 +76,7 @@ export class InterpolateVolume extends NodeCore {
 		// If no volumetric data or no interpolation request return the input structure
 		if(!this.interpolateVolume || volume.length === 0) {
 
-			this.notify(this.structure!);
+			this.toNextNode(this.structure!);
 			return;
 		}
 
@@ -94,7 +94,7 @@ export class InterpolateVolume extends NodeCore {
 		}
 
 		// Output the result
-		this.notify(out);
+		this.toNextNode(out);
 	}
 
 	/**
@@ -294,7 +294,7 @@ export class InterpolateVolume extends NodeCore {
 
 		if(!this.structure) return;
 		const countDatasets = this.structure.volume ? this.structure.volume.length : 0;
-		if(countDatasets === 0 || !this.interpolateVolume) this.notify(this.structure);
+		if(countDatasets === 0 || !this.interpolateVolume) this.toNextNode(this.structure);
 		else this.computeInterpolation();
 	}
 }

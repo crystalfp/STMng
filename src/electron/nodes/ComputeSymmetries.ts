@@ -95,7 +95,7 @@ export class ComputeSymmetries extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		this.inputStructure = data;
 		if(!this.inputStructure) return;
@@ -147,7 +147,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		// If no unit cell or no atoms, copy input structure to output
 		if(crystal === undefined || hasNoUnitCell(crystal.basis) || atoms.length === 0) {
-			this.notify(this.inputStructure);
+			this.toNextNode(this.inputStructure);
 			this.showComputedSymmetry();
 			return;
 		}
@@ -157,7 +157,7 @@ export class ComputeSymmetries extends NodeCore {
 
 			this.structure = this.fillUnitCell ? this.fillCellFull(this.inputStructure) : this.inputStructure;
 
-			this.notify(this.structure);
+			this.toNextNode(this.structure);
 			this.showComputedSymmetry();
 			return;
 		}
@@ -168,7 +168,7 @@ export class ComputeSymmetries extends NodeCore {
 
 			this.structure = this.fillUnitCell ? this.fillCellFull(this.inputStructure) : this.inputStructure;
 
-			this.notify(this.structure);
+			this.toNextNode(this.structure);
 			this.showComputedSymmetry();
 			return;
 		}
@@ -190,7 +190,7 @@ export class ComputeSymmetries extends NodeCore {
 			fractionalCoordinates = [];
 		}
 		if(fractionalCoordinates.length === 0) {
-			this.notify(this.inputStructure);
+			this.toNextNode(this.inputStructure);
 			this.showComputedSymmetry();
 			return;
 		}
@@ -229,7 +229,7 @@ export class ComputeSymmetries extends NodeCore {
 		// eslint-disable-next-line unicorn/consistent-destructuring
 		if(out.noCellChanges && this.inputStructure) this.structure.volume = this.inputStructure.volume ?? [];
 
-		this.notify(this.structure);
+		this.toNextNode(this.structure);
 
 		this.computedSpaceGroup = this.structure.crystal.spaceGroup;
 		this.showComputedSymmetry(this.computedSpaceGroup);

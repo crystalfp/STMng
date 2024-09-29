@@ -35,7 +35,7 @@ export class StructureWriter extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		if(!data || data.atoms.length === 0) return;
 		if(this.captureData) this.capturedStructures.push(data);

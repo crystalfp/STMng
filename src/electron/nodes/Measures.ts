@@ -36,7 +36,7 @@ export class Measures extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		sendToClient(this.id, "reset");
 		if(!data || data.atoms.length === 0) return;

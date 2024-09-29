@@ -41,7 +41,7 @@ export abstract class NodeCore {
 	 *
 	 * @param data - The structure to be passed to the notified observers
 	 */
-	protected notify(data: Structure): void {
+	protected toNextNode(data: Structure): void {
 		for(const entry of this.observersList) entry.observer.call(entry.node, data);
 	}
 
@@ -50,9 +50,9 @@ export abstract class NodeCore {
 	 *
 	 * @param data - The structure received by the subscribed node
 	 * @throws Error
-	 * If the node call notifier without overriding it
+	 * If the node call fromPreviousNode without overriding it
 	 */
-	notifier(data: Structure): void {
+	fromPreviousNode(data: Structure): void {
 		void data;
 		throw Error("Notifier should not be called for this node");
 	}

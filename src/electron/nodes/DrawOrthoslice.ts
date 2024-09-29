@@ -49,7 +49,7 @@ export class DrawOrthoslice extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
 		const countDatasets = this.structure?.volume ? this.structure.volume.length : 0;

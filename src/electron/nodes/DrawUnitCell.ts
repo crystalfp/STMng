@@ -11,7 +11,7 @@ import {adjustOrigin} from "../modules/AdjustOrigin";
 import {sendVerticesToClient} from "../modules/WindowsUtilities";
 import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
 			 PositionType, BasisType, Volume} from "@/types";
-import {computeCellVertices} from "./ComputeCellVertices";
+import {computeCellVertices} from "../modules/ComputeCellVertices";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell} from "../modules/Helpers";
 
@@ -46,12 +46,12 @@ export class DrawUnitCell extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
-	override notifier(data: Structure): void {
+	override fromPreviousNode(data: Structure): void {
 
 		// No data, output an empty structure
 		this.inputStructure = data;
 		if(!this.inputStructure|| this.inputStructure.atoms.length === 0) {
-			this.notify(new EmptyStructure());
+			this.toNextNode(new EmptyStructure());
 			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
@@ -59,7 +59,7 @@ export class DrawUnitCell extends NodeCore {
 		// Structure should have the unit cell
 		const {crystal} = this.inputStructure;
 		if(!crystal || hasNoUnitCell(crystal.basis)) {
-			this.notify(this.inputStructure);
+			this.toNextNode(this.inputStructure);
 			sendVerticesToClient(this.id, "cell", []);
 			return;
 		}
@@ -70,7 +70,7 @@ export class DrawUnitCell extends NodeCore {
 		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1 &&
 		   this.percentA === 0 && this.percentB === 0 && this.percentC === 0) {
 
-			this.notify(this.inputStructure);
+			this.toNextNode(this.inputStructure);
 
 			this.computeUnitCell(basis, origin);
 			this.computeSupercell(basis, origin);
@@ -89,12 +89,14 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Pass the structure to next node
-		if(this.structure) this.notify(this.structure);
-		else this.notify(new EmptyStructure());
+		if(this.structure) this.toNextNode(this.structure);
+		else this.toNextNode(new EmptyStructure());
 
-		this.computeUnitCell(basis, origin);
-		this.computeSupercell(basis, origin);
-		this.computeBasisVectors(basis, origin);
+		// Create unit and supercell
+		const {basis: basis2, origin: origin2} = this.structure!.crystal;
+		this.computeUnitCell(basis2, origin2);
+		this.computeSupercell(basis2, origin2);
+		this.computeBasisVectors(basis2, origin2);
 	}
 
 	/**
@@ -449,15 +451,13 @@ export class DrawUnitCell extends NodeCore {
 		const {basis, origin} = this.inputStructure.crystal;
 
 		// If there are replications
-		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
-
-			this.structure = this.replicateUnitCell(this.inputStructure);
-		}
+		this.structure = (this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) ?
+									this.replicateUnitCell(this.inputStructure) : this.inputStructure;
 		this.computeSupercell(basis, origin);
 
 		// Pass the structure to next node
-		if(this.structure) this.notify(this.structure);
-		else this.notify(new EmptyStructure());
+		if(this.structure) this.toNextNode(this.structure);
+		else this.toNextNode(new EmptyStructure());
 	}
 
 	/**
@@ -466,15 +466,13 @@ export class DrawUnitCell extends NodeCore {
 	 * @param params - Parameters from the client
 	 */
 	private channelOrigin(params: CtrlParams): void {
+
         this.percentA = params.percentA as number ?? 0;
         this.percentB = params.percentB as number ?? 0;
         this.percentC = params.percentC as number ?? 0;
         this.shrink = params.shrink as boolean ?? true;
 
 		if(!this.inputStructure) return;
-
-		const {crystal} = this.inputStructure;
-		const {basis, origin} = crystal;
 
 		// Adjust origin if any of the percentages is greather than zero
 		this.structure = this.adjustStructureOrigin();
@@ -486,9 +484,11 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Pass the structure to next node
-		if(this.structure) this.notify(this.structure);
-		else this.notify(new EmptyStructure());
+		if(this.structure) this.toNextNode(this.structure);
+		else this.toNextNode(new EmptyStructure());
 
+		// Compute unit and supercell
+		const {basis, origin} = this.structure!.crystal;
 		this.computeUnitCell(basis, origin);
 		this.computeSupercell(basis, origin);
 		this.computeBasisVectors(basis, origin);
