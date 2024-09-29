@@ -45,8 +45,8 @@ const confirmDeletion = (): void => {
       <v-textarea :model-value="text" readonly auto-grow hide-details variant="underlined" width="100%" class="log-text pl-2" />
     </v-container>
     <v-container class="log-button-strip">
-      <v-btn @click="showConfirm=true">Empty Log</v-btn>
-      <v-btn @click="closeWindow('/log')">Close</v-btn>
+      <v-btn variant="tonal" @click="showConfirm=true">Empty Log</v-btn>
+      <v-btn variant="tonal" @click="closeWindow('/log')">Close</v-btn>
     </v-container>
   </v-row>
 </v-app>

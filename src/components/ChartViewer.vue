@@ -53,7 +53,7 @@ closeWithEscape("/chart");
       />
     </div>
     <v-container class="chart-button-strip">
-      <v-btn @click="closeWindow('/chart')">
+      <v-btn variant="tonal" @click="closeWindow('/chart')">
         Close
       </v-btn>
     </v-container>

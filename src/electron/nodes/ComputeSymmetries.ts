@@ -154,7 +154,10 @@ export class ComputeSymmetries extends NodeCore {
 
 		// If no symmetry computation to do, copy input structure to output
 		if(!this.applyInputSymmetries && !this.enableFindSymmetries) {
-			this.notify(this.inputStructure);
+
+			this.structure = this.fillUnitCell ? this.fillCellFull(this.inputStructure) : this.inputStructure;
+
+			this.notify(this.structure);
 			this.showComputedSymmetry();
 			return;
 		}
@@ -162,7 +165,10 @@ export class ComputeSymmetries extends NodeCore {
 		// If only apply symmetries, but no symmetry, copy input structure to output
 		const noSymmetries = noSymmetriesSpaceGroup.has(crystal.spaceGroup);
 		if(this.applyInputSymmetries && !this.enableFindSymmetries && noSymmetries) {
-			this.notify(this.inputStructure);
+
+			this.structure = this.fillUnitCell ? this.fillCellFull(this.inputStructure) : this.inputStructure;
+
+			this.notify(this.structure);
 			this.showComputedSymmetry();
 			return;
 		}
@@ -274,7 +280,53 @@ export class ComputeSymmetries extends NodeCore {
 
 	// > Fill unit cell
 	/**
-	 * Fill unit cell
+	 * Fill the unit cell starting from the full structure
+	 *
+	 * @param structure - The structure to fill
+	 * @returns Complete structure with unit cell filled
+	 */
+	private fillCellFull(structure: Structure): Structure {
+
+		const {crystal, atoms, volume} = structure;
+		const {basis, spaceGroup} = crystal;
+
+		// Collect atoms data
+		const atomsZ = [];
+		const labels = [];
+		for(const atom of atoms) {
+			atomsZ.push(atom.atomZ);
+			labels.push(atom.label);
+		}
+
+		let fractionalCoordinates: number[] = [];
+		try {
+			fractionalCoordinates = cartesianToFractionalCoordinates(structure);
+		}
+		catch {
+			sendAlertMessage("Basis matrix is not invertible", "symmetries");
+			fractionalCoordinates = [];
+		}
+
+		// Prepare the input for fillCell()
+		const out: ComputeSymmetriesOutput = {
+
+			basis,
+			spaceGroup,
+			atomsZ,
+			labels,
+			fractionalCoordinates,
+			noCellChanges: true,	// Ignored
+			status: ""				// Ignored
+		};
+
+		// Fill the unit cell restoring the volumetric data
+		const outStructure = this.fillCell(out);
+		outStructure.volume = volume;
+		return outStructure;
+	}
+
+	/**
+	 * Fill the unit cell
 	 *
 	 * @param out - Structure data just computed
 	 * @returns Complete structure with unit cell filled

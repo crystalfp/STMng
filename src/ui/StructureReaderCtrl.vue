@@ -179,7 +179,7 @@ const selectedFile = (filename: string): void => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
-            controlStore.reset = true;
+            setTimeout(() => {controlStore.reset = true;}, 20);
         })
         .catch((error: Error) => {
             inProgress.value = false;

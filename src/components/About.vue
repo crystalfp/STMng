@@ -8,7 +8,7 @@
  * @since 2024-07-05
  */
 import {reactive, ref, version as VueVersion} from "vue";
-import * as THREE from "three";
+import {REVISION} from "three";
 import {getVersions, type Versions} from "@/services/RoutesClient";
 
 // > Events
@@ -43,8 +43,8 @@ getVersions()
 <v-dialog v-model="isOpen" width="26rem">
   <v-card>
     <v-card-text class="pl-2">
-      <div class="ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a visualization tool
-           that implements some of the STM4 functionalities.</div>
+      <div class="ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a
+            visualization tool that implements some of the STM4 functionalities.</div>
       <div class="mb-4 ml-2 mt-3 text-body-1">Author: Mario Valle
            (<a href="mailto:mvalle@ikmail.com">mvalle@ikmail.com</a>).</div>
       <table class="text-body-2 ml-2">
@@ -53,15 +53,14 @@ getVersions()
           <tr><td class="w-50">Electron:</td><td>{{ versions.electron }}</td></tr>
           <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
           <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
-          <tr><td class="w-50">Three.js:</td><td>{{ THREE.REVISION }}</td></tr>
+          <tr><td class="w-50">Three.js:</td><td>{{ REVISION }}</td></tr>
           <tr><td class="w-50">Vue:</td><td>{{ VueVersion }}</td></tr>
         </tbody>
       </table>
       <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
     </v-card-text>
     <v-card-actions>
-      <v-btn class="mt-2" color="primary" rounded="0" variant="tonal" block
-             @click="isOpen = false; emit('close-panel')">Close</v-btn>
+      <v-btn variant="tonal" @click="isOpen = false; emit('close-panel')">Close</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>

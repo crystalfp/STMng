@@ -340,8 +340,8 @@ const closeInfo = (): void => {
     </v-table>
   </v-container>
   <v-container class="graph-editor-button-strip">
-    <v-btn v-if="showInfo" class="mr-2" @click="closeInfo">Close info</v-btn>
-    <v-btn @click="closeWindow('/editor')">Close</v-btn>
+    <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss info</v-btn>
+    <v-btn variant="tonal" @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>
 </v-app>
