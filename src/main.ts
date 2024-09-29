@@ -114,7 +114,13 @@ const app = createApp(App)
 	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
 	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")))
 	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")))
-	.component("GSelectFile", defineAsyncComponent(() => import("./widgets/SelectFile.vue")));
+	.component("GSelectFile", defineAsyncComponent(() => import("./widgets/SelectFile.vue")))
+    .directive("focus", {
+        // When the bound element is mounted into the DOM, focus the element
+        mounted(element: HTMLElement) {
+            element.focus();
+        }
+    });
 
 // Add global error handlers
 app.config.errorHandler = (error: unknown) => {
