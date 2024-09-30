@@ -75,7 +75,17 @@ watchEffect(() => {
 
 receiveFromNode(id, "params", (params: CtrlParams) => {
 
-	enableComputeBonds.value = params.enableComputeBonds as boolean ?? false;
+    if(params.enableComputeBonds !== undefined) {
+	    enableComputeBonds.value = params.enableComputeBonds as boolean ?? false;
+    }
+    if(params.perPairData !== undefined) {
+        perPairData.value.length = 0;
+        const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
+        for(const item of pairData) {
+            perPairData.value.push(item);
+            showScale.value.push(item.scale);
+        }
+    }
 });
 
 /**

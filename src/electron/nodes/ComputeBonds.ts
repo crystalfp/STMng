@@ -112,6 +112,11 @@ export class ComputeBonds extends NodeCore {
 				enableComputeBonds: false
 			});
 		}
+		else {
+			sendToClient(this.id, "params", {
+				perPairData: JSON.stringify(this.perPairData)
+			});
+		}
 
 		this.addBonds();
 	}

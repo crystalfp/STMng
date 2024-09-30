@@ -39,7 +39,7 @@ const bondsGroup = new THREE.Group();
 const labelsGroup = new THREE.Group();
 const bondRadius = 0.1;
 const sphereSubdivisions   = [0, 0, 1, 3,  9];
-const cylinderSubdivisions = [0, 3, 5, 8, 16];
+const cylinderSubdivisions = [0, 3, 5, 10, 16];
 const rCovScale = 0.5;
 let renderInfo: StructureRenderInfo;
 const outName = "DrawStructure-" + id;

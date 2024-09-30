@@ -13,7 +13,7 @@ import {getAtomData} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
-const colors = ["#FF0000", "#00FF00", "#4263FF"];
+const colors = ["#FF0000", "#00C300", "#4263FF"];
 
 /** Convert radiants to degrees */
 const RAD2DEG = 180/Math.PI;

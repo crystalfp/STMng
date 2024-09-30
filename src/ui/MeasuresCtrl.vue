@@ -190,10 +190,19 @@ watch(polyhedronNewIdx, () => {
   </v-table>
   <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measures</v-label>
   <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
-    <tr><td style="width:9rem">Distance A–B:</td><td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
-    <tr v-if="distanceBC > 0"><td>Distance B–C:</td><td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>
-    <tr v-if="distanceAC > 0"><td>Distance A–C:</td><td style="text-align:right">{{ distanceAC.toFixed(5) }}</td></tr>
-    <tr v-if="angleABC >= 0"><td>Angle A–B–C:</td><td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
+    <tr>
+    <td style="width:9rem">Distance <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>:</td>
+    <td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
+    <tr v-if="distanceBC > 0">
+    <td>Distance <span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
+    <td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>
+    <tr v-if="distanceAC > 0">
+    <td>Distance <span style="color: #FF0000">A</span>–<span style="color: #4263FF">C</span>:</td>
+    <td style="text-align:right">{{ distanceAC.toFixed(5) }}</td></tr>
+    <tr v-if="angleABC >= 0">
+    <!-- eslint-disable-next-line @alasdair/max-len/max-len -->
+    <td>Angle <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
+    <td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
   </v-table>
   <v-table v-if="volume > 0" density="default" class="pa-1 mt-n1 pr-5">
     <tr><td style="width:9rem">Polyhedra volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>

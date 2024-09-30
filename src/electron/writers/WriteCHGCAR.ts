@@ -9,6 +9,7 @@
 
 import fs from "node:fs";
 import {cartesianToFractionalCoordinates, format, hasNoUnitCell} from "../modules/Helpers";
+import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterCHGCAR implements WriterImplementation {
@@ -40,6 +41,13 @@ export class WriterCHGCAR implements WriterImplementation {
 				fs.writeSync(fd,
 							`${format(basis[6])} ${format(basis[7])} ${format(basis[8])}\n`);
 
+				// Atoms symbols
+				const atomSymbols = new Map<number, string>();
+				for(const atom of atoms) {
+					const symbol = getAtomicSymbol(atom.atomZ);
+					atomSymbols.set(atom.atomZ, symbol);
+				}
+
 				// Atom counts
 				const atomCounts = new Map<number, number>();
 				for(const atom of atoms) {
@@ -49,6 +57,10 @@ export class WriterCHGCAR implements WriterImplementation {
 				}
 
 				let line = "";
+				for(const item of atomCounts) {
+					line += ` ${atomSymbols.get(item[0])}`;
+				}
+				line += "\n";
 				for(const item of atomCounts) {
 					line += ` ${item[1]}`;
 				}
