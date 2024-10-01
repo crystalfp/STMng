@@ -171,6 +171,7 @@ export class StructureReader extends NodeCore {
 		}
 
 		this.structures = await reader.readStructure(filename, readerOptions);
+		this.removeEmptyStructures(this.structures);
 		if(this.checkStructures(this.structures)) {
 			this.toNextNode(this.structures[0]);
 			this.countSteps = this.structures.length;
@@ -395,6 +396,25 @@ export class StructureReader extends NodeCore {
 		}
 		return true;
 	};
+
+	/**
+	 * Remove empty structures from the list of structures read.
+	 * @remarks They are added mostly by CIF files.
+	 *
+	 * @param structures - List of structures to be pruned
+	 */
+	private removeEmptyStructures(structures: Structure[]): void {
+
+		const len = structures.length;
+		if(len === 0) return;
+		for(let idx = len-1; idx >= 0; --idx) {
+
+			const structure = structures[idx];
+			if(structure.atoms.length === 0) {
+				structures.splice(idx, 1);
+			}
+		}
+	}
 
 	/**
 	 * Change the unit between Angstrom and Bohr

@@ -66,7 +66,7 @@ const Y_ANY = 0x002;
 const Z_ANY = 0x004;
 
 /** Space groups that are no symmetries */
-const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1"]);
+const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1"]);
 
 /** Tolerance to check for coincident atoms */
 const TOL = 10e-5;

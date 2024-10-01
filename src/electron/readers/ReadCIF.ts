@@ -8,10 +8,10 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
+import {extractBasis, fractionalToCartesianCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Structure, Atom, ReaderImplementation} from "@/types";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import type {Structure, Atom, ReaderImplementation} from "@/types";
 
 /** Collect lines from "loop_" constructs */
 class Table {
@@ -30,12 +30,13 @@ class Table {
 	}
 
 	/**
-	 * Add a new table header
+	 * Add a new table header.
+	 * The key is normalized converting "." to "_"
 	 *
-	 * @param header - The key listed in the loop_construct
+	 * @param header - The key listed in the loop_ construct
 	 */
 	addColumn(header: string):void {
-		this.headers.push(header);
+		this.headers.push(header.replaceAll(".", "_"));
 	}
 
 	/**
@@ -55,23 +56,25 @@ class Table {
 	}
 
 	/**
-	 * Check if a column exists
+	 * Check if a column exists.
+	 * The key is normalized converting "." to "_"
 	 *
 	 * @param header - Key of a column of the table
 	 * @returns True if the column is present in the table
 	 */
 	hasColumn(header: string): boolean {
-		return this.headers.includes(header);
+		return this.headers.includes(header.replaceAll(".", "_"));
 	}
 
 	/**
-	 * Extract a table column
+	 * Extract a table column.
+	 * The key is normalized converting "." to "_"
 	 *
 	 * @param header - Column to be extracted
 	 * @returns The column as array of strings. If the colum does not exist return empty array.
 	 */
 	getColumn(header: string): string[] {
-		const idx = this.headers.indexOf(header);
+		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
 		if(idx < 0) return [];
 		const result = [];
 		for(const row of this.rows) result.push(row[idx]);
@@ -258,18 +261,21 @@ export class ReaderCIF implements ReaderImplementation {
 		// this.tbl.dump();
 		if(this.tbl.hasColumn("_atom_site_fract_x")) {
 
+			if(hasNoUnitCell(this.structures[this.step].crystal.basis)) return;
+
 			const fracX  = this.tbl.getColumn("_atom_site_fract_x");
 			const fracY  = this.tbl.getColumn("_atom_site_fract_y");
 			const fracZ  = this.tbl.getColumn("_atom_site_fract_z");
 			const label  = this.tbl.getColumn("_atom_site_label");
 			const symbol = this.tbl.getColumn("_atom_site_type_symbol");
+			const hasSymbol = symbol.length > 0;
 
 			const natoms = fracX.length;
 			for(let i=0; i < natoms; ++i) {
 				const fx = Number.parseFloat(fracX[i]);
 				const fy = Number.parseFloat(fracY[i]);
 				const fz = Number.parseFloat(fracZ[i]);
-				const az = (symbol.length > 0 ? symbol[i] : label[i]).replace(/[^a-z].*$/i, "");
+				const az = (hasSymbol ? symbol[i] : label[i]).replace(/[^a-z].*$/i, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: label.length > 0 ? label[i] : symbol[i],
@@ -284,18 +290,20 @@ export class ReaderCIF implements ReaderImplementation {
 			this.structures[this.step].crystal.spaceGroup =
 				this.tbl.getColumn("_symmetry_equiv_pos_as_xyz").join("\n");
 		}
-		else if(this.tbl.hasColumn("_atom_site.cartn_x")) {
+		else if(this.tbl.hasColumn("_atom_site_cartn_x")) {
 
-			const cartnX = this.tbl.getColumn("_atom_site.cartn_x");
-			const cartnY = this.tbl.getColumn("_atom_site.cartn_y");
-			const cartnZ = this.tbl.getColumn("_atom_site.cartn_z");
-			const label  = this.tbl.getColumn("_atom_site.label_atom_id");
+			const cartnX   = this.tbl.getColumn("_atom_site_cartn_x");
+			const cartnY   = this.tbl.getColumn("_atom_site_cartn_y");
+			const cartnZ   = this.tbl.getColumn("_atom_site_cartn_z");
+			const label    = this.tbl.getColumn("_atom_site_label_atom_id");
+			const atomType = this.tbl.getColumn("_atom_site_type_symbol");
+			const hasAtomType = atomType.length > 0;
 			const natoms = cartnX.length;
 			for(let i=0; i < natoms; ++i) {
 				const x = Number.parseFloat(cartnX[i]);
 				const y = Number.parseFloat(cartnY[i]);
 				const z = Number.parseFloat(cartnZ[i]);
-				const symbol = label[i].replace(/[^a-z].*$/i, "");
+				const symbol = (hasAtomType ? atomType[i] : label[i]).replace(/[^a-z].*$/i, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(symbol),
 					label: label[i],

@@ -184,7 +184,7 @@ watch(polyhedronNewIdx, () => {
       <td style="width: 3rem;text-align:right">[</td>
       <td style="width: 1rem;text-align:right">{{ `${line.position[0].toFixed(2)},` }}</td>
       <td style="width: 2rem;text-align:right">{{ `${line.position[1].toFixed(2)},` }}</td>
-      <td style="width: 2rem;text-align:right">{{ `${line.position[0].toFixed(2)}` }}</td>
+      <td style="width: 2rem;text-align:right">{{ `${line.position[2].toFixed(2)}` }}</td>
       <td style="width: 0.5rem;text-align:right">]</td>
     </tr>
   </v-table>
