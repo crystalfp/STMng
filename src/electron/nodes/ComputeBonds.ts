@@ -413,11 +413,19 @@ export class ComputeBonds extends NodeCore {
 					break;
 				}
 				case "outside": {
-					// If no unit cell, do nothing
+					// If no unit cell, do nothing special
 					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
 
+						// Disable the requested enlargement
+						this.enlargementKind = "none";
+
 						// Send the input structure down the pipeline
-						this.toNextNode(this.inputStructure);
+						this.toNextNode({
+							crystal: this.inputStructure.crystal,
+							atoms: this.inputStructure.atoms,
+							bonds: this.computeBonds(this.inputStructure),
+							volume: this.inputStructure.volume
+						});
 
 						return;
 					}
@@ -431,7 +439,17 @@ export class ComputeBonds extends NodeCore {
 				case "connected": {
 					// If no unit cell, do nothing
 					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
-						this.toNextNode(this.inputStructure);
+
+						// Disable the requested enlargement
+						this.enlargementKind = "none";
+
+						// Send the input structure down the pipeline
+						this.toNextNode({
+							crystal: this.inputStructure.crystal,
+							atoms: this.inputStructure.atoms,
+							bonds: this.computeBonds(this.inputStructure),
+							volume: this.inputStructure.volume
+						});
 						return;
 					}
 

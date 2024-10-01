@@ -148,6 +148,8 @@ export class ComputeFingerprints extends NodeCore {
 	 * @returns Computed symmetry
 	 */
 	private channelChange(params: CtrlParams): void {
+
+		// eslint-disable-next-line sonarjs/void-use
 		void params; // TBD
 	}
 
@@ -285,6 +287,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelFP(params: CtrlParams): CtrlParams {
 
+		// eslint-disable-next-line sonarjs/void-use
 		void params;
 		return {
 			resultDimensionality: 123 // TBD

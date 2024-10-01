@@ -54,6 +54,7 @@ export class ReaderSHELX implements ReaderImplementation {
 
 			// Get the lines to be used
 			if(lineUC.startsWith("SYMM")) {
+				// eslint-disable-next-line sonarjs/slow-regex
 				const sg = lineUC.replace(/\s+\(.+$/, "").replace(/^SYMM\s+/, "");
 				if(spaceGroup) spaceGroup += "\n" + sg;
 				else spaceGroup = sg;

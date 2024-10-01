@@ -116,7 +116,7 @@ class SceneManager {
 		});
 
 		// Clear the group
-		for(const mesh of meshes) group.remove(mesh);
+		for(const mesh of meshes) {group.remove(mesh);}
         group.clear();
 
 		// Remove the group itself

@@ -11,6 +11,19 @@ import {M} from "../modules/InterpolationTable";
 import {sendToClient} from "../modules/WindowsUtilities";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, Volume} from "@/types";
 
+/**
+ * Helper function to compute from where the interpolation should be computed
+ *
+ * @param idx - Current index
+ * @param side - Corresponding side of the matrix
+ * @returns Origin of the computation
+ */
+const getMatrixOrigin = (idx: number, side: number): number => {
+
+	const second = (idx < 2) ? 0 : idx-1;
+	return (idx > side-4) ? side-4 : second;
+};
+
 export class InterpolateVolume extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -138,9 +151,9 @@ export class InterpolateVolume extends NodeCore {
 				for(let i=0; i < sx-1; ++i) {
 
 					// Decide from where the matrix should be computed
-					const oi = (i > sx-4) ? sx-4 : ((i < 2) ? 0 : i-1);
-					const oj = (j > sy-4) ? sy-4 : ((j < 2) ? 0 : j-1);
-					const ok = (k > sz-4) ? sz-4 : ((k < 2) ? 0 : k-1);
+					const oi = getMatrixOrigin(i, sx);
+					const oj = getMatrixOrigin(j, sy);
+					const ok = getMatrixOrigin(k, sz);
 
 					// Compute matrix
 					const c = this.computeMatrix(oi, oj, ok, volume.values, sx, sy);

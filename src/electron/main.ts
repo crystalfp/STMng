@@ -15,7 +15,7 @@ import {version, description} from "../../package.json";
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
 import {createMainWindow} from "./modules/WindowsUtilities";
-import {disableSaveProjectEntry, setupMenuChannel} from "./modules/SystemMenu";
+import {disableSaveProjectEntry, setupChannelMenu} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFileSelector} from "./modules/SelectFile";
 import {pm, setupChannelProject} from "./modules/ProjectManager";
@@ -75,7 +75,7 @@ setupChannelVersions();
 setupChannelFileSelector();
 setupChannelProject();
 setupChannelLogFile();
-setupMenuChannel();
+setupChannelMenu();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

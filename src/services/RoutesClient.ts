@@ -140,7 +140,7 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 
 	if(project) {
 		let idx = project.lastIndexOf("\\");
-		if(idx < 0) idx = project.lastIndexOf("/");
+		if(idx < 0) {idx = project.lastIndexOf("/");}
     	window.api.setTitle(baseTitle + " — " + project.slice(idx+1));
 	}
     else window.api.setTitle(baseTitle + " — default project");
@@ -405,36 +405,6 @@ export const receiveInWindow = (callback: (data: string) => void): void => {
 
     window.electron.ipcRenderer.on("SYSTEM:DATA", (_event, payload: string) => callback(payload));
 };
-
-
-// > Capturer
-/**
- * Save an image given as data url
- *
- * @param data - Data url representing an image
- * @returns Response from the main process
- */
-export const saveDataURL = (data: string): Promise<CtrlParams> =>
-							window.electron.ipcRenderer.invoke("SYSTEM:snapshot", data) as Promise<CtrlParams>;
-
-/**
- * Save a movie
- *
- * @param buffer - Movie captured as buffer
- * @returns Response from the main process
- */
-export const saveMovie = (buffer: ArrayBuffer): Promise<CtrlParams> =>
-							window.electron.ipcRenderer.invoke("SYSTEM:movie", buffer) as Promise<CtrlParams>;
-
-/**
- * Save structure as a STL formatted file
- *
- * @param content - The scene content (only atoms and bonds) to be saved
- * @param binary - Save in a binary file
- * @returns Response from the main process
- */
-export const saveSTL = (content: string | ArrayBuffer, binary: boolean): Promise<CtrlParams> =>
-							window.electron.ipcRenderer.invoke("SYSTEM:stl", content, binary) as Promise<CtrlParams>;
 
 // > Log file
 /**

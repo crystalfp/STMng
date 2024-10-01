@@ -257,7 +257,7 @@ export const disableSaveProjectEntry = (disable: boolean): void => {
 /**
  * Setup channel to toggle extended view from client
  */
-export const setupMenuChannel = (): void => {
+export const setupChannelMenu = (): void => {
 
     ipcMain.on("SYSTEM:extended", (_event: unknown, params: CtrlParams) => {
 

@@ -359,6 +359,8 @@ export default [{
         "sonarjs/no-duplicate-string": ["off", 6],
         "sonarjs/elseif-without-else": "off",
         "sonarjs/no-nested-switch": "off",
+        "sonarjs/no-commented-code": "off",
+        "sonarjs/different-types-comparison": "off",
         "unicorn/better-regex": "off",
         "unicorn/no-null": "off",
         "unicorn/prefer-add-event-listener": "warn",

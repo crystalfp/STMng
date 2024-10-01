@@ -40,15 +40,16 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		let orbitalsPresent = false;
 		let natoms = 0;
 		let idxBasis = 0;
-		const subdivisions = [0, 0, 0];
+		const voxelsPerSide = [0, 0, 0];
 		let useBohr = false;
-		const sides = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		const sidesPerVoxel = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		const BOHR_TO_ANGSTROM = 0.529177;
 		let voxels: number[] = [];
 		let nvoxels = 0;
 		let idxVoxels = 0;
 
 		const structure: Structure = new EmptyStructure();
+		structure.volume = [{sides: [0, 0, 0], values: []}];
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -84,11 +85,11 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 				case LineType.basis: {
 
 					if(fields.length < 4) throw Error(`Malformed file (basis line ${idxBasis+1})`);
-					subdivisions[idxBasis] = Number.parseInt(fields[0], 10);
+					voxelsPerSide[idxBasis] = Number.parseInt(fields[0], 10);
 					const j = 3*idxBasis;
-					sides[j]   = Number.parseFloat(fields[1]);
-					sides[j+1] = Number.parseFloat(fields[2]);
-					sides[j+2] = Number.parseFloat(fields[3]);
+					sidesPerVoxel[j]   = Number.parseFloat(fields[1]);
+					sidesPerVoxel[j+1] = Number.parseFloat(fields[2]);
+					sidesPerVoxel[j+2] = Number.parseFloat(fields[3]);
 
 					++idxBasis;
 					if(idxBasis === 3) {
@@ -97,18 +98,18 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 							useBohr = options.useBohr;
 						}
 						else {
-							useBohr = subdivisions[0] < 0;
-							if(useBohr) subdivisions[0] = -subdivisions[0];
+							useBohr = voxelsPerSide[0] < 0;
+							if(useBohr) voxelsPerSide[0] = -voxelsPerSide[0];
 						}
 
 						// Compute the unit cell and adjust the origin
 						for(let i=0; i < 3; ++i) {
 							const k = 3*i;
-							structure.crystal.basis[k]   = sides[k]*subdivisions[i];
-							structure.crystal.basis[k+1] = sides[k+1]*subdivisions[i];
-							structure.crystal.basis[k+2] = sides[k+2]*subdivisions[i];
+							structure.crystal.basis[k]   = sidesPerVoxel[k]*voxelsPerSide[i];
+							structure.crystal.basis[k+1] = sidesPerVoxel[k+1]*voxelsPerSide[i];
+							structure.crystal.basis[k+2] = sidesPerVoxel[k+2]*voxelsPerSide[i];
 
-							structure.volume[0].sides[i] = subdivisions[i]+1;
+							structure.volume[0].sides[i] = voxelsPerSide[i]+1;
 						}
 
 						if(useBohr) {
@@ -127,9 +128,9 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 							structure.crystal.origin[2] *= BOHR_TO_ANGSTROM;
 						}
 
-						const nv1 = subdivisions[0];
-						const nv2 = subdivisions[1];
-						const nv3 = subdivisions[2];
+						const nv1 = voxelsPerSide[0];
+						const nv2 = voxelsPerSide[1];
+						const nv3 = voxelsPerSide[2];
 
 						nvoxels = nv1*nv2*nv3;
 						voxels = Array(nvoxels).fill(0) as number[];
@@ -179,13 +180,13 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 					if(nvoxels === 0) {
 
-						const nvx = subdivisions[0];
-						const nvy = subdivisions[1];
-						const nvz = subdivisions[2];
+						const nvx = voxelsPerSide[0];
+						const nvy = voxelsPerSide[1];
+						const nvz = voxelsPerSide[2];
 
-						const nx = subdivisions[0]+1;
-						const ny = subdivisions[1]+1;
-						const nz = subdivisions[2]+1;
+						const nx = voxelsPerSide[0]+1;
+						const ny = voxelsPerSide[1]+1;
+						const nz = voxelsPerSide[2]+1;
 						structure.volume[0].values = Array(nx*ny*nz).fill(0) as number[];
 
 						for(let iz=0; iz < nz; ++iz) {

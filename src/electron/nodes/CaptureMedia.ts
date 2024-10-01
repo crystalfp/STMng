@@ -35,7 +35,7 @@ export class CaptureView extends NodeCore {
 		return "";
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	// eslint-disable-next-line @typescript-eslint/no-empty-function, sonarjs/no-empty-function
 	loadStatus(): void {}
 
 	getUiInfo(): UiInfo {
@@ -142,6 +142,7 @@ export class CaptureView extends NodeCore {
 
 			// Call ffmpeg to do the format conversion
 			try {
+				// eslint-disable-next-line sonarjs/os-command
 				execSync(`"${ffmpeg}" -y -i ${webmFile} ${opt} ${filename}`, {windowsHide: true});
 				void fs.remove(webmFile);
 				return {payload: filename};

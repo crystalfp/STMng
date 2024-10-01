@@ -140,7 +140,7 @@ export class ReaderCIF implements ReaderImplementation {
 			// Clear line from comments and control characters
 			const lineNC = line.replace(/#.*/, "").trim();
 			if(lineNC === "") continue;
-			// eslint-disable-next-line no-control-regex
+			// eslint-disable-next-line sonarjs/sonar-no-control-regex, no-control-regex
 			if(/[\u0000-\u0008\u000E-\u001F]/.test(lineNC)) continue;
 
 			// The keys are case insensitive
@@ -195,9 +195,9 @@ export class ReaderCIF implements ReaderImplementation {
 			if(!isInDataBlock) continue;
 
 			// Extract key and value inline
-			const ws = lineLC.split(/(?<=^\S+)\s/);
+			const ws = lineLC.split(/\s+/);
 			const key = ws[0];
-			const value = ws[1] ? ws[1].trim() : "";
+			const value = ws[1] ?? "";
 
 			switch(key) {
 				case "_symmetry.space_group_name_h-m":
@@ -275,7 +275,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const fx = Number.parseFloat(fracX[i]);
 				const fy = Number.parseFloat(fracY[i]);
 				const fz = Number.parseFloat(fracZ[i]);
-				const az = (hasSymbol ? symbol[i] : label[i]).replace(/[^a-z].*$/i, "");
+				const az = (hasSymbol ? symbol[i] : label[i]).replaceAll(/[^a-z]/gi, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: label.length > 0 ? label[i] : symbol[i],
@@ -303,7 +303,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const x = Number.parseFloat(cartnX[i]);
 				const y = Number.parseFloat(cartnY[i]);
 				const z = Number.parseFloat(cartnZ[i]);
-				const symbol = (hasAtomType ? atomType[i] : label[i]).replace(/[^a-z].*$/i, "");
+				const symbol = (hasAtomType ? atomType[i] : label[i]).replaceAll(/[^a-z]/gi, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(symbol),
 					label: label[i],

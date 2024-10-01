@@ -8,6 +8,8 @@
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 
+type MessageType = "error" | "success" | "warning" | "info" | undefined;
+
 interface MessageState {
     symmetries: {
 		message: string;
@@ -19,11 +21,11 @@ interface MessageState {
 		message: string;
 	};
 	captureMedia: {
-		typeS: "error" | "success" | "warning" | "info" | undefined;
+		typeS: MessageType;
 		textS: string;
-		typeM: "error" | "success" | "warning" | "info" | undefined;
+		typeM: MessageType;
 		textM: string;
-		typeT: "error" | "success" | "warning" | "info" | undefined;
+		typeT: MessageType;
 		textT: string;
 	};
 	system: {

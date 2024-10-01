@@ -15,7 +15,7 @@ import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
 import {sm} from "@/services/SceneManager";
-import {saveDataURL, saveMovie, saveSTL} from "@/services/RoutesClient";
+import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {showAlertMessage} from "@/services/AlertMessage";
@@ -97,15 +97,19 @@ async function handleStop(): Promise<void> {
     });
 
     const buffer = await blob.arrayBuffer();
-    const sts = await saveMovie(buffer);
-    if(sts.error) {
-        messageStore.captureMedia.typeM = "error";
-        messageStore.captureMedia.textM = sts.error as string;
-    }
-    else if(sts.payload) {
-        messageStore.captureMedia.typeM = "success";
-        messageStore.captureMedia.textM = sts.payload as string;
-    }
+
+    askNode("SYSTEM", "movie", {buffer})
+        .then((sts) => {
+            if(sts.error) throw Error(sts.error as string);
+            if(sts.payload) {
+                messageStore.captureMedia.typeM = "success";
+                messageStore.captureMedia.textM = sts.payload as string;
+            }
+        })
+        .catch((error: Error) => {
+            messageStore.captureMedia.typeM = "error";
+            messageStore.captureMedia.textM = error.message;
+        });
 }
 
 /**
@@ -271,12 +275,13 @@ onMounted(() => {
 
     // Take snapshot
     watchEffect(() => {
+
         if(controlStore.snapshot) {
 
             controlStore.snapshot = false;
 
             const mimeType = `image/${configStore.camera.snapshotFormat}`;
-            saveDataURL(renderer.domElement.toDataURL(mimeType))
+            askNode("SYSTEM", "snapshot", {dataURI: renderer.domElement.toDataURL(mimeType)})
                 .then((response: CtrlParams) => {
                     if(response.error) throw Error(response.error as string);
                     if(response.payload === "") return;
@@ -298,7 +303,7 @@ onMounted(() => {
             controlStore.stl = false;
 
             const result = sm.createSTL(configStore.camera.stlFormat);
-            saveSTL(result, configStore.camera.stlFormat === "binary")
+            askNode("SYSTEM", "stl", {binary: configStore.camera.stlFormat === "binary", content: result})
                 .then((response: CtrlParams) => {
                     if(response.error) throw Error(response.error as string);
                     if(response.payload === "") return;

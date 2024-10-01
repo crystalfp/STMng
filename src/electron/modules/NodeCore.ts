@@ -53,6 +53,7 @@ export abstract class NodeCore {
 	 * If the node call fromPreviousNode without overriding it
 	 */
 	fromPreviousNode(data: Structure): void {
+		// eslint-disable-next-line sonarjs/void-use
 		void data;
 		throw Error("Notifier should not be called for this node");
 	}
