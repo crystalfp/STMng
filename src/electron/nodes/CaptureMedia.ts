@@ -93,6 +93,9 @@ export class CaptureView extends NodeCore {
 		const buffer = params.buffer as ArrayBuffer;
 		if(!buffer) return {payload: ""};
 
+		const width = params.width as number;
+		const height = params.height as number;
+
 		const filename = dialog.showSaveDialogSync({
 			title: "Save movie",
 			filters: [
@@ -137,13 +140,24 @@ export class CaptureView extends NodeCore {
 								path.join(mainSourceDirectory, "..", "public", "bin", ffmpegExe);
 
 			// Setup movie format specific options
-			const opt = format === ".mp4" ?
-								"-movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov" : "";
+			let opt = "";
+			if(format === ".mp4") {
+
+				let vf = "";
+				if(width % 2 !== 0 || height % 2 !== 0) {
+
+					const w2 = Math.floor(width/2)*2;
+					const h2 = Math.floor(height/2)*2;
+					vf = ` -vf "scale=${w2}:${h2}"`;
+				}
+
+				opt = " -movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov" + vf;
+			}
 
 			// Call ffmpeg to do the format conversion
 			try {
 				// eslint-disable-next-line sonarjs/os-command
-				execSync(`"${ffmpeg}" -y -i ${webmFile} ${opt} ${filename}`, {windowsHide: true});
+				execSync(`"${ffmpeg}" -y -i ${webmFile}${opt} ${filename}`, {windowsHide: true});
 				void fs.remove(webmFile);
 				return {payload: filename};
 			}

@@ -98,7 +98,7 @@ async function handleStop(): Promise<void> {
 
     const buffer = await blob.arrayBuffer();
 
-    askNode("SYSTEM", "movie", {buffer})
+    askNode("SYSTEM", "movie", {buffer, width: cnv.value!.clientWidth, height: cnv.value!.clientHeight})
         .then((sts) => {
             if(sts.error) throw Error(sts.error as string);
             if(sts.payload) {
