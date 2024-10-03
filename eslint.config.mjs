@@ -368,8 +368,7 @@ export default [{
         "@typescript-eslint/no-unsafe-enum-comparison": "off",
 
         "arrow-body-style": "warn",
-        // "sonarjs/pluginRules-of-hooks": "off",
-        // "sonarjs/sonar-no-fallthrough": "off",
+        "sonarjs/sonar-no-fallthrough": "off",
 
         // Fixed for ESlint 9.x
         "sonarjs/no-gratuitous-expressions": "warn",

@@ -30,7 +30,7 @@ program
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
-	.option("-e, --enable", "enable developer tools in production");
+	.option("-e, --enable", "enable developer tools in production build");
     // .addHelpText("before", " ")
     // .addHelpText("after", " ");
 

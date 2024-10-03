@@ -8,6 +8,10 @@
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 
+/**
+ * Kind of message from capture media
+ * @notExported
+ */
 type MessageType = "error" | "success" | "warning" | "info" | undefined;
 
 interface MessageState {
