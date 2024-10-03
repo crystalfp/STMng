@@ -302,7 +302,7 @@ export class StructureReader extends NodeCore {
 						running: this.running,
 					});
 
-				}, 170);
+				}, 300);
 			}
 			return {running: this.running};
 		}
