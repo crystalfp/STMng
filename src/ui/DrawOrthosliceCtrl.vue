@@ -104,11 +104,6 @@ const drawOrthoIso = (vertices: number[],
                       isolineVertices: number[][],
                       isolineValues: number[]): void => {
 
-    // Sanity check
-    if(!vertices || !indices || !values || !isolineVertices || !isolineValues) return;
-    if(vertices.length === 0 || indices.length === 0 || values.length === 0 ||
-        isolineVertices.length === 0 || isolineValues.length === 0) return;
-
     // Remove the existing plane
     sm.deleteMesh(meshName);
 
@@ -117,6 +112,11 @@ const drawOrthoIso = (vertices: number[],
     isolinesGroup = new THREE.Group();
     isolinesGroup.name = isolinesName;
     sm.add(isolinesGroup);
+
+    // Sanity check
+    if(!vertices || !indices || !values || !isolineVertices || !isolineValues) return;
+    if(vertices.length === 0 || indices.length === 0 || values.length === 0 ||
+       isolineVertices.length === 0 || isolineValues.length === 0) return;
 
     // Create the isoline colors
     const isolineColors = isolineValues.map((value) => lut.value.getColor(value).getHex());

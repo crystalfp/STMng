@@ -36,7 +36,8 @@ const emit = defineEmits<{
 }>();
 
 /** Label to be show (the file selected) */
-const label = ref("");
+const label = defineModel<string>();
+label.value = "";
 
 /** True if the file is loading */
 const inProgress = ref(false);

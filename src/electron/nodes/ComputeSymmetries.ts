@@ -78,8 +78,8 @@ export class ComputeSymmetries extends NodeCore {
 	private applyInputSymmetries = true;
 	private enableFindSymmetries = true;
 	private standardizeCell = true;
-	private symprecStandardize = -5;
-	private symprecDataset = -5;
+	private symprecStandardize = -1;
+	private symprecDataset = -1;
 	private fillUnitCell  = true;
 	private standardizeOnly = false;
 	private computedSpaceGroup = "";
@@ -199,8 +199,8 @@ export class ComputeSymmetries extends NodeCore {
 		const outAtomsZ = new Int32Array(natoms);
 		for(let i=0; i < natoms; ++i) outAtomsZ[i] = atoms[i].atomZ;
 		const outFractionalCoordinates = new Float64Array(fractionalCoordinates);
-		const symprecStandardize = Math.pow(10, this.symprecStandardize);
-		const symprecDataset = Math.pow(10, this.symprecDataset);
+		const symprecStandardize = 10**this.symprecStandardize;
+		const symprecDataset = 10**this.symprecDataset;
 		const applyInputSymmetries = this.applyInputSymmetries && !noSymmetries;
 
 		// Do the computation

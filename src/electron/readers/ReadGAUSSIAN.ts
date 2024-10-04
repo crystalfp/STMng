@@ -14,7 +14,7 @@ import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
-const enum LineType {
+enum LineType {
     comment1,
     comment2,
 	origin,

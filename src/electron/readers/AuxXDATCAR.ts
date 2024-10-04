@@ -13,7 +13,7 @@ import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure} from "@/types";
 
 /** Line read type */
-const enum LineType {
+enum LineType {
     header,
     separator,
     position,

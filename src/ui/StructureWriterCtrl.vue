@@ -32,6 +32,7 @@ const outputFile     = ref("");
 const outputFileFull = ref("");
 const continuous     = ref(false);
 const finish         = ref(false);
+const label          = ref("");
 
 // Initialize the control
 resetAlertMessage("structureWriter");
@@ -155,9 +156,9 @@ const selectedSaveFile = (filename: string): void => {
 <template>
 <v-container class="container">
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4" density="compact" />
+            :items="fileFormats" class="mt-4" density="compact" @update:model-value="label=''"/>
 
-  <g-select-file class="mt-2" :disabled="format === ''" title="Select save file"
+  <g-select-file v-model="label" class="mt-2" :disabled="format === ''" title="Select save file"
                  :filter="filterFromFormat(format)"
                  kind="save" @selected="selectedSaveFile" />
 

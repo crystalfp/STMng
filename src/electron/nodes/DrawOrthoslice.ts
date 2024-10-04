@@ -343,9 +343,16 @@ export class DrawOrthoslice extends NodeCore {
         this.limitLow = params.limitLow as number ?? -10;
         this.limitHigh = params.limitHigh as number ?? 10;
 
+        this.orthoVertices.length = 0;
+        this.orthoIndices.length = 0;
+        this.orthoValues.length = 0;
+        this.isolinesVertices.length = 0;
+        this.isolineValues.length = 0;
+
         // Check if the plane should be created
         if((this.showOrthoslice || this.showIsolines) &&
             this.structure &&
+            this.structure.volume.length > 0 &&
             this.structure.volume[this.dataset].values.length > 0) {
 
             this.computeOrthoslice();

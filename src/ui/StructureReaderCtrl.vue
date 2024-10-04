@@ -128,6 +128,10 @@ const setFormat = (): void => {
     fileToRead.value = "";
     countSteps.value = 1;
     step.value = 1;
+
+    // Clean the labels of the file selectors
+    label1.value = "";
+    label2.value = "";
 };
 
 /** Formats that needs atoms types */
@@ -261,6 +265,9 @@ const filterFromFormat = (fileFormat: string): string => {
 /** The JSON encoded filter for XDATCAR auxiliary file */
 const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"All","extensions":["*"]}]';
 
+const label1 = ref("");
+const label2 = ref("");
+
 </script>
 
 
@@ -279,10 +286,10 @@ const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
                 @click:clear="getAtomsTypes"/>
 
-  <g-select-file class="mt-2" :disabled="format === ''" title="Select input file"
+  <g-select-file v-model="label1" class="mt-2" :disabled="format === ''" title="Select input file"
                  :filter="filterFromFormat(format)" @selected="selectedFile" />
 
-  <g-select-file v-if="format === 'POSCAR + XDATCAR'" class="mt-2"
+  <g-select-file v-if="format === 'POSCAR + XDATCAR'" v-model="label2" class="mt-2"
                  :filter="filterForXDATCAR"
                  title="Select XDATCAR file" @selected="selectedAuxFile"/>
 

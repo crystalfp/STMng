@@ -14,7 +14,7 @@ import type {Structure, Atom, BasisType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
-const enum LineType {
+enum LineType {
     item,
     step,
     natoms,
@@ -25,7 +25,7 @@ const enum LineType {
 }
 
 /** Types of unit cells */
-const enum BoxType {
+enum BoxType {
 	unknown,
 	restrictedTriclinic,
 	rectangular

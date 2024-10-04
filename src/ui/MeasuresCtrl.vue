@@ -205,7 +205,7 @@ watch(polyhedronNewIdx, () => {
     <td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
   </v-table>
   <v-table v-if="volume > 0" density="default" class="pa-1 mt-n1 pr-5">
-    <tr><td style="width:9rem">Polyhedra volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
+    <tr><td style="width:9rem">Polyhedral volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
   </v-table>
   <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
 </v-container>

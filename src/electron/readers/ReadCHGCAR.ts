@@ -15,7 +15,7 @@ import type {Structure, Atom, PositionType,
 import {EmptyStructure} from "../modules/EmptyStructure";
 
 /** Line read type */
-const enum LineType {
+enum LineType {
     comment,
     scale,
     basis,
@@ -83,7 +83,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 							const Vuc = basis[0]*basis[4]*basis[8] + basis[1]*basis[5]*basis[6] +
 										basis[2]*basis[3]*basis[7] - basis[2]*basis[4]*basis[6] -
 										basis[1]*basis[3]*basis[8] - basis[0]*basis[5]*basis[7];
-							scaleFactor = Math.pow((-scaleFactor)/Vuc, 1/3);
+							scaleFactor = Math.cbrt(-scaleFactor/Vuc);
 						}
 						else if(scaleFactor === 0) {
 							throw Error("Invalid scale factor");

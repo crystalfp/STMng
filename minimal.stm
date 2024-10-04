@@ -136,8 +136,8 @@
       "applyInputSymmetries": true,
       "enableFindSymmetries": true,
       "standardizeCell": true,
-      "symprecStandardize": -5,
-      "symprecDataset": -5,
+      "symprecStandardize": -1,
+      "symprecDataset": -1,
       "fillUnitCell": true,
       "standardizeOnly": false
     },

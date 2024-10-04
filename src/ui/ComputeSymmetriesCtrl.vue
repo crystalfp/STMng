@@ -37,7 +37,7 @@ const computedSpaceGroup = ref("");
  * @param value - Power of 10 to convert in human readable format
  * @returns The value converted to string (value -3 → 1.00e-3)
  */
-const showExponential = (value: number): string => Math.pow(10, value).toExponential(2);
+const showExponential = (value: number): string => (10**value).toExponential(2);
 
 // Initialize the control
 resetAlertMessage("symmetries");
@@ -101,11 +101,11 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
               label="Standardize cell" density="compact" class="mt-n5 ml-3" />
     <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
   <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
-                        :min="-3" :max="0" :step="0.05" class="ml-2 mb-2">
+                        :min="-3" :max="0" :step="0.02" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
     </g-debounced-slider>
     <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
-                        :min="-3" :max="0" :step="0.05" class="ml-2">
+                        :min="-3" :max="0" :step="0.02" class="ml-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="no-select" />
     </g-debounced-slider>
   </v-container>
