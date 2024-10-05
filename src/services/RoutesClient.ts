@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-10
  */
+ /* eslint-disable unicorn/prefer-global-this */
 import {watchEffect} from "vue";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "@/types";
@@ -411,3 +412,5 @@ export const receiveInWindow = (callback: (data: string) => void): void => {
  * Ask to clear the application log file
  */
 export const clearLog = (): void => window.electron.ipcRenderer.send("LOGFILE:CLEAR");
+
+ /* eslint-enable unicorn/prefer-global-this */

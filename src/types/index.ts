@@ -41,8 +41,8 @@ export interface Bond {
     /** Index in the list of atoms where the bond ends */
     to: number;
 
-    /** Type of bond: "h" Hydrogen bond; "n" Single bond; "x" No bond (used only by ComputeBonds) */
-    type: "h" | "n" | "x";
+    /** Type of bond: 0: Single bond; 1: Hydrogen bond; 99: No bond (used only by ComputeBonds) */
+    type: 0 | 1 | 99;
 }
 
 /** Crystallographic data */

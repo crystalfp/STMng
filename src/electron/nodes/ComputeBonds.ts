@@ -319,7 +319,7 @@ export class ComputeBonds extends NodeCore {
 		for(const bond of bonds) {
 
 			const {from, to, type} = bond;
-			if(type !== "n") continue;
+			if(type !== 0) continue;
 			if(from === startIdx) {
 				if(this.addType[to] === 2) {
 					this.addType[to] = 22;
@@ -344,7 +344,7 @@ export class ComputeBonds extends NodeCore {
 		for(const bond of structure.bonds) {
 
 			const {from, to, type} = bond;
-			if(type !== "n") continue;
+			if(type !== 0) continue;
 			if(this.addType[from] === 1 && this.addType[to] === 2) {
 				this.addType[to] = 22;
 				this.markingConnected(structure.bonds, to);
@@ -584,12 +584,12 @@ export class ComputeBonds extends NodeCore {
 				   (distSquared <= maxDistanceHbondSquared) &&
 				   (distSquared > sumRcovSquared)) {
 
-					bonds.push({from: i, to: j, type: "h"});
+					bonds.push({from: i, to: j, type: 1});
 				}
 
 				// Check for ordinary bond
 				else if(distSquared <= sumRcovSquared) {
-					bonds.push({from: i, to: j, type: "n"});
+					bonds.push({from: i, to: j, type: 0});
 				}
 			}
 		}
@@ -599,7 +599,7 @@ export class ComputeBonds extends NodeCore {
 		const countBonds = bonds.length;
 		for(let i=0; i < countBonds; ++i) {
 
-			if(bonds[i].type !== "h") continue;
+			if(bonds[i].type !== 1) continue;
 
 			const idx1 = bonds[i].from;
 			const idx2 = bonds[i].to;
@@ -616,7 +616,7 @@ export class ComputeBonds extends NodeCore {
 
 			for(let j=0; j < countBonds; ++j) {
 
-				if(bonds[j].type === "h" || bonds[j].type === "x") continue;
+				if(bonds[j].type === 1 || bonds[j].type === 99) continue;
 
 				if(bonds[j].from === idxH) {idxX = bonds[j].to;   break;}
 				if(bonds[j].to   === idxH) {idxX = bonds[j].from; break;}
@@ -641,14 +641,14 @@ export class ComputeBonds extends NodeCore {
 				const sumCov = (rCH + rCY)*this.boundingScale(atomH.atomZ, atomY.atomZ);
 				const sumCovSquared = sumCov*sumCov;
 
-				bonds[i].type = distSquared <= sumCovSquared ? "n" : "x";
+				bonds[i].type = distSquared <= sumCovSquared ? 0 : 99;
 
 				continue;
 			}
 
 			const atomX = atoms[idxX];
 			if(!this.atomForHBond(atomX.atomZ) ||
-			   this.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = "x";
+			   this.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = 99;
 		}
 
 		// Remove bonds between atoms that have too many bonds
@@ -657,7 +657,7 @@ export class ComputeBonds extends NodeCore {
 		// Clean up bonds list removing invalid bonds
 		const outBonds: Bond[] = [];
 		for(let i=0; i < countBonds; ++i) {
-			if(bonds[i].type !== "x") outBonds.push(bonds[i]);
+			if(bonds[i].type !== 99) outBonds.push(bonds[i]);
 		}
 
 		return outBonds;

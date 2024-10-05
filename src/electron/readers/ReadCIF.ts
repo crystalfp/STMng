@@ -75,7 +75,7 @@ class Table {
 	 */
 	getColumn(header: string): string[] {
 		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
-		if(idx < 0) return [];
+		if(idx === -1) return [];
 		const result = [];
 		for(const row of this.rows) result.push(row[idx]);
 		return result;

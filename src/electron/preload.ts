@@ -24,7 +24,7 @@ interface DOMContentLoadedEvent {
     };
 }
 
-window.addEventListener("DOMContentLoaded", (loadEvent: Event) => {
+globalThis.addEventListener("DOMContentLoaded", (loadEvent: Event) => {
 
     // Specific operations for each kind of window opened
     const {href} = (loadEvent as unknown as DOMContentLoadedEvent).target!.location;

@@ -159,7 +159,7 @@ onMounted(() => {
     const controls = new CameraControls(camera, renderer.domElement);
 
     // Add keyboard controls to camera positioning
-    window.addEventListener("keydown", (event: KeyboardEvent): void => {
+    globalThis.addEventListener("keydown", (event: KeyboardEvent): void => {
 
         switch(event.code) {
             case "ArrowLeft":
@@ -377,7 +377,7 @@ onMounted(() => {
         });
     };
 
-    window.addEventListener("resize", resizeScene);
+    globalThis.addEventListener("resize", resizeScene);
 
     watch(props, resizeScene);
 

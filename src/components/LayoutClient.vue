@@ -22,7 +22,7 @@ import ControlsContainer from "./ControlsContainer.vue";
 const normalScreen = ref(true);
 
 // > Answer fullscreen requests and set title
-window.addEventListener("DOMContentLoaded", () => {
+globalThis.addEventListener("DOMContentLoaded", () => {
     let count = 0;
     const timer = setInterval(() => {
         ++count;

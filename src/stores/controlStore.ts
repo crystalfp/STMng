@@ -79,7 +79,7 @@ export const useControlStore = defineStore("ControlStore", {
 
             // If index already there remove it
             const existing = this.atomsSelected.indexOf(index);
-            if(existing >= 0) {
+            if(existing !== -1) {
                 this.atomsSelected.splice(existing, 1);
             }
             else if(this.atomsSelected.length < 3) {

@@ -314,7 +314,7 @@ const drawStructure = (): void => {
 
                 const atomFrom = renderInfo.atoms[bond.from];
                 const atomTo   = renderInfo.atoms[bond.to];
-                if(bond.type === "h") addHBond(atomFrom.position, atomTo.position, bondsGroup);
+                if(bond.type === 1) addHBond(atomFrom.position, atomTo.position, bondsGroup);
                 else {
                     const colorFrom = atomFrom.color;
                     const colorTo   = atomTo.color;
@@ -328,7 +328,7 @@ const drawStructure = (): void => {
 
                 const atomFrom = renderInfo.atoms[bond.from];
                 const atomTo   = renderInfo.atoms[bond.to];
-                if(bond.type === "h") addHBond(atomFrom.position, atomTo.position, bondsGroup);
+                if(bond.type === 1) addHBond(atomFrom.position, atomTo.position, bondsGroup);
                 else if(atomFrom.atomZ === atomTo.atomZ) {
                     const {color, position} = atomFrom;
                     addNormalBondSameAtoms(position, atomTo.position, color, bondsGroup);
