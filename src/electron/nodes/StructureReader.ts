@@ -294,14 +294,14 @@ export class StructureReader extends NodeCore {
 						this.running = false;
 					}
 
-					// Send the updated structure down the pipeline
-					this.toNextNode(this.structures[this.step-1]);
-
+					// Update the UI
 					sendToClient(this.id, "runningStep", {
 						step: this.step,
 						running: this.running,
 					});
 
+					// Send the updated structure down the pipeline
+					this.toNextNode(this.structures[this.step-1]);
 				}, 300);
 			}
 			return {running: this.running};

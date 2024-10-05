@@ -1,5 +1,7 @@
 To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
+  ☐ camera.type -> camera.isPerspective (boolean)
+  ☐ Put style scoped where missing (or add a comment why is not used)
 
 Bugs:
 

@@ -162,6 +162,7 @@ const resetSliders = (): void => {
 </template>
 
 <style>
+/* Cannot be scoped otherwise it is ignored */
 /* stylelint-disable selector-class-pattern */
 .v-table__wrapper {
   overflow-y: hidden
