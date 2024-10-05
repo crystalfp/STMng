@@ -46,6 +46,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let currentCount = 0;
 		let currentStep = -1;
 		let cartesian = false;
+		let atomIdx = 0;
 
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
@@ -163,7 +164,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						currentCount = atomsCount[0];
 						cartesian = true;
 					}
-
+					atomIdx = 0;
 					break;
 				}
 				case LineType.atoms: {
@@ -183,11 +184,12 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					const atomZ = atomsZ[currentIdx];
 					const atom: Atom = {
 						atomZ,
-						label: "Atom" + currentIdx.toString(),
+						label: "Atom" + atomIdx.toString(),
 						position
 					};
 					structures[currentStep].atoms.push(atom);
 					--currentCount;
+					++atomIdx;
 					if(currentCount === 0) {
 						++currentIdx;
 						if(currentIdx < atomsCount.length) {

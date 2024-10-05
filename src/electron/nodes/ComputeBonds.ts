@@ -357,8 +357,7 @@ export class ComputeBonds extends NodeCore {
 
 		// Remove unneeded bonds
 		for(let i=structure.bonds.length-1; i >= 0; --i) {
-			const {from, to, type} = structure.bonds[i];
-			if(type !== "n") continue;
+			const {from, to} = structure.bonds[i];
 			if(this.addType[from] === 2 || this.addType[to] === 2) {
 				structure.bonds.splice(i, 1);
 			}
