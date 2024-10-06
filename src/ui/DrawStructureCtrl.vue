@@ -44,7 +44,7 @@ const cylinderSubdivisions = [0, 3, 5, 10, 16];
 const rCovScale = 0.5;
 let renderInfo: StructureRenderInfo;
 const outName = "DrawStructure-" + id;
-const spheresCache = new SpheresCache(rCovScale, bondRadius);
+const spheresCache = new SpheresCache(rCovScale, bondRadius, sphereSubdivisions);
 
 resetAlertMessage("system");
 askNode(id, "init")
@@ -242,6 +242,46 @@ const setDirection = (nx: number, ny: number, nz: number, quaternion: THREE.Quat
 };
 
 /**
+ * Adjust start and end positions of the bond rendered as cylinder to have a better coloring
+ *
+ * @param start - Center of the first atom
+ * @param end - Center of the second atom
+ * @param radiusStart - Radius of the rendered first atom
+ * @param radiusEnd - Radius of the rendered second atom
+ * @returns Adjusted start and end positions for the bond rendered as cylinder
+ */
+const adjustLimitsCylinder = (start: PositionType, end: PositionType,
+                              radiusStart: number, radiusEnd: number): {start: PositionType; end: PositionType} => {
+
+    // Multiplier to have how much to move from the center of the atom
+    const PERCENTAGE = 0.90;
+
+    const dx = end[0] - start[0];
+    const dy = end[1] - start[1];
+    const dz = end[2] - start[2];
+    const len = Math.hypot(dx, dy, dz);
+    const nx = dx/len;
+    const ny = dy/len;
+    const nz = dz/len;
+    const adjustRadiusStart = radiusStart*PERCENTAGE;
+    const adjustRadiusEnd = radiusEnd*PERCENTAGE;
+
+    const adjustedStart: PositionType = [
+        nx*adjustRadiusStart + start[0],
+        ny*adjustRadiusStart + start[1],
+        nz*adjustRadiusStart + start[2]
+    ];
+
+    const adjustedEnd: PositionType = [
+        end[0] - nx*adjustRadiusEnd,
+        end[1] - ny*adjustRadiusEnd,
+        end[2] - nz*adjustRadiusEnd
+    ];
+
+    return {start: adjustedStart, end: adjustedEnd};
+};
+
+/**
  * Convert the structure data into 3D objects
  */
 const drawStructure = (): void => {
@@ -284,6 +324,22 @@ const drawStructure = (): void => {
     // Render bonds
     switch(drawKind.value) {
         case "ball-and-stick":
+            for(const bond of renderInfo.bonds) {
+
+                const atomFrom = renderInfo.atoms[bond.from];
+                const atomTo   = renderInfo.atoms[bond.to];
+                if(bond.type === 1) addHBond(atomFrom.position, atomTo.position, bondsGroup);
+                else {
+                    const colorFrom    = atomFrom.color;
+                    const colorTo      = atomTo.color;
+                    const radiusStart  = atomFrom.rCov*rCovScale;
+                    const radiusEnd    = atomTo.rCov*rCovScale;
+                    const {start, end} = adjustLimitsCylinder(atomFrom.position, atomTo.position,
+                                                              radiusStart, radiusEnd);
+                    addCylinder(start, end, bondRadius, colorFrom, colorTo, bondsGroup);
+                }
+            }
+            break;
         case "licorice":
             for(const bond of renderInfo.bonds) {
 
@@ -294,7 +350,7 @@ const drawStructure = (): void => {
                     const colorFrom = atomFrom.color;
                     const colorTo   = atomTo.color;
                     addCylinder(atomFrom.position, atomTo.position,
-                                     bondRadius, colorFrom, colorTo, bondsGroup);
+                                bondRadius, colorFrom, colorTo, bondsGroup);
                 }
             }
             break;

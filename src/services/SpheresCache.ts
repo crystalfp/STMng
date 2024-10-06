@@ -12,10 +12,9 @@ import type {AtomRenderInfo} from "@/types";
 
 export class SpheresCache {
 
-	private readonly sphereSubdivisions = [0, 0, 1, 3, 9];
 	private currentKind: 0 | 1 | 2 = 0;
-	private currentQuality: number = this.sphereSubdivisions.length - 1;
-	private subdivisions: number = this.sphereSubdivisions[this.currentQuality];
+	private currentQuality: number;
+	private subdivisions: number;
 
 	// Geometries to be cloned
 	private licoriceGeometry: THREE.IcosahedronGeometry | undefined;
@@ -27,7 +26,20 @@ export class SpheresCache {
 	private currentMetalness = -1;
 	private currentRoughness = -1;
 
-	constructor(private readonly covScale: number, private readonly licoriceRadius: number) {}
+	/**
+	 * Constructor
+	 *
+	 * @param covScale - Scale for sphere diameter in ball and stick rendering
+	 * @param licoriceRadius - Radius of the sphere for licorice rendering
+	 * @param sphereSubdivisions - Table of sphere subdivisions for each rendering quality
+	 */
+	constructor(private readonly covScale: number,
+				private readonly licoriceRadius: number,
+				private readonly sphereSubdivisions: number[]) {
+
+		this.currentQuality = this.sphereSubdivisions.length - 1;
+		this.subdivisions = this.sphereSubdivisions[this.currentQuality];
+	}
 
 	/**
 	 * Cache the graphical structures
