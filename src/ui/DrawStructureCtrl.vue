@@ -11,9 +11,10 @@ import {ref, watch, computed} from "vue";
 import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
-import {normalMaterial, colorTextureMaterial} from "@/services/HelperMaterials";
+import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
+import {SpheresCache} from "@/services/SpheresCache";
 import type {StructureRenderInfo, PositionType} from "@/types";
 
 // > Properties
@@ -43,6 +44,7 @@ const cylinderSubdivisions = [0, 3, 5, 10, 16];
 const rCovScale = 0.5;
 let renderInfo: StructureRenderInfo;
 const outName = "DrawStructure-" + id;
+const spheresCache = new SpheresCache(rCovScale, bondRadius);
 
 resetAlertMessage("system");
 askNode(id, "init")
@@ -92,31 +94,6 @@ const adjustMaterials = (): void => {
             }
         }
     });
-};
-
-/**
- * Draw a sphere
- *
- * @param radius - Sphere radius
- * @param color - Sphere color
- * @param position - Center of the sphere
- * @param index - Index of the atom in the structure atom list
- * @param out - The output group where to add the sphere
- */
-const addSphere = (radius: number,
-				   color: THREE.ColorRepresentation,
-				   position: PositionType,
-				   index: number,
-				   group: THREE.Group): void => {
-
-    const subdivisions = sphereSubdivisions[drawQuality.value];
-    const geometry = new THREE.IcosahedronGeometry(radius, subdivisions);
-    const meshMaterial = normalMaterial(color, drawRoughness.value, drawMetalness.value);
-    const sphere = new THREE.Mesh(geometry, meshMaterial);
-    sphere.position.set(position[0], position[1], position[2]);
-    sphere.name = "Atom";
-    sphere.userData = {index};
-    group.add(sphere);
 };
 
 /**
@@ -279,31 +256,29 @@ const drawStructure = (): void => {
     // No atoms present, display nothing
     if(renderInfo.atoms.length === 0) return;
 
-    // Render atoms
-    let index = 0;
-    switch(drawKind.value) {
-        case "ball-and-stick":
-            for(const atom of renderInfo.atoms) {
-                const {color, rCov, position} = atom;
-                const radius = rCov * rCovScale;
-                addSphere(radius, color, position, index, atomsGroup);
-                ++index;
-            }
-            break;
-        case "van-der-walls":
-            for(const atom of renderInfo.atoms) {
-                const {color, rVdW, position} = atom;
-                addSphere(rVdW, color, position, index, atomsGroup);
-                ++index;
-            }
-            break;
-        case "licorice":
-            for(const atom of renderInfo.atoms) {
-                const {color, position} = atom;
-                addSphere(bondRadius, color, position, index, atomsGroup);
-                ++index;
-            }
-            break;
+    // Render atoms if present
+    if(drawKind.value !== "lines") {
+
+        // Prepare spheres
+        spheresCache.prepare(drawQuality.value,
+                            drawKind.value,
+                            renderInfo.atoms,
+                            drawRoughness.value,
+                            drawMetalness.value);
+
+        // Render atoms
+        let index = 0;
+        for(const atom of renderInfo.atoms) {
+
+            const {atomZ, position} = atom;
+
+            const sphere = spheresCache.getSphere(atomZ);
+            sphere.position.set(position[0], position[1], position[2]);
+            sphere.name = "Atom";
+            sphere.userData = {index};
+            ++index;
+            atomsGroup.add(sphere);
+        }
     }
 
     // Render bonds
@@ -372,7 +347,7 @@ const drawLabels = (): void => {
             case "ball-and-stick":
                 offset = atom.rCov * rCovScale * 1.3;
                 break;
-            case "van-der-walls":
+            case "van-der-waals":
                 offset = atom.rVdW * 1.3;
                 break;
             case "licorice":
@@ -492,7 +467,7 @@ sm.add(out);
   <v-label text="Structure rendering mode" class="mb-3 ml-2 mt-4 no-select" /><br>
   <v-btn-toggle v-model="drawKind" color="primary" mandatory class="mb-6 ml-2">
     <v-btn value="ball-and-stick">CPK</v-btn>
-    <v-btn value="van-der-walls">VdW</v-btn>
+    <v-btn value="van-der-waals">VdW</v-btn>
     <v-btn value="licorice">Licorice</v-btn>
     <v-btn value="lines">Lines</v-btn>
   </v-btn-toggle>

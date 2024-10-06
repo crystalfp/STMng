@@ -120,11 +120,11 @@ const app = createApp(App)
     .directive("focus", {mounted(element: HTMLElement) {element.focus();}});
 
 // Add global error handlers
-app.config.errorHandler = (error: unknown) => {
+app.config.errorHandler = (error: unknown): void => {
 	log.error(`Unhandled exception: ${(error as Error).message}\n`, (error as Error).stack);
 };
 
-addEventListener("unhandledrejection", (event) => {
+addEventListener("unhandledrejection", (event): void => {
 	log.error("Unhandled rejection:", event.reason);
 });
 

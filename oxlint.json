@@ -1,9 +1,9 @@
 {
   "env": {
     "shared-node-browser": true,
-	"browser ": true,
-	"node ": true,
-	"es2024 ": true
+	"browser": true,
+	"node": true,
+	"es2024": true
   },
   "globals": {
     "defineProps": "readonly",
@@ -14,7 +14,8 @@
 	"Record": "readonly",
 	"Buffer": "readonly",
 	"ReturnType": "readonly",
-	"NodeJS": "readonly"
+	"NodeJS": "readonly",
+	"window": "readonly"
   },
   "settings": {},
   "rules": {
@@ -435,7 +436,7 @@
 	"prefer-structured-clone": 1,
 	"require-array-join-separator": 1,
 	"text-encoding-identifier-case": 1,
-	"throw-new-error": 1,
+	"throw-new-error": 0,
 	"no-import-node-test": 1,
 	"prefer-each": 1,
 	"prefer-to-be-falsy": 1,

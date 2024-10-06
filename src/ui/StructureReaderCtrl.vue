@@ -222,7 +222,7 @@ const selectedAuxFile = (filename: string): void => {
  */
 const filterFromFormat = (fileFormat: string): string => {
 
-    let filter: FileFilter[] = [{name: "All",	extensions: ["*"]}];
+    let filter: FileFilter[];
 	switch(fileFormat) {
 		case "CHGCAR":
 			filter = [{name: "CHGCAR",	        extensions: ["chgcar"]},
@@ -256,6 +256,9 @@ const filterFromFormat = (fileFormat: string): string => {
 		case "XYZ":
 			filter = [{name: "XYZ",		        extensions: ["xyz"]},
 					  {name: "All",		        extensions: ["*"]}];
+            break;
+        default:
+            filter = [{name: "All",	extensions: ["*"]}];
             break;
 	}
 

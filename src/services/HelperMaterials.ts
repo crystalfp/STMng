@@ -9,24 +9,6 @@
 import * as THREE from "three";
 
 /**
- * Compute surface material
- *
- * @param color - Color of the surface
- * @param roughness - Rugosity of the material
- * @param metalness - Metal shining of the material
- * @returns The mesh material
- */
-export const normalMaterial = (color: THREE.ColorRepresentation,
-						       roughness: number,
-							   metalness: number): THREE.MeshStandardMaterial =>
-	new THREE.MeshStandardMaterial({
-		color,
-		roughness,
-		metalness,
-		side: THREE.FrontSide,
-	});
-
-/**
  * Compute material that interpolates between two colors
  *
  * @param colorFrom - First side color

@@ -61,11 +61,11 @@ log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
 
 // Handle uncaught errors
-process.on("uncaughtException", (event) => {
+process.on("uncaughtException", (event): void => {
 	log.error(`Unhandled exception: ${event.message}\n`, event.stack);
 });
 
-process.on("unhandledRejection", (event: PromiseRejectionEvent) => {
+process.on("unhandledRejection", (event: PromiseRejectionEvent): void => {
 	log.error("Unhandled rejection:", event.reason);
 });
 

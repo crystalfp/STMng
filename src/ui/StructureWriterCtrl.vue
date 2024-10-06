@@ -104,31 +104,34 @@ const startStopCapture = (): void => {
  */
 const filterFromFormat = (fileFormat: string): string => {
 
-    let filters: FileFilter[] = [{name: "All",	extensions: ["*"]}];
+    let filter: FileFilter[];
 	switch(fileFormat) {
         case "CHGCAR":
-            filters = [{name: "CHGCAR",	extensions: ["chgcar"]},
-                       {name: "All",	extensions: ["*"]}];
+            filter = [{name: "CHGCAR",	extensions: ["chgcar"]},
+                      {name: "All",	extensions: ["*"]}];
             break;
         case "CIF":
-            filters = [{name: "CIF",	extensions: ["cif"]},
-                       {name: "All",	extensions: ["*"]}];
+            filter = [{name: "CIF",	extensions: ["cif"]},
+                      {name: "All",	extensions: ["*"]}];
             break;
         case "POSCAR":
-            filters = [{name: "POSCAR",	extensions: ["poscar"]},
-                       {name: "All",	extensions: ["*"]}];
+            filter = [{name: "POSCAR",	extensions: ["poscar"]},
+                      {name: "All",	extensions: ["*"]}];
             break;
         case "Shel-X":
-            filters = [{name: "Shel-X",	extensions: ["res"]},
-                       {name: "All",	extensions: ["*"]}];
+            filter = [{name: "Shel-X",	extensions: ["res"]},
+                      {name: "All",	extensions: ["*"]}];
             break;
         case "XYZ":
-            filters = [{name: "XYZ",	extensions: ["xyz"]},
-                       {name: "All",	extensions: ["*"]}];
+            filter = [{name: "XYZ",	extensions: ["xyz"]},
+                      {name: "All",	extensions: ["*"]}];
+            break;
+        default:
+            filter = [{name: "All",	extensions: ["*"]}];
             break;
 	}
 
-    return JSON.stringify(filters);
+    return JSON.stringify(filter);
 };
 
 // > Save the selected file name

@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-17
  */
-import * as THREE from "three";
+import {Group, type Mesh} from "three";
 import type {PositionType} from "@/types";
 import {Text as TroikaText} from "troika-three-text";
 
@@ -24,7 +24,7 @@ import localRoboto from "@/assets/Roboto-Regular.ttf";
 export const spriteText = (text: string,
 						   color: string,
 						   position: PositionType,
-						   offset?: PositionType): THREE.Mesh => {
+						   offset?: PositionType): Mesh => {
 
 	const sprite = new TroikaText();
 
@@ -49,7 +49,7 @@ export const spriteText = (text: string,
  *
  * @param group - Group containing Text meshes
  */
-export const disposeTextInGroup = (group: THREE.Group): void => {
+export const disposeTextInGroup = (group: Group): void => {
 
 	const labelsToDelete: TroikaText[] = [];
 	group.traverse((obj) => {
