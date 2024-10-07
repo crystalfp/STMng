@@ -253,9 +253,6 @@ const setDirection = (nx: number, ny: number, nz: number, quaternion: THREE.Quat
 const adjustLimitsCylinder = (start: PositionType, end: PositionType,
                               radiusStart: number, radiusEnd: number): {start: PositionType; end: PositionType} => {
 
-    // Multiplier to have how much to move from the center of the atom
-    const PERCENTAGE = 0.90;
-
     const dx = end[0] - start[0];
     const dy = end[1] - start[1];
     const dz = end[2] - start[2];
@@ -263,8 +260,12 @@ const adjustLimitsCylinder = (start: PositionType, end: PositionType,
     const nx = dx/len;
     const ny = dy/len;
     const nz = dz/len;
-    const adjustRadiusStart = radiusStart*PERCENTAGE;
-    const adjustRadiusEnd = radiusEnd*PERCENTAGE;
+
+    // Distance from the center to have the cylinder border on the atom surface
+	// const b = Math.sqrt((rCov/2)**2 - 0.1**2)
+	// 0.035 = max(rCov/2-b) over all atom types
+    const adjustRadiusStart = radiusStart-0.035;
+    const adjustRadiusEnd = radiusEnd-0.035;
 
     const adjustedStart: PositionType = [
         nx*adjustRadiusStart + start[0],

@@ -33,6 +33,8 @@ export class StructureReader extends NodeCore {
 	private loopSteps = false;
 	private running = false;
 	private step = 1;
+
+	/** Total number of steps in the structure loaded */
 	private countSteps = 1;
 	private format = "";
     private atomsTypes = "";
@@ -40,6 +42,9 @@ export class StructureReader extends NodeCore {
 	private fileToRead = "";
 	private auxFileToRead = "";
 	private intervalId: ReturnType<typeof setInterval> | undefined;
+
+	/** Steps to add at each tick */
+	private stepIncrement = 1;
 
 	private structures: Structure[] = [];
 
@@ -65,6 +70,7 @@ export class StructureReader extends NodeCore {
 			format: this.format,
       		atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
+			stepIncrement: this.stepIncrement,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -74,6 +80,7 @@ export class StructureReader extends NodeCore {
 		this.format     = params.format as string ?? "";
     	this.atomsTypes = params.atomsTypes as string ?? "";
     	this.useBohr    = params.useBohr as boolean ?? true;
+		this.stepIncrement = params.stepIncrement as number ?? 1;
 	}
 
 	getUiInfo(): UiInfo {
@@ -101,6 +108,7 @@ export class StructureReader extends NodeCore {
 			useBohr: this.useBohr,
 			fileToRead: this.fileToRead,
 			auxFileToRead: this.auxFileToRead,
+			stepIncrement: this.stepIncrement,
 		};
 	}
 
@@ -159,6 +167,10 @@ export class StructureReader extends NodeCore {
 			this.intervalId = undefined;
 		}
 
+		this.useBohr = params.useBohr as boolean ?? true;
+		this.atomsTypes = params.atomsTypes as string ?? "";
+		this.stepIncrement = params.stepIncrement as number ?? 1;
+
 		let readerOptions: ReaderOptions;
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
 
@@ -190,9 +202,9 @@ export class StructureReader extends NodeCore {
 	 */
 	private channelTypes(params: CtrlParams): void {
 
-		const at = (params.atomsTypes as string).trim();
-		this.changeAtomsType(at);
-		this.atomsTypes = at;
+		const updatedAtomsTypes = (params.atomsTypes as string).trim();
+		this.changeAtomsType(updatedAtomsTypes);
+		this.atomsTypes = updatedAtomsTypes;
 	}
 
 	/**
@@ -264,6 +276,7 @@ export class StructureReader extends NodeCore {
 		const requestedStep = params.step as number ?? 1;
 		this.running = params.running as boolean ?? false;
 		this.loopSteps = params.loopSteps as boolean ?? false;
+		this.stepIncrement = params.stepIncrement as number ?? 1;
 
 		if(requestedStep !== this.step) {
 
@@ -284,14 +297,23 @@ export class StructureReader extends NodeCore {
 			if(this.intervalId === undefined && this.step < this.countSteps) {
 
 				this.intervalId = setInterval(() => {
-					++this.step;
-					if(this.step > this.countSteps) {
-						this.step = 1;
-					}
+
+					this.step += this.stepIncrement;
+
 					if(this.step === this.countSteps && !this.loopSteps) {
 						clearInterval(this.intervalId);
 						this.intervalId = undefined;
 						this.running = false;
+					}
+					else if(this.step > this.countSteps) {
+						if(this.loopSteps) this.step = 1;
+						else {
+							this.step -= this.stepIncrement;
+							clearInterval(this.intervalId);
+							this.intervalId = undefined;
+							this.running = false;
+							return;
+						}
 					}
 
 					// Update the UI

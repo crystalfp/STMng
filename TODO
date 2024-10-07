@@ -2,7 +2,6 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Put style scoped where missing (or add a comment why is not used)
-  ☐ Cache sphere geometries (then cylinders)
 
 Bugs:
 
@@ -52,6 +51,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Cache sphere geometries (then cylinders) @done(2024-10-06 11:15) @project(To do)
   ✔ Nested isosurfaces does not work. But touching number of isosurfaces makes them appears. @done(2024-09-27 06:49) @project(Bugs)
   ✔ Finish help @done(2024-09-26 07:03) @project(To do)
   ✔ Add show log function ("C:\Users\mvalle\AppData\Roaming\stm-ng\logs\main.log") @done(2024-09-24 14:08) @project(Nice to have/Future)

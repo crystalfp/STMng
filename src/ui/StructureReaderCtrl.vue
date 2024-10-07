@@ -38,16 +38,17 @@ const fileFormats = [
 ];
 
 // > UI parameters
-const fileToRead       = ref("");           // Path of the file to be read
-const countSteps       = ref(1);            // Total steps read
-const step             = ref(1);            // Current step
-const running          = ref(false);        // The steps are playing
-const atomsTypes       = ref("");           // Atom types in the structure read
-const loopSteps        = ref(false);        // If the sequence should loop
-const format           = ref("");           // File format to be read
-const inProgress       = ref(false);        // True during file load
-const auxFileToRead    = ref("");           // Path to the auxiliary file to read
-const useBohr          = ref(true);         // Use Bohr units
+const fileToRead    = ref("");      // Path of the file to be read
+const countSteps    = ref(1);       // Total steps read
+const step          = ref(1);       // Current step
+const running       = ref(false);   // The steps are playing
+const atomsTypes    = ref("");      // Atom types in the structure read
+const loopSteps     = ref(false);   // If the sequence should loop
+const format        = ref("");      // File format to be read
+const inProgress    = ref(false);   // True during file load
+const auxFileToRead = ref("");      // Path to the auxiliary file to read
+const useBohr       = ref(true);    // Use Bohr units
+const stepIncrement = ref(1);       // How many step skip every tick
 
 const controlStore = useControlStore();
 
@@ -62,16 +63,18 @@ askNode(id, "init")
         useBohr.value       = params.useBohr as boolean ?? true;
         fileToRead.value    = params.fileToRead as string ?? "";
         auxFileToRead.value = params.auxFileToRead as string ?? "";
+        stepIncrement.value = params.stepIncrement as number ?? 1;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
 
 // Manage the step selection
-watch([step, running, loopSteps], () => {
+watch([step, running, loopSteps, stepIncrement], () => {
 
     askNode(id, "step", {
         step: step.value,
         running: running.value,
         loopSteps: loopSteps.value,
+        stepIncrement: stepIncrement.value
     })
     .then((params) => {
         if(running.value && params.running === false) running.value = false;
@@ -178,6 +181,7 @@ const selectedFile = (filename: string): void => {
             fileToRead: filename,
             atomsTypes: atomsTypes.value,
             useBohr: useBohr.value,
+            stepIncrement: stepIncrement.value,
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
@@ -268,6 +272,7 @@ const filterFromFormat = (fileFormat: string): string => {
 /** The JSON encoded filter for XDATCAR auxiliary file */
 const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"All","extensions":["*"]}]';
 
+// To clear the select atoms labels
 const label1 = ref("");
 const label2 = ref("");
 
@@ -301,7 +306,12 @@ const label2 = ref("");
   <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
     <enable-capture />
-    <v-label class="no-select">{{ `Step ${step}/${countSteps}` }}</v-label>
+    <v-row class="ml-2 mr-1">
+      <v-label class="no-select pb-4">{{ `Step ${step}/${countSteps}` }}</v-label>
+      <v-spacer />
+      <v-number-input controlVariant="stacked" variant="solo-filled" density="compact" v-model="stepIncrement"
+                      label="Step increment" :min="1" class="ml-n2 mr-6" />
+    </v-row>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-6" />
     <v-row class="mr-2">
       <v-spacer />
