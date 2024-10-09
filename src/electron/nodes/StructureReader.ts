@@ -312,6 +312,9 @@ export class StructureReader extends NodeCore {
 							clearInterval(this.intervalId);
 							this.intervalId = undefined;
 							this.running = false;
+							sendToClient(this.id, "runningStep", {
+								running: false,
+							});
 							return;
 						}
 					}

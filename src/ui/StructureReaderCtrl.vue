@@ -86,7 +86,7 @@ watch([step, running, loopSteps, stepIncrement], () => {
 
 receiveFromNode(id, "runningStep", (params: CtrlParams) => {
 
-    step.value = params.step as number ?? 1;
+    if(params.step) step.value = params.step as number;
 
     if(running.value) {
         const updatedRunning = params.running as boolean;

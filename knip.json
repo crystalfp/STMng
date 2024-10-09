@@ -20,7 +20,8 @@
     "typedoc",
     "typedoc-plugin-vue",
     "dependency-cruiser",
-    "@types/eslint"
+    "@types/eslint",
+    "postcss-scss"
   ],
   "includeEntryExports": true
 }
