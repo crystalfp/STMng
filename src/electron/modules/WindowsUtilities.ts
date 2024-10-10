@@ -345,10 +345,25 @@ export const askClient = (id: string, channel: string): Promise<string> => {
     const channelName = id + ":" + channel;
     mainWin.webContents.send(channelName);
     return new Promise((resolve) => {
-        ipcMain.on(channelName + "-res", (_event: unknown, answer: string): void => resolve(answer));
+        ipcMain.once(channelName + "-res", (_event: unknown, answer: string): void => resolve(answer));
     });
 };
 
+/**
+ * Send parameters synchronously to client process
+ *
+ * @param id - ID of the node sending the parameters
+ * @param channel - Specify the channel inside the id related group
+ * @param params - Parameters to be sent synchronously to client
+ */
+export const sendToClientSync = (id: string, channel: string, params: CtrlParams): Promise<void> => {
+
+    const channelName = id + ":" + channel;
+    return new Promise((resolve) => {
+        mainWin.webContents.send(channelName, params);
+        ipcMain.once(channelName + "-response", () => {resolve();});
+    });
+};
 /**
  * Push structure data to client
  *
