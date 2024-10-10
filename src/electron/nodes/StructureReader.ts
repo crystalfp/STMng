@@ -9,7 +9,7 @@
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
-import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
+import {sendAlertMessage, sendToClientSync} from "../modules/WindowsUtilities";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 
@@ -41,7 +41,6 @@ export class StructureReader extends NodeCore {
 	private useBohr = true;
 	private fileToRead = "";
 	private auxFileToRead = "";
-	private intervalId: ReturnType<typeof setInterval> | undefined;
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -55,7 +54,7 @@ export class StructureReader extends NodeCore {
 		{name: "formats",	type: "send",        callback: this.channelFormats.bind(this)},
 		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
-		{name: "step",		type: "invoke",		 callback: this.channelStep.bind(this)},
+		{name: "step",		type: "invokeAsync", callback: this.channelStep.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -161,12 +160,7 @@ export class StructureReader extends NodeCore {
 			log.error(message);
 			return {error: message};
 		}
-
-		if(this.intervalId !== undefined) {
-			clearInterval(this.intervalId);
-			this.intervalId = undefined;
-		}
-
+		this.running = false;
 		this.useBohr = params.useBohr as boolean ?? true;
 		this.atomsTypes = params.atomsTypes as string ?? "";
 		this.stepIncrement = params.stepIncrement as number ?? 1;
@@ -215,10 +209,7 @@ export class StructureReader extends NodeCore {
 	private channelFormats(params: CtrlParams): void {
 
 		this.format = params.format as string;
-		if(this.intervalId !== undefined) {
-			clearInterval(this.intervalId);
-			this.intervalId = undefined;
-		}
+		this.running = false;
 	}
 
 	/**
@@ -271,7 +262,7 @@ export class StructureReader extends NodeCore {
 	 * @param params - Parameters from the client
 	 * @returns Params with the operation status
 	 */
-	private channelStep(params: CtrlParams): CtrlParams {
+	private async channelStep(params: CtrlParams): Promise<CtrlParams> {
 
 		const requestedStep = params.step as number ?? 1;
 		this.running = params.running as boolean ?? false;
@@ -294,47 +285,41 @@ export class StructureReader extends NodeCore {
 
 		if(this.running) {
 
-			if(this.intervalId === undefined && this.step < this.countSteps) {
+			if(this.step < this.countSteps) {
 
-				this.intervalId = setInterval(() => {
+				while(this.running) {
 
 					this.step += this.stepIncrement;
 
 					if(this.step === this.countSteps && !this.loopSteps) {
-						clearInterval(this.intervalId);
-						this.intervalId = undefined;
+
 						this.running = false;
 					}
 					else if(this.step > this.countSteps) {
 						if(this.loopSteps) this.step = 1;
 						else {
 							this.step -= this.stepIncrement;
-							clearInterval(this.intervalId);
-							this.intervalId = undefined;
 							this.running = false;
-							sendToClient(this.id, "runningStep", {
+							await sendToClientSync(this.id, "runningStep", {
 								running: false,
 							});
-							return;
+							break;
 						}
 					}
 
 					// Update the UI
-					sendToClient(this.id, "runningStep", {
+					await sendToClientSync(this.id, "runningStep", {
 						step: this.step,
 						running: this.running,
 					});
 
 					// Send the updated structure down the pipeline
 					this.toNextNode(this.structures[this.step-1]);
-				}, 300);
+
+					await new Promise((resolve) => setTimeout(resolve, 500));
+				}
 			}
 			return {running: this.running};
-		}
-		else if(this.intervalId !== undefined) {
-			clearInterval(this.intervalId);
-			this.intervalId = undefined;
-			this.running = false;
 		}
 
 		return {running: this.running};

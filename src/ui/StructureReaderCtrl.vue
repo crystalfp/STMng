@@ -10,7 +10,7 @@
 import {ref, watch} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
-import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
+import {askNode, sendToNode, receiveFromNodeSync} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams, FileFilter} from "@/types";
@@ -84,7 +84,7 @@ watch([step, running, loopSteps, stepIncrement], () => {
     });
 });
 
-receiveFromNode(id, "runningStep", (params: CtrlParams) => {
+receiveFromNodeSync(id, "runningStep", (params: CtrlParams) => {
 
     if(params.step) step.value = params.step as number;
 
