@@ -2,7 +2,14 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Put style scoped where missing (or add a comment why is not used)
-  ☐ Finish use of sync message in reader (removing setInterval)
+  ✔ Finish use of sync message in reader (removing setInterval) @done(2024-10-18 10:42)
+  ☐ Unify receiveFromNodeSync and receiveFromNode
+  ☐ Add backward in read structure
+  ☐ Separate UI management and rendering logic in *Ctrl
+  ☐ Check v-for don't have index in :key [check ControlsContainer, change panels]
+  ☐ Check if v-memo could be used in some v-for
+  ☐ Check if ShallowRef could be used (and triggerRef to trigger its reactivity) [uiList in ControlsContainer]
+  ☐ Try `<datalist>` for atoms type field in StructureReaderCtrl (and `useID()`)
 
 Bugs:
 

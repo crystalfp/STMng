@@ -31,6 +31,7 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 export class StructureReader extends NodeCore {
 
 	private loopSteps = false;
+	private stepBackward = false;
 	private running = false;
 	private step = 1;
 
@@ -66,6 +67,7 @@ export class StructureReader extends NodeCore {
 	saveStatus(): string {
         const statusToSave = {
 			loopSteps: this.loopSteps,
+			stepBackward: this.stepBackward,
 			format: this.format,
       		atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
@@ -75,10 +77,11 @@ export class StructureReader extends NodeCore {
 	}
 
 	loadStatus(params: CtrlParams): void {
-		this.loopSteps  = params.loopSteps as boolean ?? false;
-		this.format     = params.format as string ?? "";
-    	this.atomsTypes = params.atomsTypes as string ?? "";
-    	this.useBohr    = params.useBohr as boolean ?? true;
+		this.loopSteps     = params.loopSteps as boolean ?? false;
+		this.stepBackward  = params.stepBackward as boolean ?? false;
+		this.format        = params.format as string ?? "";
+    	this.atomsTypes    = params.atomsTypes as string ?? "";
+    	this.useBohr       = params.useBohr as boolean ?? true;
 		this.stepIncrement = params.stepIncrement as number ?? 1;
 	}
 
@@ -102,6 +105,7 @@ export class StructureReader extends NodeCore {
 
 		return {
 			loopSteps: this.loopSteps,
+			stepBackward: this.stepBackward,
 			format: this.format,
 			atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
@@ -265,9 +269,10 @@ export class StructureReader extends NodeCore {
 	private async channelStep(params: CtrlParams): Promise<CtrlParams> {
 
 		const requestedStep = params.step as number ?? 1;
-		this.running = params.running as boolean ?? false;
-		this.loopSteps = params.loopSteps as boolean ?? false;
-		this.stepIncrement = params.stepIncrement as number ?? 1;
+		this.running        = params.running as boolean ?? false;
+		this.loopSteps      = params.loopSteps as boolean ?? false;
+		this.stepBackward   = params.stepBackward as boolean ?? false;
+		this.stepIncrement  = params.stepIncrement as number ?? 1;
 
 		if(requestedStep !== this.step) {
 
@@ -307,16 +312,17 @@ export class StructureReader extends NodeCore {
 						}
 					}
 
-					// Update the UI
-					await sendToClientSync(this.id, "runningStep", {
-						step: this.step,
-						running: this.running,
-					});
-
 					// Send the updated structure down the pipeline
 					this.toNextNode(this.structures[this.step-1]);
 
-					await new Promise((resolve) => setTimeout(resolve, 500));
+					// Update the UI
+					const response = await sendToClientSync(this.id, "runningStep", {
+						step: this.step,
+						running: this.running,
+					});
+					if(response.running !== undefined) this.running = response.running as boolean;
+
+					await new Promise((resolve) => setTimeout(resolve, 700));
 				}
 			}
 			return {running: this.running};

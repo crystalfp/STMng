@@ -227,12 +227,13 @@ export const receiveFromNode = (id: string, channel: string, callback: (params: 
  * @param channel - Specify the channel inside the id related group
  * @param callback - Callback function called when a message is received
  */
-export const receiveFromNodeSync = (id: string, channel: string, callback: (params: CtrlParams) => void): void => {
+export const receiveFromNodeSync = (id: string, channel: string,
+									callback: (params: CtrlParams) => CtrlParams): void => {
 
 	const channelName = id + ":" + channel;
     window.electron.ipcRenderer.on(channelName, (_event, params: CtrlParams) => {
-		callback(params);
-		window.electron.ipcRenderer.send(channelName + "-response");
+		const response = callback(params);
+		window.electron.ipcRenderer.send(channelName + "-response", response);
 	});
 };
 
@@ -341,7 +342,7 @@ export const sendViewer3DState = (id: string,
 	const channelName = id + ":" + channel;
     window.electron.ipcRenderer.on(channelName, () => {
 
-		window.electron.ipcRenderer.send(channelName + "-res", getState());
+		window.electron.ipcRenderer.send(channelName + "-response", getState());
 	});
 };
 

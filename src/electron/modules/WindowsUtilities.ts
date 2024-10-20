@@ -334,36 +334,39 @@ export const sendPolyhedraToClient = (id: string,
 };
 
 /**
- * Ask the client to receive a string
+ * Ask the client to send a string.
+ * For example the Viewer3D status stringified.
  *
  * @param id - ID of the node sending the parameters
  * @param channel - Specify the channel inside the id related group
- * @returns The viewer3D state stringified
+ * @returns The string from client
  */
 export const askClient = (id: string, channel: string): Promise<string> => {
 
     const channelName = id + ":" + channel;
-    mainWin.webContents.send(channelName);
     return new Promise((resolve) => {
-        ipcMain.once(channelName + "-res", (_event: unknown, answer: string): void => resolve(answer));
+        mainWin.webContents.send(channelName);
+        ipcMain.once(channelName + "-response", (_event: unknown, answer: string): void => resolve(answer));
     });
 };
 
 /**
- * Send parameters synchronously to client process
+ * Send parameters to client process and receive parameters back synchronously
  *
  * @param id - ID of the node sending the parameters
  * @param channel - Specify the channel inside the id related group
- * @param params - Parameters to be sent synchronously to client
+ * @param params - Parameters to be sent to client
+ * @returns The params from client
  */
-export const sendToClientSync = (id: string, channel: string, params: CtrlParams): Promise<void> => {
+export const sendToClientSync = (id: string, channel: string, params: CtrlParams): Promise<CtrlParams> => {
 
     const channelName = id + ":" + channel;
     return new Promise((resolve) => {
         mainWin.webContents.send(channelName, params);
-        ipcMain.once(channelName + "-response", () => {resolve();});
+        ipcMain.once(channelName + "-response", (_event, response: CtrlParams) => {resolve(response);});
     });
 };
+
 /**
  * Push structure data to client
  *

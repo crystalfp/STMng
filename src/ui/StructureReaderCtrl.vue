@@ -44,6 +44,7 @@ const step          = ref(1);       // Current step
 const running       = ref(false);   // The steps are playing
 const atomsTypes    = ref("");      // Atom types in the structure read
 const loopSteps     = ref(false);   // If the sequence should loop
+const stepBackward  = ref(false);   // Run in backward steps
 const format        = ref("");      // File format to be read
 const inProgress    = ref(false);   // True during file load
 const auxFileToRead = ref("");      // Path to the auxiliary file to read
@@ -58,6 +59,7 @@ askNode(id, "init")
     .then((params) => {
 
         loopSteps.value     = params.loopSteps as boolean ?? false;
+        stepBackward.value  = params.lostepBackwardopSteps as boolean ?? false;
         format.value        = params.format as string ?? "";
         atomsTypes.value    = params.atomsTypes as string ?? "";
         useBohr.value       = params.useBohr as boolean ?? true;
@@ -68,12 +70,13 @@ askNode(id, "init")
     .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
 
 // Manage the step selection
-watch([step, running, loopSteps, stepIncrement], () => {
+watch([step, running, loopSteps, stepIncrement, stepBackward], () => {
 
     askNode(id, "step", {
         step: step.value,
         running: running.value,
         loopSteps: loopSteps.value,
+        stepBackward: stepBackward.value,
         stepIncrement: stepIncrement.value
     })
     .then((params) => {
@@ -84,7 +87,7 @@ watch([step, running, loopSteps, stepIncrement], () => {
     });
 });
 
-receiveFromNodeSync(id, "runningStep", (params: CtrlParams) => {
+receiveFromNodeSync(id, "runningStep", (params: CtrlParams): CtrlParams => {
 
     if(params.step) step.value = params.step as number;
 
@@ -94,6 +97,8 @@ receiveFromNodeSync(id, "runningStep", (params: CtrlParams) => {
             running.value = false;
         }
     }
+
+    return {running: running.value};
 });
 
 /**
@@ -305,6 +310,7 @@ const label2 = ref("");
             label="Use Bohr units" density="compact" class="ml-2 mt-4" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
     <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
+    <v-switch v-model="stepBackward" color="primary" label="Backward" density="compact" />
     <enable-capture />
     <v-row class="ml-2 mr-1">
       <v-label class="no-select pb-4">{{ `Step ${step}/${countSteps}` }}</v-label>
