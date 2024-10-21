@@ -59,7 +59,7 @@ askNode(id, "init")
     .then((params) => {
 
         loopSteps.value     = params.loopSteps as boolean ?? false;
-        stepBackward.value  = params.lostepBackwardopSteps as boolean ?? false;
+        stepBackward.value  = params.stepBackward as boolean ?? false;
         format.value        = params.format as string ?? "";
         atomsTypes.value    = params.atomsTypes as string ?? "";
         useBohr.value       = params.useBohr as boolean ?? true;
@@ -308,17 +308,16 @@ const label2 = ref("");
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
             label="Use Bohr units" density="compact" class="ml-2 mt-4" @update:model-value="setUseBohr" />
-  <v-container v-if="countSteps > 1" class="ml-2 pa-0 mt-4">
-    <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" />
-    <v-switch v-model="stepBackward" color="primary" label="Backward" density="compact" />
+  <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
     <enable-capture />
-    <v-row class="ml-2 mr-1">
-      <v-label class="no-select pb-4">{{ `Step ${step}/${countSteps}` }}</v-label>
-      <v-spacer />
+    <v-row class="pl-3 mt-0">
+      <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mr-5" />
+      <v-switch v-model="stepBackward" color="primary" label="Reverse" density="compact" />
       <v-number-input controlVariant="stacked" variant="solo-filled" density="compact" v-model="stepIncrement"
-                      label="Step increment" :min="1" class="ml-n2 mr-6" />
+                      label="Step increment" :min="1" class="ml-3 mr-8" />
     </v-row>
-    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-6" />
+    <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
+    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-8" />
     <v-row class="mr-2">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"

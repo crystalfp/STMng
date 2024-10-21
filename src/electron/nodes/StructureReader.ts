@@ -294,21 +294,42 @@ export class StructureReader extends NodeCore {
 
 				while(this.running) {
 
-					this.step += this.stepIncrement;
+					if(this.stepBackward) {
+						this.step -= this.stepIncrement;
 
-					if(this.step === this.countSteps && !this.loopSteps) {
+						if(this.step === 1 && !this.loopSteps) {
 
-						this.running = false;
-					}
-					else if(this.step > this.countSteps) {
-						if(this.loopSteps) this.step = 1;
-						else {
-							this.step -= this.stepIncrement;
 							this.running = false;
-							await sendToClientSync(this.id, "runningStep", {
-								running: false,
-							});
-							break;
+						}
+						else if(this.step < 1) {
+							if(this.loopSteps) this.step = this.countSteps;
+							else {
+								this.step += this.stepIncrement;
+								this.running = false;
+								await sendToClientSync(this.id, "runningStep", {
+									running: false,
+								});
+								break;
+							}
+						}
+					}
+					else {
+						this.step += this.stepIncrement;
+
+						if(this.step === this.countSteps && !this.loopSteps) {
+
+							this.running = false;
+						}
+						else if(this.step > this.countSteps) {
+							if(this.loopSteps) this.step = 1;
+							else {
+								this.step -= this.stepIncrement;
+								this.running = false;
+								await sendToClientSync(this.id, "runningStep", {
+									running: false,
+								});
+								break;
+							}
 						}
 					}
 
