@@ -2,14 +2,11 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Put style scoped where missing (or add a comment why is not used)
-  ✔ Finish use of sync message in reader (removing setInterval) @done(2024-10-18 10:42)
-  ☐ Unify receiveFromNodeSync and receiveFromNode
   ☐ Add backward in read structure
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Check v-for don't have index in :key [check ControlsContainer, change panels]
   ☐ Check if v-memo could be used in some v-for
   ☐ Check if ShallowRef could be used (and triggerRef to trigger its reactivity) [uiList in ControlsContainer]
-  ☐ Try `<datalist>` for atoms type field in StructureReaderCtrl (and `useID()`)
 
 Bugs:
 
@@ -59,6 +56,9 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✘ Try `<datalist>` for atoms type field in StructureReaderCtrl (and `useID()`) @cancelled(2024-10-20 08:46) @project(To do)
+  ✔ Finish use of sync message in reader (removing setInterval) @done(2024-10-18 10:42) @project(To do)
+  ✘ Unify receiveFromNodeSync and receiveFromNode @cancelled(2024-10-20 08:24) @project(To do)
   ✔ Cache sphere geometries (then cylinders) @done(2024-10-06 11:15) @project(To do)
   ✔ Nested isosurfaces does not work. But touching number of isosurfaces makes them appears. @done(2024-09-27 06:49) @project(Bugs)
   ✔ Finish help @done(2024-09-26 07:03) @project(To do)
