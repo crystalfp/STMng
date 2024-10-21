@@ -18,7 +18,7 @@ const controlStore = useControlStore();
 
 const selectedTabId = ref("");
 const uiList = ref<ClientProjectInfoItem[]>([]);
-const panelList = ref<unknown[]>([]);
+const panelList = ref<{id: string; ctrl: unknown}[]>([]);
 
 /** When the project is loaded require the project data */
 sendToNode("SYSTEM", "project");
@@ -33,7 +33,7 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 		const info = clientProjectInfo[id];
 		uiList.value.push(info);
 		const {ui} = info;
-		panelList.value.push(markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`))));
+		panelList.value.push({id, ctrl: markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`)))});
 	}
 	selectedTabId.value = uiList.value[0].id;
 });
@@ -55,8 +55,8 @@ sendCurrentNode(() => {
 		<v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
 		variant="solo-filled" density="compact" hide-details rounded="0" />
 	</v-container>
-	<v-container v-for="(panel, index) of panelList" :key="uiList[index].id" class="pa-0">
-		<component v-show="uiList[index].id === selectedTabId" :is="panel" :id="uiList[index].id" />
+	<v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
+		<component v-show="panel.id === selectedTabId" :is="panel.ctrl" :id="panel.id" />
 	</v-container>
 	<v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true" class="mb-n4">
 		Reset camera
