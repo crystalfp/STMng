@@ -65,7 +65,6 @@ sendCurrentNode(() => {
 
 
 <style>
-/* stylelint-disable selector-class-pattern */
 .title-container .v-select__selection-text {
 	font-size: 140%;
 }

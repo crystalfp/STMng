@@ -9,7 +9,7 @@
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
-import {sendAlertMessage, sendToClientSync} from "../modules/WindowsUtilities";
+import {sendAlertMessage} from "../modules/WindowsUtilities";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 
@@ -32,7 +32,6 @@ export class StructureReader extends NodeCore {
 
 	private loopSteps = false;
 	private stepBackward = false;
-	private running = false;
 	private step = 1;
 
 	/** Total number of steps in the structure loaded */
@@ -55,7 +54,7 @@ export class StructureReader extends NodeCore {
 		{name: "formats",	type: "send",        callback: this.channelFormats.bind(this)},
 		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
-		{name: "step",		type: "invokeAsync", callback: this.channelStep.bind(this)},
+		{name: "step",		type: "invoke",      callback: this.channelStep.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -164,10 +163,8 @@ export class StructureReader extends NodeCore {
 			log.error(message);
 			return {error: message};
 		}
-		this.running = false;
 		this.useBohr = params.useBohr as boolean ?? true;
 		this.atomsTypes = params.atomsTypes as string ?? "";
-		this.stepIncrement = params.stepIncrement as number ?? 1;
 
 		let readerOptions: ReaderOptions;
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
@@ -213,7 +210,6 @@ export class StructureReader extends NodeCore {
 	private channelFormats(params: CtrlParams): void {
 
 		this.format = params.format as string;
-		this.running = false;
 	}
 
 	/**
@@ -266,17 +262,11 @@ export class StructureReader extends NodeCore {
 	 * @param params - Parameters from the client
 	 * @returns Params with the operation status
 	 */
-	private async channelStep(params: CtrlParams): Promise<CtrlParams> {
+	private channelStep(params: CtrlParams): CtrlParams {
 
 		const requestedStep = params.step as number ?? 1;
-		this.running        = params.running as boolean ?? false;
-		this.loopSteps      = params.loopSteps as boolean ?? false;
-		this.stepBackward   = params.stepBackward as boolean ?? false;
-		this.stepIncrement  = params.stepIncrement as number ?? 1;
 
 		if(requestedStep !== this.step) {
-
-			this.step = requestedStep;
 
 			if(requestedStep < 1 || requestedStep > this.structures.length) {
 				const message = `Requested step ${requestedStep} is not in range 1-${this.structures.length}`;
@@ -284,72 +274,13 @@ export class StructureReader extends NodeCore {
 				return {error: message};
 			}
 
+			this.step = requestedStep;
+
 			// Send the updated structure down the pipeline
 			this.toNextNode(this.structures[requestedStep-1]);
+
 		}
-
-		if(this.running) {
-
-			if(this.step < this.countSteps) {
-
-				while(this.running) {
-
-					if(this.stepBackward) {
-						this.step -= this.stepIncrement;
-
-						if(this.step === 1 && !this.loopSteps) {
-
-							this.running = false;
-						}
-						else if(this.step < 1) {
-							if(this.loopSteps) this.step = this.countSteps;
-							else {
-								this.step += this.stepIncrement;
-								this.running = false;
-								await sendToClientSync(this.id, "runningStep", {
-									running: false,
-								});
-								break;
-							}
-						}
-					}
-					else {
-						this.step += this.stepIncrement;
-
-						if(this.step === this.countSteps && !this.loopSteps) {
-
-							this.running = false;
-						}
-						else if(this.step > this.countSteps) {
-							if(this.loopSteps) this.step = 1;
-							else {
-								this.step -= this.stepIncrement;
-								this.running = false;
-								await sendToClientSync(this.id, "runningStep", {
-									running: false,
-								});
-								break;
-							}
-						}
-					}
-
-					// Send the updated structure down the pipeline
-					this.toNextNode(this.structures[this.step-1]);
-
-					// Update the UI
-					const response = await sendToClientSync(this.id, "runningStep", {
-						step: this.step,
-						running: this.running,
-					});
-					if(response.running !== undefined) this.running = response.running as boolean;
-
-					await new Promise((resolve) => setTimeout(resolve, 700));
-				}
-			}
-			return {running: this.running};
-		}
-
-		return {running: this.running};
+		return {};
 	}
 
 	// > Helper functions

@@ -27,7 +27,6 @@ const {labelWidth = "2rem"} = defineProps<{
 
 <style>
 
-/* stylelint-disable selector-class-pattern */
 .v-slider__label {
   /* stylelint-disable value-keyword-case */
   width: v-bind(labelWidth);

@@ -16,7 +16,6 @@ overrides:
   - "**/*.vue"
   customSyntax: postcss-html
 
-
 reportNeedlessDisables: true
 
 rules:
@@ -39,3 +38,4 @@ rules:
   selector-no-qualifying-type: null
   selector-pseudo-class-no-unknown: [true, {ignorePseudoClasses: [deep, slotted, global]}]
   shorthand-property-no-redundant-values: null
+  selector-class-pattern: null

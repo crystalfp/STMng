@@ -221,23 +221,6 @@ export const receiveFromNode = (id: string, channel: string, callback: (params: 
 };
 
 /**
- * Receive parameters as a synchronous message
- *
- * @param id - ID of the node sending the parameters
- * @param channel - Specify the channel inside the id related group
- * @param callback - Callback function called when a message is received
- */
-export const receiveFromNodeSync = (id: string, channel: string,
-									callback: (params: CtrlParams) => CtrlParams): void => {
-
-	const channelName = id + ":" + channel;
-    window.electron.ipcRenderer.on(channelName, (_event, params: CtrlParams) => {
-		const response = callback(params);
-		window.electron.ipcRenderer.send(channelName + "-response", response);
-	});
-};
-
-/**
  * Receive parameters as push message
  *
  * @param id - ID of the node sending the parameters

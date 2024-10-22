@@ -10,10 +10,10 @@
 import {ref, watch} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
-import {askNode, sendToNode, receiveFromNodeSync} from "@/services/RoutesClient";
+import {askNode, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
-import type {CtrlParams, FileFilter} from "@/types";
+import type {FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
 
@@ -70,35 +70,66 @@ askNode(id, "init")
     .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
 
 // Manage the step selection
-watch([step, running, loopSteps, stepIncrement, stepBackward], () => {
+watch([running, loopSteps, stepIncrement, stepBackward], async () => {
+
+    while(running.value) {
+
+        let nextStep = step.value;
+
+        if(stepBackward.value) {
+
+            // Steps backward
+            nextStep -= stepIncrement.value;
+
+            if(nextStep === 1) {
+
+                if(loopSteps.value) nextStep = countSteps.value;
+                else running.value = false;
+            }
+            else if(nextStep < 1) {
+                if(loopSteps.value) nextStep = countSteps.value;
+                else {
+                    nextStep += stepIncrement.value;
+                    running.value = false;
+                }
+            }
+        }
+        else {
+
+            // Steps forward
+            nextStep += stepIncrement.value;
+
+            if(nextStep === countSteps.value) {
+
+                if(loopSteps.value) nextStep = 1;
+                else running.value = false;
+            }
+            else if(nextStep > countSteps.value) {
+
+                if(loopSteps.value) nextStep = 1;
+                else {
+                    nextStep -= stepIncrement.value;
+                    running.value = false;
+                }
+            }
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        step.value = nextStep;
+    }
+});
+
+watch([step], () => {
 
     askNode(id, "step", {
         step: step.value,
-        running: running.value,
-        loopSteps: loopSteps.value,
-        stepBackward: stepBackward.value,
-        stepIncrement: stepIncrement.value
     })
     .then((params) => {
-        if(running.value && params.running === false) running.value = false;
+        if("error" in params) throw Error(params.error as string);
     })
     .catch((error: Error) => {
         showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
     });
-});
-
-receiveFromNodeSync(id, "runningStep", (params: CtrlParams): CtrlParams => {
-
-    if(params.step) step.value = params.step as number;
-
-    if(running.value) {
-        const updatedRunning = params.running as boolean;
-        if(updatedRunning !== undefined && !updatedRunning) {
-            running.value = false;
-        }
-    }
-
-    return {running: running.value};
 });
 
 /**
@@ -186,7 +217,6 @@ const selectedFile = (filename: string): void => {
             fileToRead: filename,
             atomsTypes: atomsTypes.value,
             useBohr: useBohr.value,
-            stepIncrement: stepIncrement.value,
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
