@@ -7,7 +7,8 @@
  * @since 2024-07-05
  */
 
-import {ref, computed} from "vue";
+import {ref, computed, watch} from "vue";
+import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
@@ -20,9 +21,10 @@ const {id} = defineProps<{
     id: string;
 }>();
 
-// Show this module has been loaded and access the control store
+// Show this module has been loaded and access the control store value set in the reader
 const controlStore = useControlStore();
 controlStore.hasWriter = true;
+const {writerAccumulate} = storeToRefs(controlStore);
 
 /** Formats that could be saved */
 const fileFormats = ["CHGCAR", "CIF", "POSCAR", "Shel-X", "XYZ"];
@@ -33,6 +35,7 @@ const outputFileFull = ref("");
 const continuous     = ref(false);
 const finish         = ref(false);
 const label          = ref("");
+const hint           = computed(() => (writerAccumulate.value ? "Set in Reader" : ""));
 
 // Initialize the control
 resetAlertMessage("structureWriter");
@@ -53,8 +56,13 @@ askNode(id, "init").then((params) => {
 /** Define the label for the capture button */
 const captureButtonLabel = computed(() => {
 
-    if(continuous.value) return controlStore.writerAccumulate ? "Stop" : "Start";
+    if(continuous.value) return writerAccumulate.value ? "Stop" : "Start";
     return "Capture";
+});
+
+watch([writerAccumulate], () => {
+
+    continuous.value = writerAccumulate.value;
 });
 
 /**
@@ -165,8 +173,8 @@ const selectedSaveFile = (filename: string): void => {
                  :filter="filterFromFormat(format)"
                  kind="save" @selected="selectedSaveFile" />
 
-  <v-row class="mt-10">
-    <v-switch v-model="continuous" color="primary" label="Continuous write"
+  <v-row class="mt-10" >
+    <v-switch v-model="continuous" color="primary" label="Continuous write" :hint="hint" persistent-hint
               density="compact" class="ml-6 mr-5" :disabled="controlStore.writerAccumulate" />
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
