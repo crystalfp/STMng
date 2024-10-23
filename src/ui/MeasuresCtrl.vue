@@ -15,7 +15,7 @@ import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
-import type {SelectedAtoms} from "@/types";
+import type {SelectedAtom} from "@/types";
 
 // > Properties
 const {id} = defineProps<{
@@ -34,7 +34,10 @@ const distanceBC = ref(-1);
 const distanceAC = ref(-1);
 const angleABC   = ref(-1);
 const volume     = ref(-1);
-const details    = ref<SelectedAtoms[]>([]);
+const details    = ref<SelectedAtom[]>([]);
+
+/** Show fractional coordinates */
+const useFractional = ref(false);
 
 // Prepare the graphical part
 const group = new THREE.Group();
@@ -98,7 +101,7 @@ watch(controlStore.atomsSelected, () => {
         distanceBC.value = params.distanceBC as number ?? -1;
         distanceAC.value = params.distanceAC as number ?? -1;
         angleABC.value   = params.angleABC as number ?? -1;
-        details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtoms[];
+        details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtom[];
 
         const pointSize = configStore.isPerspectiveCamera ? 0.3 : 6;
 		sm.clearGroup(groupName);
@@ -171,20 +174,38 @@ watch(polyhedronNewIdx, () => {
     }
 });
 
+/**
+ * Format one coordinate (cartesian of fractional) of the selected atom.
+ *
+ * @param detail - Selected atom details
+ * @param idx - Coordinate index to visualize
+ * @returns Formatted atom coordinate (cartesian of fractional)
+ */
+const showCoords = (detail: SelectedAtom, idx: number): string => {
+
+    if(useFractional.value) {
+        const fr = detail.fractional[idx];
+        return fr === -1 ? "none" : fr.toFixed(3);
+    }
+    return detail.position[idx].toFixed(3);
+};
+
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 mt-2 no-select">Selected atoms</v-label>
+  <v-switch v-model="useFractional" label="Show fractional coordinates"
+            color="primary" density="compact" class="ml-4 mt-2 mb-n4"/>
+  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Selected atoms</v-label>
   <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
     <tr v-for="line of details" :key="line.index">
       <td :style="`color: ${line.color};width:3rem`">{{ line.label }}</td>
       <td style="width: 1rem">{{ line.symbol }}</td>
       <td style="width: 3rem;text-align:right">[</td>
-      <td style="width: 1rem;text-align:right">{{ `${line.position[0].toFixed(2)},` }}</td>
-      <td style="width: 2rem;text-align:right">{{ `${line.position[1].toFixed(2)},` }}</td>
-      <td style="width: 2rem;text-align:right">{{ `${line.position[2].toFixed(2)}` }}</td>
+      <td style="width: 1rem;text-align:right">{{ `${showCoords(line, 0)},` }}</td>
+      <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 1)},` }}</td>
+      <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 2)}` }}</td>
       <td style="width: 0.5rem;text-align:right">]</td>
     </tr>
   </v-table>

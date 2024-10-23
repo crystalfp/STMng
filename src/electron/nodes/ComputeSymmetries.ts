@@ -334,6 +334,7 @@ export class ComputeSymmetries extends NodeCore {
 	private fillCell(out: ComputeSymmetriesOutput): Structure {
 
 		const idx: number[] = [];
+		const MARGIN = 1e-2;
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels} = out;
 		const structure: Structure = {
@@ -357,12 +358,12 @@ export class ComputeSymmetries extends NodeCore {
 			const zf = fractionalCoordinates[k+2];
 
 			// Mark atoms exactly on the border
-			if(xf < TOL && xf > -TOL)          	direction[i]  = X_MIN|X_ANY;
-			else if(xf > 1-TOL && xf < 1+TOL)	direction[i]  = X_MAX|X_ANY;
-			if(yf < TOL && yf > -TOL)			direction[i] |= Y_MIN|Y_ANY;
-			else if(yf > 1-TOL && yf < 1+TOL)	direction[i] |= Y_MAX|Y_ANY;
-			if(zf < TOL && zf > -TOL)			direction[i] |= Z_MIN|Z_ANY;
-			else if(zf > 1-TOL && zf < 1+TOL)	direction[i] |= Z_MAX|Z_ANY;
+			if(xf < MARGIN && xf > -MARGIN)			direction[i]  = X_MIN|X_ANY;
+			else if(xf > 1-MARGIN && xf < 1+MARGIN)	direction[i]  = X_MAX|X_ANY;
+			if(yf < MARGIN && yf > -MARGIN)			direction[i] |= Y_MIN|Y_ANY;
+			else if(yf > 1-MARGIN && yf < 1+MARGIN)	direction[i] |= Y_MAX|Y_ANY;
+			if(zf < MARGIN && zf > -MARGIN)			direction[i] |= Z_MIN|Z_ANY;
+			else if(zf > 1-MARGIN && zf < 1+MARGIN)	direction[i] |= Z_MAX|Z_ANY;
 
 			idx.push(i);
 		}

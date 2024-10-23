@@ -308,7 +308,7 @@ export interface WriterImplementation {
 }
 
 /** Selected atoms data for measure */
-export interface SelectedAtoms {
+export interface SelectedAtom {
 
     /** Atom index in the structure */
     index: number;
@@ -327,6 +327,9 @@ export interface SelectedAtoms {
 
     /** Covalent radius of the atom */
     radius: number;
+
+    /** Fractional coordinates. If cannot be computed it is [-1, -1, -1] */
+    fractional: PositionType;
 }
 
 /** Accept string for the file selector */

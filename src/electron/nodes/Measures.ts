@@ -8,9 +8,10 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, SelectedAtoms} from "@/types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition, SelectedAtom, PositionType} from "@/types";
 import {getAtomData} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
+import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
 const colors = ["#FF0000", "#00C300", "#4263FF"];
@@ -25,7 +26,7 @@ export class Measures extends NodeCore {
     private distanceBC = -1;
     private distanceAC = -1;
     private angleABC = -1;
-    private readonly details: SelectedAtoms[] = [];
+    private readonly details: SelectedAtom[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "compute", type: "invoke", callback: this.channelCompute.bind(this)},
@@ -123,20 +124,59 @@ export class Measures extends NodeCore {
 		const {atoms} = this.structure!;
 		this.details.length = 0;
 
+		let invalid = hasNoUnitCell(this.structure!.crystal.basis);
+		let fractionalCoordinates: number[] = [];
+		try {
+			if(!invalid) fractionalCoordinates = cartesianToFractionalCoordinates(this.structure!);
+		}
+		catch {
+			invalid = true;
+		}
+
 		if(idx1 !== undefined) {
 			const {position, atomZ} = atoms[idx1];
 			const {symbol, rCov} = getAtomData(atomZ);
-			this.details.push({index: idx1, label: labels[0], symbol, color: colors[0], position, radius: rCov});
+			const fractional: PositionType = invalid ? [-1, -1, -1] :
+					[fractionalCoordinates[3*idx1],
+					 fractionalCoordinates[3*idx1+1],
+					 fractionalCoordinates[3*idx1+2]];
+			this.details.push({index: idx1,
+							   label: labels[0],
+							   symbol,
+							   color: colors[0],
+							   position,
+							   radius: rCov,
+							   fractional});
 		}
 		if(idx2 !== undefined) {
 			const {position, atomZ} = atoms[idx2];
 			const {symbol, rCov} = getAtomData(atomZ);
-			this.details.push({index: idx2, label: labels[1], symbol, color: colors[1], position, radius: rCov});
+			const fractional: PositionType = invalid ? [-1, -1, -1] :
+					[fractionalCoordinates[3*idx2],
+					 fractionalCoordinates[3*idx2+1],
+					 fractionalCoordinates[3*idx2+2]];
+			this.details.push({index: idx2,
+							   label: labels[1],
+							   symbol,
+							   color: colors[1],
+							   position,
+							   radius: rCov,
+							   fractional});
 		}
 		if(idx3 !== undefined) {
 			const {position, atomZ} = atoms[idx3];
 			const {symbol, rCov} = getAtomData(atomZ);
-			this.details.push({index: idx3, label: labels[2], symbol, color: colors[2], position, radius: rCov});
+			const fractional: PositionType = invalid ? [-1, -1, -1] :
+					[fractionalCoordinates[3*idx3],
+					 fractionalCoordinates[3*idx3+1],
+					 fractionalCoordinates[3*idx3+2]];
+			this.details.push({index: idx3,
+							   label: labels[2],
+							   symbol,
+							   color: colors[2],
+							   position,
+							   radius: rCov,
+							   fractional});
 		}
 	}
 
