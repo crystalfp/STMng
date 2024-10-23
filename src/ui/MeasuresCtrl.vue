@@ -8,7 +8,7 @@
  */
 
 import * as THREE from "three";
-import {ref, watch} from "vue";
+import {ref, watch, shallowRef} from "vue";
 import {storeToRefs} from "pinia";
 import {sm} from "@/services/SceneManager";
 import {useControlStore} from "@/stores/controlStore";
@@ -34,7 +34,7 @@ const distanceBC = ref(-1);
 const distanceAC = ref(-1);
 const angleABC   = ref(-1);
 const volume     = ref(-1);
-const details    = ref<SelectedAtom[]>([]);
+const details    = shallowRef<SelectedAtom[]>([]);
 
 /** Show fractional coordinates */
 const useFractional = ref(false);
@@ -106,7 +106,8 @@ watch(controlStore.atomsSelected, () => {
         const pointSize = configStore.isPerspectiveCamera ? 0.3 : 6;
 		sm.clearGroup(groupName);
         for(const detail of details.value) {
-            const geom = new THREE.IcosahedronGeometry(detail.radius*0.6, 4);
+            const subdivisions = detail.radius > 0.5 ? 4 : 1;
+            const geom = new THREE.IcosahedronGeometry(detail.radius*0.6, subdivisions);
             const mat = new THREE.PointsMaterial({color: detail.color, size: pointSize});
             const points = new THREE.Points(geom, mat);
             points.position.set(detail.position[0], detail.position[1], detail.position[2]);

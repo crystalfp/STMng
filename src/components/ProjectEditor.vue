@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, onMounted, computed} from "vue";
+import {ref, onMounted, computed, shallowRef} from "vue";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
@@ -258,7 +258,7 @@ onMounted(() => {
 closeWithEscape("/editor");
 
 const showInfo = ref(false);
-const infoContent = ref<{label: string; value: string}[]>([]);
+const infoContent = shallowRef<{label: string; value: string}[]>([]);
 
 /**
  * Show the data pertaining to a node and toggle its visibility

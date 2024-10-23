@@ -25,7 +25,7 @@ ChartJS.register(
     Tooltip,
     Legend);
 
-const chartType = ref<string>("");
+const chartType = ref("");
 let decodedData: ChartParams;
 receiveInWindow((data) => {
 

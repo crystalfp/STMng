@@ -2,7 +2,6 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Put style scoped where missing (or add a comment why is not used)
-  ☐ Add backward in read structure
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Check if v-memo could be used in some v-for
 
@@ -26,7 +25,6 @@ ToDo eventually:
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
-  ☐ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}`
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
@@ -54,6 +52,8 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Add backward in read structure @done(2024-10-23 14:46) @project(To do)
+  ✔ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}` @done(2024-10-23 14:48) @project(ToDo eventually)
   ✔ Check v-for don't have index in :key [check ControlsContainer, change panels] @done(2024-10-21 11:33) @project(To do)
   ✘ Check if ShallowRef could be used (and triggerRef to trigger its reactivity) [uiList in ControlsContainer] @cancelled(2024-10-21 11:33) @project(To do)
   ✘ Try `<datalist>` for atoms type field in StructureReaderCtrl (and `useID()`) @cancelled(2024-10-20 08:46) @project(To do)

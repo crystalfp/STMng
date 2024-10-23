@@ -15,14 +15,8 @@ import maxlenPlugin from "@alasdair/eslint-plugin-max-len";
 import tsdocPlugin from "eslint-plugin-tsdoc";
 import electronPlugin from "eslint-plugin-electron-extension";
 import jsPlugin from "@eslint/js"
-import vuetifyPlugin from "eslint-plugin-vuetify";
-import {FlatCompat} from "@eslint/eslintrc"
 import stylistic from "@stylistic/eslint-plugin";
 import * as depend from "eslint-plugin-depend";
-
-const compat = new FlatCompat({
-    config: vuetifyPlugin.configs.recommended.rules,
-});
 
 /* @type {import('eslint').Linter.Config[]} */
 export default [{
@@ -84,7 +78,6 @@ export default [{
         "@alasdair/max-len": maxlenPlugin,
         tsdoc: tsdocPlugin,
         "electron-extension": electronPlugin,
-        vuetify: vuetifyPlugin,
         "@stylistic": stylistic,
         depend: depend,
     },
@@ -109,14 +102,13 @@ export default [{
         ...securityPlugin.configs["recommended-legacy"].rules,
         ...sonarjsPlugin.configs.recommended.rules,
         ...regexpPlugin.configs.recommended.rules,
-        // ...vuePlugin.configs["flat/essential"].rules,
-        // ...vuePlugin.configs["flat/strongly-recommended"].rules,
+        ...vuePlugin.configs["flat/essential"].rules,
+        ...vuePlugin.configs["flat/strongly-recommended"].rules,
         ...vuePlugin.configs["flat/recommended"].rules,
         ...typescriptPlugin.configs.recommended.rules,
         ...typescriptPlugin.configs["recommended-type-checked"].rules,
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
         ...typescriptPlugin.configs["strict-type-checked"].rules,
-        ...compat.extends("plugin:vue/base", "plugin:vuetify/base").rules,
         ...depend.configs["flat/recommended"].rules,
 
         "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
