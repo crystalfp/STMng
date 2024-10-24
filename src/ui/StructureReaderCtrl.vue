@@ -70,7 +70,21 @@ askNode(id, "init")
     .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
 
 // Manage the step selection
-watch([running, loopSteps, stepIncrement, stepBackward], async () => {
+watch([step, running, loopSteps, stepIncrement, stepBackward], async () => {
+
+    if(!running.value) {
+
+        askNode(id, "step", {
+            step: step.value,
+        })
+        .then((params) => {
+            if("error" in params) throw Error(params.error as string);
+        })
+        .catch((error: Error) => {
+            showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
+        });
+        return;
+    }
 
     while(running.value) {
 
@@ -115,21 +129,16 @@ watch([running, loopSteps, stepIncrement, stepBackward], async () => {
         }
 
         await new Promise((resolve) => setTimeout(resolve, 200));
-        step.value = nextStep;
+
+        try {
+            const response = await askNode(id, "step", {step: nextStep});
+            if("error" in response) throw Error(response.error as string);
+            step.value = nextStep;
+        }
+        catch(error: unknown) {
+            showAlertMessage(`Error from stepping: ${(error as Error).message}`, "structureReader");
+        };
     }
-});
-
-watch([step], () => {
-
-    askNode(id, "step", {
-        step: step.value,
-    })
-    .then((params) => {
-        if("error" in params) throw Error(params.error as string);
-    })
-    .catch((error: Error) => {
-        showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
-    });
 });
 
 /**
@@ -149,12 +158,7 @@ const deltaStep = (delta: number): void => {
  */
 const togglePlay = (): void => {
 
-    if(running.value) running.value = false;
-    else if(step.value < countSteps.value) running.value = true;
-    else if(loopSteps.value) {
-        step.value = 1;
-        running.value = true;
-    }
+    running.value = !running.value;
 };
 
 /**
@@ -347,7 +351,7 @@ const label2 = ref("");
                       label="Step increment" :min="1" class="ml-3 mr-8" />
     </v-row>
     <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
-    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-8" />
+    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9" />
     <v-row class="mr-2">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
