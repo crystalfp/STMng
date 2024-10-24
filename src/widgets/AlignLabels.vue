@@ -26,6 +26,7 @@ const {labelWidth = "2rem"} = defineProps<{
 
 
 <style>
+/* Style cannot be scoped */
 
 .v-slider__label {
   /* stylelint-disable value-keyword-case */

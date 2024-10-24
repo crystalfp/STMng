@@ -351,23 +351,6 @@ export const askClient = (id: string, channel: string): Promise<string> => {
 };
 
 /**
- * Send parameters to client process and receive parameters back synchronously
- *
- * @param id - ID of the node sending the parameters
- * @param channel - Specify the channel inside the id related group
- * @param params - Parameters to be sent to client
- * @returns The params from client
- */
-export const sendToClientSync = (id: string, channel: string, params: CtrlParams): Promise<CtrlParams> => {
-
-    const channelName = id + ":" + channel;
-    return new Promise((resolve) => {
-        mainWin.webContents.send(channelName, params);
-        ipcMain.once(channelName + "-response", (_event, response: CtrlParams) => {resolve(response);});
-    });
-};
-
-/**
  * Push structure data to client
  *
  * @param id - ID of the node sending the parameters

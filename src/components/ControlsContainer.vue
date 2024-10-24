@@ -55,17 +55,17 @@ sendCurrentNode(() => {
 		<v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
 		variant="solo-filled" density="compact" hide-details rounded="0" />
 	</v-container>
-	<v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
+	<v-container v-for="panel of panelList" v-memo="[panelList]" :key="panel.id" class="pa-0">
 		<component v-show="panel.id === selectedTabId" :is="panel.ctrl" :id="panel.id" />
 	</v-container>
-	<v-btn density="comfortable" variant="tonal" rounded="0" @click="controlStore.reset = true" class="mb-n4">
-		Reset camera
-	</v-btn>
+	<v-btn density="comfortable" variant="tonal" rounded="0"
+		   @click="controlStore.reset = true" class="mb-n4">Reset camera</v-btn>
 </template>
 
 
 <style>
+/* Style cannot be scoped */
 .title-container .v-select__selection-text {
-	font-size: 140%;
+  font-size: 140%;
 }
 </style>

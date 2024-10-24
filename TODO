@@ -1,9 +1,7 @@
 To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
-  ☐ Put style scoped where missing (or add a comment why is not used)
   ☐ Separate UI management and rendering logic in *Ctrl
-  ☐ Check if v-memo could be used in some v-for
 
 Bugs:
 
@@ -52,6 +50,8 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Put style scoped where missing (or add a comment why is not used) @done(2024-10-24 06:31) @project(To do)
+  ✔ Check if v-memo could be used in some v-for @done(2024-10-24 06:37) @project(To do)
   ✔ Add backward in read structure @done(2024-10-23 14:46) @project(To do)
   ✔ Use `::-webkit-scrollbar {width: 10px; background: #f1f1f1; border-radius: 10px;}` @done(2024-10-23 14:48) @project(ToDo eventually)
   ✔ Check v-for don't have index in :key [check ControlsContainer, change panels] @done(2024-10-21 11:33) @project(To do)
