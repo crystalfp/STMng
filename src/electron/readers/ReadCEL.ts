@@ -1,33 +1,14 @@
 /**
  * Read Powdercell's CEL-format file
  *
+ * ftp://ftp.bam.de/Powder_Cell/structure_files/ (old)
+ * http://ccp14.cryst.bbk.ac.uk/ccp/web-mirrors/powdcell/a_v/v_1/powder/details/powcell.htm
+ *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-24
  */
-
-/*
-  Read/write Powdercell's CEL-format file
-
-ftp://ftp.bam.de/Powder_Cell/structure_files/
-http://ccp14.cryst.bbk.ac.uk/ccp/web-mirrors/powdcell/a_v/v_1/powder/details/powcell.htm
-
-cell 8.23289 4.63556 3.01277 90 90 55.7328
-natom 10
-Al1 13 0.90956 0.25542 0.54403
-Al2 13 0.65956 0.0361 0.04403
-Al3 13 0.15956 0.47474 0.04403
-Al4 13 0.40956 0.75542 0.54403
-O1 8 0.84399 0.5655 0.04403
-O2 8 0.47513 0.93437 0.04403
-O3 8 0.65956 0.25789 0.54403
-O4 8 0.97513 0.94534 0.04403
-O5 8 0.15956 0.25295 0.54403
-O6 8 0.34399 0.57647 0.04403
-rgnr 1
-
-*/
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
@@ -57,7 +38,7 @@ export class ReaderCEL implements ReaderImplementation {
 			const lineUC = lineNC.toUpperCase();
 			if(lineUC.startsWith("REM")) continue;
 
-			const fields = lineNC.split(/ +/);
+			const fields = lineNC.split(/\s+/);
 
 			if(lineUC.startsWith("CELL")) {
 

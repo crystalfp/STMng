@@ -63,7 +63,7 @@ export class ReaderSHELX implements ReaderImplementation {
 				latticeType = Number.parseInt(lineUC.slice(5), 10);
 			}
 			else if(lineUC.startsWith("CELL")) {
-				const fields = lineUC.split(/ +/);
+				const fields = lineUC.split(/\s+/);
 				if(fields.length < 8) continue;
 				const a = Number.parseFloat(fields[2]);
 				const b = Number.parseFloat(fields[3]);
@@ -76,7 +76,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			}
 			else {
 				// Ordinary atom line
-				const fields = line.split(/ +/);
+				const fields = line.split(/\s+/);
 				if(fields.length < 5) continue;
 
 				// Extract the element type

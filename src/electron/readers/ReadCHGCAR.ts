@@ -68,7 +68,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					lineType = LineType.basis;
 					break;
 				case LineType.basis: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					const {basis} = structures[currentStructure].crystal;
 					basis[base]   = Number.parseFloat(fields[0]);
 					basis[base+1] = Number.parseFloat(fields[1]);
@@ -100,7 +100,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.counts: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					if(/\d+/.test(fields[0])) {
 						// Line with atoms count. Put them in an array
 						atomsCount.length = 0;
@@ -170,7 +170,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.atoms: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					if(fields.length < 3) {
 						lineType = LineType.exit;
 						break;
@@ -210,7 +210,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					lineType = LineType.volumeCount;
 					break;
 				case LineType.volumeCount: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					if(fields.length !== 3) break;
 
 					const sides: PositionType = [
@@ -242,7 +242,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.volumeValues: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					for(const field of fields) {
 						volume[volumeIndex++] = Number.parseFloat(field);
 					}

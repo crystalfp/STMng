@@ -30,6 +30,7 @@ const showSymmetriesDialog = ref(false);
 const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
+const fillTolerance = ref(-5);
 
 /**
  * Convert in human readable format the exponent of 10
@@ -50,6 +51,7 @@ askNode(id, "init")
         symprecStandardize.value = params.symprecStandardize as number ?? -1;
         symprecDataset.value = params.symprecDataset as number ?? -1;
         fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
+        fillTolerance.value = params.fillTolerance as number ?? -5;
         showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
         standardizeOnly.value = params.standardizeOnly as boolean ?? false;
     })
@@ -62,6 +64,7 @@ watch([applyInputSymmetries,
        symprecStandardize,
        symprecDataset,
        fillUnitCell,
+       fillTolerance,
        standardizeOnly], () => {
 
     askNode(id, "compute", {
@@ -71,6 +74,7 @@ watch([applyInputSymmetries,
         symprecStandardize: symprecStandardize.value,
         symprecDataset: symprecDataset.value,
         fillUnitCell: fillUnitCell.value,
+        fillTolerance: fillTolerance.value,
         standardizeOnly: standardizeOnly.value
     })
     .then((params) => {
@@ -100,7 +104,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     <v-switch v-model="standardizeCell" color="primary"
               label="Standardize cell" density="compact" class="mt-n5 ml-3" />
     <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
-  <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
+    <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
     </g-debounced-slider>
@@ -128,6 +132,10 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
   </v-row>
 
   <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-3 mt-4" />
+  <g-debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
+                      :min="-5" :max="-1" :step="0.02" class="ml-2 mb-4">
+    <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
+  </g-debounced-slider>
 
   <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 

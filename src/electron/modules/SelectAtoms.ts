@@ -29,7 +29,7 @@ export const selectAtomsByKind = (structure: Structure,
 	if(kind !== "all") {
 		atomsSelector = atomsSelector.trim();
 		if(atomsSelector === "") return [];
-		selectorsList = atomsSelector.toLowerCase().split(/ +/);
+		selectorsList = atomsSelector.toLowerCase().split(/\s+/);
 	}
 
 	// Extract structure parts

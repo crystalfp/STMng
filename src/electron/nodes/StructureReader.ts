@@ -174,7 +174,7 @@ export class StructureReader extends NodeCore {
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
 
 			const atomsTypesTrimmed = this.atomsTypes.trim();
-			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/ +/);
+			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/\s+/);
 			readerOptions = {atomsTypes: atoms};
 		}
 		else {
@@ -311,7 +311,7 @@ export class StructureReader extends NodeCore {
 		}
 		else {
 
-			typesAfter = renamedAtomTypes.split(/ +/);
+			typesAfter = renamedAtomTypes.split(/\s+/);
 			if(currentAtomsZ.size > typesAfter.length) {
 				const missing = currentAtomsZ.size - typesAfter.length;
 				const plural = missing === 1 ? "" : "s";

@@ -41,7 +41,7 @@ export class ReaderXYZ implements ReaderImplementation {
 				commentLine = false;
 			}
 			else {
-				const fields = line.trim().split(/ +/);
+				const fields = line.trim().split(/\s+/);
 				const position: [number, number, number] = [
 					Number.parseFloat(fields[1]),
 					Number.parseFloat(fields[2]),

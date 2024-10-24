@@ -61,6 +61,7 @@ export class ComputeSymmetries extends NodeCore {
 	private symprecStandardize = -1;
 	private symprecDataset = -1;
 	private fillUnitCell  = true;
+	private fillTolerance = -5;
 	private standardizeOnly = false;
 	private computedSpaceGroup = "";
 
@@ -91,6 +92,7 @@ export class ComputeSymmetries extends NodeCore {
 	        symprecStandardize: this.symprecStandardize,
 	        symprecDataset: this.symprecDataset,
 	        fillUnitCell: this.fillUnitCell,
+			fillTolerance: this.fillTolerance,
 	        standardizeOnly: this.standardizeOnly,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
@@ -102,7 +104,8 @@ export class ComputeSymmetries extends NodeCore {
         this.standardizeCell = params.standardizeCell as boolean ?? true;
         this.symprecStandardize = params.symprecStandardize as number ?? -1;
         this.symprecDataset = params.symprecDataset as number ?? -1;
-        this.fillUnitCell  = params.fillUnitCell as boolean ?? true;
+        this.fillUnitCell = params.fillUnitCell as boolean ?? true;
+		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
 	}
 
@@ -316,7 +319,7 @@ export class ComputeSymmetries extends NodeCore {
 	private fillCell(out: ComputeSymmetriesOutput): Structure {
 
 		const idx: number[] = [];
-		const MARGIN = 1e-2;
+		const MARGIN = 10**this.fillTolerance;
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels} = out;
 		const structure: Structure = {
@@ -581,6 +584,7 @@ export class ComputeSymmetries extends NodeCore {
 			symprecStandardize: this.symprecStandardize,
 			symprecDataset: this.symprecDataset,
 			fillUnitCell: this.fillUnitCell,
+			fillTolerance: this.fillTolerance,
 			standardizeOnly: this.standardizeOnly,
 		};
 	}
@@ -598,6 +602,7 @@ export class ComputeSymmetries extends NodeCore {
         this.symprecStandardize = params.symprecStandardize as number ?? -1;
         this.symprecDataset = params.symprecDataset as number ?? -1;
         this.fillUnitCell  = params.fillUnitCell as boolean ?? true;
+		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
 
 		this.computeSymmetries();

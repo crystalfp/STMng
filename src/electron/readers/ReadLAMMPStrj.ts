@@ -59,7 +59,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 
 			const line = lineRaw.trim();
 			if(line === "" || line.startsWith("#")) continue;
-			const fields = line.split(/ +/);
+			const fields = line.split(/\s+/);
 
 			switch(lineType) {
 				case LineType.item:

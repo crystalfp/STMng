@@ -79,7 +79,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 					};
 					structures.push(structure);
 				}
-				const fields = line.trim().split(/ +/);
+				const fields = line.trim().split(/\s+/);
 
 				const position = fractionalToCartesianCoordinates(
 									crystal.basis,

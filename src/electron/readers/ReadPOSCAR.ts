@@ -57,7 +57,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					break;
 				case LineType.scale: {
 					if(line.trim() === "") {lineType = LineType.exit; break;}
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					if(fields.length > 1) {lineType = LineType.exit; break;}
 					structures.push(new EmptyStructure());
 					++currentStep;
@@ -68,7 +68,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 				}
 				case LineType.basis: {
 
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					const {basis} = structures[currentStep].crystal;
 					basis[base]   = Number.parseFloat(fields[0]);
 					basis[base+1] = Number.parseFloat(fields[1]);
@@ -100,7 +100,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.counts: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 					if(/\d+/.test(fields[0])) {
 						// Line with atoms count. Put them in an array
 						atomsCount.length = 0;
@@ -168,7 +168,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.atoms: {
-					const fields = line.trim().split(/ +/);
+					const fields = line.trim().split(/\s+/);
 
 					const position = cartesian ? [
 											Number.parseFloat(fields[0]) * scaleFactor,

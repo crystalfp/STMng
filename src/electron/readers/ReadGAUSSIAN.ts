@@ -54,7 +54,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const stream = rd.createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
 
-			const fields = line.trim().split(/ +/);
+			const fields = line.trim().split(/\s+/);
 
 			switch(lineType) {
 				case LineType.comment1:
