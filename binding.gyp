@@ -12,7 +12,8 @@
 				"src/cpp/sginfo/sginfo.c",
 				"src/cpp/sginfo/sgio.c",
 				"src/cpp/sginfo/sgsi.c",
-				"src/cpp/FindAndApplySymmetries.cpp"
+				"src/cpp/FindAndApplySymmetries.cpp",
+				"src/cpp/ConvertSpaceGroupNumber.cpp"
 			],
 			"include_dirs": [
 				"<!@(node -p \"require('node-addon-api').include\")",
@@ -50,7 +51,8 @@
 					"msvs_settings": {
 						"VCCLCompilerTool": {
 							"ExceptionHandling": 1,
-							"WholeProgramOptimization": "true", # /GL, whole program optimization, needed for LTCG
+							# /GL, whole program optimization, needed for LTCG
+							"WholeProgramOptimization": "true",
 							"OmitFramePointers": "true",
 							"EnableFunctionLevelLinking": "true",
 							"EnableIntrinsicFunctions": "true",

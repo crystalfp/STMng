@@ -27,6 +27,7 @@ const {id} = defineProps<{
 /** Formats that could be loaded */
 const fileFormats = [
     "CHGCAR",
+    "CEL",
     "CIF",
     "Gaussian Cube",
     "LAMMPS",
@@ -269,6 +270,10 @@ const filterFromFormat = (fileFormat: string): string => {
 	switch(fileFormat) {
 		case "CHGCAR":
 			filter = [{name: "CHGCAR",	        extensions: ["chgcar"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
+		case "CEL":
+			filter = [{name: "CEL",		        extensions: ["cel"]},
 					  {name: "All",		        extensions: ["*"]}];
             break;
 		case "CIF":

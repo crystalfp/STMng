@@ -22,6 +22,7 @@ import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
 import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
 import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
 import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
+import {ReaderCEL} from "../readers/ReadCEL";
 
 import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
 
@@ -148,6 +149,9 @@ export class StructureReader extends NodeCore {
 					break;
 				case "CIF":
 					reader = new ReaderCIF();
+					break;
+				case "CEL":
+					reader = new ReaderCEL();
 					break;
 				case "CHGCAR":
 					reader = new ReaderCHGCAR();
@@ -278,7 +282,6 @@ export class StructureReader extends NodeCore {
 
 			// Send the updated structure down the pipeline
 			this.toNextNode(this.structures[requestedStep-1]);
-
 		}
 		return {};
 	}
@@ -324,7 +327,8 @@ export class StructureReader extends NodeCore {
 
 			const to = getAtomicNumber(typesAfter[idx]);
 			if(to === 0) {
-				sendAlertMessage(`Invalid symbol "${typesAfter[idx]}" in the renamed list`, "structureReader");
+				sendAlertMessage(`Invalid symbol "${typesAfter[idx]}" in the renamed list`,
+								 "structureReader");
 				return;
 			}
 			mapAtomZ.set(from, to);

@@ -1,6 +1,7 @@
 #include <napi.h>
 #include <string>
 #include "FindAndApplySymmetries.h"
+#include "ConvertSpaceGroupNumber.h"
 
 using namespace std;
 
@@ -171,9 +172,52 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	return obj;
 }
 
+Napi::Value convertSpaceGroupNumber(const Napi::CallbackInfo& info) {
+
+	Napi::Env env = info.Env();
+
+	// Check arguments
+	if(info.Length() != 2) {
+    	Napi::TypeError::New(env, "Expecting exactly two arguments").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 0: spaceGroupNumber
+	if(!info[0].IsNumber()) {
+    	Napi::TypeError::New(env, "First argument should be a number").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 1: variation
+	if(!info[1].IsNumber()) {
+    	Napi::TypeError::New(env, "Second argument should be a number").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 0: integer
+	int spaceGroupNumber = static_cast<int>(info[0].As<Napi::Number>());
+
+	// Argument 1: integer
+	int variation = static_cast<int>(info[1].As<Napi::Number>());
+
+	// Execute the native function
+	int errorNumber;
+	std::string out = doConvertSpaceGroupNumber(spaceGroupNumber, variation, errorNumber);
+
+	// Return the data
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("spaceGroup", out);
+	obj.Set("errorNumber", errorNumber);
+
+	return obj;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
-	exports.Set(Napi::String::New(env, "findAndApplySymmetries"), Napi::Function::New(env, findAndApplySymmetries));
+	exports.Set(Napi::String::New(env, "findAndApplySymmetries"),
+				Napi::Function::New(env, findAndApplySymmetries));
+	exports.Set(Napi::String::New(env, "convertSpaceGroupNumber"),
+				Napi::Function::New(env, convertSpaceGroupNumber));
 	return exports;
 }
 

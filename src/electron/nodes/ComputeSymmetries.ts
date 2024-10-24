@@ -8,32 +8,12 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {NodeCore} from "../modules/NodeCore";
+import {findAndApplySymmetries} from "../modules/NativeFunctions";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType, PositionType} from "@/types";
-
-/** Type of the native code output */
-interface NativeOutput {
-	spaceGroup: string;
-	basis: Float64Array;
-	atomsZ: Int32Array;
-	fractionalCoordinates: Float64Array;
-	noCellChanges: boolean;
-	status: string;
-}
-
-interface NativeModule {
-	findAndApplySymmetries: (basis: Float64Array, spaceGroup: string, atomsZ: Int32Array,
-							 fractionalCoordinates: Float64Array, applyInputSymmetries: boolean,
-							 enableFindSymmetries: boolean, standardizeCell: boolean,
-							 standardizeOnly: boolean,
-							 symprecStandardize: number, symprecDataset: number) => NativeOutput;
-}
-
-/* eslint-disable-next-line @typescript-eslint/no-require-imports, unicorn/prefer-module */
-const addon = require("../build/Release/native") as NativeModule;
 
 /** Output from the native module that computes and find symmetries */
 interface ComputeSymmetriesOutput {
@@ -204,11 +184,11 @@ export class ComputeSymmetries extends NodeCore {
 		const applyInputSymmetries = this.applyInputSymmetries && !noSymmetries;
 
 		// Do the computation
-		const computed = addon.findAndApplySymmetries(basis, crystal.spaceGroup, outAtomsZ,
-													  outFractionalCoordinates, applyInputSymmetries,
-													  this.enableFindSymmetries, this.standardizeCell,
-													  this.standardizeOnly,
-													  symprecStandardize, symprecDataset);
+		const computed = findAndApplySymmetries(basis, crystal.spaceGroup, outAtomsZ,
+												outFractionalCoordinates, applyInputSymmetries,
+												this.enableFindSymmetries, this.standardizeCell,
+												this.standardizeOnly,
+												symprecStandardize, symprecDataset);
 
 		// Reformat the returned values
 		const atomsZOut = [...computed.atomsZ];
@@ -226,8 +206,10 @@ export class ComputeSymmetries extends NodeCore {
 			status: computed.status
 		};
 		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
-		// eslint-disable-next-line unicorn/consistent-destructuring
-		if(out.noCellChanges && this.inputStructure) this.structure.volume = this.inputStructure.volume ?? [];
+		if(out.noCellChanges && this.inputStructure) {
+			// eslint-disable-next-line unicorn/consistent-destructuring
+			this.structure.volume = this.inputStructure.volume ?? [];
+		}
 
 		this.toNextNode(this.structure);
 
