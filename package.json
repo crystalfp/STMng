@@ -31,6 +31,7 @@
     "js-yaml": "^4.1.0",
     "pinia": "^2.2.4",
     "three": "^0.169.0",
+    "three-viewport-gizmo": "^0.1.5",
     "tmp": "^0.2.3",
     "troika-three-text": "^0.50.2",
     "valibot": "^0.42.1",

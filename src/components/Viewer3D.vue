@@ -14,6 +14,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
+// import {ViewportGizmo} from "three-viewport-gizmo";
 import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
@@ -354,8 +355,28 @@ onMounted(() => {
     // Create lights
     sm.createLights();
 
-    // const helper = new THREE.CameraHelper( camera );
-    // scene.add( helper );
+    // const gizmoOptions = {
+    //   container: cnv.value,
+    //   size: 100,
+    //   placement: "bottom-right",
+    //   lineWidth: 2,
+    //   backgroundSphere: {
+    //     enabled: true,
+    //     color: "#00FF00",
+    //     opacity: 0.5
+    //   },
+    //   font: {},
+    //   resolution: 100,
+    //   x: {colors: {main: "#0000FF"}},
+    //   y: {colors: {main: "#00FF00"}},
+    //   z: {colors: {main: "#FF0000"}},
+    //   nx: {colors: {main: "#000"}},
+    //   ny: {colors: {main: "#000"}},
+    //   nz: {colors: {main: "#000"}},
+    // };
+    // const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
+    // const helper = new THREE.CameraHelper(camera);
+    // scene.add(helper);
     // const viewHelper = new ViewHelper(camera, renderer.domElement);
 
     // Change the camera parameters when the window changes or ask for an expanded view
@@ -385,7 +406,8 @@ onMounted(() => {
     const clock = new THREE.Clock();
     const animate = (): void => {
         renderer.render(scene, camera);
-        // viewHelper.render(renderer);
+        // viewportGizmo.render();
+        // helper.render(renderer);
         controls.update(clock.getDelta());
     };
     renderer.setAnimationLoop(animate);
