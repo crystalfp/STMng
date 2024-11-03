@@ -145,8 +145,9 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
     secondaryWin.once("ready-to-show", () => {
         secondaryWin?.show();
     });
+
     if(params.data) secondaryWin.once("show", () => {
-        secondaryWin.webContents.send("SYSTEM:DATA", params.data);
+        setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 100);
     });
 
     // Manage the list of opened windows

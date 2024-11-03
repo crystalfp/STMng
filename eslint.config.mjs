@@ -352,6 +352,7 @@ export default [{
         "sonarjs/elseif-without-else": "off",
         "sonarjs/no-nested-switch": "off",
         "sonarjs/no-commented-code": "off",
+        "sonarjs/void-use": "off",
         "sonarjs/different-types-comparison": "off",
         "unicorn/better-regex": "off",
         "unicorn/no-null": "off",

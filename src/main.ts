@@ -13,7 +13,7 @@ import {createPinia} from "pinia";
 // The app
 import App from "./App.vue";
 
-// Plugins
+// The router plugin
 import {router} from "./router";
 
 // Vuetify
@@ -22,7 +22,7 @@ import {createVuetify} from "vuetify";
 import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
 import {md2} from "vuetify/blueprints";
 
-// Vuetify components used
+// Vuetify components that will be used
 import {VSlider} from "vuetify/components/VSlider";
 import {VBtn} from "vuetify/components/VBtn";
 import {VLabel} from "vuetify/components/VLabel";

@@ -39,3 +39,4 @@ rules:
   selector-pseudo-class-no-unknown: [true, {ignorePseudoClasses: [deep, slotted, global]}]
   shorthand-property-no-redundant-values: null
   selector-class-pattern: null
+  comment-empty-line-before: null

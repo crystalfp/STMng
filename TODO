@@ -50,6 +50,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Check why you cannot load dynamically components in router (seems onMounted is not executed) @done(2024-11-03 13:25) @project(To do)
   ✔ Put style scoped where missing (or add a comment why is not used) @done(2024-10-24 06:31) @project(To do)
   ✔ Check if v-memo could be used in some v-for @done(2024-10-24 06:37) @project(To do)
   ✔ Add backward in read structure @done(2024-10-23 14:46) @project(To do)

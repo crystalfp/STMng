@@ -19,7 +19,6 @@
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
-    "dependency-cruiser",
     "@types/eslint",
     "postcss-scss"
   ],

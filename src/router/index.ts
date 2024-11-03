@@ -1,5 +1,6 @@
 /**
  * Setup router. Besides main entry, one for each independent window to be created
+ * @remarks If the page content does not load, increase the timeout in WindowsUtilities
  *
  * @packageDocumentation
  *
@@ -9,10 +10,6 @@
 import {createWebHashHistory, createRouter} from "vue-router";
 
 import LayoutClient from "@/components/LayoutClient.vue";
-import ChartViewer from "@/components/ChartViewer.vue";
-import ProjectEditor from "@/components/ProjectEditor.vue";
-import ShowSymmetries from "@/components/ShowSymmetries.vue";
-import ShowLog from "@/components/ShowLog.vue";
 
 /** Routes for the external windows created */
 export const router = createRouter({
@@ -24,19 +21,19 @@ export const router = createRouter({
         },
         {
             path: "/chart",
-            component: ChartViewer
+            component: () => import("@/components/ChartViewer.vue")
         },
         {
             path: "/editor",
-            component: ProjectEditor
+            component: () => import("@/components/ProjectEditor.vue")
         },
         {
             path: "/symmetries",
-            component: ShowSymmetries
+            component: () => import("@/components/ShowSymmetries.vue")
         },
         {
             path: "/log",
-            component: ShowLog
+            component: () => import("@/components/ShowLog.vue")
         },
     ],
 });

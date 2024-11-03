@@ -20,6 +20,7 @@ html {
 
 :root {
   --container-height: calc(100vh - 121px);
+  --scrollbar-track: light-dark(#e6e6e6, #202020);
 }
 
 /* > Vuetify specific */
@@ -57,19 +58,26 @@ html {
 /* >> Scrollbar */
 ::-webkit-scrollbar {
   width: 15px;
+  height: 15px;
 }
 
 ::-webkit-scrollbar-track {
-  background: light-dark(#e6e6e6, #202020);
+  background-color: var(--scrollbar-track);
+  /* background-color: light-dark(#e6e6e6, #202020); */
   border-left: 1px solid light-dark(#dadada, #2c2c2c);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: light-dark(#b0b0b0, #3e3e3e);
-  border: solid 3px light-dark(#e6e6e6, #202020);
+  background-color: light-dark(#b0b0b0, #3e3e3e);
+  border: solid 3px var(--scrollbar-track);
+  /* border: solid 3px light-dark(#e6e6e6, #202020); */
   border-radius: 7px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: light-dark(#808080, #B3B3B3);
+  background-color: light-dark(#808080, #B3B3B3);
+}
+
+::-webkit-scrollbar-corner {
+  background-color: var(--v-theme-background);
 }
