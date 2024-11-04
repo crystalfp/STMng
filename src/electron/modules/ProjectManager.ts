@@ -18,7 +18,7 @@ import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
 import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "@/types";
 
-// NOTE 1) Add here the classes that defines the nodes
+// NOTE 1) Add here the classes that define the nodes
 import {CaptureView} from "../nodes/CaptureMedia";
 import {ChartViewer} from "../nodes/ChartViewer";
 import {ComputeBonds} from "../nodes/ComputeBonds";
@@ -35,6 +35,7 @@ import {StructureReader} from "../nodes/StructureReader";
 import {StructureWriter} from "../nodes/StructureWriter";
 import {Trajectories} from "../nodes/Trajectories";
 import {Viewer3D} from "../nodes/Viewer3D";
+import {DiffractionPattern} from "../nodes/DiffractionPattern";
 
 /**
  * @notExported
@@ -192,6 +193,8 @@ class ProjectManager {
 				return new Viewer3D(id);
 			case "capture-view":
 				return new CaptureView(id);
+			case "diffraction-pattern":
+				return new DiffractionPattern(id);
 			default:
 				throw Error(`Invalid node type ${nodeType}`);
 		}

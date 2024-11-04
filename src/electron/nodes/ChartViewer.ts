@@ -39,12 +39,14 @@ export class ChartViewer extends NodeCore {
 			{
 				label: "Data One",
 				backgroundColor: "#f87979",
+				fill: false,
 				data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11],
 				borderColor: "#f87979",
 			},
 			{
 				label: "Data Two",
 				backgroundColor: "#00ff00",
+				fill: false,
 				data: [4, 2, 2, 4, 1, 4, 5, 9, 6, 19, 3, 8],
 				borderColor: "#00ff00",
 			}

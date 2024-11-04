@@ -18,10 +18,13 @@ import type {FileFilter} from "@/types";
 import EnableCapture from "@/components/EnableCapture.vue";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 /** Formats that could be loaded */
@@ -68,7 +71,7 @@ askNode(id, "init")
         auxFileToRead.value = params.auxFileToRead as string ?? "";
         stepIncrement.value = params.stepIncrement as number ?? 1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for StructureReader: ${error.message}`, "structureReader"));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
 
 // Manage the step selection
 watch([step, running, loopSteps, stepIncrement, stepBackward], async () => {

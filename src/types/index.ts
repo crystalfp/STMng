@@ -374,12 +374,13 @@ export interface ChartOptions {
 }
 
 export interface ChartData {
-    labels: string[];
+    labels?: string[];
     datasets: {
-            label: string;
-            backgroundColor: string;
-            data: number[];
-            borderColor: string;
+        label: string;
+        fill: boolean;
+        backgroundColor: string;
+        data: number[] | {x: number; y: number}[];
+        borderColor: string;
     }[];
 }
 

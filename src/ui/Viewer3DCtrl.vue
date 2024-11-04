@@ -13,10 +13,13 @@ import {askNode, sendViewer3DState} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 /** Convert degrees to radiants */
@@ -31,7 +34,7 @@ askNode(id, "init")
 
         configStore.restoreState(params.rawStatus as string);
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for Viewer3D: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 // Send state on request from main process
 sendViewer3DState(id, "state", () => configStore.statusToSave);

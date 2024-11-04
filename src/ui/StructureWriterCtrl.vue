@@ -15,10 +15,13 @@ import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import type {FileFilter} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // Show this module has been loaded and access the control store value set in the reader
@@ -34,7 +37,7 @@ const outputFile     = ref("");
 const outputFileFull = ref("");
 const continuous     = ref(false);
 const finish         = ref(false);
-const label          = ref("");
+const writerLabel    = ref("");
 const hint           = computed(() => (writerAccumulate.value ? "Set in Reader" : ""));
 
 // Initialize the control
@@ -50,7 +53,7 @@ askNode(id, "init").then((params) => {
         outputFile.value = outputFileFull.value.slice(pos+1);
     }
 })
-.catch((error: Error) => showAlertMessage(`Error from UI init for StructureWriter: ${error.message}`,
+.catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                           "structureWriter"));
 
 /** Define the label for the capture button */
@@ -167,9 +170,9 @@ const selectedSaveFile = (filename: string): void => {
 <template>
 <v-container class="container">
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4" density="compact" @update:model-value="label=''"/>
+            :items="fileFormats" class="mt-4" density="compact" @update:model-value="writerLabel=''"/>
 
-  <g-select-file v-model="label" class="mt-2" :disabled="format === ''" title="Select save file"
+  <g-select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select save file"
                  :filter="filterFromFormat(format)"
                  kind="save" @selected="selectedSaveFile" />
 

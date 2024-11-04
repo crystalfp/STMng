@@ -17,10 +17,13 @@ import {sm} from "@/services/SceneManager";
 import type {CtrlParams} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 const showIsosurface = ref(false);
@@ -81,7 +84,7 @@ askNode(id, "init")
         limits.value[1] = params.limitHigh as number ?? 10;
         limitColormap.value = params.limitColormap as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for Isosurface: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
                                        vertices: number[][],

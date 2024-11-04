@@ -7,7 +7,7 @@
  * @since 2024-09-05
  */
 import {ref} from "vue";
-import {Bar, Line} from "vue-chartjs";
+import {Bar, Line, Scatter} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
@@ -48,6 +48,10 @@ closeWithEscape("/chart");
         :data="decodedData.data"
       />
       <Line v-else-if="chartType === 'line'"
+        :options="decodedData.options"
+        :data="decodedData.data"
+      />
+      <Scatter v-else-if="chartType === 'scatter'"
         :options="decodedData.options"
         :data="decodedData.data"
       />

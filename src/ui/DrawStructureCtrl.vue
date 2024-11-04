@@ -18,10 +18,13 @@ import {SpheresCache} from "@/services/SpheresCache";
 import type {StructureRenderInfo, PositionType} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // > Get and set ui parameters from the switchboard
@@ -60,7 +63,7 @@ askNode(id, "init")
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for DrawStructure: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 /**
  * Adjust 3D objects characteristics
@@ -431,8 +434,8 @@ const drawLabels = (): void => {
                 break;
         }
 
-        const label = spriteText(labelText, color, atom.position, [0, 0, offset]);
-        labelsGroup.add(label);
+        const atomLabel = spriteText(labelText, color, atom.position, [0, 0, offset]);
+        labelsGroup.add(atomLabel);
 
         ++idx;
     }

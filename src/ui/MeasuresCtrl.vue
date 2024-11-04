@@ -22,6 +22,9 @@ const {id} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // > Access the stores

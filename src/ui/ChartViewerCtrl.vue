@@ -12,10 +12,13 @@ import {askNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 const chartType = ref("line");
@@ -25,8 +28,7 @@ askNode(id, "init")
     .then((params) => {
         chartType.value = params.chartType as string ?? "line";
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ChartViewer: ${error.message}`));
-
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 watch([chartType, openChart], () => {
     askNode(id, "show", {
@@ -37,7 +39,7 @@ watch([chartType, openChart], () => {
         chartType.value = params.chartType as string ?? "line";
         openChart.value = params.openChart as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from show chart for ChartViewer: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from show chart for ${label}: ${error.message}`));
 });
 
 </script>
@@ -50,6 +52,7 @@ watch([chartType, openChart], () => {
     <v-btn-toggle v-model="chartType" color="primary" mandatory class="mb-6">
       <v-btn value="line">Line</v-btn>
       <v-btn value="bar">Bar</v-btn>
+      <v-btn value="scatter">Scatter</v-btn>
     </v-btn-toggle>
   </v-row>
   <v-btn block @click="openChart=true">Open chart</v-btn>

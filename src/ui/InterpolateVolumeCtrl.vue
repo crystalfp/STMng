@@ -13,10 +13,13 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 const interpolateVolume = ref(false);
@@ -30,7 +33,7 @@ askNode(id, "init")
 		interpolateVolume.value = params.interpolateVolume as boolean ?? false;
 		pointsToAdd.value = params.pointsToAdd as number ?? 1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for InterpolateVolume: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 receiveFromNode(id, "maxDataset", (params: CtrlParams) => {
     maxDataset.value = params.maxDataset as number ?? 0;

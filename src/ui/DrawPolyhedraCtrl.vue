@@ -15,10 +15,13 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import {sm} from "@/services/SceneManager";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // > Initialization
@@ -53,7 +56,7 @@ askNode(id, "init")
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for DrawPolyhedra: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 // > Utility functions
 /**

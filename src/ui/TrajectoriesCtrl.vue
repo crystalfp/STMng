@@ -18,10 +18,13 @@ import {sm} from "@/services/SceneManager";
 import {VolumeRenderShader} from "@/services/VolumeShader";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // Show this module has been loaded and access the control store
@@ -63,7 +66,7 @@ askNode(id, "init")
         positionCloudsSide          = 2**positionCloudsSideExp.value;
         positionCloudsGrow.value    = params.positionCloudsGrow as number ?? 0.1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for Trajectories: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 /**
  * Create a colormap

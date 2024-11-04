@@ -1,0 +1,73 @@
+<script setup lang="ts">
+/**
+ * @component
+ * Controls for diffraction pattern computation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-11-04
+ */
+import {ref, watch} from "vue";
+import {showAlertMessage} from "@/services/AlertMessage";
+import {askNode} from "@/services/RoutesClient";
+
+const wavelengthCodes = ref<string[]>([]);
+const wavelengthCode = ref("");
+const theta = ref([0, 90]);
+const scaled = ref(true);
+const openChart = ref(false);
+
+// > Properties
+const {id, label} = defineProps<{
+
+    /** Its own module id */
+    id: string;
+
+    /** Label on the node selector */
+    label: string;
+}>();
+
+// > Initialize the ui
+askNode(id, "init")
+    .then((params) => {
+        scaled.value = params.scaled as boolean ?? true;
+        theta.value[0] = params.thetaLow as number ?? 0;
+        theta.value[1] = params.thetaHigh as number ?? 90;
+        const codes = JSON.parse(params.wavelengthCodes as string ?? "[]") as string[];
+        wavelengthCodes.value.length = 0;
+        for(const code of codes) wavelengthCodes.value.push(code);
+        wavelengthCode.value = params.wavelengthCode as string ?? "CuKa";
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+
+watch([wavelengthCode, theta, scaled, openChart], () => {
+
+    askNode(id, "show", {
+        wavelengthCode: wavelengthCode.value,
+        thetaLow: theta.value[0],
+        thetaHigh: theta.value[1],
+        scaled: scaled.value,
+        openChart: openChart.value
+    })
+    .then((params) => {
+        openChart.value = params.openChart as boolean ?? false;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from show chart for ${label}: ${error.message}`));
+});
+
+</script>
+
+
+<template>
+<v-container class="container">
+  <v-label class="mt-4 mb-2 ml-2 no-select">Wavelength:</v-label>
+  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2"/>
+  <g-debounced-range-slider v-slot="{values}" v-model="theta"
+                              :step="0.01" :min="0" :max="90"
+                              class="ml-4 mt-2 pr-4">
+    <v-label :text="`Theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
+             class="ml-n2 no-select"/>
+  </g-debounced-range-slider>
+  <v-switch v-model="scaled" color="primary" label="Chart scaled" class="ml-2 mt-0" />
+  <v-btn block @click="openChart=true">Open chart</v-btn>
+</v-container>
+</template>

@@ -13,10 +13,13 @@ import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // > Get and set ui parameters from the switchboard
@@ -55,7 +58,7 @@ askNode(id, "init")
         showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
         standardizeOnly.value = params.standardizeOnly as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ComputeSymmetries: ${error.message}`,
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "symmetries"));
 
 watch([applyInputSymmetries,
@@ -80,7 +83,7 @@ watch([applyInputSymmetries,
     .then((params) => {
         computedSpaceGroup.value = params.computedSpaceGroup as string ?? "";
     })
-    .catch((error: Error) => showAlertMessage(`Error from ComputeSymmetries: ${error.message}`,
+    .catch((error: Error) => showAlertMessage(`Error from ${label}: ${error.message}`,
                                               "symmetries"));
 });
 

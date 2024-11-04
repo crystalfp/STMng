@@ -15,10 +15,13 @@ import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // Unit cell
@@ -81,7 +84,7 @@ askNode(id, "init")
         percentC.value = params.percentC as number ?? 0;
         shrink.value = params.shrink as boolean ?? true;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for DrawUnitCell: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 // Triangles. Top and bottom facies are not needed
 const indices = [
@@ -140,7 +143,7 @@ const setMaterial = (color: string, dashed: boolean): THREE.Material =>
  * @param name - Name of the mesh
  * @param color - Color of the line mesh
  * @param dashed - If line should be dashed
- * @returns The mesh or undefined if nno vertices present
+ * @returns The mesh or undefined if no vertices present
  */
 const drawCell = (vertices: number[], name: string, color: string, dashed: boolean): THREE.LineSegments | undefined => {
 
@@ -211,11 +214,11 @@ const setDirection = (versor: THREE.Vector3, quaternion: THREE.Quaternion): void
 * @param basis - Basis vector to be show
 * @param origin - Unit cell origin
 * @param color - Color of the arrow and the label
-* @param label - Label of the vector
+* @param axisLabel - Label of the vector
 * @param group - The arrow is added to this group
 */
 const basisVectorArrow = (basis: THREE.Vector3, origin: THREE.Vector3,
-                          color: string, label: string, group: THREE.Group): void => {
+                          color: string, axisLabel: string, group: THREE.Group): void => {
 
     const versor = basis.clone().normalize();
     const basisLen = basis.length();
@@ -243,7 +246,7 @@ const basisVectorArrow = (basis: THREE.Vector3, origin: THREE.Vector3,
     cone.position.addScaledVector(versor, -coneLen/2);
 
     // Label
-    const sprite = spriteText(label,
+    const sprite = spriteText(axisLabel,
                               color,
                               [basis.x+origin.x, basis.y+origin.y, basis.z+origin.z],
                               [versor.x*0.1, versor.y*0.1, versor.z*0.1]);

@@ -1,0 +1,142 @@
+{
+  "graph": {
+    "reader": {
+      "label": "Reader",
+      "type": "structure-reader"
+    },
+    "xray": {
+      "label": "X-Ray diffraction",
+      "type": "diffraction-pattern",
+      "in": "reader"
+    },
+    "unit": {
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "in": "reader"
+    },
+    "bonds": {
+      "label": "Bonds",
+      "type": "compute-bonds",
+      "in": "unit"
+    },
+    "draw": {
+      "label": "Structure",
+      "type": "draw-structure",
+      "in": "bonds"
+    },
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d"
+    },
+    "chart": {
+      "label": "Chart",
+      "type": "chart-viewer"
+    }
+  },
+  "viewer": {
+    "camera": {
+      "type": "orthographic",
+      "position": [
+        6.680041988508798,
+        5.3841791944712565,
+        14.374075183376783
+      ],
+      "lookAt": [
+        3.035,
+        3.035,
+        3.035
+      ],
+      "snapshotFormat": "png"
+    },
+    "scene": {
+      "background": "#90CEEC"
+    },
+    "lights": {
+      "ambientColor": "#FFFFFF",
+      "ambientIntensity": 0.5,
+      "directional1Color": "#FFFFFF",
+      "directional1Intensity": 1.5,
+      "directional2Color": "#FFFFFF",
+      "directional2Intensity": 1.5,
+      "directional3Color": "#FFFFFF",
+      "directional3Intensity": 1.5,
+      "directional1Position": [
+        0,
+        1,
+        0
+      ],
+      "directional2Position": [
+        0.5774,
+        0.5774,
+        0.5774
+      ],
+      "directional3Position": [
+        -0.5774,
+        -0.5774,
+        -0.5774
+      ]
+    },
+    "helpers": {
+      "showAxis": false,
+      "showGridXZ": false,
+      "showGridXY": false,
+      "showGridYZ": false,
+      "gridSize": 10,
+      "axisLength": 1
+    }
+  },
+  "ui": {
+    "reader": {
+      "loopSteps": false,
+      "stepBackward": false,
+      "format": "Shel-X",
+      "atomsTypes": "",
+      "useBohr": true,
+      "stepIncrement": 1
+    },
+    "xray": {
+      "scaled": true,
+      "thetaLow": 0,
+      "thetaHigh": 90,
+      "wavelengthCode": "CuKa"
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": true
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "perPairData": "[]",
+      "enlargementKind": "none"
+    },
+    "draw": {
+      "drawKind": "ball-and-stick",
+      "drawQuality": 4,
+      "drawRoughness": 0.5,
+      "drawMetalness": 0.6,
+      "labelKind": "symbol",
+      "showBonds": true,
+      "showStructure": true,
+      "showLabels": true,
+      "shadedBonds": false
+    }
+  }
+}

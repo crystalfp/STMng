@@ -17,10 +17,13 @@ import {sm} from "@/services/SceneManager";
 import type {CtrlParams} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 /** Available colormaps */
@@ -87,7 +90,7 @@ askNode(id, "init")
         limits.value[0] = valueMin.value;
         limits.value[1] = valueMax.value;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for Orthoslice: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 /**
  * Draw orthoslice and isolines

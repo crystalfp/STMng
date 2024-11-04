@@ -13,10 +13,13 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 interface PairData {
@@ -57,7 +60,7 @@ askNode(id, "init")
             showScale.value.push(item.scale);
         }
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ComputeBonds: ${error.message}`));
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 watchEffect(() => {
     sendToNode(id, "changes", {

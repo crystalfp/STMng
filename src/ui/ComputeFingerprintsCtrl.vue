@@ -15,10 +15,13 @@ import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams} from "@/types";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
+
+    /** Label on the node selector */
+    label: string;
 }>();
 
 // Prepare the error messages
@@ -76,7 +79,7 @@ askNode(id, "init")
         selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
         fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for Fingerprinting: ${error.message}`,
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
 
 receiveFromNode(id, "load", (params) => {
@@ -111,7 +114,7 @@ watch([enableEnergyThreshold, thresholdFromMinimum, energyThreshold, fingerprint
         countAccumulated.value = params.countAccumulated as number ?? 0;
         energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
     })
-    .catch((error: Error) => showAlertMessage(`Error from energy settings for Fingerprinting: ${error.message}`,
+    .catch((error: Error) => showAlertMessage(`Error from energy settings for ${label}: ${error.message}`,
                                               "fingerprints"));
 });
 
