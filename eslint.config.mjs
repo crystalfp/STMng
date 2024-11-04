@@ -22,6 +22,7 @@ import * as depend from "eslint-plugin-depend";
 export default [{
     ignores: [
         "src/vite-env.d.ts",
+		"src/assets"
     ]}, {
     files: [
         "src/**/*.ts",

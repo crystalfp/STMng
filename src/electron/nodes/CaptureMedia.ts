@@ -8,7 +8,7 @@
  * @since 2024-07-08
  */
 import {dialog, app} from "electron";
-import fs from "fs-extra";
+import fs from "node:fs";
 import path from "node:path";
 import tmp from "tmp";
 import os from "node:os";
@@ -158,7 +158,8 @@ export class CaptureView extends NodeCore {
 			try {
 				// eslint-disable-next-line sonarjs/os-command
 				execSync(`"${ffmpeg}" -y -i ${webmFile}${opt} ${filename}`, {windowsHide: true});
-				void fs.remove(webmFile);
+				fs.unlinkSync(webmFile);
+				// void fs.remove(webmFile);
 				return {payload: filename};
 			}
 			catch(error) {
