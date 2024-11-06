@@ -13,7 +13,7 @@ import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
-import type {ChartParams} from "@/types";
+import type {ChartParams, ChartData, ChartOptions} from "@/types";
 
 ChartJS.register(
     CategoryScale,
@@ -25,12 +25,25 @@ ChartJS.register(
     Tooltip,
     Legend);
 
+const emptyChartData = {
+    datasets: []
+};
+const emptyChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false
+};
+const chartOptions = ref<ChartOptions>(emptyChartOptions);
+const chartData = ref<ChartData>(emptyChartData);
 const chartType = ref("");
-let decodedData: ChartParams;
-receiveInWindow((data) => {
 
-    decodedData = JSON.parse(data) as ChartParams;
-    chartType.value = decodedData.type;
+receiveInWindow((dataFromMain) => {
+
+    const decodedData = JSON.parse(dataFromMain) as ChartParams;
+    const {data, options, type} = decodedData;
+
+    chartType.value = type;
+    chartData.value = data;
+    chartOptions.value = options;
 });
 
 /** Close the window on Esc press */
@@ -44,16 +57,16 @@ closeWithEscape("/chart");
   <div class="chart-portal">
     <div class="chart-container">
       <Bar v-if="chartType === 'bar'"
-        :options="decodedData.options"
-        :data="decodedData.data"
+        :options="chartOptions"
+        :data="chartData"
       />
       <Line v-else-if="chartType === 'line'"
-        :options="decodedData.options"
-        :data="decodedData.data"
+        :options="chartOptions"
+        :data="chartData"
       />
       <Scatter v-else-if="chartType === 'scatter'"
-        :options="decodedData.options"
-        :data="decodedData.data"
+        :options="chartOptions"
+        :data="chartData"
       />
     </div>
     <v-container class="chart-button-strip">

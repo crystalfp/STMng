@@ -37,9 +37,9 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        6.680041988508798,
-        5.3841791944712565,
-        14.374075183376783
+        3.035,
+        3.035000000000001,
+        15.175
       ],
       "lookAt": [
         3.035,
@@ -98,6 +98,7 @@
       "scaled": true,
       "thetaLow": 0,
       "thetaHigh": 90,
+      "width": 2.45,
       "wavelengthCode": "CuKa"
     },
     "unit": {
@@ -137,6 +138,9 @@
       "showStructure": true,
       "showLabels": true,
       "shadedBonds": false
+    },
+    "chart": {
+      "chartType": "line"
     }
   }
 }

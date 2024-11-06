@@ -342,23 +342,33 @@ export interface FileFilter {
 	extensions: string[];
 }
 
-// TBD Definition of the chart data
+/** Definition of the chart data and options */
 export interface ChartOptions {
     responsive: boolean;
     maintainAspectRatio: boolean;
-    plugins: {
-      title: {
-          text: string;
-          display: boolean;
-          font: Record<string, number | string>;
-      };
+    plugins?: {
+        title?: {
+            text: string;
+            display: boolean;
+            font: Record<string, number | string>;
+            padding?: number;
+        };
+        legend?: {
+            display: boolean;
+        };
     };
-    scales: {
+    elements?: {
+        line: {
+            borderWidth: number;
+        };
+    };
+    scales?: {
       x: {
         title: {
           color: string;
           display: boolean;
           text: string;
+          font?: Record<string, number | string>;
         };
         grid: Record<string, string>;
       };
@@ -367,20 +377,25 @@ export interface ChartOptions {
           color: string;
           display: boolean;
           text: string;
+          font?: Record<string, number | string>;
         };
         grid: Record<string, string>;
       };
     };
 }
 
+export type ChartCoordinates = {x: number; y: number}[];
+
 export interface ChartData {
     labels?: string[];
     datasets: {
         label: string;
-        fill: boolean;
+        fill?: boolean;
         backgroundColor: string;
-        data: number[] | {x: number; y: number}[];
         borderColor: string;
+        pointRadius?: number;
+        data: number[] | ChartCoordinates;
+        showLine?: boolean;
     }[];
 }
 

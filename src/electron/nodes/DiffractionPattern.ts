@@ -1,5 +1,5 @@
 /**
- * Computes the X-Ray Diffraction pattern of a crystal structure.
+ * Computes and display the X-Ray Diffraction pattern of a crystal structure.
  *
  * @packageDocumentation
  *
@@ -7,45 +7,12 @@
  * @since 2024-11-04
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, ChartData, ChartOptions} from "@/types";
-import {createSecondaryWindow, isSecondaryWindowOpen, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition,
+			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
+import {createSecondaryWindow, isSecondaryWindowOpen,
+		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 
-interface PatternValues {
-	twoTheta: number[];
-	intensity: number[];
-}
-
-// Fake class till the real class is finished and integrated
-class XRDCalculator {
-
-	getWavelengthNames(): string[] {
-
-		return [
-			"CuKa",
-			"CuKa2",
-			"CuKa1",
-			"CuKb1",
-			"MoKa",
-		];
-	}
-
-	getDiffractionPattern(structure: Structure,
-						  wavelengthCode="CuKa",
-						  scaled=true,
-						  thetaLow=0,
-						  thetaHight=90): PatternValues {
-		void structure;
-		void wavelengthCode;
-		void scaled;
-		void thetaLow;
-		void thetaHight;
-
-		return {
-			twoTheta:  [28.46772426, 47.34657519, 56.17571327, 69.19895076, 76.45494946, 88.1268895],
-			intensity: [100.0000000, 66.64746966, 39.58448396, 10.71251618, 16.34081066, 23.50766372]
-		};
-	}
-}
 
 export class DiffractionPattern extends NodeCore {
 
@@ -53,13 +20,17 @@ export class DiffractionPattern extends NodeCore {
 	private scaled = true;
 	private thetaLow = 0;
 	private thetaHigh = 90;
+	private width = 0.5;
 	private wavelengthCode = "CuKa";
-	private openChart = false;
 	private readonly xrd = new XRDCalculator();
+	private xy: DiffractionPatternResult = {twoTheta: [], intensity: []};
+	private readonly chartTitle = "X-Ray diffraction pattern";
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
-		{name: "show",      type: "invoke", callback: this.channelShow.bind(this)},
+		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "show",    type: "send",   callback: this.channelShow.bind(this)},
+		{name: "open",    type: "send",   callback: this.channelOpen.bind(this)},
+		{name: "compute", type: "send",   callback: this.channelCompute.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -70,13 +41,22 @@ export class DiffractionPattern extends NodeCore {
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
+		const hasData = Boolean(data);
 
-		if(this.openChart && data) {
+		// There is the structure so the XRD could be computed
+		sendToClient(this.id, "enable", {enableComputation: hasData});
 
-			const xy = this.xrd.getDiffractionPattern(data, this.wavelengthCode, this.scaled,
-													  this.thetaLow, this.thetaHigh);
-			this.makeChart(xy);
-			this.openChart = false;
+		if(hasData && isSecondaryWindowOpen(undefined, "/chart")) {
+
+			// Compute spectra
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+													 this.thetaLow, this.thetaHigh);
+
+			// Compute chart data
+			const dataToSend = this.createDataForChart();
+
+			// Update window
+			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
 		}
 	}
 
@@ -85,6 +65,7 @@ export class DiffractionPattern extends NodeCore {
 			scaled: this.scaled,
 			thetaLow: this.thetaLow,
 			thetaHigh: this.thetaHigh,
+			width: this.width,
 			wavelengthCode: this.wavelengthCode
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
@@ -94,6 +75,7 @@ export class DiffractionPattern extends NodeCore {
 		this.scaled = params.scaled as boolean ?? true;
 		this.thetaLow = params.thetaLow as number ?? 0;
 		this.thetaHigh = params.thetaHigh as number ?? 90;
+		this.width = params.width as number ?? 0.5;
 		this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 	}
 
@@ -106,23 +88,41 @@ export class DiffractionPattern extends NodeCore {
 		};
 	}
 
-	private makeChart(xy: PatternValues): void {
+	/**
+	 * Create and pack the data for the chart viewer
+	 *
+	 * @returns JSON encoded chart data to be sent to the chart viewer
+	 */
+	private createDataForChart(): string {
 
-		const chartTitle = "X-Ray diffraction pattern";
+		// Chart of the peaks
+		// const coords: ChartCoordinates = [];
+		// const len = this.xy.intensity.length;
+		// for(let i=0; i < len; ++i) {
+		// 	coords.push({x: this.xy.twoTheta[i], y: this.xy.intensity[i]});
+		// }
 
-		const coords: {x: number; y: number}[] = [];
-		const len = xy.intensity.length;
-		for(let i=0; i < len; ++i) {
-			coords.push({x: xy.twoTheta[i], y: xy.intensity[i]});
-		}
-		const chartData: ChartData = {
+		// Chart of the line spectra
+		const lineCoordinates = this.smoothPeaks(this.xy, this.thetaLow, this.thetaHigh, 0.05, this.width);
+
+		// Data and options for the chart
+		const chartData: Partial<ChartData> = {
+
 			datasets: [
+				// {
+				// 	label: "(2θ, Intensity)",
+				// 	borderColor: "transparent",
+				// 	backgroundColor: "#00ff00",
+				// 	data: coords,
+				// 	pointRadius: 5,
+				// },
 				{
-					label: "Scatter Dataset 1",
-					fill: false,
-					borderColor: "#f87979",
-					backgroundColor: "#f87979",
-					data: coords
+					label: "(2θ, Intensity)",
+					data: lineCoordinates,
+					borderColor: "#00ff00",
+					backgroundColor: "#00ff00",
+					showLine: true,
+					pointRadius: 0,
 				}
 			]
 		};
@@ -131,60 +131,85 @@ export class DiffractionPattern extends NodeCore {
 			responsive: true,
 			maintainAspectRatio: false,
 			plugins: {
-				title: {
-					text: chartTitle,
-					display: true,
-					font: {
-						size: 30
-					}
+				legend: {
+					display: false
 				}
 			},
+			elements: {line: {borderWidth: 2}},
 			scales: {
 				x: {
 					title: {
 						color: "red",
 						display: true,
-						text: "Two theta"
+						text: "2θ",
+						font: {
+							size: 20,
+							// weight: "bold"
+						},
 					},
 					grid: {
-						color: "aqua"
+						color: "#575757"
 					}
 				},
 				y: {
 					title: {
-						color: "green",
+						color: "red",
 						display: true,
-						text: "Intensity"
+						text: "Intensity",
+						font: {
+							size: 20,
+							// weight: "bold"
+						},
 					},
 					grid: {
-						color: "aqua"
+						color: "#575757"
 					}
 				}
 			}
 		};
 
-		const dataToSend = JSON.stringify({
+		return JSON.stringify({
 			data: chartData,
 			options: chartOptions,
 			type: "scatter"
 		});
+	}
 
-		// if already open, update chart
-		if(isSecondaryWindowOpen(undefined, "/chart")) {
+	/**
+	 * Smooth the diffraction peaks using a gaussian
+	 *
+	 * @param xy - The diffraction pattern computed
+	 * @param min - Theta min value
+	 * @param max - Theta max value
+	 * @param step - Step for the line points
+	 * @param width - Width of the gaussian to be used to smooth the peaks
+	 * @returns Array of points coordinates to be used in the chart
+	 */
+	private smoothPeaks(xy: DiffractionPatternResult,
+						min: number,
+						max: number,
+						step: number,
+						width: number): ChartCoordinates {
 
-			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+		const out: ChartCoordinates = [];
+		for(let x=min; x <= max; x += step) {
+			out.push({x, y: 0});
 		}
-		else {
+		const nPoints = out.length;
 
-			createSecondaryWindow(undefined, {
-				routerPath: "/chart",
-				width: 800,
-				height: 600,
-				title: chartTitle,
-				data: dataToSend
-			});
+		const len = xy.intensity.length;
+		for(let i=0; i < len; ++i) {
+
+			const mean = xy.twoTheta[i];
+			const peak = xy.intensity[i];
+			// const den = 2*(width/2.35482)**2;
+			const den = 2*(width*0.8493218)**2;
+
+			for(let j=0; j < nPoints; ++j) {
+				out[j].y += peak*Math.exp(-((out[j].x-mean)**2)/den);
+			}
 		}
-		void xy;
+		return out;
 	}
 
 	// > Channel handlers
@@ -196,38 +221,93 @@ export class DiffractionPattern extends NodeCore {
 	private channelInit(): CtrlParams {
 
 		return {
+			enableComputation: Boolean(this.structure),
 			scaled: this.scaled,
 			thetaLow: this.thetaLow,
 			thetaHigh: this.thetaHigh,
+			width: this.width,
 			wavelengthCode: this.wavelengthCode,
 			wavelengthCodes: JSON.stringify(this.xrd.getWavelengthNames())
 		};
 	}
 
 	/**
-	 * Channel handler for compute and show diffraction pattern
-	 *
-	 * @returns Parameters to initialize the user interface
+	 * Channel handler to change the chart parameters
 	 */
-	private channelShow(params: CtrlParams): CtrlParams {
+	private channelShow(params: CtrlParams): void {
 
-        this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
-        this.thetaLow = params.theta as number ?? 0;
-        this.thetaHigh = params.theta as number ?? 90;
-        this.scaled = params.scaled as boolean ?? true;
-        this.openChart = params.openChart as boolean ?? false;
+		if(this.structure && isSecondaryWindowOpen(undefined, "/chart")) {
 
-		// Compute and show chart
-		if(this.openChart && this.structure) {
+			this.width = params.width as number ?? 0.5;
 
-			const xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-													  this.thetaLow, this.thetaHigh);
-			this.makeChart(xy);
-			this.openChart = false;
+			// Compute chart data
+			const dataToSend = this.createDataForChart();
+
+			// Update window
+			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
 		}
+	}
 
-		return {
-			openChart: this.openChart
-		};
+	/**
+	 * Channel handler for compute and show diffraction pattern if the window is already open
+	 */
+	private channelCompute(params: CtrlParams): void {
+
+		if(this.structure && isSecondaryWindowOpen(undefined, "/chart")) {
+
+			this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
+			this.thetaLow = params.thetaLow as number ?? 0;
+			this.thetaHigh = params.thetaHigh as number ?? 90;
+			this.scaled = params.scaled as boolean ?? true;
+			this.width = params.width as number ?? 0.5;
+
+			// Compute spectra
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+													 this.thetaLow, this.thetaHigh);
+
+			// Compute chart data
+			const dataToSend = this.createDataForChart();
+
+			// Update window
+			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+		}
+	}
+
+	/**
+	 * Channel handler for compute and show diffraction pattern when the chart window is requested
+	 */
+	private channelOpen(params: CtrlParams): void {
+
+		if(this.structure) {
+
+			this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
+			this.thetaLow = params.thetaLow as number ?? 0;
+			this.thetaHigh = params.thetaHigh as number ?? 90;
+			this.scaled = params.scaled as boolean ?? true;
+			this.width = params.width as number ?? 0.5;
+
+			// Compute spectra
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+		 											 this.thetaLow, this.thetaHigh);
+
+			// Compute chart data
+			const dataToSend = this.createDataForChart();
+
+			// if already open, update chart, otherwise create the window
+			if(isSecondaryWindowOpen(undefined, "/chart")) {
+
+				sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+			}
+			else {
+
+				createSecondaryWindow(undefined, {
+					routerPath: "/chart",
+					width: 1067,
+					height: 800,
+					title: this.chartTitle,
+					data: dataToSend
+				});
+			}
+		}
 	}
 }

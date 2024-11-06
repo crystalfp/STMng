@@ -1,20 +1,22 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for diffraction pattern computation
+ * Controls for the X-Ray diffraction pattern computation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-11-04
  */
 import {ref, watch} from "vue";
 import {showAlertMessage} from "@/services/AlertMessage";
-import {askNode} from "@/services/RoutesClient";
+import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
+import type {CtrlParams} from "@/types";
 
 const wavelengthCodes = ref<string[]>([]);
 const wavelengthCode = ref("");
 const theta = ref([0, 90]);
 const scaled = ref(true);
-const openChart = ref(false);
+const enableComputation = ref(false);
+const width = ref(0.5);
 
 // > Properties
 const {id, label} = defineProps<{
@@ -29,9 +31,11 @@ const {id, label} = defineProps<{
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
+        enableComputation.value = params.enableComputation as boolean ?? false;
         scaled.value = params.scaled as boolean ?? true;
         theta.value[0] = params.thetaLow as number ?? 0;
         theta.value[1] = params.thetaHigh as number ?? 90;
+        width.value = params.width as number ?? 0.5;
         const codes = JSON.parse(params.wavelengthCodes as string ?? "[]") as string[];
         wavelengthCodes.value.length = 0;
         for(const code of codes) wavelengthCodes.value.push(code);
@@ -39,20 +43,38 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
-watch([wavelengthCode, theta, scaled, openChart], () => {
+watch([wavelengthCode, theta, scaled], () => {
 
-    askNode(id, "show", {
+    sendToNode(id, "compute", {
         wavelengthCode: wavelengthCode.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
         scaled: scaled.value,
-        openChart: openChart.value
-    })
-    .then((params) => {
-        openChart.value = params.openChart as boolean ?? false;
-    })
-    .catch((error: Error) => showAlertMessage(`Error from show chart for ${label}: ${error.message}`));
+        width: width.value,
+    });
+}, {deep: true});
+
+watch([width], () => {
+
+    sendToNode(id, "show", {
+        width: width.value,
+    });
 });
+
+receiveFromNode(id, "enable", (params: CtrlParams) => {
+    enableComputation.value = params.enableComputation as boolean ?? false;
+});
+
+const openChartWindow = (): void => {
+
+    sendToNode(id, "open", {
+        wavelengthCode: wavelengthCode.value,
+        thetaLow: theta.value[0],
+        thetaHigh: theta.value[1],
+        scaled: scaled.value,
+        width: width.value,
+    });
+};
 
 </script>
 
@@ -68,6 +90,10 @@ watch([wavelengthCode, theta, scaled, openChart], () => {
              class="ml-n2 no-select"/>
   </g-debounced-range-slider>
   <v-switch v-model="scaled" color="primary" label="Chart scaled" class="ml-2 mt-0" />
-  <v-btn block @click="openChart=true">Open chart</v-btn>
+  <g-debounced-slider v-slot="{value}" v-model="width" :min="0.05" :max="5" :step="0.05"
+                      class="ml-2 mb-6 mt-1">
+    <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
+  </g-debounced-slider>
+  <v-btn block @click="openChartWindow" :disabled="!enableComputation">Open chart</v-btn>
 </v-container>
 </template>
