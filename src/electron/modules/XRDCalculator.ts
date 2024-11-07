@@ -7,11 +7,11 @@
  * @since 2024-10-26
  */
 
-import type {Structure} from "@/types";
-// import {Lattice} from "./Lattice";
-// import {ReciprocalLattice} from "./ReciprocalLattice";
-// import {ATOMIC_SCATTERING_PARAMS} from "./AtomicScatteringParams";
-// import {getAtomicSymbol} from "./AtomData";
+import type {Structure, PositionType} from "@/types";
+import {Lattice} from "./Lattice";
+import {ReciprocalLattice, type ReciprocalPoint} from "./ReciprocalLattice";
+import {ATOMIC_SCATTERING_PARAMS} from "./AtomicScatteringParams";
+import {getAtomicSymbol} from "./AtomData";
 
 /** Type of the XRD calculator output */
 export interface DiffractionPatternResult {
@@ -84,16 +84,157 @@ export class XRDCalculator {
         // Convert the wavelength symbol to the numeric wavelength
         this.wavelength = WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS["CuKa"];
 
-		// TBD
-		void scaled;
-        void structure;
-        void thetaLow;
-        void thetaHigh;
-        void this.wavelength;
+        // Obtained from Bragg condition.
+		// Note that reciprocal lattice vector length is 1 / d_hkl.
+        // rLimits is [min_r, max_r]
+        const rLimits = [2 * Math.sin((thetaLow  * Math.PI/180) / 2) / this.wavelength,
+                         2 * Math.sin((thetaHigh * Math.PI/180) / 2) / this.wavelength];
 
-		return {
-			twoTheta:  [28.46772426, 47.34657519, 56.17571327, 69.19895076, 76.45494946, 88.1268895],
-			intensity: [100.0000000, 66.64746966, 39.58448396, 10.71251618, 16.34081066, 23.50766372]
-		};
+		// Load the structure and check if it is hexagonal
+		const lattice = new Lattice(structure);
+		const isHex = lattice.isHexagonal();
+
+        // Obtain crystallographic reciprocal lattice points within range
+        const reciprocalLattice = new ReciprocalLattice(lattice);
+        let reciprocalPoints = reciprocalLattice.getPointsInSphereOrigin(rLimits[1]);
+        if(rLimits[0]) reciprocalPoints = reciprocalPoints.filter((pt: ReciprocalPoint) => pt.dist >= rLimits[0]);
+
+        // Create a flattened array of zs, coeffs, frac_coords and occus. This is used to perform
+        // vectorized computation of atomic scattering factors later. Note that these are not
+        // necessarily the same size as the structure as each partially occupied specie occupies its
+        // own position in the flattened array.
+        const zs: number[] = [];
+        const coeffs: number[][][] = [];
+        const fracCoords: PositionType[] = [];
+        const occus: number[] = [];
+        const dwFactors: number[] = [];
+        for(const atom of structure.atoms) {
+			zs.push(atom.atomZ);
+			const symbol = getAtomicSymbol(atom.atomZ);
+			const scatteringParams = ATOMIC_SCATTERING_PARAMS[symbol];
+			if(!scatteringParams) throw Error(`Unable to calculate XRD pattern as there is no scattering coefficients for ${symbol}.`);
+
+			coeffs.push(scatteringParams);
+			fracCoords.push(lattice.toFractionalCoordinates(atom.position));
+            occus.push(1);
+            dwFactors.push(0);
+		}
+
+        // const peaks: dict[float, list[float | list[tuple[int, ...]]]] = {}
+        const peaks: Record<string, [number, [number[]], number]> = {};
+        const twoThetas: number[] = [];
+        const TOL = 1e-17;
+
+        reciprocalPoints.sort((a, b) => {
+
+            let delta = a.dist - b.dist;
+            // if(delta > TOL || delta < -TOL) return delta;
+            if(delta !== 0) return delta;
+            delta = b.coord[0] - a.coord[0];
+            if(delta !== 0) return delta;
+            delta = b.coord[10] - a.coord[1];
+            if(delta !== 0) return delta;
+            delta = b.coord[2] - a.coord[2];
+            if(delta !== 0) return delta;
+            return 0;
+        });
+
+        for(const pt of reciprocalPoints) {
+
+            const gHKL = pt.dist;
+            if(gHKL < TOL) continue;
+
+            // Force miller indices to be integers
+            let hkl = [Math.round(pt.coord[0]), Math.round(pt.coord[1]), Math.round(pt.coord[2])];
+
+            // Bragg condition
+            const halfDist = gHKL / 2;
+            const theta = Math.asin(this.wavelength * halfDist);
+
+            // Store s^2 since we are using it a few times
+            const halfDistSquared = halfDist**2;
+
+            // Computation of g.r for all fractional coords and hkl
+            const gDotR: number[] = [];
+            for(const fc of fracCoords) {
+                gDotR.push(fc[0]*hkl[0]+fc[1]*hkl[1]+fc[2]*hkl[2]);
+            }
+
+            // Computation of atomic scattering factors.
+            const fs: number[] = [];
+            for(let i=0; i < zs.length; ++i) {
+
+                let sum = 0;
+                for(const c of coeffs[i]) sum += c[0]*Math.exp(-c[1]*halfDistSquared);
+                fs.push(zs[i] - 41.78214 * halfDistSquared * sum);
+            }
+            const dwCorrection = dwFactors.map((dwf) => Math.exp(-dwf * halfDistSquared));
+
+            // Structure factor = sum of atomic scattering factors (with
+            // position factor exp(2j * pi * g.r and occupancies).
+            // The two elements of the tuple are the real and imaginary parts
+            const fHKL: [number, number] = [0, 0];
+            for(let i=0; i < fs.length; ++i) {
+                const multiplier = fs[i] * occus[i] * dwCorrection[i];
+                const value = Math.PI*2*gDotR[i];
+                fHKL[0] += multiplier*Math.cos(value);
+                fHKL[1] += multiplier*Math.sin(value);
+            }
+
+            // Lorentz polarization correction for hkl
+            const lorentzFactor = (1 + Math.cos(2 * theta) ** 2) / (Math.sin(theta) ** 2 * Math.cos(theta));
+
+            // Intensity for hkl is modulus square of structure factor
+            const iHKL = fHKL[0] * fHKL[0] + fHKL[1] * fHKL[1];
+
+            const twoTheta = 2 * theta * 180 / Math.PI;
+
+            // Use Miller-Bravais indices for hexagonal lattices
+            if(isHex) {
+                hkl = [hkl[0], hkl[1], -hkl[0] - hkl[1], hkl[2]];
+            }
+            const inds: number[] = [];
+            for(let i=0; i < twoThetas.length; ++i) {
+                const delta = twoThetas[i] - twoTheta;
+                if(delta < 1e-5 && delta > -1e-5) inds.push(i);
+            }
+
+            // Deal with floating point precision issues
+            if(inds.length > 0) {
+                const key = twoThetas[inds[0]].toString();
+                peaks[key][0] += iHKL * lorentzFactor;
+                peaks[key][1].push(hkl);
+            }
+            else {
+                peaks[twoTheta.toString()] = [iHKL * lorentzFactor, [hkl], 1 / gHKL];
+                twoThetas.push(twoTheta);
+            }
+        }
+
+        let maxIntensity = -1;
+        const keys: string[] = [];
+        for(const key in peaks) {
+
+            const intensity = peaks[key][0];
+            if(intensity > maxIntensity) maxIntensity = intensity;
+            keys.push(key);
+        }
+
+        // eslint-disable-next-line sonarjs/no-alphabetical-sort
+        keys.sort();
+
+        const SCALED_INTENSITY_TOL = 0.001;
+        const dp: DiffractionPatternResult = {twoTheta: [], intensity: []};
+        for(const key of keys) {
+
+            const scaledIntensity = peaks[key][0] / maxIntensity * 100;
+            if(scaledIntensity > SCALED_INTENSITY_TOL) {
+
+                dp.twoTheta.push(Number.parseFloat(key));
+                dp.intensity.push(scaled ? scaledIntensity : peaks[key][0]);
+            }
+        }
+
+		return dp;
 	}
 }

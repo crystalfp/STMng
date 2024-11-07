@@ -43,6 +43,7 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
+/** Changing computation parameters */
 watch([wavelengthCode, theta, scaled], () => {
 
     sendToNode(id, "compute", {
@@ -54,6 +55,7 @@ watch([wavelengthCode, theta, scaled], () => {
     });
 }, {deep: true});
 
+/** Changing charting parameters */
 watch([width], () => {
 
     sendToNode(id, "show", {
@@ -61,10 +63,14 @@ watch([width], () => {
     });
 });
 
+/** Receive if a structure has been loaded */
 receiveFromNode(id, "enable", (params: CtrlParams) => {
     enableComputation.value = params.enableComputation as boolean ?? false;
 });
 
+/**
+ * Open the chart window
+ */
 const openChartWindow = (): void => {
 
     sendToNode(id, "open", {
