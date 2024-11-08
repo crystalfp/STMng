@@ -92,10 +92,10 @@ const openChartWindow = (): void => {
   <g-debounced-range-slider v-slot="{values}" v-model="theta"
                               :step="0.01" :min="0" :max="90"
                               class="ml-4 mt-2 pr-4">
-    <v-label :text="`Theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
+    <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
   </g-debounced-range-slider>
-  <v-switch v-model="scaled" color="primary" label="Chart scaled" class="ml-2 mt-0" />
+  <v-switch v-model="scaled" color="primary" label="Chart scaled" class="ml-2 mt-1" />
   <g-debounced-slider v-slot="{value}" v-model="width" :min="0.05" :max="5" :step="0.05"
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />

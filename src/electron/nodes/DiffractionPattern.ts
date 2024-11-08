@@ -49,7 +49,7 @@ export class DiffractionPattern extends NodeCore {
 		if(hasData && isSecondaryWindowOpen(undefined, "/chart")) {
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, false,
 													 this.thetaLow, this.thetaHigh);
 
 			// Compute chart data
@@ -209,6 +209,17 @@ export class DiffractionPattern extends NodeCore {
 				out[j].y += peak*Math.exp(-((out[j].x-mean)**2)/den);
 			}
 		}
+		if(this.scaled) {
+
+			let maxIntensity = 0;
+			for(let j=0; j < nPoints; ++j) {
+				if(out[j].y > maxIntensity) maxIntensity = out[j].y;
+			}
+			const scale = 100/maxIntensity;
+			for(let j=0; j < nPoints; ++j) {
+				out[j].y *= scale;
+			}
+		}
 		return out;
 	}
 
@@ -262,7 +273,7 @@ export class DiffractionPattern extends NodeCore {
 			this.width = params.width as number ?? 0.5;
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, false,
 													 this.thetaLow, this.thetaHigh);
 
 			// Compute chart data
@@ -287,7 +298,7 @@ export class DiffractionPattern extends NodeCore {
 			this.width = params.width as number ?? 0.5;
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, false,
 		 											 this.thetaLow, this.thetaHigh);
 
 			// Compute chart data

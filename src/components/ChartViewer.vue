@@ -6,11 +6,11 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-05
  */
-import {ref} from "vue";
+import {ref, useTemplateRef} from "vue";
 import {Bar, Line, Scatter} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {askNode, closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
 import type {ChartParams, ChartData, ChartOptions} from "@/types";
@@ -36,6 +36,7 @@ const chartOptions = ref<ChartOptions>(emptyChartOptions);
 const chartData = ref<ChartData>(emptyChartData);
 const chartType = ref("");
 
+/** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {
 
     const decodedData = JSON.parse(dataFromMain) as ChartParams;
@@ -49,6 +50,33 @@ receiveInWindow((dataFromMain) => {
 /** Close the window on Esc press */
 closeWithEscape("/chart");
 
+interface ChartCanvas {
+    chart: {
+        canvas: HTMLCanvasElement;
+    };
+}
+// Reference to the chart
+const chartElement = useTemplateRef<ChartCanvas>("chart");
+
+/**
+ * Make a chart snapshot
+ */
+const makeImage = (): void => {
+
+    if(chartElement.value) {
+
+        const dataURI = chartElement.value.chart.canvas.toDataURL("image/png");
+        askNode("SYSTEM", "snapshot", {dataURI})
+            .then((response) => {
+                if(response.error) throw Error(response.error as string);
+            })
+            .catch((error: Error) => {
+                // TBD
+                console.log(error.message);
+            });
+    }
+};
+
 </script>
 
 
@@ -57,19 +85,25 @@ closeWithEscape("/chart");
   <div class="chart-portal">
     <div class="chart-container">
       <Bar v-if="chartType === 'bar'"
+        ref="chart"
         :options="chartOptions"
         :data="chartData"
       />
       <Line v-else-if="chartType === 'line'"
+        ref="chart"
         :options="chartOptions"
         :data="chartData"
       />
       <Scatter v-else-if="chartType === 'scatter'"
+        ref="chart"
         :options="chartOptions"
         :data="chartData"
       />
     </div>
-    <v-container class="chart-button-strip">
+    <v-container class="button-strip">
+      <v-btn variant="tonal" @click="makeImage">
+        Save
+      </v-btn>
       <v-btn v-focus variant="tonal" @click="closeWindow('/chart')">
         Close
       </v-btn>
@@ -92,13 +126,6 @@ closeWithEscape("/chart");
   width: 100vw;
   flex: 2;
   padding: 10px;
-}
-
-.chart-button-strip {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  max-width: 2000px;
 }
 
 </style>

@@ -339,7 +339,7 @@ const closeInfo = (): void => {
       </tr>
     </v-table>
   </v-container>
-  <v-container class="graph-editor-button-strip">
+  <v-container class="button-strip">
     <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss info</v-btn>
     <v-btn v-focus variant="tonal" @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
@@ -362,13 +362,6 @@ const closeInfo = (): void => {
   width: 100vw;
   flex: 2;
   padding: 10px;
-}
-
-.graph-editor-button-strip {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  max-width: 2000px;
 }
 
 /* > Node */

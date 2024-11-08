@@ -12,6 +12,7 @@ import {receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 
 const text = ref("");
+const showConfirm = shallowRef(false);
 
 receiveInWindow((data: string) => {
 
@@ -27,7 +28,9 @@ receiveInWindow((data: string) => {
 /** Close the window on Esc press */
 closeWithEscape("/log");
 
-const showConfirm = shallowRef(false);
+/**
+ * Ask confirmation for deleting the log content
+ */
 const confirmDeletion = (): void => {
 
     showConfirm.value = false;
@@ -42,9 +45,10 @@ const confirmDeletion = (): void => {
 <v-app :theme="theme">
   <v-row class="log-box pa-0">
     <v-container class="log-text-container">
-      <v-textarea :model-value="text" readonly auto-grow hide-details variant="underlined" width="100%" class="log-text pl-2" />
+      <v-textarea :model-value="text" readonly auto-grow hide-details variant="underlined"
+                  width="100%" class="pl-2" />
     </v-container>
-    <v-container class="log-button-strip">
+    <v-container class="button-strip">
       <v-btn variant="tonal" @click="showConfirm=true">Empty Log</v-btn>
       <v-btn v-focus variant="tonal" @click="closeWindow('/log')">Close</v-btn>
     </v-container>
@@ -79,14 +83,4 @@ const confirmDeletion = (): void => {
     padding: 0;
 }
 
-.log-button-strip {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 10px;
-  width: 100vw;
-  max-width: 100%;
-  margin-bottom: 3px;
-  gap: 10px
-}
 </style>

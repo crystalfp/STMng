@@ -49,7 +49,7 @@ closeWithEscape("/symmetries");
       <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
   </v-row>
-  <v-container class="symmetry-button-strip">
+  <v-container class="button-strip">
     <v-btn v-focus variant="tonal" @click="closeWindow('/symmetries')">Close</v-btn>
   </v-container>
 </v-container>
@@ -74,15 +74,6 @@ closeWithEscape("/symmetries");
   display: flex;
   flex-direction: row;
   margin: 0;
-}
-
-.symmetry-button-strip {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 10px;
-  width: 100vw;
-  max-width: 2000px;
 }
 
 .show-symmetry {
