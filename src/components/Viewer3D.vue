@@ -359,11 +359,15 @@ onMounted(() => {
 
         size: 150,
         placement: "bottom-right",
-        lineWidth: 2,
-        sphere: {enabled: false},
-        x: {colors: {main: "#0000FF", text: "aqua"}, circle: false, text: "X"},
-        y: {colors: {main: "#00AA00", text: "#000"}, circle: false, text: "Y"},
-        z: {colors: {main: "#FF0000", text: "#000"}, circle: false, text: "Z"},
+        lineWidth: 30,
+        resolution: 64,
+        sphere: {enabled: true, hoverOpacity: .2},
+        x: {colors: {main: "#FF0000", text: "#000"}, text: "X"},
+        y: {colors: {main: "#79FF00", text: "#000"}, text: "Y"},
+        z: {colors: {main: "#0000FF", text: "#000"}, text: "Z"},
+        nx: {colors: {main: "#FF0000"}, circle: false, line: false},
+        ny: {colors: {main: "#79FF00"}, circle: false, line: false},
+        nz: {colors: {main: "#0000FF"}, circle: false, line: false},
     };
     const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
     // const helper = new THREE.CameraHelper(camera);
