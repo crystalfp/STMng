@@ -2,6 +2,8 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
+  ☐ Add scrollbar in Show Symmetries (check 2_5298595329376014524.cif)
+  ☐ Add radio select to Measures for the three measurement (intra-atoms, polyhedra volume, bonds-length)
 
 Bugs:
 
@@ -35,9 +37,12 @@ Study:
 
 Requests from Oganov:
   ☐ Computation of fingerprints and their use to remove duplicate structures.
-  ☐ Use of local fingerprint order parameters to color atoms
   ☐ An option to specify arbitrary section plane
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
+  ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
+  ☐ Coloring atoms according to their coordination number
+  ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
+  ☐ An option to show all bond lengths from a selected atom (we had this in STM4)
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

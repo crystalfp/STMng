@@ -144,7 +144,6 @@ export class DiffractionPattern extends NodeCore {
 						text: "2θ",
 						font: {
 							size: 20,
-							// weight: "bold"
 						},
 					},
 					grid: {
@@ -158,7 +157,6 @@ export class DiffractionPattern extends NodeCore {
 						text: "Intensity",
 						font: {
 							size: 20,
-							// weight: "bold"
 						},
 					},
 					grid: {
@@ -182,7 +180,7 @@ export class DiffractionPattern extends NodeCore {
 	 * @param min - Theta min value
 	 * @param max - Theta max value
 	 * @param step - Step for the line points
-	 * @param width - Width of the gaussian to be used to smooth the peaks
+	 * @param width - Width of the gaussian to be used to smooth the peaks (FWHM)
 	 * @returns Array of points coordinates to be used in the chart
 	 */
 	private smoothPeaks(xy: DiffractionPatternResult,
@@ -203,7 +201,6 @@ export class DiffractionPattern extends NodeCore {
 			const mean = xy.twoTheta[i];
 			const peak = xy.intensity[i];
 			// const den = 2*(width/2.35482)**2;
-			// const den = 2*(width*0.8493218)**2;
 			const den = 2*(width*0.424661)**2;
 
 			for(let j=0; j < nPoints; ++j) {
@@ -319,6 +316,9 @@ export class DiffractionPattern extends NodeCore {
 					title: this.chartTitle,
 					data: dataToSend
 				});
+
+				// Workaround for chart not appearing due to timing
+				setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend}), 500);
 			}
 		}
 	}
