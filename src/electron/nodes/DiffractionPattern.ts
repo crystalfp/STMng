@@ -203,7 +203,8 @@ export class DiffractionPattern extends NodeCore {
 			const mean = xy.twoTheta[i];
 			const peak = xy.intensity[i];
 			// const den = 2*(width/2.35482)**2;
-			const den = 2*(width*0.8493218)**2;
+			// const den = 2*(width*0.8493218)**2;
+			const den = 2*(width*0.424661)**2;
 
 			for(let j=0; j < nPoints; ++j) {
 				out[j].y += peak*Math.exp(-((out[j].x-mean)**2)/den);

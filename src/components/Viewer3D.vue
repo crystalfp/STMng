@@ -14,7 +14,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
 // import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
-// import {ViewportGizmo} from "three-viewport-gizmo";
+import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
@@ -355,26 +355,17 @@ onMounted(() => {
     // Create lights
     sm.createLights();
 
-    // const gizmoOptions = {
-    //   container: cnv.value,
-    //   size: 100,
-    //   placement: "bottom-right",
-    //   lineWidth: 2,
-    //   backgroundSphere: {
-    //     enabled: true,
-    //     color: "#00FF00",
-    //     opacity: 0.5
-    //   },
-    //   font: {},
-    //   resolution: 100,
-    //   x: {colors: {main: "#0000FF"}},
-    //   y: {colors: {main: "#00FF00"}},
-    //   z: {colors: {main: "#FF0000"}},
-    //   nx: {colors: {main: "#000"}},
-    //   ny: {colors: {main: "#000"}},
-    //   nz: {colors: {main: "#000"}},
-    // };
-    // const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
+    const gizmoOptions: GizmoOptions = {
+
+        size: 150,
+        placement: "bottom-right",
+        lineWidth: 2,
+        sphere: {enabled: false},
+        x: {colors: {main: "#0000FF", text: "aqua"}, circle: false, text: "X"},
+        y: {colors: {main: "#00AA00", text: "#000"}, circle: false, text: "Y"},
+        z: {colors: {main: "#FF0000", text: "#000"}, circle: false, text: "Z"},
+    };
+    const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
     // const helper = new THREE.CameraHelper(camera);
     // scene.add(helper);
     // const viewHelper = new ViewHelper(camera, renderer.domElement);
@@ -395,6 +386,8 @@ onMounted(() => {
             camera.updateProjectionMatrix();
 
             renderer.setSize(cnv.value!.clientWidth, cnv.value!.clientHeight);
+
+            viewportGizmo.update();
         });
     };
 
@@ -402,11 +395,27 @@ onMounted(() => {
 
     watch(props, resizeScene);
 
+    // Set the events listeners
+    viewportGizmo.addEventListener("start", () => (controls.enabled = false));
+    viewportGizmo.addEventListener("end", () => (controls.enabled = true));
+    viewportGizmo.addEventListener("change", () => {
+        void controls.setPosition(...camera.position.toArray());
+    });
+
+      controls.addEventListener("update", () => {
+        controls.getTarget(viewportGizmo.target);
+        viewportGizmo.update();
+      });
+
+      // Set the target
+      void controls.setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
+      camera.lookAt(viewportGizmo.target);
+
     // Start run
     const clock = new THREE.Clock();
     const animate = (): void => {
         renderer.render(scene, camera);
-        // viewportGizmo.render();
+        if(configStore.helpers.showGizmo) viewportGizmo.render();
         // helper.render(renderer);
         controls.update(clock.getDelta());
     };

@@ -2,7 +2,7 @@
     "graph": {
         "reader":    {"label": "Reader",            "type": "structure-reader"},
         "symmetry":  {"label": "Symmetries",        "type": "compute-symmetries",  "in": "reader"},
-        "xray":      {"label": "X-Ray diffraction", "type": "diffraction-pattern", "in": "reader"},
+        "xray":      {"label": "X-Ray diffraction", "type": "diffraction-pattern", "in": "symmetry"},
         "unit":      {"label": "Cell",              "type": "draw-unit-cell",      "in": "symmetry"},
         "bonds":     {"label": "Bonds",             "type": "compute-bonds",       "in": "unit"},
         "draw":      {"label": "Structure",         "type": "draw-structure",      "in": "bonds"},

@@ -173,6 +173,8 @@ watchEffect(() => {
           <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
                     min="2" max="40" step="2" thumb-label />
         </g-align-labels>
+        <v-switch v-model="configStore.helpers.showGizmo" color="primary"
+                  label="Show orientation axis" density="compact" class="mt-n5" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>

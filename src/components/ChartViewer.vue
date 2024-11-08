@@ -14,6 +14,7 @@ import {askNode, closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
 import type {ChartParams, ChartData, ChartOptions} from "@/types";
+import log from "electron-log";
 
 ChartJS.register(
     CategoryScale,
@@ -50,12 +51,12 @@ receiveInWindow((dataFromMain) => {
 /** Close the window on Esc press */
 closeWithEscape("/chart");
 
+// Reference to the chart
 interface ChartCanvas {
     chart: {
         canvas: HTMLCanvasElement;
     };
 }
-// Reference to the chart
 const chartElement = useTemplateRef<ChartCanvas>("chart");
 
 /**
@@ -71,8 +72,8 @@ const makeImage = (): void => {
                 if(response.error) throw Error(response.error as string);
             })
             .catch((error: Error) => {
-                // TBD
-                console.log(error.message);
+
+                log.error(`Error saving chart snapshot: ${error.message}`);
             });
     }
 };

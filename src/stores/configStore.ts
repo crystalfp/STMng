@@ -41,6 +41,7 @@ interface Viewer3DConfiguration {
         showGridYZ: boolean;
         gridSize: number;
         axisLength: number;
+        showGizmo: boolean;
     };
 }
 
@@ -79,6 +80,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             showGridYZ: false,
             gridSize: 10,
             axisLength: 1,
+            showGizmo: false
         }
 	} as Viewer3DConfiguration),
 
@@ -153,6 +155,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.helpers.showGridYZ = state.helpers.showGridYZ;
             this.helpers.gridSize = state.helpers.gridSize;
             this.helpers.axisLength = state.helpers.axisLength;
+            this.helpers.showGizmo = state.helpers.showGizmo;
         }
     }
 });
