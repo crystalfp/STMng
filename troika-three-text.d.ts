@@ -1,7 +1,9 @@
-import * as THREE from "three";
 declare module "troika-three-text" {
 
-	class Text extends THREE.Mesh {
+	import type {Mesh, Color} from "three";
+
+	class Text extends Mesh {
+
 		constructor();
 		sync(): void;
 		dispose(): void;
@@ -10,7 +12,8 @@ declare module "troika-three-text" {
 		public fontSize: number;
 		public fontWeight: string;
 		public font: string;
-		public color: string|number|THREE.Color;
+		public textAlign: "left" | "right" | "center" | "justify";
+		public color: string|number|Color;
 		public anchorX: "left" | "center" | "right";
 		public anchorY: "top" | "top-baseline" | "top-cap" | "top-ex" | "middle" | "bottom-baseline" | "bottom";
 	}

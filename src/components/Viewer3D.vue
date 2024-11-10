@@ -361,7 +361,7 @@ onMounted(() => {
         placement: "bottom-right",
         lineWidth: 30,
         resolution: 64,
-        sphere: {enabled: true, hoverOpacity: .2},
+        sphere: {enabled: true, opacity: 0, hoverOpacity: .2, color: "#FFFFFF", hoverColor: "#FFFFFF"},
         x: {colors: {main: "#FF0000", text: "#000"}, text: "X"},
         y: {colors: {main: "#79FF00", text: "#000"}, text: "Y"},
         z: {colors: {main: "#0000FF", text: "#000"}, text: "Z"},

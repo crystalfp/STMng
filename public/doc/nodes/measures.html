@@ -22,34 +22,52 @@
 <h1 class="subh1">Measure distance and angles</h1>
 
 <div class="description">
-<p>By clicking on one to three atoms (using Ctrl-Click), this module provides:</p>
-<table>
-<tr><td>Atoms type and their coordinates.
-These lines are colored like the atoms selection marker.</td></tr>
-<tr><td>Distances between pair or atoms.</td></tr>
-<tr><td>Angle (in degrees) created by the three atoms.</td></tr>
-</table>
-<p>The information provided depends on the number of atoms selected. If more than three atoms are selected the first entered will be deselected.</p>
-<p>Selecting again a selected atom deselects it.</p>
-<p>If a polyhedra is selected, its color changes and its volume is computed.</p>
+<p>This module provides three types of measurement:</p>
+<dl>
+<dt>Atoms</dt>
+<dd>Clicking (Ctrl-Click) on one to three atoms gives their coordinates, distances and angle.</dd>
+<dt>Polyhedra</dt>
+<dd>Clicking (Ctrl-Click) on a polyhedra gives its volume.</dd>
+<dt>Bonds</dt>
+<dd>Clicking (Ctrl-Click) on an atom gives the lengths of its bonds.</dd>
+</dl>
+<p>The results table shows, when the measurement type <b>Atom</b> is selected:</p>
+<ul>
+<li>Atoms type and their coordinates.
+These lines are colored like the atoms selection marker.</li>
+<li>Distances between pair or atoms.</li>
+<li>Angle (in degrees) created by the three atoms.</li>
+<li>The information provided depends on the number of atoms selected. If more than three atoms are selected the first entered will be deselected. Selecting again a selected atom deselects it.</li>
+</ul>
+
+<p>The results table shows, when the measurement type <b>Polyhedra</b> is selected:</p>
+<ul><li>When a polyhedra is selected by Ctrl-Click, its color changes and its volume is shown.</li></ul>
+
+<p>The results table shows, when the measurement type <b>Bonds</b> is selected:</p>
+<ul><li>The bonded atom index and its bond length. The bonds length are also put near the corresponding bond in the viewer3D.</li></ul>
 </div>
 
 <h2>Controls</h2>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Selected atoms</td>
-	<td class="c2">table</td>
-	<td class="c3">The selected atoms color, symbol and coordinates.</td>
+	<td class="c1">Chart type</td>
+	<td class="c2">radio button</td>
+	<td class="c3">Selects the type of measurement to make: <b>Atoms</b>, <b>Polyhedra</b>, <b>Bonds</b></td>
 </tr>
 <tr>
-	<td class="c1">Measures</td>
+	<td class="c1">Show fractional coordinates</td>
+	<td class="c2">switch</td>
+	<td class="c3">This control appears only if <b>Atoms</b> measurement is selected. If set, the atoms coordinates shown change from cartesian to fractional.</td>
+</tr>
+<tr>
+	<td class="c1">Results</td>
 	<td class="c2">table</td>
-	<td class="c3">The distances and angles. If a polyhedron is selected, its volume appears.</td>
+	<td class="c3">Depending on the type of measurement, here the measurement results appear.</td>
 </tr>
 <tr>
 	<td class="c1">Deselect</td>
 	<td class="c2">button</td>
-	<td class="c3">Deselect selected atoms.</td>
+	<td class="c3">Deselect selected atoms and polyhedra.</td>
 </tr>
 </table>
 

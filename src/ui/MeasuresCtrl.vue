@@ -15,7 +15,8 @@ import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
-import type {SelectedAtom} from "@/types";
+import {spriteTextAlongBond} from "@/services/SpriteText";
+import type {SelectedAtom, BondData} from "@/types";
 
 // > Properties
 const {id} = defineProps<{
@@ -38,6 +39,9 @@ const distanceAC = ref(-1);
 const angleABC   = ref(-1);
 const volume     = ref(-1);
 const details    = shallowRef<SelectedAtom[]>([]);
+
+const measurementType = ref<"atoms" | "polyhedra" | "bonds">("atoms");
+const bondData = ref<BondData[]>([]);
 
 /** Show fractional coordinates */
 const useFractional = ref(false);
@@ -92,7 +96,49 @@ const computeVolume = (vertices: THREE.TypedArray, numberVertices: number): numb
 // Watch atoms selection
 watch(controlStore.atomsSelected, () => {
 
+    const pointSize = configStore.isPerspectiveCamera ? 0.3 : 6;
     const atsel = controlStore.atomsSelected;
+    if(measurementType.value === "bonds") {
+
+        const nselected = atsel.length;
+        if(nselected === 0) return;
+
+        askNode(id, "bonds", {
+            idx: atsel[nselected-1]
+        })
+        .then((params) => {
+
+		    sm.clearGroup(groupName);
+
+            const radius = params.radius as number ?? 0;
+            if(radius === 0) return;
+            const x = params.x as number ?? 0;
+            const y = params.y as number ?? 0;
+            const z = params.z as number ?? 0;
+            const color = params.color as string ?? "red";
+
+            const bondDataTable = JSON.parse(params.labels as string ?? "[]" ) as BondData[];
+            bondData.value.length = 0;
+            for(const bd of bondDataTable) {
+
+                bondData.value.push(bd);
+
+                const label = spriteTextAlongBond(bd.distance.toFixed(3), "yellow", [x, y, z],
+                                                  bd.atomPosition, radius*0.5, bd.radius*0.5, bd.distance);
+                group.add(label);
+            }
+
+            const subdivisions = radius > 0.5 ? 4 : 1;
+            const geom = new THREE.IcosahedronGeometry(radius*0.6, subdivisions);
+            const mat = new THREE.PointsMaterial({color, size: pointSize});
+            const points = new THREE.Points(geom, mat);
+            points.position.set(x, y, z);
+            group.add(points);
+        })
+        .catch((error: Error) => showAlertMessage(`Error from computing bonds lengths: ${error.message}`));
+        return;
+    }
+
     askNode(id, "compute", {
         idx1: atsel[0],
         idx2: atsel[1],
@@ -106,7 +152,6 @@ watch(controlStore.atomsSelected, () => {
         angleABC.value   = params.angleABC as number ?? -1;
         details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtom[];
 
-        const pointSize = configStore.isPerspectiveCamera ? 0.3 : 6;
 		sm.clearGroup(groupName);
         for(const detail of details.value) {
             const subdivisions = detail.radius > 0.5 ? 4 : 1;
@@ -178,6 +223,9 @@ watch(polyhedronNewIdx, () => {
     }
 });
 
+// Watch measurement change. Every measurement should start with nothing selected
+watch(measurementType, () => controlStore.deselectAll());
+
 /**
  * Format one coordinate (cartesian of fractional) of the selected atom.
  *
@@ -199,39 +247,63 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="useFractional" label="Show fractional coordinates"
-            color="primary" density="compact" class="ml-4 mt-2 mb-n4"/>
-  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Selected atoms</v-label>
-  <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
-    <tr v-for="line of details" :key="line.index">
-      <td :style="`color: ${line.color};width:3rem`">{{ line.label }}</td>
-      <td style="width: 1rem">{{ line.symbol }}</td>
-      <td style="width: 3rem;text-align:right">[</td>
-      <td style="width: 1rem;text-align:right">{{ `${showCoords(line, 0)},` }}</td>
-      <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 1)},` }}</td>
-      <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 2)}` }}</td>
-      <td style="width: 0.5rem;text-align:right">]</td>
-    </tr>
-  </v-table>
-  <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measures</v-label>
-  <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
-    <tr>
-    <td style="width:9rem">Distance <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>:</td>
-    <td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
-    <tr v-if="distanceBC > 0">
-    <td>Distance <span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
-    <td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>
-    <tr v-if="distanceAC > 0">
-    <td>Distance <span style="color: #FF0000">A</span>–<span style="color: #4263FF">C</span>:</td>
-    <td style="text-align:right">{{ distanceAC.toFixed(5) }}</td></tr>
-    <tr v-if="angleABC >= 0">
-    <!-- eslint-disable-next-line @alasdair/max-len/max-len -->
-    <td>Angle <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
-    <td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
-  </v-table>
-  <v-table v-if="volume > 0" density="default" class="pa-1 mt-n1 pr-5">
-    <tr><td style="width:9rem">Polyhedral volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
-  </v-table>
+  <v-label class="ml-2 mb-2 mt-4 no-select">Measurement type</v-label>
+  <v-btn-toggle v-model="measurementType" color="primary" mandatory class="ml-2 mb-6">
+    <v-btn value="atoms">Atoms</v-btn>
+    <v-btn value="polyhedra">Polyhedra</v-btn>
+    <v-btn value="bonds">Bonds</v-btn>
+  </v-btn-toggle>
+
+  <v-container v-if="measurementType === 'atoms'" class="pa-0">
+    <v-switch v-model="useFractional" label="Show fractional coordinates"
+              color="primary" density="compact" class="ml-4 mt-2 mb-n4"/>
+    <v-label v-if="details.length > 0"
+             class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Selected atoms</v-label>
+    <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
+      <tr v-for="line of details" :key="line.index">
+        <td :style="`color:${line.color};width:3rem`">{{ line.label }}</td>
+        <td style="width: 1rem">{{ line.symbol }}</td>
+        <td style="width: 3rem;text-align:right">[</td>
+        <td style="width: 1rem;text-align:right">{{ `${showCoords(line, 0)},` }}</td>
+        <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 1)},` }}</td>
+        <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 2)}` }}</td>
+        <td style="width: 0.5rem;text-align:right">]</td>
+      </tr>
+    </v-table>
+    <v-label v-if="distanceAB > 0" class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measures</v-label>
+    <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
+      <tr>
+      <td style="width:9rem">Distance <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>:</td>
+      <td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
+      <tr v-if="distanceBC > 0">
+      <td>Distance <span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
+      <td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>
+      <tr v-if="distanceAC > 0">
+      <td>Distance <span style="color: #FF0000">A</span>–<span style="color: #4263FF">C</span>:</td>
+      <td style="text-align:right">{{ distanceAC.toFixed(5) }}</td></tr>
+      <tr v-if="angleABC >= 0">
+      <!-- eslint-disable-next-line @alasdair/max-len/max-len -->
+      <td>Angle <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
+      <td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
+    </v-table>
+  </v-container>
+
+  <v-container v-if="measurementType === 'polyhedra' && volume > 0" class="pa-0">
+    <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measure</v-label>
+    <v-table density="default" class="pa-1 mt-n1 pr-5">
+      <tr><td style="width:9rem">Polyhedral volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
+    </v-table>
+  </v-container>
+
+  <v-container v-if="measurementType === 'bonds' && bondData.length > 0" class="pa-0">
+    <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Bond length to atom index</v-label>
+    <v-table density="default" class="pa-1 mt-n1 pr-5">
+      <tr v-for="entry of bondData" :key="entry.idx">
+        <td style="width:9rem">{{ entry.idx }}</td>
+        <td style="text-align:right">{{ entry.distance.toFixed(5) }}</td></tr>
+    </v-table>
+  </v-container>
+
   <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
 </v-container>
 </template>

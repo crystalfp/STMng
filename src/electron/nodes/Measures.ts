@@ -8,7 +8,8 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, SelectedAtom, PositionType} from "@/types";
+import type {Structure, UiInfo, CtrlParams, ChannelDefinition,
+			 SelectedAtom, PositionType, BondData} from "@/types";
 import {getAtomData} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
@@ -30,6 +31,7 @@ export class Measures extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "compute", type: "invoke", callback: this.channelCompute.bind(this)},
+		{name: "bonds",   type: "invoke", callback: this.channelBonds.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -209,6 +211,65 @@ export class Measures extends NodeCore {
         	distanceAC: this.distanceAC,
         	angleABC: this.angleABC,
         	details: JSON.stringify(this.details),
+		};
+	}
+
+	/**
+	 * Channel handler for compute bonds lengths
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelBonds(params: CtrlParams): CtrlParams {
+
+		if(!this.structure ||
+			this.structure.atoms.length === 0 ||
+			this.structure.bonds.length === 0) return {
+			radius: 0,
+			labels: "[]"
+		};
+
+		const idx = params.idx as number;
+		if(idx === undefined || idx < 0 || idx >= this.structure.atoms.length) return {
+			radius: 0,
+			labels: "[]"
+		};
+
+		const {atoms, bonds} = this.structure;
+		const {atomZ, position} = atoms[idx];
+
+		const bondData: BondData[] = [];
+
+		for(const bond of bonds) {
+
+			if(bond.from === idx) {
+
+				const {position: other, atomZ: otherZ} = atoms[bond.to];
+				const distance = Math.hypot(position[0]-other[0],
+											position[1]-other[1],
+											position[2]-other[2]);
+
+				bondData.push({idx: bond.to, atomPosition: other,
+							  radius: getAtomData(otherZ).rCov, distance});
+			}
+			else if(bond.to === idx) {
+
+				const {position: other, atomZ: otherZ} = atoms[bond.from];
+				const distance = Math.hypot(position[0]-other[0],
+											position[1]-other[1],
+											position[2]-other[2]);
+
+				bondData.push({idx: bond.from, atomPosition: other,
+							  radius: getAtomData(otherZ).rCov, distance});
+			}
+		}
+
+		return {
+			x: position[0],
+			y: position[1],
+			z: position[2],
+			radius: getAtomData(atomZ).rCov,
+			color: colors[0],
+			labels: JSON.stringify(bondData)
 		};
 	}
 }

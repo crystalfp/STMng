@@ -332,6 +332,22 @@ export interface SelectedAtom {
     fractional: PositionType;
 }
 
+/** Bond data when measuring bonds lengths */
+export interface BondData {
+
+    /** Index of the bonded atom */
+    idx: number;
+
+    /** Bonded atom position */
+	atomPosition: PositionType;
+
+    /** Bonded atom radius */
+    radius: number;
+
+    /** Bond length */
+	distance: number;
+}
+
 /** Accept string for the file selector */
 export interface FileFilter {
 
