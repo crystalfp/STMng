@@ -229,7 +229,7 @@ console.log(reciprocalPoints)
 
         let max_intensity = -1;
         const keys: string[] = [];
-        const x: number[] = [];
+
         for(const p in peaks) {
             const pt = peaks[p]
             // console.log(p, pt[0], pt[1], pt[2])
