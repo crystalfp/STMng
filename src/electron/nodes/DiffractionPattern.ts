@@ -21,9 +21,10 @@ export class DiffractionPattern extends NodeCore {
 	private thetaLow = 0;
 	private thetaHigh = 90;
 	private width = 0.5;
+	private showHKL = false;
 	private wavelengthCode = "CuKa";
 	private readonly xrd = new XRDCalculator();
-	private xy: DiffractionPatternResult = {twoTheta: [], intensity: []};
+	private xy: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
 	private readonly chartTitle = "X-Ray diffraction pattern";
 
 	private readonly channels: ChannelDefinition[] = [
@@ -49,7 +50,7 @@ export class DiffractionPattern extends NodeCore {
 		if(hasData && isSecondaryWindowOpen(undefined, "/chart")) {
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, false,
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
 													 this.thetaLow, this.thetaHigh);
 
 			// Compute chart data
@@ -66,7 +67,8 @@ export class DiffractionPattern extends NodeCore {
 			thetaLow: this.thetaLow,
 			thetaHigh: this.thetaHigh,
 			width: this.width,
-			wavelengthCode: this.wavelengthCode
+			wavelengthCode: this.wavelengthCode,
+			showHKL: this.showHKL
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -77,6 +79,7 @@ export class DiffractionPattern extends NodeCore {
 		this.thetaHigh = params.thetaHigh as number ?? 90;
 		this.width = params.width as number ?? 0.5;
 		this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
+		this.showHKL = params.showHKL as boolean ?? false;
 	}
 
 	getUiInfo(): UiInfo {
@@ -96,26 +99,32 @@ export class DiffractionPattern extends NodeCore {
 	private createDataForChart(): string {
 
 		// Chart of the peaks
-		// const coords: ChartCoordinates = [];
-		// const len = this.xy.intensity.length;
-		// for(let i=0; i < len; ++i) {
-		// 	coords.push({x: this.xy.twoTheta[i], y: this.xy.intensity[i]});
-		// }
+		const coords: ChartCoordinates = [];
+		const labels: string[] = [];
+		const len = this.xy.intensity.length;
+		for(let i=0; i < len; ++i) {
+			coords.push({x: this.xy.twoTheta[i], y: this.xy.intensity[i]});
+			labels.push(this.xy.label[i]);
+		}
 
 		// Chart of the line spectra
 		const lineCoordinates = this.smoothPeaks(this.xy, this.thetaLow, this.thetaHigh, 0.05, this.width);
 
 		// Data and options for the chart
-		const chartData: Partial<ChartData> = {
-
+		const chartData: ChartData = {
 			datasets: [
-				// {
-				// 	label: "(2θ, Intensity)",
-				// 	borderColor: "transparent",
-				// 	backgroundColor: "#00ff00",
-				// 	data: coords,
-				// 	pointRadius: 5,
-				// },
+				{
+					label: "(2θ, Intensity)",
+					borderColor: "transparent",
+					backgroundColor: "#00ff00",
+					data: coords,
+					pointRadius: 0,
+					datalabels: {
+    					color: "#36A2EB",
+						align: "right",
+						anchor: "center"
+					}
+				},
 				{
 					label: "(2θ, Intensity)",
 					data: lineCoordinates,
@@ -123,9 +132,20 @@ export class DiffractionPattern extends NodeCore {
 					backgroundColor: "#00ff00",
 					showLine: true,
 					pointRadius: 0,
+					datalabels: {
+    					display: false
+					}
 				}
 			]
 		};
+
+		if(this.showHKL) {
+			chartData.labels = labels;
+			chartData.datasets[0].datalabels!.display = true;
+		}
+		else {
+			chartData.datasets[0].datalabels!.display = false;
+		}
 
 		const chartOptions: ChartOptions = {
 			responsive: true,
@@ -133,9 +153,10 @@ export class DiffractionPattern extends NodeCore {
 			plugins: {
 				legend: {
 					display: false
-				}
+				},
 			},
 			elements: {line: {borderWidth: 2}},
+			layout: {padding: 20},
 			scales: {
 				x: {
 					title: {
@@ -248,6 +269,7 @@ export class DiffractionPattern extends NodeCore {
 		if(this.structure && isSecondaryWindowOpen(undefined, "/chart")) {
 
 			this.width = params.width as number ?? 0.5;
+			this.showHKL = params.showHKL as boolean ?? false;
 
 			// Compute chart data
 			const dataToSend = this.createDataForChart();
@@ -269,9 +291,10 @@ export class DiffractionPattern extends NodeCore {
 			this.thetaHigh = params.thetaHigh as number ?? 90;
 			this.scaled = params.scaled as boolean ?? true;
 			this.width = params.width as number ?? 0.5;
+			this.showHKL = params.showHKL as boolean ?? false;
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, false,
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
 													 this.thetaLow, this.thetaHigh);
 
 			// Compute chart data
@@ -294,9 +317,10 @@ export class DiffractionPattern extends NodeCore {
 			this.thetaHigh = params.thetaHigh as number ?? 90;
 			this.scaled = params.scaled as boolean ?? true;
 			this.width = params.width as number ?? 0.5;
+			this.showHKL = params.showHKL as boolean ?? false;
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, false,
+			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
 		 											 this.thetaLow, this.thetaHigh);
 
 			// Compute chart data

@@ -10,6 +10,8 @@ import {ref, useTemplateRef} from "vue";
 import {Bar, Line, Scatter} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+import type {Context} from "chartjs-plugin-datalabels";
 import {askNode, closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
@@ -22,6 +24,7 @@ ChartJS.register(
     PointElement,
     LineElement,
     BarElement,
+    ChartDataLabels,
     Title,
     Tooltip,
     Legend);
@@ -45,6 +48,14 @@ receiveInWindow((dataFromMain) => {
 
     chartType.value = type;
     chartData.value = data;
+
+    if(data.labels && options.plugins) {
+        options.plugins.datalabels = {
+            formatter: (_value: unknown, context: Context): string =>
+                context.chart.data.labels![context.dataIndex] as string
+        };
+    }
+
     chartOptions.value = options;
 });
 

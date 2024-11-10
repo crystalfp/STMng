@@ -17,6 +17,7 @@ import {getAtomicSymbol} from "./AtomData";
 export interface DiffractionPatternResult {
 	twoTheta: number[];
 	intensity: number[];
+    label: string[];
 }
 
 // XRD wavelengths in angstroms
@@ -224,7 +225,7 @@ export class XRDCalculator {
         keys.sort();
 
         const SCALED_INTENSITY_TOL = 0.001;
-        const dp: DiffractionPatternResult = {twoTheta: [], intensity: []};
+        const dp: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
         for(const key of keys) {
 
             const scaledIntensity = peaks[key][0] / maxIntensity * 100;
@@ -232,9 +233,64 @@ export class XRDCalculator {
 
                 dp.twoTheta.push(Number.parseFloat(key));
                 dp.intensity.push(scaled ? scaledIntensity : peaks[key][0]);
+                dp.label.push(this.getUniqueFamilies(peaks[key][1]));
             }
         }
 
 		return dp;
 	}
+
+    private isPermutation(hkl1: number[], hkl2: number[]): boolean {
+
+        const thkl1 = hkl1.map((nn) => (nn < 0 ? -nn : nn)).sort((a, b) => (a - b));
+        const thkl2 = hkl2.map((nn) => (nn < 0 ? -nn : nn)).sort((a, b) => (a - b));
+
+        const len1 = thkl1.length;
+        if(len1 !== thkl2.length) return false;
+        for(let i=0; i < len1; ++i) if(thkl1[i] !== thkl2[i]) return false;
+        return true;
+    }
+
+    /**
+     * Get unique families of Miller indices. Families must be permutations of each other
+     *
+     * @param hkls - ([h, k, l]): List of Miller indices
+     * @returns Label for the peak
+     */
+    private getUniqueFamilies(hkls: [number[]]): string {
+
+        const unique: Record<string, {idx: number[]; val: number[][]}> = {};
+        for(const hkl of hkls) {
+
+            let found = false;
+            for(const key in unique) {
+
+                const item = unique[key];
+                if(this.isPermutation(hkl, item.idx)) {
+                    found = true;
+                    item.val.push(hkl);
+                }
+            }
+            if(!found) unique[hkl.join(",")] = {idx: hkl, val: [hkl]};
+        }
+
+        let out = "";
+        for(const key in unique) {
+
+            const item = unique[key];
+
+            // Find the maximum
+            item.val.sort((a, b) => {
+                for(let i=0; i < a.length; ++i) {
+
+                    if(a[i] !== b[i]) return b[i]-a[i];
+                }
+                return 0;
+            });
+
+            if(out !== "") out += "\n";
+            out += `(${item.val[0].join(", ")}): ${item.val.length}`;
+        }
+        return out;
+    }
 }

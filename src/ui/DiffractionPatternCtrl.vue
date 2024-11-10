@@ -17,6 +17,7 @@ const theta = ref([0, 90]);
 const scaled = ref(true);
 const enableComputation = ref(false);
 const width = ref(0.5);
+const showHKL = ref(false);
 
 // > Properties
 const {id, label} = defineProps<{
@@ -36,6 +37,7 @@ askNode(id, "init")
         theta.value[0] = params.thetaLow as number ?? 0;
         theta.value[1] = params.thetaHigh as number ?? 90;
         width.value = params.width as number ?? 0.5;
+		showHKL.value = params.showHKL as boolean ?? false;
         const codes = JSON.parse(params.wavelengthCodes as string ?? "[]") as string[];
         wavelengthCodes.value.length = 0;
         for(const code of codes) wavelengthCodes.value.push(code);
@@ -52,14 +54,16 @@ watch([wavelengthCode, theta, scaled], () => {
         thetaHigh: theta.value[1],
         scaled: scaled.value,
         width: width.value,
+        showHKL: showHKL.value
     });
 }, {deep: true});
 
 /** Changing charting parameters */
-watch([width], () => {
+watch([width, showHKL], () => {
 
     sendToNode(id, "show", {
         width: width.value,
+        showHKL: showHKL.value
     });
 });
 
@@ -79,6 +83,7 @@ const openChartWindow = (): void => {
         thetaHigh: theta.value[1],
         scaled: scaled.value,
         width: width.value,
+        showHKL: showHKL.value
     });
 };
 
@@ -96,6 +101,7 @@ const openChartWindow = (): void => {
              class="ml-n2 no-select"/>
   </g-debounced-range-slider>
   <v-switch v-model="scaled" color="primary" label="Chart scaled" class="ml-2 mt-1" />
+  <v-switch v-model="showHKL" color="primary" label="Show HKL" class="ml-2 mt-n5" />
   <g-debounced-slider v-slot="{value}" v-model="width" :min="0.05" :max="5" :step="0.05"
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />

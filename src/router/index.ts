@@ -1,5 +1,5 @@
 /**
- * Setup router. Besides main entry, one for each independent window to be created
+ * Setup router. Besides main entry, one route for each independent window to be created
  * @remarks If the page content does not load, increase the timeout in WindowsUtilities
  *
  * @packageDocumentation

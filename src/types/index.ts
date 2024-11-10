@@ -6,6 +6,17 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-07
  */
+import type {Context} from "chartjs-plugin-datalabels";
+/**
+ * Label alignment respect to the point
+ * @notExported
+ */
+type Align = "bottom" | "center" | "end" | "left" | "right" | "start" | "top" | number;
+/**
+ * Where to anchor the label on the point
+ * @notExported
+ */
+type Anchor = "center" | "end" | "start";
 
 // > Type of a collection of atomic structures
 // >> Base types
@@ -372,11 +383,20 @@ export interface ChartOptions {
         legend?: {
             display: boolean;
         };
+        datalabels?: {
+            color?: string;
+            formatter?: (value: unknown, context: Context) => string;
+            align?: Align;
+            anchor?: Anchor;
+        };
     };
     elements?: {
         line: {
             borderWidth: number;
         };
+    };
+    layout?: {
+        padding: number;
     };
     scales?: {
       x: {
@@ -412,6 +432,12 @@ export interface ChartData {
         pointRadius?: number;
         data: number[] | ChartCoordinates;
         showLine?: boolean;
+        datalabels?: {
+            display?: boolean;
+            color?: string;
+            align?: Align;
+            anchor?: Anchor;
+        };
     }[];
 }
 

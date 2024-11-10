@@ -9,7 +9,10 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable sonarjs/sonar-max-params, max-params */
 
-/** Type of the native code output */
+/**
+ * Type of the native code output
+ * @notExported
+ */
 interface FindAndApplySymmetriesOutput {
 	spaceGroup: string;
 	basis: Float64Array;
@@ -19,6 +22,10 @@ interface FindAndApplySymmetriesOutput {
 	status: string;
 }
 
+/**
+ * Type of the converter from space group number to space group output
+ * @notExported
+ */
 interface ConvertSpaceGroupNumberOutput {
 	spaceGroup: string;
 	errorNumber: number;

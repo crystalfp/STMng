@@ -9,6 +9,10 @@
 import type {BasisType, PositionType, Structure} from "@/types";
 import {basisToLengthAngles} from "./Helpers";
 
+/**
+ * Alternative description of the unit cell
+ * @notExported
+ */
 type LengthsAnglesType = [a: number, b: number, c: number, alpha: number, beta: number, gamma: number];
 
 export class Lattice {
@@ -48,9 +52,8 @@ export class Lattice {
 	}
 
 	/**
-	 * Check if lattice corresponds to hexagonal lattice
+	 * Check if lattice corresponds to an hexagonal lattice
 	 *
-	 * @param lattice - Unit cell from the structure
 	 * @param angleTolerance - Angle tolerance
 	 * @param lengthTolerance - Length tolerance
 	 * @returns Whether lattice corresponds to hexagonal lattice
@@ -78,10 +81,19 @@ export class Lattice {
         );
 	}
 
+	/**
+	 * Return the cell origin
+     */
 	get origin(): number[] {return this.structure.crystal.origin;}
 
+	/**
+	 * Return the lengths of the basis vectors
+	 */
 	get lengths(): number[] {return this.lengthsAngles.slice(0, 3);}
 
+	/**
+	 * Return the basis matrix how it is considered in the python library
+	 */
 	get matrix(): number[] {
 
 		const out = Array(9).fill(0) as number[];
@@ -94,6 +106,12 @@ export class Lattice {
 		return out;
 	}
 
+	/**
+	 * Convert cartesian coordinates into corresponding fractional ones
+	 *
+	 * @param position - Cartesian coordinates
+	 * @returns Fractional coordinates
+	 */
 	toFractionalCoordinates(position: number[]): PositionType {
 
 		const {origin} = this.structure.crystal;
@@ -109,6 +127,12 @@ export class Lattice {
 		];
 	}
 
+	/**
+	 * Convert fractional coordinates into corresponding cartesian ones
+	 *
+	 * @param fractional - Fractional coordinates
+	 * @returns Cartesian coordinates
+	 */
 	toCartesianCoodinates(fractional: number[]): PositionType {
 
 		const {basis} = this.structure.crystal;
@@ -123,6 +147,11 @@ export class Lattice {
 		];
 	}
 
+	/**
+	 * Compute the reciprocal cell vectors lengths
+	 *
+	 * @returns Lengths of the reciprocal cell vectors
+	 */
 	reciprocalLatticeLengths(): number[] {
 
 		const {crystal} = this.structure;
