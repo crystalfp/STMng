@@ -37,14 +37,13 @@ closeWithEscape("/symmetries");
 
 <template>
 <v-app :theme="theme">
-<v-container class="symmetry-portal">
+<v-container class="symmetry-portal ma-0">
   <v-row class="symmetry-container">
-    <v-col style="flex: 1; overflow-y: auto">
+    <v-col class="left-col">
       <v-label class="text-h5 justify-center mt-4 w-100">Input symmetry</v-label>
       <v-label :text="inSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
-    <v-divider thickness="8" vertical class="mt-4" />
-    <v-col style="flex: 1; overflow-y: auto">
+    <v-col class="right-col">
       <v-label class="text-h5 justify-center mt-4 w-100">Output symmetry</v-label>
       <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
@@ -64,16 +63,18 @@ closeWithEscape("/symmetries");
   flex-direction: column;
   height: 100vh;
   padding: 0;
-  width: 100vw;
 }
 
 .symmetry-container {
-  overflow-y: hidden;
+  overflow-y: auto;
   width: 100vw;
   flex: 2;
   display: flex;
   flex-direction: row;
   margin: 0;
+  height: 100%;
+  padding-top: 15px;
+  max-width: 3000px !important;
 }
 
 .show-symmetry {
@@ -82,4 +83,12 @@ closeWithEscape("/symmetries");
   font-family: monospace;
 }
 
+.left-col {
+  flex: 1;
+  border-right: 8px solid #B8B8B8;
+}
+
+.right-col {
+  flex: 1;
+}
 </style>

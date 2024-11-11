@@ -7,7 +7,7 @@
  * @since 2024-10-26
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/prevent-abbreviations */
-import {Lattice} from "./Lattice";
+import type {Lattice} from "./Lattice";
 
 export interface ReciprocalPoint {
     coord: number[];

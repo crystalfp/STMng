@@ -11,6 +11,7 @@
  */
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
+import log from "electron-log";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {convertSpaceGroupNumber} from "../modules/NativeFunctions";
@@ -59,7 +60,7 @@ export class ReaderCEL implements ReaderImplementation {
 
 				if(cnt === 1) throw Error("Missing space group in RGNR");
 
-				const nspaceGroup = Number.parseInt(fields[1]);
+				const nspaceGroup = Number.parseInt(fields[1], 10);
 				if(nspaceGroup < 1 || nspaceGroup > 230) {
 					throw Error(`Invalid space group number ${nspaceGroup}`);
 				}
@@ -69,7 +70,7 @@ export class ReaderCEL implements ReaderImplementation {
 					variation = 0;
 				}
 				else {
-					variation = Number.parseInt(fields[2]);
+					variation = Number.parseInt(fields[2], 10);
 					if(variation > 0) --variation;
 				}
 
@@ -79,7 +80,7 @@ export class ReaderCEL implements ReaderImplementation {
 						structures[0].crystal.spaceGroup = computed.spaceGroup;
 						break;
 					case 1:
-						console.log(`Space group var ${variation+1} invalid for sg ${nspaceGroup}`);
+						log.error(`Space group var ${variation+1} invalid for sg ${nspaceGroup}`);
 						structures[0].crystal.spaceGroup = computed.spaceGroup;
 						break;
 					default: throw Error(computed.spaceGroup);

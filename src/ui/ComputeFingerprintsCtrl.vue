@@ -137,7 +137,7 @@ watchEffect(() => {
 // eslint-disable-next-line security/detect-unsafe-regex
 const rg = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
 const rules = {
-    numeric: (value: string) => rg.test(value) || "Field should be numeric",
+    numeric: (value: string): boolean | string => rg.test(value) || "Field should be numeric",
 };
 
 const fpMethods = [

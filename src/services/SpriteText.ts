@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-17
  */
-import {Group, type Mesh, Vector3} from "three";
+import {type Group, type Mesh, Vector3} from "three";
 import type {PositionType} from "@/types";
 import {Text as TroikaText} from "troika-three-text";
 
