@@ -2,7 +2,6 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
-  ☐ Try to use import instead of require in NativeFunctions.ts
 
 Bugs:
 
@@ -53,6 +52,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Try to use import instead of require in NativeFunctions.ts @done(2024-11-12 03:49) @project(To do)
   ✔ An option to show all bond lengths from a selected atom (we had this in STM4) @done(2024-11-11 15:52) @project(Requests from Oganov)
   ✔ Add scrollbar in Show Symmetries (check 2_5298595329376014524.cif) @done(2024-11-11 15:51) @project(To do)
   ✔ Add radio select to Measures for the three measurement (intra-atoms, polyhedra volume, bonds-length) @done(2024-11-11 14:28) @project(To do)
