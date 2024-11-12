@@ -2,6 +2,8 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
+  ☐ Finish trajectories position clouds
+  ☐ Fix background color in print chart
 
 Bugs:
 
@@ -19,7 +21,6 @@ Porting:
 
 ToDo eventually:
   ☐ Readers do not fail if the file format is invalid
-  ☐ Finish trajectories position clouds
   ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
