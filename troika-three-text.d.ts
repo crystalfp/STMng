@@ -2,6 +2,8 @@ declare module "troika-three-text" {
 
 	import type {Mesh, Color} from "three";
 
+	declare function preloadFont(opt: {font: string, characters: string}, callback: () => void): void;
+
 	class Text extends Mesh {
 
 		constructor();

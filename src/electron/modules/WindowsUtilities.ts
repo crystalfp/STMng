@@ -412,24 +412,6 @@ export const sendTracesToClient = (id: string,
 };
 
 /**
- * Push position clouds volumetric data to client
- *
- * @param id - ID of the node sending the parameters
- * @param channel - Specify the channel inside the id related group
- * @param volume - The volumetric data
- * @param limits - The limits of the volumetric data
- */
-export const sendPositionCloudsToClient = (id: string,
-                                           channel: string,
-                                           volume: number[],
-                                           limits: number[],
-                                           count: number): void => {
-
-    const channelName = id + ":" + channel;
-    mainWin.webContents.send(channelName, volume, limits, count);
-};
-
-/**
  * Push isosurfaces data to client
  *
  * @param id - ID of the node sending the parameters

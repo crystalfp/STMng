@@ -364,27 +364,6 @@ export const receiveTracesFromNode = (id: string,
 								    colors: string[]) => callback(segments, colors));
 };
 
-/**
- * Receive position clouds volumetric data as push message
- *
- * @param id - ID of the node sending the parameters
- * @param channel - Specify the channel inside the id related group
- * @param callback - Callback function called when a message is received
- */
-export const receivePositionCloudsFromNode = (id: string,
-									  		  channel: string,
-											  callback: (positionCloud: number[],
-											  			 limits: number[],
-														 count: number) => void): void => {
-
-	const channelName = id + ":" + channel;
-    window.electron.ipcRenderer.on(channelName,
-								   (_event,
-								    positionCloud: number[],
-									limits: number[],
-									count: number) => callback(positionCloud, limits, count));
-};
-
 // > Communication to windows
 /**
  * Close a secondary window.

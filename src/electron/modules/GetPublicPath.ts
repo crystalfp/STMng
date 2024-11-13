@@ -22,3 +22,19 @@ export const publicDirPath = (filename: string): string => {
 	const publicDir = path.join(mainSourceDirectory, "..", app.isPackaged ? "dist" : "public");
 	return path.join(publicDir, filename);
 };
+
+/**
+ * Add the correct path to the public directory for development and production
+ *
+ * @param filename - Filename inside the public directory
+ * @returns The complete path to the given file
+ */
+export const publicImagePath = (filename: string): string => {
+
+	if(app.isPackaged) {
+		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+		const publicDir = path.join(mainSourceDirectory, "..", "dist");
+		return path.join(publicDir, filename);
+	}
+	return `/${filename}`;
+};

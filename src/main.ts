@@ -9,6 +9,7 @@
 import {createApp, defineAsyncComponent} from "vue";
 import log from "electron-log/renderer";
 import {createPinia} from "pinia";
+import {preloadFonts} from "./services/SpriteText";
 
 // The app
 import App from "./App.vue";
@@ -127,6 +128,9 @@ app.config.errorHandler = (error: unknown): void => {
 addEventListener("unhandledrejection", (event): void => {
 	log.error("Unhandled rejection:", event.reason);
 });
+
+// Preload fonts for labels
+preloadFonts();
 
 // Mount the application
 app.mount("#app");

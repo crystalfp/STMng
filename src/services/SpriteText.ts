@@ -8,7 +8,7 @@
  */
 import {type Group, type Mesh, Vector3} from "three";
 import type {PositionType} from "@/types";
-import {Text as TroikaText} from "troika-three-text";
+import {Text as TroikaText, preloadFont} from "troika-three-text";
 
 import localRoboto from "@/assets/Roboto-Regular.ttf";
 
@@ -159,4 +159,18 @@ export const disposeTextInGroup = (group: Group): void => {
 		group.remove(obj);
 		obj.dispose();
 	}
+};
+
+/**
+ * Preload used characters
+ */
+export const preloadFonts = (): void => {
+
+	const glyphs = "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuy0123456789.";
+
+	preloadFont({
+		font: localRoboto,
+		characters: glyphs
+	},
+	() => {/* do nothing */});
 };

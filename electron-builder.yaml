@@ -5,7 +5,7 @@ productName: STMng
 copyright: Copyright © 2024 ${author}
 asar: true
 directories:
-  output: release/${os}/${version}
+  output: release/${version}
   buildResources: resources
 files:
   - dist-electron

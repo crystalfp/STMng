@@ -4,6 +4,8 @@ To do:
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Finish trajectories position clouds
   ☐ Fix background color in print chart
+  ✔ Add a preload font to SpriteText @done(2024-11-13 07:59)
+  ☐ In the wavelength code select add "other..." and open a numeric input for the wavelength
 
 Bugs:
 
