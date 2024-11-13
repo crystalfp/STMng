@@ -5,6 +5,7 @@ To do:
   ☐ Fix background color in print chart
   ☐ In the wavelength code select add "other..." and open a numeric input for the wavelength
   ☐ Check if files under public can be moved under src/assets using "import"
+  ✔ Add reference to chemical data: https://sourceforge.net/projects/openbabel/ 2.4.1 file "element.txt" @done(2024-11-13 16:43)
 
 Bugs:
 

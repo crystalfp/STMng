@@ -36,6 +36,7 @@ import {publicDirPath} from "./GetPublicPath";
 // #   - element name (in English)                                              #
 // #                                                                            #
 // ##############################################################################
+
 /**
  * Data from file
  * @notExported
@@ -99,7 +100,7 @@ class AtomData {
 
     private static instance: AtomData;
 	private readonly data;
-	private readonly symbol2an = new Map<string, number>();
+	private readonly symbol2atomZ = new Map<string, number>();
 
 	/**
 	 * Build the class by loading the atomic data from file
@@ -112,10 +113,14 @@ class AtomData {
 		const len = this.data.length;
 		for(let i=1; i < len; ++i) {
 			const {symbol} = this.data[i];
-			this.symbol2an.set(symbol, i);
-			this.symbol2an.set(symbol.toLowerCase(), i);
-			this.symbol2an.set(symbol.toUpperCase(), i);
+			this.symbol2atomZ.set(symbol, i);
+			this.symbol2atomZ.set(symbol.toLowerCase(), i);
+			this.symbol2atomZ.set(symbol.toUpperCase(), i);
 		}
+
+		// Add Deuterium
+		this.symbol2atomZ.set("D", 1);
+		this.symbol2atomZ.set("d", 1);
 	}
 
 	/**
@@ -125,7 +130,7 @@ class AtomData {
 	 * @returns The atom Z value
 	 */
 	atomicNumber(symbol: string): number {
-		return this.symbol2an.get(symbol) ?? 0;
+		return this.symbol2atomZ.get(symbol) ?? 0;
 	}
 
 	/**
