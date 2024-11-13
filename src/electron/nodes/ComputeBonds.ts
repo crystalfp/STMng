@@ -458,6 +458,7 @@ export class ComputeBonds extends NodeCore {
 					this.toNextNode(enlargedStructure);
 					break;
 				}
+				default: throw Error(`Impossible enlargement Kind "${this.enlargementKind}"`);
 			}
 		}
 		else {

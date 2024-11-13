@@ -14,6 +14,7 @@ import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import {sm} from "@/services/SceneManager";
+import spriteImage from "@/assets/volumetric-sprite.png";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -44,30 +45,39 @@ group.name = groupName;
 group.visible = showTrajectories.value;
 sm.add(group);
 
-const volumeName = "PositionCloudVolume-" + id;
+const volumeName = "PositionCloud-" + id;
 let volumeMaterial: THREE.PointsMaterial | undefined;
 const volumeVertices: number[] = [];
 const volumeGeometry = new THREE.BufferGeometry();
 
-const initializeVolume = (textureFile: string): void => {
+/**
+ * Initialize the positionCloud material
+ */
+const initializeVolume = (): void => {
 
     const textureLoader = new THREE.TextureLoader();
 
-    const sprite = textureLoader.load(textureFile, (texture: THREE.Texture): void => {
+    const sprite = textureLoader.load(spriteImage, (texture: THREE.Texture): void => {
 
         texture.colorSpace = THREE.SRGBColorSpace;
     });
 
 	volumeMaterial = new THREE.PointsMaterial({
-        size: 100,
+        size: positionCloudsSize.value,
         map: sprite,
         blending: THREE.AdditiveBlending,
         depthTest: false,
         transparent: true
     });
-	volumeMaterial.color.setHSL(0.9, 0.2, 0.1, THREE.SRGBColorSpace);
+
+	volumeMaterial.color.set(positionCloudsColor.value);
+
+    volumeVertices.length = 0;
 };
 
+/**
+ * Create the position clouds
+ */
 const populateVolume = (): void => {
 
     sm.deleteMesh(volumeName);
@@ -79,6 +89,9 @@ const populateVolume = (): void => {
     sm.add(particles);
 };
 
+// > Initialize the position cloud
+initializeVolume();
+
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
@@ -87,8 +100,8 @@ askNode(id, "init")
         atomsSelector.value         = params.atomsSelector as string ?? "";
         maxDisplacement.value       = params.maxDisplacement as number ?? 1;
         showPositionClouds.value    = params.showPositionClouds as boolean ?? false;
-
-        initializeVolume(params.textureFile as string ?? "");
+		positionCloudsColor.value   = params.positionCloudsColor as string ?? "#BBBBBE";
+		positionCloudsSize.value    = params.positionCloudsSize as number ?? 100;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
@@ -99,6 +112,7 @@ const resetTraces = (): void => {
 
 	sm.clearGroup(groupName);
     sm.deleteMesh(volumeName);
+    volumeVertices.length = 0;
 
     sendToNode(id, "reset");
 };
@@ -128,7 +142,7 @@ watch([labelKind, atomsSelector], () => {
     });
 });
 
-/** Max displacement to consider a single trace */
+/** Max displacement to take part of a single trace */
 watch([maxDisplacement], () => {
 
     sendToNode(id, "gap", {
@@ -138,16 +152,20 @@ watch([maxDisplacement], () => {
 
 /** Capture position clouds related variables */
 watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
-        (after: [boolean, number, string],
-        before: [boolean, number, string]) => {
+      (after:  [boolean, number, string],
+       before: [boolean, number, string]) => {
 
-    if(after[1] !== before[1] || after[2] !== before[2]) {
-        // TBD
+    if(volumeMaterial) {
+        if(after[2] !== before[2]) {
+            volumeMaterial.color.set(after[2]);
+        }
+        if(after[1] !== before[1]) {
+            volumeMaterial.size = after[1];
+        }
     }
     if(after[0]) populateVolume();
     else sm.deleteMesh(volumeName);
 
-    // TBD
     sendToNode(id, "cloud", {
         showPositionClouds: showPositionClouds.value,
         positionCloudsSize: positionCloudsSize.value,

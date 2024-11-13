@@ -10,7 +10,6 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient} from "../modules/WindowsUtilities";
-import {publicImagePath} from "../modules/GetPublicPath";
 import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
 
 export class Trajectories extends NodeCore {
@@ -25,6 +24,8 @@ export class Trajectories extends NodeCore {
 	private readonly traces: number[][] = [];
 	private readonly tracesColor: string[] = [];
 	private nextSteps = false;
+	private positionCloudsColor = "#BBBBBE";
+	private positionCloudsSize = 100;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -32,6 +33,7 @@ export class Trajectories extends NodeCore {
 		{name: "run",		type: "send",   callback: this.channelRun.bind(this)},
 		{name: "select",	type: "send",   callback: this.channelSelect.bind(this)},
 		{name: "gap",		type: "send",   callback: this.channelGap.bind(this)},
+		{name: "clouds",	type: "send",   callback: this.channelClouds.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -92,16 +94,20 @@ export class Trajectories extends NodeCore {
 			atomsSelector: this.atomsSelector,
 			maxDisplacement: this.maxDisplacement,
 			showPositionClouds: this.showPositionClouds,
+			positionCloudsColor: this.positionCloudsColor,
+			positionCloudsSize: this.positionCloudsSize
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
 
 	loadStatus(params: CtrlParams): void {
-		this.showTrajectories      = params.showTrajectories as boolean ?? false;
-		this.labelKind             = params.labelKind as SelectorType ?? "symbol";
-		this.atomsSelector         = params.atomsSelector as string ?? "";
-		this.maxDisplacement       = params.maxDisplacement as number ?? 1;
-		this.showPositionClouds    = params.showPositionClouds as boolean ?? false;
+		this.showTrajectories    = params.showTrajectories as boolean ?? false;
+		this.labelKind           = params.labelKind as SelectorType ?? "symbol";
+		this.atomsSelector       = params.atomsSelector as string ?? "";
+		this.maxDisplacement     = params.maxDisplacement as number ?? 1;
+		this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
+		this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
+		this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
 	}
 
 	getUiInfo(): UiInfo {
@@ -209,7 +215,8 @@ export class Trajectories extends NodeCore {
 			atomsSelector: this.atomsSelector,
 			maxDisplacement: this.maxDisplacement,
 			showPositionClouds: this.showPositionClouds,
-			textureFile: publicImagePath("volumetric-sprite.png"),
+			positionCloudsColor: this.positionCloudsColor,
+			positionCloudsSize: this.positionCloudsSize
 		};
 	}
 
@@ -257,5 +264,17 @@ export class Trajectories extends NodeCore {
 
 		// Create lines
 		this.sendLines(this.traces.length);
+	}
+
+	/**
+	 * Channel handler for position clouds
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelClouds(params: CtrlParams): void {
+
+	    this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
+        this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
+        this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
 	}
 }

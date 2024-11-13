@@ -28,7 +28,7 @@ export default defineConfig({
             },
             {
                 entry: "src/electron/preload.ts",
-                onstart(options) {
+                onstart(options): void {
                     // Notify the Renderer-Process to reload the page when the Preload-Scripts build
                     // is complete, instead of restarting the entire Electron App.
                     options.reload();

@@ -162,15 +162,13 @@ export const disposeTextInGroup = (group: Group): void => {
 };
 
 /**
- * Preload used characters
+ * Preload characters used by atoms' symbols and distance numbers
  */
 export const preloadFonts = (): void => {
 
-	const glyphs = "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuy0123456789.";
-
 	preloadFont({
 		font: localRoboto,
-		characters: glyphs
+		characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuy0123456789."
 	},
-	() => {/* do nothing */});
+	() => {/* do nothing after loading */});
 };

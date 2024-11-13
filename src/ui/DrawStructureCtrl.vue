@@ -375,6 +375,7 @@ const drawStructure = (): void => {
                 }
             }
             break;
+        default: throw Error(`Impossible draw kind value "${drawKind.value}"`);
     }
 
     // Find the camera rotation center and position based
@@ -416,6 +417,8 @@ const drawLabels = (): void => {
             case "lines":
                 offset = 0.1;
                 break;
+            default: throw Error(`Impossible draw kind value "${drawKind.value}"`);
+
         }
 
         let labelText;
