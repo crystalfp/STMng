@@ -221,7 +221,7 @@ export class XRDCalculator {
             keys.push(key);
         }
 
-        const toSort: {twoTheta: number, intensity: number, label: string}[] = [];
+        const toSort: {twoTheta: number; intensity: number; label: string}[] = [];
         const SCALED_INTENSITY_TOL = 1;
         // const SCALED_INTENSITY_TOL = 0.001;
         for(const key of keys) {
@@ -231,7 +231,7 @@ export class XRDCalculator {
 
                 toSort.push({twoTheta: Number.parseFloat(key),
                              intensity: scaled ? scaledIntensity : peaks[key][0],
-                             label: this.getUniqueFamilies(peaks[key][1])})
+                             label: this.getUniqueFamilies(peaks[key][1])});
             }
         }
 

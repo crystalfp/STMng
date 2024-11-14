@@ -4,11 +4,11 @@ module.exports = {
 	outDir: "doc/vue",
 	apiOptions: {
 		addScriptHandlers: [
-            function (
+            (
                 documentation,
                 _componentDefinition,
                 astPath
-            ) {
+            ) => {
 
                 const cd = astPath.tokens.filter(
 												token => token.type === 'CommentBlock' &&

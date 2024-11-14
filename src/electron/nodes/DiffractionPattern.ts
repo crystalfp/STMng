@@ -98,18 +98,38 @@ export class DiffractionPattern extends NodeCore {
 	 */
 	private createDataForChart(): string {
 
-		// Chart of the peaks
-		const coords: ChartCoordinates = [];
-		const labels: string[] = [];
+		// Normalize the peaks
 		const len = this.xy.intensity.length;
+		const y = [...this.xy.intensity];
+		if(this.width > 0) {
+			const mult = 0.9394372786996513/this.width;
+			for(let i=0; i < len; ++i) {
+				y[i] *= mult;
+			}
+		}
+
+		// And scale them to 100
+		if(this.scaled) {
+			let maxValue = -1;
+			for(let i=0; i < len; ++i) {
+				if(y[i] > maxValue) maxValue = y[i];
+			}
+			const scale = 100/maxValue;
+			for(let i=0; i < len; ++i) y[i] *= scale;
+		}
+
+		// Chart of the peaks
+		const coords = Array(len) as ChartCoordinates;
+		const labels = Array(len) as string[];
 		for(let i=0; i < len; ++i) {
-			coords.push({x: this.xy.twoTheta[i], y: this.xy.intensity[i]});
-			labels.push(this.xy.label[i]);
+			coords[i] = {x: this.xy.twoTheta[i], y: y[i]};
+			labels[i] = this.xy.label[i];
 		}
 
 		// Chart of the line spectra
 		const lineCoordinates = this.width > 0 ?
-									this.smoothPeaks(this.xy, this.thetaLow, this.thetaHigh, this.width) :
+									this.smoothPeaks(this.xy.twoTheta, y,
+													 this.thetaLow, this.thetaHigh, this.width) :
 									this.hardPeaks(this.xy, this.thetaLow, this.thetaHigh);
 
 		// Data and options for the chart
@@ -199,31 +219,32 @@ export class DiffractionPattern extends NodeCore {
 	/**
 	 * Smooth the diffraction peaks using a gaussian
 	 *
-	 * @param xy - The computed diffraction pattern
+	 * @param x - Peak intensities
+	 * @param y - Peak position
 	 * @param min - Theta min value
 	 * @param max - Theta max value
 	 * @param width - Width of the gaussian to be used to smooth the peaks (FWHM)
 	 * @returns Array of points coordinates to be used in the chart
 	 */
-	private smoothPeaks(xy: DiffractionPatternResult,
+	private smoothPeaks(x: number[],
+						y: number[],
 						min: number,
 						max: number,
 						width: number): ChartCoordinates {
 
 		const step = (max-min)/2_000;
 		const out: ChartCoordinates = [];
-		for(let x=min; x <= max; x += step) {
-			out.push({x, y: 0});
+		for(let xx=min; xx <= max; xx += step) {
+			out.push({x: xx, y: 0});
 		}
 		const nPoints = out.length;
 
-		const len = xy.intensity.length;
+		const len = x.length;
 		for(let i=0; i < len; ++i) {
 
-			const mean = xy.twoTheta[i];
-			const peak = xy.intensity[i];
-			// const den = 2*(width/2.35482)**2;
-			const den = 2*(width*0.424661)**2;
+			const mean = x[i];
+			const peak = y[i];
+			const den = width**2/2.772588722239781;
 
 			for(let j=0; j < nPoints; ++j) {
 				out[j].y += peak*Math.exp(-((out[j].x-mean)**2)/den);
@@ -271,9 +292,7 @@ export class DiffractionPattern extends NodeCore {
 		for(let i=0; i < len; ++i) {
 			const mean = xy.twoTheta[i];
 			const peak = xy.intensity[i]*scale;
-			out.push({x: mean, y: 0});
-			out.push({x: mean, y: peak});
-			out.push({x: mean, y: 0});
+			out.push({x: mean, y: 0}, {x: mean, y: peak}, {x: mean, y: 0});
 		}
 		out.push({x: max, y: 0});
 		return out;
