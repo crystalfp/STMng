@@ -39,6 +39,7 @@ const emptyChartOptions = {
 const chartOptions = ref<ChartOptions>(emptyChartOptions);
 const chartData = ref<ChartData>(emptyChartData);
 const chartType = ref("");
+const transparent = ref(false);
 
 /** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {
@@ -77,9 +78,44 @@ const makeImage = (): void => {
 
     if(chartElement.value) {
 
-        const dataURI = chartElement.value.chart.canvas.toDataURL("image/png");
+        const {canvas} = chartElement.value.chart;
+
+        if(transparent.value) {
+            const ctx = canvas.getContext("2d");
+            if(ctx) {
+                ctx.save();
+                ctx.globalCompositeOperation = "destination-over";
+                ctx.fillStyle = "transparent";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+        }
+        else {
+            const ctx = canvas.getContext("2d");
+            if(ctx) {
+                ctx.save();
+                ctx.globalCompositeOperation = "destination-over";
+                ctx.fillStyle = theme.value === "dark" ? "#121212" : "#FFFFFF";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+        }
+
+        const dataURI = canvas.toDataURL("image/png");
         askNode("SYSTEM", "snapshot", {dataURI})
             .then((response) => {
+
+                if(!transparent.value) {
+                    const ctx = canvas.getContext("2d");
+                    if(ctx) {
+                        ctx.save();
+                        ctx.globalCompositeOperation = "destination-over";
+                        ctx.fillStyle = "transparent";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.restore();
+                    }
+                }
+
                 if(response.error) throw Error(response.error as string);
             })
             .catch((error: Error) => {
@@ -114,8 +150,10 @@ const makeImage = (): void => {
     </div>
     <v-container class="button-strip">
       <v-btn variant="tonal" @click="makeImage">
-        Save
+        Save image
       </v-btn>
+      <v-switch v-model="transparent" color="primary" label="Transparent background"
+                :hide-details="true" class="ml-1"/>
       <v-btn v-focus variant="tonal" @click="closeWindow('/chart')">
         Close
       </v-btn>

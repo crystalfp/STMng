@@ -20,7 +20,6 @@ import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "@/types";
 
 // NOTE 1) Add here the classes that define the nodes
 import {CaptureView} from "../nodes/CaptureMedia";
-import {ChartViewer} from "../nodes/ChartViewer";
 import {ComputeBonds} from "../nodes/ComputeBonds";
 import {ComputeFingerprints} from "../nodes/ComputeFingerprints";
 import {ComputeSymmetries} from "../nodes/ComputeSymmetries";
@@ -169,8 +168,6 @@ class ProjectManager {
 				return new DrawStructure(id);
 			case "draw-unit-cell":
 				return new DrawUnitCell(id);
-			case "chart-viewer":
-				return new ChartViewer(id);
 			case "compute-bonds":
 				return new ComputeBonds(id);
 			case "compute-fingerprints":

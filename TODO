@@ -4,8 +4,6 @@ To do:
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Fix background color in print chart
   ☐ In the wavelength code select add "other..." and open a numeric input for the wavelength
-  ☐ Check if files under public can be moved under src/assets using "import"
-  ✔ Add reference to chemical data: https://sourceforge.net/projects/openbabel/ 2.4.1 file "element.txt" @done(2024-11-13 16:43)
 
 Bugs:
 
@@ -55,6 +53,9 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Add credits for sprite to by Kenney Vleugels (Kenney.nl) <https://kenney.nl/assets/particle-pack> @done(2024-11-14 15:46) @project(To do)
+  ✘ Check if files under public can be moved under src/assets using "import" @cancelled(2024-11-13 21:13) @project(To do)
+  ✔ Add reference to chemical data: https://sourceforge.net/projects/openbabel/ 2.4.1 file "element.txt" @done(2024-11-13 16:43) @project(To do)
   ✔ Finish trajectories position clouds @done(2024-11-13 12:07) @project(To do)
   ✔ Add a preload font to SpriteText @done(2024-11-13 07:59) @project(To do)
   ✔ Try to use import instead of require in NativeFunctions.ts @done(2024-11-12 03:49) @project(To do)

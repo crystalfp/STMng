@@ -221,20 +221,27 @@ export class XRDCalculator {
             keys.push(key);
         }
 
-        // eslint-disable-next-line sonarjs/no-alphabetical-sort
-        keys.sort();
-
-        const SCALED_INTENSITY_TOL = 0.001;
-        const dp: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
+        const toSort: {twoTheta: number, intensity: number, label: string}[] = [];
+        const SCALED_INTENSITY_TOL = 1;
+        // const SCALED_INTENSITY_TOL = 0.001;
         for(const key of keys) {
 
             const scaledIntensity = peaks[key][0] / maxIntensity * 100;
             if(scaledIntensity > SCALED_INTENSITY_TOL) {
 
-                dp.twoTheta.push(Number.parseFloat(key));
-                dp.intensity.push(scaled ? scaledIntensity : peaks[key][0]);
-                dp.label.push(this.getUniqueFamilies(peaks[key][1]));
+                toSort.push({twoTheta: Number.parseFloat(key),
+                             intensity: scaled ? scaledIntensity : peaks[key][0],
+                             label: this.getUniqueFamilies(peaks[key][1])})
             }
+        }
+
+        toSort.sort((a, b) => a.twoTheta - b.twoTheta);
+
+        const dp: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
+        for(const entry of toSort) {
+            dp.twoTheta.push(entry.twoTheta);
+            dp.intensity.push(entry.intensity);
+            dp.label.push(entry.label);
         }
 
 		return dp;
