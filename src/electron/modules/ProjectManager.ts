@@ -123,9 +123,7 @@ class ProjectManager {
 
 				const nodeIn = this.nodes.get(inNode);
 				if(!nodeIn) throw Error(`Invalid input id "${inNode}" for "${entry}"`);
-				// eslint-disable-next-line @typescript-eslint/unbound-method
-				nodeIn.subscribe(node.fromPreviousNode, node);
-				// nodeIn.subscribe(node.fromPreviousNode.bind(node), node);
+				nodeIn.subscribe(node.fromPreviousNode.bind(node));
 			}
 		}
 

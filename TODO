@@ -1,5 +1,4 @@
 To do:
-  ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
 
@@ -51,6 +50,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Check if `.bind()` should be added to ProjectManager line 128 @done(2024-11-15 16:55) @project(To do)
   ✔ Fix background color in print chart @done(2024-11-15 14:31) @project(To do)
   ✔ In the wavelength code select add "other..." and open a numeric input for the wavelength @done(2024-11-15 15:30) @project(To do)
   ✔ Fix normalizing peaks to have the same area @done(2024-11-14 18:39) @project(To do)

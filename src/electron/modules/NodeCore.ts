@@ -15,34 +15,30 @@ import type {Structure, UiInfo, CtrlParams, ViewerState, ChannelDefinition} from
  */
 type Observer = (data: Structure) => void;
 
-interface ObserverEntry {
-	observer: Observer;
-	node: NodeCore;
-}
-
 export abstract class NodeCore {
 
-	/** List of observers from subscribe to this node */
-	private readonly observersList: ObserverEntry[] = [];
+	/** List of observers from subscribe() to this node */
+	private readonly observersList: Observer[] = [];
 
 	/**
 	 * Add an observer to the current node
 	 *
-	 * @param observer - The observer routine
+	 * @param observer - The observer routine already bound to its node
 	 * @param node - The node that contains the observer routine
 	 */
-	subscribe(observer: Observer, node: NodeCore): void {
+	subscribe(observer: Observer): void {
 
-		this.observersList.push({observer, node});
+		this.observersList.push(observer);
 	}
 
 	/**
 	 * Notify the subscribed observer passing the structure modified by the current node
 	 *
-	 * @param data - The structure to be passed to the notified observers
+	 * @param data - The chemical structure to be passed to the notified observers
 	 */
 	protected toNextNode(data: Structure): void {
-		for(const entry of this.observersList) entry.observer.call(entry.node, data);
+
+		for(const observer of this.observersList) observer(data);
 	}
 
 	/**

@@ -168,7 +168,7 @@ export const preloadFonts = (): void => {
 
 	preloadFont({
 		font: localRoboto,
-		characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuy0123456789."
+		characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz0123456789."
 	},
 	() => {/* do nothing after loading */});
 };
