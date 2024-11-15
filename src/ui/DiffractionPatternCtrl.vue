@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the X-Ray diffraction pattern computation
+ * Controls for the X-Ray diffraction pattern computation.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-11-04

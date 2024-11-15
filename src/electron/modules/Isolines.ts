@@ -188,6 +188,11 @@ export class Isolines {
         return this.volume[nx + (ny + nz*this.sides[1])*this.sides[0]];
 	}
 
+	/**
+	 * Return isolines for display
+	 *
+	 * @returns List of coordinates lists for each isoline
+	 */
 	getIsolinesVertices(): number[][] {
 		return this.isolinesVertices;
 	}

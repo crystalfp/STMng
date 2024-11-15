@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * @component
- * Debounced range slider. In the slot the value not yet debounced is made available
+ * Debounced range slider.
+ * In the slot the value not yet debounced is made available.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05

@@ -95,6 +95,12 @@ export interface Structure {
     volume:     Volume[];
 }
 
+/**
+ * Alternative description of the unit cell
+ */
+export type LengthsAnglesType = [a: number, b: number, c: number,
+                                 alpha: number, beta: number, gamma: number];
+
 // > The project structure
 /**
  * Project structure

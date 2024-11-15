@@ -1,5 +1,5 @@
 /**
- * Computes the XRD pattern of a crystal structure.
+ * Computes the X-Ray diffraction pattern of a crystal structure.
  *
  * @packageDocumentation
  *
@@ -15,12 +15,18 @@ import {getAtomicSymbol} from "./AtomData";
 
 /** Type of the XRD calculator output */
 export interface DiffractionPatternResult {
+
+    /** Peak position */
 	twoTheta: number[];
+
+    /** Peak intensity */
 	intensity: number[];
+
+    /** Label with hkl values and related multiplicity */
     label: string[];
 }
 
-// XRD wavelengths in angstroms
+/** XRD wavelengths in angstroms */
 const WAVELENGTHS: Record<string, number> = {
     "CuKa":  1.54184,
     "CuKa2": 1.54439,
@@ -68,10 +74,9 @@ export class XRDCalculator {
 	 *
 	 * @param structure - Input structure
      * @param wavelengthCode - The symbol that identify the wavelength used.
-     *          Defaults to "CuKa", i.e, Cu K_alpha radiation.
-	 * @param scaled - Whether to return scaled intensities. The maximum
-     *          peak is set to a value of 100. Defaults to true. Use false if
-     *          you need the absolute values to combine XRD plots.
+       Defaults to "CuKa", i.e, Cu K_alpha radiation.
+	 * @param scaled - Whether to return scaled intensities. The maximum peak is set to a value of 100.
+       Defaults to true. Use false if you need the absolute values to combine XRD plots.
 	 * @param thetaLow - Low value for range of two_thetas to calculate in degrees. Defaults to 0.
 	 * @param thetaHigh - High value for range of two_thetas to calculate in degrees. Defaults to 90.
 	 * @returns The computed diffraction pattern

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Generates a chart in a new windows with the structure of the loaded project
+ * Generates a chart in a new windows with the structure of the loaded project.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
@@ -14,8 +14,8 @@ import {theme} from "@/services/ReceiveTheme";
 import type {ClientProjectInfo} from "@/types";
 
 /** Dimensions of the node on screen */
-const NODE_WIDTH  = 150;
-const NODE_HEIGHT =  50;
+const NODE_WIDTH  = 160;
+const NODE_HEIGHT =  44;
 const NODE_GAP    =  10;
 
 /** Set the foreground color */
@@ -282,6 +282,8 @@ const selectNode = (key: string): void => {
         {label: "Node id:",   value: key},
         {label: "Label:",     value: node.label},
         {label: "Node type:", value: node.type},
+        {label: "Input:",     value: node.input.join(", ")},
+        {label: "Graphics:",  value: node.graphic},
     );
 };
 

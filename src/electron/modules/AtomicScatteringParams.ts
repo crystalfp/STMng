@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-26
  */
+/** Parameters pairs to compute `a*exp(-b)` for atom scattering */
 export const ATOMIC_SCATTERING_PARAMS: Record<string, number[][]> = {
 	"Ru": [[4.358, 27.881], [3.298, 5.179], [1.323, 0.594], [0, 0]],
 	"Re": [[5.695, 28.968], [4.74, 5.156], [2.064, 0.575], [0, 0]],

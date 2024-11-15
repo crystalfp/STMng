@@ -27,7 +27,15 @@ interface FindAndApplySymmetriesOutput {
  * @notExported
  */
 interface ConvertSpaceGroupNumberOutput {
+
+	/** The converted space group */
 	spaceGroup: string;
+
+	/** Error type:
+	 * - 0: No error
+	 * - 1: Conversion has been retried with variation set to 0
+	 * - 2: Other errors, the message is in the output string
+	 */
 	errorNumber: number;
 }
 

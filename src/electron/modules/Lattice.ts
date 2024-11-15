@@ -6,14 +6,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-26
  */
-import type {BasisType, PositionType, Structure} from "@/types";
+import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
 import {basisToLengthAngles} from "./Helpers";
-
-/**
- * Alternative description of the unit cell
- * @notExported
- */
-type LengthsAnglesType = [a: number, b: number, c: number, alpha: number, beta: number, gamma: number];
 
 export class Lattice {
 
@@ -26,7 +20,7 @@ export class Lattice {
 		const {basis: b} = crystal;
 
 		// Change basis into sides lengths and angles
-		this.lengthsAngles = basisToLengthAngles(b) as LengthsAnglesType;
+		this.lengthsAngles = basisToLengthAngles(b);
 
 		// Compute the determinant of the matrix
 		const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -

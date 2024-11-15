@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
 * @component
-* Manage the load of the elements' user interfaces
+* Manage the load of the elements' user interfaces.
 *
 * @author Mario Valle "mvalle\@ikmail.com"
 * @since 2024-07-11

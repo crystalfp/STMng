@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Show the application log
+ * Show the application log. Can also clean it.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-24

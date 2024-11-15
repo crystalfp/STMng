@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Widget to select a file. The selector is called in the main process
+ * Widget to select a file. The selector is called in the main process.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-22

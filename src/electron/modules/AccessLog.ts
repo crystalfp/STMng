@@ -12,6 +12,9 @@ import fs from "node:fs";
 // import fs from "fs-extra";
 import {createSecondaryWindow, sendAlertMessage} from "./WindowsUtilities";
 
+/**
+ * Open a secondary window to show the current log file
+ */
 export const showLogFile = (): void => {
 
 	const directory = app.getPath("userData");

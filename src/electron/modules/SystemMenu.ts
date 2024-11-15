@@ -22,7 +22,8 @@ import type {CtrlParams} from "@/types/index.ts";
 /**
  * Open documentation file
  *
- * @param node - Node name for which the documentation should be shown. If missing show general STMng documentation
+ * @param node - Node name for which the documentation should be shown.
+   If missing show general STMng documentation
  * @returns Promise from openExternal
  * @throws Error
  * If the help file is not found
@@ -52,6 +53,9 @@ let systemMenu: Menu;
 // > Prepare the application menu
 /**
  * Prepare the application menu
+ *
+ * @param isDevelopment - Set if the application is running under development or have developer tools
+   set in production
  */
 export const setupMenu = (isDevelopment: boolean): void => {
 

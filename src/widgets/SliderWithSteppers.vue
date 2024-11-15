@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Slider with increment/decrement buttons and debouncing
+ * Slider with increment/decrement buttons and debouncing.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05

@@ -33,7 +33,7 @@ const messageStore = useMessageStore();
 // > Properties
 const props = defineProps<{
 
-    /** True if the viewer part is expanded */
+    /** True if the viewer fills the whole window */
     expanded: boolean;
 }>();
 

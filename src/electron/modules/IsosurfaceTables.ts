@@ -289,7 +289,7 @@ const EDGES = [
 ];
 
 /**
- * Get case
+ * Get one of the possible marching cube case
  *
  * @param index - Case index
  * @returns The line from the case table

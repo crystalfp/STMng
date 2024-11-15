@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Show an error alert in the ui container for a given node
+ * Show an error alert in the UI container for a given node.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-15

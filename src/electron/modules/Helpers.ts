@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import type {BasisType, PositionType, Structure} from "@/types";
+import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 /** Convert degrees to radiants and viceversa */
 const DEG2RAD = Math.PI/180;
@@ -121,9 +121,9 @@ const vectorAngle = (v0: number, v1: number, v2: number, w0: number, w1: number,
  * Transform the basis vectors into (a, b, c, alpha, beta, gamma)
  *
  * @param basis - Basis vectors
- * @returns Vector with in order: a, b, c, alpha, beta, gamma
+ * @returns Tuple with in order: a, b, c, alpha, beta, gamma
  */
-export const basisToLengthAngles = (basis: BasisType): number[] => [
+export const basisToLengthAngles = (basis: BasisType): LengthsAnglesType => [
 
 	// Unit cell sides
 	Math.hypot(basis[0], basis[1], basis[2]),

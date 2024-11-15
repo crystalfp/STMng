@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Show a button to change a color
+ * Show a button to change a color.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
