@@ -23,6 +23,7 @@ export class DiffractionPattern extends NodeCore {
 	private width = 0.25;
 	private showHKL = false;
 	private wavelengthCode = "CuKa";
+	private wavelengthNumeric = 1.5;
 	private readonly xrd = new XRDCalculator();
 	private xy: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
 	private readonly chartTitle = "X-Ray diffraction pattern";
@@ -68,6 +69,7 @@ export class DiffractionPattern extends NodeCore {
 			thetaHigh: this.thetaHigh,
 			width: this.width,
 			wavelengthCode: this.wavelengthCode,
+			wavelengthNumeric: this.wavelengthNumeric,
 			showHKL: this.showHKL
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
@@ -79,6 +81,7 @@ export class DiffractionPattern extends NodeCore {
 		this.thetaHigh = params.thetaHigh as number ?? 90;
 		this.width = params.width as number ?? 0.25;
 		this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
+		this.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
 		this.showHKL = params.showHKL as boolean ?? false;
 	}
 
@@ -313,7 +316,8 @@ export class DiffractionPattern extends NodeCore {
 			thetaHigh: this.thetaHigh,
 			width: this.width,
 			wavelengthCode: this.wavelengthCode,
-			wavelengthCodes: JSON.stringify(this.xrd.getWavelengthNames())
+			wavelengthCodes: JSON.stringify(this.xrd.getWavelengthNames()),
+			wavelengthNumeric: this.wavelengthNumeric
 		};
 	}
 
@@ -343,6 +347,7 @@ export class DiffractionPattern extends NodeCore {
 		if(this.structure && isSecondaryWindowOpen(undefined, "/chart")) {
 
 			this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
+			this.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
 			this.thetaLow = params.thetaLow as number ?? 0;
 			this.thetaHigh = params.thetaHigh as number ?? 90;
 			this.scaled = params.scaled as boolean ?? true;
@@ -351,7 +356,7 @@ export class DiffractionPattern extends NodeCore {
 
 			// Compute spectra
 			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-													 this.thetaLow, this.thetaHigh);
+													 this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
 
 			// Compute chart data
 			const dataToSend = this.createDataForChart();
@@ -369,6 +374,7 @@ export class DiffractionPattern extends NodeCore {
 		if(this.structure) {
 
 			this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
+			this.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
 			this.thetaLow = params.thetaLow as number ?? 0;
 			this.thetaHigh = params.thetaHigh as number ?? 90;
 			this.scaled = params.scaled as boolean ?? true;
@@ -377,7 +383,7 @@ export class DiffractionPattern extends NodeCore {
 
 			// Compute spectra
 			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-		 											 this.thetaLow, this.thetaHigh);
+		 											 this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
 
 			// Compute chart data
 			const dataToSend = this.createDataForChart();

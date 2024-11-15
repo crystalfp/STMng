@@ -13,6 +13,7 @@ import type {CtrlParams} from "@/types";
 
 const wavelengthCodes = ref<string[]>([]);
 const wavelengthCode = ref("");
+const wavelengthNumeric = ref(1.5);
 const theta = ref([0, 90]);
 const scaled = ref(true);
 const enableComputation = ref(false);
@@ -41,15 +42,18 @@ askNode(id, "init")
         const codes = JSON.parse(params.wavelengthCodes as string ?? "[]") as string[];
         wavelengthCodes.value.length = 0;
         for(const code of codes) wavelengthCodes.value.push(code);
+        wavelengthCodes.value.push("Other …");
         wavelengthCode.value = params.wavelengthCode as string ?? "CuKa";
+        wavelengthNumeric.value = params.wavelengthNumeric as number ?? 1.5;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
 /** Changing computation parameters */
-watch([wavelengthCode, theta, scaled], () => {
+watch([wavelengthCode, wavelengthNumeric, theta, scaled], () => {
 
     sendToNode(id, "compute", {
         wavelengthCode: wavelengthCode.value,
+        wavelengthNumeric: wavelengthNumeric.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
         scaled: scaled.value,
@@ -79,6 +83,7 @@ const openChartWindow = (): void => {
 
     sendToNode(id, "open", {
         wavelengthCode: wavelengthCode.value,
+        wavelengthNumeric: wavelengthNumeric.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
         scaled: scaled.value,
@@ -94,6 +99,10 @@ const openChartWindow = (): void => {
 <v-container class="container">
   <v-label class="mt-4 mb-2 ml-2 no-select">Wavelength:</v-label>
   <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2"/>
+  <v-number-input v-if="wavelengthCode === 'Other …'" controlVariant="stacked"
+                  variant="solo-filled" density="compact" v-model="wavelengthNumeric"
+                  label="Numeric wavelength"
+                  :min="0.1" :max="4" :step="0.1" class="ml-2 mr-0" />
   <g-debounced-range-slider v-slot="{values}" v-model="theta"
                               :step="0.01" :min="0" :max="90"
                               class="ml-4 mt-2 pr-4">

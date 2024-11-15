@@ -2,8 +2,6 @@ To do:
   ☐ Check if `.bind()` should be added to ProjectManager line 128
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
-  ☐ Fix background color in print chart
-  ☐ In the wavelength code select add "other..." and open a numeric input for the wavelength
 
 Bugs:
 
@@ -53,6 +51,8 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Fix background color in print chart @done(2024-11-15 14:31) @project(To do)
+  ✔ In the wavelength code select add "other..." and open a numeric input for the wavelength @done(2024-11-15 15:30) @project(To do)
   ✔ Fix normalizing peaks to have the same area @done(2024-11-14 18:39) @project(To do)
   ✔ Add credits for sprite to by Kenney Vleugels (Kenney.nl) <https://kenney.nl/assets/particle-pack> @done(2024-11-14 15:46) @project(To do)
   ✘ Check if files under public can be moved under src/assets using "import" @cancelled(2024-11-13 21:13) @project(To do)

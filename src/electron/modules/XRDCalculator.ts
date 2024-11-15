@@ -85,10 +85,13 @@ export class XRDCalculator {
                           wavelengthCode="CuKa",
                           scaled=true,
                           thetaLow=0,
-                          thetaHigh=90): DiffractionPatternResult {
+                          thetaHigh=90,
+                          wavelengthNumeric=1.5): DiffractionPatternResult {
 
         // Convert the wavelength symbol to the numeric wavelength
-        this.wavelength = WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS["CuKa"];
+        this.wavelength = wavelengthCode === "Other …" ?
+                                wavelengthNumeric :
+                                (WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS["CuKa"]);
 
         // Obtained from Bragg condition.
 		// Note that reciprocal lattice vector length is 1 / d_hkl.
@@ -126,7 +129,6 @@ export class XRDCalculator {
             dwFactors.push(0);
 		}
 
-        // const peaks: dict[float, list[float | list[tuple[int, ...]]]] = {}
         const peaks: Record<string, [number, [number[]], number]> = {};
         const twoThetas: number[] = [];
         const TOL = 1e-17;
@@ -134,7 +136,6 @@ export class XRDCalculator {
         reciprocalPoints.sort((a, b) => {
 
             let delta = a.dist - b.dist;
-            // if(delta > TOL || delta < -TOL) return delta;
             if(delta !== 0) return delta;
             delta = b.coord[0] - a.coord[0];
             if(delta !== 0) return delta;
@@ -227,8 +228,8 @@ export class XRDCalculator {
         }
 
         const toSort: {twoTheta: number; intensity: number; label: string}[] = [];
+        // Changed from const SCALED_INTENSITY_TOL = 0.001; to reduce the chart noise
         const SCALED_INTENSITY_TOL = 1;
-        // const SCALED_INTENSITY_TOL = 0.001;
         for(const key of keys) {
 
             const scaledIntensity = peaks[key][0] / maxIntensity * 100;
@@ -240,6 +241,7 @@ export class XRDCalculator {
             }
         }
 
+        // Sort peaks in ascending order
         toSort.sort((a, b) => a.twoTheta - b.twoTheta);
 
         const dp: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
@@ -252,6 +254,13 @@ export class XRDCalculator {
 		return dp;
 	}
 
+    /**
+     * Verify if two hkl codes are one the permutation of the other
+     *
+     * @param hkl1 - First hkl code to compare
+     * @param hkl2 - Second hkl code to compare
+     * @returns True if one is a permutation of the other
+     */
     private isPermutation(hkl1: number[], hkl2: number[]): boolean {
 
         const thkl1 = hkl1.map((nn) => (nn < 0 ? -nn : nn)).sort((a, b) => (a - b));

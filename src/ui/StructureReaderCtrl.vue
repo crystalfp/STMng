@@ -355,8 +355,8 @@ const label2 = ref("");
     <v-row class="pl-3 mt-0">
       <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mr-5" />
       <v-switch v-model="stepBackward" color="primary" label="Reverse" density="compact" />
-      <v-number-input controlVariant="stacked" variant="solo-filled" density="compact" v-model="stepIncrement"
-                      label="Step increment" :min="1" class="ml-3 mr-8" />
+      <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                      v-model="stepIncrement" label="Step increment" :min="1" class="ml-3 mr-8" />
     </v-row>
     <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9" />
