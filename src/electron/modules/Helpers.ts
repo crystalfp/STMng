@@ -136,6 +136,38 @@ export const basisToLengthAngles = (basis: BasisType): LengthsAnglesType => [
 	vectorAngle(basis[0], basis[1], basis[2], basis[3], basis[4], basis[5]),
 ];
 
+/**
+ * Invert the basis matrix
+ *
+ * @param basis - Basis matrix
+ * @returns Inverse of the basis matrix
+ * @throws Error
+ * The basis matrix is not invertible
+ */
+export const invertBasis = (basis: BasisType): BasisType => {
+
+	// Compute the determinant of the basis matrix
+	const det = basis[0] * (basis[4] * basis[8] - basis[5] * basis[7]) -
+				basis[1] * (basis[3] * basis[8] - basis[5] * basis[6]) +
+				basis[2] * (basis[3] * basis[7] - basis[4] * basis[6]);
+
+	// Check if the determinant is zero, which means the matrix is not invertible
+	if(det === 0) throw Error("Basis matrix is not invertible");
+
+	// Compute the inverse basis matrix
+	const invDet = 1 / det;
+	return [
+		(basis[4] * basis[8] - basis[5] * basis[7]) * invDet,
+		(basis[2] * basis[7] - basis[1] * basis[8]) * invDet,
+		(basis[1] * basis[5] - basis[2] * basis[4]) * invDet,
+		(basis[5] * basis[6] - basis[3] * basis[8]) * invDet,
+		(basis[0] * basis[8] - basis[2] * basis[6]) * invDet,
+		(basis[2] * basis[3] - basis[0] * basis[5]) * invDet,
+		(basis[3] * basis[7] - basis[4] * basis[6]) * invDet,
+		(basis[1] * basis[6] - basis[0] * basis[7]) * invDet,
+		(basis[0] * basis[4] - basis[1] * basis[3]) * invDet
+	];
+};
 
 // > Compute the atoms' fractional coordinates
 /**
@@ -150,29 +182,10 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
 
 	// Get the structure
 	const {crystal, atoms} = structure;
-	const {basis: b, origin} = crystal;
+	const {basis, origin} = crystal;
 
-	// Compute the determinant of the matrix
-	const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
-				b[1] * (b[3] * b[8] - b[5] * b[6]) +
-				b[2] * (b[3] * b[7] - b[4] * b[6]);
-
-	// Check if the determinant is zero, which means the matrix is not invertible
-	if(det === 0) throw Error("Basis matrix is not invertible");
-
-	// Compute the inverse basis matrix
-	const invDet = 1 / det;
-	const inverse = [
-		(b[4] * b[8] - b[5] * b[7]) * invDet,
-		(b[2] * b[7] - b[1] * b[8]) * invDet,
-		(b[1] * b[5] - b[2] * b[4]) * invDet,
-		(b[5] * b[6] - b[3] * b[8]) * invDet,
-		(b[0] * b[8] - b[2] * b[6]) * invDet,
-		(b[2] * b[3] - b[0] * b[5]) * invDet,
-		(b[3] * b[7] - b[4] * b[6]) * invDet,
-		(b[1] * b[6] - b[0] * b[7]) * invDet,
-		(b[0] * b[4] - b[1] * b[3]) * invDet
-	];
+	// Compute inverse matrix
+	const inverse = invertBasis(basis);
 
 	// For each atom compute the fractional coordinates
 	const fractionalCoords: number[] = [];

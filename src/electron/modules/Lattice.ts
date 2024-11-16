@@ -7,7 +7,7 @@
  * @since 2024-10-26
  */
 import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
-import {basisToLengthAngles} from "./Helpers";
+import {basisToLengthAngles, invertBasis} from "./Helpers";
 
 export class Lattice {
 
@@ -17,32 +17,13 @@ export class Lattice {
 	constructor(private readonly structure: Structure) {
 
 		const {crystal} = this.structure;
-		const {basis: b} = crystal;
+		const {basis} = crystal;
 
 		// Change basis into sides lengths and angles
-		this.lengthsAngles = basisToLengthAngles(b);
-
-		// Compute the determinant of the matrix
-		const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
-					b[1] * (b[3] * b[8] - b[5] * b[6]) +
-					b[2] * (b[3] * b[7] - b[4] * b[6]);
-
-		// Check if the determinant is zero, which means the matrix is not invertible
-		if(det === 0) throw Error("Basis matrix is not invertible");
+		this.lengthsAngles = basisToLengthAngles(basis);
 
 		// Compute the inverse basis matrix
-		const invDet = 1 / det;
-		this.inverseBasis = [
-			(b[4] * b[8] - b[5] * b[7]) * invDet,
-			(b[2] * b[7] - b[1] * b[8]) * invDet,
-			(b[1] * b[5] - b[2] * b[4]) * invDet,
-			(b[5] * b[6] - b[3] * b[8]) * invDet,
-			(b[0] * b[8] - b[2] * b[6]) * invDet,
-			(b[2] * b[3] - b[0] * b[5]) * invDet,
-			(b[3] * b[7] - b[4] * b[6]) * invDet,
-			(b[1] * b[6] - b[0] * b[7]) * invDet,
-			(b[0] * b[4] - b[1] * b[3]) * invDet
-		];
+		this.inverseBasis = invertBasis(basis);
 	}
 
 	/**

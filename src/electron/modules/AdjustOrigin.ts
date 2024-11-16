@@ -7,6 +7,7 @@
  * @since 2024-07-05
  */
 import log from "electron-log";
+import {invertBasis} from "./Helpers";
 import type {BasisType, PositionType, Structure, Atom} from "@/types";
 
 /** Tolerance to check fractal coordinate on the cell border */
@@ -69,38 +70,20 @@ export const adjustOrigin = (structure: Structure,
 		];
 
 	// Now invert the updated basis matrix
-	const b = updatedBasis;
-
-	// Compute the determinant of the matrix
-	const det = b[0] * (b[4] * b[8] - b[5] * b[7]) -
-				b[1] * (b[3] * b[8] - b[5] * b[6]) +
-				b[2] * (b[3] * b[7] - b[4] * b[6]);
-
-	// Check if the determinant is zero, which means the matrix is not invertible
-	if(det === 0) {
-		log.error("Basis matrix is not invertible");
+	let inverse;
+	try {
+		inverse = invertBasis(updatedBasis);
+	}
+	catch {
+		log.error("In Adjust Origin basis matrix is not invertible");
 		return structure;
 	}
-
-	// Compute the inverse basis matrix
-	const invDet = 1 / det;
-	const inverse = [
-		(b[4] * b[8] - b[5] * b[7]) * invDet,
-		(b[2] * b[7] - b[1] * b[8]) * invDet,
-		(b[1] * b[5] - b[2] * b[4]) * invDet,
-		(b[5] * b[6] - b[3] * b[8]) * invDet,
-		(b[0] * b[8] - b[2] * b[6]) * invDet,
-		(b[2] * b[3] - b[0] * b[5]) * invDet,
-		(b[3] * b[7] - b[4] * b[6]) * invDet,
-		(b[1] * b[6] - b[0] * b[7]) * invDet,
-		(b[0] * b[4] - b[1] * b[3]) * invDet
-	];
 
 	// For each atom fold its position to inside the unit cell
 	const updatedAtoms: Atom[] = [];
 	for(const atom of atoms) {
 
-		const fc = toFractalCoordinates(inverse, updatedOrigin, atom.position);
+		const fc = toFractalCoordinates(inverse!, updatedOrigin, atom.position);
 		fc[0] = foldIntoUnitCell(fc[0]);
 		fc[1] = foldIntoUnitCell(fc[1]);
 		fc[2] = foldIntoUnitCell(fc[2]);

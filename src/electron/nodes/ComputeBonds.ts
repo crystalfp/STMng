@@ -401,64 +401,28 @@ export class ComputeBonds extends NodeCore {
 		}
 		else if(this.enableComputeBonds) {
 
-			switch(this.enlargementKind) {
-				case "none": {
-					this.toNextNode({
-						crystal: this.inputStructure.crystal,
-						atoms: this.inputStructure.atoms,
-						bonds: this.computeBonds(this.inputStructure),
-						volume: this.inputStructure.volume
-					});
-					break;
-				}
-				case "outside": {
-					// If no unit cell, do nothing special
-					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
+			// If no enlargement or no unit cell, do nothing
+			if(this.enlargementKind === "none" ||
+			   hasNoUnitCell(this.inputStructure.crystal.basis)) {
 
-						// Disable the requested enlargement
-						this.enlargementKind = "none";
+				// Disable the requested enlargement
+				this.enlargementKind = "none";
 
-						// Send the input structure down the pipeline
-						this.toNextNode({
-							crystal: this.inputStructure.crystal,
-							atoms: this.inputStructure.atoms,
-							bonds: this.computeBonds(this.inputStructure),
-							volume: this.inputStructure.volume
-						});
+				// Send the input structure down the pipeline
+				this.toNextNode({
+					crystal: this.inputStructure.crystal,
+					atoms: this.inputStructure.atoms,
+					bonds: this.computeBonds(this.inputStructure),
+					volume: this.inputStructure.volume
+				});
+			}
+			else {
 
-						return;
-					}
-
-					const enlargedStructure = this.addOutsideAtoms();
-					enlargedStructure.bonds = this.computeBonds(enlargedStructure);
-					this.clearOutsideAtoms(enlargedStructure);
-					this.toNextNode(enlargedStructure);
-					break;
-				}
-				case "connected": {
-					// If no unit cell, do nothing
-					if(hasNoUnitCell(this.inputStructure.crystal.basis)) {
-
-						// Disable the requested enlargement
-						this.enlargementKind = "none";
-
-						// Send the input structure down the pipeline
-						this.toNextNode({
-							crystal: this.inputStructure.crystal,
-							atoms: this.inputStructure.atoms,
-							bonds: this.computeBonds(this.inputStructure),
-							volume: this.inputStructure.volume
-						});
-						return;
-					}
-
-					const enlargedStructure = this.addOutsideAtoms();
-					enlargedStructure.bonds = this.computeBonds(enlargedStructure);
-					this.leaveConnectedAtoms(enlargedStructure);
-					this.toNextNode(enlargedStructure);
-					break;
-				}
-				default: throw Error(`Impossible enlargement Kind "${this.enlargementKind}"`);
+				const enlargedStructure = this.addOutsideAtoms();
+				enlargedStructure.bonds = this.computeBonds(enlargedStructure);
+				if(this.enlargementKind === "outside") this.clearOutsideAtoms(enlargedStructure);
+				else this.leaveConnectedAtoms(enlargedStructure);
+				this.toNextNode(enlargedStructure);
 			}
 		}
 		else {
