@@ -89,7 +89,7 @@ export class XRDCalculator {
                           wavelengthNumeric=1.5): DiffractionPatternResult {
 
         // Convert the wavelength symbol to the numeric wavelength
-        this.wavelength = wavelengthCode === "Other …" ?
+        this.wavelength = wavelengthCode === "Manual" ?
                                 wavelengthNumeric :
                                 (WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS["CuKa"]);
 
