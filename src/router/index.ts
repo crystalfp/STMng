@@ -8,6 +8,7 @@
  * @since 2024-07-05
  */
 import {createWebHashHistory, createRouter} from "vue-router";
+import type {Component} from "vue";
 
 import LayoutClient from "@/components/LayoutClient.vue";
 
@@ -21,19 +22,19 @@ export const router = createRouter({
         },
         {
             path: "/chart",
-            component: () => import("@/components/ChartViewer.vue")
+            component: (): Component => import("@/components/ChartViewer.vue")
         },
         {
             path: "/editor",
-            component: () => import("@/components/ProjectEditor.vue")
+            component: (): Component => import("@/components/ProjectEditor.vue")
         },
         {
             path: "/symmetries",
-            component: () => import("@/components/ShowSymmetries.vue")
+            component: (): Component => import("@/components/ShowSymmetries.vue")
         },
         {
             path: "/log",
-            component: () => import("@/components/ShowLog.vue")
+            component: (): Component => import("@/components/ShowLog.vue")
         },
     ],
 });

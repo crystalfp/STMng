@@ -17,6 +17,14 @@
 	"NodeJS": "readonly",
 	"window": "readonly"
   },
+  "plugins": [
+    "unicorn",
+    "typescript",
+    "oxc",
+	"promise",
+	"node",
+	"security"
+  ],
   "settings": {},
   "rules": {
 
@@ -209,7 +217,7 @@
 	"jsx-no-new-array-as-prop": 1,
 	"jsx-no-new-function-as-prop": 1,
 	"jsx-no-new-object-as-prop": 1,
-	"default-case": 1,
+	"default-case": 0,
 	"no-alert": 1,
 	"no-bitwise": 1,
 	"no-console": 1,
@@ -354,7 +362,7 @@
 	"default-param-last": 1,
 	"func-names": 1,
 	"guard-for-in": 1,
-	"max-params": 1,
+	"max-params": 0,
 	"no-label-var": 1,
 	"no-multi-str": 1,
 	"no-new-func": 1,
@@ -399,9 +407,9 @@
 	"require-hook": 1,
 	"require-top-level-describe": 1,
 	"no-exports-assign": 1,
-	"avoid-new": 1,
+	"avoid-new": 0,
 	"param-names": 1,
-	"prefer-await-to-then": 1,
+	"prefer-await-to-then": 0,
 	"jsx-boolean-value": 1,
 	"jsx-curly-brace-presence": 1,
 	"no-set-state": 1,

@@ -9,7 +9,7 @@
     "src/router/index.ts"
   ],
   "project": ["src/**/*.{js,ts,vue}"],
-  "ignoreBinaries": ["madge", "start"],
+  "ignoreBinaries": ["madge", "start", "oxlint"],
   "ignoreDependencies": [
     "vue-docgen-cli",
     "@mdi/svg",

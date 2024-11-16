@@ -100,9 +100,9 @@ const startStopCapture = (): void => {
                 if("error" in params) throw Error(params.error as string);
                 finish.value = true;
             })
+            .finally(() => controlStore.writerAccumulate = false)
             .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
-                                                      "structureWriter"))
-            .finally(() => controlStore.writerAccumulate = false);
+                                                      "structureWriter"));
     }
 };
 
