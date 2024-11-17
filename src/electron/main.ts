@@ -121,3 +121,12 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => {
     if(process.platform !== "darwin") app.quit();
 });
+
+// Hot reload preload scripts
+process.on("message", (message) => {
+    if(message === "electron-vite&type=hot-reload") {
+        for(const win of BrowserWindow.getAllWindows()) {
+            win.webContents.reload();
+        }
+    }
+});

@@ -96,12 +96,19 @@ const computeVolume = (vertices: THREE.TypedArray, numberVertices: number): numb
 // Watch atoms selection
 watch(controlStore.atomsSelected, () => {
 
+    // Check if atoms have been deselected
+    const nselected = controlStore.atomsSelected.length;
+    if(nselected === 0) {
+		sm.clearGroup(groupName);
+        bondData.value.length = 0;
+        details.value.length = 0;
+        distanceAB.value = -1;
+        return;
+    }
+
     const pointSize = configStore.isPerspectiveCamera ? 0.3 : 6;
     const atsel = controlStore.atomsSelected;
     if(measurementType.value === "bonds") {
-
-        const nselected = atsel.length;
-        if(nselected === 0) return;
 
         askNode(id, "bonds", {
             idx: atsel[nselected-1]
@@ -163,7 +170,7 @@ watch(controlStore.atomsSelected, () => {
         }
     })
     .catch((error: Error) => showAlertMessage(`Error from computing measures: ${error.message}`));
-});
+}, {deep: true});
 
 // Remove selection on structure change
 receiveFromNode(id, "reset", () => {
