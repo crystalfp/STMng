@@ -1,6 +1,7 @@
 To do:
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
+  ☐ Check THREE.Layer for visibility
 
 Bugs:
 
@@ -24,6 +25,7 @@ ToDo eventually:
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
+  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
 
 Study:
   ☐ Check the order of entries in objects
@@ -50,6 +52,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Reduce far plane @done(2024-11-16 14:38) @project(To do)
   ✔ Check if `.bind()` should be added to ProjectManager line 128 @done(2024-11-15 16:55) @project(To do)
   ✔ Fix background color in print chart @done(2024-11-15 14:31) @project(To do)
   ✔ In the wavelength code select add "other..." and open a numeric input for the wavelength @done(2024-11-15 15:30) @project(To do)

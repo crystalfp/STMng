@@ -52,7 +52,7 @@ const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
     orthographicCamera.zoom = 1;
     orthographicCamera.lookAt(new THREE.Vector3(0, 0, 0));
     orthographicCamera.near = 0.1;
-    orthographicCamera.far = 5000;
+    orthographicCamera.far = 500;
 
     orthographicCamera.position.copy(perspectiveCamera.position);
 };
@@ -140,7 +140,7 @@ onMounted(() => {
     // Create cameras
     const cameraPerspective = new THREE.PerspectiveCamera(75,
                                                           cnv.value.clientWidth / cnv.value.clientHeight,
-                                                          0.1, 2000);
+                                                          0.1, 500);
     cameraPerspective.position.set(...configStore.camera.position);
     cameraPerspective.lookAt(new THREE.Vector3(...configStore.camera.lookAt));
 
