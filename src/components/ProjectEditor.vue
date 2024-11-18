@@ -7,11 +7,11 @@
  * @since 2024-07-05
  */
 
-import {ref, onMounted, computed, shallowRef} from "vue";
+import {ref, onMounted, computed, shallowRef, watch} from "vue";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
-import type {ClientProjectInfo} from "@/types";
+import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, ProjectInfo} from "@/types";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 160;
@@ -22,6 +22,13 @@ const NODE_GAP    =  10;
 const fg = computed(() => (theme.value === "dark" ? "#FFF" : "#000"));
 
 let graph: ClientProjectInfo;
+
+const showConfirm = ref(false);
+const showEdit = ref(false);
+const showAdd = ref(false);
+const selectedId = ref("");
+const disableActions = ref(false);
+const allNodes = ref<{label: string; type: string}[]>([]);
 
 /** Information about a node */
 interface NodeType {
@@ -245,12 +252,26 @@ onMounted(() => {
     // When the loaded project changes
     receiveInWindow((data) => {
 
-        graph = JSON.parse(data) as ClientProjectInfo;
+        const info = JSON.parse(data) as ProjectInfo;
+        graph = info.graph;
 
         const nodesList = createNodes(graph);
         nodes.value = nodesList;
 
         edges.value = createEdges(graph, nodesList);
+
+        // Get the list of possible nodes
+        allNodes.value.length = 0;
+        for(const entry of info.allNodes) {
+
+            if(entry.graphic === "in") continue;
+            const entryType = entry.type;
+            const label = entryType[0].toUpperCase() + entryType.slice(1).replaceAll("-", " ");
+            allNodes.value.push({label, type: entry.type});
+        }
+        nodeToAdd.value = info.allNodes[0].type;
+
+        allInfo.value = info.allNodes;
     });
 });
 
@@ -273,6 +294,12 @@ const selectNode = (key: string): void => {
         if(nodes.value[i].selected) nodes.value[i].selected = false;
         if(nodes.value[i].id === key) nodes.value[i].selected = true;
     }
+
+    // Disable deleting viewer
+    disableActions.value = graph[key].type === "viewer-3d";
+
+    // The id of the selected node
+    selectedId.value = key;
 
     // Fill and show the info section
     showInfo.value = true;
@@ -305,6 +332,75 @@ const closeInfo = (): void => {
     }
 };
 
+// TBD
+const confirmDeletion = (): void => {
+    showConfirm.value = false;
+    console.log("Deleting node", selectedId.value);
+};
+
+// TBD
+const saveEditedNode = (): void => {
+    showEdit.value = false;
+    console.log("Edit node", selectedId.value);
+};
+
+// TBD
+const nodeToAdd = ref("");
+const allInfo = ref<OneNodeInfo[]>([]);
+const inputFrom = computed(() => {
+
+    if(allInfo.value.some((item) => item.type === nodeToAdd.value && !item.in)) return [];
+
+    const nodesWithOut = allInfo.value.filter((item) => item.out);
+
+    const out = [];
+    for(const key in graph) {
+
+        for(const node of nodesWithOut) {
+            if(node.type === graph[key].type) {
+                out.push({label: graph[key].label, id: key});
+            }
+        }
+    }
+    inputId.value = out[0].id;
+    return out;
+});
+const inputId = ref("");
+const nodeLabel = ref("");
+
+watch(nodeToAdd, () => {
+
+    nodeLabel.value = nodeToAdd.value[0].toUpperCase() + nodeToAdd.value.slice(1).replaceAll("-", " ");
+});
+
+const addNode = (): void => {
+
+    showAdd.value = false;
+
+    const node = allInfo.value.find((item) => item.type === nodeToAdd.value);
+    if(!node) return;
+
+    // Find the next free id
+    let sequence = 0;
+    let id = node.idPrefix;
+    while(graph[id]) {
+        ++sequence;
+        id = `${node.idPrefix}${sequence}`;
+    }
+
+    const nodeInfo: ClientProjectInfoItem = {
+        id,
+        label: nodeLabel.value,
+        type: nodeToAdd.value,
+        input: [inputId.value],
+        ui: node.ui,
+        graphic: node.graphic
+    };
+
+    // TBD Add the node to the project
+    console.log("Add node:", nodeInfo);
+};
+
 </script>
 
 
@@ -312,7 +408,7 @@ const closeInfo = (): void => {
 <v-app :theme="theme">
 <div class="graph-editor-portal">
   <div class="graph-editor-container">
-    <svg width="2500" height="3000" x="0" y="0" viewBox="0 0 2500 3000"
+    <svg width="3000" height="3000" x="0" y="0" viewBox="0 0 3000 3000"
     	 xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrow" markerWidth="6" markerHeight="4" refX="4" refY="2"
@@ -334,18 +430,71 @@ const closeInfo = (): void => {
     </svg>
   </div>
   <v-container v-if="showInfo" class="mt-2">
-    <v-table class="pa-3" density="comfortable">
-      <tr v-for="i of infoContent" :key="i.label">
-        <td class="w-25">{{ i.label }}</td>
-        <td>{{ i.value }}</td>
-      </tr>
-    </v-table>
+    <v-row>
+      <v-col cols="10">
+        <v-table class="pa-3" density="comfortable">
+          <tr v-for="i of infoContent" :key="i.label">
+            <td class="w-25">{{ i.label }}</td>
+            <td>{{ i.value }}</td>
+          </tr>
+        </v-table>
+      </v-col>
+<!-- TBD remove v-if after workshop -->
+      <v-col cols="2" v-if="true">
+        <v-row><v-btn class="w-50 mb-2 mt-5" @click="showAdd=true">Add</v-btn></v-row>
+        <v-row><v-btn class="w-50 mb-2" @click="showEdit=true"
+                      :disabled="disableActions">Edit</v-btn></v-row>
+        <v-row><v-btn class="w-50" @click="showConfirm=true"
+                      :disabled="disableActions">Delete</v-btn></v-row>
+      </v-col>
+    </v-row>
   </v-container>
   <v-container class="button-strip">
     <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss info</v-btn>
     <v-btn v-focus variant="tonal" @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>
+
+<v-dialog v-model="showConfirm">
+  <v-card title="Confirm deletion" text="Do you want to remove the currently selected node?"
+          class="mx-auto" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
+        <v-btn @click="confirmDeletion">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="showEdit">
+  <v-card title="Edit node" text="TBD"
+          class="mx-auto" elevation="16" max-width="500">
+    <v-card-actions>
+      <v-btn v-focus @click="showEdit=false">Dismiss</v-btn>
+      <v-btn @click="saveEditedNode">Save</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="showAdd">
+  <v-card title="Add node to project" class="mx-auto" elevation="16" width="400">
+    <v-card-text>
+		  <v-select v-model="nodeToAdd" :items="allNodes" item-title="label" item-value="type"
+		            variant="solo-filled" density="compact" hide-details />
+      <v-text-field v-model="nodeLabel"
+                label="New node label" class="mt-2"
+                variant="solo-filled" hide-details="auto"
+                clearable spellcheck="false" />
+		  <v-select v-if="inputFrom.length > 0" v-model="inputId" :items="inputFrom"
+                item-title="label" item-value="id"
+		            variant="solo-filled" density="compact" hide-details class="mt-2" />
+    </v-card-text>
+    <v-card-actions>
+      <v-btn v-focus @click="showAdd=false">Dismiss</v-btn>
+      <v-btn :disabled="!nodeLabel" @click="addNode">Add</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
 </v-app>
 </template>
 

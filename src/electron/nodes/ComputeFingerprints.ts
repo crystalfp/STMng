@@ -9,7 +9,7 @@
 import fs from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -99,15 +99,6 @@ export class ComputeFingerprints extends NodeCore {
 		this.enableEnergyThreshold = params.enableEnergyThreshold as boolean ?? false;
 		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
 		this.energyThreshold = params.energyThreshold as number ?? 0;
-	}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "ComputeFingerprintsCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	/**

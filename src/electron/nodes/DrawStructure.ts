@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, AtomRenderInfo,
+import type {Structure, CtrlParams, ChannelDefinition, AtomRenderInfo,
 			 StructureRenderInfo} from "@/types";
 import {sendToClientForRendering} from "../modules/WindowsUtilities";
 import {getAtomData} from "../modules/AtomData";
@@ -102,16 +102,6 @@ export class DrawStructure extends NodeCore {
 		this.showStructure = params.showStructure as boolean ?? true;
 		this.showLabels = params.showLabels as boolean ?? true;
 		this.shadedBonds = params.shadedBonds as boolean ?? false;
-	}
-
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "DrawStructureCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	// > Channel handlers

@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, Bond, Atom, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -679,15 +679,6 @@ export class ComputeBonds extends NodeCore {
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
 		this.enlargementKind     = params.enlargementKind as string ?? "none";
 		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
-	}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "ComputeBondsCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	// > Channel handlers

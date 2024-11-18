@@ -16,7 +16,7 @@ import {fileURLToPath} from "node:url";
 import {execSync} from "node:child_process";
 
 import {NodeCore} from "../modules/NodeCore";
-import type {UiInfo, ChannelDefinition, CtrlParams} from "@/types";
+import type {ChannelDefinition, CtrlParams} from "@/types";
 
 export class CaptureView extends NodeCore {
 
@@ -29,6 +29,7 @@ export class CaptureView extends NodeCore {
 	constructor(private readonly id: string) {
 		super();
 		this.setupChannels("SYSTEM", this.channels);
+		void this.id;
 	}
 
 	saveStatus(): string {
@@ -37,15 +38,6 @@ export class CaptureView extends NodeCore {
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function, sonarjs/no-empty-function
 	loadStatus(): void {}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "CaptureMediaCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
-	}
 
 	// > Channel handlers
 	/**

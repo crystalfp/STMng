@@ -7,11 +7,14 @@
  * @since 2024-07-07
  */
 import type {Context} from "chartjs-plugin-datalabels";
+
+// > Types for the charts
 /**
  * Label alignment respect to the point
  * @notExported
  */
 type Align = "bottom" | "center" | "end" | "left" | "right" | "start" | "top" | number;
+
 /**
  * Where to anchor the label on the point
  * @notExported
@@ -172,21 +175,10 @@ export interface Project {
 }
 
 // > User interface info
-/** User interface info */
-export interface UiInfo {
 
-    /** ID of the node */
-    id: string;
-
-	/** The name of the node ui component */
-	ui: string;
-
-	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
-	graphic: "none" | "in" | "out";
-
-    /** Channels names to communicate with the node */
-    channels: string[];
-}
+/** Description of the node graphical output:
+ *  "out": generates graphical output, "in": the viewer, "none": is pure computation */
+type GraphicType = "none" | "in" | "out";
 
 // > Project information to the client
 /** One UI module description */
@@ -208,14 +200,46 @@ export interface ClientProjectInfoItem {
 	ui: string;
 
 	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
-	graphic: "none" | "in" | "out";
-
-    /** Channels names to communicate with the node */
-    channels: string[];
+	graphic: GraphicType;
 }
 
 /** List of ui modules descriptions to the client */
 export type ClientProjectInfo = Record<string, ClientProjectInfoItem>;
+
+/** Description of one available node */
+export interface OneNodeInfo {
+
+    /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+    type: string;
+
+    /** True if the node accepts an input structure */
+    in: boolean;
+
+    /** True if the node send a structure down the pipeline */
+    out: boolean;
+
+	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
+    graphic: "none" | "in" | "out";
+
+    /** Prefix to automatically generate id by project editor */
+    idPrefix: string;
+
+	/** The name of the node ui component */
+	ui: string;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler: any;
+}
+
+/** Project data to the project editor */
+export interface ProjectInfo {
+
+    /** Project content */
+    graph: ClientProjectInfo;
+
+    /** All available nodes info */
+    allNodes: OneNodeInfo[];
+}
 
 /** Definition of the channels */
 export type ChannelDefinition =

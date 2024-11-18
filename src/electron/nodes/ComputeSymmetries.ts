@@ -13,7 +13,7 @@ import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, BasisType, PositionType} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType} from "@/types";
 
 /** Output from the native module that computes and find symmetries */
 interface ComputeSymmetriesOutput {
@@ -107,15 +107,6 @@ export class ComputeSymmetries extends NodeCore {
         this.fillUnitCell = params.fillUnitCell as boolean ?? true;
 		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
-	}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "ComputeSymmetriesCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	// > Compute new structure after finding and applying symmetries

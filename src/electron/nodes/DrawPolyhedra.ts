@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendPolyhedraToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawPolyhedra extends NodeCore {
 
@@ -72,16 +72,6 @@ export class DrawPolyhedra extends NodeCore {
 		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
 		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
 		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
-	}
-
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "DrawPolyhedraCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	/**

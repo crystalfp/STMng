@@ -8,7 +8,7 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
 import {sendAlertMessage} from "../modules/WindowsUtilities";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -83,16 +83,6 @@ export class StructureReader extends NodeCore {
     	this.atomsTypes    = params.atomsTypes as string ?? "";
     	this.useBohr       = params.useBohr as boolean ?? true;
 		this.stepIncrement = params.stepIncrement as number ?? 1;
-	}
-
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "StructureReaderCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	// > Channel handlers

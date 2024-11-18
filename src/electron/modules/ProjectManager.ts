@@ -16,7 +16,7 @@ import type {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
-import type {Project, ClientProjectInfo, ClientProjectInfoItem} from "@/types";
+import type {Project, ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo} from "@/types";
 
 // NOTE 1) Add here the classes that define the nodes
 import {CaptureView} from "../nodes/CaptureMedia";
@@ -46,6 +46,51 @@ class ProjectManager {
 	private readonly nodes = new Map<string, NodeCore>();
 	private project: Project | undefined;
 	private projectName = "";
+
+	// NOTE 2) Add here the type of all nodes
+	private readonly allNodes: OneNodeInfo[] = [
+
+		{type: "structure-reader",     in: false, out: true,  graphic: "none", handler: StructureReader,
+									   idPrefix: "reader", ui: "StructureReaderCtrl"},
+		{type: "compute-symmetries",   in: true,  out: true,  graphic: "none", handler: ComputeSymmetries,
+									   idPrefix: "symmetry", ui: "ComputeSymmetriesCtrl"},
+		{type: "diffraction-pattern",  in: true,  out: false, graphic: "none", handler: DiffractionPattern,
+									   idPrefix: "xray", ui: "DiffractionPatternCtrl"},
+		{type: "draw-structure",       in: true,  out: false, graphic: "out", handler: DrawStructure,
+									   idPrefix: "draw", ui: "DrawStructureCtrl"},
+		{type: "draw-unit-cell",       in: true,  out: true,  graphic: "out", handler: DrawUnitCell,
+									   idPrefix: "unit", ui: "DrawUnitCellCtrl"},
+		{type: "compute-bonds",        in: true,  out: true,  graphic: "none", handler: ComputeBonds,
+									   idPrefix: "bonds", ui: "ComputeBondsCtrl"},
+		{type: "compute-fingerprints", in: true,  out: false, graphic: "none", handler: ComputeFingerprints,
+									   idPrefix: "cfp", ui: "ComputeFingerprintsCtrl"},
+		{type: "isosurface",           in: true,  out: false, graphic: "out", handler: DrawIsosurface,
+									   idPrefix: "iso", ui: "DrawIsosurfaceCtrl"},
+		{type: "orthoslice",           in: true,  out: false, graphic: "out", handler: DrawOrthoslice,
+									   idPrefix: "ortho", ui: "DrawOrthosliceCtrl"},
+		{type: "draw-polyhedra",       in: true,  out: false, graphic: "out", handler: DrawPolyhedra,
+									   idPrefix: "polyhedra", ui: "DrawPolyhedraCtrl"},
+		{type: "interpolate-volume",   in: true,  out: true,  graphic: "none", handler: InterpolateVolume,
+									   idPrefix: "smooth", ui: "InterpolateVolumeCtrl"},
+		{type: "measures",             in: true,  out: false, graphic: "out", handler: Measures,
+									   idPrefix: "measure", ui: "MeasuresCtrl"},
+		{type: "structure-writer",     in: true,  out: false, graphic: "none", handler: StructureWriter,
+									   idPrefix: "writer", ui: "StructureWriterCtrl"},
+		{type: "draw-trajectories",    in: true,  out: false, graphic: "out", handler: Trajectories,
+									   idPrefix: "trace", ui: "TrajectoriesCtrl"},
+		{type: "capture-view",         in: false, out: false, graphic: "none", handler: CaptureView,
+									   idPrefix: "capture", ui: "CaptureMediaCtrl"},
+		{type: "viewer-3d",            in: false, out: false, graphic: "in", handler: Viewer3D,
+									   idPrefix: "viewer", ui: "Viewer3DCtrl"},
+	];
+	private readonly allNodesMap = new Map<string, OneNodeInfo>();
+
+	private constructor() {
+
+		for(const entry of this.allNodes) {
+			this.allNodesMap.set(entry.type, entry);
+		}
+	}
 
 	/**
 	* Read the given project, parse it and send it to client
@@ -156,8 +201,13 @@ class ProjectManager {
 	 */
 	private nodeFactory(nodeType: string, id: string): NodeCore {
 
-		// NOTE 2) Add node class instantiation
-		switch(nodeType) {
+		const node = this.allNodesMap.get(nodeType);
+		if(!node) throw Error(`Invalid node type ${nodeType}`);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, sonarjs/new-cap
+		return new node.handler(id) as NodeCore;
+
+		// NOTE 3) Add node class instantiation
+/*		switch(nodeType) {
 			case "structure-reader":
 				return new StructureReader(id);
 			case "compute-symmetries":
@@ -192,7 +242,7 @@ class ProjectManager {
 				return new DiffractionPattern(id);
 			default:
 				throw Error(`Invalid node type ${nodeType}`);
-		}
+		} */
 	}
 
 	/**
@@ -214,7 +264,9 @@ class ProjectManager {
 			const {label, type, in: inString} = this.project.graph[entry];
 			const inNodes = inString ? inString.replaceAll(" ", "").split(",") : [];
 
-			const uiInfo = node.getUiInfo();
+			const uiInfo = this.allNodesMap.get(type);
+			if(!uiInfo) throw Error(`Invalid type ${entry} in allNodeMap`);
+
 			const info: ClientProjectInfoItem = {
 				id: entry,
 				label,
@@ -222,7 +274,6 @@ class ProjectManager {
 				input: inNodes,
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
-				channels: uiInfo.channels,
 			};
 			clientProjectInfo[entry] = info;
 		}
@@ -236,7 +287,7 @@ class ProjectManager {
 	 * @returns JSON encoded project graph info
 	 */
 	projectGraphForEditor(): string {
-		return JSON.stringify(this.buildProjectInfo());
+		return JSON.stringify({graph: this.buildProjectInfo(), allNodes: this.allNodes});
 	}
 
 	/**

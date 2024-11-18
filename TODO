@@ -2,6 +2,7 @@ To do:
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Check THREE.Layer for visibility
+  ☐ Check if the nodes in ProjectManager could be integrated with allNodesMap
 
 Bugs:
 

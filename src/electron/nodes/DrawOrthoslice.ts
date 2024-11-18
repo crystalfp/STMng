@@ -11,7 +11,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendIsoOrthoToClient} from "../modules/WindowsUtilities";
 import {Isolines} from "../modules/Isolines";
 import {getValueLimits} from "../modules/Helpers";
-import type {Structure, UiInfo, CtrlParams,
+import type {Structure, CtrlParams,
              ChannelDefinition, PositionType, BasisType} from "@/types";
 
 export class DrawOrthoslice extends NodeCore {
@@ -149,16 +149,6 @@ export class DrawOrthoslice extends NodeCore {
         this.showIsolines = params.showIsolines as boolean ?? false;
         this.isoValue = params.isoValue as number ?? 0;
         this.colorIsolines = params.colorIsolines as boolean ?? false;
-	}
-
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "DrawOrthosliceCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
     /**

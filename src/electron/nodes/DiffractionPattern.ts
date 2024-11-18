@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition,
+import type {Structure, CtrlParams, ChannelDefinition,
 			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
@@ -83,15 +83,6 @@ export class DiffractionPattern extends NodeCore {
 		this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		this.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
 		this.showHKL = params.showHKL as boolean ?? false;
-	}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "DiffractionPatternCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	/**

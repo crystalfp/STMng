@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class Trajectories extends NodeCore {
 
@@ -108,15 +108,6 @@ export class Trajectories extends NodeCore {
 		this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
 		this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
 		this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
-	}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "TrajectoriesCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	// > Trace lines methods

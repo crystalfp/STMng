@@ -12,7 +12,7 @@ import {sendVerticesToClient} from "../modules/WindowsUtilities";
 import {computeCellVertices} from "../modules/ComputeCellVertices";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell} from "../modules/Helpers";
-import type {Structure, Atom, UiInfo, CtrlParams, ChannelDefinition,
+import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 PositionType, BasisType, Volume} from "@/types";
 
 export class DrawUnitCell extends NodeCore {
@@ -66,7 +66,7 @@ export class DrawUnitCell extends NodeCore {
 		const {basis, origin} = crystal;
 
 		// Nothing to be changed in the structure
-		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1 &&
+		if(!this.hasSupercell() &&
 		   this.percentA === 0 && this.percentB === 0 && this.percentC === 0) {
 
 			this.toNextNode(this.inputStructure);
@@ -82,7 +82,7 @@ export class DrawUnitCell extends NodeCore {
 		let structure: Structure | undefined = this.adjustStructureOrigin();
 
 		// If there are replications
-		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
+		if(this.hasSupercell()) {
 
 			structure = this.replicateUnitCell(structure);
 		}
@@ -228,7 +228,7 @@ export class DrawUnitCell extends NodeCore {
 
 		// If no volumetric data or no replications, do nothing
 		if(volume.length === 0) return [];
-		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1) return volume;
+		if(!this.hasSupercell()) return volume;
 
 		const out: Volume[] = [];
 		for(const set of volume) {
@@ -297,16 +297,6 @@ export class DrawUnitCell extends NodeCore {
         this.shrink = params.shrink as boolean ?? true;
 	}
 
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "DrawUnitCellCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
-	}
-
 	/**
 	 * Send data to draw the unit cell
 	 *
@@ -342,7 +332,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// If no supercell send an empty coords array
-		if(this.repetitionsA === 1 && this.repetitionsB === 1 && this.repetitionsC === 1)  {
+		if(!this.hasSupercell())  {
 			sendVerticesToClient(this.id, "supercell", []);
 			return;
 		}
@@ -455,7 +445,7 @@ export class DrawUnitCell extends NodeCore {
 		this.computeSupercell(basis, origin);
 
 		// If there are replications
-		const structure = (this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) ?
+		const structure = this.hasSupercell() ?
 									this.replicateUnitCell(this.inputStructure) : this.inputStructure;
 
 		// Pass the structure to next node
@@ -481,7 +471,7 @@ export class DrawUnitCell extends NodeCore {
 		let structure: Structure | undefined = this.adjustStructureOrigin();
 
 		// If there are replications
-		if(this.repetitionsA > 1 || this.repetitionsB > 1 || this.repetitionsC > 1) {
+		if(this.hasSupercell()) {
 
 			structure = this.replicateUnitCell(structure);
 		}

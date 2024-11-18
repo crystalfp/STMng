@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {ipcMain} from "electron";
-import type {Structure, UiInfo, CtrlParams, ViewerState, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ViewerState, ChannelDefinition} from "@/types";
 
 /**
  * Observer routine provided by another node
@@ -66,13 +66,6 @@ export abstract class NodeCore {
 	 * @param params - The parameters from the project file
 	 */
 	abstract loadStatus(params: CtrlParams | ViewerState): void;
-
-	/**
-	 * Return the info needed to build the client part of the node
-	 *
-	 * @returns Info needed to build the client part of the node
-	 */
-	abstract getUiInfo(): UiInfo;
 
 	/**
 	 * Setup channels for the node to communicate with

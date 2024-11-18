@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {IsosurfaceCore} from "../modules/IsosurfaceCore";
 import {sendIsosurfacesToClient} from "../modules/WindowsUtilities";
 import {getValueLimits, hasNoUnitCell} from "../modules/Helpers";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawIsosurface extends NodeCore {
 
@@ -90,15 +90,6 @@ export class DrawIsosurface extends NodeCore {
         this.limitLow = params.limitLow as number ?? -10;
         this.limitHigh = params.limitHigh as number ?? 10;
         this.limitColormap = params.limitColormap as boolean ?? false;
-	}
-
-	getUiInfo(): UiInfo {
-		return {
-			id: this.id,
-			ui: "DrawIsosurfaceCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
     /**

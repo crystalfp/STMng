@@ -8,7 +8,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition,
+import type {Structure, CtrlParams, ChannelDefinition,
 			 SelectedAtom, PositionType, BondData} from "@/types";
 import {getAtomData} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
@@ -50,16 +50,6 @@ export class Measures extends NodeCore {
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function, sonarjs/no-empty-function
 	loadStatus(): void {}
-
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "MeasuresCtrl",
-			graphic: "out",
-			channels: this.channels.map((channel) => channel.name)
-		};
-	}
 
 	/**
 	 * Compute distances and angles between the 0 to 3 atoms selected

@@ -9,7 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {M} from "../modules/InterpolationTable";
 import {sendToClient} from "../modules/WindowsUtilities";
-import type {Structure, UiInfo, CtrlParams, ChannelDefinition, Volume} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, Volume} from "@/types";
 
 /**
  * Helper function to compute from where the interpolation should be computed
@@ -67,16 +67,6 @@ export class InterpolateVolume extends NodeCore {
 	loadStatus(params: CtrlParams): void {
 		this.interpolateVolume = params.interpolateVolume as boolean ?? false;
 		this.pointsToAdd = params.pointsToAdd as number ?? 1;
-	}
-
-	getUiInfo(): UiInfo {
-
-		return {
-			id: this.id,
-			ui: "InterpolateVolumeCtrl",
-			graphic: "none",
-			channels: this.channels.map((channel) => channel.name)
-		};
 	}
 
 	/**
