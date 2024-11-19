@@ -27,10 +27,15 @@ const showConfirm = ref(false);
 const showEdit = ref(false);
 const showAdd = ref(false);
 const selectedId = ref("");
+const selectedLabel = ref("");
+const selectedInput = ref("");
 const disableActions = ref(false);
 const allNodes = ref<{label: string; type: string}[]>([]);
 
-/** Information about a node */
+/**
+ * Information about a node
+ * @notExported
+ */
 interface NodeType {
     x: number;
     y: number;
@@ -42,7 +47,10 @@ interface NodeType {
     graphics: string;  // Contains "in" for the viewer node, "out" for nodes that generate graphics objects
 }
 
-/** Information about an edge */
+/**
+ * Information about an edge
+ * @notExported
+ */
 interface EdgeType {
     idx: number;
     points: string;
@@ -282,7 +290,7 @@ const showInfo = ref(false);
 const infoContent = shallowRef<{label: string; value: string}[]>([]);
 
 /**
- * Show the data pertaining to a node and toggle its visibility
+ * Show the data pertaining to the selected node and toggle its visibility
  *
  * @param key - Key of the selected node
  */
@@ -300,6 +308,8 @@ const selectNode = (key: string): void => {
 
     // The id of the selected node
     selectedId.value = key;
+    selectedLabel.value = graph[key].label;
+    selectedInput.value = graph[key].input[0];
 
     // Fill and show the info section
     showInfo.value = true;
@@ -332,21 +342,60 @@ const closeInfo = (): void => {
     }
 };
 
-// TBD
+/**
+ * Delete the selected node
+ */
 const confirmDeletion = (): void => {
+
     showConfirm.value = false;
-    console.log("Deleting node", selectedId.value);
+
+    // TBD Delete the current node
+    console.log("Deleting node:", selectedId.value);
 };
 
-// TBD
+/** List of nodes from the input could be taken */
+const inputFromOther = computed(() => {
+
+    // If has no input
+    const editedNodeType = graph[selectedId.value].type;
+    if(allInfo.value.some((item) => item.type === editedNodeType && !item.in)) return [];
+
+    // All nodes that has an input
+    const nodesWithOut = allInfo.value.filter((item) => item.out);
+
+    const out = [];
+    for(const key in graph) {
+
+        for(const node of nodesWithOut) {
+            if(node.type === graph[key].type && key !== selectedId.value) {
+                out.push({label: graph[key].label, id: key});
+            }
+        }
+    }
+    selectedInput.value = graph[selectedId.value].input[0];
+    return out;
+});
+
+/**
+ * Edit the selected node
+ */
 const saveEditedNode = (): void => {
+
     showEdit.value = false;
-    console.log("Edit node", selectedId.value);
+
+    const node = graph[selectedId.value];
+
+    node.label = selectedLabel.value;
+    node.input = [selectedInput.value];
+
+    // TBD Use the modified node
+    console.log("Edit node:", node);
 };
 
-// TBD
 const nodeToAdd = ref("");
 const allInfo = ref<OneNodeInfo[]>([]);
+
+/** All nodes from which the added node could take an input */
 const inputFrom = computed(() => {
 
     if(allInfo.value.some((item) => item.type === nodeToAdd.value && !item.in)) return [];
@@ -373,6 +422,9 @@ watch(nodeToAdd, () => {
     nodeLabel.value = nodeToAdd.value[0].toUpperCase() + nodeToAdd.value.slice(1).replaceAll("-", " ");
 });
 
+/**
+ * Add a new node to the project
+ */
 const addNode = (): void => {
 
     showAdd.value = false;
@@ -439,9 +491,9 @@ const addNode = (): void => {
           </tr>
         </v-table>
       </v-col>
-<!-- TBD remove v-if after workshop -->
-      <v-col cols="2" v-if="true">
-        <v-row><v-btn class="w-50 mb-2 mt-5" @click="showAdd=true">Add</v-btn></v-row>
+      <!-- TBD remove v-if after workshop -->
+      <v-col cols="2" v-if="true" class="my-auto">
+        <v-row><v-btn class="w-50 mb-2" @click="showAdd=true">Add</v-btn></v-row>
         <v-row><v-btn class="w-50 mb-2" @click="showEdit=true"
                       :disabled="disableActions">Edit</v-btn></v-row>
         <v-row><v-btn class="w-50" @click="showConfirm=true"
@@ -466,8 +518,17 @@ const addNode = (): void => {
 </v-dialog>
 
 <v-dialog v-model="showEdit">
-  <v-card title="Edit node" text="TBD"
-          class="mx-auto" elevation="16" max-width="500">
+  <v-card title="Edit selected node"
+          class="mx-auto" elevation="16" width="400">
+    <v-card-text>
+      <v-text-field v-model="selectedLabel"
+                label="Node label" class="mt-2"
+                variant="solo-filled" hide-details="auto"
+                clearable spellcheck="false" />
+		  <v-select v-if="inputFromOther.length > 0" v-model="selectedInput" :items="inputFromOther"
+                item-title="label" item-value="id"
+		            variant="solo-filled" density="compact" hide-details class="mt-2" />
+    </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showEdit=false">Dismiss</v-btn>
       <v-btn @click="saveEditedNode">Save</v-btn>
