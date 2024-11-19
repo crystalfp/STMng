@@ -364,7 +364,6 @@ export default [{
         "arrow-body-style": "warn",
         "sonarjs/sonar-no-fallthrough": "off",
 
-        // Fixed for ESlint 9.x
         "sonarjs/no-gratuitous-expressions": "warn",
         "sonarjs/no-empty-collection": "warn",
         "sonarjs/no-unused-collection": "warn",
@@ -384,6 +383,10 @@ export default [{
 
         "depend/ban-dependencies": ["error", {
                                     "presets": ["native", "microutilities", "preferred"]
-        }]
+        }],
+
+        // Problems fixed for ESlint 9.15.0
+        "sonarjs/no-empty-function": ["error", {allow: []}],
+        "sonarjs/no-unused-expressions": ["error", {allowShortCircuit: false}],
     }
 }];

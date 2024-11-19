@@ -177,7 +177,10 @@ export interface Project {
 // > User interface info
 
 /** Description of the node graphical output:
- *  "out": generates graphical output, "in": the viewer, "none": is pure computation */
+ *  - "out": generates graphical output
+ *  - "in": the viewer
+ *  - "none": is pure computation
+ */
 type GraphicType = "none" | "in" | "out";
 
 // > Project information to the client
@@ -199,7 +202,7 @@ export interface ClientProjectInfoItem {
 	/** The name of the node ui component */
 	ui: string;
 
-	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
+	/** Which kind of graphical object this node generates or consume */
 	graphic: GraphicType;
 }
 
