@@ -2,7 +2,6 @@ To do:
   ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Check THREE.Layer for visibility
-  ☐ Check if the nodes in ProjectManager could be integrated with allNodesMap
 
 Bugs:
 
@@ -53,6 +52,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✘ Check if the nodes in ProjectManager could be integrated with allNodesMap @cancelled(2024-11-19 06:48) @project(To do)
   ✔ Reduce far plane @done(2024-11-16 14:38) @project(To do)
   ✔ Check if `.bind()` should be added to ProjectManager line 128 @done(2024-11-15 16:55) @project(To do)
   ✔ Fix background color in print chart @done(2024-11-15 14:31) @project(To do)

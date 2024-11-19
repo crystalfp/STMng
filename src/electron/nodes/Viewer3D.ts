@@ -7,7 +7,7 @@
  * @since 2024-07-08
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {ViewerState, ChannelDefinition, CtrlParams} from "@/types";
+import type {Viewer3DState, ChannelDefinition, CtrlParams} from "@/types";
 import {askClient} from "../modules/WindowsUtilities";
 
 export class Viewer3D extends NodeCore {
@@ -29,7 +29,7 @@ export class Viewer3D extends NodeCore {
         return this.rawStatus;
 	}
 
-	loadStatus(params: ViewerState): void {
+	loadStatus(params: Viewer3DState): void {
 
 		this.rawStatus = JSON.stringify(params);
 	}

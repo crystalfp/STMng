@@ -125,12 +125,13 @@ interface GraphNode {
 export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>;
 
 /** Viewer 3D state */
-export interface ViewerState {
+export interface Viewer3DState {
     camera: {
         type: "perspective" | "orthographic";
         position: PositionType;
         lookAt: PositionType;
         snapshotFormat: string;
+        stlFormat: "ascii" | "binary";
     };
     scene: {
         background: string;
@@ -155,6 +156,7 @@ export interface ViewerState {
         showGridYZ: boolean;
         gridSize: number;
         axisLength: number;
+        showGizmo: boolean;
     };
 }
 
@@ -168,7 +170,7 @@ export interface Project {
     currentId?: string;
 
     /** The state of the viewer */
-    viewer?: ViewerState;
+    viewer?: Viewer3DState;
 
     /** The state of the other nodes (The key is the node id) */
     ui?: Record<string, CtrlParams>;
@@ -180,6 +182,7 @@ export interface Project {
  *  - "out": generates graphical output
  *  - "in": the viewer
  *  - "none": is pure computation
+ * @notExported
  */
 type GraphicType = "none" | "in" | "out";
 
@@ -230,6 +233,7 @@ export interface OneNodeInfo {
 	/** The name of the node ui component */
 	ui: string;
 
+    /** The class that will be instanced if the node is active */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler: any;
 }

@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {ipcMain} from "electron";
-import type {Structure, CtrlParams, ViewerState, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, Viewer3DState, ChannelDefinition} from "@/types";
 
 /**
  * Observer routine provided by another node
@@ -24,7 +24,6 @@ export abstract class NodeCore {
 	 * Add an observer to the current node
 	 *
 	 * @param observer - The observer routine already bound to its node
-	 * @param node - The node that contains the observer routine
 	 */
 	subscribe(observer: Observer): void {
 
@@ -65,7 +64,7 @@ export abstract class NodeCore {
 	 *
 	 * @param params - The parameters from the project file
 	 */
-	abstract loadStatus(params: CtrlParams | ViewerState): void;
+	abstract loadStatus(params: CtrlParams | Viewer3DState): void;
 
 	/**
 	 * Setup channels for the node to communicate with

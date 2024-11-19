@@ -7,44 +7,7 @@
  * @since 2024-07-05
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
-import type {PositionType} from "@/types";
-
-interface Viewer3DConfiguration {
-
-    camera: {
-        type: "perspective" | "orthographic";
-        position: PositionType;
-        lookAt: PositionType;
-        snapshotFormat: string;
-        stlFormat: "ascii" | "binary";
-    };
-    scene: {
-        background: string;
-    };
-    lights: {
-        ambientColor: string;
-        ambientIntensity: number;
-        directional1Color: string;
-        directional1Intensity: number;
-        directional1Position: PositionType;
-        directional2Color: string;
-        directional2Intensity: number;
-        directional2Position: PositionType;
-        directional3Color: string;
-        directional3Intensity: number;
-        directional3Position: PositionType;
-    };
-    helpers: {
-        showAxis: boolean;
-        showGridXZ: boolean;
-        showGridXY: boolean;
-        showGridYZ: boolean;
-        gridSize: number;
-        axisLength: number;
-        showGizmo: boolean;
-    };
-}
-
+import type {Viewer3DState} from "@/types";
 
 export const useConfigStore = defineStore("ConfigStore", {
 
@@ -82,7 +45,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             axisLength: 1,
             showGizmo: false
         }
-	} as Viewer3DConfiguration),
+	} as Viewer3DState),
 
     // > Getters
     getters: {
@@ -92,7 +55,7 @@ export const useConfigStore = defineStore("ConfigStore", {
          * @param state - The store state
          * @returns JSON formatted content of the store to be saved
          */
-        statusToSave(state: Viewer3DConfiguration) {
+        statusToSave(state: Viewer3DState) {
             const statusToSave = {
                 camera: state.camera,
                 scene: state.scene,
@@ -107,7 +70,7 @@ export const useConfigStore = defineStore("ConfigStore", {
          * @param state - The store state
          * @returns True if the camera is set to perspective
          */
-        isPerspectiveCamera(state: Viewer3DConfiguration) {
+        isPerspectiveCamera(state: Viewer3DState) {
             return state.camera.type === "perspective";
         }
     },
@@ -117,7 +80,7 @@ export const useConfigStore = defineStore("ConfigStore", {
         restoreState(rawState: string | undefined) {
 
             if(!rawState) return;
-            const state = JSON.parse(rawState) as Viewer3DConfiguration;
+            const state = JSON.parse(rawState) as Viewer3DState;
 
             this.camera.type = state.camera.type;
             this.camera.position[0] = state.camera.position[0];

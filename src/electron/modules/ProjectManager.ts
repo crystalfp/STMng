@@ -43,7 +43,7 @@ class ProjectManager {
 
     private static instance: ProjectManager;
 
-	private readonly nodes = new Map<string, NodeCore>();
+	private readonly activeNodes = new Map<string, NodeCore>();
 	private project: Project | undefined;
 	private projectName = "";
 
@@ -51,37 +51,37 @@ class ProjectManager {
 	private readonly allNodes: OneNodeInfo[] = [
 
 		{type: "structure-reader",     in: false, out: true,  graphic: "none", handler: StructureReader,
-									   idPrefix: "reader", ui: "StructureReaderCtrl"},
+									   idPrefix: "reader",    ui: "StructureReaderCtrl"},
 		{type: "compute-symmetries",   in: true,  out: true,  graphic: "none", handler: ComputeSymmetries,
-									   idPrefix: "symmetry", ui: "ComputeSymmetriesCtrl"},
+									   idPrefix: "symmetry",  ui: "ComputeSymmetriesCtrl"},
 		{type: "diffraction-pattern",  in: true,  out: false, graphic: "none", handler: DiffractionPattern,
-									   idPrefix: "xray", ui: "DiffractionPatternCtrl"},
-		{type: "draw-structure",       in: true,  out: false, graphic: "out", handler: DrawStructure,
-									   idPrefix: "draw", ui: "DrawStructureCtrl"},
-		{type: "draw-unit-cell",       in: true,  out: true,  graphic: "out", handler: DrawUnitCell,
-									   idPrefix: "unit", ui: "DrawUnitCellCtrl"},
+									   idPrefix: "xray",      ui: "DiffractionPatternCtrl"},
+		{type: "draw-structure",       in: true,  out: false, graphic: "out",  handler: DrawStructure,
+									   idPrefix: "draw",      ui: "DrawStructureCtrl"},
+		{type: "draw-unit-cell",       in: true,  out: true,  graphic: "out",  handler: DrawUnitCell,
+									   idPrefix: "unit",      ui: "DrawUnitCellCtrl"},
 		{type: "compute-bonds",        in: true,  out: true,  graphic: "none", handler: ComputeBonds,
-									   idPrefix: "bonds", ui: "ComputeBondsCtrl"},
+									   idPrefix: "bonds",     ui: "ComputeBondsCtrl"},
 		{type: "compute-fingerprints", in: true,  out: false, graphic: "none", handler: ComputeFingerprints,
-									   idPrefix: "cfp", ui: "ComputeFingerprintsCtrl"},
-		{type: "isosurface",           in: true,  out: false, graphic: "out", handler: DrawIsosurface,
-									   idPrefix: "iso", ui: "DrawIsosurfaceCtrl"},
-		{type: "orthoslice",           in: true,  out: false, graphic: "out", handler: DrawOrthoslice,
-									   idPrefix: "ortho", ui: "DrawOrthosliceCtrl"},
-		{type: "draw-polyhedra",       in: true,  out: false, graphic: "out", handler: DrawPolyhedra,
+									   idPrefix: "cfp",       ui: "ComputeFingerprintsCtrl"},
+		{type: "isosurface",           in: true,  out: false, graphic: "out",  handler: DrawIsosurface,
+									   idPrefix: "iso",       ui: "DrawIsosurfaceCtrl"},
+		{type: "orthoslice",           in: true,  out: false, graphic: "out",  handler: DrawOrthoslice,
+									   idPrefix: "ortho",     ui: "DrawOrthosliceCtrl"},
+		{type: "draw-polyhedra",       in: true,  out: false, graphic: "out",  handler: DrawPolyhedra,
 									   idPrefix: "polyhedra", ui: "DrawPolyhedraCtrl"},
 		{type: "interpolate-volume",   in: true,  out: true,  graphic: "none", handler: InterpolateVolume,
-									   idPrefix: "smooth", ui: "InterpolateVolumeCtrl"},
-		{type: "measures",             in: true,  out: false, graphic: "out", handler: Measures,
-									   idPrefix: "measure", ui: "MeasuresCtrl"},
+									   idPrefix: "smooth",    ui: "InterpolateVolumeCtrl"},
+		{type: "measures",             in: true,  out: false, graphic: "out",  handler: Measures,
+									   idPrefix: "measure",   ui: "MeasuresCtrl"},
 		{type: "structure-writer",     in: true,  out: false, graphic: "none", handler: StructureWriter,
-									   idPrefix: "writer", ui: "StructureWriterCtrl"},
-		{type: "draw-trajectories",    in: true,  out: false, graphic: "out", handler: Trajectories,
-									   idPrefix: "trace", ui: "TrajectoriesCtrl"},
+									   idPrefix: "writer",    ui: "StructureWriterCtrl"},
+		{type: "draw-trajectories",    in: true,  out: false, graphic: "out",  handler: Trajectories,
+									   idPrefix: "trace",     ui: "TrajectoriesCtrl"},
 		{type: "capture-view",         in: false, out: false, graphic: "none", handler: CaptureView,
-									   idPrefix: "capture", ui: "CaptureMediaCtrl"},
-		{type: "viewer-3d",            in: false, out: false, graphic: "in", handler: Viewer3D,
-									   idPrefix: "viewer", ui: "Viewer3DCtrl"},
+									   idPrefix: "capture",   ui: "CaptureMediaCtrl"},
+		{type: "viewer-3d",            in: false, out: false, graphic: "in",   handler: Viewer3D,
+									   idPrefix: "viewer",    ui: "Viewer3DCtrl"},
 	];
 	private readonly allNodesMap = new Map<string, OneNodeInfo>();
 
@@ -132,7 +132,7 @@ class ProjectManager {
 	private clearProject(): void {
 
 		this.project = undefined;
-		this.nodes.clear();
+		this.activeNodes.clear();
 	}
 
 	/**
@@ -147,7 +147,7 @@ class ProjectManager {
 		// Store the nodes
 		for(const entry in this.project.graph) {
 
-			this.nodes.set(entry, this.nodeFactory(this.project.graph[entry].type, entry));
+			this.activeNodes.set(entry, this.nodeFactory(this.project.graph[entry].type, entry));
 		}
 
 		// Make connections
@@ -161,12 +161,12 @@ class ProjectManager {
 			if(inNodes.length === 0) continue;
 
 			// The node that receive these input
-			const node = this.nodes.get(entry)!;
+			const node = this.activeNodes.get(entry)!;
 
 			// For each input
 			for(const inNode of inNodes) {
 
-				const nodeIn = this.nodes.get(inNode);
+				const nodeIn = this.activeNodes.get(inNode);
 				if(!nodeIn) throw Error(`Invalid input id "${inNode}" for "${entry}"`);
 				nodeIn.subscribe(node.fromPreviousNode.bind(node));
 			}
@@ -174,7 +174,7 @@ class ProjectManager {
 
 		// Set node state
 		for(const id in this.project.ui) {
-			const node = this.nodes.get(id);
+			const node = this.activeNodes.get(id);
 			if(!node) continue;
 
 			node.loadStatus(this.project.ui[id]);
@@ -185,7 +185,7 @@ class ProjectManager {
 			for(const entry in this.project.graph) {
 				if(this.project.graph[entry].type === "viewer-3d") {
 
-					const node = this.nodes.get(entry);
+					const node = this.activeNodes.get(entry);
 					if(node) node.loadStatus(this.project.viewer);
 				}
 			}
@@ -258,7 +258,7 @@ class ProjectManager {
 
 		for(const entry in this.project.graph) {
 
-			const node = this.nodes.get(entry);
+			const node = this.activeNodes.get(entry);
 			if(!node) throw Error(`Invalid type "${entry}" in buildProjectInfo`);
 
 			const {label, type, in: inString} = this.project.graph[entry];
@@ -306,7 +306,7 @@ class ProjectManager {
 
 		for(const entry in this.project.graph) {
 
-			const node = this.nodes.get(entry)!;
+			const node = this.activeNodes.get(entry)!;
 
 			if(this.project.graph[entry].type === "viewer-3d") viewerStatus = await node.saveStatus();
 			else {
