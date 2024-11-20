@@ -202,47 +202,9 @@ class ProjectManager {
 	private nodeFactory(nodeType: string, id: string): NodeCore {
 
 		const node = this.allNodesMap.get(nodeType);
-		if(!node) throw Error(`Invalid node type ${nodeType}`);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, sonarjs/new-cap
-		return new node.handler(id) as NodeCore;
-
-		// NOTE 3) Add node class instantiation
-/*		switch(nodeType) {
-			case "structure-reader":
-				return new StructureReader(id);
-			case "compute-symmetries":
-				return new ComputeSymmetries(id);
-			case "draw-structure":
-				return new DrawStructure(id);
-			case "draw-unit-cell":
-				return new DrawUnitCell(id);
-			case "compute-bonds":
-				return new ComputeBonds(id);
-			case "compute-fingerprints":
-				return new ComputeFingerprints(id);
-			case "isosurface":
-				return new DrawIsosurface(id);
-			case "orthoslice":
-				return new DrawOrthoslice(id);
-			case "draw-polyhedra":
-				return new DrawPolyhedra(id);
-			case "interpolate-volume":
-				return new InterpolateVolume(id);
-			case "measures":
-				return new Measures(id);
-			case "structure-writer":
-				return new StructureWriter(id);
-			case "draw-trajectories":
-				return new Trajectories(id);
-			case "viewer-3d":
-				return new Viewer3D(id);
-			case "capture-view":
-				return new CaptureView(id);
-			case "diffraction-pattern":
-				return new DiffractionPattern(id);
-			default:
-				throw Error(`Invalid node type ${nodeType}`);
-		} */
+		if(!node) throw Error(`Invalid node type "${nodeType}"`);
+		// eslint-disable-next-line sonarjs/new-cap
+		return new node.handler(id);
 	}
 
 	/**

@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-07
  */
+import type {NodeCore} from "@/electron/modules/NodeCore";
 import type {Context} from "chartjs-plugin-datalabels";
 
 // > Types for the charts
@@ -234,8 +235,9 @@ export interface OneNodeInfo {
 	ui: string;
 
     /** The class that will be instanced if the node is active */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: any;
+    // eslint-disable-next-line sonarjs/prefer-function-type, @typescript-eslint/prefer-function-type
+    handler: {new (id: string): NodeCore};
+    // handler: any;
 }
 
 /** Project data to the project editor */
