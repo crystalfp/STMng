@@ -200,8 +200,8 @@ export interface ClientProjectInfoItem {
     /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
 	type: string;
 
-    /** Comma separated list of node ids from which the node takes inputs */
-	input: string[];
+    /** Node id from which the node takes input. If none, it is the empty string */
+	input: string;
 
 	/** The name of the node ui component */
 	ui: string;
@@ -237,7 +237,6 @@ export interface OneNodeInfo {
     /** The class that will be instanced if the node is active */
     // eslint-disable-next-line sonarjs/prefer-function-type, @typescript-eslint/prefer-function-type
     handler: {new (id: string): NodeCore};
-    // handler: any;
 }
 
 /** Project data to the project editor */

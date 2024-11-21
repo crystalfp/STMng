@@ -52,6 +52,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Make graph input as string, not array @done(2024-11-21 05:43) @project(To do)
   ✘ Check if the nodes in ProjectManager could be integrated with allNodesMap @cancelled(2024-11-19 06:48) @project(To do)
   ✔ Reduce far plane @done(2024-11-16 14:38) @project(To do)
   ✔ Check if `.bind()` should be added to ProjectManager line 128 @done(2024-11-15 16:55) @project(To do)

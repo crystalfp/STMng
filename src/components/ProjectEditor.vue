@@ -14,7 +14,7 @@ import {theme} from "@/services/ReceiveTheme";
 import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, ProjectInfo} from "@/types";
 
 /** Dimensions of the node on screen */
-const NODE_WIDTH  = 160;
+const NODE_WIDTH  = 190;
 const NODE_HEIGHT =  44;
 const NODE_GAP    =  10;
 
@@ -71,7 +71,7 @@ const createNodes = (projectGraph: ClientProjectInfo): NodeType[] => {
         for(const otherKey in projectGraph) {
             if(otherKey === key) continue;
             if(!projectGraph[otherKey].input) continue;
-            if(projectGraph[otherKey].input.includes(key)) {
+            if(projectGraph[otherKey].input === key) {
                 keysWithConnections.add(key);
                 keysWithConnections.add(otherKey);
             }
@@ -142,39 +142,36 @@ const createEdges = (projectGraph: ClientProjectInfo, nodesList: NodeType[]): Ed
 
         if(!projectGraph[key].input) continue;
 
-        const inputs = projectGraph[key].input;
-        for(const input of inputs) {
-            const from = input;
-            const to = key;
+        const from = projectGraph[key].input;
+        const to = key;
 
-            const connection = {
+        const connection = {
 
-                xFrom:   0,
-                yFrom:   0,
-                wFrom:   0,
-                hFrom:   0,
-                xTo:     0,
-                yTo:     0,
-                wTo:     0,
-                hTo:     0,
-                special: false,
-            };
-            for(const node of nodesList) {
-                if(node.id === from) {
-                    connection.xFrom = node.x;
-                    connection.yFrom = node.y;
-                    connection.wFrom = node.w;
-                    connection.hFrom = node.h;
-                }
-                else if(node.id === to) {
-                    connection.xTo = node.x;
-                    connection.yTo = node.y;
-                    connection.wTo = node.w;
-                    connection.hTo = node.h;
-                }
+            xFrom:   0,
+            yFrom:   0,
+            wFrom:   0,
+            hFrom:   0,
+            xTo:     0,
+            yTo:     0,
+            wTo:     0,
+            hTo:     0,
+            special: false,
+        };
+        for(const node of nodesList) {
+            if(node.id === from) {
+                connection.xFrom = node.x;
+                connection.yFrom = node.y;
+                connection.wFrom = node.w;
+                connection.hFrom = node.h;
             }
-            connections.push(connection);
+            else if(node.id === to) {
+                connection.xTo = node.x;
+                connection.yTo = node.y;
+                connection.wTo = node.w;
+                connection.hTo = node.h;
+            }
         }
+        connections.push(connection);
     }
 
     // Get the viewer node
@@ -309,7 +306,7 @@ const selectNode = (key: string): void => {
     // The id of the selected node
     selectedId.value = key;
     selectedLabel.value = graph[key].label;
-    selectedInput.value = graph[key].input[0];
+    selectedInput.value = graph[key].input;
 
     // Fill and show the info section
     showInfo.value = true;
@@ -319,7 +316,7 @@ const selectNode = (key: string): void => {
         {label: "Node id:",   value: key},
         {label: "Label:",     value: node.label},
         {label: "Node type:", value: node.type},
-        {label: "Input:",     value: node.input.join(", ")},
+        {label: "Input:",     value: node.input},
         {label: "Graphics:",  value: node.graphic},
     );
 };
@@ -342,13 +339,22 @@ const closeInfo = (): void => {
     }
 };
 
+// > Delete the selected node
 /**
  * Delete the selected node
  */
 const confirmDeletion = (): void => {
 
+    // Close the dialog
     showConfirm.value = false;
 
+    // Remove the node output from all nodes that has it as input
+    for(const key in graph) {
+
+        if(graph[key].input === selectedId.value) {
+            graph[key].input = "";
+        }
+    }
     // TBD Delete the current node
     console.log("Deleting node:", selectedId.value);
 };
@@ -372,10 +378,11 @@ const inputFromOther = computed(() => {
             }
         }
     }
-    selectedInput.value = graph[selectedId.value].input[0];
+    selectedInput.value = graph[selectedId.value].input;
     return out;
 });
 
+// > Edit the selected node
 /**
  * Edit the selected node
  */
@@ -386,12 +393,13 @@ const saveEditedNode = (): void => {
     const node = graph[selectedId.value];
 
     node.label = selectedLabel.value;
-    node.input = [selectedInput.value];
+    node.input = selectedInput.value;
 
     // TBD Use the modified node
     console.log("Edit node:", node);
 };
 
+// > Add a new node to the project
 const nodeToAdd = ref("");
 const allInfo = ref<OneNodeInfo[]>([]);
 
@@ -440,17 +448,25 @@ const addNode = (): void => {
         id = `${node.idPrefix}${sequence}`;
     }
 
+    // Create the node
     const nodeInfo: ClientProjectInfoItem = {
         id,
         label: nodeLabel.value,
         type: nodeToAdd.value,
-        input: [inputId.value],
+        input: inputId.value,
         ui: node.ui,
         graphic: node.graphic
     };
 
-    // TBD Add the node to the project
-    console.log("Add node:", nodeInfo);
+    // Add the node to the project
+    graph[id] = nodeInfo;
+
+    // Update the graph
+    const nodesList = createNodes(graph);
+    nodes.value = nodesList;
+    edges.value = createEdges(graph, nodesList);
+
+    // TBD Update the main project structure
 };
 
 </script>
@@ -460,7 +476,7 @@ const addNode = (): void => {
 <v-app :theme="theme">
 <div class="graph-editor-portal">
   <div class="graph-editor-container">
-    <svg width="3000" height="3000" x="0" y="0" viewBox="0 0 3000 3000"
+    <svg width="5000" height="3000" x="0" y="0" viewBox="0 0 5000 3000"
     	 xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrow" markerWidth="6" markerHeight="4" refX="4" refY="2"
@@ -492,7 +508,7 @@ const addNode = (): void => {
         </v-table>
       </v-col>
       <!-- TBD remove v-if after workshop -->
-      <v-col cols="2" v-if="true" class="my-auto">
+      <v-col cols="2" v-if="false" class="my-auto">
         <v-row><v-btn class="w-50 mb-2" @click="showAdd=true">Add</v-btn></v-row>
         <v-row><v-btn class="w-50 mb-2" @click="showEdit=true"
                       :disabled="disableActions">Edit</v-btn></v-row>

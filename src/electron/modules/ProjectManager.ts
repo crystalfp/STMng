@@ -224,7 +224,6 @@ class ProjectManager {
 			if(!node) throw Error(`Invalid type "${entry}" in buildProjectInfo`);
 
 			const {label, type, in: inString} = this.project.graph[entry];
-			const inNodes = inString ? inString.replaceAll(" ", "").split(",") : [];
 
 			const uiInfo = this.allNodesMap.get(type);
 			if(!uiInfo) throw Error(`Invalid type ${entry} in allNodeMap`);
@@ -233,7 +232,7 @@ class ProjectManager {
 				id: entry,
 				label,
 				type,
-				input: inNodes,
+				input: inString ?? "",
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
 			};
