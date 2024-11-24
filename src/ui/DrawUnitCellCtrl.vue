@@ -60,9 +60,11 @@ let lineSC: THREE.LineSegments | undefined;
 /**
  * Check if a supercell has been requested
  *
- * @returns True if there is a repetition
+ * @returns True if there is at least one repetition
  */
-const hasSupercell = (): boolean => repetitionsA.value > 1 || repetitionsB.value > 1 || repetitionsC.value > 1;
+const hasSupercell = (): boolean => repetitionsA.value > 1 ||
+                                    repetitionsB.value > 1 ||
+                                    repetitionsC.value > 1;
 
 // > Initialize ui
 askNode(id, "init")
@@ -375,8 +377,10 @@ watch([percentA, percentB, percentC, shrink], () => {
   <v-btn :disabled="!hasSupercell()" class="mt-2 mb-4 ml-2 w-50" @click="resetSliders">
     Reset
   </v-btn>
-  <v-switch v-model="showSupercell" color="primary" :disabled="!hasSupercell()" label="Show supercell" class="ml-4" />
-  <v-switch v-model="dashedSupercell" color="primary" label="Dashed lines supercell" class="ml-4 mt-n5" />
+  <v-switch v-model="showSupercell" color="primary" :disabled="!hasSupercell()"
+            label="Show supercell" class="ml-4" />
+  <v-switch v-model="dashedSupercell" color="primary" :disabled="!hasSupercell()"
+            label="Dashed lines supercell" class="ml-4 mt-n5" />
   <g-color-selector v-model="supercellColor" label="Line color" />
   <v-divider thickness="8" class="mb-4" />
   <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-3 yellow-title no-select" />

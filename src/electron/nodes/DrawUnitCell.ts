@@ -74,12 +74,20 @@ export class DrawUnitCell extends NodeCore {
 			this.computeUnitCell(basis, origin);
 			this.computeSupercell(basis, origin);
 			this.computeBasisVectors(basis, origin);
-
 			return;
 		}
 
 		// Adjust origin if any of the percentages is greather than zero
 		let structure: Structure | undefined = this.adjustStructureOrigin();
+
+		// Create unit and supercell
+		if(structure) {
+
+			const {basis: basis2, origin: origin2} = structure.crystal;
+			this.computeUnitCell(basis2, origin2);
+			this.computeSupercell(basis2, origin2);
+			this.computeBasisVectors(basis2, origin2);
+		}
 
 		// If there are replications
 		if(this.hasSupercell()) {
@@ -87,16 +95,8 @@ export class DrawUnitCell extends NodeCore {
 			structure = this.replicateUnitCell(structure);
 		}
 
-		// Pass the structure to next node and create unit and supercell
-		if(structure) {
-
-			this.toNextNode(structure);
-
-			const {basis: basis2, origin: origin2} = structure.crystal;
-			this.computeUnitCell(basis2, origin2);
-			this.computeSupercell(basis2, origin2);
-			this.computeBasisVectors(basis2, origin2);
-		}
+		// Pass the structure to next node
+		if(structure) this.toNextNode(structure);
 		else this.toNextNode(new EmptyStructure());
 	}
 
@@ -470,6 +470,15 @@ export class DrawUnitCell extends NodeCore {
 		// Adjust origin if any of the percentages is greather than zero
 		let structure: Structure | undefined = this.adjustStructureOrigin();
 
+		// Compute unit and supercell
+		if(structure) {
+
+			const {basis, origin} = structure.crystal;
+			this.computeUnitCell(basis, origin);
+			this.computeSupercell(basis, origin);
+			this.computeBasisVectors(basis, origin);
+		}
+
 		// If there are replications
 		if(this.hasSupercell()) {
 
@@ -477,15 +486,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Pass the structure to next node and compute unit and supercell
-		if(structure) {
-
-			this.toNextNode(structure);
-
-			const {basis, origin} = structure.crystal;
-			this.computeUnitCell(basis, origin);
-			this.computeSupercell(basis, origin);
-			this.computeBasisVectors(basis, origin);
-		}
+		if(structure) this.toNextNode(structure);
 		else this.toNextNode(new EmptyStructure());
 	};
 }

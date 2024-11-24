@@ -4,7 +4,26 @@
 //
 import fs from "node:fs";
 import * as rd from "node:readline/promises";
-const out: any[] = [];
+
+interface OneAtomData {
+
+	/** Element symbol */
+	symbol: string;
+
+	/** Covalent radii (in Angstrom). 1.6 if unknown */
+	rCov: number;
+
+	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
+	rVdW: number;
+
+	/** Maximum bond valence. 6 if unknown */
+	maxBonds: number;
+
+	/** RGB color for visualization (format: "#RRGGBB") */
+	color: string;
+}
+
+const out: string[] = [];
 const reader = rd.createInterface(fs.createReadStream("element.txt"));
 for await (const lineRaw of reader) {
 
@@ -17,7 +36,7 @@ for await (const lineRaw of reader) {
 	const blue  = Math.round((Number.parseFloat(fld[13]) * 255)).toString(16).padStart(2, "0")
 	const color =`#${red}${green}${blue}`.toUpperCase();
 
-	const entry = {
+	const entry: OneAtomData = {
 		symbol: fld[1],
 		rCov: Number.parseFloat(fld[3]),
 		rVdW: Number.parseFloat(fld[5]),
