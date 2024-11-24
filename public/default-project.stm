@@ -2,7 +2,6 @@
     "graph": {
         "reader":    {"label": "Reader",            "type": "structure-reader"},
         "symmetry":  {"label": "Symmetries",        "type": "compute-symmetries",  "in": "reader"},
-        "xray":      {"label": "X-Ray diffraction", "type": "diffraction-pattern", "in": "symmetry"},
         "unit":      {"label": "Cell",              "type": "draw-unit-cell",      "in": "symmetry"},
         "bonds":     {"label": "Bonds",             "type": "compute-bonds",       "in": "unit"},
         "draw":      {"label": "Structure",         "type": "draw-structure",      "in": "bonds"},
@@ -11,9 +10,10 @@
         "ortho":     {"label": "Orthoslice",        "type": "orthoslice",          "in": "smooth"},
         "iso":       {"label": "Isosurface",        "type": "isosurface",          "in": "smooth"},
         "trace":     {"label": "Trajectories",      "type": "draw-trajectories",   "in": "bonds"},
+        "xray":      {"label": "X-Ray diffraction", "type": "diffraction-pattern", "in": "symmetry"},
 		"measure": 	 {"label": "Measures", 	        "type": "measures",            "in": "bonds"},
 		"writer": 	 {"label": "Writer", 	        "type": "structure-writer",    "in": "bonds"},
-        "viewer":    {"label": "Viewer",            "type": "viewer-3d"},
-        "capture":   {"label": "Capture",           "type": "capture-view"}
+        "capture":   {"label": "Capture",           "type": "capture-view"},
+        "viewer":    {"label": "Viewer",            "type": "viewer-3d"}
     }
 }

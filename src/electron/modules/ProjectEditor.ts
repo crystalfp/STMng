@@ -17,13 +17,17 @@ export const createProjectEditor = (projectName: string): void => {
 
 	const title = projectName === "" ? "View default project" : `View "${projectName}" project`;
 
+	const projectAsString = pm.projectGraphForEditor();
 	createSecondaryWindow(undefined, {
 		routerPath: "/editor",
 		width: 1700,
 		height: 900,
 		title,
-		data: pm.projectGraphForEditor()
+		data: projectAsString
 	});
+
+	// Workaround for chart not appearing due to timing
+	setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/editor", data: projectAsString}), 600);
 };
 
 /**

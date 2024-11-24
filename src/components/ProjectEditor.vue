@@ -507,8 +507,7 @@ const addNode = (): void => {
           </tr>
         </v-table>
       </v-col>
-      <!-- TBD remove v-if after workshop -->
-      <v-col cols="2" v-if="false" class="my-auto">
+      <v-col cols="2" class="my-auto">
         <v-row><v-btn class="w-50 mb-2" @click="showAdd=true">Add</v-btn></v-row>
         <v-row><v-btn class="w-50 mb-2" @click="showEdit=true"
                       :disabled="disableActions">Edit</v-btn></v-row>

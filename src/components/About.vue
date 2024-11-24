@@ -50,7 +50,7 @@ getVersions()
       <table class="text-body-2 ml-2">
         <tbody>
           <tr><td class="w-50">STMng:</td><td>{{ versions.app }}</td></tr>
-          <tr><td class="w-50">Electron:</td><td>{{ versions.electron }}</td></tr>
+          <tr><td class="w-50">ElectronJS:</td><td>{{ versions.electron }}</td></tr>
           <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
           <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
           <tr><td class="w-50">Three.js:</td><td>{{ REVISION }}</td></tr>

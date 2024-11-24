@@ -11,9 +11,9 @@ import {publicDirPath} from "./GetPublicPath";
 
 // ##############################################################################
 // #                                                                            #
-// #                   Open Babel file: element.txt                             #
+// #                  Open Babel file: element.txt                              #
 // #                                                                            #
-// #  Some portions Copyright (c) 2001-2005 Geoffrey R. Hutchison               #
+// #  Some portions Copyright (c) 2001-2009 Geoffrey R. Hutchison               #
 // #  Part of the Open Babel package, under the GNU General Public License (GPL)#
 // #                                                                            #
 // #  Created from the Blue Obelisk Cheminformatics Data Repository             #
@@ -21,13 +21,19 @@ import {publicDirPath} from "./GetPublicPath";
 // #       http://www.blueobelisk.org/repos/blueobelisk/elements.xml            #
 // #  (includes furhter bibliographic citation information)                     #
 // #                                                                            #
+// #  Allred and Rochow Electronegativity from:                                 #
+// #  http://www.hull.ac.uk/chemistry/electroneg.php?type=Allred-Rochow         #
+// #                                                                            #
 // #  Columns represent:  (used by data.cpp:OBElementTable and OBElement)       #
-// #   - atomic number (used as an index to the vector as well)      [NOT HERE] #
+// #   - atomic number (used as an index to the vector as well)                 #
 // #   - elemental symbol                                                       #
+// #   - Allred and Rochow electronegativity  0.0 if unknown                    #
 // #   - covalent radii (in Angstrom)         1.6 if unknown                    #
-// #   - "bond order" radii                                          [NOT HERE] #
+// #       from http://dx.doi.org/10.1039/b801115j                              #
+// #   - "bond order" radii -- ignored, but included for compatibility          #
 // #   - van der Waals radii (in Angstrom)    2.0 if unknown                    #
-// #   - maximum bond valence         		  6 if unknown                      #
+// #       from http://dx.doi.org/10.1021/jp8111556                             #
+// #   - maximum bond valence                 6 if unknown                      #
 // #   - IUPAC recommended atomic masses (in amu)                               #
 // #   - Pauling electronegativity            0.0 if unknown                    #
 // #   - ionization potential (in eV)         0.0 if unknown                    #
@@ -55,23 +61,8 @@ interface OneAtomData {
 	/** Maximum bond valence. 6 if unknown */
 	maxBonds: number;
 
-	/** IUPAC recommended atomic masses (in amu) */
-	mass: number;
-
-	/** Pauling electronegativity. 0.0 if unknown */
-	elNeg: number;
-
-	/** Ionization potential (in eV). 0.0 if unknown */
-	ionization: number;
-
-	/** Electron affinity (in eV). 0.0 if unknown */
-	elAffinity: number;
-
 	/** RGB color for visualization (format: "#RRGGBB") */
 	color: string;
-
-	/** Element name (in English) */
-	name: string;
 }
 
 /**
