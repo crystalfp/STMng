@@ -64,7 +64,7 @@ code {
 }
 
 .m1 {
-  width: 13rem;
+  width: 14rem;
 }
 
 td.c1 {
@@ -90,4 +90,10 @@ div.description {
 dt {
   font-weight: bold;
   margin-top: 0.5rem;
+}
+
+.back {
+  text-decoration: none;
+  font-size: 4rem;
+  margin-left: 1rem;
 }

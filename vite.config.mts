@@ -5,6 +5,7 @@ import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from 'node:url'
 
 // https://vitejs.dev/config/
+/** @type {import('vite').UserConfig} */
 export default defineConfig({
     resolve: {
         alias: {

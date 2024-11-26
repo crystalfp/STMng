@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-us"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Organization" content="Swiss National Supercomputing Centre, Switzerland">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="STM4 MoleculeType documentation">
+  <meta name="keywords" content="AVS,AVS/Express,STM4">
+  <meta name="copyright" content="Copyright 1999-2012 by CSCS-ETH Zurich">
+
+  <title>MoleculeType</title>
+
+  <link rel="stylesheet" href="stm4.css" type="text/css">
+
+</head><body>
+
+<h1>MoleculeType</h1>
+
+<h2>Description</h2>
+<p>The MoleculeType is the data type that carry molecular information between modules. It uses another sub type (MoleculeDataType)
+to describe data associated to atoms, bonds or to the whole structure.</p>
+<pre style="padding-left: 20px">
+group MoleculeDataType {
+    int num_components;		// How many components are described
+    int num_values;		// How many values
+    group data[num_components] {
+	byte len;           		// 1 for scalar, 3 for vector
+	float values[num_values][len];  // data values
+	string name;        		// optional variable name
+    };
+};
+</pre>
+<p>The MoleculeType is composed by the following objects:</p>
+<pre style="padding-left: 20px">
+group MoleculeType {
+
+    //
+    // Global data
+    //
+    int step[4];    // If the structure is part of an animation step contains:
+		    // [0] start, [1] end, [2] increment, [3] curr step. (values start from 1)
+		    // otherwise it contains {1,1,1,1}
+    int info_set;   // InfoSet used for subsequent bonds computation etc. (superceded in DrawStructure)
+
+    //
+    // Data associated to the structure as a whole
+    //
+    MoleculeDataType global_data;
+
+    //
+    // Base structure
+    //
+    int    natoms;              // number of atoms
+    float  xyz[natoms][3];      // coordinates of those atoms
+    int    Z[natoms];           // Z value of the atoms
+    string name[];              // size: 0 or natoms. if 0 compute the name from Z
+    byte   render[natoms];      // if the atom should be rendered or not
+				// or the rendering method for the atom
+				// (described by RenderType enum)
+
+    //
+    // Fragment naming and grouping (eg. Residues)
+    //
+    int fragment[];             // size: 0 or natoms. Contains the indices into the
+				// fragment_table of the fragments each atom pertains
+    group fragment_table {      // the arrays in fragment_table should have the same size
+	    int id[];           // id is one of the idx in fragment_id
+	    string name[];      // the name of the particular fragment
+				// optionally another int table could carry the code
+				// that identify known fragment types (like residues)
+    };
+
+    //
+    // Data associated to atoms
+    //
+    MoleculeDataType atoms_data;
+
+    //
+    // Bonds
+    //
+    int  nbonds;		// Total number of bonds
+    int  bonds[nbonds][2];	// Pair of indices of the bonded atoms
+    byte bonds_type[nbonds];	// Content described by BondType enum
+
+    //
+    // Data associated to bonds
+    //
+    MoleculeDataType bonds_data;
+
+    //
+    // Unit cell
+    //
+    float unit_cell[][];    // unit_cell[0][0..2] a
+			    // unit_cell[1][0..2] b
+			    // unit_cell[2][0..2] c
+			    // unit_cell[3][0..2] origin
+			    // unit_cell[0..2][3] &lt;zero&gt;
+			    // unit_cell[3][3]    &lt;one&gt;
+			    // if size [0][0] no unit cell associated, otherwise [4][4]
+
+    //
+    // Symmetries
+    //
+    string space_group;	    // the Hermann-Mauguin space group symmetry code (eg. P 21 21 21)
+};
+</pre>
+
+<div class="back"><a href="index.html" class="back">Return to index</a></div>
+</body></html>
