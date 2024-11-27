@@ -170,6 +170,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
         material.transparent = opacity.value < 0.99;
         material.color = lut.value.getColor(value as number);
     });
+    sm.modified();
 });
 
 </script>

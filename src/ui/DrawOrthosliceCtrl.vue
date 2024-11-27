@@ -221,7 +221,9 @@ watchEffect(() => {
 
     if(isolinesGroup) isolinesGroup.visible = showIsolines.value;
     if(orthosliceMesh) orthosliceMesh.visible = showOrthoslice.value;
+    sm.modified();
 });
+
 watchEffect(() => {
 
     sendToNode(id, "show", {

@@ -15,7 +15,8 @@
 	"Buffer": "readonly",
 	"ReturnType": "readonly",
 	"NodeJS": "readonly",
-	"window": "readonly"
+	"window": "readonly",
+	"ArrayBufferLike": "readonly"
   },
   "plugins": [
     "unicorn",

@@ -253,6 +253,7 @@ onMounted(() => {
         }
         camera.updateProjectionMatrix();
         controls.camera = camera;
+        sm.modified();
     });
 
     // Reset camera on request or when the scene objects change
@@ -271,6 +272,7 @@ onMounted(() => {
             else {
                 fitOrthographicCameraToObject(cameraOrthographic, controls);
             }
+            sm.modified();
         }
     });
 
@@ -360,14 +362,13 @@ onMounted(() => {
         size: 150,
         placement: "bottom-right",
         lineWidth: 30,
-        resolution: 64,
-        sphere: {enabled: true, opacity: 0, hoverOpacity: .2, color: "#FFFFFF", hoverColor: "#FFFFFF"},
-        x: {colors: {main: "#FF0000", text: "#000"}, text: "X"},
-        y: {colors: {main: "#79FF00", text: "#000"}, text: "Y"},
-        z: {colors: {main: "#0000FF", text: "#000"}, text: "Z"},
-        nx: {colors: {main: "#FF0000"}, circle: false, line: false},
-        ny: {colors: {main: "#79FF00"}, circle: false, line: false},
-        nz: {colors: {main: "#0000FF"}, circle: false, line: false},
+        background: {enabled: false},
+        x: {color: "#FF0000", labelColor: "#000", label: "X"},
+        y: {color: "#79FF00", labelColor: "#000", label: "Y"},
+        z: {color: "#0000FF", labelColor: "#000", label: "Z"},
+        nx: {scale: 0},
+        ny: {scale: 0},
+        nz: {scale: 0},
     };
     const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
     // const helper = new THREE.CameraHelper(camera);
@@ -406,23 +407,33 @@ onMounted(() => {
         void controls.setPosition(...camera.position.toArray());
     });
 
-      controls.addEventListener("update", () => {
+    controls.addEventListener("update", () => {
         controls.getTarget(viewportGizmo.target);
         viewportGizmo.update();
-      });
+    });
 
-      // Set the target
-      void controls.setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
-      camera.lookAt(viewportGizmo.target);
+    // Set the target
+    void controls.setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
+    camera.lookAt(viewportGizmo.target);
 
     // Start run
     const clock = new THREE.Clock();
     const animate = (): void => {
-        renderer.render(scene, camera);
-        if(configStore.helpers.showGizmo) viewportGizmo.render();
+        // controls.update(clock.getDelta());
+        // renderer.render(scene, camera);
+        // if(configStore.helpers.showGizmo) viewportGizmo.render();
+        const doRender = controls.update(clock.getDelta());
+        if(doRender || sm.needRendering()) {
+            renderer.render(scene, camera);
+            if(configStore.helpers.showGizmo) viewportGizmo.render();
+        }
         // helper.render(renderer);
-        controls.update(clock.getDelta());
     };
+
+    controls.update(clock.getDelta());
+    renderer.render(scene, camera);
+    if(configStore.helpers.showGizmo) viewportGizmo.render();
+
     renderer.setAnimationLoop(animate);
 });
 

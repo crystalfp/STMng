@@ -41,6 +41,7 @@ export const spriteText = (text: string,
 	else {
 		sprite.position.set(position[0], position[1], position[2]);
 	}
+	sprite.sync();
 
 	return sprite;
 };
@@ -139,6 +140,7 @@ export const spriteTextAlongBond = (text: string,
         sprite.quaternion.setFromAxisAngle(rotationAxis, radians);
     }
 	sprite.rotateZ(Math.PI/2);
+	sprite.sync();
 
 	return sprite;
 };

@@ -254,6 +254,7 @@ const basisVectorArrow = (basis: THREE.Vector3, origin: THREE.Vector3,
                               [versor.x*0.1, versor.y*0.1, versor.z*0.1]);
 
     group.add(cylinder, cone, sprite);
+    sm.modified();
 };
 
 // Render the basis vectors
@@ -293,6 +294,7 @@ const changeMaterials = (): void => {
         lineSC.material = setMaterial(supercellColor.value, dashedSupercell.value);
         if(dashedSupercell.value) lineSC.computeLineDistances();
     }
+	sm.modified();
 };
 
 /**
@@ -315,6 +317,7 @@ watch([showUnitCell, showSupercell, showBasisVectors], () => {
     if(lineUC) lineUC.visible = showUnitCell.value;
     if(lineSC) lineSC.visible = showSupercell.value;
     outBV.visible = showBasisVectors.value;
+    sm.modified();
 
     sendToNode(id, "visible", {
         showUnitCell: showUnitCell.value,

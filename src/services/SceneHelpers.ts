@@ -8,10 +8,11 @@
  */
 
 import * as THREE from "three";
-import {watchEffect} from "vue";
+import {watchEffect, watch} from "vue";
 import {sm} from "./SceneManager";
 import {useConfigStore} from "@/stores/configStore";
 import {spriteText} from "./SpriteText";
+import {storeToRefs} from "pinia";
 
 let sidePrevious = 10;
 let axisLengthPrevious = 1;
@@ -24,9 +25,14 @@ export const setupSceneHelpers = (): void => {
 	// Access the stores
 	const configStore = useConfigStore();
 
+	const {helpers} = storeToRefs(configStore);
+	watch(helpers, () => {
+		sm.modified();
+	}, {deep: true});
+
 	watchEffect(() => {
 
-		// Access the scene
+		// Access the scene and set it modified
 		const {scene} = sm;
 
 		// Manage axis helper

@@ -13,12 +13,12 @@
   "ignoreDependencies": [
     "vue-docgen-cli",
     "@mdi/svg",
-    "@zamiell/typedoc-plugin-not-exported",
     "eslint-formatter-codeframe",
     "eslint-import-resolver-typescript",
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
+    "typedoc-plugin-missing-exports",
     "@types/eslint",
     "postcss-scss"
   ],

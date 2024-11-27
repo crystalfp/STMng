@@ -21,6 +21,7 @@ class SceneManager {
     private static instance: SceneManager;
 	private static readonly scene = new THREE.Scene();
 	private exporter: STLExporter | undefined;
+	private sceneModified = true;
 
 	private constructor() {
 		this.clearScene();
@@ -38,6 +39,7 @@ class SceneManager {
 		SceneManager.scene.background = new THREE.Color(configStore.scene.background);
 		watchEffect(() => {
 			SceneManager.scene.background = new THREE.Color(configStore.scene.background);
+			this.sceneModified = true;
 		});
 		return SceneManager.scene;
 	}
@@ -80,6 +82,7 @@ class SceneManager {
 
 			if(this.lights.has(object.type)) continue;
 			this.removeObjectsWithChildren(object);
+			this.sceneModified = true;
 		}
 	}
 
@@ -121,6 +124,7 @@ class SceneManager {
 
 		// Remove the group itself
 		if(removeGroup) SceneManager.scene.remove(group);
+		this.sceneModified = true;
 	}
 
 	/**
@@ -135,6 +139,7 @@ class SceneManager {
             SceneManager.scene.remove(object);
             if(object.geometry) object.geometry.dispose();
 			(object.material as THREE.Material).dispose();
+			this.sceneModified = true;
         }
 	}
 
@@ -152,6 +157,7 @@ class SceneManager {
 	 */
 	add(obj: THREE.Object3D): void {
 		SceneManager.scene.add(obj);
+		this.sceneModified = true;
 	}
 
 	/**
@@ -200,6 +206,7 @@ class SceneManager {
 			ambient.intensity = configStore.lights.ambientIntensity;
 			ambient.color = new THREE.Color(configStore.lights.ambientColor);
 		});
+		this.sceneModified = true;
 	}
 
 	/**
@@ -292,7 +299,7 @@ class SceneManager {
 	 * @returns A string (format: ascii) or an ArrayBuffer (format: binary)
 	 *			with the content of the STL file to be written
 	 */
-	createSTL(format: "ascii" | "binary"): string | ArrayBuffer {
+	createSTL(format: "ascii" | "binary"): string | ArrayBufferLike {
 
 		// Instance the exporter if not already instanced
 		if(!this.exporter) this.exporter = new STLExporter();
@@ -318,6 +325,27 @@ class SceneManager {
 
 		// Return the results
 		return format === "ascii" ? result as string : (result as DataView).buffer;
+	}
+
+	/**
+	 * Something has changed, so the scene should be rendered
+	 */
+	modified(): void {
+
+		this.sceneModified = true;
+	}
+
+	/**
+	 * Ask if the scene needs rendering because has been changed,
+	 * then reset the modified flag
+	 *
+	 * @returns True if the scene should be rendered
+	 */
+	needRendering(): boolean {
+
+		const doRendering = this.sceneModified;
+		this.sceneModified = false;
+		return doRendering;
 	}
 
 	// > Access the singleton instance

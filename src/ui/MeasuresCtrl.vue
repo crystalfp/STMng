@@ -141,6 +141,7 @@ watch(controlStore.atomsSelected, () => {
             const points = new THREE.Points(geom, mat);
             points.position.set(x, y, z);
             group.add(points);
+            sm.modified();
         })
         .catch((error: Error) => showAlertMessage(`Error from computing bonds lengths: ${error.message}`));
         return;
@@ -228,6 +229,7 @@ watch(polyhedronNewIdx, () => {
         const positions = objectNew!.geometry.getAttribute("position");
         volume.value = computeVolume(positions.array, positions.count);
     }
+    sm.modified();
 });
 
 // Watch measurement change. Every measurement should start with nothing selected

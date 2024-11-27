@@ -25,9 +25,11 @@ node_modules/.bin/typedoc \
 --readme none \
 --suppressCommentWarningsInDeclarationFiles \
 --plugin typedoc-plugin-vue \
---plugin @zamiell/typedoc-plugin-not-exported \
+--plugin typedoc-plugin-missing-exports \
 --disableGit \
 --excludeInternal \
+--excludeExternals \
+--placeInternalsInOwningModule \
 --sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env"`

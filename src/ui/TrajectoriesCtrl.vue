@@ -73,6 +73,7 @@ const initializeVolume = (): void => {
 	volumeMaterial.color.set(positionCloudsColor.value);
 
     volumeVertices.length = 0;
+    sm.modified();
 };
 
 /**
@@ -165,6 +166,7 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
     }
     if(after[0]) populateVolume();
     else sm.deleteMesh(volumeName);
+    sm.modified();
 
     sendToNode(id, "cloud", {
         showPositionClouds: showPositionClouds.value,

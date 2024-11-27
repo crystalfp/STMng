@@ -123,6 +123,7 @@ const addHBond = (from: PositionType, to: PositionType, group: THREE.Group): voi
     const line = new THREE.Line(geometry, material);
     line.computeLineDistances();
     group.add(line);
+    sm.modified();
 };
 
 /**
@@ -164,6 +165,7 @@ const addNormalBond = (from: PositionType, to: PositionType,
     const material = new THREE.LineBasicMaterial({vertexColors: true});
 
     group.add(new THREE.LineSegments(geometry, material));
+    sm.modified();
 };
 
 /**
@@ -182,6 +184,7 @@ const addNormalBondSameAtoms = (from: PositionType, to: PositionType, color: str
     const material = new THREE.LineBasicMaterial({color});
     const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
     group.add(new THREE.Line(geometry, material));
+    sm.modified();
 };
 
 /**
@@ -222,6 +225,7 @@ const addCylinder = (start: PositionType, end: PositionType,
     cylinder.position.set(midx, midy, midz);
 
     group.add(cylinder);
+    sm.modified();
 };
 
 /**
@@ -296,6 +300,7 @@ const drawStructure = (): void => {
     bondsGroup.clear();
     labelsGroup.clear();
     out.add(atomsGroup, bondsGroup, labelsGroup);
+    sm.modified();
 
     // No atoms present, display nothing
     if(renderInfo.atoms.length === 0) return;
@@ -418,7 +423,6 @@ const drawLabels = (): void => {
                 offset = 0.1;
                 break;
             default: throw Error(`Impossible draw kind value "${drawKind.value}"`);
-
         }
 
         let labelText;
@@ -442,6 +446,7 @@ const drawLabels = (): void => {
 
         ++idx;
     }
+    sm.modified();
 
     // Without this the labels do not appear on redraw
     labelsGroup.updateMatrix();

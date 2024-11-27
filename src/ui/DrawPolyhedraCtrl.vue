@@ -144,6 +144,7 @@ const drawPolyhedra = (): void => {
     }
 
     group.visible = showPolyhedra.value;
+    sm.modified();
 };
 
 // > React to changes
@@ -159,6 +160,7 @@ watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () 
     // If only visibility changes
     if(group.visible !== showPolyhedra.value) {
         group.visible = showPolyhedra.value;
+        sm.modified();
         return;
     }
 
