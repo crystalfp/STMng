@@ -30,7 +30,8 @@ program
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
-	.option("-e, --enable", "enable developer tools in production build");
+	.option("-e, --enable", "enable developer tools in production build")
+	.option("-x, --extra <switches>", "extra command line switches");
     // .addHelpText("before", " ")
     // .addHelpText("after", " ");
 
@@ -42,6 +43,7 @@ interface ProgramOptions {
     default?: boolean;
     verbose?: boolean;
     enable?: boolean;
+    extra?: string;
 }
 const options = program.opts<ProgramOptions>();
 
@@ -49,7 +51,7 @@ const options = program.opts<ProgramOptions>();
 const verbose = options.verbose ?? process.env.STM_NG_VERBOSE !== undefined;
 
 // Tools can be enabled in production also with the "STM_NG_ENABLE" environment variable set to any value
-const enable = options.enable ?? process.env.STM_NG_ENABLED !== undefined;
+const enable = options.enable ?? process.env.STM_NG_ENABLE !== undefined;
 const isDevelopment = import.meta.env.DEV || enable;
 
 // > Setup the main process
@@ -84,6 +86,21 @@ else setMainTheme("dark", true);
 
 // Setup the titlebar main process
 setupTitlebar();
+
+// If present, set extra command line switches
+if(options.extra) {
+
+    const switches = options.extra.split(/, */);
+    for(const sw of switches) {
+        if(sw.includes("=")) {
+            const element = sw.split("=");
+            app.commandLine.appendSwitch(element[0], element[1]);
+        }
+        else {
+            app.commandLine.appendSwitch(sw);
+        }
+    }
+}
 
 // > Start application
 app.whenReady().then(() => {

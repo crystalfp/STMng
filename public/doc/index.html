@@ -157,16 +157,20 @@ that implements some of the STM4 functionalities.
   <code>
 Usage: STMng [options] [project-file]
 
-See The Molecule new generation
+See The Molecule new generation is a chemical structure visualizer that inherits
+some functionalities of STM4
 
 Options:
-  -V, --version        output the version number
-  -t, --theme &lt;theme&gt;  user interface theme (choices: "dark", "light")
-  -d, --default        force load of default project
-  -v, --verbose        verbose
-  -e, --enable         enable developer tools in production build
-  -h, --help           display help for command
+  -V, --version           output the version number
+  -t, --theme &lt;theme&gt;     user interface theme (choices: "dark", "light")
+  -d, --default           force load of default project
+  -v, --verbose           verbose
+  -e, --enable            enable developer tools in production build
+  -x, --extra &lt;switches&gt;  extra command line switches
+  -h, --help              display help for command
   </code>
+<p>The <tt>“-x”</tt> switch pass the given switches to the Chromium process. If more than one, they are
+comma separated and if they pass a value, switch and value are separated by a <tt>“=”</tt>.</p>
 </details>
 </body>
 </html>
