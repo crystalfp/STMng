@@ -254,6 +254,7 @@ const computeFingerprints = (): void => {
 
   <v-select v-model="selectedMethod"
     :items="fpMethods"
+    label="Selection method"
     item-title="label"
     item-value="value"
     density="compact" class="mr-2" />
@@ -274,6 +275,7 @@ const computeFingerprints = (): void => {
   <v-divider thickness="8" class="mt-4" />
   <v-label class="text-h5 w-100 justify-center yellow-title mt-4 mb-4 no-select">Compare structures</v-label>
   <v-select v-model="selectedDistanceMethod"
+    label="Distance method"
     :items="distanceMethods"
     item-title="label"
     item-value="value"

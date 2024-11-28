@@ -93,10 +93,11 @@ const adjustMaterials = (): void => {
                 const {radiusTop, radiusBottom, height} = cylinder.parameters;
 
                 mesh.geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom,
-                                                            height, segments, 1, true);
+                                                           height, segments, 1, true);
             }
         }
     });
+    sm.modified();
 };
 
 /**
@@ -327,6 +328,7 @@ const drawStructure = (): void => {
             sphere.userData = {index};
             ++index;
             atomsGroup.add(sphere);
+            sm.modified();
         }
     }
 
@@ -380,7 +382,9 @@ const drawStructure = (): void => {
                 }
             }
             break;
-        default: throw Error(`Impossible draw kind value "${drawKind.value}"`);
+        case "van-der-waals":
+            // Do nothing
+            break;
     }
 
     // Find the camera rotation center and position based
@@ -397,6 +401,7 @@ const drawLabels = (): void => {
 
     // Remove existing labels
     disposeTextInGroup(labelsGroup);
+    sm.modified();
 
     const {atoms} = renderInfo;
 
@@ -449,7 +454,7 @@ const drawLabels = (): void => {
     sm.modified();
 
     // Without this the labels do not appear on redraw
-    labelsGroup.updateMatrix();
+    // labelsGroup.updateMatrix();
 };
 
 // Receive new structure from main process
@@ -473,6 +478,7 @@ watch([labelKind, drawKind, shadedBonds], () => {
         drawKind: drawKind.value,
         shadedBonds: shadedBonds.value
     });
+    sm.modified();
 });
 
 // Change visibility
@@ -486,6 +492,7 @@ watch([showStructure, showBonds, showLabels], () => {
         showBonds: showBonds.value,
         showLabels: showLabels.value
     });
+    sm.modified();
 });
 
 // Change material parameters
@@ -543,7 +550,7 @@ sm.add(out);
   <v-switch v-model="shadedBonds" color="primary"
             label="Smooth color bonds" density="compact" class="mt-2 ml-2" />
 
-  <v-label text="Label is" class="mb-3 ml-2 no-select" /><br>
+  <v-label text="Atom label" class="mb-3 ml-2 no-select" /><br>
   <v-btn-toggle v-model="labelKind" color="primary" mandatory class="mb-6 ml-2">
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>

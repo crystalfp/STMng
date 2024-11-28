@@ -15,7 +15,7 @@ export type SelectorType = "symbol" | "label" | "index" | "all";
  * Select atoms in the structure by the criteria entered in the AtomsSelector widget
  *
  * @param structure - The structure for which atoms should be selected
- * @param kind - Kind of selection. Could be: "symbol", "label", "index"
+ * @param kind - Kind of selection. Could be: "symbol", "label", "index" or "all"
  * @param atomsSelector - The human entered space separated string of selectors
  * @returns List of atoms indices selected in the structure
  */

@@ -3,6 +3,7 @@ To do:
   ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Check THREE.Layer for visibility
   ☐ Add camera position save and set
+  ☐ Add state from the various nodes in saving modified project
 
 Bugs:
 

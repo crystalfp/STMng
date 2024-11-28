@@ -341,11 +341,18 @@ class SceneManager {
 	 *
 	 * @returns True if the scene should be rendered
 	 */
+	private retry = 0;
 	needRendering(): boolean {
 
-		const doRendering = this.sceneModified;
-		this.sceneModified = false;
-		return doRendering;
+		if(this.sceneModified) {
+			if(this.retry > 2) {
+				this.sceneModified = false;
+				this.retry = 0;
+			}
+			++this.retry;
+			return true;
+		}
+		return false;
 	}
 
 	// > Access the singleton instance

@@ -8,7 +8,7 @@
  */
 
 import {ref, onMounted, computed, shallowRef, watch} from "vue";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
 import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, ProjectInfo} from "@/types";
@@ -31,6 +31,7 @@ const selectedLabel = ref("");
 const selectedInput = ref("");
 const disableActions = ref(false);
 const allNodes = ref<{label: string; type: string}[]>([]);
+const projectModified = ref(false);
 
 /**
  * Information about a node
@@ -252,6 +253,27 @@ const createEdges = (projectGraph: ClientProjectInfo, nodesList: NodeType[]): Ed
 const nodes = ref<NodeType[]>([]);
 const edges = ref<EdgeType[]>([]);
 
+/**
+ * Compute the values of nodes and edges described in graph object
+ */
+const createGraph = (): void => {
+
+    const nodesList = createNodes(graph);
+    nodes.value = nodesList;
+    edges.value = createEdges(graph, nodesList);
+};
+
+/**
+ * Send the modified project to be saved on the main process
+ */
+const saveProject = (): void => {
+
+    projectModified.value = false;
+
+    sendToNode("SYSTEM", "modified-project", {projectModified: JSON.stringify(graph)});
+};
+
+/** Receive the initial data and build the initial graph */
 onMounted(() => {
 
     // When the loaded project changes
@@ -260,10 +282,8 @@ onMounted(() => {
         const info = JSON.parse(data) as ProjectInfo;
         graph = info.graph;
 
-        const nodesList = createNodes(graph);
-        nodes.value = nodesList;
-
-        edges.value = createEdges(graph, nodesList);
+        // Create the initial graph
+        createGraph();
 
         // Get the list of possible nodes
         allNodes.value.length = 0;
@@ -355,8 +375,15 @@ const confirmDeletion = (): void => {
             graph[key].input = "";
         }
     }
-    // TBD Delete the current node
-    console.log("Deleting node:", selectedId.value);
+
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete graph[selectedId.value];
+
+    // Update the graph
+    createGraph();
+
+    // Ask to save modifications
+    projectModified.value = true;
 };
 
 /** List of nodes from the input could be taken */
@@ -395,8 +422,11 @@ const saveEditedNode = (): void => {
     node.label = selectedLabel.value;
     node.input = selectedInput.value;
 
-    // TBD Use the modified node
-    console.log("Edit node:", node);
+    // Update the graph
+    createGraph();
+
+    // Ask to save modifications
+    projectModified.value = true;
 };
 
 // > Add a new node to the project
@@ -462,11 +492,10 @@ const addNode = (): void => {
     graph[id] = nodeInfo;
 
     // Update the graph
-    const nodesList = createNodes(graph);
-    nodes.value = nodesList;
-    edges.value = createEdges(graph, nodesList);
+    createGraph();
 
-    // TBD Update the main project structure
+    // Ask to save modifications
+    projectModified.value = true;
 };
 
 </script>
@@ -517,13 +546,15 @@ const addNode = (): void => {
     </v-row>
   </v-container>
   <v-container class="button-strip">
+    <v-btn v-if="showInfo" :disabled="!projectModified" variant="tonal" class="mr-2"
+           @click="saveProject">Save modified project</v-btn>
     <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss info</v-btn>
     <v-btn v-focus variant="tonal" @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>
 
 <v-dialog v-model="showConfirm">
-  <v-card title="Confirm deletion" text="Do you want to remove the currently selected node?"
+  <v-card title="Confirm deletion" :text='`Do you want to remove the "${selectedLabel}" node?`'
           class="mx-auto" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
@@ -541,7 +572,7 @@ const addNode = (): void => {
                 variant="solo-filled" hide-details="auto"
                 clearable spellcheck="false" />
 		  <v-select v-if="inputFromOther.length > 0" v-model="selectedInput" :items="inputFromOther"
-                item-title="label" item-value="id"
+                item-title="label" item-value="id" label="Input from"
 		            variant="solo-filled" density="compact" hide-details class="mt-2" />
     </v-card-text>
     <v-card-actions>
@@ -555,13 +586,13 @@ const addNode = (): void => {
   <v-card title="Add node to project" class="mx-auto" elevation="16" width="400">
     <v-card-text>
 		  <v-select v-model="nodeToAdd" :items="allNodes" item-title="label" item-value="type"
-		            variant="solo-filled" density="compact" hide-details />
+		            variant="solo-filled" density="compact" hide-details label="Type of the node to add" />
       <v-text-field v-model="nodeLabel"
                 label="New node label" class="mt-2"
                 variant="solo-filled" hide-details="auto"
                 clearable spellcheck="false" />
 		  <v-select v-if="inputFrom.length > 0" v-model="inputId" :items="inputFrom"
-                item-title="label" item-value="id"
+                item-title="label" item-value="id" label="Input from"
 		            variant="solo-filled" density="compact" hide-details class="mt-2" />
     </v-card-text>
     <v-card-actions>

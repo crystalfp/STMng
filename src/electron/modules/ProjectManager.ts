@@ -8,15 +8,14 @@
  */
 import fs from "node:fs";
 import {writeFile} from "node:fs/promises";
-import {ipcMain} from "electron";
+import {ipcMain, dialog, type IpcMainEvent} from "electron";
 import path from "node:path";
 import {publicDirPath} from "./GetPublicPath";
-
-import type {NodeCore} from "./NodeCore";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
-import type {Project, ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo} from "@/types";
+import type {Project, ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, CtrlParams} from "@/types";
+import type {NodeCore} from "./NodeCore";
 
 // NOTE 1) Add here the classes that define the nodes
 import {CaptureView} from "../nodes/CaptureMedia";
@@ -417,5 +416,24 @@ export const setupChannelProject = (): void => {
 
 	ipcMain.on("SYSTEM:project", () => {
 		pm.sendProject();
+	});
+
+	ipcMain.on("SYSTEM:modified-project", (_event: IpcMainEvent, params: CtrlParams): void => {
+
+		const prj = params.projectModified as string;
+		if(!prj) return;
+
+		const file = dialog.showSaveDialogSync({
+			title: "Save modified project",
+			filters: [
+				{name: "STMng project", extensions: ["stm"]},
+			]
+		});
+		if(file) {
+
+			// TBD Add state from the various nodes
+			const formattedOut = `${JSON.stringify(JSON.parse(prj), undefined, 2)}\n`;
+			fs.writeFileSync(file, formattedOut, "utf8");
+		}
 	});
 };

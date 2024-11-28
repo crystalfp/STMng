@@ -98,7 +98,8 @@ const openChartWindow = (): void => {
 <template>
 <v-container class="container">
   <v-label class="mt-4 mb-2 ml-2 no-select">Wavelength:</v-label>
-  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2"/>
+  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2"
+            label="Wavelength"/>
   <v-number-input v-if="wavelengthCode === 'Manual'" controlVariant="stacked"
                   variant="solo-filled" density="compact" v-model="wavelengthNumeric"
                   label="Numeric wavelength"
