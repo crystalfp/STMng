@@ -107,10 +107,10 @@ export type LengthsAnglesType = [a: number, b: number, c: number,
 
 // > The project structure
 /**
- * Project structure
+ * Project node description
  * @notExported
  */
-export interface GraphNode {
+interface GraphNode {
 
     /** The label that appears on the node selector */
 	label: string;
@@ -121,6 +121,9 @@ export interface GraphNode {
     /** Comma separated list of node ids from which the node takes inputs */
 	in?: string;
 }
+
+/** The project graph */
+export type ProjectGraph = Record<string, GraphNode>;
 
 /** Type of the node state variables */
 export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>;
@@ -165,7 +168,7 @@ export interface Viewer3DState {
 export interface Project {
 
     /** The graph structure as read from file (The key is the node id) */
-    graph: Record<string, GraphNode>;
+    graph: ProjectGraph;
 
     /** The id of the selected node */
     currentId?: string;

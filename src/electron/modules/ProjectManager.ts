@@ -15,7 +15,7 @@ import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
 import type {Project, ClientProjectInfo, ClientProjectInfoItem,
-			 OneNodeInfo, CtrlParams, GraphNode} from "@/types";
+			 OneNodeInfo, CtrlParams, ProjectGraph} from "@/types";
 import type {NodeCore} from "./NodeCore";
 
 // NOTE 1) Add here the classes that define the nodes
@@ -369,7 +369,7 @@ class ProjectManager {
 	 * @returns The project file content to be saved
 	 */
 	// async createProjectSave(graph: ClientProjectInfo): Promise<string> {
-	async createProjectSave(graph: Record<string, GraphNode>): Promise<string> {
+	async createProjectSave(graph: ProjectGraph): Promise<string> {
 
 		// Retrieve the state of the nodes
 		let uiStatus = "";

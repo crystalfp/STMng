@@ -362,7 +362,7 @@
 	"default-case-last": 1,
 	"default-param-last": 1,
 	"func-names": 1,
-	"guard-for-in": 1,
+	"guard-for-in": 0,
 	"max-params": 0,
 	"no-label-var": 1,
 	"no-multi-str": 1,
