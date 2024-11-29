@@ -10,11 +10,10 @@
 import {onMounted, watch, watchEffect, nextTick, useTemplateRef} from "vue";
 import * as THREE from "three";
 import CameraControls from "camera-controls";
+import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
-// import {ViewHelper} from "three/examples/jsm/helpers/ViewHelper.js";
-import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
@@ -189,13 +188,7 @@ onMounted(() => {
                 break;
         }
     });
-    // controls.addEventListener("controlend", () => {
-    //     configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
-    //             console.log("POSITION*:",
-    //                 cameraOrthographic.position.x,
-    //                 cameraOrthographic.position.y,
-    //                 cameraOrthographic.position.z);
-    // });
+
     controls.addEventListener("sleep", () => {
         configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
     });
@@ -362,18 +355,16 @@ onMounted(() => {
         size: 150,
         placement: "bottom-right",
         lineWidth: 30,
+        resolution: 128,
         background: {enabled: false},
         x: {color: "#FF0000", labelColor: "#000", label: "X"},
         y: {color: "#79FF00", labelColor: "#000", label: "Y"},
         z: {color: "#0000FF", labelColor: "#000", label: "Z"},
-        nx: {scale: 0},
-        ny: {scale: 0},
-        nz: {scale: 0},
+        nx: {enabled: false},
+        ny: {enabled: false},
+        nz: {enabled: false},
     };
     const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
-    // const helper = new THREE.CameraHelper(camera);
-    // scene.add(helper);
-    // const viewHelper = new ViewHelper(camera, renderer.domElement);
 
     // Change the camera parameters when the window changes or ask for an expanded view
     const resizeScene = (): void => {
@@ -416,24 +407,22 @@ onMounted(() => {
     void controls.setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
     camera.lookAt(viewportGizmo.target);
 
-    // Start run
+    // Rendering function for the run
     const clock = new THREE.Clock();
     const animate = (): void => {
-        // controls.update(clock.getDelta());
-        // renderer.render(scene, camera);
-        // if(configStore.helpers.showGizmo) viewportGizmo.render();
         const doRender = controls.update(clock.getDelta());
         if(doRender || sm.needRendering()) {
             renderer.render(scene, camera);
             if(configStore.helpers.showGizmo) viewportGizmo.render();
         }
-        // helper.render(renderer);
     };
 
+    // First time render everything
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
     if(configStore.helpers.showGizmo) viewportGizmo.render();
 
+    // Start run
     renderer.setAnimationLoop(animate);
 });
 
