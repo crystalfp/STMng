@@ -14,7 +14,8 @@ import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
-import type {Project, ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, CtrlParams} from "@/types";
+import type {Project, ClientProjectInfo, ClientProjectInfoItem,
+			 OneNodeInfo, CtrlParams, GraphNode} from "@/types";
 import type {NodeCore} from "./NodeCore";
 
 // NOTE 1) Add here the classes that define the nodes
@@ -259,34 +260,7 @@ class ProjectManager {
 
 		if(!this.project) return;
 
-		// Retrieve the state of the nodes
-		let uiStatus = "";
-		let viewerStatus;
-		let notFirst = false;
-
-		for(const entry in this.project.graph) {
-
-			const node = this.activeNodes.get(entry)!;
-
-			if(this.project.graph[entry].type === "viewer-3d") viewerStatus = await node.saveStatus();
-			else {
-				const statusToSave = node.saveStatus() as string;
-				if(!statusToSave) continue;
-				if(notFirst) uiStatus += ",";
-				else notFirst = true;
-
-				uiStatus += statusToSave;
-			}
-		}
-
-		// Save the graph
-		const graphAsString = JSON.stringify(this.project.graph);
-
-		// Prepare the output and write it
-		const out = viewerStatus ?
-					`{"graph":${graphAsString},"viewer":${viewerStatus},"ui":{${uiStatus}}}` :
-					`{"graph":${graphAsString},"ui":{${uiStatus}}}`;
-		const formattedOut = `${JSON.stringify(JSON.parse(out), undefined, 2)}\n`;
+		const formattedOut = await this.createProjectSave(this.project.graph);
 		await writeFile(filename, formattedOut, "utf8");
 
 		sendProjectPath(filename);
@@ -385,6 +359,52 @@ class ProjectManager {
 		return this.projectName;
 	}
 
+	/** The keys not to be written to the project file */
+	private readonly keyToRemove = new Set(["id", "ui", "graphic"]);
+
+	/**
+	 * Create the project save from the project editor
+	 *
+	 * @param graph - Project graph from the project editor
+	 * @returns The project file content to be saved
+	 */
+	// async createProjectSave(graph: ClientProjectInfo): Promise<string> {
+	async createProjectSave(graph: Record<string, GraphNode>): Promise<string> {
+
+		// Retrieve the state of the nodes
+		let uiStatus = "";
+		let viewerStatus;
+		let notFirst = false;
+
+		for(const entry in graph) {
+
+			const node = this.activeNodes.get(entry)!;
+
+			if(graph[entry].type === "viewer-3d") viewerStatus = await node.saveStatus();
+			else {
+				const statusToSave = node.saveStatus() as string;
+				if(!statusToSave) continue;
+				if(notFirst) uiStatus += ",";
+				else notFirst = true;
+
+				uiStatus += statusToSave;
+			}
+		}
+
+		// Save the graph
+		const graphAsString = JSON.stringify(graph, (key, value) => {
+			if(key === "input" && value === "") return;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/consistent-return
+			if(!this.keyToRemove.has(key)) return value;
+		});
+
+		// Prepare the output
+		const out = viewerStatus ?
+					`{"graph":${graphAsString},"viewer":${viewerStatus},"ui":{${uiStatus}}}` :
+					`{"graph":${graphAsString},"ui":{${uiStatus}}}`;
+		return `${JSON.stringify(JSON.parse(out), undefined, 2)}\n`;
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
@@ -415,6 +435,7 @@ export const pm = ProjectManager.getInstance();
 export const setupChannelProject = (): void => {
 
 	ipcMain.on("SYSTEM:project", () => {
+
 		pm.sendProject();
 	});
 
@@ -431,9 +452,15 @@ export const setupChannelProject = (): void => {
 		});
 		if(file) {
 
-			// TBD Add state from the various nodes
-			const formattedOut = `${JSON.stringify(JSON.parse(prj), undefined, 2)}\n`;
-			fs.writeFileSync(file, formattedOut, "utf8");
+			const graph = JSON.parse(prj) as ClientProjectInfo;
+
+			pm.createProjectSave(graph)
+				.then((content) => {
+					fs.writeFileSync(file, content, "utf8");
+				})
+				.catch((error: Error) => {
+					sendAlertMessage(`Cannot write modified project file. Error: ${(error as Error).message}`);
+				});
 		}
 	});
 };

@@ -110,7 +110,7 @@ export type LengthsAnglesType = [a: number, b: number, c: number,
  * Project structure
  * @notExported
  */
-interface GraphNode {
+export interface GraphNode {
 
     /** The label that appears on the node selector */
 	label: string;
