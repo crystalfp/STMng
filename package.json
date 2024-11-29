@@ -32,7 +32,7 @@
     "electron-log": "^5.2.3",
     "js-yaml": "^4.1.0",
     "pinia": "^2.2.8",
-    "three": "^0.170.0",
+    "three": "^0.171.0",
     "three-viewport-gizmo": "^2.0.2",
     "tmp": "^0.2.3",
     "troika-three-text": "^0.52.2",

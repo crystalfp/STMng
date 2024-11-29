@@ -37,9 +37,8 @@ controlStore.hasCapture = true;
            :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
            density="compact" class="mt-4 cursor-pointer"
            @click="messageStore.captureMedia.typeS=undefined" />
-  <v-divider thickness="8" class="mt-6" />
 
-  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title no-select">Movie</v-label>
+  <v-label class="mt-10 text-h5 w-100 justify-center yellow-title no-select">Movie</v-label>
   <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
         @click="controlStore.movie = !controlStore.movie">
       {{ controlStore.movie ? "Stop recording" : "Start recording" }}
@@ -49,9 +48,8 @@ controlStore.hasCapture = true;
            :text="messageStore.captureMedia.textM" :type="messageStore.captureMedia.typeM"
            density="compact" class="mt-4 cursor-pointer"
            @click="messageStore.captureMedia.typeM=undefined" />
-  <v-divider thickness="8" class="mt-6" />
 
-  <v-label class="mt-4 text-h5 w-100 justify-center yellow-title no-select">STL</v-label>
+  <v-label class="mt-10 text-h5 w-100 justify-center yellow-title no-select">STL</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.stlFormat" color="primary" mandatory class="mb-3">
