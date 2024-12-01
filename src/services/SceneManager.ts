@@ -161,6 +161,21 @@ class SceneManager {
 	}
 
 	/**
+	 * Remove a named group and re-add it
+	 *
+	 * @param group - Named group to add
+	 */
+	clearAndAddGroup(group: THREE.Group): void {
+
+		if(group.name) {
+			const previousObj = SceneManager.scene.getObjectByName(group.name);
+			if(previousObj) SceneManager.scene.remove(previousObj);
+		}
+		SceneManager.scene.add(group);
+		this.sceneModified = true;
+	}
+
+	/**
 	 * Create lights
 	 */
 	createLights(): void {

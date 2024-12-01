@@ -59,6 +59,15 @@ export class IsosurfaceCore {
 	 */
 	computeIsosurface(isoValue: number): void {
 
+		// Reinitialize variables
+		this.faceIndices.length = 0;
+		this.faceVertices.length = 0;
+		this.vertexNormals.length = 0;
+		this.voxelScalars.length = 0;
+		this.voxelPts.length = 0;
+		this.voxelGradients.length = 0;
+		this.vertexIndex = 0;
+
 		// For each voxel
 		for(let k = 0; k < this.dims[2] - 1; ++k) {
 			for(let j = 0; j < this.dims[1] - 1; ++j) {

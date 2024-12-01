@@ -7,14 +7,12 @@
  * @since 2024-09-12
  */
 
-import * as THREE from "three";
 import {ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
-import {sm} from "@/services/SceneManager";
-import spriteImage from "@/assets/volumetric-sprite.png";
+import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -38,61 +36,6 @@ const showPositionClouds = ref(false);
 const positionCloudsSize = ref(100);
 const positionCloudsColor = ref("#BBBBBE");
 
-// > Graphical objects
-const group = new THREE.Group();
-const groupName = "Trajectories-" + id;
-group.name = groupName;
-group.visible = showTrajectories.value;
-sm.add(group);
-
-const volumeName = "PositionCloud-" + id;
-let volumeMaterial: THREE.PointsMaterial | undefined;
-const volumeVertices: number[] = [];
-const volumeGeometry = new THREE.BufferGeometry();
-
-/**
- * Initialize the positionCloud material
- */
-const initializeVolume = (): void => {
-
-    const textureLoader = new THREE.TextureLoader();
-
-    const sprite = textureLoader.load(spriteImage, (texture: THREE.Texture): void => {
-
-        texture.colorSpace = THREE.SRGBColorSpace;
-    });
-
-	volumeMaterial = new THREE.PointsMaterial({
-        size: positionCloudsSize.value,
-        map: sprite,
-        blending: THREE.AdditiveBlending,
-        depthTest: false,
-        transparent: true
-    });
-
-	volumeMaterial.color.set(positionCloudsColor.value);
-
-    volumeVertices.length = 0;
-    sm.modified();
-};
-
-/**
- * Create the position clouds
- */
-const populateVolume = (): void => {
-
-    sm.deleteMesh(volumeName);
-    if(volumeVertices.length === 0 || !volumeMaterial) return;
-
-    volumeGeometry.setAttribute("position", new THREE.Float32BufferAttribute(volumeVertices, 3));
-	const particles = new THREE.Points(volumeGeometry, volumeMaterial.clone());
-    particles.name = volumeName;
-    sm.add(particles);
-};
-
-// > Initialize the position cloud
-initializeVolume();
-
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
@@ -106,14 +49,18 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
+// > Initialize graphical rendering
+const renderer = new TrajectoriesRenderer(id,
+                                          showTrajectories.value,
+                                          positionCloudsSize.value,
+                                          positionCloudsColor.value);
+
 /**
  * Clear the accumulated structures
  */
 const resetTraces = (): void => {
 
-	sm.clearGroup(groupName);
-    sm.deleteMesh(volumeName);
-    volumeVertices.length = 0;
+    renderer.resetTraces();
 
     sendToNode(id, "reset");
 };
@@ -156,17 +103,9 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
       (after:  [boolean, number, string],
        before: [boolean, number, string]) => {
 
-    if(volumeMaterial) {
-        if(after[2] !== before[2]) {
-            volumeMaterial.color.set(after[2]);
-        }
-        if(after[1] !== before[1]) {
-            volumeMaterial.size = after[1];
-        }
-    }
-    if(after[0]) populateVolume();
-    else sm.deleteMesh(volumeName);
-    sm.modified();
+    if(after[2] !== before[2]) renderer.changeColor(after[2]);
+    if(after[1] !== before[1]) renderer.changeSize(after[1]);
+    renderer.changeCloudsVisibility(after[0]);
 
     sendToNode(id, "cloud", {
         showPositionClouds: showPositionClouds.value,
@@ -175,38 +114,10 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
     });
 });
 
-/**
- * Receive a set of traces
- *
- * @param segments - List of coordinates arrays for each trace segment
- * @param colors - Color of each segment
- */
-const receiveTraces = (segments: number[][], colors: string[]): void => {
-
-	sm.clearGroup(groupName);
-
-    volumeVertices.length = 0;
-
-    let idx = 0;
-    for(const segment of segments) {
-
-        const points: THREE.Vector3[] = [];
-        const len = segment.length;
-        for(let i=0; i < len; i+=3) {
-            points.push(new THREE.Vector3(segment[i], segment[i+1], segment[i+2]));
-            volumeVertices.push(segment[i], segment[i+1], segment[i+2]);
-        }
-
-        const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const material = new THREE.LineBasicMaterial({color: colors[idx]});
-        const line = new THREE.Line(geometry, material);
-        group.add(line);
-        ++idx;
-    }
-
-    populateVolume();
-};
-receiveTracesFromNode(id, "traces", receiveTraces);
+/** Receive a set of traces */
+receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): void => {
+    renderer.receiveTraces(segments, colors, showPositionClouds.value);
+});
 
 </script>
 
@@ -214,7 +125,8 @@ receiveTracesFromNode(id, "traces", receiveTraces);
 <template>
 <v-container class="container">
   <v-switch v-model="showTrajectories" color="primary" label="Show trajectories"
-            density="compact" class="mt-2 ml-2" @update:modelValue="group.visible = showTrajectories" />
+            density="compact" class="mt-2 ml-2"
+            @update:modelValue="renderer.setVisibility(showTrajectories)" />
   <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     :disabled="trajectoriesRecording"

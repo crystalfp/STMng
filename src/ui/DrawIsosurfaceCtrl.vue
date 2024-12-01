@@ -7,13 +7,11 @@
  * @since 2024-07-05
  */
 
-import * as THREE from "three";
-import {Lut} from "three/addons/math/Lut.js";
 import {ref, computed, watch} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsosurfacesFromNode, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
-import {sm} from "@/services/SceneManager";
+import {DrawIsosurfaceRenderer} from "@/renderers/DrawIsosurfaceRenderer";
 import type {CtrlParams} from "@/types";
 
 // > Properties
@@ -44,28 +42,6 @@ const limitColormap = ref(false);
 /** Available colormaps */
 const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
 
-const group = new THREE.Group();
-const groupName = "Isosurface-" + id;
-group.name = groupName;
-sm.add(group);
-
-// > Colormap creation
-const lut = computed(() => {
-
-    const thatLut = new Lut(colormapName.value, 512);
-
-    if(limitColormap.value) {
-        thatLut.setMax(limits.value[1]);
-        thatLut.setMin(limits.value[0]);
-    }
-    else {
-        thatLut.setMax(valueMax.value);
-        thatLut.setMin(valueMin.value);
-    }
-
-    return thatLut;
-});
-
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
@@ -86,16 +62,15 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
+// > Initialize graphical rendering
+const renderer = new DrawIsosurfaceRenderer(id);
+
+/** Receive the data from the main process */
 receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
                                        vertices: number[][],
                                        normals: number[][],
                                        isoValues: number[],
                                        params: CtrlParams) => {
-
-    // Remove existing surfaces
-    sm.clearGroup(groupName);
-
-    if(indices.length === 0) return;
 
     maxDataset.value = params.maxDataset as number ?? 0;
     valueMin.value = params.valueMin as number ?? -10;
@@ -110,31 +85,20 @@ receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
         isoValue.value = (valueMin.value+valueMax.value)/2;
     }
 
-    // Add single or nested isosurfaces
-    for(let i=0; i < indices.length; ++i) {
-
-        // Create and add the surface to the scene
-        const geometry = new THREE.BufferGeometry();
-        geometry.setIndex(indices[i]);
-        geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices[i], 3));
-        geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(normals[i], 3));
-
-        const material = new THREE.MeshStandardMaterial({
-            side: THREE.DoubleSide,
-            color: lut.value.getColor(isoValues[i]).getHex(),
-            opacity: opacity.value,
-            roughness: 0.5,
-            metalness: 0.6,
-            transparent: opacity.value < 0.99,
-        });
-
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.userData = {isoValue: isoValues[i]};
-        group.add(mesh);
-    }
-
-    group.visible = showIsosurface.value;
+    // Draw isosurfaces
+    renderer.drawIsosurfaces(indices, vertices, normals, isoValues, opacity.value, showIsosurface.value);
 });
+
+watch([limitColormap, colormapName, limits, valueMin, valueMax], () => {
+
+    // Set colormap
+    if(limitColormap.value) {
+        renderer.setLut(colormapName.value, limits.value[0], limits.value[1]);
+    }
+    else {
+        renderer.setLut(colormapName.value, valueMin.value, valueMax.value);
+    }
+}, {deep: true});
 
 // To recompute the isosurfaces
 watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
@@ -148,6 +112,7 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
         limitHigh: limits.value[1],
         isoValue: isoValue.value,
     });
+
 }, {deep: true});
 
 // To change locally
@@ -160,17 +125,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
         opacity: opacity.value
     });
 
-    group.visible = showIsosurface.value;
-
-    group.traverse((mesh) => {
-        if(mesh.type !== "Mesh") return;
-        const {isoValue: value} = mesh.userData;
-        const material = (mesh as THREE.Mesh).material as THREE.MeshStandardMaterial;
-        material.opacity = opacity.value;
-        material.transparent = opacity.value < 0.99;
-        material.color = lut.value.getColor(value as number);
-    });
-    sm.modified();
+    renderer.changeRendering(showIsosurface.value, opacity.value);
 });
 
 </script>
@@ -181,7 +136,8 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
   <v-switch v-model="showIsosurface" color="primary" label="Show isosurface"
             density="compact" class="mt-4 ml-3" />
   <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
-  <v-slider v-model="dataset" min="0" :max="maxDataset" step="1" :disabled="maxDataset === 0" class="ml-4 mt-1" />
+  <v-slider v-model="dataset" min="0" :max="maxDataset" step="1"
+            :disabled="maxDataset === 0" class="ml-4 mt-1" />
 
   <v-switch v-model="nestedIsosurfaces" color="primary" label="Nested isosurfaces"
             density="compact" class="mt-1 ml-3" />

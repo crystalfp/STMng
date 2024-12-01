@@ -133,11 +133,22 @@ export class DrawIsosurface extends NodeCore {
 
                 iso.computeIsosurface(isoValue);
 
-                indices[i] = iso.indices;
-                vertices[i] = iso.vertices;
-                normals[i] = iso.normals;
+                // Copy results
+                let len = iso.indices.length;
+                indices[i] = Array(len) as number[];
+                for(let j=0; j < len; ++j) indices[i][j] = iso.indices[j];
+
+                len = iso.vertices.length;
+                vertices[i] = Array(len) as number[];
+                for(let j=0; j < len; ++j) vertices[i][j] = iso.vertices[j];
+
+                len = iso.normals.length;
+                normals[i] = Array(len) as number[];
+                for(let j=0; j < len; ++j) normals[i][j] = iso.normals[j];
+
                 isoValues[i] = isoValue;
 
+                // Next value
                 isoValue += delta;
             }
         }

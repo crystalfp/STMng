@@ -7,7 +7,6 @@
  * @since 2024-08-09
  */
 
-import * as THREE from "three";
 import {ref, watch, shallowRef} from "vue";
 import {storeToRefs} from "pinia";
 import {sm} from "@/services/SceneManager";
@@ -15,7 +14,7 @@ import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
-import {spriteTextAlongBond} from "@/services/SpriteText";
+import {MeasuresRenderer} from "@/renderers/MeasuresRenderer";
 import type {SelectedAtom, BondData} from "@/types";
 
 // > Properties
@@ -46,52 +45,7 @@ const bondData = ref<BondData[]>([]);
 /** Show fractional coordinates */
 const useFractional = ref(false);
 
-// Prepare the graphical part
-const group = new THREE.Group();
-const groupName = "AtomSelectors-" + id;
-group.name = groupName;
-sm.add(group);
-
-/**
- * Compute the polyhedron volume using the formula found here:
- * https://mathworld.wolfram.com/PolyhedronVolume.html
- *
- * @param vertices - Polyhedron geometry vertices coordinates.
- *					 Each three consecutive vertices form a triangle
- * @param numberVertices - Total number of vertices
- * @returns The polyhedron volume
- */
-const computeVolume = (vertices: THREE.TypedArray, numberVertices: number): number => {
-
-    let computedVolume = 0;
-    for(let i=0; i < numberVertices/3; ++i) {
-
-        const startIdx = i*9;
-
-        const vu = [
-            vertices[startIdx+3] - vertices[startIdx],
-            vertices[startIdx+4] - vertices[startIdx+1],
-            vertices[startIdx+5] - vertices[startIdx+2]
-        ];
-        const vv = [
-            vertices[startIdx+6] - vertices[startIdx],
-            vertices[startIdx+7] - vertices[startIdx+1],
-            vertices[startIdx+8] - vertices[startIdx+2]
-        ];
-        const normal = [
-            vu[1] * vv[2] - vu[2] * vv[1],
-            vu[2] * vv[0] - vu[0] * vv[2],
-            vu[0] * vv[1] - vu[1] * vv[0]
-        ];
-
-        computedVolume += vertices[startIdx]*normal[0] +
-                          vertices[startIdx+1]*normal[1] +
-                          vertices[startIdx+2]*normal[2];
-    }
-
-    // Compute volume
-    return computedVolume/6;
-};
+const renderer = new MeasuresRenderer(id);
 
 // Watch atoms selection
 watch(controlStore.atomsSelected, () => {
@@ -99,7 +53,7 @@ watch(controlStore.atomsSelected, () => {
     // Check if atoms have been deselected
     const nselected = controlStore.atomsSelected.length;
     if(nselected === 0) {
-		sm.clearGroup(groupName);
+        renderer.clearOutput();
         bondData.value.length = 0;
         details.value.length = 0;
         distanceAB.value = -1;
@@ -115,33 +69,11 @@ watch(controlStore.atomsSelected, () => {
         })
         .then((params) => {
 
-		    sm.clearGroup(groupName);
-
-            const radius = params.radius as number ?? 0;
-            if(radius === 0) return;
-            const x = params.x as number ?? 0;
-            const y = params.y as number ?? 0;
-            const z = params.z as number ?? 0;
-            const color = params.color as string ?? "red";
-
             const bondDataTable = JSON.parse(params.labels as string ?? "[]" ) as BondData[];
             bondData.value.length = 0;
-            for(const bd of bondDataTable) {
+            for(const bd of bondDataTable) bondData.value.push(bd);
 
-                bondData.value.push(bd);
-
-                const label = spriteTextAlongBond(bd.distance.toFixed(3), "yellow", [x, y, z],
-                                                  bd.atomPosition, radius*0.5, bd.radius*0.5, bd.distance);
-                group.add(label);
-            }
-
-            const subdivisions = radius > 0.5 ? 4 : 1;
-            const geom = new THREE.IcosahedronGeometry(radius*0.6, subdivisions);
-            const mat = new THREE.PointsMaterial({color, size: pointSize});
-            const points = new THREE.Points(geom, mat);
-            points.position.set(x, y, z);
-            group.add(points);
-            sm.modified();
+	        renderer.measureBonds(params, bondDataTable, pointSize);
         })
         .catch((error: Error) => showAlertMessage(`Error from computing bonds lengths: ${error.message}`));
         return;
@@ -160,23 +92,16 @@ watch(controlStore.atomsSelected, () => {
         angleABC.value   = params.angleABC as number ?? -1;
         details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtom[];
 
-		sm.clearGroup(groupName);
-        for(const detail of details.value) {
-            const subdivisions = detail.radius > 0.5 ? 4 : 1;
-            const geom = new THREE.IcosahedronGeometry(detail.radius*0.6, subdivisions);
-            const mat = new THREE.PointsMaterial({color: detail.color, size: pointSize});
-            const points = new THREE.Points(geom, mat);
-            points.position.set(detail.position[0], detail.position[1], detail.position[2]);
-            group.add(points);
-        }
+    	renderer.measureAtoms(details.value, pointSize);
     })
     .catch((error: Error) => showAlertMessage(`Error from computing measures: ${error.message}`));
+
 }, {deep: true});
 
 // Remove selection on structure change
 receiveFromNode(id, "reset", () => {
     controlStore.deselectAll();
-    sm.clearGroup(groupName);
+    renderer.clearOutput();
 });
 
 // Watch polyhedra selection
@@ -186,24 +111,13 @@ watch(polyhedronNewIdx, () => {
     // No polyhedra selected
     if(controlStore.polyhedronNewIdx === undefined) return;
 
-    let objectCurrent: THREE.Mesh;
-    let objectNew: THREE.Mesh;
-    sm.scene.traverse((object) => {
-        if(object.name === "Polyhedron") {
-            if(object.userData.idx === controlStore.polyhedronNewIdx) {
-                objectNew = object as THREE.Mesh;
-            }
-            if(object.userData.idx === controlStore.polyhedronCurrentIdx) {
-                objectCurrent = object as THREE.Mesh;
-            }
-        }
-    });
+	renderer.selectPolyhedra(controlStore.polyhedronNewIdx, controlStore.polyhedronCurrentIdx);
 
     // Click on the same poly deselects it
     if(controlStore.polyhedronNewIdx === controlStore.polyhedronCurrentIdx) {
 
-        (objectCurrent!.material as THREE.MeshLambertMaterial).color =
-            new THREE.Color(controlStore.polyhedronCurrentColor);
+        renderer.setCurrentPolyhedraColor(controlStore.polyhedronCurrentColor);
+
         controlStore.polyhedronCurrentIdx = undefined;
         controlStore.polyhedronNewIdx = undefined;
 
@@ -213,21 +127,20 @@ watch(polyhedronNewIdx, () => {
         // Deselect current selection
         if(controlStore.polyhedronCurrentIdx !== undefined) {
 
-            (objectCurrent!.material as THREE.MeshLambertMaterial).color =
-                new THREE.Color(controlStore.polyhedronCurrentColor);
+            renderer.setCurrentPolyhedraColor(controlStore.polyhedronCurrentColor);
+
             controlStore.polyhedronCurrentIdx = undefined;
         }
 
         // Select new poly
-        (objectNew!.material as THREE.MeshLambertMaterial).color = new THREE.Color("#FF0000");
+        renderer.markPolyhedra();
 
         // Move the control to the new poly
         controlStore.polyhedronCurrentIdx = controlStore.polyhedronNewIdx;
         controlStore.polyhedronCurrentColor = controlStore.polyhedronNewColor;
         controlStore.polyhedronNewIdx = undefined;
 
-        const positions = objectNew!.geometry.getAttribute("position");
-        volume.value = computeVolume(positions.array, positions.count);
+        volume.value = renderer.getPolyhedraVolume();
     }
     sm.modified();
 });
@@ -236,11 +149,11 @@ watch(polyhedronNewIdx, () => {
 watch(measurementType, () => controlStore.deselectAll());
 
 /**
- * Format one coordinate (cartesian of fractional) of the selected atom.
+ * Format one coordinate (cartesian or fractional) of the selected atom.
  *
  * @param detail - Selected atom details
  * @param idx - Coordinate index to visualize
- * @returns Formatted atom coordinate (cartesian of fractional)
+ * @returns Formatted atom coordinates (cartesian or fractional)
  */
 const showCoords = (detail: SelectedAtom, idx: number): string => {
 

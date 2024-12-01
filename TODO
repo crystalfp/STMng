@@ -1,6 +1,5 @@
 To do:
   ☐ camera.type -> camera.isPerspective (boolean)
-  ☐ Separate UI management and rendering logic in *Ctrl
   ☐ Check THREE.Layer for visibility
   ☐ Add camera position save and set
 
@@ -53,6 +52,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Separate UI management and rendering logic in *Ctrl @done(2024-12-01 16:02) @project(To do)
   ✔ Add state from the various nodes in saving modified project @done(2024-11-29 08:05) @project(To do)
   ✔ Make graph input as string, not array @done(2024-11-21 05:43) @project(To do)
   ✘ Check if the nodes in ProjectManager could be integrated with allNodesMap @cancelled(2024-11-19 06:48) @project(To do)

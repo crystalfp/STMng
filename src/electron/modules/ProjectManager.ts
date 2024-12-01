@@ -457,9 +457,11 @@ export const setupChannelProject = (): void => {
 			pm.createProjectSave(graph)
 				.then((content) => {
 					fs.writeFileSync(file, content, "utf8");
+					pm.loadProjectAndRemember(file);
 				})
 				.catch((error: Error) => {
-					sendAlertMessage(`Cannot write modified project file. Error: ${(error as Error).message}`);
+					const {message} = error as Error;
+					sendAlertMessage(`Cannot write modified project file. Error: ${message}`);
 				});
 		}
 	});
