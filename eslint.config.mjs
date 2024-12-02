@@ -384,9 +384,5 @@ export default [{
         "depend/ban-dependencies": ["error", {
                                     "presets": ["native", "microutilities", "preferred"]
         }],
-
-        // Problems fixed for ESlint 9.15.0
-        "sonarjs/no-empty-function": ["error", {allow: []}],
-        "sonarjs/no-unused-expressions": ["error", {allowShortCircuit: false}],
     }
 }];

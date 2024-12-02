@@ -203,7 +203,6 @@ class ProjectManager {
 
 		const node = this.allNodesMap.get(nodeType);
 		if(!node) throw Error(`Invalid node type "${nodeType}"`);
-		// eslint-disable-next-line sonarjs/new-cap
 		return new node.handler(id);
 	}
 

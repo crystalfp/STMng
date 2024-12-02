@@ -16,15 +16,14 @@ import localRoboto from "@/assets/Roboto-Regular.ttf";
  * Create a text sprite
  *
  * @param text - The text to display
- * @param color - Color of the text (as #RRGGBB)
+ * @param color - Color of the text (as #RRGGBB or color name)
  * @param position - Position of the label
  * @param offset - If present gives the offset respect to position
  * @returns The sprite to be added to the scene
  */
 export const spriteText = (text: string,
 						   color: string,
-						   position: PositionType,
-						   offset?: PositionType): Mesh => {
+						   position: PositionType): Mesh => {
 
 	const sprite = new TroikaText();
 
@@ -35,12 +34,9 @@ export const spriteText = (text: string,
 	sprite.color = color;
 	sprite.anchorX = "center";
 	sprite.anchorY = "middle";
-	if(offset) {
-		sprite.position.set(position[0]+offset[0], position[1]+offset[1], position[2]+offset[2]);
-	}
-	else {
-		sprite.position.set(position[0], position[1], position[2]);
-	}
+
+	sprite.position.set(position[0], position[1], position[2]);
+
 	sprite.sync();
 
 	return sprite;
@@ -73,9 +69,9 @@ const computeLabelPosition = (startPosition: PositionType,
 	// 	(startPosition[2]-endPosition[2])*endRadius/distance+endPosition[2],
 	// ];
 	// return [
-	// 	(r1[0]+r2[0])/2+0.15,
-	// 	(r1[1]+r2[1])/2+0.15,
-	// 	(r1[2]+r2[2])/2+0.15
+	// 	(r1[0]+r2[0])/2,
+	// 	(r1[1]+r2[1])/2,
+	// 	(r1[2]+r2[2])/2
 	// ];
 
 	const cA = startRadius/distance;
@@ -97,9 +93,9 @@ const computeLabelPosition = (startPosition: PositionType,
  * @param endPosition - End of the final vector
  * @param quaternion - Rotation quaternion to move the label to align to the final vector
  */
-export const rotateLabel = (startPosition: PositionType,
-						    endPosition: PositionType,
-							quaternion: Quaternion): void => {
+const rotateLabel = (startPosition: PositionType,
+					 endPosition: PositionType,
+					 quaternion: Quaternion): void => {
 
 	const v1 = new Vector3(1, 0, 0);
 	const v2 = new Vector3(endPosition[0] - startPosition[0],
@@ -107,7 +103,7 @@ export const rotateLabel = (startPosition: PositionType,
 						   endPosition[2] - startPosition[2]);
 
 	// Normalize vectors (v1 is already normalized)
-	const normalizedV1 = v1; // const normalizedV1 = normalizeVector(v1);
+	const normalizedV1 = v1; // const normalizedV1 = v1.normalize();
 	const normalizedV2 = v2.normalize();
 
 	// Compute dot product to find the angle
@@ -125,7 +121,7 @@ export const rotateLabel = (startPosition: PositionType,
  * Create a text sprite along a bond
  *
  * @param text - The text to display
- * @param color - Color of the text (as #RRGGBB)
+ * @param color - Color of the text (as #RRGGBB or color name)
  * @param startPosition - Position of the first atom
  * @param endPosition - Position of the second atom
  * @param startRadius - Radius of the first atom
@@ -156,12 +152,14 @@ export const spriteTextAlongBond = (text: string,
 	// Rotate label to align to the bond
 	rotateLabel(startPosition, endPosition, sprite.quaternion);
 
+	// Compute the offset from the center of the bond
 	const offset = new Vector3(0, 1, 0);
 	offset.applyQuaternion(sprite.quaternion);
 	offset.normalize().multiplyScalar(0.17);
 
-	// Set center of label
-	const pos = computeLabelPosition(startPosition, endPosition, startRadius, endRadius, distance);
+	// Set center of label offset by the vector computed
+	const pos = computeLabelPosition(startPosition, endPosition,
+									 startRadius, endRadius, distance);
 	sprite.position.set(pos[0]+offset.x, pos[1]+offset.y, pos[2]+offset.z);
 
 	sprite.sync();
@@ -190,11 +188,12 @@ export const disposeTextInGroup = (group: Group): void => {
 /**
  * Preload characters used by atoms' symbols and distance numbers
  */
-export const preloadFonts = (): void => {
+export const preloadFonts = (onReady: () => void): void => {
 
 	preloadFont({
-		font: localRoboto,
-		characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz0123456789."
-	},
-	() => {/* do nothing after loading */});
+			font: localRoboto,
+			characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz0123456789."
+		},
+		onReady
+	);
 };

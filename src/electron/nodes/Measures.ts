@@ -48,7 +48,7 @@ export class Measures extends NodeCore {
 
 	saveStatus(): string {return "";}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function, sonarjs/no-empty-function
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	loadStatus(): void {}
 
 	/**

@@ -9,6 +9,7 @@
 import * as THREE from "three";
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
+import type {PositionType} from "@/types";
 
 // Triangles. Top and bottom facies are not needed
 const indices = [
@@ -169,10 +170,12 @@ export class DrawUnitCellRenderer {
 		cone.position.addScaledVector(versor, -coneLen/2);
 
 		// Label
-		const sprite = spriteText(axisLabel,
-								  color,
-								  [basis.x+origin.x, basis.y+origin.y, basis.z+origin.z],
-								  [versor.x*0.1, versor.y*0.1, versor.z*0.1]);
+		const labelPosition: PositionType = [
+			basis.x+origin.x+versor.x*0.1,
+			basis.y+origin.y+versor.y*0.1,
+			basis.z+origin.z+versor.z*0.1
+		];
+		const sprite = spriteText(axisLabel, color, labelPosition);
 
 		group.add(cylinder, cone, sprite);
 		sm.modified();

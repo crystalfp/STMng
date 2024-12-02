@@ -7,7 +7,7 @@
  * @since 2024-10-24
  */
 /* eslint-disable eslint-comments/disable-enable-pair */
-/* eslint-disable sonarjs/sonar-max-params, max-params */
+/* eslint-disable max-params */
 
 /**
  * Type of the native code output

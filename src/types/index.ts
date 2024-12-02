@@ -238,7 +238,7 @@ export interface OneNodeInfo {
 	ui: string;
 
     /** The class that will be instanced if the node is active */
-    // eslint-disable-next-line sonarjs/prefer-function-type, @typescript-eslint/prefer-function-type
+    // eslint-disable-next-line @typescript-eslint/prefer-function-type
     handler: {new (id: string): NodeCore};
 }
 

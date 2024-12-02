@@ -129,8 +129,5 @@ addEventListener("unhandledrejection", (event): void => {
 	log.error("Unhandled rejection:", event.reason);
 });
 
-// Preload fonts for labels
-preloadFonts();
-
-// Mount the application
-app.mount("#app");
+// Preload fonts for labels. At the end, mount the application
+preloadFonts(() => app.mount("#app"));
