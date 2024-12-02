@@ -52,6 +52,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Better placement of the bond lengths labels @done(2024-12-02 07:52) @project(To do)
   ✔ Separate UI management and rendering logic in *Ctrl @done(2024-12-01 16:02) @project(To do)
   ✔ Add state from the various nodes in saving modified project @done(2024-11-29 08:05) @project(To do)
   ✔ Make graph input as string, not array @done(2024-11-21 05:43) @project(To do)

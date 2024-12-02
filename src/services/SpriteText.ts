@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-17
  */
-import {type Group, type Mesh, Vector3} from "three";
+import {type Group, type Mesh, Vector3, Quaternion} from "three";
 import type {PositionType} from "@/types";
 import {Text as TroikaText, preloadFont} from "troika-three-text";
 
@@ -84,10 +84,41 @@ const computeLabelPosition = (startPosition: PositionType,
 	const cBA1 = (cB-cA+1)/2;
 
 	return [
-		endPosition[0]*cAB1+startPosition[0]*cBA1+0.15,
-		endPosition[1]*cAB1+startPosition[1]*cBA1+0.15,
-		endPosition[2]*cAB1+startPosition[2]*cBA1+0.15,
+		endPosition[0]*cAB1+startPosition[0]*cBA1,
+		endPosition[1]*cAB1+startPosition[1]*cBA1,
+		endPosition[2]*cAB1+startPosition[2]*cBA1
 	];
+};
+
+/**
+ * Rotate label to align to the final vector
+ *
+ * @param startPosition - Start of the final vector
+ * @param endPosition - End of the final vector
+ * @param quaternion - Rotation quaternion to move the label to align to the final vector
+ */
+export const rotateLabel = (startPosition: PositionType,
+						    endPosition: PositionType,
+							quaternion: Quaternion): void => {
+
+	const v1 = new Vector3(1, 0, 0);
+	const v2 = new Vector3(endPosition[0] - startPosition[0],
+						   endPosition[1] - startPosition[1],
+						   endPosition[2] - startPosition[2]);
+
+	// Normalize vectors (v1 is already normalized)
+	const normalizedV1 = v1; // const normalizedV1 = normalizeVector(v1);
+	const normalizedV2 = v2.normalize();
+
+	// Compute dot product to find the angle
+	const dotProduct = normalizedV1.dot(normalizedV2);
+	const angle = Math.acos(Math.max(Math.min(dotProduct, 1), -1));
+
+	// Compute rotation versor
+	const rotationAxis = normalizedV1.cross(normalizedV2).normalize();
+
+	// Apply the rotation quaternion
+	quaternion.setFromAxisAngle(rotationAxis, angle);
 };
 
 /**
@@ -122,24 +153,17 @@ export const spriteTextAlongBond = (text: string,
 	sprite.anchorX = "center";
 	sprite.anchorY = "middle";
 
+	// Rotate label to align to the bond
+	rotateLabel(startPosition, endPosition, sprite.quaternion);
+
+	const offset = new Vector3(0, 1, 0);
+	offset.applyQuaternion(sprite.quaternion);
+	offset.normalize().multiplyScalar(0.17);
+
 	// Set center of label
 	const pos = computeLabelPosition(startPosition, endPosition, startRadius, endRadius, distance);
-	sprite.position.set(pos[0], pos[1], pos[2]);
+	sprite.position.set(pos[0]+offset.x, pos[1]+offset.y, pos[2]+offset.z);
 
-    // Normalized versors
-	const nx = (endPosition[0] - startPosition[0])/distance;
-	const ny = (endPosition[1] - startPosition[1])/distance;
-	const nz = (endPosition[2] - startPosition[2])/distance;
-
-	// Rotate to be parallel to the bond
-    if(ny > 0.99999) sprite.quaternion.set(0, 0, 0, 1);
-    else if(ny < -0.99999) sprite.quaternion.set(1, 0, 0, 0);
-    else {
-        const rotationAxis = new Vector3(nz, 0, -nx).normalize();
-        const radians = Math.acos(ny);
-        sprite.quaternion.setFromAxisAngle(rotationAxis, radians);
-    }
-	sprite.rotateZ(Math.PI/2);
 	sprite.sync();
 
 	return sprite;
