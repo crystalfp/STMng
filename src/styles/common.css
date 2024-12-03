@@ -63,14 +63,12 @@ html {
 
 ::-webkit-scrollbar-track {
   background-color: var(--scrollbar-track);
-  /* background-color: light-dark(#e6e6e6, #202020); */
   border-left: 1px solid light-dark(#dadada, #2c2c2c);
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: light-dark(#b0b0b0, #3e3e3e);
   border: solid 3px var(--scrollbar-track);
-  /* border: solid 3px light-dark(#e6e6e6, #202020); */
   border-radius: 7px;
 }
 
