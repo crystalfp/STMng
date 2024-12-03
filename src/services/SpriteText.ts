@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-17
  */
-import {type Group, type Mesh, Vector3, Quaternion} from "three";
+import {type Group, type Mesh, Vector3, type Quaternion} from "three";
 import type {PositionType} from "@/types";
 import {Text as TroikaText, preloadFont} from "troika-three-text";
 import log from "electron-log";

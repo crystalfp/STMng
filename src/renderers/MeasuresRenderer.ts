@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-01
  */
-import {Group, IcosahedronGeometry, PointsMaterial, Points, Mesh, MeshLambertMaterial,
+import {Group, IcosahedronGeometry, PointsMaterial, Points, type Mesh, type MeshLambertMaterial,
 		Color, type ColorRepresentation, type TypedArray} from "three";
 import {sm} from "@/services/SceneManager";
 import {spriteTextAlongBond} from "@/services/SpriteText";

@@ -6,9 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-01
  */
-import {Group, Mesh, MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
+import {Group, Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
 		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
-		Float32BufferAttribute, LineSegments, type ColorRepresentation, Quaternion} from "three";
+		Float32BufferAttribute, LineSegments, type ColorRepresentation, type Quaternion} from "three";
 import {sm} from "@/services/SceneManager";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {getBoundingBox} from "@/services/BoundingBox";

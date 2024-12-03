@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-01
  */
-import {Group, PointsMaterial, BufferGeometry, TextureLoader, Texture, Points,
+import {Group, PointsMaterial, BufferGeometry, TextureLoader, type Texture, Points,
 		SRGBColorSpace, AdditiveBlending, Float32BufferAttribute, Vector3,
 		LineBasicMaterial, Line} from "three";
 import {sm} from "@/services/SceneManager";
