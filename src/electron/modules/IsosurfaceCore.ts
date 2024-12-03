@@ -31,16 +31,17 @@ export class IsosurfaceCore {
 				private readonly origin: PositionType,
 			    private readonly values: number[]) {
 
+		// A point will be added in each direction to accomodate periodic cell boundaries
 		this.cellSides = [
-			basis[0] / (dims[0]-1),
-			basis[1] / (dims[0]-1),
-			basis[2] / (dims[0]-1),
-			basis[3] / (dims[1]-1),
-			basis[4] / (dims[1]-1),
-			basis[5] / (dims[1]-1),
-			basis[6] / (dims[2]-1),
-			basis[7] / (dims[2]-1),
-			basis[8] / (dims[2]-1),
+			basis[0] / dims[0],
+			basis[1] / dims[0],
+			basis[2] / dims[0],
+			basis[3] / dims[1],
+			basis[4] / dims[1],
+			basis[5] / dims[1],
+			basis[6] / dims[2],
+			basis[7] / dims[2],
+			basis[8] / dims[2],
 		];
 
 		this.cellLengths = [
@@ -69,9 +70,9 @@ export class IsosurfaceCore {
 		this.vertexIndex = 0;
 
 		// For each voxel
-		for(let k = 0; k < this.dims[2] - 1; ++k) {
-			for(let j = 0; j < this.dims[1] - 1; ++j) {
-				for(let i = 0; i < this.dims[0] - 1; ++i) {
+		for(let k = 0; k < this.dims[2]; ++k) {
+			for(let j = 0; j < this.dims[1]; ++j) {
+				for(let i = 0; i < this.dims[0]; ++i) {
 
 					this.produceTriangles(i, j, k, isoValue);
 				}
@@ -160,14 +161,20 @@ export class IsosurfaceCore {
 
 		// First get the indices for the voxel
 		// (i,i+1),(j,j+1),(k,k+1) - i varies fastest; then j; then k
-		ids[0] = k * this.dims[0] * this.dims[1] + j * this.dims[0] + i; // i, j, k
-		ids[1] = ids[0] + 1; // i+1, j, k
-		ids[2] = ids[0] + this.dims[0]; // i, j+1, k
-		ids[3] = ids[2] + 1; // i+1, j+1, k
-		ids[4] = ids[0] + this.dims[0] * this.dims[1]; // i, j, k+1
-		ids[5] = ids[4] + 1; // i+1, j, k+1
-		ids[6] = ids[4] + this.dims[0]; // i, j+1, k+1
-		ids[7] = ids[6] + 1; // i+1, j+1, k+1
+		// Wrap indices around
+		const kPart = k * this.dims0x1;
+		const kPlus1Part = k >= this.dims[2]-1 ? 0 : ((k+1) * this.dims0x1);
+		const jPart = j * this.dims[0];
+		const jPlus1Part = j >= this.dims[1]-1 ? 0 : ((j+1) * this.dims[0]);
+		const iPlus1 = i >= this.dims[0]-1 ? 0 : i+1;
+		ids[0] = kPart + jPart + i; 				// i,   j,   k
+		ids[1] = kPart + jPart + iPlus1;			// i+1, j,   k
+		ids[2] = kPart + jPlus1Part + i;			// i,   j+1, k
+		ids[3] = kPart + jPlus1Part + iPlus1;		// i+1, j+1, k
+		ids[4] = kPlus1Part + jPart + i; 			// i,   j,   k+1
+		ids[5] = kPlus1Part + jPart + iPlus1; 		// i+1, j,   k+1
+		ids[6] = kPlus1Part + jPlus1Part + i;		// i,   j+1, k+1
+		ids[7] = kPlus1Part + jPlus1Part + iPlus1;	// i+1, j+1, k+1
 
 		// Now retrieve the scalars
 		for(let ii = 0; ii < 8; ++ii) {
@@ -228,63 +235,87 @@ export class IsosurfaceCore {
 	 */
   	private getPointGradient(i: number, j: number, k: number, g: number[]): void {
 
-		let sp;
-    	let sm;
+		let sp;	// Next point (s-plus)
+    	let sm;	// Previous point (s-minus)
 		let side;
 
 		// x-direction
-		side = j * this.dims[0] + k * this.dims0x1;
-		if(i === 0) {
-			sp = this.values[i + 1 + side];
-			sm = this.values[i     + side];
-			g[0] = (sm - sp) / this.cellLengths[0];
-		}
-		else if(i === this.dims[0] - 1) {
-			sp = this.values[i     + side];
-			sm = this.values[i - 1 + side];
-			g[0] = (sm - sp) / this.cellLengths[0];
-		}
-		else {
-			sp = this.values[i + 1 + side];
-			sm = this.values[i - 1 + side];
-			g[0] = (0.5 * (sm - sp)) / this.cellLengths[0];
+		side = (j >= this.dims[1]-1 ? 0 : (j * this.dims[0])) +
+			   (k >= this.dims[2]-1 ? 0 : (k * this.dims0x1));
+		switch(i) {
+			case 0:
+				sp = this.values[1     + side];
+				sm = this.values[        side];
+				g[0] = (sm - sp) / this.cellLengths[0];
+				break;
+			case this.dims[0] - 1:
+				sp = this.values[        side];
+				sm = this.values[i     + side];
+				g[0] = (sm - sp) / this.cellLengths[0];
+				break;
+			case this.dims[0]:
+				sp = this.values[        side];
+				sm = this.values[i - 1 + side];
+				g[0] = (sm - sp) / this.cellLengths[0];
+				break;
+			default:
+				sp = this.values[i + 1 + side];
+				sm = this.values[i - 1 + side];
+				g[0] = (sm - sp) / (2*this.cellLengths[0]);
+				break;
 		}
 
     	// y-direction
-		side = i + k * this.dims0x1;
-    	if(j === 0) {
-			sp = this.values[(j + 1) * this.dims[0] + side];
-			sm = this.values[j       * this.dims[0] + side];
-			g[1] = (sm - sp) / this.cellLengths[1];
-		}
-		else if(j === this.dims[1] - 1) {
-			sp = this.values[j       * this.dims[0] + side];
-			sm = this.values[(j - 1) * this.dims[0] + side];
-			g[1] = (sm - sp) / this.cellLengths[1];
-		}
-		else {
-			sp = this.values[(j + 1) * this.dims[0] + side];
-			sm = this.values[(j - 1) * this.dims[0] + side];
-			g[1] = (0.5 * (sm - sp)) / this.cellLengths[1];
+		side = (i >= this.dims[0]-1 ? 0 : i) +
+			   (k >= this.dims[2]-1 ? 0 : (k * this.dims0x1));
+		switch(j) {
+			case 0:
+				sp = this.values[          this.dims[0] + side];
+				sm = this.values[                         side];
+				g[1] = (sm - sp) / this.cellLengths[1];
+				break;
+			case this.dims[1] - 1:
+				sp = this.values[                         side];
+				sm = this.values[      j * this.dims[0] + side];
+				g[1] = (sm - sp) / this.cellLengths[1];
+				break;
+			case this.dims[1]:
+				sp = this.values[                         side];
+				sm = this.values[  (j-1) * this.dims[0] + side];
+				g[1] = (sm - sp) / this.cellLengths[1];
+				break;
+			default:
+				sp = this.values[(j + 1) * this.dims[0] + side];
+				sm = this.values[(j - 1) * this.dims[0] + side];
+				g[1] = (sm - sp) / (2*this.cellLengths[1]);
+				break;
 		}
 
 		// z-direction
-		side = i + j * this.dims[0];
-		if(k === 0) {
-			sp = this.values[side + (k + 1) * this.dims0x1];
-			sm = this.values[side + k * this.dims0x1];
-			g[2] = (sm - sp) / this.cellLengths[2];
+		side = (i >= this.dims[0]-1 ? 0 : i) +
+			   (j >= this.dims[1]-1 ? 0 : (j * this.dims[0]));
+		switch(k) {
+			case 0:
+				sp = this.values[side + this.dims0x1];
+				sm = this.values[side               ];
+				g[2] = (sm - sp) / this.cellLengths[2];
+				break;
+			case this.dims[2] - 1:
+				sp = this.values[side                   ];
+				sm = this.values[side + k * this.dims0x1];
+				g[2] = (sm - sp) / this.cellLengths[2];
+				break;
+			case this.dims[2]:
+				sp = this.values[side                   ];
+				sm = this.values[side + (k-1) * this.dims0x1];
+				g[2] = (sm - sp) / this.cellLengths[2];
+				break;
+			default:
+				sp = this.values[side + (k + 1) * this.dims0x1];
+				sm = this.values[side + (k - 1) * this.dims0x1];
+				g[2] = (sm - sp) / (2*this.cellLengths[2]);
+				break;
 		}
-		else if(k === this.dims[2] - 1) {
-			sp = this.values[side + k * this.dims0x1];
-			sm = this.values[side + (k - 1) * this.dims0x1];
-			g[2] = (sm - sp) / this.cellLengths[2];
-		}
-		else {
-			sp = this.values[side + (k + 1) * this.dims0x1];
-			sm = this.values[side + (k - 1) * this.dims0x1];
-			g[2] = (0.5 * (sm - sp)) / this.cellLengths[2];
-    	}
   	}
 
 	/**
