@@ -231,9 +231,9 @@ export class IsosurfaceCore {
 	 * @param i - Fast index of the voxel vertex
 	 * @param j - Intermediate index of the voxel vertex
 	 * @param k - Slow index of the voxel vertex
-	 * @param g - Computed gradient
+	 * @param start - Index of the first element of voxelGradients where to put computed gradient
 	 */
-  	private getPointGradient(i: number, j: number, k: number, g: number[]): void {
+  	private getPointGradient(i: number, j: number, k: number, start: number): void {
 
 		let sp;	// Next point (s-plus)
     	let sm;	// Previous point (s-minus)
@@ -246,22 +246,22 @@ export class IsosurfaceCore {
 			case 0:
 				sp = this.values[1     + side];
 				sm = this.values[        side];
-				g[0] = (sm - sp) / this.cellLengths[0];
+				this.voxelGradients[start] = (sm - sp) / this.cellLengths[0];
 				break;
 			case this.dims[0] - 1:
 				sp = this.values[        side];
 				sm = this.values[i     + side];
-				g[0] = (sm - sp) / this.cellLengths[0];
+				this.voxelGradients[start] = (sm - sp) / this.cellLengths[0];
 				break;
 			case this.dims[0]:
 				sp = this.values[        side];
 				sm = this.values[i - 1 + side];
-				g[0] = (sm - sp) / this.cellLengths[0];
+				this.voxelGradients[start] = (sm - sp) / this.cellLengths[0];
 				break;
 			default:
 				sp = this.values[i + 1 + side];
 				sm = this.values[i - 1 + side];
-				g[0] = (sm - sp) / (2*this.cellLengths[0]);
+				this.voxelGradients[start] = (sm - sp) / (2*this.cellLengths[0]);
 				break;
 		}
 
@@ -272,22 +272,22 @@ export class IsosurfaceCore {
 			case 0:
 				sp = this.values[          this.dims[0] + side];
 				sm = this.values[                         side];
-				g[1] = (sm - sp) / this.cellLengths[1];
+				this.voxelGradients[start+1] = (sm - sp) / this.cellLengths[1];
 				break;
 			case this.dims[1] - 1:
 				sp = this.values[                         side];
 				sm = this.values[      j * this.dims[0] + side];
-				g[1] = (sm - sp) / this.cellLengths[1];
+				this.voxelGradients[start+1] = (sm - sp) / this.cellLengths[1];
 				break;
 			case this.dims[1]:
 				sp = this.values[                         side];
 				sm = this.values[  (j-1) * this.dims[0] + side];
-				g[1] = (sm - sp) / this.cellLengths[1];
+				this.voxelGradients[start+1] = (sm - sp) / this.cellLengths[1];
 				break;
 			default:
 				sp = this.values[(j + 1) * this.dims[0] + side];
 				sm = this.values[(j - 1) * this.dims[0] + side];
-				g[1] = (sm - sp) / (2*this.cellLengths[1]);
+				this.voxelGradients[start+1] = (sm - sp) / (2*this.cellLengths[1]);
 				break;
 		}
 
@@ -298,28 +298,28 @@ export class IsosurfaceCore {
 			case 0:
 				sp = this.values[side + this.dims0x1];
 				sm = this.values[side               ];
-				g[2] = (sm - sp) / this.cellLengths[2];
+				this.voxelGradients[start+2] = (sm - sp) / this.cellLengths[2];
 				break;
 			case this.dims[2] - 1:
 				sp = this.values[side                   ];
 				sm = this.values[side + k * this.dims0x1];
-				g[2] = (sm - sp) / this.cellLengths[2];
+				this.voxelGradients[start+2] = (sm - sp) / this.cellLengths[2];
 				break;
 			case this.dims[2]:
 				sp = this.values[side                   ];
 				sm = this.values[side + (k-1) * this.dims0x1];
-				g[2] = (sm - sp) / this.cellLengths[2];
+				this.voxelGradients[start+2] = (sm - sp) / this.cellLengths[2];
 				break;
 			default:
 				sp = this.values[side + (k + 1) * this.dims0x1];
 				sm = this.values[side + (k - 1) * this.dims0x1];
-				g[2] = (sm - sp) / (2*this.cellLengths[2]);
+				this.voxelGradients[start+2] = (sm - sp) / (2*this.cellLengths[2]);
 				break;
 		}
   	}
 
 	/**
-	 * Compute voxel gradient
+	 * Compute voxel gradients
 	 *
 	 * @param i - Fast index of the voxel origin
 	 * @param j - Intermediate index of the voxel origin
@@ -327,40 +327,14 @@ export class IsosurfaceCore {
 	 */
 	getVoxelGradients(i: number, j: number, k: number): void {
 
-	    const g = [0, 0, 0];
-
-		this.getPointGradient(i, j, k, g);
-		this.voxelGradients[0] = g[0];
-		this.voxelGradients[1] = g[1];
-		this.voxelGradients[2] = g[2];
-		this.getPointGradient(i + 1, j, k, g);
-		this.voxelGradients[3] = g[0];
-		this.voxelGradients[4] = g[1];
-		this.voxelGradients[5] = g[2];
-		this.getPointGradient(i, j + 1, k, g);
-		this.voxelGradients[6] = g[0];
-		this.voxelGradients[7] = g[1];
-		this.voxelGradients[8] = g[2];
-		this.getPointGradient(i + 1, j + 1, k, g);
-		this.voxelGradients[9]  = g[0];
-		this.voxelGradients[10] = g[1];
-		this.voxelGradients[11] = g[2];
-		this.getPointGradient(i, j, k + 1, g);
-		this.voxelGradients[12] = g[0];
-		this.voxelGradients[13] = g[1];
-		this.voxelGradients[14] = g[2];
-		this.getPointGradient(i + 1, j, k + 1, g);
-		this.voxelGradients[15] = g[0];
-		this.voxelGradients[16] = g[1];
-		this.voxelGradients[17] = g[2];
-		this.getPointGradient(i, j + 1, k + 1, g);
-		this.voxelGradients[18] = g[0];
-		this.voxelGradients[19] = g[1];
-		this.voxelGradients[20] = g[2];
-		this.getPointGradient(i + 1, j + 1, k + 1, g);
-		this.voxelGradients[21] = g[0];
-		this.voxelGradients[22] = g[1];
-		this.voxelGradients[23] = g[2];
+		this.getPointGradient(i,     j,     k,      0);
+		this.getPointGradient(i + 1, j,     k,      3);
+		this.getPointGradient(i,     j + 1, k,      6);
+		this.getPointGradient(i + 1, j + 1, k,      9);
+		this.getPointGradient(i,     j,     k + 1, 12);
+		this.getPointGradient(i + 1, j,     k + 1, 15);
+		this.getPointGradient(i,     j + 1, k + 1, 18);
+		this.getPointGradient(i + 1, j + 1, k + 1, 21);
 	}
 
 	/** Access face indices */
