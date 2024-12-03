@@ -186,7 +186,7 @@ export default [{
         "no-extend-native": "error",
         "no-sequences": "error",
         "no-new": "error",
-        "no-bitwise": "error",
+        "no-bitwise": "off",
         "no-unsafe-negation": ["warn", {enforceForOrderingRelations: true}],
         "eqeqeq": ["error", "always"],
         "strict": ["error", "global"],

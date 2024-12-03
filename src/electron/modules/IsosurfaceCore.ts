@@ -98,7 +98,7 @@ export class IsosurfaceCore {
 		let index = 0;
 		for(let idx = 0; idx < 8; idx++) {
 			if(this.voxelScalars[VERT_MAP[idx]] >= isoValue) {
-				index |= CASE_MASK[idx]; // eslint-disable-line no-bitwise
+				index |= CASE_MASK[idx];
 			}
 		}
 

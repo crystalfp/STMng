@@ -6,7 +6,6 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-/* eslint-disable eslint-comments/disable-enable-pair, no-bitwise */
 import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
 import {createSecondaryWindow, isSecondaryWindowOpen,

@@ -11,7 +11,7 @@ import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {hasNoUnitCell} from "../modules/Helpers";
+import {hasNoUnitCell, vectorAngle} from "../modules/Helpers";
 
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
@@ -63,9 +63,6 @@ const displacementCoefficients = [
 
 /** Possible atoms Z value to form a H bond */
 const atomZForH = new Set([7, 8, 9, 16]);
-
-/** Convert radiants to degrees */
-const RAD2DEG = 180/Math.PI;
 
 
 export class ComputeBonds extends NodeCore {
@@ -459,11 +456,7 @@ export class ComputeBonds extends NodeCore {
 		const v2 = atomH.position[2] - atomX.position[2];
 		const w2 = atomY.position[2] - atomX.position[2];
 
-		const dotProduct = v0*w0 + v1*w1 + v2*w2;
-		const lv2 = v0*v0 + v1*v1 + v2*v2;
-		const lw2 = w0*w0 + w1*w1 + w2*w2;
-
-		return Math.acos(dotProduct/Math.sqrt(lv2*lw2))*RAD2DEG;
+		return vectorAngle(v0, v1, v2, w0, w1, w2);
 	};
 
 	// > Compute bonds

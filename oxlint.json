@@ -220,7 +220,7 @@
 	"jsx-no-new-object-as-prop": 1,
 	"default-case": 0,
 	"no-alert": 1,
-	"no-bitwise": 1,
+	"no-bitwise": 0,
 	"no-console": 1,
 	"no-div-regex": 1,
 	"no-empty": 1,

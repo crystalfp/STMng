@@ -340,12 +340,15 @@ export class DrawOrthoslice extends NodeCore {
         this.isolineValues.length = 0;
 
         // Check if the plane should be created
-        if((this.showOrthoslice || this.showIsolines) &&
-            this.structure &&
-            this.structure.volume.length > 0 &&
-            this.structure.volume[this.dataset].values.length > 0) {
+        if(this.structure &&
+           this.structure.volume.length > 0 &&
+           this.structure.volume[this.dataset].values.length > 0) {
 
-            this.computeOrthoslice();
+            // The number of planes is one more the sides. The last plane is equal to the first one
+            this.maxPlane = this.structure.volume[this.dataset].sides[this.axis];
+
+            // Check if the plane should be created
+            if(this.showOrthoslice || this.showIsolines) this.computeOrthoslice();
         }
 
         sendIsoOrthoToClient(this.id, "computed",

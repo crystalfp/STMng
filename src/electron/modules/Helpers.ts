@@ -108,7 +108,8 @@ export const fractionalToCartesianCoordinates = (basis: BasisType,
  * @param w2 - Second vector z
  * @returns Angle in degrees between the two vectors
  */
-const vectorAngle = (v0: number, v1: number, v2: number, w0: number, w1: number, w2: number): number => {
+export const vectorAngle = (v0: number, v1: number, v2: number,
+							w0: number, w1: number, w2: number): number => {
 
 	const dotProduct = v0*w0 + v1*w1 + v2*w2;
 	const lv2 = v0*v0 + v1*v1 + v2*v2;

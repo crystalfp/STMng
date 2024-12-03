@@ -9,8 +9,10 @@
 import {type Group, type Mesh, Vector3, Quaternion} from "three";
 import type {PositionType} from "@/types";
 import {Text as TroikaText, preloadFont} from "troika-three-text";
+import log from "electron-log";
 
-import localRoboto from "@/assets/Roboto-Regular.ttf";
+import localRobotoRegular from "@/assets/Roboto-Regular.ttf";
+import localRobotoBold from "@/assets/Roboto-Bold.ttf";
 
 /**
  * Create a text sprite
@@ -27,7 +29,7 @@ export const spriteText = (text: string,
 
 	const sprite = new TroikaText();
 
-	sprite.font = localRoboto;
+	sprite.font = localRobotoRegular;
 	sprite.text = text;
 	sprite.textAlign = "center";
 	sprite.fontSize = 0.4;
@@ -74,10 +76,14 @@ const computeLabelPosition = (startPosition: PositionType,
 	// 	(r1[2]+r2[2])/2
 	// ];
 
-	const cA = startRadius/distance;
-	const cB = endRadius/distance;
-	const cAB1 = (cA-cB+1)/2;
-	const cBA1 = (cB-cA+1)/2;
+	// const cA = startRadius/distance;
+	// const cB = endRadius/distance;
+	// const cAB1 = (cA-cB+1)/2;
+	// const cBA1 = (cB-cA+1)/2;
+
+	const cAcB = (startRadius-endRadius)/distance;
+	const cAB1 = (cAcB+1)/2;
+	const cBA1 = (1-cAcB)/2;
 
 	return [
 		endPosition[0]*cAB1+startPosition[0]*cBA1,
@@ -140,10 +146,10 @@ export const spriteTextAlongBond = (text: string,
 
 	const sprite = new TroikaText();
 
-	sprite.font = localRoboto;
+	sprite.font = localRobotoBold;
 	sprite.text = text;
 	sprite.textAlign = "center";
-	sprite.fontSize = 0.2;
+	sprite.fontSize = 0.17;
 	sprite.fontWeight = "bold";
 	sprite.color = color;
 	sprite.anchorX = "center";
@@ -188,12 +194,18 @@ export const disposeTextInGroup = (group: Group): void => {
 /**
  * Preload characters used by atoms' symbols and distance numbers
  */
-export const preloadFonts = (onReady: () => void): void => {
+export const preloadFonts = (): void => {
 
 	preloadFont({
-			font: localRoboto,
-			characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz0123456789."
+			font: localRobotoRegular,
+			characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz"
 		},
-		onReady
+		() => log.info("Done preloading regular font")
+	);
+	preloadFont({
+			font: localRobotoBold,
+			characters: "0123456789."
+		},
+		() => log.info("Done preloading bold font")
 	);
 };
