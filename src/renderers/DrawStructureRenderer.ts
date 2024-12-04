@@ -8,7 +8,7 @@
  */
 import {Group, Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
 		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
-		Float32BufferAttribute, LineSegments, type ColorRepresentation, type Quaternion} from "three";
+		Float32BufferAttribute, LineSegments, type ColorRepresentation} from "three";
 import {sm} from "@/services/SceneManager";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {getBoundingBox} from "@/services/BoundingBox";
@@ -16,6 +16,7 @@ import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {SpheresCache} from "@/services/SpheresCache";
 import type {PositionType, StructureRenderInfo} from "@/types";
 
+// > Constants
 const bondRadius = 0.1;
 const sphereSubdivisions   = [0, 0, 1, 3,  9];
 const cylinderSubdivisions = [0, 3, 5, 10, 16];
@@ -23,6 +24,7 @@ const rCovScale = 0.5;
 
 
 export class DrawStructureRenderer {
+
 	private readonly atomsGroup = new Group();
 	private readonly bondsGroup = new Group();
 	private readonly labelsGroup = new Group();
@@ -195,12 +197,14 @@ export class DrawStructureRenderer {
 						radius: number, shadedBonds: boolean, colorStart: ColorRepresentation,
 						colorEnd: ColorRepresentation, group: Group): void {
 
+		// Create cylinder aligned along Y axis
 		const subdivisions = cylinderSubdivisions[this.drawQuality];
 
 		const dx = end[0] - start[0];
 		const dy = end[1] - start[1];
 		const dz = end[2] - start[2];
 		const len = Math.hypot(dx, dy, dz);
+
 		const geometry = new CylinderGeometry(radius, radius, len, subdivisions, 1, true);
 		const meshMaterial = colorTextureMaterial(new Color(colorStart),
 												  new Color(colorEnd),
@@ -210,35 +214,18 @@ export class DrawStructureRenderer {
 												  shadedBonds);
 		const cylinder = new Mesh(geometry, meshMaterial);
 
-		this.setDirection(dx/len, dy/len, dz/len, cylinder.quaternion);
+		// Rotate it along the bond direction
+		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/len, dy/len, dz/len));
 
+		// Move it to the midpoint between atoms
 		const midx = (start[0] + end[0])/2;
 		const midy = (start[1] + end[1])/2;
 		const midz = (start[2] + end[2])/2;
 		cylinder.position.set(midx, midy, midz);
 
+		// Add to the scene
 		group.add(cylinder);
 		sm.modified();
-	}
-
-	/**
-	 * Set a quaternion from a direction vector (versor)
-	 *
-	 * @param nx - Versor x component
-	 * @param ny - Versor y component
-	 * @param nz - Versor z component
-	 * @param quaternion - The computed quaternion
-	 */
-	private setDirection(nx: number, ny: number, nz: number, quaternion: Quaternion): void {
-
-		// Versor is assumed to be normalized
-		if(ny > 0.99999) quaternion.set(0, 0, 0, 1);
-		else if(ny < -0.99999) quaternion.set(1, 0, 0, 0);
-		else {
-			const rotationAxis = new Vector3(nz, 0, -nx).normalize();
-			const radians = Math.acos(ny);
-			quaternion.setFromAxisAngle(rotationAxis, radians);
-		}
 	}
 
 	/**

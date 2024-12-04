@@ -9,19 +9,6 @@
 import type {NodeCore} from "@/electron/modules/NodeCore";
 import type {Context} from "chartjs-plugin-datalabels";
 
-// > Types for the charts
-/**
- * Label alignment respect to the point
- * @notExported
- */
-type Align = "bottom" | "center" | "end" | "left" | "right" | "start" | "top" | number;
-
-/**
- * Where to anchor the label on the point
- * @notExported
- */
-type Anchor = "center" | "end" | "start";
-
 // > Type of a collection of atomic structures
 // >> Base types
 /** An [x, y, z] position */
@@ -87,7 +74,7 @@ export interface Volume {
 export interface Structure {
 
     /** Crystallographic data */
-    crystal:	Crystal;
+    crystal:    Crystal;
 
     /** Atoms in the structure */
     atoms:      Atom[];
@@ -100,7 +87,7 @@ export interface Structure {
 }
 
 /**
- * Alternative description of the unit cell
+ * Alternative description of the unit cell as base vectors and angles
  */
 export type LengthsAnglesType = [a: number, b: number, c: number,
                                  alpha: number, beta: number, gamma: number];
@@ -131,35 +118,59 @@ export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>
 /** Viewer 3D state */
 export interface Viewer3DState {
     camera: {
+        /** Type of the camera */
         type: "perspective" | "orthographic";
+        /** Position of the camera */
         position: PositionType;
+        /** Point where the camera points */
         lookAt: PositionType;
-        snapshotFormat: string;
+        /** Format of the screenshot */
+        snapshotFormat: "png" | "jpeg";
+        /** STL file format */
         stlFormat: "ascii" | "binary";
     };
     scene: {
+        /** Scene background color formatted as #RRGGBB */
         background: string;
     };
     lights: {
+        /** Ambient light color in #RRGGBB format */
         ambientColor: string;
+        /** Ambient light intensity (0-1) */
         ambientIntensity: number;
+        /** First directional light color in #RRGGBB format */
         directional1Color: string;
+        /** First directional light intensity (0-1) */
         directional1Intensity: number;
+        /** Second directional light color in #RRGGBB format */
         directional2Color: string;
+        /** Second directional light intensity (0-1) */
         directional2Intensity: number;
+        /** Third directional light color in #RRGGBB format */
         directional3Color: string;
+        /** Third directional light intensity (0-1) */
         directional3Intensity: number;
+        /** Vector of the first directional light */
         directional1Position: PositionType;
+        /** Vector of the second directional light */
         directional2Position: PositionType;
+        /** Vector of the third directional light */
         directional3Position: PositionType;
     };
     helpers: {
+        /** Show cartesian axis centered in the origin */
         showAxis: boolean;
-        showGridXZ: boolean;
-        showGridXY: boolean;
-        showGridYZ: boolean;
-        gridSize: number;
+        /** Length of the cartesian axis */
         axisLength: number;
+        /** Show grid on the XZ plane */
+        showGridXZ: boolean;
+        /** Show grid on the XY plane */
+        showGridXY: boolean;
+        /** Show grid on the YZ plane */
+        showGridYZ: boolean;
+        /** Squares on the side of the grid (an even number) */
+        gridSize: number;
+        /** Orientation gizmo visibility */
         showGizmo: boolean;
     };
 }
@@ -319,10 +330,15 @@ export interface AtomRenderInfo {
 
 /** Data for structure rendering */
 export interface StructureRenderInfo {
+    /** Info on how to render the atoms */
     atoms: AtomRenderInfo[];
+    /** List of bonds */
     bonds: Bond[];
+    /** Unit cell data */
     cell: {
+        /** Cell origin */
         origin: PositionType;
+        /** Cell basis vectors */
         basis: BasisType;
     };
 }
@@ -409,6 +425,19 @@ export interface FileFilter {
     /** List of accepted extensions */
 	extensions: string[];
 }
+
+// > Types for the charts
+/**
+ * Label alignment respect to the point
+ * @notExported
+ */
+type Align = "bottom" | "center" | "end" | "left" | "right" | "start" | "top" | number;
+
+/**
+ * Where to anchor the label on the point
+ * @notExported
+ */
+type Anchor = "center" | "end" | "start";
 
 /** Definition of the chart data and options */
 export interface ChartOptions {

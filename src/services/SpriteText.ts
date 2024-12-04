@@ -20,7 +20,6 @@ import localRobotoBold from "@/assets/Roboto-Bold.ttf";
  * @param text - The text to display
  * @param color - Color of the text (as #RRGGBB or color name)
  * @param position - Position of the label
- * @param offset - If present gives the offset respect to position
  * @returns The sprite to be added to the scene
  */
 export const spriteText = (text: string,
@@ -112,15 +111,8 @@ const rotateLabel = (startPosition: PositionType,
 	const normalizedV1 = v1; // const normalizedV1 = v1.normalize();
 	const normalizedV2 = v2.normalize();
 
-	// Compute dot product to find the angle
-	const dotProduct = normalizedV1.dot(normalizedV2);
-	const angle = Math.acos(Math.max(Math.min(dotProduct, 1), -1));
-
-	// Compute rotation versor
-	const rotationAxis = normalizedV1.cross(normalizedV2).normalize();
-
 	// Apply the rotation quaternion
-	quaternion.setFromAxisAngle(rotationAxis, angle);
+	quaternion.setFromUnitVectors(normalizedV1, normalizedV2);
 };
 
 /**

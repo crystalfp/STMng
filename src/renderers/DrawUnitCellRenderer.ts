@@ -8,7 +8,7 @@
  */
 import {Group, Vector3, type Material, ConeGeometry,
 		LineDashedMaterial, BufferGeometry, BufferAttribute,
-		type Quaternion, CylinderGeometry, MeshBasicMaterial,
+		CylinderGeometry, MeshBasicMaterial,
 		Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
@@ -118,24 +118,6 @@ export class DrawUnitCellRenderer {
 	}
 
 	/**
-	 * From a direction extract needed rotation
-	 *
-	 * @param versor - Direction versor
-	 * @param quaternion - Resulting rotation quaternion
-	 */
-	private setDirection(versor: Vector3, quaternion: Quaternion): void {
-
-		// Versor is assumed to be normalized
-		if(versor.y > 0.99999) quaternion.set(0, 0, 0, 1);
-		else if(versor.y < -0.99999) quaternion.set(1, 0, 0, 0);
-		else {
-			const rotationAxis = new Vector3(versor.z, 0, -versor.x).normalize();
-			const radians = Math.acos(versor.y);
-			quaternion.setFromAxisAngle(rotationAxis, radians);
-		}
-	}
-
-	/**
 	* Create an arrow in the direction of the basis vector
 	*
 	* @param basis - Basis vector to be show
@@ -159,7 +141,7 @@ export class DrawUnitCellRenderer {
 			new MeshBasicMaterial({color})
 		);
 
-		this.setDirection(versor, cylinder.quaternion);
+		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(...versor));
 		cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
 
 		// Arrow tips
@@ -187,7 +169,8 @@ export class DrawUnitCellRenderer {
 	/**
 	 * Draw the unit cell vectors
 	 *
-	 * @param vertices - Basis vectors and cell origin (vertices[0-8]: basis; vertices[9-11]: origin)
+	 * @param vertices - Basis vectors and cell origin
+	 * vertices[0-8] are the basis; vertices[9-11] the origin
 	 * @param visible - If the vectors are visible when created
 	 */
 	drawBasisVectors(vertices: number[], visible: boolean): void {
