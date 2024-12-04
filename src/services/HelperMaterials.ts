@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-01
  */
-import * as THREE from "three";
+import {type Color, type Material, DataTexture, MeshStandardMaterial, FrontSide} from "three";
 
 /**
  * Compute material that interpolates between two colors
@@ -19,12 +19,12 @@ import * as THREE from "three";
  * @param shaded - If true bonds have a linear color interpolation, else have two color areas
  * @returns Material to apply
  */
-export const colorTextureMaterial = (colorFrom: THREE.Color,
-									 colorTo: THREE.Color,
+export const colorTextureMaterial = (colorFrom: Color,
+									 colorTo: Color,
 									 roughness: number,
 									 metalness: number,
 									 width: number,
-									 shaded: boolean): THREE.Material => {
+									 shaded: boolean): Material => {
 
 	const height = shaded ? 32 : 2;
 	const size = width * height;
@@ -53,13 +53,13 @@ export const colorTextureMaterial = (colorFrom: THREE.Color,
 	}
 
 	// Use the buffer to create a DataTexture
-	const texture = new THREE.DataTexture(data, width, height);
+	const texture = new DataTexture(data, width, height);
 	texture.needsUpdate = true;
 
-	return new THREE.MeshStandardMaterial({
+	return new MeshStandardMaterial({
 		roughness,
 		metalness,
-		side: THREE.FrontSide,
+		side: FrontSide,
 		map: texture
 	});
 };

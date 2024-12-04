@@ -8,7 +8,9 @@
  */
 
 import {onMounted, watch, watchEffect, nextTick, useTemplateRef} from "vue";
-import * as THREE from "three";
+import {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
+        Raycaster, type Object3D, type Mesh, type MeshLambertMaterial, Clock,
+        Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere, MathUtils} from "three";
 import CameraControls from "camera-controls";
 import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
@@ -42,14 +44,14 @@ const props = defineProps<{
  * @param perspectiveCamera - The perspective camera, the source of the copy
  * @param orthographicCamera - The orthographic camera, the receiver of the copy
  */
-const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
-                               orthographicCamera: THREE.OrthographicCamera): void => {
+const copyPerspectiveCamera = (perspectiveCamera: PerspectiveCamera,
+                               orthographicCamera: OrthographicCamera): void => {
 
 
     setOrthographicAspect(perspectiveCamera, orthographicCamera, perspectiveCamera.aspect);
 
     orthographicCamera.zoom = 1;
-    orthographicCamera.lookAt(new THREE.Vector3(0, 0, 0));
+    orthographicCamera.lookAt(new Vector3(0, 0, 0));
     orthographicCamera.near = 0.1;
     orthographicCamera.far = 500;
 
@@ -63,11 +65,11 @@ const copyPerspectiveCamera = (perspectiveCamera: THREE.PerspectiveCamera,
  * @param orthographicCamera - The orthographic camera that receives the result
  * @param aspect - The aspect ratio of the perspective camera
  */
-const setOrthographicAspect = (perspectiveCamera: THREE.PerspectiveCamera,
-                               orthographicCamera: THREE.OrthographicCamera, aspect: number): void => {
+const setOrthographicAspect = (perspectiveCamera: PerspectiveCamera,
+                               orthographicCamera: OrthographicCamera, aspect: number): void => {
 
     const vFov = perspectiveCamera.fov * DEG2RAD;
-    const distance = perspectiveCamera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+    const distance = perspectiveCamera.position.distanceTo(new Vector3(0, 0, 0));
     const halfHeight = Math.tan(vFov / 2) * distance;
     const halfWidth = halfHeight * aspect;
     orthographicCamera.top = halfHeight;
@@ -137,25 +139,28 @@ onMounted(() => {
     }
 
     // Create cameras
-    const cameraPerspective = new THREE.PerspectiveCamera(75,
-                                                          cnv.value.clientWidth / cnv.value.clientHeight,
-                                                          0.1, 500);
+    const cameraPerspective = new PerspectiveCamera(75,
+                                                    cnv.value.clientWidth / cnv.value.clientHeight,
+                                                    0.1, 500);
     cameraPerspective.position.set(...configStore.camera.position);
-    cameraPerspective.lookAt(new THREE.Vector3(...configStore.camera.lookAt));
+    cameraPerspective.lookAt(new Vector3(...configStore.camera.lookAt));
 
-    const cameraOrthographic = new THREE.OrthographicCamera();
+    const cameraOrthographic = new OrthographicCamera();
     copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
 
     let camera = configStore.camera.type === "perspective" ? cameraPerspective : cameraOrthographic;
 
     // Add renderer
-    const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+    const renderer = new WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
     renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
 
     // Add mouse controls to move the camera
-    CameraControls.install({THREE});
+    const subsetOfTHREE = {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
+                           Raycaster, Clock, Vector4, Quaternion, Matrix4, Spherical, Box3,
+                           Sphere, MathUtils};
+    CameraControls.install({THREE: subsetOfTHREE});
     const controls = new CameraControls(camera, renderer.domElement);
 
     // Add keyboard controls to camera positioning
@@ -199,13 +204,13 @@ onMounted(() => {
         if(!event.ctrlKey) return;
         event.preventDefault();
 
-        const mouse2D = new THREE.Vector2((event.offsetX / cnv.value!.clientWidth) * 2 - 1,
+        const mouse2D = new Vector2((event.offsetX / cnv.value!.clientWidth) * 2 - 1,
                                           -(event.offsetY / cnv.value!.clientHeight) * 2 + 1);
-        const raycaster = new THREE.Raycaster();
+        const raycaster = new Raycaster();
         raycaster.setFromCamera(mouse2D, camera);
 
-        const objects: THREE.Object3D[] = [];
-        scene.traverse((object: THREE.Object3D) => {
+        const objects: Object3D[] = [];
+        scene.traverse((object: Object3D) => {
             if(object.name === "Atom" || object.name === "Polyhedron") objects.push(object);
         });
         const intersects = raycaster.intersectObjects(objects);
@@ -218,8 +223,8 @@ onMounted(() => {
             }
             else if(object.name === "Polyhedron") {
                 controlStore.deselectPolyhedron();
-                const color = ((object as THREE.Mesh).material as
-                                THREE.MeshLambertMaterial).color.getHex();
+                const color = ((object as Mesh).material as
+                                MeshLambertMaterial).color.getHex();
                 controlStore.selectPolyhedron(object.userData.idx as number, color);
             }
         }
@@ -408,7 +413,7 @@ onMounted(() => {
     camera.lookAt(viewportGizmo.target);
 
     // Rendering function for the run
-    const clock = new THREE.Clock();
+    const clock = new Clock();
     const animate = (): void => {
         const doRender = controls.update(clock.getDelta());
         if(doRender || sm.needRendering()) {

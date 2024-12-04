@@ -6,13 +6,14 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-11-30
  */
-import * as THREE from "three";
+import {Group, BufferGeometry, Float32BufferAttribute,
+		MeshStandardMaterial, DoubleSide, Mesh} from "three";
 import {Lut} from "three/addons/math/Lut.js";
 import {sm} from "@/services/SceneManager";
 
 export class DrawIsosurfaceRenderer {
 
-	private readonly group = new THREE.Group();
+	private readonly group = new Group();
 	private readonly name;
 	private readonly lut = new Lut("rainbow", 512);
 
@@ -57,13 +58,13 @@ export class DrawIsosurfaceRenderer {
 		for(let i=0; i < indices.length; ++i) {
 
 			// Create and add the surface to the scene
-			const geometry = new THREE.BufferGeometry();
+			const geometry = new BufferGeometry();
 			geometry.setIndex(indices[i]);
-			geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices[i], 3));
-			geometry.setAttribute("normal",   new THREE.Float32BufferAttribute(normals[i], 3));
+			geometry.setAttribute("position", new Float32BufferAttribute(vertices[i], 3));
+			geometry.setAttribute("normal",   new Float32BufferAttribute(normals[i], 3));
 
-			const material = new THREE.MeshStandardMaterial({
-				side: THREE.DoubleSide,
+			const material = new MeshStandardMaterial({
+				side: DoubleSide,
             	color: this.lut.getColor(isoValues[i]).getHex(),
 				opacity,
 				roughness: 0.5,
@@ -71,7 +72,7 @@ export class DrawIsosurfaceRenderer {
 				transparent: opacity < 0.99,
 			});
 
-			const mesh = new THREE.Mesh(geometry, material);
+			const mesh = new Mesh(geometry, material);
 			mesh.userData = {isoValue: isoValues[i]};
 			mesh.name = `Isosurface${i}`;
 			this.group.add(mesh);
@@ -108,7 +109,7 @@ export class DrawIsosurfaceRenderer {
 		this.group.traverse((mesh) => {
 			if(mesh.type !== "Mesh") return;
 			const {isoValue: value} = mesh.userData;
-			const material = (mesh as THREE.Mesh).material as THREE.MeshStandardMaterial;
+			const material = (mesh as Mesh).material as MeshStandardMaterial;
 			material.opacity = opacity;
 			material.transparent = opacity < 0.99;
 			material.color = this.lut.getColor(value as number);

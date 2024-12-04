@@ -8,7 +8,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import * as THREE from "three";
+import {type PerspectiveCamera, type OrthographicCamera, Vector3} from "three";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import type CameraControls from "camera-controls";
@@ -19,14 +19,14 @@ import type CameraControls from "camera-controls";
  * @param camera - The perspective camera to be moved
  * @param controls - The orbit control to have the rotation center updated
  */
-export const fitPerspectiveCameraToObject = (camera: THREE.PerspectiveCamera,
+export const fitPerspectiveCameraToObject = (camera: PerspectiveCamera,
 											 controls: CameraControls): void => {
 
 	// Get bounding box of the scene - this will be used to setup controls and camera
 	const configStore = useConfigStore();
 	const controlStore = useControlStore();
 	const {sceneCenter, sceneSides} = controlStore;
-	const center = new THREE.Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
+	const center = new Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
 
 	// Get the max side of the bounding box (fits to width OR height as needed)
 	const maxDim = Math.max(sceneSides[0], sceneSides[1]);
@@ -55,7 +55,7 @@ export const fitPerspectiveCameraToObject = (camera: THREE.PerspectiveCamera,
  * @param camera - The orthographic camera to be moved
  * @param controls - The orbit control to have the rotation center updated
  */
-export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
+export const fitOrthographicCameraToObject = (camera: OrthographicCamera,
 											  controls: CameraControls): void => {
 
 	// Get bounding box of the scene - this will be used to setup controls and camera
@@ -63,7 +63,7 @@ export const fitOrthographicCameraToObject = (camera: THREE.OrthographicCamera,
 	const controlStore = useControlStore();
 	const {sceneCenter, sceneSides} = controlStore;
 
-    camera.lookAt(new THREE.Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]));
+    camera.lookAt(new Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]));
 
 	// Set camera to rotate around center of loaded object
 	controls.setOrbitPoint(sceneCenter[0], sceneCenter[1], sceneCenter[2]);

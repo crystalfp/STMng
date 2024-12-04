@@ -384,5 +384,6 @@ export default [{
         "depend/ban-dependencies": ["error", {
                                     "presets": ["native", "microutilities", "preferred"]
         }],
+        "@typescript-eslint/consistent-type-imports": "error"
     }
 }];

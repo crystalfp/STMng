@@ -1,8 +1,9 @@
 import {defineConfig} from "vite";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
+import vueDevTools from "vite-plugin-vue-devtools";
 import vue from "@vitejs/plugin-vue";
-import {fileURLToPath, URL} from 'node:url'
+import {fileURLToPath, URL} from 'node:url';
 
 // https://vitejs.dev/config/
 /** @type {import('vite').UserConfig} */
@@ -14,7 +15,7 @@ export default defineConfig({
         preserveSymlinks: true
     },
     optimizeDeps: {
-        exclude: ["doc", "release", "save", "others"],
+        exclude: ["doc", "release", "save", "others", "bugs", "test-data"],
         holdUntilCrawlEnd: false
     },
     define: {
@@ -37,6 +38,7 @@ export default defineConfig({
             },
         ]),
         renderer(),
+        vueDevTools(),
     ],
     build: {
         assetsInlineLimit: 8096,

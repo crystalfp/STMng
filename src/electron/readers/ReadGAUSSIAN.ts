@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import fs from "node:fs";
-import * as rd from "node:readline/promises";
+import {createInterface} from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom,
@@ -51,7 +51,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const structure: Structure = new EmptyStructure();
 		structure.volume = [{sides: [0, 0, 0], values: []}];
 
-		const stream = rd.createInterface(fs.createReadStream(filename));
+		const stream = createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
 
 			const fields = line.trim().split(/\s+/);

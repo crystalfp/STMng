@@ -1,6 +1,6 @@
 /**
- * Save a screen capture as an image or a movie or save the displayed structure
- * as a STL file.
+ * Save a screen capture as an image or a movie or
+ * save the displayed structure as a STL file.
  *
  * @packageDocumentation
  *

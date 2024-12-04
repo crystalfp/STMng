@@ -6,7 +6,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import * as THREE from "three";
+import {Group, Scene, type Object3D, type Mesh, type Material,
+		DirectionalLight, AmbientLight, Color} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
@@ -19,7 +20,7 @@ import type {BoundingBox} from "./BoundingBox";
 class SceneManager {
 
     private static instance: SceneManager;
-	private static readonly scene = new THREE.Scene();
+	private static readonly scene = new Scene();
 	private exporter: STLExporter | undefined;
 	private sceneModified = true;
 
@@ -32,13 +33,13 @@ class SceneManager {
 	 *
 	 * @returns The created scene
 	 */
-	createScene(): THREE.Scene {
+	createScene(): Scene {
 
 		const configStore = useConfigStore();
 
-		SceneManager.scene.background = new THREE.Color(configStore.scene.background);
+		SceneManager.scene.background = new Color(configStore.scene.background);
 		watchEffect(() => {
-			SceneManager.scene.background = new THREE.Color(configStore.scene.background);
+			SceneManager.scene.background = new Color(configStore.scene.background);
 			this.sceneModified = true;
 		});
 		return SceneManager.scene;
@@ -49,7 +50,7 @@ class SceneManager {
 	 *
 	 * @param object - The object to remove
 	 */
-	private removeObjectsWithChildren(object: THREE.Object3D): void {
+	private removeObjectsWithChildren(object: Object3D): void {
 
         if(object.children.length > 0) {
             for(let idx = object.children.length - 1; idx >= 0; idx--) {
@@ -58,13 +59,13 @@ class SceneManager {
         }
 
 		if(object.type === "Mesh") {
-			const mesh =  object as THREE.Mesh;
+			const mesh =  object as Mesh;
 
 			if(mesh.geometry) {
 				mesh.geometry.dispose();
 			}
 			if(mesh.material) {
-				(mesh.material as THREE.Material).dispose();
+				(mesh.material as Material).dispose();
 			}
         }
 
@@ -98,21 +99,21 @@ class SceneManager {
 		if(!group) return;
 
 		// Meshes to be delete from the group
-		const meshes: THREE.Mesh[] = [];
+		const meshes: Mesh[] = [];
 
 		// Remove meshes' parts
 		group.traverse((object) => {
 
 			if(object.type === "Group") return;
 
-			const mesh = object as THREE.Mesh;
+			const mesh = object as Mesh;
 			if(mesh.geometry) mesh.geometry.dispose();
 			if(mesh.material) {
 				if(Array.isArray(mesh.material)) {
-					for(const material of mesh.material) (material as THREE.Material).dispose();
+					for(const material of mesh.material) (material as Material).dispose();
 				}
 				else {
-					(mesh.material as THREE.Material).dispose();
+					(mesh.material as Material).dispose();
 				}
 			}
 			meshes.push(mesh);
@@ -134,11 +135,11 @@ class SceneManager {
 	 */
 	deleteMesh(meshName: string): void {
 
-        const object = SceneManager.scene.getObjectByName(meshName) as THREE.Mesh;
+        const object = SceneManager.scene.getObjectByName(meshName) as Mesh;
         if(object) {
             SceneManager.scene.remove(object);
             if(object.geometry) object.geometry.dispose();
-			(object.material as THREE.Material).dispose();
+			(object.material as Material).dispose();
 			this.sceneModified = true;
         }
 	}
@@ -146,7 +147,7 @@ class SceneManager {
 	/**
 	 * Access the scene
 	 */
-	get scene(): THREE.Scene {
+	get scene(): Scene {
 		return SceneManager.scene;
 	}
 
@@ -155,7 +156,7 @@ class SceneManager {
 	 *
 	 * @param obj - Object to be added to the scene
 	 */
-	add(obj: THREE.Object3D): void {
+	add(obj: Object3D): void {
 		SceneManager.scene.add(obj);
 		this.sceneModified = true;
 	}
@@ -165,7 +166,7 @@ class SceneManager {
 	 *
 	 * @param group - Named group to add
 	 */
-	clearAndAddGroup(group: THREE.Group): void {
+	clearAndAddGroup(group: Group): void {
 
 		if(group.name) {
 			const previousObj = SceneManager.scene.getObjectByName(group.name);
@@ -183,43 +184,43 @@ class SceneManager {
 		const configStore = useConfigStore();
 
 		// Add directional lights
-		const light1 = new THREE.DirectionalLight(configStore.lights.directional1Color,
-												  configStore.lights.directional1Intensity);
+		const light1 = new DirectionalLight(configStore.lights.directional1Color,
+											configStore.lights.directional1Intensity);
 		light1.position.set(...configStore.lights.directional1Position);
 		SceneManager.scene.add(light1);
 		watchEffect(() => {
 			light1.intensity = configStore.lights.directional1Intensity;
-			light1.color = new THREE.Color(configStore.lights.directional1Color);
+			light1.color = new Color(configStore.lights.directional1Color);
 			light1.position.set(...configStore.lights.directional1Position);
 		});
 
-		const light2 = new THREE.DirectionalLight(configStore.lights.directional2Color,
-												  configStore.lights.directional2Intensity);
+		const light2 = new DirectionalLight(configStore.lights.directional2Color,
+											configStore.lights.directional2Intensity);
 		light2.position.set(...configStore.lights.directional2Position);
 		SceneManager.scene.add(light2);
 		watchEffect(() => {
 			light2.intensity = configStore.lights.directional2Intensity;
-			light2.color = new THREE.Color(configStore.lights.directional2Color);
+			light2.color = new Color(configStore.lights.directional2Color);
 			light2.position.set(...configStore.lights.directional2Position);
 		});
 
-		const light3 = new THREE.DirectionalLight(configStore.lights.directional3Color,
-												  configStore.lights.directional3Intensity);
+		const light3 = new DirectionalLight(configStore.lights.directional3Color,
+											configStore.lights.directional3Intensity);
 		light3.position.set(...configStore.lights.directional3Position);
 		SceneManager.scene.add(light3);
 		watchEffect(() => {
 			light3.intensity = configStore.lights.directional3Intensity;
-			light3.color = new THREE.Color(configStore.lights.directional3Color);
+			light3.color = new Color(configStore.lights.directional3Color);
 			light3.position.set(...configStore.lights.directional3Position);
 		});
 
 		// Add ambient light
-		const ambient = new THREE.AmbientLight(configStore.lights.ambientColor,
+		const ambient = new AmbientLight(configStore.lights.ambientColor,
 											configStore.lights.ambientIntensity);
 		SceneManager.scene.add(ambient);
 		watchEffect(() => {
 			ambient.intensity = configStore.lights.ambientIntensity;
-			ambient.color = new THREE.Color(configStore.lights.ambientColor);
+			ambient.color = new Color(configStore.lights.ambientColor);
 		});
 		this.sceneModified = true;
 	}
@@ -261,7 +262,7 @@ class SceneManager {
 	 * @param children - List pf item children
 	 * @returns The string to print
 	 */
-	private dumpSceneWalker(indent: string, children: THREE.Object3D[]): string {
+	private dumpSceneWalker(indent: string, children: Object3D[]): string {
 
 		let currentType = "";
 		let currentName = "";
@@ -320,7 +321,7 @@ class SceneManager {
 		if(!this.exporter) this.exporter = new STLExporter();
 
 		// Create a group with only atoms and bonds
-		const structure = new THREE.Group();
+		const structure = new Group();
 		const atoms = this.scene.getObjectByName("Atoms");
 		if(atoms) {
 			const atoms2 = atoms.clone(true);

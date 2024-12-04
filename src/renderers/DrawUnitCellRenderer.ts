@@ -6,7 +6,10 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-11-29
  */
-import * as THREE from "three";
+import {Group, Vector3, type Material, ConeGeometry,
+		LineDashedMaterial, BufferGeometry, BufferAttribute,
+		type Quaternion, CylinderGeometry, MeshBasicMaterial,
+		Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
 import type {PositionType} from "@/types";
@@ -34,9 +37,9 @@ const indices = [
 
 export class DrawUnitCellRenderer {
 
-	private readonly outBV = new THREE.Group();
-	private lineUC: THREE.LineSegments | undefined;
-	private lineSC: THREE.LineSegments | undefined;
+	private readonly outBV = new Group();
+	private lineUC: LineSegments | undefined;
+	private lineSC: LineSegments | undefined;
 	private readonly nameUC;
 	private readonly nameSC;
 	private readonly nameBV;
@@ -61,16 +64,16 @@ export class DrawUnitCellRenderer {
 	 * @param dashed - If the line should be dashed
 	 * @returns The material to apply to the lines
 	 */
-	private setMaterial(color: string, dashed: boolean): THREE.Material {
+	private setMaterial(color: string, dashed: boolean): Material {
 
 		// eslint-disable-next-line sonarjs/no-selector-parameter
-		return dashed ? new THREE.LineDashedMaterial({
+		return dashed ? new LineDashedMaterial({
 						color,
 						scale: 5,
 						dashSize: 1,
 						gapSize: 1,
 					}) :
-					new THREE.LineBasicMaterial({
+					new LineBasicMaterial({
 						color
 					});
 	}
@@ -98,12 +101,12 @@ export class DrawUnitCellRenderer {
 		// If no unit cell return
 		if(vertices.length === 0) return;
 
-		const geometry = new THREE.BufferGeometry();
+		const geometry = new BufferGeometry();
 		geometry.setIndex(indices);
-		geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
-		const edges = new THREE.EdgesGeometry(geometry);
+		geometry.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
+		const edges = new EdgesGeometry(geometry);
 
-		const line = new THREE.LineSegments(edges, this.setMaterial(color, dashed));
+		const line = new LineSegments(edges, this.setMaterial(color, dashed));
 		if(dashed) line.computeLineDistances();
 		line.name = name;
         line.visible = visible;
@@ -120,13 +123,13 @@ export class DrawUnitCellRenderer {
 	 * @param versor - Direction versor
 	 * @param quaternion - Resulting rotation quaternion
 	 */
-	private setDirection(versor: THREE.Vector3, quaternion: THREE.Quaternion): void {
+	private setDirection(versor: Vector3, quaternion: Quaternion): void {
 
 		// Versor is assumed to be normalized
 		if(versor.y > 0.99999) quaternion.set(0, 0, 0, 1);
 		else if(versor.y < -0.99999) quaternion.set(1, 0, 0, 0);
 		else {
-			const rotationAxis = new THREE.Vector3(versor.z, 0, -versor.x).normalize();
+			const rotationAxis = new Vector3(versor.z, 0, -versor.x).normalize();
 			const radians = Math.acos(versor.y);
 			quaternion.setFromAxisAngle(rotationAxis, radians);
 		}
@@ -141,8 +144,8 @@ export class DrawUnitCellRenderer {
 	* @param axisLabel - Label of the vector
 	* @param group - The arrow is added to this group
 	*/
-	private basisVectorArrow(basis: THREE.Vector3, origin: THREE.Vector3,
-							color: string, axisLabel: string, group: THREE.Group): void {
+	private basisVectorArrow(basis: Vector3, origin: Vector3,
+							color: string, axisLabel: string, group: Group): void {
 
 		const versor = basis.clone().normalize();
 		const basisLen = basis.length();
@@ -151,18 +154,18 @@ export class DrawUnitCellRenderer {
 		const coneSize = 2*size;
 		const coneLen = 5*size;
 
-		const cylinder = new THREE.Mesh(
-			new THREE.CylinderGeometry(size, size, basisLen-coneLen, 10),
-			new THREE.MeshBasicMaterial({color})
+		const cylinder = new Mesh(
+			new CylinderGeometry(size, size, basisLen-coneLen, 10),
+			new MeshBasicMaterial({color})
 		);
 
 		this.setDirection(versor, cylinder.quaternion);
 		cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
 
 		// Arrow tips
-		const cone = new THREE.Mesh(
-			new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
-			new THREE.MeshBasicMaterial({color})
+		const cone = new Mesh(
+			new ConeGeometry(coneSize, coneLen, 8, 1),
+			new MeshBasicMaterial({color})
 		);
 
 		cone.quaternion.copy(cylinder.quaternion);
@@ -196,11 +199,11 @@ export class DrawUnitCellRenderer {
 		if(vertices.length < 12) return;
 
 		// Basis vectors visible, create them
-		const originZero = new THREE.Vector3(vertices[9], vertices[10], vertices[11]);
+		const originZero = new Vector3(vertices[9], vertices[10], vertices[11]);
 
-		const basisA = new THREE.Vector3(vertices[0], vertices[1], vertices[2]);
-		const basisB = new THREE.Vector3(vertices[3], vertices[4], vertices[5]);
-		const basisC = new THREE.Vector3(vertices[6], vertices[7], vertices[8]);
+		const basisA = new Vector3(vertices[0], vertices[1], vertices[2]);
+		const basisB = new Vector3(vertices[3], vertices[4], vertices[5]);
+		const basisC = new Vector3(vertices[6], vertices[7], vertices[8]);
 
 		this.basisVectorArrow(basisA, originZero, "#FF0000", "a", this.outBV);
 		this.basisVectorArrow(basisB, originZero, "#79FF00", "b", this.outBV);

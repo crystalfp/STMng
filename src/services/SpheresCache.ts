@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-06
  */
-import * as THREE from "three";
+import {IcosahedronGeometry, MeshStandardMaterial, FrontSide, Mesh} from "three";
 import type {AtomRenderInfo} from "@/types";
 
 
@@ -17,12 +17,12 @@ export class SpheresCache {
 	private subdivisions: number;
 
 	// Geometries to be cloned
-	private licoriceGeometry: THREE.IcosahedronGeometry | undefined;
-	private readonly ballAndStickGeometry = new Map<number, THREE.IcosahedronGeometry>();
-	private readonly vanDerWaalsGeometry = new Map<number, THREE.IcosahedronGeometry>();
+	private licoriceGeometry: IcosahedronGeometry | undefined;
+	private readonly ballAndStickGeometry = new Map<number, IcosahedronGeometry>();
+	private readonly vanDerWaalsGeometry = new Map<number, IcosahedronGeometry>();
 
 	// Materials to be cloned
-	private readonly meshMaterial = new Map<number, THREE.MeshStandardMaterial>();
+	private readonly meshMaterial = new Map<number, MeshStandardMaterial>();
 	private currentMetalness = -1;
 	private currentRoughness = -1;
 
@@ -80,7 +80,7 @@ export class SpheresCache {
 
 						const radius = rCov * this.covScale;
 						this.ballAndStickGeometry.set(atomZ,
-													  new THREE.IcosahedronGeometry(radius, this.subdivisions));
+													  new IcosahedronGeometry(radius, this.subdivisions));
 					}
 				}
 				break;
@@ -91,7 +91,7 @@ export class SpheresCache {
 					if(!this.vanDerWaalsGeometry.has(atomZ)) {
 
 						this.vanDerWaalsGeometry.set(atomZ,
-													  new THREE.IcosahedronGeometry(rVdW, this.subdivisions));
+													  new IcosahedronGeometry(rVdW, this.subdivisions));
 
 					}
 				}
@@ -99,8 +99,8 @@ export class SpheresCache {
 			case "licorice":
 				this.currentKind = 2;
 				if(!this.licoriceGeometry) {
-					this.licoriceGeometry = new THREE.IcosahedronGeometry(this.licoriceRadius,
-																		  this.subdivisions);
+					this.licoriceGeometry = new IcosahedronGeometry(this.licoriceRadius,
+																	this.subdivisions);
 				}
 				break;
 		}
@@ -110,11 +110,11 @@ export class SpheresCache {
 			const {atomZ, color} = atom;
 			if(!this.meshMaterial.has(atomZ)) {
 				this.meshMaterial.set(atomZ,
-									  new THREE.MeshStandardMaterial({
+									  new MeshStandardMaterial({
 										color,
 										roughness: this.currentRoughness,
 										metalness: this.currentMetalness,
-										side: THREE.FrontSide,
+										side: FrontSide,
 									  }));
 			}
 		}
@@ -126,7 +126,7 @@ export class SpheresCache {
 	 * @param atomZ - Atom to be returned
 	 * @returns Sphere mesh to be positioned and rendered
 	 */
-	getSphere(atomZ: number): THREE.Mesh {
+	getSphere(atomZ: number): Mesh {
 
 		const material = this.meshMaterial.get(atomZ)!.clone();
 		let geometry;
@@ -145,6 +145,6 @@ export class SpheresCache {
 				geometry = this.ballAndStickGeometry.get(atomZ)!.clone();
 				break;
 		}
-		return new THREE.Mesh(geometry, material);
+		return new Mesh(geometry, material);
 	}
 }

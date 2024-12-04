@@ -6,23 +6,24 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-11-29
  */
-import * as THREE from "three";
+import {MeshLambertMaterial, FrontSide, Group, Vector3,
+		Color, Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
 import {sm} from "@/services/SceneManager";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 
 export class DrawPolyhedraRenderer {
 
-	private readonly material = new THREE.MeshLambertMaterial({
+	private readonly material = new MeshLambertMaterial({
 		color: "#FFFFFF",
 		opacity: 0.5,
-		side: THREE.FrontSide,
+		side: FrontSide,
 		transparent: true,
 		polygonOffset: true,
 		polygonOffsetFactor: 1
 	});
-	private readonly group = new THREE.Group();
+	private readonly group = new Group();
 	private readonly name;
-	private readonly polyhedraVertices: THREE.Vector3[][] = [];
+	private readonly polyhedraVertices: Vector3[][] = [];
 	private readonly centerAtomColorList: string[] = [];
 	private countPolyhedra = 0;
 
@@ -43,7 +44,7 @@ export class DrawPolyhedraRenderer {
 	 * @param bw - True (default) to create contrasting black and white color
 	 * @returns Color for the polyhedra edges
 	 */
-	private createContrastingColor(materialColor: THREE.Color, bw=true): number {
+	private createContrastingColor(materialColor: Color, bw=true): number {
 
 		const {r, g, b} = materialColor;
 
@@ -69,10 +70,10 @@ export class DrawPolyhedraRenderer {
 		for(let i=0; i < this.countPolyhedra; ++i) {
 
 			// Convert the list of coordinates into a THREE.Vector3 list
-			const points: THREE.Vector3[] = [];
+			const points: Vector3[] = [];
 			const len = vertices[i].length;
 			for(let j=0; j < len; j += 3) {
-				const point = new THREE.Vector3(vertices[i][j], vertices[i][j+1], vertices[i][j+2]);
+				const point = new Vector3(vertices[i][j], vertices[i][j+1], vertices[i][j+2]);
 				points.push(point);
 			}
 			this.polyhedraVertices.push(points);
@@ -96,13 +97,13 @@ export class DrawPolyhedraRenderer {
 		for(let i=0; i < this.countPolyhedra; ++i) {
 
 			// The polyhedron
-			const mesh = new THREE.Mesh();
+			const mesh = new Mesh();
 			mesh.geometry = new ConvexGeometry(this.polyhedraVertices[i]);
 			mesh.name = "Polyhedron";
 			let color;
 			if(colorByCenterAtom) {
 				const polyhedraMaterial = this.material.clone();
-				color = new THREE.Color(this.centerAtomColorList[i]);
+				color = new Color(this.centerAtomColorList[i]);
 				polyhedraMaterial.color = color;
 				mesh.material = polyhedraMaterial;
 			}
@@ -117,8 +118,8 @@ export class DrawPolyhedraRenderer {
 
 			// The polyhedron edges
 			const edgeColor = this.createContrastingColor(color);
-			const edges = new THREE.EdgesGeometry(mesh.geometry);
-			const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: edgeColor}));
+			const edges = new EdgesGeometry(mesh.geometry);
+			const line = new LineSegments(edges, new LineBasicMaterial({color: edgeColor}));
 			this.group.add(line);
 		}
 
@@ -157,10 +158,10 @@ export class DrawPolyhedraRenderer {
 	 * @param color - Color in #RRGGBBAA format
 	 * @returns The color part
 	 */
-	private extractColor(color: string): THREE.Color {
+	private extractColor(color: string): Color {
 
 		const colorString = color.slice(0, 7);
-		return new THREE.Color(colorString);
+		return new Color(colorString);
 	};
 
 	/**

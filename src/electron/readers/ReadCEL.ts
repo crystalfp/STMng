@@ -10,7 +10,7 @@
  * @since 2024-10-24
  */
 import fs from "node:fs";
-import * as rd from "node:readline/promises";
+import {createInterface} from "node:readline/promises";
 import log from "electron-log";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -31,7 +31,7 @@ export class ReaderCEL implements ReaderImplementation {
 		const structures: Structure[] = [new EmptyStructure()];
 		let rdnatoms = -1;
 
-		const reader = rd.createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename));
 		for await (const line of reader) {
 
 			const lineNC = line.trim();

@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import fs from "node:fs";
-import * as rd from "node:readline/promises";
+import {createInterface} from "node:readline/promises";
 import {extractBasis, fractionalToCartesianCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -134,7 +134,7 @@ export class ReaderCIF implements ReaderImplementation {
 		let isInLoopHeader = false;
 
 		// Read file by line
-		const reader = rd.createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename));
 		for await (const line of reader) {
 
 			// Clear line from comments and control characters

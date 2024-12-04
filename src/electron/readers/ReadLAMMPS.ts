@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import fs from "node:fs";
-import * as rd from "node:readline/promises";
+import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom,
@@ -32,7 +32,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 		let correspond: number[] = [];
 		let ntypes = 0;
 
-		const reader = rd.createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename));
 		for await (const lineRaw of reader) {
 
 			const line = lineRaw.trim();

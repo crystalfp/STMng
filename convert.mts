@@ -3,7 +3,7 @@
 // Beware! do it under shell or cmd. Under power shell the output file is not utf-8
 //
 import fs from "node:fs";
-import * as rd from "node:readline/promises";
+import {createInterface} from "node:readline/promises";
 
 interface OneAtomData {
 
@@ -24,7 +24,7 @@ interface OneAtomData {
 }
 
 const out: string[] = [];
-const reader = rd.createInterface(fs.createReadStream("element.txt"));
+const reader = createInterface(fs.createReadStream("element.txt"));
 for await (const lineRaw of reader) {
 
 	const line = lineRaw.replace(/#.+$/, "").trim();

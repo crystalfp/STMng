@@ -7,7 +7,8 @@
  * @since 2024-07-05
  */
 
-import * as THREE from "three";
+import {Group, GridHelper, Mesh, CylinderGeometry,
+		ConeGeometry, MeshBasicMaterial} from "three";
 import {watchEffect, watch} from "vue";
 import {sm} from "./SceneManager";
 import {useConfigStore} from "@/stores/configStore";
@@ -36,7 +37,7 @@ export const setupSceneHelpers = (): void => {
 		const {scene} = sm;
 
 		// Manage axis helper
-		let axis = scene.getObjectByName("AxisHelper") as THREE.Group;
+		let axis = scene.getObjectByName("AxisHelper") as Group;
 		if(configStore.helpers.showAxis) {
 
 			if(axis) {
@@ -48,7 +49,7 @@ export const setupSceneHelpers = (): void => {
 				}
 			}
 			else {
-				axis = new THREE.Group();
+				axis = new Group();
 				axis.name = "AxisHelper";
 				scene.add(axis);
 				axis.visible = true;
@@ -59,7 +60,7 @@ export const setupSceneHelpers = (): void => {
 		else if(axis) axis.visible = false;
 
 		// Manage XZ helper plane
-		let gridXZ = scene.getObjectByName("GridHelperXZ") as THREE.GridHelper;
+		let gridXZ = scene.getObjectByName("GridHelperXZ") as GridHelper;
 		if(configStore.helpers.showGridXZ) {
 			if(gridXZ) {
 				gridXZ.visible = true;
@@ -82,7 +83,7 @@ export const setupSceneHelpers = (): void => {
 		else if(gridXZ) gridXZ.visible = false;
 
 		// Manage XY helper plane
-		let gridXY = scene.getObjectByName("GridHelperXY") as THREE.GridHelper;
+		let gridXY = scene.getObjectByName("GridHelperXY") as GridHelper;
 		if(configStore.helpers.showGridXY) {
 			if(gridXY) {
 				gridXY.visible = true;
@@ -105,7 +106,7 @@ export const setupSceneHelpers = (): void => {
 		else if(gridXY) gridXY.visible = false;
 
 		// Manage YZ helper plane
-		let gridYZ = scene.getObjectByName("GridHelperYZ") as THREE.GridHelper;
+		let gridYZ = scene.getObjectByName("GridHelperYZ") as GridHelper;
 		if(configStore.helpers.showGridYZ) {
 			if(gridYZ) {
 				gridYZ.visible = true;
@@ -134,9 +135,9 @@ export const setupSceneHelpers = (): void => {
  *
  * @returns The grid to be added to the scene
  */
-const gridHelper = (plane: "XZ" | "XY" | "YZ", gridSide: number): THREE.GridHelper => {
+const gridHelper = (plane: "XZ" | "XY" | "YZ", gridSide: number): GridHelper => {
 
-	const grid = new THREE.GridHelper(gridSide, gridSide, "#FF0000");
+	const grid = new GridHelper(gridSide, gridSide, "#FF0000");
 	grid.name = "GridHelper" + plane;
 
 	if(plane === "XY") {
@@ -154,7 +155,7 @@ const gridHelper = (plane: "XZ" | "XY" | "YZ", gridSide: number): THREE.GridHelp
  * @param group - The group that will contains the axis to be added to the scene
  * @param axisLength - Length of each arrow
  */
-const axisHelper = (group: THREE.Group, axisLength: number): void => {
+const axisHelper = (group: Group, axisLength: number): void => {
 
 	const size = 0.05;
 	const coneSize = 2*size;
@@ -163,43 +164,43 @@ const axisHelper = (group: THREE.Group, axisLength: number): void => {
 	const labelPosition = axisLength+coneLen;
 
 	// Axis
-	const cylinderX = new THREE.Mesh(
-		new THREE.CylinderGeometry(size, size, axisLength, 10),
-		new THREE.MeshBasicMaterial({color: 0xFF0000}) // Red - X
+	const cylinderX = new Mesh(
+		new CylinderGeometry(size, size, axisLength, 10),
+		new MeshBasicMaterial({color: 0xFF0000}) // Red - X
 	);
 	cylinderX.position.set(axisLength/2, 0, 0);
 	cylinderX.rotation.set(0, 0, Math.PI / 2);
 
-	const cylinderY = new THREE.Mesh(
-		new THREE.CylinderGeometry(size, size, axisLength, 10),
-		new THREE.MeshBasicMaterial({color: 0x79FF00}) // Green - Y
+	const cylinderY = new Mesh(
+		new CylinderGeometry(size, size, axisLength, 10),
+		new MeshBasicMaterial({color: 0x79FF00}) // Green - Y
 	);
 	cylinderY.position.set(0, axisLength/2, 0);
 
-	const cylinderZ = new THREE.Mesh(
-		new THREE.CylinderGeometry(size, size, axisLength, 10),
-		new THREE.MeshBasicMaterial({color: 0x0000FF}) // Blue - Z
+	const cylinderZ = new Mesh(
+		new CylinderGeometry(size, size, axisLength, 10),
+		new MeshBasicMaterial({color: 0x0000FF}) // Blue - Z
 	);
 	cylinderZ.position.set(0, 0, axisLength/2);
 	cylinderZ.rotation.set(Math.PI / 2, 0, 0);
 
 	// Arrow tips
-	const coneX = new THREE.Mesh(
-		new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
-		new THREE.MeshBasicMaterial({color: 0xFF0000})
+	const coneX = new Mesh(
+		new ConeGeometry(coneSize, coneLen, 8, 1),
+		new MeshBasicMaterial({color: 0xFF0000})
 	);
 	coneX.position.set(conePosition, 0, 0);
 	coneX.rotation.set(0, 0, -Math.PI / 2);
 
-	const coneY = new THREE.Mesh(
-		new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
-		new THREE.MeshBasicMaterial({color: 0x79FF00})
+	const coneY = new Mesh(
+		new ConeGeometry(coneSize, coneLen, 8, 1),
+		new MeshBasicMaterial({color: 0x79FF00})
 	);
 	coneY.position.set(0, conePosition, 0);
 
-	const coneZ = new THREE.Mesh(
-		new THREE.ConeGeometry(coneSize, coneLen, 8, 1),
-		new THREE.MeshBasicMaterial({color: 0x0000FF})
+	const coneZ = new Mesh(
+		new ConeGeometry(coneSize, coneLen, 8, 1),
+		new MeshBasicMaterial({color: 0x0000FF})
 	);
 	coneZ.position.set(0, 0, conePosition);
 	coneZ.rotation.set(Math.PI / 2, 0, 0);
@@ -213,4 +214,5 @@ const axisHelper = (group: THREE.Group, axisLength: number): void => {
 	group.add(cylinderX, cylinderY, cylinderZ,
 			  coneX, coneY, coneZ,
 			  spriteX, spriteY, spriteZ);
+	sm.modified();
 };

@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import fs from "node:fs";
-import * as rd from "node:readline/promises";
+import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -48,7 +48,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let cartesian = false;
 		let atomIdx = 0;
 
-		const stream = rd.createInterface(fs.createReadStream(filename));
+		const stream = createInterface(fs.createReadStream(filename));
 		for await (const line of stream) {
 
 			switch(lineType) {
