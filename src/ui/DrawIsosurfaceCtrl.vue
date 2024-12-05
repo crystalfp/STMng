@@ -14,6 +14,8 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import {DrawIsosurfaceRenderer} from "@/renderers/DrawIsosurfaceRenderer";
 import type {CtrlParams} from "@/types";
 
+import DatasetSelector from "@/widgets/DatasetSelector.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -26,7 +28,7 @@ const {id, label} = defineProps<{
 
 const showIsosurface = ref(false);
 const dataset = ref(0);
-const maxDataset = ref(0);
+const countDatasets = ref(0);
 const valueMin = ref(-10);
 const valueMax = ref(10);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
@@ -72,7 +74,7 @@ receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
                                        isoValues: number[],
                                        params: CtrlParams) => {
 
-    maxDataset.value = params.maxDataset as number ?? 0;
+    countDatasets.value = params.countDatasets as number ?? 0;
     valueMin.value = params.valueMin as number ?? -10;
     valueMax.value = params.valueMax as number ?? 10;
 
@@ -80,7 +82,7 @@ receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
         limits.value[0] = valueMin.value;
         limits.value[1] = valueMax.value;
 
-        if(dataset.value > maxDataset.value) dataset.value = maxDataset.value;
+        if(dataset.value >= countDatasets.value) dataset.value = countDatasets.value - 1;
 
         isoValue.value = (valueMin.value+valueMax.value)/2;
     }
@@ -135,9 +137,8 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 <v-container class="container">
   <v-switch v-model="showIsosurface" color="primary" label="Show isosurface"
             density="compact" class="mt-4 ml-3" />
-  <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
-  <v-slider v-model="dataset" min="0" :max="maxDataset" step="1"
-            :disabled="maxDataset === 0" class="ml-4 mt-1" />
+
+  <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
   <v-switch v-model="nestedIsosurfaces" color="primary" label="Nested isosurfaces"
             density="compact" class="mt-1 ml-3" />

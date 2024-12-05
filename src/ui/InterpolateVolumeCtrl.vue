@@ -12,6 +12,8 @@ import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
+import DatasetSelector from "@/widgets/DatasetSelector.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -25,7 +27,7 @@ const {id, label} = defineProps<{
 const interpolateVolume = ref(false);
 const pointsToAdd = ref(1);
 const dataset = ref(0);
-const maxDataset = ref(0);
+const countDatasets = ref(0);
 
 askNode(id, "init")
     .then((params) => {
@@ -35,8 +37,8 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
-receiveFromNode(id, "maxDataset", (params: CtrlParams) => {
-    maxDataset.value = params.maxDataset as number ?? 0;
+receiveFromNode(id, "countDatasets", (params: CtrlParams) => {
+    countDatasets.value = params.countDatasets as number ?? 0;
 });
 
 watchEffect(() => {
@@ -54,9 +56,9 @@ watchEffect(() => {
 <v-container class="container">
   <v-switch v-model="interpolateVolume" color="primary"
             label="Interpolate volume data" class="mt-4 ml-4" />
-  <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
-  <v-slider v-model="dataset" min="0" :max="maxDataset" step="1"
-            :disabled="maxDataset === 0" class="ml-4 mt-1" />
+
+  <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+
   <g-debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
                       :disabled="!interpolateVolume" class="ml-2 mt-1">
     <v-label :text="`Points to add (${value})`" class="no-select" />

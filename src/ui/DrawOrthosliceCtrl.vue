@@ -14,6 +14,8 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import {DrawOrthosliceRenderer} from "@/renderers/DrawOrthosliceRenderer";
 import type {CtrlParams} from "@/types";
 
+import DatasetSelector from "@/widgets/DatasetSelector.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -31,7 +33,7 @@ const dataset = ref(0);
 const axis = ref(0);
 const plane = ref(0);
 const showOrthoslice = ref(false);
-const maxDataset = ref(0);
+const countDatasets = ref(0);
 const maxPlane = ref(0);
 const colormapName = ref("rainbow");
 const limits = ref<number[]>([-10, 10]); // User selected limits
@@ -52,7 +54,7 @@ askNode(id, "init")
         dataset.value = params.dataset as number ?? 0;
         axis.value = params.axis as number ?? 0;
         plane.value = params.plane as number ?? 0;
-        maxDataset.value = params.maxDataset as number ?? 0;
+        countDatasets.value = params.countDatasets as number ?? 0;
         maxPlane.value = params.maxPlane as number ?? 0;
         colormapName.value = params.colormapName as string ?? "rainbow";
         valueMin.value = params.valueMin as number ?? -10;
@@ -68,6 +70,11 @@ askNode(id, "init")
 
         limits.value[0] = valueMin.value;
         limits.value[1] = valueMax.value;
+
+        if(countDatasets.value === 0) {
+            showOrthoslice.value = false;
+            showIsolines.value = false;
+        }
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
@@ -89,7 +96,7 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
                                          params: CtrlParams): void => {
 
     // Update parameters
-    maxDataset.value = params.maxDataset as number ?? 0;
+    countDatasets.value = params.countDatasets as number ?? 0;
     maxPlane.value = params.maxPlane as number ?? 0;
     valueMin.value = params.valueMin as number ?? -10;
     valueMax.value = params.valueMax as number ?? 10;
@@ -100,6 +107,12 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
     if(params.limitLow !== undefined) {
         limits.value[0] = params.limitLow as number;
         limits.value[1] = params.limitHigh as number;
+    }
+
+    if(countDatasets.value === 0) {
+        showOrthoslice.value = false;
+        showIsolines.value = false;
+        return;
     }
 
     // Save values
@@ -160,9 +173,7 @@ watchEffect(() => {
   <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice"
             density="compact" class="mt-2 ml-3" />
 
-  <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
-  <v-slider v-model="dataset" min="0" :max="maxDataset" step="1"
-            :disabled="maxDataset === 0" class="ml-4" />
+  <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
   <v-label text="Axis" class="ml-2 mb-3 no-select" /><br>
   <v-btn-toggle v-model="axis" color="primary" mandatory class="mb-6 ml-2">

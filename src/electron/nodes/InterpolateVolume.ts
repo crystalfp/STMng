@@ -46,14 +46,13 @@ export class InterpolateVolume extends NodeCore {
 		this.structure = data;
 		if(!this.structure) return;
 
-		const countDatasets = this.structure.volume ? this.structure.volume.length : 0;
-		if(countDatasets === 0 || !this.interpolateVolume) this.toNextNode(this.structure);
-		else {
-			sendToClient(this.id, "maxDataset", {
-				maxDataset: countDatasets - 1
-			});
-			this.computeInterpolation();
-		}
+		const countDatasets = this.structure.volume?.length ?? 0;
+		sendToClient(this.id, "countDatasets", {
+			countDatasets
+		});
+
+		if(!countDatasets || !this.interpolateVolume) this.toNextNode(this.structure);
+		else this.computeInterpolation();
 	}
 
 	saveStatus(): string {

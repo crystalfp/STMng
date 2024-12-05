@@ -18,7 +18,7 @@ export class DrawIsosurface extends NodeCore {
 
     private showIsosurface = false;
     private dataset = 0;
-    private maxDataset = 0;
+    private countDatasets = 0;
     private isoValue = 0;
     private range: [number, number] = [-10, 10];
     private colormapName = "rainbow";
@@ -47,11 +47,11 @@ export class DrawIsosurface extends NodeCore {
 
 		const countDatasets = this.structure.volume.length;
 		if(countDatasets === 0) {
-			this.maxDataset = 0;
+			this.countDatasets = 0;
 			this.range = [-10, 10];
 		}
 		else {
-			this.maxDataset = countDatasets - 1;
+			this.countDatasets = countDatasets;
 			this.range = getValueLimits(this.structure, this.dataset);
 		}
 
@@ -169,7 +169,7 @@ export class DrawIsosurface extends NodeCore {
             isoValues,
 			params: {
                 changedStructure,
-				maxDataset: this.maxDataset,
+				countDatasets: this.countDatasets,
 				valueMin: this.range[0],
 				valueMax: this.range[1],
 			}
