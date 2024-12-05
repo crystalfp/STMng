@@ -274,6 +274,34 @@ onMounted(() => {
         }
     });
 
+    // Force camera position if requested
+    watchEffect(() => {
+
+        if(controlStore.force) {
+
+            controlStore.force = false;
+
+	        void controls.setLookAt(configStore.camera.position[0],
+                                    configStore.camera.position[1],
+                                    configStore.camera.position[2],
+							        configStore.camera.lookAt[0],
+                                    configStore.camera.lookAt[1],
+                                    configStore.camera.lookAt[2],
+                                    false);
+            if(configStore.camera.type === "perspective") {
+                cameraPerspective.position.set(...configStore.camera.position);
+                cameraPerspective.lookAt(new Vector3(...configStore.camera.lookAt));
+                cameraPerspective.updateProjectionMatrix();
+            }
+            else {
+                cameraOrthographic.position.set(...configStore.camera.position);
+                cameraOrthographic.lookAt(new Vector3(...configStore.camera.lookAt));
+                cameraOrthographic.updateProjectionMatrix();
+            }
+            sm.modified();
+        }
+    });
+
     // Take snapshot
     watchEffect(() => {
 

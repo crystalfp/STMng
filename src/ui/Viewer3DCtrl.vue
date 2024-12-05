@@ -9,6 +9,7 @@
 
 import {ref, watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
+import {useControlStore} from "@/stores/controlStore";
 import {askNode, sendViewer3DState} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 
@@ -27,6 +28,7 @@ const DEG2RAD = Math.PI/180;
 
 // > Access the store
 const configStore = useConfigStore();
+const controlStore = useControlStore();
 
 // Initialize the parameters
 askNode(id, "init")
@@ -78,6 +80,53 @@ watchEffect(() => {
     configStore.lights.directional3Position[2] = Math.cos(betaRad);
 });
 
+// > Positioning camera
+const forcedCameraPositionX = ref(configStore.camera.forcePosition[0]);
+const forcedCameraPositionY = ref(configStore.camera.forcePosition[1]);
+const forcedCameraPositionZ = ref(configStore.camera.forcePosition[2]);
+
+const forcedCameraLookAtX = ref(configStore.camera.forceLookAt[0]);
+const forcedCameraLookAtY = ref(configStore.camera.forceLookAt[1]);
+const forcedCameraLookAtZ = ref(configStore.camera.forceLookAt[2]);
+
+/**
+ * Load the current camera position and lookAt in the user interface
+ */
+const loadPosition = (): void => {
+
+    forcedCameraPositionX.value = configStore.camera.position[0];
+    forcedCameraPositionY.value = configStore.camera.position[1];
+    forcedCameraPositionZ.value = configStore.camera.position[2];
+
+    forcedCameraLookAtX.value = configStore.camera.lookAt[0];
+    forcedCameraLookAtY.value = configStore.camera.lookAt[1];
+    forcedCameraLookAtZ.value = configStore.camera.lookAt[2];
+};
+
+/**
+ * Set the camera position and lookAt to the ones set in the user interface
+ */
+const forcePosition = (): void => {
+
+    configStore.camera.position[0] = forcedCameraPositionX.value;
+    configStore.camera.position[1] = forcedCameraPositionY.value;
+    configStore.camera.position[2] = forcedCameraPositionZ.value;
+
+    configStore.camera.lookAt[0] = forcedCameraLookAtX.value;
+    configStore.camera.lookAt[1] = forcedCameraLookAtY.value;
+    configStore.camera.lookAt[2] = forcedCameraLookAtZ.value;
+
+    configStore.camera.forcePosition[0] = forcedCameraPositionX.value;
+    configStore.camera.forcePosition[1] = forcedCameraPositionY.value;
+    configStore.camera.forcePosition[2] = forcedCameraPositionZ.value;
+
+    configStore.camera.forceLookAt[0] = forcedCameraLookAtX.value;
+    configStore.camera.forceLookAt[1] = forcedCameraLookAtY.value;
+    configStore.camera.forceLookAt[2] = forcedCameraLookAtZ.value;
+
+    controlStore.force = true;
+};
+
 </script>
 
 
@@ -90,6 +139,41 @@ watchEffect(() => {
     <v-btn value="orthographic">Orthographic</v-btn>
   </v-btn-toggle>
   <v-expansion-panels>
+    <v-expansion-panel>
+      <v-expansion-panel-title>
+        Camera positioning
+      </v-expansion-panel-title>
+      <v-expansion-panel-text>
+        <v-label text="Camera position" class="mb-4 no-select" />
+        <v-row class="pl-1">
+          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                          v-model="forcedCameraPositionX" label="x"
+                          :step="0.1" class="ml-2 mr-0" />
+          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                          v-model="forcedCameraPositionY" label="y"
+                          :step="0.1" class="ml-2 mr-0" />
+          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                          v-model="forcedCameraPositionZ" label="z"
+                          :step="0.1" class="ml-2 mr-0" />
+        </v-row>
+        <v-label text="Camera look at" class="mb-4 no-select" />
+        <v-row class="pl-1">
+          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                          v-model="forcedCameraLookAtX" label="x"
+                          :step="0.1" class="ml-2 mr-0" />
+          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                          v-model="forcedCameraLookAtY" label="y"
+                          :step="0.1" class="ml-2 mr-0" />
+          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
+                          v-model="forcedCameraLookAtZ" label="z"
+                          :step="0.1" class="ml-2 mr-0" />
+        </v-row>
+        <v-row class="d-flex justify-center gc-2 pl-1">
+          <v-btn variant="tonal" density="compact" @click="loadPosition">Load current</v-btn>
+          <v-btn variant="tonal" density="compact" @click="forcePosition">Force position</v-btn>
+        </v-row>
+      </v-expansion-panel-text>
+    </v-expansion-panel>
     <v-expansion-panel>
       <v-expansion-panel-title>
         Scene

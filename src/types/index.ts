@@ -128,6 +128,10 @@ export interface Viewer3DState {
         snapshotFormat: "png" | "jpeg";
         /** STL file format */
         stlFormat: "ascii" | "binary";
+        /** Position of the camera */
+        forcePosition: PositionType;
+        /** Point where the camera points */
+        forceLookAt: PositionType;
     };
     scene: {
         /** Scene background color formatted as #RRGGBB */

@@ -19,6 +19,8 @@ export const useConfigStore = defineStore("ConfigStore", {
             lookAt: [0, 0, 0],
             snapshotFormat: "png",
             stlFormat: "binary",
+            forcePosition: [5, 3, 5],
+            forceLookAt: [0, 0, 0],
 		},
 		scene: {
 			background: "#90CEEC",
@@ -89,8 +91,14 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.lookAt[0] = state.camera.lookAt[0];
             this.camera.lookAt[1] = state.camera.lookAt[1];
             this.camera.lookAt[2] = state.camera.lookAt[2];
-            this.camera.snapshotFormat = state.camera.snapshotFormat;
-            this.camera.stlFormat = state.camera.stlFormat;
+            this.camera.snapshotFormat = state.camera.snapshotFormat ?? "png";
+            this.camera.stlFormat = state.camera.stlFormat ?? "binary";
+            this.camera.forcePosition[0] = state.camera.forcePosition?.[0] ?? 5;
+            this.camera.forcePosition[1] = state.camera.forcePosition?.[1] ?? 3;
+            this.camera.forcePosition[2] = state.camera.forcePosition?.[2] ?? 5;
+            this.camera.forceLookAt[0] = state.camera.forceLookAt?.[0] ?? 0;
+            this.camera.forceLookAt[1] = state.camera.forceLookAt?.[1] ?? 0;
+            this.camera.forceLookAt[2] = state.camera.forceLookAt?.[2] ?? 0;
 
             this.scene.background = state.scene.background;
 
@@ -112,13 +120,13 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.lights.directional3Position[1] = state.lights.directional3Position[1];
             this.lights.directional3Position[2] = state.lights.directional3Position[2];
 
-            this.helpers.showAxis = state.helpers.showAxis;
-            this.helpers.showGridXZ = state.helpers.showGridXZ;
-            this.helpers.showGridXY = state.helpers.showGridXY;
-            this.helpers.showGridYZ = state.helpers.showGridYZ;
-            this.helpers.gridSize = state.helpers.gridSize;
-            this.helpers.axisLength = state.helpers.axisLength;
-            this.helpers.showGizmo = state.helpers.showGizmo;
+            this.helpers.showAxis = state.helpers.showAxis ?? false;
+            this.helpers.showGridXZ = state.helpers.showGridXZ ?? false;
+            this.helpers.showGridXY = state.helpers.showGridXY ?? false;
+            this.helpers.showGridYZ = state.helpers.showGridYZ ?? false;
+            this.helpers.gridSize = state.helpers.gridSize ?? 10;
+            this.helpers.axisLength = state.helpers.axisLength ?? 2;
+            this.helpers.showGizmo = state.helpers.showGizmo ?? false;
         }
     }
 });

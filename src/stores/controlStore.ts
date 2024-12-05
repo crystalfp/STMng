@@ -16,6 +16,9 @@ interface GlobalControls {
 	sceneCenter: PositionType;
 	sceneSides: PositionType;
 
+	/** Force camera position */
+	force: boolean;
+
 	/** Capture media controls */
 	snapshot: boolean;
 	movie: boolean;
@@ -46,6 +49,8 @@ export const useControlStore = defineStore("ControlStore", {
 		reset: false,
 		sceneCenter: [0, 0, 0],
 		sceneSides: [1, 1, 1],
+
+		force: false,
 
 		snapshot: false,
 		movie: false,

@@ -1,7 +1,5 @@
 To do:
-  ☐ camera.type -> camera.isPerspective (boolean)
   ☐ Check THREE.Layer for visibility
-  ☐ Add camera position save and set
 
 Bugs:
 
@@ -52,6 +50,8 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✘ camera.type -> camera.isPerspective (boolean) @cancelled(2024-12-05 15:50) @project(To do)
+  ✔ Add camera position save and set @done(2024-12-05 15:49) @project(To do)
   ✔ Better placement of the bond lengths labels @done(2024-12-02 07:52) @project(To do)
   ✔ Separate UI management and rendering logic in *Ctrl @done(2024-12-01 16:02) @project(To do)
   ✔ Add state from the various nodes in saving modified project @done(2024-11-29 08:05) @project(To do)
