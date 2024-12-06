@@ -27,10 +27,6 @@
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
-    },
-    "chart": {
-      "label": "Chart",
-      "type": "chart-viewer"
     }
   },
   "viewer": {
@@ -46,7 +42,18 @@
         0,
         0
       ],
-      "snapshotFormat": "png"
+      "snapshotFormat": "png",
+      "stlFormat": "binary",
+      "forcePosition": [
+        5,
+        3,
+        5
+      ],
+      "forceLookAt": [
+        0,
+        0,
+        0
+      ]
     },
     "scene": {
       "background": "#90CEEC"
@@ -82,15 +89,18 @@
       "showGridXY": false,
       "showGridYZ": false,
       "gridSize": 10,
-      "axisLength": 1
+      "axisLength": 1,
+      "showGizmo": false
     }
   },
   "ui": {
     "reader": {
       "loopSteps": false,
-      "step": 1,
+      "stepBackward": false,
       "format": "CHGCAR",
-      "atomsTypes": ""
+      "atomsTypes": "",
+      "useBohr": true,
+      "stepIncrement": 1
     },
     "cfp": {
       "enableEnergyThreshold": false,
@@ -107,16 +117,22 @@
       "repetitionsC": 1,
       "showSupercell": false,
       "supercellColor": "#02A502",
-      "dashedSupercell": false
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": true
     },
     "bonds": {
       "minBondingDistance": 0.64,
       "maxBondingDistance": 4.5,
       "maxHBondingDistance": 3,
       "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
       "bondScale": 1.1,
       "perPairScale": false,
-      "enlargeCell": false
+      "perPairData": "[]",
+      "enlargementKind": "none"
     },
     "draw": {
       "drawKind": "ball-and-stick",
@@ -124,13 +140,10 @@
       "drawRoughness": 0.5,
       "drawMetalness": 0.6,
       "labelKind": "symbol",
-      "showStructure": true,
       "showBonds": true,
-      "showLabels": true
-    },
-    "chart": {
-      "chartType": "line"
+      "showStructure": true,
+      "showLabels": true,
+      "shadedBonds": false
     }
-  },
-  "currentId": "reader"
+  }
 }

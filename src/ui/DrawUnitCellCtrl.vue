@@ -169,9 +169,8 @@ watch([percentA, percentB, percentC, shrink], () => {
   <v-switch v-model="showUnitCell" color="primary" label="Show unit cell" class="mt-2 ml-4" />
   <v-switch v-model="dashedLine" color="primary" label="Dashed lines" class="ml-4 mt-n5" />
   <v-switch v-model="showBasisVectors" color="primary" label="Show basis vectors" class="ml-4 mt-n5" />
-  <g-color-selector v-model="lineColor" label="Line color" />
-  <v-divider thickness="8" class="mb-4" />
-  <v-label text="Cell repetitions" class="ml-2 mb-1 yellow-title no-select" />
+  <g-color-selector v-model="lineColor" label="Line color" block />
+  <v-label class="separator-title">Cell repetitions</v-label>
   <g-slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
                           :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
@@ -181,16 +180,16 @@ watch([percentA, percentB, percentC, shrink], () => {
   <g-slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
-  <v-btn :disabled="!hasSupercell()" class="mt-2 mb-4 ml-2 w-50" @click="resetSliders">
+  <v-btn :disabled="!hasSupercell()" variant="tonal" class="mt-2 mb-4 ml-2 w-100"
+         @click="resetSliders">
     Reset
   </v-btn>
   <v-switch v-model="showSupercell" color="primary" :disabled="!hasSupercell()"
             label="Show supercell" class="ml-4" />
   <v-switch v-model="dashedSupercell" color="primary" :disabled="!hasSupercell()"
             label="Dashed lines supercell" class="ml-4 mt-n5" />
-  <g-color-selector v-model="supercellColor" label="Line color" />
-  <v-divider thickness="8" class="mb-4" />
-  <v-label text="Shift origin (by fraction of basis)" class="ml-2 mb-3 yellow-title no-select" />
+  <g-color-selector v-model="supercellColor" label="Line color" block />
+  <v-label class="separator-title">Shift origin</v-label>
   <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />

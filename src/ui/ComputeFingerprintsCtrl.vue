@@ -208,16 +208,15 @@ const computeFingerprints = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 no-select">Accumulate structures</v-label>
+  <v-label class="separator-title">Accumulate structures</v-label>
 
   <v-row class="mx-0 my-4 mr-2">
     <v-label class="green-label no-select">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
-    <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
+    <v-btn density="compact" variant="tonal" @click="resetAccumulator">Reset</v-btn>
   </v-row>
 
-  <v-divider thickness="8" />
-  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 no-select">Filter structures</v-label>
+  <v-label class="separator-title">Filter structures</v-label>
 
   <g-select-file class="mt-2 mr-2" title="Select energy file"
                  :filter="energyFileFilter" @selected="selectEnergyFile" />
@@ -236,8 +235,7 @@ const computeFingerprints = (): void => {
 
   <v-label class="mt-4 mb-4 green-label no-select"> {{ accumulatedLabel }}</v-label>
 
-  <v-divider thickness="8" />
-  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 no-select">Compute fingerprints</v-label>
+  <v-label class="separator-title">Compute fingerprints</v-label>
 
   <v-row class="mt-4 mx-0">
     <v-switch v-model="forceCutoff" color="primary" label="Force cutoff at:" class="ml-2" />
@@ -265,15 +263,14 @@ const computeFingerprints = (): void => {
     <v-text-field v-model="peakWidth" label="Peak width"
                     :rules="[rules.numeric]" />
   </v-row>
-  <v-btn block :disabled="countSelected === 0" @click="computeFingerprints">
+  <v-btn block variant="tonal" :disabled="countSelected === 0" @click="computeFingerprints">
     Compute fingerprints
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label no-select">
     {{ `Done (dimensionality: ${resultDimensionality})` }}
   </v-label>
 
-  <v-divider thickness="8" class="mt-4" />
-  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 mb-4 no-select">Compare structures</v-label>
+  <v-label class="separator-title">Compare structures</v-label>
   <v-select v-model="selectedDistanceMethod"
     label="Distance method"
     :items="distanceMethods"
@@ -283,15 +280,14 @@ const computeFingerprints = (): void => {
 
   <v-switch v-model="fixTriangleInequality" color="primary"
             label="Fix triangle inequality" class="ml-2" />
-  <v-btn block :disabled="countSelected === 0" @click="computeDistances=true">
+  <v-btn block variant="tonal" :disabled="countSelected === 0" @click="computeDistances=true">
     Compute distances
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label no-select">
     Done
   </v-label>
 
-  <v-divider thickness="8" class="mt-4" />
-  <v-label class="text-h5 w-100 justify-center mt-4 mb-4 yellow-title no-select">Classify structures</v-label>
+  <v-label class="separator-title">Classify structures</v-label>
   <v-text-field v-model="tolerance" label="Tolerance"
                   class="ml-2 mr-2" :rules="[rules.numeric]" />
   <v-switch v-model="absolute" color="primary"

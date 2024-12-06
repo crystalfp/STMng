@@ -226,6 +226,6 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     </v-table>
   </v-container>
 
-  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
+  <v-btn class="mt-4 mb-4" block variant="tonal" @click="controlStore.deselectAll()">Deselect</v-btn>
 </v-container>
 </template>

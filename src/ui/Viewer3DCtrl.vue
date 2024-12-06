@@ -168,9 +168,9 @@ const forcePosition = (): void => {
                           v-model="forcedCameraLookAtZ" label="z"
                           :step="0.1" class="ml-2 mr-0" />
         </v-row>
-        <v-row class="d-flex justify-center gc-2 pl-1">
-          <v-btn variant="tonal" density="compact" @click="loadPosition">Load current</v-btn>
-          <v-btn variant="tonal" density="compact" @click="forcePosition">Force position</v-btn>
+        <v-row class="d-flex justify-center gc-2 pl-4 pb-1">
+          <v-btn variant="tonal" density="comfortable" @click="loadPosition">Load current</v-btn>
+          <v-btn variant="tonal" density="comfortable" @click="forcePosition">Force position</v-btn>
         </v-row>
       </v-expansion-panel-text>
     </v-expansion-panel>

@@ -179,7 +179,7 @@ const selectedSaveFile = (filename: string): void => {
   <v-row class="mt-10" >
     <v-switch v-model="continuous" color="primary" label="Continuous write" :hint="hint" persistent-hint
               density="compact" class="ml-6 mr-5" :disabled="controlStore.writerAccumulate" />
-    <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
+    <v-btn variant="tonal" :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>
   </v-row>

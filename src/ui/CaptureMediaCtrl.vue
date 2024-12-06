@@ -31,7 +31,7 @@ controlStore.hasCapture = true;
     <v-btn value="png">PNG</v-btn>
   </v-btn-toggle>
   </v-row>
-  <v-btn block class="mt-3" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
+  <v-btn block variant="tonal" class="mt-3" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
   <v-alert v-if="messageStore.captureMedia.typeS !== undefined"
            :title="messageStore.captureMedia.typeS === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
@@ -39,7 +39,7 @@ controlStore.hasCapture = true;
            @click="messageStore.captureMedia.typeS=undefined" />
 
   <v-label class="mt-10 text-h5 w-100 justify-center yellow-title no-select">Movie</v-label>
-  <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
+  <v-btn block variant="tonal" class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
         @click="controlStore.movie = !controlStore.movie">
       {{ controlStore.movie ? "Stop recording" : "Start recording" }}
   </v-btn>
@@ -57,7 +57,7 @@ controlStore.hasCapture = true;
     <v-btn value="binary">Binary</v-btn>
   </v-btn-toggle>
   </v-row>
-  <v-btn block class="mt-3" @click="controlStore.stl = true">Capture geometry</v-btn>
+  <v-btn block variant="tonal" class="mt-3" @click="controlStore.stl = true">Capture geometry</v-btn>
   <v-alert v-if="messageStore.captureMedia.typeT !== undefined"
            :title="messageStore.captureMedia.typeT === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textT" :type="messageStore.captureMedia.typeT"

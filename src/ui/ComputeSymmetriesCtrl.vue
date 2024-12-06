@@ -140,7 +140,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
   </g-debounced-slider>
 
-  <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
+  <v-btn block class="mb-4" variant="tonal" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 
   <g-error-alert kind="symmetries"/>
 </v-container>

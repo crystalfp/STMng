@@ -127,7 +127,7 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
   <v-switch v-model="showTrajectories" color="primary" label="Show trajectories"
             density="compact" class="mt-2 ml-2"
             @update:modelValue="renderer.setVisibility(showTrajectories)" />
-  <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
+  <v-btn block variant="tonal" class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     :disabled="trajectoriesRecording"
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
@@ -145,7 +145,7 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
     </g-debounced-slider>
     <g-color-selector v-model="positionCloudsColor" label="Cloud color" />
   </v-container>
-  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" @click="toggleRecording">
+  <v-btn block variant="tonal" :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" @click="toggleRecording">
     {{ controlStore.trajectoriesRecording ? "Stop trajectories" : "Start trajectories" }}
   </v-btn>
 </v-container>

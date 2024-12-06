@@ -157,7 +157,7 @@ const resetSliders = (): void => {
     <v-btn value="connected">Connected</v-btn>
   </v-btn-toggle>
 
-  <v-btn block class="mt-4" @click="resetSliders">
+  <v-btn block class="mt-4" variant="tonal" @click="resetSliders">
     Reset parameters
   </v-btn>
 
