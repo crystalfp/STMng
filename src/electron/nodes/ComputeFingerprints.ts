@@ -10,17 +10,16 @@ import fs from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
+import {FingerprintsAccumulator} from "../modules/FingerprintsAccumulator";
 
 export class ComputeFingerprints extends NodeCore {
 
 	private structure: Structure | undefined;
-	private readonly accumulator: Structure[] = [];
+	private readonly accumulator = new FingerprintsAccumulator();
 
-    private enableEnergyThreshold = false;
+    private enableEnergyFiltering = false;
 	private thresholdFromMinimum = false;
-    private minimumEnergy = 0;
     private energyThreshold = 0;
-	private energyPerStructure: number[] = [];
 	private fingerprintsAccumulate = false;
 
 	// private forceCutoff = false;
@@ -33,11 +32,12 @@ export class ComputeFingerprints extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "capture",   type: "invoke", callback: this.channelCapture.bind(this)},
+		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 		{name: "energy",    type: "invoke", callback: this.channelEnergy.bind(this)},
-		{name: "threshold", type: "invoke", callback: this.channelThreshold.bind(this)},
+
 		{name: "fp",		type: "invoke", callback: this.channelFP.bind(this)},
 		{name: "change",    type: "send",   callback: this.channelChange.bind(this)},
-		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -50,45 +50,46 @@ export class ComputeFingerprints extends NodeCore {
 		this.structure = data;
 		if(!this.structure) return;
 
-		// Find the energy threshold
-		const threshold = this.thresholdFromMinimum ?
-								this.minimumEnergy + this.energyThreshold :
-								this.energyThreshold;
-
 		// If in accumulate mode, save the structure encoded
 		if(this.fingerprintsAccumulate) {
 
-			this.accumulator.push(structuredClone(this.structure));
-
-				// Do filtering
-				const countSelected = this.filterOnEnergy(threshold);
-				if(countSelected < 0) {
-					sendAlertMessage("Energies are less than structures", "fingerprints");
-					sendToClient(this.id, "load", {
-						countSelected: 0,
-						countAccumulated: this.accumulator.length,
-						energyThresholdEffective: threshold,
-					});
-					return;
-				}
-				sendToClient(this.id, "load", {
-					countSelected,
-					countAccumulated: this.accumulator.length,
-					energyThresholdEffective: threshold,
-				});
+			this.accumulator.add(this.structure);
+			this.doFiltering();
 		}
 		else {
 			sendToClient(this.id, "load", {
-				countSelected: this.accumulator.length,
-				countAccumulated: this.accumulator.length,
-				energyThresholdEffective: threshold,
+				countSelected: this.accumulator.size(),
+				countAccumulated: this.accumulator.size(),
+				energyThresholdEffective: this.energyThreshold
+			});
+		}
+	}
+
+	private doFiltering(): void {
+
+		const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
+													   this.energyThreshold,
+													   this.thresholdFromMinimum);
+		if(status.error) {
+			sendAlertMessage(status.error, "fingerprints");
+			sendToClient(this.id, "load", {
+				countSelected: 0,
+				countAccumulated: this.accumulator.size(),
+				energyThresholdEffective: status.threshold
+			});
+		}
+		else {
+			sendToClient(this.id, "load", {
+				countSelected: status.countSelected,
+				countAccumulated: this.accumulator.size(),
+				energyThresholdEffective: status.threshold
 			});
 		}
 	}
 
 	saveStatus(): string {
         const statusToSave = {
-			enableEnergyThreshold: this.enableEnergyThreshold,
+			enableEnergyFiltering: this.enableEnergyFiltering,
 			energyThreshold: this.energyThreshold,
 			thresholdFromMinimum: this.thresholdFromMinimum,
 		};
@@ -96,31 +97,10 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	loadStatus(params: CtrlParams): void {
-		this.enableEnergyThreshold = params.enableEnergyThreshold as boolean ?? false;
+		this.enableEnergyFiltering = params.enableEnergyFiltering as boolean ?? false;
 		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
 		this.energyThreshold = params.energyThreshold as number ?? 0;
 	}
-
-	/**
-	 * Filter the list of accumulated structure by energy
-	 *
-	 * @returns The number of selected structures or -1 if the energies values
-	 *			are less than the number of accumulated structures
-	 */
-	private filterOnEnergy(thresholdEnergy: number): number {
-
-		const len = this.accumulator.length;
-		if(this.enableEnergyThreshold) {
-
-			if(this.energyPerStructure.length < len) return -1;
-
-			let countSelected = 0;
-			for(let i=0; i < len; ++i) if(this.energyPerStructure[i] <= thresholdEnergy) ++countSelected;
-
-			return countSelected;
-		}
-		return len;
-	};
 
 	// > Channel handlers
 	/**
@@ -130,7 +110,62 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelInit(): CtrlParams {
 
-		return {};
+		return {
+
+			enableEnergyFiltering: this.enableEnergyFiltering,
+			thresholdFromMinimum: this.thresholdFromMinimum,
+			energyThreshold: this.energyThreshold,
+			energyThresholdEffective: this.accumulator.filtered().threshold,
+
+			// forceCutoff.value = params.forceCutoff as boolean ?? false;
+			// cutoffDistance.value = params.cutoffDistance as number ?? 12;
+			// manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
+			// selectedMethod.value = params.selectedMethod as number ?? 0;
+			// binSize.value = params.binSize as number ?? 0.05;
+			// peakWidth.value = params.peakWidth as number ?? 0.05;
+			// resultDimensionality.value = params.resultDimensionality as number ?? 0;
+
+			// selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
+			// fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
+		};
+	}
+
+	/**
+	 * Channel handler for fingerprint accumulate change
+	 *
+	 * @param params - Fingerprint accumulate status
+	 * @returns Filtering results
+	 */
+	private channelCapture(params: CtrlParams): CtrlParams {
+
+		this.fingerprintsAccumulate = params.fingerprintsAccumulate as boolean ?? false;
+
+		if(this.fingerprintsAccumulate && this.structure) {
+
+			this.accumulator.add(this.structure);
+			const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
+														   this.energyThreshold,
+														   this.thresholdFromMinimum);
+			if(status.error) {
+				sendAlertMessage(status.error, "fingerprints");
+				return {
+					countSelected: 0,
+					countAccumulated: this.accumulator.size(),
+					energyThresholdEffective: status.threshold
+				};
+			}
+			return {
+				countSelected: status.countSelected,
+				countAccumulated: this.accumulator.size(),
+				energyThresholdEffective: status.threshold,
+			};
+		}
+
+		return {
+		    countSelected: this.accumulator.filtered().countSelected,
+        	countAccumulated: this.accumulator.size(),
+			energyThresholdEffective: this.energyThreshold,
+		};
 	}
 
 	/**
@@ -144,129 +179,60 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for symmetry parameters change
-	 *
-	 * @returns Computed symmetry
+	 * Channel handler for cleaning the accumulator
 	 */
 	private channelReset(): void {
-		this.accumulator.length = 0;
+
+		this.accumulator.clear();
 	}
 
 	/**
-	 * Channel handler for UI initialization
+	 * Channel handler for energy filtering parameter changes
 	 *
-	 * @returns Parameters to initialize the user interface
+	 * @param params - Energy filtering parameters
+	 * @returns Results from the filtering
 	 */
 	private channelEnergy(params: CtrlParams): CtrlParams {
 
 		const filename = params.filename as string;
-		if(!filename) return {
-			countSelected: this.accumulator.length,
-			countAccumulated: this.accumulator.length,
-			energyThresholdEffective: 0,
+		if(filename) {
+			try {
+				const energiesRaw = fs.readFileSync(filename, "utf8") + "\n";
+				this.accumulator.loadEnergies(energiesRaw
+													.replaceAll(/\s+/g, "\n")
+													.split("\n")
+													.map((line) => Number.parseFloat(line)));
+			}
+			catch(error: unknown) {
+				sendAlertMessage(`Error reading energy file: ${(error as Error).message}`, "fingerprints");
+			}
 		};
 
-        this.enableEnergyThreshold = params.enableEnergyThreshold as boolean ?? false;
+        this.enableEnergyFiltering = params.enableEnergyFiltering as boolean ?? false;
         this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
         this.energyThreshold = params.energyThreshold as number ?? 0;
 
-		try {
-			const energiesRaw = fs.readFileSync(filename, "utf8") + "\n";
-			this.energyPerStructure = energiesRaw
-											.replaceAll(/\s+/g, "\n")
-											.split("\n")
-											.map((line) => Number.parseFloat(line));
-
-			// Find the minimum energy
-			this.minimumEnergy = Number.POSITIVE_INFINITY;
-			for(const oneEnergy of this.energyPerStructure) {
-				if(oneEnergy < this.minimumEnergy) this.minimumEnergy = oneEnergy;
-			}
-
-			// Find the energy threshold
-			const threshold = this.thresholdFromMinimum ?
-								this.minimumEnergy + this.energyThreshold :
-								this.energyThreshold;
-
-			// Do nothing if no structures
-			if(this.accumulator.length === 0) {
-				return {
-					countSelected: 0,
-					countAccumulated: 0,
-					energyThresholdEffective: threshold,
-				};
-			}
-
-			// Structures should be filtered by energy
-			if(this.enableEnergyThreshold) {
-
-				// Do filtering
-				const countSelected = this.filterOnEnergy(threshold);
-				if(countSelected < 0) {
-					sendAlertMessage("Energies are less than structures", "fingerprints");
-					return {
-						countSelected: 0,
-						countAccumulated: this.accumulator.length,
-						energyThresholdEffective: threshold,
-					};
-				}
-				return {
-					countSelected,
-					countAccumulated: this.accumulator.length,
-					energyThresholdEffective: threshold,
-				};
-			}
-		}
-		catch(error: unknown) {
-			sendAlertMessage(`Error reading energy file: ${(error as Error).message}`, "fingerprints");
-		}
-		return {
-			countSelected: this.accumulator.length,
-			countAccumulated: this.accumulator.length,
-			energyThresholdEffective: this.energyThreshold,
+		if(this.accumulator.size() === 0) return {
+			countSelected: 0,
+			countAccumulated: 0,
+			energyThresholdEffective: this.accumulator.filtered().threshold
 		};
-	}
 
-	/**
-	 * Channel handler for UI initialization
-	 *
-	 * @returns Parameters to initialize the user interface
-	 */
-	private channelThreshold(params: CtrlParams): CtrlParams {
-
-        this.enableEnergyThreshold = params.enableEnergyThreshold as boolean ?? false;
-        this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
-        this.energyThreshold = params.energyThreshold as number ?? 0;
-        this.fingerprintsAccumulate = params.fingerprintsAccumulate as boolean ?? false;
-
-		// Find the energy threshold
-		const threshold = this.thresholdFromMinimum ?
-								this.minimumEnergy + this.energyThreshold :
-								this.energyThreshold;
-
-		// If in accumulate mode, save the structure encoded
-		if(this.fingerprintsAccumulate) {
-
-			// Do filtering
-			const countSelected = this.filterOnEnergy(threshold);
-			if(countSelected < 0) {
-				sendAlertMessage("Energies are less than structures", "fingerprints");
-				return {
-					countSelected: 0,
-					countAccumulated: this.accumulator.length,
-					energyThresholdEffective: threshold,
-				};
-			}
+		const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
+														this.energyThreshold,
+														this.thresholdFromMinimum);
+		if(status.error) {
+			sendAlertMessage(status.error, "fingerprints");
 			return {
-				countSelected,
-				countAccumulated: this.accumulator.length,
-				energyThresholdEffective: threshold,
+				countSelected: 0,
+				countAccumulated: this.accumulator.size(),
+				energyThresholdEffective: status.threshold
 			};
 		}
 		return {
-			countSelected: this.accumulator.length,
-			countAccumulated: this.accumulator.length,
-			energyThresholdEffective: threshold,
+			countSelected: status.countSelected,
+			countAccumulated: this.accumulator.size(),
+			energyThresholdEffective: status.threshold,
 		};
 	}
 

@@ -33,14 +33,14 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        5,
-        2.9999999999999996,
-        5.000000000000001
+        4.066269963979721,
+        3.791224406508264,
+        18.500026555964723
       ],
       "lookAt": [
-        0,
-        0,
-        0
+        4.066269963979721,
+        3.791224406508263,
+        1.7385249510407448
       ],
       "snapshotFormat": "png",
       "stlFormat": "binary",
@@ -97,14 +97,14 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "CHGCAR",
+      "format": "POSCAR",
       "atomsTypes": "",
       "useBohr": true,
       "stepIncrement": 1
     },
     "cfp": {
-      "enableEnergyThreshold": false,
-      "energyThreshold": "0",
+      "enableEnergyFiltering": false,
+      "energyThreshold": 0,
       "thresholdFromMinimum": false
     },
     "unit": {

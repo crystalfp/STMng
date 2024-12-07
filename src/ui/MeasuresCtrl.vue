@@ -180,7 +180,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     <v-switch v-model="useFractional" label="Show fractional coordinates"
               color="primary" density="compact" class="ml-4 mt-2 mb-n4"/>
     <v-label v-if="details.length > 0"
-             class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Selected atoms</v-label>
+             class="text-h5 w-100 justify-center yellow-title mb-2">Selected atoms</v-label>
     <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
       <tr v-for="line of details" :key="line.index">
         <td :style="`color:${line.color};width:3rem`">{{ line.label }}</td>
@@ -192,7 +192,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
         <td style="width: 0.5rem;text-align:right">]</td>
       </tr>
     </v-table>
-    <v-label v-if="distanceAB > 0" class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measures</v-label>
+    <v-label v-if="distanceAB > 0" class="text-h5 w-100 justify-center yellow-title mb-2">Measures</v-label>
     <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
       <tr>
       <td style="width:9rem">Distance <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>:</td>
@@ -211,14 +211,14 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
   </v-container>
 
   <v-container v-if="measurementType === 'polyhedra' && volume > 0" class="pa-0">
-    <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Measure</v-label>
+    <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Measure</v-label>
     <v-table density="default" class="pa-1 mt-n1 pr-5">
       <tr><td style="width:9rem">Polyhedral volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
     </v-table>
   </v-container>
 
   <v-container v-if="measurementType === 'bonds' && bondData.length > 0" class="pa-0">
-    <v-label class="text-h5 w-100 justify-center yellow-title mb-2 no-select">Bond length to atom index</v-label>
+    <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Bond length to atom index</v-label>
     <v-table density="default" class="pa-1 mt-n1 pr-5">
       <tr v-for="entry of bondData" :key="entry.idx">
         <td style="width:9rem">{{ entry.idx }}</td>

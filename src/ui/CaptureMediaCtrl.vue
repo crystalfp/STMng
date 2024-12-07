@@ -23,7 +23,7 @@ controlStore.hasCapture = true;
 
 <template>
 <v-container class="container">
-  <v-label class="text-h5 w-100 justify-center yellow-title mt-4 no-select">Snapshot</v-label>
+  <v-label class="text-h5 w-100 justify-center yellow-title mt-4">Snapshot</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.snapshotFormat" color="primary" mandatory class="mb-3">
@@ -38,7 +38,7 @@ controlStore.hasCapture = true;
            density="compact" class="mt-4 cursor-pointer"
            @click="messageStore.captureMedia.typeS=undefined" />
 
-  <v-label class="mt-10 text-h5 w-100 justify-center yellow-title no-select">Movie</v-label>
+  <v-label class="mt-10 text-h5 w-100 justify-center yellow-title">Movie</v-label>
   <v-btn block variant="tonal" class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
         @click="controlStore.movie = !controlStore.movie">
       {{ controlStore.movie ? "Stop recording" : "Start recording" }}
@@ -49,7 +49,7 @@ controlStore.hasCapture = true;
            density="compact" class="mt-4 cursor-pointer"
            @click="messageStore.captureMedia.typeM=undefined" />
 
-  <v-label class="mt-10 text-h5 w-100 justify-center yellow-title no-select">STL</v-label>
+  <v-label class="mt-10 text-h5 w-100 justify-center yellow-title">STL</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.stlFormat" color="primary" mandatory class="mb-3">

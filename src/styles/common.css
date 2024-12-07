@@ -36,11 +36,13 @@ html {
 .green-label {
   color: light-dark(#2E7D32, #66BB6A) !important;
   opacity: 1 !important;
+  user-select: none !important;
 }
 
 .yellow-title {
   color: light-dark(#F57F17, #FFF176) !important;
   opacity: 1 !important;
+  user-select: none !important;
 }
 
 .no-select {
@@ -101,8 +103,7 @@ html {
   width: 100% !important;
   justify-content: center !important;
   user-select: none !important;
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin: 12px 0 12px 0;
   opacity: 1 !important;
   color: #000000 !important;
   background-color: #64B5F6 !important;

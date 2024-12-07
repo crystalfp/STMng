@@ -132,7 +132,7 @@ const forcePosition = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="mb-3 mt-3 w-100 text-h6 justify-center yellow-title no-select">Camera type</v-label><br>
+  <v-label class="mb-3 mt-3 w-100 text-h6 justify-center yellow-title">Camera type</v-label><br>
   <v-btn-toggle v-model="configStore.camera.type" color="primary" mandatory
                 class="mb-8 w-100 justify-center">
     <v-btn value="perspective">Perspective</v-btn>

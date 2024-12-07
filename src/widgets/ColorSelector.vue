@@ -29,7 +29,7 @@ const lineColor = defineModel<string>();
 
 
 <template>
-<v-btn class="mb-2 ml-2 px-4 w-50" :class="{'w-100': block}" variant="tonal"
+<v-btn class="mb-2 w-50" :class="{'w-100': block}" variant="tonal"
        @click="colorPickerShow = !colorPickerShow">
   <template #append>
     <v-icon :icon="mdiRectangle" :color="lineColor" size="x-large" />
@@ -38,5 +38,5 @@ const lineColor = defineModel<string>();
 </v-btn><br>
 <v-color-picker v-if="colorPickerShow" v-model="lineColor"
                 :modes="transparency ? ['rgba', 'hsla', 'hexa'] : ['rgb', 'hsl', 'hex']"
-                elevation="0" class="mb-4 mt-2 ml-2" />
+                elevation="0" class="mb-4 mt-2" />
 </template>
