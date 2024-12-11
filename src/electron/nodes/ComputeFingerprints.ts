@@ -9,8 +9,9 @@
 import fs from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
-import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 import {FingerprintsAccumulator} from "../modules/FingerprintsAccumulator";
+import {fingerprinting, getFingerprintMethodsNames} from "../modules/FingerprintsCompute";
+import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -21,12 +22,16 @@ export class ComputeFingerprints extends NodeCore {
 	private thresholdFromMinimum = false;
     private energyThreshold = 0;
 	private fingerprintsAccumulate = false;
+	private areNanoclusters = false;
 
-	// private forceCutoff = false;
-	// private manualCutoffDistance = 10;
-	// private selectedMethod = 0;
-	// private binSize = 0.05;
-	// private peakWidth = 0.05;
+	private forceCutoff = false;
+	private manualCutoffDistance = 10;
+	private cutoffDistance = 0;
+
+	private selectedMethod = 0;
+	private binSize = 0.05;
+	private peakWidth = 0.02;
+
 	// private selectDistanceMethod = 0;
 	// private fixTriangleInequality = false;
 
@@ -35,9 +40,8 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "capture",   type: "invoke", callback: this.channelCapture.bind(this)},
 		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 		{name: "energy",    type: "invoke", callback: this.channelEnergy.bind(this)},
-
+		{name: "cutoff",    type: "invoke", callback: this.channelCutoff.bind(this)},
 		{name: "fp",		type: "invoke", callback: this.channelFP.bind(this)},
-		{name: "change",    type: "send",   callback: this.channelChange.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -50,21 +54,41 @@ export class ComputeFingerprints extends NodeCore {
 		this.structure = data;
 		if(!this.structure) return;
 
-		// If in accumulate mode, save the structure encoded
+		// If in accumulate mode, save the structure
 		if(this.fingerprintsAccumulate) {
 
-			this.accumulator.add(this.structure);
+			this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
 			this.doFiltering();
 		}
 		else {
+			this.setCutoffDistance();
+
 			sendToClient(this.id, "load", {
 				countSelected: this.accumulator.size(),
 				countAccumulated: this.accumulator.size(),
-				energyThresholdEffective: this.energyThreshold
+				energyThresholdEffective: this.energyThreshold,
+				cutoffDistance: this.setCutoffDistance(),
+				areNanoclusters: this.areNanoclusters
 			});
 		}
 	}
 
+	/**
+	 * Compute cutoff distance
+	 *
+	 * @returns The cutoff distance (already set in this.cutoffDistance)
+	 */
+	private setCutoffDistance(): number {
+
+		this.cutoffDistance = this.forceCutoff ?
+										this.manualCutoffDistance :
+										this.accumulator.getCutoffDistance();
+		return this.cutoffDistance;
+	}
+
+	/**
+	 * Filters on energy the list of structures accumulated
+	 */
 	private doFiltering(): void {
 
 		const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
@@ -75,14 +99,19 @@ export class ComputeFingerprints extends NodeCore {
 			sendToClient(this.id, "load", {
 				countSelected: 0,
 				countAccumulated: this.accumulator.size(),
-				energyThresholdEffective: status.threshold
+				energyThresholdEffective: status.threshold,
+				cutoffDistance: 0,
+				areNanoclusters: this.areNanoclusters
 			});
 		}
 		else {
+
 			sendToClient(this.id, "load", {
 				countSelected: status.countSelected,
 				countAccumulated: this.accumulator.size(),
-				energyThresholdEffective: status.threshold
+				energyThresholdEffective: status.threshold,
+				cutoffDistance: this.setCutoffDistance(),
+				areNanoclusters: this.areNanoclusters
 			});
 		}
 	}
@@ -92,6 +121,10 @@ export class ComputeFingerprints extends NodeCore {
 			enableEnergyFiltering: this.enableEnergyFiltering,
 			energyThreshold: this.energyThreshold,
 			thresholdFromMinimum: this.thresholdFromMinimum,
+			areNanoclusters: this.areNanoclusters,
+        	selectedMethod: this.selectedMethod,
+        	binSize: this.binSize,
+        	peakWidth: this.peakWidth,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -100,6 +133,10 @@ export class ComputeFingerprints extends NodeCore {
 		this.enableEnergyFiltering = params.enableEnergyFiltering as boolean ?? false;
 		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
 		this.energyThreshold = params.energyThreshold as number ?? 0;
+        this.areNanoclusters = params.areNanoclusters as boolean ?? false;
+        this.selectedMethod = params.selectedMethod as number ?? 0;
+        this.binSize = params.binSize as number ?? 0.05;
+        this.peakWidth = params.peakWidth as number ?? 0.02;
 	}
 
 	// > Channel handlers
@@ -116,14 +153,15 @@ export class ComputeFingerprints extends NodeCore {
 			thresholdFromMinimum: this.thresholdFromMinimum,
 			energyThreshold: this.energyThreshold,
 			energyThresholdEffective: this.accumulator.filtered().threshold,
+        	areNanoclusters: this.areNanoclusters,
 
-			// forceCutoff.value = params.forceCutoff as boolean ?? false;
-			// cutoffDistance.value = params.cutoffDistance as number ?? 12;
-			// manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
-			// selectedMethod.value = params.selectedMethod as number ?? 0;
-			// binSize.value = params.binSize as number ?? 0.05;
-			// peakWidth.value = params.peakWidth as number ?? 0.05;
-			// resultDimensionality.value = params.resultDimensionality as number ?? 0;
+			forceCutoff: this.forceCutoff,
+			manualCutoffDistance: this.manualCutoffDistance,
+
+			fingerprintMethods: JSON.stringify(getFingerprintMethodsNames()),
+			selectedMethod: this.selectedMethod,
+			binSize: this.binSize,
+			peakWidth: this.peakWidth,
 
 			// selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
 			// fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
@@ -139,10 +177,11 @@ export class ComputeFingerprints extends NodeCore {
 	private channelCapture(params: CtrlParams): CtrlParams {
 
 		this.fingerprintsAccumulate = params.fingerprintsAccumulate as boolean ?? false;
+		this.areNanoclusters = params.areNanoclusters as boolean ?? false;
 
 		if(this.fingerprintsAccumulate && this.structure) {
 
-			this.accumulator.add(this.structure);
+			this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
 			const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
 														   this.energyThreshold,
 														   this.thresholdFromMinimum);
@@ -151,13 +190,18 @@ export class ComputeFingerprints extends NodeCore {
 				return {
 					countSelected: 0,
 					countAccumulated: this.accumulator.size(),
-					energyThresholdEffective: status.threshold
+					energyThresholdEffective: status.threshold,
+					cutoffDistance: 0,
+					areNanoclusters: this.areNanoclusters
 				};
 			}
+
 			return {
 				countSelected: status.countSelected,
 				countAccumulated: this.accumulator.size(),
 				energyThresholdEffective: status.threshold,
+				cutoffDistance: this.setCutoffDistance(),
+				areNanoclusters: this.areNanoclusters
 			};
 		}
 
@@ -165,17 +209,9 @@ export class ComputeFingerprints extends NodeCore {
 		    countSelected: this.accumulator.filtered().countSelected,
         	countAccumulated: this.accumulator.size(),
 			energyThresholdEffective: this.energyThreshold,
+			cutoffDistance: this.setCutoffDistance(),
+			areNanoclusters: this.areNanoclusters
 		};
-	}
-
-	/**
-	 * Channel handler for symmetry parameters change
-	 *
-	 * @returns Computed symmetry
-	 */
-	private channelChange(params: CtrlParams): void {
-
-		void params; // TBD
 	}
 
 	/**
@@ -215,7 +251,8 @@ export class ComputeFingerprints extends NodeCore {
 		if(this.accumulator.size() === 0) return {
 			countSelected: 0,
 			countAccumulated: 0,
-			energyThresholdEffective: this.accumulator.filtered().threshold
+			energyThresholdEffective: this.accumulator.filtered().threshold,
+			cutoffDistance: 0
 		};
 
 		const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
@@ -226,26 +263,59 @@ export class ComputeFingerprints extends NodeCore {
 			return {
 				countSelected: 0,
 				countAccumulated: this.accumulator.size(),
-				energyThresholdEffective: status.threshold
+				energyThresholdEffective: status.threshold,
+				cutoffDistance: 0
 			};
 		}
+
 		return {
 			countSelected: status.countSelected,
 			countAccumulated: this.accumulator.size(),
 			energyThresholdEffective: status.threshold,
+			cutoffDistance: this.setCutoffDistance()
 		};
 	}
 
 	/**
-	 * Channel handler for UI initialization
+	 * Channel handler for starting fingerprinting
 	 *
 	 * @returns Parameters to initialize the user interface
 	 */
+	private channelCutoff(params: CtrlParams): CtrlParams {
+
+        this.forceCutoff = params.forceCutoff as boolean ?? false;
+        this.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
+
+		return {
+			cutoffDistance: this.setCutoffDistance()
+		};
+	}
+
+	/**
+	 * Channel handler for doing fingerprinting
+	 *
+	 * @returns Results for the user interface
+	 */
 	private channelFP(params: CtrlParams): CtrlParams {
 
-		void params;
+		this.selectedMethod = params.selectedMethod as number ?? 0;
+        this.binSize = params.binSize as number ?? 0.05;
+        this.peakWidth = params.peakWidth as number ?? 0.02;
+
+		const fpDimension = fingerprinting(this.accumulator, {
+			method: this.selectedMethod,
+			areNanoclusters: this.areNanoclusters,
+			cutoffDistance: this.cutoffDistance,
+			binSize: this.binSize,
+			peakWidth: this.peakWidth
+		});
+
+		if(fpDimension === 0) {
+			sendAlertMessage("Error computing fingerprints", "fingerprints");
+		}
+
 		return {
-			resultDimensionality: 123 // TBD
+			resultDimensionality: fpDimension
 		};
 	}
 }

@@ -105,7 +105,11 @@
     "cfp": {
       "enableEnergyFiltering": false,
       "energyThreshold": 0,
-      "thresholdFromMinimum": false
+      "thresholdFromMinimum": false,
+      "areNanoclusters": false,
+      "selectedMethod": 0,
+      "binSize": 0.05,
+      "peakWidth": 0.02
     },
     "unit": {
       "showUnitCell": true,

@@ -527,3 +527,9 @@ export interface ChartParams {
     /** Type of chart to be shown */
     type: string;
 }
+
+// > Fingerprinting
+export interface FingerprintingMethod {
+	label: string;
+	needSizes: boolean;
+}

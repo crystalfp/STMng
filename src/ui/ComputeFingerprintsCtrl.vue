@@ -7,12 +7,12 @@
  * @since 2024-07-05
  */
 
-import {ref, watchEffect, computed, watch} from "vue";
+import {ref, computed, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {useControlStore} from "@/stores/controlStore";
-import type {CtrlParams} from "@/types";
+import type {CtrlParams, FingerprintingMethod} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -24,11 +24,14 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
+type FPmethodName = {value: number} & FingerprintingMethod;
+
 // Prepare the error messages
 resetAlertMessage("fingerprints");
 
 // Accumulate structures
 const countAccumulated = ref(0);
+const areNanoclusters = ref(false);
 
 // Filter structures
 const enableEnergyFiltering = ref(false);
@@ -39,11 +42,12 @@ const countSelected = ref(0);
 
 // Compute fingerprints
 const forceCutoff = ref(false);
-const cutoffDistance = ref(12);
+const cutoffDistance = ref(0);
 const manualCutoffDistance = ref(10);
+const fingerprintMethodsNames = ref<FPmethodName[]>([]);
 const selectedMethod = ref(0);
 const binSize = ref(0.05);
-const peakWidth = ref(0.05);
+const peakWidth = ref(0.02);
 const resultDimensionality = ref(0);
 
 // Compute distances
@@ -68,14 +72,20 @@ askNode(id, "init")
         thresholdFromMinimum.value = params.thresholdFromMinimum as boolean ?? false;
         energyThreshold.value = params.energyThreshold as number ?? 0;
         energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+        areNanoclusters.value = params.areNanoclusters as boolean ?? false;
 
-        // forceCutoff.value = params.forceCutoff as boolean ?? false;
-        // cutoffDistance.value = params.cutoffDistance as number ?? 12;
-        // manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
-        // selectedMethod.value = params.selectedMethod as number ?? 0;
-        // binSize.value = params.binSize as number ?? 0.05;
-        // peakWidth.value = params.peakWidth as number ?? 0.05;
-        // resultDimensionality.value = params.resultDimensionality as number ?? 0;
+        forceCutoff.value = params.forceCutoff as boolean ?? false;
+        manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
+        cutoffDistance.value = forceCutoff.value ? manualCutoffDistance.value : 0;
+
+        const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as FingerprintingMethod[];
+        const len = fpmn.length;
+        fingerprintMethodsNames.value.length = 0;
+        for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, ...fpmn[i]});
+
+        selectedMethod.value = params.selectedMethod as number ?? 0;
+        binSize.value = params.binSize as number ?? 0.05;
+        peakWidth.value = params.peakWidth as number ?? 0.02;
 
         // selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
         // fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
@@ -88,6 +98,8 @@ receiveFromNode(id, "load", (params) => {
     countSelected.value = params.countSelected as number ?? 0;
     countAccumulated.value = params.countAccumulated as number ?? 0;
     energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+    cutoffDistance.value = params.cutoffDistance as number ?? 0;
+    areNanoclusters.value = params.areNanoclusters as boolean ?? false;
 });
 
 /**
@@ -112,12 +124,15 @@ const toggleAccumulating = (): void => {
     controlStore.fingerprintsAccumulate = !controlStore.fingerprintsAccumulate;
 
     askNode(id, "capture", {
-        fingerprintsAccumulate: controlStore.fingerprintsAccumulate
+        fingerprintsAccumulate: controlStore.fingerprintsAccumulate,
+        areNanoclusters: areNanoclusters.value
     })
     .then((params) => {
         setTimeout(() => {
             countSelected.value = params.countSelected as number ?? 0;
             countAccumulated.value = params.countAccumulated as number ?? 0;
+            cutoffDistance.value = params.cutoffDistance as number ?? 0;
+            areNanoclusters.value = params.areNanoclusters as boolean ?? false;
         }, 50);
     })
     .catch((error: Error) => showAlertMessage(`Error from toggle capture for ${label}: ${error.message}`,
@@ -141,6 +156,7 @@ const selectEnergyFile = (filename: string): void => {
         countSelected.value = params.countSelected as number ?? 0;
         countAccumulated.value = params.countAccumulated as number ?? 0;
         energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+        cutoffDistance.value = params.cutoffDistance as number ?? 0;
     })
     .catch((error: Error) => {
         showAlertMessage(`Error reading energy file: ${error.message}`, "fingerprints");
@@ -170,43 +186,41 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
         countSelected.value = params.countSelected as number ?? 0;
         countAccumulated.value = params.countAccumulated as number ?? 0;
         energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+        cutoffDistance.value = params.cutoffDistance as number ?? 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from energy settings for ${label}: ${error.message}`,
                                               "fingerprints"));
 });
 
-watchEffect(() => {
+watch([forceCutoff, manualCutoffDistance], () => {
 
-      sendToNode(id, "change", {
-
+    askNode(id, "cutoff", {
         forceCutoff: forceCutoff.value,
         manualCutoffDistance: manualCutoffDistance.value,
-        selectedMethod: selectedMethod.value,
-        binSize: binSize.value,
-        peakWidth: peakWidth.value,
+    })
+    .then((params: CtrlParams) => {
 
-        selectedDistanceMethod: selectedDistanceMethod.value,
-        computeDistances: computeDistances.value,
-        fixTriangleInequality: fixTriangleInequality.value,
-    });
+        cutoffDistance.value = params.cutoffDistance as number ?? manualCutoffDistance.value;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from cutoff setting for ${label}: ${error.message}`,
+                                              "fingerprints"));
+
+});
+
+const cutoffLabel = computed(() => {
+
+    if(cutoffDistance.value === 0) return "No cutoff defined";
+    return forceCutoff.value ?
+        `Forced cutoff: ${manualCutoffDistance.value.toFixed(2)}`:
+        `Computed cutoff: ${cutoffDistance.value.toFixed(2)}`;
 });
 
 // eslint-disable-next-line security/detect-unsafe-regex
 const rg = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
 const rules = {
     numeric: (value: string): boolean | string => rg.test(value) || "Field should be numeric",
+    positive: (value: string): boolean | string => Number.parseFloat(value) > 0 || "Field should be > 0",
 };
-
-const fpMethods = [
-    {value: 0, label: "Normalized diffraction"},
-    {value: 1, label: "Mendeleev spectra"},
-    {value: 2, label: "Chemical scale spectra"},
-    {value: 3, label: "Per element diffraction"},
-    {value: 4, label: "Distances per atom"},
-    {value: 5, label: "Merged distances"},
-    {value: 6, label: "Re-centered per element diffraction"},
-    {value: 7, label: "Trimmed per element diffraction"},
-];
 
 const distanceMethods = [
     {value: 0, label: "Cosine distance"},
@@ -220,8 +234,6 @@ const distanceMethods = [
 const computeFingerprints = (): void => {
 
     askNode(id, "fp", {
-        forceCutoff: forceCutoff.value,
-        manualCutoffDistance: manualCutoffDistance.value,
 		selectedMethod: selectedMethod.value,
         binSize: binSize.value,
         peakWidth: peakWidth.value
@@ -245,6 +257,8 @@ const computeFingerprints = (): void => {
     <v-spacer />
     <v-btn density="compact" variant="tonal" @click="resetAccumulator">Reset</v-btn>
   </v-row>
+  <v-switch v-model="areNanoclusters" color="primary"
+            label="Structures are nanoclusters" class="ml-2 my-n3" />
   <v-btn variant="tonal" block class="m2-4" @click="toggleAccumulating">{{ accumulatingLabel }}</v-btn>
 
   <v-label class="separator-title">Filter structures</v-label>
@@ -264,40 +278,36 @@ const computeFingerprints = (): void => {
                     label="Max energy" readonly class="ml-2 mr-5" />
   </v-row>
 
-  <v-label class="mt-4 mb-4 green-label no-select"> {{ accumulatedLabel }}</v-label>
+  <v-label class="mt-2 mb-2 green-label"> {{ accumulatedLabel }}</v-label>
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
   <v-row class="mt-4 mx-0">
     <v-switch v-model="forceCutoff" color="primary" label="Force cutoff at:" class="ml-2" />
-    <v-text-field v-model="manualCutoffDistance" label="Cutoff distance" :disabled="!forceCutoff"
-                  class="ml-2 mr-2" :rules="[rules.numeric]" />
+    <v-number-input controlVariant="stacked" variant="filled" v-model="manualCutoffDistance"
+                    label="Cutoff distance" :min="0.1" :step="0.1" :disabled="!forceCutoff"
+                    class="mx-2" />
   </v-row>
 
-  <v-label class="mt-2 mb-6 green-label no-select">
-  {{ forceCutoff ?
-    `Forced cutoff: ${manualCutoffDistance.toFixed(2)} (was: ${cutoffDistance.toFixed(2)})` :
-    `Computed cutoff: ${cutoffDistance.toFixed(2)}`
-  }}
-  </v-label>
+  <v-label class="mt-2 mb-6 green-label">{{ cutoffLabel }}</v-label>
 
   <v-select v-model="selectedMethod"
-    :items="fpMethods"
+    :items="fingerprintMethodsNames"
     label="Selection method"
     item-title="label"
     item-value="value"
     density="compact" class="mr-2" />
 
-  <v-row v-if="selectedMethod < 4 || selectedMethod === 6" class="ml-0 mr-2">
-    <v-text-field v-model="binSize" label="Bin size"
-                    class="mr-2" :rules="[rules.numeric]" />
-    <v-text-field v-model="peakWidth" label="Peak width"
-                    :rules="[rules.numeric]" />
+  <v-row v-if="fingerprintMethodsNames[selectedMethod]?.needSizes" class="ml-0 mr-2 pt-1">
+    <v-number-input controlVariant="stacked" variant="filled" v-model="binSize"
+                    label="Bin size" :min="0.01" :step="0.01" class="mr-2" />
+    <v-number-input controlVariant="stacked" variant="filled" v-model="peakWidth"
+                    label="Peak width" :min="0.01" :step="0.01" />
   </v-row>
   <v-btn block variant="tonal" :disabled="countSelected === 0" @click="computeFingerprints">
     Compute fingerprints
   </v-btn>
-  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label no-select">
+  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
     {{ `Done (dimensionality: ${resultDimensionality})` }}
   </v-label>
 
@@ -314,7 +324,7 @@ const computeFingerprints = (): void => {
   <v-btn block variant="tonal" :disabled="countSelected === 0" @click="computeDistances=true">
     Compute distances
   </v-btn>
-  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label no-select">
+  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
     Done
   </v-label>
 
