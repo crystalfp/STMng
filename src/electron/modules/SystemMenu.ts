@@ -25,7 +25,7 @@ import type {CtrlParams} from "@/types/index.ts";
  * @param node - Node name for which the documentation should be shown.
    If missing show general STMng documentation
  * @returns Promise from openExternal
- * @throws Error
+ * @throws Error.
  * If the help file is not found
  */
 const openDocumentation = (node?: string): Promise<void> => {
@@ -205,7 +205,10 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     label: "STMng documentation",
                     accelerator: "F1",
                     click() {
-                        void openDocumentation();
+                        openDocumentation()
+                            .catch((error: Error) => {
+                                sendAlertMessage(`Error getting help for "STMng": ${error.message}`);
+                            });
                     },
                 },
                 {

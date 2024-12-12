@@ -8,10 +8,10 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import type {Structure, CtrlParams, ChannelDefinition,
-			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import type {Structure, CtrlParams, ChannelDefinition,
+			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
 
 
 export class DiffractionPattern extends NodeCore {
@@ -62,6 +62,7 @@ export class DiffractionPattern extends NodeCore {
 		}
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			scaled: this.scaled,

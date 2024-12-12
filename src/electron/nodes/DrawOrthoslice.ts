@@ -120,6 +120,7 @@ export class DrawOrthoslice extends NodeCore {
 		}
 	}
 
+	// > Load/save status
 	saveStatus(): string {
 
         const statusToSave = {

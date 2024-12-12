@@ -9,7 +9,6 @@
 import fs from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
-
 import type {Structure} from "@/types";
 
 /** Line read type */
@@ -25,6 +24,8 @@ enum LineType {
  * @param filename - Filename to be read as XDATCAR
  * @param mainStructure - The already read main structure
  * @returns Main structures trajectory
+ * @throws Error.
+ * "Missing main structure" or "Empty main structure" or "ENOENT: no such file or directory"
  */
 export const readAuxXDATCAR = async (filename: string, mainStructure: Structure): Promise<Structure[]> => {
 

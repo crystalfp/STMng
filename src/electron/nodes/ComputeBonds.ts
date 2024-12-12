@@ -7,12 +7,11 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell, vectorAngle} from "../modules/Helpers";
-
+import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
 interface PairData {
@@ -644,6 +643,7 @@ export class ComputeBonds extends NodeCore {
 		return this.bondScale;
 	}
 
+	// > Load/save status
 	saveStatus(): string {
 
 		const pd = this.perPairData.some((entry) => entry.scale !== 1.1) ? JSON.stringify(this.perPairData) : "[]";

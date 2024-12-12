@@ -9,7 +9,6 @@
 import {app} from "electron";
 import path from "node:path";
 import fs from "node:fs";
-// import fs from "fs-extra";
 import yaml from "js-yaml";
 
 /**
@@ -54,7 +53,6 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 			const filename = `${options?.name ?? "config"}.yaml`;
 			const directory = app.getPath("userData");
 			const userDataDir = path.join(directory, "UserData");
-			// fs.ensureDirSync(userDataDir);
  			if(!fs.existsSync(userDataDir)) {
     			fs.mkdirSync(userDataDir, {recursive: true});
 			}

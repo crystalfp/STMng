@@ -6,9 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-09
  */
+import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
-import log from "electron-log";
 
 import {WriterXYZ} from "../writers/WriteXYZ";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
@@ -42,6 +42,7 @@ export class StructureWriter extends NodeCore {
 		else this.structure = data;
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			format: this.format,

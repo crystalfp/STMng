@@ -9,7 +9,6 @@
 import {app, ipcMain} from "electron";
 import path from "node:path";
 import fs from "node:fs";
-// import fs from "fs-extra";
 import {createSecondaryWindow, sendAlertMessage} from "./WindowsUtilities";
 
 /**
@@ -45,7 +44,6 @@ export const setupChannelLogFile = (): void => {
 		const currentPath = path.join(directory, "logs", "main.log");
 		const savePath = path.join(directory, "logs", "main.old.log");
 
-		// fs.moveSync(currentPath, savePath, {overwrite: true});
 		fs.copyFileSync(currentPath, savePath);
 		fs.writeFileSync(currentPath, "", "utf8");
 	});

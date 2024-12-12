@@ -7,10 +7,10 @@
  * @since 2024-07-05
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, CtrlParams, ChannelDefinition, AtomRenderInfo,
-			 StructureRenderInfo} from "@/types";
 import {sendToClientForRendering} from "../modules/WindowsUtilities";
 import {getAtomData} from "../modules/AtomData";
+import type {Structure, CtrlParams, ChannelDefinition, AtomRenderInfo,
+			 StructureRenderInfo} from "@/types";
 
 export class DrawStructure extends NodeCore {
 
@@ -76,6 +76,7 @@ export class DrawStructure extends NodeCore {
 		sendToClientForRendering(this.id, "structure", renderInfo);
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			drawKind: this.drawKind,

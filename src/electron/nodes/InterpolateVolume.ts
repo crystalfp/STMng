@@ -55,6 +55,7 @@ export class InterpolateVolume extends NodeCore {
 		else this.computeInterpolation();
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			interpolateVolume: this.interpolateVolume,

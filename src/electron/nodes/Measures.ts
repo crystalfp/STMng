@@ -8,11 +8,11 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, CtrlParams, ChannelDefinition,
-			 SelectedAtom, PositionType, BondData} from "@/types";
 import {getAtomData} from "../modules/AtomData";
 import {sendToClient} from "../modules/WindowsUtilities";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
+import type {Structure, CtrlParams, ChannelDefinition,
+			 SelectedAtom, PositionType, BondData} from "@/types";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
 const colors = ["#FF0000", "#00C300", "#4263FF"];
@@ -46,6 +46,7 @@ export class Measures extends NodeCore {
 		this.structure = data;
 	}
 
+	// > Load/save status
 	saveStatus(): string {return "";}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function

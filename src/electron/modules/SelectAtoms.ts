@@ -9,6 +9,7 @@
 import {getAtomicSymbol} from "./AtomData";
 import type {Structure} from "@/types";
 
+/** Valid values for the selection type */
 export type SelectorType = "symbol" | "label" | "index" | "all";
 
 /**

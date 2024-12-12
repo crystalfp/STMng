@@ -87,6 +87,7 @@ export class Trajectories extends NodeCore {
 		}
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			showTrajectories: this.showTrajectories,

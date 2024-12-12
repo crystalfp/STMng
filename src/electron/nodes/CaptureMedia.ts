@@ -32,6 +32,7 @@ export class CaptureView extends NodeCore {
 		void this.id;
 	}
 
+	// > Load/save status
 	saveStatus(): string {
 		return "";
 	}

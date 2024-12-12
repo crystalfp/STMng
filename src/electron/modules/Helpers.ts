@@ -142,7 +142,7 @@ export const basisToLengthAngles = (basis: BasisType): LengthsAnglesType => [
  *
  * @param basis - Basis matrix
  * @returns Inverse of the basis matrix
- * @throws Error
+ * @throws Error.
  * The basis matrix is not invertible
  */
 export const invertBasis = (basis: BasisType): BasisType => {

@@ -83,6 +83,7 @@ export class ComputeSymmetries extends NodeCore {
 		this.computeSymmetries();
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 	        applyInputSymmetries: this.applyInputSymmetries,

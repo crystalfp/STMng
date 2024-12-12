@@ -7,11 +7,11 @@
  * @since 2024-10-26
  */
 
-import type {Structure, PositionType} from "@/types";
 import {Lattice} from "./Lattice";
 import {ReciprocalLattice, type ReciprocalPoint} from "./ReciprocalLattice";
 import {ATOMIC_SCATTERING_PARAMS} from "./AtomicScatteringParams";
 import {getAtomicSymbol} from "./AtomData";
+import type {Structure, PositionType} from "@/types";
 
 /** Type of the XRD calculator output */
 export interface DiffractionPatternResult {
@@ -80,6 +80,8 @@ export class XRDCalculator {
 	 * @param thetaLow - Low value for range of two_thetas to calculate in degrees. Defaults to 0.
 	 * @param thetaHigh - High value for range of two_thetas to calculate in degrees. Defaults to 90.
 	 * @returns The computed diffraction pattern
+     * @throws Error.
+     * Unable to calculate XRD pattern as there is no scattering coefficients for specie
 	 */
     getDiffractionPattern(structure: Structure,
                           wavelengthCode="CuKa",

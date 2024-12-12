@@ -6,8 +6,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-26
  */
-import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
 import {basisToLengthAngles, invertBasis} from "./Helpers";
+import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 export class Lattice {
 

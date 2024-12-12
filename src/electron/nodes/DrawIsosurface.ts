@@ -62,6 +62,7 @@ export class DrawIsosurface extends NodeCore {
 		this.createIsosurface(true);
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
             showIsosurface: this.showIsosurface,

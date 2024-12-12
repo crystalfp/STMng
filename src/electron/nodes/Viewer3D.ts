@@ -7,8 +7,8 @@
  * @since 2024-07-08
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {Viewer3DState, ChannelDefinition, CtrlParams} from "@/types";
 import {askClient} from "../modules/WindowsUtilities";
+import type {Viewer3DState, ChannelDefinition, CtrlParams} from "@/types";
 
 export class Viewer3D extends NodeCore {
 
@@ -23,6 +23,7 @@ export class Viewer3D extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
+	// > Load/save status
 	async saveStatus(): Promise<string> {
 
 		this.rawStatus = await askClient(this.id, "state");

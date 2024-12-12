@@ -10,9 +10,9 @@ import fs from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
+import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
-import {EmptyStructure} from "../modules/EmptyStructure";
 
 /** Line read type */
 enum LineType {

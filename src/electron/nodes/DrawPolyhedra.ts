@@ -52,6 +52,7 @@ export class DrawPolyhedra extends NodeCore {
 		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			color: this.color,

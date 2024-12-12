@@ -8,10 +8,10 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
-import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
 import {sendAlertMessage} from "../modules/WindowsUtilities";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
 
 // Import the readers
 import {ReaderXYZ} from "../readers/ReadXYZ";
@@ -64,6 +64,7 @@ export class StructureReader extends NodeCore {
 		this.toNextNode(new EmptyStructure());
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			loopSteps: this.loopSteps,

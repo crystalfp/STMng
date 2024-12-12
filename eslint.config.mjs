@@ -197,7 +197,7 @@ export default [{
         "no-unneeded-ternary": "warn",
         "no-trailing-spaces": "warn",
         "id-length": ["warn", {exceptions: [
-                                    "i", "j", "k", "x", "y", "z",
+                                    "i", "j", "k", "x", "y", "z", "n",
                                     "w", "h", "r", "g", "a", "b", "c", "t", "v"
                                ]}],
         "prefer-const": "warn",

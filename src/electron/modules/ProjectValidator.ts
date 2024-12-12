@@ -7,8 +7,8 @@
  * @since 2024-07-05
  */
 import * as v from "valibot";
-import type {Project} from "@/types";
 import {sendAlertMessage} from "./WindowsUtilities";
+import type {Project} from "@/types";
 
 // {
 // "graph": {

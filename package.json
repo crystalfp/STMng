@@ -47,7 +47,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@eslint/js": "^9.16.0",
     "@mdi/svg": "^7.4.47",
-    "@stylistic/eslint-plugin": "^2.12.0",
+    "@stylistic/eslint-plugin": "^2.12.1",
     "@types/eslint": "^9.6.1",
     "@types/js-yaml": "^4.0.9",
     "@types/three": "^0.170.0",
@@ -88,7 +88,7 @@
     "vite": "^6.0.3",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",
-    "vite-plugin-vue-devtools": "^7.6.7",
+    "vite-plugin-vue-devtools": "^7.6.8",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^2.1.10"
