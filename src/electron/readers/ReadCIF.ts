@@ -134,7 +134,7 @@ export class ReaderCIF implements ReaderImplementation {
 		let isInLoopHeader = false;
 
 		// Read file by line
-		const reader = createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			// Clear line from comments and control characters

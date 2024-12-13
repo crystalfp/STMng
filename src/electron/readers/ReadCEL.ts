@@ -31,7 +31,7 @@ export class ReaderCEL implements ReaderImplementation {
 		const structures: Structure[] = [new EmptyStructure()];
 		let rdnatoms = -1;
 
-		const reader = createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			const lineNC = line.trim();

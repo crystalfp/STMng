@@ -6,29 +6,25 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-07
  */
-import {hasNoUnitCell} from "./Helpers";
-import type {Structure, PositionType, BasisType} from "@/types";
-
-/** Essential parts of the atom definition */
-interface AtomReduced {
-	atomZ: number;
-	position: PositionType;
-}
+import {hasNoUnitCell} from "../modules/Helpers";
+import type {Structure, BasisType} from "@/types";
 
 /** Essential part of the structure to be accumulated */
-interface StructureReduced {
+export interface StructureReduced {
 
-	origin: PositionType;
+	index: number;
+
 	basis: BasisType;
 	minRadius: number;
 
-	atoms: AtomReduced[];
-	bonds: {
-    	from: number;
-	    to: number;
-	    type: 0 | 1 | 99;
-	}[];
+	atomsPosition: number[];
+	atomsZ: number[];
+	species: Map<number, number>;
+
 	selected: boolean;
+
+	fingerprint: number[];
+	weights: number[];
 }
 
 /** Filtering return */
@@ -45,19 +41,26 @@ export class FingerprintsAccumulator {
 	private thresholdEnergy = 0;
 	private countSelected = 0;
 	private areNanoclusters = false;
+	private countSpecies = 0;
 
 	/**
 	 * Add one structure to the accumulator
 	 *
 	 * @param structure - Structure to be added to the accumulator
+	 * @param isNanocluster - If the structure is a nanocluster and not a crystal
 	 * @returns True if the loaded structures are nanoclusters
+	 * @throws Error.
+	 * "Empty structure loaded" or "Number of species differs"
 	 */
 	add(structure: Structure, isNanocluster: boolean): boolean {
 
-		const {crystal, atoms, bonds} = structure;
+		const {crystal, atoms} = structure;
 		const {basis, origin} = crystal;
 
-		// Check if this structure is a nanocluster
+		// Check structure not empty
+		if(atoms.length === 0) throw Error("Empty structure loaded");
+
+		// Check if this structure is a nanocluster because no unit cell
 		if(!isNanocluster && hasNoUnitCell(basis)) isNanocluster = true;
 
 		// It is the first structure
@@ -72,41 +75,47 @@ export class FingerprintsAccumulator {
 		// Load the structure clone
 		const entry: StructureReduced = {
 
+			index: this.accumulator.length,
+
 			basis: [
 				basis[0], basis[1], basis[2],
 				basis[3], basis[4], basis[5],
 				basis[6], basis[7], basis[8]
 			],
-			origin: [
-				origin[0],
-				origin[1],
-				origin[2]
-			],
-			minRadius: isNanocluster ?
-							this.getMaxAtomDistance(atoms) : this.getMaxDiagonalLength(basis),
-			atoms: [],
-			bonds: [],
-			selected: true
+			minRadius: 0,
+
+			atomsPosition: [],
+			atomsZ: [],
+			species: new Map<number, number>(),
+
+			selected: true,
+
+			fingerprint: [],
+			weights: []
 		};
 
 		for(const atom of atoms) {
-			entry.atoms.push({
-				atomZ: atom.atomZ,
-				position: [
-					atom.position[0],
-					atom.position[1],
-					atom.position[2]
-				]
-			});
+			const {atomZ, position} = atom;
+
+			if(entry.species.has(atomZ)) {
+				const n = entry.species.get(atomZ)!;
+				entry.species.set(atomZ, n+1);
+			}
+			else entry.species.set(atomZ, 1);
+			entry.atomsZ.push(atomZ);
+			entry.atomsPosition.push(
+				position[0] - origin[0],
+				position[1] - origin[1],
+				position[2] - origin[2]
+			);
 		}
 
-		for(const bond of bonds) {
-			entry.bonds.push({
-				from: bond.from,
-				to: bond.to,
-				type: bond.type
-			});
-		}
+		// Check all structures have the same number of species
+		if(this.countSpecies === 0) this.countSpecies = entry.species.size;
+		else if(this.countSpecies !== entry.species.size) throw Error("Number of species differs");
+
+		entry.minRadius = isNanocluster ?
+					this.getMaxAtomDistance(entry.atomsPosition) : this.getMaxDiagonalLength(basis);
 
 		this.accumulator.push(entry);
 
@@ -127,6 +136,24 @@ export class FingerprintsAccumulator {
 	 */
 	size(): number {
 		return this.accumulator.length;
+	}
+
+	/**
+	 * Count of structures loaded and selected
+	 *
+	 * @returns - Count of the selected structures
+	 */
+	selectedSize(): number {
+		return this.countSelected;
+	}
+
+	/**
+	 * Count of species in the loaded structures
+	 *
+	 * @returns - Count of species
+	 */
+	numberOfSpecies(): number {
+		return this.countSpecies;
 	}
 
 	/**
@@ -215,6 +242,20 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
+	 * Iterator on the selected structures
+	 *
+	 * @returns An iterator on the selected structures
+	 */
+	* iterateSelectedStructures(): Generator<StructureReduced> {
+
+		for(const entry of this.accumulator) {
+			if(entry.selected) {
+				yield entry;
+			}
+		}
+	}
+
+	/**
 	 * Get unit cell longest diagonal
 	 *
 	 * @param basis - Structure basis vectors
@@ -260,21 +301,24 @@ export class FingerprintsAccumulator {
 	 * @param atoms - List of structure atoms
 	 * @returns Max distance between structure atoms
 	 */
-	private getMaxAtomDistance(atoms: AtomReduced[]): number {
+	private getMaxAtomDistance(atomsPosition: number[]): number {
 
 		let maxAtomDistance = 0;
 
-		const natoms = atoms.length;
+		const natoms = atomsPosition.length / 3;
 		for(let i=0; i < natoms-1; ++i) {
 
-			const ix = atoms[i].position[0];
-			const iy = atoms[i].position[1];
-			const iz = atoms[i].position[2];
+			const i3 = i*3;
+			const ix = atomsPosition[i3];
+			const iy = atomsPosition[i3+1];
+			const iz = atomsPosition[i3+2];
 
 			for(let j=i+1; j < natoms; ++j) {
-				const jx = atoms[j].position[0];
-				const jy = atoms[j].position[1];
-				const jz = atoms[j].position[2];
+
+				const j3 = j*3;
+				const jx = atomsPosition[j3];
+				const jy = atomsPosition[j3+1];
+				const jz = atomsPosition[j3+2];
 				const dx = ix - jx;
 				const dy = iy - jy;
 				const dz = iz - jz;
@@ -317,7 +361,7 @@ export class FingerprintsAccumulator {
 
 		for(const structure of this.accumulator) {
 			structure.minRadius = this.areNanoclusters ?
-								this.getMaxAtomDistance(structure.atoms) :
+								this.getMaxAtomDistance(structure.atomsPosition) :
 								this.getMaxDiagonalLength(structure.basis);
 		}
 	}

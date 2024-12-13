@@ -40,7 +40,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 	const structures: Structure[] = [];
 	let structure: Structure;
 
-	const stream = createInterface(fs.createReadStream(filename));
+	const stream = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 	for await (const line of stream) {
 
 		switch(lineType) {

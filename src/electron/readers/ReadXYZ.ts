@@ -27,7 +27,7 @@ export class ReaderXYZ implements ReaderImplementation {
 		let numberAtoms = 0;
 		let step = -1;
 		let atoms;
-		const reader = createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			if(numberAtoms === 0) {

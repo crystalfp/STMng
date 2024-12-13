@@ -53,7 +53,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 		let volume: number[] = [];
 		let volumeIndex = 0;
 
-		const stream = createInterface(fs.createReadStream(filename));
+		const stream = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of stream) {
 
 			switch(lineType) {

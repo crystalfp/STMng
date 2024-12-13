@@ -12,7 +12,7 @@ import {storeToRefs} from "pinia";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {useControlStore} from "@/stores/controlStore";
-import type {CtrlParams, FingerprintingMethod} from "@/types";
+import type {CtrlParams, FingerprintingMethodName} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -24,7 +24,7 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-type FPmethodName = {value: number} & FingerprintingMethod;
+type FPmethodName = {value: number} & FingerprintingMethodName;
 
 // Prepare the error messages
 resetAlertMessage("fingerprints");
@@ -78,7 +78,7 @@ askNode(id, "init")
         manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
         cutoffDistance.value = forceCutoff.value ? manualCutoffDistance.value : 0;
 
-        const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as FingerprintingMethod[];
+        const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as FingerprintingMethodName[];
         const len = fpmn.length;
         fingerprintMethodsNames.value.length = 0;
         for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, ...fpmn[i]});

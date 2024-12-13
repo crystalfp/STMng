@@ -48,7 +48,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let cartesian = false;
 		let atomIdx = 0;
 
-		const stream = createInterface(fs.createReadStream(filename));
+		const stream = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of stream) {
 
 			switch(lineType) {

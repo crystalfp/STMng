@@ -24,7 +24,7 @@ interface OneAtomData {
 }
 
 const out: string[] = [];
-const reader = createInterface(fs.createReadStream("element.txt"));
+const reader = createInterface(fs.createReadStream("element.txt", {encoding: "utf8"}));
 for await (const lineRaw of reader) {
 
 	const line = lineRaw.replace(/#.+$/, "").trim();

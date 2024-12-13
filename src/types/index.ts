@@ -529,7 +529,15 @@ export interface ChartParams {
 }
 
 // > Fingerprinting
-export interface FingerprintingMethod {
+export interface FingerprintingMethodName {
 	label: string;
 	needSizes: boolean;
+}
+
+export interface FingerprintingParameters {
+	method?: number;
+	areNanoclusters: boolean;
+	cutoffDistance: number;
+	binSize: number;
+	peakWidth: number;
 }

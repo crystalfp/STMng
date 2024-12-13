@@ -28,7 +28,7 @@ export class ReaderSHELX implements ReaderImplementation {
 		let latticeType = 0;
 		let ignoreNext = false;
 
-		const reader = createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			const lineUC = line.toUpperCase();

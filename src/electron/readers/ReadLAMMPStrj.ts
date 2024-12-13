@@ -54,7 +54,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let boxType: BoxType = BoxType.unknown;
 		const boxValues: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-		const reader = createInterface(fs.createReadStream(filename));
+		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
 		for await (const lineRaw of reader) {
 
 			const line = lineRaw.trim();

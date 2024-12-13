@@ -9,14 +9,15 @@
 import fs from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
-import {FingerprintsAccumulator} from "../modules/FingerprintsAccumulator";
-import {fingerprinting, getFingerprintMethodsNames} from "../modules/FingerprintsCompute";
+import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
+import {Fingerprinting} from "../fingerprint/Compute";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
 	private structure: Structure | undefined;
 	private readonly accumulator = new FingerprintsAccumulator();
+	private readonly fp = new Fingerprinting();
 
     private enableEnergyFiltering = false;
 	private thresholdFromMinimum = false;
@@ -57,14 +58,19 @@ export class ComputeFingerprints extends NodeCore {
 		// If in accumulate mode, save the structure
 		if(this.fingerprintsAccumulate) {
 
-			this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
+			try {
+				this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
+			}
+			catch(error: unknown) {
+				sendAlertMessage((error as Error).message, "fingerprints");
+			}
 			this.doFiltering();
 		}
 		else {
 			this.setCutoffDistance();
 
 			sendToClient(this.id, "load", {
-				countSelected: this.accumulator.size(),
+				countSelected: this.accumulator.selectedSize(),
 				countAccumulated: this.accumulator.size(),
 				energyThresholdEffective: this.energyThreshold,
 				cutoffDistance: this.setCutoffDistance(),
@@ -116,6 +122,7 @@ export class ComputeFingerprints extends NodeCore {
 		}
 	}
 
+	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {
 			enableEnergyFiltering: this.enableEnergyFiltering,
@@ -158,7 +165,7 @@ export class ComputeFingerprints extends NodeCore {
 			forceCutoff: this.forceCutoff,
 			manualCutoffDistance: this.manualCutoffDistance,
 
-			fingerprintMethods: JSON.stringify(getFingerprintMethodsNames()),
+			fingerprintMethods: JSON.stringify(this.fp.getFingerprintMethodsNames()),
 			selectedMethod: this.selectedMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,
@@ -181,7 +188,13 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(this.fingerprintsAccumulate && this.structure) {
 
-			this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
+			try {
+				this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
+			}
+			catch(error: unknown) {
+				sendAlertMessage((error as Error).message, "fingerprints");
+			}
+
 			const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
 														   this.energyThreshold,
 														   this.thresholdFromMinimum);
@@ -248,7 +261,7 @@ export class ComputeFingerprints extends NodeCore {
         this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
         this.energyThreshold = params.energyThreshold as number ?? 0;
 
-		if(this.accumulator.size() === 0) return {
+		if(this.accumulator.selectedSize() === 0) return {
 			countSelected: 0,
 			countAccumulated: 0,
 			energyThresholdEffective: this.accumulator.filtered().threshold,
@@ -302,7 +315,7 @@ export class ComputeFingerprints extends NodeCore {
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
 
-		const fpDimension = fingerprinting(this.accumulator, {
+		const result = this.fp.compute(this.accumulator, {
 			method: this.selectedMethod,
 			areNanoclusters: this.areNanoclusters,
 			cutoffDistance: this.cutoffDistance,
@@ -310,12 +323,12 @@ export class ComputeFingerprints extends NodeCore {
 			peakWidth: this.peakWidth
 		});
 
-		if(fpDimension === 0) {
-			sendAlertMessage("Error computing fingerprints", "fingerprints");
+		if(result.error) {
+			sendAlertMessage(result.error, "fingerprints");
 		}
 
 		return {
-			resultDimensionality: fpDimension
+			resultDimensionality: result.dimension
 		};
 	}
 }
