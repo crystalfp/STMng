@@ -9,7 +9,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-24
  */
-import fs from "node:fs";
+import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import log from "electron-log";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
@@ -31,7 +31,7 @@ export class ReaderCEL implements ReaderImplementation {
 		const structures: Structure[] = [new EmptyStructure()];
 		let rdnatoms = -1;
 
-		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
+		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			const lineNC = line.trim();

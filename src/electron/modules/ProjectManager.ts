@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-06
  */
-import fs from "node:fs";
+import {readFileSync, existsSync, writeFileSync} from "node:fs";
 import {writeFile} from "node:fs/promises";
 import {ipcMain, dialog, type IpcMainEvent} from "electron";
 import path from "node:path";
@@ -105,7 +105,7 @@ class ProjectManager {
 		this.projectName = isDefaultProject ? "" : path.basename(filename);
 
 		try {
-			const rawProject = fs.readFileSync(filename, "utf8");
+			const rawProject = readFileSync(filename, "utf8");
 			if(!rawProject) throw Error("Empty project file");
 			this.project = JSON.parse(rawProject) as Project;
 			this.parseProject();
@@ -296,7 +296,7 @@ class ProjectManager {
 
 		let loadedDefaultProject = false;
 
-		if(fs.existsSync(filename)) {
+		if(existsSync(filename)) {
 
 			setProjectPath(filename);
 			sendProjectPath(filename);
@@ -336,7 +336,7 @@ class ProjectManager {
 				sendProjectPath();
 				loadedDefaultProject = true;
 			}
-			if(fs.existsSync(filename)) sendProjectPath(filename);
+			if(existsSync(filename)) sendProjectPath(filename);
 			else {
 				sendAlertMessage(`Project file "${filename}" does not exist. Loading default project`);
 				removeProjectPath();
@@ -455,7 +455,7 @@ export const setupChannelProject = (): void => {
 
 			pm.createProjectSave(graph)
 				.then((content) => {
-					fs.writeFileSync(file, content, "utf8");
+					writeFileSync(file, content, "utf8");
 					pm.loadProjectAndRemember(file);
 				})
 				.catch((error: Error) => {

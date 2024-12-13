@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import fs from "node:fs";
+import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {extractBasis, fractionalToCartesianCoordinates} from "../modules/Helpers";
@@ -28,7 +28,7 @@ export class ReaderSHELX implements ReaderImplementation {
 		let latticeType = 0;
 		let ignoreNext = false;
 
-		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
+		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			const lineUC = line.toUpperCase();

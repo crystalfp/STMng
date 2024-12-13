@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import fs from "node:fs";
+import {openSync, writeSync, closeSync} from "node:fs";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
@@ -16,21 +16,21 @@ export class WriterSHELX implements WriterImplementation {
 
 	writeStructure(filename: string, structures: Structure[]): CtrlParams {
 		try {
-			const fd = fs.openSync(filename, "w");
+			const fd = openSync(filename, "w");
 
 			// Access the structure
 			const {crystal, atoms} = structures[0];
 			const {basis, spaceGroup} = crystal;
 
 			// Comment line
-    		fs.writeSync(fd, "TITL Created by STMng\n");
+    		writeSync(fd, "TITL Created by STMng\n");
 
 			// Output the unit cell, if any
 			if(basis.some((value: number) => value !== 0)) {
 
 				const cell = basisToLengthAngles(basis);
 
-				fs.writeSync(fd,
+				writeSync(fd,
 						`CELL 1.54180 ${cell[0].toFixed(4)} ${cell[1].toFixed(4)} ${cell[2].toFixed(4)}` +
 						` ${cell[3].toFixed(4)} ${cell[4].toFixed(4)} ${cell[5].toFixed(4)}\n`);
 			}
@@ -41,16 +41,16 @@ export class WriterSHELX implements WriterImplementation {
 				if(spaceGroup.startsWith("(")) {
 
 					const pos = spaceGroup.indexOf(")");
-					fs.writeSync(fd, `LATT ${spaceGroup.slice(1, pos)}\n`);
+					writeSync(fd, `LATT ${spaceGroup.slice(1, pos)}\n`);
 					const symms = spaceGroup.slice(pos+1).split("\n");
-					for(const symm of symms) fs.writeSync(fd, `SYMM ${symm}\n`);
+					for(const symm of symms) writeSync(fd, `SYMM ${symm}\n`);
 				}
 				else if("PpCcIiFfAa".includes(spaceGroup.at(0)!)) {
-	    			fs.writeSync(fd, `SYMM ${spaceGroup} (0)\n`);
+	    			writeSync(fd, `SYMM ${spaceGroup} (0)\n`);
 				}
 				else {
 					const symms = spaceGroup.split("\n");
-					for(const symm of symms) fs.writeSync(fd, `SYMM ${symm}\n`);
+					for(const symm of symms) writeSync(fd, `SYMM ${symm}\n`);
 				}
 			}
 
@@ -74,7 +74,7 @@ export class WriterSHELX implements WriterImplementation {
 				line += ` ${getAtomicSymbol(item[0])}`;
 			}
 			line += "\n";
-			fs.writeSync(fd, line);
+			writeSync(fd, line);
 
 			// The counts
 			line = "UNIT";
@@ -82,7 +82,7 @@ export class WriterSHELX implements WriterImplementation {
 				line += ` ${item[1]}`;
 			}
 			line += "\n";
-			fs.writeSync(fd, line);
+			writeSync(fd, line);
 
 			// Output coordinates
 			const fc = cartesianToFractionalCoordinates(structures[0]);
@@ -91,14 +91,14 @@ export class WriterSHELX implements WriterImplementation {
 			for(const atom of atoms) {
 				const name = getAtomicSymbol(atom.atomZ);
 				const pos = atomIndices.get(atom.atomZ)!;
-				fs.writeSync(fd, `${name.padEnd(4)} ${pos.toString().padEnd(4)} ` +
-							 	 `${format(fc[idx])} ${format(fc[idx+1])} ` +
-								 `${format(fc[idx+2])}   11.00000   0\n`);
+				writeSync(fd, `${name.padEnd(4)} ${pos.toString().padEnd(4)} ` +
+							  `${format(fc[idx])} ${format(fc[idx+1])} ` +
+							  `${format(fc[idx+2])}   11.00000   0\n`);
 				idx += 3;
 			}
 
-			fs.writeSync(fd, "END\n");
-			fs.closeSync(fd);
+			writeSync(fd, "END\n");
+			closeSync(fd);
 
 			return {payload: "Success!"};
 		}

@@ -12,25 +12,37 @@ import type {Structure, BasisType} from "@/types";
 /** Essential part of the structure to be accumulated */
 export interface StructureReduced {
 
+	/** Index of the structure in the input set of structures (not selected) */
 	index: number;
 
+	/** Unit cell basis vectors */
 	basis: BasisType;
+	/** The minimum radius to use for the fingerprinting */
 	minRadius: number;
 
+	/** Atoms coordinates as [x1, y1, z1, x2, y2, z2, ...] */
 	atomsPosition: number[];
+	/** Atomic numbers of the structure atoms */
 	atomsZ: number[];
+	/** Map from atomic number to count of atoms with this atomic number */
 	species: Map<number, number>;
 
+	/** If the structure has been selected (by energy) */
 	selected: boolean;
 
+	/** Computed fingerprint for the structure */
 	fingerprint: number[];
+	/** Computed weights */
 	weights: number[];
 }
 
 /** Filtering return */
 interface FilteringStatus {
+	/** Count of selected structures */
 	countSelected: number;
+	/** Energy threshold to select structures with energy less than it */
 	threshold: number;
+	/** Error from filtering operation, if any */
 	error?: string;
 }
 

@@ -11,7 +11,7 @@ import {nullMethod, perElementRdfHistogram} from "./Methods";
 import type {BasisType, FingerprintingMethodName, FingerprintingParameters, PositionType} from "@/types";
 import type {FingerprintsAccumulator, StructureReduced} from "./Accumulator";
 
-
+/** Type of the table of fingerprinting methods */
 type FingerprintingMethod = FingerprintingMethodName & {
 	method: (structure: StructureReduced,
 			 expansion: PositionType,
@@ -19,7 +19,9 @@ type FingerprintingMethod = FingerprintingMethodName & {
 };
 
 interface FingerprintingComputeResult {
+	/** Computed fingerprint length */
 	dimension: number;
+	/** Error from fingerprinting, if any */
 	error?: string;
 }
 
@@ -73,14 +75,18 @@ export class Fingerprinting {
 		// Add the North pole
 		this.tryPoints[0] = [1, 0, 0];
 
+		// Some constants
+		const pivd = Math.PI/verticalDivisions;
+		const pihd = Math.PI/horizontalDivisions;
+
 		// Add points along parallel circles
 		let j = 1;
 		for(let v=1; v < verticalDivisions; ++v) {
 
-			const first = Math.cos(Math.PI/verticalDivisions*v);
+			const first = Math.cos(pivd*v);
 			for(let h=0; h < horizontalDivisions; ++h) {
 
-				const angle = Math.PI/horizontalDivisions*h;
+				const angle = pihd*h;
 				this.tryPoints[j] = [first, Math.cos(angle), Math.sin(angle)];
 				++j;
 			}

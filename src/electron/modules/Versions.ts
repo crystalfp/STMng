@@ -9,7 +9,7 @@
 import {ipcMain} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import fs from "node:fs";
+import {existsSync, readFileSync} from "node:fs";
 
 /**
  * Setup the channel to visualize the application version and
@@ -23,9 +23,9 @@ export const setupChannelVersions = (): void => {
 		const projectDir = path.dirname(fileURLToPath(import.meta.url));
 
 		const pkgFile = path.join(projectDir, "..", "package.json");
-		if(fs.existsSync(pkgFile)) {
+		if(existsSync(pkgFile)) {
 
-			const packageContent = JSON.parse(fs.readFileSync(pkgFile, "utf8")) as {version: string};
+			const packageContent = JSON.parse(readFileSync(pkgFile, "utf8")) as {version: string};
 			appVersion = packageContent.version;
 		}
 		const {node, electron, chrome} = process.versions;

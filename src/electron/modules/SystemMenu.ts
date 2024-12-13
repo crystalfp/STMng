@@ -8,7 +8,7 @@
  */
 import {Menu, shell, app, nativeTheme, dialog, ipcMain, type MenuItemConstructorOptions} from "electron";
 import path from "node:path";
-import fs from "node:fs";
+import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
@@ -44,7 +44,7 @@ const openDocumentation = (node?: string): Promise<void> => {
             path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
     }
 
-    if(!fs.existsSync(url)) throw Error("Help file not found");
+    if(!existsSync(url)) throw Error("Help file not found");
     return shell.openExternal(`file:///${url}`);
 };
 

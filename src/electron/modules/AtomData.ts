@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import fs from "node:fs";
+import {readFileSync} from "node:fs";
 import {publicDirPath} from "./GetPublicPath";
 
 // ##############################################################################
@@ -99,7 +99,7 @@ class AtomData {
 	private constructor() {
 
 		const filename = publicDirPath("atom-data.json");
-		this.data = JSON.parse(fs.readFileSync(filename, "utf8")) as OneAtomData[];
+		this.data = JSON.parse(readFileSync(filename, "utf8")) as OneAtomData[];
 
 		const len = this.data.length;
 		for(let i=1; i < len; ++i) {

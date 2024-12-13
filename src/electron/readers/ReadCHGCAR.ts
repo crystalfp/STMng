@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import fs from "node:fs";
+import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
@@ -53,7 +53,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 		let volume: number[] = [];
 		let volumeIndex = 0;
 
-		const stream = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
+		const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of stream) {
 
 			switch(lineType) {

@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-09
  */
-import fs from "node:fs";
+import {readFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
@@ -246,7 +246,7 @@ export class ComputeFingerprints extends NodeCore {
 		const filename = params.filename as string;
 		if(filename) {
 			try {
-				const energiesRaw = fs.readFileSync(filename, "utf8") + "\n";
+				const energiesRaw = readFileSync(filename, "utf8") + "\n";
 				this.accumulator.loadEnergies(energiesRaw
 													.replaceAll(/\s+/g, "\n")
 													.split("\n")

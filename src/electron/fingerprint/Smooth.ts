@@ -1,5 +1,5 @@
 /**
- * Smooth the histograms peaks using a gaussian.
+ * Smooth the histograms peaks using a Gaussian.
  *
  * @packageDocumentation
  *
@@ -86,7 +86,7 @@ const gaussianIntegral = (x: number): number => {
  * @param delta - Width of the bin
  * @param binCount - Number of bins
  * @param histogram - Array to be filled starting from start
- * @param start - Starting index in the histogram
+ * @param start - Starting index in the histogram where to deposit the smoothed histogram
  * @param peakWidth - Width of the smoothing Gaussian
  */
 export const smoothPeak = (peakValue: number, radius: number, delta: number,

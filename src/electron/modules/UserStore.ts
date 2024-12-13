@@ -8,7 +8,7 @@
  */
 import {app} from "electron";
 import path from "node:path";
-import fs from "node:fs";
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from "node:fs";
 import yaml from "js-yaml";
 
 /**
@@ -53,19 +53,19 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 			const filename = `${options?.name ?? "config"}.yaml`;
 			const directory = app.getPath("userData");
 			const userDataDir = path.join(directory, "UserData");
- 			if(!fs.existsSync(userDataDir)) {
-    			fs.mkdirSync(userDataDir, {recursive: true});
+ 			if(!existsSync(userDataDir)) {
+    			mkdirSync(userDataDir, {recursive: true});
 			}
 			this.filePath = path.join(userDataDir, filename);
 		}
 
-		if(fs.existsSync(this.filePath)) {
-			this.data = yaml.load(fs.readFileSync(this.filePath, "utf8"),
+		if(existsSync(this.filePath)) {
+			this.data = yaml.load(readFileSync(this.filePath, "utf8"),
 								  {schema: yaml.CORE_SCHEMA}) as T;
 		}
 		else if(options?.defaultContent) {
 			this.data = structuredClone(options.defaultContent) as T;
-			fs.writeFileSync(this.filePath,
+			writeFileSync(this.filePath,
 							 yaml.dump(this.data, {
 								schema: yaml.CORE_SCHEMA,
 								lineWidth: 256,
@@ -94,12 +94,12 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 */
 	set<K extends keyof T>(key: K, value: T[K]): void {
 		this.data[key] = value;
-		fs.writeFileSync(this.filePath,
-						 yaml.dump(this.data, {
+		writeFileSync(this.filePath,
+					  yaml.dump(this.data, {
 							schema: yaml.CORE_SCHEMA,
 							lineWidth: 256,
 							flowLevel: 1
-						 }), "utf8");
+					  }), "utf8");
 	}
 
 	/**
@@ -122,11 +122,11 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	delete<K extends keyof T>(key: K): void {
 		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete this.data[key];
-		fs.writeFileSync(this.filePath,
-						 yaml.dump(this.data, {
+		writeFileSync(this.filePath,
+					  yaml.dump(this.data, {
 							schema: yaml.CORE_SCHEMA,
 							lineWidth: 256,
 							flowLevel: 1
-						 }), "utf8");
+					  }), "utf8");
 	}
 }

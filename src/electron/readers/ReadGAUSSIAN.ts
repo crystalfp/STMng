@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import fs from "node:fs";
+import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -51,7 +51,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const structure: Structure = new EmptyStructure();
 		structure.volume = [{sides: [0, 0, 0], values: []}];
 
-		const stream = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
+		const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of stream) {
 
 			const fields = line.trim().split(/\s+/);

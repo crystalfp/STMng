@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import fs from "node:fs";
+import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
@@ -27,7 +27,7 @@ export class ReaderXYZ implements ReaderImplementation {
 		let numberAtoms = 0;
 		let step = -1;
 		let atoms;
-		const reader = createInterface(fs.createReadStream(filename, {encoding: "utf8"}));
+		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
 			if(numberAtoms === 0) {

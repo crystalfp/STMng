@@ -9,11 +9,11 @@
 import type {BasisType} from "@/types";
 
 /**
- * Compute the unit cell volume, if any
+ * Compute the unit cell volume
  *
  * @param basis - Unit cell basis vectors
  * @param isNanocluster - Is nanocluster (i.e., has no unit cell)
- * @returns Unit cell volume
+ * @returns Unit cell volume or zero for nanoclusters
  */
 export const getCellVolume = (basis: BasisType, isNanocluster: boolean): number =>
     (isNanocluster ?

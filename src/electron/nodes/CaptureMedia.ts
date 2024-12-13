@@ -8,7 +8,7 @@
  * @since 2024-07-08
  */
 import {dialog, app} from "electron";
-import fs from "node:fs";
+import {writeFileSync, unlinkSync} from "node:fs";
 import path from "node:path";
 import tmp from "tmp";
 import os from "node:os";
@@ -67,7 +67,7 @@ export class CaptureView extends NodeCore {
 
 		// Save the image
 		try {
-			fs.writeFileSync(filename, Buffer.from(data[1], "base64"));
+			writeFileSync(filename, Buffer.from(data[1], "base64"));
 			return {payload: filename};
 		}
 		catch(error) {
@@ -105,7 +105,7 @@ export class CaptureView extends NodeCore {
 			// Save the movie to a temporary WEBM formatted file
 			const webmFile = tmp.tmpNameSync({prefix: "stm-ng", postfix: ".webm"});
 			try {
-				fs.writeFileSync(webmFile, Buffer.from(buffer));
+				writeFileSync(webmFile, Buffer.from(buffer));
 			}
 			catch(error) {
 				return {error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
@@ -151,8 +151,7 @@ export class CaptureView extends NodeCore {
 			try {
 				// eslint-disable-next-line sonarjs/os-command
 				execSync(`"${ffmpeg}" -y -i ${webmFile}${opt} ${filename}`, {windowsHide: true});
-				fs.unlinkSync(webmFile);
-				// void fs.remove(webmFile);
+				unlinkSync(webmFile);
 				return {payload: filename};
 			}
 			catch(error) {
@@ -160,7 +159,7 @@ export class CaptureView extends NodeCore {
 			}
 		}
 		try {
-			fs.writeFileSync(filename, Buffer.from(buffer));
+			writeFileSync(filename, Buffer.from(buffer));
 			return {payload: filename};
 		}
 		catch(error) {
@@ -189,8 +188,8 @@ export class CaptureView extends NodeCore {
 		if(!filename) return {payload: ""};
 
 		try {
-			if(binary) fs.writeFileSync(filename, Buffer.from(content as ArrayBuffer));
-			else       fs.writeFileSync(filename, content as string, "utf8");
+			if(binary) writeFileSync(filename, Buffer.from(content as ArrayBuffer));
+			else       writeFileSync(filename, content as string, "utf8");
 			return {payload: filename};
 		}
 		catch(error) {
