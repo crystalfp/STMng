@@ -430,7 +430,7 @@ export interface FileFilter {
 	extensions: string[];
 }
 
-// > Types for the charts
+// > Types for charts
 /**
  * Label alignment respect to the point
  * @notExported
@@ -494,8 +494,10 @@ export interface ChartOptions {
     };
 }
 
+/** Chart points coordinates */
 export type ChartCoordinates = {x: number; y: number}[];
 
+/** Data to be charted */
 export interface ChartData {
     labels?: string[];
     datasets: {
@@ -529,15 +531,47 @@ export interface ChartParams {
 }
 
 // > Fingerprinting
+/** Methods names for the user selector */
 export interface FingerprintingMethodName {
+
+    /** Name of the method */
 	label: string;
+
+    /** If peak size and bin width are needed for this method */
 	needSizes: boolean;
 }
 
+/** Parameters for fingerprinting */
 export interface FingerprintingParameters {
-	method?: number;
+
+    /** Fingerprinting method (index into the list of methods) */
+	method: number;
+
+    /** If the structures are nanoclusters */
 	areNanoclusters: boolean;
+
+    /** End radius for fingerprinting computation */
 	cutoffDistance: number;
+
+    /** Width of the histogram bins */
 	binSize: number;
+
+    /** Width of the smoothing Gaussian */
 	peakWidth: number;
+}
+
+/** Result from computing fingerprint */
+export interface FingerprintingMethodResult {
+
+    /** Length of the fingerprint */
+    dimension: number;
+
+    /** Number of sections in the fingerprint */
+    countSections: number;
+
+    /** Length of each section of the fingerprint */
+    sectionLength: number;
+
+    /** Error message, if any */
+    error?: string;
 }
