@@ -50,6 +50,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Edit project cfp.stm, add measure, save. Error in saveStatus. activeNodes should be updated. @done(2024-12-16 06:26) @project(Bugs)
   ✘ camera.type -> camera.isPerspective (boolean) @cancelled(2024-12-05 15:50) @project(To do)
   ✔ Add camera position save and set @done(2024-12-05 15:49) @project(To do)
   ✔ Better placement of the bond lengths labels @done(2024-12-02 07:52) @project(To do)

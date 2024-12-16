@@ -233,6 +233,8 @@ const distanceMethods = [
  */
 const computeFingerprints = (): void => {
 
+    resultDimensionality.value = 0;
+
     askNode(id, "fp", {
 		selectedMethod: selectedMethod.value,
         binSize: binSize.value,

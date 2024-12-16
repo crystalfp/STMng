@@ -231,7 +231,7 @@ class ProjectManager {
 				id: entry,
 				label,
 				type,
-				input: inString ?? "",
+				in: inString ?? "",
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
 			};
@@ -377,8 +377,17 @@ class ProjectManager {
 
 		for(const entry in graph) {
 
-			const node = this.activeNodes.get(entry)!;
+			// Access the node or create it if new
+			let node;
+			if(this.activeNodes.has(entry)) {
+				node = this.activeNodes.get(entry)!;
+			}
+			else {
+				node = this.nodeFactory(graph[entry].type, entry);
+				this.activeNodes.set(entry, node);
+			}
 
+			// Get the node status
 			if(graph[entry].type === "viewer-3d") viewerStatus = await node.saveStatus();
 			else {
 				const statusToSave = node.saveStatus() as string;
@@ -392,7 +401,7 @@ class ProjectManager {
 
 		// Save the graph
 		const graphAsString = JSON.stringify(graph, (key, value) => {
-			if(key === "input" && value === "") return;
+			if(key === "in" && value === "") return;
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/consistent-return
 			if(!this.keyToRemove.has(key)) return value;
 		});
@@ -459,8 +468,7 @@ export const setupChannelProject = (): void => {
 					pm.loadProjectAndRemember(file);
 				})
 				.catch((error: Error) => {
-					const {message} = error as Error;
-					sendAlertMessage(`Cannot write modified project file. Error: ${message}`);
+					sendAlertMessage(`Cannot write modified project file. Error: ${error.message}`);
 				});
 		}
 	});

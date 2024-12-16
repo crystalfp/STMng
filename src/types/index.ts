@@ -219,7 +219,7 @@ export interface ClientProjectInfoItem {
 	type: string;
 
     /** Node id from which the node takes input. If none, it is the empty string */
-	input: string;
+	in: string;
 
 	/** The name of the node ui component */
 	ui: string;

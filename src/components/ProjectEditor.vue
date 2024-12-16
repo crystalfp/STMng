@@ -71,8 +71,8 @@ const createNodes = (projectGraph: ClientProjectInfo): NodeType[] => {
     for(const key in projectGraph) {
         for(const otherKey in projectGraph) {
             if(otherKey === key) continue;
-            if(!projectGraph[otherKey].input) continue;
-            if(projectGraph[otherKey].input === key) {
+            if(!projectGraph[otherKey].in) continue;
+            if(projectGraph[otherKey].in === key) {
                 keysWithConnections.add(key);
                 keysWithConnections.add(otherKey);
             }
@@ -141,9 +141,9 @@ const createEdges = (projectGraph: ClientProjectInfo, nodesList: NodeType[]): Ed
     const connections = [];
     for(const key in projectGraph) {
 
-        if(!projectGraph[key].input) continue;
+        if(!projectGraph[key].in) continue;
 
-        const from = projectGraph[key].input;
+        const from = projectGraph[key].in;
         const to = key;
 
         const connection = {
@@ -326,7 +326,7 @@ const selectNode = (key: string): void => {
     // The id of the selected node
     selectedId.value = key;
     selectedLabel.value = graph[key].label;
-    selectedInput.value = graph[key].input;
+    selectedInput.value = graph[key].in;
 
     // Fill and show the info section
     showInfo.value = true;
@@ -336,7 +336,7 @@ const selectNode = (key: string): void => {
         {label: "Node id:",   value: key},
         {label: "Label:",     value: node.label},
         {label: "Node type:", value: node.type},
-        {label: "Input:",     value: node.input},
+        {label: "Input:",     value: node.in},
         {label: "Graphics:",  value: node.graphic},
     );
 };
@@ -371,8 +371,8 @@ const confirmDeletion = (): void => {
     // Remove the node output from all nodes that has it as input
     for(const key in graph) {
 
-        if(graph[key].input === selectedId.value) {
-            graph[key].input = "";
+        if(graph[key].in === selectedId.value) {
+            graph[key].in = "";
         }
     }
 
@@ -405,7 +405,7 @@ const inputFromOther = computed(() => {
             }
         }
     }
-    selectedInput.value = graph[selectedId.value].input;
+    selectedInput.value = graph[selectedId.value].in;
     return out;
 });
 
@@ -420,7 +420,7 @@ const saveEditedNode = (): void => {
     const node = graph[selectedId.value];
 
     node.label = selectedLabel.value;
-    node.input = selectedInput.value;
+    node.in    = selectedInput.value;
 
     // Update the graph
     createGraph();
@@ -483,7 +483,7 @@ const addNode = (): void => {
         id,
         label: nodeLabel.value,
         type: nodeToAdd.value,
-        input: inputId.value,
+        in: inputId.value,
         ui: node.ui,
         graphic: node.graphic
     };
@@ -522,8 +522,8 @@ const addNode = (): void => {
       </svg>
       <polyline v-for="e of edges" :key="e.idx" :points="e.points" :stroke="fg"
                 :stroke-dasharray="e.dotted"
-			    style="stroke-width:2;stroke-linecap:butt;fill:none;stroke-opacity:0.7"
-			    marker-end="url(#arrow)" pointer-events="none" vector-effect="non-scaling-stroke" />
+                style="stroke-width:2;stroke-linecap:butt;fill:none;stroke-opacity:0.7"
+                marker-end="url(#arrow)" pointer-events="none" vector-effect="non-scaling-stroke" />
     </svg>
   </div>
   <v-container v-if="showInfo" class="mt-2">
@@ -546,7 +546,7 @@ const addNode = (): void => {
     </v-row>
   </v-container>
   <v-container class="button-strip">
-    <v-label v-if="!showInfo" class="text-blue-lighten-1 mr-4 no-select">Click on a node to open the edit panel</v-label>
+    <v-label v-if="!showInfo" class="text-blue-darken-2 mr-4 no-select">Click on a node to open the edit panel</v-label>
     <v-btn v-if="showInfo" :disabled="!projectModified" variant="tonal" class="mr-2"
            @click="saveProject">Save modified project</v-btn>
     <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss panel</v-btn>
@@ -572,9 +572,9 @@ const addNode = (): void => {
                 label="Node label" class="mt-2"
                 variant="solo-filled" hide-details="auto"
                 clearable spellcheck="false" />
-		  <v-select v-if="inputFromOther.length > 0" v-model="selectedInput" :items="inputFromOther"
+      <v-select v-if="inputFromOther.length > 0" v-model="selectedInput" :items="inputFromOther"
                 item-title="label" item-value="id" label="Input from"
-		            variant="solo-filled" density="compact" hide-details class="mt-2" />
+                variant="solo-filled" density="compact" hide-details class="mt-2" />
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showEdit=false">Dismiss</v-btn>
@@ -586,15 +586,15 @@ const addNode = (): void => {
 <v-dialog v-model="showAdd">
   <v-card title="Add node to project" class="mx-auto" elevation="16" width="400">
     <v-card-text>
-		  <v-select v-model="nodeToAdd" :items="allNodes" item-title="label" item-value="type"
-		            variant="solo-filled" density="compact" hide-details label="Type of the node to add" />
+      <v-select v-model="nodeToAdd" :items="allNodes" item-title="label" item-value="type"
+                variant="solo-filled" density="compact" hide-details label="Type of the node to add" />
       <v-text-field v-model="nodeLabel"
                 label="New node label" class="mt-2"
                 variant="solo-filled" hide-details="auto"
                 clearable spellcheck="false" />
-		  <v-select v-if="inputFrom.length > 0" v-model="inputId" :items="inputFrom"
+      <v-select v-if="inputFrom.length > 0" v-model="inputId" :items="inputFrom"
                 item-title="label" item-value="id" label="Input from"
-		            variant="solo-filled" density="compact" hide-details class="mt-2" />
+                variant="solo-filled" density="compact" hide-details class="mt-2" />
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showAdd=false">Dismiss</v-btn>
