@@ -58,16 +58,14 @@ export class Fingerprinting {
 			return {dimension: 0, error: "Invalid fingerprinting parameters"};
 		}
 
-		fingerprintingMethods[method].method.init(params);
+		const status = fingerprintingMethods[method].method.init(params);
+		if(status !== "") return {dimension: 0, error: status};
 
 		let fingerprintSize = 0;
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
 			// Compute fingerprint
 			const results = fingerprintingMethods[method].method.fingerprinting(structure);
-
-			// If error
-			if(results.error) return {dimension: 0, error: results.error};
 
 			// Get fingerprint size
 			if(fingerprintSize === 0) fingerprintSize = results.dimension;

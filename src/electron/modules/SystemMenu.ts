@@ -119,7 +119,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                 },
                 {type: "separator"},
                 {
-                    label: "Show project",
+                    label: "Project editor",
                     click() {
                         createProjectEditor(pm.getProjectName());
                     }

@@ -14,13 +14,13 @@ export class Slab {
 
     private readonly tryPoints: number[][] = [];
     private readonly interatomicDistances = new Map<number, [number, number][]>();
+    private inverseBasis: BasisType = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
-    constructor(private readonly cutoff: number, private readonly isNanocluster: boolean) {
+    constructor(private readonly cutoff: number, private readonly isNanocluster=false) {
 
         // Initialize try points
 		this.computeTryPoints(8, 8);
     }
-
 
 	/**
 	 * Compute points on a sphere of radius one
@@ -58,7 +58,7 @@ export class Slab {
 	}
 
 	/**
-	 * Compute expansions along each base axis
+	 * Compute expansions along each base axis to contain a sphere of radius cutoff distance
 	 *
 	 * @param basis - Structure basis
 	 * @param cutoffDistance - The requested cutoff radius
@@ -77,8 +77,6 @@ export class Slab {
 		const basisY = basis[1] + basis[4] + basis[7];
 		const basisZ = basis[2] + basis[5] + basis[8];
 
-		const inverse = invertBasis(basis);
-
 		for(const point of this.tryPoints) {
 
 			// Enlarge to account for truncation
@@ -87,9 +85,9 @@ export class Slab {
 			const z = basisZ + point[2]*cutoffDistance;
 
 			// The end point in fractional coordinates
-			const xf = x*inverse[0]+y*inverse[3]+z*inverse[6];
-			const yf = x*inverse[1]+y*inverse[4]+z*inverse[7];
-			const zf = x*inverse[2]+y*inverse[5]+z*inverse[8];
+			const xf = x*this.inverseBasis[0]+y*this.inverseBasis[3]+z*this.inverseBasis[6];
+			const yf = x*this.inverseBasis[1]+y*this.inverseBasis[4]+z*this.inverseBasis[7];
+			const zf = x*this.inverseBasis[2]+y*this.inverseBasis[5]+z*this.inverseBasis[8];
 
 			if(xf < 0) {
 				const n = Math.ceil(-xf);
@@ -134,6 +132,9 @@ export class Slab {
         const TOL = 1e-2;
         const TOL_SQUARED = TOL*TOL;
 
+        // Inverse basis to convert to fractional coordinates
+        this.inverseBasis = invertBasis(basis);
+
         // Compute how many copies of the unit cell are needed to contain the cutoff distance
         const expansion: PositionType = [0, 0, 0];
         if(!this.isNanocluster) {
@@ -162,6 +163,9 @@ export class Slab {
             }
         }
 
+        // Mark atoms on the border that could become duplicated
+        const ok = this.getDuplicatedAtomsIndex(atomsPosition);
+
         // For each replica (included the original cell)
         const natoms = atomsZ.length;
         for(let replica=0; replica < replicaMaxIndex; replica += 3) {
@@ -178,6 +182,8 @@ export class Slab {
                 if(replica === originalCellIndex) {
 
                     for(let j=i+1; j < natoms; ++j) {
+
+                        if(!ok[j]) continue;
 
                         const dx = atomsPosition[3*j]   - x;
                         const dy = atomsPosition[3*j+1] - y;
@@ -207,6 +213,8 @@ export class Slab {
 
                     for(let j=0; j < natoms; ++j) {
 
+                        if(!ok[j]) continue;
+
                         const dx = atomsPosition[3*j+0] - ox;
                         const dy = atomsPosition[3*j+1] - oy;
                         const dz = atomsPosition[3*j+2] - oz;
@@ -229,10 +237,130 @@ export class Slab {
         }
     }
 
-    getDistancesForZ(atomZ: number): [number, number][] {
+    /**
+     * Return the computed interatomic distances from a given type
+     *
+     * @param atomZ - Atom type from which the distance should be computed
+     * @returns Array of pairs remote atom type, distance
+     */
+    getDistancesForZ(atomZ: number): [atomZ: number, distance: number][] {
 
         const distances = this.interatomicDistances.get(atomZ);
 
         return distances ?? [];
+    }
+
+    /**
+     * List atoms that will be duplicated on replicated unit cell
+     *
+     * @param atomsPosition - List of atom coordinates
+     * @returns List of will be duplicated marks per atom
+     */
+    private getDuplicatedAtomsIndex(atomsPosition: number[]): boolean[] {
+
+        const fracCoordinates = Array(atomsPosition.length);
+        const mark = Array(atomsPosition.length).fill(false);
+        const natoms = atomsPosition.length / 3;
+        const ok = Array(natoms).fill(true) as boolean[];
+        const TOL = 1e-2;
+
+        // Convert coordinates into fractional coordinates
+        for(let i=0, i3=0; i < natoms; ++i, i3+=3) {
+
+            const x = atomsPosition[i3];
+            const y = atomsPosition[i3+1];
+            const z = atomsPosition[i3+2];
+			const fx = x*this.inverseBasis[0]+y*this.inverseBasis[3]+z*this.inverseBasis[6];
+			const fy = x*this.inverseBasis[1]+y*this.inverseBasis[4]+z*this.inverseBasis[7];
+			const fz = x*this.inverseBasis[2]+y*this.inverseBasis[5]+z*this.inverseBasis[8];
+			fracCoordinates[i3]   = fx;
+			fracCoordinates[i3+1] = fy;
+			fracCoordinates[i3+2] = fz;
+
+            // Mark coordinates that are near a border
+            mark[i3]   = fx < TOL || (1-fx) < TOL;
+            mark[i3+1] = fy < TOL || (1-fy) < TOL;
+            mark[i3+2] = fz < TOL || (1-fz) < TOL;
+        }
+
+        // Check if all atoms are far from the borders
+        if(mark.every((v) => !v)) return ok;
+
+        // For every pair of atoms
+        for(let i=0, i3=0; i < natoms-1; ++i, i3+=3) {
+
+            if(!ok[i] && !mark[i3] && !mark[i3+1] && !mark[i3+2]) continue;
+
+            for(let j=i+1, j3=j*3; j < natoms; ++j, j3+=3) {
+
+                // Interior, no problem
+                if(!ok[j] && !mark[j3] && !mark[j3+1] && !mark[j3+2]) continue;
+
+                // In a corner
+                if(mark[i3] && mark[j3] && mark[i3+1] && mark[j3+1] && mark[i3+2] && mark[j3+2]) {
+                    ok[j] = false;
+                    continue;
+                }
+
+                // Both on the Z axis
+                if(mark[i3] && mark[j3] && mark[i3+1] && mark[j3+1]) {
+                    const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
+                    if(dz < TOL && dz > -TOL) {
+                        ok[j] = false;
+                        continue;
+                    }
+                }
+
+                // Both on the Y axis
+                if(mark[i3] && mark[j3] && mark[i3+2] && mark[j3+2]) {
+                    const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
+                    if(dy < TOL && dy > -TOL) {
+                        ok[j] = false;
+                        continue;
+                    }
+                }
+
+                // Both on the X axis
+                if(mark[i3+1] && mark[j3+1] && mark[i3+2] && mark[j3+2]) {
+                    const dx = fracCoordinates[i3]   - fracCoordinates[j3];
+                    if(dx < TOL && dx > -TOL) {
+                        ok[j] = false;
+                        continue;
+                    }
+                }
+
+                // Both on the YZ plane
+                if(mark[i3] && mark[j3]) {
+                    const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
+                    const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
+                    if(dy < TOL && dy > -TOL && dz < TOL && dz > -TOL) {
+                        ok[j] = false;
+                        continue;
+                    }
+                }
+
+                // Both on the XZ plane
+                if(mark[i3+1] && mark[j3+1]) {
+                    const dx = fracCoordinates[i3]   - fracCoordinates[j3];
+                    const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
+                    if(dx < TOL && dx > -TOL && dz < TOL && dz > -TOL) {
+                        ok[j] = false;
+                        continue;
+                    }
+                }
+
+                // Both on the XY plane
+                if(mark[i3+2] && mark[j3+2]) {
+                    const dx = fracCoordinates[i3]   - fracCoordinates[j3];
+                    const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
+                    if(dx < TOL && dx > -TOL && dy < TOL && dy > -TOL) {
+                        ok[j] = false;
+                        continue;
+                    }
+                }
+            }
+        }
+
+        return ok;
     }
 }

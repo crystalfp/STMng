@@ -546,9 +546,10 @@ const addNode = (): void => {
     </v-row>
   </v-container>
   <v-container class="button-strip">
+    <v-label v-if="!showInfo" class="text-blue-lighten-1 mr-4 no-select">Click on a node to open the edit panel</v-label>
     <v-btn v-if="showInfo" :disabled="!projectModified" variant="tonal" class="mr-2"
            @click="saveProject">Save modified project</v-btn>
-    <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss info</v-btn>
+    <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss panel</v-btn>
     <v-btn v-focus variant="tonal" @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>

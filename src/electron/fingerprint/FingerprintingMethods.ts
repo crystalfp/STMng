@@ -12,18 +12,18 @@ import {Slab} from "./Slab";
 import type {FingerprintingMethodName, FingerprintingMethodResult,
              FingerprintingParameters} from "@/types";
 import type {StructureReduced} from "./Accumulator";
-import {writeFileSync} from "node:fs";
+// import {writeFileSync} from "node:fs";
 
+/** Superclass of all fingerprinting methods */
 abstract class FingerprintMethod {
-    abstract init(params: FingerprintingParameters): void;
+    abstract init(params: FingerprintingParameters): string;
     abstract fingerprinting(structure: StructureReduced): FingerprintingMethodResult;
 }
 
 // > Null method (till end of development)
 class NullMethod extends FingerprintMethod {
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    init(): void {}
+    init(): string {return "Fingerprinting method not yet implemented";}
 
     fingerprinting(structure: StructureReduced): FingerprintingMethodResult {
 
@@ -45,7 +45,7 @@ class PerElementRdfHistogram extends FingerprintMethod {
     private nbins = 10;
     private delta = 1;
 
-    init(params: FingerprintingParameters): void {
+    init(params: FingerprintingParameters): string {
         const {areNanoclusters, cutoffDistance, binSize, peakWidth} = params;
         this.areNanoclusters = areNanoclusters;
         this.cutoffDistance = cutoffDistance;
@@ -59,6 +59,9 @@ class PerElementRdfHistogram extends FingerprintMethod {
 
         // Create the infinite slab
         this.slab = new Slab(this.adjustedCutoffForEdgeEffects, this.areNanoclusters);
+
+        // No error
+        return "";
     }
 
     fingerprinting(structure: StructureReduced): FingerprintingMethodResult {
@@ -147,7 +150,6 @@ class PerElementRdfHistogram extends FingerprintMethod {
 // > Normalized diffraction method
 class NormalizedDiffraction extends FingerprintMethod {
 
-    private areNanoclusters = false;
     private adjustedCutoffForEdgeEffects = 10;
     private binSize = 0.05;
     private peakWidth = 0.02;
@@ -155,10 +157,12 @@ class NormalizedDiffraction extends FingerprintMethod {
     private nbins = 10;
     private delta = 1;
 
-    init(params: FingerprintingParameters): void {
+    init(params: FingerprintingParameters): string {
 
         const {areNanoclusters, cutoffDistance, binSize, peakWidth} = params;
-        this.areNanoclusters = areNanoclusters;
+
+        if(areNanoclusters) return "Not implemented for nanoclusters";
+
         this.binSize = binSize;
         this.peakWidth = peakWidth;
         this.adjustedCutoffForEdgeEffects = cutoffDistance + 4 * this.peakWidth;
@@ -167,19 +171,18 @@ class NormalizedDiffraction extends FingerprintMethod {
         this.delta = this.adjustedCutoffForEdgeEffects/this.nbins;
 
         // Create the infinite slab
-        this.slab = new Slab(this.adjustedCutoffForEdgeEffects, this.areNanoclusters);
+        this.slab = new Slab(this.adjustedCutoffForEdgeEffects);
+
+        return "";
     }
 
     fingerprinting(structure: StructureReduced): FingerprintingMethodResult {
-
-        if(this.areNanoclusters) return {dimension: 0, countSections: 0, sectionLength: 0,
-                                         error: "Not implemented for nanoclusters"};
 
         // Access the parameters
         const {basis, fingerprint, species, atomsZ, weights} = structure;
 
         // Compute the volume of the unit cell
-        const cellVolume = getCellVolume(basis, this.areNanoclusters);
+        const cellVolume = getCellVolume(basis, false);
 
         // Allocate the histogram (max distance is half max side of every unit cell)
         fingerprint.length = this.nbins;
@@ -228,14 +231,14 @@ class NormalizedDiffraction extends FingerprintMethod {
         weights.length = 1;
         weights[0] = 1;
 
-            // TEST
-    const {index} = structure;
-    const t = JSON.stringify(fingerprint, undefined, 2)
-                            .replace("[\n", "")
-                            .replace("]", "")
-                            .replaceAll(" ", "")
-                            .replaceAll(",", "");
-    writeFileSync(`fingerprint${index}.dat`, t, "utf8");
+    //         // TEST
+    // const {index} = structure;
+    // const t = JSON.stringify(fingerprint, undefined, 2)
+    //                         .replace("[\n", "")
+    //                         .replace("]", "")
+    //                         .replaceAll(" ", "")
+    //                         .replaceAll(",", "");
+    // writeFileSync(`fingerprint${index}.dat`, t, "utf8");
 
         return {dimension: this.nbins, countSections: 1, sectionLength: this.nbins};
     }
