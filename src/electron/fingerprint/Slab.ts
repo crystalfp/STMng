@@ -16,10 +16,12 @@ export class Slab {
     private readonly interatomicDistances = new Map<number, [number, number][]>();
     private inverseBasis: BasisType = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
-    constructor(private readonly cutoff: number, private readonly isNanocluster=false) {
+    constructor(private readonly cutoff: number,
+                private readonly isNanocluster=false,
+                private readonly byAtom=false) {
 
         // Initialize try points
-		this.computeTryPoints(8, 8);
+		if(!isNanocluster) this.computeTryPoints(8, 8);
     }
 
 	/**
@@ -122,6 +124,26 @@ export class Slab {
 	};
 
     /**
+     * Store the distance between atoms "i" and "j" by specie or by atom index
+     *
+     * @param index - Index of the atom "i"
+     * @param Zi - Atom Z of the atom "i"
+     * @param Zj - Atom Z of the atom "j"
+     * @param distance - Distance between the two atoms
+     */
+    private storeDistance(index: number, Zi: number, Zj: number, distance: number): void {
+
+        const key = this.byAtom ? index : Zi;
+
+        if(this.interatomicDistances.has(key)) {
+            this.interatomicDistances.get(key)!.push([Zj, distance]);
+        }
+        else {
+            this.interatomicDistances.set(key, [[Zj, distance]]);
+        }
+    }
+
+    /**
      * Compute the infinite slab for the structure
      *
      * @param structure - Structure that fills the infinite slab
@@ -193,12 +215,7 @@ export class Slab {
                         if(distSquared >= TOL_SQUARED) {
                             const distance = Math.sqrt(distSquared);
                             const Zj = atomsZ[j];
-                            if(this.interatomicDistances.has(Zi)) {
-                                this.interatomicDistances.get(Zi)!.push([Zj, distance]);
-                            }
-                            else {
-                                this.interatomicDistances.set(Zi, [[Zj, distance]]);
-                            }
+                            this.storeDistance(i, Zi, Zj, distance);
                         }
                     }
                 }
@@ -224,12 +241,7 @@ export class Slab {
                         if(distSquared >= TOL_SQUARED) {
                             const distance = Math.sqrt(distSquared);
                             const Zj = atomsZ[j];
-                            if(this.interatomicDistances.has(Zi)) {
-                                this.interatomicDistances.get(Zi)!.push([Zj, distance]);
-                            }
-                            else {
-                                this.interatomicDistances.set(Zi, [[Zj, distance]]);
-                            }
+                            this.storeDistance(i, Zi, Zj, distance);
                         }
                     }
                 }

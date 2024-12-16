@@ -74,6 +74,9 @@ export class Fingerprinting {
 			}
 		}
 
+		// For methods that needs a last global step
+		fingerprintSize = fingerprintingMethods[method].method.finish(accumulator);
+
 		return {dimension: fingerprintSize};
 	};
 }
