@@ -49,15 +49,17 @@ const selectedMethod = ref(0);
 const binSize = ref(0.05);
 const peakWidth = ref(0.02);
 const resultDimensionality = ref(0);
+const fingerprintingBusy = ref(false);
 
 // Compute distances
 const selectedDistanceMethod = ref(0);
 const fixTriangleInequality = ref(false);
-const computeDistances = ref(false);
+const distanceBusy = ref(false);
 
 // Classify structures
 const tolerance = ref(0.01);
 const absolute = ref(false);
+
 
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
@@ -215,25 +217,10 @@ const cutoffLabel = computed(() => {
         `Computed cutoff: ${cutoffDistance.value.toFixed(2)}`;
 });
 
-// eslint-disable-next-line security/detect-unsafe-regex
-const rg = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
-const rules = {
-    numeric: (value: string): boolean | string => rg.test(value) || "Field should be numeric",
-    positive: (value: string): boolean | string => Number.parseFloat(value) > 0 || "Field should be > 0",
-};
-
-const distanceMethods = [
-    {value: 0, label: "Cosine distance"},
-    {value: 1, label: "Euclidean distance"},
-    {value: 2, label: "Minkowski (p=1/3) distance"},
-];
-
 /**
  * Start computing fingerprints
  */
 const computeFingerprints = (): void => {
-
-    resultDimensionality.value = 0;
 
     askNode(id, "fp", {
 		selectedMethod: selectedMethod.value,
@@ -244,7 +231,38 @@ const computeFingerprints = (): void => {
         resultDimensionality.value = params.resultDimensionality as number ?? 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from fingerprint computation: ${error.message}`,
-                                              "fingerprints"));
+                                              "fingerprints"))
+    .finally(() => fingerprintingBusy.value = false);
+};
+
+// // eslint-disable-next-line security/detect-unsafe-regex
+// const rg = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
+// const rules = {
+//     numeric: (value: string): boolean | string => rg.test(value) || "Field should be numeric",
+//     positive: (value: string): boolean | string => Number.parseFloat(value) > 0 || "Field should be > 0",
+// };
+
+const distanceMethods = [
+    {value: 0, label: "Cosine distance"},
+    {value: 1, label: "Euclidean distance"},
+    {value: 2, label: "Minkowski (p=1/3) distance"},
+];
+
+const computeDistances = (): void => {
+
+    // TBD
+    console.log("DIST", selectedDistanceMethod.value, fixTriangleInequality.value);
+
+    askNode(id, "dist", {
+		selectedDistanceMethod: selectedDistanceMethod.value,
+        fixTriangleInequality: fixTriangleInequality.value,
+    })
+    .then((params: CtrlParams) => {
+        resultDimensionality.value = params.resultDimensionality as number ?? 0;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
+                                              "fingerprints"))
+    .finally(() => distanceBusy.value = false);
 };
 
 </script>
@@ -254,7 +272,7 @@ const computeFingerprints = (): void => {
 <v-container class="container">
   <v-label class="separator-title">Accumulate structures</v-label>
 
-  <v-row class="mx-0 my-4 mx-2">
+  <v-row class="mt-2 mb-4 mx-2">
     <v-label class="green-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
     <v-btn density="compact" variant="tonal" @click="resetAccumulator">Reset</v-btn>
@@ -284,14 +302,14 @@ const computeFingerprints = (): void => {
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
-  <v-row class="mt-4 mx-0">
+  <v-row class="mt-2 mx-0">
     <v-switch v-model="forceCutoff" color="primary" label="Force cutoff at:" class="ml-2" />
     <v-number-input controlVariant="stacked" variant="filled" v-model="manualCutoffDistance"
                     label="Cutoff distance" :min="0.1" :step="0.1" :disabled="!forceCutoff"
                     class="mx-2" />
   </v-row>
 
-  <v-label class="mt-2 mb-6 green-label">{{ cutoffLabel }}</v-label>
+  <v-label class="mt-1 mb-4 green-label">{{ cutoffLabel }}</v-label>
 
   <v-select v-model="selectedMethod"
     :items="fingerprintMethodsNames"
@@ -306,12 +324,13 @@ const computeFingerprints = (): void => {
     <v-number-input controlVariant="stacked" variant="filled" v-model="peakWidth"
                     label="Peak width" :min="0.01" :step="0.01" />
   </v-row>
-  <v-btn block variant="tonal" :disabled="countSelected === 0" @click="computeFingerprints">
+  <v-btn block variant="tonal" :disabled="countSelected === 0"
+         @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
     Compute fingerprints
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
-    {{ `Done (dimensionality: ${resultDimensionality})` }}
-  </v-label>
+    {{ `Done (dimensionality: ${resultDimensionality})` }}</v-label>
+  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 green-label">Computing...</v-label>
 
   <v-label class="separator-title">Compare structures</v-label>
   <v-select v-model="selectedDistanceMethod"
@@ -319,20 +338,24 @@ const computeFingerprints = (): void => {
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    density="compact" class="mr-2" />
+    density="compact" class="mr-2 mt-2" />
 
   <v-switch v-model="fixTriangleInequality" color="primary"
-            label="Fix triangle inequality" class="ml-2" />
-  <v-btn block variant="tonal" :disabled="countSelected === 0" @click="computeDistances=true">
+            label="Fix triangle inequality" class="ml-2 mt-n2 mb-n2" />
+  <v-btn block variant="tonal" :disabled="countSelected === 0"
+         @click="distanceBusy=true; computeDistances()">
     Compute distances
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
     Done
   </v-label>
+  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 green-label">Computing...</v-label>
 
   <v-label class="separator-title">Classify structures</v-label>
-  <v-text-field v-model="tolerance" label="Tolerance"
-                  class="ml-2 mr-2" :rules="[rules.numeric]" />
+  <!-- <v-text-field v-model="tolerance" label="Tolerance"
+                  class="ml-2 mr-2" :rules="[rules.numeric]" /> -->
+  <v-number-input controlVariant="stacked" variant="filled" v-model="tolerance"
+                    label="Tolerance" :min="0.01" :step="0.01" class="mr-2" />
   <v-switch v-model="absolute" color="primary"
             label="Absolute" class="ml-2" />
   <!-- <v-text-field v-if="" v-model="tolerance" label="Best K"
