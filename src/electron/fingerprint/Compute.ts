@@ -30,7 +30,11 @@ export class Fingerprinting {
 
 		const out: FingerprintingMethodName[] = [];
 		for(const entry of fingerprintingMethods) {
-			out.push({label: entry.label, needSizes: entry.needSizes});
+			out.push({
+				label: entry.label,
+				needSizes: entry.needSizes,
+				forNanoclusters: entry.forNanoclusters
+			});
 		}
 		return out;
 	}

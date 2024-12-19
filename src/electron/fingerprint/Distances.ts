@@ -1,0 +1,282 @@
+/**
+ * Compute the matrix of distances between every pair of structures.
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-12-17
+ */
+import type {FingerprintsAccumulator} from "./Accumulator";
+import {measuringMethods} from "./DistanceMethods";
+
+
+class DistanceMatrix {
+
+    private readonly distanceMatrix: number[][] = [];
+    private side = 0;
+	private readonly id2idx = new Map<number, number>();
+	private nextIdx = 0;
+
+    /**
+     * Initialize the distance matrix
+     *
+     * @param countStructures - How many fingerprints will be covered
+     * @returns Count of distinct distances (i.e., without self zero distances)
+     */
+    init(countStructures: number): number {
+
+        this.side = countStructures;
+        this.nextIdx = 0;
+
+        this.id2idx.clear();
+		this.distanceMatrix.length = 0;
+        for(let i=0; i < countStructures; ++i) {
+            this.distanceMatrix.push(Array(countStructures-i).fill(0) as number[]);
+        }
+
+        return countStructures*(countStructures-1)/2;
+    }
+
+    /**
+     * Store a distance between fingerprints of the structure identified by they index
+     *
+     * @param idRow - Identifier of the structure on the matrix row
+     * @param idColumn - Identifier of the structure on the matrix column
+     * @param distance - Value to be stored
+     * @returns True on success, false on matrix indices out of range
+     */
+    set(idRow: number, idColumn: number, distance: number): boolean {
+
+		let row = this.mapIndex(idRow);
+		let col = this.mapIndex(idColumn);
+
+        if(row >= this.side || col >= this.side) return false;
+
+        // The matrix is symmetrical and only the upper side is stored
+		if(col < row) [col, row] = [row, col];
+		this.distanceMatrix[row][col-row] = distance;
+
+        return true;
+    }
+
+    /**
+     * Access the matrix values
+     *
+     * @param row - Row matrix index
+     * @param column - Column matrix index
+     * @returns - Value from the matrix
+     */
+    get(row: number, column: number): number {
+
+		if(column < row) [column, row] = [row, column];
+		return this.distanceMatrix[row][column-row];
+    }
+
+    /**
+     * Add a value to a matrix element
+     *
+     * @param row - Row matrix index
+     * @param column - Column matrix index
+     * @param value - Value to be added to the matrix element
+     */
+    add(row: number, column: number, value: number): void {
+
+		if(column < row) [column, row] = [row, column];
+		this.distanceMatrix[row][column-row] += value;
+    }
+
+    /**
+     * Convert the structure identifier to index in the matrix
+     *
+     * @param id - Identifier to be mapped to matrix index
+     * @returns The matrix index
+     */
+	private mapIndex(id: number): number {
+		let idx = 0;
+		if(this.id2idx.has(id)) idx = this.id2idx.get(id)!;
+		else {idx = this.nextIdx++; this.id2idx.set(id, idx);}
+		return idx;
+	}
+
+    /**
+     * Return the matrix side
+     *
+     * @returns Matrix side dimension
+     */
+    matrixSize(): number {return this.side;}
+}
+
+class Delta {
+
+    private readonly delta: number[];
+    private readonly nMinus1;
+	private readonly nTimesNMinus1Divided2;
+
+	constructor(n: number) {
+
+        this.nMinus1 = n-1;
+		this.nTimesNMinus1Divided2 = (n*(n-1))/2;
+		const sz = n*this.nTimesNMinus1Divided2;
+		this.delta = Array(sz).fill(0) as number[];
+	}
+
+	get(i: number, j: number, k: number): number	{
+
+        return this.delta[this.deltaIdx(i, j, k)];
+	}
+
+	decr(i: number, j: number, k: number, value: number): void {
+
+        this.delta[this.deltaIdx(i, j, k)] -= value;
+	}
+
+	private deltaIdx(i: number, j: number, k: number): number {
+
+		const start = j * this.nMinus1 - ((j - 1) * j) / 2;
+
+		return i * this.nTimesNMinus1Divided2 + start + k - j - 1;
+	}
+};
+
+interface DistanceResult {
+    countDistances: number;
+    endMessage: string;
+    error?: string;
+}
+
+export class Distances {
+
+    private readonly distances = new DistanceMatrix();
+
+    /**
+     * Return the list of methods names
+     *
+     * @returns The list of distance methods for the selector on the UI
+     */
+    getDistancesMethodsNames(): string[] {
+        const out: string[] = [];
+        for(const method of measuringMethods) out.push(method.label);
+        return out;
+    }
+
+    measureAll(accumulator: FingerprintsAccumulator,
+            distanceMethod: number,
+            fixTriangleInequality: boolean): DistanceResult {
+
+        const countDistances = this.distances.init(accumulator.selectedSize());
+
+        for(const pair of accumulator.iterateSelectedStructurePairs()) {
+
+            const distance = measuringMethods[distanceMethod].method.computeDistance(pair[0], pair[1]);
+
+            const sts = this.distances.set(pair[0].index, pair[1].index, distance);
+            if(!sts) return {countDistances, endMessage: "Error", error: "Indices out of range"};
+        }
+
+        if(fixTriangleInequality) {
+
+            const sts = this.fixTriangleInequalityViolations();
+
+            if(sts === -1) return {
+                countDistances, endMessage: "Error", error: "Max iterations exceeded"
+            };
+            let endMessage;
+            switch(sts) {
+                case 0:  endMessage = "Done (no change)"; break;
+                case 1:  endMessage = "Done (fixed)"; break;
+                default: endMessage = "Done"; break;
+            }
+            return {countDistances, endMessage};
+        }
+
+        return {countDistances, endMessage: "Done"};
+    }
+
+    /**
+     * Fix triangular inequality violations
+     *
+     * @returns 0 if everything is OK; 1 if had to fix triangular inequalities; -1 if maxIterations exceeded
+     */
+    private fixTriangleInequalityViolations(maxIterations=10): number {
+
+        // Check if fixing needed
+        let violated = 0;
+        const n = this.distances.matrixSize();
+
+        for(let i=0; i < n-1; ++i) {
+            for(let j=i+1; j < n; ++j) {
+                for(let k=j+1; k < n; ++k) {
+
+                    const dij = this.distances.get(i, j);
+                    const djk = this.distances.get(j, k);
+                    const dki = this.distances.get(k, i);
+                    if(dij > (djk+dki)) ++violated;
+                }
+            }
+        }
+	    if(violated <= 0) return 0; // Fixing not needed
+
+	    // Allocate the correction matrix
+        const delta = new Delta(n);
+
+        // While the matrix is not fixed, apply the algorithm
+        do {
+            for(let i=0; i < n-1; ++i) {
+                for(let j=i+1; j < n; ++j) {
+                    for(let k=j+1; k < n; ++k) {
+                        for(let t=0; t < 3; ++t) {
+
+                            let ii, jj, kk;
+                            switch(t) {
+                                case 0: ii = i; jj = j; kk = k; break;
+                                case 1: ii = j; jj = k; kk = i; break;
+                                case 2: ii = k; jj = i; kk = j; break;
+                            }
+
+                            const oDij = this.distances.get(ii!, jj!);
+
+                            const d1 = delta.get(i, j, k);
+                            this.distances.add(ii!, jj!,  d1);
+                            this.distances.add(jj!, kk!, -d1);
+                            this.distances.add(kk!, ii!, -d1);
+
+                            const d2 = this.distances.get(ii!, jj!) -
+                                       this.distances.get(jj!, kk!) -
+                                       this.distances.get(kk!, ii!);
+
+                            if(d2 > 0) {
+                                this.distances.add(ii!, jj!, -d2/3);
+                                this.distances.add(jj!, kk!,  d2);
+                                this.distances.add(kk!, ii!,  d2);
+                            }
+                            delta.decr(i, j, k, this.distances.get(ii!, jj!) - oDij);
+                        }
+                    }
+                }
+            }
+
+            // Check if violations present
+            violated = 0;
+            for(let i=0; i < n-1; ++i) {
+                for(let j=i+1; j < n; ++j) {
+                    for(let k=j+1; k < n; ++k) {
+
+                        const dij = this.distances.get(i, j);
+                        const djk = this.distances.get(j, k);
+                        const dki = this.distances.get(k, i);
+                        if(dij > (djk+dki)) ++violated;
+                    }
+                }
+            }
+
+            // Update the number of iterations
+            --maxIterations;
+        }
+        while(violated > 0 && maxIterations > 0);
+
+        // Check if the max number of iterations has been exceeded
+        if(violated > 0) return -1;
+
+        return 1;
+    }
+}

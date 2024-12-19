@@ -45,21 +45,21 @@ const forceCutoff = ref(false);
 const cutoffDistance = ref(0);
 const manualCutoffDistance = ref(10);
 const fingerprintMethodsNames = ref<FPmethodName[]>([]);
-const selectedMethod = ref(0);
+const fingerprintingMethod = ref(0);
 const binSize = ref(0.05);
 const peakWidth = ref(0.02);
 const resultDimensionality = ref(0);
 const fingerprintingBusy = ref(false);
 
 // Compute distances
-const selectedDistanceMethod = ref(0);
+const distanceMethod = ref(0);
 const fixTriangleInequality = ref(false);
 const distanceBusy = ref(false);
+const distanceMethods = ref<{value: number; label: string}[]>([]);
 
 // Classify structures
 const tolerance = ref(0.01);
 const absolute = ref(false);
-
 
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
@@ -81,16 +81,21 @@ askNode(id, "init")
         cutoffDistance.value = forceCutoff.value ? manualCutoffDistance.value : 0;
 
         const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as FingerprintingMethodName[];
-        const len = fpmn.length;
+        let len = fpmn.length;
         fingerprintMethodsNames.value.length = 0;
         for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, ...fpmn[i]});
 
-        selectedMethod.value = params.selectedMethod as number ?? 0;
+        fingerprintingMethod.value = params.fingerprintingMethod as number ?? 0;
         binSize.value = params.binSize as number ?? 0.05;
         peakWidth.value = params.peakWidth as number ?? 0.02;
 
-        // selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
-        // fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
+        const dms = JSON.parse(params.distanceMethods as string ?? "[]") as string[];
+        len = dms.length;
+        distanceMethods.value.length = 0;
+        for(let i=0; i < len; ++i) distanceMethods.value.push({value: i, label: dms[i]});
+
+        distanceMethod.value = params.distanceMethod as number ?? 0;
+        fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
@@ -223,7 +228,7 @@ const cutoffLabel = computed(() => {
 const computeFingerprints = (): void => {
 
     askNode(id, "fp", {
-		selectedMethod: selectedMethod.value,
+		fingerprintingMethod: fingerprintingMethod.value,
         binSize: binSize.value,
         peakWidth: peakWidth.value
     })
@@ -235,26 +240,13 @@ const computeFingerprints = (): void => {
     .finally(() => fingerprintingBusy.value = false);
 };
 
-// // eslint-disable-next-line security/detect-unsafe-regex
-// const rg = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
-// const rules = {
-//     numeric: (value: string): boolean | string => rg.test(value) || "Field should be numeric",
-//     positive: (value: string): boolean | string => Number.parseFloat(value) > 0 || "Field should be > 0",
-// };
-
-const distanceMethods = [
-    {value: 0, label: "Cosine distance"},
-    {value: 1, label: "Euclidean distance"},
-    {value: 2, label: "Minkowski (p=1/3) distance"},
-];
-
+/**
+ * Start computing distances between fingerprints
+ */
 const computeDistances = (): void => {
 
-    // TBD
-    console.log("DIST", selectedDistanceMethod.value, fixTriangleInequality.value);
-
     askNode(id, "dist", {
-		selectedDistanceMethod: selectedDistanceMethod.value,
+		distanceMethod: distanceMethod.value,
         fixTriangleInequality: fixTriangleInequality.value,
     })
     .then((params: CtrlParams) => {
@@ -264,6 +256,17 @@ const computeDistances = (): void => {
                                               "fingerprints"))
     .finally(() => distanceBusy.value = false);
 };
+
+/**
+ * Enable sizes section in the UI
+ */
+const needSizes = computed(() => fingerprintMethodsNames.value[fingerprintingMethod.value]?.needSizes ?? false);
+
+/**
+ * Enable nanocluster choice in the UI
+ */
+const forNanoclusters = computed(() =>
+                            fingerprintMethodsNames.value[fingerprintingMethod.value]?.forNanoclusters ?? false);
 
 </script>
 
@@ -277,8 +280,8 @@ const computeDistances = (): void => {
     <v-spacer />
     <v-btn density="compact" variant="tonal" @click="resetAccumulator">Reset</v-btn>
   </v-row>
-  <v-switch v-model="areNanoclusters" color="primary"
-            label="Structures are nanoclusters" class="ml-2 my-n3" />
+  <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
+            color="primary" label="Structures are nanoclusters" class="ml-2 my-n3" />
   <v-btn variant="tonal" block class="m2-4" @click="toggleAccumulating">{{ accumulatingLabel }}</v-btn>
 
   <v-label class="separator-title">Filter structures</v-label>
@@ -311,14 +314,14 @@ const computeDistances = (): void => {
 
   <v-label class="mt-1 mb-4 green-label">{{ cutoffLabel }}</v-label>
 
-  <v-select v-model="selectedMethod"
+  <v-select v-model="fingerprintingMethod"
     :items="fingerprintMethodsNames"
     label="Selection method"
     item-title="label"
     item-value="value"
     density="compact" class="mr-2" />
 
-  <v-row v-if="fingerprintMethodsNames[selectedMethod]?.needSizes" class="ml-0 mr-2 pt-1">
+  <v-row v-if="needSizes" class="ml-0 mr-2 pt-1">
     <v-number-input controlVariant="stacked" variant="filled" v-model="binSize"
                     label="Bin size" :min="0.01" :step="0.01" class="mr-2" />
     <v-number-input controlVariant="stacked" variant="filled" v-model="peakWidth"
@@ -330,10 +333,10 @@ const computeDistances = (): void => {
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
     {{ `Done (dimensionality: ${resultDimensionality})` }}</v-label>
-  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 green-label">Computing...</v-label>
+  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
 
   <v-label class="separator-title">Compare structures</v-label>
-  <v-select v-model="selectedDistanceMethod"
+  <v-select v-model="distanceMethod"
     label="Distance method"
     :items="distanceMethods"
     item-title="label"

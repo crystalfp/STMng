@@ -32,6 +32,11 @@ export interface StructureReduced {
 
 	/** Computed fingerprint for the structure */
 	fingerprint: number[];
+	/** Number of sections in the fingerprint */
+	countSections: number;
+	/** Length of each section */
+	sectionLength: number;
+
 	/** Computed weights */
 	weights: number[];
 }
@@ -103,6 +108,9 @@ export class FingerprintsAccumulator {
 			selected: true,
 
 			fingerprint: [],
+			countSections: 0,
+			sectionLength: 0,
+
 			weights: []
 		};
 
@@ -268,6 +276,23 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
+	 * Iterator on the selected structures
+	 *
+	 * @returns An iterator on the selected structures
+	 */
+	* iterateSelectedStructurePairs(): Generator<[StructureReduced, StructureReduced]> {
+
+		for(let i=0; i < this.accumulator.length-1; ++i) {
+			if(!this.accumulator[i].selected) continue;
+			for(let j=i+1; j < this.accumulator.length; ++j) {
+				if(!this.accumulator[j].selected) continue;
+
+				yield [this.accumulator[i], this.accumulator[j]];
+			}
+		}
+	}
+
+	/**
 	 * Get unit cell longest diagonal
 	 *
 	 * @param basis - Structure basis vectors
@@ -376,5 +401,25 @@ export class FingerprintsAccumulator {
 								this.getMaxAtomDistance(structure.atomsPosition) :
 								this.getMaxDiagonalLength(structure.basis);
 		}
+	}
+
+	getSectionsInfo(): {count: number; length: number; error?: string} {
+
+		let count = 0;
+		let length = 0;
+
+		for(const entry of this.accumulator) {
+			if(entry.selected) {
+
+				const cc = entry.countSections;
+				if(count === 0) count = cc;
+				else if(cc !== count) return {count: 0, length: 0, error: "Inconsistent section count"};
+
+				const ll = entry.sectionLength;
+				if(length === 0) length = ll;
+				else if(ll !== length) return {count: 0, length: 0, error: "Inconsistent section length"};
+			}
+		}
+		return {count, length};
 	}
 }

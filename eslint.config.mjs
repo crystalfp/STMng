@@ -329,7 +329,7 @@ export default [{
         "unicorn/prefer-top-level-await": "off",
         "unicorn/no-zero-fractions": "off",
         "unicorn/no-for-loop": "off",
-        "promise/catch-or-return": ["off", {allowFinally: true}],
+        "promise/catch-or-return": ["warn", {allowFinally: true}],
         "deprecate/function": "warn",
         "deprecate/member-expression": "warn",
         "deprecate/import": "off",
@@ -384,6 +384,7 @@ export default [{
         "depend/ban-dependencies": ["error", {
                                     "presets": ["native", "microutilities", "preferred"]
         }],
-        "@typescript-eslint/consistent-type-imports": "error"
+        "@typescript-eslint/consistent-type-imports": "error",
+        "sonarjs/no-unenclosed-multiline-block": "off"
     }
 }];

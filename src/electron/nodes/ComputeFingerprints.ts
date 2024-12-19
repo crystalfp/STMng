@@ -11,6 +11,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
+import {Distances} from "../fingerprint/Distances";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
@@ -18,6 +19,7 @@ export class ComputeFingerprints extends NodeCore {
 	private structure: Structure | undefined;
 	private readonly accumulator = new FingerprintsAccumulator();
 	private readonly fp = new Fingerprinting();
+	private readonly dist = new Distances();
 
     private enableEnergyFiltering = false;
 	private thresholdFromMinimum = false;
@@ -29,12 +31,12 @@ export class ComputeFingerprints extends NodeCore {
 	private manualCutoffDistance = 10;
 	private cutoffDistance = 0;
 
-	private selectedMethod = 0;
+	private fingerprintingMethod = 0;
 	private binSize = 0.05;
 	private peakWidth = 0.02;
 
-	// private selectDistanceMethod = 0;
-	// private fixTriangleInequality = false;
+	private distanceMethod = 0;
+	private fixTriangleInequality = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -43,6 +45,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "energy",    type: "invoke", callback: this.channelEnergy.bind(this)},
 		{name: "cutoff",    type: "invoke", callback: this.channelCutoff.bind(this)},
 		{name: "fp",		type: "invoke", callback: this.channelFP.bind(this)},
+		{name: "dist",		type: "invoke", callback: this.channelDist.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -129,9 +132,11 @@ export class ComputeFingerprints extends NodeCore {
 			energyThreshold: this.energyThreshold,
 			thresholdFromMinimum: this.thresholdFromMinimum,
 			areNanoclusters: this.areNanoclusters,
-        	selectedMethod: this.selectedMethod,
+        	fingerprintingMethod: this.fingerprintingMethod,
         	binSize: this.binSize,
         	peakWidth: this.peakWidth,
+			distanceMethod: this.distanceMethod,
+			fixTriangleInequality: this.fixTriangleInequality,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -141,9 +146,11 @@ export class ComputeFingerprints extends NodeCore {
 		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
 		this.energyThreshold = params.energyThreshold as number ?? 0;
         this.areNanoclusters = params.areNanoclusters as boolean ?? false;
-        this.selectedMethod = params.selectedMethod as number ?? 0;
+        this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
+		this.distanceMethod = params.distanceMethod as number ?? 0;
+		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
 	}
 
 	// > Channel handlers
@@ -166,12 +173,13 @@ export class ComputeFingerprints extends NodeCore {
 			manualCutoffDistance: this.manualCutoffDistance,
 
 			fingerprintMethods: JSON.stringify(this.fp.getFingerprintMethodsNames()),
-			selectedMethod: this.selectedMethod,
+			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,
 
-			// selectedDistanceMethod.value = params.selectedDistanceMethod as number ?? 0;
-			// fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
+			distanceMethods: JSON.stringify(this.dist.getDistancesMethodsNames()),
+			distanceMethod: this.distanceMethod,
+			fixTriangleInequality: this.fixTriangleInequality,
 		};
 	}
 
@@ -305,18 +313,19 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for doing fingerprinting
+	 * Channel handler for fingerprinting
 	 *
+	 * @param params - Fingerprinting computation parameters
 	 * @returns Results for the user interface
 	 */
 	private channelFP(params: CtrlParams): CtrlParams {
 
-		this.selectedMethod = params.selectedMethod as number ?? 0;
+		this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
 
 		const result = this.fp.compute(this.accumulator, {
-			method: this.selectedMethod,
+			method: this.fingerprintingMethod,
 			areNanoclusters: this.areNanoclusters,
 			cutoffDistance: this.cutoffDistance,
 			binSize: this.binSize,
@@ -330,5 +339,27 @@ export class ComputeFingerprints extends NodeCore {
 		return {
 			resultDimensionality: result.dimension
 		};
+	}
+
+	/**
+	 * Channel handler for compute distances
+	 *
+	 * @param params - Distance computation parameters
+	 * @returns Results for the user interface
+	 */
+	private channelDist(params: CtrlParams): CtrlParams {
+
+		this.distanceMethod = params.distanceMethod as number ?? 0;
+		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+
+		const result = this.dist.measureAll(this.accumulator,
+											this.distanceMethod,
+											this.fixTriangleInequality);
+
+		if(result.error) {
+			sendAlertMessage(result.error, "fingerprints");
+		}
+
+		return {countDistances: result.countDistances, endMessage: result.endMessage};
 	}
 }

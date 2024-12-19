@@ -27,6 +27,11 @@
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d"
+    },
+    "measure": {
+      "label": "Measures",
+      "type": "measures",
+      "in": "reader"
     }
   },
   "viewer": {
@@ -107,9 +112,11 @@
       "energyThreshold": 0,
       "thresholdFromMinimum": false,
       "areNanoclusters": false,
-      "selectedMethod": 0,
+      "fingerprintingMethod": 0,
       "binSize": 0.05,
-      "peakWidth": 0.02
+      "peakWidth": 0.02,
+      "distanceMethod": 0,
+      "fixTriangleInequality": false
     },
     "unit": {
       "showUnitCell": true,

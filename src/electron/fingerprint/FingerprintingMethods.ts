@@ -41,10 +41,8 @@ abstract class FingerprintMethod {
      */
     finish(accumulator: FingerprintsAccumulator): number {
 
-        for(const structure of accumulator.iterateSelectedStructures()) {
-            return  structure.fingerprint.length;
-        }
-        return 0;
+        const {count, length} = accumulator.getSectionsInfo();
+        return count*length;
     }
 }
 
@@ -312,9 +310,8 @@ class DistancesPerAtom extends FingerprintMethod {
 
         const natoms = atomsZ.length;
 
-        // Set equal weights
-        weights.length = natoms;
-        weights.fill(1/natoms);
+        // No weights, distance will be computed pairing atoms
+        weights.length = 0;
 
         return {dimension: natoms*sectionLength, countSections: natoms, sectionLength};
     }
@@ -473,12 +470,20 @@ type FingerprintingMethod = FingerprintingMethodName & {method: FingerprintMetho
 
 /** Fingerprinting methods list */
 export const fingerprintingMethods: FingerprintingMethod[] = [
-    {label: "Normalized diffraction",				needSizes: true,  method: new NormalizedDiffraction()},
-    {label: "Mendeleev spectra",					needSizes: true,  method: new MendeleevSpectra()},
-    {label: "Chemical scale spectra",				needSizes: true,  method: new ChemicalScaleSpectra()},
-    {label: "Per element diffraction",				needSizes: true,  method: new PerElementRdfHistogram()},
-    {label: "Distances per atom",					needSizes: false, method: new DistancesPerAtom()},
-    {label: "Merged distances",						needSizes: false, method: new MergedDistances()},
-    {label: "Re-centered per element diffraction",	needSizes: true,  method: new RecenteredRdfHistogram()},
-    {label: "Trimmed per element diffraction",		needSizes: false, method: new TrimmedRdfHistogram()},
+    {label: "Normalized diffraction",				needSizes: true,  forNanoclusters: false,
+        method: new NormalizedDiffraction()},
+    {label: "Mendeleev spectra",					needSizes: true,  forNanoclusters: false,
+        method: new MendeleevSpectra()},
+    {label: "Chemical scale spectra",				needSizes: true,  forNanoclusters: false,
+        method: new ChemicalScaleSpectra()},
+    {label: "Per element diffraction",				needSizes: true,  forNanoclusters: true,
+        method: new PerElementRdfHistogram()},
+    {label: "Distances per atom",					needSizes: false, forNanoclusters: false,
+        method: new DistancesPerAtom()},
+    {label: "Merged distances",						needSizes: false, forNanoclusters: false,
+        method: new MergedDistances()},
+    {label: "Re-centered per element diffraction",	needSizes: true,  forNanoclusters: true,
+        method: new RecenteredRdfHistogram()},
+    {label: "Trimmed per element diffraction",		needSizes: false, forNanoclusters: true,
+        method: new TrimmedRdfHistogram()},
 ];

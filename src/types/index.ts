@@ -539,6 +539,9 @@ export interface FingerprintingMethodName {
 
     /** If peak size and bin width are needed for this method */
 	needSizes: boolean;
+
+    /** If the method can distinguish between crystals and nanoclusters */
+    forNanoclusters: boolean;
 }
 
 /** Parameters for fingerprinting */

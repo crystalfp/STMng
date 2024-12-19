@@ -246,7 +246,7 @@
 	"no-barrel-file": 1,
 	"no-const-enum": 1,
 	"no-optional-chaining": 0,
-	"catch-or-return": 1,
+	"catch-or-return": 0,
 	"spec-only": 1,
 	"button-has-type": 1,
 	"no-danger": 1,
