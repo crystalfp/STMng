@@ -288,6 +288,7 @@ export default [{
         "vue/no-v-html": "off",
         "vue/multi-word-component-names": "off",
         "vue/comment-directive": "warn",
+        "import/no-cycle": "off",
         "import/namespace": "off",
         "import/default": "off",
         "import/no-named-as-default": "off",

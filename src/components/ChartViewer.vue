@@ -12,11 +12,11 @@ import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {Context} from "chartjs-plugin-datalabels";
+import log from "electron-log";
 import {askNode, closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
 import type {ChartParams, ChartData, ChartOptions} from "@/types";
-import log from "electron-log";
 
 ChartJS.register(
     CategoryScale,
