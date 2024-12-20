@@ -9,8 +9,7 @@
 import type {FingerprintsAccumulator} from "./Accumulator";
 import {measuringMethods} from "./DistanceMethods";
 
-
-class DistanceMatrix {
+export class DistanceMatrix {
 
     private readonly distanceMatrix: number[][] = [];
     private side = 0;
@@ -21,7 +20,7 @@ class DistanceMatrix {
      * Initialize the distance matrix
      *
      * @param countStructures - How many fingerprints will be covered
-     * @returns Count of distinct distances (i.e., without self zero distances)
+     * @returns Count of distinct distances (i.e., without zero self distances)
      */
     init(countStructures: number): number {
 
@@ -120,16 +119,40 @@ class Delta {
 		this.delta = Array(sz).fill(0) as number[];
 	}
 
-	get(i: number, j: number, k: number): number	{
+    /**
+     * Get one element of the delta matrix
+     *
+     * @param i - First index for the delta parameters matrix
+     * @param j - Second index for the delta parameters matrix
+     * @param k - Third index for the delta parameters matrix
+     * @returns Value in the matrix at (i, j, k)
+     */
+	get(i: number, j: number, k: number): number {
 
         return this.delta[this.deltaIdx(i, j, k)];
 	}
 
+    /**
+     * Decrement a matrix element
+     *
+     * @param i - First index for the delta parameters matrix
+     * @param j - Second index for the delta parameters matrix
+     * @param k - Third index for the delta parameters matrix
+     * @param value - Value to be subtracted from the matrix element
+     */
 	decr(i: number, j: number, k: number, value: number): void {
 
         this.delta[this.deltaIdx(i, j, k)] -= value;
 	}
 
+    /**
+     * Compute the index in the linearized delta matrix
+     *
+     * @param i - First index for the delta parameters matrix
+     * @param j - Second index for the delta parameters matrix
+     * @param k - Third index for the delta parameters matrix
+     * @returns Index in the linearized array that stores the delta matrix
+     */
 	private deltaIdx(i: number, j: number, k: number): number {
 
 		const start = j * this.nMinus1 - ((j - 1) * j) / 2;
@@ -140,6 +163,8 @@ class Delta {
 
 interface DistanceResult {
     countDistances: number;
+    distanceMin: number;
+    distanceMax: number;
     endMessage: string;
     error?: string;
 }
@@ -159,18 +184,45 @@ export class Distances {
         return out;
     }
 
+    /**
+     * Access the distance matrix
+     *
+     * @returns The distance matrix
+     */
+    getDistanceMatrix(): DistanceMatrix {
+        return this.distances;
+    }
+
+    /**
+     * Compute all the distances between the computed fingerprints
+     *
+     * @param accumulator - The structure accumulator
+     * @param distanceMethod - The selected distance method
+     * @param fixTriangleInequality - If the triangle inequality should be checked for all distances
+     * @returns Result of the distance computation
+     */
     measureAll(accumulator: FingerprintsAccumulator,
-            distanceMethod: number,
-            fixTriangleInequality: boolean): DistanceResult {
+               distanceMethod: number,
+               fixTriangleInequality: boolean): DistanceResult {
 
         const countDistances = this.distances.init(accumulator.selectedSize());
+
+        let distanceMin = Number.POSITIVE_INFINITY;
+        let distanceMax = 0;
 
         for(const pair of accumulator.iterateSelectedStructurePairs()) {
 
             const distance = measuringMethods[distanceMethod].method.computeDistance(pair[0], pair[1]);
 
             const sts = this.distances.set(pair[0].index, pair[1].index, distance);
-            if(!sts) return {countDistances, endMessage: "Error", error: "Indices out of range"};
+            if(!sts) return {countDistances,
+                             distanceMin: 0,
+                             distanceMax: 10,
+                             endMessage: "Error",
+                             error: "Indices out of range"};
+
+            if(distance < distanceMin) distanceMin = distance;
+            if(distance > distanceMax) distanceMax = distance;
         }
 
         if(fixTriangleInequality) {
@@ -178,7 +230,11 @@ export class Distances {
             const sts = this.fixTriangleInequalityViolations();
 
             if(sts === -1) return {
-                countDistances, endMessage: "Error", error: "Max iterations exceeded"
+                countDistances,
+                distanceMin: 0,
+                distanceMax: 10,
+                endMessage: "Error",
+                error: "Max iterations exceeded"
             };
             let endMessage;
             switch(sts) {
@@ -186,10 +242,10 @@ export class Distances {
                 case 1:  endMessage = "Done (fixed)"; break;
                 default: endMessage = "Done"; break;
             }
-            return {countDistances, endMessage};
+            return {countDistances, distanceMin, distanceMax, endMessage};
         }
 
-        return {countDistances, endMessage: "Done"};
+        return {countDistances, distanceMin, distanceMax, endMessage: "Done"};
     }
 
     /**

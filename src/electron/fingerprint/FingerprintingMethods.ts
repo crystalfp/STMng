@@ -1,5 +1,5 @@
 /**
- * Methods that compute the actual fingerprint.
+ * Methods to compute the actual fingerprint.
  *
  * @packageDocumentation
  *

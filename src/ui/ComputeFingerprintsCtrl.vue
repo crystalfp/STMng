@@ -6,13 +6,13 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-
 import {ref, computed, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams, FingerprintingMethodName} from "@/types";
+import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -24,7 +24,21 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
+/** Type of the list of fingerprinting methods names for selection */
 type FPmethodName = {value: number} & FingerprintingMethodName;
+
+/** Type of the list of distance methods names for selection */
+interface DistanceMethodsNames {
+    value: number;
+    label: string;
+}
+
+/** Type of the list of grouping methods names for selection */
+interface GroupingMethodsNames {
+    value: number;
+    label: string;
+    usingEdge: boolean;
+}
 
 // Prepare the error messages
 resetAlertMessage("fingerprints");
@@ -55,11 +69,18 @@ const fingerprintingBusy = ref(false);
 const distanceMethod = ref(0);
 const fixTriangleInequality = ref(false);
 const distanceBusy = ref(false);
-const distanceMethods = ref<{value: number; label: string}[]>([]);
+const distanceMethods = ref<DistanceMethodsNames[]>([]);
+const countDistances = ref(0);
+const endMessage = ref("");
 
 // Classify structures
-const tolerance = ref(0.01);
-const absolute = ref(false);
+const groupingMethods = ref<GroupingMethodsNames[]>([]);
+const groupingMethod = ref(0);
+const groupingThreshold = ref(50); // Halfway between min and max distances
+const addEdge = ref(0); // Was called "K" in the old code
+// const absolute = ref(false);
+const countGroups = ref(0);
+const groupingBusy = ref(false);
 
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
@@ -96,10 +117,21 @@ askNode(id, "init")
 
         distanceMethod.value = params.distanceMethod as number ?? 0;
         fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
+
+        const gms = JSON.parse(params.groupingMethods as string ?? "[]") as GroupingMethodName[];
+        len = gms.length;
+        groupingMethods.value.length = 0;
+        for(let i=0; i < len; ++i) {
+            groupingMethods.value.push({value: i, label: gms[i].label, usingEdge: gms[i].usingEdge});
+        }
+        groupingMethod.value = params.groupingMethod as number ?? 0;
+        groupingThreshold.value = params.groupingThreshold as number ?? 50;
+        addEdge.value = params.addEdge as number ?? 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
 
+/** Receive the parameters of structure loaded */
 receiveFromNode(id, "load", (params) => {
 
     countSelected.value = params.countSelected as number ?? 0;
@@ -123,12 +155,9 @@ const resetAccumulator = (): void => {
 const accumulatingLabel = computed(() => (fingerprintsAccumulate.value ?
                                                             "Stop accumulating" :
                                                             "Start accumulating"));
-/**
- * Start/stop accumulating structures
- */
-const toggleAccumulating = (): void => {
 
-    controlStore.fingerprintsAccumulate = !controlStore.fingerprintsAccumulate;
+/** Changes accumulating structures request */
+watch([fingerprintsAccumulate], () => {
 
     askNode(id, "capture", {
         fingerprintsAccumulate: controlStore.fingerprintsAccumulate,
@@ -144,6 +173,14 @@ const toggleAccumulating = (): void => {
     })
     .catch((error: Error) => showAlertMessage(`Error from toggle capture for ${label}: ${error.message}`,
                                               "fingerprints"));
+});
+
+/**
+ * Start/stop accumulating structures on the UI
+ */
+const toggleAccumulating = (): void => {
+
+    controlStore.fingerprintsAccumulate = !controlStore.fingerprintsAccumulate;
 };
 
 /**
@@ -199,6 +236,7 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
                                               "fingerprints"));
 });
 
+/** On changing manual cutoff distance */
 watch([forceCutoff, manualCutoffDistance], () => {
 
     askNode(id, "cutoff", {
@@ -214,6 +252,7 @@ watch([forceCutoff, manualCutoffDistance], () => {
 
 });
 
+/** Cutoff type label for the UI */
 const cutoffLabel = computed(() => {
 
     if(cutoffDistance.value === 0) return "No cutoff defined";
@@ -222,13 +261,23 @@ const cutoffLabel = computed(() => {
         `Computed cutoff: ${cutoffDistance.value.toFixed(2)}`;
 });
 
+/** On fingerprinting parameters change */
+watch([fingerprintingMethod, binSize, peakWidth], () => {
+
+    sendToNode(id, "fp-params", {
+        fingerprintingMethod: fingerprintingMethod.value,
+        binSize: binSize.value,
+        peakWidth: peakWidth.value
+    });
+});
+
 /**
  * Start computing fingerprints
  */
 const computeFingerprints = (): void => {
 
     askNode(id, "fp", {
-		fingerprintingMethod: fingerprintingMethod.value,
+        fingerprintingMethod: fingerprintingMethod.value,
         binSize: binSize.value,
         peakWidth: peakWidth.value
     })
@@ -240,33 +289,73 @@ const computeFingerprints = (): void => {
     .finally(() => fingerprintingBusy.value = false);
 };
 
+/** On changing distance computation parameters */
+watch([distanceMethod, fixTriangleInequality], () => {
+    sendToNode(id, "dist-params", {
+        distanceMethod: distanceMethod.value,
+        fixTriangleInequality: fixTriangleInequality.value,
+    });
+});
+
 /**
  * Start computing distances between fingerprints
  */
 const computeDistances = (): void => {
 
     askNode(id, "dist", {
-		distanceMethod: distanceMethod.value,
+        distanceMethod: distanceMethod.value,
         fixTriangleInequality: fixTriangleInequality.value,
     })
     .then((params: CtrlParams) => {
-        resultDimensionality.value = params.resultDimensionality as number ?? 0;
+        countDistances.value = params.countDistances as number ?? 0;
+        endMessage.value = params.endMessage as string ?? "";
     })
     .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
                                               "fingerprints"))
     .finally(() => distanceBusy.value = false);
 };
 
-/**
- * Enable sizes section in the UI
- */
-const needSizes = computed(() => fingerprintMethodsNames.value[fingerprintingMethod.value]?.needSizes ?? false);
+/** On changing grouping parameters */
+watch([groupingMethod, groupingThreshold, addEdge], () => {
+
+    sendToNode(id, "group-params", {
+
+        groupingMethod: groupingMethod.value,
+        groupingThreshold: groupingThreshold.value,
+        addEdge: addEdge.value
+    });
+});
 
 /**
- * Enable nanocluster choice in the UI
+ * Start grouping structures based on the distance
  */
+const ClassifyStructures = (): void => {
+
+    askNode(id, "group", {
+        groupingMethod: groupingMethod.value,
+        groupingThreshold: groupingThreshold.value,
+        addEdge: addEdge.value
+    })
+    .then((params: CtrlParams) => {
+        countGroups.value = params.countGroups as number ?? 0;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from grouping structures: ${error.message}`,
+                                              "fingerprints"))
+    .finally(() => groupingBusy.value = false);
+};
+
+/** Enable sizes section in the UI */
+const needSizes = computed(() => fingerprintMethodsNames
+                                        .value[fingerprintingMethod.value]?.needSizes ?? false);
+
+/** Enable nanocluster choice in the UI */
 const forNanoclusters = computed(() =>
-                            fingerprintMethodsNames.value[fingerprintingMethod.value]?.forNanoclusters ?? false);
+                            fingerprintMethodsNames
+                                        .value[fingerprintingMethod.value]?.forNanoclusters ?? false);
+
+/** Enable input of K value */
+const useEdge = computed(() => groupingMethods
+                                        .value[groupingMethod.value]?.usingEdge ?? false);
 
 </script>
 
@@ -345,24 +434,46 @@ const forNanoclusters = computed(() =>
 
   <v-switch v-model="fixTriangleInequality" color="primary"
             label="Fix triangle inequality" class="ml-2 mt-n2 mb-n2" />
-  <v-btn block variant="tonal" :disabled="countSelected === 0"
+  <v-btn block variant="tonal" :disabled="resultDimensionality === 0"
          @click="distanceBusy=true; computeDistances()">
     Compute distances
   </v-btn>
-  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
-    Done
+  <v-label v-if="countDistances > 0" class="mt-4 mb-2 green-label">
+    {{ `Distances computed: ${countDistances}`}}
   </v-label>
-  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 green-label">Computing...</v-label>
+  <v-label v-if="distanceBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
 
   <v-label class="separator-title">Classify structures</v-label>
-  <!-- <v-text-field v-model="tolerance" label="Tolerance"
-                  class="ml-2 mr-2" :rules="[rules.numeric]" /> -->
-  <v-number-input controlVariant="stacked" variant="filled" v-model="tolerance"
-                    label="Tolerance" :min="0.01" :step="0.01" class="mr-2" />
-  <v-switch v-model="absolute" color="primary"
-            label="Absolute" class="ml-2" />
-  <!-- <v-text-field v-if="" v-model="tolerance" label="Best K"
-                  class="ml-2 mr-0" :rules="[rules.numeric]" /> -->
+
+  <v-select v-model="groupingMethod"
+    :items="groupingMethods"
+    label="Grouping method"
+    item-title="label"
+    item-value="value"
+    density="compact" class="mr-2" />
+
+  <!-- <v-switch v-model="absolute" color="primary" label="Absolute" class="ml-2" /> -->
+  <v-row class="ml-0 mr-2 pt-1">
+    <v-number-input controlVariant="stacked" variant="filled" v-model="groupingThreshold"
+                  label="Distance thresh. %"
+                  :min="0" :max="100" :step="1" class="mr-2" />
+    <v-number-input v-if="useEdge" controlVariant="stacked"
+                  variant="filled" v-model="addEdge"
+                  label="Edge value (K)" :min="0" :step="1" />
+  </v-row>
+  <v-btn block variant="tonal" :disabled="countDistances === 0"
+         @click="groupingBusy = true; ClassifyStructures()">
+    Classify structures
+  </v-btn>
+  <v-label v-if="countGroups > 0" class="mt-4 mb-2 green-label">
+    {{ `Found ${countGroups} groups`}}
+  </v-label>
+  <v-label v-if="groupingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
+
+                  <!-- <v-number-input controlVariant="stacked" variant="filled" v-model="binSize"
+                    label="Bin size" :min="0.01" :step="0.01" class="mr-2" />
+    <v-number-input controlVariant="stacked" variant="filled" v-model="peakWidth"
+                    label="Peak width" :min="0.01" :step="0.01" /> -->
 
   <g-error-alert kind="fingerprints" />
 </v-container>

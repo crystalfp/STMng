@@ -12,6 +12,7 @@ import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
+import {Grouping} from "../fingerprint/Grouping";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
@@ -20,6 +21,7 @@ export class ComputeFingerprints extends NodeCore {
 	private readonly accumulator = new FingerprintsAccumulator();
 	private readonly fp = new Fingerprinting();
 	private readonly dist = new Distances();
+	private readonly grouping = new Grouping();
 
     private enableEnergyFiltering = false;
 	private thresholdFromMinimum = false;
@@ -37,15 +39,25 @@ export class ComputeFingerprints extends NodeCore {
 
 	private distanceMethod = 0;
 	private fixTriangleInequality = false;
+	private distanceMin = 0;
+	private distanceMax = 10;
+
+	private groupingMethod = 0;
+	private groupingThreshold = 5;
+	private addEdge = 0;
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
-		{name: "capture",   type: "invoke", callback: this.channelCapture.bind(this)},
-		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
-		{name: "energy",    type: "invoke", callback: this.channelEnergy.bind(this)},
-		{name: "cutoff",    type: "invoke", callback: this.channelCutoff.bind(this)},
-		{name: "fp",		type: "invoke", callback: this.channelFP.bind(this)},
-		{name: "dist",		type: "invoke", callback: this.channelDist.bind(this)},
+		{name: "init",      	type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "capture",   	type: "invoke", callback: this.channelCapture.bind(this)},
+		{name: "reset",     	type: "send",   callback: this.channelReset.bind(this)},
+		{name: "energy",    	type: "invoke", callback: this.channelEnergy.bind(this)},
+		{name: "cutoff",    	type: "invoke", callback: this.channelCutoff.bind(this)},
+		{name: "fp",			type: "invoke", callback: this.channelFP.bind(this)},
+		{name: "fp-params",		type: "send", 	callback: this.channelFPParams.bind(this)},
+		{name: "dist",			type: "invoke", callback: this.channelDist.bind(this)},
+		{name: "dist-params",	type: "send",	callback: this.channelDistParams.bind(this)},
+		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
+		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -137,6 +149,9 @@ export class ComputeFingerprints extends NodeCore {
         	peakWidth: this.peakWidth,
 			distanceMethod: this.distanceMethod,
 			fixTriangleInequality: this.fixTriangleInequality,
+			groupingMethod: this.groupingMethod,
+			groupingThreshold: this.groupingThreshold,
+			addEdge: this.addEdge,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -151,6 +166,9 @@ export class ComputeFingerprints extends NodeCore {
         this.peakWidth = params.peakWidth as number ?? 0.02;
 		this.distanceMethod = params.distanceMethod as number ?? 0;
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+		this.groupingMethod = params.groupingMethod as number ?? 0;
+		this.groupingThreshold = params.groupingThreshold as number ?? 0;
+		this.addEdge = params.addEdge as number ?? 0;
 	}
 
 	// > Channel handlers
@@ -180,6 +198,11 @@ export class ComputeFingerprints extends NodeCore {
 			distanceMethods: JSON.stringify(this.dist.getDistancesMethodsNames()),
 			distanceMethod: this.distanceMethod,
 			fixTriangleInequality: this.fixTriangleInequality,
+
+			groupingMethods: JSON.stringify(this.grouping.getGroupingMethodsNames()),
+			groupingMethod: this.groupingMethod,
+			groupingThreshold: this.groupingThreshold,
+			addEdge: this.addEdge,
 		};
 	}
 
@@ -298,9 +321,9 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for starting fingerprinting
+	 * Channel handler for changing cutoff distance
 	 *
-	 * @returns Parameters to initialize the user interface
+	 * @returns The computed cutoff distance
 	 */
 	private channelCutoff(params: CtrlParams): CtrlParams {
 
@@ -310,6 +333,18 @@ export class ComputeFingerprints extends NodeCore {
 		return {
 			cutoffDistance: this.setCutoffDistance()
 		};
+	}
+
+	/**
+	 * Channel handler for fingerprinting parameters change
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelFPParams(params: CtrlParams): void {
+
+		this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
+        this.binSize = params.binSize as number ?? 0.05;
+        this.peakWidth = params.peakWidth as number ?? 0.02;
 	}
 
 	/**
@@ -342,6 +377,17 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
+	 * Channel handler for distance computation parameters change
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelDistParams(params: CtrlParams): void {
+
+		this.distanceMethod = params.distanceMethod as number ?? 0;
+		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+	}
+
+	/**
 	 * Channel handler for compute distances
 	 *
 	 * @param params - Distance computation parameters
@@ -356,10 +402,47 @@ export class ComputeFingerprints extends NodeCore {
 											this.distanceMethod,
 											this.fixTriangleInequality);
 
-		if(result.error) {
-			sendAlertMessage(result.error, "fingerprints");
-		}
+		if(result.error) sendAlertMessage(result.error, "fingerprints");
+
+		// Save distance range
+		this.distanceMin = result.distanceMin;
+		this.distanceMax = result.distanceMax;
 
 		return {countDistances: result.countDistances, endMessage: result.endMessage};
+	}
+
+	/**
+	 * Channel handler for grouping parameters change
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelGroupParams(params: CtrlParams): void {
+
+		this.groupingMethod = params.groupingMethod as number ?? 0;
+        this.groupingThreshold = params.groupingThreshold as number ?? 50;
+        this.addEdge = params.addEdge as number ?? 0;
+	}
+
+	/**
+	 * Channel handler for computing grouping
+	 *
+	 * @param params - Parameters from the UI
+	 * @returns Computation results for the UI
+	 */
+	private channelGroup(params: CtrlParams): CtrlParams {
+
+		this.groupingMethod = params.groupingMethod as number ?? 0;
+        this.groupingThreshold = params.groupingThreshold as number ?? 50;
+        this.addEdge = params.addEdge as number ?? 0;
+
+		// Transform percentage into absolute threshold value
+		const threshold = this.distanceMin + this.groupingThreshold/100*(this.distanceMax-this.distanceMin);
+
+		const result = this.grouping.group(this.accumulator, this.dist.getDistanceMatrix(),
+										   this.groupingMethod, threshold, this.addEdge);
+
+		if(result.error) sendAlertMessage(result.error, "fingerprints");
+
+		return {countGroups: result.countGroups};
 	}
 }
