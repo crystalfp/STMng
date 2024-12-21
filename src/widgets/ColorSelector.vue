@@ -29,7 +29,7 @@ const lineColor = defineModel<string>();
 
 
 <template>
-<v-btn class="mb-2 w-50" :class="{'w-100': block}" variant="tonal"
+<v-btn class="mb-2 w-50" :class="{'w-100': block}"
        @click="colorPickerShow = !colorPickerShow">
   <template #append>
     <v-icon :icon="mdiRectangle" :color="lineColor" size="x-large" />

@@ -170,7 +170,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 <template>
 <v-container class="container">
   <v-label class="ml-2 mb-2 mt-4 no-select">Measurement type</v-label>
-  <v-btn-toggle v-model="measurementType" color="primary" mandatory class="ml-2 mb-6">
+  <v-btn-toggle v-model="measurementType" mandatory class="ml-2 mb-6">
     <v-btn value="atoms">Atoms</v-btn>
     <v-btn value="polyhedra">Polyhedra</v-btn>
     <v-btn value="bonds">Bonds</v-btn>
@@ -178,7 +178,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
   <v-container v-if="measurementType === 'atoms'" class="pa-0">
     <v-switch v-model="useFractional" label="Show fractional coordinates"
-              color="primary" density="compact" class="ml-4 mt-2 mb-n4"/>
+              class="ml-4 mt-2 mb-n4"/>
     <v-label v-if="details.length > 0"
              class="text-h5 w-100 justify-center yellow-title mb-2">Selected atoms</v-label>
     <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
@@ -226,6 +226,6 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     </v-table>
   </v-container>
 
-  <v-btn class="mt-4 mb-4" block variant="tonal" @click="controlStore.deselectAll()">Deselect</v-btn>
+  <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
 </v-container>
 </template>

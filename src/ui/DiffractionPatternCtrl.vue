@@ -99,8 +99,7 @@ const openChartWindow = (): void => {
 <v-container class="container">
   <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 mt-2"
             label="Wavelength"/>
-  <v-number-input v-if="wavelengthCode === 'Manual'" controlVariant="stacked"
-                  variant="solo-filled" density="compact" v-model="wavelengthNumeric"
+  <v-number-input v-if="wavelengthCode === 'Manual'" v-model="wavelengthNumeric"
                   label="Numeric wavelength"
                   :min="0.1" :max="4" :step="0.1" class="ml-2 mr-0" />
   <g-debounced-range-slider v-slot="{values}" v-model="theta"
@@ -109,12 +108,12 @@ const openChartWindow = (): void => {
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
   </g-debounced-range-slider>
-  <v-switch v-model="scaled" color="primary" label="Chart scaled" class="ml-2 mt-1" />
-  <v-switch v-model="showHKL" color="primary" label="Show HKL" class="ml-2 mt-n5" />
+  <v-switch v-model="scaled" label="Chart scaled" class="ml-2 mt-1" />
+  <v-switch v-model="showHKL" label="Show HKL" class="ml-2 mt-n5" />
   <g-debounced-slider v-slot="{value}" v-model="width" :min="0" :max="5" :step="0.05"
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
-  <v-btn block variant="tonal" @click="openChartWindow" :disabled="!enableComputation">Open chart</v-btn>
+  <v-btn block @click="openChartWindow" :disabled="!enableComputation">Open chart</v-btn>
 </v-container>
 </template>

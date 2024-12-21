@@ -49,8 +49,8 @@ const confirmDeletion = (): void => {
                   width="100%" class="pl-2" />
     </v-container>
     <v-container class="button-strip">
-      <v-btn variant="tonal" @click="showConfirm=true">Empty Log</v-btn>
-      <v-btn v-focus variant="tonal" @click="closeWindow('/log')">Close</v-btn>
+      <v-btn @click="showConfirm=true">Empty Log</v-btn>
+      <v-btn v-focus @click="closeWindow('/log')">Close</v-btn>
     </v-container>
   </v-row>
 </v-app>

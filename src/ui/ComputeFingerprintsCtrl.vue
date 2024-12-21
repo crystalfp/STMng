@@ -367,27 +367,27 @@ const useEdge = computed(() => groupingMethods
   <v-row class="mt-2 mb-4 mx-2">
     <v-label class="green-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
-    <v-btn density="compact" variant="tonal" @click="resetAccumulator">Reset</v-btn>
+    <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
   </v-row>
   <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
-            color="primary" label="Structures are nanoclusters" class="ml-2 my-n3" />
-  <v-btn variant="tonal" block class="m2-4" @click="toggleAccumulating">{{ accumulatingLabel }}</v-btn>
+            label="Structures are nanoclusters" class="ml-2 my-n3" />
+  <v-btn block @click="toggleAccumulating">{{ accumulatingLabel }}</v-btn>
 
   <v-label class="separator-title">Filter structures</v-label>
 
   <g-select-file class="mt-2 mr-2" title="Select energy file"
                  :filter="energyFileFilter" @selected="selectEnergyFile" />
 
-  <v-switch v-model="enableEnergyFiltering" color="primary"
+  <v-switch v-model="enableEnergyFiltering"
             label="Filter by energy" class="ml-2" />
-  <v-switch v-model="thresholdFromMinimum" color="primary"
+  <v-switch v-model="thresholdFromMinimum"
             label="Threshold from minimum energy" class="ml-2 mt-n5" />
   <v-row>
-    <v-number-input controlVariant="stacked" variant="filled" v-model="energyThreshold"
+    <v-number-input v-model="energyThreshold"
                     :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
                     class="ml-4 mr-2" />
-    <v-text-field controlVariant="stacked" variant="filled" v-model="energyThresholdEffective"
-                    label="Max energy" readonly class="ml-2 mr-5" />
+    <v-text-field v-model="energyThresholdEffective"
+                  label="Max energy" readonly class="ml-2 mr-5" />
   </v-row>
 
   <v-label class="mt-2 mb-2 green-label"> {{ accumulatedLabel }}</v-label>
@@ -395,8 +395,8 @@ const useEdge = computed(() => groupingMethods
   <v-label class="separator-title">Compute fingerprints</v-label>
 
   <v-row class="mt-2 mx-0">
-    <v-switch v-model="forceCutoff" color="primary" label="Force cutoff at:" class="ml-2" />
-    <v-number-input controlVariant="stacked" variant="filled" v-model="manualCutoffDistance"
+    <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2" />
+    <v-number-input v-model="manualCutoffDistance"
                     label="Cutoff distance" :min="0.1" :step="0.1" :disabled="!forceCutoff"
                     class="mx-2" />
   </v-row>
@@ -408,15 +408,15 @@ const useEdge = computed(() => groupingMethods
     label="Selection method"
     item-title="label"
     item-value="value"
-    density="compact" class="mr-2" />
+    class="mr-2" />
 
   <v-row v-if="needSizes" class="ml-0 mr-2 pt-1">
-    <v-number-input controlVariant="stacked" variant="filled" v-model="binSize"
+    <v-number-input v-model="binSize"
                     label="Bin size" :min="0.01" :step="0.01" class="mr-2" />
-    <v-number-input controlVariant="stacked" variant="filled" v-model="peakWidth"
+    <v-number-input v-model="peakWidth"
                     label="Peak width" :min="0.01" :step="0.01" />
   </v-row>
-  <v-btn block variant="tonal" :disabled="countSelected === 0"
+  <v-btn block :disabled="countSelected === 0"
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
     Compute fingerprints
   </v-btn>
@@ -430,11 +430,11 @@ const useEdge = computed(() => groupingMethods
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    density="compact" class="mr-2 mt-2" />
+    class="mr-2 mt-2" />
 
-  <v-switch v-model="fixTriangleInequality" color="primary"
+  <v-switch v-model="fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n2 mb-n2" />
-  <v-btn block variant="tonal" :disabled="resultDimensionality === 0"
+  <v-btn block :disabled="resultDimensionality === 0"
          @click="distanceBusy=true; computeDistances()">
     Compute distances
   </v-btn>
@@ -450,30 +450,26 @@ const useEdge = computed(() => groupingMethods
     label="Grouping method"
     item-title="label"
     item-value="value"
-    density="compact" class="mr-2" />
+    class="mr-2" />
 
-  <!-- <v-switch v-model="absolute" color="primary" label="Absolute" class="ml-2" /> -->
+  <!-- <v-switch v-model="absolute" label="Absolute" class="ml-2" /> -->
   <v-row class="ml-0 mr-2 pt-1">
-    <v-number-input controlVariant="stacked" variant="filled" v-model="groupingThreshold"
+    <v-number-input v-model="groupingThreshold"
                   label="Distance thresh. %"
                   :min="0" :max="100" :step="1" class="mr-2" />
-    <v-number-input v-if="useEdge" controlVariant="stacked"
-                  variant="filled" v-model="addEdge"
+    <v-number-input v-if="useEdge" v-model="addEdge"
                   label="Edge value (K)" :min="0" :step="1" />
   </v-row>
-  <v-btn block variant="tonal" :disabled="countDistances === 0"
+  <v-btn block :disabled="countDistances === 0"
          @click="groupingBusy = true; ClassifyStructures()">
     Classify structures
   </v-btn>
-  <v-label v-if="countGroups > 0" class="mt-4 mb-2 green-label">
-    {{ `Found ${countGroups} groups`}}
-  </v-label>
-  <v-label v-if="groupingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
-
-                  <!-- <v-number-input controlVariant="stacked" variant="filled" v-model="binSize"
-                    label="Bin size" :min="0.01" :step="0.01" class="mr-2" />
-    <v-number-input controlVariant="stacked" variant="filled" v-model="peakWidth"
-                    label="Peak width" :min="0.01" :step="0.01" /> -->
+  <v-container>
+    <v-label v-if="countGroups > 0" class="mt-4 mb-2 green-label">
+      {{ `Found ${countGroups} groups`}}
+    </v-label>
+    <v-label v-if="groupingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
+  </v-container class="pa-0 mb-6">
 
   <g-error-alert kind="fingerprints" />
 </v-container>

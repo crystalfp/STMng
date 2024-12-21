@@ -149,12 +149,12 @@ const makeImage = (): void => {
       />
     </div>
     <v-container class="button-strip">
-      <v-btn variant="tonal" @click="makeImage">
+      <v-btn @click="makeImage">
         Save image
       </v-btn>
-      <v-switch v-model="transparent" color="primary" label="Transparent background"
-                :hide-details="true" class="ml-1"/>
-      <v-btn v-focus variant="tonal" @click="closeWindow('/chart')">
+      <v-switch v-model="transparent" label="Transparent background"
+                :hide-details="true" class="ml-4 mr-3"/>
+      <v-btn v-focus @click="closeWindow('/chart')">
         Close
       </v-btn>
     </v-container>

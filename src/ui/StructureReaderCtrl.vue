@@ -331,12 +331,12 @@ const label2 = ref("");
 
   <v-select v-model="format" label="File format"
             :items="fileFormats" class="mt-4"
-            density="compact" @update:model-value="setFormat" />
+            @update:model-value="setFormat" />
 
   <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes"
                 label="Atoms types"
                 placeholder="Space separated list" class="mb-6"
-                variant="solo-filled" hide-details="auto"
+                hide-details="auto"
                 clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
                 @click:clear="getAtomsTypes"/>
@@ -348,15 +348,14 @@ const label2 = ref("");
                  :filter="filterForXDATCAR"
                  title="Select XDATCAR file" @selected="selectedAuxFile"/>
 
-  <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr" color="primary"
-            label="Use Bohr units" density="compact" class="ml-2 mt-4" @update:model-value="setUseBohr" />
+  <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
+            label="Use Bohr units" class="ml-2 mt-4" @update:model-value="setUseBohr" />
   <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
     <enable-capture />
     <v-row class="pl-3 mt-0">
-      <v-switch v-model="loopSteps" color="primary" label="Loop" density="compact" class="mr-5" />
-      <v-switch v-model="stepBackward" color="primary" label="Reverse" density="compact" />
-      <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                      v-model="stepIncrement" label="Step increment" :min="1" class="ml-3 mr-8" />
+      <v-switch v-model="loopSteps" label="Loop" class="mr-5" />
+      <v-switch v-model="stepBackward" label="Reverse" />
+      <v-number-input v-model="stepIncrement" label="Step increment" :min="1" class="ml-3 mr-8" />
     </v-row>
     <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9" />

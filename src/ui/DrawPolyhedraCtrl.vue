@@ -96,10 +96,8 @@ receivePolyhedraFromNode(id, "vertices",
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showPolyhedra" color="primary" label="Show polyhedra" density="compact"
-            class="mt-2 ml-4" />
-  <v-switch v-model="colorByCenterAtom" color="primary" label="Color by center atom" density="compact"
-            class="mt-n5 ml-4" />
+  <v-switch v-model="showPolyhedra" label="Show polyhedra" class="mt-2 ml-4" />
+  <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mt-n5 ml-4" />
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     class="ml-2 mb-6"
                     title="Select central atoms by" placeholder="Central atoms selector" />
@@ -107,6 +105,6 @@ receivePolyhedraFromNode(id, "vertices",
                           v-model:raw="showOpacity" label-width="7rem"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
                           :min="0" :max="1" :step="0.1" />
-  <g-color-selector v-else v-model="surfaceColor" label="Surface color" :transparency="true" />
+  <g-color-selector v-else v-model="surfaceColor" label="Surface color" :transparency="true" block />
 </v-container>
 </template>

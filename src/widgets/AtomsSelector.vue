@@ -38,7 +38,7 @@ const getSelector = (): void => {
 <template>
 <v-container class="pa-0">
   <v-label :text="title" class="mb-3 no-select" /><br>
-  <v-btn-toggle v-model="labelKind" color="primary" mandatory class="mb-6" :disabled="disabled">
+  <v-btn-toggle v-model="labelKind" mandatory class="mb-6" :disabled="disabled">
     <v-btn value="symbol">Symbol</v-btn>
     <v-btn value="label">Label</v-btn>
     <v-btn value="index">Index</v-btn>
@@ -47,7 +47,7 @@ const getSelector = (): void => {
   <v-text-field v-model="atomsSelectorBase" :label="placeholder"
                 :disabled="labelKind === 'all' || disabled"
                 placeholder="Space separated list"
-                variant="solo-filled" hide-details="auto" clearable spellcheck="false"
+                hide-details="auto" clearable spellcheck="false"
                 @blur="getSelector" @keyup.enter="getSelector" @click:clear="getSelector"/>
 </v-container>
 </template>

@@ -49,7 +49,7 @@ closeWithEscape("/symmetries");
     </v-col>
   </v-row>
   <v-container class="button-strip">
-    <v-btn v-focus variant="tonal" @click="closeWindow('/symmetries')">Close</v-btn>
+    <v-btn v-focus @click="closeWindow('/symmetries')">Close</v-btn>
   </v-container>
 </v-container>
 </v-app>

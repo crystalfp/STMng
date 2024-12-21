@@ -99,14 +99,12 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="applyInputSymmetries" color="primary"
-            label="Apply input symmetries" density="compact" class="mt-2 ml-3" />
-  <v-switch v-model="enableFindSymmetries" color="primary"
-            label="Enable find symmetries" density="compact" class="ml-3 mt-n5 mb-n6" />
+  <v-switch v-model="applyInputSymmetries" label="Apply input symmetries" class="mt-2 ml-3" />
+  <v-switch v-model="enableFindSymmetries" label="Enable find symmetries" class="ml-3 mt-n5 mb-n6" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
-    <v-switch v-model="standardizeCell" color="primary"
-              label="Standardize cell" density="compact" class="mt-n5 ml-3" />
-    <v-switch v-model="standardizeOnly" color="primary" label="Only standardize cell" class="ml-3 mt-n5" />
+    <v-switch v-model="standardizeCell"
+              label="Standardize cell" class="mt-n5 ml-3" />
+    <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n5" />
     <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
@@ -134,13 +132,13 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     </v-col>
   </v-row>
 
-  <v-switch v-model="fillUnitCell" color="primary" label="Fill unit cell" class="ml-3 mt-4" />
+  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4" />
   <g-debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
                       :min="-5" :max="-1" :step="0.02" class="ml-2 mb-4">
     <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
   </g-debounced-slider>
 
-  <v-btn block class="mb-4" variant="tonal" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
+  <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 
   <g-error-alert kind="symmetries"/>
 </v-container>

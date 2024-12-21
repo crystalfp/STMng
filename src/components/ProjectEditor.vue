@@ -547,10 +547,10 @@ const addNode = (): void => {
   </v-container>
   <v-container class="button-strip">
     <v-label v-if="!showInfo" class="text-blue-darken-2 mr-4 no-select">Click on a node to open the edit panel</v-label>
-    <v-btn v-if="showInfo" :disabled="!projectModified" variant="tonal" class="mr-2"
+    <v-btn v-if="showInfo" :disabled="!projectModified" class="mr-2"
            @click="saveProject">Save modified project</v-btn>
-    <v-btn v-if="showInfo" variant="tonal" class="mr-2" @click="closeInfo">Dismiss panel</v-btn>
-    <v-btn v-focus variant="tonal" @click="closeWindow('/editor')">Close</v-btn>
+    <v-btn v-if="showInfo" class="mr-2" @click="closeInfo">Dismiss panel</v-btn>
+    <v-btn v-focus @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>
 
@@ -570,11 +570,11 @@ const addNode = (): void => {
     <v-card-text>
       <v-text-field v-model="selectedLabel"
                 label="Node label" class="mt-2"
-                variant="solo-filled" hide-details="auto"
+                hide-details="auto"
                 clearable spellcheck="false" />
       <v-select v-if="inputFromOther.length > 0" v-model="selectedInput" :items="inputFromOther"
                 item-title="label" item-value="id" label="Input from"
-                variant="solo-filled" density="compact" hide-details class="mt-2" />
+                variant="solo-filled" hide-details class="mt-2" />
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showEdit=false">Dismiss</v-btn>
@@ -587,14 +587,14 @@ const addNode = (): void => {
   <v-card title="Add node to project" class="mx-auto" elevation="16" width="400">
     <v-card-text>
       <v-select v-model="nodeToAdd" :items="allNodes" item-title="label" item-value="type"
-                variant="solo-filled" density="compact" hide-details label="Type of the node to add" />
+                variant="solo-filled" hide-details label="Type of the node to add" />
       <v-text-field v-model="nodeLabel"
                 label="New node label" class="mt-2"
-                variant="solo-filled" hide-details="auto"
+                hide-details="auto"
                 clearable spellcheck="false" />
       <v-select v-if="inputFrom.length > 0" v-model="inputId" :items="inputFrom"
                 item-title="label" item-value="id" label="Input from"
-                variant="solo-filled" density="compact" hide-details class="mt-2" />
+                hide-details class="mt-2" />
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showAdd=false">Dismiss</v-btn>

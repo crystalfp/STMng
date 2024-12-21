@@ -170,16 +170,16 @@ const selectedSaveFile = (filename: string): void => {
 <template>
 <v-container class="container">
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4" density="compact" @update:model-value="writerLabel=''"/>
+            :items="fileFormats" class="mt-4" @update:model-value="writerLabel=''"/>
 
   <g-select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select output file"
                  :filter="filterFromFormat(format)"
                  kind="save" @selected="selectedSaveFile" />
 
   <v-row class="mt-10" >
-    <v-switch v-model="continuous" color="primary" label="Continuous write" :hint="hint" persistent-hint
-              density="compact" class="ml-6 mr-5" :disabled="controlStore.writerAccumulate" />
-    <v-btn variant="tonal" :disabled="format === '' || outputFile === ''" @click="startStopCapture">
+    <v-switch v-model="continuous" label="Continuous write" :hint="hint" persistent-hint
+              class="ml-6 mr-8" :disabled="controlStore.writerAccumulate" />
+    <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>
   </v-row>

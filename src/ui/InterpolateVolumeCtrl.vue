@@ -54,7 +54,7 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="interpolateVolume" color="primary"
+  <v-switch v-model="interpolateVolume"
             label="Interpolate volume data" class="mt-4 ml-4" />
 
   <dataset-selector v-model="dataset" :count-datasets="countDatasets" />

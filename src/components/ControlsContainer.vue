@@ -53,7 +53,7 @@ sendCurrentNode(() => {
 <template>
 <v-container class="pa-0 title-container">
   <v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
-  variant="solo-filled" density="compact" hide-details rounded="0" />
+  variant="solo-filled" hide-details rounded="0" />
 </v-container>
 <v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
   <component v-show="panel.id === selectedTabId" :is="panel.ctrl" :id="panel.id" :label="panel.label" />

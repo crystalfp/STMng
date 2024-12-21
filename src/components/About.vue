@@ -60,7 +60,7 @@ getVersions()
       <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
     </v-card-text>
     <v-card-actions>
-      <v-btn v-focus variant="tonal" @click="isOpen = false; emit('close-panel')">Close</v-btn>
+      <v-btn v-focus @click="isOpen = false; emit('close-panel')">Close</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>

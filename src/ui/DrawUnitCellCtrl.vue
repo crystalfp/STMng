@@ -166,9 +166,9 @@ watch([percentA, percentB, percentC, shrink], () => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showUnitCell" color="primary" label="Show unit cell" class="mt-2 ml-4" />
-  <v-switch v-model="dashedLine" color="primary" label="Dashed lines" class="ml-4 mt-n5" />
-  <v-switch v-model="showBasisVectors" color="primary" label="Show basis vectors" class="ml-4 mt-n5" />
+  <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-2 ml-4" />
+  <v-switch v-model="dashedLine" label="Dashed lines" class="ml-4 mt-n5" />
+  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4 mt-n5" />
   <g-color-selector v-model="lineColor" label="Line color" block />
   <v-label class="separator-title">Cell repetitions</v-label>
   <g-slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
@@ -180,13 +180,13 @@ watch([percentA, percentB, percentC, shrink], () => {
   <g-slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
-  <v-btn :disabled="!hasSupercell()" variant="tonal" class="mt-2 mb-4 ml-2 w-100"
+  <v-btn :disabled="!hasSupercell()" class="mt-2 mb-4 ml-2 w-100"
          @click="resetSliders">
     Reset
   </v-btn>
-  <v-switch v-model="showSupercell" color="primary" :disabled="!hasSupercell()"
+  <v-switch v-model="showSupercell" :disabled="!hasSupercell()"
             label="Show supercell" class="ml-4" />
-  <v-switch v-model="dashedSupercell" color="primary" :disabled="!hasSupercell()"
+  <v-switch v-model="dashedSupercell" :disabled="!hasSupercell()"
             label="Dashed lines supercell" class="ml-4 mt-n5" />
   <g-color-selector v-model="supercellColor" label="Line color" block />
   <v-label class="separator-title">Shift origin</v-label>
@@ -199,7 +199,7 @@ watch([percentA, percentB, percentC, shrink], () => {
   <g-slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />
-  <v-switch v-model="shrink" color="primary" label="Shrink cell" class="ml-4 mt-2" />
+  <v-switch v-model="shrink" label="Shrink cell" class="ml-4 mt-2" />
 
 </v-container>
 </template>

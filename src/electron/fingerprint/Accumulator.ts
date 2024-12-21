@@ -29,7 +29,7 @@ export interface StructureReduced {
 
 	/** If the structure has been selected (by energy) */
 	selected: boolean;
-	/** The structure energy, if any otherwise zero */
+	/** The structure energy, if any, otherwise zero */
 	energy: number;
 
 	/** Computed fingerprint for the structure */

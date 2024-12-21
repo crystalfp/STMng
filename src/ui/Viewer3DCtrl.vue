@@ -132,13 +132,19 @@ const forcePosition = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="mb-3 mt-3 w-100 text-h6 justify-center yellow-title">Camera type</v-label><br>
-  <v-btn-toggle v-model="configStore.camera.type" color="primary" mandatory
-                class="mb-8 w-100 justify-center">
-    <v-btn value="perspective">Perspective</v-btn>
-    <v-btn value="orthographic">Orthographic</v-btn>
-  </v-btn-toggle>
-  <v-expansion-panels>
+  <v-expansion-panels class="mt-2">
+    <v-expansion-panel>
+      <v-expansion-panel-title>
+        {{ `Camera type (${configStore.camera.type})` }}
+      </v-expansion-panel-title>
+      <v-expansion-panel-text>
+        <v-btn-toggle v-model="configStore.camera.type" mandatory
+                      class="mt-2 mb-n2 w-100 justify-center">
+          <v-btn value="perspective">Perspective</v-btn>
+          <v-btn value="orthographic">Orthographic</v-btn>
+        </v-btn-toggle>
+      </v-expansion-panel-text>
+    </v-expansion-panel>
     <v-expansion-panel>
       <v-expansion-panel-title>
         Camera positioning
@@ -146,31 +152,25 @@ const forcePosition = (): void => {
       <v-expansion-panel-text>
         <v-label text="Camera position" class="mb-4 no-select" />
         <v-row class="pl-1">
-          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                          v-model="forcedCameraPositionX" label="x"
+          <v-number-input v-model="forcedCameraPositionX" label="x"
                           :step="0.1" class="ml-2 mr-0" />
-          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                          v-model="forcedCameraPositionY" label="y"
+          <v-number-input v-model="forcedCameraPositionY" label="y"
                           :step="0.1" class="ml-2 mr-0" />
-          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                          v-model="forcedCameraPositionZ" label="z"
+          <v-number-input v-model="forcedCameraPositionZ" label="z"
                           :step="0.1" class="ml-2 mr-0" />
         </v-row>
         <v-label text="Camera look at" class="mb-4 no-select" />
         <v-row class="pl-1">
-          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                          v-model="forcedCameraLookAtX" label="x"
+          <v-number-input v-model="forcedCameraLookAtX" label="x"
                           :step="0.1" class="ml-2 mr-0" />
-          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                          v-model="forcedCameraLookAtY" label="y"
+          <v-number-input v-model="forcedCameraLookAtY" label="y"
                           :step="0.1" class="ml-2 mr-0" />
-          <v-number-input controlVariant="stacked" variant="solo-filled" density="compact"
-                          v-model="forcedCameraLookAtZ" label="z"
+          <v-number-input v-model="forcedCameraLookAtZ" label="z"
                           :step="0.1" class="ml-2 mr-0" />
         </v-row>
         <v-row class="d-flex justify-center gc-2 pl-4 pb-1">
-          <v-btn variant="tonal" density="comfortable" @click="loadPosition">Load current</v-btn>
-          <v-btn variant="tonal" density="comfortable" @click="forcePosition">Force position</v-btn>
+          <v-btn density="comfortable" @click="loadPosition">Load current</v-btn>
+          <v-btn density="comfortable" @click="forcePosition">Force position</v-btn>
         </v-row>
       </v-expansion-panel-text>
     </v-expansion-panel>
@@ -241,24 +241,24 @@ const forcePosition = (): void => {
         Helper objects
       </v-expansion-panel-title>
       <v-expansion-panel-text>
-        <v-switch v-model="configStore.helpers.showAxis" color="primary"
-                  label="Show axis" density="compact" class="mt-3" />
+        <v-switch v-model="configStore.helpers.showAxis"
+                  label="Show axis" class="mt-3" />
         <g-align-labels label-width="5rem" class="ml-n4 mt-n5">
           <v-slider v-model="configStore.helpers.axisLength" label="Axis length" density="compact"
                     min="0.5" max="20" step="0.5" thumb-label />
         </g-align-labels>
-        <v-switch v-model="configStore.helpers.showGridXZ" color="primary"
-                  label="Show grid XZ" density="compact" class="mt-n5" />
-        <v-switch v-model="configStore.helpers.showGridXY" color="primary"
-                  label="Show grid XY" density="compact" class="mt-n5" />
-        <v-switch v-model="configStore.helpers.showGridYZ" color="primary"
-                  label="Show grid YZ" density="compact" class="mt-n5" />
+        <v-switch v-model="configStore.helpers.showGridXZ"
+                  label="Show grid XZ" class="mt-n5" />
+        <v-switch v-model="configStore.helpers.showGridXY"
+                  label="Show grid XY" class="mt-n5" />
+        <v-switch v-model="configStore.helpers.showGridYZ"
+                  label="Show grid YZ" class="mt-n5" />
         <g-align-labels label-width="5rem" class="ml-n4 mt-n5">
           <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
                     min="2" max="40" step="2" thumb-label />
         </g-align-labels>
-        <v-switch v-model="configStore.helpers.showGizmo" color="primary"
-                  label="Show orientation axis" density="compact" class="mt-n5" />
+        <v-switch v-model="configStore.helpers.showGizmo"
+                  label="Show orientation axis" class="mt-n5" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>

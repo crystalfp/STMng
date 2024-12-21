@@ -170,13 +170,12 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showOrthoslice" color="primary" label="Show orthoslice"
-            density="compact" class="mt-2 ml-3" />
+  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 ml-3" />
 
   <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
   <v-label text="Axis" class="ml-2 mb-3 no-select" /><br>
-  <v-btn-toggle v-model="axis" color="primary" mandatory class="mb-6 ml-2">
+  <v-btn-toggle v-model="axis" mandatory class="mb-6 ml-2">
     <v-btn :value="0">X</v-btn>
     <v-btn :value="1">Y</v-btn>
     <v-btn :value="2">Z</v-btn>
@@ -194,20 +193,17 @@ watchEffect(() => {
              class="ml-n2 no-select" />
   </g-debounced-range-slider>
 
-  <v-switch v-model="useColorClasses" color="primary"
-            label="Use discrete classes" density="compact" class="ml-3" />
+  <v-switch v-model="useColorClasses" label="Use discrete classes" class="ml-3" />
   <g-debounced-slider v-if="useColorClasses" v-slot="{value}" v-model="colorClasses"
                       :step="1" :min="2" :max="20" class="ml-2 mt-1 mb-4">
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </g-debounced-slider>
 
   <v-select v-model="colormapName" label="Colormap"
-            :items="colormaps" class="mt-0 mx-2" density="compact" />
+            :items="colormaps" class="mt-0 mx-2" />
 
-  <v-switch v-model="showIsolines" color="primary" label="Show isolines"
-            density="compact" class="mt-2 ml-4" />
-  <v-switch v-model="colorIsolines" color="primary" label="Color isolines"
-            density="compact" class="ml-4 mt-n5" />
+  <v-switch v-model="showIsolines" label="Show isolines" class="mt-2 ml-4" />
+  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mt-n5" />
 
   <g-debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
                       :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1">

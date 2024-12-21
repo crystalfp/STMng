@@ -103,7 +103,27 @@ const app = createApp(App)
 			},
 			VBtn: {
       			density: "default",
+				variant: "outlined"
     		},
+			VSwitch: {
+				density: "compact",
+				color: "primary"
+			},
+			VBtnToggle: {
+				color: "primary"
+			},
+			VSelect: {
+				density: "compact",
+				variant: "filled"
+			},
+			VNumberInput: {
+				variant: "filled",
+				controlVariant: "stacked",
+				density: "compact"
+			},
+			VTextField: {
+				variant: "filled",
+			}
 		}
   	}))
 

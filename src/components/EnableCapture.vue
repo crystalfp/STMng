@@ -18,12 +18,12 @@ const controlStore = useControlStore();
 <template>
 <v-container class="pa-0">
   <v-switch v-if="controlStore.hasCapture" v-model="controlStore.movie"
-            color="primary" label="Movie from steps" density="compact" class="mt-n5" />
+            label="Movie from steps" class="mt-n5" />
   <v-switch v-if="controlStore.hasTrajectory" v-model="controlStore.trajectoriesRecording"
-            color="primary" label="Record trajectories" density="compact" class="mt-n5" />
+            label="Record trajectories" class="mt-n5" />
   <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
-            color="primary" label="Accumulate for fingerprinting" density="compact" class="mt-n5" />
+            label="Accumulate for fingerprinting" class="mt-n5" />
   <v-switch v-if="controlStore.hasWriter" v-model="controlStore.writerAccumulate"
-            color="primary" label="Collect for structure writer" density="compact" class="mt-n5" />
+            label="Collect for structure writer" class="mt-n5" />
 </v-container>
 </template>

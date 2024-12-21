@@ -114,8 +114,8 @@ const resetSliders = (): void => {
 <template>
 <v-container class="container">
 
-  <v-switch v-model="enableComputeBonds" color="primary"
-            label="Enable compute bonds" density="compact" class="mt-4 ml-2" />
+  <v-switch v-model="enableComputeBonds"
+            label="Enable compute bonds" class="mt-4 ml-2" />
 
   <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
                       class="ml-2 mb-2 mt-1">
@@ -133,8 +133,8 @@ const resetSliders = (): void => {
     <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
   <v-label class="ml-2 no-select">Sum of covalent radii multiplier</v-label>
-  <v-switch v-model="perPairScale" color="primary" :disabled="perPairData.length < 2"
-            label="Multiplier per atom pair" density="compact" class="ml-2 mt-2" />
+  <v-switch v-model="perPairScale" :disabled="perPairData.length < 2"
+            label="Multiplier per atom pair" class="ml-2 mt-2" />
   <v-container v-if="perPairScale" class="pa-0">
     <v-table class="px-2 py-1">
       <tr v-for="(item, idx) of perPairData" :key="item.label">
@@ -151,15 +151,13 @@ const resetSliders = (): void => {
     </g-debounced-slider>
   </v-container>
   <v-label class="ml-2 mb-2 mt-4 no-select">Add bonded atoms outside unit cell</v-label>
-  <v-btn-toggle v-model="enlargementKind" color="primary" mandatory class="mb-6 ml-2">
+  <v-btn-toggle v-model="enlargementKind" mandatory class="mb-6 ml-2">
     <v-btn value="none">None</v-btn>
     <v-btn value="outside">Neighbors</v-btn>
     <v-btn value="connected">Connected</v-btn>
   </v-btn-toggle>
 
-  <v-btn block class="mt-4" variant="tonal" @click="resetSliders">
-    Reset parameters
-  </v-btn>
+  <v-btn block class="mt-2" @click="resetSliders">Reset parameters</v-btn>
 
 </v-container>
 </template>
