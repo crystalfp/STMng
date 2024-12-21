@@ -29,6 +29,8 @@ export interface StructureReduced {
 
 	/** If the structure has been selected (by energy) */
 	selected: boolean;
+	/** The structure energy, if any otherwise zero */
+	energy: number;
 
 	/** Computed fingerprint for the structure */
 	fingerprint: number[];
@@ -59,6 +61,7 @@ export class FingerprintsAccumulator {
 	private countSelected = 0;
 	private areNanoclusters = false;
 	private countSpecies = 0;
+	private readonly idx2id = new Map<number, number>();
 
 	/**
 	 * Add one structure to the accumulator
@@ -106,6 +109,7 @@ export class FingerprintsAccumulator {
 			species: new Map<number, number>(),
 
 			selected: true,
+			energy: 0,
 
 			fingerprint: [],
 			countSections: 0,
@@ -135,9 +139,14 @@ export class FingerprintsAccumulator {
 		else if(this.countSpecies !== entry.species.size) throw Error("Number of species differs");
 
 		entry.minRadius = isNanocluster ?
-					this.getMaxAtomDistance(entry.atomsPosition) : this.getMaxDiagonalLength(basis);
+								this.getMaxAtomDistance(entry.atomsPosition) :
+								this.getMaxDiagonalLength(basis);
 
+		// Add to the accumulator
 		this.accumulator.push(entry);
+
+		// Initialize the mapping between selected structure index and loaded index
+		this.idx2id.set(entry.index, entry.index);
 
 		return this.areNanoclusters;
 	}
@@ -168,15 +177,6 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
-	 * Count of species in the loaded structures
-	 *
-	 * @returns - Count of species
-	 */
-	numberOfSpecies(): number {
-		return this.countSpecies;
-	}
-
-	/**
 	 * Load the list of energies per structure
 	 *
 	 * @param energies - Energies per structure
@@ -199,10 +199,29 @@ export class FingerprintsAccumulator {
 				   energyThreshold: number,
 				   thresholdFromMinimum: boolean): FilteringStatus {
 
+		// Reload the mapping
+		this.idx2id.clear();
+
+		// Load energies
+		const cnt = this.accumulator.length;
+		if(this.energyPerStructure.length >= cnt) {
+			for(let i=0; i < cnt; ++i) {
+				this.accumulator[i].energy = this.energyPerStructure[i];
+			}
+		}
+		else {
+			for(let i=0; i < cnt; ++i) {
+				this.accumulator[i].energy = 0;
+			}
+		}
+
 		// No energy loaded or no filtering requested
 		if(!enableEnergyFiltering || this.energyPerStructure.length === 0) {
 
-			for(const structure of this.accumulator) structure.selected = true;
+			for(const structure of this.accumulator) {
+				structure.selected = true;
+				this.idx2id.set(structure.index, structure.index);
+			}
 			this.countSelected = this.accumulator.length;
 			return {
 				countSelected: this.countSelected,
@@ -212,7 +231,7 @@ export class FingerprintsAccumulator {
 
 		// Compute energy threshold
 		if(thresholdFromMinimum) {
-			const cnt = this.accumulator.length;
+
 			if(cnt > this.energyPerStructure.length) {
 				this.countSelected = 0;
 				return {
@@ -234,10 +253,12 @@ export class FingerprintsAccumulator {
 		// Select structures with energy less than the threshold
 		let countSelected = 0;
 		const len = this.accumulator.length;
+		let j = 0;
 		for(let i = 0; i < len; ++i) {
 			if(this.energyPerStructure[i] <= this.thresholdEnergy) {
 				++countSelected;
 				this.accumulator[i].selected = true;
+				this.idx2id.set(j++, i);
 			}
 			else this.accumulator[i].selected = false;
 		}
@@ -364,6 +385,7 @@ export class FingerprintsAccumulator {
 				if(len > maxAtomDistance) maxAtomDistance = len;
 			}
 		}
+
 		// Return the maximum value
 		return Math.sqrt(maxAtomDistance);
 	}
@@ -398,11 +420,16 @@ export class FingerprintsAccumulator {
 
 		for(const structure of this.accumulator) {
 			structure.minRadius = this.areNanoclusters ?
-								this.getMaxAtomDistance(structure.atomsPosition) :
-								this.getMaxDiagonalLength(structure.basis);
+										this.getMaxAtomDistance(structure.atomsPosition) :
+										this.getMaxDiagonalLength(structure.basis);
 		}
 	}
 
+	/**
+	 * Return info on the sections
+	 *
+	 * @returns Section count and section length
+	 */
 	getSectionsInfo(): {count: number; length: number; error?: string} {
 
 		let count = 0;
@@ -421,5 +448,15 @@ export class FingerprintsAccumulator {
 			}
 		}
 		return {count, length};
+	}
+
+	/**
+	 * Map selected structure index to original structure index
+	 *
+	 * @param idx - Index in the array of selected structures
+	 * @returns Loaded structure index
+	 */
+	toOriginalIndex(idx: number): number {
+		return this.idx2id.get(idx) ?? 0;
 	}
 }
