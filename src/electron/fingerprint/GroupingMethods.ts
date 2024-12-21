@@ -158,32 +158,120 @@ class PseudoSNNGrouping extends GroupingMethod {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
+class Node {
+
+    public readonly idx: number[] = [];
+
+    constructor(i: number) {
+        this.idx.push(i);
+    }
+
+    merge(n: Node): void {
+        for(const element of n.idx) this.idx.push(element);
+    }
+}
+
 abstract class HierarchicalGrouping extends GroupingMethod {
 
-    protected abstract clusterLinkage(): number;
+    protected abstract clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number;
+
     doGrouping(accumulator: FingerprintsAccumulator,
-        distances: DistanceMatrix,
-        threshold: number,
-        margin: number): Set<number>[] {
-            void accumulator;
-            void distances;
-            void threshold;
-            void margin;
-            return [];
+               distances: DistanceMatrix,
+               threshold: number): Set<number>[] {
+
+        const countStructures = accumulator.selectedSize();
+
+        // Initialize root (to point to all)
+        const root: Node[] = [];
+        for(let i=0; i < countStructures; ++i) root.push(new Node(i));
+
+	    // Iterate till the distance becomes greater than the given threshold
+        while(root.length > 1) {
+
+            let mini: number;
+            let minj: number;
+            let minDistance = Number.POSITIVE_INFINITY;
+            const len = root.length;
+            for(let ni=0; ni < len-1; ++ni) {
+                for(let nj=ni+1; nj < len; ++nj) {
+                    const distance = this.clusterDistance(root[ni].idx, root[nj].idx, distances);
+                    if(distance < minDistance) {
+                        minDistance = distance;
+                        mini = ni;
+                        minj = nj;
+                    }
+                }
+            }
+
+            // Exit if the threshold has been reached
+            if(minDistance > threshold) break;
+
+            // Update the group list. Merge node j at the end of node i
+            root[mini!].merge(root[minj!]);
+
+            // Remove merged node
+            root.splice(minj!, 1);
         }
+
+        // Load the configuration in the final structure
+        const result: Set<number>[] = [];
+        for(const node of root) {
+
+            // Start a new group
+            const group = new Set<number>();
+            for(const ii of node.idx) group.add(ii);
+            result.push(group);
+        }
+        return result;
+    }
 }
 
 class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
 
-    protected clusterLinkage(): number {
-        return 0;
+    protected clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number {
+
+        const leni = idxi.length;
+        const lenj = idxj.length;
+
+        if(leni === 1 && lenj === 1) {
+            return distances.get(idxi[0], idxj[0]);
+        }
+
+        let distance = Number.POSITIVE_INFINITY;
+
+        for(let i=0; i < leni; ++i) {
+            for(let j=0; j < lenj; ++j) {
+                const dd = distances.get(idxi[i], idxj[j]);
+                if(dd < distance) distance = dd;
+            }
+        }
+
+        return distance;
     }
 }
 
 class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
 
-    protected clusterLinkage(): number {
-        return 0;
+    protected clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number {
+
+        const leni = idxi.length;
+        const lenj = idxj.length;
+
+        if(leni === 1 && lenj === 1) {
+            return distances.get(idxi[0], idxj[0]);
+        }
+
+        let distance = Number.NEGATIVE_INFINITY;
+
+        for(let i=0; i < leni; ++i) {
+            for(let j=0; j < lenj; ++j) {
+                const dd = distances.get(idxi[i], idxj[j]);
+                if(dd > distance) distance = dd;
+            }
+        }
+
+        return distance;
     }
 }
 
