@@ -8,14 +8,15 @@
  */
 import type {StructureReduced} from "./Accumulator";
 
-/** Superclass of all fingerprinting methods */
+/** Superclass of all distance methods */
 abstract class DistanceMethod {
 
     /**
-     * Do the fingerprinting
+     * Measure the distance between the fingerprints of two structures
      *
-     * @param structure - The structure for which the fingerprint should be computed
-     * @returns The various dimensions of the fingerprint
+     * @param structure1 - The first structure for which the fingerprint should be used
+     * @param structure2 - The second structure for which the fingerprint should be used
+     * @returns The distance between the fingerprints
      */
     abstract computeDistance(structure1: StructureReduced, structure2: StructureReduced): number;
 }

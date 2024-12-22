@@ -9,15 +9,30 @@
 import type {FingerprintsAccumulator} from "./Accumulator";
 import type {DistanceMatrix} from "./Distances";
 
-/** Superclass of all fingerprinting methods */
+/** Superclass of all grouping methods */
 abstract class GroupingMethod {
 
-
+    /**
+     * Compute grouping of structures into groups with similar fingerprints
+     *
+     * @param accumulator - Accumulator with all structures
+     * @param distances - Distance matrix between fingerprints
+     * @param threshold - Distance threshold to consider two structures in the same group
+     * @param margin - Number of structure over one to be considered for node linkage
+     */
     abstract doGrouping(accumulator: FingerprintsAccumulator,
                         distances: DistanceMatrix,
                         threshold: number,
                         margin: number): Set<number>[];
 
+    /**
+     * Compute connection matrix between structure with similar fingerprints
+     *
+     * @param countStructures - Total number of selected structures
+     * @param distances - Distance matrix between fingerprints
+     * @param threshold - Distance threshold to consider two structures in the same group
+     * @returns Connection matrix between structures
+     */
     sparsify(countStructures: number,
              distances: DistanceMatrix,
              threshold: number): number[] {
@@ -38,6 +53,15 @@ abstract class GroupingMethod {
         return connection;
     }
 
+    /**
+     * Depth first visit of the connection matrix
+     *
+     * @param idx - Starting structure index
+     * @param assigned - Nodes marked as already visited
+     * @param group - Set of connected nodes
+     * @param connection - Connection matrix between structures
+     * @param nnodes - Total number of selected structures
+     */
     depthFirstVisit(idx: number, assigned: boolean[],
                     group: Set<number>, connection: number[], nnodes: number): void {
 
