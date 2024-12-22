@@ -67,6 +67,6 @@ watch(limitsToDebounce, () => {
   <slot :values="limitsToDebounce" />
   <v-range-slider v-model="limitsToDebounce" strict
                   :step="step" :min="min" :max="max"
-                  color="primary" class="ml-0 mt-1 pr-2" />
+                  class="ml-0 mt-1 pr-2" />
 </v-container>
 </template>

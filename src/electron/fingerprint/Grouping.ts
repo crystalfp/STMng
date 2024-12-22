@@ -13,7 +13,7 @@ import type {DistanceMatrix} from "./Distances";
 /** List of methods names for the UI */
 export interface GroupingMethodName {
 	label: string;
-	usingEdge: boolean;
+	usingMargin: boolean;
 }
 
 interface GroupingResults {
@@ -33,7 +33,7 @@ export class Grouping {
      */
     getGroupingMethodsNames(): GroupingMethodName[] {
         const out: GroupingMethodName[] = [];
-        for(const method of groupingMethods) out.push({label: method.label, usingEdge: method.usingEdge});
+        for(const method of groupingMethods) out.push({label: method.label, usingMargin: method.usingMargin});
         return out;
     }
 
@@ -44,16 +44,16 @@ export class Grouping {
 	 * @param distances - The pair distance matrix
 	 * @param groupingMethod - Method to be used to do the grouping
 	 * @param groupingThreshold - Threshold on distances to consider structures in the same group
-	 * @param addEdge - Connections to add to minimum one to set structures as linked. Was called "K"
+	 * @param addMargin - Connections to add to minimum one to set structures as linked. Was called "K"
 	 * @returns Count of groups found
 	 */
 	group(accumulator: FingerprintsAccumulator, distances: DistanceMatrix,
-		  groupingMethod: number, groupingThreshold: number, addEdge: number): GroupingResults {
+		  groupingMethod: number, groupingThreshold: number, addMargin: number): GroupingResults {
 
 		const groups = groupingMethods[groupingMethod].method.doGrouping(accumulator,
 																		distances,
 																		groupingThreshold,
-																		addEdge);
+																		addMargin);
 
 		for(const group of groups) {
 

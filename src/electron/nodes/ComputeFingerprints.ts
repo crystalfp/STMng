@@ -44,7 +44,7 @@ export class ComputeFingerprints extends NodeCore {
 
 	private groupingMethod = 0;
 	private groupingThreshold = 5;
-	private addEdge = 0;
+	private addMargin = 0;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      	type: "invoke", callback: this.channelInit.bind(this)},
@@ -151,7 +151,7 @@ export class ComputeFingerprints extends NodeCore {
 			fixTriangleInequality: this.fixTriangleInequality,
 			groupingMethod: this.groupingMethod,
 			groupingThreshold: this.groupingThreshold,
-			addEdge: this.addEdge,
+			addMargin: this.addMargin,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -168,7 +168,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
 		this.groupingMethod = params.groupingMethod as number ?? 0;
 		this.groupingThreshold = params.groupingThreshold as number ?? 0;
-		this.addEdge = params.addEdge as number ?? 0;
+		this.addMargin = params.addMargin as number ?? 0;
 	}
 
 	// > Channel handlers
@@ -202,7 +202,7 @@ export class ComputeFingerprints extends NodeCore {
 			groupingMethods: JSON.stringify(this.grouping.getGroupingMethodsNames()),
 			groupingMethod: this.groupingMethod,
 			groupingThreshold: this.groupingThreshold,
-			addEdge: this.addEdge,
+			addMargin: this.addMargin,
 		};
 	}
 
@@ -420,7 +420,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		this.groupingMethod = params.groupingMethod as number ?? 0;
         this.groupingThreshold = params.groupingThreshold as number ?? 50;
-        this.addEdge = params.addEdge as number ?? 0;
+        this.addMargin = params.addMargin as number ?? 0;
 	}
 
 	/**
@@ -433,13 +433,13 @@ export class ComputeFingerprints extends NodeCore {
 
 		this.groupingMethod = params.groupingMethod as number ?? 0;
         this.groupingThreshold = params.groupingThreshold as number ?? 50;
-        this.addEdge = params.addEdge as number ?? 0;
+        this.addMargin = params.addMargin as number ?? 0;
 
 		// Transform percentage into absolute threshold value
 		const threshold = this.distanceMin + this.groupingThreshold/100*(this.distanceMax-this.distanceMin);
 
 		const result = this.grouping.group(this.accumulator, this.dist.getDistanceMatrix(),
-										   this.groupingMethod, threshold, this.addEdge);
+										   this.groupingMethod, threshold, this.addMargin);
 
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 

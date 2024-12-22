@@ -24,23 +24,23 @@
       "type": "draw-structure",
       "in": "bonds"
     },
-    "viewer": {
-      "label": "Viewer",
-      "type": "viewer-3d"
-    },
     "measure": {
       "label": "Measures",
       "type": "measures",
       "in": "reader"
+    },
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d"
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        4.066269963979721,
-        3.791224406508264,
-        18.500026555964723
+        5,
+        3,
+        5
       ],
       "lookAt": [
         4.066269963979721,
@@ -112,7 +112,7 @@
       "energyThreshold": 0,
       "thresholdFromMinimum": false,
       "areNanoclusters": false,
-      "fingerprintingMethod": 0,
+      "fingerprintingMethod": 3,
       "binSize": 0.05,
       "peakWidth": 0.02,
       "distanceMethod": 0,

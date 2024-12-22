@@ -123,6 +123,9 @@ const app = createApp(App)
 			},
 			VTextField: {
 				variant: "filled",
+			},
+			VRangeSlider: {
+				color: "primary"
 			}
 		}
   	}))

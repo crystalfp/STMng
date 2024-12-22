@@ -64,7 +64,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
             label: "&File",
             submenu: [
                 {
-                    label: "Load project",
+                    label: "Load project from…",
                     accelerator: "CommandOrControl+O",
                     click() {
                         const file = dialog.showOpenDialogSync({
@@ -124,12 +124,6 @@ export const setupMenu = (isDevelopment: boolean): void => {
                         createProjectEditor(pm.getProjectName());
                     }
                 },
-                {
-                    label: "Show application log",
-                    click() {
-                        showLogFile();
-                    }
-                },
                 {type: "separator"},
                 {
                     label: "Quit application",
@@ -148,12 +142,14 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     role: "forceReload",
                     enabled: isDevelopment,
                     visible: isDevelopment,
+                    label: "Force reload"
                 },
                 {
                     role: "toggleDevTools",
                     enabled: isDevelopment,
                     visible: isDevelopment,
-                    accelerator: "F12"
+                    accelerator: "F12",
+                    label: "Toggle DevTools"
                 },
                 {
                     label: "DevTools on secondary",
@@ -173,7 +169,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     }
                 },
                 {type: "separator"},
-                {role: "togglefullscreen"},
+                {role: "togglefullscreen", label: "Toggle full screen"},
                 {
                     label: "Dark theme",
                     type: "checkbox",
@@ -186,7 +182,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     }
                 },
                 {
-                    label: "Extended viewer",
+                    label: "Extend viewer",
                     type: "checkbox",
                     accelerator: "CommandOrControl+E",
                     id: "toggleExtended",
@@ -225,12 +221,14 @@ export const setupMenu = (isDevelopment: boolean): void => {
                         });
                     }
                 },
+                {type: "separator"},
                 {
-                    label: "Learn more",
+                    label: "Show application log",
                     click() {
-                        void shell.openExternal("https://www.electronjs.org");
-                    },
+                        showLogFile();
+                    }
                 },
+                {type: "separator"},
                 {
                     label: "About",
                     accelerator: "CommandOrControl+A",

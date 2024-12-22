@@ -280,16 +280,16 @@ class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
 /** Type of the table of grouping methods */
 interface OneGroupingMethod {
     label: string;
-    usingEdge: boolean;
+    usingMargin: boolean;
     method: GroupingMethod;
 }
 
 /** Grouping methods list */
 export const groupingMethods: OneGroupingMethod[] = [
-    {label: "Pseudo SNN",                               usingEdge: true,
+    {label: "Pseudo SNN",                               usingMargin: true,
         method: new PseudoSNNGrouping()},
-    {label: "Hierarchical grouping (single linkage)",   usingEdge: false,
+    {label: "Hierarchical grouping (single linkage)",   usingMargin: false,
         method: new HierarchicalSingleLinkageGrouping()},
-    {label: "Hierarchical grouping (complete linkage)", usingEdge: false,
+    {label: "Hierarchical grouping (complete linkage)", usingMargin: false,
         method: new HierarchicalCompleteLinkageGrouping()},
 ];

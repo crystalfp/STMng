@@ -37,7 +37,7 @@ interface DistanceMethodsNames {
 interface GroupingMethodsNames {
     value: number;
     label: string;
-    usingEdge: boolean;
+    usingMargin: boolean;
 }
 
 // Prepare the error messages
@@ -77,7 +77,7 @@ const endMessage = ref("");
 const groupingMethods = ref<GroupingMethodsNames[]>([]);
 const groupingMethod = ref(0);
 const groupingThreshold = ref(50); // Halfway between min and max distances
-const addEdge = ref(0); // Was called "K" in the old code
+const addMargin = ref(0); // Was called "K" in the old code
 // const absolute = ref(false);
 const countGroups = ref(0);
 const groupingBusy = ref(false);
@@ -122,11 +122,11 @@ askNode(id, "init")
         len = gms.length;
         groupingMethods.value.length = 0;
         for(let i=0; i < len; ++i) {
-            groupingMethods.value.push({value: i, label: gms[i].label, usingEdge: gms[i].usingEdge});
+            groupingMethods.value.push({value: i, label: gms[i].label, usingMargin: gms[i].usingMargin});
         }
         groupingMethod.value = params.groupingMethod as number ?? 0;
         groupingThreshold.value = params.groupingThreshold as number ?? 50;
-        addEdge.value = params.addEdge as number ?? 0;
+        addMargin.value = params.addMargin as number ?? 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
@@ -316,13 +316,13 @@ const computeDistances = (): void => {
 };
 
 /** On changing grouping parameters */
-watch([groupingMethod, groupingThreshold, addEdge], () => {
+watch([groupingMethod, groupingThreshold, addMargin], () => {
 
     sendToNode(id, "group-params", {
 
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
-        addEdge: addEdge.value
+        addMargin: addMargin.value
     });
 });
 
@@ -334,7 +334,7 @@ const ClassifyStructures = (): void => {
     askNode(id, "group", {
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
-        addEdge: addEdge.value
+        addMargin: addMargin.value
     })
     .then((params: CtrlParams) => {
         countGroups.value = params.countGroups as number ?? 0;
@@ -355,7 +355,7 @@ const forNanoclusters = computed(() =>
 
 /** Enable input of K value */
 const useEdge = computed(() => groupingMethods
-                                        .value[groupingMethod.value]?.usingEdge ?? false);
+                                        .value[groupingMethod.value]?.usingMargin ?? false);
 
 </script>
 
@@ -457,8 +457,8 @@ const useEdge = computed(() => groupingMethods
     <v-number-input v-model="groupingThreshold"
                   label="Distance thresh. %"
                   :min="0" :max="100" :step="1" class="mr-2" />
-    <v-number-input v-if="useEdge" v-model="addEdge"
-                  label="Edge value (K)" :min="0" :step="1" />
+    <v-number-input v-if="useEdge" v-model="addMargin"
+                  label="Margin value (K)" :min="0" :step="1" />
   </v-row>
   <v-btn block :disabled="countDistances === 0"
          @click="groupingBusy = true; ClassifyStructures()">

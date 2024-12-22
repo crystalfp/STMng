@@ -45,8 +45,8 @@ const confirmDeletion = (): void => {
 <v-app :theme="theme">
   <v-row class="log-box pa-0">
     <v-container class="log-text-container">
-      <v-textarea :model-value="text" readonly auto-grow hide-details variant="underlined"
-                  width="100%" class="pl-2" />
+      <v-textarea :model-value="text" readonly auto-grow hide-details
+                  variant="solo" flat width="100%" class="pl-2" />
     </v-container>
     <v-container class="button-strip">
       <v-btn @click="showConfirm=true">Empty Log</v-btn>
@@ -76,11 +76,11 @@ const confirmDeletion = (): void => {
 }
 
 .log-text-container {
-    flex: 2;
-    width: 100%;
-    overflow-y: auto;
-    max-width: 100%;
-    padding: 0;
+  flex: 2;
+  width: 100%;
+  overflow-y: auto;
+  max-width: 100%;
+  padding: 0;
 }
 
 </style>

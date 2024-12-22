@@ -97,3 +97,39 @@ dt {
   font-size: 4rem;
   margin-left: 1rem;
 }
+
+.menu {
+  border-collapse: collapse;
+  margin-left: 1rem;
+}
+
+.menu tr {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 98%;
+  display: inline-block;
+}
+
+.menu	tr:nth-child(odd) {
+  background: #D0E4F5;
+}
+
+.menu td.c1 {
+  width: 16rem;
+  font-weight: bold;
+  overflow: hidden;
+  padding: 5px 10px;
+  word-break: normal;
+  vertical-align: top;
+}
+
+.menu td.c2 {
+  width: 9rem;
+  vertical-align: top;
+  padding: 5px;
+}
+
+.menu td.c3 {
+  vertical-align: top;
+  padding: 5px;
+}

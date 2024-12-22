@@ -32,7 +32,7 @@ that implements some of the STM4 functionalities.
     <tr><td><a href="nodes/compute-bonds.html">Compute bonds</a></td>
         <td>Add bonds to the given atomic structure.</td></tr>
     <tr><td><a href="nodes/compute-fingerprints.html">Compute fingerprints</a></td>
-        <td>Compute fingerprints for a sequence of structures (work in progress).</td></tr>
+        <td>Compute fingerprints for a set of structures (work in progress).</td></tr>
     <tr><td><a href="nodes/compute-symmetries.html">Compute symmetries</a></td>
         <td>Find and apply symmetries to the structure.</td></tr>
     <tr><td><a href="nodes/diffraction-pattern.html">Compute X-Ray diffraction</a></td>
@@ -71,61 +71,162 @@ that implements some of the STM4 functionalities.
   and their parameters.</p>
   <p>The nodes provided by the project have their UI visible in the UI section of the screen.</p>
   <p>The application comes with an hardcoded project, called <b>default project,</b>
-  that contains all the nodes shipped. It cannot be changed, but can be saved and edited.</p>
-  <p>The project or the default project is automatically loaded on application start.
-  The project file could also be loaded on the command line.</p>
+  that contains all the nodes shipped. It cannot be changed, but can be edited and saved.</p>
+  <p>The project or the default project are automatically loaded on application start.
+  The project file could also be loaded from the command line.</p>
   <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
   with the following content:</p>
   <ul>
     <li><b>graph</b> List the loaded nodes and their interconnections</li>
     <li><b>viewer</b> Optional section to collect the viewer 3D parameters</li>
     <li><b>ui</b> Optional section to collect the parameters for each node</li>
-    <li><b>currentId</b> Optional parameter to set the initial ui panel to this node key.</li>
+    <li><b>currentId</b> Optional parameter to set the initial ui panel to this node key</li>
   </ul>
   <h2>Graph content</h2>
-  <p>This section is a JSON record using as key the unique identifier of the node with the following content:</p>
+  <p>This section is a JSON record with the unique identifier of the node as key and the following content:</p>
   <ul>
     <li><b>label:</b> The label that appear in the UI selection panel</li>
-    <li><b>type:</b> The type of node, that is its functionality.</li>
-    <li><b>in:</b> The id of the node from which this node takes the input. It is the empty string if the node has no input or it the input come from the graphical scene.</li>
+    <li><b>type:</b> The type of node, that is its functionality</li>
+    <li><b>in:</b> The id of the node from which this node takes the input. It is missing if the node has no input or if the input come from the graphical scene</li>
   </ul>
   <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. Here the solid lines show the data connections between nodes. The dotted lines instead show the graphical objects going to the viewer.</p>
-  <p>To edit the project, click on one node in the chart, a panel will open revealing info on the selected node and make possible adding a new node, delete a node or modify one node. At the end the modified project will be saved and loaded.</p>
+  <p>To edit the project, click on one node in the chart, and a panel will open revealing info on the selected node and make possible adding a new node, delete a node or modify the selected node. At the end the modified project could be saved and loaded becoming the current project.</p>
 </details>
 <details>
-  <summary>Shortcuts</summary>
+  <summary>Main menu and application shortcuts</summary>
   <h2>System menu</h2>
-  <ul>
-    <li><b>Alt+F:</b> File submenu</li>
-    <li><b>Alt+V:</b> View submenu</li>
-    <li><b>Alt+H:</b> Help submenu</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">File</td>
+      <td class="c2">Alt+F</td>
+      <td class="c3">Open the File submenu</td>
+    </tr>
+    <tr>
+      <td class="c1">View</td>
+      <td class="c2">Alt+V</td>
+      <td class="c3">Open the View submenu</td>
+    </tr>
+    <tr>
+      <td class="c1">Help</td>
+      <td class="c2">Alt+H</td>
+      <td class="c3">Open the Help submenu</td>
+    </tr>
+  </tbody>
+  </table>
+
   <h2>File submenu</h2>
-  <ul>
-    <li><b>Control+O:</b> Load a project file</li>
-    <li><b>Control+D:</b> Load the default project</li>
-    <li><b>Control+S:</b> Save the project to the file from which has been loaded</li>
-    <li><b>Control+Shift+S:</b> Save the project to a selected file. This file will be loaded automatically next time</li>
-    <li><b>Control+Q:</b> Quit the application without asking confirmation</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Load project from…</td>
+      <td class="c2">Control+O</td>
+      <td class="c3">Select and load a project file</td>
+    </tr>
+    <tr>
+      <td class="c1">Load default project</td>
+      <td class="c2">Control+D</td>
+      <td class="c3">Load the default project</td>
+    </tr>
+    <tr>
+      <td class="c1">Save project</td>
+      <td class="c2">Control+S</td>
+      <td class="c3">Save the project to the file from which has been loaded</td>
+    </tr>
+    <tr>
+      <td class="c1">Save project as…</td>
+      <td class="c2">Control+Shift+S</td>
+      <td class="c3">Save the project to a selected file. This file will be loaded automatically next time</td>
+    </tr>
+    <tr>
+      <td class="c1">Project editor</td>
+      <td class="c2"></td>
+      <td class="c3">Open the project editor window</td>
+    </tr>
+    <tr>
+      <td class="c1">Quit application</td>
+      <td class="c2">Control+Q</td>
+      <td class="c3">Quit the application without asking confirmation</td>
+    </tr>
+  </tbody>
+  </table>
+
   <h2>View submenu</h2>
-  <ul>
-    <li><b>Control+R:</b> Reload the application</li>
-    <li><b>F11:</b> Toggle full screen</li>
-    <li><b>Control+T:</b> Toggle the dark theme for the application</li>
-    <li><b>Control+E:</b> Toggle the viewer extension, that is hide the control panel on the left</li>
-  </ul>
-  During development or when calling STMng with <tt>“-e”</tt> command line option, the following keys are also available:
-  <ul>
-    <li><b>F12:</b> Toggle development tools</li>
-    <li><b>Control+F12:</b> Toggle development tools also on opened secondary windows</li>
-    <li><b>Control+Shift+R:</b> Force reload the application</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Reload</td>
+      <td class="c2">Control+R</td>
+      <td class="c3">Reload the application</td>
+    </tr>
+    <tr>
+      <td class="c1">Toggle full screen</td>
+      <td class="c2">F11</td>
+      <td class="c3">Toggle full screen</td>
+    </tr>
+    <tr>
+      <td class="c1">Dark theme</td>
+      <td class="c2">Control+T</td>
+      <td class="c3">Toggle the dark theme for the application</td>
+    </tr>
+    <tr>
+      <td class="c1">Extend viewer</td>
+      <td class="c2">Control+E</td>
+      <td class="c3">Toggle the viewer extension, that is, hide the control panel on the left. The same effect is obtained clicking on the separator between the two panels</td>
+    </tr>
+  </tbody>
+  </table>
+  <p>During development or calling STMng with the <tt>“-e”</tt> command line option, the following keys are also available:</p>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Force reload</td>
+      <td class="c2">Control+Shift+R</td>
+      <td class="c3">Force reload of the application</td>
+    </tr>
+    <tr>
+      <td class="c1">Toggle DevTools</td>
+      <td class="c2">F12</td>
+      <td class="c3">Toggle development tools on the main window</td>
+    </tr>
+    <tr>
+      <td class="c1">DevTools on secondary</td>
+      <td class="c2">Control+F12</td>
+      <td class="c3">Toggle development tools also on the opened secondary windows</td>
+    </tr>
+    <tr>
+      <td class="c1">Show scene 3D</td>
+      <td class="c2"></td>
+      <td class="c3">In the development tools console show the tree of graphical objects in the viewer</td>
+    </tr>
+  </tbody>
+  </table>
+
   <h2>Help submenu</h2>
-  <ul>
-    <li><b>F1:</b> Open the STMng help (this file) in browser</li>
-    <li><b>Control+A:</b> Open the About dialog</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">STMng documentation</td>
+      <td class="c2">F1</td>
+      <td class="c3">Open the STMng help (this file) in a browser</td>
+    </tr>
+    <tr>
+      <td class="c1">Current node documentation</td>
+      <td class="c2"></td>
+      <td class="c3">Show help for the current active node in a browser</td>
+    </tr>
+    <tr>
+      <td class="c1">Show application log</td>
+      <td class="c2"></td>
+      <td class="c3">Open the application log file in a new window. Here it is possible also to clear it</td>
+    </tr>
+    <tr>
+      <td class="c1">About</td>
+      <td class="c2">Control+A</td>
+      <td class="c3">Open the About dialog with info on the main libraries used in the application</td>
+    </tr>
+  </tbody>
+  </table>
 </details>
 <details>
   <summary>Interaction with the viewer</summary>
