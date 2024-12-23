@@ -39,7 +39,6 @@
     "vite.config.mts",
     "troika-three-text.d.ts",
     "src/**/*.ts",
-    "src/**/*.vue",
-	  "temporary-src-root/**/*.ts"
+    "src/**/*.vue"
   ]
 }

@@ -2,6 +2,7 @@
 # No argument: run all
 # -t: only the typescript part
 # -v: only the Vue part
+# -s: (future) documentation for only the .vue files
 #
 if [ "x$1" = "x" ]
 then
@@ -38,25 +39,25 @@ node_modules/.bin/typedoc \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env"`
 fi
 
-if [ $c = "s" -o $c = "a" ]
-then
-echo "--- Extract SFC documentation"
+# if [ $c = "s" -o $c = "a" ]
+# then
+# echo "--- Extract SFC documentation"
 
-node_modules/.bin/typedoc \
---name "See the Molecule new generation" \
---out "doc/sfc" \
---readme none \
---suppressCommentWarningsInDeclarationFiles \
---plugin typedoc-plugin-vue \
---plugin typedoc-plugin-missing-exports \
---disableGit \
---excludeInternal \
---excludeExternals \
---placeInternalsInOwningModule \
---sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
---tsconfig ./tsconfig.json \
-`/bin/find "temporary-src-root" -name "*.ts" -type f`
-fi
+# node_modules/.bin/typedoc \
+# --name "See the Molecule new generation" \
+# --out "doc/sfc" \
+# --readme none \
+# --suppressCommentWarningsInDeclarationFiles \
+# --plugin typedoc-plugin-vue \
+# --plugin typedoc-plugin-missing-exports \
+# --disableGit \
+# --excludeInternal \
+# --excludeExternals \
+# --placeInternalsInOwningModule \
+# --sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
+# --tsconfig ./tsconfig.json \
+# `/bin/find "temporary-src-root" -name "*.ts" -type f`
+# fi
 
 if [ $c = "v" -o $c = "a" ]
 then
