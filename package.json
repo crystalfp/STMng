@@ -72,6 +72,7 @@
     "eslint-plugin-tsdoc": "^0.4.0",
     "eslint-plugin-unicorn": "^56.0.1",
     "eslint-plugin-vue": "^9.32.0",
+    "fast-glob": "^3.3.2",
     "node-addon-api": "^8.3.0",
     "node-gyp": "^11.0.0",
     "postcss-html": "^1.7.0",

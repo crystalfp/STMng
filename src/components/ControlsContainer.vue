@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
 * @component
-* Manage the user interfaces loading.
+* Manage the user interfaces loading and display.
 *
 * @author Mario Valle "mvalle\@ikmail.com"
 * @since 2024-07-11
@@ -20,7 +20,7 @@ const selectedTabId = ref("");
 const uiList = ref<ClientProjectInfoItem[]>([]);
 const panelList = ref<{id: string; label: string; ctrl: unknown}[]>([]);
 
-/** When the project is loaded require the project data */
+/** When the project is loaded request the project data */
 sendToNode("SYSTEM", "project");
 
 receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {

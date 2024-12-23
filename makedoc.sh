@@ -12,11 +12,14 @@ then
 elif [ $1 = "-v" ]
 then
 	c=v
+elif [ $1 = "-s" ]
+then
+	c=s
 fi
 
 root=`pwd | sed "s@/d/@/d:/@"`
 
-if [ $c != "v" ]
+if [ $c = "t" -o $c = "a" ]
 then
 echo "--- Extract typescript documentation"
 node_modules/.bin/typedoc \
@@ -35,7 +38,27 @@ node_modules/.bin/typedoc \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env"`
 fi
 
-if [ $c != "t" ]
+if [ $c = "s" -o $c = "a" ]
+then
+echo "--- Extract SFC documentation"
+
+node_modules/.bin/typedoc \
+--name "See the Molecule new generation" \
+--out "doc/sfc" \
+--readme none \
+--suppressCommentWarningsInDeclarationFiles \
+--plugin typedoc-plugin-vue \
+--plugin typedoc-plugin-missing-exports \
+--disableGit \
+--excludeInternal \
+--excludeExternals \
+--placeInternalsInOwningModule \
+--sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
+--tsconfig ./tsconfig.json \
+`/bin/find "temporary-src-root" -name "*.ts" -type f`
+fi
+
+if [ $c = "v" -o $c = "a" ]
 then
 echo "--- Extract Vue documentation"
 node_modules/.bin/vue-docgen

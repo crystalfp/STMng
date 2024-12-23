@@ -354,8 +354,15 @@ const forNanoclusters = computed(() =>
                                         .value[fingerprintingMethod.value]?.forNanoclusters ?? false);
 
 /** Enable input of K value */
-const useEdge = computed(() => groupingMethods
+const useMargin = computed(() => groupingMethods
                                         .value[groupingMethod.value]?.usingMargin ?? false);
+
+/**
+ * Adjust addMargin to integer on blur or Enter key
+ */
+const adjInteger = (): void => {
+    addMargin.value = Math.floor(addMargin.value);
+};
 
 </script>
 
@@ -396,9 +403,8 @@ const useEdge = computed(() => groupingMethods
 
   <v-row class="mt-2 mx-0">
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2" />
-    <v-number-input v-model="manualCutoffDistance"
-                    label="Cutoff distance" :min="0.1" :step="0.1" :disabled="!forceCutoff"
-                    class="mx-2" />
+    <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"
+                    :min="0.1" :step="0.1" :disabled="!forceCutoff" class="mx-2" />
   </v-row>
 
   <v-label class="mt-1 mb-4 green-label">{{ cutoffLabel }}</v-label>
@@ -452,13 +458,13 @@ const useEdge = computed(() => groupingMethods
     item-value="value"
     class="mr-2" />
 
-  <!-- <v-switch v-model="absolute" label="Absolute" class="ml-2" /> -->
   <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="groupingThreshold"
                   label="Distance thresh. %"
                   :min="0" :max="100" :step="1" class="mr-2" />
-    <v-number-input v-if="useEdge" v-model="addMargin"
-                  label="Margin value (K)" :min="0" :step="1" />
+    <v-number-input v-if="useMargin" v-model="addMargin"
+                  label="Margin value (K)" :min="0" :step="1"
+                  @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
   <v-btn block :disabled="countDistances === 0"
          @click="groupingBusy = true; ClassifyStructures()">

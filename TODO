@@ -1,6 +1,8 @@
 To do:
   ☐ Check THREE.Layer for visibility
   ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
+  ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
+  ☐ Use `chagelogen`
 
 Bugs:
 
