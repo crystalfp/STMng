@@ -19,7 +19,7 @@ import {disableSaveProjectEntry, setupChannelMenu} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFileSelector} from "./modules/SelectFile";
 import {pm, setupChannelProject} from "./modules/ProjectManager";
-import {setupChannelLogFile} from "./modules/AccessLog.ts";
+import {setupChannelLogFile} from "./modules/AccessLog";
 
 // > Command line parsing
 const program = new Command("STMng");

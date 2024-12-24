@@ -14,8 +14,8 @@ import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
-import type {Project, ClientProjectInfo, ClientProjectInfoItem,
-			 OneNodeInfo, CtrlParams, ProjectGraph} from "@/types";
+import type {Project, CtrlParams, ProjectGraph} from "@/types";
+import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo} from "@/types/NodeInfo";
 import type {NodeCore} from "./NodeCore";
 
 // NOTE 1) Add here the classes that define the nodes

@@ -11,7 +11,7 @@ import {ref, onMounted, computed, shallowRef, watch} from "vue";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
-import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, ProjectInfo} from "@/types";
+import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo, ProjectInfo} from "@/types/NodeInfo";
 
 /** Dimensions of the node on screen */
 const NODE_WIDTH  = 190;

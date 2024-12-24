@@ -10,7 +10,8 @@
 import {watchEffect} from "vue";
 import {useMessageStore} from "@/stores/messageStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {ClientProjectInfo, CtrlParams, StructureRenderInfo} from "@/types";
+import type {CtrlParams, StructureRenderInfo} from "@/types";
+import type {ClientProjectInfo} from "@/types/NodeInfo";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {

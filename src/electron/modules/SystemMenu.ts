@@ -16,8 +16,8 @@ import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import {pm} from "./ProjectManager";
-import {showLogFile} from "./AccessLog.ts";
-import type {CtrlParams} from "@/types/index.ts";
+import {showLogFile} from "./AccessLog";
+import type {CtrlParams} from "@/types";
 
 /**
  * Open documentation file

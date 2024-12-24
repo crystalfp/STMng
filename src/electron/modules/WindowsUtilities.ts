@@ -13,7 +13,8 @@ import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
 import favicon from "../../assets/favicon.png";
-import type {ClientProjectInfo, CtrlParams, StructureRenderInfo, WindowsParams} from "@/types";
+import type {CtrlParams, StructureRenderInfo, WindowsParams} from "@/types";
+import type {ClientProjectInfo} from "@/types/NodeInfo";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();
