@@ -57,7 +57,7 @@ export const useConfigStore = defineStore("ConfigStore", {
          * @param state - The store state
          * @returns JSON formatted content of the store to be saved
          */
-        statusToSave(state: Viewer3DState) {
+        statusToSave(state: Viewer3DState): string {
             const statusToSave = {
                 camera: state.camera,
                 scene: state.scene,
@@ -72,14 +72,14 @@ export const useConfigStore = defineStore("ConfigStore", {
          * @param state - The store state
          * @returns True if the camera is set to perspective
          */
-        isPerspectiveCamera(state: Viewer3DState) {
+        isPerspectiveCamera(state: Viewer3DState): boolean {
             return state.camera.type === "perspective";
         }
     },
 
     // > Actions
     actions: {
-        restoreState(rawState: string | undefined) {
+        restoreState(rawState: string | undefined): void {
 
             if(!rawState) return;
             const state = JSON.parse(rawState) as Viewer3DState;

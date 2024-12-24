@@ -11,8 +11,7 @@
   "gypfile": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder",
-    "build-ok": "vue-tsc && vite build && electron-builder",
+    "build": "vue-tsc && vite build && electron-builder",
     "prebuild": "node-gyp rebuild && electron-builder install-app-deps",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
@@ -52,8 +51,8 @@
     "@types/js-yaml": "^4.0.9",
     "@types/three": "^0.171.0",
     "@types/tmp": "^0.2.6",
-    "@typescript-eslint/eslint-plugin": "^8.18.1",
-    "@typescript-eslint/parser": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
     "@vitejs/plugin-vue": "^5.2.1",
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
@@ -72,7 +71,6 @@
     "eslint-plugin-tsdoc": "^0.4.0",
     "eslint-plugin-unicorn": "^56.0.1",
     "eslint-plugin-vue": "^9.32.0",
-    "fast-glob": "^3.3.2",
     "node-addon-api": "^8.3.0",
     "node-gyp": "^11.0.0",
     "postcss-html": "^1.7.0",
@@ -92,6 +90,6 @@
     "vite-plugin-vue-devtools": "^7.6.8",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^9.4.3",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.2.0"
   }
 }

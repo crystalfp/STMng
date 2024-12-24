@@ -80,7 +80,7 @@ export const useControlStore = defineStore("ControlStore", {
 		 *
 		 * @param index - Index of the atom selected on the screen
 		 */
-        addSelectedAtom(index: number) {
+        addSelectedAtom(index: number): void {
 
             // If index already there remove it
             const existing = this.atomsSelected.indexOf(index);
@@ -102,7 +102,7 @@ export const useControlStore = defineStore("ControlStore", {
 		 * @param index - Index of the selected polyhedron
 		 * @param color - Original color of the selected polyhedron
 		 */
-		selectPolyhedron(index: number, color: number) {
+		selectPolyhedron(index: number, color: number): void {
 
 			this.polyhedronNewIdx = index;
 			this.polyhedronNewColor = color;
@@ -110,13 +110,13 @@ export const useControlStore = defineStore("ControlStore", {
 		/**
 		 * Deselect the selected polyhedron
 		 */
-		deselectPolyhedron() {
+		deselectPolyhedron(): void {
 			this.polyhedronNewIdx = this.polyhedronCurrentIdx;
 		},
 		/**
 		 * Deselect the selected polyhedron and atoms
 		 */
-		deselectAll() {
+		deselectAll(): void {
 
 			// Deselect atoms
             this.atomsSelected.length = 0;
