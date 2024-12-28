@@ -123,6 +123,16 @@ export const useControlStore = defineStore("ControlStore", {
 
 			// Deselect polyhedra
 			this.polyhedronNewIdx = this.polyhedronCurrentIdx;
+		},
+		/**
+		 * Reset capability indicator (the has* variables)
+		 */
+		resetCapabilityIndicators(): void {
+
+			this.hasCapture = false;
+			this.hasFingerprints = false;
+			this.hasTrajectory = false;
+			this.hasWriter = false;
 		}
     }
 });

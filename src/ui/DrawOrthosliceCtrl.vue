@@ -174,7 +174,7 @@ watchEffect(() => {
 
   <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
-  <v-label text="Axis" class="ml-2 mb-3 no-select" /><br>
+  <v-label text="Axis" class="ml-2 mb-1 no-select" /><br>
   <v-btn-toggle v-model="axis" mandatory class="mb-6 ml-2">
     <v-btn :value="0">X</v-btn>
     <v-btn :value="1">Y</v-btn>

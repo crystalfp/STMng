@@ -180,8 +180,7 @@ watch([percentA, percentB, percentC, shrink], () => {
   <g-slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
-  <v-btn :disabled="!hasSupercell()" class="mt-2 mb-4 ml-2 w-100"
-         @click="resetSliders">
+  <v-btn block :disabled="!hasSupercell()" class="mt-2 mb-4" @click="resetSliders">
     Reset
   </v-btn>
   <v-switch v-model="showSupercell" :disabled="!hasSupercell()"

@@ -25,6 +25,9 @@ sendToNode("SYSTEM", "project");
 
 receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 
+	// Reset indicators to prepare for the new set of loaded modules
+	controlStore.resetCapabilityIndicators();
+
 	// Get the node UI list and select the first one
 	uiList.value.length = 0;
 	panelList.value.length = 0;
@@ -58,7 +61,7 @@ sendCurrentNode(() => {
 <v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
   <component v-show="panel.id === selectedTabId" :is="panel.ctrl" :id="panel.id" :label="panel.label" />
 </v-container>
-<v-btn density="comfortable" variant="tonal" rounded="0"
+<v-btn density="comfortable" variant="plain"
        @click="controlStore.reset = true" class="mb-n4">Reset camera</v-btn>
 </template>
 

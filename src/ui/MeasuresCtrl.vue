@@ -169,7 +169,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
 <template>
 <v-container class="container">
-  <v-label class="ml-2 mb-2 mt-4 no-select">Measurement type</v-label>
+  <v-label class="ml-2 mb-1 mt-4 no-select">Measurement type</v-label>
   <v-btn-toggle v-model="measurementType" mandatory class="ml-2 mb-6">
     <v-btn value="atoms">Atoms</v-btn>
     <v-btn value="polyhedra">Polyhedra</v-btn>

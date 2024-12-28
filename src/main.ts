@@ -112,7 +112,9 @@ const app = createApp(App)
 				color: "primary"
 			},
 			VBtnToggle: {
-				color: "primary"
+				color: "primary",
+				variant: "outlined",
+				divided: true
 			},
 			VSelect: {
 				density: "compact",
