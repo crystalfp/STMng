@@ -103,6 +103,25 @@ export class DistanceMatrix {
      * @returns Matrix side dimension
      */
     matrixSize(): number {return this.side;}
+
+    /**
+     * Compress the distance matrix into a vector
+     *
+     * @returns The matrix upper triangle without the all zero diagonal and row by row
+     */
+    toVector(): number[] {
+
+        const out: number[] = [];
+
+        for(let i=0; i < this.side-1; ++i) {
+
+            for(let j=1; j < this.side-i; ++j) {
+                out.push(this.distanceMatrix[i][j]);
+            }
+        }
+
+        return out;
+    }
 }
 
 class Delta {

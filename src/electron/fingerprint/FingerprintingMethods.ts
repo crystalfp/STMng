@@ -136,11 +136,12 @@ class PerElementRdfHistogram extends FingerprintMethod {
         // Compute weights
         const len = orderedZ.length;
         weights.length = countSections;
-        for(let i=0; i < len-1; ++i) {
+
+        for(let i=0; i < len; ++i) {
             const Zi = orderedZ[i];
             const Ni = species.get(Zi)!;
             const Pi = atomsIdx.get(Zi)!;
-            for(let j=i+1; j < len; ++j) {
+            for(let j=i; j < len; ++j) {
                 const Zj = orderedZ[j];
                 const Nj = species.get(Zj)!;
                 const Pj = atomsIdx.get(Zj)!;

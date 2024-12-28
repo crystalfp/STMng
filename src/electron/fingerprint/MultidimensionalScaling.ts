@@ -1,0 +1,195 @@
+/**
+ * Classical Multidimensional Scaling (MDS)
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2024-12-28
+ */
+
+const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
+
+	const D2 = Array(side) as number[][];
+	for(let i=0; i < side; ++i) D2[i] = Array(side).fill(0) as number[];
+
+	let pos = 0;
+	for(let i=0; i < side-1; ++i) {
+
+		for(let j=i+1; j < side; ++j) {
+
+			const v = vector[pos++];
+			D2[i][j] = D2[j][i] = v*v;
+		}
+	}
+
+	return D2;
+};
+
+/**
+ * Classical Multidimensional Scaling (MDS)
+ *
+ * @param distances - Distances symmetrical matrix NxN
+ * @param dimensions - Dimension of the output space (default: 2)
+ * @returns Array of points coordinates
+ */
+// export const MDS = (distances: number[][], dimensions = 2): number[][] => {
+export const MDS = (distancesVector: number[], n: number, dimensions = 2): number[][] => {
+
+    // 1. Create the matrix of distances squared
+	const D2 = vector2squaredMatrix(distancesVector, n);
+
+	// 2. Compute row and total averages
+    const rowMeans = D2.map((row) =>
+        row.reduce((sum, value) => sum + value, 0) / n
+    );
+    const totalMean = rowMeans.reduce((sum, value) => sum + value, 0) / n;
+
+    // 3. Compute double centering matrix
+    const doubleCenteringMatrix = Array(n) as number[][];
+    for(let row=0; row < n; ++row) doubleCenteringMatrix[row] = Array(n).fill(0) as number[];
+
+    for(let i = 0; i < n; i++) {
+        for(let j = 0; j < n; j++) {
+            doubleCenteringMatrix[i][j] = -0.5 * (D2[i][j] - rowMeans[i] - rowMeans[j] + totalMean);
+        }
+    }
+
+    // 4. Compute eigenvalues and eigenvectors using the power method
+    const {eigenvalues, eigenvectors} = powerIteration(doubleCenteringMatrix, dimensions);
+
+    // 5. Compute the final coordinates
+    const coordinates = Array(n) as number[][];
+    for(let i = 0; i < n; i++) {
+        coordinates[i] = Array(dimensions).fill(0) as number[];
+        for(let j = 0; j < dimensions; j++) {
+
+            // Use only positive eigenvalues
+            if(eigenvalues[j] > 0) {
+                coordinates[i][j] = eigenvectors[j][i] * Math.sqrt(eigenvalues[j]);
+            }
+        }
+    }
+
+    return coordinates;
+};
+
+/**
+ * Compute first k eigenvalues and eigenvectors using the power method
+ *
+ * @param matrix - Matrix to be decomposed
+ * @param k - Number of eigenvalues and eigenvectors to retain
+ * @returns Eigenvalues vector and eigenvectors matrix
+ */
+const powerIteration = (matrix: number[][],
+                        k: number): {eigenvalues: number[]; eigenvectors: number[][]} => {
+
+    const n = matrix.length;
+    const eigenvalues: number[] = [];
+    const eigenvectors: number[][] = [];
+    const currentMatrix = matrix.map((row) => [...row]);
+
+    for(let i = 0; i < k; i++) {
+
+        // Create a random vector
+        // eslint-disable-next-line sonarjs/pseudo-random
+        let vector = Array(n).fill(0).map(() => Math.random() - 0.5);
+
+        // Normalize the vector
+        const norm = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
+        vector = vector.map((v) => v / norm);
+
+        // Itera fino a convergenza
+        let lastEigenvalue = 0;
+        for(let iter = 0; iter < 100; iter++) {
+
+            // Moltiplica matrice per vettore
+            const updatedVector = multiplyMatrixVector(currentMatrix, vector);
+
+            // Normalizza
+            const updatedNorm = Math.sqrt(updatedVector.reduce((sum, value) => sum + value * value, 0));
+            vector = updatedVector.map((v) => v / updatedNorm);
+
+            // Calcola autovalore usando il quoziente di Rayleigh
+            const oneEigenvalue = dotProduct(multiplyMatrixVector(currentMatrix, vector), vector);
+
+            // Controlla convergenza
+            if(Math.abs(oneEigenvalue - lastEigenvalue) < 1e-10) break;
+            lastEigenvalue = oneEigenvalue;
+        }
+
+        // Calcola autovalore finale
+        const eigenvalue = dotProduct(multiplyMatrixVector(currentMatrix, vector), vector);
+
+        eigenvalues.push(eigenvalue);
+        eigenvectors.push(vector);
+
+        // Deflazione: rimuovi il contributo dell'autovalore/autovettore trovato
+        for(let r = 0; r < n; r++) {
+            for(let c = 0; c < n; c++) {
+                currentMatrix[r][c] -= eigenvalue * vector[r] * vector[c];
+            }
+        }
+    }
+
+    return {eigenvalues, eigenvectors};
+};
+
+/**
+ * Multiply vector by a matrix
+ *
+ * @param matrix - Matrix that multiply the vector
+ * @param vector - Vector to be multiplied
+ */
+const multiplyMatrixVector = (matrix: number[][], vector: number[]): number[] => {
+
+    const n = matrix.length;
+    const result = Array(n).fill(0) as number[];
+
+    for(let i = 0; i < n; i++) {
+        for(let j = 0; j < n; j++) {
+            result[i] += matrix[i][j] * vector[j];
+        }
+    }
+
+    return result;
+};
+
+/**
+ * Compute dot product
+ *
+ * @param a - First vector
+ * @param b - Second vector
+ */
+const dotProduct = (a: number[], b: number[]): number => a.reduce((sum, value, i) => sum + value * b[i], 0);
+
+/*
+// Esempio di utilizzo
+const testMatrix = [
+    [0, 1, 2, 3],
+    [1, 0, 1, 2],
+    [2, 1, 0, 1],
+    [3, 2, 1, 0]
+];
+
+const testVector = [1, 2, 3, 1, 2, 1];
+const x = vector2squaredMatrix(testVector, 4);
+console.log("SQ", x);
+const coords = MDS(testVector, 4); // Restituisce array di punti 2D
+console.log("MDS", coords);
+
+
+// Verifica le distanze
+console.log("\nVerifica distanze:");
+for(let i = 0; i < coords.length; i++) {
+    for(let j = i+1; j < coords.length; j++) {
+        const dist = Math.sqrt(
+            Math.pow(coords[i][0] - coords[j][0], 2) +
+            Math.pow(coords[i][1] - coords[j][1], 2)
+        );
+        console.log(
+            `Distanza ${i}-${j}: originale = ${testMatrix[i][j]}, ` +
+            `ricostruita = ${dist.toFixed(2)}`
+        );
+    }
+}
+*/

@@ -50,6 +50,7 @@ import {VFileInput} from "vuetify/components/VFileInput";
 import {VSelect} from "vuetify/components/VSelect";
 import {VNumberInput} from "vuetify/labs/VNumberInput";
 import {VTextarea} from "vuetify/components/VTextarea";
+// import {VStepperVertical, VStepperVerticalItem} from "vuetify/labs/VStepperVertical";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -85,6 +86,7 @@ const app = createApp(App)
 			VSelect,
 			VNumberInput,
 			VTextarea,
+			// VStepperVertical, VStepperVerticalItem,
 		},
 		theme: {
     		defaultTheme: "dark",

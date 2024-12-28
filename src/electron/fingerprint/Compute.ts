@@ -76,9 +76,13 @@ export class Fingerprinting {
 			if(fingerprintSize !== results.dimension) {
 				return {dimension: 0, error: "Fingerprinting dimension has changed"};
 			}
+
+			// Save the resulting fingerprint dimension
+			structure.countSections = results.countSections;
+			structure.sectionLength = results.sectionLength;
 		}
 
-		// For methods that needs a last global step
+		// For methods that need a last global step
 		fingerprintSize = fingerprintingMethods[method].method.finish(accumulator);
 
 		return {dimension: fingerprintSize};

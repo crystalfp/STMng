@@ -8,11 +8,12 @@
  */
 import {readFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
+import {createSecondaryWindow, sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
 import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
+import {MDS} from "../fingerprint/MultidimensionalScaling";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
@@ -58,6 +59,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "dist-params",	type: "send",	callback: this.channelDistParams.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
+		{name: "scatter",		type: "send",	callback: this.channelGroupScatter.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -444,5 +446,25 @@ export class ComputeFingerprints extends NodeCore {
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 
 		return {countGroups: result.countGroups};
+	}
+
+	/**
+	 * Channel handler for opening scatterplot on the results
+	 */
+	private channelGroupScatter(): void {
+
+		const distanceMatrix = this.dist.getDistanceMatrix();
+		const distanceVector = distanceMatrix.toVector();
+		const points = MDS(distanceVector, distanceMatrix.matrixSize());
+		const dataToSend = `{"points":${JSON.stringify(points)}}`;
+		// TBD Add accumulator
+
+		createSecondaryWindow(undefined, {
+			routerPath: "/scatter",
+			width: 1200,
+			height: 900,
+			title: "Fingerprints scatterplot",
+			data: dataToSend
+		});
 	}
 }

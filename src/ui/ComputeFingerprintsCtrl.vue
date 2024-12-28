@@ -149,6 +149,9 @@ const resetAccumulator = (): void => {
     sendToNode(id, "reset");
     countSelected.value = 0;
     countAccumulated.value = 0;
+    resultDimensionality.value = 0;
+    countDistances.value = 0;
+    countGroups.value = 0;
 };
 
 /** Accumulating button label */
@@ -364,6 +367,13 @@ const adjInteger = (): void => {
     addMargin.value = Math.floor(addMargin.value);
 };
 
+/**
+ * Open a secondary window showing the resulting scatterplot
+ */
+const showScatterplot = (): void => {
+    sendToNode(id, "scatter");
+};
+
 </script>
 
 
@@ -470,12 +480,17 @@ const adjInteger = (): void => {
          @click="groupingBusy = true; ClassifyStructures()">
     Classify structures
   </v-btn>
-  <v-container>
+  <v-container class="pa-0">
     <v-label v-if="countGroups > 0" class="mt-4 mb-2 green-label">
       {{ `Found ${countGroups} groups`}}
     </v-label>
     <v-label v-if="groupingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
-  </v-container class="pa-0 mb-6">
+  </v-container>
+
+  <v-btn block class="mb-6 mt-4"
+         :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
+    Show scatterplot
+  </v-btn>
 
   <g-error-alert kind="fingerprints" />
 </v-container>

@@ -36,5 +36,9 @@ export const router = createRouter({
             path: "/log",
             component: (): Component => import("@/components/ShowLog.vue")
         },
+        {
+            path: "/scatter",
+            component: (): Component => import("@/components/FingerprintScatterplot.vue")
+        },
     ],
 });

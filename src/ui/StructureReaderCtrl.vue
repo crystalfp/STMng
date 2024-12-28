@@ -193,11 +193,13 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPS
 const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomTypes.has(fileFormat);
 
 /**
- * Get atoms types field value on blur or ENTER pressed
+ * Get atoms types field value on blur or ENTER pressed.
+ * If field empty do nothing
  */
 const getAtomsTypes = (): void => {
 
-    sendToNode(id, "types", {atomsTypes: atomsTypes.value ?? ""});
+    if(!atomsTypes.value) return;
+    sendToNode(id, "types", {atomsTypes: atomsTypes.value});
 };
 
 /**
