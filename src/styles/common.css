@@ -21,6 +21,8 @@ html {
 :root {
   --container-height: calc(100vh - 121px);
   --scrollbar-track: light-dark(#e6e6e6, #202020);
+  --separator-color: rgb(var(--v-theme-secondary));
+  /* --separator-color: light-dark(#f57f17, #f48d33); */
 }
 
 /* > Vuetify specific */
@@ -33,14 +35,9 @@ html {
 }
 
 /* Colors to be made more visible when changing application theme */
-.green-label {
-  color: light-dark(#2E7D32, #66BB6A) !important;
-  opacity: 1 !important;
-  user-select: none !important;
-}
-
-.yellow-title {
-  color: light-dark(#F57F17, #FFF176) !important;
+.result-label {
+  color: rgb(var(--v-theme-info)) !important;
+  /* color: light-dark(#2E7D32, #66BB6A) !important; */
   opacity: 1 !important;
   user-select: none !important;
 }
@@ -86,10 +83,11 @@ html {
 .button-strip {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: baseline;
   max-width: 3000px !important;
   width: 100vw;
   gap: 10px;
+  /* height: fit-content */
 }
 
 .separator-title {
@@ -100,6 +98,22 @@ html {
   user-select: none !important;
   margin: 12px 0 12px 0;
   opacity: 1 !important;
-  color: #000000 !important;
-  background-color: #64B5F6 !important;
+  color: var(--separator-color) !important;
+  border-top: solid 3px var(--separator-color);
+  border-bottom: solid 3px var(--separator-color);
+  padding: 1px 0;
+  letter-spacing: 0.05rem !important;
+}
+
+.simple-title {
+  font-size: 1.5rem !important;
+  line-height: 1.333;
+  width: 100% !important;
+  justify-content: center !important;
+  user-select: none !important;
+  margin: 12px 0 12px 0;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  padding: 1px 0;
+  letter-spacing: 0.05rem !important;
 }

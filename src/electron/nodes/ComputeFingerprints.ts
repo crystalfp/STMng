@@ -14,7 +14,7 @@ import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {MDS} from "../fingerprint/MultidimensionalScaling";
-import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, ScatterplotData} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -171,6 +171,107 @@ export class ComputeFingerprints extends NodeCore {
 		this.groupingMethod = params.groupingMethod as number ?? 0;
 		this.groupingThreshold = params.groupingThreshold as number ?? 0;
 		this.addMargin = params.addMargin as number ?? 0;
+	}
+
+	/**
+	 * Prepare the data for the scatterplot
+	 *
+	 * @param mappedPoints - Points mapped in 2D
+	 * @returns Data needed by the scatterplot
+	 */
+	private packDataForClient(mappedPoints: number[][]): ScatterplotData {
+
+		// How many structures are we dealing with
+		const n = mappedPoints.length;
+
+		// Normalize mapped points coordinates between 0 and 1
+		let maxX = Number.NEGATIVE_INFINITY;
+		let minX = Number.POSITIVE_INFINITY;
+		let maxY = Number.NEGATIVE_INFINITY;
+		let minY = Number.POSITIVE_INFINITY;
+		for(const point of mappedPoints) {
+
+			if(point[0] > maxX) maxX = point[0];
+			if(point[0] < minX) minX = point[0];
+			if(point[1] > maxY) maxY = point[1];
+			if(point[1] < minY) minY = point[1];
+		}
+
+		let denX = maxX - minX;
+		if(denX < 1e-10) denX = 1;
+		let denY = maxY - minY;
+		if(denY < 1e-10) denY = 1;
+
+		const normalizedPoints: number[][] = Array(n) as number[][];
+		for(let i=0; i < n; ++i) {
+
+			normalizedPoints[i] = [
+				(mappedPoints[i][0] - minX)/denX,
+				(mappedPoints[i][1] - minY)/denY,
+			];
+		}
+
+		// Compare projected distances with the original ones
+		const distanceMatrix = this.dist.getDistanceMatrix();
+		const efficiencies: [number, number][] = [];
+		for(let row=0; row < n-1; ++row) {
+			for(let col=row+1; col < n; ++col) {
+
+				const distanceOriginal = distanceMatrix.get(row, col);
+
+				const distanceProjected = Math.hypot(
+					mappedPoints[row][0]-mappedPoints[col][0],
+					mappedPoints[row][1]-mappedPoints[col][1]
+				);
+
+				efficiencies.push([distanceOriginal, distanceProjected]);
+			}
+		}
+
+		// Normalize original and projected distances
+		minX = Number.POSITIVE_INFINITY;
+		maxX = Number.NEGATIVE_INFINITY;
+		minY = Number.POSITIVE_INFINITY;
+		maxY = Number.NEGATIVE_INFINITY;
+		for(const eff of efficiencies) {
+
+			if(eff[0] > maxX) maxX = eff[0];
+			if(eff[0] < minX) minX = eff[0];
+			if(eff[1] > maxY) maxY = eff[1];
+			if(eff[1] < minY) minY = eff[1];
+		}
+
+		denX = maxX - minX;
+		if(denX < 1e-10) denX = 1;
+		denY = maxY - minY;
+		if(denY < 1e-10) denY = 1;
+
+		for(const eff of efficiencies) {
+			eff[0] = (eff[0]-minX)/denX;
+			eff[1] = (eff[1]-minY)/denY;
+		}
+
+		// Collect energies and ids per structure
+		const energies = [];
+		const ids = [];
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			energies.push(structure.energy);
+			ids.push(structure.index);
+		}
+
+		// Collect groups
+		const groups = this.grouping.getGroups();
+		const countGroups = this.grouping.getCountGroups();
+
+		// Create data for the scatterplot
+		return {
+			id: ids,
+			points: normalizedPoints,
+			groups,
+			countGroups,
+			energies,
+			efficiencies
+		};
 	}
 
 	// > Channel handlers
@@ -453,18 +554,21 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelGroupScatter(): void {
 
+		// Take the distance matrix and project it in 2D
 		const distanceMatrix = this.dist.getDistanceMatrix();
 		const distanceVector = distanceMatrix.toVector();
 		const points = MDS(distanceVector, distanceMatrix.matrixSize());
-		const dataToSend = `{"points":${JSON.stringify(points)}}`;
-		// TBD Add accumulator
 
+		// Collect the data for the scatterplot
+		const scatterplotData = this.packDataForClient(points);
+
+		// Create the scatterplot window
 		createSecondaryWindow(undefined, {
 			routerPath: "/scatter",
 			width: 1200,
 			height: 900,
 			title: "Fingerprints scatterplot",
-			data: dataToSend
+			data: JSON.stringify(scatterplotData)
 		});
 	}
 }

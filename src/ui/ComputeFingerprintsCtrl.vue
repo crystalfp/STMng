@@ -382,7 +382,7 @@ const showScatterplot = (): void => {
   <v-label class="separator-title">Accumulate structures</v-label>
 
   <v-row class="mt-2 mb-4 mx-2">
-    <v-label class="green-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
+    <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
     <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
   </v-row>
@@ -407,7 +407,7 @@ const showScatterplot = (): void => {
                   label="Max energy" readonly class="ml-2 mr-5" />
   </v-row>
 
-  <v-label class="mt-2 mb-2 green-label"> {{ accumulatedLabel }}</v-label>
+  <v-label class="mt-2 mb-2 result-label"> {{ accumulatedLabel }}</v-label>
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
@@ -417,7 +417,7 @@ const showScatterplot = (): void => {
                     :min="0.1" :step="0.1" :disabled="!forceCutoff" class="mx-2" />
   </v-row>
 
-  <v-label class="mt-1 mb-4 green-label">{{ cutoffLabel }}</v-label>
+  <v-label class="mt-1 mb-4 result-label">{{ cutoffLabel }}</v-label>
 
   <v-select v-model="fingerprintingMethod"
     :items="fingerprintMethodsNames"
@@ -436,9 +436,9 @@ const showScatterplot = (): void => {
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
     Compute fingerprints
   </v-btn>
-  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 green-label">
+  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
     {{ `Done (dimensionality: ${resultDimensionality})` }}</v-label>
-  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
+  <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
   <v-label class="separator-title">Compare structures</v-label>
   <v-select v-model="distanceMethod"
@@ -454,10 +454,10 @@ const showScatterplot = (): void => {
          @click="distanceBusy=true; computeDistances()">
     Compute distances
   </v-btn>
-  <v-label v-if="countDistances > 0" class="mt-4 mb-2 green-label">
+  <v-label v-if="countDistances > 0" class="mt-4 mb-2 result-label">
     {{ `Distances computed: ${countDistances}`}}
   </v-label>
-  <v-label v-if="distanceBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
+  <v-label v-if="distanceBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
   <v-label class="separator-title">Classify structures</v-label>
 
@@ -481,16 +481,20 @@ const showScatterplot = (): void => {
     Classify structures
   </v-btn>
   <v-container class="pa-0">
-    <v-label v-if="countGroups > 0" class="mt-4 mb-2 green-label">
+    <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">
       {{ `Found ${countGroups} groups`}}
     </v-label>
-    <v-label v-if="groupingBusy" class="mt-4 mb-2 green-label">Working&hellip;</v-label>
+    <v-label v-if="groupingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
   </v-container>
 
   <v-btn block class="mb-6 mt-4"
-         :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
+         @click="showScatterplot">
     Show scatterplot
   </v-btn>
+  <!-- <v-btn block class="mb-6 mt-4"
+         :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
+    Show scatterplot
+  </v-btn> -->
 
   <g-error-alert kind="fingerprints" />
 </v-container>

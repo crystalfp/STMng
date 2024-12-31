@@ -27,7 +27,7 @@
     "measure": {
       "label": "Measures",
       "type": "measures",
-      "in": "reader"
+      "in": "bonds"
     },
     "viewer": {
       "label": "Viewer",
@@ -38,9 +38,9 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        5,
-        3,
-        5
+        -4.034334175577664,
+        5.11891262479481,
+        16.352401665351632
       ],
       "lookAt": [
         4.066269963979721,
@@ -116,7 +116,10 @@
       "binSize": 0.05,
       "peakWidth": 0.02,
       "distanceMethod": 0,
-      "fixTriangleInequality": false
+      "fixTriangleInequality": false,
+      "groupingMethod": 0,
+      "groupingThreshold": 7,
+      "addMargin": 0
     },
     "unit": {
       "showUnitCell": true,

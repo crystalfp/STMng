@@ -73,7 +73,7 @@ watch(controlStore.atomsSelected, () => {
             bondData.value.length = 0;
             for(const bd of bondDataTable) bondData.value.push(bd);
 
-	        renderer.measureBonds(params, bondDataTable, pointSize);
+            renderer.measureBonds(params, bondDataTable, pointSize);
         })
         .catch((error: Error) => showAlertMessage(`Error from computing bonds lengths: ${error.message}`));
         return;
@@ -111,7 +111,7 @@ watch(polyhedronNewIdx, () => {
     // No polyhedra selected
     if(controlStore.polyhedronNewIdx === undefined) return;
 
-	renderer.selectPolyhedra(controlStore.polyhedronNewIdx, controlStore.polyhedronCurrentIdx);
+    renderer.selectPolyhedra(controlStore.polyhedronNewIdx, controlStore.polyhedronCurrentIdx);
 
     // Click on the same poly deselects it
     if(controlStore.polyhedronNewIdx === controlStore.polyhedronCurrentIdx) {
@@ -178,9 +178,9 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
   <v-container v-if="measurementType === 'atoms'" class="pa-0">
     <v-switch v-model="useFractional" label="Show fractional coordinates"
-              class="ml-4 mt-2 mb-n4"/>
+              class="ml-4 mb-n4"/>
     <v-label v-if="details.length > 0"
-             class="text-h5 w-100 justify-center yellow-title mb-2">Selected atoms</v-label>
+             class="simple-title mb-2">Selected atoms</v-label>
     <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
       <tr v-for="line of details" :key="line.index">
         <td :style="`color:${line.color};width:3rem`">{{ line.label }}</td>
@@ -192,7 +192,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
         <td style="width: 0.5rem;text-align:right">]</td>
       </tr>
     </v-table>
-    <v-label v-if="distanceAB > 0" class="text-h5 w-100 justify-center yellow-title mb-2">Measures</v-label>
+    <v-label v-if="distanceAB > 0" class="simple-title mb-2 mt-2">Measures</v-label>
     <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
       <tr>
       <td style="width:9rem">Distance <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>:</td>
@@ -211,15 +211,15 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
   </v-container>
 
   <v-container v-if="measurementType === 'polyhedra' && volume > 0" class="pa-0">
-    <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Measure</v-label>
-    <v-table density="default" class="pa-1 mt-n1 pr-5">
+    <v-label class="simple-title mb-3">Measure</v-label>
+    <v-table density="default" class="pa-1 pr-5">
       <tr><td style="width:9rem">Polyhedral volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
     </v-table>
   </v-container>
 
   <v-container v-if="measurementType === 'bonds' && bondData.length > 0" class="pa-0">
-    <v-label class="text-h5 w-100 justify-center yellow-title mb-2">Bond length to atom index</v-label>
-    <v-table density="default" class="pa-1 mt-n1 pr-5">
+    <v-label class="simple-title mb-3">Bond length to atom index</v-label>
+    <v-table density="default" class="pa-1 pr-5">
       <tr v-for="entry of bondData" :key="entry.idx">
         <td style="width:9rem">{{ entry.idx }}</td>
         <td style="text-align:right">{{ entry.distance.toFixed(5) }}</td></tr>

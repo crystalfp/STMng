@@ -23,8 +23,8 @@ interface GroupingResults {
 
 export class Grouping {
 
-	/** For each group the list of structures indices */
-	private readonly groups: number[][] = [];
+	private readonly structureGroup: number[] = [];
+	private countGroups = 0;
 
 	/**
      * Return the list of methods names
@@ -50,19 +50,42 @@ export class Grouping {
 	group(accumulator: FingerprintsAccumulator, distances: DistanceMatrix,
 		  groupingMethod: number, groupingThreshold: number, addMargin: number): GroupingResults {
 
+		// For each group the list of structures indices
 		const groups = groupingMethods[groupingMethod].method.doGrouping(accumulator,
 																		distances,
 																		groupingThreshold,
 																		addMargin);
 
+		this.structureGroup.length = accumulator.selectedSize();
+		let groupCount = 0;
 		for(const group of groups) {
 
-			const idxs = [...group];
-			const ids = [];
-			for(const idx of idxs) ids.push(accumulator.toOriginalIndex(idx));
-			this.groups.push(ids);
+			for(const idx of group) this.structureGroup[idx] = groupCount;
+			++groupCount;
 		}
 
-		return {countGroups: this.groups.length};
+		this.countGroups = groupCount;
+
+		return {countGroups: groupCount};
+	}
+
+	/**
+	 * Get group for structure
+	 *
+	 * @returns The list of group for each structure
+	 */
+	getGroups(): number[] {
+
+		return this.structureGroup;
+	}
+
+	/**
+	 * Get count of groups
+	 *
+	 * @returns Count of groups found
+	 */
+	getCountGroups(): number {
+
+		return this.countGroups;
 	}
 }

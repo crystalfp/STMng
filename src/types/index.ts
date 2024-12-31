@@ -505,3 +505,27 @@ export interface FingerprintingMethodResult {
     /** Error message, if any */
     error?: string;
 }
+
+export interface ScatterplotData {
+
+    /** Structures index (the original one, not filtered by energy) */
+    id: number[];
+
+    /** Fingerprints projected in 2D. The coordinates are normalized between 0 and 1 */
+    points: number[][];
+
+    /** For each point, the group to which the fingerprint pertains */
+    groups: number[];
+
+    /** Total number of groups */
+    countGroups: number;
+
+    /** For each point, the energy of the corresponding structure */
+    energies: number[];
+
+    /** Comparison between original and projected distances.
+     * The distances are normalized between 0 and 1.
+     * The first index is the original distance, the second is the projected distance.
+     */
+    efficiencies: number[][];
+}
