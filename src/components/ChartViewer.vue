@@ -73,6 +73,9 @@ const chartElement = useTemplateRef<ChartCanvas>("chart");
 
 /**
  * Make a chart snapshot
+ *
+ * @throws "Error"
+ * Error saving chart snapshot
  */
 const makeImage = (): void => {
 

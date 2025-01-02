@@ -7,6 +7,13 @@
  * @since 2024-12-28
  */
 
+/**
+ * Transform a distances vector into a squared matrix of distances
+ *
+ * @param vector - Upper triangular of side x side matrix
+ * @param side - Size of the original square symmetrical matrix
+ * @returns Square matrix of squared input values
+ */
 const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
 
 	const D2 = Array(side) as number[][];
@@ -28,28 +35,28 @@ const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
 /**
  * Classical Multidimensional Scaling (MDS)
  *
- * @param distances - Distances vector (upper triangular of n x n matrix)
- * @param n - Number of points
+ * @param distancesVector - Distances vector (upper triangular of NxN symmetrical distance matrix)
+ * @param pointsCount - Number of points (N), that is, the side of the distance matrix
  * @param dimensions - Dimension of the output space (default: 2)
- * @returns Array of points coordinates in the output space (2D or 3D)
+ * @returns Array of points coordinates in the output space (of dimension `dimensions`)
  */
-export const MDS = (distancesVector: number[], n: number, dimensions = 2): number[][] => {
+export const MDS = (distancesVector: number[], pointsCount: number, dimensions = 2): number[][] => {
 
     // 1. Create the matrix of distances squared
-	const D2 = vector2squaredMatrix(distancesVector, n);
+	const D2 = vector2squaredMatrix(distancesVector, pointsCount);
 
 	// 2. Compute row and total averages
     const rowMeans = D2.map((row) =>
-        row.reduce((sum, value) => sum + value, 0) / n
+        row.reduce((sum, value) => sum + value, 0) / pointsCount
     );
-    const totalMean = rowMeans.reduce((sum, value) => sum + value, 0) / n;
+    const totalMean = rowMeans.reduce((sum, value) => sum + value, 0) / pointsCount;
 
     // 3. Compute double centering matrix
-    const doubleCenteringMatrix = Array(n) as number[][];
-    for(let row=0; row < n; ++row) doubleCenteringMatrix[row] = Array(n).fill(0) as number[];
+    const doubleCenteringMatrix = Array(pointsCount) as number[][];
+    for(let row=0; row < pointsCount; ++row) doubleCenteringMatrix[row] = Array(pointsCount).fill(0) as number[];
 
-    for(let i = 0; i < n; i++) {
-        for(let j = 0; j < n; j++) {
+    for(let i = 0; i < pointsCount; i++) {
+        for(let j = 0; j < pointsCount; j++) {
             doubleCenteringMatrix[i][j] = -0.5 * (D2[i][j] - rowMeans[i] - rowMeans[j] + totalMean);
         }
     }
@@ -58,8 +65,8 @@ export const MDS = (distancesVector: number[], n: number, dimensions = 2): numbe
     const {eigenvalues, eigenvectors} = powerIteration(doubleCenteringMatrix, dimensions);
 
     // 5. Compute the final coordinates
-    const coordinates = Array(n) as number[][];
-    for(let i = 0; i < n; i++) {
+    const coordinates = Array(pointsCount) as number[][];
+    for(let i = 0; i < pointsCount; i++) {
         coordinates[i] = Array(dimensions).fill(0) as number[];
         for(let j = 0; j < dimensions; j++) {
 
@@ -99,32 +106,32 @@ const powerIteration = (matrix: number[][],
         const norm = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
         vector = vector.map((v) => v / norm);
 
-        // Itera fino a convergenza
+        // Iterate to convergence
         let lastEigenvalue = 0;
         for(let iter = 0; iter < 100; iter++) {
 
-            // Moltiplica matrice per vettore
+            // Update the test vector
             const updatedVector = multiplyMatrixVector(currentMatrix, vector);
 
-            // Normalizza
+            // Normalize the vector
             const updatedNorm = Math.sqrt(updatedVector.reduce((sum, value) => sum + value * value, 0));
             vector = updatedVector.map((v) => v / updatedNorm);
 
-            // Calcola autovalore usando il quoziente di Rayleigh
+            // Compute eigenvalue using the Rayleigh quotient
             const oneEigenvalue = dotProduct(multiplyMatrixVector(currentMatrix, vector), vector);
 
-            // Controlla convergenza
+            // Check convergence
             if(Math.abs(oneEigenvalue - lastEigenvalue) < 1e-10) break;
             lastEigenvalue = oneEigenvalue;
         }
 
-        // Calcola autovalore finale
+        // Compute the final eigenvalue
         const eigenvalue = dotProduct(multiplyMatrixVector(currentMatrix, vector), vector);
 
         eigenvalues.push(eigenvalue);
         eigenvectors.push(vector);
 
-        // Deflazione: rimuovi il contributo dell'autovalore/autovettore trovato
+        // Deflate: remove the contribution of the found eigenvalue/eigenvector
         for(let r = 0; r < n; r++) {
             for(let c = 0; c < n; c++) {
                 currentMatrix[r][c] -= eigenvalue * vector[r] * vector[c];
@@ -140,6 +147,7 @@ const powerIteration = (matrix: number[][],
  *
  * @param matrix - Matrix that multiply the vector
  * @param vector - Vector to be multiplied
+ * @returns Result of the multiplication
  */
 const multiplyMatrixVector = (matrix: number[][], vector: number[]): number[] => {
 
@@ -160,6 +168,7 @@ const multiplyMatrixVector = (matrix: number[][], vector: number[]): number[] =>
  *
  * @param a - First vector
  * @param b - Second vector
+ * @returns Dot product of the two vectors
  */
 const dotProduct = (a: number[], b: number[]): number => a.reduce((sum, value, i) => sum + value * b[i], 0);
 

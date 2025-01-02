@@ -7,7 +7,16 @@
  * @since 2024-12-30
  */
 
+/**
+ * RGB color space triple [r, g, b] with values between 0 and 1
+ * @notExported
+ */
 type RGB = [r: number, g: number, b: number];
+
+/**
+ * CIELAB color space triple [l, a, b]
+ * @notExported
+ */
 type LAB = [l: number, a: number, b: number];
 
 // The following functions are based on the pseudocode
@@ -19,6 +28,7 @@ type LAB = [l: number, a: number, b: number];
  *
  * @param lab - Color in CIELAB color space as triple
  * @returns RGB color as triple with values between 0 and 1
+ * @notExported
  */
 const lab2rgb = (lab: LAB): RGB => {
 
@@ -48,6 +58,7 @@ const lab2rgb = (lab: LAB): RGB => {
  *
  * @param rgb - RGB color as triple with values between 0 and 1
  * @returns LAB color as triple
+ * @notExported
  */
 const rgb2lab = (rgb: RGB): LAB => {
 
@@ -77,6 +88,7 @@ const rgb2lab = (rgb: RGB): LAB => {
  * @param labA - First color to compare in CIELAB color space
  * @param labB - Second color to compare in CIELAB color space
  * @returns Perceptual difference between the two colors
+ * @notExported
  */
 const deltaE = (labA: LAB, labB: LAB): number => {
 

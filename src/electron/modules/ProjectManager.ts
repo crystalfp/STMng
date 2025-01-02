@@ -136,7 +136,10 @@ class ProjectManager {
 	}
 
 	/**
-	 * Parse the project.
+	 * Parse the project
+	 *
+	 * @throws Error.
+	 * "Invalid project loaded" or "Invalid project file format" or "Invalid input id"
 	 */
 	private parseProject(): void {
 
@@ -198,6 +201,7 @@ class ProjectManager {
 	 * @param nodeType - Type of the node to instantiate
 	 * @param id - ID of the node to be instantiated
 	 * @returns - One instantiation of the node
+	 * @throws Error. "Invalid node type"
 	 */
 	private nodeFactory(nodeType: string, id: string): NodeCore {
 
@@ -210,6 +214,7 @@ class ProjectManager {
 	 * Build a description of the project graph
 	 *
 	 * @returns Description of the project graph
+	 * @throws Error. "Invalid type" or "Invalid type in allNodeMap"
 	 */
 	private buildProjectInfo(): ClientProjectInfo {
 

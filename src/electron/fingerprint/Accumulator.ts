@@ -38,7 +38,6 @@ export interface StructureReduced {
 	countSections: number;
 	/** Length of each section */
 	sectionLength: number;
-
 	/** Computed weights */
 	weights: number[];
 }
@@ -53,6 +52,9 @@ interface FilteringStatus {
 	error?: string;
 }
 
+/**
+ * Accumulate structures for fingerprint calculation.
+ */
 export class FingerprintsAccumulator {
 
 	private readonly accumulator: StructureReduced[] = [];
@@ -297,9 +299,9 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
-	 * Iterator on the selected structures
+	 * Iterator on selected structure pairs
 	 *
-	 * @returns An iterator on the selected structures
+	 * @returns An iterator on selected structure pairs
 	 */
 	* iterateSelectedStructurePairs(): Generator<[StructureReduced, StructureReduced]> {
 

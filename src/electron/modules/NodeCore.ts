@@ -45,7 +45,7 @@ export abstract class NodeCore {
 	 *
 	 * @param data - The structure received by the subscribed node
 	 * @throws Error.
-	 * If the node call fromPreviousNode without overriding it
+	 * If the node calls fromPreviousNode without overriding it
 	 */
 	fromPreviousNode(data: Structure): void {
 		void data;

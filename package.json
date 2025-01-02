@@ -17,7 +17,7 @@
     "preview": "vite preview",
     "lint": "eslint -f codeframe src",
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/*",
-    "madge": "madge --extensions ts,vue --ts-config tsconfig.json -i madge.png --warning src",
+    "madge": "sh ./madge.sh",
     "start": "start /D .\\release\\win\\%npm_package_version%\\win-unpacked STMng.exe",
     "oxlint": "oxlint -c ./oxlint.json --ignore-pattern=save"
   },
