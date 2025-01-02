@@ -55,6 +55,10 @@ export class DrawUnitCellRenderer {
 		this.outBV.name = this.nameBV;
 		sm.clearAndAddGroup(this.outBV);
 		sm.clearGroup(this.nameBV);
+
+		// Clear previous cell
+		sm.deleteMesh(this.nameUC);
+		sm.deleteMesh(this.nameSC);
 	}
 
 	/**

@@ -14,14 +14,26 @@ import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import type {ScatterplotData} from "@/types";
 
+/** One point that goes to the scatterplot */
 interface Glyph {
+
+    /** The original step number or sequence number for efficiency display */
     id: number;
+
+    /** X screen coordinate */
     x: number;
+
+    /** Y screen coordinate */
     y: number;
+
+    /** The color of the point as "#RRGGBB" */
     color: string;
+
+    /** Value associated to the point: group, energy, or delta for efficiency */
+    value: number;
 }
 
-/** The canvas sizes */
+/** The canvas sizes (will be computed during mount or resize) */
 const scatterplotWidth = ref(500);
 const scatterplotHeight = ref(300);
 
@@ -31,10 +43,10 @@ const scatterplotType = ref("group");
 /** The scatterplot parameters */
 const pointRadius = ref(10);
 const showPointRadius = ref(10);
-const fgColor = computed(() => ((theme.value === "dark") ? "#808080" : "#121212"));
+const fgColor = "#575757";
 
 /** The received data */
-let scatterplotData: ScatterplotData | null = null;
+let scatterplotData: ScatterplotData | undefined;
 const scatterplotDataAvailable = ref(false);
 
 /**
@@ -52,16 +64,22 @@ const colorsToRGB = (colors: [r: number, g: number, b: number][]): string[] =>
 
 /**
  * Return the points for the scatterplot colored by group
+ *
+ * @returns The list of points as glyphs
  */
 const pointsByGroup = (): Glyph[] => {
 
-    if(!scatterplotData?.countGroups || scatterplotData.points.length === 0) return [];
+    if(!scatterplotData || scatterplotData.points.length === 0) return [];
 
-    // Prepare the list of contrasting colors
-    const backgroundColor: [number, number, number] =
-                (theme.value === "dark") ? [0.07059, 0.07059, 0.07059] : [1, 1, 1];
-    const colorsRaw = contrastingColors(scatterplotData.countGroups, backgroundColor);
-    const colors = colorsToRGB(colorsRaw);
+    let colors: string[] = [];
+    const oneGroup = scatterplotData.countGroups === 0;
+    if(!oneGroup) {
+        // Prepare the list of contrasting colors
+        const backgroundColor: [number, number, number] =
+                    (theme.value === "dark") ? [0.07059, 0.07059, 0.07059] : [1, 1, 1];
+        const colorsRaw = contrastingColors(scatterplotData.countGroups, backgroundColor);
+        colors = colorsToRGB(colorsRaw);
+    }
 
     // Map each point to a glyph
     const {points, groups, id} = scatterplotData;
@@ -70,13 +88,14 @@ const pointsByGroup = (): Glyph[] => {
     for(let i=0; i < n; ++i) {
 
         // Get the color corresponding to the group of the point
-        const color = colors[groups[i]];
+        const color = oneGroup ? "#0000FF" : colors[groups[i]];
 
         out.push({
             id: id[i],
             x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
             y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
             color,
+            value: groups[i],
         });
     }
     return out;
@@ -84,6 +103,8 @@ const pointsByGroup = (): Glyph[] => {
 
 /**
  * Return the points for the scatterplot colored by energy
+ *
+ * @returns The list of points as glyphs
  */
 const pointsByEnergy = (): Glyph[] => {
 
@@ -118,6 +139,7 @@ const pointsByEnergy = (): Glyph[] => {
             x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
             y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
             color,
+            value: energies[i],
         });
     }
     return out;
@@ -125,6 +147,10 @@ const pointsByEnergy = (): Glyph[] => {
 
 /**
  * Return the points for the scatterplot colored by efficiency
+ * - X axis is the original distance
+ * - Y axis is the distance after the projection
+ *
+ * @returns The list of points as glyphs
  */
 const pointsByEfficiency = (): Glyph[] => {
 
@@ -157,29 +183,38 @@ const pointsByEfficiency = (): Glyph[] => {
     for(let i=0; i < n; ++i) {
 
         let delta = efficiencies[i][1] - efficiencies[i][0];
+        const value = delta;
         if(delta < 0) delta = -delta;
 
         const color = lut ? `#${lut.getColor(delta).getHexString()}` : "#0000FF";
 
         out.push({
-            id: -i-1,
+            id: i,
             x: Math.round(efficiencies[i][0] * (scatterplotWidth.value - 40) + 20),
             y: Math.round((1-efficiencies[i][1]) * (scatterplotHeight.value - 40) + 20),
             color,
+            value,
         });
     }
     return out;
 };
 
+/** Compute the list of points to be shown */
 const scatterplotPoints = computed<Glyph[]>(() => {
 
+    // Needed to force the reactivity
     if(scatterplotDataAvailable.value) scatterplotDataAvailable.value = false;
-// console.log(JSON.stringify(scatterplotData, undefined, 2));
+
+    // Hide the text if any and deselect all points
+    textShow.value = false;
+    selectedPoints.value.length = 0;
+
+    // Compute the points
     switch(scatterplotType.value) {
         case "energy": return pointsByEnergy();
         case "efficiency": return pointsByEfficiency();
-        // case "group": return pointsByGroup();
-        default: return pointsByGroup();
+        case "group": return pointsByGroup();
+        default: return [];
     }
 });
 
@@ -213,16 +248,54 @@ receiveInWindow((dataFromMain) => {
 /** Close the window on Esc press */
 closeWithEscape("/scatter");
 
+/** The info associated to the clicked point */
+const textShow  = ref(false);
+const textX     = ref(0);
+const textY     = ref(0);
+const textLine1 = ref("");
+const textLine2 = ref("");
+const textLine3 = ref("");
+
+const selectedPoints = ref<number[]>([]);
+
 /**
  * On selecting a point
+ * @remarks The operation should Open or select points
  *
- * @param id - The id of the selected point
+ * @param idx - The index of the selected point
  */
-const selectPoint = (id: number): void => {
+const selectPoint = (idx: number): void => {
 
-    if(id < 0) return;
-    console.log("Selected point:", id); // TBD
+    const {x, y, value} = scatterplotPoints.value[idx];
+    let valueLine = "";
+    switch(scatterplotType.value) {
+        case "group":      valueLine = `Group: ${value}`; break;
+        case "energy":     valueLine = `Energy: ${value.toFixed(3)}`; break;
+        case "efficiency": valueLine = `Delta: ${value.toFixed(4)}`; break;
+    }
+    textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+8;
+    textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+8;
+    textLine1.value = `(${x}, ${y})`;
+    textLine2.value = valueLine;
+    textLine3.value = scatterplotType.value === "efficiency" ? "" : `Step: ${idx}`;
+    textShow.value = true;
+
+    if(scatterplotType.value !== "efficiency") {
+
+        // If the point is already selected, remove it; otherwise add it
+        const i = selectedPoints.value.indexOf(idx);
+        if(i === -1) selectedPoints.value.push(idx);
+        else selectedPoints.value.splice(i, 1);
+    }
 };
+
+const resetSelected = (): void => {
+    selectedPoints.value.length = 0;
+    textShow.value = false;
+};
+
+const selectionMarkers = computed(() => selectedPoints.value.map((idx) => scatterplotPoints.value[idx]));
+
 </script>
 
 
@@ -232,13 +305,22 @@ const selectPoint = (id: number): void => {
     <div class="scatterplot-viewer">
       <svg :width="scatterplotWidth" :height="scatterplotHeight" x="0" y="0"
           :viewBox="`0 0 ${scatterplotWidth} ${scatterplotHeight}`" fill="transparent"
-          xmlns="http://www.w3.org/2000/svg">
-        <circle v-for="n of scatterplotPoints" :key="n.id" :cx="n.x" :cy="n.y"
-                :r="pointRadius" :style="{fill: n.color}" @click="selectPoint(n.id)"/>
-        <rect x="20" y="20" :width="scatterplotWidth-40" :height="scatterplotHeight-40" :stroke="fgColor"/>
+          xmlns="http://www.w3.org/2000/svg" @click="textShow=false">
+        <rect x="20" y="20" :width="scatterplotWidth-40" :height="scatterplotHeight-40"
+              fill="none" :stroke="fgColor"/>
         <line v-if="scatterplotType==='efficiency'"
               x1="20" :y1="scatterplotHeight-20" :x2="scatterplotWidth-20" y2="20" :stroke="fgColor"
-              stroke-dasharray="6 4"/>
+              stroke-dasharray="6 4" pointer-event="none"/>
+        <circle v-for="n of selectionMarkers" :key="n.id" :cx="n.x" :cy="n.y" pointer-event="none"
+                :r="pointRadius+5" stroke-width="2" :style="{stroke: n.color}" />
+        <circle v-for="(n, index) of scatterplotPoints" :key="n.id" :cx="n.x" :cy="n.y"
+                :r="pointRadius" :style="{fill: n.color}"
+                @click.stop="selectPoint(index)"/>
+        <text v-if="textShow" :x="textX" :y="textY" :fill="fgColor">
+            <tspan :x="textX">{{ textLine1 }}</tspan>
+            <tspan :x="textX" dy="20">{{ textLine2 }}</tspan>
+            <tspan :x="textX" dy="20">{{ textLine3 }}</tspan>
+        </text>
       </svg>
     </div>
   <v-container class="button-strip scatterplot-buttons">
@@ -251,6 +333,7 @@ const selectPoint = (id: number): void => {
                           v-model:raw="showPointRadius" label-width="8rem"
                           :label="`Point radius (${showPointRadius})`"
                           :min="3" :max="20" :step="1" />
+    <v-btn v-focus @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
     <v-btn v-focus @click="closeWindow('/scatter')">Close</v-btn>
   </v-container>
   </div>

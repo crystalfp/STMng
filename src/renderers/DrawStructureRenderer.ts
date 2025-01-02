@@ -42,11 +42,11 @@ export class DrawStructureRenderer {
 		this.outName = "DrawStructure-" + this.id;
 		this.out.name = this.outName;
 
-		// Combine the groups
-		this.out.add(this.atomsGroup, this.bondsGroup, this.labelsGroup);
-
 		// Add to the scene
-		sm.add(this.out);
+		sm.clearAndAddGroup(this.out);
+
+		// Combine and add the groups
+		this.out.add(this.atomsGroup, this.bondsGroup, this.labelsGroup);
 	}
 
 	/**

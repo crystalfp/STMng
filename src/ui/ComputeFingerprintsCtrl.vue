@@ -127,6 +127,12 @@ askNode(id, "init")
         groupingMethod.value = params.groupingMethod as number ?? 0;
         groupingThreshold.value = params.groupingThreshold as number ?? 50;
         addMargin.value = params.addMargin as number ?? 0;
+
+        countSelected.value = 0;
+        countAccumulated.value = 0;
+        resultDimensionality.value = 0;
+        countDistances.value = 0;
+        countGroups.value = 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
@@ -249,6 +255,10 @@ watch([forceCutoff, manualCutoffDistance], () => {
     .then((params: CtrlParams) => {
 
         cutoffDistance.value = params.cutoffDistance as number ?? manualCutoffDistance.value;
+
+        resultDimensionality.value = 0;
+        countDistances.value = 0;
+        countGroups.value = 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from cutoff setting for ${label}: ${error.message}`,
                                               "fingerprints"));
@@ -279,6 +289,10 @@ watch([fingerprintingMethod, binSize, peakWidth], () => {
  */
 const computeFingerprints = (): void => {
 
+    resultDimensionality.value = 0;
+    countDistances.value = 0;
+    countGroups.value = 0;
+
     askNode(id, "fp", {
         fingerprintingMethod: fingerprintingMethod.value,
         binSize: binSize.value,
@@ -304,6 +318,9 @@ watch([distanceMethod, fixTriangleInequality], () => {
  * Start computing distances between fingerprints
  */
 const computeDistances = (): void => {
+
+    countDistances.value = 0;
+    countGroups.value = 0;
 
     askNode(id, "dist", {
         distanceMethod: distanceMethod.value,
@@ -334,6 +351,8 @@ watch([groupingMethod, groupingThreshold, addMargin], () => {
  */
 const ClassifyStructures = (): void => {
 
+    countGroups.value = 0;
+
     askNode(id, "group", {
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
@@ -361,7 +380,7 @@ const useMargin = computed(() => groupingMethods
                                         .value[groupingMethod.value]?.usingMargin ?? false);
 
 /**
- * Adjust addMargin to integer on blur or Enter key
+ * Adjust addMargin to be an integer on blur or Enter key
  */
 const adjInteger = (): void => {
     addMargin.value = Math.floor(addMargin.value);
@@ -379,7 +398,7 @@ const showScatterplot = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="separator-title">Accumulate structures</v-label>
+  <v-label class="separator-title mt-n1" style="border: none">Accumulate structures</v-label>
 
   <v-row class="mt-2 mb-4 mx-2">
     <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
@@ -488,13 +507,9 @@ const showScatterplot = (): void => {
   </v-container>
 
   <v-btn block class="mb-6 mt-4"
-         @click="showScatterplot">
-    Show scatterplot
-  </v-btn>
-  <!-- <v-btn block class="mb-6 mt-4"
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot
-  </v-btn> -->
+  </v-btn>
 
   <g-error-alert kind="fingerprints" />
 </v-container>

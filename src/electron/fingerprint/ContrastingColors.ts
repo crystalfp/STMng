@@ -34,9 +34,9 @@ const lab2rgb = (lab: LAB): RGB => {
     let g = x * -0.9689 + y *  1.8758 + z *  0.0415;
     let b = x *  0.0557 + y * -0.2040 + z *  1.0570;
 
-    r = (r > 0.0031308) ? (1.055 * Math.pow(r, 1/2.4) - 0.055) : 12.92 * r;
-    g = (g > 0.0031308) ? (1.055 * Math.pow(g, 1/2.4) - 0.055) : 12.92 * g;
-    b = (b > 0.0031308) ? (1.055 * Math.pow(b, 1/2.4) - 0.055) : 12.92 * b;
+    r = (r > 0.0031308) ? (1.055 * r**(1/2.4) - 0.055) : 12.92 * r;
+    g = (g > 0.0031308) ? (1.055 * g**(1/2.4) - 0.055) : 12.92 * g;
+    b = (b > 0.0031308) ? (1.055 * b**(1/2.4) - 0.055) : 12.92 * b;
 
     return [Math.max(0, Math.min(1, r)),
             Math.max(0, Math.min(1, g)),
@@ -53,17 +53,17 @@ const rgb2lab = (rgb: RGB): LAB => {
 
     let [r, g, b] = rgb;
 
-    r = (r > 0.04045) ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
-    g = (g > 0.04045) ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
-    b = (b > 0.04045) ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+    r = (r > 0.04045) ? ((r + 0.055) / 1.055)**2.4 : r / 12.92;
+    g = (g > 0.04045) ? ((g + 0.055) / 1.055)**2.4 : g / 12.92;
+    b = (b > 0.04045) ? ((b + 0.055) / 1.055)**2.4 : b / 12.92;
 
     let x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
     let y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
     let z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
 
-    x = (x > 0.008856) ? Math.pow(x, 1/3) : (7.787 * x) + 16/116;
-    y = (y > 0.008856) ? Math.pow(y, 1/3) : (7.787 * y) + 16/116;
-    z = (z > 0.008856) ? Math.pow(z, 1/3) : (7.787 * z) + 16/116;
+    x = (x > 0.008856) ? Math.cbrt(x) : (7.787 * x) + 16/116;
+    y = (y > 0.008856) ? Math.cbrt(y) : (7.787 * y) + 16/116;
+    z = (z > 0.008856) ? Math.cbrt(z) : (7.787 * z) + 16/116;
 
     return [(116 * y) - 16, 500 * (x - y), 200 * (y - z)];
 };
@@ -148,7 +148,7 @@ export const contrastingColors = (countColors: number, backgroundColor: RGB): RG
     }
 
     // Distances from the candidate colors to the background colors
-    let mindist2 = Array(lab.length).fill(Infinity) as number[];
+    let mindist2 = Array(lab.length).fill(Number.POSITIVE_INFINITY) as number[];
 
     // Prepare output array
     const colors = Array(countColors) as RGB[];

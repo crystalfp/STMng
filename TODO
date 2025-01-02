@@ -1,12 +1,13 @@
 To do:
-  ☐ Check THREE.Layer for visibility
   ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
   ☐ Use `chagelogen`
+  ☐ Finish Fingerprinting
 
 Bugs:
 
-Porting:
+ToDo eventually:
+  ☐ Check THREE.Layer for visibility
   ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
   ☐ Memory leak detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
@@ -17,10 +18,7 @@ Porting:
   ☐ Remove multiple invoke to the nodes
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
-
-ToDo eventually:
   ☐ Readers do not fail if the file format is invalid
-  ☐ Finish Fingerprinting
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
@@ -53,6 +51,7 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✘ Use `drop(1)` when searching for max/min in arrays @cancelled(2025-01-02 06:46) @project(To do)
   ✔ Edit project cfp.stm, add measure, save. Error in saveStatus. activeNodes should be updated. @done(2024-12-16 06:26) @project(Bugs)
   ✘ camera.type -> camera.isPerspective (boolean) @cancelled(2024-12-05 15:50) @project(To do)
   ✔ Add camera position save and set @done(2024-12-05 15:49) @project(To do)

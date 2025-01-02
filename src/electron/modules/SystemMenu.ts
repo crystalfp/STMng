@@ -209,6 +209,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                 },
                 {
                     label: "Current node documentation",
+                    accelerator: "CommandOrControl+F1",
                     click() {
                         let currentNodeInError: string;
                         getCurrentNode().then((currentNode) => {

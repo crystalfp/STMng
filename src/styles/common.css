@@ -22,7 +22,6 @@ html {
   --container-height: calc(100vh - 121px);
   --scrollbar-track: light-dark(#e6e6e6, #202020);
   --separator-color: rgb(var(--v-theme-secondary));
-  /* --separator-color: light-dark(#f57f17, #f48d33); */
 }
 
 /* > Vuetify specific */
@@ -34,14 +33,41 @@ html {
   padding: 10px 0 0 0 !important;
 }
 
-/* Colors to be made more visible when changing application theme */
+/* >> Elements on the UI */
 .result-label {
-  color: rgb(var(--v-theme-info)) !important;
-  /* color: light-dark(#2E7D32, #66BB6A) !important; */
+  color: light-dark(#7ca911, #baf434) !important;
   opacity: 1 !important;
   user-select: none !important;
 }
 
+.separator-title {
+  font-size: 1.5rem !important;
+  line-height: 1.333;
+  width: 100% !important;
+  justify-content: center !important;
+  user-select: none !important;
+  margin: 14px 0 12px 0;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  border-top: solid 3px var(--separator-color);
+  padding-top: 2px;
+  letter-spacing: 0.06rem !important;
+}
+
+.simple-title {
+  font-size: 1.5rem !important;
+  line-height: 1.333;
+  width: 100% !important;
+  justify-content: center !important;
+  user-select: none !important;
+  margin: 12px 0 12px 0;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  padding: 1px 0;
+  letter-spacing: 0.05rem !important;
+}
+
+/* >> Made labels not selectable */
 .no-select {
   user-select: none !important;
 }
@@ -87,33 +113,4 @@ html {
   max-width: 3000px !important;
   width: 100vw;
   gap: 10px;
-  /* height: fit-content */
-}
-
-.separator-title {
-  font-size: 1.5rem !important;
-  line-height: 1.333;
-  width: 100% !important;
-  justify-content: center !important;
-  user-select: none !important;
-  margin: 12px 0 12px 0;
-  opacity: 1 !important;
-  color: var(--separator-color) !important;
-  border-top: solid 3px var(--separator-color);
-  border-bottom: solid 3px var(--separator-color);
-  padding: 1px 0;
-  letter-spacing: 0.05rem !important;
-}
-
-.simple-title {
-  font-size: 1.5rem !important;
-  line-height: 1.333;
-  width: 100% !important;
-  justify-content: center !important;
-  user-select: none !important;
-  margin: 12px 0 12px 0;
-  opacity: 1 !important;
-  color: var(--separator-color) !important;
-  padding: 1px 0;
-  letter-spacing: 0.05rem !important;
 }

@@ -22,7 +22,7 @@ export class MeasuresRenderer {
 		// Prepare the output group
 		this.groupName = "AtomSelectors-" + this.id;
 		this.group.name = this.groupName;
-		sm.add(this.group);
+		sm.clearAndAddGroup(this.group);
 	}
 
 	/**

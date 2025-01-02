@@ -8,7 +8,7 @@
  */
 import {readFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {createSecondaryWindow, sendAlertMessage, sendToClient} from "../modules/WindowsUtilities";
+import {createSecondaryWindow, isSecondaryWindowOpen, sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
@@ -274,6 +274,57 @@ export class ComputeFingerprints extends NodeCore {
 		};
 	}
 
+	/**
+	 * Open or update the scatterplot window
+	 *
+	 * @param opKind - Operation to be performed: "no-group" only distances available,
+	 *                 "update" update if scatter available or "create" create the scatterplot
+	 */
+	private createUpdateScatterplot(opKind: "no-group" | "update" | "create"): void {
+
+		const scatterplotOpen = isSecondaryWindowOpen(undefined, "/scatter");
+		if(opKind !== "create" && !scatterplotOpen) return;
+
+		// Take the distance matrix and project it in 2D
+		const distanceMatrix = this.dist.getDistanceMatrix();
+		const distanceVector = distanceMatrix.toVector();
+		const points = MDS(distanceVector, distanceMatrix.matrixSize());
+
+		// Collect the data for the scatterplot
+		const scatterplotData = this.packDataForClient(points);
+		if(opKind === "no-group") {
+			scatterplotData.groups = [];
+			scatterplotData.countGroups = 0;
+		}
+		const dataToSend = JSON.stringify(scatterplotData);
+
+		// If it is open, update the scatterplot window
+		if(scatterplotOpen) {
+
+			sendToSecondaryWindow(undefined, {
+				routerPath: "/scatter",
+				data: dataToSend
+			});
+		}
+		else {
+
+			// Create the scatterplot window
+			createSecondaryWindow(undefined, {
+				routerPath: "/scatter",
+				width: 1200,
+				height: 900,
+				title: "Fingerprints scatterplot",
+				data: dataToSend
+			});
+
+			// Workaround for chart not appearing due to timing
+			setTimeout(() => sendToSecondaryWindow(undefined, {
+				routerPath: "/scatter",
+				data: dataToSend
+			}), 600);
+		}
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -511,6 +562,9 @@ export class ComputeFingerprints extends NodeCore {
 		this.distanceMin = result.distanceMin;
 		this.distanceMax = result.distanceMax;
 
+		// Update the scatterplot if it is open
+		this.createUpdateScatterplot("no-group");
+
 		return {countDistances: result.countDistances, endMessage: result.endMessage};
 	}
 
@@ -546,6 +600,9 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 
+		// Update the scatterplot if it is open
+		this.createUpdateScatterplot("update");
+
 		return {countGroups: result.countGroups};
 	}
 
@@ -554,21 +611,6 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelGroupScatter(): void {
 
-		// Take the distance matrix and project it in 2D
-		const distanceMatrix = this.dist.getDistanceMatrix();
-		const distanceVector = distanceMatrix.toVector();
-		const points = MDS(distanceVector, distanceMatrix.matrixSize());
-
-		// Collect the data for the scatterplot
-		const scatterplotData = this.packDataForClient(points);
-
-		// Create the scatterplot window
-		createSecondaryWindow(undefined, {
-			routerPath: "/scatter",
-			width: 1200,
-			height: 900,
-			title: "Fingerprints scatterplot",
-			data: JSON.stringify(scatterplotData)
-		});
+		this.createUpdateScatterplot("create");
 	}
 }

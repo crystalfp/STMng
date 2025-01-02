@@ -28,11 +28,11 @@ const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
 /**
  * Classical Multidimensional Scaling (MDS)
  *
- * @param distances - Distances symmetrical matrix NxN
+ * @param distances - Distances vector (upper triangular of n x n matrix)
+ * @param n - Number of points
  * @param dimensions - Dimension of the output space (default: 2)
- * @returns Array of points coordinates
+ * @returns Array of points coordinates in the output space (2D or 3D)
  */
-// export const MDS = (distances: number[][], dimensions = 2): number[][] => {
 export const MDS = (distancesVector: number[], n: number, dimensions = 2): number[][] => {
 
     // 1. Create the matrix of distances squared
@@ -64,9 +64,10 @@ export const MDS = (distancesVector: number[], n: number, dimensions = 2): numbe
         for(let j = 0; j < dimensions; j++) {
 
             // Use only positive eigenvalues
-            if(eigenvalues[j] > 0) {
-                coordinates[i][j] = eigenvectors[j][i] * Math.sqrt(eigenvalues[j]);
-            }
+            // if(eigenvalues[j] > 0) {
+            //     coordinates[i][j] = eigenvectors[j][i] * Math.sqrt(eigenvalues[j]);
+            // }
+            coordinates[i][j] = eigenvectors[j][i] * Math.sqrt(Math.abs(eigenvalues[j]));
         }
     }
 

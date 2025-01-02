@@ -31,7 +31,7 @@ export class TrajectoriesRenderer {
 		// Prepare the group for the trajectories and add it to the scene
 		this.group.name = this.groupName;
 		this.group.visible = traceVisible;
-		sm.add(this.group);
+		sm.clearAndAddGroup(this.group);
 
 		// Initialize the position clouds rendering
 		this.initializeVolume(positionCloudsSize, positionCloudsColor);
