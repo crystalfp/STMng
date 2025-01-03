@@ -122,7 +122,7 @@ const pointsByEnergy = (): Glyph[] => {
     }
 
     // Generate the colormap
-    const lut = (maxEnergy - minEnergy) < 1e-10 ? undefined : new Lut("rainbow", 512);
+    const lut = (maxEnergy - minEnergy) < 1e-10 ? undefined : new Lut("blackbody", 512);
     if(lut) {
         lut.setMin(minEnergy);
         lut.setMax(maxEnergy);
@@ -175,7 +175,7 @@ const pointsByEfficiency = (): Glyph[] => {
     const lut = maxDelta < 1e-10 ? undefined : new Lut("blackbody", 512);
     if(lut) {
         lut.setMin(0);
-        lut.setMax(maxDelta);
+        lut.setMax(1);
     }
 
     const n = efficiencies.length;
@@ -256,44 +256,48 @@ const textLine1 = ref("");
 const textLine2 = ref("");
 const textLine3 = ref("");
 
+/** Indices of the selected points */
 const selectedPoints = ref<number[]>([]);
 
 /**
  * On selecting a point
- * @remarks The operation should Open or select points
  *
  * @param idx - The index of the selected point
  */
 const selectPoint = (idx: number): void => {
 
+    // Do not allow selection of points in efficiency mode
+    if(scatterplotType.value === "efficiency") return;
+
+    // Prepare the text to show and move it to remain inside the plot
     const {x, y, value} = scatterplotPoints.value[idx];
     let valueLine = "";
     switch(scatterplotType.value) {
-        case "group":      valueLine = `Group: ${value}`; break;
-        case "energy":     valueLine = `Energy: ${value.toFixed(3)}`; break;
-        case "efficiency": valueLine = `Delta: ${value.toFixed(4)}`; break;
+        case "group":  valueLine = `Group: ${value}`; break;
+        case "energy": valueLine = `Energy: ${value.toFixed(3)}`; break;
     }
     textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+8;
     textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+8;
     textLine1.value = `(${x}, ${y})`;
     textLine2.value = valueLine;
-    textLine3.value = scatterplotType.value === "efficiency" ? "" : `Step: ${idx}`;
-    textShow.value = true;
+    textLine3.value = `Step: ${idx}`;
+    textShow.value  = true;
 
-    if(scatterplotType.value !== "efficiency") {
-
-        // If the point is already selected, remove it; otherwise add it
-        const i = selectedPoints.value.indexOf(idx);
-        if(i === -1) selectedPoints.value.push(idx);
-        else selectedPoints.value.splice(i, 1);
-    }
+    // If the point is already selected, remove it; otherwise add it
+    const i = selectedPoints.value.indexOf(idx);
+    if(i === -1) selectedPoints.value.push(idx);
+    else selectedPoints.value.splice(i, 1);
 };
 
+/**
+ * Reset the selected points
+ */
 const resetSelected = (): void => {
     selectedPoints.value.length = 0;
     textShow.value = false;
 };
 
+/** Point selection markers for display */
 const selectionMarkers = computed(() => selectedPoints.value.map((idx) => scatterplotPoints.value[idx]));
 
 </script>

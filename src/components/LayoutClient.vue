@@ -11,7 +11,8 @@ import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {sm} from "@/services/SceneManager";
 import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
-        receiveNotifications, sendToNode} from "@/services/RoutesClient";
+        receiveNotifications, sendToNode,
+        receiveBroadcast} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import {theme} from "@/services/ReceiveTheme";
 
@@ -77,13 +78,25 @@ receiveNotifications((type: "error" | "success", text: string, from: string) => 
 });
 
 /**
- * Toggle normal screen by clicking on the layout separator.
+ * Toggle normal screen by clicking on the layout separator
  */
 const toggleNormalScreen = (): void => {
+
+    // To redraw the scene after toggling extended screen
+    sm.modified();
 
     normalScreen.value = !normalScreen.value;
     sendToNode("SYSTEM", "extended", {normalScreen: normalScreen.value});
 };
+
+receiveBroadcast((eventType: string) => {
+
+    if(eventType === "extended-screen") {
+
+        // To redraw the scene after toggling extended screen
+        sm.modified();
+    }
+});
 
 </script>
 

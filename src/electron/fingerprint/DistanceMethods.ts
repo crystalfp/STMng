@@ -333,7 +333,7 @@ interface MeasuringMethod {
 
 /** Distance measuring methods list */
 export const measuringMethods: MeasuringMethod[] = [
-    {label: "Cosine distance",              method: new CosineDistance()},
-    {label: "Euclidean distance",           method: new EuclideanDistance()},
-    {label: "Minkowski (p=1/3) distance",   method: new MinkowskiDistance()},
+    {label: "Cosine distance",                  method: new CosineDistance()},
+    {label: "Euclidean distance",               method: new EuclideanDistance()},
+    {label: "Minkowski distance of order ⅓",    method: new MinkowskiDistance()},
 ];

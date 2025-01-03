@@ -308,6 +308,10 @@ const computeFingerprints = (): void => {
 
 /** On changing distance computation parameters */
 watch([distanceMethod, fixTriangleInequality], () => {
+
+    countDistances.value = 0;
+    countGroups.value = 0;
+
     sendToNode(id, "dist-params", {
         distanceMethod: distanceMethod.value,
         fixTriangleInequality: fixTriangleInequality.value,
@@ -337,6 +341,8 @@ const computeDistances = (): void => {
 
 /** On changing grouping parameters */
 watch([groupingMethod, groupingThreshold, addMargin], () => {
+
+    countGroups.value = 0;
 
     sendToNode(id, "group-params", {
 
@@ -440,7 +446,7 @@ const showScatterplot = (): void => {
 
   <v-select v-model="fingerprintingMethod"
     :items="fingerprintMethodsNames"
-    label="Selection method"
+    label="Fingerprinting method"
     item-title="label"
     item-value="value"
     class="mr-2" />
@@ -459,7 +465,7 @@ const showScatterplot = (): void => {
     {{ `Done (dimensionality: ${resultDimensionality})` }}</v-label>
   <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
-  <v-label class="separator-title">Compare structures</v-label>
+  <v-label class="separator-title">Compute distances</v-label>
   <v-select v-model="distanceMethod"
     label="Distance method"
     :items="distanceMethods"
@@ -506,7 +512,8 @@ const showScatterplot = (): void => {
     <v-label v-if="groupingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
   </v-container>
 
-  <v-btn block class="mb-6 mt-4"
+  <v-label class="separator-title">Show results</v-label>
+  <v-btn block class="mb-6"
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot
   </v-btn>

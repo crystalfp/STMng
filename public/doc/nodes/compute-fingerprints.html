@@ -7,9 +7,8 @@
   <meta name="description" content="Documentation for the STMng compute-fingerprints node">
   <meta name="keywords" content="STMng">
   <meta name="date" content="2024-09-25"/>
-  <meta name="copyright" content="Copyright 2023-2024 by Mario Valle">
-  <meta name="dcterms.rightsHolder" content="Copyright 2023-2024 by Mario Valle"/>
-  <meta name="geo.position" content="46.019440;8.974010"/>
+  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <link rel="stylesheet" href="../style.css" type="text/css">
   <link rel="icon" href="../favicon.ico" type="image/x-icon" />
@@ -19,18 +18,226 @@
 
 <body>
 <h1 class="title">Fingerprints</h1>
-<h1 class="subh1">Compute fingerprints for a sequence of structures</h1>
+<h1 class="subh1">Compute fingerprints for a set of structures to group them</h1>
 
 <div class="description">
-<p>⚠ Work in progress! ⚠</p>
+<p>The module implements the fingerprinting method to group similar structures as presented in:</p>
+<ul>
+<li>Valle, M., & Oganov, A. R. (2008). <i>Crystal Structures Classifier for an Evolutionary Algorithm Structure Predictor.</i> IEEE Symposium On Visual Analytics Science and Technology, VAST 2008, 11–18</li>
+<li>Valle, M., & Oganov, A. R. (2010). <i>Crystal fingerprint space – a novel paradigm for studying crystal-structure sets.</i> Acta Crystallographica Section A, 66(5), 507–517</li>
+</ul>
+<p style="color: red">Note that this module is still work in progress.</p>
+
 </div>
 
 <h2>Controls</h2>
+<p>The controls are grouped in logical steps that normally should be completed top to bottom.</p>
+
+<h3>Accumulate structures</h3>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Deselect</td>
+	<td class="c1">Start/stop accumulating</td>
 	<td class="c2">button</td>
-	<td class="c3">Deselect selected atoms.</td>
+	<td class="c3">Toggle accumulating structures for which fingerprint should be computed. This toggle is present also in the reader page, when this module is loaded.</td>
+</tr>
+<tr>
+	<td class="c1">Reset</td>
+	<td class="c2">button</td>
+	<td class="c3">Clear the accumulated structures.</td>
+</tr>
+<tr>
+	<td class="c1">Structures are nanoclusters</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Mark the structures as nanoclusters, not crystals with a periodic structure.</td>
+</tr>
+<tr>
+	<td class="c1">Structures loaded</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of accumulated structures.</td>
+</tr>
+</table>
+
+<h3>Filter structures</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Select energy file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">Select the file with energies per structure. The file is ASCII with one energy per line. The energies will be associated to the accumulated structures and will be used also to filter the structures.</td>
+</tr>
+<tr>
+	<td class="c1">Filter by energy</td>
+	<td class="c2">toggle</td>
+	<td class="c3">From the accumulated structures extract only the ones that satisfy the following constrains.</td>
+</tr>
+<tr>
+	<td class="c1">Threshold from minimum energy</td>
+	<td class="c2">toggle</td>
+	<td class="c3">The maximum energy threshold is computed from the minimum energy of accumulated structures.</td>
+</tr>
+<tr>
+	<td class="c1">Energy from minimum / Max energy</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">For filtering structures enter the maximum energy the structures should have or, when "Threshold from minimum energy" is set, the offset from the minimum energy of the accumulated structures to establish the threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Max energy</td>
+	<td class="c2">readonly numeric field</td>
+	<td class="c3">The computed or manually entered energy threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Structures selected</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of structures eventually selected by energy.</td>
+</tr>
+</table>
+
+<h3>Compute fingerprints</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Force cutoff at:</td>
+	<td class="c2">toggle + numeric field</td>
+	<td class="c3">When set, forces the cutoff distance for the computation of fingerprint to the value entered.</td>
+</tr>
+<tr>
+	<td class="c1">Cutoff</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">The cutoff distance (computed or manually entered) that will be used by the fingerprint computation.</td>
+</tr>
+<tr>
+	<td class="c1">Fingerprinting method</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the method for computing the fingerprints.
+		<dl>
+      <dt>Normalized diffraction</dt><dd>Needs bin size and peak width. Not for nanoclusters.</dd>
+      <dt>Mendeleev spectra</dt><dd>Needs bin size and peak width. Not for nanoclusters.</dd>
+      <dt>Chemical scale spectra</dt><dd>Needs bin size and peak width. Not for nanoclusters.</dd>
+      <dt>Per element diffraction</dt><dd>Needs bin size and peak width.</dd>
+      <dt>Distances per atom</dt><dd>Not for nanoclusters.</dd>
+      <dt>Merged distances</dt><dd>Not for nanoclusters.</dd>
+      <dt>Re-centered per element diffraction</dt><dd>Needs bin size and peak width.</dd>
+      <dt>Trimmed per element diffraction</dt><dd></dd>
+    </dl></td>
+</tr>
+<tr>
+	<td class="c1">Bin size</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">To reduce the dimension of the fingerprints, the interatomic distances are binned to this size.</td>
+</tr>
+<tr>
+	<td class="c1">Peak width</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">The binned distances are smoothed and so cover more than one bin.</td>
+</tr>
+<tr>
+  <td class="c1">Compute fingerprints</td>
+  <td class="c2">button</td>
+  <td class="c3">Compute the fingerprints for the selected structures.</td>
+</tr>
+<tr>
+	<td class="c1">Dimensionality</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation shows the length of the computed fingerprints.</td>
+</tr>
+</table>
+
+<h3>Compute distances</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Distance method</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the method to measure the distance between fingerprints.
+		<dl>
+      <dt>Cosine distance</dt><dd>Cosine distance between fingerprints interpreted as multidimensional vectors. The distances are scaled between 0 and 1</dd>
+      <dt>Euclidean distance</dt><dd>Euclidean distance between fingerprints interpreted as points in a multidimensional space</dd>
+      <dt>Minkowski distance of order ⅓</dt><dd>The Minkowski distance with order p = ⅓. With this order value the measure violates the triangle inequality</dd>
+    </dl></td>
+</tr>
+<tr>
+	<td class="c1">Fix triangle inequality</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Iteratively adjust distances to satisfy the triangle inequality for every triple of distances.</td>
+</tr>
+<tr>
+  <td class="c1">Compute distances</td>
+  <td class="c2">button</td>
+  <td class="c3">Compute the distances between fingerprints.</td>
+</tr>
+<tr>
+	<td class="c1">Distances computed</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation shows the number of computed distances.</td>
+</tr>
+</table>
+
+<h3>Classify structures</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Grouping method</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the method to group similar fingerprints.
+		<dl>
+      <dt>Pseudo SNN</dt><dd>Use the margin value</dd>
+      <dt>Hierarchical grouping (single linkage)</dt><dd></dd>
+      <dt>Hierarchical grouping (complete linkage)</dt><dd></dd>
+    </dl></td>
+</tr>
+<tr>
+	<td class="c1">Distance thresh. %</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">The percentage of the maximum distance to consider two structures in the same group.</td>
+</tr>
+<tr>
+	<td class="c1">Margin value (K)</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">For the method that require it is the number of connection above one to consider two structures connected.</td>
+</tr>
+<tr>
+  <td class="c1">Classify structures</td>
+  <td class="c2">button</td>
+  <td class="c3">Classify fingerprints into groups.</td>
+</tr>
+<tr>
+	<td class="c1">Groups found</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation shows the number of groups found.</td>
+</tr>
+</table>
+
+<h3>Show results</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+  <td class="c1">Show scatterplot</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the Fingerprints scatterplot window</td>
+</tr>
+</table>
+
+<h2>Fingerprints scatterplot window</h2>
+<p>The scatterplot window shows the fingerprints in a 2D space. The fingerprints are colored by the group they belong to or by the energy.</p>
+<p>This window shows three different kinds of scatterplot:</p>
+<dl style="margin-left: 20px;">
+  <dt>Group</dt><dd>One point for each structure colored by group</dd>
+  <dt>Energy</dt><dd>One point for each structure colored by energy</dd>
+  <dt>Efficiency</dt><dd>On point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance</dd>
+</dl>
+<p>Clicking on one point selects it and show a small popup.
+  <span style="color: red;">This popup possibly does not stay in the final version.</span></p>
+<p>Besides the scatterplot kind selector, the scatterplot window has the following controls:</p>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Point radius</td>
+	<td class="c2">slider</td>
+	<td class="c3">Radius of the scatterplot points</td>
+</tr>
+<tr>
+  <td class="c1">Deselect</td>
+  <td class="c2">button</td>
+  <td class="c3">Deselect all selected points</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window</td>
 </tr>
 </table>
 
@@ -41,6 +248,12 @@
 <tr><td class="c1">Output type:</td><td>—</td></tr>
 <tr><td class="c1">Adds 3D objects to scene:</td><td>No</td></tr>
 </table>
+
+<h2>Credits</h2>
+<p>Creating contrasting colors has been modified from: Tim Holy (2024). <i>Generate maximally perceptually-distinct colors,</i> <a href="https://www.mathworks.com/matlabcentral/fileexchange/29702-generate-maximally-perceptually-distinct-colors">MATLAB Central File Exchange</a>. Retrieved December 29, 2024.</p>
+<p>Converting LAB color to RGB color and vice versa routines are from: <a href="https://github.com/antimatter15/rgb-lab/tree/master">github.com/antimatter15/rgb-lab/tree/master</a>.</p>
+<p>Code to compute the perceptual difference between two colors in CIELAB color space has been ported from: <a href="https://github.com/PoshCode/Pansies/blob/main/Source/Assembly/ColorSpaces/Comparisons/Cie94Comparison.cs">github.com/PoshCode/Pansies/blob/main/Source/Assembly/ColorSpaces/Comparisons/Cie94Comparison.cs</a>.</p>
+<p>The initial MDS code has been generated by Copilot.</p>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">🔝</a></p>
 

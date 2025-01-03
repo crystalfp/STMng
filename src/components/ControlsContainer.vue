@@ -61,7 +61,7 @@ sendCurrentNode(() => {
 <v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
   <component v-show="panel.id === selectedTabId" :is="panel.ctrl" :id="panel.id" :label="panel.label" />
 </v-container>
-<v-btn density="comfortable" variant="plain"
+<v-btn density="comfortable" variant="tonal" rounded="0"
        @click="controlStore.reset = true" class="mb-n4">Reset camera</v-btn>
 </template>
 

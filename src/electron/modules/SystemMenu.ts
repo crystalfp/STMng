@@ -190,6 +190,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     click(event) {
                         setExtended(event.checked);
                         openMenuEntry("extend-viewer", event.checked ? "yes" : "no");
+                        broadcastMessage("extended-screen");
                     }
                 }
             ]

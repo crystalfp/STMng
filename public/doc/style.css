@@ -32,6 +32,14 @@ h2 {
   padding-top: 0.7rem;
 }
 
+h3 {
+  font-size: 120%;
+  color: #FF6400;
+  font-weight: normal;
+  padding-top: 0.1rem;
+  margin-bottom: 0.2rem;
+}
+
 header {
   margin-bottom: 1rem;
 }
@@ -68,14 +76,14 @@ code {
 }
 
 td.c1 {
-	width: 240px;
+	width: 20rem;
 	vertical-align: top;
 	padding-left: 20px;
 	font-weight: bold;
 }
 
 td.c2 {
-	width: 150px;
+	width: 12rem;
 	vertical-align: top;
 }
 
