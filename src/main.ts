@@ -112,6 +112,7 @@ const app = createApp(App)
 				color: "primary"
 			},
 			VBtnToggle: {
+				density: "comfortable",
 				color: "primary",
 				variant: "outlined",
 				divided: true

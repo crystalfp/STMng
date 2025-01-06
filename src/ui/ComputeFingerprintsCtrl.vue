@@ -406,22 +406,23 @@ const showScatterplot = (): void => {
 <v-container class="container">
   <v-label class="separator-title mt-n1" style="border: none">Accumulate structures</v-label>
 
-  <v-row class="mt-2 mb-4 mx-2">
+  <v-row class="mt-0 mb-4 mx-2">
     <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
     <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
   </v-row>
   <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
             label="Structures are nanoclusters" class="ml-2 my-n3" />
+
+  <g-select-file class="mb-5 mr-2" title="Select energy file"
+                 :filter="energyFileFilter" @selected="selectEnergyFile" />
+
   <v-btn block @click="toggleAccumulating">{{ accumulatingLabel }}</v-btn>
 
   <v-label class="separator-title">Filter structures</v-label>
 
-  <g-select-file class="mt-2 mr-2" title="Select energy file"
-                 :filter="energyFileFilter" @selected="selectEnergyFile" />
-
   <v-switch v-model="enableEnergyFiltering"
-            label="Filter by energy" class="ml-2" />
+            label="Filter by energy" class="ml-2 mt-n2" />
   <v-switch v-model="thresholdFromMinimum"
             label="Threshold from minimum energy" class="ml-2 mt-n5" />
   <v-row>
@@ -436,7 +437,7 @@ const showScatterplot = (): void => {
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
-  <v-row class="mt-2 mx-0">
+  <v-row class="mt-0 mx-0">
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2" />
     <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"
                     :min="0.1" :step="0.1" :disabled="!forceCutoff" class="mx-2" />
@@ -452,10 +453,10 @@ const showScatterplot = (): void => {
     class="mr-2" />
 
   <v-row v-if="needSizes" class="ml-0 mr-2 pt-1">
-    <v-number-input v-model="binSize"
-                    label="Bin size" :min="0.01" :step="0.01" class="mr-2" />
     <v-number-input v-model="peakWidth"
-                    label="Peak width" :min="0.01" :step="0.01" />
+                    label="Peak width" :min="0.01" :step="0.01" class="mr-2" />
+    <v-number-input v-model="binSize"
+                    label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
   <v-btn block :disabled="countSelected === 0"
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
@@ -471,7 +472,7 @@ const showScatterplot = (): void => {
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    class="mr-2 mt-2" />
+    class="mr-2" />
 
   <v-switch v-model="fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n2 mb-n2" />
@@ -495,11 +496,11 @@ const showScatterplot = (): void => {
 
   <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="groupingThreshold"
-                  label="Distance thresh. %"
-                  :min="0" :max="100" :step="1" class="mr-2" />
+                    label="Distance thresh. %"
+                    :min="0" :max="100" :step="1" class="mr-2" />
     <v-number-input v-if="useMargin" v-model="addMargin"
-                  label="Margin value (K)" :min="0" :step="1"
-                  @blur="adjInteger" @keyup.enter="adjInteger" />
+                    label="Margin" :min="0" :step="1"
+                    @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
   <v-btn block :disabled="countDistances === 0"
          @click="groupingBusy = true; ClassifyStructures()">

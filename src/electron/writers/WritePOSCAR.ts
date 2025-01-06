@@ -83,7 +83,7 @@ export class WriterPOSCAR implements WriterImplementation {
 			return {payload: "Success!"};
 		}
 		catch(error) {
-			return {error: (error as Error).message};
+			return {payload: "Error", error: (error as Error).message};
 		}
 	}
 }

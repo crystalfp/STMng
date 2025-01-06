@@ -36,9 +36,9 @@
 <h3>Accumulate structures</h3>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Start/stop accumulating</td>
-	<td class="c2">button</td>
-	<td class="c3">Toggle accumulating structures for which fingerprint should be computed. This toggle is present also in the reader page, when this module is loaded.</td>
+	<td class="c1">Structures loaded</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of accumulated structures.</td>
 </tr>
 <tr>
 	<td class="c1">Reset</td>
@@ -48,26 +48,26 @@
 <tr>
 	<td class="c1">Structures are nanoclusters</td>
 	<td class="c2">toggle</td>
-	<td class="c3">Mark the structures as nanoclusters, not crystals with a periodic structure.</td>
+	<td class="c3">Mark the structures as nanoclusters, that is, they are not crystals with a periodic structure.</td>
 </tr>
 <tr>
-	<td class="c1">Structures loaded</td>
-	<td class="c2">readonly text</td>
-	<td class="c3">Count of accumulated structures.</td>
+	<td class="c1">Select energy file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">Select the file with energies (internal energies or enthalpy) per structure. The file is ASCII with one energy per line. The energies will be associated to the accumulated structures and will be used also to filter the structures.</td>
+</tr>
+<tr>
+	<td class="c1">Start/stop accumulating</td>
+	<td class="c2">button</td>
+	<td class="c3">Toggle accumulating structures for which fingerprint should be computed. This toggle is present also in the reader page, when this module is loaded. <b>Important:</b> the structures should be loaded from step 1 onward to maintain synchronization with the energy file content.</td>
 </tr>
 </table>
 
 <h3>Filter structures</h3>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Select energy file</td>
-	<td class="c2">file selector</td>
-	<td class="c3">Select the file with energies per structure. The file is ASCII with one energy per line. The energies will be associated to the accumulated structures and will be used also to filter the structures.</td>
-</tr>
-<tr>
 	<td class="c1">Filter by energy</td>
 	<td class="c2">toggle</td>
-	<td class="c3">From the accumulated structures extract only the ones that satisfy the following constrains.</td>
+	<td class="c3">From the accumulated structures extract only the ones that satisfy the following constrains on energy.</td>
 </tr>
 <tr>
 	<td class="c1">Threshold from minimum energy</td>
@@ -77,7 +77,7 @@
 <tr>
 	<td class="c1">Energy from minimum / Max energy</td>
 	<td class="c2">numeric field</td>
-	<td class="c3">For filtering structures enter the maximum energy the structures should have or, when "Threshold from minimum energy" is set, the offset from the minimum energy of the accumulated structures to establish the threshold.</td>
+	<td class="c3">For filtering structures enter the maximum energy the structures should have or, when “Threshold from minimum energy” is set, the offset from the minimum energy of the accumulated structures to establish the threshold.</td>
 </tr>
 <tr>
 	<td class="c1">Max energy</td>
@@ -106,27 +106,28 @@
 <tr>
 	<td class="c1">Fingerprinting method</td>
 	<td class="c2">list</td>
-	<td class="c3">Select the method for computing the fingerprints.
+	<td class="c3">Select the method for computing the fingerprints:
 		<dl>
-      <dt>Normalized diffraction</dt><dd>Needs bin size and peak width. Not for nanoclusters.</dd>
-      <dt>Mendeleev spectra</dt><dd>Needs bin size and peak width. Not for nanoclusters.</dd>
-      <dt>Chemical scale spectra</dt><dd>Needs bin size and peak width. Not for nanoclusters.</dd>
-      <dt>Per element diffraction</dt><dd>Needs bin size and peak width.</dd>
-      <dt>Distances per atom</dt><dd>Not for nanoclusters.</dd>
-      <dt>Merged distances</dt><dd>Not for nanoclusters.</dd>
-      <dt>Re-centered per element diffraction</dt><dd>Needs bin size and peak width.</dd>
-      <dt>Trimmed per element diffraction</dt><dd></dd>
-    </dl></td>
-</tr>
-<tr>
-	<td class="c1">Bin size</td>
-	<td class="c2">numeric field</td>
-	<td class="c3">To reduce the dimension of the fingerprints, the interatomic distances are binned to this size.</td>
+      <dt>Normalized diffraction</dt><dd>A rapidly convergent function based on distance distributions and related to RDF and diffraction spectra. Needs bin size and peak width. Not for nanoclusters.</dd>
+	  <dt>Mendeleev spectra</dt><dd>It is the same as “Normalized diffraction”, but the atom Z values are mapped to the corresponding Mendeleev Number <i>m</i> to implement the Pettifor correction.</dd>
+      <dt>Chemical scale spectra</dt><dd>It is the same as “Normalized diffraction”, but the atom Z values are mapped to the Chemical Scale <img src="chi.svg" alt="Greek Chi letter"> correction for a given atom type to implement the Pettifor correction.</dd>
+      <dt>Per element diffraction</dt><dd>The per-atom distance sets fingerprint is composed by a section for each atom in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances. Furthermore each section is labeled with the element type of the corresponding atom. Needs bin size and peak width.</dd>
+	  <dt>Distances per atom</dt><dd>Not for nanoclusters.</dd>
+      <dt>Merged distances</dt><dd>It is the same as “Distance per atom”, but the fingerprinting values are sorted in descending order.</dd>
+      <dt>Re-centered per element diffraction</dt><dd>It is the same as “Per element diffraction”. Needs bin size and peak width.</dd>
+      <dt>Trimmed per element diffraction</dt><dd>It is the same as “Per element diffraction”.</dd>
+    </dl>
+  </td>
 </tr>
 <tr>
 	<td class="c1">Peak width</td>
 	<td class="c2">numeric field</td>
-	<td class="c3">The binned distances are smoothed and so cover more than one bin.</td>
+	<td class="c3">The distance peaks are smoothed with a gaussian and then binned.</td>
+</tr>
+<tr>
+	<td class="c1">Bin size</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">To convert smoothed distance peaks into a vector of values, that is, the fingerprint, the smoothed interatomic distances are binned to this size.</td>
 </tr>
 <tr>
   <td class="c1">Compute fingerprints</td>
@@ -145,17 +146,17 @@
 <tr>
 	<td class="c1">Distance method</td>
 	<td class="c2">list</td>
-	<td class="c3">Select the method to measure the distance between fingerprints.
+	<td class="c3">Select the measuring method to obtain the distance between fingerprints:
 		<dl>
-      <dt>Cosine distance</dt><dd>Cosine distance between fingerprints interpreted as multidimensional vectors. The distances are scaled between 0 and 1</dd>
-      <dt>Euclidean distance</dt><dd>Euclidean distance between fingerprints interpreted as points in a multidimensional space</dd>
-      <dt>Minkowski distance of order ⅓</dt><dd>The Minkowski distance with order p = ⅓. With this order value the measure violates the triangle inequality</dd>
+      <dt>Cosine distance</dt><dd>Cosine distance between fingerprints interpreted as multidimensional vectors. The distances are scaled between 0 and 1. This measure violates the triangle inequality.</dd>
+      <dt>Euclidean distance</dt><dd>Euclidean distance between fingerprints interpreted as points in a multidimensional space.</dd>
+      <dt>Minkowski distance of order ⅓</dt><dd>The <a href="https://en.wikipedia.org/wiki/Minkowski_distance">Minkowski distance</a> with order p = ⅓. With this order value, the measure violates the triangle inequality but spread points better in the multidimensional space facilitating grouping.</dd>
     </dl></td>
 </tr>
 <tr>
 	<td class="c1">Fix triangle inequality</td>
 	<td class="c2">toggle</td>
-	<td class="c3">Iteratively adjust distances to satisfy the triangle inequality for every triple of distances.</td>
+	<td class="c3">Iteratively adjust distances to satisfy the triangle inequality for every triples of distances.</td>
 </tr>
 <tr>
   <td class="c1">Compute distances</td>
@@ -174,22 +175,23 @@
 <tr>
 	<td class="c1">Grouping method</td>
 	<td class="c2">list</td>
-	<td class="c3">Select the method to group similar fingerprints.
+	<td class="c3">Select the method to group similar fingerprints:
 		<dl>
-      <dt>Pseudo SNN</dt><dd>Use the margin value</dd>
-      <dt>Hierarchical grouping (single linkage)</dt><dd></dd>
-      <dt>Hierarchical grouping (complete linkage)</dt><dd></dd>
-    </dl></td>
+      <dt>Pseudo SNN</dt><dd>Structure clustering method based on the number of nearest neighbors points shared between pairs of connected points and confirm this last connection only if the number is at least K (equal to one plus the margin value). SNN means Shared Nearest Neighbor and is “Pseudo” becouse laks the final DBSCAN step to refine clustering.</dd>
+      <dt>Hierarchical grouping (single linkage)</dt><dd>It is a methods of hierarchical clustering based on grouping clusters in bottom-up fashion, at each step combining two clusters that contain the closest pair of elements not yet belonging to the same cluster as each other.</dd>
+      <dt>Hierarchical grouping (complete linkage)</dt><dd>It is an agglomerative hierarchical clustering that at the beginning of the process, has each element is in a cluster of its own. The clusters are then sequentially combined into larger clusters until all elements end up being in the same cluster.</dd>
+    </dl>
+  </td>
 </tr>
 <tr>
 	<td class="c1">Distance thresh. %</td>
 	<td class="c2">numeric field</td>
-	<td class="c3">The percentage of the maximum distance to consider two structures in the same group.</td>
+	<td class="c3">Distance threshold for two structures to consider them in the same group. The distance is given as a percentage of the global maximum distance.</td>
 </tr>
 <tr>
-	<td class="c1">Margin value (K)</td>
+	<td class="c1">Margin</td>
 	<td class="c2">numeric field</td>
-	<td class="c3">For the method that require it is the number of connection above one to consider two structures connected.</td>
+	<td class="c3">For the Pseudo SNN method it is the number of connection above one to consider two structures connected.</td>
 </tr>
 <tr>
   <td class="c1">Classify structures</td>
@@ -208,36 +210,87 @@
 <tr>
   <td class="c1">Show scatterplot</td>
   <td class="c2">button</td>
-  <td class="c3">Open the Fingerprints scatterplot window</td>
+  <td class="c3">Open the Fingerprints scatterplot window.</td>
 </tr>
 </table>
 
 <h2>Fingerprints scatterplot window</h2>
-<p>The scatterplot window shows the fingerprints in a 2D space. The fingerprints are colored by the group they belong to or by the energy.</p>
+<p>The scatterplot window shows the fingerprints as points in a 2D space. The points are colored by the associated value.</p>
 <p>This window shows three different kinds of scatterplot:</p>
 <dl style="margin-left: 20px;">
-  <dt>Group</dt><dd>One point for each structure colored by group</dd>
-  <dt>Energy</dt><dd>One point for each structure colored by energy</dd>
-  <dt>Efficiency</dt><dd>On point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance</dd>
+  <dt>Group</dt><dd>One point for each structure colored by group.</dd>
+  <dt>Energy</dt><dd>One point for each structure colored by energy.</dd>
+  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance.</dd>
+  <dt>Quality</dt><dd>Grouping quality using the
+  	  <a ref="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>.</dd>
 </dl>
-<p>Clicking on one point selects it and show a small popup.
-  <span style="color: red;">This popup possibly does not stay in the final version.</span></p>
+<p>The grouping quality color scale is:</p>
+<ul>
+<li><span style="width: 150px; background-color: green; color: green">⬚</span> Strong (silhouette &gt; 0.7)</li>
+<li><span style="width: 150px; background-color: yellow; color: yellow">⬚</span> Reasonable (silhouette &gt; 0.5)</li>
+<li><span style="width: 150px; background-color: orange; color: orange">⬚</span> Weak (silhouette &gt; 0.25)</li>
+<li><span style="width: 150px; background-color: red; color: red">⬚</span> Bad (silhouette &gt; 0.05)</li>
+<li><span style="width: 150px; background-color: #bd0000; color: #bd0000">⬚</span> Very bad (silhouette &lt; -0.05)</li>
+<li><span style="width: 150px; background-color: #7d0075; color: #7d0075">⬚</span> Cannot measure (group of one element)</li>
+<li><span style="width: 150px; background-color: white">⬚</span> On the border between two groups (silhouette between -0.05 and 0.05)</li>
+</ul>
+<p>Clicking on one point selects it and show a small popup.</p>
+<p>Dragging the mouse with the right button down makes a rectangular selection and select all points inside. If done with the control key pressed, deselects all selected points inside the selection.</p>
+<p>Note that due to the random initialization of the projection method, some time the direction of the axis flips.</p>
 <p>Besides the scatterplot kind selector, the scatterplot window has the following controls:</p>
 <table cellpadding="2" cellspacing="2">
 <tr>
 	<td class="c1">Point radius</td>
 	<td class="c2">slider</td>
-	<td class="c3">Radius of the scatterplot points</td>
+	<td class="c3">Radius of the scatterplot points.</td>
+</tr>
+<tr>
+  <td class="c1">Select</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the “Manage point selection” dialog to manage selection of points.</td>
 </tr>
 <tr>
   <td class="c1">Deselect</td>
   <td class="c2">button</td>
-  <td class="c3">Deselect all selected points</td>
+  <td class="c3">Deselect all selected points.</td>
 </tr>
 <tr>
   <td class="c1">Close</td>
   <td class="c2">button</td>
-  <td class="c3">Close the window</td>
+  <td class="c3">Close the window.</td>
+</tr>
+</table>
+<h2>Manage point selection dialog</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+  <td class="c1">Select all</td>
+  <td class="c2">button</td>
+  <td class="c3">Select all points.</td>
+</tr>
+<tr>
+  <td class="c1">Deselect all</td>
+  <td class="c2">button</td>
+  <td class="c3">Deselect all selected points.</td>
+</tr>
+<tr>
+	<td class="c1">Group</td>
+	<td class="c2">slider</td>
+	<td class="c3">Select one of the groups present.</td>
+</tr>
+<tr>
+  <td class="c1">Select by group</td>
+  <td class="c2">button</td>
+  <td class="c3">Select all points pertaining to the selected group.</td>
+</tr>
+<tr>
+  <td class="c1">Compare selected</td>
+  <td class="c2">button</td>
+  <td class="c3">Visually compare pairs of structures. <span style="color: red;">Not yet implemented.</span></td>
+</tr>
+<tr>
+  <td class="c1">Export selected</td>
+  <td class="c2">button</td>
+  <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy file.</td>
 </tr>
 </table>
 
@@ -250,10 +303,10 @@
 </table>
 
 <h2>Credits</h2>
-<p>Creating contrasting colors has been modified from: Tim Holy (2024). <i>Generate maximally perceptually-distinct colors,</i> <a href="https://www.mathworks.com/matlabcentral/fileexchange/29702-generate-maximally-perceptually-distinct-colors">MATLAB Central File Exchange</a>. Retrieved December 29, 2024.</p>
-<p>Converting LAB color to RGB color and vice versa routines are from: <a href="https://github.com/antimatter15/rgb-lab/tree/master">github.com/antimatter15/rgb-lab/tree/master</a>.</p>
+<p>Code to create contrasting colors has been derived from: Tim Holy (2024). <i>Generate maximally perceptually-distinct colors,</i> <a href="https://www.mathworks.com/matlabcentral/fileexchange/29702-generate-maximally-perceptually-distinct-colors">MATLAB Central File Exchange</a>. Retrieved December 29, 2024.</p>
+<p>Converting CIELAB color to RGB color and vice versa routines are from: <a href="https://github.com/antimatter15/rgb-lab/tree/master">github.com/antimatter15/rgb-lab/tree/master</a>.</p>
 <p>Code to compute the perceptual difference between two colors in CIELAB color space has been ported from: <a href="https://github.com/PoshCode/Pansies/blob/main/Source/Assembly/ColorSpaces/Comparisons/Cie94Comparison.cs">github.com/PoshCode/Pansies/blob/main/Source/Assembly/ColorSpaces/Comparisons/Cie94Comparison.cs</a>.</p>
-<p>The initial MDS code has been generated by Copilot.</p>
+<p>The initial Multidimensional Scaling (MDS) code has been generated by <a href="https://claude.ai/">Claude AI</a>.</p>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">🔝</a></p>
 

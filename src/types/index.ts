@@ -528,4 +528,7 @@ export interface ScatterplotData {
      * The first index is the original distance, the second is the projected distance.
      */
     efficiencies: number[][];
+
+    /** Silhouette coefficients that measure the clustering quality for each point */
+    silhouettes: number[];
 }

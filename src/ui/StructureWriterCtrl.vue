@@ -145,9 +145,9 @@ const filterFromFormat = (fileFormat: string): string => {
     return JSON.stringify(filter);
 };
 
-// > Save the selected file name
+// > Save the selected file
 /**
- * Save the selected file name
+ * Save the selected file
  *
  * @param filename - Selected filename
  */

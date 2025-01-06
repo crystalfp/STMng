@@ -57,7 +57,7 @@ const confirmDeletion = (): void => {
 
 <v-dialog v-model="showConfirm">
   <v-card title="Confirm" text="Do you want to clear the application log file?"
-          class="mx-auto" elevation="16" max-width="500">
+          class="mx-auto no-select" elevation="16" max-width="500">
    <v-card-actions>
       <v-btn @click="showConfirm=false">Dismiss</v-btn>
       <v-btn @click="confirmDeletion">Yes</v-btn>

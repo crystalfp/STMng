@@ -6,15 +6,19 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-09
  */
-import {readFileSync} from "node:fs";
+import {ipcMain} from "electron";
+import {readFileSync, writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {createSecondaryWindow, isSecondaryWindowOpen, sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {FingerprintsAccumulator} from "../fingerprint/Accumulator";
+import {createSecondaryWindow, isSecondaryWindowOpen, sendAlertMessage,
+		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {MDS} from "../fingerprint/MultidimensionalScaling";
-import type {Structure, CtrlParams, ChannelDefinition, ScatterplotData} from "@/types";
+import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData, PositionType} from "@/types";
+import {WriterPOSCAR} from "../writers/WritePOSCAR";
+import {getAtomicSymbol} from "../modules/AtomData";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -46,6 +50,8 @@ export class ComputeFingerprints extends NodeCore {
 	private groupingMethod = 0;
 	private groupingThreshold = 5;
 	private addMargin = 0;
+
+	private channelOpened = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      	type: "invoke", callback: this.channelInit.bind(this)},
@@ -262,6 +268,7 @@ export class ComputeFingerprints extends NodeCore {
 		// Collect groups
 		const groups = this.grouping.getGroups();
 		const countGroups = this.grouping.getCountGroups();
+		const silhouettes = this.grouping.computeSilhouetteCoefficients(distanceMatrix);
 
 		// Create data for the scatterplot
 		return {
@@ -270,7 +277,8 @@ export class ComputeFingerprints extends NodeCore {
 			groups,
 			countGroups,
 			energies,
-			efficiencies
+			efficiencies,
+			silhouettes
 		};
 	}
 
@@ -323,6 +331,41 @@ export class ComputeFingerprints extends NodeCore {
 				data: dataToSend
 			}), 600);
 		}
+	}
+
+	/**
+	 * Convert an accumulated structure to a Structure type for writing to file
+	 *
+	 * @param structure - One structure from the accumulator
+	 * @returns - The structure as a Structure type
+	 */
+	convertAccumulatedStructure(structure: StructureReduced): Structure {
+
+		const natoms = structure.atomsZ.length;
+		const atoms: Atom[] = [];
+		for(let i=0; i < natoms; ++i) {
+
+			atoms.push({
+				atomZ: structure.atomsZ[i],
+				label: getAtomicSymbol(structure.atomsZ[i]),
+				position: [
+					structure.atomsPosition[3*i],
+					structure.atomsPosition[3*i+1],
+					structure.atomsPosition[3*i+2],
+				]
+			});
+		}
+		return {
+
+			crystal: {
+				basis: structure.basis,
+				origin: [0, 0, 0] as PositionType,
+				spaceGroup: "",
+			},
+			atoms,
+			bonds: [],
+			volume: [],
+		};
 	}
 
 	// > Channel handlers
@@ -612,5 +655,41 @@ export class ComputeFingerprints extends NodeCore {
 	private channelGroupScatter(): void {
 
 		this.createUpdateScatterplot("create");
+
+		if(!this.channelOpened) {
+			this.channelOpened = true;
+
+			ipcMain.on("SYSTEM:selected-points", (_event: unknown, params: CtrlParams): void => {
+
+				const points = params.points as string;
+				if(!points)	return;
+				const indices = JSON.parse(params.points as string) as number[];
+				if(indices.length === 0) return;
+				const filename = params.filename as string;
+				if(!filename) return;
+
+				const structures: Structure[] = [];
+				const energies: number[] = [];
+				let idx = 0;
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					if(indices.includes(idx)) {
+						structures.push(this.convertAccumulatedStructure(structure));
+						energies.push(structure.energy);
+					}
+					++idx;
+				}
+
+				if(structures.length === 0) return;
+				const writer = new WriterPOSCAR();
+				const sts = writer.writeStructure(filename, structures);
+
+				if(sts.error) sendAlertMessage(sts.error as string, "fingerprints");
+
+        		const pos = filename.lastIndexOf(".");
+				const energyFilename = pos > 0 ? `${filename.slice(pos+1)}.energy` : `${filename}.energy`;
+
+				writeFileSync(energyFilename, energies.join("\n"), "utf8");
+			});
+		}
 	}
 }

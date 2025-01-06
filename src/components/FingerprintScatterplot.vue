@@ -9,7 +9,7 @@
 import {computed, onMounted, ref} from "vue";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import type {ScatterplotData} from "@/types";
@@ -52,7 +52,7 @@ const scatterplotDataAvailable = ref(false);
 /**
  * Convert a list of colors to RGB strings
  *
- * @param colors - The list of colors as [r, g, b] tuples
+ * @param colors - The list of colors as [r, g, b] tuples with values between 0 and 1
  */
 const colorsToRGB = (colors: [r: number, g: number, b: number][]): string[] =>
     colors.map(([r, g, b]) => {
@@ -199,6 +199,45 @@ const pointsByEfficiency = (): Glyph[] => {
     return out;
 };
 
+/**
+ * Return the points for the scatterplot colored by the silhouette coefficient
+ *
+ * @returns The list of points as glyphs
+ */
+ const pointsBySilhouettes = (): Glyph[] => {
+
+    if(!scatterplotData || scatterplotData.silhouettes.length === 0) return [];
+
+    // Map each point to a glyph
+    const {points, silhouettes, id} = scatterplotData;
+    const n = points.length;
+    const out: Glyph[] = [];
+    for(let i=0; i < n; ++i) {
+
+        // Get the color corresponding to the silhouette coefficient of the point
+        const sl = silhouettes[i];
+
+        let color;
+        if(sl < -0.05)     color = "#bd0000";
+        else if(sl < 0)    color = "white";
+        else if(sl === 0)  color = "#7d0075";
+        else if(sl < 0.05) color = "white";
+        else if(sl < 0.25) color = "red";
+        else if(sl < 0.5)  color = "orange";
+        else if(sl < 0.7)  color = "yellow";
+        else               color = "green";
+
+        out.push({
+            id: id[i],
+            x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
+            y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
+            color,
+            value: sl
+        });
+    }
+    return out;
+};
+
 /** Compute the list of points to be shown */
 const scatterplotPoints = computed<Glyph[]>(() => {
 
@@ -214,6 +253,7 @@ const scatterplotPoints = computed<Glyph[]>(() => {
         case "energy": return pointsByEnergy();
         case "efficiency": return pointsByEfficiency();
         case "group": return pointsByGroup();
+        case "silhouette": return pointsBySilhouettes();
         default: return [];
     }
 });
@@ -254,10 +294,10 @@ const textX     = ref(0);
 const textY     = ref(0);
 const textLine1 = ref("");
 const textLine2 = ref("");
-const textLine3 = ref("");
 
 /** Indices of the selected points */
 const selectedPoints = ref<number[]>([]);
+const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
 
 /**
  * On selecting a point
@@ -269,24 +309,29 @@ const selectPoint = (idx: number): void => {
     // Do not allow selection of points in efficiency mode
     if(scatterplotType.value === "efficiency") return;
 
-    // Prepare the text to show and move it to remain inside the plot
-    const {x, y, value} = scatterplotPoints.value[idx];
-    let valueLine = "";
-    switch(scatterplotType.value) {
-        case "group":  valueLine = `Group: ${value}`; break;
-        case "energy": valueLine = `Energy: ${value.toFixed(3)}`; break;
-    }
-    textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+8;
-    textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+8;
-    textLine1.value = `(${x}, ${y})`;
-    textLine2.value = valueLine;
-    textLine3.value = `Step: ${idx}`;
-    textShow.value  = true;
-
     // If the point is already selected, remove it; otherwise add it
     const i = selectedPoints.value.indexOf(idx);
     if(i === -1) selectedPoints.value.push(idx);
-    else selectedPoints.value.splice(i, 1);
+    else {
+        selectedPoints.value.splice(i, 1);
+        textShow.value = false;
+        return;
+    }
+
+    // Prepare the text to show and move it to remain inside the plot
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const {x, y, value} = scatterplotPoints.value[idx];
+    let valueLine = "";
+    switch(scatterplotType.value) {
+        case "group":       valueLine = `Group: ${value}`; break;
+        case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
+        case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
+    }
+    textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+10;
+    textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+6;
+    textLine1.value = `Step: ${idx}`;
+    textLine2.value = valueLine;
+    textShow.value  = true;
 };
 
 /**
@@ -300,6 +345,190 @@ const resetSelected = (): void => {
 /** Point selection markers for display */
 const selectionMarkers = computed(() => selectedPoints.value.map((idx) => scatterplotPoints.value[idx]));
 
+/** Rectangular point selection (with right mouse button) */
+const x = ref(0);
+const y = ref(0);
+const width = ref(0);
+const height = ref(0);
+let rectangleStartX: number | undefined;
+let rectangleStartY: number | undefined;
+const showSelectionRectangle = ref(false);
+
+/**
+ * Right mouse button down event: start rectangular selection
+ *
+ * @param event - The mouse event
+ */
+const mousedown = (event: MouseEvent): void => {
+
+    if(event.button !== 2) return;
+
+    rectangleStartX = event.clientX;
+    rectangleStartY = event.clientY;
+    showSelectionRectangle.value = true;
+    width.value = 0;
+    height.value = 0;
+};
+
+/**
+ * Right mouse button up event: end selection
+ *
+ * @param event - The mouse event
+ */
+const mouseup = (event: MouseEvent): void => {
+
+    if(event.button !== 2) return;
+    if(rectangleStartX === undefined || rectangleStartY === undefined) return;
+
+    let rectangleEndX = event.clientX;
+    let rectangleEndY = event.clientY;
+
+    if(rectangleEndX < rectangleStartX) {
+        const tt = rectangleEndX;
+        rectangleEndX = rectangleStartX;
+        rectangleStartX = tt;
+    }
+
+    if(rectangleEndY < rectangleStartY) {
+        const tt = rectangleEndY;
+        rectangleEndY = rectangleStartY;
+        rectangleStartY = tt;
+    }
+
+    let idx = 0;
+    textShow.value = false;
+    if(event.ctrlKey) {
+        for(const point of scatterplotPoints.value) {
+            if(point.x >= rectangleStartX && point.x <= rectangleEndX &&
+               point.y >= rectangleStartY && point.y <= rectangleEndY) {
+                const i = selectedPoints.value.indexOf(idx);
+                if(i !== -1) selectedPoints.value.splice(i, 1);
+            }
+            ++idx;
+        }
+    }
+    else {
+        for(const point of scatterplotPoints.value) {
+            if(point.x >= rectangleStartX && point.x <= rectangleEndX &&
+               point.y >= rectangleStartY && point.y <= rectangleEndY &&
+               !selectedPoints.value.includes(idx)) selectedPoints.value.push(idx);
+            ++idx;
+        }
+    }
+    rectangleStartX = undefined;
+    rectangleStartY = undefined;
+    showSelectionRectangle.value = false;
+};
+
+let lastMoveEvent: number | undefined;
+/**
+ * Move the mouse to change the rectangular selection area
+ *
+ * @param event - The mouse event
+ */
+const mousemove = (event: MouseEvent): void => {
+
+    // Selection not started or not active
+    if(!showSelectionRectangle.value ||
+       rectangleStartX === undefined ||
+       rectangleStartY === undefined) return;
+
+    // Avoid too many events
+    if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 100) return;
+    lastMoveEvent = event.timeStamp;
+
+    const rectangleEndX = event.clientX;
+    const rectangleEndY = event.clientY;
+
+    // Reorder coordinates if needed
+    if(rectangleEndX < rectangleStartX) {
+        x.value = rectangleEndX;
+        width.value = rectangleStartX - rectangleEndX;
+    }
+    else {
+        x.value = rectangleStartX;
+        width.value = rectangleEndX - rectangleStartX;
+    }
+
+    if(rectangleEndY < rectangleStartY) {
+        y.value = rectangleEndY;
+        height.value = rectangleStartY - rectangleEndY;
+    }
+    else {
+        y.value = rectangleStartY;
+        height.value = rectangleEndY - rectangleStartY;
+    }
+};
+
+/** Selected all points pertaining to a group */
+const showSelect = ref(false);
+const selectedGroup = ref(0);
+const showSelectedGroup = ref(0);
+
+/**
+ * Selected all points pertaining to a group
+ */
+const selectByGroup = (): void => {
+
+    if(!scatterplotData ||
+        scatterplotData.countGroups === 0) return;
+
+    const cnt = scatterplotData.groups.length;
+    if(!cnt) return;
+
+    for(let i=0; i < cnt; ++i) {
+        if(scatterplotData.groups[i] === selectedGroup.value &&
+           !selectedPoints.value.includes(i)) {
+                selectedPoints.value.push(i);
+        }
+    }
+};
+
+/**
+ * Select all points
+ */
+const selectAll = ():void => {
+
+  if(!scatterplotData) return;
+
+    const cnt = scatterplotData.points.length;
+    if(!cnt) return;
+
+    selectedPoints.value.length = cnt;
+    for(let i=0; i < cnt; ++i) selectedPoints.value[i] = i;
+};
+
+// > Save selected to the selected file name
+
+const showSave = ref(false);
+
+/**
+ * Save selected to the selected file name
+ *
+ * @param filename - Selected filename
+ */
+const selectedSaveFile = (filename: string): void => {
+
+    if(filename) {
+
+        sendToNode("SYSTEM", "selected-points", {
+            filename,
+            points: JSON.stringify(selectedPoints.value),
+        });
+    }
+    showSave.value = false;
+};
+
+const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
+                                     {name: "All",    extensions: ["*"]}]);
+
+// > Compare structures selected
+const compareSelected = (): void => {
+
+    notImplemented.value = !notImplemented.value;
+};
+const notImplemented = ref(false);
+
 </script>
 
 
@@ -309,7 +538,9 @@ const selectionMarkers = computed(() => selectedPoints.value.map((idx) => scatte
     <div class="scatterplot-viewer">
       <svg :width="scatterplotWidth" :height="scatterplotHeight" x="0" y="0"
           :viewBox="`0 0 ${scatterplotWidth} ${scatterplotHeight}`" fill="transparent"
-          xmlns="http://www.w3.org/2000/svg" @click="textShow=false">
+          xmlns="http://www.w3.org/2000/svg" @click="textShow=false"
+          @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove">
+        <rect v-if="showSelectionRectangle" :x :y :width :height stroke="red" stroke-width="2"/>
         <rect x="20" y="20" :width="scatterplotWidth-40" :height="scatterplotHeight-40"
               fill="none" :stroke="fgColor"/>
         <line v-if="scatterplotType==='efficiency'"
@@ -323,24 +554,64 @@ const selectionMarkers = computed(() => selectedPoints.value.map((idx) => scatte
         <text v-if="textShow" :x="textX" :y="textY" :fill="fgColor">
             <tspan :x="textX">{{ textLine1 }}</tspan>
             <tspan :x="textX" dy="20">{{ textLine2 }}</tspan>
-            <tspan :x="textX" dy="20">{{ textLine3 }}</tspan>
         </text>
       </svg>
     </div>
-  <v-container class="button-strip scatterplot-buttons">
-    <v-btn-toggle v-model="scatterplotType" mandatory>
-      <v-btn value="group">Group</v-btn>
-      <v-btn value="energy">Energy</v-btn>
-      <v-btn value="efficiency">Efficiency</v-btn>
-    </v-btn-toggle>
-    <g-slider-with-steppers v-model="pointRadius"
-                          v-model:raw="showPointRadius" label-width="8rem"
-                          :label="`Point radius (${showPointRadius})`"
-                          :min="3" :max="20" :step="1" />
-    <v-btn v-focus @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
-    <v-btn v-focus @click="closeWindow('/scatter')">Close</v-btn>
-  </v-container>
+    <v-container class="button-strip scatterplot-buttons">
+      <v-btn-toggle v-model="scatterplotType" mandatory>
+        <v-btn value="group">Group</v-btn>
+        <v-btn value="energy">Energy</v-btn>
+        <v-btn value="efficiency">Fidelity</v-btn>
+        <v-btn value="silhouette">Quality</v-btn>
+      </v-btn-toggle>
+      <g-slider-with-steppers v-model="pointRadius"
+                              v-model:raw="showPointRadius" label-width="8rem"
+                              :label="`Point radius (${showPointRadius})`"
+                              :min="3" :max="20" :step="1" />
+      <v-btn @click="showSelect=true">Select</v-btn>
+      <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
+      <v-btn v-focus @click="closeWindow('/scatter')">Close</v-btn>
+    </v-container>
   </div>
+
+<v-dialog v-model="showSelect">
+  <v-card title="Manage point selection" class="mx-auto no-select" elevation="16" width="380">
+    <v-card-text>
+      <v-row class="ga-2 mt-2 mb-5 ml-1">
+        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" style="width: 158px">
+          Select all
+        </v-btn>
+        <v-btn @click="resetSelected" :disabled="noSelectedPoints">
+          Deselect all
+        </v-btn>
+      </v-row>
+      <v-divider thickness="2" />
+      <g-slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
+                              v-model:raw="showSelectedGroup" label-width="5rem"
+                              :label="`Group (${showSelectedGroup})`" class="mt-2"
+                              :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
+      <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups" class="w-75 mt-4 ml-1 mb-4">
+        Select by group
+      </v-btn>
+      <v-divider thickness="2" />
+      <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
+      <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="true">
+        Compare selected
+      </v-btn>
+      <v-divider thickness="2" />
+      <v-btn class="mt-4 ml-1 w-75" @click="showSave=!showSave" :disabled="noSelectedPoints">
+        Export selected
+      </v-btn>
+
+      <g-select-file v-if="showSave" class="mt-4" title="Select output file"
+                     :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
+    </v-card-text>
+    <v-card-actions>
+      <v-btn v-focus @click="showSelect=false">Close</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
 </v-app>
 </template>
 

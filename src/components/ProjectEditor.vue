@@ -556,7 +556,7 @@ const addNode = (): void => {
 
 <v-dialog v-model="showConfirm">
   <v-card title="Confirm deletion" :text='`Do you want to remove the "${selectedLabel}" node?`'
-          class="mx-auto" elevation="16" max-width="500">
+          class="mx-auto no-select" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
         <v-btn @click="confirmDeletion">Yes</v-btn>
@@ -566,7 +566,7 @@ const addNode = (): void => {
 
 <v-dialog v-model="showEdit">
   <v-card title="Edit selected node"
-          class="mx-auto" elevation="16" width="400">
+          class="mx-auto no-select" elevation="16" width="400">
     <v-card-text>
       <v-text-field v-model="selectedLabel"
                 label="Node label" class="mt-2"
@@ -584,7 +584,7 @@ const addNode = (): void => {
 </v-dialog>
 
 <v-dialog v-model="showAdd">
-  <v-card title="Add node to project" class="mx-auto" elevation="16" width="400">
+  <v-card title="Add node to project" class="mx-auto no-select" elevation="16" width="400">
     <v-card-text>
       <v-select v-model="nodeToAdd" :items="allNodes" item-title="label" item-value="type"
                 variant="solo-filled" hide-details label="Type of the node to add" />

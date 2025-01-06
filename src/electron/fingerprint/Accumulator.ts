@@ -94,6 +94,9 @@ export class FingerprintsAccumulator {
 			this.recomputeMaxRadius();
 		}
 
+		const energy = this.energyPerStructure.length > this.accumulator.length ?
+									this.energyPerStructure[this.accumulator.length] : 0;
+
 		// Load the structure clone
 		const entry: StructureReduced = {
 
@@ -111,7 +114,7 @@ export class FingerprintsAccumulator {
 			species: new Map<number, number>(),
 
 			selected: true,
-			energy: 0,
+			energy,
 
 			fingerprint: [],
 			countSections: 0,
@@ -187,6 +190,12 @@ export class FingerprintsAccumulator {
 
 		this.energyPerStructure.length = energies.length;
 		for(let i = 0; i < energies.length; ++i) this.energyPerStructure[i] = energies[i];
+
+		// If possible, update the energies in the accumulated structures
+		if(energies.length < this.accumulator.length) return;
+		for(const structure of this.accumulator) {
+			structure.energy = this.energyPerStructure[structure.index];
+		}
 	}
 
 	/**
