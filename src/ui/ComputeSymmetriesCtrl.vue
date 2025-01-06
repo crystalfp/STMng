@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the symmetry (find and apply) node.
+ * Controls for the symmetry find and apply node.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-08-20

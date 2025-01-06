@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Show scatterplot resulting from fingerprint computation.
+ * Show the scatterplot resulting from fingerprint computation.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-26

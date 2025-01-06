@@ -460,14 +460,4 @@ export class FingerprintsAccumulator {
 		}
 		return {count, length};
 	}
-
-	/**
-	 * Map selected structure index to original structure index
-	 *
-	 * @param idx - Index in the array of selected structures
-	 * @returns Loaded structure index
-	 */
-	toOriginalIndex(idx: number): number {
-		return this.idx2id.get(idx) ?? 0;
-	}
 }

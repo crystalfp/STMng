@@ -14,8 +14,6 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import {DrawOrthosliceRenderer} from "@/renderers/DrawOrthosliceRenderer";
 import type {CtrlParams} from "@/types";
 
-import DatasetSelector from "@/widgets/DatasetSelector.vue";
-
 // > Properties
 const {id, label} = defineProps<{
 
@@ -172,7 +170,7 @@ watchEffect(() => {
 <v-container class="container">
   <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 ml-3" />
 
-  <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+  <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
   <v-label text="Axis" class="ml-2 mb-1 no-select" /><br>
   <v-btn-toggle v-model="axis" mandatory class="mb-6 ml-2">

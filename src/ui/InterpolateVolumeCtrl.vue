@@ -12,8 +12,6 @@ import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
-import DatasetSelector from "@/widgets/DatasetSelector.vue";
-
 // > Properties
 const {id, label} = defineProps<{
 
@@ -57,7 +55,7 @@ watchEffect(() => {
   <v-switch v-model="interpolateVolume"
             label="Interpolate volume data" class="mt-4 ml-4" />
 
-  <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+  <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
   <g-debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
                       :disabled="!interpolateVolume" class="ml-2 mt-1">

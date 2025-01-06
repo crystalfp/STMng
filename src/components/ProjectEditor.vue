@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * @component
- * Generates a chart in a new windows with the structure of the loaded project and support the project editing.
+ * Generates a graph in a new windows with the structure of the loaded project and
+ * makes possible the project editing.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05

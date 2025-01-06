@@ -14,8 +14,6 @@ import {showAlertMessage} from "@/services/AlertMessage";
 import {DrawIsosurfaceRenderer} from "@/renderers/DrawIsosurfaceRenderer";
 import type {CtrlParams} from "@/types";
 
-import DatasetSelector from "@/widgets/DatasetSelector.vue";
-
 // > Properties
 const {id, label} = defineProps<{
 
@@ -137,7 +135,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 <v-container class="container">
   <v-switch v-model="showIsosurface" label="Show isosurface" class="mt-4 ml-3" />
 
-  <dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+  <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
   <v-switch v-model="nestedIsosurfaces" label="Nested isosurfaces" class="mt-1 ml-3" />
 

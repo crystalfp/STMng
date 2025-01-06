@@ -137,13 +137,14 @@ const app = createApp(App)
 
 	// Project defined components. The registered name should begin by G (g- in templates)
 	.component("GAlignLabels", defineAsyncComponent(() => import("./widgets/AlignLabels.vue")))
-	.component("GColorSelector", defineAsyncComponent(() => import("./widgets/ColorSelector.vue")))
 	.component("GAtomsSelector", defineAsyncComponent(() => import("./widgets/AtomsSelector.vue")))
-	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
-	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
+	.component("GColorSelector", defineAsyncComponent(() => import("./widgets/ColorSelector.vue")))
+	.component("GDatasetSelector", defineAsyncComponent(() => import("./widgets/DatasetSelector.vue")))
 	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")))
+	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
 	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")))
 	.component("GSelectFile", defineAsyncComponent(() => import("./widgets/SelectFile.vue")))
+	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
 
 	// Directive to focus the element when the bound element is mounted into the DOM
     .directive("focus", {mounted(element: HTMLElement) {element.focus();}});
