@@ -90,6 +90,7 @@
     "vite-plugin-vue-devtools": "^7.6.8",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^9.4.3",
+    "vue-mess-detector": "^0.66.0",
     "vue-tsc": "^2.2.0"
   }
 }
