@@ -102,8 +102,10 @@ dt {
 
 .back {
   text-decoration: none;
-  font-size: 4rem;
-  margin-left: 1rem;
+  font-size: 160%;
+  padding: 0.1rem 0.5rem;
+  background-color: #FF6400;
+  color: white
 }
 
 .menu {

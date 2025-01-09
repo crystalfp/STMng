@@ -54,6 +54,7 @@ const inProgress    = ref(false);   // True during file load
 const auxFileToRead = ref("");      // Path to the auxiliary file to read
 const useBohr       = ref(true);    // Use Bohr units
 const stepIncrement = ref(1);       // How many step skip every tick
+const speed         = ref(0);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
 
 const controlStore = useControlStore();
 
@@ -70,15 +71,18 @@ askNode(id, "init")
         fileToRead.value    = params.fileToRead as string ?? "";
         auxFileToRead.value = params.auxFileToRead as string ?? "";
         stepIncrement.value = params.stepIncrement as number ?? 1;
+        speed.value         = params.speed as number ?? 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
 
 // Manage the step selection
-watch([step, running, loopSteps, stepIncrement, stepBackward], async () => {
+watch([step], (
+       after:  [number],
+       before: [number]) => {
 
-    if(!running.value) {
+    if(running.value || before[0] === after[0]) return;
 
-        askNode(id, "step", {
+    askNode(id, "step", {
             step: step.value,
         })
         .then((params) => {
@@ -87,10 +91,14 @@ watch([step, running, loopSteps, stepIncrement, stepBackward], async () => {
         .catch((error: Error) => {
             showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
         });
-        return;
-    }
+});
 
-    while(running.value) {
+// Manage the running step
+watch([running], async () => {
+
+    let isRunning = running.value;
+
+    while(isRunning) {
 
         let nextStep = step.value;
 
@@ -102,13 +110,13 @@ watch([step, running, loopSteps, stepIncrement, stepBackward], async () => {
             if(nextStep === 1) {
 
                 if(loopSteps.value) nextStep = countSteps.value;
-                else running.value = false;
+                else isRunning = false;
             }
             else if(nextStep < 1) {
                 if(loopSteps.value) nextStep = countSteps.value;
                 else {
                     nextStep += stepIncrement.value;
-                    running.value = false;
+                    isRunning = false;
                 }
             }
         }
@@ -120,29 +128,42 @@ watch([step, running, loopSteps, stepIncrement, stepBackward], async () => {
             if(nextStep === countSteps.value) {
 
                 if(loopSteps.value) nextStep = 1;
-                else running.value = false;
+                else isRunning = false;
             }
             else if(nextStep > countSteps.value) {
 
                 if(loopSteps.value) nextStep = 1;
                 else {
                     nextStep -= stepIncrement.value;
-                    running.value = false;
+                    isRunning = false;
                 }
             }
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        // Delay between steps: 0: no delay; 1: delay 200ms; 2: delay 400ms
+        if(speed.value === 1) await new Promise((resolve) => setTimeout(resolve, 200));
+        else if(speed.value === 2) await new Promise((resolve) => setTimeout(resolve, 400));
 
         try {
             const response = await askNode(id, "step", {step: nextStep});
             if("error" in response) throw Error(response.error as string);
-            step.value = nextStep;
+            step.value = response.step as number;
         }
         catch(error: unknown) {
             showAlertMessage(`Error from stepping: ${(error as Error).message}`, "structureReader");
         };
     }
+    running.value = isRunning;
+});
+
+watch([loopSteps, stepIncrement, stepBackward, speed], () => {
+
+    sendToNode(id, "step-ctrl", {
+        loopSteps: loopSteps.value,
+        stepIncrement: stepIncrement.value,
+        stepBackward: stepBackward.value,
+        speed: speed.value
+    });
 });
 
 /**
@@ -361,7 +382,7 @@ const label2 = ref("");
     </v-row>
     <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9" />
-    <v-row class="mr-2">
+    <v-row class="mr-4">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
               @click="step = 1" />
@@ -374,6 +395,14 @@ const label2 = ref("");
       <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
               @click="step = countSteps; running = false" />
       <v-spacer />
+    </v-row>
+    <v-row>
+      <v-label class="mb-n2 ml-3 mr-4 no-select">Speed:</v-label>
+      <v-btn-toggle v-model="speed" mandatory class="mt-8 mb-6">
+        <v-btn>Fast</v-btn>
+        <v-btn>Medium</v-btn>
+        <v-btn>Slow</v-btn>
+      </v-btn-toggle>
     </v-row>
   </v-container>
   <g-error-alert kind="structureReader" />

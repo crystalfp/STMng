@@ -34,6 +34,7 @@ export class StructureReader extends NodeCore {
 	private loopSteps = false;
 	private stepBackward = false;
 	private step = 1;
+	private speed = 0;
 
 	/** Total number of steps in the structure loaded */
 	private countSteps = 1;
@@ -56,6 +57,7 @@ export class StructureReader extends NodeCore {
 		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
 		{name: "step",		type: "invoke",      callback: this.channelStep.bind(this)},
+		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -73,6 +75,7 @@ export class StructureReader extends NodeCore {
       		atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
 			stepIncrement: this.stepIncrement,
+			speed: this.speed,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -84,6 +87,7 @@ export class StructureReader extends NodeCore {
     	this.atomsTypes    = params.atomsTypes as string ?? "";
     	this.useBohr       = params.useBohr as boolean ?? true;
 		this.stepIncrement = params.stepIncrement as number ?? 1;
+        this.speed         = params.speed as number ?? 0;
 	}
 
 	// > Channel handlers
@@ -103,6 +107,7 @@ export class StructureReader extends NodeCore {
 			fileToRead: this.fileToRead,
 			auxFileToRead: this.auxFileToRead,
 			stepIncrement: this.stepIncrement,
+			speed: this.speed
 		};
 	}
 
@@ -274,7 +279,20 @@ export class StructureReader extends NodeCore {
 			// Send the updated structure down the pipeline
 			this.toNextNode(this.structures[requestedStep-1]);
 		}
-		return {};
+		return {step: requestedStep};
+	}
+
+	/**
+	 * Channel handler for the change of stepping related parameters
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelStepCtrl(params: CtrlParams): void {
+
+		this.loopSteps = params.loopSteps as boolean ?? false;
+        this.stepIncrement = params.stepIncrement as number ?? 1;
+        this.stepBackward = params.stepBackward as boolean ?? false;
+        this.speed = params.speed as number ?? 0;
 	}
 
 	// > Helper functions

@@ -212,7 +212,7 @@
 	"prefer-string-starts-ends-with": 1,
 	"no-conditional-tests": 1,
 	"require-local-test-context-for-concurrent-snapshots": 1,
-	"no-await-in-loop": 1,
+	"no-await-in-loop": 0,
 	"no-accumulating-spread": 1,
 	"jsx-no-jsx-as-prop": 1,
 	"jsx-no-new-array-as-prop": 1,

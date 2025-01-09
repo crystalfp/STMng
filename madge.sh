@@ -1,11 +1,13 @@
 
+cycles="" # Or -c to visualize cycles
+
 for d in src/components src/ui src/widgets
 do
   for f in `ls -1 $d/*.vue`
   do
     echo $f
     n=doc/madge/`basename $f .vue`.png
-    madge --extensions ts,vue --ts-config tsconfig.json -i $n --warning $f
+    madge --extensions ts,vue --ts-config tsconfig.json -i $n $cycles --warning $f
   done
 done
 
@@ -15,6 +17,6 @@ do
   do
     echo $f
     n=doc/madge/`basename $f .ts`.png
-    madge --extensions ts,vue --ts-config tsconfig.json -i $n --warning $f
+    madge --extensions ts,vue --ts-config tsconfig.json -i $n $cycles --warning $f
   done
 done

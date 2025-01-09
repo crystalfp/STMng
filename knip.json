@@ -20,7 +20,8 @@
     "typedoc-plugin-vue",
     "typedoc-plugin-missing-exports",
     "@types/eslint",
-    "postcss-scss"
+    "postcss-scss",
+    "vue-mess-detector"
   ],
   "includeEntryExports": true
 }
