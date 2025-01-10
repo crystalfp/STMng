@@ -148,12 +148,14 @@ watch([running], async () => {
             const response = await askNode(id, "step", {step: nextStep});
             if("error" in response) throw Error(response.error as string);
             step.value = response.step as number;
+            if(!running.value) break;
         }
         catch(error: unknown) {
             showAlertMessage(`Error from stepping: ${(error as Error).message}`, "structureReader");
         };
     }
-    running.value = isRunning;
+
+    running.value = false;
 });
 
 watch([loopSteps, stepIncrement, stepBackward, speed], () => {

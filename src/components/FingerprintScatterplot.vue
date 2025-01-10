@@ -576,12 +576,12 @@ const notImplemented = ref(false);
 
 <v-dialog v-model="showSelect">
   <v-card title="Manage point selection" class="mx-auto no-select" elevation="16" width="380">
-    <v-card-text>
-      <v-row class="ga-2 mt-2 mb-5 ml-1">
-        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" style="width: 158px">
+    <v-card-text class="pb-0">
+      <v-row class="ga-2 mt-2 mb-5 ml-1" no-gutters>
+        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="equal">
           Select all
         </v-btn>
-        <v-btn @click="resetSelected" :disabled="noSelectedPoints">
+        <v-btn @click="resetSelected" :disabled="noSelectedPoints" class="equal">
           Deselect all
         </v-btn>
       </v-row>
@@ -636,4 +636,9 @@ const notImplemented = ref(false);
   height: fit-content;
   justify-content: space-between;
 }
+
+.equal {
+  width: 158px;
+}
+
 </style>
