@@ -2,7 +2,7 @@
 "$schema": https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json
 appId: com.electron.{productName}
 productName: STMng
-copyright: Copyright © 2024 ${author}
+copyright: Copyright © 2025 ${author}
 asar: true
 directories:
   output: release/${version}
@@ -11,6 +11,10 @@ files:
   - dist-electron
   - dist
   - build/Release/native.node
+  - "!**/node_modules/**/*.d.ts.map"
+  - "!**/node_modules/**/*.flow"
+  - "!**/node_modules/**/tsconfig.tsbuildinfo"
+  - "!**/node_modules/**/{test,__tests__,tests,powered-test,example,examples}"
 asarUnpack:
   - dist/bin/ffmpeg.exe
   - dist/bin/ffmpeg

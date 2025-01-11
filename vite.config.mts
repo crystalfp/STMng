@@ -4,6 +4,7 @@ import renderer from "vite-plugin-electron-renderer";
 import vueDevTools from "vite-plugin-vue-devtools";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from 'node:url';
+// import dts from "vite-plugin-dts";
 
 // https://vitejs.dev/config/
 /** @type {import('vite').UserConfig} */
@@ -22,6 +23,11 @@ export default defineConfig({
         __VUE_PROD_DEVTOOLS__: "false",
     },
     plugins: [
+        // dts({
+        //     tsconfigPath: './tsconfig.json',
+        //     rollupTypes: true,
+        //     entryRoot: 'src',
+        // }),
         vue(),
         electron([
             {
