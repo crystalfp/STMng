@@ -77,8 +77,7 @@ const endMessage = ref("");
 const groupingMethods = ref<GroupingMethodsNames[]>([]);
 const groupingMethod = ref(0);
 const groupingThreshold = ref(50); // Halfway between min and max distances
-const addMargin = ref(0); // Was called "K" in the old code
-// const absolute = ref(false);
+const addedMargin = ref(0); // (1+addedMargin) was called "K" in the old code
 const countGroups = ref(0);
 const groupingBusy = ref(false);
 
@@ -126,7 +125,7 @@ askNode(id, "init")
         }
         groupingMethod.value = params.groupingMethod as number ?? 0;
         groupingThreshold.value = params.groupingThreshold as number ?? 50;
-        addMargin.value = params.addMargin as number ?? 0;
+        addedMargin.value = params.addedMargin as number ?? 0;
 
         countSelected.value = 0;
         countAccumulated.value = 0;
@@ -340,7 +339,7 @@ const computeDistances = (): void => {
 };
 
 /** On changing grouping parameters */
-watch([groupingMethod, groupingThreshold, addMargin], () => {
+watch([groupingMethod, groupingThreshold, addedMargin], () => {
 
     countGroups.value = 0;
 
@@ -348,7 +347,7 @@ watch([groupingMethod, groupingThreshold, addMargin], () => {
 
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
-        addMargin: addMargin.value
+        addedMargin: addedMargin.value
     });
 });
 
@@ -362,7 +361,7 @@ const ClassifyStructures = (): void => {
     askNode(id, "group", {
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
-        addMargin: addMargin.value
+        addedMargin: addedMargin.value
     })
     .then((params: CtrlParams) => {
         countGroups.value = params.countGroups as number ?? 0;
@@ -386,10 +385,10 @@ const useMargin = computed(() => groupingMethods
                                         .value[groupingMethod.value]?.usingMargin ?? false);
 
 /**
- * Adjust addMargin to be an integer on blur or Enter key
+ * Adjust addedMargin to be an integer on blur or Enter key
  */
 const adjInteger = (): void => {
-    addMargin.value = Math.floor(addMargin.value);
+    addedMargin.value = Math.floor(addedMargin.value);
 };
 
 /**
@@ -498,7 +497,7 @@ const showScatterplot = (): void => {
     <v-number-input v-model="groupingThreshold"
                     label="Distance thresh. %"
                     :min="0" :max="100" :step="1" class="mr-2" />
-    <v-number-input v-if="useMargin" v-model="addMargin"
+    <v-number-input v-if="useMargin" v-model="addedMargin"
                     label="Margin" :min="0" :step="1"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>

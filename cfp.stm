@@ -120,7 +120,7 @@
       "fixTriangleInequality": false,
       "groupingMethod": 0,
       "groupingThreshold": 7,
-      "addMargin": 0
+      "addedMargin": 0
     },
     "unit": {
       "showUnitCell": true,

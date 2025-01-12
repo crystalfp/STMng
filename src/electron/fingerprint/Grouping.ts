@@ -44,17 +44,18 @@ export class Grouping {
 	 * @param distances - The pair distance matrix
 	 * @param groupingMethod - Method to be used to do the grouping
 	 * @param groupingThreshold - Threshold on distances to consider structures in the same group
-	 * @param addMargin - Connections to add to minimum one to set structures as linked. Was called "K"
+	 * @param addedMargin - Connections to add to minimum one to set structures as linked.
+	 * 						(1+addedMargin) is called "K".
 	 * @returns Count of groups found
 	 */
 	group(accumulator: FingerprintsAccumulator, distances: DistanceMatrix,
-		  groupingMethod: number, groupingThreshold: number, addMargin: number): GroupingResults {
+		  groupingMethod: number, groupingThreshold: number, addedMargin: number): GroupingResults {
 
 		// For each group the list of structures indices
 		const groups = groupingMethods[groupingMethod].method.doGrouping(accumulator,
 																		distances,
 																		groupingThreshold,
-																		addMargin);
+																		addedMargin);
 
 		this.structureGroup.length = accumulator.selectedSize();
 		let groupCount = 0;

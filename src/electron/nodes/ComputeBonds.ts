@@ -90,7 +90,7 @@ export class ComputeBonds extends NodeCore {
 	}
 
 	override fromPreviousNode(data: Structure): void {
-
+// console.log("---");
 		this.inputStructure = data;
 
 		if(!this.inputStructure || this.inputStructure.atoms.length === 0) {
@@ -113,6 +113,7 @@ export class ComputeBonds extends NodeCore {
 				perPairData: JSON.stringify(this.perPairData)
 			});
 		}
+		// console.log("ADD1");
 
 		this.addBonds();
 	}
@@ -394,6 +395,8 @@ export class ComputeBonds extends NodeCore {
 		if(!this.inputStructure?.atoms || this.inputStructure.atoms.length === 0) {
 
 			this.toNextNode(new EmptyStructure());
+			// console.log("OUT2");
+
 		}
 		else if(this.enableComputeBonds) {
 
@@ -411,6 +414,8 @@ export class ComputeBonds extends NodeCore {
 					bonds: this.computeBonds(this.inputStructure),
 					volume: this.inputStructure.volume
 				});
+				// console.log("OUT3");
+
 			}
 			else {
 
@@ -419,11 +424,14 @@ export class ComputeBonds extends NodeCore {
 				if(this.enlargementKind === "outside") this.clearOutsideAtoms(enlargedStructure);
 				else this.leaveConnectedAtoms(enlargedStructure);
 				this.toNextNode(enlargedStructure);
+				// console.log("OUT4");
+
 			}
 		}
 		else {
 
 			this.toNextNode(this.inputStructure);
+			// console.log("OUT5");
 		}
 	}
 
@@ -713,6 +721,7 @@ export class ComputeBonds extends NodeCore {
 
 		// this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 		this.loadStatus(params); // This does the exact same settings
+		// console.log("ADD2");
 		this.addBonds();
 	}
 }
