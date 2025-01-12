@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, watchEffect} from "vue";
+import {ref, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
@@ -39,7 +39,7 @@ receiveFromNode(id, "countDatasets", (params: CtrlParams) => {
     countDatasets.value = params.countDatasets as number ?? 0;
 });
 
-watchEffect(() => {
+watch([interpolateVolume, pointsToAdd, dataset], () => {
     sendToNode(id, "change", {
         interpolateVolume: interpolateVolume.value,
         pointsToAdd: pointsToAdd.value,

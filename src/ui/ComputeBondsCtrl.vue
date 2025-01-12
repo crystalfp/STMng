@@ -7,7 +7,7 @@
  * @since 2024-08-20
  */
 
-import {ref, watchEffect} from "vue";
+import {ref, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
@@ -62,7 +62,10 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
-watchEffect(() => {
+watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
+       maxHValenceAngle, enableComputeBonds, bondScale, perPairScale,
+       perPairData, enlargementKind], () => {
+
     sendToNode(id, "changes", {
         minBondingDistance:  minBondingDistance.value,
         maxBondingDistance:  maxBondingDistance.value,

@@ -3,6 +3,10 @@ To do:
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
   ☐ Use `chagelogen`
   ☐ Finish Fingerprinting
+  ☐ Change watchEffect to watch
+  ☐ Try to put label as billboards
+  ☐ Option to not fold fractional coordinates inside unit cell
+  ☐ Put read filename in window title
 
 Bugs:
 
@@ -15,10 +19,10 @@ ToDo eventually:
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
   ☐ Is there any way to avoid callbacks for repetitive call?
-  ☐ Remove multiple invoke to the nodes
+  ✔ Remove multiple invoke to the nodes @done(2025-01-12 09:10)
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
-  ☐ Readers do not fail if the file format is invalid
+  ✔ Readers do not fail if the file format is invalid @done(2025-01-12 09:10)
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>

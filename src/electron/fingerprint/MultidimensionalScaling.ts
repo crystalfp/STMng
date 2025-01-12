@@ -171,35 +171,3 @@ const multiplyMatrixVector = (matrix: number[][], vector: number[]): number[] =>
  * @returns Dot product of the two vectors
  */
 const dotProduct = (a: number[], b: number[]): number => a.reduce((sum, value, i) => sum + value * b[i], 0);
-
-/*
-// Esempio di utilizzo
-const testMatrix = [
-    [0, 1, 2, 3],
-    [1, 0, 1, 2],
-    [2, 1, 0, 1],
-    [3, 2, 1, 0]
-];
-
-const testVector = [1, 2, 3, 1, 2, 1];
-const x = vector2squaredMatrix(testVector, 4);
-console.log("SQ", x);
-const coords = MDS(testVector, 4); // Restituisce array di punti 2D
-console.log("MDS", coords);
-
-
-// Verifica le distanze
-console.log("\nVerifica distanze:");
-for(let i = 0; i < coords.length; i++) {
-    for(let j = i+1; j < coords.length; j++) {
-        const dist = Math.sqrt(
-            Math.pow(coords[i][0] - coords[j][0], 2) +
-            Math.pow(coords[i][1] - coords[j][1], 2)
-        );
-        console.log(
-            `Distanza ${i}-${j}: originale = ${testMatrix[i][j]}, ` +
-            `ricostruita = ${dist.toFixed(2)}`
-        );
-    }
-}
-*/

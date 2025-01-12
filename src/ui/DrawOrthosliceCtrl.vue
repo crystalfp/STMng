@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, computed, watchEffect} from "vue";
+import {ref, computed, watch} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsoOrthoFromNode, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
@@ -130,7 +130,8 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
 });
 
 // > Send updated parameters to main process
-watchEffect(() => {
+watch([dataset, axis, plane, colorClasses, useColorClasses,
+       isoValue, showOrthoslice, showIsolines, limits], () => {
 
     sendToNode(id, "change", {
         dataset: dataset.value,
@@ -146,16 +147,17 @@ watchEffect(() => {
     });
 
     renderer.setVisibility(showIsolines.value, showOrthoslice.value);
-});
+}, {deep: true});
 
-watchEffect(() => {
+watch([colormapName, colorIsolines], () => {
 
     sendToNode(id, "show", {
         colormapName: colormapName.value,
         colorIsolines: colorIsolines.value,
     });
 
-    renderer.setLut(colormapName.value, limits.value[0], limits.value[1], useColorClasses.value, colorClasses.value);
+    renderer.setLut(colormapName.value, limits.value[0], limits.value[1],
+                    useColorClasses.value, colorClasses.value);
 
     // Draw orthoslice and isolines
     renderer.drawOrthoIso(currentVertices, currentIndices, currentValues,

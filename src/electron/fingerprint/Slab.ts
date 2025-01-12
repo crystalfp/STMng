@@ -375,4 +375,11 @@ export class Slab {
 
         return ok;
     }
+
+    /**
+     * Reset allocated memory
+     */
+    reset(): void {
+        this.interatomicDistances.clear();
+    }
 }

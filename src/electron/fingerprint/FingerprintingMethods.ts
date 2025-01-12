@@ -129,9 +129,11 @@ class PerElementRdfHistogram extends FingerprintMethod {
                                         Pj*countSpecies-(Pj*(Pj+1))/2+Pi;
 
                 // Smooth the peak and accumulate
-                smoothPeak(fing, Rij, this.delta, this.nbins, fingerprint, idxSection*this.nbins, this.peakWidth);
+                smoothPeak(fing, Rij, this.delta, this.nbins, fingerprint,
+                           idxSection*this.nbins, this.peakWidth);
             }
         }
+        this.slab!.reset();
 
         // Compute weights
         const len = orderedZ.length;
@@ -221,6 +223,7 @@ class NormalizedDiffraction extends FingerprintMethod {
     			smoothPeak(fing, Rij, this.delta, this.nbins, fingerprint, 0, this.peakWidth);
             }
         }
+        this.slab!.reset();
 
         // Create list of atom z values and corresponding count
         const listZ = [...species.keys()];
@@ -301,6 +304,8 @@ class DistancesPerAtom extends FingerprintMethod {
             }
             ++section;
         }
+        this.slab!.reset();
+
         return sectionLength;
     }
 

@@ -42,6 +42,7 @@ export class ReaderXYZ implements ReaderImplementation {
 			}
 			else {
 				const fields = line.trim().split(/\s+/);
+				if(fields.length !== 4) throw Error(`Wrong number of fields in "${line}"`);
 				const position: [number, number, number] = [
 					Number.parseFloat(fields[1]),
 					Number.parseFloat(fields[2]),
