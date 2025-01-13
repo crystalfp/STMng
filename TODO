@@ -4,9 +4,10 @@ To do:
   ☐ Use `chagelogen`
   ☐ Finish Fingerprinting
   ☐ Change watchEffect to watch
-  ☐ Try to put label as billboards
+  ☐ Try to put labels as billboards
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
+  ☐ Add energy surface
 
 Bugs:
 

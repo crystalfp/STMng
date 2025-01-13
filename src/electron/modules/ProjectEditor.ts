@@ -27,7 +27,7 @@ export const createProjectEditor = (projectName: string): void => {
 	});
 
 	// Workaround for chart not appearing due to timing
-	setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/editor", data: projectAsString}), 600);
+	setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/editor", data: projectAsString}), 800);
 };
 
 /**

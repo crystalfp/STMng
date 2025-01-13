@@ -19,7 +19,12 @@ overrides:
 reportNeedlessDisables: true
 
 rules:
-  ## declaration-property-value-no-unknown: true # this rule does not accept scss variables
+  declaration-property-value-no-unknown:
+  - true
+  - ignoreProperties:
+      width: /v-bind/
+      stroke: /v-bind/
+      fill: /v-bind/
   alpha-value-notation: number
   at-rule-no-unknown: null
   color-function-notation: null
@@ -36,7 +41,12 @@ rules:
   scss/selector-no-redundant-nesting-selector: null
   scss/double-slash-comment-empty-line-before: null
   selector-no-qualifying-type: null
-  selector-pseudo-class-no-unknown: [true, {ignorePseudoClasses: [deep, slotted, global]}]
+  selector-pseudo-class-no-unknown:
+  - true
+  - ignorePseudoClasses:
+      - deep
+      - slotted
+      - global
   shorthand-property-no-redundant-values: null
   selector-class-pattern: null
   comment-empty-line-before: null

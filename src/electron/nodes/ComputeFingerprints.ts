@@ -261,7 +261,7 @@ export class ComputeFingerprints extends NodeCore {
 		const energies = [];
 		const ids = [];
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			energies.push(structure.energy);
+			if(structure.energy !== undefined) energies.push(structure.energy);
 			ids.push(structure.index);
 		}
 
@@ -329,7 +329,7 @@ export class ComputeFingerprints extends NodeCore {
 			setTimeout(() => sendToSecondaryWindow(undefined, {
 				routerPath: "/scatter",
 				data: dataToSend
-			}), 600);
+			}), 800);
 		}
 	}
 
@@ -674,7 +674,7 @@ export class ComputeFingerprints extends NodeCore {
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
 					if(indices.includes(idx)) {
 						structures.push(this.convertAccumulatedStructure(structure));
-						energies.push(structure.energy);
+						if(structure.energy) energies.push(structure.energy);
 					}
 					++idx;
 				}

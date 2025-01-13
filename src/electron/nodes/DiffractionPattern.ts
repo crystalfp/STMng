@@ -396,7 +396,7 @@ export class DiffractionPattern extends NodeCore {
 				});
 
 				// Workaround for chart not appearing due to timing
-				setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend}), 600);
+				setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend}), 800);
 			}
 		}
 	}

@@ -29,8 +29,8 @@ export interface StructureReduced {
 
 	/** If the structure has been selected (by energy) */
 	selected: boolean;
-	/** The structure energy, if any, otherwise zero */
-	energy: number;
+	/** The structure energy, if any, otherwise undefined */
+	energy?: number;
 
 	/** Computed fingerprint for the structure */
 	fingerprint: number[];
@@ -95,7 +95,7 @@ export class FingerprintsAccumulator {
 		}
 
 		const energy = this.energyPerStructure.length > this.accumulator.length ?
-									this.energyPerStructure[this.accumulator.length] : 0;
+									this.energyPerStructure[this.accumulator.length] : undefined;
 
 		// Load the structure clone
 		const entry: StructureReduced = {
@@ -161,6 +161,8 @@ export class FingerprintsAccumulator {
 	 */
 	clear(): void {
 		this.accumulator.length = 0;
+		this.energyPerStructure.length = 0;
+		this.idx2id.clear();
 	}
 
 	/**
@@ -192,9 +194,10 @@ export class FingerprintsAccumulator {
 		for(let i = 0; i < energies.length; ++i) this.energyPerStructure[i] = energies[i];
 
 		// If possible, update the energies in the accumulated structures
-		if(energies.length < this.accumulator.length) return;
 		for(const structure of this.accumulator) {
-			structure.energy = this.energyPerStructure[structure.index];
+
+			structure.energy = structure.index < this.energyPerStructure.length ?
+										this.energyPerStructure[structure.index] : undefined;
 		}
 	}
 

@@ -49,6 +49,13 @@ const fgColor = "#575757";
 let scatterplotData: ScatterplotData | undefined;
 const scatterplotDataAvailable = ref(false);
 
+/** The group colors */
+let groupColors: string[] = [];
+
+/** The energy range */
+let minEnergy = 0;
+let maxEnergy = 0;
+
 /**
  * Convert a list of colors to RGB strings
  *
@@ -71,14 +78,13 @@ const pointsByGroup = (): Glyph[] => {
 
     if(!scatterplotData || scatterplotData.points.length === 0) return [];
 
-    let colors: string[] = [];
     const oneGroup = scatterplotData.countGroups === 0;
     if(!oneGroup) {
         // Prepare the list of contrasting colors
         const backgroundColor: [number, number, number] =
                     (theme.value === "dark") ? [0.07059, 0.07059, 0.07059] : [1, 1, 1];
         const colorsRaw = contrastingColors(scatterplotData.countGroups, backgroundColor);
-        colors = colorsToRGB(colorsRaw);
+        groupColors = colorsToRGB(colorsRaw);
     }
 
     // Map each point to a glyph
@@ -88,7 +94,7 @@ const pointsByGroup = (): Glyph[] => {
     for(let i=0; i < n; ++i) {
 
         // Get the color corresponding to the group of the point
-        const color = oneGroup ? "#0000FF" : colors[groups[i]];
+        const color = oneGroup ? "#0000FF" : groupColors[groups[i]];
 
         out.push({
             id: id[i],
@@ -114,8 +120,8 @@ const pointsByEnergy = (): Glyph[] => {
     const {points, energies, id} = scatterplotData;
 
     // Extract the energy range
-    let minEnergy = energies[0];
-    let maxEnergy = minEnergy;
+    minEnergy = energies[0];
+    maxEnergy = minEnergy;
     for(let i=1; i < energies.length; ++i) {
         if(energies[i] < minEnergy) minEnergy = energies[i];
         if(energies[i] > maxEnergy) maxEnergy = energies[i];
@@ -529,6 +535,90 @@ const compareSelected = (): void => {
 };
 const notImplemented = ref(false);
 
+/**
+ * Select by min energy in each group
+ */
+const selectByGroupMinEnergy = (): void => {
+
+    if(!scatterplotData ||
+        scatterplotData.countGroups === 0 ||
+        scatterplotData.energies.length === 0) return;
+
+    const npoints = scatterplotData.groups.length;
+    if(!npoints) return;
+
+    // For each group
+    for(let group=0; group < scatterplotData.countGroups; ++group) {
+
+        let minEnergyValue = Number.POSITIVE_INFINITY;
+        let minEnergyIdx = 0;
+
+        for(let j=0; j < npoints; ++j) {
+
+            if(scatterplotData.groups[j] === group &&
+               scatterplotData.energies[j] < minEnergyValue) {
+                minEnergyValue = scatterplotData.energies[j];
+                minEnergyIdx = j;
+            }
+        }
+
+        if(!selectedPoints.value.includes(minEnergyIdx)) {
+            selectedPoints.value.push(minEnergyIdx);
+        }
+    }
+};
+
+const showLegend = ref(false);
+const showLegendDiscrete = computed(() => showLegend.value &&
+                                          (scatterplotType.value === "group" ||
+                                           scatterplotType.value === "silhouette"));
+const showLegendContinue = computed(() => showLegend.value &&
+                                          (scatterplotType.value === "energy" ||
+                                           scatterplotType.value === "efficiency"));
+
+const legendDiscrete = computed<{key: number; color: string; label: string}[]>(() => {
+
+    if(scatterplotType.value === "group") {
+        if(!scatterplotData || scatterplotData.countGroups === 0) {
+            return [{key: 0, color: "#0000FF", label: "No groups"}];
+        }
+        const out = [];
+        let group = 0;
+        for(const color of groupColors) {
+            out.push({key: group, color, label: `Group ${group}`});
+            ++group;
+        }
+        return out;
+    }
+    else if(scatterplotType.value === "silhouette") {
+        return [
+            {key: 0, color: "green",   label: "Strong"},
+            {key: 1, color: "yellow",  label: "Reasonable"},
+            {key: 2, color: "orange",  label: "Weak"},
+            {key: 3, color: "red",     label: "Bad"},
+            {key: 4, color: "#bd0000", label: "Very bad"},
+            {key: 5, color: "#7d0075", label: "Group of one element"},
+            {key: 6, color: "white",   label: "Across groups border"},
+        ];
+    }
+
+    return [];
+});
+
+// Create the color scale for the legend
+const lut2 = new Lut("blackbody", 256);
+const colorScale = lut2.createCanvas().toDataURL();
+
+const legendContinue = computed(() => {
+    if(scatterplotType.value === "energy") {
+        return {min: minEnergy.toFixed(4), max: maxEnergy.toFixed(4)};
+    }
+    else if(scatterplotType.value === "efficiency") {
+        return {min: "0.0000", max: "1.0000"};
+    }
+    return {min: "0.0000", max: "1.0000"};
+});
+
 </script>
 
 
@@ -556,21 +646,41 @@ const notImplemented = ref(false);
             <tspan :x="textX" dy="20">{{ textLine2 }}</tspan>
         </text>
       </svg>
+      <div v-if="showLegendDiscrete" class="legend">
+        <div v-for="n of legendDiscrete" :key="n.key">
+          <span style="width: 150px" :style="{backgroundColor: n.color, color: n.color}">⬚</span> {{ n.label }}</div>
+      </div>
+      <div v-if="showLegendContinue" class="legend narrow">
+        <table class="tg"><tbody>
+        <tr>
+          <td class="td-bottom" rowspan="2"><img :src="colorScale" height="150" width="30"></td>
+          <td class="td-top pt-1">{{ legendContinue.max }}</td>
+        </tr>
+        <tr>
+          <td class="td-bottom pb-3">{{ legendContinue.min }}</td>
+        </tr>
+        </tbody></table>
+      </div>
     </div>
-    <v-container class="button-strip scatterplot-buttons">
-      <v-btn-toggle v-model="scatterplotType" mandatory>
-        <v-btn value="group">Group</v-btn>
-        <v-btn value="energy">Energy</v-btn>
-        <v-btn value="efficiency">Fidelity</v-btn>
-        <v-btn value="silhouette">Quality</v-btn>
-      </v-btn-toggle>
-      <g-slider-with-steppers v-model="pointRadius"
-                              v-model:raw="showPointRadius" label-width="8rem"
-                              :label="`Point radius (${showPointRadius})`"
-                              :min="3" :max="20" :step="1" />
-      <v-btn @click="showSelect=true">Select</v-btn>
-      <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
-      <v-btn v-focus @click="closeWindow('/scatter')">Close</v-btn>
+    <v-container class="scatterplot-buttons">
+      <div class="buttons-line">
+        <v-btn-toggle v-model="scatterplotType" mandatory>
+          <v-btn value="group">Group</v-btn>
+          <v-btn value="energy">Energy</v-btn>
+          <v-btn value="efficiency">Fidelity</v-btn>
+          <v-btn value="silhouette">Quality</v-btn>
+        </v-btn-toggle>
+        <g-slider-with-steppers v-model="pointRadius"
+                                v-model:raw="showPointRadius" label-width="8rem"
+                                :label="`Point radius (${showPointRadius})`"
+                                :min="3" :max="20" :step="1" />
+        <v-btn @click="showSelect=true">Select</v-btn>
+        <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
+      </div>
+      <div class="buttons-line mt-2 ml-2 mb-n5">
+        <v-switch v-model="showLegend" label="Show legend" hide-details/>
+        <v-btn v-focus @click="closeWindow('/scatter')" class="mr-2 mb-4">Close</v-btn>
+      </div>
     </v-container>
   </div>
 
@@ -594,6 +704,10 @@ const notImplemented = ref(false);
         Select by group
       </v-btn>
       <v-divider thickness="2" />
+      <v-btn @click="selectByGroupMinEnergy" :disabled="scatterplotData?.energies.length === 0" class="w-75 mt-4 ml-1 mb-4">
+        Select by min energy
+      </v-btn>
+      <v-divider thickness="2" />
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
       <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="true">
         Compare selected
@@ -605,6 +719,7 @@ const notImplemented = ref(false);
 
       <g-select-file v-if="showSave" class="mt-4" title="Select output file"
                      :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
+
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showSelect=false">Close</v-btn>
@@ -633,12 +748,46 @@ const notImplemented = ref(false);
 }
 
 .scatterplot-buttons {
-  height: fit-content;
+  flex-direction: column;
+  display: flex;
+  max-width: 3000px !important;
+  padding: 0 20px 16px 20px !important;
+}
+
+.buttons-line {
   justify-content: space-between;
+  display: flex;
+  align-items: center;
+  max-width: 3000px !important;
+  width: 100vw;
+  gap: 10px;
+  padding-right: 40px !important;
 }
 
 .equal {
   width: 158px;
 }
+
+.legend {
+  position: absolute;
+  bottom: 116px;
+  right: 20px;
+  z-index: 800;
+  background-color: #7e7e7e46;
+  width: 220px;
+  height: 220px;
+  overflow: hidden auto;
+  padding-left: 7px;
+  padding-top: 7px;
+}
+
+.narrow {
+  width: 150px;
+  height: 190px;
+}
+
+.tg td {overflow:hidden; padding:10px 5px;}
+.tg .td-top {text-align:right;vertical-align:top}
+.tg .td-bottom {text-align:right;vertical-align:bottom}
 
 </style>
