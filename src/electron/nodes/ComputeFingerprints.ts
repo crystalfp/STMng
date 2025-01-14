@@ -16,9 +16,11 @@ import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {MDS} from "../fingerprint/MultidimensionalScaling";
-import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData, PositionType} from "@/types";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
+import {scatterToUniform} from "../fingerprint/ScatterToUniform";
+import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
+			 EnergyLandscapeData, PositionType} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -65,7 +67,8 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "dist-params",	type: "send",	callback: this.channelDistParams.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
-		{name: "scatter",		type: "send",	callback: this.channelGroupScatter.bind(this)},
+		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
+		{name: "surface",		type: "send",	callback: this.channelSurface.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -328,6 +331,78 @@ export class ComputeFingerprints extends NodeCore {
 			// Workaround for chart not appearing due to timing
 			setTimeout(() => sendToSecondaryWindow(undefined, {
 				routerPath: "/scatter",
+				data: dataToSend
+			}), 800);
+		}
+	}
+
+	/**
+	 * Open or update the energy landscape window
+	 *
+	 * @param opKind - Operation to be performed:
+	 *                 "update" update if scatter available or "create" create the landscape
+	 */
+	private createUpdateLandscape(opKind: "update" | "create"): void {
+
+		const landscapeOpen = isSecondaryWindowOpen(undefined, "/landscape");
+		if(opKind !== "create" && !landscapeOpen) return;
+
+		// Collect energies per structure
+		const energies = [];
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			if(structure.energy === undefined) return;
+			energies.push(structure.energy);
+		}
+
+		// Normalize between 0 and 1
+		let minEnergy = Number.POSITIVE_INFINITY;
+		let maxEnergy = Number.NEGATIVE_INFINITY;
+		for(const energy of energies) {
+			if(energy < minEnergy) minEnergy = energy;
+			if(energy > maxEnergy) maxEnergy = energy;
+		}
+		for(let i=0; i < energies.length; ++i) {
+			energies[i] = (energies[i] - minEnergy) / (maxEnergy - minEnergy);
+		}
+
+		// Take the distance matrix and project it in 2D
+		const distanceMatrix = this.dist.getDistanceMatrix();
+		if(distanceMatrix.matrixSize() === 0) return;
+		const distanceVector = distanceMatrix.toVector();
+		const points = MDS(distanceVector, distanceMatrix.matrixSize());
+
+		// TBD
+		const gridSide = 128;
+		const grid = scatterToUniform(gridSide, points, energies);
+		const energyLandscapeData: EnergyLandscapeData = {
+			grid,
+			side: gridSide
+		};
+
+		const dataToSend = JSON.stringify(energyLandscapeData);
+
+		// If it is open, update the energy landscape window
+		if(landscapeOpen) {
+
+			sendToSecondaryWindow(undefined, {
+				routerPath: "/landscape",
+				data: dataToSend
+			});
+		}
+		else {
+
+			// Create the energy landscape window
+			createSecondaryWindow(undefined, {
+				routerPath: "/landscape",
+				width: 1200,
+				height: 900,
+				title: "Fingerprints energy landscape",
+				data: dataToSend
+			});
+
+			// Workaround for chart not appearing due to timing
+			setTimeout(() => sendToSecondaryWindow(undefined, {
+				routerPath: "/landscape",
 				data: dataToSend
 			}), 800);
 		}
@@ -652,7 +727,7 @@ export class ComputeFingerprints extends NodeCore {
 	/**
 	 * Channel handler for opening scatterplot on the results
 	 */
-	private channelGroupScatter(): void {
+	private channelScatter(): void {
 
 		this.createUpdateScatterplot("create");
 
@@ -691,5 +766,14 @@ export class ComputeFingerprints extends NodeCore {
 				writeFileSync(energyFilename, energies.join("\n"), "utf8");
 			});
 		}
+	}
+
+	/**
+	 * Channel handler for opening energy surface display
+	 */
+	private channelSurface(): void {
+		// TBD
+		this.createUpdateLandscape("create");
+
 	}
 }

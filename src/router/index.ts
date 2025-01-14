@@ -40,5 +40,9 @@ export const router = createRouter({
             path: "/scatter",
             component: (): Component => import("@/components/FingerprintScatterplot.vue")
         },
+        {
+            path: "/landscape",
+            component: (): Component => import("@/components/EnergyLandscape.vue")
+        },
     ],
 });

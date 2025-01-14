@@ -532,3 +532,12 @@ export interface ScatterplotData {
     /** Silhouette coefficients that measure the clustering quality for each point */
     silhouettes: number[];
 }
+
+export interface EnergyLandscapeData {
+
+    /** Interpolated energy values on a grid side x side and scaled 0 to 1 */
+    grid: number[];
+
+    /** Side of the grid */
+    side: number;
+}

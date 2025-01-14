@@ -37,8 +37,9 @@ export class CaptureView extends NodeCore {
 		return "";
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	loadStatus(): void {}
+	loadStatus(): void {
+		// No body necessary
+	}
 
 	// > Channel handlers
 	/**

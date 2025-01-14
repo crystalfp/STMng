@@ -18,7 +18,9 @@ export interface ReciprocalPoint {
 
 export class ReciprocalLattice {
 
-	constructor(private readonly lattice: Lattice) {}
+	constructor(private readonly lattice: Lattice) {
+        // No body necessary
+    }
 
 	// Find all points within a sphere from the point taking into account
 	// periodic boundary conditions. This includes sites in other periodic images.

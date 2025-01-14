@@ -398,6 +398,10 @@ const showScatterplot = (): void => {
     sendToNode(id, "scatter");
 };
 
+const showEnergySurface = (): void => {
+    sendToNode(id, "surface");
+};
+
 </script>
 
 
@@ -513,9 +517,14 @@ const showScatterplot = (): void => {
   </v-container>
 
   <v-label class="separator-title">Show results</v-label>
-  <v-btn block class="mb-6"
+  <v-btn block class="mb-2"
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot
+  </v-btn>
+  <!-- <v-btn block class="mb-6"
+         :disabled="countDistances === 0" @click="showEnergySurface"> -->
+  <v-btn block class="mb-6" @click="showEnergySurface">
+    Show energy surface
   </v-btn>
 
   <g-error-alert kind="fingerprints" />

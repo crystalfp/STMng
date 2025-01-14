@@ -48,7 +48,9 @@ export class Isolines {
 	 */
 	constructor(private readonly volume: number[],
 				private readonly sides: PositionType,
-				private readonly isoValues: number[]) {}
+				private readonly isoValues: number[]) {
+		// No body necessary
+	}
 
 	/**
 	 * Compute isolines on the orthoslice

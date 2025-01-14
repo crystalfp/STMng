@@ -49,8 +49,9 @@ export class Measures extends NodeCore {
 	// > Load/save status
 	saveStatus(): string {return "";}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	loadStatus(): void {}
+	loadStatus(): void {
+		// No body necessary
+	}
 
 	/**
 	 * Compute distances and angles between the 0 to 3 atoms selected
