@@ -8,7 +8,8 @@
  */
 
 import {pm} from "./ProjectManager";
-import {createSecondaryWindow, isSecondaryWindowOpen, sendToSecondaryWindow} from "./WindowsUtilities";
+import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
+		sendToSecondaryWindow} from "./WindowsUtilities";
 
 /**
  * Create the project editor/viewer window
@@ -17,17 +18,13 @@ export const createProjectEditor = (projectName: string): void => {
 
 	const title = projectName === "" ? "View default project" : `View "${projectName}" project`;
 
-	const projectAsString = pm.projectGraphForEditor();
-	createSecondaryWindow(undefined, {
+	createSecondaryWindowWithRetry({
 		routerPath: "/editor",
 		width: 1700,
 		height: 900,
 		title,
-		data: projectAsString
+		data: pm.projectGraphForEditor()
 	});
-
-	// Workaround for chart not appearing due to timing
-	setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/editor", data: projectAsString}), 800);
 };
 
 /**
@@ -35,8 +32,7 @@ export const createProjectEditor = (projectName: string): void => {
  */
 export const sendProjectToEditor = (): void => {
 
-	if(isSecondaryWindowOpen(undefined, "/editor")) {
-		const projectAsString = pm.projectGraphForEditor();
-		sendToSecondaryWindow(undefined, {routerPath: "/editor", data: projectAsString});
+	if(isSecondaryWindowOpen("/editor")) {
+		sendToSecondaryWindow("/editor", pm.projectGraphForEditor());
 	}
 };

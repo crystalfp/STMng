@@ -6,8 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-17
  */
-import type {FingerprintsAccumulator} from "./Accumulator";
 import {measuringMethods} from "./DistanceMethods";
+import {MDS} from "./MultidimensionalScaling";
+import type {FingerprintsAccumulator} from "./Accumulator";
 
 export class DistanceMatrix {
 
@@ -191,6 +192,7 @@ interface DistanceResult {
 export class Distances {
 
     private readonly distances = new DistanceMatrix();
+    private projectedPoints: number[][] = [];
 
     /**
      * Return the list of methods names
@@ -353,5 +355,59 @@ export class Distances {
         if(violated > 0) return -1;
 
         return 1;
+    }
+
+    /**
+     * Create points in 2D [0..1]x[0..1] that keep distances as best as possible
+     */
+    projectPoints(): void {
+
+        // No distances, no projected points
+        if(this.distances.matrixSize() === 0) {
+            this.projectedPoints = [];
+            return;
+        }
+
+        const distanceVector = this.distances.toVector();
+		const mappedPoints = MDS(distanceVector, this.distances.matrixSize());
+
+		// Normalize mapped points coordinates between 0 and 1
+		let maxX = Number.NEGATIVE_INFINITY;
+		let minX = Number.POSITIVE_INFINITY;
+		let maxY = Number.NEGATIVE_INFINITY;
+		let minY = Number.POSITIVE_INFINITY;
+		for(const point of mappedPoints) {
+
+			if(point[0] > maxX) maxX = point[0];
+			if(point[0] < minX) minX = point[0];
+			if(point[1] > maxY) maxY = point[1];
+			if(point[1] < minY) minY = point[1];
+		}
+
+		let denX = maxX - minX;
+		if(denX < 1e-10) denX = 1;
+		let denY = maxY - minY;
+		if(denY < 1e-10) denY = 1;
+
+		// How many structures are we dealing with
+		const n = mappedPoints.length;
+		this.projectedPoints = Array(n) as number[][];
+		for(let i=0; i < n; ++i) {
+
+			this.projectedPoints[i] = [
+				(mappedPoints[i][0] - minX)/denX,
+				(mappedPoints[i][1] - minY)/denY,
+			];
+		}
+    }
+
+    /**
+     * Return the projected points
+     *
+     * @returns Points in 2D [0..1]x[0..1] that keep distances as best as possible
+     */
+    getProjectedPoints(): number[][] {
+
+        return this.projectedPoints;
     }
 }

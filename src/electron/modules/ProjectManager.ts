@@ -8,7 +8,7 @@
  */
 import {readFileSync, existsSync, writeFileSync} from "node:fs";
 import {writeFile} from "node:fs/promises";
-import {ipcMain, dialog, type IpcMainEvent} from "electron";
+import {ipcMain, dialog} from "electron";
 import path from "node:path";
 import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
@@ -452,7 +452,7 @@ export const setupChannelProject = (): void => {
 		pm.sendProject();
 	});
 
-	ipcMain.on("SYSTEM:modified-project", (_event: IpcMainEvent, params: CtrlParams): void => {
+	ipcMain.on("SYSTEM:modified-project", (_event, params: CtrlParams): void => {
 
 		const prj = params.projectModified as string;
 		if(!prj) return;

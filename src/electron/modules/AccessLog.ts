@@ -20,7 +20,7 @@ export const showLogFile = (): void => {
 	const logPath = path.join(directory, "logs", "main.log");
 	try {
 		const log = readFileSync(logPath, "utf8");
-		createSecondaryWindow(undefined, {
+		createSecondaryWindow({
 			routerPath: "/log",
 			width: 1400,
 			height: 900,

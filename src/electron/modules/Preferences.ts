@@ -8,7 +8,7 @@
  */
 import {ipcMain, nativeTheme} from "electron";
 import {Store} from "./UserStore";
-import type {IpcMainInvokeEvent, IpcMainEvent} from "electron";
+import type {IpcMainEvent} from "electron";
 
 /** The accepted preference types */
 type PreferenceEntry = string | number | string[];
@@ -24,14 +24,14 @@ const store = new Store<PreferencesStore>({name: "preferences"});
  */
 export const setupChannelPreferences = (): void => {
 
-	ipcMain.handle("PREFERENCES:GET", (_event: IpcMainInvokeEvent, key: string) => store.get(key));
+	ipcMain.handle("PREFERENCES:GET", (_event, key: string) => store.get(key));
 
 	ipcMain.on("PREFERENCES:GET-SYNC", (event: IpcMainEvent, key: string) => {
 
 		event.returnValue = store.get(key);
     });
 
-    ipcMain.on("PREFERENCES:SET", (_event: IpcMainInvokeEvent, payload: {key: string; value: PreferenceEntry}) => {
+    ipcMain.on("PREFERENCES:SET", (_event, payload: {key: string; value: PreferenceEntry}) => {
 
 		const {key, value} = payload;
 		store.set(key, value);

@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import {createSecondaryWindow, isSecondaryWindowOpen,
+import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
@@ -48,7 +48,7 @@ export class DiffractionPattern extends NodeCore {
 		// There is the structure so the XRD could be computed
 		sendToClient(this.id, "enable", {enableComputation: hasData});
 
-		if(hasData && isSecondaryWindowOpen(undefined, "/chart")) {
+		if(hasData && isSecondaryWindowOpen("/chart")) {
 
 			// Compute spectra
 			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
@@ -58,7 +58,7 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// Update window
-			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+			sendToSecondaryWindow("/chart", dataToSend);
 		}
 	}
 
@@ -318,7 +318,7 @@ export class DiffractionPattern extends NodeCore {
 	 */
 	private channelShow(params: CtrlParams): void {
 
-		if(this.structure && isSecondaryWindowOpen(undefined, "/chart")) {
+		if(this.structure && isSecondaryWindowOpen("/chart")) {
 
 			this.width = params.width as number ?? 0.25;
 			this.showHKL = params.showHKL as boolean ?? false;
@@ -327,7 +327,7 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// Update window
-			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+			sendToSecondaryWindow("/chart", dataToSend);
 		}
 	}
 
@@ -336,7 +336,7 @@ export class DiffractionPattern extends NodeCore {
 	 */
 	private channelCompute(params: CtrlParams): void {
 
-		if(this.structure && isSecondaryWindowOpen(undefined, "/chart")) {
+		if(this.structure && isSecondaryWindowOpen("/chart")) {
 
 			this.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 			this.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
@@ -354,7 +354,7 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// Update window
-			sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+			sendToSecondaryWindow("/chart", dataToSend);
 		}
 	}
 
@@ -381,22 +381,19 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// if already open, update chart, otherwise create the window
-			if(isSecondaryWindowOpen(undefined, "/chart")) {
+			if(isSecondaryWindowOpen("/chart")) {
 
-				sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend});
+				sendToSecondaryWindow("/chart", dataToSend);
 			}
 			else {
 
-				createSecondaryWindow(undefined, {
+				createSecondaryWindowWithRetry({
 					routerPath: "/chart",
 					width: 1067,
 					height: 800,
 					title: this.chartTitle,
 					data: dataToSend
 				});
-
-				// Workaround for chart not appearing due to timing
-				setTimeout(() => sendToSecondaryWindow(undefined, {routerPath: "/chart", data: dataToSend}), 800);
 			}
 		}
 	}

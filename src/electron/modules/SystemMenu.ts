@@ -266,7 +266,7 @@ export const disableSaveProjectEntry = (disable: boolean): void => {
  */
 export const setupChannelMenu = (): void => {
 
-    ipcMain.on("SYSTEM:extended", (_event: unknown, params: CtrlParams) => {
+    ipcMain.on("SYSTEM:extended", (_event, params: CtrlParams) => {
 
         setExtended(!params.normalScreen as boolean);
         const entry = systemMenu.getMenuItemById("toggleExtended");

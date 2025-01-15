@@ -270,6 +270,7 @@ export default [{
                 }
             }
         ],
+        "@typescript-eslint/no-import-type-side-effects": "error",
         "no-multiple-empty-lines": ["warn", {max: 2, maxEOF: 1}],
         "prefer-arrow-callback": "warn",
         "array-callback-return": ["error", {allowImplicit: true}],

@@ -1,5 +1,5 @@
 /**
- * Interpolate the scatter values into a square grid with given side.
+ * Interpolate the scatter values into a square grid with given sides.
  *
  * @packageDocumentation
  *
@@ -29,9 +29,7 @@ const shepardInterpolation = (x: number,
 
 		const [px, py] = points[i];
 		const distance = Math.hypot(x-px, y-py);
-		if(distance === 0) {
-			return energies[i];
-		}
+		if(distance === 0) return energies[i];
 
 		const weight = 1 / (distance ** power);
 		numerator += weight * energies[i];
@@ -47,9 +45,13 @@ const shepardInterpolation = (x: number,
  * @param gridSide - Resulting square grid side
  * @param points - Scatter points to interpolate
  * @param energies - Corresponding energies
+ * @param power - Factor to weight distances
  * @returns Values on the grid nodes
  */
-export const scatterToUniform = (gridSide: number, points: number[][], energies: number[]): number[] => {
+export const scatterToUniform = (gridSide: number,
+								 points: number[][],
+								 energies: number[],
+								 power = 2): number[] => {
 
 	// Normalize mapped points coordinates between 0 and 1
 	let maxX = Number.NEGATIVE_INFINITY;
@@ -85,7 +87,7 @@ export const scatterToUniform = (gridSide: number, points: number[][], energies:
 
 			const x = i / (gridSide - 1);
 			const y = j / (gridSide - 1);
-			const interpolatedValue = shepardInterpolation(x, y, normalizedPoints, energies);
+			const interpolatedValue = shepardInterpolation(x, y, normalizedPoints, energies, power);
 			result[j * gridSide + i] = interpolatedValue;
 		}
 	}

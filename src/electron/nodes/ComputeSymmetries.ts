@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
-import {createSecondaryWindow, isSecondaryWindowOpen,
+import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
@@ -229,7 +229,7 @@ export class ComputeSymmetries extends NodeCore {
 			inSymmetry,
 			outSymmetry
 		});
-		sendToSecondaryWindow(undefined, {routerPath: "/symmetries", data: dataToSend});
+		sendToSecondaryWindow("/symmetries", dataToSend);
 	}
 
 	/**
@@ -615,18 +615,18 @@ export class ComputeSymmetries extends NodeCore {
 			outSymmetry: this.computedSpaceGroup
 		});
 
-		if(isSecondaryWindowOpen(undefined, "/symmetries")) {
+		if(isSecondaryWindowOpen("/symmetries")) {
 
-			sendToSecondaryWindow(undefined, {routerPath: "/symmetries", data: dataToSend});
+			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
 		else {
-			createSecondaryWindow(undefined, {
-									routerPath: "/symmetries",
-									width: 700,
-									height: 400,
-									title: "Show symmetries",
-									data: dataToSend
-								});
+			createSecondaryWindowWithRetry({
+				routerPath: "/symmetries",
+				width: 700,
+				height: 400,
+				title: "Show symmetries",
+				data: dataToSend
+			});
 		}
 	}
 }

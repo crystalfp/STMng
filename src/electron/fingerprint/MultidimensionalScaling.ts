@@ -33,7 +33,7 @@ const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
 };
 
 /**
- * Classical Multidimensional Scaling (MDS)
+ * Compute Multidimensional Scaling (MDS)
  *
  * @param distancesVector - Distances vector (upper triangular of NxN symmetrical distance matrix)
  * @param pointsCount - Number of points (N), that is, the side of the distance matrix

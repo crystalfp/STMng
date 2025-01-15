@@ -9,13 +9,12 @@
 import {ipcMain} from "electron";
 import {readFileSync, writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {createSecondaryWindow, isSecondaryWindowOpen, sendAlertMessage,
+import {createSecondaryWindowWithRetry, isSecondaryWindowOpen, sendAlertMessage,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
-import {MDS} from "../fingerprint/MultidimensionalScaling";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {scatterToUniform} from "../fingerprint/ScatterToUniform";
@@ -68,7 +67,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
-		{name: "surface",		type: "send",	callback: this.channelSurface.bind(this)},
+		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -193,33 +192,6 @@ export class ComputeFingerprints extends NodeCore {
 		// How many structures are we dealing with
 		const n = mappedPoints.length;
 
-		// Normalize mapped points coordinates between 0 and 1
-		let maxX = Number.NEGATIVE_INFINITY;
-		let minX = Number.POSITIVE_INFINITY;
-		let maxY = Number.NEGATIVE_INFINITY;
-		let minY = Number.POSITIVE_INFINITY;
-		for(const point of mappedPoints) {
-
-			if(point[0] > maxX) maxX = point[0];
-			if(point[0] < minX) minX = point[0];
-			if(point[1] > maxY) maxY = point[1];
-			if(point[1] < minY) minY = point[1];
-		}
-
-		let denX = maxX - minX;
-		if(denX < 1e-10) denX = 1;
-		let denY = maxY - minY;
-		if(denY < 1e-10) denY = 1;
-
-		const normalizedPoints: number[][] = Array(n) as number[][];
-		for(let i=0; i < n; ++i) {
-
-			normalizedPoints[i] = [
-				(mappedPoints[i][0] - minX)/denX,
-				(mappedPoints[i][1] - minY)/denY,
-			];
-		}
-
 		// Compare projected distances with the original ones
 		const distanceMatrix = this.dist.getDistanceMatrix();
 		const efficiencies: [number, number][] = [];
@@ -238,10 +210,10 @@ export class ComputeFingerprints extends NodeCore {
 		}
 
 		// Normalize original and projected distances
-		minX = Number.POSITIVE_INFINITY;
-		maxX = Number.NEGATIVE_INFINITY;
-		minY = Number.POSITIVE_INFINITY;
-		maxY = Number.NEGATIVE_INFINITY;
+		let minX = Number.POSITIVE_INFINITY;
+		let maxX = Number.NEGATIVE_INFINITY;
+		let minY = Number.POSITIVE_INFINITY;
+		let maxY = Number.NEGATIVE_INFINITY;
 		for(const eff of efficiencies) {
 
 			if(eff[0] > maxX) maxX = eff[0];
@@ -250,9 +222,9 @@ export class ComputeFingerprints extends NodeCore {
 			if(eff[1] < minY) minY = eff[1];
 		}
 
-		denX = maxX - minX;
+		let denX = maxX - minX;
 		if(denX < 1e-10) denX = 1;
-		denY = maxY - minY;
+		let denY = maxY - minY;
 		if(denY < 1e-10) denY = 1;
 
 		for(const eff of efficiencies) {
@@ -276,7 +248,7 @@ export class ComputeFingerprints extends NodeCore {
 		// Create data for the scatterplot
 		return {
 			id: ids,
-			points: normalizedPoints,
+			points: mappedPoints,
 			groups,
 			countGroups,
 			energies,
@@ -293,13 +265,11 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private createUpdateScatterplot(opKind: "no-group" | "update" | "create"): void {
 
-		const scatterplotOpen = isSecondaryWindowOpen(undefined, "/scatter");
+		const scatterplotOpen = isSecondaryWindowOpen("/scatter");
 		if(opKind !== "create" && !scatterplotOpen) return;
 
-		// Take the distance matrix and project it in 2D
-		const distanceMatrix = this.dist.getDistanceMatrix();
-		const distanceVector = distanceMatrix.toVector();
-		const points = MDS(distanceVector, distanceMatrix.matrixSize());
+		// Take the points projected to 2D
+		const points = this.dist.getProjectedPoints();
 
 		// Collect the data for the scatterplot
 		const scatterplotData = this.packDataForClient(points);
@@ -312,27 +282,18 @@ export class ComputeFingerprints extends NodeCore {
 		// If it is open, update the scatterplot window
 		if(scatterplotOpen) {
 
-			sendToSecondaryWindow(undefined, {
-				routerPath: "/scatter",
-				data: dataToSend
-			});
+			sendToSecondaryWindow("/scatter", dataToSend);
 		}
 		else {
 
 			// Create the scatterplot window
-			createSecondaryWindow(undefined, {
+			createSecondaryWindowWithRetry({
 				routerPath: "/scatter",
 				width: 1200,
 				height: 900,
 				title: "Fingerprints scatterplot",
 				data: dataToSend
 			});
-
-			// Workaround for chart not appearing due to timing
-			setTimeout(() => sendToSecondaryWindow(undefined, {
-				routerPath: "/scatter",
-				data: dataToSend
-			}), 800);
 		}
 	}
 
@@ -344,7 +305,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private createUpdateLandscape(opKind: "update" | "create"): void {
 
-		const landscapeOpen = isSecondaryWindowOpen(undefined, "/landscape");
+		const landscapeOpen = isSecondaryWindowOpen("/landscape");
 		if(opKind !== "create" && !landscapeOpen) return;
 
 		// Collect energies per structure
@@ -366,10 +327,7 @@ export class ComputeFingerprints extends NodeCore {
 		}
 
 		// Take the distance matrix and project it in 2D
-		const distanceMatrix = this.dist.getDistanceMatrix();
-		if(distanceMatrix.matrixSize() === 0) return;
-		const distanceVector = distanceMatrix.toVector();
-		const points = MDS(distanceVector, distanceMatrix.matrixSize());
+		const points = this.dist.getProjectedPoints();
 
 		// TBD
 		const gridSide = 128;
@@ -384,27 +342,18 @@ export class ComputeFingerprints extends NodeCore {
 		// If it is open, update the energy landscape window
 		if(landscapeOpen) {
 
-			sendToSecondaryWindow(undefined, {
-				routerPath: "/landscape",
-				data: dataToSend
-			});
+			sendToSecondaryWindow("/landscape", dataToSend);
 		}
 		else {
 
 			// Create the energy landscape window
-			createSecondaryWindow(undefined, {
+			createSecondaryWindowWithRetry({
 				routerPath: "/landscape",
 				width: 1200,
 				height: 900,
 				title: "Fingerprints energy landscape",
 				data: dataToSend
 			});
-
-			// Workaround for chart not appearing due to timing
-			setTimeout(() => sendToSecondaryWindow(undefined, {
-				routerPath: "/landscape",
-				data: dataToSend
-			}), 800);
 		}
 	}
 
@@ -680,6 +629,9 @@ export class ComputeFingerprints extends NodeCore {
 		this.distanceMin = result.distanceMin;
 		this.distanceMax = result.distanceMax;
 
+		// Project points to 2D
+		this.dist.projectPoints();
+
 		// Update the scatterplot if it is open
 		this.createUpdateScatterplot("no-group");
 
@@ -771,7 +723,7 @@ export class ComputeFingerprints extends NodeCore {
 	/**
 	 * Channel handler for opening energy surface display
 	 */
-	private channelSurface(): void {
+	private channelLandscape(): void {
 		// TBD
 		this.createUpdateLandscape("create");
 

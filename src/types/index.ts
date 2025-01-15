@@ -290,7 +290,7 @@ export interface WindowsParams {
     title: string;
 
     /** Data to be passed to the window when it is ready */
-    data?: string;
+    data: string;
 }
 
 /** Interface exposed by all format writers */

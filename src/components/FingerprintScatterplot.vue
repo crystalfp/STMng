@@ -151,6 +151,7 @@ const pointsByEnergy = (): Glyph[] => {
     return out;
 };
 
+let overallQuality = 0;
 /**
  * Return the points for the scatterplot colored by efficiency
  * - X axis is the original distance
@@ -184,6 +185,7 @@ const pointsByEfficiency = (): Glyph[] => {
         lut.setMax(1);
     }
 
+    overallQuality = 0;
     const n = efficiencies.length;
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
@@ -191,8 +193,9 @@ const pointsByEfficiency = (): Glyph[] => {
         let delta = efficiencies[i][1] - efficiencies[i][0];
         const value = delta;
         if(delta < 0) delta = -delta;
+        overallQuality += delta;
 
-        const color = lut ? `#${lut.getColor(delta).getHexString()}` : "#0000FF";
+        const color = lut ? `#${lut.getColor(1-delta).getHexString()}` : "#0000FF";
 
         out.push({
             id: i,
@@ -202,6 +205,9 @@ const pointsByEfficiency = (): Glyph[] => {
             value,
         });
     }
+
+    overallQuality /= n;
+
     return out;
 };
 
@@ -611,12 +617,27 @@ const colorScale = lut2.createCanvas().toDataURL();
 
 const legendContinue = computed(() => {
     if(scatterplotType.value === "energy") {
-        return {min: minEnergy.toFixed(4), max: maxEnergy.toFixed(4)};
+        return {
+            min: minEnergy.toFixed(4),
+            max: maxEnergy.toFixed(4),
+            header: "Energy",
+            footer: ""
+        };
     }
     else if(scatterplotType.value === "efficiency") {
-        return {min: "0.0000", max: "1.0000"};
+        return {
+            min: "1.0000",
+            max: "0.0000",
+            header: "Distance from diagonal",
+            footer: `Mean: ${overallQuality.toFixed(2)}`
+        };
     }
-    return {min: "0.0000", max: "1.0000"};
+    return {
+        min: "0.0000",
+        max: "1.0000",
+        header: "",
+        footer: ""
+    };
 });
 
 </script>
@@ -651,6 +672,7 @@ const legendContinue = computed(() => {
           <span style="width: 150px" :style="{backgroundColor: n.color, color: n.color}">⬚</span> {{ n.label }}</div>
       </div>
       <div v-if="showLegendContinue" class="legend narrow">
+        <p>{{ legendContinue.header }}</p>
         <table class="tg"><tbody>
         <tr>
           <td class="td-bottom" rowspan="2"><img :src="colorScale" height="150" width="30"></td>
@@ -660,6 +682,7 @@ const legendContinue = computed(() => {
           <td class="td-bottom pb-3">{{ legendContinue.min }}</td>
         </tr>
         </tbody></table>
+        <p>{{ legendContinue.footer }}</p>
       </div>
     </div>
     <v-container class="scatterplot-buttons">
@@ -783,7 +806,7 @@ const legendContinue = computed(() => {
 
 .narrow {
   width: 150px;
-  height: 190px;
+  height: 270px;
 }
 
 .tg td {overflow:hidden; padding:10px 5px;}

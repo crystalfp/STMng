@@ -91,11 +91,9 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     // To avoid garbage collection problems
     openedWindows.set("/", mainWin);
 
-    // Functions to manage a secondary window
-    ipcMain.on("WINDOW:NEW", createSecondaryWindow);
-    ipcMain.on("WINDOW:CLOSE", closeSecondaryWindow);
-    ipcMain.handle("WINDOW:CHECK", isSecondaryWindowOpen);
-    ipcMain.on("WINDOW:SEND", sendToSecondaryWindow);
+    // Functions to manage a request to close a secondary window
+    ipcMain.on("WINDOW:CLOSE",
+               (_event, routerPath: string): void => closeSecondaryWindow(routerPath));
 
     // Setup the system menu
     setupMenu(isDevelopment);
@@ -105,10 +103,9 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
 /**
  * Create a secondary window
  *
- * @param _event - Ignored IPC event
  * @param params - Params for the created window
  */
-export const createSecondaryWindow = (_event: unknown, params: WindowsParams): void => {
+export const createSecondaryWindow = (params: WindowsParams): void => {
 
     // If already created do nothing
     if(openedWindows.has(params.routerPath)) return;
@@ -158,14 +155,28 @@ export const createSecondaryWindow = (_event: unknown, params: WindowsParams): v
     });
 };
 
+/**
+ * Create a secondary window with retry to send data that could be not yet ready
+ *
+ * @param params - Params for the created window
+ */
+export const createSecondaryWindowWithRetry = (params: WindowsParams): void => {
+
+    // Create the window
+    createSecondaryWindow(params);
+
+    // Workaround for content not appearing due to timing
+    const {routerPath, data} = params;
+    setTimeout(() => sendToSecondaryWindow(routerPath, data), 800);
+};
+
 // > Close the secondary window
 /**
  * Close the secondary window
  *
- * @param _event - Ignored IPC event
  * @param routerPath - The router path of the created window
  */
-const closeSecondaryWindow = (_event: unknown, routerPath: string): void => {
+const closeSecondaryWindow = (routerPath: string): void => {
 
     let win = openedWindows.get(routerPath);
     if(!win) return;
@@ -180,24 +191,21 @@ const closeSecondaryWindow = (_event: unknown, routerPath: string): void => {
 /**
  * Check if a secondary window is open
  *
- * @param _event - Ignored IPC event
  * @param routerPath - The router path of the created window to check
  * @returns True if the window is open
  */
-export const isSecondaryWindowOpen = (_event: unknown, routerPath: string): boolean => openedWindows.has(routerPath);
+export const isSecondaryWindowOpen = (routerPath: string): boolean => openedWindows.has(routerPath);
 
 // > Send data to a secondary window
 /**
  * Send data to a secondary window
  *
- * @param _event - Ignored IPC event
  * @param payload - Destination window and the data to send to it
  */
-export const sendToSecondaryWindow = (_event: unknown,
-                                      payload: {routerPath: string; data: string}): void => {
+export const sendToSecondaryWindow = (routerPath: string, data: string): void => {
 
-    const win = openedWindows.get(payload.routerPath);
-    if(win) win.webContents.send("SYSTEM:DATA", payload.data);
+    const win = openedWindows.get(routerPath);
+    if(win) win.webContents.send("SYSTEM:DATA", data);
 };
 
 // > Broadcast message
