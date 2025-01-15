@@ -329,14 +329,16 @@ export class ComputeFingerprints extends NodeCore {
 		// Take the distance matrix and project it in 2D
 		const points = this.dist.getProjectedPoints();
 
-		// TBD
+		// TBD Get the parameters for the interpolation
 		const gridSide = 128;
-		const grid = scatterToUniform(gridSide, points, energies);
+		const power = 2;
+
+		// Interpolate the scatter points to a regular grid and send to client
+		const grid = scatterToUniform(gridSide, points, energies, power);
 		const energyLandscapeData: EnergyLandscapeData = {
 			grid,
 			side: gridSide
 		};
-
 		const dataToSend = JSON.stringify(energyLandscapeData);
 
 		// If it is open, update the energy landscape window
@@ -512,13 +514,6 @@ export class ComputeFingerprints extends NodeCore {
         this.enableEnergyFiltering = params.enableEnergyFiltering as boolean ?? false;
         this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
         this.energyThreshold = params.energyThreshold as number ?? 0;
-
-		if(this.accumulator.selectedSize() === 0) return {
-			countSelected: 0,
-			countAccumulated: 0,
-			energyThresholdEffective: this.accumulator.filtered().threshold,
-			cutoffDistance: 0
-		};
 
 		const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
 														this.energyThreshold,

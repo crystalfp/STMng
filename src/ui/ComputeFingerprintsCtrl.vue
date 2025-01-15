@@ -399,7 +399,7 @@ const showScatterplot = (): void => {
 };
 
 const showEnergySurface = (): void => {
-    sendToNode(id, "surface");
+    sendToNode(id, "landscape");
 };
 
 </script>
@@ -426,10 +426,10 @@ const showEnergySurface = (): void => {
 
   <v-switch v-model="enableEnergyFiltering"
             label="Filter by energy" class="ml-2 mt-n2" />
-  <v-switch v-model="thresholdFromMinimum"
+  <v-switch v-model="thresholdFromMinimum" :disabled="!enableEnergyFiltering"
             label="Threshold from minimum energy" class="ml-2 mt-n5" />
   <v-row>
-    <v-number-input v-model="energyThreshold"
+    <v-number-input v-model="energyThreshold" :disabled="!enableEnergyFiltering"
                     :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
                     class="ml-4 mr-2" />
     <v-text-field v-model="energyThresholdEffective"
@@ -523,7 +523,8 @@ const showEnergySurface = (): void => {
   </v-btn>
   <!-- <v-btn block class="mb-6"
          :disabled="countDistances === 0" @click="showEnergySurface"> -->
-  <v-btn block class="mb-6" @click="showEnergySurface">
+  <v-btn block class="mb-6"
+         :disabled="true" @click="showEnergySurface">
     Show energy surface
   </v-btn>
 

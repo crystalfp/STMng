@@ -105,12 +105,12 @@ class Table {
 	/**
 	 * Dump the table for debug
 	 */
-	dump(): void {
-		console.log("=====");
-		console.log(this.headers.join(";"));
-		console.log("-----");
-		for(const row of this.rows) console.log(row.join(";"));
-	}
+	// dump(): void {
+	// 	console.log("=====");
+	// 	console.log(this.headers.join(";"));
+	// 	console.log("-----");
+	// 	for(const row of this.rows) console.log(row.join(";"));
+	// }
 }
 
 export class ReaderCIF implements ReaderImplementation {
