@@ -39,9 +39,6 @@ const countIsosurfaces = ref(2);
 const limits = ref<number[]>([-10, 10]);
 const limitColormap = ref(false);
 
-/** Available colormaps */
-const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
-
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
@@ -160,8 +157,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
     </g-debounced-slider>
   </v-container>
 
-  <v-select v-model="colormapName" label="Colormap"
-            :items="colormaps" class="mt-0 mx-2" />
+  <g-select-colormap v-model="colormapName" class="mt-0 mx-2" />
 
   <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-2">
     <v-label :text="`Opacity (${value.toFixed(1)})`" class="no-select" />

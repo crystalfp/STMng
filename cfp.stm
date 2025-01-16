@@ -38,9 +38,9 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        0.046856066172116684,
-        7.384329152104129,
-        17.550377469371263
+        4.330834550000001,
+        4.3991050000000005,
+        18.34293
       ],
       "lookAt": [
         4.330834550000001,
@@ -106,7 +106,7 @@
       "atomsTypes": "",
       "useBohr": true,
       "stepIncrement": 1,
-      "speed": 1
+      "speed": 0
     },
     "cfp": {
       "enableEnergyFiltering": false,

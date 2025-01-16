@@ -24,9 +24,6 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-/** Available colormaps */
-const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
-
 const dataset = ref(0);
 const axis = ref(0);
 const plane = ref(0);
@@ -199,8 +196,7 @@ watch([colormapName, colorIsolines], () => {
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </g-debounced-slider>
 
-  <v-select v-model="colormapName" label="Colormap"
-            :items="colormaps" class="mt-0 mx-2" />
+  <g-select-colormap v-model="colormapName" class="mt-0 mx-2" />
 
   <v-switch v-model="showIsolines" label="Show isolines" class="mt-2 ml-4" />
   <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mt-n5" />

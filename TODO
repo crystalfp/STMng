@@ -2,15 +2,18 @@ To do:
   ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
   ☐ Use `chagelogen`
-  ☐ Finish Fingerprinting
   ☐ Change watchEffect to watch
   ☐ Try to put labels as billboards
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
-  ☐ Add energy surface
+  ☐ Do both fingerprint and distance calculations by just one click
+  ☐ Energy file is read in Fingerprints, but would be more logical in Reader
+  ☐ In Scatterplot it would be useful to add correlation between the energy from global minimum and distance from the global minimum
+  ☐ There are still too many types of fingerprints. For per-element diffraction (atomic Oganov-Valle fingerprint) we can compute and visualize local degree of order
+  ☐ For fingerprinting I suggest to switch symmetry off automatically, by default
+  ☐ There are too many types of fingerprints. I would keep "Normalized diffraction" (we can rename it as Oganov-Valle fingerprint), and "Chemical scale spectra" (we can rename it as "Chemical scale weighted fingerprint"), "Re-centered per element diffraction" (we can rename it as "Per site fingerprints")
 
 Bugs:
-  ☐ Energy filtering does not work
 
 ToDo eventually:
   ☐ Check THREE.Layer for visibility
@@ -21,10 +24,8 @@ ToDo eventually:
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
   ☐ Is there any way to avoid callbacks for repetitive call?
-  ✔ Remove multiple invoke to the nodes @done(2025-01-12 09:10)
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
-  ✔ Readers do not fail if the file format is invalid @done(2025-01-12 09:10)
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
@@ -39,12 +40,14 @@ Study:
   ☐ Unify naming: graph, node, project
 
 Requests from Oganov:
-  ☐ Computation of fingerprints and their use to remove duplicate structures.
   ☐ An option to specify arbitrary section plane
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
+  ☐ Would it be possible to determine effective dimensionality of the energy landscape?
+  ☐ We start with the multicomponent fingerprint space. Then reduce its dimensionality to n (usually, n=3-4) and build a convex hull in space energy-principal fingerprint components.
+  ☐ Convert skinny cells to more cubic ones
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -57,6 +60,14 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Add widget for colormap selection @done(2025-01-16 08:06) @project(To do)
+  ✔ Energy filtering does not work @done(2025-01-16 06:42) @project(Bugs)
+  ✔ Energies of selected structures apparently are not written to a file @done(2025-01-16 07:07) @project(Bugs)
+  ✔ Remove multiple invoke to the nodes @done(2025-01-12 09:10) @project(ToDo eventually)
+  ✔ Finish Fingerprinting @done(2025-01-16 06:42) @project(To do)
+  ✔ Add energy surface @done(2025-01-16 06:42) @project(To do)
+  ✔ Readers do not fail if the file format is invalid @done(2025-01-12 09:10) @project(ToDo eventually)
+  ✔ Computation of fingerprints and their use to remove duplicate structures. @done(2025-01-16 07:12) @project(Requests from Oganov)
   ✘ Use `drop(1)` when searching for max/min in arrays @cancelled(2025-01-02 06:46) @project(To do)
   ✔ Edit project cfp.stm, add measure, save. Error in saveStatus. activeNodes should be updated. @done(2024-12-16 06:26) @project(Bugs)
   ✘ camera.type -> camera.isPerspective (boolean) @cancelled(2024-12-05 15:50) @project(To do)

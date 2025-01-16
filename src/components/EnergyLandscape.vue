@@ -54,9 +54,6 @@ const surfaceName = "Landscape";
 const colormapName = ref("blackbody");
 const lut = new Lut("blackbody", 256);
 
-/** Available colormaps */
-const colormaps = ["rainbow", "cooltowarm", "blackbody", "grayscale"];
-
 const initViewer = (): void => {
 
     if(!cnv.value) {
@@ -248,8 +245,7 @@ const renderSurface = (): void => {
                                 v-model:raw="showPower" label-width="5.5rem"
                                 :label="`Power (${showPower})`"
                                 :min="1" :max="6" :step="0.1" />
-        <v-select v-model="colormapName" label="Colormap"
-                  :items="colormaps" class="mt-2 mb-n2" />
+        <g-select-colormap v-model="colormapName" class="mt-2 mb-n2" />
 
         <v-btn v-focus @click="closeWindow('/landscape')" class="mr-2 mb-2">Close</v-btn>
       </div>

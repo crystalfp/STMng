@@ -145,6 +145,7 @@ const app = createApp(App)
 	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")))
 	.component("GSelectFile", defineAsyncComponent(() => import("./widgets/SelectFile.vue")))
 	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
+	.component("GSelectColormap", defineAsyncComponent(() => import("./widgets/SelectColormap.vue")))
 
 	// Directive to focus the element when the bound element is mounted into the DOM
     .directive("focus", {mounted(element: HTMLElement) {element.focus();}});
@@ -161,5 +162,5 @@ addEventListener("unhandledrejection", (event): void => {
 // Preload fonts for labels
 preloadFonts();
 
-// Mount (abd start) the application
+// Mount (and start) the application
 app.mount("#app");
