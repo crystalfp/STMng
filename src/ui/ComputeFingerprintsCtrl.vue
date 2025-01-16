@@ -46,6 +46,7 @@ resetAlertMessage("fingerprints");
 // Accumulate structures
 const countAccumulated = ref(0);
 const areNanoclusters = ref(false);
+const haveEnergies = ref(false);
 
 // Filter structures
 const enableEnergyFiltering = ref(false);
@@ -95,6 +96,7 @@ askNode(id, "init")
         energyThreshold.value = params.energyThreshold as number ?? 0;
         energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
         areNanoclusters.value = params.areNanoclusters as boolean ?? false;
+        haveEnergies.value = false;
 
         forceCutoff.value = params.forceCutoff as boolean ?? false;
         manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
@@ -157,6 +159,7 @@ const resetAccumulator = (): void => {
     resultDimensionality.value = 0;
     countDistances.value = 0;
     countGroups.value = 0;
+    haveEnergies.value = false;
 };
 
 /** Accumulating button label */
@@ -209,8 +212,10 @@ const selectEnergyFile = (filename: string): void => {
         countAccumulated.value = params.countAccumulated as number ?? 0;
         energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
         cutoffDistance.value = params.cutoffDistance as number ?? 0;
+        haveEnergies.value = true;
     })
     .catch((error: Error) => {
+        haveEnergies.value = false;
         showAlertMessage(`Error reading energy file: ${error.message}`, "fingerprints");
     });
 };
@@ -398,7 +403,7 @@ const showScatterplot = (): void => {
     sendToNode(id, "scatter");
 };
 
-const showEnergySurface = (): void => {
+const showEnergyLandscape = (): void => {
     sendToNode(id, "landscape");
 };
 
@@ -424,12 +429,12 @@ const showEnergySurface = (): void => {
 
   <v-label class="separator-title">Filter structures</v-label>
 
-  <v-switch v-model="enableEnergyFiltering"
+  <v-switch v-model="enableEnergyFiltering" :disabled="!haveEnergies"
             label="Filter by energy" class="ml-2 mt-n2" />
-  <v-switch v-model="thresholdFromMinimum" :disabled="!enableEnergyFiltering"
+  <v-switch v-model="thresholdFromMinimum" :disabled="!enableEnergyFiltering || !haveEnergies"
             label="Threshold from minimum energy" class="ml-2 mt-n5" />
   <v-row>
-    <v-number-input v-model="energyThreshold" :disabled="!enableEnergyFiltering"
+    <v-number-input v-model="energyThreshold" :disabled="!enableEnergyFiltering || !haveEnergies"
                     :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
                     class="ml-4 mr-2" />
     <v-text-field v-model="energyThresholdEffective"
@@ -488,7 +493,7 @@ const showEnergySurface = (): void => {
   </v-label>
   <v-label v-if="distanceBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
-  <v-label class="separator-title">Classify structures</v-label>
+  <v-label class="separator-title">Structure landscape</v-label>
 
   <v-select v-model="groupingMethod"
     :items="groupingMethods"
@@ -521,11 +526,9 @@ const showEnergySurface = (): void => {
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot
   </v-btn>
-  <!-- <v-btn block class="mb-6"
-         :disabled="countDistances === 0" @click="showEnergySurface"> -->
   <v-btn block class="mb-6"
-         :disabled="true" @click="showEnergySurface">
-    Show energy surface
+         :disabled="countDistances === 0 || !haveEnergies" @click="showEnergyLandscape">
+    Show energy landscape
   </v-btn>
 
   <g-error-alert kind="fingerprints" />

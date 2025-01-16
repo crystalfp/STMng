@@ -535,9 +535,9 @@ export interface ScatterplotData {
 
 export interface EnergyLandscapeData {
 
-    /** Interpolated energy values on a grid side x side and scaled 0 to 1 */
-    grid: number[];
+    /** Fingerprints projected in 2D. The coordinates are normalized between 0 and 1 */
+    points: number[][];
 
-    /** Side of the grid */
-    side: number;
+    /** Corresponding energies (unnormalized) */
+    energies: number[];
 }

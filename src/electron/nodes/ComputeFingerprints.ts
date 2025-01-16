@@ -17,7 +17,6 @@ import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
-import {scatterToUniform} from "../fingerprint/ScatterToUniform";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
 			 EnergyLandscapeData, PositionType} from "@/types";
 
@@ -329,15 +328,9 @@ export class ComputeFingerprints extends NodeCore {
 		// Take the distance matrix and project it in 2D
 		const points = this.dist.getProjectedPoints();
 
-		// TBD Get the parameters for the interpolation
-		const gridSide = 128;
-		const power = 2;
-
-		// Interpolate the scatter points to a regular grid and send to client
-		const grid = scatterToUniform(gridSide, points, energies, power);
 		const energyLandscapeData: EnergyLandscapeData = {
-			grid,
-			side: gridSide
+			points,
+			energies
 		};
 		const dataToSend = JSON.stringify(energyLandscapeData);
 
@@ -351,7 +344,7 @@ export class ComputeFingerprints extends NodeCore {
 			// Create the energy landscape window
 			createSecondaryWindowWithRetry({
 				routerPath: "/landscape",
-				width: 1200,
+				width: 1500,
 				height: 900,
 				title: "Fingerprints energy landscape",
 				data: dataToSend
@@ -708,8 +701,7 @@ export class ComputeFingerprints extends NodeCore {
 				if(sts.error) sendAlertMessage(sts.error as string, "fingerprints");
 
         		const pos = filename.lastIndexOf(".");
-				const energyFilename = pos > 0 ? `${filename.slice(pos+1)}.energy` : `${filename}.energy`;
-
+				const energyFilename = pos > 0 ? `${filename.slice(0, pos)}.energy` : `${filename}.energy`;
 				writeFileSync(energyFilename, energies.join("\n"), "utf8");
 			});
 		}
@@ -719,8 +711,7 @@ export class ComputeFingerprints extends NodeCore {
 	 * Channel handler for opening energy surface display
 	 */
 	private channelLandscape(): void {
-		// TBD
-		this.createUpdateLandscape("create");
 
+		this.createUpdateLandscape("create");
 	}
 }

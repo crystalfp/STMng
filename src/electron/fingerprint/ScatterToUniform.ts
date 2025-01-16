@@ -12,14 +12,14 @@
  * @param x - Grid point X coordinate
  * @param y - Grid point Y coordinate
  * @param points - List of scatter points coordinates
- * @param energies - Corresponding energies
+ * @param values - Corresponding values
  * @param power - Factor to weight distances
  * @returns Interpolated value in the (x, y) point
  */
 const shepardInterpolation = (x: number,
 							  y: number,
 							  points: number[][],
-							  energies: number[],
+							  values: number[],
 							  power = 2): number => {
 
 	let numerator = 0;
@@ -29,10 +29,10 @@ const shepardInterpolation = (x: number,
 
 		const [px, py] = points[i];
 		const distance = Math.hypot(x-px, y-py);
-		if(distance === 0) return energies[i];
+		if(distance === 0) return values[i];
 
 		const weight = 1 / (distance ** power);
-		numerator += weight * energies[i];
+		numerator += weight * values[i];
 		denominator += weight;
 	}
 
@@ -44,13 +44,13 @@ const shepardInterpolation = (x: number,
  *
  * @param gridSide - Resulting square grid side
  * @param points - Scatter points to interpolate
- * @param energies - Corresponding energies
+ * @param values - Associated values
  * @param power - Factor to weight distances
  * @returns Values on the grid nodes
  */
 export const scatterToUniform = (gridSide: number,
 								 points: number[][],
-								 energies: number[],
+								 values: number[],
 								 power = 2): number[] => {
 
 	// Normalize mapped points coordinates between 0 and 1
@@ -82,13 +82,17 @@ export const scatterToUniform = (gridSide: number,
 	}
 
 	const result = Array(gridSide*gridSide).fill(0) as number[];
-	for(let i = 0; i < gridSide; i++) {
-		for(let j = 0; j < gridSide; j++) {
 
-			const x = i / (gridSide - 1);
-			const y = j / (gridSide - 1);
-			const interpolatedValue = shepardInterpolation(x, y, normalizedPoints, energies, power);
-			result[j * gridSide + i] = interpolatedValue;
+	if(values.length > 0) {
+
+		for(let i = 0; i < gridSide; i++) {
+			for(let j = 0; j < gridSide; j++) {
+
+				const x = i / (gridSide - 1);
+				const y = j / (gridSide - 1);
+				const interpolatedValue = shepardInterpolation(x, y, normalizedPoints, values, power);
+				result[j * gridSide + i] = interpolatedValue;
+			}
 		}
 	}
 

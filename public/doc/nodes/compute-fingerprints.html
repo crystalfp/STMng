@@ -212,6 +212,11 @@
   <td class="c2">button</td>
   <td class="c3">Open the Fingerprints scatterplot window.</td>
 </tr>
+<tr>
+  <td class="c1">Show energy landscape</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the Show energy landscape window.</td>
+</tr>
 </table>
 
 <h2>Fingerprints scatterplot window</h2>
@@ -220,9 +225,9 @@
 <dl style="margin-left: 20px;">
   <dt>Group</dt><dd>One point for each structure colored by group.</dd>
   <dt>Energy</dt><dd>One point for each structure colored by energy.</dd>
-  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance.</dd>
+  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for bad mapped distances.</dd>
   <dt>Quality</dt><dd>Grouping quality using the
-  	  <a ref="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>.</dd>
+  	  <a ref="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1 that show perfect association to the group of the point, to -1 that show the point is in the wrong group. There are two special cases: the point is alone in a group and the point is in the border between two groups.</dd>
 </dl>
 <p>The grouping quality color scale is:</p>
 <ul>
@@ -265,6 +270,7 @@
   <td class="c3">Close the window.</td>
 </tr>
 </table>
+
 <h2>Manage point selection dialog</h2>
 <table cellpadding="2" cellspacing="2">
 <tr>
@@ -301,6 +307,36 @@
   <td class="c1">Export selected</td>
   <td class="c2">button</td>
   <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy file.</td>
+</tr>
+</table>
+
+<h2>Show energy landscape window</h2>
+<p>Show the energy surface interpolating the computed fingerprints and the corresponding energies.</p>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Scale</td>
+	<td class="c2">slider</td>
+	<td class="c3">Vertical scale of the plot.</td>
+</tr>
+<tr>
+	<td class="c1">Grid side</td>
+	<td class="c2">slider</td>
+	<td class="c3">Side of the resulting square surface. It is a power of two.</td>
+</tr>
+<tr>
+	<td class="c1">Power</td>
+	<td class="c2">slider</td>
+	<td class="c3">Parameter for the interpolation. Normally it is two, bigger values make the points influence be more local to a given point.</td>
+</tr>
+<tr>
+	<td class="c1">Colormap</td>
+	<td class="c2">selector</td>
+	<td class="c3">Name of the colormap to convert value into color.</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window.</td>
 </tr>
 </table>
 
