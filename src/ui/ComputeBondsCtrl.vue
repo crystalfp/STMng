@@ -77,7 +77,7 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
         perPairData:         JSON.stringify(perPairData.value),
         enlargementKind:     enlargementKind.value
     });
-});
+}, {deep: true});
 
 receiveFromNode(id, "params", (params: CtrlParams) => {
 

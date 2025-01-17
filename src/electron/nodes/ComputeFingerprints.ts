@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {ipcMain} from "electron";
-import {readFileSync, writeFileSync} from "node:fs";
+import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen, sendAlertMessage,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
@@ -88,6 +88,9 @@ export class ComputeFingerprints extends NodeCore {
 			catch(error: unknown) {
 				sendAlertMessage((error as Error).message, "fingerprints");
 			}
+			sendToClient(this.id, "has-energies", {
+				haveEnergies: this.accumulator.accumulatedHaveEnergies()
+			});
 			this.doFiltering();
 		}
 		else {
@@ -442,6 +445,9 @@ export class ComputeFingerprints extends NodeCore {
 			catch(error: unknown) {
 				sendAlertMessage((error as Error).message, "fingerprints");
 			}
+			sendToClient(this.id, "has-energies", {
+				haveEnergies: this.accumulator.accumulatedHaveEnergies()
+			});
 
 			const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
 														   this.energyThreshold,
@@ -490,20 +496,6 @@ export class ComputeFingerprints extends NodeCore {
 	 * @returns Results from the filtering
 	 */
 	private channelEnergy(params: CtrlParams): CtrlParams {
-
-		const filename = params.filename as string;
-		if(filename) {
-			try {
-				const energiesRaw = readFileSync(filename, "utf8") + "\n";
-				this.accumulator.loadEnergies(energiesRaw
-													.replaceAll(/\s+/g, "\n")
-													.split("\n")
-													.map((line) => Number.parseFloat(line)));
-			}
-			catch(error: unknown) {
-				sendAlertMessage(`Error reading energy file: ${(error as Error).message}`, "fingerprints");
-			}
-		};
 
         this.enableEnergyFiltering = params.enableEnergyFiltering as boolean ?? false;
         this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;

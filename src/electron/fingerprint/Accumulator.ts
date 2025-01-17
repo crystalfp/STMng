@@ -58,12 +58,12 @@ interface FilteringStatus {
 export class FingerprintsAccumulator {
 
 	private readonly accumulator: StructureReduced[] = [];
-	private readonly energyPerStructure: number[] = [];
 	private thresholdEnergy = 0;
 	private countSelected = 0;
 	private areNanoclusters = false;
 	private countSpecies = 0;
 	private readonly idx2id = new Map<number, number>();
+	private hasEnergies: boolean | undefined = undefined;
 
 	/**
 	 * Add one structure to the accumulator
@@ -76,7 +76,7 @@ export class FingerprintsAccumulator {
 	 */
 	add(structure: Structure, isNanocluster: boolean): boolean {
 
-		const {crystal, atoms} = structure;
+		const {crystal, atoms, extra} = structure;
 		const {basis, origin} = crystal;
 
 		// Check structure not empty
@@ -94,8 +94,8 @@ export class FingerprintsAccumulator {
 			this.recomputeMaxRadius();
 		}
 
-		const energy = this.energyPerStructure.length > this.accumulator.length ?
-									this.energyPerStructure[this.accumulator.length] : undefined;
+		// Check if all structures have energy
+		if(this.hasEnergies === undefined || this.hasEnergies) this.hasEnergies = extra.energy !== undefined;
 
 		// Load the structure clone
 		const entry: StructureReduced = {
@@ -114,7 +114,7 @@ export class FingerprintsAccumulator {
 			species: new Map<number, number>(),
 
 			selected: true,
-			energy,
+			energy: extra.energy,
 
 			fingerprint: [],
 			countSections: 0,
@@ -161,8 +161,8 @@ export class FingerprintsAccumulator {
 	 */
 	clear(): void {
 		this.accumulator.length = 0;
-		this.energyPerStructure.length = 0;
 		this.idx2id.clear();
+		this.hasEnergies = undefined;
 	}
 
 	/**
@@ -184,21 +184,12 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
-	 * Load the list of energies per structure
+	 * Check if energies have been loaded
 	 *
-	 * @param energies - Energies per structure
+	 * @returns True if the loaded structures have energies
 	 */
-	loadEnergies(energies: number[]): void {
-
-		this.energyPerStructure.length = energies.length;
-		for(let i = 0; i < energies.length; ++i) this.energyPerStructure[i] = energies[i];
-
-		// If possible, update the energies in the accumulated structures
-		for(const structure of this.accumulator) {
-
-			structure.energy = structure.index < this.energyPerStructure.length ?
-										this.energyPerStructure[structure.index] : undefined;
-		}
+	accumulatedHaveEnergies(): boolean {
+		return this.hasEnergies ?? false;
 	}
 
 	/**
@@ -216,21 +207,8 @@ export class FingerprintsAccumulator {
 		// Reload the mapping
 		this.idx2id.clear();
 
-		// Load energies
-		const cnt = this.accumulator.length;
-		if(this.energyPerStructure.length >= cnt) {
-			for(let i=0; i < cnt; ++i) {
-				this.accumulator[i].energy = this.energyPerStructure[i];
-			}
-		}
-		else {
-			for(let i=0; i < cnt; ++i) {
-				this.accumulator[i].energy = 0;
-			}
-		}
-
 		// No energy loaded or no filtering requested
-		if(!enableEnergyFiltering || this.energyPerStructure.length === 0) {
+		if(!enableEnergyFiltering || !this.hasEnergies) {
 
 			for(const structure of this.accumulator) {
 				structure.selected = true;
@@ -246,17 +224,9 @@ export class FingerprintsAccumulator {
 		// Compute energy threshold
 		if(thresholdFromMinimum) {
 
-			if(cnt > this.energyPerStructure.length) {
-				this.countSelected = 0;
-				return {
-					countSelected: 0,
-					threshold: 0,
-					error: "Energies are less than structures"
-				};
-			}
-			let min = this.energyPerStructure[0];
-			for(let i = 1; i < cnt; ++i) {
-				if(this.energyPerStructure[i] < min) min = this.energyPerStructure[i];
+			let min = Number.POSITIVE_INFINITY;
+			for(const structure of this.accumulator) {
+				if(structure.energy! < min) min = structure.energy!;
 			}
 			this.thresholdEnergy = min + energyThreshold;
 		}
@@ -269,7 +239,7 @@ export class FingerprintsAccumulator {
 		const len = this.accumulator.length;
 		let j = 0;
 		for(let i = 0; i < len; ++i) {
-			if(this.energyPerStructure[i] <= this.thresholdEnergy) {
+			if(this.accumulator[i].energy! <= this.thresholdEnergy) {
 				++countSelected;
 				this.accumulator[i].selected = true;
 				this.idx2id.set(j++, i);

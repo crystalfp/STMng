@@ -148,6 +148,12 @@ receiveFromNode(id, "load", (params) => {
     areNanoclusters.value = params.areNanoclusters as boolean ?? false;
 });
 
+/** Update the energies present status */
+receiveFromNode(id, "has-energies", (params) => {
+
+    haveEnergies.value = params.haveEnergies as boolean ?? false;
+});
+
 /**
  * Clear the accumulated structures
  */
@@ -161,11 +167,6 @@ const resetAccumulator = (): void => {
     countGroups.value = 0;
     haveEnergies.value = false;
 };
-
-/** Accumulating button label */
-const accumulatingLabel = computed(() => (fingerprintsAccumulate.value ?
-                                                            "Stop accumulating" :
-                                                            "Start accumulating"));
 
 /** Changes accumulating structures request */
 watch([fingerprintsAccumulate], () => {
@@ -185,43 +186,6 @@ watch([fingerprintsAccumulate], () => {
     .catch((error: Error) => showAlertMessage(`Error from toggle capture for ${label}: ${error.message}`,
                                               "fingerprints"));
 });
-
-/**
- * Start/stop accumulating structures on the UI
- */
-const toggleAccumulating = (): void => {
-
-    controlStore.fingerprintsAccumulate = !controlStore.fingerprintsAccumulate;
-};
-
-/**
- * Select and load the energy file
- *
- * @param filename - Energy file to be loaded
- */
-const selectEnergyFile = (filename: string): void => {
-
-    askNode(id, "energy", {
-        filename,
-        enableEnergyFiltering: enableEnergyFiltering.value,
-        thresholdFromMinimum: thresholdFromMinimum.value,
-        energyThreshold: energyThreshold.value,
-    })
-    .then((params) => {
-        countSelected.value = params.countSelected as number ?? 0;
-        countAccumulated.value = params.countAccumulated as number ?? 0;
-        energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
-        cutoffDistance.value = params.cutoffDistance as number ?? 0;
-        haveEnergies.value = true;
-    })
-    .catch((error: Error) => {
-        haveEnergies.value = false;
-        showAlertMessage(`Error reading energy file: ${error.message}`, "fingerprints");
-    });
-};
-
-/** The JSON encoded filter for the energy file */
-const energyFileFilter = '[{"name":"Energies","extensions":["energy"]},{"name":"All","extensions":["*"]}]';
 
 /** Count of the structures selected */
 const accumulatedLabel = computed(() => {
@@ -412,20 +376,13 @@ const showEnergyLandscape = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="separator-title mt-n1" style="border: none">Accumulate structures</v-label>
+  <v-label class="separator-title mt-0" style="border: none">Accumulated structures</v-label>
 
   <v-row class="mt-0 mb-4 mx-2">
     <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
     <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
   </v-row>
-  <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
-            label="Structures are nanoclusters" class="ml-2 my-n3" />
-
-  <g-select-file class="mb-5 mr-2" title="Select energy file"
-                 :filter="energyFileFilter" @selected="selectEnergyFile" />
-
-  <v-btn block @click="toggleAccumulating">{{ accumulatingLabel }}</v-btn>
 
   <v-label class="separator-title">Filter structures</v-label>
 
@@ -445,6 +402,8 @@ const showEnergyLandscape = (): void => {
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
+  <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
+            label="Structures are nanoclusters" class="ml-2 mt-n1 mb-n3" />
   <v-row class="mt-0 mx-0">
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2" />
     <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"

@@ -12,7 +12,7 @@ import {Slab} from "./Slab";
 import type {FingerprintingMethodName, FingerprintingMethodResult,
              FingerprintingParameters} from "@/types";
 import type {FingerprintsAccumulator, StructureReduced} from "./Accumulator";
-import {MapChemScale, MapMendeleev} from "./MapPettifor";
+import {MapChemicalScale} from "./ChemicalScale";
 
 /** Superclass of all fingerprinting methods */
 abstract class FingerprintMethod {
@@ -253,95 +253,12 @@ class NormalizedDiffraction extends FingerprintMethod {
     }
 }
 
-// > Mendeleev spectra method
-class MendeleevSpectra extends NormalizedDiffraction {
-
-    protected override zmap = MapMendeleev;
-};
 
 // > Chemical scale spectra method
 class ChemicalScaleSpectra extends NormalizedDiffraction {
 
-    protected override zmap = MapChemScale;
+    protected override zmap = MapChemicalScale;
 };
-
-// > Distances per atom method
-class DistancesPerAtom extends FingerprintMethod {
-
-    private slab: Slab | undefined;
-
-    init(): string {
-
-        // Create the slab limited to the unit cell and by atoms, not species
-        this.slab = new Slab(0, true, true);
-
-        return "";
-    }
-
-    protected distancePerAtomFingerprinting(structure: StructureReduced): number {
-
-        // Compute interatomic distances inside the unit cell
-        this.slab!.computeInteratomicDistances(structure);
-
-        const {atomsZ, fingerprint} = structure;
-
-        const natoms = atomsZ.length;
-        let sectionLength = 0;
-        for(let idx=0; idx < natoms; ++idx) {
-            const countDistances = this.slab!.getDistancesForZ(idx).length;
-            if(countDistances > sectionLength) sectionLength = countDistances;
-        }
-        fingerprint.length = natoms*sectionLength;
-        fingerprint.fill(0);
-
-        let section = 0;
-        for(let idx=0; idx < natoms; ++idx) {
-            const distances = this.slab!.getDistancesForZ(idx).toSorted((a, b) => b[1]-a[1]);
-            let i = 0;
-            for(const distance of distances) {
-                fingerprint[section*sectionLength+i] = distance[1];
-                ++i;
-            }
-            ++section;
-        }
-        this.slab!.reset();
-
-        return sectionLength;
-    }
-
-    fingerprinting(structure: StructureReduced): FingerprintingMethodResult {
-
-        const sectionLength = this.distancePerAtomFingerprinting(structure);
-        const {atomsZ, weights} = structure;
-
-        const natoms = atomsZ.length;
-
-        // No weights, distance will be computed pairing atoms
-        weights.length = 0;
-
-        return {dimension: natoms*sectionLength, countSections: natoms, sectionLength};
-    }
-}
-
-// > Merged distances method
-class MergedDistances extends DistancesPerAtom {
-
-    override fingerprinting(structure: StructureReduced): FingerprintingMethodResult {
-
-        const sectionLength = this.distancePerAtomFingerprinting(structure);
-        const {atomsZ, weights, fingerprint} = structure;
-
-        const natoms = atomsZ.length;
-
-        fingerprint.sort((a, b) => b-a);
-
-        // Set equal weights
-        weights.length = 1;
-        weights[0] = 1;
-
-        return {dimension: natoms*sectionLength, countSections: 1, sectionLength: natoms*sectionLength};
-    }
-}
 
 // > Re-centered per element diffraction method
 class RecenteredRdfHistogram extends PerElementRdfHistogram {
@@ -396,100 +313,18 @@ class RecenteredRdfHistogram extends PerElementRdfHistogram {
     }
 }
 
-// > Trimmed per element diffraction method
-class TrimmedRdfHistogram extends PerElementRdfHistogram {
-
-    private nloaded = 0;
-    private readonly minValues: number[] = [];
-    private readonly maxValues: number[] = [];
-
-    override init(params: FingerprintingParameters): string {
-        return super.init(params);
-    }
-
-    override fingerprinting(structure: StructureReduced): FingerprintingMethodResult {
-
-        const result = super.fingerprinting(structure);
-
-        const {fingerprint} = structure;
-
-        if(this.nloaded > 0) {
-
-            for(let i=0; i < result.dimension; ++i) {
-
-                if(fingerprint[i] < this.minValues[i]) this.minValues[i] = fingerprint[i];
-                if(fingerprint[i] > this.maxValues[i]) this.maxValues[i] = fingerprint[i];
-            }
-            ++this.nloaded;
-        }
-        else {
-            this.minValues.length = result.dimension;
-            this.maxValues.length = result.dimension;
-            for(let i=0; i < result.dimension; ++i) {
-
-                this.minValues[i] = this.maxValues[i] = fingerprint[i];
-            }
-            this.nloaded = 1;
-        }
-
-        return result;
-    }
-
-    override finish(accumulator: FingerprintsAccumulator): number {
-
-        const nvalues = this.minValues.length;
-        const dimIncluded: boolean[] = Array(nvalues) as boolean[];
-        const TOL = 1e-3;
-
-        for(let i=0; i < nvalues; ++i) {
-			const perc = (this.maxValues[i]-this.minValues[i])/(this.maxValues[i]+this.minValues[i]);
-			dimIncluded[i] = (perc > TOL || perc < -TOL);
-        }
-
-        let dimension = 0;
-		for(const structure of accumulator.iterateSelectedStructures()) {
-
-            const {fingerprint} = structure;
-
-            const resultingFingerprint: number[] = [];
-
-            for(let i=0; i < nvalues; ++i) {
-                if(dimIncluded[i]) resultingFingerprint.push(fingerprint[i]);
-            }
-
-            fingerprint.length = 0;
-            for(const fp of resultingFingerprint) fingerprint.push(fp);
-            dimension = fingerprint.length;
-        }
-
-        // Reset working arrays
-        this.minValues.length = 0;
-        this.maxValues.length = 0;
-        this.nloaded = 0;
-        return dimension;
-    }
-}
-
 // > Fingerprinting methods list
 /** Type of the table of fingerprinting methods */
 type FingerprintingMethod = FingerprintingMethodName & {method: FingerprintMethod};
 
 /** Fingerprinting methods list */
 export const fingerprintingMethods: FingerprintingMethod[] = [
-    {label: "Normalized diffraction",				needSizes: true,  forNanoclusters: false,
-        method: new NormalizedDiffraction()},
-    {label: "Mendeleev spectra",					needSizes: true,  forNanoclusters: false,
-        method: new MendeleevSpectra()},
-    {label: "Chemical scale spectra",				needSizes: true,  forNanoclusters: false,
-        method: new ChemicalScaleSpectra()},
-    {label: "Per element diffraction",				needSizes: true,  forNanoclusters: true,
-        method: new PerElementRdfHistogram()},
-    {label: "Distances per atom",					needSizes: false, forNanoclusters: false,
-        method: new DistancesPerAtom()},
-    {label: "Merged distances",						needSizes: false, forNanoclusters: false,
-        method: new MergedDistances()},
-    {label: "Re-centered per element diffraction",	needSizes: true,  forNanoclusters: true,
-        method: new RecenteredRdfHistogram()},
-    {label: "Trimmed per element diffraction",		needSizes: false, forNanoclusters: true,
-        method: new TrimmedRdfHistogram()},
+    {label: "Oganov-Valle fingerprint",				needSizes: true,  forNanoclusters: false,
+                                                    method: new NormalizedDiffraction()},
+    {label: "Chemical scale weighted fingerprint",	needSizes: true,  forNanoclusters: false,
+                                                    method: new ChemicalScaleSpectra()},
+    {label: "Per element fingerprint",				needSizes: true,  forNanoclusters: true,
+                                                    method: new PerElementRdfHistogram()},
+    {label: "Per site fingerprint",                 needSizes: true,  forNanoclusters: true,
+                                                    method: new RecenteredRdfHistogram()},
 ];

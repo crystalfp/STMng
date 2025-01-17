@@ -663,8 +663,8 @@ const legendContinue = computed(() => {
                 :r="pointRadius" :style="{fill: n.color}"
                 @click.stop="selectPoint(index)"/>
         <text v-if="textShow" :x="textX" :y="textY" :fill="fgColor">
-            <tspan :x="textX">{{ textLine1 }}</tspan>
-            <tspan :x="textX" dy="20">{{ textLine2 }}</tspan>
+          <tspan :x="textX">{{ textLine1 }}</tspan>
+          <tspan :x="textX" dy="20">{{ textLine2 }}</tspan>
         </text>
       </svg>
       <div v-if="showLegendDiscrete" class="legend">
@@ -697,7 +697,7 @@ const legendContinue = computed(() => {
                                 v-model:raw="showPointRadius" label-width="8rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn @click="showSelect=true">Select</v-btn>
+        <v-btn @click="showSelect=true">Manage</v-btn>
         <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n5">

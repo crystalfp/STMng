@@ -126,8 +126,8 @@ const MAX_PETTIFOR_Z = coefficients.length-1;
  * @param z - Atom Z value
  * @returns The Mendeleev number
  */
-export const MapMendeleev = (z: number): number =>
-    (z > MAX_PETTIFOR_Z ? 0 : coefficients[z].mendeleevNumber);
+// export const MapMendeleev = (z: number): number =>
+//     (z > MAX_PETTIFOR_Z ? 0 : coefficients[z].mendeleevNumber);
 
 /**
  * Get the chemical scale correction for a given atom type
