@@ -74,7 +74,7 @@ export class InterpolateVolume extends NodeCore {
 	 */
 	private computeInterpolation(): void {
 
-		const {volume, crystal, atoms, bonds} = this.structure!;
+		const {volume, crystal, atoms, bonds, extra} = this.structure!;
 
 		// If no volumetric data or no interpolation request return the input structure
 		if(!this.interpolateVolume || volume.length === 0) {
@@ -88,7 +88,8 @@ export class InterpolateVolume extends NodeCore {
 			crystal,
 			atoms,
 			bonds,
-			volume: []
+			volume: [],
+			extra
 		};
 
 		// Interpolate the requested dataset

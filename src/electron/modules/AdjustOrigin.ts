@@ -47,7 +47,7 @@ export const adjustOrigin = (structure: Structure,
 	// No adjustment, do nothing
 	if(pa === 0 && pb === 0 && pc === 0) return structure;
 
-	const {crystal, atoms} = structure;
+	const {crystal, atoms, extra} = structure;
 	const {basis, origin, spaceGroup} = crystal;
 
 	const updatedOrigin: PositionType = [
@@ -104,7 +104,8 @@ export const adjustOrigin = (structure: Structure,
 		},
 		atoms: updatedAtoms,
 		bonds: [],
-		volume: []
+		volume: [],
+		extra
 	};
 
 	return out;

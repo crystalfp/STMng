@@ -7,7 +7,7 @@
  * @since 2024-07-16
  */
 
-import {ref, watch} from "vue";
+import {ref, watch, computed} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {askNode, sendToNode} from "@/services/RoutesClient";
@@ -36,6 +36,7 @@ const fileFormats = [
     "LAMMPS",
     "LAMMPStrj",
     "POSCAR",
+    "POSCAR + ENERGY",
     "POSCAR + XDATCAR",
     "Shel-X",
     "XYZ"
@@ -205,7 +206,12 @@ const setFormat = (): void => {
 };
 
 /** Formats that needs atoms types */
-const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS", "LAMMPStrj", "POSCAR + XDATCAR"]);
+const formatsThatNeedsAtomTypes = new Set(["POSCAR",
+                                           "CHGCAR",
+                                           "LAMMPS",
+                                           "LAMMPStrj",
+                                           "POSCAR + XDATCAR",
+                                           "POSCAR + ENERGY"]);
 
 /**
  * Check if the format needs the atom types
@@ -265,14 +271,14 @@ const selectedFile = (filename: string): void => {
 
 // > Load auxiliary file
 /**
- * Start loading a XDATCAR auxiliary file
+ * Start loading an auxiliary file
  *
- * @param filename - Selected filename
+ * @param filename - Selected auxiliary filename
  */
 const selectedAuxFile = (filename: string): void => {
 
     askNode(id, "aux", {
-            format: "XDATCAR",
+            format: format.value,
             auxFileToRead: filename,
         })
         .then((params) => {
@@ -280,10 +286,9 @@ const selectedAuxFile = (filename: string): void => {
             countSteps.value = params.countSteps as number ?? 1;
         })
         .catch((error: Error) => {
-            showAlertMessage(`Error from load aux file: ${error.message}`, "structureReader");
+            showAlertMessage(`Error loading auxiliary file: ${error.message}`, "structureReader");
         });
 };
-
 
 // > Set filters
 /**
@@ -322,6 +327,7 @@ const filterFromFormat = (fileFormat: string): string => {
             break;
 		case "POSCAR":
 		case "POSCAR + XDATCAR":
+        case "POSCAR + ENERGY":
 			filter = [{name: "POSCAR",	        extensions: ["poscar", "poscars"]},
 					  {name: "All",		        extensions: ["*"]}];
             break;
@@ -341,12 +347,34 @@ const filterFromFormat = (fileFormat: string): string => {
     return JSON.stringify(filter);
 };
 
-/** The JSON encoded filter for XDATCAR auxiliary file */
-const filterForXDATCAR = '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"All","extensions":["*"]}]';
-
 // To clear the select atoms labels
 const label1 = ref("");
 const label2 = ref("");
+
+/** Data for formats that have an auxiliary file */
+const auxSetup = computed(() => {
+
+    switch(format.value) {
+        case "POSCAR + ENERGY":
+            return {
+                hasAux: true,
+                title: "Select ENERGY file",
+                filter: '[{"name":"ENERGY","extensions":["energy"]},{"name":"All","extensions":["*"]}]',
+            };
+        case "POSCAR + XDATCAR":
+            return {
+                hasAux: true,
+                title: "Select XDATCAR file",
+                filter: '[{"name":"XDATCAR","extensions":["xdatcar"]},{"name":"All","extensions":["*"]}]',
+            };
+        default:
+            return {
+                hasAux: false,
+                title: "",
+                filter: "",
+            };
+    }
+});
 
 </script>
 
@@ -369,9 +397,9 @@ const label2 = ref("");
   <g-select-file v-model="label1" class="mt-2" :disabled="format === ''" title="Select input file"
                  :filter="filterFromFormat(format)" @selected="selectedFile" />
 
-  <g-select-file v-if="format === 'POSCAR + XDATCAR'" v-model="label2" class="mt-2"
-                 :filter="filterForXDATCAR"
-                 title="Select XDATCAR file" @selected="selectedAuxFile"/>
+  <g-select-file v-if="auxSetup.hasAux" v-model="label2" class="mt-2"
+                 :filter="auxSetup.filter"
+                 :title="auxSetup.title" @selected="selectedAuxFile"/>
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
             label="Use Bohr units" class="ml-2 mt-4" @update:model-value="setUseBohr" />

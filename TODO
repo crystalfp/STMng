@@ -12,6 +12,7 @@ To do:
   ☐ There are still too many types of fingerprints. For per-element diffraction (atomic Oganov-Valle fingerprint) we can compute and visualize local degree of order
   ☐ For fingerprinting I suggest to switch symmetry off automatically, by default
   ☐ There are too many types of fingerprints. I would keep "Normalized diffraction" (we can rename it as Oganov-Valle fingerprint), and "Chemical scale spectra" (we can rename it as "Chemical scale weighted fingerprint"), "Re-centered per element diffraction" (we can rename it as "Per site fingerprints")
+  ☐ "Normalized diffraction" (rename to "Oganov-Valle fingerprint") "Mendeleev spectra" (remove) "Chemical scale spectra" (rename to "Chemical scale weighted fingerprint") "Per element diffraction" (keep?) "Distances per atom" (remove) "Merged distances" (remove) "Re-centered per element diffraction" (rename to "Per site fingerprints") "Trimmed per element diffraction" (remove)
 
 Bugs:
 

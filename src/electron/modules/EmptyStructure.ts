@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-24
  */
-import type {Structure, Crystal, Atom, Bond, Volume} from "@/types";
+import type {Structure, Crystal, Atom, Bond, Volume, Extra} from "@/types";
 
 export class EmptyStructure implements Structure {
 
@@ -18,4 +18,5 @@ export class EmptyStructure implements Structure {
 	public atoms: Atom[] = [];
 	public bonds: Bond[] = [];
 	public volume: Volume[] = [];
+	public extra: Extra = {};
 }

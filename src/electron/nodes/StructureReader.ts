@@ -25,9 +25,11 @@ import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
 import {ReaderCEL} from "../readers/ReadCEL";
 
 import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
+import {readAuxENERGY} from "../readers/AuxENERGY";
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
-										   "LAMMPStrj", "POSCAR + XDATCAR"]);
+										   "LAMMPStrj", "POSCAR + XDATCAR",
+										   "POSCAR + ENERGY"]);
 
 export class StructureReader extends NodeCore {
 
@@ -141,6 +143,7 @@ export class StructureReader extends NodeCore {
 					break;
 				case "POSCAR":
 				case "POSCAR + XDATCAR":
+				case "POSCAR + ENERGY":
 					reader = new ReaderPOSCAR();
 					break;
 				case "CIF":
@@ -237,11 +240,16 @@ export class StructureReader extends NodeCore {
 
 		try {
 
-			// If the number of formats increases, change this into a switch statement
-			if(mainFormat === "POSCAR + XDATCAR") {
-				this.structures = await readAuxXDATCAR(filename, this.structures[0]);
+			switch(mainFormat) {
+				case "POSCAR + XDATCAR":
+					this.structures = await readAuxXDATCAR(filename, this.structures[0]);
+					break;
+				case "POSCAR + ENERGY":
+					this.structures = readAuxENERGY(filename, this.structures);
+					break;
+				default:
+					throw Error(`Format "${mainFormat}" has no auxiliary file`);
 			}
-			else throw Error(`Format "${mainFormat}" has no auxiliary file`);
 		}
 		catch(error) {
 			const message = `Error reading auxiliary file: ${(error as Error).message}`;
@@ -403,7 +411,7 @@ export class StructureReader extends NodeCore {
 	private changeBohrUnits(): void {
 
 		if(!this.structures[0]) return;
-		const {crystal, atoms, volume} = this.structures[0];
+		const {crystal, atoms, volume, extra} = this.structures[0];
 		if(!crystal) return;
 		const {basis, origin, spaceGroup} = crystal;
 
@@ -437,7 +445,8 @@ export class StructureReader extends NodeCore {
 			},
 			atoms,
 			bonds: [],
-			volume
+			volume,
+			extra
 		};
 
 		// Send the updated structure down the pipeline

@@ -12,7 +12,7 @@ import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
-import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
 
 /** Output from the native module that computes and find symmetries */
 interface ComputeSymmetriesOutput {
@@ -31,6 +31,8 @@ interface ComputeSymmetriesOutput {
 	noCellChanges: boolean;
 	/** Process errors if not the empty string */
 	status: string;
+	/** Extra structure data */
+	extra: Extra;
 }
 
 // > Kind of directions for filling unit cell
@@ -44,7 +46,7 @@ const X_ANY = 0x001;
 const Y_ANY = 0x002;
 const Z_ANY = 0x004;
 
-/** Space groups that are no symmetries */
+/** Space groups that are not symmetries */
 const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1"]);
 
 /** Tolerance to check for coincident atoms */
@@ -117,7 +119,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		// If no structure do nothing
 		if(!this.inputStructure) return;
-		const {crystal, atoms, volume} = this.inputStructure;
+		const {crystal, atoms, volume, extra} = this.inputStructure;
 
 		// If no unit cell or no atoms, copy input structure to output
 		if(crystal === undefined || hasNoUnitCell(crystal.basis) || atoms.length === 0) {
@@ -197,13 +199,11 @@ export class ComputeSymmetries extends NodeCore {
 			labels,
 			fractionalCoordinates: [...computed.fractionalCoordinates],
 			noCellChanges: computed.noCellChanges,
-			status: computed.status
+			status: computed.status,
+			extra
 		};
 		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
-		if(out.noCellChanges && this.inputStructure) {
-			// eslint-disable-next-line unicorn/consistent-destructuring
-			this.structure.volume = this.inputStructure.volume ?? [];
-		}
+		if(out.noCellChanges && this.inputStructure) this.structure.volume = volume;
 
 		this.toNextNode(this.structure);
 
@@ -263,7 +263,7 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private fillCellFull(structure: Structure): Structure {
 
-		const {crystal, atoms, volume} = structure;
+		const {crystal, atoms, volume, extra} = structure;
 		const {basis, spaceGroup} = crystal;
 
 		// Collect atoms data
@@ -292,7 +292,8 @@ export class ComputeSymmetries extends NodeCore {
 			labels,
 			fractionalCoordinates,
 			noCellChanges: true,	// Ignored
-			status: ""				// Ignored
+			status: "",				// Ignored
+			extra
 		};
 
 		// Fill the unit cell restoring the volumetric data
@@ -312,7 +313,7 @@ export class ComputeSymmetries extends NodeCore {
 		const idx: number[] = [];
 		const MARGIN = 10**this.fillTolerance;
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels, extra} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -321,7 +322,8 @@ export class ComputeSymmetries extends NodeCore {
 			},
 			atoms: [],
 			bonds: [],
-			volume: []
+			volume: [],
+			extra
 		};
 
 		let natoms = atomsZ.length;
@@ -535,7 +537,7 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private buildStructure(out: ComputeSymmetriesOutput): Structure {
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, extra} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -544,7 +546,8 @@ export class ComputeSymmetries extends NodeCore {
 			},
 			atoms: [],
 			bonds: [],
-			volume: []
+			volume: [],
+			extra
 		};
 
 		const natoms = atomsZ.length;

@@ -105,7 +105,7 @@ export class DrawUnitCell extends NodeCore {
 	 */
 	private adjustStructureOrigin(): Structure {
 
-		const {crystal, atoms} = this.inputStructure!;
+		const {crystal, atoms, extra} = this.inputStructure!;
 
 		return (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
 			adjustOrigin(this.inputStructure!,
@@ -118,7 +118,8 @@ export class DrawUnitCell extends NodeCore {
 				crystal,
 				atoms,
 				bonds: [],
-				volume: []
+				volume: [],
+				extra
 			};
 	}
 
@@ -184,7 +185,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Create out
-		const {crystal, volume} = structure;
+		const {crystal, volume, extra} = structure;
 		const out: Structure = {
 
 			crystal: {
@@ -204,7 +205,8 @@ export class DrawUnitCell extends NodeCore {
 			},
 			atoms: [],
 			bonds: [],
-			volume: this.replicateVolume(volume)
+			volume: this.replicateVolume(volume),
+			extra
 		};
 
 		for(let i=0; i < outAtoms; ++i) {

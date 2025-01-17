@@ -384,6 +384,7 @@ export class ComputeFingerprints extends NodeCore {
 			atoms,
 			bonds: [],
 			volume: [],
+			extra: {}
 		};
 	}
 

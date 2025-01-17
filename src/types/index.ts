@@ -69,6 +69,13 @@ export interface Volume {
     values: number[];
 }
 
+/** Extra per structure data. Currently empty or contains structure energy */
+export interface Extra {
+
+    /** Structure energy or enthalpy */
+    energy?: number;
+}
+
 /** The whole atomic structure */
 export interface Structure {
 
@@ -83,6 +90,9 @@ export interface Structure {
 
     /** Volumetric data */
     volume:     Volume[];
+
+    /** Per structure data */
+    extra:      Extra;
 }
 
 /**

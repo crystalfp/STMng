@@ -24,43 +24,43 @@ interface PairData {
 /** Multiplicative coefficients for basis to get atoms adjacent to the unit cell */
 const displacementCoefficients = [
 
-	[1, 0, 0], // Z = 0
-	[1, 1, 0],
+	[1,  0, 0], // Z = 0
+	[1,  1, 0],
 	[1, -1, 0],
 
-	[-1, 0, 0],
-	[-1, 1, 0],
+	[-1,  0, 0],
+	[-1,  1, 0],
 	[-1, -1, 0],
 
-	[0, 1, 0], // [0, 0, 0] is obviously missing
+	[0,  1, 0], // [0, 0, 0] is obviously missing
 	[0, -1, 0],
 
-	[0, 0, 1], // Z = 1
-	[0, 1, 1],
+	[0,  0, 1], // Z = 1
+	[0,  1, 1],
 	[0, -1, 1],
 
-	[-1, 0, 1],
-	[-1, 1, 1],
+	[-1,  0, 1],
+	[-1,  1, 1],
 	[-1, -1, 1],
 
-	[1, 0, 1],
-	[1, 1, 1],
+	[1,  0, 1],
+	[1,  1, 1],
 	[1, -1, 1],
 
-	[0, 0, -1], // Z = -1
-	[0, 1, -1],
+	[0,  0, -1], // Z = -1
+	[0,  1, -1],
 	[0, -1, -1],
 
-	[-1, 0, -1],
-	[-1, 1, -1],
+	[-1,  0, -1],
+	[-1,  1, -1],
 	[-1, -1, -1],
 
-	[1, 0, -1],
-	[1, 1, -1],
+	[1,  0, -1],
+	[1,  1, -1],
 	[1, -1, -1],
 ];
 
-/** Possible atoms Z value to form a H bond */
+/** Possible atoms Z values that form a H bond */
 const atomZForH = new Set([7, 8, 9, 16]);
 
 
@@ -184,7 +184,7 @@ export class ComputeBonds extends NodeCore {
 
 		const natoms = this.inputStructure!.atoms.length;
 		this.inputNumAtoms = natoms;
-		const {crystal, atoms, volume} = this.inputStructure!;
+		const {crystal, atoms, volume, extra} = this.inputStructure!;
 		const {basis} = crystal;
 
 		// Add the input atoms
@@ -258,7 +258,8 @@ export class ComputeBonds extends NodeCore {
 			crystal,
 			atoms: outAtoms,
 			bonds: [],
-			volume
+			volume,
+			extra
 		};
 	}
 
@@ -404,12 +405,16 @@ export class ComputeBonds extends NodeCore {
 				// Disable the requested enlargement
 				this.enlargementKind = "none";
 
+				// Extract input parts to be copied to output
+				const {crystal, atoms, volume, extra} = this.inputStructure;
+
 				// Send the input structure down the pipeline
 				this.toNextNode({
-					crystal: this.inputStructure.crystal,
-					atoms: this.inputStructure.atoms,
+					crystal,
+					atoms,
 					bonds: this.computeBonds(this.inputStructure),
-					volume: this.inputStructure.volume
+					volume,
+					extra
 				});
 			}
 			else {
