@@ -152,6 +152,7 @@ const pointsByEnergy = (): Glyph[] => {
 };
 
 let overallQuality = 0;
+let maxDelta = 1;
 /**
  * Return the points for the scatterplot colored by efficiency
  * - X axis is the original distance
@@ -168,7 +169,7 @@ const pointsByEfficiency = (): Glyph[] => {
 
     // Extract the distance from the diagonal
     let minDelta = efficiencies[0][1] - efficiencies[0][0];
-    let maxDelta = minDelta;
+    maxDelta = minDelta;
     for(let i=1; i < efficiencies.length; ++i) {
         const delta = efficiencies[i][1] - efficiencies[i][0];
         if(delta < minDelta) minDelta = delta;
@@ -182,7 +183,7 @@ const pointsByEfficiency = (): Glyph[] => {
     const lut = maxDelta < 1e-10 ? undefined : new Lut("blackbody", 512);
     if(lut) {
         lut.setMin(0);
-        lut.setMax(1);
+        lut.setMax(maxDelta);
     }
 
     overallQuality = 0;
@@ -195,7 +196,7 @@ const pointsByEfficiency = (): Glyph[] => {
         if(delta < 0) delta = -delta;
         overallQuality += delta;
 
-        const color = lut ? `#${lut.getColor(1-delta).getHexString()}` : "#0000FF";
+        const color = lut ? `#${lut.getColor(maxDelta-delta).getHexString()}` : "#0000FF";
 
         out.push({
             id: i,
@@ -250,6 +251,71 @@ const pointsByEfficiency = (): Glyph[] => {
     return out;
 };
 
+let maxDistanceFromMin = 0;
+/**
+ * Return the points for the scatterplot colored by the distance from the min energy point
+ *
+ * @returns The list of points as glyphs
+ */
+ const pointsByFromMinEnergy = (): Glyph[] => {
+
+    if(!scatterplotData || scatterplotData.energies.length === 0) return [];
+
+    // Extract needed data
+    const {id, energies, points} = scatterplotData;
+
+    // Find the minimum energy point
+    let min = Number.POSITIVE_INFINITY;
+    let minIdx = 0;
+    const len = energies.length;
+    for(let idx = 0; idx < len; ++idx) {
+        const energy = energies[idx];
+        if(energy < min) {
+            min = energy;
+            minIdx = idx;
+        }
+    }
+
+    // Compute the distances from the minimum energy point
+    const distancesFromMin = Array(len).fill(0) as number[];
+    const minPoint = points[minIdx];
+
+    for(let idx = 0; idx < len; ++idx) {
+
+        if(idx === minIdx) {
+            distancesFromMin[idx] = 0;
+        }
+        else {
+            const point = points[idx];
+            const distance = Math.hypot(point[0]-minPoint[0], point[1]-minPoint[1]);
+            if(distance > maxDistanceFromMin) maxDistanceFromMin = distance;
+            distancesFromMin[idx] = distance;
+        }
+    }
+
+    // Generate the colormap
+    const lut = new Lut("blackbody", 512);
+    if(lut) {
+        lut.setMin(0);
+        lut.setMax(maxDistanceFromMin);
+    }
+
+    const out: Glyph[] = [];
+    for(let i=0; i < len; ++i) {
+
+        const color = `#${lut.getColor(distancesFromMin[i]).getHexString()}`;
+
+        out.push({
+            id: id[i],
+            x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
+            y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
+            color,
+            value: distancesFromMin[i],
+        });
+    }
+    return out;
+};
+
 /** Compute the list of points to be shown */
 const scatterplotPoints = computed<Glyph[]>(() => {
 
@@ -266,6 +332,7 @@ const scatterplotPoints = computed<Glyph[]>(() => {
         case "efficiency": return pointsByEfficiency();
         case "group": return pointsByGroup();
         case "silhouette": return pointsBySilhouettes();
+        case "from-min": return pointsByFromMinEnergy();
         default: return [];
     }
 });
@@ -338,6 +405,7 @@ const selectPoint = (idx: number): void => {
         case "group":       valueLine = `Group: ${value}`; break;
         case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
         case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
+        case "from-min":    valueLine = `Dist. from min: ${value.toFixed(2)}`; break;
     }
     textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+10;
     textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+6;
@@ -511,7 +579,6 @@ const selectAll = ():void => {
 };
 
 // > Save selected to the selected file name
-
 const showSave = ref(false);
 
 /**
@@ -580,6 +647,7 @@ const showLegendDiscrete = computed(() => showLegend.value &&
                                            scatterplotType.value === "silhouette"));
 const showLegendContinue = computed(() => showLegend.value &&
                                           (scatterplotType.value === "energy" ||
+                                           scatterplotType.value === "from-min" ||
                                            scatterplotType.value === "efficiency"));
 
 const legendDiscrete = computed<{key: number; color: string; label: string}[]>(() => {
@@ -612,32 +680,41 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
 });
 
 // Create the color scale for the legend
-const lut2 = new Lut("blackbody", 256);
+const lut2 = new Lut("blackbody", 128);
 const colorScale = lut2.createCanvas().toDataURL();
 
 const legendContinue = computed(() => {
-    if(scatterplotType.value === "energy") {
+
+    switch (scatterplotType.value) {
+    case "energy":
         return {
             min: minEnergy.toFixed(4),
             max: maxEnergy.toFixed(4),
             header: "Energy",
             footer: ""
         };
-    }
-    else if(scatterplotType.value === "efficiency") {
+    case "from-min":
         return {
-            min: "1.0000",
+            min: "0.0000",
+            max: maxDistanceFromMin.toFixed(4),
+            header: "Distance from min energy",
+            footer: ""
+        };
+    case "efficiency":
+        return {
+            min: (maxDelta*Math.SQRT1_2).toFixed(4),
             max: "0.0000",
             header: "Distance from diagonal",
-            footer: `Mean: ${overallQuality.toFixed(2)}`
+            footer: `Mean: ${(overallQuality*Math.SQRT1_2).toFixed(3)}`
+        };
+    default:
+        return {
+            min: "0.0000",
+            max: "1.0000",
+            header: "",
+            footer: ""
         };
     }
-    return {
-        min: "0.0000",
-        max: "1.0000",
-        header: "",
-        footer: ""
-    };
 });
 
 </script>
@@ -692,6 +769,7 @@ const legendContinue = computed(() => {
           <v-btn value="energy">Energy</v-btn>
           <v-btn value="efficiency">Fidelity</v-btn>
           <v-btn value="silhouette">Quality</v-btn>
+          <v-btn value="from-min">From min</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-model="pointRadius"
                                 v-model:raw="showPointRadius" label-width="8rem"

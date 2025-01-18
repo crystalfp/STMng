@@ -184,6 +184,40 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
+	 * Decimate points to represent their distribution
+	 *
+	 * @param points - The list of points as [x, y] tuples
+	 * @param targetCount - The maximum number of points after decimation
+	 * @returns The decimated list of points
+	 */
+	private decimatePoints(points: [number, number][], targetCount: number): [number, number][] {
+
+		if(points.length <= targetCount) return points;
+
+		// Create a grid to count points in each cell
+		const gridSide = Math.ceil(Math.sqrt(targetCount));
+		const grid: number[][] = Array(gridSide * gridSide).fill([]) as number[][];
+
+		// Assign one representative point to each grid cells
+		for(const point of points) {
+
+			const cellX = Math.floor(point[0] * (gridSide-1));
+			const cellY = Math.floor(point[1] * (gridSide-1));
+			const cellIndex = cellY * gridSide + cellX;
+			if(grid[cellIndex].length === 0) grid[cellIndex] = point;
+		}
+
+		// Collect points from each filled cell
+		const decimatedPoints: [number, number][] = [];
+		for(const cell of grid) {
+
+			if(cell.length > 0) decimatedPoints.push([cell[0], cell[1]]);
+		}
+
+		return decimatedPoints;
+	};
+
+	/**
 	 * Prepare the data for the scatterplot
 	 *
 	 * @param mappedPoints - Points mapped in 2D
@@ -196,7 +230,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Compare projected distances with the original ones
 		const distanceMatrix = this.dist.getDistanceMatrix();
-		const efficiencies: [number, number][] = [];
+		let efficiencies: [number, number][] = [];
 		for(let row=0; row < n-1; ++row) {
 			for(let col=row+1; col < n; ++col) {
 
@@ -233,6 +267,9 @@ export class ComputeFingerprints extends NodeCore {
 			eff[0] = (eff[0]-minX)/denX;
 			eff[1] = (eff[1]-minY)/denY;
 		}
+
+		// If too many points, decimate them to reduce them to less than 40'000
+    	efficiencies = this.decimatePoints(efficiencies, 40_000);
 
 		// Collect energies and ids per structure
 		const energies = [];

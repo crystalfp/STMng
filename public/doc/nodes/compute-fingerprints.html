@@ -205,13 +205,14 @@
 
 <h2>Fingerprints scatterplot window</h2>
 <p>The scatterplot window shows the fingerprints as points in a 2D space. The points are colored by the associated value.</p>
-<p>This window shows four different kinds of scatterplot:</p>
+<p>This window shows five different kinds of scatterplot:</p>
 <dl style="margin-left: 20px;">
   <dt>Group</dt><dd>One point for each structure colored by group.</dd>
   <dt>Energy</dt><dd>One point for each structure colored by energy.</dd>
-  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for bad mapped distances.</dd>
+  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for bad mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 40,000.</dd>
   <dt>Quality</dt><dd>Grouping quality using the
       <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1 that show perfect association of the point to the group, to -1 that show that the point is in the wrong group. There are two special cases: the point is alone in a group and the point is on the border between two groups.</dd>
+  <dt>From min</dt><dd>One point for each structure colored by its distance from the point with minimum energy.</dd>
 </dl>
 <p>The grouping quality color scale is:</p>
 <ul>
