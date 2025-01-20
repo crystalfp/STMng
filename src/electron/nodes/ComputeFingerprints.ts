@@ -8,6 +8,7 @@
  */
 import {ipcMain} from "electron";
 import {writeFileSync} from "node:fs";
+import qh, {type Vec3Like, type Face} from "quickhull3d";
 import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen, sendAlertMessage,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
@@ -218,6 +219,34 @@ export class ComputeFingerprints extends NodeCore {
 	};
 
 	/**
+	 * Compute face normal
+	 *
+	 * @param face - One triangular face of the convex hull, that is the indices of the points at its vertices
+	 * @param points - The points in the fingerprint-energy 3D space
+	 * @returns The Z component of the outward pointing face normal
+	 */
+	private computeNormalZ(face: Face, points: number[][]): number {
+
+		const p1 = points[face[0]];
+		const p2 = points[face[1]];
+		const p3 = points[face[2]];
+
+		const aa = [
+			p2[0]-p1[0],
+			p2[1]-p1[1],
+			p2[2]-p1[2]
+		];
+
+		const bb = [
+			p3[0]-p1[0],
+			p3[1]-p1[1],
+			p3[2]-p1[2]
+		];
+
+		return aa[0]*bb[1]-aa[1]*bb[0];
+	}
+
+	/**
 	 * Prepare the data for the scatterplot
 	 *
 	 * @param mappedPoints - Points mapped in 2D
@@ -284,6 +313,31 @@ export class ComputeFingerprints extends NodeCore {
 		const countGroups = this.grouping.getCountGroups();
 		const silhouettes = this.grouping.computeSilhouetteCoefficients(distanceMatrix);
 
+		// Create the 3D convex hull in energy-fingerprint space
+		const pointsEF = Array(mappedPoints.length) as Vec3Like[];
+		for(let i=0; i < mappedPoints.length; ++i) {
+			pointsEF[i] = [
+				mappedPoints[i][0],
+				mappedPoints[i][1],
+				energies[i]
+			];
+		}
+		const faces = qh(pointsEF, {skipTriangulation: false});
+
+		// Extract unique vertices indexes in the lower branch of the convex hull
+		const indices = new Set<number>();
+		for(const face of faces) {
+
+			// The normal put outward the convex hull.
+			// If it points downward, it is on the lower branch of the convex hull
+			const nz = this.computeNormalZ(face, mappedPoints);
+			if(nz <= 0) {
+				indices.add(face[0]);
+				indices.add(face[1]);
+				indices.add(face[2]);
+			}
+		}
+
 		// Create data for the scatterplot
 		return {
 			id: ids,
@@ -292,7 +346,8 @@ export class ComputeFingerprints extends NodeCore {
 			countGroups,
 			energies,
 			efficiencies,
-			silhouettes
+			silhouettes,
+			convexHull: [...indices]
 		};
 	}
 

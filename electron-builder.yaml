@@ -26,6 +26,9 @@ linux:
   category: Visualization
   target:
   - AppImage
+  extraFiles:
+    - from: build/Release/libsymspg.so.2.3.2
+      to: ./libsymspg.so.2
 mac:
   artifactName: "${productName}_${version}.${ext}"
   target:

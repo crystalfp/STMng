@@ -41,7 +41,7 @@ const scatterplotHeight = ref(300);
 const scatterplotType = ref("group");
 
 /** The scatterplot parameters */
-const pointRadius = ref(10);
+const pointRadius = ref(5);
 const showPointRadius = ref(10);
 const fgColor = "#575757";
 
@@ -641,6 +641,20 @@ const selectByGroupMinEnergy = (): void => {
     }
 };
 
+/**
+ * Select points that falls on a convex hull in 3D
+ */
+const selectByConvexHull = (): void => {
+
+    if(!scatterplotData ||
+        scatterplotData.convexHull.length === 0 ||
+        scatterplotData.points.length === 0) return;
+
+    for(const idx of scatterplotData.convexHull) {
+        selectedPoints.value.push(idx);
+    }
+};
+
 const showLegend = ref(false);
 const showLegendDiscrete = computed(() => showLegend.value &&
                                           (scatterplotType.value === "group" ||
@@ -807,6 +821,10 @@ const legendContinue = computed(() => {
       <v-divider thickness="2" />
       <v-btn @click="selectByGroupMinEnergy" :disabled="scatterplotData?.energies.length === 0" class="w-75 mt-4 ml-1 mb-4">
         Select by min energy
+      </v-btn>
+      <v-divider thickness="2" />
+      <v-btn @click="selectByConvexHull" :disabled="!scatterplotData?.points.length" class="w-75 mt-4 ml-1 mb-4">
+        Select by convex hull
       </v-btn>
       <v-divider thickness="2" />
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->

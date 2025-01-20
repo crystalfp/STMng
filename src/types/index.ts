@@ -541,6 +541,11 @@ export interface ScatterplotData {
 
     /** Silhouette coefficients that measure the clustering quality for each point */
     silhouettes: number[];
+
+    /** Index of the points on the convex hull of the 3D projection of
+     * the fingerprints and their energies
+     */
+    convexHull: number[];
 }
 
 export interface EnergyLandscapeData {
