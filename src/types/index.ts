@@ -556,3 +556,21 @@ export interface EnergyLandscapeData {
     /** Corresponding energies (unnormalized) */
     energies: number[];
 }
+
+export interface FingerprintsChartData {
+
+    /** How many fingerprints have been computed */
+    countFingerprints?: number;
+
+    /** List of indices for each fingerprint */
+    fingerprintIndices?: number[];
+
+    /** Requested fingerprint */
+    fingerprint?: number[];
+
+    /** Corresponding step */
+    fingerprintIndex?: number;
+
+    /** The other chart */
+    energyDistance?: [x: number, y: number][]; // TBD
+}

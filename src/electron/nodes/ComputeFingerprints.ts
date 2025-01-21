@@ -19,7 +19,7 @@ import {Grouping} from "../fingerprint/Grouping";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
-			 EnergyLandscapeData, PositionType} from "@/types";
+			 EnergyLandscapeData, PositionType, FingerprintsChartData} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -53,6 +53,7 @@ export class ComputeFingerprints extends NodeCore {
 	private addedMargin = 0;
 
 	private channelOpened = false;
+	private channelChartsOpened = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      	type: "invoke", callback: this.channelInit.bind(this)},
@@ -68,6 +69,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
 		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
+		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
 	];
 
 	constructor(private readonly id: string) {
@@ -448,6 +450,43 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
+	 * Open or update the charts window
+	 *
+	 * @param opKind - Operation to be performed:
+	 *                 "update" update if new data available or "create" create the chart viewer
+	 */
+	private createUpdateCharts(opKind: "update" | "create"): void {
+
+		const chartsOpen = isSecondaryWindowOpen("/fp-charts");
+		if(opKind !== "create" && !chartsOpen) return;
+
+		const data: FingerprintsChartData = {
+			countFingerprints: this.accumulator.selectedSize(),
+			fingerprintIndex: 0,
+			fingerprint: [-1, -1, 0, 2, 4, 3, 1, 0]
+		};
+		// TBD
+		const dataToSend = JSON.stringify(data);
+
+		// If it is open, update the charts window
+		if(chartsOpen) {
+
+			sendToSecondaryWindow("/fp-charts", dataToSend);
+		}
+		else {
+
+			// Create the charts window
+			createSecondaryWindowWithRetry({
+				routerPath: "/fp-charts",
+				width: 1500,
+				height: 900,
+				title: "Fingerprints charts",
+				data: dataToSend
+			});
+		}
+	}
+
+	/**
 	 * Convert an accumulated structure to a Structure type for writing to file
 	 *
 	 * @param structure - One structure from the accumulator
@@ -798,5 +837,23 @@ export class ComputeFingerprints extends NodeCore {
 	private channelLandscape(): void {
 
 		this.createUpdateLandscape("create");
+	}
+
+	/**
+	 * Channel handler for opening fingerprints charts
+	 */
+	private channelCharts(): void {
+
+		this.createUpdateCharts("create");
+
+		if(!this.channelChartsOpened) {
+			this.channelChartsOpened = true;
+
+			ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
+
+				const fpIndex = params.fpIndex as number ?? 0;
+				console.log("FP IDX", fpIndex); // TBD
+			});
+		}
 	}
 }

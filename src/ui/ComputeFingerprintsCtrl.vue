@@ -367,8 +367,18 @@ const showScatterplot = (): void => {
     sendToNode(id, "scatter");
 };
 
+/**
+ * Open a secondary window showing the energy landscape
+ */
 const showEnergyLandscape = (): void => {
     sendToNode(id, "landscape");
+};
+
+/**
+ * Open a secondary window showing charts related to fingerprinting
+ */
+ const showCharts = (): void => {
+    sendToNode(id, "charts");
 };
 
 </script>
@@ -484,6 +494,11 @@ const showEnergyLandscape = (): void => {
   <v-btn block class="mb-2"
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot
+  </v-btn>
+  <!-- <v-btn block class="mb-2"
+         :disabled="countDistances === 0 || !haveEnergies" @click="showCharts"> -->
+  <v-btn block class="mb-2" @click="showCharts">
+    Show charts
   </v-btn>
   <v-btn block class="mb-6"
          :disabled="countDistances === 0 || !haveEnergies" @click="showEnergyLandscape">

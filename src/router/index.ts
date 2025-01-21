@@ -44,5 +44,9 @@ export const router = createRouter({
             path: "/landscape",
             component: (): Component => import("@/components/EnergyLandscape.vue")
         },
+        {
+            path: "/fp-charts",
+            component: (): Component => import("@/components/FingerprintCharts.vue")
+        },
     ],
 });

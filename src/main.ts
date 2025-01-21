@@ -163,4 +163,10 @@ addEventListener("unhandledrejection", (event): void => {
 preloadFonts();
 
 // Mount (and start) the application
-app.mount("#app");
+// app.mount("#app");
+
+router.isReady()
+	.then(() => {
+		app.mount("#app");
+  	})
+  	.catch((mountError: Error) => log.error(`Cannot mount application. Error: ${mountError.message}`));

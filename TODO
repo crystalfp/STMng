@@ -10,6 +10,7 @@ To do:
   ☐ For fingerprinting I suggest to switch symmetry off automatically, by default
   ☐ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order
   ☐ Visualizing fingerprints would be useful too
+  ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
 
 Bugs:
 
