@@ -9,8 +9,9 @@ To do:
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ For fingerprinting I suggest to switch symmetry off automatically, by default
   ☐ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order
-  ☐ Visualizing fingerprints would be useful too
   ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
+  ☐ Use shallowRef
+  ☐ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum`
 
 Bugs:
 
@@ -45,7 +46,6 @@ Requests from Oganov:
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
-  ☐ We start with the multicomponent fingerprint space. Then reduce its dimensionality to n (usually, n=3-4) and build a convex hull in space energy-principal fingerprint components.
   ☐ Convert skinny cells to more cubic ones
 
 Nice to have/Future:
@@ -59,6 +59,8 @@ Nice to have/Future:
   ☐ Add drag and drop for input file
 
 Archive:
+  ✔ Visualizing fingerprints would be useful too @done(2025-01-22 14:46) @project(To do)
+  ✔ We start with the multicomponent fingerprint space. Then reduce its dimensionality to n (usually, n=3-4) and build a convex hull in space energy-principal fingerprint components. @done(2025-01-22 16:02) @project(Requests from Oganov)
   ✔ In Scatterplot it would be useful to add correlation between the energy from global minimum and distance from the global minimum @done(2025-01-18 07:44) @project(To do)
   ✔ Energy file is read in Fingerprints, but would be more logical in Reader @done(2025-01-17 18:02) @project(To do)
   ✔ There are still too many types of fingerprints. For per-element diffraction (atomic Oganov-Valle fingerprint) we can compute and visualize local degree of order @done(2025-01-17 18:02) @project(To do)

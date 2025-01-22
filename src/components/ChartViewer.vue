@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-05
  */
-import {ref, useTemplateRef} from "vue";
+import {ref, shallowRef, useTemplateRef} from "vue";
 import {Bar, Line, Scatter} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
@@ -36,8 +36,8 @@ const emptyChartOptions = {
     responsive: true,
     maintainAspectRatio: false
 };
-const chartOptions = ref<ChartOptions>(emptyChartOptions);
-const chartData = ref<ChartData>(emptyChartData);
+const chartOptions = shallowRef<ChartOptions>(emptyChartOptions);
+const chartData = shallowRef<ChartData>(emptyChartData);
 const chartType = ref("");
 const transparent = ref(false);
 

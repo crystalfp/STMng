@@ -77,7 +77,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 						atoms: [],
 						bonds: [],
 						volume: [],
-						extra: {}
+						extra: {id: structures.length+1}
 					};
 					structures.push(structure);
 				}

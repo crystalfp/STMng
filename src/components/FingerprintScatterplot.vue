@@ -789,7 +789,7 @@ const legendContinue = computed(() => {
                                 v-model:raw="showPointRadius" label-width="8rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn @click="showSelect=true">Manage</v-btn>
+        <v-btn @click="showSelect=true">Selection</v-btn>
         <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n5">
@@ -816,15 +816,15 @@ const legendContinue = computed(() => {
                               :label="`Group (${showSelectedGroup})`" class="mt-2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
       <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups" class="w-75 mt-4 ml-1 mb-4">
-        Select by group
+        Output groups
       </v-btn>
       <v-divider thickness="2" />
       <v-btn @click="selectByGroupMinEnergy" :disabled="scatterplotData?.energies.length === 0" class="w-75 mt-4 ml-1 mb-4">
-        Select by min energy
+        Min energy per group
       </v-btn>
       <v-divider thickness="2" />
       <v-btn @click="selectByConvexHull" :disabled="!scatterplotData?.points.length" class="w-75 mt-4 ml-1 mb-4">
-        Select by convex hull
+        Gen. convex hull
       </v-btn>
       <v-divider thickness="2" />
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
@@ -832,7 +832,7 @@ const legendContinue = computed(() => {
         Compare selected
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn class="mt-4 ml-1 w-75" @click="showSave=!showSave" :disabled="noSelectedPoints">
+      <v-btn class="mt-4 ml-1 w-75" @click="showSave = !showSave" :disabled="noSelectedPoints">
         Export selected
       </v-btn>
 

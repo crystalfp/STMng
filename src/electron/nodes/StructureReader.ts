@@ -180,7 +180,13 @@ export class StructureReader extends NodeCore {
 			readerOptions = {useBohr: this.useBohr};
 		}
 
+		// Read the file
 		this.structures = await reader.readStructure(filename, readerOptions);
+
+		// Set structure id
+		for(let id=0; id < this.structures.length; ++id) this.structures[id].extra.id = id+1;
+
+		// Clean and check the structure list
 		this.removeEmptyStructures(this.structures);
 		if(this.checkStructures(this.structures)) {
 			this.toNextNode(this.structures[0]);

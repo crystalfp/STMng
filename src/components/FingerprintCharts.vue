@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-01-20
  */
-import {ref, watch} from "vue";
+import {ref, shallowRef, watch} from "vue";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
@@ -30,15 +30,16 @@ const chartType = ref("fp");
 
 /** The chart parameters */
 const fpIndex = ref(0);
+const showFpIndex = ref(0);
 const countFingerprints = ref(0);
-const indicesList = ref<number[]>([]);
+const ids = ref<number[]>([]);
 
 /** Data and options for the chart component (will be filled when receiving data) */
-const chartOptions = ref<ChartOptions>({
+const chartOptions = shallowRef<ChartOptions>({
     responsive: true,
     maintainAspectRatio: false,
 });
-const chartData = ref<ChartData>({
+const chartData = shallowRef<ChartData>({
     datasets: []
 });
 
@@ -53,22 +54,23 @@ receiveInWindow((dataFromMain) => {
     // If received fingerprint data
     if(fingerprint) {
 
-        const {countFingerprints: count, fingerprintIndex, fingerprintIndices} = fingerprintChartData;
+        const {countFingerprints: count, structureIds} = fingerprintChartData;
 
         // Sanity check
-        if(!count || fingerprintIndex === undefined ||
-           !fingerprintIndices || fingerprintIndices.length === 0) {
-            return;
-        }
-        countFingerprints.value = count;
-        fpIndex.value = fingerprintIndex;
+        if(!count || !structureIds || structureIds.length === 0) return;
 
-        indicesList.value.length = 0;
-        for(const idx of fingerprintIndices) indicesList.value.push(idx);
+        countFingerprints.value = count;
+
+        ids.value.length = 0;
+        for(const id of structureIds) ids.value.push(id);
 
         lineCoordinates.length = 0;
-        for(let i=0; i < fingerprint.length; ++i) {
-            lineCoordinates.push({x: i, y: fingerprint[i]});
+        let previousY = fingerprint[0];
+        lineCoordinates.push({x: 0, y: fingerprint[0]});
+        for(let i=1; i < fingerprint.length; ++i) {
+            lineCoordinates.push({x: i, y: previousY},
+                                 {x: i, y: fingerprint[i]});
+            previousY = fingerprint[i];
         }
 
         chartData.value = {
@@ -217,8 +219,8 @@ watch([fpIndex, chartType], () => {
           <v-btn value="ed">Energy-Dist</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
-                                label-width="11rem"
-                                :label="`Structure index (${fpIndex})`"
+                                v-model:raw="showFpIndex" label-width="11rem"
+                                :label="`Structure step ${ids[showFpIndex]}`"
                                 :min="0" :max="countFingerprints" :step="1" />
         <v-btn v-focus @click="closeWindow('/fp-charts')">Close</v-btn>
       </div>

@@ -162,11 +162,9 @@ addEventListener("unhandledrejection", (event): void => {
 // Preload fonts for labels
 preloadFonts();
 
-// Mount (and start) the application
-// app.mount("#app");
-
+// Mount (and start) the application when the route is ready (needed for secondary windows)
 router.isReady()
 	.then(() => {
 		app.mount("#app");
   	})
-  	.catch((mountError: Error) => log.error(`Cannot mount application. Error: ${mountError.message}`));
+  	.catch((error: Error) => log.error(`Cannot mount application. Error: ${error.message}`));

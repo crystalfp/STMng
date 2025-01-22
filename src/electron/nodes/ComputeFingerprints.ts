@@ -19,7 +19,7 @@ import {Grouping} from "../fingerprint/Grouping";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
-			 EnergyLandscapeData, PositionType, FingerprintsChartData} from "@/types";
+			 EnergyLandscapeData, PositionType} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -299,7 +299,7 @@ export class ComputeFingerprints extends NodeCore {
 			eff[1] = (eff[1]-minY)/denY;
 		}
 
-		// If too many points, decimate them to reduce them to less than 40'000
+		// If too many points, decimate them to reduce the number to less than 40'000
     	efficiencies = this.decimatePoints(efficiencies, 40_000);
 
 		// Collect energies and ids per structure
@@ -307,7 +307,7 @@ export class ComputeFingerprints extends NodeCore {
 		const ids = [];
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 			if(structure.energy !== undefined) energies.push(structure.energy);
-			ids.push(structure.index);
+			ids.push(structure.id);
 		}
 
 		// Collect groups
@@ -454,19 +454,60 @@ export class ComputeFingerprints extends NodeCore {
 	 *
 	 * @param opKind - Operation to be performed:
 	 *                 "update" update if new data available or "create" create the chart viewer
+	 * @param kind - Data to send to the charts window:
+	 * 					"fp" one fingerprint; "ed" energy from minimum vs. distance
+	 * @param fingerprintIndex - If kind is "fp" the index of the fingerprint (not the structure index)
 	 */
-	private createUpdateCharts(opKind: "update" | "create"): void {
+	private createUpdateCharts(opKind: "update" | "create", kind: "fp" | "ed", fingerprintIndex=0): void {
 
 		const chartsOpen = isSecondaryWindowOpen("/fp-charts");
 		if(opKind !== "create" && !chartsOpen) return;
 
-		const data: FingerprintsChartData = {
-			countFingerprints: this.accumulator.selectedSize(),
-			fingerprintIndex: 0,
-			fingerprint: [-1, -1, 0, 2, 4, 3, 1, 0]
-		};
-		// TBD
-		const dataToSend = JSON.stringify(data);
+		let dataToSend = "";
+		if(kind === "ed") {
+
+			// Get minimum energy and index of the corresponding point
+			let minEnergy = Number.POSITIVE_INFINITY;
+			let minEnergyIdx = 0;
+			let idx = 0;
+			for(const structure of this.accumulator.iterateSelectedStructures()) {
+				const energy = structure.energy ?? 0;
+				if(energy < minEnergy) {
+					minEnergy = energy;
+					minEnergyIdx = idx;
+				}
+				++idx;
+			}
+
+			// Compute energy differences
+			const energyDistance: number[][] = [];
+			for(const structure of this.accumulator.iterateSelectedStructures()) {
+				const energy = structure.energy ?? 0;
+				energyDistance.push([-1, energy - minEnergy]);
+			}
+
+			// Compute distances
+			const distanceMatrix = this.dist.getDistanceMatrix();
+			const len = distanceMatrix.matrixSize();
+			for(let col=0; col < len; ++col) {
+				const distance = distanceMatrix.get(minEnergyIdx, col);
+				energyDistance[col][0] = distance;
+			}
+
+			// Order by increasing distances
+			energyDistance.sort((a, b) => a[0] - b[0]);
+
+			dataToSend = JSON.stringify({
+				energyDistance
+			});
+		}
+		else {
+			dataToSend = JSON.stringify({
+				countFingerprints: this.accumulator.selectedSize(),
+				fingerprint: this.accumulator.getFingerprint(fingerprintIndex),
+				structureIds: this.accumulator.getSelectedStepsIds()
+			});
+		}
 
 		// If it is open, update the charts window
 		if(chartsOpen) {
@@ -494,31 +535,32 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	convertAccumulatedStructure(structure: StructureReduced): Structure {
 
-		const natoms = structure.atomsZ.length;
+		const {atomsZ, atomsPosition, basis, id} = structure;
+		const natoms = atomsZ.length;
 		const atoms: Atom[] = [];
 		for(let i=0; i < natoms; ++i) {
 
 			atoms.push({
-				atomZ: structure.atomsZ[i],
-				label: getAtomicSymbol(structure.atomsZ[i]),
+				atomZ: atomsZ[i],
+				label: getAtomicSymbol(atomsZ[i]),
 				position: [
-					structure.atomsPosition[3*i],
-					structure.atomsPosition[3*i+1],
-					structure.atomsPosition[3*i+2],
+					atomsPosition[3*i],
+					atomsPosition[3*i+1],
+					atomsPosition[3*i+2],
 				]
 			});
 		}
 		return {
 
 			crystal: {
-				basis: structure.basis,
+				basis,
 				origin: [0, 0, 0] as PositionType,
 				spaceGroup: "",
 			},
 			atoms,
 			bonds: [],
 			volume: [],
-			extra: {}
+			extra: {id}
 		};
 	}
 
@@ -844,7 +886,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelCharts(): void {
 
-		this.createUpdateCharts("create");
+		this.createUpdateCharts("create", "fp");
 
 		if(!this.channelChartsOpened) {
 			this.channelChartsOpened = true;
@@ -852,7 +894,9 @@ export class ComputeFingerprints extends NodeCore {
 			ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
 
 				const fpIndex = params.fpIndex as number ?? 0;
-				console.log("FP IDX", fpIndex); // TBD
+				const chartType = params.chartType as "fp" | "ed" ?? "fp";
+
+				this.createUpdateCharts("update", chartType, fpIndex);
 			});
 		}
 	}

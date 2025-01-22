@@ -200,7 +200,8 @@ export const isSecondaryWindowOpen = (routerPath: string): boolean => openedWind
 /**
  * Send data to a secondary window
  *
- * @param payload - Destination window and the data to send to it
+ * @param routerPath - Router path of the secondary window
+ * @param data - Data to be sent (normally JSON encoded data)
  */
 export const sendToSecondaryWindow = (routerPath: string, data: string): void => {
 

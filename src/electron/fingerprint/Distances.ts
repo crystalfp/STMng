@@ -235,7 +235,7 @@ export class Distances {
 
             const distance = measuringMethods[distanceMethod].method.computeDistance(pair[0], pair[1]);
 
-            const sts = this.distances.set(pair[0].index, pair[1].index, distance);
+            const sts = this.distances.set(pair[0].selectedIdx, pair[1].selectedIdx, distance);
             if(!sts) return {countDistances,
                              distanceMin: 0,
                              distanceMax: 10,

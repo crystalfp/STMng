@@ -245,6 +245,10 @@ const cutoffLabel = computed(() => {
 /** On fingerprinting parameters change */
 watch([fingerprintingMethod, binSize, peakWidth], () => {
 
+    resultDimensionality.value = 0;
+    countDistances.value = 0;
+    countGroups.value = 0;
+
     sendToNode(id, "fp-params", {
         fingerprintingMethod: fingerprintingMethod.value,
         binSize: binSize.value,
@@ -495,9 +499,8 @@ const showEnergyLandscape = (): void => {
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot
   </v-btn>
-  <!-- <v-btn block class="mb-2"
-         :disabled="countDistances === 0 || !haveEnergies" @click="showCharts"> -->
-  <v-btn block class="mb-2" @click="showCharts">
+  <v-btn block class="mb-2"
+         :disabled="countDistances === 0 || !haveEnergies" @click="showCharts">
     Show charts
   </v-btn>
   <v-btn block class="mb-6"

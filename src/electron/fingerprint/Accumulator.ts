@@ -12,8 +12,8 @@ import type {Structure, BasisType} from "@/types";
 /** Essential part of the structure to be accumulated */
 export interface StructureReduced {
 
-	/** Index of the structure in the input set of structures (not selected) */
-	index: number;
+	/** Index of the structure in the input full set of structures (not selected) */
+	id: number;
 
 	/** Unit cell basis vectors */
 	basis: BasisType;
@@ -29,6 +29,8 @@ export interface StructureReduced {
 
 	/** If the structure has been selected (by energy) */
 	selected: boolean;
+	/** Index in the list of selected structures, invalid if selected is false */
+	selectedIdx: number;
 	/** The structure energy, if any, otherwise undefined */
 	energy?: number;
 
@@ -64,6 +66,7 @@ export class FingerprintsAccumulator {
 	private countSpecies = 0;
 	private readonly idx2id = new Map<number, number>();
 	private hasEnergies: boolean | undefined = undefined;
+	private readonly selectedSteps: number[] = [];
 
 	/**
 	 * Add one structure to the accumulator
@@ -100,7 +103,7 @@ export class FingerprintsAccumulator {
 		// Load the structure clone
 		const entry: StructureReduced = {
 
-			index: this.accumulator.length,
+			id: extra.id,
 
 			basis: [
 				basis[0], basis[1], basis[2],
@@ -114,6 +117,7 @@ export class FingerprintsAccumulator {
 			species: new Map<number, number>(),
 
 			selected: true,
+			selectedIdx: this.accumulator.length,
 			energy: extra.energy,
 
 			fingerprint: [],
@@ -151,7 +155,10 @@ export class FingerprintsAccumulator {
 		this.accumulator.push(entry);
 
 		// Initialize the mapping between selected structure index and loaded index
-		this.idx2id.set(entry.index, entry.index);
+		this.idx2id.set(entry.id, entry.id);
+
+		// Put it in the list of selected structures
+		this.selectedSteps.push(entry.id);
 
 		return this.areNanoclusters;
 	}
@@ -163,6 +170,7 @@ export class FingerprintsAccumulator {
 		this.accumulator.length = 0;
 		this.idx2id.clear();
 		this.hasEnergies = undefined;
+		this.selectedSteps.length = 0;
 	}
 
 	/**
@@ -210,9 +218,13 @@ export class FingerprintsAccumulator {
 		// No energy loaded or no filtering requested
 		if(!enableEnergyFiltering || !this.hasEnergies) {
 
+			this.selectedSteps.length = 0;
+			let idx = 0;
 			for(const structure of this.accumulator) {
 				structure.selected = true;
-				this.idx2id.set(structure.index, structure.index);
+				structure.selectedIdx = idx++;
+				this.idx2id.set(structure.id, structure.id);
+				this.selectedSteps.push(structure.id);
 			}
 			this.countSelected = this.accumulator.length;
 			return {
@@ -236,13 +248,17 @@ export class FingerprintsAccumulator {
 
 		// Select structures with energy less than the threshold
 		let countSelected = 0;
+		this.selectedSteps.length = 0;
 		const len = this.accumulator.length;
 		let j = 0;
 		for(let i = 0; i < len; ++i) {
 			if(this.accumulator[i].energy! <= this.thresholdEnergy) {
 				++countSelected;
 				this.accumulator[i].selected = true;
+				this.accumulator[i].selectedIdx = j;
 				this.idx2id.set(j++, i);
+				this.selectedSteps.push(this.accumulator[i].id);
+
 			}
 			else this.accumulator[i].selected = false;
 		}
@@ -432,5 +448,33 @@ export class FingerprintsAccumulator {
 			}
 		}
 		return {count, length};
+	}
+
+	/**
+	 * Return selected structures step number
+	 *
+	 * @returns List of all selected structure steps numbers
+	 */
+	getSelectedStepsIds(): number[] {
+
+		return this.selectedSteps;
+	}
+
+	/**
+	 * Return a fingerprint
+	 *
+	 * @param requestedIdx - Index in the list of selected structures
+	 * @returns The fingerprint of the selected structure
+	 */
+	getFingerprint(requestedIdx: number): number[] {
+
+		let idx = 0;
+		for(const entry of this.accumulator) {
+			if(entry.selected) {
+				if(idx === requestedIdx) return entry.fingerprint;
+				++idx;
+			}
+		}
+		return [];
 	}
 }

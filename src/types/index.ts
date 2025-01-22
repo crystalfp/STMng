@@ -69,8 +69,11 @@ export interface Volume {
     values: number[];
 }
 
-/** Extra per structure data. Currently empty or contains structure energy */
+/** Extra per structure data */
 export interface Extra {
+
+    /** Step index that identifies the structure in a sequence (one based) */
+    id: number;
 
     /** Structure energy or enthalpy */
     energy?: number;
@@ -562,14 +565,11 @@ export interface FingerprintsChartData {
     /** How many fingerprints have been computed */
     countFingerprints?: number;
 
-    /** List of indices for each fingerprint */
-    fingerprintIndices?: number[];
+    /** List of structure id for the set of fingerprints */
+    structureIds?: number[];
 
     /** Requested fingerprint */
     fingerprint?: number[];
-
-    /** Corresponding step */
-    fingerprintIndex?: number;
 
     /** The other chart */
     energyDistance?: [x: number, y: number][]; // TBD
