@@ -17,6 +17,8 @@ import type {ClientProjectInfo, ClientProjectInfoItem} from "@/types/NodeInfo";
 const controlStore = useControlStore();
 
 const selectedTabId = ref("");
+
+// Don't use shallowRef here
 const uiList = ref<ClientProjectInfoItem[]>([]);
 const panelList = ref<{id: string; label: string; ctrl: unknown}[]>([]);
 

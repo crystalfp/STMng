@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, watchEffect} from "vue";
+import {ref, watch} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, sendViewer3DState} from "@/services/RoutesClient";
@@ -45,7 +45,7 @@ sendViewer3DState(id, "state", () => configStore.statusToSave);
 const alpha1 = ref(0);  // Around X on YZ plane
 const beta1 = ref(0);   // Angle with X axis
 
-watchEffect(() => {
+watch([alpha1, beta1], () => {
     const alphaRad = alpha1.value * DEG2RAD;
     const betaRad  = beta1.value * DEG2RAD;
     const lenYZ = Math.sin(betaRad);
@@ -58,7 +58,7 @@ watchEffect(() => {
 const alpha2 = ref(0);
 const beta2 = ref(0);
 
-watchEffect(() => {
+watch([alpha2, beta2], () => {
     const alphaRad = alpha2.value * DEG2RAD;
     const betaRad  = beta2.value * DEG2RAD;
     const lenXZ = Math.sin(betaRad);
@@ -71,7 +71,7 @@ watchEffect(() => {
 const alpha3 = ref(0);
 const beta3 = ref(0);
 
-watchEffect(() => {
+watch([alpha3, beta3], () => {
     const alphaRad = alpha3.value * DEG2RAD;
     const betaRad  = beta3.value * DEG2RAD;
     const lenXY = Math.sin(betaRad);

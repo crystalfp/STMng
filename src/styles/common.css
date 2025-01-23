@@ -64,10 +64,10 @@ html {
   opacity: 1 !important;
   color: var(--separator-color) !important;
   padding: 1px 0;
-  letter-spacing: 0.05rem !important;
+  letter-spacing: 0.06rem !important;
 }
 
-/* >> Made labels not selectable */
+/* >> Make labels not selectable */
 .no-select {
   user-select: none !important;
 }

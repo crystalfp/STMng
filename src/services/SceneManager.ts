@@ -192,6 +192,7 @@ class SceneManager {
 			light1.intensity = configStore.lights.directional1Intensity;
 			light1.color = new Color(configStore.lights.directional1Color);
 			light1.position.set(...configStore.lights.directional1Position);
+			this.sceneModified = true;
 		});
 
 		const light2 = new DirectionalLight(configStore.lights.directional2Color,
@@ -202,6 +203,7 @@ class SceneManager {
 			light2.intensity = configStore.lights.directional2Intensity;
 			light2.color = new Color(configStore.lights.directional2Color);
 			light2.position.set(...configStore.lights.directional2Position);
+			this.sceneModified = true;
 		});
 
 		const light3 = new DirectionalLight(configStore.lights.directional3Color,
@@ -212,6 +214,7 @@ class SceneManager {
 			light3.intensity = configStore.lights.directional3Intensity;
 			light3.color = new Color(configStore.lights.directional3Color);
 			light3.position.set(...configStore.lights.directional3Position);
+			this.sceneModified = true;
 		});
 
 		// Add ambient light
@@ -221,6 +224,7 @@ class SceneManager {
 		watchEffect(() => {
 			ambient.intensity = configStore.lights.ambientIntensity;
 			ambient.color = new Color(configStore.lights.ambientColor);
+			this.sceneModified = true;
 		});
 		this.sceneModified = true;
 	}

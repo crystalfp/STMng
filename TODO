@@ -1,45 +1,38 @@
+Bugs:
+
 To do:
-  ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
-  ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
-  ☐ Use `chagelogen`
-  ☐ Change watchEffect to watch
   ☐ Try to put labels as billboards
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
-  ☐ For fingerprinting I suggest to switch symmetry off automatically, by default
   ☐ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order
-  ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
-  ☐ Use shallowRef
   ☐ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum`
+  ☐ Remove similar structures from convex hull
+  ☐ Check error return from main process to client
 
-Bugs:
-
-ToDo eventually:
-  ☐ Check THREE.Layer for visibility
-  ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
+Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
   ☐ Memory leak detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
-  ☐ Check error return from main process to client
-  ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
+  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
+  ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
+  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
+
+ToDo eventually:
+  ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
+  ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
+  ☐ Use `chagelogen`
+  ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
+  ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Is there any way to avoid callbacks for repetitive call?
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
-  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
-  ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
-  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
-
-Study:
   ☐ Check the order of entries in objects
-  ☐ Use Suspense component for controls loading <https://vueschool.io/articles/vuejs-tutorials/suspense-everything-you-need-to-know/>
   ☐ In builder copy only platform specific exe files
   ☐ Unify naming: graph, node, project
-
-Requests from Oganov:
   ☐ An option to specify arbitrary section plane
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
@@ -53,12 +46,21 @@ Nice to have/Future:
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Add tooltips
-  ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Move to WebGPURenderer
   ☐ Rewrite UserStore using Map() and not object
   ☐ Add drag and drop for input file
 
+Reference:
+  ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
+  ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
+  ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
+
 Archive:
+  ✘ Check THREE.Layer for visibility @cancelled(2025-01-23 08:00) @project(ToDo eventually)
+  ✘ Use Suspense component for controls loading <https://vueschool.io/articles/vuejs-tutorials/suspense-everything-you-need-to-know/> @cancelled(2025-01-23 07:15) @project(Study)
+  ✔ Change watchEffect to watch @done(2025-01-23 07:01) @project(To do)
+  ✘ For fingerprinting I suggest to switch symmetry off automatically, by default @cancelled(2025-01-23 07:14) @project(To do)
+  ✔ Use shallowRef @done(2025-01-23 06:40) @project(To do)
   ✔ Visualizing fingerprints would be useful too @done(2025-01-22 14:46) @project(To do)
   ✔ We start with the multicomponent fingerprint space. Then reduce its dimensionality to n (usually, n=3-4) and build a convex hull in space energy-principal fingerprint components. @done(2025-01-22 16:02) @project(Requests from Oganov)
   ✔ In Scatterplot it would be useful to add correlation between the energy from global minimum and distance from the global minimum @done(2025-01-18 07:44) @project(To do)
@@ -119,7 +121,6 @@ Archive:
   ✔ Add class `no-select` to labels that should not selected @done(2024-09-10 14:04) @project(To do)
   ✔ Check `useTemplateRef()` in Viewer3D (already in comment) @project(To do) @done(2024-09-18 17:56)
   ✔ Energy file: fix disappearing file name @done(2024-09-07 05:42) @project(Bugs)
-  ✘ Check `useTemplateRef()` in Viewer3D (already in comment) @project(To do) @cancelled(2024-09-07 05:42)
   ✔ The atoms types reading a new file are not updated from the saved ones @done(2024-09-05 06:23) @project(Bugs)
   ✔ Structure writer: unify `continuous` and start button. Put it in EnableCapture @done(2024-09-04 05:42) @project(To do)
   ✔ Put the project name in the project viewer @done(2024-09-03 16:28) @project(To do)
@@ -131,7 +132,6 @@ Archive:
   ✔ Use `bind()` in observer functions definitions @done(2024-08-20 18:19) @project(ToDo)
   ✔ Load struct with unit cell, load one without → The cell remains @done(2024-08-21 05:16) @project(Bugs)
   ✘ Try to use KeepAlive component in user interface @cancelled(2024-08-19 07:44) @project(Nice to have/Future)
-  ✔ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4> @done(2024-08-19 07:43) @project(Study)
   ✘ Experiment with command line parser of NodeJS: <https://pawelgrzybek.com/til-node-js-18-3-comes-with-command-line-arguments-parser/> @cancelled(2024-08-19 07:44) @project(Nice to have/Future)
   ✔ Use `bind()` in channel handler functions @done(2024-08-19 07:42) @project(ToDo)
   ✔ "Save as..." don't change the project name in the main bar @done(2024-08-15 17:29) @project(Bugs)

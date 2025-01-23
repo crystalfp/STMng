@@ -8,6 +8,7 @@
  */
 import {measuringMethods} from "./DistanceMethods";
 import {MDS} from "./MultidimensionalScaling";
+import {normalizeCoordinates2D} from "./Helpers";
 import type {FingerprintsAccumulator} from "./Accumulator";
 
 export class DistanceMatrix {
@@ -372,33 +373,7 @@ export class Distances {
 		const mappedPoints = MDS(distanceVector, this.distances.matrixSize());
 
 		// Normalize mapped points coordinates between 0 and 1
-		let maxX = Number.NEGATIVE_INFINITY;
-		let minX = Number.POSITIVE_INFINITY;
-		let maxY = Number.NEGATIVE_INFINITY;
-		let minY = Number.POSITIVE_INFINITY;
-		for(const point of mappedPoints) {
-
-			if(point[0] > maxX) maxX = point[0];
-			if(point[0] < minX) minX = point[0];
-			if(point[1] > maxY) maxY = point[1];
-			if(point[1] < minY) minY = point[1];
-		}
-
-		let denX = maxX - minX;
-		if(denX < 1e-10) denX = 1;
-		let denY = maxY - minY;
-		if(denY < 1e-10) denY = 1;
-
-		// How many structures are we dealing with
-		const n = mappedPoints.length;
-		this.projectedPoints = Array(n) as number[][];
-		for(let i=0; i < n; ++i) {
-
-			this.projectedPoints[i] = [
-				(mappedPoints[i][0] - minX)/denX,
-				(mappedPoints[i][1] - minY)/denY,
-			];
-		}
+        this.projectedPoints = normalizeCoordinates2D(mappedPoints);
     }
 
     /**

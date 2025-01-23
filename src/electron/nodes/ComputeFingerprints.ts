@@ -16,6 +16,7 @@ import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Acc
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
+import {normalizeCoordinates2D} from "../fingerprint/Helpers";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
@@ -77,6 +78,24 @@ export class ComputeFingerprints extends NodeCore {
 		this.setupChannels(this.id, this.channels);
 	}
 
+	/**
+	 * Add one structure to accumulator
+	 *
+	 * @param structure - Structure to be added to the accumulator
+	 */
+	private addToAccumulator(structure: Structure): void {
+
+		try {
+			this.areNanoclusters = this.accumulator.add(structure, this.areNanoclusters);
+		}
+		catch(error: unknown) {
+			sendAlertMessage((error as Error).message, "fingerprints");
+		}
+		sendToClient(this.id, "has-energies", {
+			haveEnergies: this.accumulator.accumulatedHaveEnergies()
+		});
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
@@ -85,15 +104,7 @@ export class ComputeFingerprints extends NodeCore {
 		// If in accumulate mode, save the structure
 		if(this.fingerprintsAccumulate) {
 
-			try {
-				this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
-			}
-			catch(error: unknown) {
-				sendAlertMessage((error as Error).message, "fingerprints");
-			}
-			sendToClient(this.id, "has-energies", {
-				haveEnergies: this.accumulator.accumulatedHaveEnergies()
-			});
+			this.addToAccumulator(this.structure);
 			this.doFiltering();
 		}
 		else {
@@ -193,7 +204,7 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param targetCount - The maximum number of points after decimation
 	 * @returns The decimated list of points
 	 */
-	private decimatePoints(points: [number, number][], targetCount: number): [number, number][] {
+	private decimatePoints(points: number[][], targetCount: number): number[][] {
 
 		if(points.length <= targetCount) return points;
 
@@ -261,7 +272,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Compare projected distances with the original ones
 		const distanceMatrix = this.dist.getDistanceMatrix();
-		let efficiencies: [number, number][] = [];
+		let efficiencies: number[][] = [];
 		for(let row=0; row < n-1; ++row) {
 			for(let col=row+1; col < n; ++col) {
 
@@ -276,28 +287,8 @@ export class ComputeFingerprints extends NodeCore {
 			}
 		}
 
-		// Normalize original and projected distances
-		let minX = Number.POSITIVE_INFINITY;
-		let maxX = Number.NEGATIVE_INFINITY;
-		let minY = Number.POSITIVE_INFINITY;
-		let maxY = Number.NEGATIVE_INFINITY;
-		for(const eff of efficiencies) {
-
-			if(eff[0] > maxX) maxX = eff[0];
-			if(eff[0] < minX) minX = eff[0];
-			if(eff[1] > maxY) maxY = eff[1];
-			if(eff[1] < minY) minY = eff[1];
-		}
-
-		let denX = maxX - minX;
-		if(denX < 1e-10) denX = 1;
-		let denY = maxY - minY;
-		if(denY < 1e-10) denY = 1;
-
-		for(const eff of efficiencies) {
-			eff[0] = (eff[0]-minX)/denX;
-			eff[1] = (eff[1]-minY)/denY;
-		}
+		// Normalize original and projected distances mapping points coordinates between 0 and 1
+		efficiencies = normalizeCoordinates2D(efficiencies);
 
 		// If too many points, decimate them to reduce the number to less than 40'000
     	efficiencies = this.decimatePoints(efficiencies, 40_000);
@@ -612,15 +603,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(this.fingerprintsAccumulate && this.structure) {
 
-			try {
-				this.areNanoclusters = this.accumulator.add(this.structure, this.areNanoclusters);
-			}
-			catch(error: unknown) {
-				sendAlertMessage((error as Error).message, "fingerprints");
-			}
-			sendToClient(this.id, "has-energies", {
-				haveEnergies: this.accumulator.accumulatedHaveEnergies()
-			});
+			this.addToAccumulator(this.structure);
 
 			const status = this.accumulator.filterOnEnergy(this.enableEnergyFiltering,
 														   this.energyThreshold,
