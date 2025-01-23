@@ -500,7 +500,7 @@ const showEnergyLandscape = (): void => {
     Show scatterplot
   </v-btn>
   <v-btn block class="mb-2"
-         :disabled="countDistances === 0 || !haveEnergies" @click="showCharts">
+         :disabled="!resultDimensionality" @click="showCharts">
     Show charts
   </v-btn>
   <v-btn block class="mb-6"

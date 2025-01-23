@@ -565,6 +565,9 @@ export interface FingerprintsChartData {
     /** How many fingerprints have been computed */
     countFingerprints?: number;
 
+    /** If the structures have energies */
+    haveEnergies: boolean;
+
     /** List of structure id for the set of fingerprints */
     structureIds?: number[];
 
@@ -572,5 +575,5 @@ export interface FingerprintsChartData {
     fingerprint?: number[];
 
     /** The other chart */
-    energyDistance?: [x: number, y: number][]; // TBD
+    energyDistance?: [x: number, y: number][];
 }

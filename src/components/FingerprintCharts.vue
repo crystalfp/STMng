@@ -33,6 +33,7 @@ const fpIndex = ref(0);
 const showFpIndex = ref(0);
 const countFingerprints = ref(0);
 const ids = ref<number[]>([]);
+const haveEnergies = ref(true);
 
 /** Data and options for the chart component (will be filled when receiving data) */
 const chartOptions = shallowRef<ChartOptions>({
@@ -49,7 +50,10 @@ receiveInWindow((dataFromMain) => {
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
     const lineCoordinates: {x: number; y: number}[] = [];
-    const {fingerprint, energyDistance} = fingerprintChartData;
+    const {fingerprint, energyDistance, haveEnergies: haveE} = fingerprintChartData;
+
+    // Disable buttons if no energy provided
+    haveEnergies.value = haveE;
 
     // If received fingerprint data
     if(fingerprint) {
@@ -216,7 +220,7 @@ watch([fpIndex, chartType], () => {
       <div class="buttons-line">
         <v-btn-toggle v-model="chartType" mandatory>
           <v-btn value="fp">Fingerprint</v-btn>
-          <v-btn value="ed">Energy-Dist</v-btn>
+          <v-btn value="ed" :disabled="!haveEnergies">Energy-Dist</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"

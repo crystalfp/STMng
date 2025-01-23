@@ -780,10 +780,10 @@ const legendContinue = computed(() => {
       <div class="buttons-line">
         <v-btn-toggle v-model="scatterplotType" mandatory>
           <v-btn value="group">Group</v-btn>
-          <v-btn value="energy">Energy</v-btn>
+          <v-btn value="energy" :disabled="!scatterplotData?.energies.length">Energy</v-btn>
           <v-btn value="efficiency">Fidelity</v-btn>
           <v-btn value="silhouette">Quality</v-btn>
-          <v-btn value="from-min">From min</v-btn>
+          <v-btn value="from-min" :disabled="!scatterplotData?.energies.length">From min</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-model="pointRadius"
                                 v-model:raw="showPointRadius" label-width="8rem"
@@ -819,11 +819,11 @@ const legendContinue = computed(() => {
         Output groups
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn @click="selectByGroupMinEnergy" :disabled="scatterplotData?.energies.length === 0" class="w-75 mt-4 ml-1 mb-4">
+      <v-btn @click="selectByGroupMinEnergy" :disabled="!scatterplotData?.energies.length" class="w-75 mt-4 ml-1 mb-4">
         Min energy per group
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn @click="selectByConvexHull" :disabled="!scatterplotData?.points.length" class="w-75 mt-4 ml-1 mb-4">
+      <v-btn @click="selectByConvexHull" :disabled="!scatterplotData?.convexHull.length" class="w-75 mt-4 ml-1 mb-4">
         Gen. convex hull
       </v-btn>
       <v-divider thickness="2" />

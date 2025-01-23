@@ -20,7 +20,8 @@ import {normalizeCoordinates2D} from "../fingerprint/Helpers";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
-			 EnergyLandscapeData, PositionType} from "@/types";
+			 EnergyLandscapeData, PositionType,
+			 FingerprintsChartData} from "@/types";
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -293,6 +294,11 @@ export class ComputeFingerprints extends NodeCore {
 		// If too many points, decimate them to reduce the number to less than 40'000
     	efficiencies = this.decimatePoints(efficiencies, 40_000);
 
+		// Collect groups
+		const groups = this.grouping.getGroups();
+		const countGroups = this.grouping.getCountGroups();
+		const silhouettes = this.grouping.computeSilhouetteCoefficients(distanceMatrix);
+
 		// Collect energies and ids per structure
 		const energies = [];
 		const ids = [];
@@ -301,34 +307,35 @@ export class ComputeFingerprints extends NodeCore {
 			ids.push(structure.id);
 		}
 
-		// Collect groups
-		const groups = this.grouping.getGroups();
-		const countGroups = this.grouping.getCountGroups();
-		const silhouettes = this.grouping.computeSilhouetteCoefficients(distanceMatrix);
+		// If there are energies, create the 3D convex hull in energy-fingerprint space
+		let convexHullIndices: number[] = [];
+		if(energies.length >= mappedPoints.length) {
 
-		// Create the 3D convex hull in energy-fingerprint space
-		const pointsEF = Array(mappedPoints.length) as Vec3Like[];
-		for(let i=0; i < mappedPoints.length; ++i) {
-			pointsEF[i] = [
-				mappedPoints[i][0],
-				mappedPoints[i][1],
-				energies[i]
-			];
-		}
-		const faces = qh(pointsEF, {skipTriangulation: false});
-
-		// Extract unique vertices indexes in the lower branch of the convex hull
-		const indices = new Set<number>();
-		for(const face of faces) {
-
-			// The normal put outward the convex hull.
-			// If it points downward, it is on the lower branch of the convex hull
-			const nz = this.computeNormalZ(face, mappedPoints);
-			if(nz <= 0) {
-				indices.add(face[0]);
-				indices.add(face[1]);
-				indices.add(face[2]);
+			const pointsEF = Array(mappedPoints.length) as Vec3Like[];
+			for(let i=0; i < mappedPoints.length; ++i) {
+				pointsEF[i] = [
+					mappedPoints[i][0],
+					mappedPoints[i][1],
+					energies[i]
+				];
 			}
+			const faces = qh(pointsEF, {skipTriangulation: false});
+
+			// Extract unique vertices indexes in the lower branch of the convex hull
+			const indices = new Set<number>();
+			for(const face of faces) {
+
+				// The normal put outward the convex hull.
+				// If it points downward, it is on the lower branch of the convex hull
+				const nz = this.computeNormalZ(face, mappedPoints);
+				if(nz <= 0) {
+					indices.add(face[0]);
+					indices.add(face[1]);
+					indices.add(face[2]);
+				}
+			}
+
+			convexHullIndices = [...indices];
 		}
 
 		// Create data for the scatterplot
@@ -340,7 +347,7 @@ export class ComputeFingerprints extends NodeCore {
 			energies,
 			efficiencies,
 			silhouettes,
-			convexHull: [...indices]
+			convexHull: convexHullIndices
 		};
 	}
 
@@ -454,51 +461,56 @@ export class ComputeFingerprints extends NodeCore {
 		const chartsOpen = isSecondaryWindowOpen("/fp-charts");
 		if(opKind !== "create" && !chartsOpen) return;
 
-		let dataToSend = "";
+		const haveEnergies = this.accumulator.accumulatedHaveEnergies();
+
+		const data: FingerprintsChartData = {
+			haveEnergies
+		};
+
 		if(kind === "ed") {
 
-			// Get minimum energy and index of the corresponding point
-			let minEnergy = Number.POSITIVE_INFINITY;
-			let minEnergyIdx = 0;
-			let idx = 0;
-			for(const structure of this.accumulator.iterateSelectedStructures()) {
-				const energy = structure.energy ?? 0;
-				if(energy < minEnergy) {
-					minEnergy = energy;
-					minEnergyIdx = idx;
+			if(haveEnergies) {
+
+				// Get minimum energy and index of the corresponding point
+				let minEnergy = Number.POSITIVE_INFINITY;
+				let minEnergyIdx = 0;
+				let idx = 0;
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					const energy = structure.energy ?? 0;
+					if(energy < minEnergy) {
+						minEnergy = energy;
+						minEnergyIdx = idx;
+					}
+					++idx;
 				}
-				++idx;
+
+				// Compute energy differences
+				const energyDistance: [x: number, y: number][] = [];
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					const energy = structure.energy ?? 0;
+					energyDistance.push([0, energy - minEnergy]);
+				}
+
+				// Compute distances
+				const distanceMatrix = this.dist.getDistanceMatrix();
+				const len = distanceMatrix.matrixSize();
+				for(let col=0; col < len; ++col) {
+					const distance = distanceMatrix.get(minEnergyIdx, col);
+					energyDistance[col][0] = distance;
+				}
+
+				// Order by increasing distances
+				energyDistance.sort((a, b) => a[0] - b[0]);
+
+				data.energyDistance = energyDistance;
 			}
-
-			// Compute energy differences
-			const energyDistance: number[][] = [];
-			for(const structure of this.accumulator.iterateSelectedStructures()) {
-				const energy = structure.energy ?? 0;
-				energyDistance.push([-1, energy - minEnergy]);
-			}
-
-			// Compute distances
-			const distanceMatrix = this.dist.getDistanceMatrix();
-			const len = distanceMatrix.matrixSize();
-			for(let col=0; col < len; ++col) {
-				const distance = distanceMatrix.get(minEnergyIdx, col);
-				energyDistance[col][0] = distance;
-			}
-
-			// Order by increasing distances
-			energyDistance.sort((a, b) => a[0] - b[0]);
-
-			dataToSend = JSON.stringify({
-				energyDistance
-			});
 		}
 		else {
-			dataToSend = JSON.stringify({
-				countFingerprints: this.accumulator.selectedSize(),
-				fingerprint: this.accumulator.getFingerprint(fingerprintIndex),
-				structureIds: this.accumulator.getSelectedStepsIds()
-			});
+			data.countFingerprints = this.accumulator.selectedSize();
+			data.fingerprint = this.accumulator.getFingerprint(fingerprintIndex);
+			data.structureIds = this.accumulator.getSelectedStepsIds();
 		}
+		const dataToSend = JSON.stringify(data);
 
 		// If it is open, update the charts window
 		if(chartsOpen) {
