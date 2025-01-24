@@ -251,71 +251,6 @@ const pointsByEfficiency = (): Glyph[] => {
     return out;
 };
 
-let maxDistanceFromMin = 0;
-/**
- * Return the points for the scatterplot colored by the distance from the min energy point
- *
- * @returns The list of points as glyphs
- */
- const pointsByFromMinEnergy = (): Glyph[] => {
-
-    if(!scatterplotData || scatterplotData.energies.length === 0) return [];
-
-    // Extract needed data
-    const {id, energies, points} = scatterplotData;
-
-    // Find the minimum energy point
-    let min = Number.POSITIVE_INFINITY;
-    let minIdx = 0;
-    const len = energies.length;
-    for(let idx = 0; idx < len; ++idx) {
-        const energy = energies[idx];
-        if(energy < min) {
-            min = energy;
-            minIdx = idx;
-        }
-    }
-
-    // Compute the distances from the minimum energy point
-    const distancesFromMin = Array(len).fill(0) as number[];
-    const minPoint = points[minIdx];
-
-    for(let idx = 0; idx < len; ++idx) {
-
-        if(idx === minIdx) {
-            distancesFromMin[idx] = 0;
-        }
-        else {
-            const point = points[idx];
-            const distance = Math.hypot(point[0]-minPoint[0], point[1]-minPoint[1]);
-            if(distance > maxDistanceFromMin) maxDistanceFromMin = distance;
-            distancesFromMin[idx] = distance;
-        }
-    }
-
-    // Generate the colormap
-    const lut = new Lut("blackbody", 512);
-    if(lut) {
-        lut.setMin(0);
-        lut.setMax(maxDistanceFromMin);
-    }
-
-    const out: Glyph[] = [];
-    for(let i=0; i < len; ++i) {
-
-        const color = `#${lut.getColor(distancesFromMin[i]).getHexString()}`;
-
-        out.push({
-            id: id[i],
-            x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
-            y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
-            color,
-            value: distancesFromMin[i],
-        });
-    }
-    return out;
-};
-
 /** Compute the list of points to be shown */
 const scatterplotPoints = computed<Glyph[]>(() => {
 
@@ -332,7 +267,6 @@ const scatterplotPoints = computed<Glyph[]>(() => {
         case "efficiency": return pointsByEfficiency();
         case "group": return pointsByGroup();
         case "silhouette": return pointsBySilhouettes();
-        case "from-min": return pointsByFromMinEnergy();
         default: return [];
     }
 });
@@ -362,6 +296,16 @@ receiveInWindow((dataFromMain) => {
 
     scatterplotData = JSON.parse(dataFromMain) as ScatterplotData;
     scatterplotDataAvailable.value = true;
+
+    if(scatterplotData.convexHull.length > 0) {
+        setTimeout(() => {
+            for(const idx of scatterplotData!.convexHull) {
+                if(!selectedPoints.value.includes(idx)) {
+                    selectedPoints.value.push(idx);
+                }
+            }
+        }, 200);
+    }
 });
 
 /** Close the window on Esc press */
@@ -405,7 +349,6 @@ const selectPoint = (idx: number): void => {
         case "group":       valueLine = `Group: ${value}`; break;
         case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
         case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
-        case "from-min":    valueLine = `Dist. from min: ${value.toFixed(2)}`; break;
     }
     textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+10;
     textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+6;
@@ -646,13 +589,12 @@ const selectByGroupMinEnergy = (): void => {
  */
 const selectByConvexHull = (): void => {
 
-    if(!scatterplotData ||
-        scatterplotData.convexHull.length === 0 ||
-        scatterplotData.points.length === 0) return;
+    sendToNode("SYSTEM", "convex-hull", {dimension: 3});
+};
 
-    for(const idx of scatterplotData.convexHull) {
-        selectedPoints.value.push(idx);
-    }
+const selectByConvexHull4D = (): void => {
+
+    sendToNode("SYSTEM", "convex-hull", {dimension: 4});
 };
 
 const showLegend = ref(false);
@@ -661,7 +603,6 @@ const showLegendDiscrete = computed(() => showLegend.value &&
                                            scatterplotType.value === "silhouette"));
 const showLegendContinue = computed(() => showLegend.value &&
                                           (scatterplotType.value === "energy" ||
-                                           scatterplotType.value === "from-min" ||
                                            scatterplotType.value === "efficiency"));
 
 const legendDiscrete = computed<{key: number; color: string; label: string}[]>(() => {
@@ -705,13 +646,6 @@ const legendContinue = computed(() => {
             min: minEnergy.toFixed(4),
             max: maxEnergy.toFixed(4),
             header: "Energy",
-            footer: ""
-        };
-    case "from-min":
-        return {
-            min: "0.0000",
-            max: maxDistanceFromMin.toFixed(4),
-            header: "Distance from min energy",
             footer: ""
         };
     case "efficiency":
@@ -783,16 +717,15 @@ const legendContinue = computed(() => {
           <v-btn value="energy" :disabled="!scatterplotData?.energies.length">Energy</v-btn>
           <v-btn value="efficiency">Fidelity</v-btn>
           <v-btn value="silhouette">Quality</v-btn>
-          <v-btn value="from-min" :disabled="!scatterplotData?.energies.length">From min</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-model="pointRadius"
-                                v-model:raw="showPointRadius" label-width="8rem"
+                                v-model:raw="showPointRadius" label-width="7.5rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
         <v-btn @click="showSelect=true">Selection</v-btn>
         <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
       </div>
-      <div class="buttons-line mt-2 ml-2 mb-n5">
+      <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend" hide-details/>
         <v-btn v-focus @click="closeWindow('/scatter')" class="mr-2 mb-4">Close</v-btn>
       </div>
@@ -823,8 +756,11 @@ const legendContinue = computed(() => {
         Min energy per group
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn @click="selectByConvexHull" :disabled="!scatterplotData?.convexHull.length" class="w-75 mt-4 ml-1 mb-4">
+      <v-btn @click="selectByConvexHull" class="w-75 mt-4 ml-1 mb-4">
         Gen. convex hull
+      </v-btn>
+      <v-btn @click="selectByConvexHull4D" class="w-75 mt-0 ml-1 mb-4">
+        Gen. convex hull 4D
       </v-btn>
       <v-divider thickness="2" />
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->

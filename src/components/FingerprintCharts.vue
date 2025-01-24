@@ -105,7 +105,7 @@ receiveInWindow((dataFromMain) => {
 					title: {
 						color: "red",
 						display: true,
-						text: "index",
+						text: "Index",
 						font: {
 							size: 20,
 						},
@@ -118,7 +118,7 @@ receiveInWindow((dataFromMain) => {
 					title: {
 						color: "red",
 						display: true,
-						text: "fingerprint value",
+						text: "Fingerprint value",
 						font: {
 							size: 20,
 						},
@@ -144,8 +144,8 @@ receiveInWindow((dataFromMain) => {
                     data: lineCoordinates,
                     borderColor: "#00ff00",
                     backgroundColor: "#00ff00",
-                    showLine: true,
-                    pointRadius: 0,
+                    showLine: false,
+                    pointRadius: 3,
                 }
             ]
         };
@@ -165,7 +165,7 @@ receiveInWindow((dataFromMain) => {
 					title: {
 						color: "red",
 						display: true,
-						text: "distance from energy minimum",
+						text: "Distance from energy minimum",
 						font: {
 							size: 20,
 						},
@@ -178,7 +178,7 @@ receiveInWindow((dataFromMain) => {
 					title: {
 						color: "red",
 						display: true,
-						text: "energy difference from minimum",
+						text: "Energy difference from minimum",
 						font: {
 							size: 20,
 						},

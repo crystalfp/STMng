@@ -8,7 +8,6 @@
  */
 import {ipcMain} from "electron";
 import {writeFileSync} from "node:fs";
-import qh, {type Vec3Like, type Face} from "quickhull3d";
 import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen, sendAlertMessage,
 		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
@@ -17,6 +16,7 @@ import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
+import {generalizedConvexHull3D, generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
@@ -233,40 +233,13 @@ export class ComputeFingerprints extends NodeCore {
 	};
 
 	/**
-	 * Compute face normal
-	 *
-	 * @param face - One triangular face of the convex hull, that is the indices of the points at its vertices
-	 * @param points - The points in the fingerprint-energy 3D space
-	 * @returns The Z component of the outward pointing face normal
-	 */
-	private computeNormalZ(face: Face, points: number[][]): number {
-
-		const p1 = points[face[0]];
-		const p2 = points[face[1]];
-		const p3 = points[face[2]];
-
-		const aa = [
-			p2[0]-p1[0],
-			p2[1]-p1[1],
-			p2[2]-p1[2]
-		];
-
-		const bb = [
-			p3[0]-p1[0],
-			p3[1]-p1[1],
-			p3[2]-p1[2]
-		];
-
-		return aa[0]*bb[1]-aa[1]*bb[0];
-	}
-
-	/**
 	 * Prepare the data for the scatterplot
 	 *
 	 * @param mappedPoints - Points mapped in 2D
+	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
 	 * @returns Data needed by the scatterplot
 	 */
-	private packDataForClient(mappedPoints: number[][]): ScatterplotData {
+	private packDataForClient(mappedPoints: number[][], dimension: number): ScatterplotData {
 
 		// How many structures are we dealing with
 		const n = mappedPoints.length;
@@ -307,35 +280,16 @@ export class ComputeFingerprints extends NodeCore {
 			ids.push(structure.id);
 		}
 
-		// If there are energies, create the 3D convex hull in energy-fingerprint space
+		// If there are energies, create the generalized convex hull in energy-fingerprint space
 		let convexHullIndices: number[] = [];
 		if(energies.length >= mappedPoints.length) {
-
-			const pointsEF = Array(mappedPoints.length) as Vec3Like[];
-			for(let i=0; i < mappedPoints.length; ++i) {
-				pointsEF[i] = [
-					mappedPoints[i][0],
-					mappedPoints[i][1],
-					energies[i]
-				];
+			if(dimension === 3) {
+				convexHullIndices = generalizedConvexHull3D(mappedPoints, energies);
 			}
-			const faces = qh(pointsEF, {skipTriangulation: false});
-
-			// Extract unique vertices indexes in the lower branch of the convex hull
-			const indices = new Set<number>();
-			for(const face of faces) {
-
-				// The normal put outward the convex hull.
-				// If it points downward, it is on the lower branch of the convex hull
-				const nz = this.computeNormalZ(face, mappedPoints);
-				if(nz <= 0) {
-					indices.add(face[0]);
-					indices.add(face[1]);
-					indices.add(face[2]);
-				}
+			else if(dimension === 4) {
+				const distanceVector = this.dist.getDistanceMatrix().toVector();
+				convexHullIndices = generalizedConvexHull4D(distanceVector, mappedPoints.length, energies);
 			}
-
-			convexHullIndices = [...indices];
 		}
 
 		// Create data for the scatterplot
@@ -356,8 +310,10 @@ export class ComputeFingerprints extends NodeCore {
 	 *
 	 * @param opKind - Operation to be performed: "no-group" only distances available,
 	 *                 "update" update if scatter available or "create" create the scatterplot
+	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
 	 */
-	private createUpdateScatterplot(opKind: "no-group" | "update" | "create"): void {
+	private createUpdateScatterplot(opKind: "no-group" | "update" | "create",
+									dimension=0): void {
 
 		const scatterplotOpen = isSecondaryWindowOpen("/scatter");
 		if(opKind !== "create" && !scatterplotOpen) return;
@@ -366,7 +322,7 @@ export class ComputeFingerprints extends NodeCore {
 		const points = this.dist.getProjectedPoints();
 
 		// Collect the data for the scatterplot
-		const scatterplotData = this.packDataForClient(points);
+		const scatterplotData = this.packDataForClient(points, dimension);
 		if(opKind === "no-group") {
 			scatterplotData.groups = [];
 			scatterplotData.countGroups = 0;
@@ -864,6 +820,13 @@ export class ComputeFingerprints extends NodeCore {
         		const pos = filename.lastIndexOf(".");
 				const energyFilename = pos > 0 ? `${filename.slice(0, pos)}.energy` : `${filename}.energy`;
 				writeFileSync(energyFilename, energies.join("\n"), "utf8");
+			});
+
+			ipcMain.on("SYSTEM:convex-hull",  (_event: unknown, params: CtrlParams): void => {
+
+				const dimension = params.dimension as number ?? 3;
+
+				this.createUpdateScatterplot("update", dimension);
 			});
 		}
 	}
