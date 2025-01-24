@@ -343,7 +343,7 @@ export class ComputeFingerprints extends NodeCore {
 			// Create the scatterplot window
 			createSecondaryWindowWithRetry({
 				routerPath: "/scatter",
-				width: 1200,
+				width: 1600,
 				height: 900,
 				title: "Fingerprints scatterplot",
 				data: dataToSend

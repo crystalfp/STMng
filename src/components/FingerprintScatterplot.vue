@@ -36,6 +36,8 @@ interface Glyph {
 /** The canvas sizes (will be computed during mount or resize) */
 const scatterplotWidth = ref(500);
 const scatterplotHeight = ref(300);
+let scatterplotX = 0;
+let scatterplotY = 0;
 
 /** The scatterplot type */
 const scatterplotType = ref("group");
@@ -277,22 +279,26 @@ const scatterplotPoints = computed<Glyph[]>(() => {
 
 onMounted(() => {
 
-    // Get the canvas size
-    const canvas = document.querySelector<HTMLDivElement>(".scatterplot-viewer");
-    if(!canvas) return;
+    const resizeObserver = new ResizeObserver((entries) => {
 
-    scatterplotWidth.value = canvas.clientWidth;
-    scatterplotHeight.value = canvas.clientHeight;
-
-    // Adjust the canvas size on window resize
-    let timer: NodeJS.Timeout;
-    globalThis.addEventListener("resize", () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            scatterplotWidth.value = canvas.clientWidth;
-            scatterplotHeight.value = canvas.clientHeight;
-        }, 200);
+        for(const entry of entries) {
+            if(entry.borderBoxSize) {
+                scatterplotWidth.value = entry.borderBoxSize[0].inlineSize;
+                scatterplotHeight.value = entry.borderBoxSize[0].blockSize;
+            }
+            else {
+                scatterplotWidth.value = entry.contentRect.width;
+                scatterplotHeight.value = entry.contentRect.height;
+            }
+        }
     });
+
+    const canvas = document.querySelector<HTMLDivElement>(".side-n");
+    if(!canvas) return;
+    resizeObserver.observe(canvas);
+    const rect = canvas.getClientRects()[0];
+    scatterplotX = rect.x;
+    scatterplotY = rect.y;
 });
 
 /** Receive the chart data from the main window */
@@ -391,8 +397,8 @@ const mousedown = (event: MouseEvent): void => {
 
     if(event.button !== 2) return;
 
-    rectangleStartX = event.clientX;
-    rectangleStartY = event.clientY;
+    rectangleStartX = event.clientX - scatterplotX;
+    rectangleStartY = event.clientY - scatterplotY;
     showSelectionRectangle.value = true;
     width.value = 0;
     height.value = 0;
@@ -408,8 +414,8 @@ const mouseup = (event: MouseEvent): void => {
     if(event.button !== 2) return;
     if(rectangleStartX === undefined || rectangleStartY === undefined) return;
 
-    let rectangleEndX = event.clientX;
-    let rectangleEndY = event.clientY;
+    let rectangleEndX = event.clientX - scatterplotX;
+    let rectangleEndY = event.clientY - scatterplotY;
 
     if(rectangleEndX < rectangleStartX) {
         const tt = rectangleEndX;
@@ -462,11 +468,11 @@ const mousemove = (event: MouseEvent): void => {
        rectangleStartY === undefined) return;
 
     // Avoid too many events
-    if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 100) return;
+    if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 50) return;
     lastMoveEvent = event.timeStamp;
 
-    const rectangleEndX = event.clientX;
-    const rectangleEndY = event.clientY;
+    const rectangleEndX = event.clientX - scatterplotX;
+    const rectangleEndY = event.clientY - scatterplotY;
 
     // Reorder coordinates if needed
     if(rectangleEndX < rectangleStartX) {
@@ -489,7 +495,6 @@ const mousemove = (event: MouseEvent): void => {
 };
 
 /** Selected all points pertaining to a group */
-const showSelect = ref(false);
 const selectedGroup = ref(0);
 const showSelectedGroup = ref(0);
 
@@ -669,18 +674,69 @@ const legendContinue = computed(() => {
         };
     }
 });
-
+// > Start template
 </script>
 
 
 <template>
 <v-app :theme="theme">
-  <div class="scatterplot-portal">
-    <div class="scatterplot-viewer">
-      <svg :width="scatterplotWidth" :height="scatterplotHeight" x="0" y="0"
+  <div class="scatterplot-grid">
+    <div class="side-w pa-2 mr-2">
+      <v-label class="separator-title mt-1" style="border: none">Manage selection</v-label>
+
+      <v-row class="ga-3 mt-2 mb-5 ml-1">
+        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="equal">
+          Select all
+        </v-btn>
+        <v-btn @click="resetSelected" :disabled="noSelectedPoints" class="equal">
+          Deselect all
+        </v-btn>
+      </v-row>
+      <v-divider thickness="2" class="mr-n1 ml-1"/>
+      <g-slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
+                              v-model:raw="showSelectedGroup" label-width="5rem"
+                              :label="`Group (${showSelectedGroup})`" class="mt-2"
+                              :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
+      <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups"
+             block class="mt-4 ml-1 mb-4">
+        Select group
+      </v-btn>
+      <v-divider thickness="2" class="mr-n1 ml-1"/>
+      <v-btn @click="selectByGroupMinEnergy" :disabled="!scatterplotData?.energies.length"
+             block class="mt-4 ml-1 mb-4">
+        Min energy per group
+      </v-btn>
+      <v-divider thickness="2" class="mr-n1 ml-1"/>
+      <v-btn @click="selectByConvexHull4D" :disabled="!scatterplotData?.energies.length"
+             block class="mt-4 ml-1 mb-2">
+        Generalized convex hull
+      </v-btn>
+      <g-slider-with-steppers v-model="threshold" :disabled="!scatterplotData?.energies.length"
+                              v-model:raw="showThreshold" label-width="7.5rem"
+                              :label="`Threshold (${showThreshold.toFixed(2)})`" class="mb-2"
+                              :min="0" :max="0.5" :step="0.01" />
+      <v-divider thickness="2" class="mr-n1 ml-1"/>
+      <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
+      <v-btn @click="compareSelected" :disabled="true" block class="mt-4 mb-4 ml-1">
+        Compare selected
+      </v-btn>
+      <v-divider thickness="2" class="mr-n1 ml-1"/>
+      <v-btn @click="showSave = !showSave" :disabled="noSelectedPoints" block class="mt-4 ml-1">
+        Export selected
+      </v-btn>
+
+      <g-select-file v-if="showSave" class="mt-4" title="Select output file"
+                     :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
+    </div>
+
+    <div class="side-n">
+      <!-- <svg :width="scatterplotWidth" :height="scatterplotHeight" x="0" y="0"
           :viewBox="`0 0 ${scatterplotWidth} ${scatterplotHeight}`" fill="transparent"
           xmlns="http://www.w3.org/2000/svg" @click="textShow=false"
-          @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove">
+          @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove"> -->
+      <svg width="100%" height="100%" x="0" y="0" fill="transparent"
+           xmlns="http://www.w3.org/2000/svg" @click="textShow=false"
+           @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove">
         <rect v-if="showSelectionRectangle" :x :y :width :height stroke="red" stroke-width="2"/>
         <rect x="20" y="20" :width="scatterplotWidth-40" :height="scatterplotHeight-40"
               fill="none" :stroke="fgColor"/>
@@ -715,7 +771,8 @@ const legendContinue = computed(() => {
         <p>{{ legendContinue.footer }}</p>
       </div>
     </div>
-    <v-container class="scatterplot-buttons">
+
+    <div class="side-s scatterplot-buttons">
       <div class="buttons-line">
         <v-btn-toggle v-model="scatterplotType" mandatory>
           <v-btn value="group">Group</v-btn>
@@ -727,109 +784,37 @@ const legendContinue = computed(() => {
                                 v-model:raw="showPointRadius" label-width="7.5rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn @click="showSelect=true">Selection</v-btn>
         <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend" hide-details/>
         <v-btn v-focus @click="closeWindow('/scatter')" class="mr-2 mb-4">Close</v-btn>
       </div>
-    </v-container>
+    </div>
   </div>
-
-<v-dialog v-model="showSelect">
-  <v-card title="Manage point selection" class="mx-auto no-select" elevation="16" width="380">
-    <v-card-text class="pb-0">
-      <v-row class="ga-2 mt-2 mb-5 ml-1" no-gutters>
-        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="equal">
-          Select all
-        </v-btn>
-        <v-btn @click="resetSelected" :disabled="noSelectedPoints" class="equal">
-          Deselect all
-        </v-btn>
-      </v-row>
-      <v-divider thickness="2" />
-      <g-slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
-                              v-model:raw="showSelectedGroup" label-width="5rem"
-                              :label="`Group (${showSelectedGroup})`" class="mt-2"
-                              :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
-      <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups"
-             class="w-75 mt-4 ml-1 mb-4">
-        Output groups
-      </v-btn>
-      <v-divider thickness="2" />
-      <v-btn @click="selectByGroupMinEnergy" :disabled="!scatterplotData?.energies.length"
-             class="w-75 mt-4 ml-1 mb-4">
-        Min energy per group
-      </v-btn>
-      <v-divider thickness="2" />
-      <v-btn @click="selectByConvexHull4D" :disabled="!scatterplotData?.energies.length"
-             class="w-75 mt-4 ml-1 mb-2">
-        Gen. convex hull
-      </v-btn>
-      <g-slider-with-steppers v-model="threshold" :disabled="!scatterplotData?.energies.length"
-                              v-model:raw="showThreshold" label-width="7.5rem"
-                              :label="`Threshold (${showThreshold.toFixed(2)})`" class="mb-2"
-                              :min="0" :max="0.5" :step="0.01" />
-      <v-divider thickness="2" />
-      <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
-      <v-btn @click="compareSelected" :disabled="true" class="mt-4 mb-4 ml-1 w-75">
-        Compare selected
-      </v-btn>
-      <v-divider thickness="2" />
-      <v-btn @click="showSave = !showSave" :disabled="noSelectedPoints" class="mt-4 ml-1 w-75">
-        Export selected
-      </v-btn>
-
-      <g-select-file v-if="showSave" class="mt-4" title="Select output file"
-                     :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
-
-    </v-card-text>
-    <v-card-actions>
-      <v-btn v-focus @click="showSelect=false">Close</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
-
 </v-app>
-<!--
-<div class="container">
-  <div class="aa"></div>
-  <div class="bb"></div>
-  <div class="cc"></div>
-</div>
-
-.container {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  grid-template-rows: 1fr 60px;
-  gap: 0px 0px;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "aa bb"
-    "aa cc";
-}
-
-.aa { grid-area: aa; }
-
-.bb { grid-area: bb; }
-
-.cc { grid-area: cc; }
-
--->
-
-
 </template>
 
 
 <style scoped>
 
-.scatterplot-portal {
-  display: flex;
-  flex-direction: column;
+.scatterplot-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: 1fr 120px;
+  gap: 0 0;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "aa bb"
+    "aa cc";
   height: 100vh;
-  padding: 0;
 }
+
+.side-w {grid-area: aa;}
+
+.side-n {grid-area: bb;}
+
+.side-s {grid-area: cc;}
 
 .scatterplot-viewer {
   overflow: hidden;
@@ -842,7 +827,8 @@ const legendContinue = computed(() => {
   flex-direction: column;
   display: flex;
   max-width: 3000px !important;
-  padding: 0 20px 16px 20px !important;
+  padding: 10px 0 16px 0 !important;
+  margin-bottom: 10px;
 }
 
 .buttons-line {
@@ -850,9 +836,10 @@ const legendContinue = computed(() => {
   display: flex;
   align-items: center;
   max-width: 3000px !important;
-  width: 100vw;
   gap: 10px;
-  padding-right: 40px !important;
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+  width: 100%
 }
 
 .equal {
@@ -861,8 +848,8 @@ const legendContinue = computed(() => {
 
 .legend {
   position: absolute;
-  bottom: 116px;
-  right: 20px;
+  bottom: 141px;
+  right: 21px;
   z-index: 800;
   background-color: #7e7e7e46;
   width: 220px;

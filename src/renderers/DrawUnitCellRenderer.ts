@@ -131,7 +131,7 @@ export class DrawUnitCellRenderer {
 	* @param group - The arrow is added to this group
 	*/
 	private basisVectorArrow(basis: Vector3, origin: Vector3,
-							color: string, axisLabel: string, group: Group): void {
+							 color: string, axisLabel: string, group: Group): void {
 
 		const versor = basis.clone().normalize();
 		const basisLen = basis.length();
