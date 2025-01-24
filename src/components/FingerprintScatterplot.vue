@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-26
  */
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
@@ -55,6 +55,10 @@ let groupColors: string[] = [];
 /** The energy range */
 let minEnergy = 0;
 let maxEnergy = 0;
+
+/** Distance threshold to remove duplicates in convex hull */
+const threshold = ref(0.1);
+const showThreshold = ref(0.1);
 
 /**
  * Convert a list of colors to RGB strings
@@ -299,12 +303,13 @@ receiveInWindow((dataFromMain) => {
 
     if(scatterplotData.convexHull.length > 0) {
         setTimeout(() => {
+            selectedPoints.value.length = 0;
             for(const idx of scatterplotData!.convexHull) {
                 if(!selectedPoints.value.includes(idx)) {
                     selectedPoints.value.push(idx);
                 }
             }
-        }, 200);
+        }, 100);
     }
 });
 
@@ -585,17 +590,17 @@ const selectByGroupMinEnergy = (): void => {
 };
 
 /**
- * Select points that falls on a convex hull in 3D
+ * Select points that falls on a convex hull in 4D
  */
-const selectByConvexHull = (): void => {
-
-    sendToNode("SYSTEM", "convex-hull", {dimension: 3});
-};
-
 const selectByConvexHull4D = (): void => {
 
-    sendToNode("SYSTEM", "convex-hull", {dimension: 4});
+    sendToNode("SYSTEM", "convex-hull", {
+        dimension: 4,
+        threshold: threshold.value
+    });
 };
+
+watch([threshold], selectByConvexHull4D);
 
 const showLegend = ref(false);
 const showLegendDiscrete = computed(() => showLegend.value &&
@@ -748,27 +753,31 @@ const legendContinue = computed(() => {
                               v-model:raw="showSelectedGroup" label-width="5rem"
                               :label="`Group (${showSelectedGroup})`" class="mt-2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
-      <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups" class="w-75 mt-4 ml-1 mb-4">
+      <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups"
+             class="w-75 mt-4 ml-1 mb-4">
         Output groups
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn @click="selectByGroupMinEnergy" :disabled="!scatterplotData?.energies.length" class="w-75 mt-4 ml-1 mb-4">
+      <v-btn @click="selectByGroupMinEnergy" :disabled="!scatterplotData?.energies.length"
+             class="w-75 mt-4 ml-1 mb-4">
         Min energy per group
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn @click="selectByConvexHull" class="w-75 mt-4 ml-1 mb-4">
+      <v-btn @click="selectByConvexHull4D" :disabled="!scatterplotData?.energies.length"
+             class="w-75 mt-4 ml-1 mb-2">
         Gen. convex hull
       </v-btn>
-      <v-btn @click="selectByConvexHull4D" class="w-75 mt-0 ml-1 mb-4">
-        Gen. convex hull 4D
-      </v-btn>
+      <g-slider-with-steppers v-model="threshold" :disabled="!scatterplotData?.energies.length"
+                              v-model:raw="showThreshold" label-width="7.5rem"
+                              :label="`Threshold (${showThreshold.toFixed(2)})`" class="mb-2"
+                              :min="0" :max="0.5" :step="0.01" />
       <v-divider thickness="2" />
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
-      <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="true">
+      <v-btn @click="compareSelected" :disabled="true" class="mt-4 mb-4 ml-1 w-75">
         Compare selected
       </v-btn>
       <v-divider thickness="2" />
-      <v-btn class="mt-4 ml-1 w-75" @click="showSave = !showSave" :disabled="noSelectedPoints">
+      <v-btn @click="showSave = !showSave" :disabled="noSelectedPoints" class="mt-4 ml-1 w-75">
         Export selected
       </v-btn>
 
@@ -783,6 +792,33 @@ const legendContinue = computed(() => {
 </v-dialog>
 
 </v-app>
+<!--
+<div class="container">
+  <div class="aa"></div>
+  <div class="bb"></div>
+  <div class="cc"></div>
+</div>
+
+.container {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  grid-template-rows: 1fr 60px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "aa bb"
+    "aa cc";
+}
+
+.aa { grid-area: aa; }
+
+.bb { grid-area: bb; }
+
+.cc { grid-area: cc; }
+
+-->
+
+
 </template>
 
 

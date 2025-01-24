@@ -291,7 +291,12 @@
 <tr>
   <td class="c1">Gen. convex hull</td>
   <td class="c2">button</td>
-  <td class="c3">Compute the generalized convex hull of the points in the 2D projected plane plus corresponding energy. From this surface select only the vertices on the lowest side of the hull.</td>
+  <td class="c3">Compute the generalized convex hull of the points projected to 3D space plus corresponding energy. From this surface selects only the vertices on the lowest side of the hull. Setting a threshold &gt; 0 remove similar points that dist less than this value. For a group of similar points extracts the lowest energy one.</td>
+</tr>
+<tr>
+	<td class="c1">Threshold</td>
+	<td class="c2">slider</td>
+	<td class="c3">Set the maximum distance to consider two points from the convex hull similar. If zero, no similar points removal is done.</td>
 </tr>
 <tr>
   <td class="c1">Compare selected</td>

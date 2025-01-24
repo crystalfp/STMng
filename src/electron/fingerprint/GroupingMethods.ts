@@ -6,7 +6,6 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-19
  */
-import type {FingerprintsAccumulator} from "./Accumulator";
 import type {DistanceMatrix} from "./Distances";
 
 /** Superclass of all grouping methods */
@@ -15,12 +14,12 @@ abstract class GroupingMethod {
     /**
      * Compute grouping of structures into groups with similar fingerprints
      *
-     * @param accumulator - Accumulator with all structures
+     * @param countStructures - Total number of selected structures
      * @param distances - Distance matrix between fingerprints
      * @param threshold - Distance threshold to consider two structures in the same group
      * @param margin - Number of structure over one to be considered for node linkage
      */
-    abstract doGrouping(accumulator: FingerprintsAccumulator,
+    abstract doGrouping(countStructures: number,
                         distances: DistanceMatrix,
                         threshold: number,
                         margin: number): Set<number>[];
@@ -82,12 +81,10 @@ abstract class GroupingMethod {
 
 class PseudoSNNGrouping extends GroupingMethod {
 
-    doGrouping(accumulator: FingerprintsAccumulator,
+    doGrouping(countStructures: number,
                distances: DistanceMatrix,
                threshold: number,
                margin: number): Set<number>[] {
-
-        const countStructures = accumulator.selectedSize();
 
         const connection = this.sparsify(countStructures, distances, threshold);
 
@@ -200,11 +197,9 @@ abstract class HierarchicalGrouping extends GroupingMethod {
 
     protected abstract clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number;
 
-    doGrouping(accumulator: FingerprintsAccumulator,
+    doGrouping(countStructures: number,
                distances: DistanceMatrix,
                threshold: number): Set<number>[] {
-
-        const countStructures = accumulator.selectedSize();
 
         // Initialize root (to point to all)
         const root: Node[] = [];

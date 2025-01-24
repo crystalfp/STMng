@@ -6,7 +6,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order
-  ☐ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum`
+  ✔ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum` @done(2025-01-24 07:19)
   ☐ Remove similar structures from convex hull
   ☐ Check error return from main process to client
 

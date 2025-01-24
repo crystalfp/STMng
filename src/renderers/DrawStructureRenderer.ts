@@ -18,7 +18,7 @@ import type {PositionType, StructureRenderInfo} from "@/types";
 
 // > Constants
 const bondRadius = 0.1;
-const sphereSubdivisions   = [0, 0, 1, 3,  9];
+const sphereSubdivisions   = [0, 0, 1,  3,  9];
 const cylinderSubdivisions = [0, 3, 5, 10, 16];
 const rCovScale = 0.5;
 

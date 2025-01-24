@@ -16,7 +16,7 @@ import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
-import {generalizedConvexHull3D, generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
+import {generalizedConvexHull4D, removeSimilarPoints} from "../fingerprint/GeneralizedConvexHull";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
@@ -237,9 +237,10 @@ export class ComputeFingerprints extends NodeCore {
 	 *
 	 * @param mappedPoints - Points mapped in 2D
 	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
+	 * @param threshold - Distance threshold to remove similar points from the generalized convex hull
 	 * @returns Data needed by the scatterplot
 	 */
-	private packDataForClient(mappedPoints: number[][], dimension: number): ScatterplotData {
+	private packDataForClient(mappedPoints: number[][], dimension: number, threshold: number): ScatterplotData {
 
 		// How many structures are we dealing with
 		const n = mappedPoints.length;
@@ -282,13 +283,14 @@ export class ComputeFingerprints extends NodeCore {
 
 		// If there are energies, create the generalized convex hull in energy-fingerprint space
 		let convexHullIndices: number[] = [];
-		if(energies.length >= mappedPoints.length) {
-			if(dimension === 3) {
-				convexHullIndices = generalizedConvexHull3D(mappedPoints, energies);
-			}
-			else if(dimension === 4) {
-				const distanceVector = this.dist.getDistanceMatrix().toVector();
-				convexHullIndices = generalizedConvexHull4D(distanceVector, mappedPoints.length, energies);
+		if(energies.length >= mappedPoints.length && dimension === 4) {
+
+			convexHullIndices = generalizedConvexHull4D(distanceMatrix, mappedPoints.length, energies);
+
+			// Remove similar points and return the reduced list of vertices
+			if(threshold > 0) {
+				convexHullIndices = removeSimilarPoints(convexHullIndices, distanceMatrix,
+														threshold, energies);
 			}
 		}
 
@@ -311,9 +313,11 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param opKind - Operation to be performed: "no-group" only distances available,
 	 *                 "update" update if scatter available or "create" create the scatterplot
 	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
+	 * @param threshold - Distance threshold to remove similar points from the generalized convex hull
 	 */
 	private createUpdateScatterplot(opKind: "no-group" | "update" | "create",
-									dimension=0): void {
+									dimension=0,
+									threshold=0.1): void {
 
 		const scatterplotOpen = isSecondaryWindowOpen("/scatter");
 		if(opKind !== "create" && !scatterplotOpen) return;
@@ -322,7 +326,7 @@ export class ComputeFingerprints extends NodeCore {
 		const points = this.dist.getProjectedPoints();
 
 		// Collect the data for the scatterplot
-		const scatterplotData = this.packDataForClient(points, dimension);
+		const scatterplotData = this.packDataForClient(points, dimension, threshold);
 		if(opKind === "no-group") {
 			scatterplotData.groups = [];
 			scatterplotData.countGroups = 0;
@@ -822,11 +826,12 @@ export class ComputeFingerprints extends NodeCore {
 				writeFileSync(energyFilename, energies.join("\n"), "utf8");
 			});
 
-			ipcMain.on("SYSTEM:convex-hull",  (_event: unknown, params: CtrlParams): void => {
+			ipcMain.on("SYSTEM:convex-hull", (_event: unknown, params: CtrlParams): void => {
 
-				const dimension = params.dimension as number ?? 3;
+				const dimension = params.dimension as number ?? 4;
+				const threshold = params.threshold as number ?? 0.1;
 
-				this.createUpdateScatterplot("update", dimension);
+				this.createUpdateScatterplot("update", dimension, threshold);
 			});
 		}
 	}

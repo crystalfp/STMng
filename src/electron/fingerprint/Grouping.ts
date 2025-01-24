@@ -51,13 +51,15 @@ export class Grouping {
 	group(accumulator: FingerprintsAccumulator, distances: DistanceMatrix,
 		  groupingMethod: number, groupingThreshold: number, addedMargin: number): GroupingResults {
 
+		// How many structures selected
+		this.structureGroup.length = accumulator.selectedSize();
+
 		// For each group the list of structures indices
-		const groups = groupingMethods[groupingMethod].method.doGrouping(accumulator,
+		const groups = groupingMethods[groupingMethod].method.doGrouping(this.structureGroup.length,
 																		distances,
 																		groupingThreshold,
 																		addedMargin);
 
-		this.structureGroup.length = accumulator.selectedSize();
 		let groupCount = 0;
 		for(const group of groups) {
 
