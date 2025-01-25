@@ -90,26 +90,28 @@ const initViewer = (): void => {
 
 onMounted(() => {
 
+    const resizeObserver = new ResizeObserver((entries) => {
+
+        for(const entry of entries) {
+            if(entry.borderBoxSize) {
+                canvasWidth.value = entry.borderBoxSize[0].inlineSize;
+                canvasHeight.value = entry.borderBoxSize[0].blockSize;
+            }
+            else {
+                canvasWidth.value = entry.contentRect.width;
+                canvasHeight.value = entry.contentRect.height;
+            }
+        }
+
+        camera.aspect = canvasWidth.value/canvasHeight.value;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvasWidth.value, canvasHeight.value);
+    });
+
     // Get the canvas size
     const canvas = document.querySelector<HTMLDivElement>(".landscape-viewer");
     if(!canvas) return;
-
-    canvasWidth.value  = canvas.clientWidth;
-    canvasHeight.value = canvas.clientHeight;
-
-    // Adjust the canvas size on window resize
-    let timer: NodeJS.Timeout;
-    globalThis.addEventListener("resize", () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            canvasWidth.value  = canvas.clientWidth;
-            canvasHeight.value = canvas.clientHeight;
-
-            camera.aspect = canvasWidth.value/canvasHeight.value;
-            camera.updateProjectionMatrix();
-            renderer.setSize(canvasWidth.value, canvasHeight.value);
-        }, 200);
-    });
+    resizeObserver.observe(canvas);
 
     initViewer();
 });

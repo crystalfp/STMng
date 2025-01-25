@@ -225,7 +225,7 @@ watch([fpIndex, chartType], () => {
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex]}`"
-                                :min="0" :max="countFingerprints" :step="1" />
+                                :min="0" :max="countFingerprints-1" :step="1" />
         <v-btn v-focus @click="closeWindow('/fp-charts')">Close</v-btn>
       </div>
     </v-container>

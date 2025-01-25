@@ -6,9 +6,9 @@ To do:
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order
-  ✔ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum` @done(2025-01-24 07:19)
-  ☐ Remove similar structures from convex hull
   ☐ Check error return from main process to client
+  ✘ Add ResizeObserver also for Viewer3D @cancelled(2025-01-25 06:00)
+  ☐ Dynamic load for Lut and other not used from beginning
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -56,6 +56,8 @@ Reference:
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
 
 Archive:
+  ✔ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum` @done(2025-01-24 07:19) @project(To do)
+  ✔ Remove similar structures from convex hull @done(2025-01-24 20:37) @project(To do)
   ✘ Check THREE.Layer for visibility @cancelled(2025-01-23 08:00) @project(ToDo eventually)
   ✘ Use Suspense component for controls loading <https://vueschool.io/articles/vuejs-tutorials/suspense-everything-you-need-to-know/> @cancelled(2025-01-23 07:15) @project(Study)
   ✔ Change watchEffect to watch @done(2025-01-23 07:01) @project(To do)

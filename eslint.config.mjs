@@ -63,7 +63,8 @@ export default [{
     },
     processor: vuePlugin.processors['.vue'],
     linterOptions: {
-        reportUnusedDisableDirectives: "error"
+        reportUnusedDisableDirectives: "error",
+        reportUnusedInlineConfigs: "error"
     },
     plugins: {
         vue: vuePlugin,

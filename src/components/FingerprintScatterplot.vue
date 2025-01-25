@@ -59,8 +59,8 @@ let minEnergy = 0;
 let maxEnergy = 0;
 
 /** Distance threshold to remove duplicates in convex hull */
-const threshold = ref(0.1);
-const showThreshold = ref(0.1);
+const threshold = ref(0.01);
+const showThreshold = ref(0.01);
 
 /**
  * Convert a list of colors to RGB strings
@@ -239,7 +239,7 @@ const pointsByEfficiency = (): Glyph[] => {
         let color;
         if(sl < -0.05)     color = "#bd0000";
         else if(sl < 0)    color = "white";
-        else if(sl === 0)  color = "#7d0075";
+        else if(sl === 0)  color = "#00c0ff";
         else if(sl < 0.05) color = "white";
         else if(sl < 0.25) color = "red";
         else if(sl < 0.5)  color = "orange";
@@ -636,7 +636,7 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
             {key: 2, color: "orange",  label: "Weak"},
             {key: 3, color: "red",     label: "Bad"},
             {key: 4, color: "#bd0000", label: "Very bad"},
-            {key: 5, color: "#7d0075", label: "Group of one element"},
+            {key: 5, color: "#00c0ff", label: "Group of one element"},
             {key: 6, color: "white",   label: "Across groups border"},
         ];
     }
@@ -694,7 +694,7 @@ const legendContinue = computed(() => {
       </v-row>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
       <g-slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
-                              v-model:raw="showSelectedGroup" label-width="5rem"
+                              v-model:raw="showSelectedGroup" label-width="7rem"
                               :label="`Group (${showSelectedGroup})`" class="mt-2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
       <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups"
@@ -712,7 +712,7 @@ const legendContinue = computed(() => {
         Generalized convex hull
       </v-btn>
       <g-slider-with-steppers v-model="threshold" :disabled="!scatterplotData?.energies.length"
-                              v-model:raw="showThreshold" label-width="7.5rem"
+                              v-model:raw="showThreshold" label-width="9rem"
                               :label="`Threshold (${showThreshold.toFixed(2)})`" class="mb-2"
                               :min="0" :max="0.5" :step="0.01" />
       <v-divider thickness="2" class="mr-n1 ml-1"/>
@@ -781,7 +781,7 @@ const legendContinue = computed(() => {
           <v-btn value="silhouette">Quality</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-model="pointRadius"
-                                v-model:raw="showPointRadius" label-width="7.5rem"
+                                v-model:raw="showPointRadius" label-width="9rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
         <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>

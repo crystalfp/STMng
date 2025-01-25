@@ -271,19 +271,18 @@ export class Distances {
     }
 
     /**
-     * Fix triangular inequality violations
+     * Count number of violations of the triangular inequality
      *
-     * @returns 0 if everything is OK; 1 if had to fix triangular inequalities; -1 if maxIterations exceeded
+     * @param matrixSide - Distance matrix side
+     * @returns - Number of violations of the AC \< AB+BC inequality
      */
-    private fixTriangleInequalityViolations(maxIterations=10): number {
+    private countTriangleInequalityViolations(matrixSide: number): number {
 
-        // Check if fixing needed
         let violated = 0;
-        const n = this.distances.matrixSize();
 
-        for(let i=0; i < n-1; ++i) {
-            for(let j=i+1; j < n; ++j) {
-                for(let k=j+1; k < n; ++k) {
+        for(let i=0; i < matrixSide-1; ++i) {
+            for(let j=i+1; j < matrixSide; ++j) {
+                for(let k=j+1; k < matrixSide; ++k) {
 
                     const dij = this.distances.get(i, j);
                     const djk = this.distances.get(j, k);
@@ -292,7 +291,22 @@ export class Distances {
                 }
             }
         }
-	    if(violated <= 0) return 0; // Fixing not needed
+
+        return violated;
+    }
+
+    /**
+     * Fix triangular inequality violations
+     *
+     * @returns 0 if everything is OK; 1 if had to fix triangular inequalities; -1 if maxIterations exceeded
+     */
+    private fixTriangleInequalityViolations(maxIterations=10): number {
+
+        // Check if fixing needed
+        const n = this.distances.matrixSize();
+
+        let violated = this.countTriangleInequalityViolations(n);
+	    if(violated === 0) return 0; // Fixing not needed
 
 	    // Allocate the correction matrix
         const delta = new Delta(n);
@@ -333,19 +347,8 @@ export class Distances {
                 }
             }
 
-            // Check if violations present
-            violated = 0;
-            for(let i=0; i < n-1; ++i) {
-                for(let j=i+1; j < n; ++j) {
-                    for(let k=j+1; k < n; ++k) {
-
-                        const dij = this.distances.get(i, j);
-                        const djk = this.distances.get(j, k);
-                        const dki = this.distances.get(k, i);
-                        if(dij > (djk+dki)) ++violated;
-                    }
-                }
-            }
+            // Check if violations still present
+            violated = this.countTriangleInequalityViolations(n);
 
             // Update the number of iterations
             --maxIterations;

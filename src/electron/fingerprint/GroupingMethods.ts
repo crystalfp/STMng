@@ -179,20 +179,6 @@ class PseudoSNNGrouping extends GroupingMethod {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-shadow
-class Node {
-
-    public readonly idx: number[] = [];
-
-    constructor(i: number) {
-        this.idx.push(i);
-    }
-
-    merge(n: Node): void {
-        for(const element of n.idx) this.idx.push(element);
-    }
-}
-
 abstract class HierarchicalGrouping extends GroupingMethod {
 
     protected abstract clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number;
@@ -202,8 +188,8 @@ abstract class HierarchicalGrouping extends GroupingMethod {
                threshold: number): Set<number>[] {
 
         // Initialize root (to point to all)
-        const root: Node[] = [];
-        for(let i=0; i < countStructures; ++i) root.push(new Node(i));
+        const root: number[][] = [];
+        for(let i=0; i < countStructures; ++i) root.push([i]);
 
 	    // Iterate till the distance becomes greater than the given threshold
         while(root.length > 1) {
@@ -214,7 +200,7 @@ abstract class HierarchicalGrouping extends GroupingMethod {
             const len = root.length;
             for(let ni=0; ni < len-1; ++ni) {
                 for(let nj=ni+1; nj < len; ++nj) {
-                    const distance = this.clusterDistance(root[ni].idx, root[nj].idx, distances);
+                    const distance = this.clusterDistance(root[ni], root[nj], distances);
                     if(distance < minDistance) {
                         minDistance = distance;
                         mini = ni;
@@ -227,7 +213,7 @@ abstract class HierarchicalGrouping extends GroupingMethod {
             if(minDistance > threshold) break;
 
             // Update the group list. Merge node j at the end of node i
-            root[mini!].merge(root[minj!]);
+            for(const element of root[minj!]) root[mini!].push(element);
 
             // Remove merged node
             root.splice(minj!, 1);
@@ -239,7 +225,7 @@ abstract class HierarchicalGrouping extends GroupingMethod {
 
             // Start a new group
             const group = new Set<number>();
-            for(const ii of node.idx) group.add(ii);
+            for(const ii of node) group.add(ii);
             result.push(group);
         }
         return result;

@@ -53,9 +53,8 @@ export const removeSimilarPoints = (indices: number[],
 							 		threshold: number,
 							 		energies: number[]): number[] => {
 
-	const root: number[][] = [];
-
 	// Initialize root (to point to all)
+	const root: number[][] = [];
 	for(const index of indices) root.push([index]);
 
 	// Iterate till the distance becomes greater than the given threshold
