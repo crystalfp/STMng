@@ -108,7 +108,8 @@ receiveInWindow((dataFromMain) => {
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
     const lineCoordinates: {x: number; y: number}[] = [];
-    const {fingerprint, energyDistance, energyHistogram, haveEnergies: haveE} = fingerprintChartData;
+    const {fingerprint, energyDistance, energyHistogram,
+           distanceHistogram, haveEnergies: haveE} = fingerprintChartData;
 
     // Disable buttons if no energy provided
     haveEnergies.value = haveE;
@@ -169,6 +170,25 @@ receiveInWindow((dataFromMain) => {
 
         chartOptions.value = buildChartOptions("Energy", "Count");
     }
+    else if(distanceHistogram) {
+
+        lineCoordinates.length = 0;
+        let previousY = 0;
+        for(const dc of distanceHistogram) {
+            lineCoordinates.push({x: dc[0], y: previousY},
+                                 {x: dc[0], y: dc[1]});
+            previousY = dc[1];
+        }
+
+        const lastX = distanceHistogram.at(-1)![0];
+        const width = lastX - distanceHistogram.at(-2)![0];
+        lineCoordinates.push({x: lastX+width, y: previousY},
+                             {x: lastX+width, y: 0});
+
+        chartData.value = buildChartData("Distance histogram", lineCoordinates, true, 0);
+
+        chartOptions.value = buildChartOptions("Distance", "Count");
+    }
 });
 
 /** Close the window on Esc press */
@@ -191,10 +211,7 @@ watch([fpIndex, chartType, binCount], () => {
 <v-app :theme="theme">
   <div class="fp-chart-portal">
     <div class="fp-chart-viewer">
-      <Scatter
-        :options="chartOptions"
-        :data="chartData"
-      />
+      <Scatter :options="chartOptions" :data="chartData" />
     </div>
     <v-container class="fp-chart-buttons">
       <div class="buttons-line">
@@ -202,12 +219,13 @@ watch([fpIndex, chartType, binCount], () => {
           <v-btn value="fp">Fingerprint</v-btn>
           <v-btn value="ed" :disabled="!haveEnergies">Energy-Dist</v-btn>
           <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
+          <v-btn value="dh">Hist distances</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex]}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />
-        <g-slider-with-steppers v-if="chartType==='eh'" v-model="binCount"
+        <g-slider-with-steppers v-if="chartType==='eh' || chartType==='dh'" v-model="binCount"
                                 v-model:raw="showBinCount" label-width="11rem"
                                 :label="`Bin count (${showBinCount})`"
                                 :min="2" :max="200" :step="1" />

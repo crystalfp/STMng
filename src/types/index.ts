@@ -577,6 +577,9 @@ export interface FingerprintsChartData {
     /** The energy-distance chart */
     energyDistance?: [x: number, y: number][];
 
-    /** Energy histogram chart */
+    /** Energies histogram chart */
     energyHistogram?: [x: number, y: number][];
+
+    /** Distances histogram chart */
+    distanceHistogram?: [x: number, y: number][];
 }

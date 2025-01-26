@@ -211,7 +211,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Create a grid to count points in each cell
 		const gridSide = Math.ceil(Math.sqrt(targetCount));
-		const grid: number[][] = Array(gridSide * gridSide).fill([]) as number[][];
+		const grid = Array(gridSide * gridSide) as number[][];
 
 		// Assign one representative point to each grid cells
 		for(const point of points) {
@@ -416,9 +416,12 @@ export class ComputeFingerprints extends NodeCore {
 	 * - "fp" one fingerprint
 	 * - "ed" energy from minimum vs. distance
 	 * - "eh" energy histogram
-	 * @param indexOrCount - If kind is "fp" the index of the fingerprint (not the structure index)
+	 * @param indexOrCount - If kind is "fp" the index of the fingerprint (not the structure index),
+	 * 	if "eh" or "dh" is the number of buckets for the histograms
 	 */
-	private createUpdateCharts(opKind: "update" | "create", kind: "fp" | "ed" | "eh", indexOrCount=0): void {
+	private createUpdateCharts(opKind: "update" | "create",
+							   kind: "fp" | "ed" | "eh" | "dh",
+							   indexOrCount=0): void {
 
 		const chartsOpen = isSecondaryWindowOpen("/fp-charts");
 		if(opKind !== "create" && !chartsOpen) return;
@@ -510,6 +513,44 @@ export class ComputeFingerprints extends NodeCore {
 					}
 
 					data.energyHistogram = energyHistogram;
+				}
+				break;
+
+			case "dh": {
+
+				// Find distances range
+				let minDistance = Number.POSITIVE_INFINITY;
+				let maxDistance = Number.NEGATIVE_INFINITY;
+
+				const distances = this.dist.getDistanceMatrix().toVector();
+				for(const distance of distances) {
+					if(distance < minDistance) minDistance = distance;
+					if(distance > maxDistance) maxDistance = distance;
+				}
+
+				if(maxDistance-minDistance < 1e-10) break;
+
+				// Fill bins with energy count
+				const bins = Array(indexOrCount).fill(0) as number[];
+				const binWidth = (maxDistance-minDistance)/indexOrCount;
+
+				for(const distance of distances) {
+					let idx = Math.floor((distance-minDistance)/binWidth);
+					if(idx === indexOrCount) --idx;
+					++bins[idx];
+				}
+
+				// Fill the histogram
+				const distanceHistogram = Array(indexOrCount) as [distance: number, count: number][];
+
+				let di = minDistance;
+				for(let i=0; i < indexOrCount; ++i) {
+
+					distanceHistogram[i] = [di, bins[i]];
+					di += binWidth;
+				}
+
+				data.distanceHistogram = distanceHistogram;
 				}
 				break;
 		}
@@ -899,13 +940,14 @@ export class ComputeFingerprints extends NodeCore {
 
 			ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
 
-				const chartType = params.chartType as "fp" | "ed" | "eh" ?? "fp";
+				const chartType = params.chartType as "fp" | "ed" | "eh" | "dh" ?? "fp";
 				let indexOrCount = 0;
 				switch(chartType) {
 					case "fp":
 						indexOrCount = params.fpIndex as number ?? 0;
 						break;
 					case "eh":
+					case "dh":
 						indexOrCount = params.binCount as number ?? 50;
 						break;
 				}

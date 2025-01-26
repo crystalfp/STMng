@@ -196,9 +196,9 @@ const renderSurface = (): void => {
     lut.setMax(maxValue);
     lut.setMin(minValue);
 
-    const colors = Array(pos.count*3).fill(0);
+    const colors = Array(pos.count*3).fill(0) as number[];
     for(let i=0; i < pos.count; i++) {
-        // const z = pos.getZ(i);
+
         const z = grid[i];
         const color = lut.getColor(z);
 

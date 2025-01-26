@@ -109,7 +109,8 @@ export class DistanceMatrix {
     /**
      * Compress the distance matrix into a vector
      *
-     * @returns The matrix upper triangle without the all zero diagonal and row by row
+     * @returns The matrix upper triangle without the all zero diagonal
+     *          and row by row
      */
     toVector(): number[] {
 
