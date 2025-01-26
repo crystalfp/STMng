@@ -34,6 +34,8 @@ const showFpIndex = ref(0);
 const countFingerprints = ref(0);
 const ids = ref<number[]>([]);
 const haveEnergies = ref(true);
+const binCount = ref(50);
+const showBinCount = ref(50);
 
 /** Data and options for the chart component (will be filled when receiving data) */
 const chartOptions = shallowRef<ChartOptions>({
@@ -44,13 +46,69 @@ const chartData = shallowRef<ChartData>({
     datasets: []
 });
 
+const buildChartData = (label: string,
+                        data: {x: number; y: number}[],
+                        showLine: boolean,
+                        pointRadius: number): ChartData => ({
+    datasets: [{
+        label,
+        data,
+        borderColor: "#00ff00",
+        backgroundColor: "#00ff00",
+        showLine,
+        pointRadius
+     }]
+});
+
+const buildChartOptions = (labelX: string, labelY: string): ChartOptions => ({
+
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false
+        },
+    },
+    elements: {line: {borderWidth: 2}},
+    layout: {padding: 20},
+    scales: {
+        x: {
+            title: {
+                color: "red",
+                display: true,
+                text: labelX,
+                font: {
+                    size: 20,
+                },
+            },
+            grid: {
+                color: "#575757"
+            }
+        },
+        y: {
+            title: {
+                color: "red",
+                display: true,
+                text: labelY,
+                font: {
+                    size: 20,
+                },
+            },
+            grid: {
+                color: "#575757"
+            }
+        }
+    }
+});
+
+
 /** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {
 
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
     const lineCoordinates: {x: number; y: number}[] = [];
-    const {fingerprint, energyDistance, haveEnergies: haveE} = fingerprintChartData;
+    const {fingerprint, energyDistance, energyHistogram, haveEnergies: haveE} = fingerprintChartData;
 
     // Disable buttons if no energy provided
     haveEnergies.value = haveE;
@@ -77,58 +135,9 @@ receiveInWindow((dataFromMain) => {
             previousY = fingerprint[i];
         }
 
-        chartData.value = {
-            datasets: [
-                {
-                    label: "Fingerprint",
-                    data: lineCoordinates,
-                    borderColor: "#00ff00",
-                    backgroundColor: "#00ff00",
-                    showLine: true,
-                    pointRadius: 0,
-                }
-            ]
-        };
+        chartData.value = buildChartData("Fingerprint", lineCoordinates, true, 0);
 
-        chartOptions.value = {
-			responsive: true,
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false
-				},
-			},
-			elements: {line: {borderWidth: 2}},
-			layout: {padding: 20},
-			scales: {
-				x: {
-					title: {
-						color: "red",
-						display: true,
-						text: "Index",
-						font: {
-							size: 20,
-						},
-					},
-					grid: {
-						color: "#575757"
-					}
-				},
-				y: {
-					title: {
-						color: "red",
-						display: true,
-						text: "Fingerprint value",
-						font: {
-							size: 20,
-						},
-					},
-					grid: {
-						color: "#575757"
-					}
-				}
-			}
-		};
+        chartOptions.value = buildChartOptions("Index", "Fingerprint value");
     }
     else if(energyDistance) {
 
@@ -137,58 +146,28 @@ receiveInWindow((dataFromMain) => {
             lineCoordinates.push({x: pair[0], y: pair[1]});
         }
 
-        chartData.value = {
-            datasets: [
-                {
-                    label: "Energy delta",
-                    data: lineCoordinates,
-                    borderColor: "#00ff00",
-                    backgroundColor: "#00ff00",
-                    showLine: false,
-                    pointRadius: 3,
-                }
-            ]
-        };
+        chartData.value = buildChartData("Energy delta", lineCoordinates, false, 3);
 
-        chartOptions.value = {
-			responsive: true,
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: false
-				},
-			},
-			elements: {line: {borderWidth: 2}},
-			layout: {padding: 20},
-			scales: {
-				x: {
-					title: {
-						color: "red",
-						display: true,
-						text: "Distance from energy minimum",
-						font: {
-							size: 20,
-						},
-					},
-					grid: {
-						color: "#575757"
-					}
-				},
-				y: {
-					title: {
-						color: "red",
-						display: true,
-						text: "Energy difference from minimum",
-						font: {
-							size: 20,
-						},
-					},
-					grid: {
-						color: "#575757"
-					}
-				}
-			}
-		};
+        chartOptions.value = buildChartOptions("Distance from energy minimum",
+                                               "Energy difference from minimum");
+    }
+    else if(energyHistogram) {
+
+        lineCoordinates.length = 0;
+        let previousY = 0;
+        for(const ec of energyHistogram) {
+            lineCoordinates.push({x: ec[0], y: previousY},
+                                 {x: ec[0], y: ec[1]});
+            previousY = ec[1];
+        }
+        const lastX = energyHistogram.at(-1)![0];
+        const width = lastX - energyHistogram.at(-2)![0];
+        lineCoordinates.push({x: lastX+width, y: previousY},
+                             {x: lastX+width, y: 0});
+
+        chartData.value = buildChartData("Energy histogram", lineCoordinates, true, 0);
+
+        chartOptions.value = buildChartOptions("Energy", "Count");
     }
 });
 
@@ -196,10 +175,11 @@ receiveInWindow((dataFromMain) => {
 closeWithEscape("/fp-charts");
 
 /** Send user choices to the main process */
-watch([fpIndex, chartType], () => {
+watch([fpIndex, chartType, binCount], () => {
 
     sendToNode("SYSTEM", "chart-request", {
         fpIndex: fpIndex.value,
+        binCount: binCount.value,
         chartType: chartType.value
     });
 });
@@ -221,11 +201,16 @@ watch([fpIndex, chartType], () => {
         <v-btn-toggle v-model="chartType" mandatory>
           <v-btn value="fp">Fingerprint</v-btn>
           <v-btn value="ed" :disabled="!haveEnergies">Energy-Dist</v-btn>
+          <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex]}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />
+        <g-slider-with-steppers v-if="chartType==='eh'" v-model="binCount"
+                                v-model:raw="showBinCount" label-width="11rem"
+                                :label="`Bin count (${showBinCount})`"
+                                :min="2" :max="200" :step="1" />
         <v-btn v-focus @click="closeWindow('/fp-charts')">Close</v-btn>
       </div>
     </v-container>

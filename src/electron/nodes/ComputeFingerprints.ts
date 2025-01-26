@@ -413,10 +413,12 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param opKind - Operation to be performed:
 	 *                 "update" update if new data available or "create" create the chart viewer
 	 * @param kind - Data to send to the charts window:
-	 * 					"fp" one fingerprint; "ed" energy from minimum vs. distance
-	 * @param fingerprintIndex - If kind is "fp" the index of the fingerprint (not the structure index)
+	 * - "fp" one fingerprint
+	 * - "ed" energy from minimum vs. distance
+	 * - "eh" energy histogram
+	 * @param indexOrCount - If kind is "fp" the index of the fingerprint (not the structure index)
 	 */
-	private createUpdateCharts(opKind: "update" | "create", kind: "fp" | "ed", fingerprintIndex=0): void {
+	private createUpdateCharts(opKind: "update" | "create", kind: "fp" | "ed" | "eh", indexOrCount=0): void {
 
 		const chartsOpen = isSecondaryWindowOpen("/fp-charts");
 		if(opKind !== "create" && !chartsOpen) return;
@@ -427,48 +429,89 @@ export class ComputeFingerprints extends NodeCore {
 			haveEnergies
 		};
 
-		if(kind === "ed") {
+		switch(kind) {
 
-			if(haveEnergies) {
+			case "ed":
+				if(haveEnergies) {
 
-				// Get minimum energy and index of the corresponding point
-				let minEnergy = Number.POSITIVE_INFINITY;
-				let minEnergyIdx = 0;
-				let idx = 0;
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					const energy = structure.energy ?? 0;
-					if(energy < minEnergy) {
-						minEnergy = energy;
-						minEnergyIdx = idx;
+					// Get minimum energy and index of the corresponding point
+					let minEnergy = Number.POSITIVE_INFINITY;
+					let minEnergyIdx = 0;
+					let idx = 0;
+					for(const structure of this.accumulator.iterateSelectedStructures()) {
+						const energy = structure.energy ?? 0;
+						if(energy < minEnergy) {
+							minEnergy = energy;
+							minEnergyIdx = idx;
+						}
+						++idx;
 					}
-					++idx;
+
+					// Compute energy differences
+					const energyDistance: [x: number, y: number][] = [];
+					for(const structure of this.accumulator.iterateSelectedStructures()) {
+						const energy = structure.energy ?? 0;
+						energyDistance.push([0, energy - minEnergy]);
+					}
+
+					// Compute distances
+					const distanceMatrix = this.dist.getDistanceMatrix();
+					const len = distanceMatrix.matrixSize();
+					for(let col=0; col < len; ++col) {
+						const distance = distanceMatrix.get(minEnergyIdx, col);
+						energyDistance[col][0] = distance;
+					}
+
+					// Order by increasing distances
+					energyDistance.sort((a, b) => a[0] - b[0]);
+
+					data.energyDistance = energyDistance;
 				}
+				break;
 
-				// Compute energy differences
-				const energyDistance: [x: number, y: number][] = [];
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					const energy = structure.energy ?? 0;
-					energyDistance.push([0, energy - minEnergy]);
+			case "fp":
+				data.countFingerprints = this.accumulator.selectedSize();
+				data.fingerprint = this.accumulator.getFingerprint(indexOrCount);
+				data.structureIds = this.accumulator.getSelectedStepsIds();
+				break;
+
+			case "eh":
+				if(haveEnergies) {
+
+					// Find energies range
+					let minEnergy = Number.POSITIVE_INFINITY;
+					let maxEnergy = Number.NEGATIVE_INFINITY;
+					for(const structure of this.accumulator.iterateSelectedStructures()) {
+						const energy = structure.energy ?? 0;
+						if(energy < minEnergy) minEnergy = energy;
+						if(energy > maxEnergy) maxEnergy = energy;
+					}
+					if(maxEnergy-minEnergy < 1e-10) break;
+
+					// Fill bins with energy count
+					const bins = Array(indexOrCount).fill(0) as number[];
+					const binWidth = (maxEnergy-minEnergy)/indexOrCount;
+
+					for(const structure of this.accumulator.iterateSelectedStructures()) {
+						const energy = structure.energy ?? 0;
+						let idx = Math.floor((energy-minEnergy)/binWidth);
+						if(idx === indexOrCount) --idx;
+						++bins[idx];
+					}
+
+					// Fill the histogram
+					const energyHistogram = Array(indexOrCount) as [energy: number, count: number][];
+
+					let en = minEnergy;
+					for(let i=0; i < indexOrCount; ++i) {
+
+						energyHistogram[i] = [en, bins[i]];
+						en += binWidth;
+					}
+
+					data.energyHistogram = energyHistogram;
 				}
-
-				// Compute distances
-				const distanceMatrix = this.dist.getDistanceMatrix();
-				const len = distanceMatrix.matrixSize();
-				for(let col=0; col < len; ++col) {
-					const distance = distanceMatrix.get(minEnergyIdx, col);
-					energyDistance[col][0] = distance;
-				}
-
-				// Order by increasing distances
-				energyDistance.sort((a, b) => a[0] - b[0]);
-
-				data.energyDistance = energyDistance;
-			}
-		}
-		else {
-			data.countFingerprints = this.accumulator.selectedSize();
-			data.fingerprint = this.accumulator.getFingerprint(fingerprintIndex);
-			data.structureIds = this.accumulator.getSelectedStepsIds();
+				break;
 		}
 		const dataToSend = JSON.stringify(data);
 
@@ -856,10 +899,18 @@ export class ComputeFingerprints extends NodeCore {
 
 			ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
 
-				const fpIndex = params.fpIndex as number ?? 0;
-				const chartType = params.chartType as "fp" | "ed" ?? "fp";
+				const chartType = params.chartType as "fp" | "ed" | "eh" ?? "fp";
+				let indexOrCount = 0;
+				switch(chartType) {
+					case "fp":
+						indexOrCount = params.fpIndex as number ?? 0;
+						break;
+					case "eh":
+						indexOrCount = params.binCount as number ?? 50;
+						break;
+				}
 
-				this.createUpdateCharts("update", chartType, fpIndex);
+				this.createUpdateCharts("update", chartType, indexOrCount);
 			});
 		}
 	}

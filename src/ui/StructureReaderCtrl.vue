@@ -55,7 +55,7 @@ const inProgress    = ref(false);   // True during file load
 const auxFileToRead = ref("");      // Path to the auxiliary file to read
 const useBohr       = ref(true);    // Use Bohr units
 const stepIncrement = ref(1);       // How many step skip every tick
-const speed         = ref(0);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
+const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
 
 const controlStore = useControlStore();
 
@@ -72,7 +72,7 @@ askNode(id, "init")
         fileToRead.value    = params.fileToRead as string ?? "";
         auxFileToRead.value = params.auxFileToRead as string ?? "";
         stepIncrement.value = params.stepIncrement as number ?? 1;
-        speed.value         = params.speed as number ?? 0;
+        speed.value         = params.speed as number ?? 1;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
 
