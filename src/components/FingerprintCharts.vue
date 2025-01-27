@@ -46,6 +46,14 @@ const chartData = shallowRef<ChartData>({
     datasets: []
 });
 
+/**
+ * Build data for the chart
+ *
+ * @param label - Dataset label
+ * @param data - The data as an array of xy pairs
+ * @param showLine - If the line should be visible
+ * @param pointRadius - Radius of the points
+ */
 const buildChartData = (label: string,
                         data: {x: number; y: number}[],
                         showLine: boolean,
@@ -60,6 +68,12 @@ const buildChartData = (label: string,
      }]
 });
 
+/**
+ * Build the layout data for the chart
+ *
+ * @param labelX - Label for X axis
+ * @param labelY - Label for Y axis
+ */
 const buildChartOptions = (labelX: string, labelY: string): ChartOptions => ({
 
     responsive: true,
@@ -101,13 +115,34 @@ const buildChartOptions = (labelX: string, labelY: string): ChartOptions => ({
     }
 });
 
+/**
+ * Prepare the coordinates for visualizing an histogram
+ *
+ * @param histogram - Histogram data: one entry per bin as x has the bin value and y the count
+ */
+const prepareHistogramCoordinates = (histogram: [x: number, y: number][]): {x: number; y: number}[] => {
+
+    const lineCoordinates: {x: number; y: number}[] = [];
+
+    let previousY = 0;
+    for(const entry of histogram) {
+        lineCoordinates.push({x: entry[0], y: previousY},
+                             {x: entry[0], y: entry[1]});
+        previousY = entry[1];
+    }
+    const lastX = histogram.at(-1)![0];
+    const width = lastX - histogram.at(-2)![0];
+    lineCoordinates.push({x: lastX+width, y: previousY},
+                         {x: lastX+width, y: 0});
+
+    return lineCoordinates;
+};
 
 /** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {
 
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
-    const lineCoordinates: {x: number; y: number}[] = [];
     const {fingerprint, energyDistance, energyHistogram,
            distanceHistogram, haveEnergies: haveE} = fingerprintChartData;
 
@@ -127,7 +162,7 @@ receiveInWindow((dataFromMain) => {
         ids.value.length = 0;
         for(const id of structureIds) ids.value.push(id);
 
-        lineCoordinates.length = 0;
+        const lineCoordinates: {x: number; y: number}[] = [];
         let previousY = fingerprint[0];
         lineCoordinates.push({x: 0, y: fingerprint[0]});
         for(let i=1; i < fingerprint.length; ++i) {
@@ -142,7 +177,7 @@ receiveInWindow((dataFromMain) => {
     }
     else if(energyDistance) {
 
-        lineCoordinates.length = 0;
+        const lineCoordinates: {x: number; y: number}[] = [];
         for(const pair of energyDistance) {
             lineCoordinates.push({x: pair[0], y: pair[1]});
         }
@@ -154,17 +189,7 @@ receiveInWindow((dataFromMain) => {
     }
     else if(energyHistogram) {
 
-        lineCoordinates.length = 0;
-        let previousY = 0;
-        for(const ec of energyHistogram) {
-            lineCoordinates.push({x: ec[0], y: previousY},
-                                 {x: ec[0], y: ec[1]});
-            previousY = ec[1];
-        }
-        const lastX = energyHistogram.at(-1)![0];
-        const width = lastX - energyHistogram.at(-2)![0];
-        lineCoordinates.push({x: lastX+width, y: previousY},
-                             {x: lastX+width, y: 0});
+        const lineCoordinates = prepareHistogramCoordinates(energyHistogram);
 
         chartData.value = buildChartData("Energy histogram", lineCoordinates, true, 0);
 
@@ -172,18 +197,7 @@ receiveInWindow((dataFromMain) => {
     }
     else if(distanceHistogram) {
 
-        lineCoordinates.length = 0;
-        let previousY = 0;
-        for(const dc of distanceHistogram) {
-            lineCoordinates.push({x: dc[0], y: previousY},
-                                 {x: dc[0], y: dc[1]});
-            previousY = dc[1];
-        }
-
-        const lastX = distanceHistogram.at(-1)![0];
-        const width = lastX - distanceHistogram.at(-2)![0];
-        lineCoordinates.push({x: lastX+width, y: previousY},
-                             {x: lastX+width, y: 0});
+        const lineCoordinates = prepareHistogramCoordinates(distanceHistogram);
 
         chartData.value = buildChartData("Distance histogram", lineCoordinates, true, 0);
 

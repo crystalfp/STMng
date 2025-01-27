@@ -558,6 +558,9 @@ export interface EnergyLandscapeData {
 
     /** Corresponding energies (unnormalized) */
     energies: number[];
+
+    /** Distances to remove similar points */
+    distancesVector: number[];
 }
 
 export interface FingerprintsChartData {

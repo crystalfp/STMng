@@ -713,8 +713,8 @@ const legendContinue = computed(() => {
       </v-btn>
       <g-slider-with-steppers v-model="threshold" :disabled="!scatterplotData?.energies.length"
                               v-model:raw="showThreshold" label-width="9rem"
-                              :label="`Threshold (${showThreshold.toFixed(2)})`" class="mb-2"
-                              :min="0" :max="0.5" :step="0.01" />
+                              :label="`Threshold (${showThreshold.toFixed(3)})`" class="mb-2"
+                              :min="0" :max="0.5" :step="0.001" />
       <v-divider thickness="2" class="mr-n1 ml-1"/>
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
       <v-btn @click="compareSelected" :disabled="true" block class="mt-4 mb-4 ml-1">

@@ -382,10 +382,11 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Take the distance matrix and project it in 2D
 		const points = this.dist.getProjectedPoints();
-
+		const distancesVector = this.dist.getDistanceMatrix().toVector();
 		const energyLandscapeData: EnergyLandscapeData = {
 			points,
-			energies
+			energies,
+			distancesVector
 		};
 		const dataToSend = JSON.stringify(energyLandscapeData);
 
@@ -481,13 +482,15 @@ export class ComputeFingerprints extends NodeCore {
 			case "eh":
 				if(haveEnergies) {
 
-					// Find energies range
+					// Find energies range and collect energies
 					let minEnergy = Number.POSITIVE_INFINITY;
 					let maxEnergy = Number.NEGATIVE_INFINITY;
+					const energies: number[] = [];
 					for(const structure of this.accumulator.iterateSelectedStructures()) {
 						const energy = structure.energy ?? 0;
 						if(energy < minEnergy) minEnergy = energy;
 						if(energy > maxEnergy) maxEnergy = energy;
+						energies.push(energy);
 					}
 					if(maxEnergy-minEnergy < 1e-10) break;
 
@@ -495,8 +498,8 @@ export class ComputeFingerprints extends NodeCore {
 					const bins = Array(indexOrCount).fill(0) as number[];
 					const binWidth = (maxEnergy-minEnergy)/indexOrCount;
 
-					for(const structure of this.accumulator.iterateSelectedStructures()) {
-						const energy = structure.energy ?? 0;
+					for(const energy of energies) {
+
 						let idx = Math.floor((energy-minEnergy)/binWidth);
 						if(idx === indexOrCount) --idx;
 						++bins[idx];

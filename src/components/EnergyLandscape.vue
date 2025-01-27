@@ -7,15 +7,17 @@
  * @since 2025-01-14
  */
 import {onMounted, ref, watch, computed, useTemplateRef} from "vue";
-import {theme} from "@/services/ReceiveTheme";
-import {closeWithEscape} from "@/services/CaptureEscape";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
-import {scatterToUniform} from "@/electron/fingerprint/ScatterToUniform";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         PlaneGeometry, MeshStandardMaterial, AmbientLight,
         Float32BufferAttribute, Mesh, DoubleSide} from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {Lut} from "three/addons/math/Lut.js";
+import {theme} from "@/services/ReceiveTheme";
+import {closeWithEscape} from "@/services/CaptureEscape";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {scatterToUniform} from "@/electron/fingerprint/ScatterToUniform";
+import {removeSimilarPoints} from "@/electron/fingerprint/GeneralizedConvexHull";
+import {DistanceMatrix} from "@/electron/fingerprint/Distances";
 import type {EnergyLandscapeData} from "@/types";
 
 /** The canvas sizes (will be computed during mount or resize) */
@@ -40,6 +42,10 @@ const gridSide = computed(() => 2**gridSideExp.value);
 /** Power parameter for the interpolator */
 const power = ref(2);
 const showPower = ref(2);
+
+/** Tolerance for removing duplicated points */
+const tolerance = ref(0.01);
+const showTolerance = ref(0.01);
 
 /** Reference to the view */
 const cnv = useTemplateRef<HTMLElement>("view");
@@ -121,11 +127,33 @@ receiveInWindow((dataFromMain) => {
 
     energyLandscapeData = JSON.parse(dataFromMain) as EnergyLandscapeData;
 
+    const {points, energies, distancesVector} = energyLandscapeData;
+
+    // Remove too similar points
+    let filteredPoints;
+    let filteredEnergies;
+    if(tolerance.value > 0) {
+        const distanceMatrix = new DistanceMatrix();
+        distanceMatrix.init(points.length, distancesVector);
+        let indices = [...Array(points.length).keys()];
+        indices = removeSimilarPoints(indices, distanceMatrix,
+									  tolerance.value, energies);
+        filteredPoints = [];
+        filteredEnergies = [];
+        for(const idx of indices) {
+            filteredPoints.push(points[idx]);
+            filteredEnergies.push(energies[idx]);
+        }
+    }
+    else {
+        filteredPoints = points;
+        filteredEnergies = energies;
+    }
+
     // Interpolate the scatter points to a regular grid
-    const {points, energies} = energyLandscapeData;
-	grid = scatterToUniform(gridSide.value,
-                            points,
-                            energies,
+    grid = scatterToUniform(gridSide.value,
+                            filteredPoints,
+                            filteredEnergies,
                             power.value);
 
     renderSurface();
@@ -134,15 +162,37 @@ receiveInWindow((dataFromMain) => {
 /** Close the window on Esc press */
 closeWithEscape("/landscape");
 
-watch([gridSide, power], () => {
+watch([gridSide, power, tolerance], () => {
 
     if(!energyLandscapeData) return;
 
+    const {points, energies, distancesVector} = energyLandscapeData;
+
+    // Remove too similar points
+    let filteredPoints;
+    let filteredEnergies;
+    if(tolerance.value > 0) {
+        const distanceMatrix = new DistanceMatrix();
+        distanceMatrix.init(points.length, distancesVector);
+        let indices = [...Array(points.length).keys()];
+        indices = removeSimilarPoints(indices, distanceMatrix,
+									  tolerance.value, energies);
+        filteredPoints = [];
+        filteredEnergies = [];
+        for(const idx of indices) {
+            filteredPoints.push(points[idx]);
+            filteredEnergies.push(energies[idx]);
+        }
+    }
+    else {
+        filteredPoints = points;
+        filteredEnergies = energies;
+    }
+
     // Interpolate the scatter points to a regular grid
-    const {points, energies} = energyLandscapeData;
-	grid = scatterToUniform(gridSide.value,
-                            points,
-                            energies,
+    grid = scatterToUniform(gridSide.value,
+                            filteredPoints,
+                            filteredEnergies,
                             power.value);
 
     renderSurface();
@@ -183,13 +233,13 @@ const renderSurface = (): void => {
 
     // Create geometry
     const geometry = new PlaneGeometry(1, 1, side-1, side-1);
-	const pos = geometry.getAttribute("position");
+    const pos = geometry.getAttribute("position");
 
     // Fill coordinates values
     for(let i=0; i < pos.count; i++) {
 
         const z = (grid[i]-minValue)/(maxValue-minValue);
-		pos.setZ(i, z*energyScale.value);
+        pos.setZ(i, z*energyScale.value);
     }
 
     // Add colors to surface
@@ -206,7 +256,7 @@ const renderSurface = (): void => {
         colors[i*3+1] = color.g;
         colors[i*3+2] = color.b;
     }
-	geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
 
     geometry.computeVertexNormals();
 
@@ -216,13 +266,13 @@ const renderSurface = (): void => {
         roughness: 0.5,
         metalness: 0.6,
         vertexColors: true
-	});
+    });
 
     // Create surface
     const surface = new Mesh(geometry, material);
-	surface.rotation.x = -Math.PI/2;
+    surface.rotation.x = -Math.PI/2;
     surface.name = surfaceName;
-	scene.add(surface);
+    scene.add(surface);
 };
 
 </script>
@@ -247,8 +297,14 @@ const renderSurface = (): void => {
                                 v-model:raw="showPower" label-width="5.5rem"
                                 :label="`Power (${showPower})`"
                                 :min="1" :max="6" :step="0.1" />
-        <g-select-colormap v-model="colormapName" class="mt-2 mb-n2" />
-
+      </div>
+      <div class="buttons-line">
+        <g-slider-with-steppers v-model="tolerance" class="mb-2"
+                                v-model:raw="showTolerance" label-width="9rem"
+                                :label="`Tolerance (${showTolerance.toFixed(3)})`"
+                                :min="0" :max="0.5" :step="0.001" />
+        <g-select-colormap v-model="colormapName" class="mt-2 mb-n2 ml-4" />
+        <v-spacer />
         <v-btn v-focus @click="closeWindow('/landscape')" class="mr-2 mb-2">Close</v-btn>
       </div>
     </v-container>

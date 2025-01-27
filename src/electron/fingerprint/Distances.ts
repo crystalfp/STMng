@@ -22,9 +22,10 @@ export class DistanceMatrix {
      * Initialize the distance matrix
      *
      * @param countStructures - How many fingerprints will be covered
+     * @param distanceVector - Optional distance vector (the one from toVector()) to initialize the matrix
      * @returns Count of distinct distances (i.e., without zero self distances)
      */
-    init(countStructures: number): number {
+    init(countStructures: number, distanceVector?: number[]): number {
 
         this.side = countStructures;
         this.nextIdx = 0;
@@ -33,6 +34,15 @@ export class DistanceMatrix {
 		this.distanceMatrix.length = 0;
         for(let i=0; i < countStructures; ++i) {
             this.distanceMatrix.push(Array(countStructures-i).fill(0) as number[]);
+        }
+
+        if(distanceVector) {
+            let idx = 0;
+            for(let i=0; i < countStructures; ++i) {
+                for(let j=1; j < countStructures-i; ++j) {
+                    this.distanceMatrix[i][j] = distanceVector[idx++];
+                }
+            }
         }
 
         return countStructures*(countStructures-1)/2;
