@@ -71,6 +71,12 @@ code {
   white-space: pre-wrap;
 }
 
+tt {
+  font-family: Consolas, 'Courier New', monospace;
+	font-weight: bold;
+  font-size: 110%;
+}
+
 .m1 {
   width: 14rem;
 }

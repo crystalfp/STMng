@@ -199,7 +199,7 @@ class NormalizedDiffraction extends FingerprintMethod {
         const {basis, fingerprint, species, atomsZ, weights} = structure;
 
         // Compute the volume of the unit cell
-        const cellVolume = getCellVolume(basis, false);
+        const cellVolume = getCellVolume(basis);
 
         // Allocate the histogram (max distance is half max side of every unit cell)
         fingerprint.length = this.nbins;
@@ -217,7 +217,8 @@ class NormalizedDiffraction extends FingerprintMethod {
             for(const [Zj, Rij] of others) {
 
                 // Compute the peak value Fing
-                const fing = (Zi*Zj)/(4*Math.PI*Rij*Rij*(natoms/cellVolume)*this.peakWidth);
+                const fing = (this.zmap(Zi)*this.zmap(Zj)) /
+                             (4*Math.PI*Rij*Rij*(natoms/cellVolume)*this.binSize);
 
                 // Smooth the peak
     			smoothPeak(fing, Rij, this.delta, this.nbins, fingerprint, 0, this.peakWidth);
@@ -225,19 +226,17 @@ class NormalizedDiffraction extends FingerprintMethod {
         }
         this.slab!.reset();
 
-        // Create list of atom z values and corresponding count
-        const listZ = [...species.keys()];
-        const listN = [...species.values()];
-        const nz = species.size;
-
-        // Compute the adjustment factor
+        // Compute the adjustment factor (adjusted from the correct one from JChemPhys)
         let adj = 0;
-        for(let ii=0; ii < nz; ++ii) {
-            for(let jj=0; jj < nz; ++jj) {
-                adj += this.zmap(listZ[ii])*this.zmap(listZ[jj])*listN[ii]*listN[jj];
+        const Zdistinct = [...species.keys()];
+        for(const Zi of Zdistinct) {
+            const Ni = species.get(Zi)!;
+            for(const Zj of Zdistinct) {
+                const Nj = species.get(Zj)!;
+                adj += this.zmap(Zi)*this.zmap(Zj)*Ni*Nj;
             }
         }
-        adj /= natoms;
+        adj /= species.size;
 
         // Normalize the histogram
         for(let i=0; i < this.nbins; ++i) {
@@ -253,11 +252,16 @@ class NormalizedDiffraction extends FingerprintMethod {
     }
 }
 
-
 // > Chemical scale spectra method
 class ChemicalScaleSpectra extends NormalizedDiffraction {
 
     protected override zmap = MapChemicalScale;
+};
+
+// > Distance only method
+class DistanceOnly extends NormalizedDiffraction {
+
+    protected override zmap = (): number => 1;
 };
 
 // > Re-centered per element diffraction method
@@ -323,6 +327,8 @@ export const fingerprintingMethods: FingerprintingMethod[] = [
                                                     method: new NormalizedDiffraction()},
     {label: "Chemical scale weighted fingerprint",	needSizes: true,  forNanoclusters: false,
                                                     method: new ChemicalScaleSpectra()},
+    {label: "Distance only fingerprint",	        needSizes: true,  forNanoclusters: false,
+                                                    method: new DistanceOnly()},
     {label: "Per element fingerprint",				needSizes: true,  forNanoclusters: true,
                                                     method: new PerElementRdfHistogram()},
     {label: "Per site fingerprint",                 needSizes: true,  forNanoclusters: true,

@@ -98,6 +98,7 @@
     <dl>
       <dt>Oganov-Valle fingerprint</dt><dd>A rapidly convergent function based on distance distributions and related to RDF and diffraction spectra. It is the first method proposed in the original paper. Needs bin size and peak width. Not for nanoclusters.</dd>
       <dt>Chemical scale weighted fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint”, but the atom Z values are mapped to the Chemical Scale <img src="chi.svg" alt="Greek Chi letter"> correction for a given atom type.</dd>
+      <dt>Distance only fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint”, but consider all Z values to be 1.</dd>
       <dt>Per element fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances. Furthermore each section is labeled with the element type of the corresponding atom. Needs bin size and peak width.</dd>
       <dt>Per site fingerprint</dt><dd>It is the same as “Per element fingerprint” but the centroid of all fingerprints is removed from each fingerprint. Needs bin size and peak width.</dd>
     </dl>
@@ -306,12 +307,13 @@
 </table>
 
 <h2>Fingerprints charts window</h2>
-<p>This window shows four different kinds of charts:</p>
+<p>This window shows five different kinds of charts:</p>
 <dl style="margin-left: 20px;">
   <dt>Fingerprint</dt><dd>Fingerprint for the selected structure step.</dd>
   <dt>Energy-Dist</dt><dd>Chart of energy differences from the minimum energy versus the distance from the point of minimal energy.</dd>
-  <dt>Hist energy</dt><dd>Histogram of energies.</dd>
-  <dt>Hist distance</dt><dd>Histogram of distances.</dd>
+  <dt>Hist energies</dt><dd>Histogram of energies.</dd>
+  <dt>Hist distances</dt><dd>Histogram of distances.</dd>
+  <dt>Order</dt><dd>Order parameter for all structures.</dd>
 </dl>
 <p>Besides the chart kind selector, the window has the following controls:
 </p>

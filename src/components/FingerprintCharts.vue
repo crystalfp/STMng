@@ -13,7 +13,7 @@ import {theme} from "@/services/ReceiveTheme";
 import {Scatter} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
-import type {ChartData, ChartOptions, FingerprintsChartData} from "@/types";
+import type {ChartData, ChartOptions, FingerprintsChartData, FingerprintsChartKind} from "@/types";
 
 /** Setup chart component */
 ChartJS.register(
@@ -26,7 +26,7 @@ ChartJS.register(
     Legend);
 
 /** The chart type */
-const chartType = ref("fp");
+const chartType = ref<FingerprintsChartKind>("fp");
 
 /** The chart parameters */
 const fpIndex = ref(0);
@@ -143,7 +143,7 @@ receiveInWindow((dataFromMain) => {
 
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
-    const {fingerprint, energyDistance, energyHistogram,
+    const {fingerprint, energyDistance, energyHistogram, order,
            distanceHistogram, haveEnergies: haveE} = fingerprintChartData;
 
     // Disable buttons if no energy provided
@@ -182,7 +182,7 @@ receiveInWindow((dataFromMain) => {
             lineCoordinates.push({x: pair[0], y: pair[1]});
         }
 
-        chartData.value = buildChartData("Energy delta", lineCoordinates, false, 3);
+        chartData.value = buildChartData("Energy delta", lineCoordinates, false, 4);
 
         chartOptions.value = buildChartOptions("Distance from energy minimum",
                                                "Energy difference from minimum");
@@ -202,6 +202,15 @@ receiveInWindow((dataFromMain) => {
         chartData.value = buildChartData("Distance histogram", lineCoordinates, true, 0);
 
         chartOptions.value = buildChartOptions("Distance", "Count");
+    }
+    else if(order) {
+
+        const lineCoordinates = order.map((value) => ({x: value[0], y: value[1]}));
+
+        chartData.value = buildChartData("Order parameter", lineCoordinates, false, 4);
+
+        chartOptions.value = buildChartOptions("Structure step",
+                                               "Order parameter");
     }
 });
 
@@ -234,10 +243,11 @@ watch([fpIndex, chartType, binCount], () => {
           <v-btn value="ed" :disabled="!haveEnergies">Energy-Dist</v-btn>
           <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
           <v-btn value="dh">Hist distances</v-btn>
+          <v-btn value="op">Order param</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
-                                :label="`Structure step ${ids[showFpIndex]}`"
+                                :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />
         <g-slider-with-steppers v-if="chartType==='eh' || chartType==='dh'" v-model="binCount"
                                 v-model:raw="showBinCount" label-width="11rem"

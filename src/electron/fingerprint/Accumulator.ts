@@ -171,6 +171,10 @@ export class FingerprintsAccumulator {
 		this.idx2id.clear();
 		this.hasEnergies = undefined;
 		this.selectedSteps.length = 0;
+		this.countSpecies = 0;
+		this.thresholdEnergy = 0;
+		this.countSelected = 0;
+		this.areNanoclusters = false;
 	}
 
 	/**

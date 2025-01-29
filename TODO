@@ -5,10 +5,14 @@ To do:
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
-  ☐ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order
   ☐ Check error return from main process to client
-  ✘ Add ResizeObserver also for Viewer3D @cancelled(2025-01-25 06:00)
   ☐ Dynamic load for Lut and other not used from beginning
+
+Functionalities:
+  ☐ An option to specify arbitrary section plane
+  ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
+  ☐ Coloring atoms according to their coordination number
+  ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -33,11 +37,7 @@ ToDo eventually:
   ☐ Check the order of entries in objects
   ☐ In builder copy only platform specific exe files
   ☐ Unify naming: graph, node, project
-  ☐ An option to specify arbitrary section plane
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
-  ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
-  ☐ Coloring atoms according to their coordination number
-  ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
 
@@ -56,6 +56,8 @@ Reference:
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
 
 Archive:
+  ✔ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order @done(2025-01-28 17:22) @project(Functionalities)
+  ✘ Add ResizeObserver also for Viewer3D @cancelled(2025-01-25 06:00) @project(To do)
   ✔ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum` @done(2025-01-24 07:19) @project(To do)
   ✔ Remove similar structures from convex hull @done(2025-01-24 20:37) @project(To do)
   ✘ Check THREE.Layer for visibility @cancelled(2025-01-23 08:00) @project(ToDo eventually)
