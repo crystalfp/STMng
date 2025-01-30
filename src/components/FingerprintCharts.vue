@@ -33,9 +33,12 @@ const fpIndex = ref(0);
 const showFpIndex = ref(0);
 const countFingerprints = ref(0);
 const ids = ref<number[]>([]);
-const haveEnergies = ref(true);
 const binCount = ref(50);
 const showBinCount = ref(50);
+
+/** Enable buttons */
+const haveEnergies = ref(false);
+const haveDistances = ref(false);
 
 /** Data and options for the chart component (will be filled when receiving data) */
 const chartOptions = shallowRef<ChartOptions>({
@@ -146,8 +149,9 @@ receiveInWindow((dataFromMain) => {
     const {fingerprint, energyDistance, energyHistogram, order,
            distanceHistogram, haveEnergies: haveE} = fingerprintChartData;
 
-    // Disable buttons if no energy provided
+    // Disable buttons if no energy or distances provided
     haveEnergies.value = haveE;
+    haveDistances.value = Boolean(distanceHistogram);
 
     // If received fingerprint data
     if(fingerprint) {
@@ -163,17 +167,17 @@ receiveInWindow((dataFromMain) => {
         for(const id of structureIds) ids.value.push(id);
 
         const lineCoordinates: {x: number; y: number}[] = [];
-        let previousY = fingerprint[0];
-        lineCoordinates.push({x: 0, y: fingerprint[0]});
+        let previousY = fingerprint[0][1];
+        lineCoordinates.push({x: 0, y: fingerprint[0][1]});
         for(let i=1; i < fingerprint.length; ++i) {
-            lineCoordinates.push({x: i, y: previousY},
-                                 {x: i, y: fingerprint[i]});
-            previousY = fingerprint[i];
+            lineCoordinates.push({x: fingerprint[i][0], y: previousY},
+                                 {x: fingerprint[i][0], y: fingerprint[i][1]});
+            previousY = fingerprint[i][1];
         }
 
         chartData.value = buildChartData("Fingerprint", lineCoordinates, true, 0);
 
-        chartOptions.value = buildChartOptions("Index", "Fingerprint value");
+        chartOptions.value = buildChartOptions("Distance", "Fingerprint value");
     }
     else if(energyDistance) {
 
@@ -240,9 +244,9 @@ watch([fpIndex, chartType, binCount], () => {
       <div class="buttons-line">
         <v-btn-toggle v-model="chartType" mandatory>
           <v-btn value="fp">Fingerprint</v-btn>
-          <v-btn value="ed" :disabled="!haveEnergies">Energy-Dist</v-btn>
+          <v-btn value="ed" :disabled="!haveEnergies || !haveDistances">Energy-Dist</v-btn>
           <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
-          <v-btn value="dh">Hist distances</v-btn>
+          <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
           <v-btn value="op">Order param</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"

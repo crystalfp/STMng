@@ -457,7 +457,7 @@ const showEnergyLandscape = (): void => {
 
   <v-switch v-model="fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n2 mb-n2" />
-  <v-btn block :disabled="resultDimensionality === 0"
+  <v-btn block :disabled="resultDimensionality === 0 || countAccumulated < 2"
          @click="distanceBusy=true; computeDistances()">
     Compute distances
   </v-btn>

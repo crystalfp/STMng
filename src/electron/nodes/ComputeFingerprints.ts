@@ -447,10 +447,17 @@ export class ComputeFingerprints extends NodeCore {
 				}
 				break;
 
-			case "fp":
+			case "fp": {
 				data.countFingerprints = this.accumulator.selectedSize();
-				data.fingerprint = this.accumulator.getFingerprint(lambda);
 				data.structureIds = this.accumulator.getSelectedStepsIds();
+				const fp = this.accumulator.getFingerprint(lambda);
+				data.fingerprint = [];
+				let x = 0;
+				for(const value of fp) {
+					data.fingerprint.push([x, value]);
+					x += this.binSize;
+				}
+				}
 				break;
 
 			case "eh":
@@ -712,6 +719,7 @@ export class ComputeFingerprints extends NodeCore {
 		if(result.error) {
 			sendAlertMessage(result.error, "fingerprints");
 		}
+		else this.createUpdateCharts("update", "fp");
 
 		return {
 			resultDimensionality: result.dimension
