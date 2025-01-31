@@ -10,7 +10,7 @@
 import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
 import {Command, Option} from "commander";
-import {version, description} from "../../package.json";
+import {version, description} from "../../package.json" with {type: "json"};
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
@@ -32,8 +32,6 @@ program
 	.option("-v, --verbose", "verbose")
 	.option("-e, --enable", "enable developer tools in production build")
 	.option("-x, --extra <switches>", "extra command line switches");
-    // .addHelpText("before", " ")
-    // .addHelpText("after", " ");
 
 if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
 program.parse(process.argv, {from: "electron"});

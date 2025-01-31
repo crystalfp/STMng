@@ -359,7 +359,7 @@ const auxSetup = computed(() => {
             return {
                 hasAux: true,
                 title: "Select ENERGY file",
-                filter: '[{"name":"ENERGY","extensions":["energy"]},{"name":"All","extensions":["*"]}]',
+                filter: '[{"name":"ENERGY","extensions":["energy","enthalpy"]},{"name":"All","extensions":["*"]}]',
             };
         case "POSCAR + XDATCAR":
             return {
