@@ -6,30 +6,29 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import * as v from "valibot";
 import {sendAlertMessage} from "./WindowsUtilities";
 import type {Project} from "@/types";
 
-// {
-// "graph": {
-// 	"reader": 	{"label": "Reader", 	"type": "structure-reader"},
-//  "symmetry": {"label": "Symmetries", "type": "compute-symmetries", "in": "reader"},
+import {object as vObject, record as vRecord, pipe as vPipe,
+		string as vString, nonEmpty as vNonEmpty, optional as vOptional,
+		union as vUnion, number as vNumber, boolean as vBoolean,
+		flatten as vFlatten, safeParse} from "valibot";
 
-const projectSchema = v.object({
-	graph: v.record(
-				v.pipe(v.string(), v.nonEmpty("Missing id")),
-				v.object({
-					label: v.pipe(v.string(), v.nonEmpty("Missing label")),
-					type: v.pipe(v.string(), v.nonEmpty("Missing type")),
-					in: v.optional(v.string())
+const projectSchema = vObject({
+	graph: vRecord(
+				vPipe(vString(), vNonEmpty("Missing id")),
+				vObject({
+					label: vPipe(vString(), vNonEmpty("Missing label")),
+					type: vPipe(vString(), vNonEmpty("Missing type")),
+					in: vOptional(vString())
 				}),
 	),
-	currentId: v.optional(v.pipe(v.string(), v.nonEmpty("Invalid currentId"))),
-	ui: v.optional(v.record(
-						v.pipe(v.string(), v.nonEmpty("Missing id")),
-						v.record(
-							v.pipe(v.string(), v.nonEmpty("Missing id")),
-							v.union([v.string(), v.number(), v.boolean()])
+	currentId: vOptional(vPipe(vString(), vNonEmpty("Invalid currentId"))),
+	ui: vOptional(vRecord(
+						vPipe(vString(), vNonEmpty("Missing id")),
+						vRecord(
+							vPipe(vString(), vNonEmpty("Missing id")),
+							vUnion([vString(), vNumber(), vBoolean()])
 						)
 	))
 });
@@ -46,11 +45,11 @@ export const projectIsValid = (prj: Project): boolean => {
 	if(!prj) return false;
 
 	// Check against the schema
-	const result = v.safeParse(projectSchema, prj);
+	const result = safeParse(projectSchema, prj);
 
 	if(!result.success) {
 
-		const {nested} = v.flatten(result.issues);
+		const {nested} = vFlatten(result.issues);
 		let errorMessage = "Error from project validator\n";
 		for(const entry in nested) {
 			errorMessage += `  ${entry}: "${nested[entry]?.join("; ")}"\n`;

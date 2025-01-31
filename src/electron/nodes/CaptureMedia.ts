@@ -10,8 +10,8 @@
 import {dialog, app} from "electron";
 import {writeFileSync, unlinkSync} from "node:fs";
 import path from "node:path";
-import tmp from "tmp";
-import os from "node:os";
+import {tmpNameSync} from "tmp";
+import {platform as osPlatform} from "node:os";
 import {fileURLToPath} from "node:url";
 import {execSync} from "node:child_process";
 
@@ -104,7 +104,7 @@ export class CaptureView extends NodeCore {
 		if(format !== ".webm") {
 
 			// Save the movie to a temporary WEBM formatted file
-			const webmFile = tmp.tmpNameSync({prefix: "stm-ng", postfix: ".webm"});
+			const webmFile = tmpNameSync({prefix: "stm-ng", postfix: ".webm"});
 			try {
 				writeFileSync(webmFile, Buffer.from(buffer));
 			}
@@ -114,7 +114,7 @@ export class CaptureView extends NodeCore {
 
 			// Select the platform executable
 			let ffmpegExe;
-			const platform = os.platform();
+			const platform = osPlatform();
 			switch(platform) {
 				case "win32":
 					ffmpegExe = "ffmpeg.exe";

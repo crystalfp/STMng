@@ -14,18 +14,6 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
 
 // Import the readers
-import {ReaderXYZ} from "../readers/ReadXYZ";
-import {ReaderSHELX} from "../readers/ReadSHELX";
-import {ReaderPOSCAR} from "../readers/ReadPOSCAR";
-import {ReaderCIF} from "../readers/ReadCIF";
-import {ReaderCHGCAR} from "../readers/ReadCHGCAR";
-import {ReaderLAMMPS} from "../readers/ReadLAMMPS";
-import {ReaderLAMMPStrj} from "../readers/ReadLAMMPStrj";
-import {ReaderGAUSSIAN} from "../readers/ReadGAUSSIAN";
-import {ReaderCEL} from "../readers/ReadCEL";
-
-import {readAuxXDATCAR} from "../readers/AuxXDATCAR";
-import {readAuxENERGY} from "../readers/AuxENERGY";
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 										   "LAMMPStrj", "POSCAR + XDATCAR",
@@ -129,34 +117,52 @@ export class StructureReader extends NodeCore {
 		try {
 
 			switch(requestedFormat) {
-				case "XYZ":
-					reader = new ReaderXYZ();
+				case "XYZ": {
+						const {ReaderXYZ} = await import("../readers/ReadXYZ");
+						reader = new ReaderXYZ();
+					}
 					break;
-				case "Shel-X":
-					reader = new ReaderSHELX();
+				case "Shel-X": {
+						const {ReaderSHELX} = await import("../readers/ReadSHELX");
+						reader = new ReaderSHELX();
+					}
 					break;
-				case "LAMMPS":
-					reader = new ReaderLAMMPS();
+				case "LAMMPS": {
+						const {ReaderLAMMPS} = await import("../readers/ReadLAMMPS");
+						reader = new ReaderLAMMPS();
+					}
 					break;
-				case "LAMMPStrj":
-					reader = new ReaderLAMMPStrj();
+				case "LAMMPStrj": {
+						const {ReaderLAMMPStrj} = await import("../readers/ReadLAMMPStrj");
+						reader = new ReaderLAMMPStrj();
+					}
 					break;
 				case "POSCAR":
 				case "POSCAR + XDATCAR":
-				case "POSCAR + ENERGY":
-					reader = new ReaderPOSCAR();
+				case "POSCAR + ENERGY": {
+						const {ReaderPOSCAR} = await import("../readers/ReadPOSCAR");
+						reader = new ReaderPOSCAR();
+					}
 					break;
-				case "CIF":
-					reader = new ReaderCIF();
+				case "CIF": {
+						const {ReaderCIF} = await import("../readers/ReadCIF");
+						reader = new ReaderCIF();
+					}
 					break;
-				case "CEL":
-					reader = new ReaderCEL();
+				case "CEL": {
+						const {ReaderCEL} = await import("../readers/ReadCEL");
+						reader = new ReaderCEL();
+					}
 					break;
-				case "CHGCAR":
-					reader = new ReaderCHGCAR();
+				case "CHGCAR": {
+						const {ReaderCHGCAR} = await import("../readers/ReadCHGCAR");
+						reader = new ReaderCHGCAR();
+					}
 					break;
-				case "Gaussian Cube":
-					reader = new ReaderGAUSSIAN();
+				case "Gaussian Cube": {
+						const {ReaderGAUSSIAN} = await import("../readers/ReadGAUSSIAN");
+						reader = new ReaderGAUSSIAN();
+					}
 					break;
 				default: throw Error("Format not implemented");
 			}
@@ -247,11 +253,15 @@ export class StructureReader extends NodeCore {
 		try {
 
 			switch(mainFormat) {
-				case "POSCAR + XDATCAR":
-					this.structures = await readAuxXDATCAR(filename, this.structures[0]);
+				case "POSCAR + XDATCAR": {
+						const {readAuxXDATCAR} = await import("../readers/AuxXDATCAR");
+						this.structures = await readAuxXDATCAR(filename, this.structures[0]);
+					}
 					break;
-				case "POSCAR + ENERGY":
-					this.structures = readAuxENERGY(filename, this.structures);
+				case "POSCAR + ENERGY": {
+						const {readAuxENERGY} = await import("../readers/AuxENERGY");
+						this.structures = readAuxENERGY(filename, this.structures);
+					}
 					break;
 				default:
 					throw Error(`Format "${mainFormat}" has no auxiliary file`);

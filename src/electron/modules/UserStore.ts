@@ -9,7 +9,7 @@
 import {app} from "electron";
 import path from "node:path";
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "node:fs";
-import yaml from "js-yaml";
+import {load, dump, CORE_SCHEMA} from "js-yaml";
 
 /**
  * Store parameters
@@ -60,14 +60,14 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 		}
 
 		if(existsSync(this.filePath)) {
-			this.data = yaml.load(readFileSync(this.filePath, "utf8"),
-								  {schema: yaml.CORE_SCHEMA}) as T;
+			this.data = load(readFileSync(this.filePath, "utf8"),
+							 {schema: CORE_SCHEMA}) as T;
 		}
 		else if(options?.defaultContent) {
 			this.data = structuredClone(options.defaultContent) as T;
 			writeFileSync(this.filePath,
-							 yaml.dump(this.data, {
-								schema: yaml.CORE_SCHEMA,
+							 dump(this.data, {
+								schema: CORE_SCHEMA,
 								lineWidth: 256,
 								flowLevel: 1
 							 }), "utf8");
@@ -95,8 +95,8 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	set<K extends keyof T>(key: K, value: T[K]): void {
 		this.data[key] = value;
 		writeFileSync(this.filePath,
-					  yaml.dump(this.data, {
-							schema: yaml.CORE_SCHEMA,
+					  dump(this.data, {
+							schema: CORE_SCHEMA,
 							lineWidth: 256,
 							flowLevel: 1
 					  }), "utf8");
@@ -123,8 +123,8 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete this.data[key];
 		writeFileSync(this.filePath,
-					  yaml.dump(this.data, {
-							schema: yaml.CORE_SCHEMA,
+					  dump(this.data, {
+							schema: CORE_SCHEMA,
 							lineWidth: 256,
 							flowLevel: 1
 					  }), "utf8");
