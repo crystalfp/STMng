@@ -73,7 +73,7 @@ const initViewer = (): void => {
     camera.position.set(5, 3, 5);
     camera.lookAt(scene.position);
 
-    renderer = new WebGLRenderer({antialias: true});
+    renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
     renderer.setSize(canvasWidth.value, canvasHeight.value);
     document.body.append(renderer.domElement);
     cnv.value.append(renderer.domElement);

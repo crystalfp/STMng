@@ -151,7 +151,11 @@ onMounted(() => {
     let camera = configStore.camera.type === "perspective" ? cameraPerspective : cameraOrthographic;
 
     // Add renderer
-    const renderer = new WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+    const renderer = new WebGLRenderer({
+        antialias: true,
+        preserveDrawingBuffer: true,
+        powerPreference: "high-performance"
+    });
     renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
