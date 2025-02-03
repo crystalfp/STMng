@@ -8,7 +8,7 @@ import typescript from "@rollup/plugin-typescript";
 export default {
 	input: "src/electron/fingerprint/Worker.ts",
 	output: {
-		file: "dist/Worker.js",
+		file: "public/Worker.js",
 		format: "es",
 		sourcemap: false,
 	},
@@ -21,16 +21,26 @@ export default {
 		commonjs({transformMixedEsModules: true}),
 		terser(),
 		typescript({
-			include: ["src/electron/fingerprint/*.ts"],
+			include: [
+				"src/electron/fingerprint/Accumulator.ts",
+				"src/electron/fingerprint/ChemicalScale.ts",
+				"src/electron/fingerprint/FingerprintingMethods.ts",
+				"src/electron/fingerprint/Helpers.ts",
+				"src/electron/fingerprint/Slab.ts",
+				"src/electron/fingerprint/Smooth.ts",
+				"src/electron/fingerprint/Worker.ts",
+				"src/electron/modules/Helpers.ts",
+			],
 			tsconfig: false,
 			outputToFilesystem: true,
 			sourceMap: false,
 			compilerOptions: {
 				target: "esnext",
-			    "paths": {
-      				"@/*": ["src/*"]
+			    paths: {
+      				"@/*": ["../../*"]
     			},
-   				"baseUrl": ".",
+   				baseUrl: "src/electron/fingerprint",
+				allowSyntheticDefaultImports: true
 			}
 		}),
 	]

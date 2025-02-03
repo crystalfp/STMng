@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-01-31
  */
+import {fingerprintingMethods} from "./FingerprintingMethods";
 
 export const worker = (positionsShared: SharedArrayBuffer,
 					   atomsZShared: SharedArrayBuffer,
@@ -19,4 +20,8 @@ export const worker = (positionsShared: SharedArrayBuffer,
     	// eslint-disable-next-line sonarjs/pseudo-random
     	fingerprint[i] = positions[i] * atomsZ[i] * Math.random();
     }
+	const selectedMethod = 0;
+	const {method} = fingerprintingMethods[selectedMethod];
+
+	void method;
 };
