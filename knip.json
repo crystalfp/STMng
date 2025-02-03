@@ -21,8 +21,12 @@
     "typedoc-plugin-missing-exports",
     "@types/eslint",
     "postcss-scss",
-    "vue-mess-detector",
-    "vite-plugin-dts"
+    "vite-plugin-dts",
+    "@rollup/plugin-commonjs",
+    "@rollup/plugin-json",
+    "@rollup/plugin-node-resolve",
+    "@rollup/plugin-terser",
+    "@rollup/plugin-typescript"
   ],
   "includeEntryExports": true
 }
