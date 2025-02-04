@@ -40,6 +40,7 @@ ToDo eventually:
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
   ☐ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>)
+  ☐ Use fat line <https://github.com/pmndrs/meshline>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -56,6 +57,7 @@ Reference:
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
 
 Archive:
+  ✔ Consider using v-show for elements that are frequently toggled instead of v-if @done(2025-02-04 09:16) @project(To do)
   ✔ Dynamic load for Lut and other not used from beginning @done(2025-01-31 15:27) @project(To do)
   ✔ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order @done(2025-01-28 17:22) @project(Functionalities)
   ✘ Add ResizeObserver also for Viewer3D @cancelled(2025-01-25 06:00) @project(To do)

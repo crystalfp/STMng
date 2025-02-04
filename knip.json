@@ -6,7 +6,8 @@
     "src/electron/preload.ts",
     "eslint.config.mjs",
     "src/ui/*.vue",
-    "src/router/index.ts"
+    "src/router/index.ts",
+    "src/electron/fingerprint/Worker.ts"
   ],
   "project": ["src/**/*.{js,ts,vue}"],
   "ignoreBinaries": ["start", "oxlint"],
