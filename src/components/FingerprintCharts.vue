@@ -147,11 +147,11 @@ receiveInWindow((dataFromMain) => {
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
     const {fingerprint, energyDistance, energyHistogram, order,
-           distanceHistogram, haveEnergies: haveE} = fingerprintChartData;
+           distanceHistogram, haveEnergies: haveE, haveDistances: haveD} = fingerprintChartData;
 
     // Disable buttons if no energy or distances provided
     haveEnergies.value = haveE;
-    haveDistances.value = Boolean(distanceHistogram);
+    haveDistances.value = haveD;
 
     // If received fingerprint data
     if(fingerprint) {

@@ -571,6 +571,9 @@ export interface FingerprintsChartData {
     /** If the structures have energies */
     haveEnergies: boolean;
 
+    /** If the structures have distances */
+    haveDistances: boolean;
+
     /** List of structure id for the set of fingerprints */
     structureIds?: number[];
 

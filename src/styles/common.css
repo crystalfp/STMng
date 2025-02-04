@@ -109,7 +109,7 @@ html {
 .button-strip {
   display: flex;
   justify-content: flex-end;
-  align-items: baseline;
+  align-items: center;
   max-width: 3000px !important;
   width: 100vw;
   gap: 10px;

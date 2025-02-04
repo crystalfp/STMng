@@ -7,8 +7,8 @@
  * @since 2024-09-05
  */
 import {ref, shallowRef, useTemplateRef} from "vue";
-import {Bar, Line, Scatter} from "vue-chartjs";
-import {Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale,
+import {Scatter} from "vue-chartjs";
+import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {Context} from "chartjs-plugin-datalabels";
@@ -23,7 +23,6 @@ ChartJS.register(
     LinearScale,
     PointElement,
     LineElement,
-    BarElement,
     ChartDataLabels,
     Title,
     Tooltip,
@@ -135,17 +134,7 @@ const makeImage = (): void => {
 <v-app :theme="theme">
   <div class="chart-portal">
     <div class="chart-container">
-      <Bar v-if="chartType === 'bar'"
-        ref="chart"
-        :options="chartOptions"
-        :data="chartData"
-      />
-      <Line v-else-if="chartType === 'line'"
-        ref="chart"
-        :options="chartOptions"
-        :data="chartData"
-      />
-      <Scatter v-else-if="chartType === 'scatter'"
+      <Scatter
         ref="chart"
         :options="chartOptions"
         :data="chartData"
@@ -156,7 +145,7 @@ const makeImage = (): void => {
         Save image
       </v-btn>
       <v-switch v-model="transparent" label="Transparent background"
-                :hide-details="true" class="ml-4 mr-3"/>
+                hide-details class="ml-4 mr-3"/>
       <v-btn v-focus @click="closeWindow('/chart')">
         Close
       </v-btn>

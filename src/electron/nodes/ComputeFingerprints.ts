@@ -426,9 +426,10 @@ export class ComputeFingerprints extends NodeCore {
 		if(opKind !== "create" && !chartsOpen) return;
 
 		const haveEnergies = this.accumulator.accumulatedHaveEnergies();
-
+		const haveDistances = this.dist.getDistanceMatrix().matrixSize() > 0;
 		const data: FingerprintsChartData = {
-			haveEnergies
+			haveEnergies,
+			haveDistances
 		};
 
 		switch(kind) {
