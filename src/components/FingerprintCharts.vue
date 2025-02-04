@@ -249,11 +249,11 @@ watch([fpIndex, chartType, binCount], () => {
           <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
           <v-btn value="op">Order param</v-btn>
         </v-btn-toggle>
-        <g-slider-with-steppers v-if="chartType==='fp'" v-model="fpIndex"
+        <g-slider-with-steppers v-show="chartType==='fp'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />
-        <g-slider-with-steppers v-if="chartType==='eh' || chartType==='dh'" v-model="binCount"
+        <g-slider-with-steppers v-show="chartType==='eh' || chartType==='dh'" v-model="binCount"
                                 v-model:raw="showBinCount" label-width="11rem"
                                 :label="`Bin count (${showBinCount})`"
                                 :min="2" :max="200" :step="1" />

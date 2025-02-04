@@ -527,7 +527,7 @@ const addNode = (): void => {
                 marker-end="url(#arrow)" pointer-events="none" vector-effect="non-scaling-stroke" />
     </svg>
   </div>
-  <v-container v-if="showInfo" class="mt-2">
+  <v-container v-show="showInfo" class="mt-2">
     <v-row>
       <v-col cols="10">
         <v-table class="pa-3" density="comfortable">
