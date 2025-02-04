@@ -97,7 +97,7 @@ const openChartWindow = (): void => {
 
 <template>
 <v-container class="container">
-  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 mt-2"
+  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 mt-2 mb-4"
             label="Wavelength"/>
   <v-number-input v-if="wavelengthCode === 'Manual'" v-model="wavelengthNumeric"
                   label="Numeric wavelength"
@@ -108,8 +108,8 @@ const openChartWindow = (): void => {
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
   </g-debounced-range-slider>
-  <v-switch v-model="scaled" label="Chart scaled" class="ml-2 mt-1" />
-  <v-switch v-model="showHKL" label="Show HKL" class="ml-2 mt-n5" />
+  <v-switch v-model="scaled" label="Chart scaled" class="ml-2" />
+  <v-switch v-model="showHKL" label="Show HKL" class="ml-2 mb-6" />
   <g-debounced-slider v-slot="{value}" v-model="width" :min="0" :max="5" :step="0.05"
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />

@@ -42,7 +42,7 @@ getVersions()
 <template>
 <v-dialog v-model="isOpen" width="26rem">
   <v-card>
-    <v-card-text class="pl-2">
+    <v-card-text class="pl-2 pb-0">
       <div class="ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a
             visualization tool that implements some of the STM4 functionalities.</div>
       <div class="mb-4 ml-2 mt-3 text-body-1">Author: Mario Valle

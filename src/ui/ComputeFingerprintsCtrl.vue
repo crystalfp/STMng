@@ -403,7 +403,7 @@ const showEnergyLandscape = (): void => {
   <v-switch v-model="enableEnergyFiltering" :disabled="!haveEnergies"
             label="Filter by energy" class="ml-2 mt-n2" />
   <v-switch v-model="thresholdFromMinimum" :disabled="!enableEnergyFiltering || !haveEnergies"
-            label="Threshold from minimum energy" class="ml-2 mt-n5" />
+            label="Threshold from minimum energy" class="ml-2 mt-n2 mb-4" />
   <v-row>
     <v-number-input v-model="energyThreshold" :disabled="!enableEnergyFiltering || !haveEnergies"
                     :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
@@ -417,9 +417,9 @@ const showEnergyLandscape = (): void => {
   <v-label class="separator-title">Compute fingerprints</v-label>
 
   <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
-            label="Structures are nanoclusters" class="ml-2 mt-n1 mb-n3" />
+            label="Structures are nanoclusters" class="ml-2 mt-n1" />
   <v-row class="mt-0 mx-0">
-    <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2" />
+    <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
     <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"
                     :min="0.1" :step="0.1" :disabled="!forceCutoff" class="mx-2" />
   </v-row>
@@ -431,7 +431,7 @@ const showEnergyLandscape = (): void => {
     label="Fingerprinting method"
     item-title="label"
     item-value="value"
-    class="mr-2" />
+    class="mr-2 mb-4" />
 
   <v-row v-if="needSizes" class="ml-0 mr-2 pt-1">
     <v-number-input v-model="peakWidth"
@@ -453,10 +453,10 @@ const showEnergyLandscape = (): void => {
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    class="mr-2" />
+    class="mr-2 mb-4" />
 
   <v-switch v-model="fixTriangleInequality"
-            label="Fix triangle inequality" class="ml-2 mt-n2 mb-n2" />
+            label="Fix triangle inequality" class="ml-2 mt-n2 mb-2" />
   <v-btn block :disabled="resultDimensionality === 0 || countAccumulated < 2"
          @click="distanceBusy=true; computeDistances()">
     Compute distances
@@ -473,7 +473,7 @@ const showEnergyLandscape = (): void => {
     label="Grouping method"
     item-title="label"
     item-value="value"
-    class="mr-2" />
+    class="mr-2 mb-4" />
 
   <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="groupingThreshold"

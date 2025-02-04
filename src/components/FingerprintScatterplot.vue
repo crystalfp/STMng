@@ -787,7 +787,7 @@ const legendContinue = computed(() => {
         <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
-        <v-switch v-model="showLegend" label="Show legend" hide-details/>
+        <v-switch v-model="showLegend" label="Show legend"/>
         <v-btn v-focus @click="closeWindow('/scatter')" class="mr-2 mb-4">Close</v-btn>
       </div>
     </div>

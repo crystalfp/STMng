@@ -388,6 +388,9 @@ export default [{
                                     "presets": ["native", "microutilities", "preferred"]
         }],
         "@typescript-eslint/consistent-type-imports": "error",
-        "sonarjs/no-unenclosed-multiline-block": "off"
+        "sonarjs/no-unenclosed-multiline-block": "off",
+
+        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/no-floating-promises": "error"
     }
 }];

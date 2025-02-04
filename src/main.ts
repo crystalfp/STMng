@@ -109,7 +109,8 @@ const app = createApp(App)
     		},
 			VSwitch: {
 				density: "compact",
-				color: "primary"
+				color: "primary",
+				"hideDetails": true
 			},
 			VBtnToggle: {
 				density: "comfortable",
@@ -119,7 +120,8 @@ const app = createApp(App)
 			},
 			VSelect: {
 				density: "compact",
-				variant: "filled"
+				variant: "filled",
+				"hideDetails": true
 			},
 			VNumberInput: {
 				variant: "filled",
@@ -158,6 +160,9 @@ app.config.errorHandler = (error: unknown): void => {
 addEventListener("unhandledrejection", (event): void => {
 	log.error("Unhandled rejection:", event.reason);
 });
+
+// TEST See if it helps looking for performance problems
+app.config.performance = true;
 
 // Preload fonts for labels
 preloadFonts();

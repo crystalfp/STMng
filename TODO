@@ -41,6 +41,7 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>)
   ☐ Use fat line <https://github.com/pmndrs/meshline>
+  ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

@@ -53,7 +53,7 @@ watch([interpolateVolume, pointsToAdd, dataset], () => {
 <template>
 <v-container class="container">
   <v-switch v-model="interpolateVolume"
-            label="Interpolate volume data" class="mt-4 ml-4" />
+            label="Interpolate volume data" class="mt-4 ml-4 mb-4" />
 
   <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 

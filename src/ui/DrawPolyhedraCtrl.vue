@@ -97,7 +97,7 @@ receivePolyhedraFromNode(id, "vertices",
 <template>
 <v-container class="container">
   <v-switch v-model="showPolyhedra" label="Show polyhedra" class="mt-2 ml-4" />
-  <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mt-n5 ml-4" />
+  <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-4 ml-4" />
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     class="ml-2 mb-6"
                     title="Select central atoms by" placeholder="Central atoms selector" />

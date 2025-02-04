@@ -37,14 +37,14 @@ closeWithEscape("/symmetries");
 
 <template>
 <v-app :theme="theme">
-<v-container class="symmetry-portal ma-0">
+<v-container class="symmetry-portal">
   <v-row class="symmetry-container">
     <v-col class="left-col">
-      <v-label class="text-h5 justify-center mt-4 w-100">Input symmetry</v-label>
+      <v-label class="text-h5 justify-center mt-n2 w-100">Input symmetry</v-label>
       <v-label :text="inSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
     <v-col class="right-col">
-      <v-label class="text-h5 justify-center mt-4 w-100">Output symmetry</v-label>
+      <v-label class="text-h5 justify-center mt-n2 w-100">Output symmetry</v-label>
       <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
   </v-row>
@@ -85,7 +85,7 @@ closeWithEscape("/symmetries");
 
 .left-col {
   flex: 1;
-  border-right: 8px solid #B8B8B8;
+  border-right: 3px solid #B8B8B8;
 }
 
 .right-col {

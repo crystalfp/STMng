@@ -145,7 +145,7 @@ const makeImage = (): void => {
         Save image
       </v-btn>
       <v-switch v-model="transparent" label="Transparent background"
-                hide-details class="ml-4 mr-3"/>
+                class="ml-4 mr-3"/>
       <v-btn v-focus @click="closeWindow('/chart')">
         Close
       </v-btn>

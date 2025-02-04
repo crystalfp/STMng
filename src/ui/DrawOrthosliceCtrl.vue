@@ -167,7 +167,7 @@ watch([colormapName, colorIsolines], () => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 ml-3" />
+  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 mb-4 ml-3" />
 
   <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
 
@@ -190,16 +190,16 @@ watch([colormapName, colorIsolines], () => {
              class="ml-n2 no-select" />
   </g-debounced-range-slider>
 
-  <v-switch v-model="useColorClasses" label="Use discrete classes" class="ml-3" />
+  <v-switch v-model="useColorClasses" label="Use discrete classes" class="ml-3 mb-4" />
   <g-debounced-slider v-if="useColorClasses" v-slot="{value}" v-model="colorClasses"
                       :step="1" :min="2" :max="20" class="ml-2 mt-1 mb-4">
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </g-debounced-slider>
 
-  <g-select-colormap v-model="colormapName" class="mt-0 mx-2" />
+  <g-select-colormap v-model="colormapName" class="mx-2" />
 
-  <v-switch v-model="showIsolines" label="Show isolines" class="mt-2 ml-4" />
-  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mt-n5" />
+  <v-switch v-model="showIsolines" label="Show isolines" class="mt-6 ml-4" />
+  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mb-5" />
 
   <g-debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
                       :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1">

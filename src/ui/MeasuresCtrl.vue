@@ -178,7 +178,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
   <v-container v-if="measurementType === 'atoms'" class="pa-0">
     <v-switch v-model="useFractional" label="Show fractional coordinates"
-              class="ml-4 mb-n4"/>
+              class="ml-4"/>
     <v-label v-if="details.length > 0"
              class="simple-title mb-2">Selected atoms</v-label>
     <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">

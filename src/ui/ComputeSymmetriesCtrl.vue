@@ -100,11 +100,11 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
 <template>
 <v-container class="container">
   <v-switch v-model="applyInputSymmetries" label="Apply input symmetries" class="mt-2 ml-3" />
-  <v-switch v-model="enableFindSymmetries" label="Enable find symmetries" class="ml-3 mt-n5 mb-n6" />
+  <v-switch v-model="enableFindSymmetries" label="Enable find symmetries" class="ml-3 mt-n2" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
     <v-switch v-model="standardizeCell"
-              label="Standardize cell" class="mt-n5 ml-3" />
-    <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n5" />
+              label="Standardize cell" class="ml-3" />
+    <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2 mb-4" />
     <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mb-2">
       <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
@@ -132,7 +132,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     </v-col>
   </v-row>
 
-  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4" />
+  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 my-4" />
   <g-debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
                       :min="-5" :max="-1" :step="0.02" class="ml-2 mb-4">
     <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />

@@ -170,7 +170,7 @@ const selectedSaveFile = (filename: string): void => {
 <template>
 <v-container class="container">
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4" @update:model-value="writerLabel=''"/>
+            :items="fileFormats" class="mt-4 mb-4" @update:model-value="writerLabel=''"/>
 
   <g-select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select output file"
                  :filter="filterFromFormat(format)"

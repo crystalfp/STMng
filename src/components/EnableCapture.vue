@@ -20,10 +20,10 @@ const controlStore = useControlStore();
   <v-switch v-if="controlStore.hasCapture" v-model="controlStore.movie"
             label="Movie from steps" class="mt-n5" />
   <v-switch v-if="controlStore.hasTrajectory" v-model="controlStore.trajectoriesRecording"
-            label="Record trajectories" class="mt-n5" />
+            label="Record trajectories" />
   <v-switch v-if="controlStore.hasFingerprints" v-model="controlStore.fingerprintsAccumulate"
-            label="Accumulate for fingerprinting" class="mt-n5" />
+            label="Accumulate for fingerprinting" />
   <v-switch v-if="controlStore.hasWriter" v-model="controlStore.writerAccumulate"
-            label="Collect for structure writer" class="mt-n5" />
+            label="Collect for structure writer" class="mb-4" />
 </v-container>
 </template>

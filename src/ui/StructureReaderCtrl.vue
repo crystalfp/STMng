@@ -383,7 +383,7 @@ const auxSetup = computed(() => {
 <v-container class="container">
 
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4"
+            :items="fileFormats" class="mt-4 mb-4"
             @update:model-value="setFormat" />
 
   <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes"
@@ -406,8 +406,8 @@ const auxSetup = computed(() => {
   <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
     <enable-capture />
     <v-row class="pl-3 mt-0">
-      <v-switch v-model="loopSteps" label="Loop" class="mr-5" />
-      <v-switch v-model="stepBackward" label="Reverse" />
+      <v-switch v-model="loopSteps" label="Loop" class="mr-5 mb-6" />
+      <v-switch v-model="stepBackward" label="Reverse" class="mb-6" />
       <v-number-input v-model="stepIncrement" label="Step increment" :min="1" class="ml-3 mr-8" />
     </v-row>
     <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>

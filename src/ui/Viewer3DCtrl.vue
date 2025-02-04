@@ -242,23 +242,23 @@ const forcePosition = (): void => {
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-switch v-model="configStore.helpers.showAxis"
-                  label="Show axis" class="mt-3" />
+                  label="Show axis" class="mt-3 mb-4" />
         <g-align-labels label-width="5rem" class="ml-n4 mt-n5">
           <v-slider v-model="configStore.helpers.axisLength" label="Axis length" density="compact"
                     min="0.5" max="20" step="0.5" thumb-label />
         </g-align-labels>
         <v-switch v-model="configStore.helpers.showGridXZ"
-                  label="Show grid XZ" class="mt-n5" />
+                  label="Show grid XZ" class="mt-n6" />
         <v-switch v-model="configStore.helpers.showGridXY"
-                  label="Show grid XY" class="mt-n5" />
+                  label="Show grid XY" />
         <v-switch v-model="configStore.helpers.showGridYZ"
-                  label="Show grid YZ" class="mt-n5" />
-        <g-align-labels label-width="5rem" class="ml-n4 mt-n5">
+                  label="Show grid YZ" />
+        <g-align-labels label-width="5rem" class="ml-n4">
           <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
                     min="2" max="40" step="2" thumb-label />
         </g-align-labels>
         <v-switch v-model="configStore.helpers.showGizmo"
-                  label="Show orientation axis" class="mt-n5" />
+                  label="Show orientation axis" class="mt-n6" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>

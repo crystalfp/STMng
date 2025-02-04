@@ -167,8 +167,8 @@ watch([percentA, percentB, percentC, shrink], () => {
 <template>
 <v-container class="container">
   <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-2 ml-4" />
-  <v-switch v-model="dashedLine" label="Dashed lines" class="ml-4 mt-n5" />
-  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4 mt-n5" />
+  <v-switch v-model="dashedLine" label="Dashed lines" class="ml-4" />
+  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4 mb-4" />
   <g-color-selector v-model="lineColor" label="Line color" block />
   <v-label class="separator-title">Cell repetitions</v-label>
   <g-slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
@@ -186,7 +186,7 @@ watch([percentA, percentB, percentC, shrink], () => {
   <v-switch v-model="showSupercell" :disabled="!hasSupercell()"
             label="Show supercell" class="ml-4" />
   <v-switch v-model="dashedSupercell" :disabled="!hasSupercell()"
-            label="Dashed lines supercell" class="ml-4 mt-n5" />
+            label="Dashed lines supercell" class="ml-4 mb-4" />
   <g-color-selector v-model="supercellColor" label="Line color" block />
   <v-label class="separator-title">Shift origin</v-label>
   <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
@@ -198,7 +198,7 @@ watch([percentA, percentB, percentC, shrink], () => {
   <g-slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
                           :min="0" :max="50" :step="1" />
-  <v-switch v-model="shrink" label="Shrink cell" class="ml-4 mt-2" />
+  <v-switch v-model="shrink" label="Shrink cell" class="ml-4 my-2" />
 
 </v-container>
 </template>

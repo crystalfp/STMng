@@ -129,7 +129,7 @@ const showCombined = computed({
     <v-btn value="lines">Lines</v-btn>
   </v-btn-toggle>
 
-  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-2 ml-2" />
+  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n2 mb-4 ml-2" />
 
   <v-label text="Atom label" class="mb-1 ml-2 no-select" /><br>
   <v-btn-toggle v-model="labelKind" mandatory class="mb-6 ml-2">
