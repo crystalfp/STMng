@@ -19,6 +19,7 @@ asarUnpack:
   - dist/bin/ffmpeg.exe
   - dist/bin/ffmpeg
   - dist/doc/**/*.*
+  - dist/Worker.js
 electronLanguages:
   - en-US
 linux:

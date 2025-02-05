@@ -55,7 +55,7 @@ export default [{
         parserOptions: {
             parser: tsParser,
             ecmaFeatures: {impliedStrict: true},
-            project: ["tsconfig.json"],
+            projectService: true,
             warnOnUnsupportedTypeScriptVersion: false,
             extraFileExtensions: ['.vue'],
             vueFeatures: {filter: false},
