@@ -44,7 +44,6 @@ export class DrawOrthosliceRenderer {
 	 * @param showIsolines - Isolines visibility
 	 * @param colorIsolines - Color isolines, otherwise they are black
 	 */
-	// eslint-disable-next-line max-params
 	drawOrthoIso(vertices: number[],
 				 indices: number[],
 				 values: number[],

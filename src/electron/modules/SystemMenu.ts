@@ -268,10 +268,10 @@ export const setupChannelMenu = (): void => {
 
     ipcMain.on("SYSTEM:extended", (_event, params: CtrlParams) => {
 
-        setExtended(!params.normalScreen as boolean);
+        setExtended(!params.normalScreen);
         const entry = systemMenu.getMenuItemById("toggleExtended");
         if(entry) {
-            entry.checked = !params.normalScreen as boolean;
+            entry.checked = !params.normalScreen;
             refreshSystemMenu();
         }
     });

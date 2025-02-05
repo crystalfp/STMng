@@ -173,7 +173,6 @@ export const contrastingColors = (countColors: number, backgroundColor: RGB): RG
     for(let i = 0; i < countColors; i++) {
 
         // Displacement of last from all colors on list
-        // eslint-disable-next-line @typescript-eslint/no-loop-func
         const dX = lab.map((color) => deltaE(color, lastlab));
 
         // Distances to closest previously-chosen color

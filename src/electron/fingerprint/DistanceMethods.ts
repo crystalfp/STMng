@@ -302,7 +302,6 @@ class MinkowskiDistance extends DistanceMethod {
                     if(dd < 0) dd = -dd;
                     oneDistance += Math.cbrt(dd);
                 }
-                // eslint-disable-next-line operator-assignment
                 oneDistance = oneDistance*oneDistance*oneDistance;
 
                 // Find the most similar atom in the other structure

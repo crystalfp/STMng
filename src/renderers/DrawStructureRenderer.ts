@@ -192,7 +192,6 @@ export class DrawStructureRenderer {
 	 * @param colorEnd - Color of the bond end
 	 * @param group - The output group where to add the bond
 	 */
-	// eslint-disable-next-line max-params
 	private addCylinder(start: PositionType, end: PositionType,
 						radius: number, shadedBonds: boolean, colorStart: ColorRepresentation,
 						colorEnd: ColorRepresentation, group: Group): void {

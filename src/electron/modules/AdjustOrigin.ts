@@ -83,7 +83,7 @@ export const adjustOrigin = (structure: Structure,
 	const updatedAtoms: Atom[] = [];
 	for(const atom of atoms) {
 
-		const fc = toFractalCoordinates(inverse!, updatedOrigin, atom.position);
+		const fc = toFractalCoordinates(inverse, updatedOrigin, atom.position);
 		fc[0] = foldIntoUnitCell(fc[0]);
 		fc[1] = foldIntoUnitCell(fc[1]);
 		fc[2] = foldIntoUnitCell(fc[2]);

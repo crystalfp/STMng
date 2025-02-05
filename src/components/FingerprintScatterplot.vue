@@ -353,7 +353,6 @@ const selectPoint = (idx: number): void => {
     }
 
     // Prepare the text to show and move it to remain inside the plot
-    // eslint-disable-next-line @typescript-eslint/no-shadow
     const {x, y, value} = scatterplotPoints.value[idx];
     let valueLine = "";
     switch(scatterplotType.value) {

@@ -57,7 +57,7 @@ const WAVELENGTHS: Record<string, number> = {
 export class XRDCalculator {
 
     /** Wavelength for the X-Ray radiation. Defaults to "CuKa", i.e, Cu K_alpha radiation */
-	private wavelength = WAVELENGTHS["CuKa"];
+	private wavelength = WAVELENGTHS.CuKa;
 
 	/**
 	 * Returns the list of available wavelengths symbols
@@ -93,7 +93,7 @@ export class XRDCalculator {
         // Convert the wavelength symbol to the numeric wavelength
         this.wavelength = wavelengthCode === "Manual" ?
                                 wavelengthNumeric :
-                                (WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS["CuKa"]);
+                                (WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS.CuKa);
 
         // Obtained from Bragg condition.
 		// Note that reciprocal lattice vector length is 1 / d_hkl.

@@ -10,7 +10,6 @@ import {fingerprintingMethods} from "./FingerprintingMethods";
 import type {FingerprintingParameters} from "@/types";
 import type {StructureReduced} from "./Accumulator";
 
-/* eslint-disable max-params, eslint-comments/disable-enable-pair */
 export const worker = (params: FingerprintingParameters,
 					   basis: number[],
 					   positionsShared: SharedArrayBuffer,

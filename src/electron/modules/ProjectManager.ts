@@ -407,7 +407,7 @@ class ProjectManager {
 		// Save the graph
 		const graphAsString = JSON.stringify(graph, (key, value) => {
 			if(key === "in" && value === "") return;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/consistent-return
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			if(!this.keyToRemove.has(key)) return value;
 		});
 

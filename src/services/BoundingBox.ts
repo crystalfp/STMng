@@ -6,8 +6,6 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-/* eslint-disable eslint-comments/disable-enable-pair, @typescript-eslint/no-shadow */
-
 import type {PositionType, StructureRenderInfo} from "@/types";
 
 /** Type of the returning data */

@@ -110,10 +110,10 @@ class SceneManager {
 			if(mesh.geometry) mesh.geometry.dispose();
 			if(mesh.material) {
 				if(Array.isArray(mesh.material)) {
-					for(const material of mesh.material) (material as Material).dispose();
+					for(const material of mesh.material) material.dispose();
 				}
 				else {
-					(mesh.material as Material).dispose();
+					mesh.material.dispose();
 				}
 			}
 			meshes.push(mesh);

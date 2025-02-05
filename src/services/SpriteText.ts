@@ -133,7 +133,6 @@ export const spriteTextAlongBond = (text: string,
 						   			endPosition: PositionType,
 						   			startRadius: number,
 						   			endRadius: number,
-						   			// eslint-disable-next-line max-params
 						   			distance: number): Mesh => {
 
 	const sprite = new TroikaText();

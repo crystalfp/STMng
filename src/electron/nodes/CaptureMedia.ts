@@ -26,10 +26,9 @@ export class CaptureView extends NodeCore {
 		{name: "stl",		type: "invoke", 	callback: this.channelSTL.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor() {
 		super();
 		this.setupChannels("SYSTEM", this.channels);
-		void this.id;
 	}
 
 	// > Load/save status

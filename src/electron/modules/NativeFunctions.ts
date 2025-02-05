@@ -6,8 +6,6 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-24
  */
-/* eslint-disable eslint-comments/disable-enable-pair */
-/* eslint-disable max-params */
 
 /**
  * Type of the native code output

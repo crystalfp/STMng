@@ -32,7 +32,7 @@ export const readAuxENERGY = (filename: string, mainStructures: Structure[]): St
 
 	let idx = 0;
 	for(const structure of mainStructures) {
-		structure.extra["energy"] = energies[idx++];
+		structure.extra.energy = energies[idx++];
 	}
 
 	return mainStructures;

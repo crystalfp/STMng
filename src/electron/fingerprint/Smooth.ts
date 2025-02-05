@@ -91,7 +91,6 @@ const gaussianIntegral = (x: number): number => {
  */
 export const smoothPeak = (peakValue: number, radius: number, delta: number,
                            binCount: number, histogram: number[],
-                           // eslint-disable-next-line max-params
                            start: number, peakWidth: number): void => {
 
 	// Compute the central bin index and the values bracketing the bin

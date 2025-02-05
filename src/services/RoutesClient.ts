@@ -280,7 +280,6 @@ export const receiveIsoOrthoFromNode = (id: string,
 				 values: number[],
 				 isolineVertices: number[][],
 				 isolineValues: number[],
-				 // eslint-disable-next-line max-params
 				 params: CtrlParams) => callback(vertices, indices,
 								 				 values, isolineVertices,
 												 isolineValues, params));

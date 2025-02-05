@@ -58,7 +58,7 @@ watch(valueToDebounce, () => {
  */
 const decrement = (): void => {
 
-    let vv = valueToDebounce.value ?? props.min;
+    let vv = valueToDebounce.value;
     vv -= props.step;
     if(vv < props.min) vv = props.min;
     valueToDebounce.value = vv;
@@ -69,7 +69,7 @@ const decrement = (): void => {
  */
 const increment = (): void => {
 
-    let vv = valueToDebounce.value ?? props.min;
+    let vv = valueToDebounce.value;
     vv += props.step;
     if(vv > props.max) vv = props.max;
     valueToDebounce.value = vv;

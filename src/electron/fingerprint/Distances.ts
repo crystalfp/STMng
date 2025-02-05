@@ -331,28 +331,28 @@ export class Distances {
 
                             let ii, jj, kk;
                             switch(t) {
-                                case 0: ii = i; jj = j; kk = k; break;
-                                case 1: ii = j; jj = k; kk = i; break;
-                                case 2: ii = k; jj = i; kk = j; break;
+                                case 1:  ii = j; jj = k; kk = i; break;
+                                case 2:  ii = k; jj = i; kk = j; break;
+                                default: ii = i; jj = j; kk = k; break; // Was case 0:
                             }
 
-                            const oDij = this.distances.get(ii!, jj!);
+                            const oDij = this.distances.get(ii, jj);
 
                             const d1 = delta.get(i, j, k);
-                            this.distances.add(ii!, jj!,  d1);
-                            this.distances.add(jj!, kk!, -d1);
-                            this.distances.add(kk!, ii!, -d1);
+                            this.distances.add(ii, jj,  d1);
+                            this.distances.add(jj, kk, -d1);
+                            this.distances.add(kk, ii, -d1);
 
-                            const d2 = this.distances.get(ii!, jj!) -
-                                       this.distances.get(jj!, kk!) -
-                                       this.distances.get(kk!, ii!);
+                            const d2 = this.distances.get(ii, jj) -
+                                       this.distances.get(jj, kk) -
+                                       this.distances.get(kk, ii);
 
                             if(d2 > 0) {
-                                this.distances.add(ii!, jj!, -d2/3);
-                                this.distances.add(jj!, kk!,  d2);
-                                this.distances.add(kk!, ii!,  d2);
+                                this.distances.add(ii, jj, -d2/3);
+                                this.distances.add(jj, kk,  d2);
+                                this.distances.add(kk, ii,  d2);
                             }
-                            delta.decr(i, j, k, this.distances.get(ii!, jj!) - oDij);
+                            delta.decr(i, j, k, this.distances.get(ii, jj) - oDij);
                         }
                     }
                 }
