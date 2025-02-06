@@ -553,12 +553,11 @@ const selectedSaveFile = (filename: string): void => {
 const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
                                      {name: "All",    extensions: ["*"]}]);
 
-// > Compare structures selected
+// TBD Compare structures selected
 const compareSelected = (): void => {
 
-    notImplemented.value = !notImplemented.value;
+    console.log("Not implemented");
 };
-const notImplemented = ref(false);
 
 /**
  * Select by min energy in each group

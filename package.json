@@ -19,7 +19,8 @@
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/*",
     "madge": "sh ./madge.sh",
     "start": "start /D .\\release\\win\\%npm_package_version%\\win-unpacked STMng.exe",
-    "oxlint": "oxlint -c ./oxlint.json --tsconfig=tsconfig.json --ignore-pattern=save"
+    "oxlint": "oxlint -c ./oxlint.json --tsconfig=tsconfig.json --ignore-pattern=save",
+    "mess": "vue-mess-detector analyze src --group=file --ignore=elementAttributeOrder,shortVariableName"
   },
   "dependencies": {
     "@derschmale/tympanum": "^1.3.6",
@@ -61,7 +62,7 @@
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "electron": "^34.0.2",
+    "electron": "^34.1.0",
     "electron-builder": "^25.1.8",
     "eslint": "^9.19.0",
     "eslint-formatter-codeframe": "^7.32.1",
@@ -91,7 +92,7 @@
     "typedoc-plugin-missing-exports": "^3.1.0",
     "typedoc-plugin-vue": "^1.4.0",
     "typescript": "^5.7.3",
-    "vite": "^6.0.11",
+    "vite": "^6.1.0",
     "vite-plugin-dts": "^4.5.0",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",

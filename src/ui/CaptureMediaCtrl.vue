@@ -9,6 +9,7 @@
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {useMessageStore} from "@/stores/messageStore";
+import {computed} from "vue";
 
 // > Access the stores
 const configStore = useConfigStore();
@@ -17,6 +18,9 @@ const messageStore = useMessageStore();
 
 // Show this module has been loaded
 controlStore.hasCapture = true;
+
+/** Simplify label */
+const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start recording"));
 
 </script>
 
@@ -40,9 +44,7 @@ controlStore.hasCapture = true;
 
   <v-label class="mt-10 separator-title">Movie</v-label>
   <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
-        @click="controlStore.movie = !controlStore.movie">
-      {{ controlStore.movie ? "Stop recording" : "Start recording" }}
-  </v-btn>
+        @click="controlStore.movie = !controlStore.movie">{{ startStop }}</v-btn>
   <v-alert v-if="messageStore.captureMedia.typeM !== undefined"
            :title="messageStore.captureMedia.typeM === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textM" :type="messageStore.captureMedia.typeM"

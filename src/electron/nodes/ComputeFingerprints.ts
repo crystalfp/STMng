@@ -64,7 +64,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "reset",     	type: "send",   callback: this.channelReset.bind(this)},
 		{name: "energy",    	type: "invoke", callback: this.channelEnergy.bind(this)},
 		{name: "cutoff",    	type: "invoke", callback: this.channelCutoff.bind(this)},
-		{name: "fp",			type: "invoke", callback: this.channelFP.bind(this)},
+		{name: "fp",			type: "invokeAsync", callback: this.channelFP.bind(this)},
 		{name: "fp-params",		type: "send", 	callback: this.channelFPParams.bind(this)},
 		{name: "dist",			type: "invoke", callback: this.channelDist.bind(this)},
 		{name: "dist-params",	type: "send",	callback: this.channelDistParams.bind(this)},
@@ -703,13 +703,13 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param params - Fingerprinting computation parameters
 	 * @returns Results for the user interface
 	 */
-	private channelFP(params: CtrlParams): CtrlParams {
+	private async channelFP(params: CtrlParams): Promise<CtrlParams> {
 
 		this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
 
-		const result = this.fp.compute(this.accumulator, {
+		const result = await this.fp.compute(this.accumulator, {
 			method: this.fingerprintingMethod,
 			areNanoclusters: this.areNanoclusters,
 			cutoffDistance: this.cutoffDistance,

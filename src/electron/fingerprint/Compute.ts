@@ -68,12 +68,6 @@ export class Fingerprinting {
 		}
 
 
-		const pool = workerpool.pool({
-			minWorkers: "max",
-			workerType: "thread"
-		});
-		const promises: ReturnType<typeof pool.exec>[] = [];
-
 		// Find the fingerprint worker
 		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 		const worker = app.isPackaged ?
@@ -81,9 +75,15 @@ export class Fingerprinting {
 													 "app.asar.unpacked/dist/Worker.js") :
 							path.join(mainSourceDirectory, "..", "public", "Worker.js");
 
+		const pool = workerpool.pool(worker, {
+			minWorkers: "max",
+			workerType: "thread"
+		});
+		const promises: ReturnType<typeof pool.exec>[] = [];
+
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-		// 	const result = pool.exec(worker, [1_000_000]).catch((error) => {
+		// 	const result = pool.exec("fingerprinting", [1_000_000]).catch((error) => {
 		// 		console.error(error);
 		// 		return {dimension: 0, error: "Invalid fingerprinting method"};
 		// 	});

@@ -462,7 +462,7 @@ const showEnergyLandscape = (): void => {
     Compute distances
   </v-btn>
   <v-label v-if="countDistances > 0" class="mt-4 mb-2 result-label">
-    {{ `Distances computed: ${countDistances}`}}
+    {{ `Distances computed: ${countDistances}` }}
   </v-label>
   <v-label v-if="distanceBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
@@ -489,7 +489,7 @@ const showEnergyLandscape = (): void => {
   </v-btn>
   <v-container class="pa-0">
     <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">
-      {{ `Found ${countGroups} groups`}}
+      {{ `Found ${countGroups} groups` }}
     </v-label>
     <v-label v-if="groupingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
   </v-container>

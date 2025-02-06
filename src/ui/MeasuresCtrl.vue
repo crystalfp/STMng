@@ -184,36 +184,35 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
       <tr v-for="line of details" :key="line.index">
         <td :style="`color:${line.color};width:3rem`">{{ line.label }}</td>
-        <td style="width: 1rem">{{ line.symbol }}</td>
-        <td style="width: 3rem;text-align:right">[</td>
-        <td style="width: 1rem;text-align:right">{{ `${showCoords(line, 0)},` }}</td>
-        <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 1)},` }}</td>
-        <td style="width: 2rem;text-align:right">{{ `${showCoords(line, 2)}` }}</td>
-        <td style="width: 0.5rem;text-align:right">]</td>
+        <td class="w-1">{{ line.symbol }}</td>
+        <td class="w-3 right">[</td>
+        <td class="w-1 right">{{ `${showCoords(line, 0)},` }}</td>
+        <td class="w-2 right">{{ `${showCoords(line, 1)},` }}</td>
+        <td class="w-2 right">{{ `${showCoords(line, 2)}` }}</td>
+        <td class="w-0-5 right">]</td>
       </tr>
     </v-table>
     <v-label v-if="distanceAB > 0" class="simple-title mb-2 mt-2">Measures</v-label>
     <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
       <tr>
-      <td style="width:9rem">Distance <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>:</td>
-      <td style="text-align:right">{{ distanceAB.toFixed(5) }}</td></tr>
+      <td class="w-9">Distance <span class="red">A</span>–<span class="green">B</span>:</td>
+      <td class="right">{{ distanceAB.toFixed(5) }}</td></tr>
       <tr v-if="distanceBC > 0">
-      <td>Distance <span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
-      <td style="text-align:right">{{ distanceBC.toFixed(5) }}</td></tr>
+      <td>Distance <span class="green">B</span>–<span class="blue">C</span>:</td>
+      <td class="right">{{ distanceBC.toFixed(5) }}</td></tr>
       <tr v-if="distanceAC > 0">
-      <td>Distance <span style="color: #FF0000">A</span>–<span style="color: #4263FF">C</span>:</td>
-      <td style="text-align:right">{{ distanceAC.toFixed(5) }}</td></tr>
+      <td>Distance <span class="red">A</span>–<span class="blue">C</span>:</td>
+      <td class="right">{{ distanceAC.toFixed(5) }}</td></tr>
       <tr v-if="angleABC >= 0">
-      <!-- eslint-disable-next-line @alasdair/max-len/max-len -->
-      <td>Angle <span style="color: #FF0000">A</span>–<span style="color: #00C300">B</span>–<span style="color: #4263FF">C</span>:</td>
-      <td style="text-align:right">{{ angleABC.toFixed(5) }}</td></tr>
+      <td>Angle <span class="red">A</span>–<span class="green">B</span>–<span class="blue">C</span>:</td>
+      <td class="right">{{ angleABC.toFixed(5) }}</td></tr>
     </v-table>
   </v-container>
 
   <v-container v-if="measurementType === 'polyhedra' && volume > 0" class="pa-0">
     <v-label class="simple-title mb-3">Measure</v-label>
     <v-table density="default" class="pa-1 pr-5">
-      <tr><td style="width:9rem">Polyhedral volume:</td><td style="text-align:right">{{ volume.toFixed(5) }}</td></tr>
+      <tr><td class="w-9">Polyhedral volume:</td><td class="right">{{ volume.toFixed(5) }}</td></tr>
     </v-table>
   </v-container>
 
@@ -221,11 +220,50 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     <v-label class="simple-title mb-3">Bond length to atom index</v-label>
     <v-table density="default" class="pa-1 pr-5">
       <tr v-for="entry of bondData" :key="entry.idx">
-        <td style="width:9rem">{{ entry.idx }}</td>
-        <td style="text-align:right">{{ entry.distance.toFixed(5) }}</td></tr>
+        <td class="w-9">{{ entry.idx }}</td>
+        <td class="right">{{ entry.distance.toFixed(5) }}</td></tr>
     </v-table>
   </v-container>
 
   <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
 </v-container>
 </template>
+
+
+<style scoped>
+.green {
+  color: #00C300
+}
+
+.red {
+  color: #FF0000
+}
+
+.blue {
+  color: #4263FF
+}
+
+.right {
+  text-align: right
+}
+
+.w-0-5 {
+  width: 0.5rem
+}
+
+.w-1 {
+  width: 1rem
+}
+
+.w-2 {
+  width: 2rem
+}
+
+.w-3 {
+  width: 3rem
+}
+
+.w-9 {
+  width: 9rem
+}
+</style>

@@ -7,7 +7,7 @@
  * @since 2024-09-12
  */
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
@@ -119,6 +119,10 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
     renderer.receiveTraces(segments, colors, showPositionClouds.value);
 });
 
+/** Simplify label */
+const startStop = computed(() => (controlStore.trajectoriesRecording ?
+                                            "Stop trajectories" : "Start trajectories"));
+
 </script>
 
 
@@ -143,8 +147,7 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
     </g-debounced-slider>
     <g-color-selector v-model="positionCloudsColor" label="Cloud color" />
   </v-container>
-  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" @click="toggleRecording">
-    {{ controlStore.trajectoriesRecording ? "Stop trajectories" : "Start trajectories" }}
-  </v-btn>
+  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
+         @click="toggleRecording">{{ startStop }}</v-btn>
 </v-container>
 </template>

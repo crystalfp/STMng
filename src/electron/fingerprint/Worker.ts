@@ -6,11 +6,12 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-01-31
  */
+import workerpool from "workerpool";
 import {fingerprintingMethods} from "./FingerprintingMethods";
 import type {FingerprintingParameters} from "@/types";
 import type {StructureReduced} from "./Accumulator";
 
-export const worker = (params: FingerprintingParameters,
+const worker = (params: FingerprintingParameters,
 					   basis: number[],
 					   positionsShared: SharedArrayBuffer,
 					   atomsZShared: SharedArrayBuffer,
@@ -92,3 +93,5 @@ export const worker = (params: FingerprintingParameters,
 	info[3] = results.countSections;
 	info[4] = results.sectionLength;
 };
+
+workerpool.worker({fingerprinting: worker});

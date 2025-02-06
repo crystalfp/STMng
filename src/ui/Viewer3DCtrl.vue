@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, sendViewer3DState} from "@/services/RoutesClient";
@@ -127,6 +127,9 @@ const forcePosition = (): void => {
     controlStore.force = true;
 };
 
+/** Simplify label */
+const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
+
 </script>
 
 
@@ -135,7 +138,7 @@ const forcePosition = (): void => {
   <v-expansion-panels class="mt-2">
     <v-expansion-panel>
       <v-expansion-panel-title>
-        {{ `Camera type (${configStore.camera.type})` }}
+        {{ cameraType }}
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-btn-toggle v-model="configStore.camera.type" mandatory
