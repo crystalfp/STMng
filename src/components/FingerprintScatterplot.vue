@@ -13,6 +13,7 @@ import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient"
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import type {ScatterplotData} from "@/types";
+import log from "electron-log";
 
 /** One point that goes to the scatterplot */
 interface Glyph {
@@ -556,7 +557,7 @@ const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
 // TBD Compare structures selected
 const compareSelected = (): void => {
 
-    console.log("Not implemented");
+    log.error("Compare structures not (yet) implemented");
 };
 
 /**

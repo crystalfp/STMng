@@ -278,7 +278,7 @@ export default [{
 
         // "init-declarations": "off",
         // "@typescript-eslint/init-declarations": "off",
-        // "@stylistic/func-call-spacing": "warn",
+        "@stylistic/func-call-spacing": "warn",
         // "default-param-last": "off",
         // "@typescript-eslint/default-param-last": "warn",
         // "vue/first-attribute-linebreak": "off",
@@ -336,7 +336,7 @@ export default [{
         // "deprecate/function": "warn",
         // "deprecate/member-expression": "warn",
         // "deprecate/import": "off",
-        // "@stylistic/member-delimiter-style": "warn",
+        "@stylistic/member-delimiter-style": "warn",
         // "tsdoc/syntax": "warn",
         // "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],
         // "electron-extension/no-incompatible-api": "warn",
@@ -392,5 +392,6 @@ export default [{
 
         // "@typescript-eslint/no-misused-promises": "error",
         // "@typescript-eslint/no-floating-promises": "error"
+        "sonarjs/fixme-tag": "off",
     }
 }];

@@ -9,7 +9,7 @@ export default {
 	input: "src/electron/fingerprint/Worker.ts",
 	output: {
 		file: "public/Worker.js",
-		format: "es",
+		format: "cjs",
 		sourcemap: false,
 	},
 	plugins: [

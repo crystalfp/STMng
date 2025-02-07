@@ -1,5 +1,5 @@
 /**
- * Worker main entry point.
+ * Fingerprinting worker main entry point.
  *
  * @packageDocumentation
  *
@@ -11,41 +11,45 @@ import {fingerprintingMethods} from "./FingerprintingMethods";
 import type {FingerprintingParameters} from "@/types";
 import type {StructureReduced} from "./Accumulator";
 
+/** The results returned to the caller */
+export interface WorkerResults {
+
+    /** Number of sections in the fingerprint */
+    countSections: number;
+
+    /** Length of each section of the fingerprint */
+	sectionLength: number;
+
+	/** The computed fingerprint as a transferable typed array */
+	fp: InstanceType<typeof workerpool.Transfer>;
+
+	/** The computed weights as a transferable typed array */
+	w: InstanceType<typeof workerpool.Transfer>;
+}
+
+/**
+ * Worker routine for fingerprinting
+ *
+ * @param params - Set of parameters needed for the computation
+ * @param basis - The basis set
+ * @param positions - Atoms positions
+ * @param atomsZ - Atoms types
+ * @returns The fingerprinting results returned to the caller
+ */
 const worker = (params: FingerprintingParameters,
-					   basis: number[],
-					   positionsShared: SharedArrayBuffer,
-					   atomsZShared: SharedArrayBuffer,
-					   infoShared: SharedArrayBuffer,
-					   fingerprintShared: SharedArrayBuffer,
-					   weightsShared: SharedArrayBuffer): void => {
+				basis: Float64Array,
+				positions: Float64Array,
+				atomsZ: Int32Array): WorkerResults => {
 
-	const positions = new Float64Array(positionsShared);
-	const atomsZ = new Int32Array(atomsZShared);
-
-	// Info content in:
-	//   0: id
-	//   1: selectedIdx
-	// Info content out:
-	//   2: fingerprint dimension
-	//   3: count sections
-	//   4: section length
-	const info = new Int32Array(infoShared);
-	const fingerprint = new Float64Array(fingerprintShared);
-	const weights = new Float64Array(weightsShared);
-
+	// Initialize the chosen fingerprinting method
 	const {method} = fingerprintingMethods[params.method];
 
-	const status = method.init(params);
-	if(status !== "") {
-		info[2] = 0;
-		info[3] = 0;
-		info[4] = 0;
-		return;
-	}
+	method.init(params);
 
+	// Populate a minimal structure to drive the computation
 	const structure: StructureReduced = {
 
-		id: info[0],
+		id: 0,
 
 		basis: [
 			basis[0], basis[1], basis[2],
@@ -59,7 +63,7 @@ const worker = (params: FingerprintingParameters,
 		species: new Map<number, number>(),
 
 		selected: true,
-		selectedIdx: info[1],
+		selectedIdx: 0,
 		energy: 0,
 
 		fingerprint: [],
@@ -69,7 +73,7 @@ const worker = (params: FingerprintingParameters,
 		weights: []
 	};
 
-	let i = 0;
+	let i3 = 0;
 	for(const atomZ of atomsZ) {
 
 		if(structure.species.has(atomZ)) {
@@ -78,20 +82,27 @@ const worker = (params: FingerprintingParameters,
 		}
 		else structure.species.set(atomZ, 1);
 		structure.atomsZ.push(atomZ);
-		structure.atomsPosition.push(positions[i], positions[i+1], positions[i+2]);
-		i += 3;
+		structure.atomsPosition.push(positions[i3], positions[i3+1], positions[i3+2]);
+		i3 += 3;
 	}
 
 	// Compute fingerprint
 	const results = method.fingerprinting(structure);
 
+	// Return the results
+	const fingerprint = new Float64Array(results.dimension);
 	for(let j=0; j < results.dimension; ++j) fingerprint[j] = structure.fingerprint[j];
+
+	const weights = new Float64Array(results.countSections);
 	for(let j=0; j < results.countSections; ++j) weights[j] = structure.weights[j];
 
-	// Save the resulting fingerprint dimension
-	info[2] = results.dimension;
-	info[3] = results.countSections;
-	info[4] = results.sectionLength;
+	return {
+		countSections: results.countSections,
+		sectionLength: results.sectionLength,
+		fp: new workerpool.Transfer(fingerprint, [fingerprint.buffer]),
+		w:  new workerpool.Transfer(weights, [weights.buffer])
+	};
 };
 
+/** Register the worker routine */
 workerpool.worker({fingerprinting: worker});

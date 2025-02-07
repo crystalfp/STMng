@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build && electron-builder",
-    "prebuild": "node-gyp rebuild && electron-builder install-app-deps",
+    "prebuild": "node-gyp rebuild && electron-builder install-app-deps & rollup -c",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
     "lint": "eslint -f codeframe src",
@@ -62,7 +62,7 @@
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "electron": "^34.1.0",
+    "electron": "^34.1.1",
     "electron-builder": "^25.1.8",
     "eslint": "^9.19.0",
     "eslint-formatter-codeframe": "^7.32.1",

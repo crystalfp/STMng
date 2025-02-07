@@ -6,6 +6,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ Check error return from main process to client
+  ☐ Reduce the list of fingerprinting methods.
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -25,23 +26,20 @@ ToDo eventually:
   ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
   ☐ Use `chagelogen`
-  ☐ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4)
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Is there any way to avoid callbacks for repetitive call?
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
   ☐ Unblock UI when rendering big scene
   ☐ Fix why alias @ does not work in electron files (now they are "../../")
-  ☐ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet>
   ☐ Check the order of entries in objects
   ☐ In builder copy only platform specific exe files
   ☐ Unify naming: graph, node, project
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
-  ☐ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>)
+  ☐ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>) or better <https://www.w3schools.com/graphics/plot_canvas.asp>
   ☐ Use fat line <https://github.com/pmndrs/meshline>
-  ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -51,6 +49,7 @@ Nice to have/Future:
   ☐ Move to WebGPURenderer
   ☐ Rewrite UserStore using Map() and not object
   ☐ Add drag and drop for input file
+  ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
@@ -58,6 +57,8 @@ Reference:
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
 
 Archive:
+  ✘ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4) @cancelled(2025-02-07 18:13) @project(ToDo eventually)
+  ✘ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet> @cancelled(2025-02-07 18:13) @project(ToDo eventually)
   ✔ Consider using v-show for elements that are frequently toggled instead of v-if @done(2025-02-04 09:16) @project(To do)
   ✔ Dynamic load for Lut and other not used from beginning @done(2025-01-31 15:27) @project(To do)
   ✔ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order @done(2025-01-28 17:22) @project(Functionalities)
