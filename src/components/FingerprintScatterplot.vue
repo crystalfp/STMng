@@ -729,10 +729,6 @@ const legendContinue = computed(() => {
     </div>
 
     <div class="side-n">
-      <!-- <svg :width="scatterplotWidth" :height="scatterplotHeight" x="0" y="0"
-          :viewBox="`0 0 ${scatterplotWidth} ${scatterplotHeight}`" fill="transparent"
-          xmlns="http://www.w3.org/2000/svg" @click="textShow=false"
-          @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove"> -->
       <svg width="100%" height="100%" x="0" y="0" fill="transparent"
            xmlns="http://www.w3.org/2000/svg" @click="textShow=false"
            @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove">

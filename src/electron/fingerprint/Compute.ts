@@ -133,7 +133,6 @@ export class Fingerprinting {
 		}
 
 		// For methods that need a last global step
-		// fingerprintSize = fingerprintingMethods[method].method.finish(accumulator);
 		if(method === 1) perSiteFinishStep(accumulator);
 
 		return {dimension: fingerprintSize};
