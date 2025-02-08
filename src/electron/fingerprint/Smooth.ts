@@ -90,7 +90,7 @@ const gaussianIntegral = (x: number): number => {
  * @param peakWidth - Width of the smoothing Gaussian
  */
 export const smoothPeak = (peakValue: number, radius: number, delta: number,
-                           binCount: number, histogram: number[],
+                           binCount: number, histogram: Float64Array | number[],
                            start: number, peakWidth: number): void => {
 
 	// Compute the central bin index and the values bracketing the bin

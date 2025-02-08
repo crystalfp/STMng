@@ -15,7 +15,7 @@ import type {BasisType} from "@/types";
  * @param isNanocluster - Is nanocluster (i.e., has no unit cell). Default false
  * @returns Unit cell volume or zero for nanoclusters
  */
-export const getCellVolume = (basis: BasisType, isNanocluster=false): number =>
+export const getCellVolume = (basis: Float64Array | BasisType, isNanocluster=false): number =>
     (isNanocluster ?
             0 :
             basis[0]*basis[4]*basis[8] + basis[1]*basis[5]*basis[6] +

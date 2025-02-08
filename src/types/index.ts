@@ -519,6 +519,20 @@ export interface FingerprintingMethodResult {
     error?: string;
 }
 
+/** Result from computing fingerprint */
+export interface FingerprintingResult {
+
+    /** Number of sections in the fingerprint */
+    countSections: number;
+
+    /** Length of each section of the fingerprint */
+    sectionLength: number;
+
+    fingerprint: Float64Array;
+
+    weights: Float64Array;
+}
+
 export interface ScatterplotData {
 
     /** Structures index (the original one, not filtered by energy) */

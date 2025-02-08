@@ -66,7 +66,7 @@ export class Slab {
 	 * @param cutoffDistance - The requested cutoff radius
 	 * @param expansion - Resulting expansions along each base axis
 	 */
-	private computeExpansion(basis: BasisType,
+	private computeExpansion(basis: Float64Array | BasisType,
                              cutoffDistance: number,
                              expansion: PositionType): void {
 
@@ -151,6 +151,14 @@ export class Slab {
     computeInteratomicDistances(structure: StructureReduced): void {
 
         const {basis, atomsZ, atomsPosition} = structure;
+
+        this.computeInteratomicDistancesCore(basis, atomsZ, atomsPosition);
+    }
+
+    computeInteratomicDistancesCore(basis: Float64Array | BasisType,
+                                    atomsZ: Int32Array | number[],
+                                    atomsPosition: Float64Array | number[]): void {
+
         const TOL = 1e-2;
         const TOL_SQUARED = TOL*TOL;
 
@@ -268,7 +276,7 @@ export class Slab {
      * @param atomsPosition - List of atom coordinates
      * @returns List of will be duplicated marks per atom
      */
-    private getDuplicatedAtomsIndex(atomsPosition: number[]): boolean[] {
+    private getDuplicatedAtomsIndex(atomsPosition: Float64Array | number[]): boolean[] {
 
         const fracCoordinates = Array(atomsPosition.length);
         const mark = Array(atomsPosition.length).fill(false);

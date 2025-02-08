@@ -145,7 +145,7 @@ export const basisToLengthAngles = (basis: BasisType): LengthsAnglesType => [
  * @throws Error.
  * The basis matrix is not invertible
  */
-export const invertBasis = (basis: BasisType): BasisType => {
+export const invertBasis = (basis: BasisType | Float64Array): BasisType => {
 
 	// Compute the determinant of the basis matrix
 	const det = basis[0] * (basis[4] * basis[8] - basis[5] * basis[7]) -

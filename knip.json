@@ -5,12 +5,13 @@
     "src/electron/main.ts",
     "src/electron/preload.ts",
     "eslint.config.mjs",
+    "src/components/*.vue",
     "src/ui/*.vue",
     "src/router/index.ts",
     "src/electron/fingerprint/Worker.ts"
   ],
   "project": ["src/**/*.{js,ts,vue}"],
-  "ignoreBinaries": ["start", "oxlint", "vue-mess-detector"],
+  "ignoreBinaries": ["start", "oxlint", "vue-mess-detector", "rollup"],
   "ignoreDependencies": [
     "vue-docgen-cli",
     "@mdi/svg",
@@ -24,7 +25,6 @@
     "postcss-scss",
     "vite-plugin-dts",
     "@rollup/plugin-commonjs",
-    "@rollup/plugin-json",
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-terser",
     "@rollup/plugin-typescript"
