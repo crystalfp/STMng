@@ -566,7 +566,8 @@ export class ComputeFingerprints extends NodeCore {
 			forceCutoff: this.forceCutoff,
 			manualCutoffDistance: this.manualCutoffDistance,
 
-			fingerprintMethods: JSON.stringify(this.fp.getFingerprintMethodsNames()),
+			fingerprintMethods: JSON.stringify(["Oganov-Valle fingerprint", "Oganov-Valle per-site fingerprint"]),
+			// fingerprintMethods: JSON.stringify(this.fp.getFingerprintMethodsNames()),
 			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,

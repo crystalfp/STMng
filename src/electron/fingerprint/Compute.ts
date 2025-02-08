@@ -7,12 +7,13 @@
  * @since 2024-12-09
  */
 import workerpool from "workerpool";
+import os from "node:os";
 import {app} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import log from "electron-log";
-import {fingerprintingMethods} from "./FingerprintingMethods";
-import type {FingerprintingMethodName, FingerprintingParameters} from "@/types";
+import {perSiteFinishStep} from "./OganovValleFingerprint";
+import type {FingerprintingParameters} from "@/types";
 import type {FingerprintsAccumulator} from "./Accumulator";
 import type {WorkerResults} from "./Worker";
 
@@ -26,24 +27,6 @@ interface FingerprintingComputeResult {
 }
 
 export class Fingerprinting {
-
-	/**
-	 * Return the list of methods names
-	 *
-	 * @returns The list of fingerprinting methods for the selector on the UI
-	 */
-	getFingerprintMethodsNames(): FingerprintingMethodName[] {
-
-		const out: FingerprintingMethodName[] = [];
-		for(const entry of fingerprintingMethods) {
-			out.push({
-				label: entry.label,
-				needSizes: entry.needSizes,
-				forNanoclusters: entry.forNanoclusters
-			});
-		}
-		return out;
-	}
 
 	/**
 	 * Compute fingerprints
@@ -61,7 +44,7 @@ export class Fingerprinting {
 
 		// Get and verify parameters
 		const {method, cutoffDistance, binSize, peakWidth} = params;
-		if(method < 0 || method >= fingerprintingMethods.length) {
+		if(method < 0 || method > 1) {
 			return {dimension: 0, error: "Invalid fingerprinting method"};
 		}
 		if(cutoffDistance <= 0 || binSize <= 0 || peakWidth <= 0) {
@@ -78,6 +61,7 @@ export class Fingerprinting {
 		// Prepare the worker pool
 		const pool = workerpool.pool(worker, {
 			minWorkers: "max",
+			maxWorkers: os.availableParallelism()-1,
 			workerType: "thread"
 		});
 		const promises: ReturnType<typeof pool.exec>[] = [];
@@ -103,12 +87,16 @@ export class Fingerprinting {
 				atomsZ,
 			], {transfer: [basis.buffer, positions.buffer, atomsZ.buffer]})
 			.catch((error) => {
-				log.error("Error sending to the worker pool", error);
+				log.error("Error sending to the worker pool.", error);
+				pool.terminate(true);
 				return {dimension: 0, error: "Error sending to the worker pool"};
 			});
 			promises.push(result);
 		}
 		const results = await Promise.all(promises) as WorkerResults[];
+
+		// Release the pool
+		pool.terminate();
 
 		let idx = 0;
 		let fingerprintSize = 0;
@@ -144,61 +132,10 @@ export class Fingerprinting {
 			for(let i=0; i < countSections; ++i) weights[i] = weightsArray[i];
 		}
 
-		// Release the pool
-		pool.terminate();
-
 		// For methods that need a last global step
-		fingerprintSize = fingerprintingMethods[method].method.finish(accumulator);
+		// fingerprintSize = fingerprintingMethods[method].method.finish(accumulator);
+		if(method === 1) perSiteFinishStep(accumulator);
 
 		return {dimension: fingerprintSize};
 	}
-
-	/**
-	 * Compute fingerprints
-	 *
-	 * @param accumulator - The accumulated structures
-	 * @param params - Set of parameters needed for the computation
-	 * @returns Dimensionality of the fingerprints, zero on error
-	 */
-	computeOriginal(accumulator: FingerprintsAccumulator,
-			params: FingerprintingParameters): FingerprintingComputeResult {
-
-		// No structures selected, no computation
-		const countStructures = accumulator.selectedSize();
-		if(countStructures === 0) return {dimension: 0, error: "No structures selected"};
-
-		// Get and verify parameters
-		const {method, cutoffDistance, binSize, peakWidth} = params;
-		if(method < 0 || method >= fingerprintingMethods.length) {
-			return {dimension: 0, error: "Invalid fingerprinting method"};
-		}
-		if(cutoffDistance <= 0 || binSize <= 0 || peakWidth <= 0) {
-			return {dimension: 0, error: "Invalid fingerprinting parameters"};
-		}
-
-		const status = fingerprintingMethods[method].method.init(params);
-		if(status !== "") return {dimension: 0, error: status};
-
-		let fingerprintSize = 0;
-		for(const structure of accumulator.iterateSelectedStructures()) {
-
-			// Compute fingerprint
-			const results = fingerprintingMethods[method].method.fingerprinting(structure);
-
-			// Get fingerprint size
-			if(fingerprintSize === 0) fingerprintSize = results.dimension;
-			if(fingerprintSize !== results.dimension) {
-				return {dimension: 0, error: "Fingerprinting dimension has changed"};
-			}
-
-			// Save the resulting fingerprint dimension
-			structure.countSections = results.countSections;
-			structure.sectionLength = results.sectionLength;
-		}
-
-		// For methods that need a last global step
-		fingerprintSize = fingerprintingMethods[method].method.finish(accumulator);
-
-		return {dimension: fingerprintSize};
-	};
 }

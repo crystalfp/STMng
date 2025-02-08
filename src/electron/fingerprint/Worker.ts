@@ -7,9 +7,8 @@
  * @since 2025-01-31
  */
 import workerpool from "workerpool";
-import {fingerprintingMethods} from "./FingerprintingMethods";
+import {fingerprinting} from "./OganovValleFingerprint";
 import type {FingerprintingParameters} from "@/types";
-import type {StructureReduced} from "./Accumulator";
 
 /** The results returned to the caller */
 export interface WorkerResults {
@@ -41,66 +40,14 @@ const worker = (params: FingerprintingParameters,
 				positions: Float64Array,
 				atomsZ: Int32Array): WorkerResults => {
 
-	// Initialize the chosen fingerprinting method
-	const {method} = fingerprintingMethods[params.method];
-
-	method.init(params);
-
-	// Populate a minimal structure to drive the computation
-	const structure: StructureReduced = {
-
-		id: 0,
-
-		basis: [
-			basis[0], basis[1], basis[2],
-			basis[3], basis[4], basis[5],
-			basis[6], basis[7], basis[8]
-		],
-		minRadius: 0,
-
-		atomsPosition: [],
-		atomsZ: [],
-		species: new Map<number, number>(),
-
-		selected: true,
-		selectedIdx: 0,
-		energy: 0,
-
-		fingerprint: [],
-		countSections: 0,
-		sectionLength: 0,
-
-		weights: []
-	};
-
-	let i3 = 0;
-	for(const atomZ of atomsZ) {
-
-		if(structure.species.has(atomZ)) {
-			const n = structure.species.get(atomZ)!;
-			structure.species.set(atomZ, n+1);
-		}
-		else structure.species.set(atomZ, 1);
-		structure.atomsZ.push(atomZ);
-		structure.atomsPosition.push(positions[i3], positions[i3+1], positions[i3+2]);
-		i3 += 3;
-	}
-
 	// Compute fingerprint
-	const results = method.fingerprinting(structure);
-
-	// Return the results
-	const fingerprint = new Float64Array(results.dimension);
-	for(let j=0; j < results.dimension; ++j) fingerprint[j] = structure.fingerprint[j];
-
-	const weights = new Float64Array(results.countSections);
-	for(let j=0; j < results.countSections; ++j) weights[j] = structure.weights[j];
+	const results = fingerprinting(params, basis, positions, atomsZ);
 
 	return {
 		countSections: results.countSections,
 		sectionLength: results.sectionLength,
-		fp: new workerpool.Transfer(fingerprint, [fingerprint.buffer]),
-		w:  new workerpool.Transfer(weights, [weights.buffer])
+		fp: new workerpool.Transfer(results.fingerprint, [results.fingerprint.buffer]),
+		w:  new workerpool.Transfer(results.weights, [results.weights.buffer])
 	};
 };
 

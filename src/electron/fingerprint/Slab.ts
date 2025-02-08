@@ -8,7 +8,6 @@
  */
 import {invertBasis} from "../modules/Helpers";
 import type {BasisType, PositionType} from "@/types";
-import type {StructureReduced} from "./Accumulator";
 
 export class Slab {
 
@@ -66,7 +65,7 @@ export class Slab {
 	 * @param cutoffDistance - The requested cutoff radius
 	 * @param expansion - Resulting expansions along each base axis
 	 */
-	private computeExpansion(basis: Float64Array | BasisType,
+	private computeExpansion(basis: Float64Array,
                              cutoffDistance: number,
                              expansion: PositionType): void {
 
@@ -146,18 +145,13 @@ export class Slab {
     /**
      * Compute the infinite slab for the structure
      *
-     * @param structure - Structure that fills the infinite slab
+     * @param basis - Unit cell basis vector
+     * @param atomsZ - Atoms Z values
+     * @param atomsPosition - Atoms coordinates
      */
-    computeInteratomicDistances(structure: StructureReduced): void {
-
-        const {basis, atomsZ, atomsPosition} = structure;
-
-        this.computeInteratomicDistancesCore(basis, atomsZ, atomsPosition);
-    }
-
-    computeInteratomicDistancesCore(basis: Float64Array | BasisType,
-                                    atomsZ: Int32Array | number[],
-                                    atomsPosition: Float64Array | number[]): void {
+    computeInteratomicDistances(basis: Float64Array,
+                                atomsZ: Int32Array,
+                                atomsPosition: Float64Array): void {
 
         const TOL = 1e-2;
         const TOL_SQUARED = TOL*TOL;
@@ -276,7 +270,7 @@ export class Slab {
      * @param atomsPosition - List of atom coordinates
      * @returns List of will be duplicated marks per atom
      */
-    private getDuplicatedAtomsIndex(atomsPosition: Float64Array | number[]): boolean[] {
+    private getDuplicatedAtomsIndex(atomsPosition: Float64Array): boolean[] {
 
         const fracCoordinates = Array(atomsPosition.length);
         const mark = Array(atomsPosition.length).fill(false);

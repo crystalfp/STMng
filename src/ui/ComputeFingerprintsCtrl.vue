@@ -11,7 +11,7 @@ import {storeToRefs} from "pinia";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {useControlStore} from "@/stores/controlStore";
-import type {CtrlParams, FingerprintingMethodName} from "@/types";
+import type {CtrlParams} from "@/types";
 import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
 // > Properties
@@ -25,7 +25,10 @@ const {id, label} = defineProps<{
 }>();
 
 /** Type of the list of fingerprinting methods names for selection */
-type FPmethodName = {value: number} & FingerprintingMethodName;
+interface FPmethodName {
+    value: number;
+    label: string;
+}
 
 /** Type of the list of distance methods names for selection */
 interface DistanceMethodsNames {
@@ -102,10 +105,10 @@ askNode(id, "init")
         manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
         cutoffDistance.value = forceCutoff.value ? manualCutoffDistance.value : 0;
 
-        const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as FingerprintingMethodName[];
+        const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as string[];
         let len = fpmn.length;
         fingerprintMethodsNames.value.length = 0;
-        for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, ...fpmn[i]});
+        for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, label: fpmn[i]});
 
         fingerprintingMethod.value = params.fingerprintingMethod as number ?? 0;
         binSize.value = params.binSize as number ?? 0.05;
@@ -236,7 +239,8 @@ watch([forceCutoff, manualCutoffDistance], () => {
 /** Cutoff type label for the UI */
 const cutoffLabel = computed(() => {
 
-    if(cutoffDistance.value === 0) return "No cutoff defined";
+    if(cutoffDistance.value === 0 ||
+      (forceCutoff.value && !manualCutoffDistance.value)) return "No cutoff defined";
     return forceCutoff.value ?
         `Forced cutoff: ${manualCutoffDistance.value.toFixed(2)}`:
         `Computed cutoff: ${cutoffDistance.value.toFixed(2)}`;
@@ -344,15 +348,6 @@ const ClassifyStructures = (): void => {
     .finally(() => groupingBusy.value = false);
 };
 
-/** Enable sizes section in the UI */
-const needSizes = computed(() => fingerprintMethodsNames
-                                        .value[fingerprintingMethod.value]?.needSizes ?? false);
-
-/** Enable nanocluster choice in the UI */
-const forNanoclusters = computed(() =>
-                            fingerprintMethodsNames
-                                        .value[fingerprintingMethod.value]?.forNanoclusters ?? false);
-
 /** Enable input of K value */
 const useMargin = computed(() => groupingMethods
                                         .value[groupingMethod.value]?.usingMargin ?? false);
@@ -416,7 +411,7 @@ const showEnergyLandscape = (): void => {
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
-  <v-switch v-if="forNanoclusters" v-model="areNanoclusters"
+  <v-switch v-model="areNanoclusters"
             label="Structures are nanoclusters" class="ml-2 mt-n1" />
   <v-row class="mt-0 mx-0">
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
@@ -433,7 +428,7 @@ const showEnergyLandscape = (): void => {
     item-value="value"
     class="mr-2 mb-4" />
 
-  <v-row v-if="needSizes" class="ml-0 mr-2 pt-1">
+  <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="peakWidth"
                     label="Peak width" :min="0.01" :step="0.01" class="mr-2" />
     <v-number-input v-model="binSize"

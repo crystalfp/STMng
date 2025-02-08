@@ -20,9 +20,7 @@ export default {
 		terser(),
 		typescript({
 			include: [
-				"src/electron/fingerprint/Accumulator.ts",
-				"src/electron/fingerprint/ChemicalScale.ts",
-				"src/electron/fingerprint/FingerprintingMethods.ts",
+				"src/electron/fingerprint/OganovValleFingerprint.ts",
 				"src/electron/fingerprint/Helpers.ts",
 				"src/electron/fingerprint/Slab.ts",
 				"src/electron/fingerprint/Smooth.ts",

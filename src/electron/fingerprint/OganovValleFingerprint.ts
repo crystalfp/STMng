@@ -50,7 +50,7 @@ export const fingerprinting = (params: FingerprintingParameters,
 	fingerprint.fill(-1);
 
 	// With the infinite slab compute interatomic distances
-	slab.computeInteratomicDistancesCore(basis, atomsZ, positions);
+	slab.computeInteratomicDistances(basis, atomsZ, positions);
 
 	// Create ordered list of atom z values and list of positions
 	const orderedZ = [...species.keys()].sort((a, b) => a-b);
