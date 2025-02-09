@@ -43,7 +43,7 @@ export class Fingerprinting {
 		if(countStructures === 0) return {dimension: 0, error: "No structures selected"};
 
 		// Get and verify parameters
-		const {method, cutoffDistance, binSize, peakWidth} = params;
+		const {method, cutoffDistance, binSize, peakWidth, areNanoclusters} = params;
 		if(method < 0 || method > 1) {
 			return {dimension: 0, error: "Invalid fingerprinting method"};
 		}
@@ -77,8 +77,8 @@ export class Fingerprinting {
 			const atomsZ = new Int32Array(lenZ);
 			for(let i=0; i < lenZ; ++i) atomsZ[i] = structure.atomsZ[i];
 
-			const basis = new Float64Array(9);
-			for(let i=0; i < 9; ++i) basis[i] = structure.basis[i];
+			const basis = new Float64Array(areNanoclusters? 0 : 9);
+			if(!areNanoclusters) for(let i=0; i < 9; ++i) basis[i] = structure.basis[i];
 
 			const result = pool.exec("fingerprinting", [
 				params,

@@ -156,12 +156,12 @@ export class Slab {
         const TOL = 1e-2;
         const TOL_SQUARED = TOL*TOL;
 
-        // Inverse basis to convert to fractional coordinates
-        this.inverseBasis = invertBasis(basis);
-
         // Compute how many copies of the unit cell are needed to contain the cutoff distance
         const expansion: PositionType = [0, 0, 0];
         if(!this.isNanocluster) {
+
+            // Inverse basis to convert to fractional coordinates
+            this.inverseBasis = invertBasis(basis);
 
             this.computeExpansion(basis, this.cutoff, expansion);
         }
@@ -207,7 +207,7 @@ export class Slab {
 
                     for(let j=i+1; j < natoms; ++j) {
 
-                        if(!ok[j]) continue;
+                        if(!this.isNanocluster && !ok[j]) continue;
 
                         const dx = atomsPosition[3*j]   - x;
                         const dy = atomsPosition[3*j+1] - y;

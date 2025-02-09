@@ -3,15 +3,16 @@ import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
 import vueDevTools from "vite-plugin-vue-devtools";
 import vue from "@vitejs/plugin-vue";
-import {fileURLToPath, URL} from 'node:url';
+import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
 
 // https://vitejs.dev/config/
+// eslint-disable-next-line tsdoc/syntax
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
     resolve: {
         alias: {
-            "@": fileURLToPath(new URL('./src', import.meta.url))
+            "@": fileURLToPath(new URL("src", import.meta.url))
         },
         preserveSymlinks: true
     },

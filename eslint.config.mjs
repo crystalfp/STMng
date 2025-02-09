@@ -27,7 +27,8 @@ export default [{
     files: [
         "src/**/*.ts",
         "src/**/*.vue",
-        "eslint.config.mjs"
+        "eslint.config.mjs",
+        "vite.config.mts"
     ],
     languageOptions: {
         parser: vueParser,
