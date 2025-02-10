@@ -411,7 +411,8 @@ const auxSetup = computed(() => {
       <v-number-input v-model="stepIncrement" label="Step increment" :min="1" class="ml-3 mr-8" />
     </v-row>
     <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
-    <v-slider v-if="speed !== 0" v-model="step" min="1" :max="countSteps" step="1" class="mr-9" />
+    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
+              :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
     <v-row class="mr-4">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"

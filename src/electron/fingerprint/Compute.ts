@@ -61,7 +61,7 @@ export class Fingerprinting {
 		// Prepare the worker pool
 		const pool = workerpool.pool(worker, {
 			minWorkers: "max",
-			maxWorkers: os.availableParallelism()-1,
+			maxWorkers: Math.min(os.availableParallelism()-1, countStructures),
 			workerType: "thread"
 		});
 		const promises: ReturnType<typeof pool.exec>[] = [];
