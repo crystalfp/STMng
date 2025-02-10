@@ -130,11 +130,8 @@ export class FingerprintsAccumulator {
 		for(const atom of atoms) {
 			const {atomZ, position} = atom;
 
-			if(entry.species.has(atomZ)) {
-				const n = entry.species.get(atomZ)!;
-				entry.species.set(atomZ, n+1);
-			}
-			else entry.species.set(atomZ, 1);
+			const n = entry.species.get(atomZ) ?? 0;
+			entry.species.set(atomZ, n+1);
 			entry.atomsZ.push(atomZ);
 			entry.atomsPosition.push(
 				position[0] - origin[0],

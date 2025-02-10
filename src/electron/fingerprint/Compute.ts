@@ -62,6 +62,7 @@ export class Fingerprinting {
 		const pool = workerpool.pool(worker, {
 			minWorkers: "max",
 			maxWorkers: Math.min(os.availableParallelism()-1, countStructures),
+			// workerType: "process"
 			workerType: "thread"
 		});
 		const promises: ReturnType<typeof pool.exec>[] = [];
@@ -83,26 +84,31 @@ export class Fingerprinting {
 			const result = pool.exec("fingerprinting", [
 				params,
 				basis,
+				lenZ,
 				positions,
 				atomsZ,
-			], {transfer: [basis.buffer, positions.buffer, atomsZ.buffer]})
-			.catch((error) => {
-				log.error("Error sending to the worker pool.", error);
-				pool.terminate(true);
-				return {dimension: 0, error: "Error sending to the worker pool"};
-			});
+			], {transfer: [basis.buffer, positions.buffer, atomsZ.buffer]});
+
 			promises.push(result);
 		}
-		const results = await Promise.all(promises) as WorkerResults[];
+
+		const results = await Promise.all(promises).catch((error) => {
+			log.error("Error from the worker pool.", error);
+			return [];
+		});
 
 		// Release the pool
 		pool.terminate();
+
+		if(results.length === 0) {
+			return {dimension: 0, error: "Error starting the fingerprinting worker pool"};
+		}
 
 		let idx = 0;
 		let fingerprintSize = 0;
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-			const {countSections, sectionLength, fp, w} = results[idx++];
+			const {countSections, sectionLength, fp, w} = results[idx++] as WorkerResults;
 
 			if(countSections === 0 || sectionLength === 0) {
 				return {dimension: 0, error: "No fingerprint"};

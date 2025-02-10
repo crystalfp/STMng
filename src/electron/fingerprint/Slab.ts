@@ -150,6 +150,7 @@ export class Slab {
      * @param atomsPosition - Atoms coordinates
      */
     computeInteratomicDistances(basis: Float64Array,
+                                natoms: number,
                                 atomsZ: Int32Array,
                                 atomsPosition: Float64Array): void {
 
@@ -188,10 +189,9 @@ export class Slab {
         }
 
         // Mark atoms on the border that could become duplicated
-        const ok = this.getDuplicatedAtomsIndex(atomsPosition);
+        const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
 
         // For each replica (included the original cell)
-        const natoms = atomsZ.length;
         for(let replica=0; replica < replicaMaxIndex; replica += 3) {
 
             // Copy the atoms in the unit cell replicas
@@ -270,11 +270,11 @@ export class Slab {
      * @param atomsPosition - List of atom coordinates
      * @returns List of will be duplicated marks per atom
      */
-    private getDuplicatedAtomsIndex(atomsPosition: Float64Array): boolean[] {
+    private getDuplicatedAtomsIndex(atomsPosition: Float64Array, natoms: number): boolean[] {
 
-        const fracCoordinates = Array(atomsPosition.length);
-        const mark = Array(atomsPosition.length).fill(false);
-        const natoms = atomsPosition.length / 3;
+        const len = natoms*3;
+        const fracCoordinates = Array(len);
+        const mark = Array(len).fill(false);
         const ok = Array(natoms).fill(true) as boolean[];
         const TOL = 1e-2;
 

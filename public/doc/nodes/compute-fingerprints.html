@@ -96,11 +96,8 @@
   <td class="c2">list</td>
   <td class="c3">Select the method for computing the fingerprints:
     <dl>
-      <dt>Oganov-Valle fingerprint</dt><dd>A rapidly convergent function based on distance distributions and related to RDF and diffraction spectra. It is the first method proposed in the original paper. Needs bin size and peak width. Not for nanoclusters.</dd>
-      <dt>Chemical scale weighted fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint”, but the atom Z values are mapped to the Chemical Scale <img src="chi.svg" alt="Greek Chi letter"> correction for a given atom type.</dd>
-      <dt>Distance only fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint”, but consider all Z values to be 1.</dd>
-      <dt>Per element fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances. Furthermore each section is labeled with the element type of the corresponding atom. Needs bin size and peak width.</dd>
-      <dt>Per site fingerprint</dt><dd>It is the same as “Per element fingerprint” but the centroid of all fingerprints is removed from each fingerprint. Needs bin size and peak width.</dd>
+      <dt>Oganov-Valle fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances.</dd>
+      <dt>Oganov-Valle per site fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint” but the centroid of all fingerprints is removed from each fingerprint.</dd>
     </dl>
   </td>
 </tr>

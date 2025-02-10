@@ -37,11 +37,12 @@ export interface WorkerResults {
  */
 const worker = (params: FingerprintingParameters,
 				basis: Float64Array,
+				natoms: number,
 				positions: Float64Array,
 				atomsZ: Int32Array): WorkerResults => {
 
 	// Compute fingerprint
-	const results = fingerprinting(params, basis, positions, atomsZ);
+	const results = fingerprinting(params, basis, natoms, positions, atomsZ);
 
 	return {
 		countSections: results.countSections,

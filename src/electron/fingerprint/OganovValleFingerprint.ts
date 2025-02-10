@@ -14,6 +14,7 @@ import type {FingerprintsAccumulator} from "./Accumulator";
 
 export const fingerprinting = (params: FingerprintingParameters,
 							   basis: Float64Array,
+							   natoms: number,
 							   positions: Float64Array,
 							   atomsZ: Int32Array): FingerprintingResult => {
 
@@ -29,13 +30,10 @@ export const fingerprinting = (params: FingerprintingParameters,
 
 	// Count species
 	const species = new Map<number, number>();
-	for(const atomZ of atomsZ) {
-
-		if(species.has(atomZ)) {
-			const n = species.get(atomZ)!;
-			species.set(atomZ, n+1);
-		}
-		else species.set(atomZ, 1);
+	for(let j=0; j < natoms; ++j) {
+		const atomZ = atomsZ[j];
+		const n = species.get(atomZ) ?? 0;
+		species.set(atomZ, n+1);
 	}
 
 	// Compute cell volume
@@ -50,7 +48,7 @@ export const fingerprinting = (params: FingerprintingParameters,
 	fingerprint.fill(-1);
 
 	// With the infinite slab compute interatomic distances
-	slab.computeInteratomicDistances(basis, atomsZ, positions);
+	slab.computeInteratomicDistances(basis, natoms, atomsZ, positions);
 
 	// Create ordered list of atom z values and list of positions
 	const orderedZ = [...species.keys()].sort((a, b) => a-b);

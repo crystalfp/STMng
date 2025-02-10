@@ -471,19 +471,6 @@ export interface ChartParams {
 }
 
 // > Fingerprinting
-/** Methods names for the user selector */
-export interface FingerprintingMethodName {
-
-    /** Name of the method */
-	label: string;
-
-    /** If peak size and bin width are needed for this method */
-	needSizes: boolean;
-
-    /** If the method can distinguish between crystals and nanoclusters */
-    forNanoclusters: boolean;
-}
-
 /** Parameters for fingerprinting */
 export interface FingerprintingParameters {
 
@@ -501,22 +488,6 @@ export interface FingerprintingParameters {
 
     /** Width of the smoothing Gaussian */
 	peakWidth: number;
-}
-
-/** Result from computing fingerprint */
-export interface FingerprintingMethodResult {
-
-    /** Length of the fingerprint */
-    dimension: number;
-
-    /** Number of sections in the fingerprint */
-    countSections: number;
-
-    /** Length of each section of the fingerprint */
-    sectionLength: number;
-
-    /** Error message, if any */
-    error?: string;
 }
 
 /** Result from computing fingerprint */
