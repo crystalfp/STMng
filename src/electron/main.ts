@@ -31,6 +31,7 @@ program
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
 	.option("-e, --enable", "enable developer tools in production build")
+	.option("-m, --memory <size>", "memory for the engine in MB (default: 2048)")
 	.option("-x, --extra <switches>", "extra command line switches");
 
 if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
@@ -42,6 +43,7 @@ interface ProgramOptions {
     verbose?: boolean;
     enable?: boolean;
     extra?: string;
+    memory?: number;
 }
 const options = program.opts<ProgramOptions>();
 
@@ -85,6 +87,11 @@ else setMainTheme("dark", true);
 // Setup the titlebar main process
 setupTitlebar();
 
+// If present, change the memory available for the js heap
+if(options.memory && options.memory > 2048) {
+    app.commandLine.appendSwitch("js-flags", `--max-old-space-size=${options.memory}`);
+}
+
 // If present, set extra command line switches
 if(options.extra) {
 
@@ -92,7 +99,11 @@ if(options.extra) {
     for(const sw of switches) {
         if(sw.includes("=")) {
             const element = sw.split("=");
-            app.commandLine.appendSwitch(element[0], element[1]);
+            if(element.length > 2) {
+
+                app.commandLine.appendSwitch(element[0], `${element[1]}=${element[2]}`);
+            }
+            else app.commandLine.appendSwitch(element[0], element[1]);
         }
         else {
             app.commandLine.appendSwitch(sw);

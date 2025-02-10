@@ -6,13 +6,13 @@ To do:
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ Check error return from main process to client
-  ☐ Reduce the list of fingerprinting methods.
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
+  ☐ Chart of distances from a given fingerprint
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -31,7 +31,6 @@ ToDo eventually:
   ☐ Add color to log messages (e.g., `%cRed`)
   ☐ Add more `log.info()` or `log.debug()` messages
   ☐ Unblock UI when rendering big scene
-  ☐ Fix why alias @ does not work in electron files (now they are "../../")
   ☐ Check the order of entries in objects
   ☐ In builder copy only platform specific exe files
   ☐ Unify naming: graph, node, project
@@ -48,7 +47,6 @@ Nice to have/Future:
   ☐ Add tooltips
   ☐ Move to WebGPURenderer
   ☐ Rewrite UserStore using Map() and not object
-  ☐ Add drag and drop for input file
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Reference:
@@ -57,6 +55,9 @@ Reference:
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
 
 Archive:
+  ✘ Add drag and drop for input file @cancelled(2025-02-10 17:52) @project(Nice to have/Future)
+  ✔ Reduce the list of fingerprinting methods. @done(2025-02-10 17:50) @project(To do)
+  ✘ Fix why alias @ does not work in electron files (now they are "../../") @cancelled(2025-02-10 17:52) @project(ToDo eventually)
   ✘ Use cluster? (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 4) @cancelled(2025-02-07 18:13) @project(ToDo eventually)
   ✘ Use tinylet to offload main thread <https://github.com/tinylibs/tinylet> @cancelled(2025-02-07 18:13) @project(ToDo eventually)
   ✔ Consider using v-show for elements that are frequently toggled instead of v-if @done(2025-02-04 09:16) @project(To do)
