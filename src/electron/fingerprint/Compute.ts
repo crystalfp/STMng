@@ -59,10 +59,11 @@ export class Fingerprinting {
 							path.join(mainSourceDirectory, "..", "public", "Worker.js");
 
 		// Prepare the worker pool
+		let availableParallelism = os.availableParallelism();
+		availableParallelism = availableParallelism > 1 ? availableParallelism-1 : 1;
 		const pool = workerpool.pool(worker, {
 			minWorkers: "max",
-			maxWorkers: Math.min(os.availableParallelism()-1, countStructures),
-			// workerType: "process"
+			maxWorkers: Math.min(availableParallelism, countStructures),
 			workerType: "thread"
 		});
 		const promises: ReturnType<typeof pool.exec>[] = [];
