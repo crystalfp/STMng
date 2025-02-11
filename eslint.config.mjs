@@ -8,10 +8,8 @@ import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 import commentsPlugin from "eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
-import deprecatePlugin from "eslint-plugin-deprecate";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
-import maxlenPlugin from "@alasdair/eslint-plugin-max-len";
 import tsdocPlugin from "eslint-plugin-tsdoc";
 import electronPlugin from "eslint-plugin-electron-extension";
 import jsPlugin from "@eslint/js"
@@ -19,10 +17,22 @@ import stylistic from "@stylistic/eslint-plugin";
 import * as depend from "eslint-plugin-depend";
 
 /* @type {import('eslint').Linter.Config[]} */
-export default [{
+export default [
+    stylistic.configs.customize({
+        flat: true, // required for flat config
+        // the following options are the default values
+        indent: 4,
+        quotes: "double",
+        semi: true,
+        jsx: false,
+        blockSpacing: false,
+    }),
+    {
     ignores: [
         "src/vite-env.d.ts",
-		"src/assets"
+		"src/assets",
+        "src/cpp",
+        "src/electron/fingerprint/rollup.config.mjs"
     ]}, {
     files: [
         "src/**/*.ts",
@@ -58,11 +68,11 @@ export default [{
             ecmaFeatures: {impliedStrict: true},
             projectService: true,
             warnOnUnsupportedTypeScriptVersion: false,
-            extraFileExtensions: ['.vue'],
+            extraFileExtensions: [".vue"],
             vueFeatures: {filter: false},
         }
     },
-    processor: vuePlugin.processors['.vue'],
+    processor: vuePlugin.processors[".vue"],
     linterOptions: {
         reportUnusedDisableDirectives: "error",
         reportUnusedInlineConfigs: "error"
@@ -75,10 +85,8 @@ export default [{
         "eslint-comments": commentsPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
-        deprecate: deprecatePlugin,
         sonarjs: sonarjsPlugin,
         regexp: regexpPlugin,
-        "@alasdair/max-len": maxlenPlugin,
         tsdoc: tsdocPlugin,
         "electron-extension": electronPlugin,
         "@stylistic": stylistic,
@@ -122,22 +130,21 @@ export default [{
         "@typescript-eslint/restrict-template-expressions": ["warn", {allowNumber: true}],
 
         // "max-len": ["off", 130],
-        // "@alasdair/max-len/max-len": ["warn", {
-        //         code: 130,
-        //         ignoreTrailingComments: true,
-        //         ignoreUrls: true,
-        //         ignoreStrings: true,
-        //         ignoreTemplateLiterals: true,
-        //         ignoreRegExpLiterals: true
-        //     }
-        // ],
-        // "no-dupe-class-members": "off",
+        "no-dupe-class-members": "off",
         "@typescript-eslint/no-dupe-class-members": "error",
         // "no-buffer-constructor": "error",
         // "no-redeclare": ["off", {builtinGlobals: true}],
         // "@typescript-eslint/no-redeclare": ["error", {builtinGlobals: true}],
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-unused-vars": ["error", {
+            "args": "all",
+            "argsIgnorePattern": "^_",
+            "caughtErrors": "all",
+            "caughtErrorsIgnorePattern": "^_",
+            "destructuredArrayIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "ignoreRestSiblings": true
+        }],
         // "no-empty-function": "off",
         // "@typescript-eslint/no-empty-function": "warn",
         "no-useless-constructor": "off",
@@ -158,31 +165,39 @@ export default [{
         // ],
         "@stylistic/comma-spacing": ["error", {before: false, after: true}],
         // "keyword-spacing": "off",
-        // "@typescript-eslint/keyword-spacing": ["off",
-        //     {before: true, after: false, overrides: {
-        //             else: {after: true},
-        //             return: {after: true},
-        //             try: {after: true},
-        //             catch: {after: false},
-        //             case: {after: true},
-        //             const: {after: true},
-        //             throw: {after: true},
-        //             let: {after: true},
-        //             do: {after: true},
-        //             of: {after: true},
-        //             as: {after: true},
-        //             finally: {after: true},
-        //             from: {after: true},
-        //             import: {after: true},
-        //             export: {after: true},
-        //             default: {after: true},
-        //         }
-        //     }
-        // ],
-        "@stylistic/object-curly-spacing": ["warn"],
+        "@stylistic/keyword-spacing": ["warn",
+            {before: true, after: false, overrides: {
+                    else: {after: true},
+                    return: {after: true},
+                    try: {after: true},
+                    catch: {after: false},
+                    case: {after: true},
+                    const: {after: true},
+                    throw: {after: true},
+                    let: {after: true},
+                    do: {after: true},
+                    of: {after: true},
+                    as: {after: true},
+                    finally: {after: true},
+                    from: {after: true},
+                    import: {after: true},
+                    export: {after: true},
+                    default: {after: true},
+                    type: {after: true},
+                    await: {after: true},
+                }
+            }
+        ],
+        "@stylistic/object-curly-spacing": ["warn", "never"],
         "@stylistic/brace-style": ["warn", "stroustrup", {allowSingleLine: true}],
+        "@stylistic/no-multi-spaces": "off",
+        "@stylistic/multiline-ternary": "off",
+        "@stylistic/operator-linebreak": "off",
+        "@stylistic/indent-binary-ops": "off",
+        "@stylistic/key-spacing": "off",
+        "@stylistic/max-statements-per-line": ["warn", {"max": 2}],
         // "comma-dangle": ["off", "never"],
-        // "@typescript-eslint/comma-dangle": ["off", {arrays: "only-multiline", objects: "only-multiline"}],
+        "@stylistic/comma-dangle": ["off", {arrays: "only-multiline", objects: "only-multiline"}],
         // "no-implicit-coercion": "error",
         // "no-undef": "error",
         // "no-extend-native": "error",
@@ -209,7 +224,7 @@ export default [{
         // "@typescript-eslint/consistent-return": ["error", {treatUndefinedAsUnspecified: true}],
         // "no-unmodified-loop-condition": "error",
         // "array-bracket-spacing": ["warn", "never"],
-        // "spaced-comment": ["warn", "always", {markers: [":", "-", "+", "::", "/"]}],
+        "@stylistic/spaced-comment": ["warn", "always", {markers: [":", "-", "+", "::", "/"]}],
         // "no-var": "error",
         // "block-scoped-var": "error",
         // "yoda": "error",
@@ -231,8 +246,9 @@ export default [{
         // "newline-per-chained-call": ["error", {ignoreChainWithDepth: 3}],
         // "nonblock-statement-body-position": ["warn", "beside"],
         // "space-infix-ops": "off",
-        // "@typescript-eslint/space-infix-ops": "off",
-        "semi-spacing": "error",
+        "@stylistic/space-infix-ops": "off",
+        "@stylistic/semi-spacing": "error",
+        "@stylistic/no-extra-semi": "error",
         // "operator-assignment": ["error", "always"],
         // "object-shorthand": ["error", "properties", {avoidQuotes: true}],
         // "no-process-exit": "off",
@@ -273,7 +289,11 @@ export default [{
         //     }
         // ],
         // "@typescript-eslint/no-import-type-side-effects": "error",
-        "no-multiple-empty-lines": ["warn", {max: 2, maxEOF: 1}],
+        "@stylistic/no-multiple-empty-lines": ["warn", {max: 2, maxEOF: 1, maxBOF: 0}],
+        "@stylistic/padded-blocks": "off",
+        "@stylistic/indent": "off",
+        "@stylistic/no-tabs": "off",
+        "@stylistic/no-mixed-spaces-and-tabs": "off",
         // "prefer-arrow-callback": "warn",
         // "array-callback-return": ["error", {allowImplicit: true}],
 
@@ -334,9 +354,6 @@ export default [{
         "unicorn/no-zero-fractions": "off",
         "unicorn/no-for-loop": "off",
         "promise/catch-or-return": ["warn", {allowFinally: true}],
-        // "deprecate/function": "warn",
-        // "deprecate/member-expression": "warn",
-        // "deprecate/import": "off",
         "@stylistic/member-delimiter-style": "warn",
         "tsdoc/syntax": "warn",
         // "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],

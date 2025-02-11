@@ -6,6 +6,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ Check error return from main process to client
+  ☐ Block screen update when "accumulating for fingerprinting" and "fast"
 
 Functionalities:
   ☐ An option to specify arbitrary section plane

@@ -69,7 +69,7 @@ watch(controlStore.atomsSelected, () => {
         })
         .then((params) => {
 
-            const bondDataTable = JSON.parse(params.labels as string ?? "[]" ) as BondData[];
+            const bondDataTable = JSON.parse(params.labels as string ?? "[]") as BondData[];
             bondData.value.length = 0;
             for(const bd of bondDataTable) bondData.value.push(bd);
 

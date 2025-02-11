@@ -37,6 +37,7 @@ export class Isolines {
 		[0, 1, 0, 3],					// 	[0, 3],
 		[]								// 	[]
 	];
+
 	private isolinesVertices: number[][] = [];
 
 	/**

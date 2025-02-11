@@ -377,7 +377,7 @@ export class DrawStructureRenderer {
 		// Find the camera rotation center and position based
 		// on the structure bounding box
 		sm.setBoundingBox(getBoundingBox(renderInfo));
-	};
+	}
 
 	/**
 	 * Draw the atoms labels

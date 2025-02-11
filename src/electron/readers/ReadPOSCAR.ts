@@ -56,13 +56,22 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					lineType = LineType.scale;
 					break;
 				case LineType.scale: {
-					if(line.trim() === "") {lineType = LineType.exit; break;}
+					if(line.trim() === "") {
+						lineType = LineType.exit;
+						break;
+					}
 					const fields = line.trim().split(/\s+/);
-					if(fields.length > 1) {lineType = LineType.exit; break;}
+					if(fields.length > 1) {
+						lineType = LineType.exit;
+						break;
+					}
 					structures.push(new EmptyStructure());
 					++currentStep;
 					scaleFactor = Number.parseFloat(fields[0]);
-					if(scaleFactor === 0) {lineType = LineType.exit; break;}
+					if(scaleFactor === 0) {
+						lineType = LineType.exit;
+						break;
+					}
 					lineType = LineType.basis;
 					break;
 				}

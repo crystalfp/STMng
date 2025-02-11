@@ -161,6 +161,7 @@ export class ComputeSymmetries extends NodeCore {
 		try {
 			fractionalCoordinates = cartesianToFractionalCoordinates(this.inputStructure);
 		}
+		// eslint-disable-next-line @stylistic/keyword-spacing
 		catch {
 			sendAlertMessage("Basis matrix is not invertible", "symmetries");
 			fractionalCoordinates = [];
@@ -278,6 +279,7 @@ export class ComputeSymmetries extends NodeCore {
 		try {
 			fractionalCoordinates = cartesianToFractionalCoordinates(structure);
 		}
+		// eslint-disable-next-line @stylistic/keyword-spacing
 		catch {
 			sendAlertMessage("Basis matrix is not invertible", "symmetries");
 			fractionalCoordinates = [];

@@ -175,25 +175,25 @@ onMounted(() => {
                 if(event.ctrlKey) void controls.rotate(DEG2RAD, 0, true);
                 else if(event.altKey) void controls.forward(-0.1, false);
                 else if(event.shiftKey) void controls.zoom(-0.05, false);
-                else void controls.truck(.1, 0, false);
+                else void controls.truck(0.1, 0, false);
                 break;
             case "ArrowRight":
                 if(event.ctrlKey) void controls.rotate(-DEG2RAD, 0, true);
                 else if(event.altKey) void controls.forward(0.1, false);
                 else if(event.shiftKey) void controls.zoom(0.05, false);
-                else void controls.truck(-.1, 0, false);
+                else void controls.truck(-0.1, 0, false);
                 break;
             case "ArrowUp":
                 if(event.ctrlKey) void controls.rotate(0, DEG2RAD, true);
                 else if(event.altKey) void controls.forward(0.1, false);
                 else if(event.shiftKey) void controls.zoom(0.05, false);
-                else void controls.truck(0, .1, false);
+                else void controls.truck(0, 0.1, false);
                 break;
             case "ArrowDown":
                 if(event.ctrlKey) void controls.rotate(0, -DEG2RAD, true);
                 else if(event.altKey) void controls.forward(-0.1, false);
                 else if(event.shiftKey) void controls.zoom(-0.05, false);
-                else void controls.truck(0, -.1, false);
+                else void controls.truck(0, -0.1, false);
                 break;
         }
     });

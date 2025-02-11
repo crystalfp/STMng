@@ -400,7 +400,7 @@ export class StructureReader extends NodeCore {
 			if(structure.atoms.length === 0) return false;
 		}
 		return true;
-	};
+	}
 
 	/**
 	 * Remove empty structures from the list of structures read.

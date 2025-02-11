@@ -35,7 +35,7 @@ class Table {
 	 *
 	 * @param header - The key listed in the loop_ construct
 	 */
-	addColumn(header: string):void {
+	addColumn(header: string): void {
 		this.headers.push(header.replaceAll(".", "_"));
 	}
 

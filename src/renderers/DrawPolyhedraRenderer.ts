@@ -13,6 +13,11 @@ import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 
 export class DrawPolyhedraRenderer {
 
+	private readonly group = new Group();
+	private readonly name;
+	private readonly polyhedraVertices: Vector3[][] = [];
+	private readonly centerAtomColorList: string[] = [];
+	private countPolyhedra = 0;
 	private readonly material = new MeshLambertMaterial({
 		color: "#FFFFFF",
 		opacity: 0.5,
@@ -21,11 +26,6 @@ export class DrawPolyhedraRenderer {
 		polygonOffset: true,
 		polygonOffsetFactor: 1
 	});
-	private readonly group = new Group();
-	private readonly name;
-	private readonly polyhedraVertices: Vector3[][] = [];
-	private readonly centerAtomColorList: string[] = [];
-	private countPolyhedra = 0;
 
 	constructor(private readonly id: string) {
 
@@ -162,7 +162,7 @@ export class DrawPolyhedraRenderer {
 
 		const colorString = color.slice(0, 7);
 		return new Color(colorString);
-	};
+	}
 
 	/**
 	 * Extract the opacity from a string containing alpha
@@ -174,7 +174,7 @@ export class DrawPolyhedraRenderer {
 
 		if(color.length < 9) return 1;
 		return Number.parseInt(color.slice(7, 9), 16) / 255;
-	};
+	}
 
 	/**
 	 * Change polyhedra surface color

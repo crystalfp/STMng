@@ -74,6 +74,7 @@ export const adjustOrigin = (structure: Structure,
 	try {
 		inverse = invertBasis(updatedBasis);
 	}
+	// eslint-disable-next-line @stylistic/keyword-spacing
 	catch {
 		log.error("In Adjust Origin basis matrix is not invertible");
 		return structure;

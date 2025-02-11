@@ -106,7 +106,7 @@ export const smoothPeak = (peakValue: number, radius: number, delta: number,
 	}
 
 	// Compute the distribution value at the x0 point
-	const oneOverSigmaTimesSqrt2 = 1./(peakWidth*1.414213562373095);
+	const oneOverSigmaTimesSqrt2 = 1/(peakWidth*1.414213562373095);
 	const dx0 = gaussianIntegral((x0-radius)*oneOverSigmaTimesSqrt2);
 
 	// Fill the bin where the peak falls and for bins on the right

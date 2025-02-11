@@ -520,7 +520,7 @@ const selectByGroup = (): void => {
 /**
  * Select all points
  */
-const selectAll = ():void => {
+const selectAll = (): void => {
 
   if(!scatterplotData) return;
 
@@ -649,7 +649,7 @@ const colorScale = lut2.createCanvas().toDataURL();
 
 const legendContinue = computed(() => {
 
-    switch (scatterplotType.value) {
+    switch(scatterplotType.value) {
     case "energy":
         return {
             min: minEnergy.toFixed(4),

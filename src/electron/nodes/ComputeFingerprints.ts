@@ -231,7 +231,7 @@ export class ComputeFingerprints extends NodeCore {
 		}
 
 		return decimatedPoints;
-	};
+	}
 
 	/**
 	 * Prepare the data for the scatterplot

@@ -490,5 +490,5 @@ export class DrawUnitCell extends NodeCore {
 		// Pass the structure to next node and compute unit and supercell
 		if(structure) this.toNextNode(structure);
 		else this.toNextNode(new EmptyStructure());
-	};
+	}
 }

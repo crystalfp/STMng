@@ -120,7 +120,7 @@ export class Slab {
 		expansion[0] = ex;
 		expansion[1] = ey;
 		expansion[2] = ez;
-	};
+	}
 
     /**
      * Store the distance between atoms "i" and "j" by specie or by atom index

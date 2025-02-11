@@ -461,7 +461,7 @@ export class ComputeBonds extends NodeCore {
 		const w2 = atomY.position[2] - atomX.position[2];
 
 		return vectorAngle(v0, v1, v2, w0, w1, w2);
-	};
+	}
 
 	// > Compute bonds
 	/**
@@ -580,8 +580,14 @@ export class ComputeBonds extends NodeCore {
 
 				if(bonds[j].type === 1 || bonds[j].type === 99) continue;
 
-				if(bonds[j].from === idxH) {idxX = bonds[j].to;   break;}
-				if(bonds[j].to   === idxH) {idxX = bonds[j].from; break;}
+				if(bonds[j].from === idxH) {
+					idxX = bonds[j].to;
+					break;
+				}
+				if(bonds[j].to   === idxH) {
+					idxX = bonds[j].from;
+					break;
+				}
 			}
 
 			const atomH = atoms[idxH];

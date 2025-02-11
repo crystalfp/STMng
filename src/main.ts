@@ -110,7 +110,7 @@ const app = createApp(App)
 			VSwitch: {
 				density: "compact",
 				color: "primary",
-				"hideDetails": true
+				hideDetails: true
 			},
 			VBtnToggle: {
 				density: "comfortable",
@@ -121,7 +121,7 @@ const app = createApp(App)
 			VSelect: {
 				density: "compact",
 				variant: "filled",
-				"hideDetails": true
+				hideDetails: true
 			},
 			VNumberInput: {
 				variant: "filled",

@@ -191,7 +191,7 @@ class Delta {
 
 		return i * this.nTimesNMinus1Divided2 + start + k - j - 1;
 	}
-};
+}
 
 interface DistanceResult {
     countDistances: number;
@@ -329,12 +329,14 @@ export class Distances {
                     for(let k=j+1; k < n; ++k) {
                         for(let t=0; t < 3; ++t) {
 
+                            /* eslint-disable @stylistic/max-statements-per-line */
                             let ii, jj, kk;
                             switch(t) {
-                                case 1:  ii = j; jj = k; kk = i; break;
                                 case 2:  ii = k; jj = i; kk = j; break;
+                                case 1:  ii = j; jj = k; kk = i; break;
                                 default: ii = i; jj = j; kk = k; break; // Was case 0:
                             }
+                            /* eslint-enable @stylistic/max-statements-per-line */
 
                             const oDij = this.distances.get(ii, jj);
 

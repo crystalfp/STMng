@@ -123,6 +123,7 @@ export class Measures extends NodeCore {
 		try {
 			if(!invalid) fractionalCoordinates = cartesianToFractionalCoordinates(this.structure!);
 		}
+		// eslint-disable-next-line @stylistic/keyword-spacing
 		catch {
 			invalid = true;
 		}

@@ -153,7 +153,7 @@ watch([running], async () => {
         }
         catch(error: unknown) {
             showAlertMessage(`Error from stepping: ${(error as Error).message}`, "structureReader");
-        };
+        }
     }
 
     running.value = false;

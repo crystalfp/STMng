@@ -11,7 +11,7 @@
     "src/electron/fingerprint/Worker.ts"
   ],
   "project": ["src/**/*.{js,ts,vue}"],
-  "ignoreBinaries": ["start", "oxlint", "vue-mess-detector", "rollup"],
+  "ignoreBinaries": ["start", "oxlint", "vue-mess-detector"],
   "ignoreDependencies": [
     "vue-docgen-cli",
     "@mdi/svg",

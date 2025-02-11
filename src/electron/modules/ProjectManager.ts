@@ -46,6 +46,7 @@ class ProjectManager {
 	private readonly activeNodes = new Map<string, NodeCore>();
 	private project: Project | undefined;
 	private projectName = "";
+	private readonly allNodesMap = new Map<string, OneNodeInfo>();
 
 	// NOTE 2) Add here the type of all nodes
 	private readonly allNodes: OneNodeInfo[] = [
@@ -83,7 +84,6 @@ class ProjectManager {
 		{type: "viewer-3d",            in: false, out: false, graphic: "in",   handler: Viewer3D,
 									   idPrefix: "viewer",    ui: "Viewer3DCtrl"},
 	];
-	private readonly allNodesMap = new Map<string, OneNodeInfo>();
 
 	private constructor() {
 
@@ -279,7 +279,7 @@ class ProjectManager {
 		const filename = getProjectPath();
 		if(filename) void this.saveProjectAs(filename);
 		else sendAlertMessage("Cannot save project. Filename not set");
-	};
+	}
 
 	/**
 	 * Get the default project file path
@@ -316,7 +316,7 @@ class ProjectManager {
 		}
 		this.loadProject(filename, loadedDefaultProject);
 		return loadedDefaultProject;
-	};
+	}
 
 	/**
 	 * Read the saved project or the default one
@@ -436,7 +436,7 @@ class ProjectManager {
 
         return ProjectManager.instance;
     }
-};
+}
 
 // > Access to the Project Manager
 /** Access the Project Manager */
