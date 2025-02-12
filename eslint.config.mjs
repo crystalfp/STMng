@@ -32,7 +32,8 @@ export default [
         "src/vite-env.d.ts",
 		"src/assets",
         "src/cpp",
-        "src/electron/fingerprint/rollup.config.mjs"
+        "src/electron/fingerprint/rollup.config.mjs",
+        "src/electron/fingerprint/KDtree.js"
     ]}, {
     files: [
         "src/**/*.ts",

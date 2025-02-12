@@ -1,3 +1,4 @@
+/* Code from <https://github.com/benmaier/kd-tree-js> */
 export class KDTree {
 
   constructor(points,dimensions,this_dim=0,is_root=true){
@@ -8,7 +9,8 @@ export class KDTree {
 
     // save the original index of points as an additional info
     if (is_root){
-      points.forEach( (p, i) => {p.idx = i});
+      // points.forEach( (p, i) => {p.idx = i});
+      for(let i=0; i < points.length; ++i) points[i].idx = i;
     }
 
     let pts, median, left, right;
@@ -36,21 +38,23 @@ export class KDTree {
     if (left.length > 0)
       self.left = new KDTree(left,dimensions,(this_dim+1) % self.ndim, is_root=false);
     else
-      self.left = null;
+      self.left = undefined;
+      // self.left = null;
 
     // in case there's nodes left to put on the right side of the space,
     // do that, creating a new tree that will split the points along the next dimension
     if (right.length > 0)
       self.right = new KDTree(right,dimensions,(this_dim+1) % self.ndim, is_root=false);
     else
-      self.right = null;
+      self.right = undefined;
+      // self.right = null;
   }
 
   // find all points of the tree that lie within radius R of a query point.
   nearest_within_R(query_point, R, this_dim=0){
 
     const self = this;
-    const ndim = self.ndim;
+    // const ndim = self.ndim;
     const dims = self.dimensions;
 
     const R_squared = R**2;
@@ -104,7 +108,7 @@ export class KDTree {
   // find the k points that lie nearest to a query point
   nearest_k(query_point,k=1,neighs=[],this_dim=0){
     const self = this;
-    const ndim = self.ndim;
+    // const ndim = self.ndim;
     const dims = self.dimensions;
 
     const distance_to_hyperplane = query_point[dims[this_dim]] - self._get_hyperplane(this_dim);
@@ -153,7 +157,7 @@ export class KDTree {
       if (neighs.length>0)
         R_squared = neighs[neighs.length-1].squared_distance;
       else
-        R_squared = Infinity;
+        R_squared = Number.Infinity;
 
       if ((distance_to_hyperplane**2 < R_squared) || (neighs.length<k))
         neighs = other_half.nearest_k(query_point, k, neighs, (this_dim+1) % self.ndim);
