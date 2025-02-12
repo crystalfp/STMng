@@ -261,6 +261,13 @@ const pointsByEfficiency = (): Glyph[] => {
     return out;
 };
 
+/** The info associated to the clicked point */
+const textShow  = ref(false);
+const textX     = ref(0);
+const textY     = ref(0);
+const textLine1 = ref("");
+const textLine2 = ref("");
+
 let glyphs: Glyph[] = [];
 let tree: KDTree;
 /**
@@ -333,6 +340,14 @@ const drawPoints = (): void => {
         }
     }
 
+    if(textShow.value) {
+        ctx.font = "20px sans-serif";
+        ctx.fillStyle = fgColor;
+
+        ctx.fillText(textLine1.value, textX.value, textY.value);
+        ctx.fillText(textLine2.value, textX.value, textY.value+22);
+    }
+
     if(glyphs.length > 0) tree = new KDTree(glyphs, ["px", "py"]);
 };
 
@@ -343,10 +358,13 @@ const selectPoint = (x: number, y: number): void => {
 
     const nearestNeighbor = tree.nearest({px: x, py: y});
 
-    let r2 = (pointRadius.value+5)/(scatterplotWidth.value - 20);
+    let r2 = (2*pointRadius.value)/(scatterplotWidth.value - 20);
     r2 *= r2;
 
-    if(nearestNeighbor.squared_distance > r2) return;
+    if(nearestNeighbor.squared_distance > r2) {
+        textShow.value = false;
+        return;
+    }
 
     const idx = nearestNeighbor.point.idx;
 
@@ -355,11 +373,29 @@ const selectPoint = (x: number, y: number): void => {
     if(i === -1) selectedPoints.value.push(idx);
     else {
         selectedPoints.value.splice(i, 1);
+        textShow.value = false;
+        return;
     }
+
+    // Prepare the text to show and move it to remain inside the plot
+    const {id, px, py, value} = glyphs[idx];
+    let valueLine = "";
+    switch(scatterplotType.value) {
+        case "group":       valueLine = `Group: ${value}`; break;
+        case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
+        case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
+    }
+    const tx = Math.round(px * (scatterplotWidth.value - 20));
+    const ty = Math.round((1-py) * (scatterplotHeight.value - 40));
+    textX.value = tx > scatterplotWidth.value - 50 ? tx-110 : tx+pointRadius.value+10;
+    textY.value = ty > scatterplotHeight.value - 50 ? ty-32 : ty+6;
+    textLine1.value = `Step: ${id}`;
+    textLine2.value = valueLine;
+    textShow.value  = true;
 };
 
 // Redraw canvas if parameters change
-watch([pointRadius, scatterplotType, selectedPoints], () => {drawPoints();}, {deep: true});
+watch([pointRadius, scatterplotType, selectedPoints, textShow], () => {drawPoints();}, {deep: true});
 
 onMounted(() => {
 
@@ -425,6 +461,7 @@ closeWithEscape("/scatter");
  */
 const resetSelected = (): void => {
     selectedPoints.value.length = 0;
+    textShow.value = false;
 };
 
 /** Selected all points pertaining to a group */
