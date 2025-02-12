@@ -1,4 +1,5 @@
 /* Code from <https://github.com/benmaier/kd-tree-js> */
+
 export class KDTree {
 
   constructor(points,dimensions,this_dim=0,is_root=true){
@@ -38,16 +39,14 @@ export class KDTree {
     if (left.length > 0)
       self.left = new KDTree(left,dimensions,(this_dim+1) % self.ndim, is_root=false);
     else
-      self.left = undefined;
-      // self.left = null;
+      self.left = null;
 
     // in case there's nodes left to put on the right side of the space,
     // do that, creating a new tree that will split the points along the next dimension
     if (right.length > 0)
       self.right = new KDTree(right,dimensions,(this_dim+1) % self.ndim, is_root=false);
     else
-      self.right = undefined;
-      // self.right = null;
+      self.right = null;
   }
 
   // find all points of the tree that lie within radius R of a query point.

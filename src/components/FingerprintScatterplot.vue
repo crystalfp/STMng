@@ -7,14 +7,14 @@
  * @since 2024-12-26
  */
 import {computed, onMounted, ref, watch} from "vue";
+import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
+import {KDTree} from "@/electron/fingerprint/KDtree.js";
 import type {ScatterplotData} from "@/types";
-import log from "electron-log";
-import {KDTree} from "../electron/fingerprint/KDtree.js";
 
 /** One point that goes to the scatterplot */
 interface Glyph {
@@ -38,6 +38,8 @@ interface Glyph {
 /** The canvas sizes (will be computed during mount or resize) */
 const scatterplotWidth = ref(500);
 const scatterplotHeight = ref(300);
+let scatterplotX = 0;
+let scatterplotY = 0;
 
 /** The scatterplot type */
 const scatterplotType = ref("group");
@@ -48,7 +50,6 @@ const showPointRadius = ref(5);
 const fgColor = "#575757";
 
 /** The received data */
-// let scatterplotData: ScatterplotData | undefined;
 const scatterplotData = ref<ScatterplotData | undefined>();
 
 /** The group colors */
@@ -65,6 +66,38 @@ const showThreshold = ref(0.01);
 /** Indices of the selected points */
 const selectedPoints = ref<number[]>([]);
 const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
+
+/**
+ * Convert point coordinates into screen coordinates
+ *
+ * @param px - Point x coordinates (range 0..1)
+ * @param py - Point y coordinates (range 0..1)
+ * @returns The corresponding screen coordinates for the canvas
+ */
+const pointToScreen = (px: number, py: number): {sx: number; sy: number} => ({
+    sx: Math.round(px * (scatterplotWidth.value - 20)),
+    sy: Math.round((1-py) * (scatterplotHeight.value - 40))
+});
+
+/**
+ * Convert screen coordinates into point coordinates
+ *
+ * @param px - Screen x coordinates
+ * @param py - Screen y coordinates
+ * @returns The corresponding point coordinates clamped to 0..1
+ */
+const screenToPoint = (sx: number, sy: number): {px: number; py: number} => {
+
+    let px = sx/(scatterplotWidth.value - 20);
+    let py = 1-(sy/(scatterplotHeight.value - 40));
+
+    if(px < 0) px = 0;
+    else if(px > 1) px = 1;
+    if(py < 0) py = 0;
+    else if(py > 1) py = 1;
+
+    return {px, py};
+};
 
 /**
  * Convert a list of colors to RGB strings
@@ -268,6 +301,15 @@ const textY     = ref(0);
 const textLine1 = ref("");
 const textLine2 = ref("");
 
+/** Rectangular point selection (with right mouse button) */
+const x = ref(0);
+const y = ref(0);
+const width = ref(0);
+const height = ref(0);
+let rectangleStartX: number | undefined;
+let rectangleStartY: number | undefined;
+const showSelectionRectangle = ref(false);
+
 let glyphs: Glyph[] = [];
 let tree: KDTree;
 /**
@@ -304,10 +346,9 @@ const drawPoints = (): void => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for(const glyph of glyphs) {
 
-        const x = Math.round(glyph.px * (scatterplotWidth.value - 20));
-        const y = Math.round((1-glyph.py) * (scatterplotHeight.value - 40));
+        const {sx, sy} = pointToScreen(glyph.px, glyph.py);
         ctx.beginPath();
-        ctx.arc(x, y, pointRadius.value, 0, 2 * Math.PI, false);
+        ctx.arc(sx, sy, pointRadius.value, 0, 2 * Math.PI, false);
         ctx.fillStyle = glyph.color;
         ctx.fill();
     }
@@ -316,8 +357,10 @@ const drawPoints = (): void => {
     if(scatterplotType.value === "efficiency") {
 
         ctx.beginPath();
-        ctx.moveTo(0, scatterplotHeight.value - 40);
-        ctx.lineTo(scatterplotWidth.value - 20, 0);
+        const {sx: startX, sy: startY} = pointToScreen(0, 0);
+        ctx.moveTo(startX, startY);
+        const {sx: endX, sy: endY} = pointToScreen(1, 1);
+        ctx.lineTo(endX, endY);
         ctx.strokeStyle = fgColor;
         ctx.lineWidth = 2;
         ctx.setLineDash([6, 4]);
@@ -330,10 +373,9 @@ const drawPoints = (): void => {
         for(const idx of selectedPoints.value) {
 
             const glyph = glyphs[idx];
-            const x = Math.round(glyph.px * (scatterplotWidth.value - 20));
-            const y = Math.round((1-glyph.py) * (scatterplotHeight.value - 40));
+            const {sx, sy} = pointToScreen(glyph.px, glyph.py);
             ctx.beginPath();
-            ctx.arc(x, y, pointRadius.value+5, 0, 2 * Math.PI, false);
+            ctx.arc(sx, sy, pointRadius.value+5, 0, 2 * Math.PI, false);
             ctx.strokeStyle = glyph.color;
             ctx.lineWidth = 2;
             ctx.stroke();
@@ -348,9 +390,23 @@ const drawPoints = (): void => {
         ctx.fillText(textLine2.value, textX.value, textY.value+22);
     }
 
+    if(showSelectionRectangle.value) {
+        ctx.beginPath();
+        ctx.rect(x.value, y.value, width.value, height.value);
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
     if(glyphs.length > 0) tree = new KDTree(glyphs, ["px", "py"]);
 };
 
+/**
+ * When a point has been selected by clicking
+ *
+ * @param x - Point x coordinate (range 0..1)
+ * @param y - Point y coordinate (range 0..1)
+ */
 const selectPoint = (x: number, y: number): void => {
 
     // Do not allow selection of points in efficiency mode
@@ -385,17 +441,20 @@ const selectPoint = (x: number, y: number): void => {
         case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
         case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
     }
-    const tx = Math.round(px * (scatterplotWidth.value - 20));
-    const ty = Math.round((1-py) * (scatterplotHeight.value - 40));
-    textX.value = tx > scatterplotWidth.value - 50 ? tx-110 : tx+pointRadius.value+10;
-    textY.value = ty > scatterplotHeight.value - 50 ? ty-32 : ty+6;
+
+    const {sx, sy} = pointToScreen(px, py);
+    textX.value = sx > scatterplotWidth.value - 50 ? sx-110 : sx+pointRadius.value+10;
+    textY.value = sy > scatterplotHeight.value - 50 ? sy-32 : sy+6;
     textLine1.value = `Step: ${id}`;
     textLine2.value = valueLine;
     textShow.value  = true;
 };
 
 // Redraw canvas if parameters change
-watch([pointRadius, scatterplotType, selectedPoints, textShow], () => {drawPoints();}, {deep: true});
+watch([
+    pointRadius, scatterplotType, selectedPoints, textShow,
+    x, y, width, height, showSelectionRectangle
+], () => {drawPoints();}, {deep: true});
 
 onMounted(() => {
 
@@ -418,9 +477,12 @@ onMounted(() => {
     if(!canvasContainer) return;
     resizeObserver.observe(canvasContainer);
     const rect = canvasContainer.getClientRects()[0];
+    scatterplotX = rect.x;
+    scatterplotY = rect.y;
 
     setTimeout(drawPoints, 100);
 
+    // Setup the click handler
     const canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
     if(!canvas) return;
     canvas.addEventListener("click", (event: MouseEvent) => {
@@ -576,6 +638,7 @@ const selectByConvexHull4D = (): void => {
 
 watch([threshold], selectByConvexHull4D);
 
+/** Setup the legend */
 const showLegend = ref(false);
 const showLegendDiscrete = computed(() => showLegend.value &&
                                           (scatterplotType.value === "group" ||
@@ -643,6 +706,126 @@ const legendContinue = computed(() => {
         };
     }
 });
+
+// > Mouse rectangular selection
+/**
+ * Right mouse button down event: start rectangular selection
+ *
+ * @param event - The mouse event
+ */
+const mousedown = (event: MouseEvent): void => {
+
+    if(event.button !== 2) return;
+
+    rectangleStartX = event.clientX - scatterplotX;
+    rectangleStartY = event.clientY - scatterplotY;
+    showSelectionRectangle.value = true;
+    width.value = 0;
+    height.value = 0;
+};
+
+/**
+ * Right mouse button up event: end selection
+ *
+ * @param event - The mouse event
+ */
+const mouseup = (event: MouseEvent): void => {
+
+    if(event.button !== 2) return;
+    if(rectangleStartX === undefined || rectangleStartY === undefined) return;
+
+    let rectangleEndX = event.clientX - scatterplotX;
+    let rectangleEndY = event.clientY - scatterplotY;
+
+    if(rectangleEndX < rectangleStartX) {
+        const tt = rectangleEndX;
+        rectangleEndX = rectangleStartX;
+        rectangleStartX = tt;
+    }
+
+    if(rectangleEndY < rectangleStartY) {
+        const tt = rectangleEndY;
+        rectangleEndY = rectangleStartY;
+        rectangleStartY = tt;
+    }
+
+    // Transform into point coordinates
+    let {px: startX, py: startY} = screenToPoint(rectangleStartX, rectangleStartY);
+    let {px: endX,   py: endY}   = screenToPoint(rectangleEndX, rectangleEndY);
+    if(startX > endX) [startX, endX] = [endX, startX];
+    if(startY > endY) [startY, endY] = [endY, startY];
+
+    let idx = 0;
+    textShow.value = false;
+    if(event.ctrlKey) {
+
+        for(const glyph of glyphs) {
+            if(glyph.px >= startX && glyph.px <= endX &&
+               glyph.py >= startY && glyph.py <= endY) {
+                const i = selectedPoints.value.indexOf(idx);
+                if(i !== -1) selectedPoints.value.splice(i, 1);
+            }
+            ++idx;
+        }
+    }
+    else {
+
+        for(const glyph of glyphs) {
+
+            if(glyph.px >= startX && glyph.px <= endX &&
+               glyph.py >= startY && glyph.py <= endY &&
+               !selectedPoints.value.includes(idx)) {
+                selectedPoints.value.push(idx);
+            }
+            ++idx;
+        }
+    }
+
+    rectangleStartX = undefined;
+    rectangleStartY = undefined;
+    showSelectionRectangle.value = false;
+};
+
+let lastMoveEvent: number | undefined;
+/**
+* Move the mouse to change the rectangular selection area
+*
+* @param event - The mouse event
+*/
+const mousemove = (event: MouseEvent): void => {
+
+    // Selection not started or not active
+    if(!showSelectionRectangle.value ||
+    rectangleStartX === undefined ||
+    rectangleStartY === undefined) return;
+
+    // Avoid too many events
+    if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 50) return;
+    lastMoveEvent = event.timeStamp;
+
+    const rectangleEndX = event.clientX - scatterplotX;
+    const rectangleEndY = event.clientY - scatterplotY;
+
+    // Reorder coordinates if needed
+    if(rectangleEndX < rectangleStartX) {
+        x.value = rectangleEndX;
+        width.value = rectangleStartX - rectangleEndX;
+    }
+    else {
+        x.value = rectangleStartX;
+        width.value = rectangleEndX - rectangleStartX;
+    }
+
+    if(rectangleEndY < rectangleStartY) {
+        y.value = rectangleEndY;
+        height.value = rectangleStartY - rectangleEndY;
+    }
+    else {
+        y.value = rectangleStartY;
+        height.value = rectangleEndY - rectangleStartY;
+    }
+};
+
 // > Start template
 </script>
 
@@ -700,7 +883,8 @@ const legendContinue = computed(() => {
 
     <div class="side-n">
       <canvas :width="scatterplotWidth-20" :height="scatterplotHeight-40"
-              :style="{border: `2px solid ${fgColor}`}" />
+              :style="{border: `2px solid ${fgColor}`}"
+              @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove" />
       <div v-if="showLegendDiscrete" class="legend">
         <div v-for="n of legendDiscrete" :key="n.key">
           <span style="width: 150px" :style="{backgroundColor: n.color, color: n.color}">⬚</span> {{ n.label }}</div>
