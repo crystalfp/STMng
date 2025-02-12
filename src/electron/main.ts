@@ -31,7 +31,7 @@ program
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
 	.option("-e, --enable", "enable developer tools in production build")
-	.option("-m, --memory <size>", "memory for the engine in MB (default: 2048)")
+	.option("-m, --memory <size>", "memory for the computation engine in MB (default: 2048)", Number.parseInt)
 	.option("-x, --extra <switches>", "extra command line switches");
 
 if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
@@ -87,7 +87,7 @@ else setMainTheme("dark", true);
 // Setup the titlebar main process
 setupTitlebar();
 
-// If present, change the memory available for the js heap
+// If present, increase the memory available for the js heap
 if(options.memory && options.memory > 2048) {
     app.commandLine.appendSwitch("js-flags", `--max-old-space-size=${options.memory}`);
 }

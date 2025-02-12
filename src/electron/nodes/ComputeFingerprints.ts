@@ -220,14 +220,14 @@ export class ComputeFingerprints extends NodeCore {
 			const cellX = Math.floor(point[0] * (gridSide-1));
 			const cellY = Math.floor(point[1] * (gridSide-1));
 			const cellIndex = cellY * gridSide + cellX;
-			if(grid[cellIndex].length === 0) grid[cellIndex] = point;
+			if(!grid[cellIndex]) grid[cellIndex] = point;
 		}
 
 		// Collect points from each filled cell
 		const decimatedPoints: [number, number][] = [];
 		for(const cell of grid) {
 
-			if(cell.length > 0) decimatedPoints.push([cell[0], cell[1]]);
+			if(cell && cell.length > 0) decimatedPoints.push([cell[0], cell[1]]);
 		}
 
 		return decimatedPoints;

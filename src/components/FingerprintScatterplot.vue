@@ -14,6 +14,7 @@ import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import type {ScatterplotData} from "@/types";
 import log from "electron-log";
+import {KDTree} from "../electron/fingerprint/KDtree.js";
 
 /** One point that goes to the scatterplot */
 interface Glyph {
@@ -21,11 +22,11 @@ interface Glyph {
     /** The original step number or sequence number for efficiency display */
     id: number;
 
-    /** X screen coordinate */
-    x: number;
+    /** X point coordinate (range 0..1) */
+    px: number;
 
-    /** Y screen coordinate */
-    y: number;
+    /** Y point coordinate (range 0..1) */
+    py: number;
 
     /** The color of the point as "#RRGGBB" */
     color: string;
@@ -37,20 +38,18 @@ interface Glyph {
 /** The canvas sizes (will be computed during mount or resize) */
 const scatterplotWidth = ref(500);
 const scatterplotHeight = ref(300);
-let scatterplotX = 0;
-let scatterplotY = 0;
 
 /** The scatterplot type */
 const scatterplotType = ref("group");
 
 /** The scatterplot parameters */
 const pointRadius = ref(5);
-const showPointRadius = ref(10);
+const showPointRadius = ref(5);
 const fgColor = "#575757";
 
 /** The received data */
-let scatterplotData: ScatterplotData | undefined;
-const scatterplotDataAvailable = ref(false);
+// let scatterplotData: ScatterplotData | undefined;
+const scatterplotData = ref<ScatterplotData | undefined>();
 
 /** The group colors */
 let groupColors: string[] = [];
@@ -62,6 +61,10 @@ let maxEnergy = 0;
 /** Distance threshold to remove duplicates in convex hull */
 const threshold = ref(0.01);
 const showThreshold = ref(0.01);
+
+/** Indices of the selected points */
+const selectedPoints = ref<number[]>([]);
+const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
 
 /**
  * Convert a list of colors to RGB strings
@@ -83,19 +86,19 @@ const colorsToRGB = (colors: [r: number, g: number, b: number][]): string[] =>
  */
 const pointsByGroup = (): Glyph[] => {
 
-    if(!scatterplotData || scatterplotData.points.length === 0) return [];
+    if(!scatterplotData.value || scatterplotData.value.points.length === 0) return [];
 
-    const oneGroup = scatterplotData.countGroups === 0;
+    const oneGroup = scatterplotData.value.countGroups === 0;
     if(!oneGroup) {
         // Prepare the list of contrasting colors
         const backgroundColor: [number, number, number] =
                     (theme.value === "dark") ? [0.07059, 0.07059, 0.07059] : [1, 1, 1];
-        const colorsRaw = contrastingColors(scatterplotData.countGroups, backgroundColor);
+        const colorsRaw = contrastingColors(scatterplotData.value.countGroups, backgroundColor);
         groupColors = colorsToRGB(colorsRaw);
     }
 
     // Map each point to a glyph
-    const {points, groups, id} = scatterplotData;
+    const {points, groups, id} = scatterplotData.value;
     const n = points.length;
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
@@ -105,8 +108,8 @@ const pointsByGroup = (): Glyph[] => {
 
         out.push({
             id: id[i],
-            x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
-            y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
+            px: points[i][0],
+            py: points[i][1],
             color,
             value: groups[i],
         });
@@ -121,10 +124,10 @@ const pointsByGroup = (): Glyph[] => {
  */
 const pointsByEnergy = (): Glyph[] => {
 
-    if(!scatterplotData || scatterplotData.points.length === 0) return [];
+    if(!scatterplotData.value || scatterplotData.value.points.length === 0) return [];
 
     // Map each point to a glyph
-    const {points, energies, id} = scatterplotData;
+    const {points, energies, id} = scatterplotData.value;
 
     // Extract the energy range
     minEnergy = energies[0];
@@ -149,8 +152,8 @@ const pointsByEnergy = (): Glyph[] => {
 
         out.push({
             id: id[i],
-            x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
-            y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
+            px: points[i][0],
+            py: points[i][1],
             color,
             value: energies[i],
         });
@@ -169,10 +172,10 @@ let maxDelta = 1;
  */
 const pointsByEfficiency = (): Glyph[] => {
 
-    if(!scatterplotData || scatterplotData.efficiencies.length === 0) return [];
+    if(!scatterplotData.value || scatterplotData.value.efficiencies.length === 0) return [];
 
     // Map each point to a glyph
-    const {efficiencies} = scatterplotData;
+    const {efficiencies} = scatterplotData.value;
 
     // Extract the distance from the diagonal
     let minDelta = efficiencies[0][1] - efficiencies[0][0];
@@ -207,8 +210,8 @@ const pointsByEfficiency = (): Glyph[] => {
 
         out.push({
             id: i,
-            x: Math.round(efficiencies[i][0] * (scatterplotWidth.value - 40) + 20),
-            y: Math.round((1-efficiencies[i][1]) * (scatterplotHeight.value - 40) + 20),
+            px: efficiencies[i][0],
+            py: efficiencies[i][1],
             color,
             value,
         });
@@ -226,10 +229,10 @@ const pointsByEfficiency = (): Glyph[] => {
  */
  const pointsBySilhouettes = (): Glyph[] => {
 
-    if(!scatterplotData || scatterplotData.silhouettes.length === 0) return [];
+    if(!scatterplotData.value || scatterplotData.value.silhouettes.length === 0) return [];
 
     // Map each point to a glyph
-    const {points, silhouettes, id} = scatterplotData;
+    const {points, silhouettes, id} = scatterplotData.value;
     const n = points.length;
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
@@ -249,8 +252,8 @@ const pointsByEfficiency = (): Glyph[] => {
 
         out.push({
             id: id[i],
-            x: Math.round(points[i][0] * (scatterplotWidth.value - 40) + 20),
-            y: Math.round((1-points[i][1]) * (scatterplotHeight.value - 40) + 20),
+            px: points[i][0],
+            py: points[i][1],
             color,
             value: sl
         });
@@ -258,25 +261,105 @@ const pointsByEfficiency = (): Glyph[] => {
     return out;
 };
 
-/** Compute the list of points to be shown */
-const scatterplotPoints = computed<Glyph[]>(() => {
+let glyphs: Glyph[] = [];
+let tree: KDTree;
+/**
+ * Draw points on the canvas
+ */
+const drawPoints = (): void => {
 
-    // Needed to force the reactivity
-    if(scatterplotDataAvailable.value) scatterplotDataAvailable.value = false;
-
-    // Hide the text if any and deselect all points
-    textShow.value = false;
-    selectedPoints.value.length = 0;
+    // Access the canvas context
+    const canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
+    if(!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if(!ctx) return;
 
     // Compute the points
     switch(scatterplotType.value) {
-        case "energy": return pointsByEnergy();
-        case "efficiency": return pointsByEfficiency();
-        case "group": return pointsByGroup();
-        case "silhouette": return pointsBySilhouettes();
-        default: return [];
+        case "energy":
+            glyphs = pointsByEnergy();
+            break;
+        case "efficiency":
+            glyphs = pointsByEfficiency();
+            break;
+        case "group":
+            glyphs = pointsByGroup();
+            break;
+        case "silhouette":
+            glyphs = pointsBySilhouettes();
+            break;
+        default:
+            glyphs = [];
+            break;
     }
-});
+
+    // Clean the canvas and draw the points
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(const glyph of glyphs) {
+
+        const x = Math.round(glyph.px * (scatterplotWidth.value - 20));
+        const y = Math.round((1-glyph.py) * (scatterplotHeight.value - 40));
+        ctx.beginPath();
+        ctx.arc(x, y, pointRadius.value, 0, 2 * Math.PI, false);
+        ctx.fillStyle = glyph.color;
+        ctx.fill();
+    }
+
+    // If the plot is about efficiency, draw the optimal diagonal
+    if(scatterplotType.value === "efficiency") {
+
+        ctx.beginPath();
+        ctx.moveTo(0, scatterplotHeight.value - 40);
+        ctx.lineTo(scatterplotWidth.value - 20, 0);
+        ctx.strokeStyle = fgColor;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    else {
+
+        // Draw marker for points selected not on the efficiency plot
+        for(const idx of selectedPoints.value) {
+
+            const glyph = glyphs[idx];
+            const x = Math.round(glyph.px * (scatterplotWidth.value - 20));
+            const y = Math.round((1-glyph.py) * (scatterplotHeight.value - 40));
+            ctx.beginPath();
+            ctx.arc(x, y, pointRadius.value+5, 0, 2 * Math.PI, false);
+            ctx.strokeStyle = glyph.color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+
+    if(glyphs.length > 0) tree = new KDTree(glyphs, ["px", "py"]);
+};
+
+const selectPoint = (x: number, y: number): void => {
+
+    // Do not allow selection of points in efficiency mode
+    if(scatterplotType.value === "efficiency") return;
+
+    const nearestNeighbor = tree.nearest({px: x, py: y});
+
+    let r2 = (pointRadius.value+5)/(scatterplotWidth.value - 20);
+    r2 *= r2;
+
+    if(nearestNeighbor.squared_distance > r2) return;
+
+    const idx = nearestNeighbor.point.idx;
+
+    // If the point is already selected, remove it; otherwise add it
+    const i = selectedPoints.value.indexOf(idx);
+    if(i === -1) selectedPoints.value.push(idx);
+    else {
+        selectedPoints.value.splice(i, 1);
+    }
+};
+
+// Redraw canvas if parameters change
+watch([pointRadius, scatterplotType, selectedPoints], () => {drawPoints();}, {deep: true});
 
 onMounted(() => {
 
@@ -292,26 +375,40 @@ onMounted(() => {
                 scatterplotHeight.value = entry.contentRect.height;
             }
         }
+        setTimeout(drawPoints, 100);
     });
 
-    const canvas = document.querySelector<HTMLDivElement>(".side-n");
+    const canvasContainer = document.querySelector<HTMLDivElement>(".side-n");
+    if(!canvasContainer) return;
+    resizeObserver.observe(canvasContainer);
+    const rect = canvasContainer.getClientRects()[0];
+
+    setTimeout(drawPoints, 100);
+
+    const canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
     if(!canvas) return;
-    resizeObserver.observe(canvas);
-    const rect = canvas.getClientRects()[0];
-    scatterplotX = rect.x;
-    scatterplotY = rect.y;
+    canvas.addEventListener("click", (event: MouseEvent) => {
+        let x = (event.clientX - rect.x)/(rect.width-20);
+        let y = (rect.height-(event.clientY+20))/(rect.height-40);
+        if(x < 0) x = 0;
+        else if(x > 1) x = 1;
+        if(y < 0) y = 0;
+        else if(y > 1) y = 1;
+        selectPoint(x, y);
+    });
 });
 
 /** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {
 
-    scatterplotData = JSON.parse(dataFromMain) as ScatterplotData;
-    scatterplotDataAvailable.value = true;
+    scatterplotData.value = JSON.parse(dataFromMain) as ScatterplotData;
 
-    if(scatterplotData.convexHull.length > 0) {
+    drawPoints();
+
+    if(scatterplotData.value.convexHull.length > 0) {
         setTimeout(() => {
             selectedPoints.value.length = 0;
-            for(const idx of scatterplotData!.convexHull) {
+            for(const idx of scatterplotData.value!.convexHull) {
                 if(!selectedPoints.value.includes(idx)) {
                     selectedPoints.value.push(idx);
                 }
@@ -323,175 +420,11 @@ receiveInWindow((dataFromMain) => {
 /** Close the window on Esc press */
 closeWithEscape("/scatter");
 
-/** The info associated to the clicked point */
-const textShow  = ref(false);
-const textX     = ref(0);
-const textY     = ref(0);
-const textLine1 = ref("");
-const textLine2 = ref("");
-
-/** Indices of the selected points */
-const selectedPoints = ref<number[]>([]);
-const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
-
-/**
- * On selecting a point
- *
- * @param idx - The index of the selected point
- */
-const selectPoint = (idx: number): void => {
-
-    // Do not allow selection of points in efficiency mode
-    if(scatterplotType.value === "efficiency") return;
-
-    // If the point is already selected, remove it; otherwise add it
-    const i = selectedPoints.value.indexOf(idx);
-    if(i === -1) selectedPoints.value.push(idx);
-    else {
-        selectedPoints.value.splice(i, 1);
-        textShow.value = false;
-        return;
-    }
-
-    // Prepare the text to show and move it to remain inside the plot
-    const {x, y, value} = scatterplotPoints.value[idx];
-    let valueLine = "";
-    switch(scatterplotType.value) {
-        case "group":       valueLine = `Group: ${value}`; break;
-        case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
-        case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
-    }
-    textX.value = x > scatterplotWidth.value - 50 ? x-110 : x+pointRadius.value+10;
-    textY.value = y > scatterplotHeight.value - 50 ? y-32 : y+6;
-    textLine1.value = `Step: ${idx}`;
-    textLine2.value = valueLine;
-    textShow.value  = true;
-};
-
 /**
  * Reset the selected points
  */
 const resetSelected = (): void => {
     selectedPoints.value.length = 0;
-    textShow.value = false;
-};
-
-/** Point selection markers for display */
-const selectionMarkers = computed(() => selectedPoints.value.map((idx) => scatterplotPoints.value[idx]));
-
-/** Rectangular point selection (with right mouse button) */
-const x = ref(0);
-const y = ref(0);
-const width = ref(0);
-const height = ref(0);
-let rectangleStartX: number | undefined;
-let rectangleStartY: number | undefined;
-const showSelectionRectangle = ref(false);
-
-/**
- * Right mouse button down event: start rectangular selection
- *
- * @param event - The mouse event
- */
-const mousedown = (event: MouseEvent): void => {
-
-    if(event.button !== 2) return;
-
-    rectangleStartX = event.clientX - scatterplotX;
-    rectangleStartY = event.clientY - scatterplotY;
-    showSelectionRectangle.value = true;
-    width.value = 0;
-    height.value = 0;
-};
-
-/**
- * Right mouse button up event: end selection
- *
- * @param event - The mouse event
- */
-const mouseup = (event: MouseEvent): void => {
-
-    if(event.button !== 2) return;
-    if(rectangleStartX === undefined || rectangleStartY === undefined) return;
-
-    let rectangleEndX = event.clientX - scatterplotX;
-    let rectangleEndY = event.clientY - scatterplotY;
-
-    if(rectangleEndX < rectangleStartX) {
-        const tt = rectangleEndX;
-        rectangleEndX = rectangleStartX;
-        rectangleStartX = tt;
-    }
-
-    if(rectangleEndY < rectangleStartY) {
-        const tt = rectangleEndY;
-        rectangleEndY = rectangleStartY;
-        rectangleStartY = tt;
-    }
-
-    let idx = 0;
-    textShow.value = false;
-    if(event.ctrlKey) {
-        for(const point of scatterplotPoints.value) {
-            if(point.x >= rectangleStartX && point.x <= rectangleEndX &&
-               point.y >= rectangleStartY && point.y <= rectangleEndY) {
-                const i = selectedPoints.value.indexOf(idx);
-                if(i !== -1) selectedPoints.value.splice(i, 1);
-            }
-            ++idx;
-        }
-    }
-    else {
-        for(const point of scatterplotPoints.value) {
-            if(point.x >= rectangleStartX && point.x <= rectangleEndX &&
-               point.y >= rectangleStartY && point.y <= rectangleEndY &&
-               !selectedPoints.value.includes(idx)) selectedPoints.value.push(idx);
-            ++idx;
-        }
-    }
-    rectangleStartX = undefined;
-    rectangleStartY = undefined;
-    showSelectionRectangle.value = false;
-};
-
-let lastMoveEvent: number | undefined;
-/**
- * Move the mouse to change the rectangular selection area
- *
- * @param event - The mouse event
- */
-const mousemove = (event: MouseEvent): void => {
-
-    // Selection not started or not active
-    if(!showSelectionRectangle.value ||
-       rectangleStartX === undefined ||
-       rectangleStartY === undefined) return;
-
-    // Avoid too many events
-    if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 50) return;
-    lastMoveEvent = event.timeStamp;
-
-    const rectangleEndX = event.clientX - scatterplotX;
-    const rectangleEndY = event.clientY - scatterplotY;
-
-    // Reorder coordinates if needed
-    if(rectangleEndX < rectangleStartX) {
-        x.value = rectangleEndX;
-        width.value = rectangleStartX - rectangleEndX;
-    }
-    else {
-        x.value = rectangleStartX;
-        width.value = rectangleEndX - rectangleStartX;
-    }
-
-    if(rectangleEndY < rectangleStartY) {
-        y.value = rectangleEndY;
-        height.value = rectangleStartY - rectangleEndY;
-    }
-    else {
-        y.value = rectangleStartY;
-        height.value = rectangleEndY - rectangleStartY;
-    }
 };
 
 /** Selected all points pertaining to a group */
@@ -503,14 +436,14 @@ const showSelectedGroup = ref(0);
  */
 const selectByGroup = (): void => {
 
-    if(!scatterplotData ||
-        scatterplotData.countGroups === 0) return;
+    if(!scatterplotData.value ||
+        scatterplotData.value.countGroups === 0) return;
 
-    const cnt = scatterplotData.groups.length;
+    const cnt = scatterplotData.value.groups.length;
     if(!cnt) return;
 
     for(let i=0; i < cnt; ++i) {
-        if(scatterplotData.groups[i] === selectedGroup.value &&
+        if(scatterplotData.value.groups[i] === selectedGroup.value &&
            !selectedPoints.value.includes(i)) {
                 selectedPoints.value.push(i);
         }
@@ -524,7 +457,7 @@ const selectAll = (): void => {
 
   if(!scatterplotData) return;
 
-    const cnt = scatterplotData.points.length;
+    const cnt = scatterplotData.value?.points.length;
     if(!cnt) return;
 
     selectedPoints.value.length = cnt;
@@ -565,24 +498,24 @@ const compareSelected = (): void => {
  */
 const selectByGroupMinEnergy = (): void => {
 
-    if(!scatterplotData ||
-        scatterplotData.countGroups === 0 ||
-        scatterplotData.energies.length === 0) return;
+    if(!scatterplotData.value ||
+        scatterplotData.value.countGroups === 0 ||
+        scatterplotData.value.energies.length === 0) return;
 
-    const npoints = scatterplotData.groups.length;
+    const npoints = scatterplotData.value.groups.length;
     if(!npoints) return;
 
     // For each group
-    for(let group=0; group < scatterplotData.countGroups; ++group) {
+    for(let group=0; group < scatterplotData.value.countGroups; ++group) {
 
         let minEnergyValue = Number.POSITIVE_INFINITY;
         let minEnergyIdx = 0;
 
         for(let j=0; j < npoints; ++j) {
 
-            if(scatterplotData.groups[j] === group &&
-               scatterplotData.energies[j] < minEnergyValue) {
-                minEnergyValue = scatterplotData.energies[j];
+            if(scatterplotData.value.groups[j] === group &&
+               scatterplotData.value.energies[j] < minEnergyValue) {
+                minEnergyValue = scatterplotData.value.energies[j];
                 minEnergyIdx = j;
             }
         }
@@ -617,7 +550,7 @@ const showLegendContinue = computed(() => showLegend.value &&
 const legendDiscrete = computed<{key: number; color: string; label: string}[]>(() => {
 
     if(scatterplotType.value === "group") {
-        if(!scatterplotData || scatterplotData.countGroups === 0) {
+        if(!scatterplotData.value || scatterplotData.value.countGroups === 0) {
             return [{key: 0, color: "#0000FF", label: "No groups"}];
         }
         const out = [];
@@ -729,25 +662,8 @@ const legendContinue = computed(() => {
     </div>
 
     <div class="side-n">
-      <svg width="100%" height="100%" x="0" y="0" fill="transparent"
-           xmlns="http://www.w3.org/2000/svg" @click="textShow=false"
-           @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove">
-        <rect v-if="showSelectionRectangle" :x :y :width :height stroke="red" stroke-width="2"/>
-        <rect x="20" y="20" :width="scatterplotWidth-40" :height="scatterplotHeight-40"
-              fill="none" :stroke="fgColor"/>
-        <line v-if="scatterplotType==='efficiency'"
-              x1="20" :y1="scatterplotHeight-20" :x2="scatterplotWidth-20" y2="20" :stroke="fgColor"
-              stroke-dasharray="6 4" pointer-event="none"/>
-        <circle v-for="n of selectionMarkers" :key="n.id" :cx="n.x" :cy="n.y" pointer-event="none"
-                :r="pointRadius+5" stroke-width="2" :style="{stroke: n.color}" />
-        <circle v-for="(n, index) of scatterplotPoints" :key="n.id" :cx="n.x" :cy="n.y"
-                :r="pointRadius" :style="{fill: n.color}"
-                @click.stop="selectPoint(index)"/>
-        <text v-if="textShow" :x="textX" :y="textY" :fill="fgColor">
-          <tspan :x="textX">{{ textLine1 }}</tspan>
-          <tspan :x="textX" dy="20">{{ textLine2 }}</tspan>
-        </text>
-      </svg>
+      <canvas :width="scatterplotWidth-20" :height="scatterplotHeight-40"
+              :style="{border: `2px solid ${fgColor}`}" />
       <div v-if="showLegendDiscrete" class="legend">
         <div v-for="n of legendDiscrete" :key="n.key">
           <span style="width: 150px" :style="{backgroundColor: n.color, color: n.color}">⬚</span> {{ n.label }}</div>
@@ -779,7 +695,7 @@ const legendContinue = computed(() => {
                                 v-model:raw="showPointRadius" label-width="9rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn @click="resetSelected" :disabled="selectionMarkers.length === 0">Deselect</v-btn>
+        <v-btn @click="resetSelected" :disabled="selectedPoints.length === 0">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
@@ -807,7 +723,7 @@ const legendContinue = computed(() => {
 
 .side-w {grid-area: aa;}
 
-.side-n {grid-area: bb;}
+.side-n {grid-area: bb; padding-top: 20px}
 
 .side-s {grid-area: cc;}
 
@@ -833,7 +749,6 @@ const legendContinue = computed(() => {
   max-width: 3000px !important;
   gap: 10px;
   padding-right: 20px !important;
-  padding-left: 20px !important;
   width: 100%
 }
 
@@ -843,8 +758,8 @@ const legendContinue = computed(() => {
 
 .legend {
   position: absolute;
-  bottom: 141px;
-  right: 21px;
+  bottom: 138px;
+  right: 18px;
   z-index: 800;
   background-color: #7e7e7e46;
   width: 220px;
