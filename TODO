@@ -38,7 +38,7 @@ ToDo eventually:
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
-  ☐ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>) or better <https://www.w3schools.com/graphics/plot_canvas.asp>
+  ✔ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>) or better <https://www.w3schools.com/graphics/plot_canvas.asp> @done(2025-02-13 16:06)
   ☐ Use fat line <https://github.com/pmndrs/meshline>
 
 Nice to have/Future:

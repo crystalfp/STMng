@@ -298,11 +298,11 @@ const pointsByEfficiency = (): Glyph[] => {
 };
 
 /** The info associated to the clicked point */
-const textShow  = ref(false);
-const textX     = ref(0);
-const textY     = ref(0);
-const textLine1 = ref("");
-const textLine2 = ref("");
+const textShow = ref(false);
+let textX = 0;
+let textY = 0;
+let textLine1 = "";
+let textLine2 = "";
 
 /** Rectangular point selection (with right mouse button) */
 const x = ref(0);
@@ -344,8 +344,11 @@ const drawPoints = (): void => {
             break;
     }
 
-    // Clean the canvas and draw the points
+    // Clean the canvas and exit if no points
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(glyphs.length === 0) return;
+
+    // Draw the points
     for(const glyph of glyphs) {
 
         const {sx, sy} = pointToScreen(glyph.px, glyph.py);
@@ -371,7 +374,7 @@ const drawPoints = (): void => {
     }
     else {
 
-        // Draw marker for points selected not on the efficiency plot
+        // Draw marker for points selected
         for(const idx of selectedPoints.value) {
 
             const glyph = glyphs[idx];
@@ -384,14 +387,16 @@ const drawPoints = (): void => {
         }
     }
 
+    // Add text if requested
     if(textShow.value) {
         ctx.font = "20px sans-serif";
         ctx.fillStyle = fgColor;
 
-        ctx.fillText(textLine1.value, textX.value, textY.value);
-        ctx.fillText(textLine2.value, textX.value, textY.value+22);
+        ctx.fillText(textLine1, textX, textY);
+        ctx.fillText(textLine2, textX, textY+22);
     }
 
+    // Manage the selection rectangle
     if(showSelectionRectangle.value) {
         ctx.beginPath();
         ctx.rect(x.value, y.value, width.value, height.value);
@@ -400,6 +405,7 @@ const drawPoints = (): void => {
         ctx.stroke();
     }
 
+    // Prepare the KD-tree to select clicked points
     if(glyphs.length > 0) tree = new KDTree(glyphs, ["px", "py"]);
 };
 
@@ -453,11 +459,12 @@ const drawPoints = (): void => {
     }
 
     const {sx, sy} = pointToScreen(px, py);
-    textX.value = sx > scatterplotWidth.value - 50 ? sx-110 : sx+pointRadius.value+10;
-    textY.value = sy > scatterplotHeight.value - 50 ? sy-32 : sy+6;
-    textLine1.value = `Step: ${id}`;
-    textLine2.value = valueLine;
-    textShow.value  = true;
+    textX = sx > scatterplotWidth.value - 150 ? sx-110 : sx+pointRadius.value+10;
+    textY = sy > scatterplotHeight.value - 100 ? sy-32 : sy+6;
+    if(sy < 30) textY = sy + 15;
+    textLine1 = `Step: ${id}`;
+    textLine2 = valueLine;
+    textShow.value = true;
 };
 
 // Redraw canvas if parameters change
@@ -506,6 +513,7 @@ onUnmounted(() => {
 // Request the data for a given plot
 watch(scatterplotType, () => {
 
+    textShow.value = false;
     sendToNode("SYSTEM", "selected-plot", {
         plotType: scatterplotType.value,
     });

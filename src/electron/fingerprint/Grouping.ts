@@ -110,16 +110,21 @@ export class Grouping {
 			++groupSizes[group];
 		}
 
-		// Intracluster mean distance
-		const a = Array(countStructures).fill(0) as number[];
+		// The final silhouette coefficient
+		const silhouette = Array(countStructures).fill(0) as number[];
+
 		for(let i=0; i < countStructures; ++i) {
 
 			// Get the point group
 			const gi = this.structureGroup[i];
 
-			// If its group size is one, do nothing
-			if(groupSizes[gi] === 1) continue;
+			// If its group size is one, do nothing, the silhouette is zero
+			if(groupSizes[gi] === 1) {
+				silhouette[i] = 0;
+				continue;
+			}
 
+			// Intracluster mean distance
 			let distanceSum = 0;
 			for(let j=0; j < countStructures; ++j) {
 
@@ -129,16 +134,9 @@ export class Grouping {
 				distanceSum += distances.get(i, j);
 			}
 
-			a[i] = distanceSum/(groupSizes[gi]-1);
-		}
+			const intra = distanceSum/(groupSizes[gi]-1);
 
-		// Extra-cluster min distance
-		const b = Array(countStructures).fill(0) as number[];
-		for(let i=0; i < countStructures; ++i) {
-
-			// Get the point group
-			const gi = this.structureGroup[i];
-
+			// Extra-cluster min distance
 			const distancesByGroup = Array(this.countGroups).fill(0) as number[];
 
 			// For all other groups
@@ -156,22 +154,15 @@ export class Grouping {
 			}
 
 			// Find minimal distance
-			let minDistance = Number.POSITIVE_INFINITY;
+			let extra = Number.POSITIVE_INFINITY;
 			for(let gj=0; gj < this.countGroups; ++gj) {
 
 				if(gj === gi) continue;
-				if(distancesByGroup[gj] < minDistance) minDistance = distancesByGroup[gj];
+				if(distancesByGroup[gj] < extra) extra = distancesByGroup[gj];
 			}
-			b[i] = minDistance;
-		}
 
-		// The final silhouette coefficient
-		const silhouette = Array(countStructures).fill(0) as number[];
-		for(let i=0; i < countStructures; ++i) {
-
-			// Get the point group
-			const gi = this.structureGroup[i];
-			silhouette[i] = groupSizes[gi] === 1 ? 0 : (b[i]-a[i])/Math.max(a[i], b[i]);
+			// The final silhouette coefficient
+			silhouette[i] = (extra-intra)/Math.max(intra, extra);
 		}
 
 		return silhouette;
