@@ -24,6 +24,21 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
 			 EnergyLandscapeData, PositionType,
 			 FingerprintsChartData, FingerprintsChartKind} from "@/types";
 
+interface CreateUpdateScatterplotOptions {
+
+	/** In how many dimensions the generalized convex hull should be computed (0: don't compute) */
+	dimension?: number;
+
+	/** Distance threshold to remove similar points from the generalized convex hull */
+	threshold?: number;
+
+	/** Kind of plot for which the data should be provided */
+	plotType?: string;
+
+	/** True if the group are not provided */
+	noGroups?: boolean;
+}
+
 export class ComputeFingerprints extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -239,40 +254,50 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param mappedPoints - Points mapped in 2D
 	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
 	 * @param threshold - Distance threshold to remove similar points from the generalized convex hull
+	 * @param plotType - Kind of plot requested to limit the data sent to client
 	 * @returns Data needed by the scatterplot
 	 */
-	private packDataForClient(mappedPoints: number[][], dimension: number, threshold: number): ScatterplotData {
+	private packDataForClient(mappedPoints: number[][],
+							  options: CreateUpdateScatterplotOptions): ScatterplotData {
 
-		// How many structures are we dealing with
-		const n = mappedPoints.length;
+		// Get the parameters
+		const {dimension=0, threshold=0.1, plotType="group", noGroups=false} = options;
 
 		// Compare projected distances with the original ones
-		const distanceMatrix = this.dist.getDistanceMatrix();
 		let efficiencies: number[][] = [];
-		for(let row=0; row < n-1; ++row) {
-			for(let col=row+1; col < n; ++col) {
+		const distanceMatrix = this.dist.getDistanceMatrix();
+		if(plotType === "efficiency") {
 
-				const distanceOriginal = distanceMatrix.get(row, col);
+			// How many structures are we dealing with
+			const n = mappedPoints.length;
 
-				const distanceProjected = Math.hypot(
-					mappedPoints[row][0]-mappedPoints[col][0],
-					mappedPoints[row][1]-mappedPoints[col][1]
-				);
+			for(let row=0; row < n-1; ++row) {
+				for(let col=row+1; col < n; ++col) {
 
-				efficiencies.push([distanceOriginal, distanceProjected]);
+					const distanceOriginal = distanceMatrix.get(row, col);
+
+					const distanceProjected = Math.hypot(
+						mappedPoints[row][0]-mappedPoints[col][0],
+						mappedPoints[row][1]-mappedPoints[col][1]
+					);
+
+					efficiencies.push([distanceOriginal, distanceProjected]);
+				}
 			}
+
+			// Normalize original and projected distances mapping points coordinates between 0 and 1
+			efficiencies = normalizeCoordinates2D(efficiencies);
+
+			// If too many points, decimate them to reduce the number to less than 40'000
+			efficiencies = this.decimatePoints(efficiencies, 40_000);
 		}
 
-		// Normalize original and projected distances mapping points coordinates between 0 and 1
-		efficiencies = normalizeCoordinates2D(efficiencies);
-
-		// If too many points, decimate them to reduce the number to less than 40'000
-    	efficiencies = this.decimatePoints(efficiencies, 40_000);
-
 		// Collect groups
-		const groups = this.grouping.getGroups();
-		const countGroups = this.grouping.getCountGroups();
-		const silhouettes = this.grouping.computeSilhouetteCoefficients(distanceMatrix);
+		const groups = noGroups ? [] : this.grouping.getGroups();
+		const countGroups = noGroups ? 0 : this.grouping.getCountGroups();
+		const silhouettes = plotType === "silhouette" ?
+											this.grouping.computeSilhouetteCoefficients(distanceMatrix) :
+											[];
 
 		// Collect energies and ids per structure
 		const energies = [];
@@ -311,14 +336,13 @@ export class ComputeFingerprints extends NodeCore {
 	/**
 	 * Open or update the scatterplot window
 	 *
-	 * @param opKind - Operation to be performed: "no-group" only distances available,
+	 * @param opKind - Operation to be performed:
 	 *                 "update" update if scatter available or "create" create the scatterplot
 	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
 	 * @param threshold - Distance threshold to remove similar points from the generalized convex hull
 	 */
-	private createUpdateScatterplot(opKind: "no-group" | "update" | "create",
-									dimension=0,
-									threshold=0.1): void {
+	private createUpdateScatterplot(opKind: "update" | "create",
+									options: CreateUpdateScatterplotOptions = {}): void {
 
 		const scatterplotOpen = isSecondaryWindowOpen("/scatter");
 		if(opKind !== "create" && !scatterplotOpen) return;
@@ -327,11 +351,7 @@ export class ComputeFingerprints extends NodeCore {
 		const points = this.dist.getProjectedPoints();
 
 		// Collect the data for the scatterplot
-		const scatterplotData = this.packDataForClient(points, dimension, threshold);
-		if(opKind === "no-group") {
-			scatterplotData.groups = [];
-			scatterplotData.countGroups = 0;
-		}
+		const scatterplotData = this.packDataForClient(points, options);
 		const dataToSend = JSON.stringify(scatterplotData);
 
 		// If it is open, update the scatterplot window
@@ -764,7 +784,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.dist.projectPoints();
 
 		// Update the scatterplot if it is open
-		this.createUpdateScatterplot("no-group");
+		this.createUpdateScatterplot("update", {noGroups: true, plotType: "group"});
 
 		return {countDistances: result.countDistances, endMessage: result.endMessage};
 	}
@@ -812,7 +832,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelScatter(): void {
 
-		this.createUpdateScatterplot("create");
+		this.createUpdateScatterplot("create", {plotType: "group"});
 
 		if(!this.channelOpened) {
 			this.channelOpened = true;
@@ -826,26 +846,45 @@ export class ComputeFingerprints extends NodeCore {
 				const filename = params.filename as string;
 				if(!filename) return;
 
-				const structures: Structure[] = [];
-				const energies: number[] = [];
+				const sorter: {idx: number; energy: number}[] = [];
+				let structures: Structure[] = [];
 				let idx = 0;
+				let k = 0;
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
 					if(indices.includes(idx)) {
 						structures.push(this.convertAccumulatedStructure(structure));
-						if(structure.energy) energies.push(structure.energy);
+						if(structure.energy !== undefined) {
+							sorter.push({idx: k++, energy: structure.energy});
+						}
 					}
 					++idx;
 				}
 
 				if(structures.length === 0) return;
+
+				const sortedStructures: Structure[] = [];
+				const energies: string[] = [];
+				if(sorter.length > 0) {
+					sorter.sort((a, b) => a.energy - b.energy);
+
+					for(const entry of sorter) {
+						sortedStructures.push(structures[entry.idx]);
+						energies.push(entry.energy.toString());
+					}
+					structures = sortedStructures;
+				}
 				const writer = new WriterPOSCAR();
 				const sts = writer.writeStructure(filename, structures);
 
 				if(sts.error) sendAlertMessage(sts.error as string, "fingerprints");
 
-        		const pos = filename.lastIndexOf(".");
-				const energyFilename = pos > 0 ? `${filename.slice(0, pos)}.energy` : `${filename}.energy`;
-				writeFileSync(energyFilename, energies.join("\n"), "utf8");
+				if(energies.length > 0) {
+					const pos = filename.lastIndexOf(".");
+					const energyFilename = pos > 0 ?
+												`${filename.slice(0, pos)}.energy` :
+												`${filename}.energy`;
+					writeFileSync(energyFilename, energies.join("\n"), "utf8");
+				}
 			});
 
 			ipcMain.on("SYSTEM:convex-hull", (_event: unknown, params: CtrlParams): void => {
@@ -853,7 +892,15 @@ export class ComputeFingerprints extends NodeCore {
 				const dimension = params.dimension as number ?? 4;
 				const threshold = params.threshold as number ?? 0.1;
 
-				this.createUpdateScatterplot("update", dimension, threshold);
+				this.createUpdateScatterplot("update", {dimension, threshold, plotType: "group"});
+			});
+
+			ipcMain.on("SYSTEM:selected-plot", (_event: unknown, params: CtrlParams): void => {
+
+				const plotType = params.plotType as string ?? "group";
+
+				this.createUpdateScatterplot("update", {plotType});
+
 			});
 		}
 	}

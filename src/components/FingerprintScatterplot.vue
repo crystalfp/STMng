@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-26
  */
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
@@ -66,6 +66,9 @@ const showThreshold = ref(0.01);
 /** Indices of the selected points */
 const selectedPoints = ref<number[]>([]);
 const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
+
+/** Reference to the canvas element */
+let canvas: HTMLCanvasElement | null;
 
 /**
  * Convert point coordinates into screen coordinates
@@ -144,7 +147,7 @@ const pointsByGroup = (): Glyph[] => {
             px: points[i][0],
             py: points[i][1],
             color,
-            value: groups[i],
+            value: oneGroup ? 0 : groups[i],
         });
     }
     return out;
@@ -318,7 +321,6 @@ let tree: KDTree;
 const drawPoints = (): void => {
 
     // Access the canvas context
-    const canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
     if(!canvas) return;
     const ctx = canvas.getContext("2d");
     if(!ctx) return;
@@ -404,14 +406,22 @@ const drawPoints = (): void => {
 /**
  * When a point has been selected by clicking
  *
- * @param x - Point x coordinate (range 0..1)
- * @param y - Point y coordinate (range 0..1)
+ * @param event - To obtain the click coordinates
  */
-const selectPoint = (x: number, y: number): void => {
+ const pointClicked = (event: MouseEvent): void => {
 
     // Do not allow selection of points in efficiency mode
     if(scatterplotType.value === "efficiency") return;
 
+    // Convert click coordinates into point coordinates
+    let x = (event.clientX - scatterplotX)/(scatterplotWidth.value-20);
+    let y = (scatterplotHeight.value-(event.clientY+20))/(scatterplotHeight.value-40);
+    if(x < 0) x = 0;
+    else if(x > 1) x = 1;
+    if(y < 0) y = 0;
+    else if(y > 1) y = 1;
+
+    // Find the nearest point index
     const nearestNeighbor = tree.nearest({px: x, py: y});
 
     let r2 = (2*pointRadius.value)/(scatterplotWidth.value - 20);
@@ -454,7 +464,7 @@ const selectPoint = (x: number, y: number): void => {
 watch([
     pointRadius, scatterplotType, selectedPoints, textShow,
     x, y, width, height, showSelectionRectangle
-], () => {drawPoints();}, {deep: true});
+], drawPoints, {deep: true});
 
 onMounted(() => {
 
@@ -483,16 +493,21 @@ onMounted(() => {
     setTimeout(drawPoints, 100);
 
     // Setup the click handler
-    const canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
+    canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
     if(!canvas) return;
-    canvas.addEventListener("click", (event: MouseEvent) => {
-        let x = (event.clientX - rect.x)/(rect.width-20);
-        let y = (rect.height-(event.clientY+20))/(rect.height-40);
-        if(x < 0) x = 0;
-        else if(x > 1) x = 1;
-        if(y < 0) y = 0;
-        else if(y > 1) y = 1;
-        selectPoint(x, y);
+    canvas.addEventListener("click", pointClicked);
+});
+
+onUnmounted(() => {
+
+    if(canvas) canvas.removeEventListener("click", pointClicked);
+});
+
+// Request the data for a given plot
+watch(scatterplotType, () => {
+
+    sendToNode("SYSTEM", "selected-plot", {
+        plotType: scatterplotType.value,
     });
 });
 

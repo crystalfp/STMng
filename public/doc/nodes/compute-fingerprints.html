@@ -228,7 +228,7 @@
 <li><span style="width: 150px; background-color: white">⬚</span> On the border between two groups (silhouette between -0.05 and 0.05)</li>
 </ul>
 <p>Clicking on one point selects it and show a small popup.</p>
-<!-- <p>Dragging the mouse with the right button down makes a rectangular selection and select all points inside. If done with the control key pressed, deselects all selected points inside the selection.</p> -->
+<p>Dragging the mouse with the right button down makes a rectangular selection and selects all points inside. If done with the control key pressed, deselects all selected points inside the selection.</p>
 <p>Note that due to the random initialization of the projection method, sometime the direction of the axis flips.</p>
 <p>Besides the scatterplot kind selector, the scatterplot window has the following controls:</p>
 <table cellpadding="2" cellspacing="2">
@@ -299,7 +299,7 @@
 <tr>
   <td class="c1">Export selected</td>
   <td class="c2">button</td>
-  <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy file.</td>
+  <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy file. The entries are sorted on increasing energy. If no energy has been loaded, the energy file is not created and the structures are unsorted.</td>
 </tr>
 </table>
 
