@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation is a chemical structure visualizer that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.23.2",
+  "version": "1.23.3",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",

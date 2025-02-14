@@ -56,17 +56,18 @@ const isDevelopment = import.meta.env.DEV || enable;
 // Initialize the logger
 log.initialize();
 log.transports.console.level = verbose ? "silly" : "warn";
+log.transports.console.useStyles = true;
 log.transports.file.level = verbose ? "silly" : "warn";
 log.errorHandler.startCatching({showDialog: false});
 log.eventLogger.startLogging();
 
 // Handle uncaught errors
 process.on("uncaughtException", (event): void => {
-	log.error(`Unhandled exception: ${event.message}\n`, event.stack);
+    log.error(`%cUnhandled exception: %c${event.message}\n`, "color: red", "color: unset", event.stack);
 });
 
 process.on("unhandledRejection", (event: PromiseRejectionEvent): void => {
-	log.error("Unhandled rejection:", event.reason);
+    log.error("%cUnhandled rejection:", "color: red", event.reason);
 });
 
 // Initialize the channels between main process and client

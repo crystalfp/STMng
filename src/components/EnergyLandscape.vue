@@ -303,7 +303,7 @@ const renderSurface = (): void => {
                                 v-model:raw="showTolerance" label-width="9rem"
                                 :label="`Tolerance (${showTolerance.toFixed(3)})`"
                                 :min="0" :max="0.5" :step="0.001" />
-        <g-select-colormap v-model="colormapName" class="mt-2 mb-n2 ml-4" />
+        <g-select-colormap v-model="colormapName" class="mt-2 mb-2 ml-4" />
         <v-spacer />
         <v-btn v-focus @click="closeWindow('/landscape')" class="mr-2 mb-2">Close</v-btn>
       </div>
@@ -334,7 +334,7 @@ const renderSurface = (): void => {
   flex-direction: column;
   display: flex;
   max-width: 3000px !important;
-  padding: 20px 20px 16px 20px !important;
+  padding: 20px 20px 4px 20px !important;
 }
 
 .buttons-line {

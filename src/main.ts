@@ -154,15 +154,13 @@ const app = createApp(App)
 
 // Add global error handlers
 app.config.errorHandler = (error: unknown): void => {
-	log.error(`Unhandled exception: ${(error as Error).message}\n`, (error as Error).stack);
+	log.error(`%cUnhandled exception: %c${(error as Error).message}\n`,
+			  "color: red", "color: unset", (error as Error).stack);
 };
 
-addEventListener("unhandledrejection", (event): void => {
-	log.error("Unhandled rejection:", event.reason);
+addEventListener("unhandledrejection", (event: PromiseRejectionEvent): void => {
+	log.error("%cUnhandled rejection:", "color: red", event.reason);
 });
-
-// TEST See if it helps looking for performance problems
-app.config.performance = true;
 
 // Preload fonts for labels
 preloadFonts();

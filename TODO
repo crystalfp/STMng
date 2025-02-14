@@ -29,7 +29,7 @@ ToDo eventually:
   ☐ Use `chagelogen`
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Is there any way to avoid callbacks for repetitive call?
-  ☐ Add color to log messages (e.g., `%cRed`)
+  ✔ Add color to log messages (e.g., `%cRed`) @done(2025-02-14 07:07)
   ☐ Add more `log.info()` or `log.debug()` messages
   ☐ Unblock UI when rendering big scene
   ☐ Check the order of entries in objects
