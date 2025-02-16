@@ -19,7 +19,7 @@ import type {ScatterplotData} from "@/types";
 /** One point that goes to the scatterplot */
 interface Glyph {
 
-    /** The original step number or sequence number for efficiency display */
+    /** The original step number or sequence number for fidelity display */
     id: number;
 
     /** X point coordinate (range 0..1) */
@@ -31,7 +31,7 @@ interface Glyph {
     /** The color of the point as "#RRGGBB" */
     color: string;
 
-    /** Value associated to the point: group, energy, or delta for efficiency */
+    /** Value associated to the point: group, energy, or delta for fidelity */
     value: number;
 }
 
@@ -58,10 +58,6 @@ let groupColors: string[] = [];
 /** The energy range */
 let minEnergy = 0;
 let maxEnergy = 0;
-
-/** Distance threshold to remove duplicates in convex hull */
-const threshold = ref(0.01);
-const showThreshold = ref(0.01);
 
 /** Indices of the selected points */
 const selectedPoints = ref<number[]>([]);
@@ -134,20 +130,20 @@ const pointsByGroup = (): Glyph[] => {
     }
 
     // Map each point to a glyph
-    const {points, groups, id} = scatterplotData.value;
+    const {points, values, id} = scatterplotData.value;
     const n = points.length;
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
 
         // Get the color corresponding to the group of the point
-        const color = oneGroup ? "#0000FF" : groupColors[groups[i]];
+        const color = oneGroup ? "#0000FF" : groupColors[values[i]];
 
         out.push({
             id: id[i],
             px: points[i][0],
             py: points[i][1],
             color,
-            value: oneGroup ? 0 : groups[i],
+            value: oneGroup ? 0 : values[i],
         });
     }
     return out;
@@ -163,14 +159,14 @@ const pointsByEnergy = (): Glyph[] => {
     if(!scatterplotData.value || scatterplotData.value.points.length === 0) return [];
 
     // Map each point to a glyph
-    const {points, energies, id} = scatterplotData.value;
+    const {points, values, id} = scatterplotData.value;
 
     // Extract the energy range
-    minEnergy = energies[0];
+    minEnergy = values[0];
     maxEnergy = minEnergy;
-    for(let i=1; i < energies.length; ++i) {
-        if(energies[i] < minEnergy) minEnergy = energies[i];
-        if(energies[i] > maxEnergy) maxEnergy = energies[i];
+    for(let i=1; i < values.length; ++i) {
+        if(values[i] < minEnergy) minEnergy = values[i];
+        if(values[i] > maxEnergy) maxEnergy = values[i];
     }
 
     // Generate the colormap
@@ -184,14 +180,14 @@ const pointsByEnergy = (): Glyph[] => {
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
 
-        const color = lut ? `#${lut.getColor(energies[i]).getHexString()}` : "#0000FF";
+        const color = lut ? `#${lut.getColor(values[i]).getHexString()}` : "#0000FF";
 
         out.push({
             id: id[i],
             px: points[i][0],
             py: points[i][1],
             color,
-            value: energies[i],
+            value: values[i],
         });
     }
     return out;
@@ -200,7 +196,7 @@ const pointsByEnergy = (): Glyph[] => {
 let overallQuality = 0;
 let maxDelta = 1;
 /**
- * Return the points for the scatterplot colored by efficiency
+ * Return the points for the scatterplot colored by fidelity
  * - X axis is the original distance
  * - Y axis is the distance after the projection
  *
@@ -208,16 +204,16 @@ let maxDelta = 1;
  */
 const pointsByEfficiency = (): Glyph[] => {
 
-    if(!scatterplotData.value || scatterplotData.value.efficiencies.length === 0) return [];
+    if(!scatterplotData.value || scatterplotData.value.fidelity.length === 0) return [];
 
     // Map each point to a glyph
-    const {efficiencies} = scatterplotData.value;
+    const {fidelity} = scatterplotData.value;
 
     // Extract the distance from the diagonal
-    let minDelta = efficiencies[0][1] - efficiencies[0][0];
+    let minDelta = fidelity[0][1] - fidelity[0][0];
     maxDelta = minDelta;
-    for(let i=1; i < efficiencies.length; ++i) {
-        const delta = efficiencies[i][1] - efficiencies[i][0];
+    for(let i=1; i < fidelity.length; ++i) {
+        const delta = fidelity[i][1] - fidelity[i][0];
         if(delta < minDelta) minDelta = delta;
         if(delta > maxDelta) maxDelta = delta;
     }
@@ -233,11 +229,11 @@ const pointsByEfficiency = (): Glyph[] => {
     }
 
     overallQuality = 0;
-    const n = efficiencies.length;
+    const n = fidelity.length;
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
 
-        let delta = efficiencies[i][1] - efficiencies[i][0];
+        let delta = fidelity[i][1] - fidelity[i][0];
         const value = delta;
         if(delta < 0) delta = -delta;
         overallQuality += delta;
@@ -246,8 +242,8 @@ const pointsByEfficiency = (): Glyph[] => {
 
         out.push({
             id: i,
-            px: efficiencies[i][0],
-            py: efficiencies[i][1],
+            px: fidelity[i][0],
+            py: fidelity[i][1],
             color,
             value,
         });
@@ -265,16 +261,16 @@ const pointsByEfficiency = (): Glyph[] => {
  */
  const pointsBySilhouettes = (): Glyph[] => {
 
-    if(!scatterplotData.value || scatterplotData.value.silhouettes.length === 0) return [];
+    if(!scatterplotData.value || scatterplotData.value.values.length === 0) return [];
 
     // Map each point to a glyph
-    const {points, silhouettes, id} = scatterplotData.value;
+    const {points, values, id} = scatterplotData.value;
     const n = points.length;
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
 
         // Get the color corresponding to the silhouette coefficient of the point
-        const sl = silhouettes[i];
+        const sl = values[i];
 
         let color;
         if(sl < -0.05)     color = "#bd0000";
@@ -330,7 +326,7 @@ const drawPoints = (): void => {
         case "energy":
             glyphs = pointsByEnergy();
             break;
-        case "efficiency":
+        case "fidelity":
             glyphs = pointsByEfficiency();
             break;
         case "group":
@@ -358,8 +354,8 @@ const drawPoints = (): void => {
         ctx.fill();
     }
 
-    // If the plot is about efficiency, draw the optimal diagonal
-    if(scatterplotType.value === "efficiency") {
+    // If the plot is about fidelity, draw the optimal diagonal
+    if(scatterplotType.value === "fidelity") {
 
         ctx.beginPath();
         const {sx: startX, sy: startY} = pointToScreen(0, 0);
@@ -416,8 +412,8 @@ const drawPoints = (): void => {
  */
  const pointClicked = (event: MouseEvent): void => {
 
-    // Do not allow selection of points in efficiency mode
-    if(scatterplotType.value === "efficiency") return;
+    // Do not allow selection of points in fidelity mode
+    if(scatterplotType.value === "fidelity") return;
 
     // Convert click coordinates into point coordinates
     let x = (event.clientX - scatterplotX)/(scatterplotWidth.value-20);
@@ -525,17 +521,6 @@ receiveInWindow((dataFromMain) => {
     scatterplotData.value = JSON.parse(dataFromMain) as ScatterplotData;
 
     drawPoints();
-
-    if(scatterplotData.value.convexHull.length > 0) {
-        setTimeout(() => {
-            selectedPoints.value.length = 0;
-            for(const idx of scatterplotData.value!.convexHull) {
-                if(!selectedPoints.value.includes(idx)) {
-                    selectedPoints.value.push(idx);
-                }
-            }
-        }, 100);
-    }
 });
 
 /** Close the window on Esc press */
@@ -561,11 +546,11 @@ const selectByGroup = (): void => {
     if(!scatterplotData.value ||
         scatterplotData.value.countGroups === 0) return;
 
-    const cnt = scatterplotData.value.groups.length;
+    const cnt = scatterplotData.value.values.length;
     if(!cnt) return;
 
     for(let i=0; i < cnt; ++i) {
-        if(scatterplotData.value.groups[i] === selectedGroup.value &&
+        if(scatterplotData.value.values[i] === selectedGroup.value &&
            !selectedPoints.value.includes(i)) {
                 selectedPoints.value.push(i);
         }
@@ -615,52 +600,6 @@ const compareSelected = (): void => {
     log.error("Compare structures not (yet) implemented");
 };
 
-/**
- * Select by min energy in each group
- */
-const selectByGroupMinEnergy = (): void => {
-
-    if(!scatterplotData.value ||
-        scatterplotData.value.countGroups === 0 ||
-        scatterplotData.value.energies.length === 0) return;
-
-    const npoints = scatterplotData.value.groups.length;
-    if(!npoints) return;
-
-    // For each group
-    for(let group=0; group < scatterplotData.value.countGroups; ++group) {
-
-        let minEnergyValue = Number.POSITIVE_INFINITY;
-        let minEnergyIdx = 0;
-
-        for(let j=0; j < npoints; ++j) {
-
-            if(scatterplotData.value.groups[j] === group &&
-               scatterplotData.value.energies[j] < minEnergyValue) {
-                minEnergyValue = scatterplotData.value.energies[j];
-                minEnergyIdx = j;
-            }
-        }
-
-        if(!selectedPoints.value.includes(minEnergyIdx)) {
-            selectedPoints.value.push(minEnergyIdx);
-        }
-    }
-};
-
-/**
- * Select points that falls on a convex hull in 4D
- */
-const selectByConvexHull4D = (): void => {
-
-    sendToNode("SYSTEM", "convex-hull", {
-        dimension: 4,
-        threshold: threshold.value
-    });
-};
-
-watch([threshold], selectByConvexHull4D);
-
 /** Setup the legend */
 const showLegend = ref(false);
 const showLegendDiscrete = computed(() => showLegend.value &&
@@ -668,7 +607,7 @@ const showLegendDiscrete = computed(() => showLegend.value &&
                                            scatterplotType.value === "silhouette"));
 const showLegendContinue = computed(() => showLegend.value &&
                                           (scatterplotType.value === "energy" ||
-                                           scatterplotType.value === "efficiency"));
+                                           scatterplotType.value === "fidelity"));
 
 const legendDiscrete = computed<{key: number; color: string; label: string}[]>(() => {
 
@@ -713,7 +652,7 @@ const legendContinue = computed(() => {
             header: "Energy",
             footer: ""
         };
-    case "efficiency":
+    case "fidelity":
         return {
             min: (maxDelta*Math.SQRT1_2).toFixed(4),
             max: "0.0000",
@@ -877,20 +816,6 @@ const mousemove = (event: MouseEvent): void => {
         Select group
       </v-btn>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <v-btn @click="selectByGroupMinEnergy" :disabled="!scatterplotData?.energies.length"
-             block class="mt-4 ml-1 mb-4">
-        Min energy per group
-      </v-btn>
-      <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <v-btn @click="selectByConvexHull4D" :disabled="!scatterplotData?.energies.length"
-             block class="mt-4 ml-1 mb-2">
-        Generalized convex hull
-      </v-btn>
-      <g-slider-with-steppers v-model="threshold" :disabled="!scatterplotData?.energies.length"
-                              v-model:raw="showThreshold" label-width="9rem"
-                              :label="`Threshold (${showThreshold.toFixed(3)})`" class="mb-2"
-                              :min="0" :max="0.5" :step="0.001" />
-      <v-divider thickness="2" class="mr-n1 ml-1"/>
       <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
       <v-btn @click="compareSelected" :disabled="true" block class="mt-4 mb-4 ml-1">
         Compare selected
@@ -931,8 +856,8 @@ const mousemove = (event: MouseEvent): void => {
       <div class="buttons-line">
         <v-btn-toggle v-model="scatterplotType" mandatory>
           <v-btn value="group">Group</v-btn>
-          <v-btn value="energy" :disabled="!scatterplotData?.energies.length">Energy</v-btn>
-          <v-btn value="efficiency">Fidelity</v-btn>
+          <v-btn value="energy" :disabled="!scatterplotData?.hasEnergies">Energy</v-btn>
+          <v-btn value="fidelity">Fidelity</v-btn>
           <v-btn value="silhouette">Quality</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-model="pointRadius"

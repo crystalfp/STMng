@@ -16,21 +16,16 @@ import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
-import {generalizedConvexHull4D, removeSimilarPoints} from "../fingerprint/GeneralizedConvexHull";
-import {methodDistancesHistogram, methodEnergiesHistogram, methodEnergyDistance, methodOrder} from "../fingerprint/Analysis";
+import {methodDistancesHistogram, methodEnergiesHistogram,
+		methodEnergyDistance, methodOrder} from "../fingerprint/Analysis";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
-import type {Structure, Atom, CtrlParams, ChannelDefinition, ScatterplotData,
+import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 EnergyLandscapeData, PositionType,
-			 FingerprintsChartData, FingerprintsChartKind} from "@/types";
+			 FingerprintsChartData, FingerprintsChartKind,
+			 ScatterplotData} from "@/types";
 
 interface CreateUpdateScatterplotOptions {
-
-	/** In how many dimensions the generalized convex hull should be computed (0: don't compute) */
-	dimension?: number;
-
-	/** Distance threshold to remove similar points from the generalized convex hull */
-	threshold?: number;
 
 	/** Kind of plot for which the data should be provided */
 	plotType?: string;
@@ -69,6 +64,9 @@ export class ComputeFingerprints extends NodeCore {
 	private groupingMethod = 0;
 	private groupingThreshold = 5;
 	private addedMargin = 0;
+	private reductionType = "none";
+
+	private plotType = "group";
 
 	private channelOpened = false;
 	private channelChartsOpened = false;
@@ -85,6 +83,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "dist-params",	type: "send",	callback: this.channelDistParams.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
+		{name: "group-reduce",	type: "send",	callback: this.channelGroupReduce.bind(this)},
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
 		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
@@ -195,6 +194,7 @@ export class ComputeFingerprints extends NodeCore {
 			groupingMethod: this.groupingMethod,
 			groupingThreshold: this.groupingThreshold,
 			addedMargin: this.addedMargin,
+			reductionType: this.reductionType
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -212,6 +212,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.groupingMethod = params.groupingMethod as number ?? 0;
 		this.groupingThreshold = params.groupingThreshold as number ?? 0;
 		this.addedMargin = params.addedMargin as number ?? 0;
+		this.reductionType = params.reductionType as string ?? "none";
 	}
 
 	/**
@@ -249,87 +250,124 @@ export class ComputeFingerprints extends NodeCore {
 	}
 
 	/**
-	 * Prepare the data for the scatterplot
+	 * Prepare the data to visualize the mapping fidelity chart
 	 *
-	 * @param mappedPoints - Points mapped in 2D
-	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
-	 * @param threshold - Distance threshold to remove similar points from the generalized convex hull
-	 * @param plotType - Kind of plot requested to limit the data sent to client
+	 * @param points - Points mapped in 2D
+	 * @param enabled - List of enabled status for the points
 	 * @returns Data needed by the scatterplot
 	 */
-	private packDataForClient(mappedPoints: number[][],
-							  options: CreateUpdateScatterplotOptions): ScatterplotData {
+	private prepareFidelityData(points: number[][], enabled: boolean[], hasEnergies: boolean): ScatterplotData {
 
-		// Get the parameters
-		const {dimension=0, threshold=0.1, plotType="group", noGroups=false} = options;
+		// How many structures are we dealing with
+		const n = points.length;
 
 		// Compare projected distances with the original ones
-		let efficiencies: number[][] = [];
+		let fidelities: number[][] = [];
 		const distanceMatrix = this.dist.getDistanceMatrix();
-		if(plotType === "efficiency") {
 
-			// How many structures are we dealing with
-			const n = mappedPoints.length;
+		// For each distance between two enabled points
+		for(let row=0; row < n-1; ++row) {
 
-			for(let row=0; row < n-1; ++row) {
-				for(let col=row+1; col < n; ++col) {
+			if(!enabled[row]) continue;
+			for(let col=row+1; col < n; ++col) {
 
-					const distanceOriginal = distanceMatrix.get(row, col);
+				if(!enabled[col]) continue;
 
-					const distanceProjected = Math.hypot(
-						mappedPoints[row][0]-mappedPoints[col][0],
-						mappedPoints[row][1]-mappedPoints[col][1]
-					);
+				const distanceOriginal = distanceMatrix.get(row, col);
 
-					efficiencies.push([distanceOriginal, distanceProjected]);
-				}
-			}
+				const distanceProjected = Math.hypot(
+					points[row][0]-points[col][0],
+					points[row][1]-points[col][1]
+				);
 
-			// Normalize original and projected distances mapping points coordinates between 0 and 1
-			efficiencies = normalizeCoordinates2D(efficiencies);
-
-			// If too many points, decimate them to reduce the number to less than 40'000
-			efficiencies = this.decimatePoints(efficiencies, 40_000);
-		}
-
-		// Collect groups
-		const groups = noGroups ? [] : this.grouping.getGroups();
-		const countGroups = noGroups ? 0 : this.grouping.getCountGroups();
-		const silhouettes = plotType === "silhouette" ?
-											this.grouping.computeSilhouetteCoefficients(distanceMatrix) :
-											[];
-
-		// Collect energies and ids per structure
-		const energies = [];
-		const ids = [];
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			if(structure.energy !== undefined) energies.push(structure.energy);
-			ids.push(structure.id);
-		}
-
-		// If there are energies, create the generalized convex hull in energy-fingerprint space
-		let convexHullIndices: number[] = [];
-		if(energies.length >= mappedPoints.length && dimension === 4) {
-
-			convexHullIndices = generalizedConvexHull4D(distanceMatrix, mappedPoints.length, energies);
-
-			// Remove similar points and return the reduced list of vertices
-			if(threshold > 0) {
-				convexHullIndices = removeSimilarPoints(convexHullIndices, distanceMatrix,
-														threshold, energies);
+				fidelities.push([distanceOriginal, distanceProjected]);
 			}
 		}
 
-		// Create data for the scatterplot
+		// Normalize original and projected distances mapping points coordinates between 0 and 1
+		fidelities = normalizeCoordinates2D(fidelities);
+
+		// If too many points, decimate them to reduce the number to less than 40'000
+		fidelities = this.decimatePoints(fidelities, 40_000);
+
 		return {
+
+			id: [],
+			points: [],
+			values: [],
+			countGroups: 0,
+			hasEnergies,
+			fidelity: fidelities
+		};
+	}
+
+	/**
+	 * Prepare the data to visualize the scatterplot chart
+	 *
+	 * @param points - Points mapped in 2D
+	 * @param enabled - List of enabled status for the points
+	 * @param noGroups - Do not collect the structure groups
+	 * @returns Data needed by the scatterplot
+	 */
+	private prepareScatterplotData(points: number[][], enabled: boolean[], options: CreateUpdateScatterplotOptions, hasEnergies: boolean): ScatterplotData {
+
+		// How many structures are we dealing with
+		const n = points.length;
+
+		// Get the total number of groups
+		const noGroups = options.noGroups ?? false;
+		const countGroups = noGroups ? 0 : this.grouping.getCountGroups();
+
+		//
+		const values: number[] = [];
+		switch(options.plotType) {
+			case "group":
+				if(!noGroups) {
+
+					// Collect groups
+					const groups = this.grouping.getGroups();
+					for(let idx=0; idx < n; ++idx) {
+						if(enabled[idx]) values.push(groups[idx]);
+					}
+				}
+				break;
+			case "energy":
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					if(structure.enabled) {
+						values.push(structure.energy ?? 0);
+					}
+				}
+				break;
+			case "silhouette": {
+					const silhouette =
+						this.grouping.computeSilhouetteCoefficients(this.dist.getDistanceMatrix(),
+																	enabled);
+					for(const s of silhouette) values.push(s);
+				}
+				break;
+			default:
+				throw Error("Invalid plot type");
+		}
+
+		// Id of the enabled structures
+		const ids: number[] = [];
+		const mappedPoints: number[][] = [];
+		let idx = 0;
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			if(structure.enabled) {
+				ids.push(structure.id);
+				mappedPoints.push(points[idx]);
+			}
+			++idx;
+		}
+		return {
+
 			id: ids,
 			points: mappedPoints,
-			groups,
+			values,
 			countGroups,
-			energies,
-			efficiencies,
-			silhouettes,
-			convexHull: convexHullIndices
+			hasEnergies,
+			fidelity: []
 		};
 	}
 
@@ -338,8 +376,7 @@ export class ComputeFingerprints extends NodeCore {
 	 *
 	 * @param opKind - Operation to be performed:
 	 *                 "update" update if scatter available or "create" create the scatterplot
-	 * @param dimension - In how many dimensions the generalized convex hull should be computed (0: don't compute)
-	 * @param threshold - Distance threshold to remove similar points from the generalized convex hull
+	 * @param options - Options for the creation of the scatterplot
 	 */
 	private createUpdateScatterplot(opKind: "update" | "create",
 									options: CreateUpdateScatterplotOptions = {}): void {
@@ -350,8 +387,22 @@ export class ComputeFingerprints extends NodeCore {
 		// Take the points projected to 2D
 		const points = this.dist.getProjectedPoints();
 
-		// Collect the data for the scatterplot
-		const scatterplotData = this.packDataForClient(points, options);
+		// Filter by enabled status on structures and check if energy present
+		const enabled: boolean[] = Array(this.accumulator.selectedSize()).fill(true) as boolean[];
+		let hasEnergies = true;
+		let idx = 0;
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			enabled[idx++] = structure.enabled;
+			if(structure.enabled && structure.energy === undefined) {
+				hasEnergies = false;
+			}
+		}
+
+		// Collect and prepare the data for the scatterplot
+		const scatterplotData = options.plotType === "fidelity" ?
+									this.prepareFidelityData(points, enabled, hasEnergies) :
+									this.prepareScatterplotData(points, enabled, options, hasEnergies);
+
 		const dataToSend = JSON.stringify(scatterplotData);
 
 		// If it is open, update the scatterplot window
@@ -403,11 +454,23 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Take the distance matrix and project it in 2D
 		const points = this.dist.getProjectedPoints();
-		const distancesVector = this.dist.getDistanceMatrix().toVector();
+
+		// Filter points as enabled during grouping
+		const filteredPoints: number[][] = [];
+		const filteredEnergies: number[] = [];
+		let idx = 0;
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			if(structure.enabled) {
+				filteredPoints.push(points[idx]);
+				filteredEnergies.push(energies[idx]);
+			}
+			++idx;
+		}
+
+		// Send to energy landscape chart
 		const energyLandscapeData: EnergyLandscapeData = {
-			points,
-			energies,
-			distancesVector
+			points: filteredPoints,
+			energies: filteredEnergies,
 		};
 		const dataToSend = JSON.stringify(energyLandscapeData);
 
@@ -595,6 +658,7 @@ export class ComputeFingerprints extends NodeCore {
 			distanceMethods: JSON.stringify(this.dist.getDistancesMethodsNames()),
 			distanceMethod: this.distanceMethod,
 			fixTriangleInequality: this.fixTriangleInequality,
+			reductionType: this.reductionType,
 
 			groupingMethods: JSON.stringify(this.grouping.getGroupingMethodsNames()),
 			groupingMethod: this.groupingMethod,
@@ -784,7 +848,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.dist.projectPoints();
 
 		// Update the scatterplot if it is open
-		this.createUpdateScatterplot("update", {noGroups: true, plotType: "group"});
+		this.createUpdateScatterplot("update", {noGroups: true, plotType: this.plotType});
 
 		return {countDistances: result.countDistances, endMessage: result.endMessage};
 	}
@@ -799,6 +863,21 @@ export class ComputeFingerprints extends NodeCore {
 		this.groupingMethod = params.groupingMethod as number ?? 0;
         this.groupingThreshold = params.groupingThreshold as number ?? 50;
         this.addedMargin = params.addedMargin as number ?? 0;
+	}
+
+	/**
+	 * Channel handler for reduce grouping to representative parameter change
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelGroupReduce(params: CtrlParams): void {
+
+        this.reductionType = params.reductionType as string ?? "none";
+
+		this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
+
+		// Update the scatterplot if it is open
+		this.createUpdateScatterplot("update", {plotType: this.plotType});
 	}
 
 	/**
@@ -821,8 +900,10 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 
+		this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
+
 		// Update the scatterplot if it is open
-		this.createUpdateScatterplot("update");
+		this.createUpdateScatterplot("update", {plotType: this.plotType});
 
 		return {countGroups: result.countGroups};
 	}
@@ -832,7 +913,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelScatter(): void {
 
-		this.createUpdateScatterplot("create", {plotType: "group"});
+		this.createUpdateScatterplot("create", {plotType: this.plotType});
 
 		if(!this.channelOpened) {
 			this.channelOpened = true;
@@ -887,19 +968,11 @@ export class ComputeFingerprints extends NodeCore {
 				}
 			});
 
-			ipcMain.on("SYSTEM:convex-hull", (_event: unknown, params: CtrlParams): void => {
-
-				const dimension = params.dimension as number ?? 4;
-				const threshold = params.threshold as number ?? 0.1;
-
-				this.createUpdateScatterplot("update", {dimension, threshold, plotType: "group"});
-			});
-
 			ipcMain.on("SYSTEM:selected-plot", (_event: unknown, params: CtrlParams): void => {
 
-				const plotType = params.plotType as string ?? "group";
+				this.plotType = params.plotType as string ?? "group";
 
-				this.createUpdateScatterplot("update", {plotType});
+				this.createUpdateScatterplot("update", {plotType: this.plotType});
 
 			});
 		}

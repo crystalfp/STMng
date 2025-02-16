@@ -85,6 +85,9 @@ const addedMargin = ref(0); // (1+addedMargin) was called "K" in the old code
 const countGroups = ref(0);
 const groupingBusy = ref(false);
 
+// Reduce the number of points
+const reductionType = ref("none");
+
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
 controlStore.hasFingerprints = true;
@@ -131,6 +134,7 @@ askNode(id, "init")
         groupingMethod.value = params.groupingMethod as number ?? 0;
         groupingThreshold.value = params.groupingThreshold as number ?? 50;
         addedMargin.value = params.addedMargin as number ?? 0;
+        reductionType.value = params.reductionType as string ?? "none";
 
         countSelected.value = 0;
         countAccumulated.value = 0;
@@ -324,7 +328,16 @@ watch([groupingMethod, groupingThreshold, addedMargin], () => {
 
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
-        addedMargin: addedMargin.value
+        addedMargin: addedMargin.value,
+    });
+});
+
+/** On changing grouping reduction */
+watch(reductionType, () => {
+
+    sendToNode(id, "group-reduce", {
+
+      reductionType: reductionType.value,
     });
 });
 
@@ -490,6 +503,14 @@ const showEnergyLandscape = (): void => {
   </v-container>
 
   <v-label class="separator-title">Show results</v-label>
+  <v-label class="mb-1 no-select">Resulting points reduction method</v-label><br>
+  <v-btn-toggle v-model="reductionType" mandatory class="mb-4">
+    <v-btn value="none">None</v-btn>
+    <v-btn value="group">Group</v-btn>
+    <v-btn value="hull" :disabled="!haveEnergies">And hull</v-btn>
+    <v-btn value="only" :disabled="!haveEnergies">Hull</v-btn>
+  </v-btn-toggle>
+
   <v-btn block class="mb-2"
          :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
     Show scatterplot

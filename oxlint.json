@@ -433,7 +433,7 @@
 	"filename-case": 0,
 	"no-await-expression-member": 1,
 	"no-console-spaces": 1,
-	"no-null": 1,
+	"no-null": 0,
 	"no-unreadable-array-destructuring": 1,
 	"number-literal-case": 1,
 	"prefer-array-flat-map": 1,

@@ -1,4 +1,5 @@
 Bugs:
+  ☐ Reduce points, then select group 0: nothing appears
 
 To do:
   ☐ Try to put labels as billboards
@@ -7,6 +8,7 @@ To do:
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ Check error return from main process to client
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
+  ☐ Use grid for landscape buttons
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -29,7 +31,6 @@ ToDo eventually:
   ☐ Use `chagelogen`
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Is there any way to avoid callbacks for repetitive call?
-  ✔ Add color to log messages (e.g., `%cRed`) @done(2025-02-14 07:07)
   ☐ Add more `log.info()` or `log.debug()` messages
   ☐ Unblock UI when rendering big scene
   ☐ Check the order of entries in objects
@@ -38,7 +39,6 @@ ToDo eventually:
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
-  ✔ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>) or better <https://www.w3schools.com/graphics/plot_canvas.asp> @done(2025-02-13 16:06)
   ☐ Use fat line <https://github.com/pmndrs/meshline>
 
 Nice to have/Future:
@@ -47,15 +47,19 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Add tooltips
   ☐ Move to WebGPURenderer
-  ☐ Rewrite UserStore using Map() and not object
-  ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
   ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
+  ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Add use of point enablement in scatterplot and fingerprints chart @done(2025-02-16 17:37) @project(To do)
+  ✔ Remove select by convex hull from scatterplot @done(2025-02-16 17:37) @project(To do)
+  ✘ Rewrite UserStore using Map() and not object @cancelled(2025-02-15 06:09) @project(Nice to have/Future)
+  ✔ Add color to log messages (e.g., `%cRed`) @done(2025-02-14 07:07) @project(ToDo eventually)
+  ✔ Use canvas for scatterplot (see <https://vuexyz.org/demo/canvas-rendering.html>) or better <https://www.w3schools.com/graphics/plot_canvas.asp> @done(2025-02-13 16:06) @project(ToDo eventually)
   ✘ Add drag and drop for input file @cancelled(2025-02-10 17:52) @project(Nice to have/Future)
   ✔ Reduce the list of fingerprinting methods. @done(2025-02-10 17:50) @project(To do)
   ✘ Fix why alias @ does not work in electron files (now they are "../../") @cancelled(2025-02-10 17:52) @project(ToDo eventually)

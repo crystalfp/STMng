@@ -512,28 +512,24 @@ export interface ScatterplotData {
     /** Fingerprints projected in 2D. The coordinates are normalized between 0 and 1 */
     points: number[][];
 
-    /** For each point, the group to which the fingerprint pertains */
-    groups: number[];
+    /** For each point, the associated value that could be:
+     * - the group to which the fingerprint pertains
+     * - the energy of the corresponding structure
+     * - the silhouette coefficients that measure the clustering quality for each point
+     */
+    values: number[];
 
     /** Total number of groups */
     countGroups: number;
 
-    /** For each point, the energy of the corresponding structure */
-    energies: number[];
+    /** If the data has energies */
+    hasEnergies: boolean;
 
     /** Comparison between original and projected distances.
      * The distances are normalized between 0 and 1.
      * The first index is the original distance, the second is the projected distance.
      */
-    efficiencies: number[][];
-
-    /** Silhouette coefficients that measure the clustering quality for each point */
-    silhouettes: number[];
-
-    /** Index of the points on the convex hull of the 3D projection of
-     * the fingerprints and their energies
-     */
-    convexHull: number[];
+    fidelity: number[][];
 }
 
 export interface EnergyLandscapeData {
@@ -543,9 +539,6 @@ export interface EnergyLandscapeData {
 
     /** Corresponding energies (unnormalized) */
     energies: number[];
-
-    /** Distances to remove similar points */
-    distancesVector: number[];
 }
 
 export interface FingerprintsChartData {

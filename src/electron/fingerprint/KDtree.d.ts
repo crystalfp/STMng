@@ -1,6 +1,6 @@
 interface Glyph {
 
-	/** The original step number or sequence number for efficiency display */
+	/** The original step number or sequence number for fidelity display */
 	id: number;
 
 	/** X point coordinate (range 0..1) */
@@ -12,7 +12,7 @@ interface Glyph {
 	/** The color of the point as "#RRGGBB" */
 	color: string;
 
-	/** Value associated to the point: group, energy, or delta for efficiency */
+	/** Value associated to the point: group, energy, or delta for fidelity */
 	value: number;
 }
 export class KDTree {

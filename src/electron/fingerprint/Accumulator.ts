@@ -33,6 +33,8 @@ export interface StructureReduced {
 	selectedIdx: number;
 	/** The structure energy, if any, otherwise undefined */
 	energy?: number;
+	/** If the structure is to consider after reducing to one for group */
+	enabled: boolean;
 
 	/** Computed fingerprint for the structure */
 	fingerprint: number[];
@@ -119,6 +121,7 @@ export class FingerprintsAccumulator {
 			selected: true,
 			selectedIdx: this.accumulator.length,
 			energy: extra.energy,
+			enabled: true,
 
 			fingerprint: [],
 			countSections: 0,
@@ -312,6 +315,16 @@ export class FingerprintsAccumulator {
 				yield [this.accumulator[i], this.accumulator[j]];
 			}
 		}
+	}
+
+	/**
+	 * Set enabled status for all structures
+	 *
+	 * @param enable - New status for the enabled bit of all structures
+	 */
+	setEnableStatus(enable: boolean): void {
+
+		for(const entry of this.accumulator) entry.enabled = enable;
 	}
 
 	/**
