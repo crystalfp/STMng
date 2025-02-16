@@ -123,6 +123,8 @@ receiveInWindow((dataFromMain) => {
 
     const {points, energies} = energyLandscapeData;
 
+    if(points.length === 0) return;
+
     // Interpolate the scatter points to a regular grid
     grid = scatterToUniform(gridSide.value,
                             points,

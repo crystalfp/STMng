@@ -190,6 +190,18 @@
 <h3>Show results</h3>
 <table cellpadding="2" cellspacing="2">
 <tr>
+	<td class="c1">Points reduction method</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select the method to reduce similar fingerprints in scatterplot and energy landscape plots:
+		<dl>
+      <dt>None</dt><dd>No reduction performed.</dd>
+      <dt>Group</dt><dd>Select one element per group, the one with minimal energy or the one nearest the centroid of the group.</dd>
+      <dt>And hull</dt><dd>Select all the points given by the generalized convex hull 4D, then leave only one point per group, the one with minimal energy or the one nearest the centroid of the group.</dd>
+      <dt>Hull</dt><dd>Select all the points given by the generalized convex hull 4D.</dd>
+    </dl>
+  </td>
+</tr>
+<tr>
   <td class="c1">Show scatterplot</td>
   <td class="c2">button</td>
   <td class="c3">Open the Fingerprints scatterplot window.</td>
@@ -214,7 +226,7 @@
   <dt>Energy</dt><dd>One point for each structure colored by energy.</dd>
   <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for bad mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 40,000.</dd>
   <dt>Quality</dt><dd>Grouping quality using the
-      <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1 that show perfect association of the point to the group, to -1 that show that the point is in the wrong group. There are two special cases: the point is alone in a group and the point is on the border between two groups.</dd>
+      <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1, that show perfect association of the point to the group, to -1, that show that the point is in the wrong group. There are two special cases: the point is alone in a group and the point is on the border between two groups.</dd>
   <dt>From min</dt><dd>One point for each structure colored by its distance from the point with minimum energy.</dd>
 </dl>
 <p>The grouping quality color scale is:</p>
@@ -270,26 +282,6 @@
 	<td class="c1">Group</td>
 	<td class="c2">slider</td>
 	<td class="c3">Select one of the groups present.</td>
-</tr>
-<tr>
-  <td class="c1">Select group</td>
-  <td class="c2">button</td>
-  <td class="c3">Select all points pertaining to the selected group.</td>
-</tr>
-<tr>
-  <td class="c1">Min energy per group</td>
-  <td class="c2">button</td>
-  <td class="c3">For each group select the point with minimum energy within the group.</td>
-</tr>
-<tr>
-  <td class="c1">Generalized convex hull</td>
-  <td class="c2">button</td>
-  <td class="c3">Compute the generalized convex hull of the points projected to 3D space plus corresponding energy. From this surface selects only the vertices on the lowest side of the hull. Setting a threshold &gt; 0 remove similar points that dist less than this value. For a group of similar points extracts the lowest energy one.</td>
-</tr>
-<tr>
-	<td class="c1">Threshold</td>
-	<td class="c2">slider</td>
-	<td class="c3">Set the maximum distance to consider two points from the convex hull similar. If zero, no similar points removal is done.</td>
 </tr>
 <tr>
   <td class="c1">Compare selected</td>
@@ -354,11 +346,6 @@
 	<td class="c1">Colormap</td>
 	<td class="c2">selector</td>
 	<td class="c3">Name of the colormap to convert value into color.</td>
-</tr>
-<tr>
-	<td class="c1">Tolerance</td>
-	<td class="c2">slider</td>
-	<td class="c3">Maximum distance to consider two points similar. If set to zero, all points are visualized.</td>
 </tr>
 <tr>
   <td class="c1">Close</td>

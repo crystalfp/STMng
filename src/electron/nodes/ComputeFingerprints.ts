@@ -876,8 +876,9 @@ export class ComputeFingerprints extends NodeCore {
 
 		this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
 
-		// Update the scatterplot if it is open
+		// Update the charts if they are open
 		this.createUpdateScatterplot("update", {plotType: this.plotType});
+		this.createUpdateLandscape("update");
 	}
 
 	/**
