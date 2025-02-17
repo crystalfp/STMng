@@ -199,3 +199,22 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 	return order;
 };
+
+/**
+ * Prepare the distances list from the given fingerprint
+ *
+ * @param distanceMatrix - The distance matrix
+ * @param steps - The step numbers for each fingerprint selected
+ * @param row - Index of the fingerprint from which the distance should be computed
+ * @returns List of (step, distance) pairs
+ */
+export const methodDistances = (distanceMatrix: DistanceMatrix,
+								steps: number[],
+								row: number): [id: number, order: number][]  => {
+
+	const distances: [id: number, order: number][] = [];
+	for(let col=0; col < distanceMatrix.matrixSize(); ++col) {
+		distances.push([steps[col], distanceMatrix.get(row, col)]);
+	}
+	return distances;
+};

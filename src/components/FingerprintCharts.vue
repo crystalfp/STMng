@@ -146,7 +146,7 @@ receiveInWindow((dataFromMain) => {
 
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
-    const {fingerprint, energyDistance, energyHistogram, order,
+    const {fingerprint, energyDistance, energyHistogram, order, distances,
            distanceHistogram, haveEnergies: haveE, haveDistances: haveD} = fingerprintChartData;
 
     // Disable buttons if no energy or distances provided
@@ -216,6 +216,15 @@ receiveInWindow((dataFromMain) => {
         chartOptions.value = buildChartOptions("Structure step",
                                                "Order parameter");
     }
+    else if(distances) {
+
+        const lineCoordinates = distances.map((value) => ({x: value[0], y: value[1]}));
+
+        chartData.value = buildChartData("distance", lineCoordinates, false, 4);
+
+        chartOptions.value = buildChartOptions("Structure step",
+                                               "Distance from given fingerprint");
+    }
 });
 
 /** Close the window on Esc press */
@@ -248,8 +257,9 @@ watch([fpIndex, chartType, binCount], () => {
           <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
           <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
           <v-btn value="op">Order param</v-btn>
+          <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
         </v-btn-toggle>
-        <g-slider-with-steppers v-show="chartType==='fp'" v-model="fpIndex"
+        <g-slider-with-steppers v-show="chartType==='fp' || chartType==='di'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />

@@ -569,6 +569,9 @@ export interface FingerprintsChartData {
 
     /** Order parameter */
     order?: [id: number, order: number][];
+
+    /** Distances from a given fingerprint chart */
+    distances?: [id: number, y: number][];
 }
 
 /**
@@ -579,5 +582,6 @@ export interface FingerprintsChartData {
  * - "eh" energy histogram
  * - "dh" distances histogram
  * - "op" order parameter
+ * - "di" distances from a given fingerprint
  */
-export type FingerprintsChartKind = "fp" | "ed" | "eh" | "dh" | "op";
+export type FingerprintsChartKind = "fp" | "ed" | "eh" | "dh" | "op" | "di";

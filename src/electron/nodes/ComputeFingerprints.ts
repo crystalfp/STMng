@@ -16,7 +16,7 @@ import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
-import {methodDistancesHistogram, methodEnergiesHistogram,
+import {methodDistances, methodDistancesHistogram, methodEnergiesHistogram,
 		methodEnergyDistance, methodOrder} from "../fingerprint/Analysis";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
@@ -498,8 +498,9 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param opKind - Operation to be performed:
 	 *                 "update" update if new data available or "create" create the chart viewer
 	 * @param kind - Kind of chart to display that determines the data to send to the charts window
-	 * @param lambda - If kind is "fp" it is the index of the fingerprint (not the structure index),
-	 * 	if "eh" or "dh" it is the number of buckets for the histograms
+	 * @param lambda - If kind is "fp" or "di" it is the index of the fingerprint
+	 * 				   (not the structure index), if "eh" or "dh" it is the number of buckets
+	 * 				   for the histograms
 	 */
 	private createUpdateCharts(opKind: "update" | "create",
 							   kind: FingerprintsChartKind,
@@ -564,13 +565,22 @@ export class ComputeFingerprints extends NodeCore {
 					this.dist.getDistanceMatrix().toVector(),
 					lambda
 				);
-
 				break;
 
 			case "op":
 
 				data.order = methodOrder(this.accumulator, this.binSize);
+				break;
 
+			case "di": {
+
+				const ids: number[] = [];
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					ids.push(structure.id);
+				}
+
+				data.distances = methodDistances(this.dist.getDistanceMatrix(), ids, lambda);
+				}
 				break;
 		}
 		const dataToSend = JSON.stringify(data);
@@ -1003,6 +1013,7 @@ export class ComputeFingerprints extends NodeCore {
 				let lambda = 0;
 				switch(chartType) {
 					case "fp":
+					case "di":
 						lambda = params.fpIndex as number ?? 0;
 						break;
 					case "eh":
