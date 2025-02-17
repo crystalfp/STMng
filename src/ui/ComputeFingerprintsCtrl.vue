@@ -474,7 +474,7 @@ const showEnergyLandscape = (): void => {
   </v-label>
   <v-label v-if="distanceBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
-  <v-label class="separator-title">Structure landscape</v-label>
+  <v-label class="separator-title">Group similar</v-label>
 
   <v-select v-model="groupingMethod"
     :items="groupingMethods"
@@ -493,7 +493,7 @@ const showEnergyLandscape = (): void => {
   </v-row>
   <v-btn block :disabled="countDistances === 0"
          @click="groupingBusy = true; ClassifyStructures()">
-    Classify structures
+    Group similar structures
   </v-btn>
   <v-container class="pa-0">
     <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">

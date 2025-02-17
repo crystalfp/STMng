@@ -265,8 +265,8 @@ export class XRDCalculator {
      */
     private isPermutation(hkl1: number[], hkl2: number[]): boolean {
 
-        const thkl1 = hkl1.map((nn) => (nn < 0 ? -nn : nn)).sort((a, b) => (a - b));
-        const thkl2 = hkl2.map((nn) => (nn < 0 ? -nn : nn)).sort((a, b) => (a - b));
+        const thkl1 = hkl1.map((nn) => (nn < 0 ? -nn : nn)).toSorted((a, b) => (a - b));
+        const thkl2 = hkl2.map((nn) => (nn < 0 ? -nn : nn)).toSorted((a, b) => (a - b));
 
         const len1 = thkl1.length;
         if(len1 !== thkl2.length) return false;
