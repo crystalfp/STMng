@@ -880,13 +880,11 @@ const mousemove = (event: MouseEvent): void => {
 
 .scatterplot-grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  grid-template-rows: 1fr 120px;
-  gap: 0 0;
+  gap: 0;
   grid-auto-flow: row;
-  grid-template-areas:
-    "aa bb"
-    "aa cc";
+  grid-template:
+    "aa bb" 1fr
+    "aa cc" 120px / 360px 1fr;
   height: 100vh;
 }
 

@@ -64,7 +64,7 @@ const initViewer = (): void => {
     scene.background = new Color("#90CEEC");
 
     camera = new PerspectiveCamera(30, canvasWidth.value/canvasHeight.value);
-    camera.position.set(5, 3, 5);
+    camera.position.set(1.7, 2.1, 1.9);
     camera.lookAt(scene.position);
 
     renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
@@ -277,13 +277,11 @@ const renderSurface = (): void => {
 
 .landscape-buttons {
   display: grid;
-  grid-template-columns: 0.5fr 0.5fr 1fr 0.7fr 0.3fr;
-  grid-template-rows: 1fr 1fr;
   gap: 5px 10px;
   grid-auto-flow: row;
-  grid-template-areas:
-  "aa aa bb cc cc"
-  "dd . . . ee";
+  grid-template:
+    "aa aa bb cc cc" 1fr
+    "dd .  .  .  ee" 1fr / 0.5fr 0.5fr 1fr 0.7fr 0.3fr;
   max-width: 3000px !important;
   padding: 20px !important;
 }
