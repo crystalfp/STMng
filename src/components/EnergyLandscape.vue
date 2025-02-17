@@ -238,27 +238,20 @@ const renderSurface = (): void => {
     <div class="landscape-viewer" ref="view">
     </div>
     <v-container class="landscape-buttons">
-      <div class="buttons-line">
-        <g-slider-with-steppers v-model="energyScale" class="mb-2"
-                                v-model:raw="showEnergyScale" label-width="4.9rem"
-                                :label="`Scale (${showEnergyScale})`"
-                                :min="0" :max="2" :step="0.1" />
-        <g-slider-with-steppers v-model="gridSideExp" class="mb-2"
-                                v-model:raw="showGridSideExp" label-width="7.5rem"
-                                :label="`Grid side (${2**showGridSideExp})`"
-                                :min="6" :max="11" :step="1" />
-        <g-slider-with-steppers v-model="power" class="mb-2"
-                                v-model:raw="showPower" label-width="5.5rem"
-                                :label="`Power (${showPower})`"
-                                :min="1" :max="6" :step="0.1" />
-      </div>
-      <div class="buttons-line">
-        <g-select-colormap v-model="colormapName" class="mt-2 mb-2 ml-4" />
-        <v-spacer />
-        <v-spacer />
-        <v-spacer />
-        <v-btn v-focus @click="closeWindow('/landscape')" class="mr-2 mb-2">Close</v-btn>
-      </div>
+      <g-slider-with-steppers v-model="energyScale" class="mb-2 aa"
+                              v-model:raw="showEnergyScale" label-width="4.9rem"
+                              :label="`Scale (${showEnergyScale})`"
+                              :min="0" :max="2" :step="0.1" />
+      <g-slider-with-steppers v-model="gridSideExp" class="mb-2 bb"
+                              v-model:raw="showGridSideExp" label-width="7.5rem"
+                              :label="`Grid side (${2**showGridSideExp})`"
+                              :min="6" :max="11" :step="1" />
+      <g-slider-with-steppers v-model="power" class="mb-2 mr-0 cc"
+                              v-model:raw="showPower" label-width="5.5rem"
+                              :label="`Power (${showPower})`"
+                              :min="1" :max="6" :step="0.1" />
+      <g-select-colormap v-model="colormapName" class="dd" />
+      <v-btn v-focus @click="closeWindow('/landscape')" class="mt-2 ee">Close</v-btn>
     </v-container>
   </div>
 </v-app>
@@ -283,20 +276,26 @@ const renderSurface = (): void => {
 }
 
 .landscape-buttons {
-  flex-direction: column;
-  display: flex;
+  display: grid;
+  grid-template-columns: 0.5fr 0.5fr 1fr 0.7fr 0.3fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 5px 10px;
+  grid-auto-flow: row;
+  grid-template-areas:
+  "aa aa bb cc cc"
+  "dd . . . ee";
   max-width: 3000px !important;
-  padding: 20px 20px 4px 20px !important;
+  padding: 20px !important;
 }
 
-.buttons-line {
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-  max-width: 3000px !important;
-  width: 100vw;
-  gap: 10px;
-  padding-right: 40px !important;
-}
+.aa { grid-area: aa; }
+
+.bb { grid-area: bb; }
+
+.cc { grid-area: cc; }
+
+.dd { grid-area: dd; }
+
+.ee { grid-area: ee; }
 
 </style>

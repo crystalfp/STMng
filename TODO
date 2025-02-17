@@ -8,7 +8,6 @@ To do:
   ☐ Do both fingerprint and distance calculations by just one click
   ☐ Check error return from main process to client
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
-  ☐ Use grid for landscape buttons
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -55,6 +54,7 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Use grid for landscape buttons @done(2025-02-17 05:01) @project(To do)
   ✔ Add use of point enablement in scatterplot and fingerprints chart @done(2025-02-16 17:37) @project(To do)
   ✔ Remove select by convex hull from scatterplot @done(2025-02-16 17:37) @project(To do)
   ✘ Rewrite UserStore using Map() and not object @cancelled(2025-02-15 06:09) @project(Nice to have/Future)
