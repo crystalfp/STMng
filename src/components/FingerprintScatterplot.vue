@@ -62,6 +62,7 @@ let maxEnergy = 0;
 /** Indices of the selected points */
 const selectedPoints = ref<number[]>([]);
 const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
+// const sel = reactive(new Set<number>());
 
 /** Reference to the canvas element */
 let canvas: HTMLCanvasElement | null;

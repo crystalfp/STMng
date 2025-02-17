@@ -64,6 +64,8 @@ export const projectIsValid = (prj: Project): boolean => {
 };
 
 // > Check node IDs in the project
+const reservedIds = new Set<string>(["SYSTEM", "PROJECT", "PREFERENCES", "WINDOW", "LOGFILE"]);
+
 /**
  * Check node IDs in the project
  *
@@ -76,7 +78,7 @@ const checkIds = (prj: Project): boolean => {
 
 	for(const id in prj.graph) {
 
-		if(["SYSTEM", "PROJECT", "PREFERENCES", "WINDOW", "LOGFILE"].includes(id)) {
+		if(reservedIds.has(id)) {
 			sendAlertMessage(`Reserved id "${id}" cannot be used`);
 			return false;
 		}
