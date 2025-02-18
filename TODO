@@ -4,9 +4,10 @@ To do:
   ☐ Try to put labels as billboards
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
-  ☐ Do both fingerprint and distance calculations by just one click
+  ✔ Do both fingerprint and distance calculations by just one click @done(2025-02-18 19:00)
   ☐ Check error return from main process to client
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
+  ☐ Add selection of non coincident points to the select criteria
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -25,7 +26,7 @@ Global analysis:
 ToDo eventually:
   ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
-  ☐ Use `chagelogen`
+  ☐ Use `changelogen`
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Is there any way to avoid callbacks for repetitive call?
   ☐ Add more `log.info()` or `log.debug()` messages

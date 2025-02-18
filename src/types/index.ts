@@ -125,7 +125,7 @@ interface GraphNode {
 export type ProjectGraph = Record<string, GraphNode>;
 
 /** Type of the node state variables */
-export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer>;
+export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer | number[]>;
 
 /** Viewer 3D state */
 export interface Viewer3DState {

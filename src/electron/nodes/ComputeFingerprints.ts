@@ -20,6 +20,7 @@ import {methodDistances, methodDistancesHistogram, methodEnergiesHistogram,
 		methodEnergyDistance, methodOrder} from "../fingerprint/Analysis";
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
+import {generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 EnergyLandscapeData, PositionType,
 			 FingerprintsChartData, FingerprintsChartKind,
@@ -639,6 +640,61 @@ export class ComputeFingerprints extends NodeCore {
 		};
 	}
 
+	/**
+	 * Select min energy point for each group
+	 *
+	 * @returns Array of selected points indices
+	 */
+	private selectMinEnergyPerGroup(): number[] {
+
+		if(this.accumulator.selectedSize() === 0) return [];
+		const ngroups = this.grouping.getCountGroups();
+		if(ngroups === 0) return [];
+
+		const groups = this.grouping.getGroups();
+
+		const minEnergy = Array(ngroups).fill(Number.POSITIVE_INFINITY) as number[];
+		const minEnergyIdx = Array(ngroups).fill(0) as number[];
+
+		let idx = 0;
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+
+			const energy = structure.energy;
+			if(energy === undefined) return [];
+			const group = groups[idx];
+			if(energy < minEnergy[group]) {
+				minEnergy[group] = energy;
+				minEnergyIdx[group] = idx;
+			}
+			++idx;
+		}
+
+		return minEnergyIdx;
+	}
+
+	/**
+	 * Compute the 4D convex hull and take the lower half points
+	 *
+	 * @returns Array of selected points indices
+	 */
+	private selectByConvexHull(): number[] {
+
+		const countPoints = this.accumulator.selectedSize();
+		if(countPoints === 0) return [];
+
+		const energies: number[] = [];
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+
+			const energy = structure.energy;
+			if(energy === undefined) return [];
+			energies.push(energy);
+		}
+
+		return generalizedConvexHull4D(this.dist.getDistanceMatrix(),
+									   countPoints,
+									   energies);
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -997,6 +1053,24 @@ export class ComputeFingerprints extends NodeCore {
 
 				this.createUpdateScatterplot("update", {plotType: this.plotType});
 
+			});
+
+			ipcMain.handle("SYSTEM:get-selections", (_event, params: CtrlParams): CtrlParams => {
+
+				const criteria = params.criteria as string ?? "";
+
+				let selectedPoints: number[] = [];
+				switch(criteria) {
+					case "min-energy":
+						selectedPoints = this.selectMinEnergyPerGroup();
+						break;
+					case "convex-hull":
+						selectedPoints = this.selectByConvexHull();
+						break;
+				}
+				return {
+					selectedPoints
+				};
 			});
 		}
 	}

@@ -134,7 +134,7 @@ const scene = sm.createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        showAlertMessage("Cannot create canvas. Quitting.");
+        showAlertMessage("Cannot create Viewer3D. Quitting.");
         return;
     }
 

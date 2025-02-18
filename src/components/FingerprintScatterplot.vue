@@ -10,11 +10,11 @@ import {computed, onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
-import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import {KDTree} from "@/electron/fingerprint/KDtree.js";
-import type {ScatterplotData} from "@/types";
+import type {CtrlParams, ScatterplotData} from "@/types";
 
 /** One point that goes to the scatterplot */
 interface Glyph {
@@ -526,6 +526,20 @@ receiveInWindow((dataFromMain) => {
 closeWithEscape("/scatter");
 
 /**
+ * Select all points
+ */
+ const selectAll = (): void => {
+
+if(!scatterplotData) return;
+
+  const cnt = scatterplotData.value?.points.length;
+  if(!cnt) return;
+
+  selectedPoints.clear();
+  for(let i=0; i < cnt; ++i) selectedPoints.add(i);
+};
+
+/**
  * Reset the selected points
  */
 const resetSelected = (): void => {
@@ -556,17 +570,23 @@ const selectByGroup = (): void => {
 };
 
 /**
- * Select all points
+ * Select the point by the given criteria
  */
-const selectAll = (): void => {
+ const selectByCriteria = (criteria: string): void => {
 
-  if(!scatterplotData) return;
+    askNode("SYSTEM", "get-selections", {
+        criteria
+    })
+    .then((params: CtrlParams) => {
 
-    const cnt = scatterplotData.value?.points.length;
-    if(!cnt) return;
-
-    selectedPoints.clear();
-    for(let i=0; i < cnt; ++i) selectedPoints.add(i);
+        const selection = params.selectedPoints as number[] ?? [];
+        if(selection.length > 0) {
+            for(const idx of selection) selectedPoints.add(idx);
+            drawPoints();
+        }
+    })
+    .catch((error: Error) => log.error(`Error from getting selected points for "${criteria}":`,
+                                       error.message));
 };
 
 // > Save selected to the selected file name
@@ -794,11 +814,11 @@ const mousemove = (event: MouseEvent): void => {
     <div class="side-w pa-2 mr-2">
       <v-label class="separator-title mt-1" style="border: none">Manage selection</v-label>
 
-      <v-row class="ga-3 mt-2 mb-5 ml-1">
-        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="equal">
+      <v-row class="ga-3 mt-2 mb-5 ml-1 mr-n1 two-buttons">
+        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="left">
           Select all
         </v-btn>
-        <v-btn @click="resetSelected" :disabled="noSelectedPoints" class="equal">
+        <v-btn @click="resetSelected" :disabled="noSelectedPoints" class="right">
           Deselect all
         </v-btn>
       </v-row>
@@ -812,7 +832,17 @@ const mousemove = (event: MouseEvent): void => {
         Select group
       </v-btn>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <!-- <v-btn class="mt-4 mb-4 ml-1 w-75" @click="compareSelected" :disabled="noSelectedPoints"> -->
+      <v-btn @click="selectByCriteria('min-energy')" :disabled="!scatterplotData?.hasEnergies"
+             block class="mt-4 ml-1 mb-4">
+        Min energy per group
+      </v-btn>
+      <v-divider thickness="2" />
+      <v-btn @click="selectByCriteria('convex-hull')" :disabled="!scatterplotData?.hasEnergies"
+             block class="mt-4 ml-1 mb-4">
+        Gen. convex hull
+      </v-btn>
+      <v-divider thickness="2" class="mr-n1 ml-1"/>
+      <!-- <v-btn block class="mt-4 mb-4 ml-1" @click="compareSelected" :disabled="noSelectedPoints"> -->
       <v-btn @click="compareSelected" :disabled="true" block class="mt-4 mb-4 ml-1">
         Compare selected
       </v-btn>
@@ -915,10 +945,6 @@ const mousemove = (event: MouseEvent): void => {
   width: 100%
 }
 
-.equal {
-  width: 158px;
-}
-
 .legend {
   position: absolute;
   bottom: 138px;
@@ -940,5 +966,17 @@ const mousemove = (event: MouseEvent): void => {
 .tg td {overflow:hidden; padding:10px 5px;}
 .tg .td-top {text-align:right;vertical-align:top}
 .tg .td-bottom {text-align:right;vertical-align:bottom}
+
+.two-buttons {
+  display: grid;
+  gap: 0 10px;
+  grid-auto-flow: row;
+  grid-template:
+    "aa bb" 1fr / 1fr 1fr;
+}
+
+.left { grid-area: aa; }
+
+.right { grid-area: bb; }
 
 </style>
