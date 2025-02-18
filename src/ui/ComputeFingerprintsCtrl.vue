@@ -486,9 +486,9 @@ const showEnergyLandscape = (): void => {
   <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="groupingThreshold"
                     label="Distance thresh. %"
-                    :min="0" :max="100" :step="1" class="mr-2" />
+                    :min="0" :max="100" :step="1" />
     <v-number-input v-if="useMargin" v-model="addedMargin"
-                    label="Margin" :min="0" :step="1"
+                    label="Margin" :min="0" :step="1" class="ml-2"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
   <v-btn block :disabled="countDistances === 0"
