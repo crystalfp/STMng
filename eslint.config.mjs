@@ -234,7 +234,7 @@ export default [
         // "arrow-parens": "error",
         "no-confusing-arrow": ["error", {allowParens: true}],
         // "dot-location": ["error", "property"],
-        // "no-else-return": "error",
+        "no-else-return": "error",
         // "no-throw-literal": "off",
         // "@typescript-eslint/only-throw-error": "error",
         // "require-await": "off",

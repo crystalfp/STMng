@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-26
  */
-import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
@@ -60,9 +60,8 @@ let minEnergy = 0;
 let maxEnergy = 0;
 
 /** Indices of the selected points */
-const selectedPoints = ref<number[]>([]);
-const noSelectedPoints = computed(() => selectedPoints.value.length === 0);
-// const sel = reactive(new Set<number>());
+const selectedPoints = reactive(new Set<number>());
+const noSelectedPoints = computed(() => selectedPoints.size === 0);
 
 /** Reference to the canvas element */
 let canvas: HTMLCanvasElement | null;
@@ -372,7 +371,7 @@ const drawPoints = (): void => {
     else {
 
         // Draw marker for points selected
-        for(const idx of selectedPoints.value) {
+        for(const idx of selectedPoints) {
 
             const glyph = glyphs[idx];
             const {sx, sy} = pointToScreen(glyph.px, glyph.py);
@@ -438,13 +437,12 @@ const drawPoints = (): void => {
     const idx = nearestNeighbor.point.idx;
 
     // If the point is already selected, remove it; otherwise add it
-    const i = selectedPoints.value.indexOf(idx);
-    if(i === -1) selectedPoints.value.push(idx);
-    else {
-        selectedPoints.value.splice(i, 1);
+    if(selectedPoints.has(idx)) {
+        selectedPoints.delete(idx);
         textShow.value = false;
         return;
     }
+    selectedPoints.add(idx);
 
     // Prepare the text to show and move it to remain inside the plot
     const {id, px, py, value} = glyphs[idx];
@@ -531,7 +529,7 @@ closeWithEscape("/scatter");
  * Reset the selected points
  */
 const resetSelected = (): void => {
-    selectedPoints.value.length = 0;
+    selectedPoints.clear();
     textShow.value = false;
 };
 
@@ -551,9 +549,8 @@ const selectByGroup = (): void => {
     if(!cnt) return;
 
     for(let i=0; i < cnt; ++i) {
-        if(scatterplotData.value.values[i] === selectedGroup.value &&
-           !selectedPoints.value.includes(i)) {
-                selectedPoints.value.push(i);
+        if(scatterplotData.value.values[i] === selectedGroup.value) {
+            selectedPoints.add(i);
         }
     }
 };
@@ -568,8 +565,8 @@ const selectAll = (): void => {
     const cnt = scatterplotData.value?.points.length;
     if(!cnt) return;
 
-    selectedPoints.value.length = cnt;
-    for(let i=0; i < cnt; ++i) selectedPoints.value[i] = i;
+    selectedPoints.clear();
+    for(let i=0; i < cnt; ++i) selectedPoints.add(i);
 };
 
 // > Save selected to the selected file name
@@ -586,7 +583,7 @@ const selectedSaveFile = (filename: string): void => {
 
         sendToNode("SYSTEM", "selected-points", {
             filename,
-            points: JSON.stringify(selectedPoints.value),
+            points: JSON.stringify([...selectedPoints]),
         });
     }
     showSave.value = false;
@@ -725,8 +722,7 @@ const mouseup = (event: MouseEvent): void => {
         for(const glyph of glyphs) {
             if(glyph.px >= startX && glyph.px <= endX &&
                glyph.py >= startY && glyph.py <= endY) {
-                const i = selectedPoints.value.indexOf(idx);
-                if(i !== -1) selectedPoints.value.splice(i, 1);
+                selectedPoints.delete(idx);
             }
             ++idx;
         }
@@ -736,9 +732,8 @@ const mouseup = (event: MouseEvent): void => {
         for(const glyph of glyphs) {
 
             if(glyph.px >= startX && glyph.px <= endX &&
-               glyph.py >= startY && glyph.py <= endY &&
-               !selectedPoints.value.includes(idx)) {
-                selectedPoints.value.push(idx);
+               glyph.py >= startY && glyph.py <= endY) {
+                selectedPoints.add(idx);
             }
             ++idx;
         }
@@ -865,7 +860,7 @@ const mousemove = (event: MouseEvent): void => {
                                 v-model:raw="showPointRadius" label-width="9rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn @click="resetSelected" :disabled="selectedPoints.length === 0">Deselect</v-btn>
+        <v-btn @click="resetSelected" :disabled="selectedPoints.size === 0">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
