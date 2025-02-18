@@ -80,7 +80,6 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "fp",			type: "invokeAsync", callback: this.channelFP.bind(this)},
 		{name: "fp-params",		type: "send", 	callback: this.channelFPParams.bind(this)},
 		{name: "dist",			type: "invoke", callback: this.channelDist.bind(this)},
-		{name: "dist-params",	type: "send",	callback: this.channelDistParams.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
 		{name: "group-reduce",	type: "send",	callback: this.channelGroupReduce.bind(this)},
@@ -803,8 +802,10 @@ export class ComputeFingerprints extends NodeCore {
 		this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
+		this.distanceMethod = params.distanceMethod as number ?? 0;
+		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
 
-		const result = await this.fp.compute(this.accumulator, {
+		const resultFP = await this.fp.compute(this.accumulator, {
 			method: this.fingerprintingMethod,
 			areNanoclusters: this.areNanoclusters,
 			cutoffDistance: this.cutoffDistance,
@@ -812,25 +813,36 @@ export class ComputeFingerprints extends NodeCore {
 			peakWidth: this.peakWidth
 		});
 
-		if(result.error) {
-			sendAlertMessage(result.error, "fingerprints");
+		if(resultFP.error) {
+			sendAlertMessage(resultFP.error, "fingerprints");
+			return {
+				resultDimensionality: 0,
+				countDistances: 0,
+				endMessage: ""
+			};
 		}
-		else this.createUpdateCharts("update", "fp");
+
+		const resultDist = this.dist.measureAll(this.accumulator,
+			this.distanceMethod,
+			this.fixTriangleInequality);
+
+		if(resultDist.error) sendAlertMessage(resultDist.error, "fingerprints");
+
+		// Save distance range
+		this.distanceMin = resultDist.distanceMin;
+		this.distanceMax = resultDist.distanceMax;
+
+		// Project points to 2D
+		this.dist.projectPoints();
+
+		// Update the scatterplot if it is open
+		this.createUpdateScatterplot("update", {noGroups: true, plotType: this.plotType});
 
 		return {
-			resultDimensionality: result.dimension
+			resultDimensionality: resultFP.dimension,
+			countDistances: resultDist.countDistances,
+			endMessage: resultDist.endMessage
 		};
-	}
-
-	/**
-	 * Channel handler for distance computation parameters change
-	 *
-	 * @param params - Parameters from the UI
-	 */
-	private channelDistParams(params: CtrlParams): void {
-
-		this.distanceMethod = params.distanceMethod as number ?? 0;
-		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
 	}
 
 	/**

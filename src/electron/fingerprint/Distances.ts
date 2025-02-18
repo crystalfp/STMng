@@ -271,14 +271,14 @@ export class Distances {
             };
             let endMessage;
             switch(sts) {
-                case 0:  endMessage = "Done (no change)"; break;
-                case 1:  endMessage = "Done (fixed)"; break;
-                default: endMessage = "Done"; break;
+                case 0:  endMessage = "Fix: no change"; break;
+                case 1:  endMessage = "Fixed triangle inequality"; break;
+                default: endMessage = "Fix: done"; break;
             }
             return {countDistances, distanceMin, distanceMax, endMessage};
         }
 
-        return {countDistances, distanceMin, distanceMax, endMessage: "Done"};
+        return {countDistances, distanceMin, distanceMax, endMessage: "Fix: done"};
     }
 
     /**

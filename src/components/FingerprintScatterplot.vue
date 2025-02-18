@@ -854,7 +854,7 @@ const mousemove = (event: MouseEvent): void => {
           <v-btn value="group">Group</v-btn>
           <v-btn value="energy" :disabled="!scatterplotData?.hasEnergies">Energy</v-btn>
           <v-btn value="fidelity">Fidelity</v-btn>
-          <v-btn value="silhouette">Quality</v-btn>
+          <v-btn value="silhouette" :disabled="scatterplotData?.countGroups === 0">Quality</v-btn>
         </v-btn-toggle>
         <g-slider-with-steppers v-model="pointRadius"
                                 v-model:raw="showPointRadius" label-width="9rem"

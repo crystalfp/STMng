@@ -276,10 +276,14 @@ const computeFingerprints = (): void => {
     askNode(id, "fp", {
         fingerprintingMethod: fingerprintingMethod.value,
         binSize: binSize.value,
-        peakWidth: peakWidth.value
+        peakWidth: peakWidth.value,
+        distanceMethod: distanceMethod.value,
+        fixTriangleInequality: fixTriangleInequality.value,
     })
     .then((params: CtrlParams) => {
         resultDimensionality.value = params.resultDimensionality as number ?? 0;
+        countDistances.value = params.countDistances as number ?? 0;
+        endMessage.value = params.endMessage as string ?? "";
     })
     .catch((error: Error) => showAlertMessage(`Error from fingerprint computation: ${error.message}`,
                                               "fingerprints"))
@@ -292,19 +296,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
     countDistances.value = 0;
     countGroups.value = 0;
 
-    sendToNode(id, "dist-params", {
-        distanceMethod: distanceMethod.value,
-        fixTriangleInequality: fixTriangleInequality.value,
-    });
-});
-
-/**
- * Start computing distances between fingerprints
- */
-const computeDistances = (): void => {
-
-    countDistances.value = 0;
-    countGroups.value = 0;
+    if(resultDimensionality.value === 0 || countAccumulated.value < 2) return;
 
     askNode(id, "dist", {
         distanceMethod: distanceMethod.value,
@@ -317,7 +309,7 @@ const computeDistances = (): void => {
     .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
                                               "fingerprints"))
     .finally(() => distanceBusy.value = false);
-};
+});
 
 /** On changing grouping parameters */
 watch([groupingMethod, groupingThreshold, addedMargin], () => {
@@ -449,13 +441,14 @@ const showEnergyLandscape = (): void => {
   </v-row>
   <v-btn block :disabled="countSelected === 0"
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
-    Compute fingerprints
+    Compute fingerprints & distances
   </v-btn>
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
-    {{ `Done (dimensionality: ${resultDimensionality})` }}</v-label>
+    {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
   <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
   <v-label class="separator-title">Compute distances</v-label>
+
   <v-select v-model="distanceMethod"
     label="Distance method"
     :items="distanceMethods"
@@ -464,13 +457,12 @@ const showEnergyLandscape = (): void => {
     class="mr-2 mb-4" />
 
   <v-switch v-model="fixTriangleInequality"
-            label="Fix triangle inequality" class="ml-2 mt-n2 mb-2" />
-  <v-btn block :disabled="resultDimensionality === 0 || countAccumulated < 2"
-         @click="distanceBusy=true; computeDistances()">
-    Compute distances
-  </v-btn>
+            label="Fix triangle inequality" class="ml-2 mt-n1" />
   <v-label v-if="countDistances > 0" class="mt-4 mb-2 result-label">
     {{ `Distances computed: ${countDistances}` }}
+  </v-label><br>
+  <v-label v-if="endMessage !== '' && fixTriangleInequality===true" class="mb-2 mt-0 result-label">
+    {{ endMessage }}
   </v-label>
   <v-label v-if="distanceBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
 
@@ -512,7 +504,7 @@ const showEnergyLandscape = (): void => {
   </v-btn-toggle>
 
   <v-btn block class="mb-2"
-         :disabled="countGroups === 0 || countDistances === 0" @click="showScatterplot">
+         :disabled="countDistances === 0" @click="showScatterplot">
     Show scatterplot
   </v-btn>
   <v-btn block class="mb-2"
