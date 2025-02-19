@@ -198,10 +198,9 @@ export class Grouping {
 		// Make an index of the structures
 		const structures = Array(countStructures) as StructureReduced[];
 		let idx = 0;
-		let hasEnergies = true;
+		const hasEnergies = accumulator.accumulatedHaveEnergies();
 		for(const structure of accumulator.iterateSelectedStructures()) {
 			structures[idx++] = structure;
-			if(structure.energy === undefined) hasEnergies = false;
 		}
 
 		// For each group
@@ -280,7 +279,9 @@ export class Grouping {
 		const countStructures = this.structureGroup.length;
 
 		// Sanity check
-		if(countStructures === 0 || this.countGroups === 0) return;
+		if(countStructures === 0 ||
+		   this.countGroups === 0 ||
+		   !accumulator.accumulatedHaveEnergies()) return;
 
 		// Make an index of the structures and collect energies
 		const structures = Array(countStructures) as StructureReduced[];
@@ -288,8 +289,7 @@ export class Grouping {
 		const energies: number[] = [];
 		for(const structure of accumulator.iterateSelectedStructures()) {
 			structures[idx++] = structure;
-			if(structure.energy === undefined) return;
-			energies.push(structure.energy);
+			energies.push(structure.energy!);
 		}
 
 		// Compute the generalized convex hull

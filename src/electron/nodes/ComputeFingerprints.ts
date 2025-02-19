@@ -389,13 +389,10 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Filter by enabled status on structures and check if energy present
 		const enabled: boolean[] = Array(this.accumulator.selectedSize()).fill(true) as boolean[];
-		let hasEnergies = true;
+		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
 		let idx = 0;
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 			enabled[idx++] = structure.enabled;
-			if(structure.enabled && structure.energy === undefined) {
-				hasEnergies = false;
-			}
 		}
 
 		// Collect and prepare the data for the scatterplot
@@ -434,11 +431,13 @@ export class ComputeFingerprints extends NodeCore {
 		const landscapeOpen = isSecondaryWindowOpen("/landscape");
 		if(opKind !== "create" && !landscapeOpen) return;
 
+		// Should have energies
+		if(!this.accumulator.accumulatedHaveEnergies()) return;
+
 		// Collect energies per structure
-		const energies = [];
+		const energies: number[] = [];
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			if(structure.energy === undefined) return;
-			energies.push(structure.energy);
+			energies.push(structure.energy!);
 		}
 
 		// Normalize between 0 and 1
@@ -647,7 +646,8 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private selectMinEnergyPerGroup(): number[] {
 
-		if(this.accumulator.selectedSize() === 0) return [];
+		if(this.accumulator.selectedSize() === 0 ||
+		   !this.accumulator.accumulatedHaveEnergies()) return [];
 		const ngroups = this.grouping.getCountGroups();
 		if(ngroups === 0) return [];
 
@@ -659,8 +659,7 @@ export class ComputeFingerprints extends NodeCore {
 		let idx = 0;
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 
-			const energy = structure.energy;
-			if(energy === undefined) return [];
+			const energy = structure.energy!;
 			const group = groups[idx];
 			if(energy < minEnergy[group]) {
 				minEnergy[group] = energy;
@@ -680,13 +679,13 @@ export class ComputeFingerprints extends NodeCore {
 	private selectByConvexHull(): number[] {
 
 		const countPoints = this.accumulator.selectedSize();
-		if(countPoints === 0) return [];
+		if(countPoints === 0 ||
+		   !this.accumulator.accumulatedHaveEnergies()) return [];
 
 		const energies: number[] = [];
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 
-			const energy = structure.energy;
-			if(energy === undefined) return [];
+			const energy = structure.energy!;
 			energies.push(energy);
 		}
 
@@ -714,8 +713,10 @@ export class ComputeFingerprints extends NodeCore {
 			forceCutoff: this.forceCutoff,
 			manualCutoffDistance: this.manualCutoffDistance,
 
-			fingerprintMethods: JSON.stringify(["Oganov-Valle fingerprint", "Oganov-Valle per-site fingerprint"]),
-			// fingerprintMethods: JSON.stringify(this.fp.getFingerprintMethodsNames()),
+			fingerprintMethods: JSON.stringify([
+				"Oganov-Valle fingerprint",
+				"Oganov-Valle per-site fingerprint"
+			]),
 			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,
@@ -1001,7 +1002,7 @@ export class ComputeFingerprints extends NodeCore {
 
 				const points = params.points as string;
 				if(!points)	return;
-				const indices = JSON.parse(params.points as string) as number[];
+				const indices = params.points as number[];
 				if(indices.length === 0) return;
 				const filename = params.filename as string;
 				if(!filename) return;
@@ -1010,11 +1011,13 @@ export class ComputeFingerprints extends NodeCore {
 				let structures: Structure[] = [];
 				let idx = 0;
 				let k = 0;
+				const hasEnergies = this.accumulator.accumulatedHaveEnergies();
+
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
 					if(indices.includes(idx)) {
 						structures.push(this.convertAccumulatedStructure(structure));
-						if(structure.energy !== undefined) {
-							sorter.push({idx: k++, energy: structure.energy});
+						if(hasEnergies) {
+							sorter.push({idx: k++, energy: structure.energy!});
 						}
 					}
 					++idx;

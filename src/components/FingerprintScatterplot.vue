@@ -603,7 +603,7 @@ const selectedSaveFile = (filename: string): void => {
 
         sendToNode("SYSTEM", "selected-points", {
             filename,
-            points: JSON.stringify([...selectedPoints]),
+            points: [...selectedPoints],
         });
     }
     showSave.value = false;

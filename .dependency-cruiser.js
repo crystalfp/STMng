@@ -26,6 +26,7 @@ module.exports = {
         pathNot: [
           '(^|/)[.][^/]+[.](?:js|cjs|mjs|ts|cts|mts|json)$',                  // dot files
           '[.]d[.]ts$',                                                       // TypeScript declaration files
+          '(^|/)vite-env[.]d[.]ts$',                                          // vite declaration files
           '(^|/)tsconfig[.]json$',                                            // TypeScript config
           '(^|/)(?:babel|rollup)[.]config[.](?:js|cjs|mjs|ts|cts|mts|json)$'  // Other configs
         ]
@@ -213,7 +214,7 @@ module.exports = {
     /* Which modules to exclusively include (array of regular expressions in strings)
        dependency-cruiser will skip everything not matching this pattern
     */
-    // includeOnly : [''],
+    includeOnly : ['^src'],
 
     /* List of module systems to cruise.
        When left out dependency-cruiser will fall back to the list of _all_
@@ -334,7 +335,7 @@ module.exports = {
       // if you migrate to ESM (or are in an ESM environment already) you will want to
       // have "module" in the list of mainFields, like so:
       // mainFields: ["module", "main", "types", "typings"],
-      mainFields: ["main", "types", "typings"],
+      mainFields: ["module", "main", "types", "typings"],
       /*
          A list of alias fields in package.jsons
          See [this specification](https://github.com/defunctzombie/package-browser-field-spec) and
@@ -364,19 +365,26 @@ module.exports = {
          */
         collapsePattern: 'node_modules/(?:@[^/]+/[^/]+|[^/]+)',
 
+        filters: {
+          // makes sure only things in the src tree end up in the dot
+          // report, and not things in node_modules, test or bin
+          includeOnly: {
+            path: "^src",
+          },
+        },
         /* Options to tweak the appearance of your graph.See
            https://github.com/sverweij/dependency-cruiser/blob/main/doc/options-reference.md#reporteroptions
            for details and some examples. If you don't specify a theme
            dependency-cruiser falls back to a built-in one.
         */
-        // theme: {
-        //   graph: {
-        //     /* splines: "ortho" gives straight lines, but is slow on big graphs
-        //        splines: "true" gives bezier curves (fast, not as nice as ortho)
-        //    */
-        //     splines: "true"
-        //   },
-        // }
+        theme: {
+          graph: {
+            /* splines: "ortho" gives straight lines, but is slow on big graphs
+               splines: "true" gives bezier curves (fast, not as nice as ortho)
+           */
+            splines: "ortho"
+          },
+        }
       },
       archi: {
         /* pattern of modules that can be consolidated in the high level
@@ -392,9 +400,9 @@ module.exports = {
          */
         // theme: { },
       },
-      "text": {
+      text: {
         "highlightFocused": true
-      },
+      }
     }
   }
 };

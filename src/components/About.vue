@@ -44,7 +44,7 @@ getVersions()
   <v-card>
     <v-card-text class="pl-2 pb-0">
       <div class="ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a
-            visualization tool that implements some of the STM4 functionalities.</div>
+            chemistry and crystallographic visualization tool that implements some of the original STM4 functionalities.</div>
       <div class="mb-4 ml-2 mt-3 text-body-1">Author: Mario Valle
            (<a href="mailto:mvalle@ikmail.com">mvalle@ikmail.com</a>).</div>
       <table class="text-body-2 ml-2">
