@@ -36,18 +36,25 @@ const getSelector = (): void => {
 
 
 <template>
-<v-container class="pa-0">
-  <v-label :text="title" class="mb-1 no-select" /><br>
-  <v-btn-toggle v-model="labelKind" mandatory class="mb-6" :disabled="disabled">
-    <v-btn value="symbol">Symbol</v-btn>
-    <v-btn value="label">Label</v-btn>
-    <v-btn value="index">Index</v-btn>
-    <v-btn value="all">All</v-btn>
-  </v-btn-toggle>
-  <v-text-field v-model="atomsSelectorBase" :label="placeholder"
-                :disabled="labelKind === 'all' || disabled"
-                placeholder="Space separated list"
-                hide-details="auto" clearable spellcheck="false"
-                @blur="getSelector" @keyup.enter="getSelector" @click:clear="getSelector"/>
-</v-container>
+<v-row class="pa-0 mt-2">
+  <v-col cols="12" class="pa-0">
+    <v-label :text="title" class="mb-1 no-select" />
+  </v-col>
+  <v-col cols="12" class="pa-0 mb-4">
+    <v-btn-toggle v-model="labelKind" mandatory :disabled="disabled">
+      <v-btn value="symbol">Symbol</v-btn>
+      <v-btn value="label">Label</v-btn>
+      <v-btn value="index">Index</v-btn>
+      <v-btn value="all">All</v-btn>
+    </v-btn-toggle>
+  </v-col>
+  <v-col cols="12" class="pa-0">
+    <v-text-field v-model="atomsSelectorBase" :label="placeholder"
+                  :disabled="labelKind === 'all' || disabled"
+                  placeholder="Space separated list"
+                  hide-details="auto" clearable spellcheck="false"
+                  @blur="getSelector" @keyup.enter="getSelector"
+                  @click:clear="getSelector"/>
+  </v-col>
+</v-row>
 </template>

@@ -59,13 +59,13 @@ export class ComputeFingerprints extends NodeCore {
 
 	private distanceMethod = 0;
 	private fixTriangleInequality = false;
-	private distanceMin = 0;
-	private distanceMax = 10;
 
 	private groupingMethod = 0;
-	private groupingThreshold = 5;
+	private groupingThreshold = 0.1;
 	private addedMargin = 0;
-	private reductionType = "none";
+
+	private removeDuplicates = false;
+	private duplicatesThreshold = 0.05;
 
 	private plotType = "group";
 
@@ -83,7 +83,6 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "dist",			type: "invoke", callback: this.channelDist.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
-		{name: "group-reduce",	type: "send",	callback: this.channelGroupReduce.bind(this)},
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
 		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
@@ -194,7 +193,8 @@ export class ComputeFingerprints extends NodeCore {
 			groupingMethod: this.groupingMethod,
 			groupingThreshold: this.groupingThreshold,
 			addedMargin: this.addedMargin,
-			reductionType: this.reductionType
+			removeDuplicates: this.removeDuplicates,
+			duplicatesThreshold: this.duplicatesThreshold,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -210,9 +210,10 @@ export class ComputeFingerprints extends NodeCore {
 		this.distanceMethod = params.distanceMethod as number ?? 0;
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
 		this.groupingMethod = params.groupingMethod as number ?? 0;
-		this.groupingThreshold = params.groupingThreshold as number ?? 0;
+		this.groupingThreshold = params.groupingThreshold as number ?? 0.1;
 		this.addedMargin = params.addedMargin as number ?? 0;
-		this.reductionType = params.reductionType as string ?? "none";
+        this.removeDuplicates = params.removeDuplicates as boolean ?? false;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
 	}
 
 	/**
@@ -602,6 +603,13 @@ export class ComputeFingerprints extends NodeCore {
 		}
 	}
 
+	updateVisualizations(options: CreateUpdateScatterplotOptions, kind: FingerprintsChartKind, lambda: number): void {
+
+		this.createUpdateScatterplot("update", options);
+		this.createUpdateLandscape("update");
+		this.createUpdateCharts("update", kind, lambda);
+	}
+
 	/**
 	 * Convert an accumulated structure to a Structure type for writing to file
 	 *
@@ -724,12 +732,14 @@ export class ComputeFingerprints extends NodeCore {
 			distanceMethods: JSON.stringify(this.dist.getDistancesMethodsNames()),
 			distanceMethod: this.distanceMethod,
 			fixTriangleInequality: this.fixTriangleInequality,
-			reductionType: this.reductionType,
 
 			groupingMethods: JSON.stringify(this.grouping.getGroupingMethodsNames()),
 			groupingMethod: this.groupingMethod,
 			groupingThreshold: this.groupingThreshold,
 			addedMargin: this.addedMargin,
+
+			removeDuplicates: this.removeDuplicates,
+			duplicatesThreshold: this.duplicatesThreshold,
 		};
 	}
 
@@ -885,10 +895,6 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(resultDist.error) sendAlertMessage(resultDist.error, "fingerprints");
 
-		// Save distance range
-		this.distanceMin = resultDist.distanceMin;
-		this.distanceMax = resultDist.distanceMax;
-
 		// Project points to 2D
 		this.dist.projectPoints();
 
@@ -919,10 +925,6 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 
-		// Save distance range
-		this.distanceMin = result.distanceMin;
-		this.distanceMax = result.distanceMax;
-
 		// Project points to 2D
 		this.dist.projectPoints();
 
@@ -940,24 +942,8 @@ export class ComputeFingerprints extends NodeCore {
 	private channelGroupParams(params: CtrlParams): void {
 
 		this.groupingMethod = params.groupingMethod as number ?? 0;
-        this.groupingThreshold = params.groupingThreshold as number ?? 50;
+        this.groupingThreshold = params.groupingThreshold as number ?? 0.1;
         this.addedMargin = params.addedMargin as number ?? 0;
-	}
-
-	/**
-	 * Channel handler for reduce grouping to representative parameter change
-	 *
-	 * @param params - Parameters from the UI
-	 */
-	private channelGroupReduce(params: CtrlParams): void {
-
-        this.reductionType = params.reductionType as string ?? "none";
-
-		this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
-
-		// Update the charts if they are open
-		this.createUpdateScatterplot("update", {plotType: this.plotType});
-		this.createUpdateLandscape("update");
 	}
 
 	/**
@@ -969,18 +955,16 @@ export class ComputeFingerprints extends NodeCore {
 	private channelGroup(params: CtrlParams): CtrlParams {
 
 		this.groupingMethod = params.groupingMethod as number ?? 0;
-        this.groupingThreshold = params.groupingThreshold as number ?? 50;
+        this.groupingThreshold = params.groupingThreshold as number ?? 0.1;
         this.addedMargin = params.addedMargin as number ?? 0;
 
-		// Transform percentage into absolute threshold value
-		const threshold = this.distanceMin + this.groupingThreshold/100*(this.distanceMax-this.distanceMin);
-
 		const result = this.grouping.group(this.accumulator, this.dist.getDistanceMatrix(),
-										   this.groupingMethod, threshold, this.addedMargin);
+										   this.groupingMethod, this.groupingThreshold, this.addedMargin);
 
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 
-		this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
+		// this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
+		this.accumulator.setEnableStatus(true);
 
 		// Update the scatterplot if it is open
 		this.createUpdateScatterplot("update", {plotType: this.plotType});

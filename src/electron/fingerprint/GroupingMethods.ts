@@ -232,7 +232,8 @@ abstract class HierarchicalGrouping extends GroupingMethod {
     }
 }
 
-class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
+// Exported because it is reused in ReduceDuplicates
+export class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
 
     protected clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number {
 

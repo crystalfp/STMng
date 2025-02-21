@@ -121,37 +121,61 @@ const showCombined = computed({
 
 <template>
 <v-container class="container">
-  <v-label text="Structure rendering mode" class="mb-1 ml-2 mt-4 no-select" /><br>
-  <v-btn-toggle v-model="drawKind" mandatory class="mb-6 ml-2">
-    <v-btn value="ball-and-stick">CPK</v-btn>
-    <v-btn value="van-der-waals">VdW</v-btn>
-    <v-btn value="licorice">Licorice</v-btn>
-    <v-btn value="lines">Lines</v-btn>
-  </v-btn-toggle>
+  <v-row>
+    <v-col cols="12" class="pa-0 ml-5 mt-6 mb-n2">
+      <v-label text="Structure rendering mode" class="no-select" />
+    </v-col>
+    <v-col>
+      <v-btn-toggle v-model="drawKind" mandatory class="mb-6 ml-2">
+        <v-btn value="ball-and-stick">CPK</v-btn>
+        <v-btn value="van-der-waals">VdW</v-btn>
+        <v-btn value="licorice">Licorice</v-btn>
+        <v-btn value="lines">Lines</v-btn>
+      </v-btn-toggle>
+    </v-col>
+  </v-row>
 
-  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n2 mb-4 ml-2" />
+  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n2 mb-4 ml-4" />
 
-  <v-label text="Atom label" class="mb-1 ml-2 no-select" /><br>
-  <v-btn-toggle v-model="labelKind" mandatory class="mb-6 ml-2">
-    <v-btn value="symbol">Symbol</v-btn>
-    <v-btn value="label">Label</v-btn>
-    <v-btn value="index">Index</v-btn>
-  </v-btn-toggle><br>
+  <v-row>
+    <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
+      <v-label text="Atom label" class="no-select" />
+    </v-col>
+    <v-col>
+      <v-btn-toggle v-model="labelKind" mandatory class="mb-2 ml-2">
+        <v-btn value="symbol">Symbol</v-btn>
+        <v-btn value="label">Label</v-btn>
+        <v-btn value="index">Index</v-btn>
+      </v-btn-toggle>
+    </v-col>
+  </v-row>
 
-  <v-label text="Visibility" class="ml-2 mb-1 no-select" /><br>
-  <v-btn-toggle v-model="showCombined" multiple mandatory class="ml-2 mb-4">
-    <v-btn value="structure">Structure</v-btn>
-    <v-btn value="bonds">Bonds</v-btn>
-    <v-btn value="labels">Labels</v-btn>
-  </v-btn-toggle>
+  <v-row>
+    <v-col cols="12" class="pa-0 ml-5 mb-n2">
+      <v-label text="Visibility" class="no-select" />
+    </v-col>
+    <v-col>
+      <v-btn-toggle v-model="showCombined" multiple mandatory class="ml-2 mb-2">
+        <v-btn value="structure">Structure</v-btn>
+        <v-btn value="bonds">Bonds</v-btn>
+        <v-btn value="labels">Labels</v-btn>
+      </v-btn-toggle>
+    </v-col>
+  </v-row>
 
-  <v-label text="Quality" class="ml-2 mb-1 no-select" /><br>
-  <v-btn-toggle v-model="drawQuality" mandatory class="ml-2">
-    <v-btn :value="1">Low</v-btn>
-    <v-btn :value="2">Medium</v-btn>
-    <v-btn :value="3">Good</v-btn>
-    <v-btn :value="4">Best</v-btn>
-  </v-btn-toggle>
+  <v-row>
+    <v-col cols="12" class="pa-0 ml-5 mb-n2">
+      <v-label text="Quality" class="no-select" />
+    </v-col>
+    <v-col>
+      <v-btn-toggle v-model="drawQuality" mandatory class="ml-2">
+        <v-btn :value="1">Low</v-btn>
+        <v-btn :value="2">Medium</v-btn>
+        <v-btn :value="3">Good</v-btn>
+        <v-btn :value="4">Best</v-btn>
+      </v-btn-toggle>
+    </v-col>
+  </v-row>
 
   <g-debounced-slider v-slot="{value}" v-model="drawRoughness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-6">

@@ -72,21 +72,21 @@ const fingerprintingBusy = ref(false);
 // Compute distances
 const distanceMethod = ref(0);
 const fixTriangleInequality = ref(false);
-const distanceBusy = ref(false);
 const distanceMethods = ref<DistanceMethodsNames[]>([]);
 const countDistances = ref(0);
 const endMessage = ref("");
 
+// TBD Remove duplicates
+const removeDuplicates = ref(true);
+const duplicatesThreshold = ref(0.05);
+
 // Classify structures
 const groupingMethods = ref<GroupingMethodsNames[]>([]);
 const groupingMethod = ref(0);
-const groupingThreshold = ref(50); // Halfway between min and max distances
+const groupingThreshold = ref(0.1);
 const addedMargin = ref(0); // (1+addedMargin) was called "K" in the old code
 const countGroups = ref(0);
 const groupingBusy = ref(false);
-
-// Reduce the number of points
-const reductionType = ref("none");
 
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
@@ -132,9 +132,11 @@ askNode(id, "init")
             groupingMethods.value.push({value: i, label: gms[i].label, usingMargin: gms[i].usingMargin});
         }
         groupingMethod.value = params.groupingMethod as number ?? 0;
-        groupingThreshold.value = params.groupingThreshold as number ?? 50;
+        groupingThreshold.value = params.groupingThreshold as number ?? 0.1;
         addedMargin.value = params.addedMargin as number ?? 0;
-        reductionType.value = params.reductionType as string ?? "none";
+
+        removeDuplicates.value = params.removeDuplicates as boolean ?? false;
+        duplicatesThreshold.value = params.duplicatesThreshold as number ?? 0.05;
 
         countSelected.value = 0;
         countAccumulated.value = 0;
@@ -307,8 +309,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
         endMessage.value = params.endMessage as string ?? "";
     })
     .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
-                                              "fingerprints"))
-    .finally(() => distanceBusy.value = false);
+                                              "fingerprints"));
 });
 
 /** On changing grouping parameters */
@@ -321,15 +322,6 @@ watch([groupingMethod, groupingThreshold, addedMargin], () => {
         groupingMethod: groupingMethod.value,
         groupingThreshold: groupingThreshold.value,
         addedMargin: addedMargin.value,
-    });
-});
-
-/** On changing grouping reduction */
-watch(reductionType, () => {
-
-    sendToNode(id, "group-reduce", {
-
-      reductionType: reductionType.value,
     });
 });
 
@@ -392,10 +384,10 @@ const showEnergyLandscape = (): void => {
 <v-container class="container">
   <v-label class="separator-title mt-0" style="border: none">Accumulated structures</v-label>
 
-  <v-row class="mt-0 mb-4 mx-2">
+  <v-row class="mt-0 mb-2 ml-0 mr-2">
     <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     <v-spacer />
-    <v-btn density="compact" @click="resetAccumulator">Reset</v-btn>
+    <v-btn @click="resetAccumulator">Reset</v-btn>
   </v-row>
 
   <v-label class="separator-title">Filter structures</v-label>
@@ -431,11 +423,11 @@ const showEnergyLandscape = (): void => {
     label="Fingerprinting method"
     item-title="label"
     item-value="value"
-    class="mr-2 mb-4" />
+    class="mr-2 mb-6" />
 
-  <v-row class="ml-0 mr-2 pt-1">
+  <v-row class="mr-2">
     <v-number-input v-model="peakWidth"
-                    label="Peak width" :min="0.01" :step="0.01" class="mr-2" />
+                    label="Peak width" :min="0.01" :step="0.01" class="mr-2 ml-2" />
     <v-number-input v-model="binSize"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
@@ -458,13 +450,27 @@ const showEnergyLandscape = (): void => {
 
   <v-switch v-model="fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n1" />
-  <v-label v-if="countDistances > 0" class="mt-4 mb-2 result-label">
-    {{ `Distances computed: ${countDistances}` }}
-  </v-label><br>
-  <v-label v-if="endMessage !== '' && fixTriangleInequality===true" class="mb-2 mt-0 result-label">
-    {{ endMessage }}
-  </v-label>
-  <v-label v-if="distanceBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
+  <v-row v-if="countDistances > 0" class="mt-n1 mb-n2">
+    <v-col cols="12">
+      <v-label class="result-label">
+        {{ `Distances computed: ${countDistances}` }}
+      </v-label>
+    </v-col>
+      <v-col cols="12" v-if="endMessage !== '' && fixTriangleInequality===true" class="mt-n4">
+        <v-label class="result-label">
+          {{ endMessage }}
+        </v-label>
+    </v-col>
+  </v-row>
+
+  <v-label class="separator-title">Remove duplicates</v-label>
+
+  <v-row class="ml-0 mr-2 pt-3">
+    <v-switch v-model="removeDuplicates"
+            label="Remove" class="ml-2 mr-6 mb-5" />
+    <v-number-input :disabled="!removeDuplicates" v-model="duplicatesThreshold"
+            label="Distance threshold" :min="0" :max="1" :step="0.01" class="mt-0"/>
+  </v-row>
 
   <v-label class="separator-title">Group similar</v-label>
 
@@ -477,8 +483,8 @@ const showEnergyLandscape = (): void => {
 
   <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="groupingThreshold"
-                    label="Distance thresh. %"
-                    :min="0" :max="100" :step="1" />
+                    label="Distance thresh."
+                    :min="0" :max="1" :step="0.01" />
     <v-number-input v-if="useMargin" v-model="addedMargin"
                     label="Margin" :min="0" :step="1" class="ml-2"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
@@ -495,13 +501,6 @@ const showEnergyLandscape = (): void => {
   </v-container>
 
   <v-label class="separator-title">Show results</v-label>
-  <v-label class="mb-1 no-select">Resulting points reduction method</v-label><br>
-  <v-btn-toggle v-model="reductionType" mandatory class="mb-4">
-    <v-btn value="none">None</v-btn>
-    <v-btn value="group">Group</v-btn>
-    <v-btn value="hull" :disabled="!haveEnergies">And hull</v-btn>
-    <v-btn value="only" :disabled="!haveEnergies">Hull</v-btn>
-  </v-btn-toggle>
 
   <v-btn block class="mb-2"
          :disabled="countDistances === 0" @click="showScatterplot">

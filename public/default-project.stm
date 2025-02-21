@@ -2,10 +2,10 @@
   "graph": {
     "reader":    {"label": "Reader",            "type": "structure-reader"},
     "symmetry":  {"label": "Symmetries",        "type": "compute-symmetries",   "in": "reader"},
-    "unit":      {"label": "Cell",              "type": "draw-unit-cell",       "in": "symmetry"},
-    "bonds":     {"label": "Bonds",             "type": "compute-bonds",        "in": "unit"},
+    "unit":      {"label": "Draw — Cell",       "type": "draw-unit-cell",       "in": "symmetry"},
+    "bonds":     {"label": "Draw — Bonds",      "type": "compute-bonds",        "in": "unit"},
+    "draw":      {"label": "Draw — Structure",  "type": "draw-structure",       "in": "bonds"},
     "cfp":       {"label": "Fingerprints",      "type": "compute-fingerprints", "in": "unit"},
-    "draw":      {"label": "Structure",         "type": "draw-structure",       "in": "bonds"},
     "polyhedra": {"label": "Polyhedra",         "type": "draw-polyhedra",       "in": "bonds"},
     "smooth":    {"label": "Interpolate",       "type": "interpolate-volume",   "in": "unit"},
     "ortho":     {"label": "Orthoslice",        "type": "orthoslice",           "in": "smooth"},

@@ -216,6 +216,9 @@ module.exports = {
     */
     includeOnly : ['^src'],
 
+    prefix: "../",
+
+    progress: { type: "cli-feedback" },
     /* List of module systems to cruise.
        When left out dependency-cruiser will fall back to the list of _all_
        module systems it knows of. It's the default because it's the safe option
@@ -356,6 +359,10 @@ module.exports = {
      */
     skipAnalysisNotInRules: true,
 
+    builtInModules: {
+        add: ["electron"]
+    },
+
     reporterOptions: {
       dot: {
         /* pattern of modules that can be consolidated in the detailed
@@ -364,7 +371,7 @@ module.exports = {
            the external modules, but their innards.
          */
         collapsePattern: 'node_modules/(?:@[^/]+/[^/]+|[^/]+)',
-
+        showMetrics: true,
         filters: {
           // makes sure only things in the src tree end up in the dot
           // report, and not things in node_modules, test or bin
