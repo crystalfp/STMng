@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {NodeCore} from "../modules/NodeCore";
-import {sendToClientForRendering} from "../modules/WindowsUtilities";
+import {sendToClientForRendering} from "../modules/ToClient";
 import {getAtomData} from "../modules/AtomData";
 import type {Structure, CtrlParams, ChannelDefinition, AtomRenderInfo,
 			 StructureRenderInfo} from "@/types";

@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {IsosurfaceCore} from "../modules/IsosurfaceCore";
-import {sendIsosurfacesToClient} from "../modules/WindowsUtilities";
+import {sendIsosurfacesToClient} from "../modules/ToClient";
 import {getValueLimits, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 

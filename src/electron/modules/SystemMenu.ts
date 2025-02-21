@@ -11,8 +11,9 @@ import path from "node:path";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import {broadcastMessage, showDevToolsOnSecondaryWindows, sendAlertMessage,
-        refreshSystemMenu, openMenuEntry, getCurrentNode} from "./WindowsUtilities";
+import {broadcastMessage, showDevToolsOnSecondaryWindows} from "./WindowsUtilities";
+import {refreshSystemMenu, openMenuEntry, sendAlertMessage,
+        getCurrentNode} from "./ToClient";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import {pm} from "./ProjectManager";

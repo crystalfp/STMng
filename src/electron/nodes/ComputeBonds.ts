@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
-import {sendToClient} from "../modules/WindowsUtilities";
+import {sendToClient} from "../modules/ToClient";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell, vectorAngle} from "../modules/Helpers";
 import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";

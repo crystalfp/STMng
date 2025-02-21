@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {adjustOrigin} from "../modules/AdjustOrigin";
-import {sendVerticesToClient} from "../modules/WindowsUtilities";
+import {sendVerticesToClient} from "../modules/ToClient";
 import {computeCellVertices} from "../modules/ComputeCellVertices";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell} from "../modules/Helpers";

@@ -9,7 +9,8 @@
 import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
-		sendAlertMessage, sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+		sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";

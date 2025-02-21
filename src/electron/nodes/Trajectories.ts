@@ -9,7 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {getAtomData} from "../modules/AtomData";
-import {sendTracesToClient} from "../modules/WindowsUtilities";
+import {sendTracesToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class Trajectories extends NodeCore {

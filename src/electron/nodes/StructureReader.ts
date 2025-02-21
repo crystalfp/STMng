@@ -8,7 +8,7 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
-import {sendAlertMessage} from "../modules/WindowsUtilities";
+import {sendAlertMessage} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";

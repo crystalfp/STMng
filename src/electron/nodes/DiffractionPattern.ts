@@ -9,7 +9,8 @@
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
-		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+		sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
 

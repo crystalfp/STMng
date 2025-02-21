@@ -9,7 +9,8 @@
 import {app, ipcMain} from "electron";
 import path from "node:path";
 import {readFileSync, copyFileSync, writeFileSync} from "node:fs";
-import {createSecondaryWindow, sendAlertMessage} from "./WindowsUtilities";
+import {createSecondaryWindow} from "./WindowsUtilities";
+import {sendAlertMessage} from "./ToClient";
 
 /**
  * Open a secondary window to show the current log file

@@ -9,7 +9,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {getAtomData} from "../modules/AtomData";
-import {sendToClient} from "../modules/WindowsUtilities";
+import {sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 SelectedAtom, PositionType, BondData} from "@/types";

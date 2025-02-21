@@ -8,7 +8,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import {sendIsoOrthoToClient} from "../modules/WindowsUtilities";
+import {sendIsoOrthoToClient} from "../modules/ToClient";
 import {Isolines} from "../modules/Isolines";
 import {getValueLimits} from "../modules/Helpers";
 import type {Structure, CtrlParams,

@@ -7,7 +7,7 @@
  * @since 2024-07-08
  */
 import {NodeCore} from "../modules/NodeCore";
-import {askClient} from "../modules/WindowsUtilities";
+import {askClient} from "../modules/ToClient";
 import type {Viewer3DState, ChannelDefinition, CtrlParams} from "@/types";
 
 export class Viewer3D extends NodeCore {

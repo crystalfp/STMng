@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {sendAlertMessage} from "./WindowsUtilities";
+import {sendAlertMessage} from "./ToClient";
 import type {Project} from "@/types";
 
 import {object as vObject, record as vRecord, pipe as vPipe,

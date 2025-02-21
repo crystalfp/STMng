@@ -13,7 +13,7 @@ import path from "node:path";
 import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
-import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./WindowsUtilities";
+import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./ToClient";
 import type {Project, CtrlParams, ProjectGraph} from "@/types";
 import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo} from "@/types/NodeInfo";
 import type {NodeCore} from "./NodeCore";

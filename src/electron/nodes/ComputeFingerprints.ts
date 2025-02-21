@@ -9,8 +9,9 @@
 import {ipcMain} from "electron";
 import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {createSecondaryWindowWithRetry, isSecondaryWindowOpen, sendAlertMessage,
-		sendToClient, sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
+		sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";

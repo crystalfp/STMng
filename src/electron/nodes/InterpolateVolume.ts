@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {M} from "../modules/InterpolationTable";
-import {sendToClient} from "../modules/WindowsUtilities";
+import {sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition, Volume} from "@/types";
 
 /**
