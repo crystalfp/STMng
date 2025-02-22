@@ -156,20 +156,20 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
         <v-label text="Camera position" class="mb-4 no-select" />
         <v-row class="pl-1">
           <v-number-input v-model="forcedCameraPositionX" label="x"
-                          :step="0.1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2 mr-0" />
           <v-number-input v-model="forcedCameraPositionY" label="y"
-                          :step="0.1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2 mr-0" />
           <v-number-input v-model="forcedCameraPositionZ" label="z"
-                          :step="0.1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2 mr-0" />
         </v-row>
         <v-label text="Camera look at" class="mb-4 no-select" />
         <v-row class="pl-1">
           <v-number-input v-model="forcedCameraLookAtX" label="x"
-                          :step="0.1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2 mr-0" />
           <v-number-input v-model="forcedCameraLookAtY" label="y"
-                          :step="0.1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2 mr-0" />
           <v-number-input v-model="forcedCameraLookAtZ" label="z"
-                          :step="0.1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2 mr-0" />
         </v-row>
         <v-row class="d-flex justify-center gc-2 pl-4 pb-1">
           <v-btn density="comfortable" @click="loadPosition">Load current</v-btn>

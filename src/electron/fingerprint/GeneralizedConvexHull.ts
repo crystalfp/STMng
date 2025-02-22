@@ -20,7 +20,7 @@ import type {DistanceMatrix} from "./Distances";
  */
 export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
 										countPoints: number,
-										energies: number[]): number[] => {
+										energies: number[]): Set<number> => {
 
 	const mappedPoints = MDS(distanceMatrix.toVector(), countPoints, 3);
 	const generalizedPoints = Array(mappedPoints.length) as number[][];
@@ -42,5 +42,5 @@ export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
 		}
 	}
 
-	return [...vertices];
+	return vertices;
 };

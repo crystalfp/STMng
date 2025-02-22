@@ -100,7 +100,7 @@ const openChartWindow = (): void => {
   <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 mt-2 mb-4"
             label="Wavelength"/>
   <v-number-input v-if="wavelengthCode === 'Manual'" v-model="wavelengthNumeric"
-                  label="Numeric wavelength"
+                  label="Numeric wavelength" :precision="6"
                   :min="0.1" :max="4" :step="0.1" class="ml-2 mr-0" />
   <g-debounced-range-slider v-slot="{values}" v-model="theta"
                               :step="0.01" :min="0" :max="90"

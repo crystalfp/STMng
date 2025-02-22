@@ -120,8 +120,8 @@ const pointsByGroup = (): Glyph[] => {
 
     if(!scatterplotData.value || scatterplotData.value.points.length === 0) return [];
 
-    const oneGroup = scatterplotData.value.countGroups === 0;
-    if(!oneGroup) {
+    const noGroups = scatterplotData.value.countGroups === 0;
+    if(!noGroups) {
         // Prepare the list of contrasting colors
         const backgroundColor: [number, number, number] =
                     (theme.value === "dark") ? [0.07059, 0.07059, 0.07059] : [1, 1, 1];
@@ -136,14 +136,14 @@ const pointsByGroup = (): Glyph[] => {
     for(let i=0; i < n; ++i) {
 
         // Get the color corresponding to the group of the point
-        const color = oneGroup ? "#0000FF" : groupColors[values[i]];
+        const color = noGroups ? "#0000FF" : groupColors[values[i]];
 
         out.push({
             id: id[i],
             px: points[i][0],
             py: points[i][1],
             color,
-            value: oneGroup ? 0 : values[i],
+            value: noGroups ? 0 : values[i],
         });
     }
     return out;
@@ -831,12 +831,10 @@ const mousemove = (event: MouseEvent): void => {
              block class="mt-4 ml-1 mb-4">
         Select group
       </v-btn>
-      <v-divider thickness="2" class="mr-n1 ml-1"/>
       <v-btn @click="selectByCriteria('min-energy')" :disabled="!scatterplotData?.hasEnergies"
              block class="mt-4 ml-1 mb-4">
         Min energy per group
       </v-btn>
-      <v-divider thickness="2" />
       <v-btn @click="selectByCriteria('convex-hull')" :disabled="!scatterplotData?.hasEnergies"
              block class="mt-4 ml-1 mb-4">
         Gen. convex hull

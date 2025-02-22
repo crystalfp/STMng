@@ -17,21 +17,25 @@ import {HierarchicalSingleLinkageGrouping} from "./GroupingMethods";
  * @param accumulator - The accumulated structures
  * @param distances - The pair distance object
  * @param threshold - The distance threshold (absolute)
+ * @returns The number of points removed
  */
-export const removeDuplicates = (enabled: boolean,
-                                 accumulator: FingerprintsAccumulator,
-                                 distances: Distances,
-                                 threshold: number): void => {
+export const removeDuplicatePoints = (enabled: boolean,
+                                      accumulator: FingerprintsAccumulator,
+                                      distances: Distances,
+                                      threshold: number): number => {
 
     // If reduction not enabled, set enabled on all structures
     if(!enabled) {
         accumulator.setEnableStatus(true);
-        return;
+        return 0;
     }
 
     // Access useful variables
     const countStructures = accumulator.selectedSize();
-    if(countStructures === 0) return;
+    if(countStructures === 0)  {
+        accumulator.setEnableStatus(true);
+        return 0;
+    }
     const distanceMatrix = distances.getDistanceMatrix();
     const hasEnergies = accumulator.accumulatedHaveEnergies();
 
@@ -39,7 +43,10 @@ export const removeDuplicates = (enabled: boolean,
     const grouper = new HierarchicalSingleLinkageGrouping();
     const groups = grouper.doGrouping(countStructures, distanceMatrix, threshold);
     const countGroups = groups.length;
-    if(countGroups === 0) return;
+    if(countGroups === 0) {
+        accumulator.setEnableStatus(true);
+        return 0;
+    }
 
     // Make an index of the structures
     const structures: StructureReduced[] = [];
@@ -49,6 +56,7 @@ export const removeDuplicates = (enabled: boolean,
 
     // Start with nothing enabled
     accumulator.setEnableStatus(false);
+    let countEnabled = 0;
 
     // For each group
     for(let gi=0; gi < countGroups; ++gi) {
@@ -61,8 +69,9 @@ export const removeDuplicates = (enabled: boolean,
 
             const idx = indices[0];
             structures[idx].enabled = true;
+            ++countEnabled;
         }
-        // Else if there are energies
+        // Else if there are energies find the lowest energy point per group
         else if(hasEnergies) {
 
             // Find minimum energy
@@ -76,6 +85,7 @@ export const removeDuplicates = (enabled: boolean,
                 }
             }
             structures[minEnergyIdx].enabled = true;
+            ++countEnabled;
         }
         // Else finds the most central point using the sum of distances (geometric median)
         else {
@@ -96,6 +106,9 @@ export const removeDuplicates = (enabled: boolean,
                 }
             }
             structures[medianDistanceIdx].enabled = true;
+            ++countEnabled;
         }
     }
+
+    return countStructures-countEnabled;
 };

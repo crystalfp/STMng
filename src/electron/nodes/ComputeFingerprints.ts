@@ -22,6 +22,7 @@ import {methodDistances, methodDistancesHistogram, methodEnergiesHistogram,
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
+import {removeDuplicatePoints} from "../fingerprint/RemoveDuplicates";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 EnergyLandscapeData, PositionType,
 			 FingerprintsChartData, FingerprintsChartKind,
@@ -65,10 +66,13 @@ export class ComputeFingerprints extends NodeCore {
 	private groupingThreshold = 0.1;
 	private addedMargin = 0;
 
-	private removeDuplicates = false;
+	private removeDuplicates = true;
 	private duplicatesThreshold = 0.05;
 
 	private plotType = "group";
+
+	private chartType: FingerprintsChartKind = "fp";
+	private lambda = 0;
 
 	private channelOpened = false;
 	private channelChartsOpened = false;
@@ -82,6 +86,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "fp",			type: "invokeAsync", callback: this.channelFP.bind(this)},
 		{name: "fp-params",		type: "send", 	callback: this.channelFPParams.bind(this)},
 		{name: "dist",			type: "invoke", callback: this.channelDist.bind(this)},
+		{name: "duplicates",	type: "send",	callback: this.channelDuplicates.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
@@ -213,7 +218,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.groupingMethod = params.groupingMethod as number ?? 0;
 		this.groupingThreshold = params.groupingThreshold as number ?? 0.1;
 		this.addedMargin = params.addedMargin as number ?? 0;
-        this.removeDuplicates = params.removeDuplicates as boolean ?? false;
+        this.removeDuplicates = params.removeDuplicates as boolean ?? true;
         this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
 	}
 
@@ -311,7 +316,10 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param noGroups - Do not collect the structure groups
 	 * @returns Data needed by the scatterplot
 	 */
-	private prepareScatterplotData(points: number[][], enabled: boolean[], options: CreateUpdateScatterplotOptions, hasEnergies: boolean): ScatterplotData {
+	private prepareScatterplotData(points: number[][],
+								   enabled: boolean[],
+								   options: CreateUpdateScatterplotOptions,
+								   hasEnergies: boolean): ScatterplotData {
 
 		// How many structures are we dealing with
 		const n = points.length;
@@ -517,6 +525,11 @@ export class ComputeFingerprints extends NodeCore {
 			haveDistances
 		};
 
+		const enabled: boolean[] = [];
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			enabled.push(structure.enabled);
+		}
+
 		switch(kind) {
 
 			case "ed":
@@ -529,13 +542,24 @@ export class ComputeFingerprints extends NodeCore {
 						energies.push(energy);
 					}
 
-					data.energyDistance = methodEnergyDistance(energies, this.dist.getDistanceMatrix());
+					data.energyDistance = methodEnergyDistance(energies,
+															   enabled,
+															   this.dist.getDistanceMatrix());
 				}
 				break;
 
 			case "fp": {
-				data.countFingerprints = this.accumulator.selectedSize();
-				data.structureIds = this.accumulator.getSelectedStepsIds();
+				let fpCount = 0;
+				const ids: number[] = [];
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					if(structure.enabled) {
+						++fpCount;
+						ids.push(structure.id);
+					}
+				}
+
+				data.countFingerprints = fpCount;
+				data.structureIds = ids;
 				const fp = this.accumulator.getFingerprint(lambda);
 				data.fingerprint = [];
 				let x = 0;
@@ -556,14 +580,15 @@ export class ComputeFingerprints extends NodeCore {
 						energies.push(energy);
 					}
 
-					data.energyHistogram = methodEnergiesHistogram(energies, lambda);
+					data.energyHistogram = methodEnergiesHistogram(energies, enabled, lambda);
 				}
 				break;
 
 			case "dh":
 
 				data.distanceHistogram = methodDistancesHistogram(
-					this.dist.getDistanceMatrix().toVector(),
+					this.dist.getDistanceMatrix(),
+					enabled,
 					lambda
 				);
 				break;
@@ -577,10 +602,10 @@ export class ComputeFingerprints extends NodeCore {
 
 				const ids: number[] = [];
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					ids.push(structure.id);
+					if(structure.enabled) ids.push(structure.id);
 				}
 
-				data.distances = methodDistances(this.dist.getDistanceMatrix(), ids, lambda);
+				data.distances = methodDistances(this.dist.getDistanceMatrix(), ids, enabled, lambda);
 				}
 				break;
 		}
@@ -604,11 +629,16 @@ export class ComputeFingerprints extends NodeCore {
 		}
 	}
 
-	updateVisualizations(options: CreateUpdateScatterplotOptions, kind: FingerprintsChartKind, lambda: number): void {
+	/**
+	 * Update visualizations if the respective secondary window is open
+	 *
+	 * @param options - Options for scatterplot
+	 */
+	updateVisualizations(options: CreateUpdateScatterplotOptions): void {
 
 		this.createUpdateScatterplot("update", options);
 		this.createUpdateLandscape("update");
-		this.createUpdateCharts("update", kind, lambda);
+		this.createUpdateCharts("update", this.chartType, this.lambda);
 	}
 
 	/**
@@ -666,13 +696,18 @@ export class ComputeFingerprints extends NodeCore {
 		const minEnergyIdx = Array(ngroups).fill(0) as number[];
 
 		let idx = 0;
+		let onScatterplotIdx = 0;
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 
-			const energy = structure.energy!;
-			const group = groups[idx];
-			if(energy < minEnergy[group]) {
-				minEnergy[group] = energy;
-				minEnergyIdx[group] = idx;
+			if(structure.enabled) {
+
+				const energy = structure.energy!;
+				const group = groups[idx];
+				if(energy < minEnergy[group]) {
+					minEnergy[group] = energy;
+					minEnergyIdx[group] = onScatterplotIdx;
+				}
+				++onScatterplotIdx;
 			}
 			++idx;
 		}
@@ -698,9 +733,22 @@ export class ComputeFingerprints extends NodeCore {
 			energies.push(energy);
 		}
 
-		return generalizedConvexHull4D(this.dist.getDistanceMatrix(),
-									   countPoints,
-									   energies);
+		const idxOnHull = generalizedConvexHull4D(this.dist.getDistanceMatrix(),
+												  countPoints,
+												  energies);
+
+		let idx = 0;
+		let onScatterplotIdx = 0;
+		const selectedIdx: number[] = [];
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+			if(structure.enabled) {
+				if(idxOnHull.has(idx)) selectedIdx.push(onScatterplotIdx);
+				++onScatterplotIdx;
+			}
+			++idx;
+		}
+
+		return selectedIdx;
 	}
 
 	// > Channel handlers
@@ -872,6 +920,8 @@ export class ComputeFingerprints extends NodeCore {
         this.peakWidth = params.peakWidth as number ?? 0.02;
 		this.distanceMethod = params.distanceMethod as number ?? 0;
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+        this.removeDuplicates = params.removeDuplicates as boolean ?? true;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
 
 		const resultFP = await this.fp.compute(this.accumulator, {
 			method: this.fingerprintingMethod,
@@ -899,8 +949,14 @@ export class ComputeFingerprints extends NodeCore {
 		// Project points to 2D
 		this.dist.projectPoints();
 
+		// Remove duplicates
+		removeDuplicatePoints(this.removeDuplicates,
+							  this.accumulator,
+							  this.dist,
+							  this.duplicatesThreshold);
+
 		// Update the scatterplot if it is open
-		this.createUpdateScatterplot("update", {noGroups: true, plotType: this.plotType});
+		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
 		return {
 			resultDimensionality: resultFP.dimension,
@@ -919,6 +975,8 @@ export class ComputeFingerprints extends NodeCore {
 
 		this.distanceMethod = params.distanceMethod as number ?? 0;
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+        this.removeDuplicates = params.removeDuplicates as boolean ?? true;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
 
 		const result = this.dist.measureAll(this.accumulator,
 											this.distanceMethod,
@@ -929,10 +987,34 @@ export class ComputeFingerprints extends NodeCore {
 		// Project points to 2D
 		this.dist.projectPoints();
 
+		// Remove duplicates
+		removeDuplicatePoints(this.removeDuplicates,
+							  this.accumulator,
+							  this.dist,
+							  this.duplicatesThreshold);
+
 		// Update the scatterplot if it is open
-		this.createUpdateScatterplot("update", {noGroups: true, plotType: this.plotType});
+		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
 		return {countDistances: result.countDistances, endMessage: result.endMessage};
+	}
+
+	/**
+	 * Channel handler for remove duplicates parameters change
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelDuplicates(params: CtrlParams): void {
+
+        this.removeDuplicates = params.removeDuplicates as boolean ?? true;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
+		removeDuplicatePoints(this.removeDuplicates,
+							  this.accumulator,
+							  this.dist,
+							  this.duplicatesThreshold);
+
+		// Update the scatterplot if it is open
+		this.updateVisualizations({plotType: this.plotType});
 	}
 
 	/**
@@ -964,11 +1046,8 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(result.error) sendAlertMessage(result.error, "fingerprints");
 
-		// this.grouping.reducePoints(this.reductionType, this.accumulator, this.dist);
-		this.accumulator.setEnableStatus(true);
-
 		// Update the scatterplot if it is open
-		this.createUpdateScatterplot("update", {plotType: this.plotType});
+		this.updateVisualizations({plotType: this.plotType});
 
 		return {countGroups: result.countGroups};
 	}
@@ -1083,20 +1162,20 @@ export class ComputeFingerprints extends NodeCore {
 
 			ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
 
-				const chartType = params.chartType as FingerprintsChartKind ?? "fp";
-				let lambda = 0;
-				switch(chartType) {
+				this.chartType = params.chartType as FingerprintsChartKind ?? "fp";
+				this.lambda = 0;
+				switch(this.chartType) {
 					case "fp":
 					case "di":
-						lambda = params.fpIndex as number ?? 0;
+						this.lambda = params.fpIndex as number ?? 0;
 						break;
 					case "eh":
 					case "dh":
-						lambda = params.binCount as number ?? 50;
+						this.lambda = params.binCount as number ?? 50;
 						break;
 				}
 
-				this.createUpdateCharts("update", chartType, lambda);
+				this.createUpdateCharts("update", this.chartType, this.lambda);
 			});
 		}
 	}

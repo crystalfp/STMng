@@ -11,38 +11,51 @@ import type {DistanceMatrix} from "./Distances";
 import type {FingerprintsAccumulator} from "./Accumulator";
 
 /**
- * Prepare the histogram of distances
+ * Prepare the histogram of distances. The distances goes from zero to the max.
  *
- * @param distances - Distance vector
+ * @param distanceMatrix - Distance matrix
+ * @param enabled - The list of enabled status for all structures
  * @param binCount - Bin count for the histogram
  * @returns Array of (distance, count) pairs
  */
-export const methodDistancesHistogram = (distances: number[],
+export const methodDistancesHistogram = (distanceMatrix: DistanceMatrix,
+										 enabled: boolean[],
 								   		 binCount: number): [distance: number, count: number][] => {
 
-	// Find distances range
-	let minDistance = Number.POSITIVE_INFINITY;
+	// For each distance between two enabled points find the distances range
 	let maxDistance = Number.NEGATIVE_INFINITY;
-	for(const distance of distances) {
-		if(distance < minDistance) minDistance = distance;
-		if(distance > maxDistance) maxDistance = distance;
+	const n = distanceMatrix.matrixSize();
+	for(let row=0; row < n-1; ++row) {
+		if(!enabled[row]) continue;
+		for(let col=row+1; col < n; ++col) {
+			if(!enabled[col]) continue;
+
+			const distance = distanceMatrix.get(row, col);
+			if(distance > maxDistance) maxDistance = distance;
+		}
 	}
 
 	// Fill bins with distances count or zero if range too small or zero
 	const bins = Array(binCount).fill(0) as number[];
-	const binWidth = (maxDistance-minDistance)/binCount;
+	const binWidth = maxDistance/binCount;
 	if(binWidth > 1e-10) {
 
-		for(const distance of distances) {
-			let idx = Math.floor((distance-minDistance)/binWidth);
-			if(idx === binCount) --idx;
-			++bins[idx];
+		for(let row=0; row < n-1; ++row) {
+			if(!enabled[row]) continue;
+			for(let col=row+1; col < n; ++col) {
+				if(!enabled[col]) continue;
+
+				const distance = distanceMatrix.get(row, col);
+				let bin = Math.floor(distance/binWidth);
+				if(bin === binCount) --bin;
+				++bins[bin];
+			}
 		}
 	}
 
 	// Fill the histogram
 	const distanceHistogram = Array(binCount) as [distance: number, count: number][];
-	let di = minDistance;
+	let di = 0;
 	for(let i=0; i < binCount; ++i) {
 
 		distanceHistogram[i] = [di, bins[i]];
@@ -56,29 +69,38 @@ export const methodDistancesHistogram = (distances: number[],
  * Prepare the histogram of energies
  *
  * @param energies - Energies per structure
+ * @param enabled - The list of enabled status for all structures
  * @param binCount - Bin count for the histogram
  * @returns Array of (energy, count) pairs
  */
 export const methodEnergiesHistogram = (energies: number[],
+										enabled: boolean[],
 										binCount: number): [energy: number, count: number][] => {
 
 	// Find energy range
 	let minEnergy = Number.POSITIVE_INFINITY;
 	let maxEnergy = Number.NEGATIVE_INFINITY;
+	let idx = 0;
 	for(const energy of energies) {
-		if(energy < minEnergy) minEnergy = energy;
-		if(energy > maxEnergy) maxEnergy = energy;
+		if(enabled[idx]) {
+			if(energy < minEnergy) minEnergy = energy;
+			if(energy > maxEnergy) maxEnergy = energy;
+		}
+		++idx;
 	}
 
 	// Fill bins with energy count or zero if range too small or zero
 	const bins = Array(binCount).fill(0) as number[];
 	const binWidth = (maxEnergy-minEnergy)/binCount;
 	if(binWidth > 1e-10) {
-
+		idx = 0;
 		for(const energy of energies) {
-			let idx = Math.floor((energy-minEnergy)/binWidth);
-			if(idx === binCount) --idx;
-			++bins[idx];
+			if(enabled[idx]) {
+				let bin = Math.floor((energy-minEnergy)/binWidth);
+				if(bin === binCount) --bin;
+				++bins[bin];
+			}
+			++idx;
 		}
 	}
 
@@ -98,19 +120,21 @@ export const methodEnergiesHistogram = (energies: number[],
  * Prepare the scatterplot of distance and energy difference from the minimum energy point
  *
  * @param energies - Energies per structure
+ * @param enabled - The list of enabled status for all structures
  * @param distanceMatrix - The distance matrix
  * @returns Array of (distance from minimum energy point, energy from minimum) pairs
  */
 export const methodEnergyDistance = (energies: number[],
-									 distanceMatrix: DistanceMatrix): [distance: number, energy: number][] => {
+									 enabled: boolean[],
+									 distanceMatrix: DistanceMatrix):
+									 						[distance: number, energy: number][] => {
 
 	// Get minimum energy and index of the corresponding point
 	let minEnergy = Number.POSITIVE_INFINITY;
 	let minEnergyIdx = 0;
 	let idx = 0;
 	for(const energy of energies) {
-
-		if(energy < minEnergy) {
+		if(enabled[idx] && energy < minEnergy) {
 			minEnergy = energy;
 			minEnergyIdx = idx;
 		}
@@ -119,15 +143,21 @@ export const methodEnergyDistance = (energies: number[],
 
 	// Compute energy differences
 	const energyDistance: [distance: number, energy: number][] = [];
+	idx = 0;
 	for(const energy of energies) {
-		energyDistance.push([0, energy - minEnergy]);
+		if(enabled[idx]) {
+			energyDistance.push([0, energy - minEnergy]);
+		}
+		++idx;
 	}
 
 	// Compute distances
 	const len = distanceMatrix.matrixSize();
 	for(let col=0; col < len; ++col) {
-		const distance = distanceMatrix.get(minEnergyIdx, col);
-		energyDistance[col][0] = distance;
+		if(enabled[col]) {
+			const distance = distanceMatrix.get(minEnergyIdx, col);
+			energyDistance[col][0] = distance;
+		}
 	}
 
 	// Order by increasing distances
@@ -156,7 +186,9 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-			const {basis, fingerprint, id} = structure;
+			const {basis, fingerprint, id, enabled} = structure;
+
+			if(!enabled) continue;
 
 			const Vuc = getCellVolume(basis);
 			const R0 = Math.cbrt(Vuc);
@@ -173,7 +205,9 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-			const {basis, fingerprint, weights, id} = structure;
+			const {basis, fingerprint, weights, id, enabled} = structure;
+
+			if(!enabled) continue;
 
 			let degreeOfOrder = 0;
 
@@ -205,16 +239,20 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
  *
  * @param distanceMatrix - The distance matrix
  * @param steps - The step numbers for each fingerprint selected
+ * @param enabled - The list of enabled status for all structures
  * @param row - Index of the fingerprint from which the distance should be computed
  * @returns List of (step, distance) pairs
  */
 export const methodDistances = (distanceMatrix: DistanceMatrix,
 								steps: number[],
+								enabled: boolean[],
 								row: number): [id: number, order: number][]  => {
 
 	const distances: [id: number, order: number][] = [];
 	for(let col=0; col < distanceMatrix.matrixSize(); ++col) {
-		distances.push([steps[col], distanceMatrix.get(row, col)]);
+		if(enabled[col]) {
+			distances.push([steps[col], distanceMatrix.get(row, col)]);
+		}
 	}
 	return distances;
 };

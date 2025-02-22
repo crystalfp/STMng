@@ -465,16 +465,6 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
-	 * Return selected structures step number
-	 *
-	 * @returns List of all selected structure steps numbers
-	 */
-	getSelectedStepsIds(): number[] {
-
-		return this.selectedSteps;
-	}
-
-	/**
 	 * Return a fingerprint
 	 *
 	 * @param requestedIdx - Index in the list of selected structures

@@ -1,13 +1,12 @@
 Bugs:
+  ☐ When VNumberInput precision in readonly is solved, change VTextInput to VNumberInput in fingerprinting
 
 To do:
   ☐ Try to put labels as billboards
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
-  ✔ Do both fingerprint and distance calculations by just one click @done(2025-02-18 19:00)
   ☐ Check error return from main process to client
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
-  ☐ Add selection of non coincident points to the select criteria
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -54,6 +53,8 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Do both fingerprint and distance calculations by just one click @done(2025-02-18 19:00) @project(To do)
+  ✘ Add selection of non coincident points to the select criteria @cancelled(2025-02-21 15:51) @project(To do)
   ✘ Reduce points, then select group 0: nothing appears @cancelled(2025-02-17 08:22) @project(Bugs)
   ✔ Chart of distances from a given fingerprint @done(2025-02-17 09:58) @project(Functionalities)
   ✔ Use grid for landscape buttons @done(2025-02-17 05:01) @project(To do)

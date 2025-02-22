@@ -76,7 +76,7 @@ const distanceMethods = ref<DistanceMethodsNames[]>([]);
 const countDistances = ref(0);
 const endMessage = ref("");
 
-// TBD Remove duplicates
+// Remove duplicates
 const removeDuplicates = ref(true);
 const duplicatesThreshold = ref(0.05);
 
@@ -135,7 +135,7 @@ askNode(id, "init")
         groupingThreshold.value = params.groupingThreshold as number ?? 0.1;
         addedMargin.value = params.addedMargin as number ?? 0;
 
-        removeDuplicates.value = params.removeDuplicates as boolean ?? false;
+        removeDuplicates.value = params.removeDuplicates as boolean ?? true;
         duplicatesThreshold.value = params.duplicatesThreshold as number ?? 0.05;
 
         countSelected.value = 0;
@@ -281,6 +281,8 @@ const computeFingerprints = (): void => {
         peakWidth: peakWidth.value,
         distanceMethod: distanceMethod.value,
         fixTriangleInequality: fixTriangleInequality.value,
+        removeDuplicates: removeDuplicates.value,
+        duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {
         resultDimensionality.value = params.resultDimensionality as number ?? 0;
@@ -303,6 +305,8 @@ watch([distanceMethod, fixTriangleInequality], () => {
     askNode(id, "dist", {
         distanceMethod: distanceMethod.value,
         fixTriangleInequality: fixTriangleInequality.value,
+        removeDuplicates: removeDuplicates.value,
+        duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {
         countDistances.value = params.countDistances as number ?? 0;
@@ -310,6 +314,15 @@ watch([distanceMethod, fixTriangleInequality], () => {
     })
     .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
                                               "fingerprints"));
+});
+
+/** On changing remove duplicates parameters */
+watch([removeDuplicates, duplicatesThreshold], () => {
+
+  sendToNode(id, "duplicates", {
+        removeDuplicates: removeDuplicates.value,
+        duplicatesThreshold: duplicatesThreshold.value
+    });
 });
 
 /** On changing grouping parameters */
@@ -399,7 +412,7 @@ const showEnergyLandscape = (): void => {
   <v-row>
     <v-number-input v-model="energyThreshold" :disabled="!enableEnergyFiltering || !haveEnergies"
                     :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
-                    class="ml-4 mr-2" />
+                    :precision="4" class="ml-4 mr-2" />
     <v-text-field v-model="energyThresholdEffective"
                   label="Max energy" readonly class="ml-2 mr-5" />
   </v-row>
@@ -413,7 +426,8 @@ const showEnergyLandscape = (): void => {
   <v-row class="mt-0 mx-0">
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
     <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"
-                    :min="0.1" :step="0.1" :disabled="!forceCutoff" class="mx-2" />
+                    :min="0.1" :step="0.1" :precision="2"
+                    :disabled="!forceCutoff" class="mx-2" />
   </v-row>
 
   <v-label class="mt-1 mb-4 result-label">{{ cutoffLabel }}</v-label>
@@ -426,9 +440,9 @@ const showEnergyLandscape = (): void => {
     class="mr-2 mb-6" />
 
   <v-row class="mr-2">
-    <v-number-input v-model="peakWidth"
+    <v-number-input v-model="peakWidth" :precision="2"
                     label="Peak width" :min="0.01" :step="0.01" class="mr-2 ml-2" />
-    <v-number-input v-model="binSize"
+    <v-number-input v-model="binSize" :precision="2"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
   <v-btn block :disabled="countSelected === 0"
@@ -456,7 +470,7 @@ const showEnergyLandscape = (): void => {
         {{ `Distances computed: ${countDistances}` }}
       </v-label>
     </v-col>
-      <v-col cols="12" v-if="endMessage !== '' && fixTriangleInequality===true" class="mt-n4">
+      <v-col cols="12" v-if="endMessage !== '' && fixTriangleInequality" class="mt-n4">
         <v-label class="result-label">
           {{ endMessage }}
         </v-label>
@@ -469,7 +483,7 @@ const showEnergyLandscape = (): void => {
     <v-switch v-model="removeDuplicates"
             label="Remove" class="ml-2 mr-6 mb-5" />
     <v-number-input :disabled="!removeDuplicates" v-model="duplicatesThreshold"
-            label="Distance threshold" :min="0" :max="1" :step="0.01" class="mt-0"/>
+            label="Distance threshold" :min="0" :max="1" :step="0.01" :precision="2" class="mt-0"/>
   </v-row>
 
   <v-label class="separator-title">Group similar</v-label>
@@ -483,9 +497,9 @@ const showEnergyLandscape = (): void => {
 
   <v-row class="ml-0 mr-2 pt-1">
     <v-number-input v-model="groupingThreshold"
-                    label="Distance thresh."
+                    label="Distance thresh." :precision="2"
                     :min="0" :max="1" :step="0.01" />
-    <v-number-input v-if="useMargin" v-model="addedMargin"
+    <v-number-input v-if="useMargin" v-model="addedMargin" :precision="0"
                     label="Margin" :min="0" :step="1" class="ml-2"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
