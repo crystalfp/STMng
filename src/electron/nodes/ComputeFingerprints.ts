@@ -19,7 +19,6 @@ import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
 import {methodDistances, methodDistancesHistogram, methodEnergiesHistogram,
 		methodEnergyDistance, methodOrder} from "../fingerprint/Analysis";
-import {WriterPOSCAR} from "../writers/WritePOSCAR";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
 import {removeDuplicatePoints} from "../fingerprint/RemoveDuplicates";
@@ -86,7 +85,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "fp",			type: "invokeAsync", callback: this.channelFP.bind(this)},
 		{name: "fp-params",		type: "send", 	callback: this.channelFPParams.bind(this)},
 		{name: "dist",			type: "invoke", callback: this.channelDist.bind(this)},
-		{name: "duplicates",	type: "send",	callback: this.channelDuplicates.bind(this)},
+		{name: "duplicates",	type: "invoke",	callback: this.channelDuplicates.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
@@ -294,15 +293,15 @@ export class ComputeFingerprints extends NodeCore {
 		// Normalize original and projected distances mapping points coordinates between 0 and 1
 		fidelities = normalizeCoordinates2D(fidelities);
 
-		// If too many points, decimate them to reduce the number to less than 40'000
-		fidelities = this.decimatePoints(fidelities, 40_000);
+		// If too many points, decimate them to reduce the number to less than 20'000
+		fidelities = this.decimatePoints(fidelities, 20_000);
 
 		return {
 
 			id: [],
 			points: [],
 			values: [],
-			countGroups: 0,
+			countGroups: this.grouping.getCountGroups(),
 			hasEnergies,
 			fidelity: fidelities
 		};
@@ -950,10 +949,10 @@ export class ComputeFingerprints extends NodeCore {
 		this.dist.projectPoints();
 
 		// Remove duplicates
-		removeDuplicatePoints(this.removeDuplicates,
-							  this.accumulator,
-							  this.dist,
-							  this.duplicatesThreshold);
+		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
+													this.accumulator,
+													this.dist,
+													this.duplicatesThreshold);
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
@@ -961,7 +960,8 @@ export class ComputeFingerprints extends NodeCore {
 		return {
 			resultDimensionality: resultFP.dimension,
 			countDistances: resultDist.countDistances,
-			endMessage: resultDist.endMessage
+			endMessage: resultDist.endMessage,
+			pointsRemoved
 		};
 	}
 
@@ -988,15 +988,19 @@ export class ComputeFingerprints extends NodeCore {
 		this.dist.projectPoints();
 
 		// Remove duplicates
-		removeDuplicatePoints(this.removeDuplicates,
-							  this.accumulator,
-							  this.dist,
-							  this.duplicatesThreshold);
+		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
+													this.accumulator,
+													this.dist,
+													this.duplicatesThreshold);
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
-		return {countDistances: result.countDistances, endMessage: result.endMessage};
+		return {
+			countDistances: result.countDistances,
+			endMessage: result.endMessage,
+			pointsRemoved
+		};
 	}
 
 	/**
@@ -1004,17 +1008,21 @@ export class ComputeFingerprints extends NodeCore {
 	 *
 	 * @param params - Parameters from the UI
 	 */
-	private channelDuplicates(params: CtrlParams): void {
+	private channelDuplicates(params: CtrlParams): CtrlParams {
 
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
         this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
-		removeDuplicatePoints(this.removeDuplicates,
-							  this.accumulator,
-							  this.dist,
-							  this.duplicatesThreshold);
+		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
+													this.accumulator,
+													this.dist,
+													this.duplicatesThreshold);
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({plotType: this.plotType});
+
+		return {
+			pointsRemoved
+		};
 	}
 
 	/**
@@ -1062,7 +1070,8 @@ export class ComputeFingerprints extends NodeCore {
 		if(!this.channelOpened) {
 			this.channelOpened = true;
 
-			ipcMain.on("SYSTEM:selected-points", (_event: unknown, params: CtrlParams): void => {
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			ipcMain.on("SYSTEM:selected-points", async (_event: unknown, params: CtrlParams): Promise<void> => {
 
 				const points = params.points as string;
 				if(!points)	return;
@@ -1100,6 +1109,7 @@ export class ComputeFingerprints extends NodeCore {
 					}
 					structures = sortedStructures;
 				}
+				const {WriterPOSCAR} = await import("../writers/WritePOSCAR");
 				const writer = new WriterPOSCAR();
 				const sts = writer.writeStructure(filename, structures);
 

@@ -79,6 +79,7 @@ const endMessage = ref("");
 // Remove duplicates
 const removeDuplicates = ref(true);
 const duplicatesThreshold = ref(0.05);
+const pointsRemoved = ref(-1); // -1 means not run yet
 
 // Classify structures
 const groupingMethods = ref<GroupingMethodsNames[]>([]);
@@ -143,6 +144,7 @@ askNode(id, "init")
         resultDimensionality.value = 0;
         countDistances.value = 0;
         countGroups.value = 0;
+        pointsRemoved.value = -1;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
@@ -175,6 +177,7 @@ const resetAccumulator = (): void => {
     countDistances.value = 0;
     countGroups.value = 0;
     haveEnergies.value = false;
+    pointsRemoved.value = -1;
 };
 
 /** Changes accumulating structures request */
@@ -288,6 +291,7 @@ const computeFingerprints = (): void => {
         resultDimensionality.value = params.resultDimensionality as number ?? 0;
         countDistances.value = params.countDistances as number ?? 0;
         endMessage.value = params.endMessage as string ?? "";
+        pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
     .catch((error: Error) => showAlertMessage(`Error from fingerprint computation: ${error.message}`,
                                               "fingerprints"))
@@ -311,6 +315,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
     .then((params: CtrlParams) => {
         countDistances.value = params.countDistances as number ?? 0;
         endMessage.value = params.endMessage as string ?? "";
+        pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
     .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
                                               "fingerprints"));
@@ -319,10 +324,15 @@ watch([distanceMethod, fixTriangleInequality], () => {
 /** On changing remove duplicates parameters */
 watch([removeDuplicates, duplicatesThreshold], () => {
 
-  sendToNode(id, "duplicates", {
+  askNode(id, "duplicates", {
         removeDuplicates: removeDuplicates.value,
         duplicatesThreshold: duplicatesThreshold.value
-    });
+    })
+    .then((params: CtrlParams) => {
+        pointsRemoved.value = params.pointsRemoved as number ?? -1;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from duplicates removal: ${error.message}`,
+                                              "fingerprints"));
 });
 
 /** On changing grouping parameters */
@@ -485,6 +495,9 @@ const showEnergyLandscape = (): void => {
     <v-number-input :disabled="!removeDuplicates" v-model="duplicatesThreshold"
             label="Distance threshold" :min="0" :max="1" :step="0.01" :precision="2" class="mt-0"/>
   </v-row>
+  <v-label v-if="pointsRemoved >= 0 && removeDuplicates" class="result-label mt-2">
+    {{ `Points removed: ${pointsRemoved}` }}
+  </v-label>
 
   <v-label class="separator-title">Group similar</v-label>
 

@@ -29,13 +29,18 @@ const props = withDefaults(defineProps<{
 
     /** Timeout for debouncing (in milliseconds) */
     timeout?: number;
-}>(), {
+
+    /** Slider disable */
+    disabled?: boolean;
+
+  }>(), {
     min: 0,
     max: 10,
     step: 1,
     label: "",
     labelWidth: "7rem",
     timeout: 500,
+    disabled: false
 });
 
 /** Returning the slider value */
@@ -83,7 +88,7 @@ watch(valueToDebounce, () => {
 
 <template>
 <v-slider v-model="valueToDebounce" :min="min" :max="max" :step="step" :label="label"
-          hide-details class="slider-with-stepper">
+          :disabled="disabled" hide-details class="slider-with-stepper">
   <template #prepend>
     <v-btn :icon="mdiMinus" size="small" variant="text" class="ml-n2" @click="decrement" />
   </template>
