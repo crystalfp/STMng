@@ -118,7 +118,7 @@ class AtomData {
 	 * Convert atomic symbol to atom Z
 	 *
 	 * @param symbol - Atomic symbol as read from the structure file
-	 * @returns The atom Z value
+	 * @returns The atom Z value or zero if it is an invalid symbol
 	 */
 	atomicNumber(symbol: string): number {
 		return this.symbol2atomZ.get(symbol) ?? 0;
@@ -177,7 +177,7 @@ class AtomData {
  * Convert atomic symbol to atom Z
  *
  * @param symbol - Atomic symbol as read from the structure file
- * @returns The atom Z value
+ * @returns The atom Z value or zero if it is an invalid symbol
  */
 export const getAtomicNumber = (symbol: string): number => AtomData.getInstance().atomicNumber(symbol);
 

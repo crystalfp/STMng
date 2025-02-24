@@ -150,8 +150,8 @@ export default [
         // "@typescript-eslint/no-empty-function": "warn",
         "no-useless-constructor": "off",
         "@typescript-eslint/no-useless-constructor": "warn",
-        // "lines-between-class-members": "off",
-        // "@typescript-eslint/lines-between-class-members": "off",
+
+        "@stylistic/lines-between-class-members": "warn",
         "@stylistic/quotes": ["warn", "double", {avoidEscape: true}],
         // "no-loop-func": "off",
         // "@typescript-eslint/no-loop-func": "error",

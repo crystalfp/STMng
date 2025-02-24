@@ -11,7 +11,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions, ReaderImplementation} from "@/types";
 
 // Import the readers
 
@@ -31,8 +31,10 @@ export class StructureReader extends NodeCore {
 	private format = "";
     private atomsTypes = "";
 	private useBohr = true;
+	private readHydrogen = false;
 	private fileToRead = "";
 	private auxFileToRead = "";
+	private reader: ReaderImplementation | undefined;
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -45,6 +47,7 @@ export class StructureReader extends NodeCore {
 		{name: "types",		type: "send",        callback: this.channelTypes.bind(this)},
 		{name: "formats",	type: "send",        callback: this.channelFormats.bind(this)},
 		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
+		{name: "hydrogen",	type: "send",        callback: this.channelReadHydrogen.bind(this)},
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
 		{name: "step",		type: "invoke",      callback: this.channelStep.bind(this)},
 		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
@@ -64,6 +67,7 @@ export class StructureReader extends NodeCore {
 			format: this.format,
       		atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
+			readHydrogen: this.readHydrogen,
 			stepIncrement: this.stepIncrement,
 			speed: this.speed,
 		};
@@ -76,6 +80,7 @@ export class StructureReader extends NodeCore {
 		this.format        = params.format as string ?? "";
     	this.atomsTypes    = params.atomsTypes as string ?? "";
     	this.useBohr       = params.useBohr as boolean ?? true;
+        this.readHydrogen  = params.readHydrogen as boolean ?? false;
 		this.stepIncrement = params.stepIncrement as number ?? 1;
         this.speed         = params.speed as number ?? 1;
 	}
@@ -94,6 +99,7 @@ export class StructureReader extends NodeCore {
 			format: this.format,
 			atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
+			readHydrogen: this.readHydrogen,
 			fileToRead: this.fileToRead,
 			auxFileToRead: this.auxFileToRead,
 			stepIncrement: this.stepIncrement,
@@ -113,55 +119,59 @@ export class StructureReader extends NodeCore {
 		const filename = params.fileToRead as string;
 		this.fileToRead = filename;
 		let message = "";
-		let reader;
 		try {
 
 			switch(requestedFormat) {
 				case "XYZ": {
 						const {ReaderXYZ} = await import("../readers/ReadXYZ");
-						reader = new ReaderXYZ();
+						this.reader = new ReaderXYZ();
 					}
 					break;
 				case "Shel-X": {
 						const {ReaderSHELX} = await import("../readers/ReadSHELX");
-						reader = new ReaderSHELX();
+						this.reader = new ReaderSHELX();
 					}
 					break;
 				case "LAMMPS": {
 						const {ReaderLAMMPS} = await import("../readers/ReadLAMMPS");
-						reader = new ReaderLAMMPS();
+						this.reader = new ReaderLAMMPS();
 					}
 					break;
 				case "LAMMPStrj": {
 						const {ReaderLAMMPStrj} = await import("../readers/ReadLAMMPStrj");
-						reader = new ReaderLAMMPStrj();
+						this.reader = new ReaderLAMMPStrj();
 					}
 					break;
 				case "POSCAR":
 				case "POSCAR + XDATCAR":
 				case "POSCAR + ENERGY": {
 						const {ReaderPOSCAR} = await import("../readers/ReadPOSCAR");
-						reader = new ReaderPOSCAR();
+						this.reader = new ReaderPOSCAR();
 					}
 					break;
 				case "CIF": {
 						const {ReaderCIF} = await import("../readers/ReadCIF");
-						reader = new ReaderCIF();
+						this.reader = new ReaderCIF();
 					}
 					break;
 				case "CEL": {
 						const {ReaderCEL} = await import("../readers/ReadCEL");
-						reader = new ReaderCEL();
+						this.reader = new ReaderCEL();
 					}
 					break;
 				case "CHGCAR": {
 						const {ReaderCHGCAR} = await import("../readers/ReadCHGCAR");
-						reader = new ReaderCHGCAR();
+						this.reader = new ReaderCHGCAR();
 					}
 					break;
 				case "Gaussian Cube": {
 						const {ReaderGAUSSIAN} = await import("../readers/ReadGAUSSIAN");
-						reader = new ReaderGAUSSIAN();
+						this.reader = new ReaderGAUSSIAN();
+					}
+					break;
+				case "PDB": {
+						const {ReaderPDB} = await import("../readers/ReadPDB");
+						this.reader = new ReaderPDB();
 					}
 					break;
 				default: throw Error("Format not implemented");
@@ -183,11 +193,11 @@ export class StructureReader extends NodeCore {
 			readerOptions = {atomsTypes: atoms};
 		}
 		else {
-			readerOptions = {useBohr: this.useBohr};
+			readerOptions = {useBohr: this.useBohr, readHydrogen: this.readHydrogen};
 		}
 
 		// Read the file
-		this.structures = await reader.readStructure(filename, readerOptions);
+		this.structures = await this.reader.readStructure(filename, readerOptions);
 
 		// Set structure id
 		for(let id=0; id < this.structures.length; ++id) this.structures[id].extra.id = id+1;
@@ -236,6 +246,12 @@ export class StructureReader extends NodeCore {
 
 		this.useBohr = params.useBohr as boolean;
 		this.changeBohrUnits();
+	}
+
+	private channelReadHydrogen(params: CtrlParams): void {
+
+		this.readHydrogen = params.readHydrogen as boolean;
+		void this.changeReadHydrogen();
 	}
 
 	/**
@@ -467,5 +483,22 @@ export class StructureReader extends NodeCore {
 
 		// Send the updated structure down the pipeline
 		this.toNextNode(structure);
+	}
+
+	/**
+	 * Read again a PDB file if should read or not hydrogens
+	 */
+	private async changeReadHydrogen(): Promise<void> {
+
+		if(this.format !== "PDB") return;
+
+		// Read the file
+		this.structures = await this.reader!.readStructure(this.fileToRead, {readHydrogen: this.readHydrogen});
+
+		// Set structure id
+		for(let id=0; id < this.structures.length; ++id) this.structures[id].extra.id = id+1;
+
+		// Send the updated structure down the pipeline
+		this.toNextNode(this.structures[this.step-1]);
 	}
 }

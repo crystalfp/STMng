@@ -35,6 +35,7 @@ const fileFormats = [
     "Gaussian Cube",
     "LAMMPS",
     "LAMMPStrj",
+    "PDB",
     "POSCAR",
     "POSCAR + ENERGY",
     "POSCAR + XDATCAR",
@@ -56,6 +57,7 @@ const auxFileToRead = ref("");      // Path to the auxiliary file to read
 const useBohr       = ref(true);    // Use Bohr units
 const stepIncrement = ref(1);       // How many step skip every tick
 const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
+const readHydrogen  = ref(false);   // Read also hydrogen atoms for PDB reader
 
 const controlStore = useControlStore();
 
@@ -69,6 +71,7 @@ askNode(id, "init")
         format.value        = params.format as string ?? "";
         atomsTypes.value    = params.atomsTypes as string ?? "";
         useBohr.value       = params.useBohr as boolean ?? true;
+        readHydrogen.value  = params.readHydrogen as boolean ?? false;
         fileToRead.value    = params.fileToRead as string ?? "";
         auxFileToRead.value = params.auxFileToRead as string ?? "";
         stepIncrement.value = params.stepIncrement as number ?? 1;
@@ -238,6 +241,13 @@ const setUseBohr = (): void => {
 
     sendToNode(id, "bohr", {useBohr: useBohr.value});
 };
+/**
+ * On change of the measurement unit
+ */
+const setReadHydrogen = (): void => {
+
+    sendToNode(id, "hydrogen", {readHydrogen: readHydrogen.value});
+};
 
 // > Load structure file
 /**
@@ -325,6 +335,10 @@ const filterFromFormat = (fileFormat: string): string => {
 			filter = [{name: "LAMMPStrj",	    extensions: ["lammpstrj"]},
 					  {name: "All",		        extensions: ["*"]}];
             break;
+    	case "PDB":
+			filter = [{name: "PDB",	            extensions: ["pdb"]},
+					  {name: "All",		        extensions: ["*"]}];
+            break;
 		case "POSCAR":
 		case "POSCAR + XDATCAR":
         case "POSCAR + ENERGY":
@@ -402,7 +416,9 @@ const auxSetup = computed(() => {
                  :title="auxSetup.title" @selected="selectedAuxFile"/>
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
-            label="Use Bohr units" class="ml-2 mt-4" @update:model-value="setUseBohr" />
+            label="Use Bohr units" class="ml-4 mt-4" @update:model-value="setUseBohr" />
+  <v-switch v-else-if="format === 'PDB'" v-model="readHydrogen"
+            label="Read hydrogens" class="ml-4 mt-4" @update:model-value="setReadHydrogen" />
   <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
     <enable-capture />
     <v-row class="pl-3 mt-0">

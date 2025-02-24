@@ -7,6 +7,10 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
+  ☐ Color position clouds
+  ☐ Plotting protein structures
+  ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
+  ☐ Optional display of the conventional Bravais cell (currently, after using symmetry, one gets a primitive cell; having an option of Bravais cell will be great).
 
 Functionalities:
   ☐ An option to specify arbitrary section plane

@@ -112,12 +112,12 @@
 	<td class="c3">To convert smoothed distance peaks into a vector of values, that is, the fingerprint, the smoothed interatomic distances are binned to this size.</td>
 </tr>
 <tr>
-  <td class="c1">Compute fingerprints</td>
+  <td class="c1">Compute fingerprints &amp; distances</td>
   <td class="c2">button</td>
-  <td class="c3">Compute the fingerprints for the selected structures.</td>
+  <td class="c3">Compute the fingerprints for the selected structures and their distances.</td>
 </tr>
 <tr>
-	<td class="c1">Dimensionality</td>
+	<td class="c1">Fingerprint dimension</td>
 	<td class="c2">readonly text</td>
 	<td class="c3">At the end of the computation shows the length of the computed fingerprints.</td>
 </tr>
@@ -141,18 +141,37 @@
 	<td class="c3">Iteratively adjust distances to satisfy the triangle inequality for every triples of distances.</td>
 </tr>
 <tr>
-  <td class="c1">Compute distances</td>
-  <td class="c2">button</td>
-  <td class="c3">Compute the distances between fingerprints.</td>
-</tr>
-<tr>
 	<td class="c1">Distances computed</td>
 	<td class="c2">readonly text</td>
 	<td class="c3">At the end of the computation shows the number of computed distances.</td>
 </tr>
+<tr>
+	<td class="c1">Fix inequality</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation with "Fix triangle inequality" set shows the result of the fixing.</td>
+</tr>
 </table>
 
-<h3>Structure landscape</h3>
+<h3>Remove duplicates</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Remove</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Enable removal of duplicated structures, that is, structures distant less than the distance threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Distance threshold</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">The maximum distance between two fingerprints to consider the highest energy one for removal.</td>
+</tr>
+<tr>
+	<td class="c1">Points removed</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation show the number of structures removed over the total.</td>
+</tr>
+</table>
+
+<h3>Group similar</h3>
 <table cellpadding="2" cellspacing="2">
 <tr>
 	<td class="c1">Grouping method</td>
@@ -176,9 +195,9 @@
 	<td class="c3">For the Pseudo SNN method it is the number of connection above one to consider two structures connected.</td>
 </tr>
 <tr>
-  <td class="c1">Classify structures</td>
+  <td class="c1">Group similar structures</td>
   <td class="c2">button</td>
-  <td class="c3">Classify fingerprints into groups.</td>
+  <td class="c3">Classify fingerprints into groups of similar ones.</td>
 </tr>
 <tr>
 	<td class="c1">Groups found</td>
@@ -189,18 +208,6 @@
 
 <h3>Show results</h3>
 <table cellpadding="2" cellspacing="2">
-<tr>
-	<td class="c1">Points reduction method</td>
-	<td class="c2">radio buttons</td>
-	<td class="c3">Select the method to reduce similar fingerprints in scatterplot and energy landscape plots:
-		<dl>
-      <dt>None</dt><dd>No reduction performed.</dd>
-      <dt>Group</dt><dd>Select one element per group, the one with minimal energy or the one nearest the centroid of the group.</dd>
-      <dt>And hull</dt><dd>Select all the points given by the generalized convex hull 4D, then leave only one point per group, the one with minimal energy or the one nearest the centroid of the group.</dd>
-      <dt>Hull</dt><dd>Select all the points given by the generalized convex hull 4D.</dd>
-    </dl>
-  </td>
-</tr>
 <tr>
   <td class="c1">Show scatterplot</td>
   <td class="c2">button</td>
@@ -286,7 +293,7 @@
 <tr>
   <td class="c1">Select group</td>
   <td class="c2">button</td>
-  <td class="c3">Select all points pertaining to the selected group. When using "And Hull" or "Hull" points reduction methods, could be that this selection found no point for the requested group.</td>
+  <td class="c3">Select all points pertaining to the selected group.</td>
 </tr>
 <tr>
   <td class="c1">Compare selected</td>
@@ -316,7 +323,7 @@
 <tr>
 	<td class="c1">Structure step selector</td>
 	<td class="c2">slider</td>
-	<td class="c3">Select the structure step for which the fingerprint or the distances should be charted. This control appears only when fingerprint or distances chart is selected.</td>
+	<td class="c3">Select the structure step for which the fingerprint or the distances should be charted. This control appears only when fingerprint or distances chart are selected.</td>
 </tr>
 <tr>
 	<td class="c1">Bin count</td>

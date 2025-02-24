@@ -496,7 +496,7 @@ const showEnergyLandscape = (): void => {
             label="Distance threshold" :min="0" :max="1" :step="0.01" :precision="2" class="mt-0"/>
   </v-row>
   <v-label v-if="pointsRemoved >= 0 && removeDuplicates" class="result-label mt-2">
-    {{ `Points removed: ${pointsRemoved}` }}
+    {{ `Points removed: ${pointsRemoved} of ${countSelected}` }}
   </v-label>
 
   <v-label class="separator-title">Group similar</v-label>

@@ -233,6 +233,9 @@ export interface ReaderOptions {
 
 	/** Use Bohr measurement units instead of Angstroms */
 	useBohr?: boolean;
+
+    /** For read PDB to read also hydrogen atoms */
+    readHydrogen?: boolean;
 }
 
 /** Interface exposed by all format readers */
