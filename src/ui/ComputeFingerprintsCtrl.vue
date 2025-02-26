@@ -55,7 +55,7 @@ const haveEnergies = ref(false);
 const enableEnergyFiltering = ref(false);
 const thresholdFromMinimum = ref(false);
 const energyThreshold = ref(0);
-const energyThresholdEffective = ref("0.0000");
+const energyThresholdEffective = ref(0);
 const countSelected = ref(0);
 
 // Compute fingerprints
@@ -101,7 +101,7 @@ askNode(id, "init")
         enableEnergyFiltering.value = params.enableEnergyFiltering as boolean ?? false;
         thresholdFromMinimum.value = params.thresholdFromMinimum as boolean ?? false;
         energyThreshold.value = params.energyThreshold as number ?? 0;
-        energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+        energyThresholdEffective.value = params.energyThresholdEffective as number ?? 0;
         areNanoclusters.value = params.areNanoclusters as boolean ?? false;
         haveEnergies.value = false;
 
@@ -154,7 +154,7 @@ receiveFromNode(id, "load", (params) => {
 
     countSelected.value = params.countSelected as number ?? 0;
     countAccumulated.value = params.countAccumulated as number ?? 0;
-    energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+    energyThresholdEffective.value = params.energyThresholdEffective as number ?? 0;
     cutoffDistance.value = params.cutoffDistance as number ?? 0;
     areNanoclusters.value = params.areNanoclusters as boolean ?? false;
 });
@@ -218,7 +218,7 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
     .then((params: CtrlParams) => {
         countSelected.value = params.countSelected as number ?? 0;
         countAccumulated.value = params.countAccumulated as number ?? 0;
-        energyThresholdEffective.value = (params.energyThresholdEffective as number ?? 0).toFixed(4);
+        energyThresholdEffective.value = params.energyThresholdEffective as number ?? 0;
         cutoffDistance.value = params.cutoffDistance as number ?? 0;
     })
     .catch((error: Error) => showAlertMessage(`Error from energy settings for ${label}: ${error.message}`,
@@ -423,8 +423,8 @@ const showEnergyLandscape = (): void => {
     <v-number-input v-model="energyThreshold" :disabled="!enableEnergyFiltering || !haveEnergies"
                     :label="thresholdFromMinimum ? 'Energy from minimum' : 'Max energy'" :step="0.1"
                     :precision="4" class="ml-4 mr-2" />
-    <v-text-field v-model="energyThresholdEffective"
-                  label="Max energy" readonly class="ml-2 mr-5" />
+    <v-number-input v-model="energyThresholdEffective" control-variant="hidden"
+                    label="Max energy" readonly :precision="4" class="ml-2 mr-5" />
   </v-row>
 
   <v-label class="mt-2 mb-2 result-label"> {{ accumulatedLabel }}</v-label>

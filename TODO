@@ -1,5 +1,4 @@
 Bugs:
-  ☐ When VNumberInput precision in readonly is solved, change VTextInput to VNumberInput in fingerprinting
 
 To do:
   ☐ Try to put labels as billboards
@@ -58,6 +57,7 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ When VNumberInput precision in readonly is solved, change VTextInput to VNumberInput in fingerprinting @done(2025-02-26 07:07) @project(Bugs)
   ✔ Do both fingerprint and distance calculations by just one click @done(2025-02-18 19:00) @project(To do)
   ✘ Add selection of non coincident points to the select criteria @cancelled(2025-02-21 15:51) @project(To do)
   ✘ Reduce points, then select group 0: nothing appears @cancelled(2025-02-17 08:22) @project(Bugs)
