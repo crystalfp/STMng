@@ -481,4 +481,18 @@ export class FingerprintsAccumulator {
 		}
 		return [];
 	}
+
+	/**
+	 * Get a structure by step number
+	 *
+	 * @param step - Step of the structure requested
+	 * @returns The structure or undefined if not found
+	 */
+	getStructureByStep(step: number): StructureReduced | undefined {
+
+		for(const entry of this.accumulator) {
+			if(entry.selected && entry.id === step) return entry;
+		}
+		return undefined;
+	}
 }

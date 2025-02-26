@@ -1119,7 +1119,7 @@ export class ComputeFingerprints extends NodeCore {
 			this.channelOpened = true;
 
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			ipcMain.on("SYSTEM:selected-points", async (_event: unknown, params: CtrlParams): Promise<void> => {
+			ipcMain.on("SYSTEM:selected-points", async (_event, params: CtrlParams): Promise<void> => {
 
 				const points = params.points as string;
 				if(!points)	return;
@@ -1172,7 +1172,7 @@ export class ComputeFingerprints extends NodeCore {
 				}
 			});
 
-			ipcMain.on("SYSTEM:selected-plot", (_event: unknown, params: CtrlParams): void => {
+			ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {
 
 				this.plotType = params.plotType as string ?? "group";
 
@@ -1195,13 +1195,13 @@ export class ComputeFingerprints extends NodeCore {
 				return {selectedPoints};
 			});
 
-			ipcMain.on("SYSTEM:compare", (_event: unknown, params: CtrlParams): void => {
+			ipcMain.on("SYSTEM:compare", (_event, params: CtrlParams): void => {
 
 				const selectedPoints = params.selectedPoints as number[] ?? [];
 				this.createUpdateCompare("create", selectedPoints);
 			});
 
-			ipcMain.on("SYSTEM:updated-selection", (_event: unknown, params: CtrlParams): void => {
+			ipcMain.on("SYSTEM:updated-selection", (_event, params: CtrlParams): void => {
 
 				const updatedStepsSelection = params.updatedStepsSelection as number[] ?? [];
 
@@ -1216,6 +1216,15 @@ export class ComputeFingerprints extends NodeCore {
 				this.createUpdateScatterplot("update", {plotType: this.plotType,
 														selectedPoints: updatedSelectedPoints
 													   });
+			});
+
+			ipcMain.handle("SYSTEM:get-structure", (_event, params: CtrlParams): CtrlParams => {
+
+				const step = params.step as number;
+				if(step === undefined) return {structure: "{}"};
+				const structure = this.accumulator.getStructureByStep(step);
+				if(!structure) return {structure: "{}"};
+				return {structure: JSON.stringify(structure)};
 			});
 		}
 	}

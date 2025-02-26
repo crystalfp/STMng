@@ -121,7 +121,8 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
 
 /** Simplify label */
 const startStop = computed(() => (controlStore.trajectoriesRecording ?
-                                            "Stop trajectories" : "Start trajectories"));
+                                            "Stop trajectories" :
+                                            "Start trajectories"));
 
 </script>
 
@@ -132,11 +133,11 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
             @update:modelValue="renderer.setVisibility(showTrajectories)" />
   <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
-                    :disabled="trajectoriesRecording"
+                    :disabled="trajectoriesRecording" class="ml-1"
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
   <g-debounced-slider v-slot="{value}" v-model="maxDisplacement"
                       :disabled="trajectoriesRecording"
-                      :step="0.01" :min="0.01" :max="3" class="ml-1 my-4">
+                      :step="0.01" :min="0.01" :max="3" class="ml-1 mb-4 mt-8">
     <v-label :text="`Max displacement (${value.toFixed(2)})`" class="no-select" />
   </g-debounced-slider>
   <v-switch v-model="showPositionClouds" label="Show position clouds" class="ml-2 mb-4" />

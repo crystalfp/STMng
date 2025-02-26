@@ -6,10 +6,20 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-02-24
  */
-import {ref} from "vue";
+import {onMounted, ref, useTemplateRef} from "vue";
 import log from "electron-log";
+import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
+        AmbientLight, Group, LineBasicMaterial, BufferGeometry,
+        Vector3, Vector2, Vector4, Quaternion, Matrix4, Spherical, Box3,
+        Sphere, MathUtils, Raycaster,
+        BufferAttribute, EdgesGeometry, LineSegments,
+        Clock} from "three";
+// import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import CameraControls from "camera-controls";
 import {theme} from "@/services/ReceiveTheme";
-import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import type {BasisType, CtrlParams} from "@/types";
+import type {StructureReduced} from "@/electron/fingerprint/Accumulator";
 
 /** List of structures to compare */
 interface Selection {
@@ -31,17 +41,233 @@ interface Selection {
 }
 const lines = ref<Selection[]>([]);
 
-/** The selected step on the two columns */
+/** Side: 0: left, 1: right */
+type Side = 0 | 1;
+
+/** The selected step on the two columns (-1 means no selection) */
 const selectedStep0 = ref(-1);
 const selectedStep1 = ref(-1);
 
-// TBD Mocked functions
-const loadStructure = (side: 0 | 1, idx: number): void => {
-    console.log("LOAD", side, idx);
+/** Reference to the view */
+const cnv = useTemplateRef<HTMLElement>("viewCompare");
+
+/** The canvas sizes (will be computed during mount or resize) */
+const canvasWidth = ref(500);
+const canvasHeight = ref(300);
+
+/** Graphical variables */
+let scene: Scene;
+let camera: OrthographicCamera;
+let renderer: WebGLRenderer;
+let groupRight: Group;
+let groupLeft: Group;
+
+// For rendering the scene if modified
+let sceneModified = true;
+let retry = 0;
+
+/**
+ * Ask if the scene needs rendering because has been changed,
+ * then reset the modified flag
+ *
+ * @returns True if the scene should be rendered
+ */
+const needRendering = (): boolean => {
+
+    if(sceneModified) {
+        if(retry > 2) {
+            sceneModified = false;
+            retry = 0;
+        }
+        ++retry;
+        return true;
+    }
+    return false;
 };
 
-const unloadStructure = (idx: number): void => {
-    console.log("UNLOAD", idx);
+/**
+ * Initialize the viewer
+ */
+const initViewer = (): void => {
+
+    if(!cnv.value) return;
+
+    scene = new Scene();
+    scene.background = new Color("#90CEEC");
+
+    const hh = 7.8;
+    const hw = hh * canvasWidth.value/canvasHeight.value;
+    camera = new OrthographicCamera(-hw, hw, hh, -hh, 0.1, 500);
+    camera.position.set(7.7, 8.5, 7.6);
+    camera.lookAt(scene.position);
+    camera.zoom = 1;
+    camera.near = 0.1;
+    camera.far = 500;
+
+    renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
+    renderer.setSize(canvasWidth.value, canvasHeight.value);
+    document.body.append(renderer.domElement);
+    cnv.value.append(renderer.domElement);
+
+    // const controls = new OrbitControls(camera, renderer.domElement);
+
+    // Add mouse controls to move the camera
+    const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2, WebGLRenderer,
+                           Raycaster, Vector4, Quaternion, Matrix4, Spherical, Box3,
+                           Sphere, MathUtils};
+    CameraControls.install({THREE: subsetOfTHREE});
+    const controls = new CameraControls(camera, renderer.domElement);
+
+    const light = new DirectionalLight("white", 3);
+    light.position.set(0, 1, 0);
+    scene.add(light);
+    const ambient = new AmbientLight("#BBBBBB", 1);
+    scene.add(ambient);
+
+    groupLeft = new Group();
+    scene.add(groupLeft);
+    groupRight = new Group();
+    scene.add(groupRight);
+
+    // Rendering function for the run
+    const clock = new Clock();
+    const animationLoop = (): void => {
+
+        const doRender = controls.update(clock.getDelta());
+        if(doRender || needRendering()) {
+
+            light.position.copy(camera.position);
+            renderer.render(scene, camera);
+        }
+    };
+    renderer.setAnimationLoop(animationLoop);
+};
+
+onMounted(() => {
+
+    const resizeObserver = new ResizeObserver((entries) => {
+
+        for(const entry of entries) {
+            if(entry.borderBoxSize) {
+                canvasWidth.value = entry.borderBoxSize[0].inlineSize;
+                canvasHeight.value = entry.borderBoxSize[0].blockSize;
+            }
+            else {
+                canvasWidth.value = entry.contentRect.width;
+                canvasHeight.value = entry.contentRect.height;
+            }
+        }
+
+        const hh = 7.8;
+        const hw = hh * canvasWidth.value/canvasHeight.value;
+        camera.left = -hw;
+        camera.right = hw;
+        camera.top = hh;
+        camera.bottom = -hh;
+
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvasWidth.value, canvasHeight.value);
+    });
+
+    // Get the canvas size
+    const canvas = document.querySelector<HTMLDivElement>(".side-n");
+    if(!canvas) return;
+    resizeObserver.observe(canvas);
+
+    initViewer();
+});
+
+const colors = [
+    "blue",
+    "green"
+];
+const indices = [
+
+    4, 5, 1,
+    4, 1, 0,
+
+    3, 2, 6,
+    3, 6, 7,
+
+    4, 0, 3,
+    4, 3, 7,
+
+    1, 5, 6,
+    1, 6, 2,
+];
+
+/**
+ * Compute unit cell vertices coordinates
+ *
+ * @param basis - Basis vectors
+ * @returns - List of vertices coordinates (bottom then top)
+ */
+ const computeCellVertices = (basis: BasisType): number[] => [
+	0,                          0,                          0,
+	basis[0],                   basis[1],                   basis[2],
+	basis[0]+basis[3],          basis[1]+basis[4],          basis[2]+basis[5],
+	basis[3],                   basis[4],                   basis[5],
+	basis[6],                   basis[7],                   basis[8],
+	basis[0]+basis[6],          basis[1]+basis[7],          basis[2]+basis[8],
+	basis[0]+basis[3]+basis[6], basis[1]+basis[4]+basis[7], basis[2]+basis[5]+basis[8],
+	basis[3]+basis[6],          basis[4]+basis[7],          basis[5]+basis[8],
+];
+
+/**
+ * Draw the unit cell
+ *
+ * @param basis - The basis for the unit cell
+ * @param side - Side of the related structure
+ */
+const drawUnitCell = (basis: BasisType, side: Side): void => {
+
+    const material = new LineBasicMaterial({color: colors[side]});
+
+    const geometry = new BufferGeometry();
+    geometry.setIndex(indices);
+    const vertices = computeCellVertices(basis);
+    geometry.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
+    const edges = new EdgesGeometry(geometry);
+
+    const line = new LineSegments(edges, material);
+    // line.visible = visible;
+    if(side) groupRight.add(line);
+    else     groupLeft.add(line);
+};
+
+/**
+ * Load the requested structure
+ *
+ * @param side - Side of the list (0: left, 1: right)
+ * @param step - Step that should be loaded
+ */
+const loadStructure = (side: Side, step: number): void => {
+
+    askNode("SYSTEM", "get-structure", {step})
+        .then((responseRaw: CtrlParams) => {
+            if(responseRaw.structure === "{}") throw Error("Cannot load the requested structure");
+            const structure = JSON.parse(responseRaw.structure as string) as StructureReduced;
+
+            drawUnitCell(structure.basis, side);
+            // TBD The atoms rendering
+
+            sceneModified = true;
+        })
+        .catch((error: Error) => {
+            log.error(error);
+        });
+};
+
+/**
+ * Remove the visualized structure
+ *
+ * @param side - Side of the list (0: left, 1: right)
+ */
+const unloadStructure = (side: Side): void => {
+
+    if(side) groupRight.clear();
+    else     groupLeft.clear();
+    sceneModified = true;
 };
 
 /**
@@ -88,7 +314,7 @@ const findIdx = (step: number): number => {
  * @param side - Side of the list (0: left, 1: right)
  * @param idx - If set enable all elements except this one
  */
-const enableAllExcept = (side: 0 | 1, idx?: number): void => {
+const enableAllExcept = (side: Side, idx?: number): void => {
 
     if(side) {
         for(const entry of lines.value) entry.disabled1 = false;
@@ -101,12 +327,12 @@ const enableAllExcept = (side: 0 | 1, idx?: number): void => {
 };
 
 /**
- * Select one entry
+ * Select one entry by clicking on it
  *
  * @param side - Side of the list (0: left, 1: right)
  * @param step - Step that has been selected
  */
-const select = (side: 0 | 1, step: number): void => {
+const select = (side: Side, step: number): void => {
 
     const idx = findIdx(step);
 
@@ -115,22 +341,22 @@ const select = (side: 0 | 1, step: number): void => {
         if(step === selectedStep1.value) {
             lines.value[idx].selected1 = false;
             selectedStep1.value = -1;
-            unloadStructure(idx);
+            unloadStructure(1);
             enableAllExcept(0);
         }
         else if(selectedStep1.value === -1) {
             lines.value[idx].selected1 = true;
             selectedStep1.value = step;
-            loadStructure(1, idx);
+            loadStructure(1, step);
             enableAllExcept(0, idx);
         }
         else {
             const idx1 = findIdx(selectedStep1.value);
             lines.value[idx1].selected1 = false;
-            unloadStructure(idx1);
+            unloadStructure(1);
             lines.value[idx].selected1 = true;
             selectedStep1.value = step;
-            loadStructure(1, idx);
+            loadStructure(1, step);
             enableAllExcept(0, idx);
         }
     }
@@ -139,22 +365,22 @@ const select = (side: 0 | 1, step: number): void => {
         if(step === selectedStep0.value) {
             lines.value[idx].selected0 = false;
             selectedStep0.value = -1;
-            unloadStructure(idx);
+            unloadStructure(0);
             enableAllExcept(1);
         }
         else if(selectedStep0.value === -1) {
             lines.value[idx].selected0 = true;
             selectedStep0.value = step;
-            loadStructure(0, idx);
+            loadStructure(0, step);
             enableAllExcept(1, idx);
         }
         else {
             const idx0 = findIdx(selectedStep0.value);
             lines.value[idx0].selected0 = false;
-            unloadStructure(idx0);
+            unloadStructure(0);
             lines.value[idx].selected0 = true;
             selectedStep0.value = step;
-            loadStructure(0, idx);
+            loadStructure(0, step);
             enableAllExcept(1, idx);
         }
     }
@@ -165,7 +391,7 @@ const select = (side: 0 | 1, step: number): void => {
  *
  * @param side - Remove the selected from the given side
  */
-const remove = (side: 0 | 1): void => {
+const remove = (side: Side): void => {
 
     let step;
     if(side) {
@@ -186,7 +412,7 @@ const remove = (side: 0 | 1): void => {
     }
 
     const idx = findIdx(step);
-    unloadStructure(idx);
+    unloadStructure(side);
     lines.value.splice(idx, 1);
     updateSelection();
 };
@@ -216,7 +442,7 @@ const showNotification = ref(true);
       <v-btn class="sub-bl" :disabled="selectedStep0 === -1" @click="remove(0)">Remove</v-btn>
       <v-btn class="sub-br" :disabled="selectedStep1 === -1" @click="remove(1)">Remove</v-btn>
     </div>
-    <div class="side-n">
+    <div class="side-n" ref="viewCompare">
     </div>
     <div class="side-s">
       <v-btn v-focus @click="closeWindow('/compare')">Close</v-btn>
@@ -253,7 +479,10 @@ const showNotification = ref(true);
   height: 100vh;
 }
 
-.side-n {grid-area: bb; padding-top: 20px; background-color: #90CEEC;}
+.side-n {
+  grid-area: bb;
+  overflow: hidden;
+}
 
 .side-s {
   grid-area: cc;
