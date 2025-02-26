@@ -42,6 +42,7 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline>
   ☐ If possible remove circular dependencies between modules
+  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

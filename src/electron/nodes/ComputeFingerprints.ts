@@ -34,6 +34,9 @@ interface CreateUpdateScatterplotOptions {
 
 	/** True if the group are not provided */
 	noGroups?: boolean;
+
+	/** Updated list of selected points */
+	selectedPoints?: number[];
 }
 
 export class ComputeFingerprints extends NodeCore {
@@ -409,6 +412,11 @@ export class ComputeFingerprints extends NodeCore {
 									this.prepareFidelityData(points, enabled, hasEnergies) :
 									this.prepareScatterplotData(points, enabled, options, hasEnergies);
 
+		// If the selected points list should be updated
+		if(options.selectedPoints && options.selectedPoints.length > 0) {
+			scatterplotData.selectedPoints = options.selectedPoints;
+		}
+
 		const dataToSend = JSON.stringify(scatterplotData);
 
 		// If it is open, update the scatterplot window
@@ -638,6 +646,46 @@ export class ComputeFingerprints extends NodeCore {
 		this.createUpdateScatterplot("update", options);
 		this.createUpdateLandscape("update");
 		this.createUpdateCharts("update", this.chartType, this.lambda);
+	}
+
+	/**
+	 * Open or update the compare structures window
+	 *
+	 * @param opKind - Operation to be performed:
+	 *                 "update" update if new data available or "create" create the window
+	 * @param selectedPoints - List of selected points from the scatterplot
+	 */
+	private createUpdateCompare(opKind: "update" | "create", selectedPoints: number[]): void {
+
+		const compareWindowOpen = isSecondaryWindowOpen("/compare");
+		if(opKind !== "create" && !compareWindowOpen) return;
+
+		const steps: number[] = [];
+		if(selectedPoints.length > 0) {
+			let idx = 0;
+			for(const structure of this.accumulator.iterateSelectedStructures()) {
+				if(selectedPoints.includes(idx)) steps.push(structure.id);
+				++idx;
+			}
+		}
+		const dataToSend = JSON.stringify(steps);
+
+		// If it is open, update the compare window
+		if(compareWindowOpen) {
+
+			sendToSecondaryWindow("/compare", dataToSend);
+		}
+		else {
+
+			// Create the scatterplot window
+			createSecondaryWindowWithRetry({
+				routerPath: "/compare",
+				width: 1600,
+				height: 900,
+				title: "Compare selected structures",
+				data: dataToSend
+			});
+		}
 	}
 
 	/**
@@ -1129,7 +1177,6 @@ export class ComputeFingerprints extends NodeCore {
 				this.plotType = params.plotType as string ?? "group";
 
 				this.createUpdateScatterplot("update", {plotType: this.plotType});
-
 			});
 
 			ipcMain.handle("SYSTEM:get-selections", (_event, params: CtrlParams): CtrlParams => {
@@ -1145,9 +1192,30 @@ export class ComputeFingerprints extends NodeCore {
 						selectedPoints = this.selectByConvexHull();
 						break;
 				}
-				return {
-					selectedPoints
-				};
+				return {selectedPoints};
+			});
+
+			ipcMain.on("SYSTEM:compare", (_event: unknown, params: CtrlParams): void => {
+
+				const selectedPoints = params.selectedPoints as number[] ?? [];
+				this.createUpdateCompare("create", selectedPoints);
+			});
+
+			ipcMain.on("SYSTEM:updated-selection", (_event: unknown, params: CtrlParams): void => {
+
+				const updatedStepsSelection = params.updatedStepsSelection as number[] ?? [];
+
+				const updatedSelectedPoints: number[] = [];
+				let idx = 0;
+				for(const structure of this.accumulator.iterateSelectedStructures()) {
+					if(updatedStepsSelection.includes(structure.id)) {
+						updatedSelectedPoints.push(idx);
+					}
+					++idx;
+				}
+				this.createUpdateScatterplot("update", {plotType: this.plotType,
+														selectedPoints: updatedSelectedPoints
+													   });
 			});
 		}
 	}

@@ -533,6 +533,9 @@ export interface ScatterplotData {
      * The first index is the original distance, the second is the projected distance.
      */
     fidelity: number[][];
+
+    /** If present, the updated list of selected points */
+    selectedPoints?: number[];
 }
 
 export interface EnergyLandscapeData {

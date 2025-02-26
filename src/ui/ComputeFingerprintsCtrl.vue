@@ -405,7 +405,7 @@ const showEnergyLandscape = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="separator-title mt-0" style="border: none">Accumulated structures</v-label>
+  <v-label class="separator-title first-title mt-n1">Accumulated structures</v-label>
 
   <v-row class="mt-0 mb-2 ml-0 mr-2">
     <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>

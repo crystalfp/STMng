@@ -48,5 +48,9 @@ export const router = createRouter({
             path: "/fp-charts",
             component: (): Component => import("@/components/FingerprintCharts.vue")
         },
+        {
+            path: "/compare",
+            component: (): Component => import("@/components/CompareSelected.vue")
+        },
     ],
 });

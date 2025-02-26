@@ -66,6 +66,8 @@ const noSelectedPoints = computed(() => selectedPoints.size === 0);
 /** Reference to the canvas element */
 let canvas: HTMLCanvasElement | null;
 
+const errorMessage = ref("");
+
 /**
  * Convert point coordinates into screen coordinates
  *
@@ -519,6 +521,11 @@ receiveInWindow((dataFromMain) => {
 
     scatterplotData.value = JSON.parse(dataFromMain) as ScatterplotData;
 
+    if(scatterplotData.value.selectedPoints !== undefined) {
+        selectedPoints.clear();
+        for(const pt of scatterplotData.value.selectedPoints) selectedPoints.add(pt);
+    }
+
     drawPoints();
 });
 
@@ -585,8 +592,11 @@ const selectByGroup = (): void => {
             drawPoints();
         }
     })
-    .catch((error: Error) => log.error(`Error from getting selected points for "${criteria}":`,
-                                       error.message));
+    .catch((error: Error) => {
+        const message = `Error from getting selected points for "${criteria}":`;
+        log.error(message, error.message);
+        errorMessage.value = message;
+    });
 };
 
 // > Save selected to the selected file name
@@ -612,10 +622,14 @@ const selectedSaveFile = (filename: string): void => {
 const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
                                      {name: "All",    extensions: ["*"]}]);
 
-// TBD Compare structures selected
+/**
+ * Compare structures selected
+ */
 const compareSelected = (): void => {
 
-    log.error("Compare structures not (yet) implemented");
+    if(selectedPoints.size < 2) return;
+
+    sendToNode("SYSTEM", "compare", {selectedPoints: [...selectedPoints]});
 };
 
 /** Setup the legend */
@@ -812,7 +826,7 @@ const mousemove = (event: MouseEvent): void => {
 <v-app :theme="theme">
   <div class="scatterplot-grid">
     <div class="side-w pa-2 mr-2">
-      <v-label class="separator-title mt-1" style="border: none">Manage selection</v-label>
+      <v-label class="separator-title first-title">Manage selection</v-label>
 
       <v-row class="ga-3 mt-2 mb-5 ml-1 mr-n1 two-buttons">
         <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="left">
@@ -840,8 +854,7 @@ const mousemove = (event: MouseEvent): void => {
         Gen. convex hull
       </v-btn>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <!-- <v-btn block class="mt-4 mb-4 ml-1" @click="compareSelected" :disabled="noSelectedPoints"> -->
-      <v-btn @click="compareSelected" :disabled="true" block class="mt-4 mb-4 ml-1">
+      <v-btn block class="mt-4 mb-4 ml-1" @click="compareSelected" :disabled="selectedPoints.size < 2">
         Compare selected
       </v-btn>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
@@ -851,6 +864,11 @@ const mousemove = (event: MouseEvent): void => {
 
       <g-select-file v-if="showSave" class="mt-4" title="Select output file"
                      :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
+
+      <v-alert v-if="errorMessage !== ''" title="Error" class="mt-7 cursor-pointer"
+         :text="errorMessage" type="error" density="compact"
+         color="red" @click="errorMessage=''" />
+
     </div>
 
     <div class="side-n">
