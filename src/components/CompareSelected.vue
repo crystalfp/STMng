@@ -60,6 +60,8 @@ let camera: OrthographicCamera;
 let renderer: WebGLRenderer;
 let groupRight: Group;
 let groupLeft: Group;
+let controls: CameraControls;
+
 
 // For rendering the scene if modified
 let sceneModified = true;
@@ -111,7 +113,7 @@ const initViewer = (): void => {
                            Raycaster, Vector4, Quaternion, Matrix4, Spherical,
                            Box3, Sphere, MathUtils};
     CameraControls.install({THREE: subsetOfTHREE});
-    const controls = new CameraControls(camera, renderer.domElement);
+    controls = new CameraControls(camera, renderer.domElement);
 
     const light = new DirectionalLight("white", 3);
     light.position.set(0, 1, 0);
@@ -173,6 +175,23 @@ onMounted(() => {
     initViewer();
 });
 
+/**
+ * Center the camera and the controls
+ *
+ * @param center - Coordinates of the center of the structure
+ */
+const centerCamera = (center: [number, number, number]): void => {
+
+    camera.lookAt(new Vector3(...center));
+	controls.setOrbitPoint(...center);
+	const maxSide = Math.max(center[0], center[1], center[2]);
+	void controls.setLookAt(center[0], center[1], center[2] + 2*maxSide,
+							center[0], center[1], center[2], false);
+    void controls.zoomTo(1, true);
+
+    camera.updateProjectionMatrix();
+};
+
 const colors = [
     "blue",
     "green"
@@ -214,8 +233,9 @@ const indices = [
  *
  * @param basis - The basis for the unit cell
  * @param side - Side of the related structure
+ * @returns - Unit cell center coordinates
  */
-const drawUnitCell = (basis: BasisType, side: Side): void => {
+const drawUnitCell = (basis: BasisType, side: Side): [number, number, number] => {
 
     const material = new LineBasicMaterial({color: colors[side]});
 
@@ -229,6 +249,17 @@ const drawUnitCell = (basis: BasisType, side: Side): void => {
 
     if(side) groupRight.add(line);
     else     groupLeft.add(line);
+
+    // Compute the center of the unit cell
+    const center: [number, number, number] = [0, 0, 0];
+    for(let i=0; i < 8; ++i) {
+        for(let j=0; j < 3; ++j) {
+            center[j] += vertices[3*i+j];
+        }
+    }
+    for(let j=0; j < 3; ++j) center[j] /= 8;
+
+    return center;
 };
 
 /**
@@ -326,7 +357,7 @@ const loadStructure = (side: Side, step: number): void => {
 
             const bb = response.basis as BasisType;
 
-            drawUnitCell(bb, side);
+            const center = drawUnitCell(bb, side);
             drawAtoms(response.positions as number[], response.radii as number[], side);
             drawBonds(response.positions as number[], response.bonds as number[], side);
 
@@ -334,6 +365,8 @@ const loadStructure = (side: Side, step: number): void => {
                 na = new Vector3(bb[0], bb[1], bb[2]).normalize();
                 nb = new Vector3(bb[3], bb[4], bb[5]).normalize();
                 nc = new Vector3(bb[6], bb[7], bb[8]).normalize();
+
+                centerCamera(center);
             }
             sceneModified = true;
         })
