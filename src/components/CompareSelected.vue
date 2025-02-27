@@ -6,20 +6,19 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-02-24
  */
-import {onMounted, ref, useTemplateRef} from "vue";
+import {onMounted, ref, useTemplateRef, watch} from "vue";
 import log from "electron-log";
 import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, Group, LineBasicMaterial, BufferGeometry,
         Vector3, Vector2, Vector4, Quaternion, Matrix4, Spherical, Box3,
         Sphere, MathUtils, Raycaster,
         BufferAttribute, EdgesGeometry, LineSegments,
-        Clock} from "three";
-// import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+        Clock, IcosahedronGeometry, MeshStandardMaterial, Mesh,
+        CylinderGeometry, FrontSide} from "three";
 import CameraControls from "camera-controls";
 import {theme} from "@/services/ReceiveTheme";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import type {BasisType, CtrlParams} from "@/types";
-import type {StructureReduced} from "@/electron/fingerprint/Accumulator";
 
 /** List of structures to compare */
 interface Selection {
@@ -101,20 +100,16 @@ const initViewer = (): void => {
     camera.position.set(7.7, 8.5, 7.6);
     camera.lookAt(scene.position);
     camera.zoom = 1;
-    camera.near = 0.1;
-    camera.far = 500;
 
     renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
     renderer.setSize(canvasWidth.value, canvasHeight.value);
     document.body.append(renderer.domElement);
     cnv.value.append(renderer.domElement);
 
-    // const controls = new OrbitControls(camera, renderer.domElement);
-
     // Add mouse controls to move the camera
     const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2, WebGLRenderer,
-                           Raycaster, Vector4, Quaternion, Matrix4, Spherical, Box3,
-                           Sphere, MathUtils};
+                           Raycaster, Vector4, Quaternion, Matrix4, Spherical,
+                           Box3, Sphere, MathUtils};
     CameraControls.install({THREE: subsetOfTHREE});
     const controls = new CameraControls(camera, renderer.domElement);
 
@@ -160,13 +155,14 @@ onMounted(() => {
 
         const hh = 7.8;
         const hw = hh * canvasWidth.value/canvasHeight.value;
-        camera.left = -hw;
-        camera.right = hw;
-        camera.top = hh;
+        camera.left   = -hw;
+        camera.right  =  hw;
+        camera.top    =  hh;
         camera.bottom = -hh;
 
         camera.updateProjectionMatrix();
         renderer.setSize(canvasWidth.value, canvasHeight.value);
+        sceneModified = true;
     });
 
     // Get the canvas size
@@ -230,10 +226,91 @@ const drawUnitCell = (basis: BasisType, side: Side): void => {
     const edges = new EdgesGeometry(geometry);
 
     const line = new LineSegments(edges, material);
-    // line.visible = visible;
+
     if(side) groupRight.add(line);
     else     groupLeft.add(line);
 };
+
+/**
+ * Draw the atoms
+ *
+ * @param atomsPosition - Positions of the atoms
+ * @param radii - List of atoms radii for display
+ * @param side - Side of the related structure
+ */
+const drawAtoms = (atomsPosition: number[], radii: number[], side: Side): void => {
+
+    const material = new MeshStandardMaterial({
+        color: colors[side],
+        roughness: 0.5,
+        metalness: 0.6,
+        side: FrontSide,
+      });
+
+    const natoms = radii.length;
+    for(let i=0; i < natoms; ++i) {
+
+      const geometry = new IcosahedronGeometry(radii[i], 3);
+
+        const sphere = new Mesh(geometry, material);
+        sphere.position.set(atomsPosition[3*i], atomsPosition[3*i+1], atomsPosition[3*i+2]);
+
+        if(side) groupRight.add(sphere);
+        else     groupLeft.add(sphere);
+    }
+};
+
+/**
+ * Draw the bonds
+ *
+ * @param atomsPosition - Positions of the atoms
+ * @param bonds - List of indices of bonded atoms
+ * @param side - Side of the related structure
+ */
+const drawBonds = (atomsPosition: number[], bonds: number[], side: Side): void => {
+
+    const len = bonds.length;
+
+    for(let i=0; i < len; i+=2) {
+
+        const from = bonds[i];
+        const to   = bonds[i+1];
+
+        const dx = atomsPosition[3*to+0] - atomsPosition[3*from+0];
+        const dy = atomsPosition[3*to+1] - atomsPosition[3*from+1];
+        const dz = atomsPosition[3*to+2] - atomsPosition[3*from+2];
+        const len = Math.hypot(dx, dy, dz);
+
+        const geometry = new CylinderGeometry(0.1, 0.1, len, 10, 1, true);
+
+        const meshMaterial = new MeshStandardMaterial({
+            color: colors[side],
+            roughness: 0.5,
+            metalness: 0.6,
+            side: FrontSide,
+        });
+
+        const cylinder = new Mesh(geometry, meshMaterial);
+
+		// Rotate it along the bond direction
+		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/len, dy/len, dz/len));
+
+		// Move it to the midpoint between atoms
+        const midx = (atomsPosition[3*to+0] + atomsPosition[3*from+0])/2;
+        const midy = (atomsPosition[3*to+1] + atomsPosition[3*from+1])/2;
+        const midz = (atomsPosition[3*to+2] + atomsPosition[3*from+2])/2;
+		cylinder.position.set(midx, midy, midz);
+
+		// Add to the scene
+        if(side) groupRight.add(cylinder);
+        else     groupLeft.add(cylinder);
+    }
+};
+
+/** Versors of the basis vectors */
+let na = new Vector3(1, 0, 0);
+let nb = new Vector3(0, 1, 0);
+let nc = new Vector3(0, 0, 1);
 
 /**
  * Load the requested structure
@@ -244,13 +321,20 @@ const drawUnitCell = (basis: BasisType, side: Side): void => {
 const loadStructure = (side: Side, step: number): void => {
 
     askNode("SYSTEM", "get-structure", {step})
-        .then((responseRaw: CtrlParams) => {
-            if(responseRaw.structure === "{}") throw Error("Cannot load the requested structure");
-            const structure = JSON.parse(responseRaw.structure as string) as StructureReduced;
+        .then((response: CtrlParams) => {
+            if(!("basis" in response)) throw Error("Cannot load the requested structure");
 
-            drawUnitCell(structure.basis, side);
-            // TBD The atoms rendering
+            const bb = response.basis as BasisType;
 
+            drawUnitCell(bb, side);
+            drawAtoms(response.positions as number[], response.radii as number[], side);
+            drawBonds(response.positions as number[], response.bonds as number[], side);
+
+            if(side === 0) {
+                na = new Vector3(bb[0], bb[1], bb[2]).normalize();
+                nb = new Vector3(bb[3], bb[4], bb[5]).normalize();
+                nc = new Vector3(bb[6], bb[7], bb[8]).normalize();
+            }
             sceneModified = true;
         })
         .catch((error: Error) => {
@@ -417,8 +501,46 @@ const remove = (side: Side): void => {
     updateSelection();
 };
 
-// TBD
-const showNotification = ref(true);
+/** Angles of rotation around left basis vectors */
+const aroundA = ref(0);
+const showAroundA = ref(0);
+const aroundB = ref(0);
+const showAroundB = ref(0);
+const aroundC = ref(0);
+const showAroundC = ref(0);
+
+/**
+ * Reset the rotation angles
+ */
+const resetRotations = (): void => {
+  aroundA.value = 0;
+  showAroundA.value = 0;
+  aroundB.value = 0;
+  showAroundB.value = 0;
+  aroundC.value = 0;
+  showAroundC.value = 0;
+};
+
+watch([aroundA, aroundB, aroundC],
+      ([aAfter, bAfter, cAfter], [aBefore, bBefore, cBefore]) => {
+
+    if(selectedStep0.value === -1 || selectedStep1.value === -1) return;
+
+    if(aAfter !== aBefore) {
+        const angle = (aAfter-aBefore)*MathUtils.DEG2RAD;
+        groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(na, angle));
+    }
+    if(bAfter !== bBefore) {
+        const angle = (bAfter-bBefore)*MathUtils.DEG2RAD;
+        groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(nb, angle));
+    }
+    if(cAfter !== cBefore) {
+        const angle = (cAfter-cBefore)*MathUtils.DEG2RAD;
+        groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(nc, angle));
+    }
+    sceneModified = true;
+});
+
 </script>
 
 
@@ -445,12 +567,26 @@ const showNotification = ref(true);
     <div class="side-n" ref="viewCompare">
     </div>
     <div class="side-s">
+      <g-slider-with-steppers v-model="aroundA"
+                      :disabled="selectedStep0 === -1 || selectedStep1 === -1"
+                      v-model:raw="showAroundA" label-width="7.4rem"
+                      :label="`Around: a (${showAroundA}°)`"
+                      :min="-180" :max="180" :step="1" />
+      <g-slider-with-steppers v-model="aroundB"
+                      :disabled="selectedStep0 === -1 || selectedStep1 === -1"
+                      v-model:raw="showAroundB" label-width="4rem"
+                      :label="`b (${showAroundB}°)`"
+                      :min="-180" :max="180" :step="1" />
+      <g-slider-with-steppers v-model="aroundC"
+                      :disabled="selectedStep0 === -1 || selectedStep1 === -1"
+                      v-model:raw="showAroundC" label-width="4rem"
+                      :label="`c (${showAroundC}°)`"
+                      :min="-180" :max="180" :step="1" />
+      <v-btn v-focus @click="resetRotations"
+             :disabled="selectedStep0 === -1 || selectedStep1 === -1">Reset</v-btn>
       <v-btn v-focus @click="closeWindow('/compare')">Close</v-btn>
     </div>
   </div>
-  <!-- TBD -->
-  <v-snackbar v-model="showNotification" timer="info"
-              close-on-content-click color="red">Not yet finished</v-snackbar>
 </v-app>
 </template>
 
@@ -462,7 +598,7 @@ const showNotification = ref(true);
   grid-auto-flow: row;
   grid-template:
     "aa bb" 1fr
-    "aa cc" 50px / 360px 1fr;
+    "aa cc" 50px / 280px 1fr;
   height: 100vh;
 }
 

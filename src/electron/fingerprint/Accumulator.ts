@@ -27,6 +27,9 @@ export interface StructureReduced {
 	/** Map from atomic number to count of atoms with this atomic number */
 	species: Map<number, number>;
 
+	/** Pair of bonded atoms indexes (only normal bonds) */
+	bonds: number[];
+
 	/** If the structure has been selected (by energy) */
 	selected: boolean;
 	/** Index in the list of selected structures, invalid if selected is false */
@@ -81,7 +84,7 @@ export class FingerprintsAccumulator {
 	 */
 	add(structure: Structure, isNanocluster: boolean): boolean {
 
-		const {crystal, atoms, extra} = structure;
+		const {crystal, atoms, bonds, extra} = structure;
 		const {basis, origin} = crystal;
 
 		// Check structure not empty
@@ -118,6 +121,8 @@ export class FingerprintsAccumulator {
 			atomsZ: [],
 			species: new Map<number, number>(),
 
+			bonds: [],
+
 			selected: true,
 			selectedIdx: this.accumulator.length,
 			energy: extra.energy,
@@ -141,6 +146,11 @@ export class FingerprintsAccumulator {
 				position[1] - origin[1],
 				position[2] - origin[2]
 			);
+		}
+
+		for(const bond of bonds) {
+			if(bond.type !== 0) continue;
+			entry.bonds.push(bond.from, bond.to);
 		}
 
 		// Check all structures have the same number of species

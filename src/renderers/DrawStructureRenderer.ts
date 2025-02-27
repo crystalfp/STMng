@@ -8,7 +8,8 @@
  */
 import {Group, Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
 		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
-		Float32BufferAttribute, LineSegments, type ColorRepresentation} from "three";
+		Float32BufferAttribute, LineSegments, type ColorRepresentation,
+		FrontSide} from "three";
 import {sm} from "@/services/SceneManager";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {getBoundingBox} from "@/services/BoundingBox";
@@ -70,6 +71,7 @@ export class DrawStructureRenderer {
 			const material = mesh.material as MeshStandardMaterial;
 			material.roughness = drawRoughness;
 			material.metalness = drawMetalness;
+			material.side = FrontSide;
 
 			const {geometry} = mesh;
 			if(geometry.type === "IcosahedronGeometry") {

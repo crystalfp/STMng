@@ -19,7 +19,7 @@ import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
 import {methodDistances, methodDistancesHistogram, methodEnergiesHistogram,
 		methodEnergyDistance, methodOrder} from "../fingerprint/Analysis";
-import {getAtomicSymbol} from "../modules/AtomData";
+import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
 import {removeDuplicatePoints} from "../fingerprint/RemoveDuplicates";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
@@ -1220,11 +1220,25 @@ export class ComputeFingerprints extends NodeCore {
 
 			ipcMain.handle("SYSTEM:get-structure", (_event, params: CtrlParams): CtrlParams => {
 
+				const empty: CtrlParams = {};
 				const step = params.step as number;
-				if(step === undefined) return {structure: "{}"};
+				if(step === undefined) return empty;
 				const structure = this.accumulator.getStructureByStep(step);
-				if(!structure) return {structure: "{}"};
-				return {structure: JSON.stringify(structure)};
+				if(!structure) return empty;
+
+				const out: CtrlParams = {
+					basis: structure.basis as number[],
+					positions: structure.atomsPosition as number[],
+					radii: [],
+					bonds: []
+				};
+
+				for(const atomZ of structure.atomsZ) {
+					(out.radii as number[]).push(getAtomData(atomZ).rCov/2);
+				}
+				out.bonds = [...structure.bonds];
+
+				return out;
 			});
 		}
 	}

@@ -5,7 +5,7 @@
     "unit":      {"label": "Draw — Cell",       "type": "draw-unit-cell",       "in": "symmetry"},
     "bonds":     {"label": "Draw — Bonds",      "type": "compute-bonds",        "in": "unit"},
     "draw":      {"label": "Draw — Structure",  "type": "draw-structure",       "in": "bonds"},
-    "cfp":       {"label": "Fingerprints",      "type": "compute-fingerprints", "in": "unit"},
+    "cfp":       {"label": "Fingerprints",      "type": "compute-fingerprints", "in": "bonds"},
     "polyhedra": {"label": "Polyhedra",         "type": "draw-polyhedra",       "in": "bonds"},
     "smooth":    {"label": "Interpolate",       "type": "interpolate-volume",   "in": "unit"},
     "ortho":     {"label": "Orthoslice",        "type": "orthoslice",           "in": "smooth"},

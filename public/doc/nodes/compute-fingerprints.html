@@ -231,9 +231,9 @@
 <dl style="margin-left: 20px;">
   <dt>Group</dt><dd>One point for each structure colored by group.</dd>
   <dt>Energy</dt><dd>One point for each structure colored by energy.</dd>
-  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for bad mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 40,000.</dd>
+  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for badly mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 20,000.</dd>
   <dt>Quality</dt><dd>Grouping quality using the
-      <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1, that show perfect association of the point to the group, to -1, that show that the point is in the wrong group. There are two special cases: the point is alone in a group and the point is on the border between two groups.</dd>
+      <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1, that show perfect association of the point to the group, to -1, that show that the point is in the wrong group. There are two special cases: 1) the point is alone in a group and 2) the point is on the border between two groups.</dd>
   <dt>From min</dt><dd>One point for each structure colored by its distance from the point with minimum energy.</dd>
 </dl>
 <p>The grouping quality color scale is:</p>
@@ -298,7 +298,7 @@
 <tr>
   <td class="c1">Compare selected</td>
   <td class="c2">button</td>
-  <td class="c3">Visually compare pairs of structures. <span style="color: red;">Not yet implemented.</span></td>
+  <td class="c3">Open the window to visually compare pairs of structures.</td>
 </tr>
 <tr>
   <td class="c1">Export selected</td>
@@ -359,6 +359,46 @@
 	<td class="c1">Colormap</td>
 	<td class="c2">selector</td>
 	<td class="c3">Name of the colormap to convert value into color.</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window.</td>
+</tr>
+</table>
+
+<h2>Compare structures window</h2>
+<p>Shows pair of structures and make possible rotate them to visually compare them. The structures are shown with coincident origins.</p>
+<table cellpadding="2" cellspacing="2">
+<tr>
+  <td class="c1">Compare selected — left</td>
+  <td class="c2">list</td>
+  <td class="c3">Select the step of the first structure to compare. The structure and its unit cell will be colored blue. Selecting again an entry deselects it. The same structure cannot be selected twice.</td>
+</tr>
+<tr>
+  <td class="c1">Compare selected — right</td>
+  <td class="c2">list</td>
+  <td class="c3">Select the step of the second structure to compare. The structure and its unit cell will be colored green. Selecting again an entry deselects it. The same structure cannot be selected twice.</td>
+</tr>
+<tr>
+  <td class="c1">Remove — left</td>
+  <td class="c2">button</td>
+  <td class="c3">Remove the selected structure step from the left list. The selection will be updated also in the scatterplot window.</td>
+</tr>
+<tr>
+  <td class="c1">Remove — right</td>
+  <td class="c2">button</td>
+  <td class="c3">Remove the selected structure step from the right list. The selection will be updated also in the scatterplot window.</td>
+</tr>
+<tr>
+  <td class="c1">Reset</td>
+  <td class="c2">button</td>
+  <td class="c3">Reset the rotation angles.</td>
+</tr>
+<tr>
+  <td class="c1">Around a, b, c</td>
+  <td class="c2">slider</td>
+  <td class="c3">Set the rotation angles around the corresponding basis vector in the left structure.</td>
 </tr>
 <tr>
   <td class="c1">Close</td>
