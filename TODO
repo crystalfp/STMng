@@ -1,4 +1,5 @@
 Bugs:
+  ✔ Remove He and Hg from PDB reader @done(2025-02-27 15:29)
 
 To do:
   ☐ Try to put labels as billboards
@@ -10,7 +11,7 @@ To do:
   ☐ Plotting protein structures
   ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
   ☐ Optional display of the conventional Bravais cell (currently, after using symmetry, one gets a primitive cell; having an option of Bravais cell will be great).
-  ☐ Set camera center to center of unit cells
+  ✔ Set camera center to center of unit cells @done(2025-02-27 15:29)
 
 Functionalities:
   ☐ An option to specify arbitrary section plane

@@ -64,9 +64,34 @@ askNode(id, "init")
 
 watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
        maxHValenceAngle, enableComputeBonds, bondScale, perPairScale,
-       perPairData, enlargementKind], () => {
+       perPairData, enlargementKind], (
+        [aminbd, amaxbd, amaxhbd, amaxva, aen, abs, apps, appd, aek],
+        [minbd,  maxbd,  maxhbd,  maxva,  en,  bs,  pps,  ppd,  ek]
+       ) => {
 
-    sendToNode(id, "changes", {
+    // Workaround to avoid firing with no value changed
+    let changes = false;
+    if(aminbd !== minbd ||
+       amaxbd !== maxbd ||
+       amaxhbd !== maxhbd ||
+       amaxva !== maxva ||
+       aen !== en ||
+       abs !== bs ||
+       apps !== pps ||
+       appd !== ppd ||
+       aek !== ek) changes = true;
+    else {
+        const len = perPairData.value.length;
+        /* eslint-disable @stylistic/max-statements-per-line */
+        for(let i=0; i < len; ++i) {
+            if(appd[i].atomZi !== ppd[i].atomZi) {changes = true; break;}
+            if(appd[i].atomZi !== ppd[i].atomZi) {changes = true; break;}
+            if(appd[i].scale !== ppd[i].scale)   {changes = true; break;}
+            if(appd[i].label !== ppd[i].label)   {changes = true; break;}
+        }
+        /* eslint-enable @stylistic/max-statements-per-line */
+    }
+    if(changes) sendToNode(id, "changes", {
         minBondingDistance:  minBondingDistance.value,
         maxBondingDistance:  maxBondingDistance.value,
         maxHBondingDistance: maxHBondingDistance.value,

@@ -142,11 +142,12 @@ export class ReaderPDB implements ReaderImplementation {
 
 					// If there is no valid symbol, try to guess it from the atom label
 					if(atomZ === 0) {
-						const trySymbol = fixedWidthStringSpaceTrimmed(line, 12, 2);
-						if(["CA", "CD", "CE", "CF"].includes(trySymbol)) atomSymbol = "C";
-						atomZ = getAtomicNumber(trySymbol);
+						atomSymbol = fixedWidthStringSpaceTrimmed(line, 12, 2);
+						if(["CA", "CD", "CE", "CF"].includes(atomSymbol)) atomSymbol = "C";
+						else if(["HE", "HF", "HG"].includes(atomSymbol)) atomSymbol = "H";
+						atomZ = getAtomicNumber(atomSymbol);
 						if(atomZ === 0) {
-							atomZ = getAtomicNumber(trySymbol[0]);
+							atomZ = getAtomicNumber(atomSymbol[0]);
 							if(atomZ === 0) continue;
 						}
 					}
