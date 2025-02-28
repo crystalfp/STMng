@@ -8,10 +8,10 @@
  */
 import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
-import {EmptyStructure} from "../modules/EmptyStructure";
 import {extractBasis, invertBasis} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Structure, ReaderImplementation, BasisType, Atom, Bond, ReaderOptions} from "@/types";
+import type {Structure, ReaderImplementation, BasisType,
+			 Atom, Bond, ReaderOptions} from "@/types";
 
 /**
  * Extract a floating point number from a fixed length field
@@ -97,7 +97,6 @@ export class ReaderPDB implements ReaderImplementation {
 		const readHydrogen = options?.readHydrogen ?? false;
 		let tryStartStep = true;
 
-
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
@@ -110,10 +109,27 @@ export class ReaderPDB implements ReaderImplementation {
 				tryStartStep = true;
 				continue;
 			}
+
 			// Start a new structure
 			if(tryStartStep) {
 				tryStartStep = false;
-				structures.push(new EmptyStructure());
+				const structure: Structure = {
+
+					crystal: {
+						basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+						origin: [0, 0, 0],
+						spaceGroup: ""
+					},
+					atoms: [],
+					bonds: [],
+					volume: [],
+					extra: {id: currentStructure+2},
+					residues: {
+						chains: [],
+						atoms: []
+					}
+				};
+				structures.push(structure);
 				++currentStructure;
 			}
 
@@ -157,18 +173,24 @@ export class ReaderPDB implements ReaderImplementation {
 
 						const sn = fixedWidthInt(line, 6, 5);
 						const label = fixedWidthStringSpaceTrimmed(line, 12, 4).split(" ")[0];
-						// const fragmentName = fixedWidthStringSpaceTrimmed(line, 17, 3);
-						// const seq = fixedWidthInt(line, 22, 4);
 						const x = fixedWidthFloat(line, 30, 8);
 						const y = fixedWidthFloat(line, 38, 8);
 						const z = fixedWidthFloat(line, 46, 8);
+
+						const {atoms, residues} = structures[currentStructure];
 
 						const atom: Atom = {
 							atomZ,
 							label,
 							position: [x, y, z]
 						};
-						structures[currentStructure].atoms.push(atom);
+						atoms.push(atom);
+
+						const residueName = fixedWidthStringSpaceTrimmed(line, 17, 3);
+						let chainName = fixedWidthStringSpaceTrimmed(line, 21, 1);
+						if(chainName === "") chainName = "X";
+						if(!residues!.chains.includes(chainName)) residues!.chains.push(chainName);
+						residues!.atoms.push({residue: residueName, chain: chainName});
 
 						snMap.set(sn, atomIdx);
 						++atomIdx;
@@ -260,7 +282,7 @@ export class ReaderPDB implements ReaderImplementation {
 					const a = fixedWidthFloat(line, 10,  10);
 					const b = fixedWidthFloat(line, 20,  10);
 					const c = fixedWidthFloat(line, 30,  10);
-					const d = fixedWidthFloat(line, 40,  10);
+					const d = fixedWidthFloat(line, 45,  10);
 
 					// Try to cope with incorrectly numbered SCALEn entries (eg. 3 times SCALE1)
 					switch(seq)	{
@@ -329,6 +351,10 @@ export class ReaderPDB implements ReaderImplementation {
 				break;
 			}
 		}
+
+// const frag = new Set<string>();
+// for(const ra of structures[0].residues?.atoms ?? []) frag.add(ra.residue);
+// console.log(frag);
 
 		return structures;
 	}

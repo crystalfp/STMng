@@ -79,6 +79,14 @@ export interface Extra {
     energy?: number;
 }
 
+export interface Residues {
+    chains: string[];
+    atoms: {
+        residue: string;
+        chain: string;
+    }[];
+}
+
 /** The whole atomic structure */
 export interface Structure {
 
@@ -96,6 +104,9 @@ export interface Structure {
 
     /** Per structure data */
     extra:      Extra;
+
+    /** Optional data for the primary structure */
+    residues?: Residues;
 }
 
 /**

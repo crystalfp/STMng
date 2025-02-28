@@ -1,5 +1,4 @@
 Bugs:
-  ✔ Remove He and Hg from PDB reader @done(2025-02-27 15:29)
 
 To do:
   ☐ Try to put labels as billboards
@@ -11,7 +10,7 @@ To do:
   ☐ Plotting protein structures
   ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
   ☐ Optional display of the conventional Bravais cell (currently, after using symmetry, one gets a primitive cell; having an option of Bravais cell will be great).
-  ✔ Set camera center to center of unit cells @done(2025-02-27 15:29)
+  ☐ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4.
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -59,6 +58,9 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Crash in find symmetries with PDB 1HHO.pdb @done(2025-02-28 13:21) @project(Bugs)
+  ✔ Remove He and Hg from PDB reader @done(2025-02-27 15:29) @project(Bugs)
+  ✔ Set camera center to center of unit cells @done(2025-02-27 15:29) @project(To do)
   ✔ When VNumberInput precision in readonly is solved, change VTextInput to VNumberInput in fingerprinting @done(2025-02-26 07:07) @project(Bugs)
   ✔ Do both fingerprint and distance calculations by just one click @done(2025-02-18 19:00) @project(To do)
   ✘ Add selection of non coincident points to the select criteria @cancelled(2025-02-21 15:51) @project(To do)

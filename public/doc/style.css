@@ -126,7 +126,7 @@ dt {
   display: inline-block;
 }
 
-.menu	tr:nth-child(odd) {
+.menu tr:nth-child(odd) {
   background: #D0E4F5;
 }
 
@@ -148,4 +148,14 @@ dt {
 .menu td.c3 {
   vertical-align: top;
   padding: 5px;
+}
+
+.alternate {
+  width:98.7%;
+  margin-top: 2em;
+  margin-left: 14px
+}
+
+.alternate tr:nth-child(odd) {
+  background: #D0E4F5;
 }

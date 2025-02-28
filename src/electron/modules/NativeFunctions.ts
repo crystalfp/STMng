@@ -51,9 +51,6 @@ interface NativeModule {
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
 }
 
-// /* eslint-disable-next-line @typescript-eslint/no-require-imports, unicorn/prefer-module */
-// const addon = require("../build/Release/native") as NativeModule;
-
 import {createRequire} from "node:module";
 const rq = createRequire(import.meta.url);
 const addon = rq("../build/Release/native") as NativeModule;
