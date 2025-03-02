@@ -165,7 +165,7 @@ const resetSliders = (): void => {
             label="Multiplier per atom pair" class="ml-2 mt-2 mb-4" />
   <v-container v-if="perPairScale" class="pa-0">
     <v-table class="px-2 py-1">
-      <tr v-for="(item, idx) of perPairData" :key="item.label">
+      <tr v-for="(item, idx) of perPairData" :key="item.label" class="per-pair-row">
         <td style="width: 4rem">{{ item.label }}</td>
         <td><g-slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"
                                     :label="`(${showScale[idx].toFixed(2)})`" label-width="3rem"
@@ -194,5 +194,14 @@ const resetSliders = (): void => {
 /* Cannot be scoped otherwise it is ignored */
 .v-table__wrapper {
   overflow-y: hidden
+}
+
+/* Setting to have over effect in table */
+.per-pair-row {
+  opacity: 0.6;
+}
+
+.per-pair-row:hover {
+  opacity: 1;
 }
 </style>

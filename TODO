@@ -6,6 +6,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Color position clouds
+  ☐ Move styles from App.vue to main.tsc
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -17,6 +18,7 @@ Performance:
   ☐ `import('@/components/...')` or `@mouseenter` in fingerprint to have show windows ready
   ☐ Check addEventListener in preload.ts if it leaks
   ☐ Computed that returns object or array: check if the output changes. No deep comparisons are done.
+  ☐ Other `ShallowRef` usage?
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -56,6 +58,7 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Add tooltips using `v-tooltip` directive
   ☐ Move to WebGPURenderer
+  ☐ Simplify error messages for user, leaving full message in log
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
