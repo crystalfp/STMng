@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-19
  */
-import {onMounted, onUnmounted} from "vue";
+import {onBeforeUnmount, onMounted} from "vue";
 import {closeWindow} from "./RoutesClient";
 
 /**
@@ -28,7 +28,7 @@ export const closeWithEscape = (windowRouterPath: string): void => {
 		document.addEventListener("keydown", escapeHandler);
 	});
 
-	onUnmounted(() => {
+	onBeforeUnmount(() => {
 		document.removeEventListener("keydown", escapeHandler);
 	});
 };

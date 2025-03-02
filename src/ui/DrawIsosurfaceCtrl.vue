@@ -24,7 +24,7 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-const showIsosurface = ref(false);
+const showIsosurface = ref<boolean|null>(false);
 const dataset = ref(0);
 const countDatasets = ref(0);
 const valueMin = ref(-10);
@@ -34,10 +34,10 @@ const step = computed(() => (valueMax.value - valueMin.value)/100);
 const colormapName = ref("rainbow");
 const opacity = ref(1);
 
-const nestedIsosurfaces = ref(false);
+const nestedIsosurfaces = ref<boolean|null>(false);
 const countIsosurfaces = ref(2);
 const limits = ref<number[]>([-10, 10]);
-const limitColormap = ref(false);
+const limitColormap = ref<boolean|null>(false);
 
 // > Initialize the ui
 askNode(id, "init")
@@ -83,7 +83,7 @@ receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
     }
 
     // Draw isosurfaces
-    renderer.drawIsosurfaces(indices, vertices, normals, isoValues, opacity.value, showIsosurface.value);
+    renderer.drawIsosurfaces(indices, vertices, normals, isoValues, opacity.value, showIsosurface.value!);
 });
 
 watch([limitColormap, colormapName, limits, valueMin, valueMax], () => {
@@ -103,7 +103,7 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
     sendToNode(id, "change", {
 
         dataset: dataset.value,
-        nestedIsosurfaces: nestedIsosurfaces.value,
+        nestedIsosurfaces: nestedIsosurfaces.value!,
         countIsosurfaces: countIsosurfaces.value,
         limitLow: limits.value[0],
         limitHigh: limits.value[1],
@@ -116,13 +116,13 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
 watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 
     sendToNode(id, "show", {
-        showIsosurface: showIsosurface.value,
-        limitColormap: limitColormap.value,
+        showIsosurface: showIsosurface.value!,
+        limitColormap: limitColormap.value!,
         colormapName: colormapName.value,
         opacity: opacity.value
     });
 
-    renderer.changeRendering(showIsosurface.value, opacity.value);
+    renderer.changeRendering(showIsosurface.value!, opacity.value);
 });
 
 </script>

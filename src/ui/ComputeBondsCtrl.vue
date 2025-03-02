@@ -34,8 +34,8 @@ const maxBondingDistance  = ref(4.50);
 const bondScale           = ref(1.10);
 const maxHBondingDistance = ref(3.00);
 const maxHValenceAngle    = ref(30);
-const enableComputeBonds  = ref(true);
-const perPairScale        = ref(false);
+const enableComputeBonds  = ref<boolean | null>(true);
+const perPairScale        = ref<boolean | null>(false);
 const perPairData         = ref<PairData[]>([]);
 const showScale           = ref<number[]>([]);
 const enlargementKind     = ref("none");
@@ -96,9 +96,9 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
         maxBondingDistance:  maxBondingDistance.value,
         maxHBondingDistance: maxHBondingDistance.value,
         maxHValenceAngle:    maxHValenceAngle.value,
-        enableComputeBonds:  enableComputeBonds.value,
+        enableComputeBonds:  enableComputeBonds.value!,
         bondScale:           bondScale.value,
-        perPairScale:        perPairScale.value,
+        perPairScale:        perPairScale.value!,
         perPairData:         JSON.stringify(perPairData.value),
         enlargementKind:     enlargementKind.value
     });

@@ -35,7 +35,7 @@ const fileFormats = ["CHGCAR", "CIF", "POSCAR", "Shel-X", "XYZ"];
 const format         = ref("");
 const outputFile     = ref("");
 const outputFileFull = ref("");
-const continuous     = ref(false);
+const continuous     = ref<boolean|null>(false);
 const finish         = ref(false);
 const writerLabel    = ref("");
 const hint           = computed(() => (writerAccumulate.value ? "Set in Reader" : ""));

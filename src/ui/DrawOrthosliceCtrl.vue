@@ -27,19 +27,19 @@ const {id, label} = defineProps<{
 const dataset = ref(0);
 const axis = ref(0);
 const plane = ref(0);
-const showOrthoslice = ref(false);
+const showOrthoslice = ref<boolean|null>(false);
 const countDatasets = ref(0);
 const maxPlane = ref(0);
 const colormapName = ref("rainbow");
 const limits = ref<number[]>([-10, 10]); // User selected limits
 const valueMin = ref(-10); // Range of the values in the volume
 const valueMax = ref(10);
-const useColorClasses = ref(false);
+const useColorClasses = ref<boolean|null>(false);
 const colorClasses = ref(5);
 const step = computed(() => (valueMax.value-valueMin.value)/100);
 
-const showIsolines = ref(false);
-const colorIsolines = ref(false);
+const showIsolines = ref<boolean|null>(false);
+const colorIsolines = ref<boolean|null>(false);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
 
 // > Initialize the ui
@@ -119,11 +119,11 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
 
     // Update the colormap
     renderer.setLut(colormapName.value, limits.value[0], limits.value[1],
-                    useColorClasses.value, colorClasses.value);
+                    useColorClasses.value!, colorClasses.value);
 
     // Draw orthoslice and isolines
     renderer.drawOrthoIso(vertices, indices, values, isolineVertices, isolineValues,
-                          showOrthoslice.value, showIsolines.value, colorIsolines.value);
+                          showOrthoslice.value!, showIsolines.value!, colorIsolines.value!);
 });
 
 // > Send updated parameters to main process
@@ -135,31 +135,31 @@ watch([dataset, axis, plane, colorClasses, useColorClasses,
         axis: axis.value,
         plane: plane.value,
         colorClasses: colorClasses.value,
-        useColorClasses: useColorClasses.value,
+        useColorClasses: useColorClasses.value!,
         isoValue: isoValue.value,
-        showOrthoslice: showOrthoslice.value,
-        showIsolines: showIsolines.value,
+        showOrthoslice: showOrthoslice.value!,
+        showIsolines: showIsolines.value!,
         limitLow: limits.value[0],
         limitHigh: limits.value[1],
     });
 
-    renderer.setVisibility(showIsolines.value, showOrthoslice.value);
+    renderer.setVisibility(showIsolines.value!, showOrthoslice.value!);
 }, {deep: true});
 
 watch([colormapName, colorIsolines], () => {
 
     sendToNode(id, "show", {
         colormapName: colormapName.value,
-        colorIsolines: colorIsolines.value,
+        colorIsolines: colorIsolines.value!,
     });
 
     renderer.setLut(colormapName.value, limits.value[0], limits.value[1],
-                    useColorClasses.value, colorClasses.value);
+                    useColorClasses.value!, colorClasses.value);
 
     // Draw orthoslice and isolines
     renderer.drawOrthoIso(currentVertices, currentIndices, currentValues,
                           currentIsolineVertices, currentIsolineValues,
-                          showOrthoslice.value, showIsolines.value, colorIsolines.value);
+                          showOrthoslice.value!, showIsolines.value!, colorIsolines.value!);
 });
 
 </script>

@@ -15,10 +15,10 @@ const wavelengthCodes = ref<string[]>([]);
 const wavelengthCode = ref("");
 const wavelengthNumeric = ref(1.5);
 const theta = ref([0, 90]);
-const scaled = ref(true);
+const scaled = ref<boolean|null>(true);
 const enableComputation = ref(false);
 const width = ref(0.25);
-const showHKL = ref(false);
+const showHKL = ref<boolean|null>(false);
 
 // > Properties
 const {id, label} = defineProps<{
@@ -56,9 +56,9 @@ watch([wavelengthCode, wavelengthNumeric, theta, scaled], () => {
         wavelengthNumeric: wavelengthNumeric.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
-        scaled: scaled.value,
+        scaled: scaled.value!,
         width: width.value,
-        showHKL: showHKL.value
+        showHKL: showHKL.value!
     });
 }, {deep: true});
 
@@ -67,7 +67,7 @@ watch([width, showHKL], () => {
 
     sendToNode(id, "show", {
         width: width.value,
-        showHKL: showHKL.value
+        showHKL: showHKL.value!
     });
 });
 
@@ -86,9 +86,9 @@ const openChartWindow = (): void => {
         wavelengthNumeric: wavelengthNumeric.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
-        scaled: scaled.value,
+        scaled: scaled.value!,
         width: width.value,
-        showHKL: showHKL.value
+        showHKL: showHKL.value!
     });
 };
 

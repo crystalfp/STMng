@@ -28,11 +28,11 @@ const {id, label} = defineProps<{
 const controlStore = useControlStore();
 controlStore.hasTrajectory = true;
 
-const showTrajectories = ref(false);
+const showTrajectories = ref<boolean|null>(false);
 const labelKind = ref("symbol");
 const atomsSelector = ref("");
 const maxDisplacement = ref(1);
-const showPositionClouds = ref(false);
+const showPositionClouds = ref<boolean|null>(false);
 const positionCloudsSize = ref(100);
 const positionCloudsColor = ref("#BBBBBE");
 
@@ -51,7 +51,7 @@ askNode(id, "init")
 
 // > Initialize graphical rendering
 const renderer = new TrajectoriesRenderer(id,
-                                          showTrajectories.value,
+                                          showTrajectories.value!,
                                           positionCloudsSize.value,
                                           positionCloudsColor.value);
 
@@ -77,7 +77,7 @@ const {trajectoriesRecording} = storeToRefs(controlStore);
 watch(trajectoriesRecording, () => {
 
     sendToNode(id, "run", {
-        createTrajectories: controlStore.trajectoriesRecording
+        createTrajectories: controlStore.trajectoriesRecording!
     });
 });
 
@@ -100,15 +100,15 @@ watch([maxDisplacement], () => {
 
 /** Capture position clouds related variables */
 watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
-      (after:  [boolean, number, string],
-       before: [boolean, number, string]) => {
+      (after:  [boolean|null, number, string],
+       before: [boolean|null, number, string]) => {
 
     if(after[2] !== before[2]) renderer.changeColor(after[2]);
     if(after[1] !== before[1]) renderer.changeSize(after[1]);
-    renderer.changeCloudsVisibility(after[0]);
+    renderer.changeCloudsVisibility(after[0]!);
 
     sendToNode(id, "cloud", {
-        showPositionClouds: showPositionClouds.value,
+        showPositionClouds: showPositionClouds.value!,
         positionCloudsSize: positionCloudsSize.value,
         positionCloudsColor: positionCloudsColor.value
     });
@@ -116,7 +116,7 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
 
 /** Receive a set of traces */
 receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): void => {
-    renderer.receiveTraces(segments, colors, showPositionClouds.value);
+    renderer.receiveTraces(segments, colors, showPositionClouds.value!);
 });
 
 /** Simplify label */
@@ -130,7 +130,7 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
 <template>
 <v-container class="container">
   <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-2 mb-4 ml-2"
-            @update:modelValue="renderer.setVisibility(showTrajectories)" />
+            @update:modelValue="renderer.setVisibility(showTrajectories!)" />
   <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
   <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
                     :disabled="trajectoriesRecording" class="ml-1"

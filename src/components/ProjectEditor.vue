@@ -8,7 +8,7 @@
  * @since 2024-07-05
  */
 
-import {ref, onMounted, computed, shallowRef, watch} from "vue";
+import {ref, onMounted, computed, shallowRef, watch, onBeforeUnmount} from "vue";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
@@ -274,6 +274,38 @@ const saveProject = (): void => {
     sendToNode("SYSTEM", "modified-project", {projectModified: JSON.stringify(graph)});
 };
 
+/**
+ * Shift node position left or right
+ *
+ * @param event - Keyboard event
+ */
+const shiftNode = (event: KeyboardEvent): void => {
+
+    // Activated only with ctrl+← or ctrl+→
+    if(!event.ctrlKey ||
+       (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
+
+    // Find the selected node
+    const nnodes = nodes.value.length;
+    let idxNodeSelected = -1;
+    for(let i=0; i < nnodes; ++i) {
+        if(nodes.value[i].selected) {
+            idxNodeSelected = i;
+            break;
+        }
+    }
+    if(idxNodeSelected === -1) return;
+    const node = nodes.value[idxNodeSelected];
+
+    // Cannot move viewer3d node or the reader node
+    if(node.graphics === "in" || node.id === "reader") return;
+
+    console.log("Push key", event.key, "on node", node.label);
+    console.log("+", graph[node.id].in);
+    event.preventDefault();
+    event.stopPropagation();
+};
+
 /** Receive the initial data and build the initial graph */
 onMounted(() => {
 
@@ -299,6 +331,13 @@ onMounted(() => {
 
         allInfo.value = info.allNodes;
     });
+
+    document.addEventListener("keydown", shiftNode);
+});
+
+onBeforeUnmount(() => {
+
+    document.removeEventListener("keydown", shiftNode);
 });
 
 /** Close the window on Esc press */

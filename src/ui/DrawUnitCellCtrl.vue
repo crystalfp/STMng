@@ -23,18 +23,18 @@ const {id, label} = defineProps<{
 }>();
 
 // Unit cell
-const showUnitCell = ref(true);
+const showUnitCell = ref<boolean|null>(true);
 const lineColor = ref("#0000FF");
-const dashedLine = ref(false);
-const showBasisVectors = ref(false);
+const dashedLine = ref<boolean|null>(false);
+const showBasisVectors = ref<boolean|null>(false);
 
 // Supercell
 const repetitionsA = ref(1);
 const repetitionsB = ref(1);
 const repetitionsC = ref(1);
-const showSupercell = ref(false);
+const showSupercell = ref<boolean|null>(false);
 const supercellColor = ref("#16A004");
-const dashedSupercell = ref(false);
+const dashedSupercell = ref<boolean|null>(false);
 
 const showRepetitionsA = ref(1);
 const showRepetitionsB = ref(1);
@@ -44,7 +44,7 @@ const showRepetitionsC = ref(1);
 const percentA = ref(0);
 const percentB = ref(0);
 const percentC = ref(0);
-const shrink   = ref(true);
+const shrink   = ref<boolean|null>(true);
 
 const showPercentA = ref(0);
 const showPercentB = ref(0);
@@ -87,19 +87,19 @@ const renderer = new DrawUnitCellRenderer(id);
 // Render the unit cell
 receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
 
-    renderer.drawCell(vertices, lineColor.value, dashedLine.value, showUnitCell.value, false);
+    renderer.drawCell(vertices, lineColor.value, dashedLine.value!, showUnitCell.value!, false);
 });
 
 // Render the supercell
 receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
 
-    renderer.drawCell(vertices, supercellColor.value, dashedSupercell.value, showSupercell.value, true);
+    renderer.drawCell(vertices, supercellColor.value, dashedSupercell.value!, showSupercell.value!, true);
 });
 
 // Render the basis vectors
 receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
 
-	renderer.drawBasisVectors(vertices, showBasisVectors.value);
+	renderer.drawBasisVectors(vertices, showBasisVectors.value!);
 });
 
 /**
@@ -119,12 +119,12 @@ const resetSliders = (): void => {
 
 watch([showUnitCell, showSupercell, showBasisVectors], () => {
 
-    renderer.setVisibility(showUnitCell.value, showSupercell.value, showBasisVectors.value);
+    renderer.setVisibility(showUnitCell.value!, showSupercell.value!, showBasisVectors.value!);
 
     sendToNode(id, "visible", {
-        showUnitCell: showUnitCell.value,
-        showSupercell: showSupercell.value,
-        showBasisVectors: showBasisVectors.value
+        showUnitCell: showUnitCell.value!,
+        showSupercell: showSupercell.value!,
+        showBasisVectors: showBasisVectors.value!
     });
 });
 
@@ -140,14 +140,14 @@ watch([repetitionsA, repetitionsB, repetitionsC], () => {
 
 watch([dashedLine, lineColor, dashedSupercell, supercellColor], () => {
 
-    renderer.changeMaterials(lineColor.value, dashedLine.value,
-                             supercellColor.value, dashedSupercell.value);
+    renderer.changeMaterials(lineColor.value, dashedLine.value!,
+                             supercellColor.value, dashedSupercell.value!);
 
     sendToNode(id, "appear", {
-		dashedLine: dashedLine.value,
+		dashedLine: dashedLine.value!,
 		lineColor: lineColor.value,
         supercellColor: supercellColor.value,
-        dashedSupercell: dashedSupercell.value,
+        dashedSupercell: dashedSupercell.value!,
    });
 });
 
@@ -157,7 +157,7 @@ watch([percentA, percentB, percentC, shrink], () => {
         percentA: percentA.value,
         percentB: percentB.value,
         percentC: percentC.value,
-        shrink: shrink.value
+        shrink: shrink.value!
     });
 });
 

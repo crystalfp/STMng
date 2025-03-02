@@ -23,14 +23,14 @@ const {id, label} = defineProps<{
 }>();
 
 // > Get and set ui parameters from the switchboard
-const applyInputSymmetries = ref(true);
-const enableFindSymmetries = ref(true);
-const standardizeCell = ref(true);
+const applyInputSymmetries = ref<boolean|null>(true);
+const enableFindSymmetries = ref<boolean|null>(true);
+const standardizeCell = ref<boolean|null>(true);
 const symprecStandardize = ref(-1);
 const symprecDataset = ref(-1);
-const fillUnitCell = ref(true);
+const fillUnitCell = ref<boolean|null>(true);
 const showSymmetriesDialog = ref(false);
-const standardizeOnly = ref(false);
+const standardizeOnly = ref<boolean|null>(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
 const fillTolerance = ref(-5);
@@ -71,14 +71,14 @@ watch([applyInputSymmetries,
        standardizeOnly], () => {
 
     askNode(id, "compute", {
-        applyInputSymmetries: applyInputSymmetries.value,
-        enableFindSymmetries: enableFindSymmetries.value,
-        standardizeCell: standardizeCell.value,
+        applyInputSymmetries: applyInputSymmetries.value!,
+        enableFindSymmetries: enableFindSymmetries.value!,
+        standardizeCell: standardizeCell.value!,
         symprecStandardize: symprecStandardize.value,
         symprecDataset: symprecDataset.value,
-        fillUnitCell: fillUnitCell.value,
+        fillUnitCell: fillUnitCell.value!,
         fillTolerance: fillTolerance.value,
-        standardizeOnly: standardizeOnly.value
+        standardizeOnly: standardizeOnly.value!
     })
     .then((params) => {
         computedSpaceGroup.value = params.computedSpaceGroup as string ?? "";

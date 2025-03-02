@@ -38,7 +38,7 @@ const emptyChartOptions = {
 const chartOptions = shallowRef<ChartOptions>(emptyChartOptions);
 const chartData = shallowRef<ChartData>(emptyChartData);
 const chartType = ref("");
-const transparent = ref(false);
+const transparent = ref<boolean|null>(false);
 
 /** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {

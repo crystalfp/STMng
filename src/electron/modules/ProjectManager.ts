@@ -35,6 +35,7 @@ import {StructureWriter} from "../nodes/StructureWriter";
 import {Trajectories} from "../nodes/Trajectories";
 import {Viewer3D} from "../nodes/Viewer3D";
 import {DiffractionPattern} from "../nodes/DiffractionPattern";
+import {ProteinStructure} from "../nodes/ProteinStructure";
 
 /**
  * @notExported
@@ -53,6 +54,8 @@ class ProjectManager {
 
 		{type: "structure-reader",     in: false, out: true,  graphic: "none", handler: StructureReader,
 									   idPrefix: "reader",    ui: "StructureReaderCtrl"},
+		{type: "protein-structure",    in: true,  out: false, graphic: "out",  handler: ProteinStructure,
+									   idPrefix: "protein",   ui: "ProteinStructureCtrl"},
 		{type: "compute-symmetries",   in: true,  out: true,  graphic: "none", handler: ComputeSymmetries,
 									   idPrefix: "symmetry",  ui: "ComputeSymmetriesCtrl"},
 		{type: "diffraction-pattern",  in: true,  out: false, graphic: "none", handler: DiffractionPattern,

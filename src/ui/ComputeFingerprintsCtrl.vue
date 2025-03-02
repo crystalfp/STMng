@@ -48,18 +48,18 @@ resetAlertMessage("fingerprints");
 
 // Accumulate structures
 const countAccumulated = ref(0);
-const areNanoclusters = ref(false);
+const areNanoclusters = ref<boolean|null>(false);
 const haveEnergies = ref(false);
 
 // Filter structures
-const enableEnergyFiltering = ref(false);
-const thresholdFromMinimum = ref(false);
+const enableEnergyFiltering = ref<boolean|null>(false);
+const thresholdFromMinimum = ref<boolean|null>(false);
 const energyThreshold = ref(0);
 const energyThresholdEffective = ref(0);
 const countSelected = ref(0);
 
 // Compute fingerprints
-const forceCutoff = ref(false);
+const forceCutoff = ref<boolean|null>(false);
 const cutoffDistance = ref(0);
 const manualCutoffDistance = ref(10);
 const fingerprintMethodsNames = ref<FPmethodName[]>([]);
@@ -71,13 +71,13 @@ const fingerprintingBusy = ref(false);
 
 // Compute distances
 const distanceMethod = ref(0);
-const fixTriangleInequality = ref(false);
+const fixTriangleInequality = ref<boolean|null>(false);
 const distanceMethods = ref<DistanceMethodsNames[]>([]);
 const countDistances = ref(0);
 const endMessage = ref("");
 
 // Remove duplicates
-const removeDuplicates = ref(true);
+const removeDuplicates = ref<boolean|null>(true);
 const duplicatesThreshold = ref(0.05);
 const pointsRemoved = ref(-1); // -1 means not run yet
 
@@ -184,8 +184,8 @@ const resetAccumulator = (): void => {
 watch([fingerprintsAccumulate], () => {
 
     askNode(id, "capture", {
-        fingerprintsAccumulate: controlStore.fingerprintsAccumulate,
-        areNanoclusters: areNanoclusters.value
+        fingerprintsAccumulate: controlStore.fingerprintsAccumulate!,
+        areNanoclusters: areNanoclusters.value!
     })
     .then((params) => {
         setTimeout(() => {
@@ -211,8 +211,8 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
 
     askNode(id, "energy", {
 
-        enableEnergyFiltering: enableEnergyFiltering.value,
-        thresholdFromMinimum: thresholdFromMinimum.value,
+        enableEnergyFiltering: enableEnergyFiltering.value!,
+        thresholdFromMinimum: thresholdFromMinimum.value!,
         energyThreshold: energyThreshold.value,
     })
     .then((params: CtrlParams) => {
@@ -229,7 +229,7 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
 watch([forceCutoff, manualCutoffDistance], () => {
 
     askNode(id, "cutoff", {
-        forceCutoff: forceCutoff.value,
+        forceCutoff: forceCutoff.value!,
         manualCutoffDistance: manualCutoffDistance.value,
     })
     .then((params: CtrlParams) => {
@@ -283,8 +283,8 @@ const computeFingerprints = (): void => {
         binSize: binSize.value,
         peakWidth: peakWidth.value,
         distanceMethod: distanceMethod.value,
-        fixTriangleInequality: fixTriangleInequality.value,
-        removeDuplicates: removeDuplicates.value,
+        fixTriangleInequality: fixTriangleInequality.value!,
+        removeDuplicates: removeDuplicates.value!,
         duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {
@@ -308,8 +308,8 @@ watch([distanceMethod, fixTriangleInequality], () => {
 
     askNode(id, "dist", {
         distanceMethod: distanceMethod.value,
-        fixTriangleInequality: fixTriangleInequality.value,
-        removeDuplicates: removeDuplicates.value,
+        fixTriangleInequality: fixTriangleInequality.value!,
+        removeDuplicates: removeDuplicates.value!,
         duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {
@@ -325,7 +325,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
 watch([removeDuplicates, duplicatesThreshold], () => {
 
   askNode(id, "duplicates", {
-        removeDuplicates: removeDuplicates.value,
+        removeDuplicates: removeDuplicates.value!,
         duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {

@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-26
  */
-import {computed, onMounted, onUnmounted, reactive, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWithEscape} from "@/services/CaptureEscape";
@@ -498,11 +498,10 @@ onMounted(() => {
 
     // Setup the click handler
     canvas = document.querySelector<HTMLCanvasElement>(".side-n canvas");
-    if(!canvas) return;
-    canvas.addEventListener("click", pointClicked);
+    if(canvas) canvas.addEventListener("click", pointClicked);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
 
     if(canvas) canvas.removeEventListener("click", pointClicked);
 });
@@ -633,7 +632,7 @@ const compareSelected = (): void => {
 };
 
 /** Setup the legend */
-const showLegend = ref(false);
+const showLegend = ref<boolean | null>(false);
 const showLegendDiscrete = computed(() => showLegend.value &&
                                           (scatterplotType.value === "group" ||
                                            scatterplotType.value === "silhouette"));

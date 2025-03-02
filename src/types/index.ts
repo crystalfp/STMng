@@ -136,7 +136,7 @@ interface GraphNode {
 export type ProjectGraph = Record<string, GraphNode>;
 
 /** Type of the node state variables */
-export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer | number[]>;
+export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer | number[] | string[]>;
 
 /** Viewer 3D state */
 export interface Viewer3DState {
@@ -186,19 +186,19 @@ export interface Viewer3DState {
     };
     helpers: {
         /** Show cartesian axis centered in the origin */
-        showAxis: boolean;
+        showAxis: boolean | null;
         /** Length of the cartesian axis */
         axisLength: number;
         /** Show grid on the XZ plane */
-        showGridXZ: boolean;
+        showGridXZ: boolean | null;
         /** Show grid on the XY plane */
-        showGridXY: boolean;
+        showGridXY: boolean | null;
         /** Show grid on the YZ plane */
-        showGridYZ: boolean;
+        showGridYZ: boolean | null;
         /** Squares on the side of the grid (an even number) */
         gridSize: number;
         /** Orientation gizmo visibility */
-        showGizmo: boolean;
+        showGizmo: boolean | null;
     };
 }
 

@@ -5,26 +5,37 @@ To do:
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
-  ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ Color position clouds
-  ☐ Plotting protein structures
-  ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
-  ☐ Optional display of the conventional Bravais cell (currently, after using symmetry, one gets a primitive cell; having an option of Bravais cell will be great).
-  ☐ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4.
+  ☐ Change OrbitControl to CameraControls
+  ☐ Change array of strings from JSON.stringify in ipc
+
+Performance:
+  ☐ Block screen update when "accumulating for fingerprinting" and "fast"
+  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
+  ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
+  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
+  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
+  ☐ Investigate lazy load `*Ctrl` components
+  ☐ `import('@/components/...')` or `@mouseenter` in fingerprint to have show windows ready
+  ☐ Check memory leaks: timers, addEventListener
+  ☐ Check addEventListener in preload.ts
+  ☐ Check resizeObserver if it leaks
+  ☐ Computed that returns object or array: check if the output changes. No deep comparisons
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
+  ☐ Plotting protein structures
+  ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
+  ☐ Optional display of the conventional Bravais cell (currently, after using symmetry, one gets a primitive cell; having an option of Bravais cell will be great).
+  ☐ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4.
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
   ☐ Memory leak detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
-  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
-  ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
-  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
 
 ToDo eventually:
   ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
@@ -42,13 +53,12 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline>
   ☐ If possible remove circular dependencies between modules
-  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Rendering spheres using sprites (as in VMD)
-  ☐ Add tooltips
+  ☐ Add tooltips using `v-tooltip` directive
   ☐ Move to WebGPURenderer
 
 Reference:

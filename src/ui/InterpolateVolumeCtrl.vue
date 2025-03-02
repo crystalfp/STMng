@@ -22,7 +22,7 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-const interpolateVolume = ref(false);
+const interpolateVolume = ref<boolean|null>(false);
 const pointsToAdd = ref(1);
 const dataset = ref(0);
 const countDatasets = ref(0);
@@ -41,7 +41,7 @@ receiveFromNode(id, "countDatasets", (params: CtrlParams) => {
 
 watch([interpolateVolume, pointsToAdd, dataset], () => {
     sendToNode(id, "change", {
-        interpolateVolume: interpolateVolume.value,
+        interpolateVolume: interpolateVolume.value!,
         pointsToAdd: pointsToAdd.value,
         dataset: dataset.value,
     });
