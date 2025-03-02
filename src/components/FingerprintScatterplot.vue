@@ -470,9 +470,11 @@ watch([
     x, y, width, height, showSelectionRectangle
 ], drawPoints, {deep: true});
 
+let resizeObserver: ResizeObserver;
+
 onMounted(() => {
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
 
         for(const entry of entries) {
             if(entry.borderBoxSize) {
@@ -502,6 +504,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+
+    resizeObserver.disconnect();
 
     if(canvas) canvas.removeEventListener("click", pointClicked);
 });

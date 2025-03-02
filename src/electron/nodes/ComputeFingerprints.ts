@@ -527,7 +527,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		const haveEnergies = this.accumulator.accumulatedHaveEnergies();
 		const haveDistances = this.dist.getDistanceMatrix().matrixSize() > 0;
-		const data: FingerprintsChartData = {
+		const chartData: FingerprintsChartData = {
 			haveEnergies,
 			haveDistances
 		};
@@ -549,9 +549,9 @@ export class ComputeFingerprints extends NodeCore {
 						energies.push(energy);
 					}
 
-					data.energyDistance = methodEnergyDistance(energies,
-															   enabled,
-															   this.dist.getDistanceMatrix());
+					chartData.energyDistance = methodEnergyDistance(energies,
+															   		enabled,
+															   		this.dist.getDistanceMatrix());
 				}
 				break;
 
@@ -565,13 +565,13 @@ export class ComputeFingerprints extends NodeCore {
 					}
 				}
 
-				data.countFingerprints = fpCount;
-				data.structureIds = ids;
+				chartData.countFingerprints = fpCount;
+				chartData.structureIds = ids;
 				const fp = this.accumulator.getFingerprint(lambda);
-				data.fingerprint = [];
+				chartData.fingerprint = [];
 				let x = 0;
 				for(const value of fp) {
-					data.fingerprint.push([x, value]);
+					chartData.fingerprint.push([x, value]);
 					x += this.binSize;
 				}
 				}
@@ -587,13 +587,13 @@ export class ComputeFingerprints extends NodeCore {
 						energies.push(energy);
 					}
 
-					data.energyHistogram = methodEnergiesHistogram(energies, enabled, lambda);
+					chartData.energyHistogram = methodEnergiesHistogram(energies, enabled, lambda);
 				}
 				break;
 
 			case "dh":
 
-				data.distanceHistogram = methodDistancesHistogram(
+				chartData.distanceHistogram = methodDistancesHistogram(
 					this.dist.getDistanceMatrix(),
 					enabled,
 					lambda
@@ -602,7 +602,7 @@ export class ComputeFingerprints extends NodeCore {
 
 			case "op":
 
-				data.order = methodOrder(this.accumulator, this.binSize);
+				chartData.order = methodOrder(this.accumulator, this.binSize);
 				break;
 
 			case "di": {
@@ -612,11 +612,12 @@ export class ComputeFingerprints extends NodeCore {
 					if(structure.enabled) ids.push(structure.id);
 				}
 
-				data.distances = methodDistances(this.dist.getDistanceMatrix(), ids, enabled, lambda);
+				chartData.distances = methodDistances(this.dist.getDistanceMatrix(),
+													  ids, enabled, lambda);
 				}
 				break;
 		}
-		const dataToSend = JSON.stringify(data);
+		const dataToSend = JSON.stringify(chartData);
 
 		// If it is open, update the charts window
 		if(chartsOpen) {
@@ -817,10 +818,10 @@ export class ComputeFingerprints extends NodeCore {
 			forceCutoff: this.forceCutoff,
 			manualCutoffDistance: this.manualCutoffDistance,
 
-			fingerprintMethods: JSON.stringify([
+			fingerprintMethods: [
 				"Oganov-Valle fingerprint",
 				"Oganov-Valle per-site fingerprint"
-			]),
+			],
 			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,

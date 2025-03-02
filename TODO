@@ -6,8 +6,6 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Color position clouds
-  ☐ Change OrbitControl to CameraControls
-  ☐ Change array of strings from JSON.stringify in ipc
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -17,10 +15,8 @@ Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
   ☐ Investigate lazy load `*Ctrl` components
   ☐ `import('@/components/...')` or `@mouseenter` in fingerprint to have show windows ready
-  ☐ Check memory leaks: timers, addEventListener
-  ☐ Check addEventListener in preload.ts
-  ☐ Check resizeObserver if it leaks
-  ☐ Computed that returns object or array: check if the output changes. No deep comparisons
+  ☐ Check addEventListener in preload.ts if it leaks
+  ☐ Computed that returns object or array: check if the output changes. No deep comparisons are done.
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -68,6 +64,10 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Change OrbitControl to CameraControls @done(2025-03-02 07:48) @project(To do)
+  ✔ Check resizeObserver if it leaks @done(2025-03-02 07:18) @project(Performance)
+  ✔ Change array of strings from JSON.stringify in ipc @done(2025-03-02 07:07) @project(To do)
+  ✔ Check memory leaks: timers, addEventListener @done(2025-03-02 07:19) @project(Performance)
   ✔ Crash in find symmetries with PDB 1HHO.pdb @done(2025-02-28 13:21) @project(Bugs)
   ✔ Remove He and Hg from PDB reader @done(2025-02-27 15:29) @project(Bugs)
   ✔ Set camera center to center of unit cells @done(2025-02-27 15:29) @project(To do)

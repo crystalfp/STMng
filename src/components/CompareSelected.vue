@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-02-24
  */
-import {onMounted, ref, useTemplateRef, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref, useTemplateRef, watch} from "vue";
 import log from "electron-log";
 import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, Group, LineBasicMaterial, BufferGeometry,
@@ -18,6 +18,7 @@ import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
 import CameraControls from "camera-controls";
 import {theme} from "@/services/ReceiveTheme";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {BasisType, CtrlParams} from "@/types";
 
 /** List of structures to compare */
@@ -62,29 +63,8 @@ let groupRight: Group;
 let groupLeft: Group;
 let controls: CameraControls;
 
-
-// For rendering the scene if modified
-let sceneModified = true;
-let retry = 0;
-
-/**
- * Ask if the scene needs rendering because has been changed,
- * then reset the modified flag
- *
- * @returns True if the scene should be rendered
- */
-const needRendering = (): boolean => {
-
-    if(sceneModified) {
-        if(retry > 2) {
-            sceneModified = false;
-            retry = 0;
-        }
-        ++retry;
-        return true;
-    }
-    return false;
-};
+/** For rendering the scene if modified */
+const nr = new NeedRendering();
 
 /**
  * Initialize the viewer
@@ -131,7 +111,7 @@ const initViewer = (): void => {
     const animationLoop = (): void => {
 
         const doRender = controls.update(clock.getDelta());
-        if(doRender || needRendering()) {
+        if(doRender || nr.needRendering()) {
 
             light.position.copy(camera.position);
             renderer.render(scene, camera);
@@ -140,9 +120,11 @@ const initViewer = (): void => {
     renderer.setAnimationLoop(animationLoop);
 };
 
+let resizeObserver: ResizeObserver;
+
 onMounted(() => {
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
 
         for(const entry of entries) {
             if(entry.borderBoxSize) {
@@ -164,7 +146,7 @@ onMounted(() => {
 
         camera.updateProjectionMatrix();
         renderer.setSize(canvasWidth.value, canvasHeight.value);
-        sceneModified = true;
+        nr.setSceneModified();
     });
 
     // Get the canvas size
@@ -173,6 +155,14 @@ onMounted(() => {
     resizeObserver.observe(canvas);
 
     initViewer();
+});
+
+onBeforeUnmount(() => {
+
+    resizeObserver.disconnect();
+    // eslint-disable-next-line unicorn/no-null
+    renderer.setAnimationLoop(null);
+    renderer.dispose();
 });
 
 /**
@@ -368,7 +358,7 @@ const loadStructure = (side: Side, step: number): void => {
 
                 centerCamera(center);
             }
-            sceneModified = true;
+            nr.setSceneModified();
         })
         .catch((error: Error) => {
             log.error(error);
@@ -384,7 +374,7 @@ const unloadStructure = (side: Side): void => {
 
     if(side) groupRight.clear();
     else     groupLeft.clear();
-    sceneModified = true;
+    nr.setSceneModified();
 };
 
 /**
@@ -571,7 +561,7 @@ watch([aroundA, aroundB, aroundC],
         const angle = (cAfter-cBefore)*MathUtils.DEG2RAD;
         groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(nc, angle));
     }
-    sceneModified = true;
+    nr.setSceneModified();
 });
 
 </script>

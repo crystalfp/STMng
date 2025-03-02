@@ -6,16 +6,21 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-01-14
  */
-import {onMounted, ref, watch, computed, useTemplateRef} from "vue";
+import {onMounted, ref, watch, computed, useTemplateRef, onBeforeUnmount} from "vue";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         PlaneGeometry, MeshStandardMaterial, AmbientLight,
-        Float32BufferAttribute, Mesh, DoubleSide} from "three";
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+        Float32BufferAttribute, Mesh, DoubleSide,
+        OrthographicCamera, Vector3, Vector2,
+        Raycaster, Vector4, Quaternion, Matrix4, Spherical,
+        Box3, Sphere, MathUtils,
+        Clock} from "three";
+import CameraControls from "camera-controls";
 import {Lut} from "three/addons/math/Lut.js";
 import {theme} from "@/services/ReceiveTheme";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {scatterToUniform} from "@/electron/fingerprint/ScatterToUniform";
+import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {EnergyLandscapeData} from "@/types";
 
 /** The canvas sizes (will be computed during mount or resize) */
@@ -49,11 +54,18 @@ let scene: Scene;
 let camera: PerspectiveCamera;
 let renderer: WebGLRenderer;
 const surfaceName = "Landscape";
+let controls: CameraControls;
 
 /** Colormap */
 const colormapName = ref("blackbody");
 const lut = new Lut("blackbody", 256);
 
+/** For rendering the scene if modified */
+const nr = new NeedRendering();
+
+/**
+ * Initialize the 3D viewer
+ */
 const initViewer = (): void => {
 
     if(!cnv.value) {
@@ -72,7 +84,12 @@ const initViewer = (): void => {
     document.body.append(renderer.domElement);
     cnv.value.append(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    // Add mouse controls to move the camera
+    const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2, WebGLRenderer,
+                           Raycaster, Vector4, Quaternion, Matrix4, Spherical,
+                           Box3, Sphere, MathUtils};
+    CameraControls.install({THREE: subsetOfTHREE});
+    controls = new CameraControls(camera, renderer.domElement);
 
     const light = new DirectionalLight("white", 3);
     light.position.set(0, 1, 0);
@@ -80,17 +97,25 @@ const initViewer = (): void => {
     const ambient = new AmbientLight("#BBBBBB", 1);
     scene.add(ambient);
 
+    // Rendering function for the run
+    const clock = new Clock();
     const animationLoop = (): void => {
-        controls.update();
-        light.position.copy(camera.position);
-        renderer.render(scene, camera);
+
+        const doRender = controls.update(clock.getDelta());
+        if(doRender || nr.needRendering()) {
+
+            light.position.copy(camera.position);
+            renderer.render(scene, camera);
+        }
     };
     renderer.setAnimationLoop(animationLoop);
 };
 
+let resizeObserver: ResizeObserver;
+
 onMounted(() => {
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
 
         for(const entry of entries) {
             if(entry.borderBoxSize) {
@@ -106,6 +131,7 @@ onMounted(() => {
         camera.aspect = canvasWidth.value/canvasHeight.value;
         camera.updateProjectionMatrix();
         renderer.setSize(canvasWidth.value, canvasHeight.value);
+        nr.setSceneModified();
     });
 
     // Get the canvas size
@@ -114,6 +140,14 @@ onMounted(() => {
     resizeObserver.observe(canvas);
 
     initViewer();
+});
+
+onBeforeUnmount(() => {
+
+    resizeObserver.disconnect();
+    // eslint-disable-next-line unicorn/no-null
+    renderer.setAnimationLoop(null);
+    renderer.dispose();
 });
 
 /** Receive the chart data from the main window */
@@ -227,6 +261,7 @@ const renderSurface = (): void => {
     surface.rotation.x = -Math.PI/2;
     surface.name = surfaceName;
     scene.add(surface);
+    nr.setSceneModified();
 };
 
 </script>

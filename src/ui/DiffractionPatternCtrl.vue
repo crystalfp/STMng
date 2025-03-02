@@ -39,7 +39,7 @@ askNode(id, "init")
         theta.value[1] = params.thetaHigh as number ?? 90;
         width.value = params.width as number ?? 0.25;
 		showHKL.value = params.showHKL as boolean ?? false;
-        const codes = JSON.parse(params.wavelengthCodes as string ?? "[]") as string[];
+        const codes = params.wavelengthCodes as string[] ?? [];
         wavelengthCodes.value.length = 0;
         for(const code of codes) wavelengthCodes.value.push(code);
         wavelengthCodes.value.push("Manual");

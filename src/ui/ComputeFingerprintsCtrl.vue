@@ -109,7 +109,7 @@ askNode(id, "init")
         manualCutoffDistance.value = params.manualCutoffDistance as number ?? 10;
         cutoffDistance.value = forceCutoff.value ? manualCutoffDistance.value : 0;
 
-        const fpmn = JSON.parse(params.fingerprintMethods as string ?? "[]") as string[];
+        const fpmn = params.fingerprintMethods as string[] ?? [];
         let len = fpmn.length;
         fingerprintMethodsNames.value.length = 0;
         for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, label: fpmn[i]});

@@ -309,7 +309,7 @@ export class DiffractionPattern extends NodeCore {
 			thetaHigh: this.thetaHigh,
 			width: this.width,
 			wavelengthCode: this.wavelengthCode,
-			wavelengthCodes: JSON.stringify(this.xrd.getWavelengthNames()),
+			wavelengthCodes: this.xrd.getWavelengthNames(),
 			wavelengthNumeric: this.wavelengthNumeric
 		};
 	}
