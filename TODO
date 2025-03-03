@@ -6,7 +6,6 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Color position clouds
-  ☐ Move styles from App.vue to main.tsc
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -29,6 +28,7 @@ Functionalities:
   ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
   ☐ Optional display of the conventional Bravais cell (currently, after using symmetry, one gets a primitive cell; having an option of Bravais cell will be great).
   ☐ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4.
+  ☐ Protein structure from a CIF file
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -67,6 +67,7 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Move styles from App.vue to main.ts @done(2025-03-02 18:19) @project(To do)
   ✔ Change OrbitControl to CameraControls @done(2025-03-02 07:48) @project(To do)
   ✔ Check resizeObserver if it leaks @done(2025-03-02 07:18) @project(Performance)
   ✔ Change array of strings from JSON.stringify in ipc @done(2025-03-02 07:07) @project(To do)

@@ -17,6 +17,9 @@ import App from "./App.vue";
 // The router plugin
 import {router} from "./router";
 
+// The global styles
+import "@/styles/common.css";
+
 // Vuetify
 import "vuetify/styles";
 import {createVuetify} from "vuetify";

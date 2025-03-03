@@ -32,15 +32,22 @@ export class DrawStructureRenderer {
 	private readonly out = new Group();
 	private readonly outName;
 	private readonly spheresCache = new SpheresCache(rCovScale, bondRadius, sphereSubdivisions);
+	private drawQuality: number;
+	private drawRoughness: number;
+	private drawMetalness: number;
 
-	constructor(private readonly id: string, private drawQuality: number,
-				private drawRoughness: number, private drawMetalness: number) {
+	constructor(id: string, drawQuality: number,
+				drawRoughness: number, drawMetalness: number) {
+
+		this.drawQuality   = drawQuality;
+		this.drawRoughness = drawRoughness;
+		this.drawMetalness = drawMetalness;
 
 		// Name the groups (useful for debugging)
 		this.atomsGroup.name  = "Atoms";
 		this.bondsGroup.name  = "Bonds";
 		this.labelsGroup.name = "Labels";
-		this.outName = "DrawStructure-" + this.id;
+		this.outName = "DrawStructure-" + id;
 		this.out.name = this.outName;
 
 		// Add to the scene

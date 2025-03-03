@@ -66,6 +66,7 @@ const atomZForH = new Set([7, 8, 9, 16]);
 
 export class ComputeBonds extends NodeCore {
 
+	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private minBondingDistance  = 0.64;
 	private maxBondingDistance  = 4.50;
@@ -84,9 +85,10 @@ export class ComputeBonds extends NodeCore {
 		{name: "changes",	type: "send",	callback: this.channelChanges.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

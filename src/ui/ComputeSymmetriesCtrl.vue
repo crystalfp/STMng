@@ -23,14 +23,14 @@ const {id, label} = defineProps<{
 }>();
 
 // > Get and set ui parameters from the switchboard
-const applyInputSymmetries = ref<boolean|null>(true);
-const enableFindSymmetries = ref<boolean|null>(true);
-const standardizeCell = ref<boolean|null>(true);
+const applyInputSymmetries = ref(true);
+const enableFindSymmetries = ref(true);
+const standardizeCell = ref(true);
 const symprecStandardize = ref(-1);
 const symprecDataset = ref(-1);
-const fillUnitCell = ref<boolean|null>(true);
+const fillUnitCell = ref(true);
 const showSymmetriesDialog = ref(false);
-const standardizeOnly = ref<boolean|null>(false);
+const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
 const fillTolerance = ref(-5);

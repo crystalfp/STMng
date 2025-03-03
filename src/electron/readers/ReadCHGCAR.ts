@@ -15,18 +15,19 @@ import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
-enum LineType {
-    comment,
-    scale,
-    basis,
-    counts,
-    direct,
-    atoms,
-    blank,
-    volumeCount,
-    volumeValues,
-	exit,
-}
+const LineType = {
+	__proto__: undefined,
+    comment:      0,
+    scale:        1,
+    basis:        2,
+    counts:       3,
+    direct:       4,
+    atoms:        5,
+    blank:        6,
+    volumeCount:  7,
+    volumeValues: 8,
+	exit:         9,
+} as const;
 
 export class ReaderCHGCAR implements ReaderImplementation {
 
@@ -41,7 +42,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
-		let lineType: LineType = LineType.comment;
+		let lineType: number = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
 		const atomsZ: number[] = [];

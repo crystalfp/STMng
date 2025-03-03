@@ -14,6 +14,7 @@ import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawIsosurface extends NodeCore {
 
+	private readonly id: string;
 	private structure: Structure | undefined;
 
     private showIsosurface = false;
@@ -35,9 +36,10 @@ export class DrawIsosurface extends NodeCore {
 		{name: "show",      type: "send",   callback: this.channelShow.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+        this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

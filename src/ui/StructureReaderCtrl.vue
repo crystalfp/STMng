@@ -49,15 +49,15 @@ const countSteps    = ref(1);       // Total steps read
 const step          = ref(1);       // Current step
 const running       = ref(false);   // The steps are playing
 const atomsTypes    = ref("");      // Atom types in the structure read
-const loopSteps     = ref<boolean|null>(false);   // If the sequence should loop
-const stepBackward  = ref<boolean|null>(false);   // Run in backward steps
+const loopSteps     = ref(false);   // If the sequence should loop
+const stepBackward  = ref(false);   // Run in backward steps
 const format        = ref("");      // File format to be read
 const inProgress    = ref(false);   // True during file load
 const auxFileToRead = ref("");      // Path to the auxiliary file to read
-const useBohr       = ref<boolean|null>(true);    // Use Bohr units
+const useBohr       = ref(true);    // Use Bohr units
 const stepIncrement = ref(1);       // How many step skip every tick
 const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
-const readHydrogen  = ref<boolean|null>(false);   // Read also hydrogen atoms for PDB reader
+const readHydrogen  = ref(false);   // Read also hydrogen atoms for PDB reader
 
 const controlStore = useControlStore();
 

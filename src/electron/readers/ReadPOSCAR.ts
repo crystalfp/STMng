@@ -15,15 +15,17 @@ import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
-enum LineType {
-    comment,
-    scale,
-    basis,
-    counts,
-    direct,
-    atoms,
-	exit
-}
+const LineType = {
+	__proto__: undefined,
+    comment: 0,
+    scale:   1,
+    basis:   2,
+    counts:  3,
+    direct:  4,
+    atoms:   5,
+	exit:    6
+} as const;
+
 
 export class ReaderPOSCAR implements ReaderImplementation {
 
@@ -38,7 +40,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
-		let lineType: LineType = LineType.comment;
+		let lineType: number = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
 		const atomsZ: number[] = [];
@@ -52,9 +54,11 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		for await (const line of stream) {
 
 			switch(lineType) {
+
 				case LineType.comment:
 					lineType = LineType.scale;
 					break;
+
 				case LineType.scale: {
 					if(line.trim() === "") {
 						lineType = LineType.exit;
@@ -72,9 +76,12 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						lineType = LineType.exit;
 						break;
 					}
+					atomsZ.length = 0;
+					base = 0;
 					lineType = LineType.basis;
 					break;
 				}
+
 				case LineType.basis: {
 
 					const fields = line.trim().split(/\s+/);
@@ -87,7 +94,8 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						lineType = LineType.counts;
 						base = 0;
 
-						// If scale is negative, it is the unit cell volume, so transform it into a scale factor
+						// If scale is negative, it is the unit cell volume,
+						// so transform it into a scale factor
 						if(scaleFactor < 0) {
 							const Vuc = basis[0]*basis[4]*basis[8] + basis[1]*basis[5]*basis[6] +
 										basis[2]*basis[3]*basis[7] - basis[2]*basis[4]*basis[6] -
@@ -108,6 +116,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					break;
 				}
+
 				case LineType.counts: {
 					const fields = line.trim().split(/\s+/);
 					if(/\d+/.test(fields[0])) {
@@ -159,6 +168,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					break;
 				}
+
 				case LineType.direct: {
 					const kind = line.trim().toLowerCase();
 					if(kind.startsWith("dir")) {
@@ -176,6 +186,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					atomIdx = 0;
 					break;
 				}
+
 				case LineType.atoms: {
 					const fields = line.trim().split(/\s+/);
 

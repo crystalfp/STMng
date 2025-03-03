@@ -14,22 +14,24 @@ import type {Structure, Atom, BasisType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
-enum LineType {
-    item,
-    step,
-    natoms,
-    box1,
-    box2,
-    box3,
-    atom,
-}
+const LineType = {
+	__proto__: undefined,
+    item:   0,
+    step:   1,
+    natoms: 2,
+    box1:   3,
+    box2:   4,
+    box3:   5,
+    atom:   6,
+} as const;
 
 /** Types of unit cells */
-enum BoxType {
-	unknown,
-	restrictedTriclinic,
-	rectangular
-}
+const BoxType = {
+	__proto__: undefined,
+    unknown: 0,
+    restrictedTriclinic:   1,
+    rectangular:   2,
+} as const;
 
 export class ReaderLAMMPStrj implements ReaderImplementation {
 
@@ -46,12 +48,12 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let currentStructure: Structure;
 
 		let numberAtoms = 0;
-		let lineType: LineType = LineType.item;
+		let lineType: number = LineType.item;
 		let atomIdx = 0;
 		const correspond: number[] = [];
 		let atomZ = 0;
 		let hasErrors = false;
-		let boxType: BoxType = BoxType.unknown;
+		let boxType: number = BoxType.unknown;
 		const boxValues: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));

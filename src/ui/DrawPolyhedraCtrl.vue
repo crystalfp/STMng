@@ -23,11 +23,11 @@ const {id, label} = defineProps<{
 }>();
 
 // > Initialization
-const showPolyhedra = ref<boolean|null>(true);
+const showPolyhedra = ref(true);
 const surfaceColor = ref("#FFFFFF80");
 const labelKind = ref("symbol");
 const atomsSelector = ref("");
-const colorByCenterAtom = ref<boolean|null>(false);
+const colorByCenterAtom = ref(false);
 const opacityByCenterAtom = ref(0.5);
 const showOpacity = ref(0.5);
 

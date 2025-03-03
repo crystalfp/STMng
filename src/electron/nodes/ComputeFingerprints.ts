@@ -41,6 +41,7 @@ interface CreateUpdateScatterplotOptions {
 
 export class ComputeFingerprints extends NodeCore {
 
+	private readonly id: string;
 	private structure: Structure | undefined;
 	private readonly accumulator = new FingerprintsAccumulator();
 	private readonly fp = new Fingerprinting();
@@ -96,9 +97,10 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	/**

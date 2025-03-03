@@ -85,7 +85,7 @@ module.exports = {
 	},
 	pages: [
 		{
-		  components: "components/*.vue",
+		  components: "{.,components}/*.vue",
 		  outFile: "components.md"
 		},
 		{

@@ -21,13 +21,13 @@ interface GlobalControls {
 
 	/** Capture media controls */
 	snapshot: boolean;
-	movie: boolean | null;
+	movie: boolean;
 	stl: boolean;
 
 	/** Capture for multistep structures */
-	fingerprintsAccumulate: boolean | null;
-	trajectoriesRecording: boolean | null;
-	writerAccumulate: boolean | null;
+	fingerprintsAccumulate: boolean;
+	trajectoriesRecording: boolean;
+	writerAccumulate: boolean;
 
 	/** Set if a functionality is present to add its control in StructureReader */
 	hasCapture: boolean;

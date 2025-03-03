@@ -636,7 +636,7 @@ const compareSelected = (): void => {
 };
 
 /** Setup the legend */
-const showLegend = ref<boolean | null>(false);
+const showLegend = ref(false);
 const showLegendDiscrete = computed(() => showLegend.value &&
                                           (scatterplotType.value === "group" ||
                                            scatterplotType.value === "silhouette"));

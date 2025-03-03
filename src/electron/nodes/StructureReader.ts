@@ -21,6 +21,8 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 
 export class StructureReader extends NodeCore {
 
+	private readonly id: string;
+
 	private loopSteps = false;
 	private stepBackward = false;
 	private step = 1;
@@ -53,9 +55,10 @@ export class StructureReader extends NodeCore {
 		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 		this.toNextNode(new EmptyStructure());
 	}
 
@@ -345,9 +348,13 @@ export class StructureReader extends NodeCore {
 
 		if(this.structures.length === 0) return;
 
-		// Get the current atomic numbers
+		// Get the current atomic numbers in all structures
 		const currentAtomsZ = new Set<number>();
-		for(const atom of this.structures[0].atoms) currentAtomsZ.add(atom.atomZ);
+		for(const structure of this.structures) {
+
+			const {atoms} = structure;
+			for(const atom of atoms) currentAtomsZ.add(atom.atomZ);
+		}
 
 		// Array of the renamed atom types
 		let typesAfter: string[] = [];

@@ -22,7 +22,7 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-const interpolateVolume = ref<boolean|null>(false);
+const interpolateVolume = ref(false);
 const pointsToAdd = ref(1);
 const dataset = ref(0);
 const countDatasets = ref(0);

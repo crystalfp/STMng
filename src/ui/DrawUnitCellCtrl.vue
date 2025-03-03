@@ -23,18 +23,18 @@ const {id, label} = defineProps<{
 }>();
 
 // Unit cell
-const showUnitCell = ref<boolean|null>(true);
+const showUnitCell = ref(true);
 const lineColor = ref("#0000FF");
-const dashedLine = ref<boolean|null>(false);
-const showBasisVectors = ref<boolean|null>(false);
+const dashedLine = ref(false);
+const showBasisVectors = ref(false);
 
 // Supercell
 const repetitionsA = ref(1);
 const repetitionsB = ref(1);
 const repetitionsC = ref(1);
-const showSupercell = ref<boolean|null>(false);
+const showSupercell = ref(false);
 const supercellColor = ref("#16A004");
-const dashedSupercell = ref<boolean|null>(false);
+const dashedSupercell = ref(false);
 
 const showRepetitionsA = ref(1);
 const showRepetitionsB = ref(1);
@@ -44,7 +44,7 @@ const showRepetitionsC = ref(1);
 const percentA = ref(0);
 const percentB = ref(0);
 const percentC = ref(0);
-const shrink   = ref<boolean|null>(true);
+const shrink   = ref(true);
 
 const showPercentA = ref(0);
 const showPercentB = ref(0);

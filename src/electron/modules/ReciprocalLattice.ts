@@ -18,8 +18,10 @@ export interface ReciprocalPoint {
 
 export class ReciprocalLattice {
 
-	constructor(private readonly lattice: Lattice) {
-        // No body necessary
+	private readonly lattice: Lattice;
+
+	constructor(lattice: Lattice) {
+        this.lattice = lattice;
     }
 
 	// Find all points within a sphere from the point taking into account

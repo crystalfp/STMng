@@ -22,6 +22,7 @@ const RAD2DEG = 180/Math.PI;
 
 export class Measures extends NodeCore {
 
+	private readonly id: string;
 	private structure: Structure | undefined;
     private distanceAB = -1;
     private distanceBC = -1;
@@ -34,9 +35,10 @@ export class Measures extends NodeCore {
 		{name: "bonds",   type: "invoke", callback: this.channelBonds.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

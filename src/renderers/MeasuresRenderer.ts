@@ -17,10 +17,10 @@ export class MeasuresRenderer {
 	private readonly group = new Group();
 	private readonly groupName;
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 
 		// Prepare the output group
-		this.groupName = "AtomSelectors-" + this.id;
+		this.groupName = "AtomSelectors-" + id;
 		this.group.name = this.groupName;
 		sm.clearAndAddGroup(this.group);
 	}

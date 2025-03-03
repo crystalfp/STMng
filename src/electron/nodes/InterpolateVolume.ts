@@ -26,6 +26,7 @@ const getMatrixOrigin = (idx: number, side: number): number => {
 
 export class InterpolateVolume extends NodeCore {
 
+	private readonly id: string;
 	private structure: Structure | undefined;
 	private interpolateVolume = false;
 	private pointsToAdd = 1;
@@ -36,9 +37,10 @@ export class InterpolateVolume extends NodeCore {
 		{name: "change",    type: "send",   callback: this.channelChange.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

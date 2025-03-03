@@ -28,11 +28,11 @@ const {id, label} = defineProps<{
 const controlStore = useControlStore();
 controlStore.hasTrajectory = true;
 
-const showTrajectories = ref<boolean|null>(false);
+const showTrajectories = ref(false);
 const labelKind = ref("symbol");
 const atomsSelector = ref("");
 const maxDisplacement = ref(1);
-const showPositionClouds = ref<boolean|null>(false);
+const showPositionClouds = ref(false);
 const positionCloudsSize = ref(100);
 const positionCloudsColor = ref("#BBBBBE");
 
@@ -100,8 +100,8 @@ watch([maxDisplacement], () => {
 
 /** Capture position clouds related variables */
 watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
-      (after:  [boolean|null, number, string],
-       before: [boolean|null, number, string]) => {
+      (after:  [boolean, number, string],
+       before: [boolean, number, string]) => {
 
     if(after[2] !== before[2]) renderer.changeColor(after[2]);
     if(after[1] !== before[1]) renderer.changeSize(after[1]);

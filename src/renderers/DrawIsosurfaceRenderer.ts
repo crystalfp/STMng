@@ -17,10 +17,10 @@ export class DrawIsosurfaceRenderer {
 	private readonly name;
 	private readonly lut = new Lut("rainbow", 512);
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects
-		this.name = "Isosurface-" + this.id;
+		this.name = "Isosurface-" + id;
 
 		// Prepare the group that will contains the isosurfaces and add it to the scene
 		this.group.name = this.name;

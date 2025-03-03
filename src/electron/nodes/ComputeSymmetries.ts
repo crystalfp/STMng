@@ -55,6 +55,7 @@ const TOL = 10e-5;
 
 export class ComputeSymmetries extends NodeCore {
 
+	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private structure: Structure | undefined;
 	private applyInputSymmetries = true;
@@ -73,9 +74,10 @@ export class ComputeSymmetries extends NodeCore {
 		{name: "window",  type: "send",   callback: this.channelWindow.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

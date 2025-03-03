@@ -48,18 +48,18 @@ resetAlertMessage("fingerprints");
 
 // Accumulate structures
 const countAccumulated = ref(0);
-const areNanoclusters = ref<boolean|null>(false);
+const areNanoclusters = ref(false);
 const haveEnergies = ref(false);
 
 // Filter structures
-const enableEnergyFiltering = ref<boolean|null>(false);
-const thresholdFromMinimum = ref<boolean|null>(false);
+const enableEnergyFiltering = ref(false);
+const thresholdFromMinimum = ref(false);
 const energyThreshold = ref(0);
 const energyThresholdEffective = ref(0);
 const countSelected = ref(0);
 
 // Compute fingerprints
-const forceCutoff = ref<boolean|null>(false);
+const forceCutoff = ref(false);
 const cutoffDistance = ref(0);
 const manualCutoffDistance = ref(10);
 const fingerprintMethodsNames = ref<FPmethodName[]>([]);
@@ -71,13 +71,13 @@ const fingerprintingBusy = ref(false);
 
 // Compute distances
 const distanceMethod = ref(0);
-const fixTriangleInequality = ref<boolean|null>(false);
+const fixTriangleInequality = ref(false);
 const distanceMethods = ref<DistanceMethodsNames[]>([]);
 const countDistances = ref(0);
 const endMessage = ref("");
 
 // Remove duplicates
-const removeDuplicates = ref<boolean|null>(true);
+const removeDuplicates = ref(true);
 const duplicatesThreshold = ref(0.05);
 const pointsRemoved = ref(-1); // -1 means not run yet
 

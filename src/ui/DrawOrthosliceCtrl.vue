@@ -27,19 +27,19 @@ const {id, label} = defineProps<{
 const dataset = ref(0);
 const axis = ref(0);
 const plane = ref(0);
-const showOrthoslice = ref<boolean|null>(false);
+const showOrthoslice = ref(false);
 const countDatasets = ref(0);
 const maxPlane = ref(0);
 const colormapName = ref("rainbow");
 const limits = ref<number[]>([-10, 10]); // User selected limits
 const valueMin = ref(-10); // Range of the values in the volume
 const valueMax = ref(10);
-const useColorClasses = ref<boolean|null>(false);
+const useColorClasses = ref(false);
 const colorClasses = ref(5);
 const step = computed(() => (valueMax.value-valueMin.value)/100);
 
-const showIsolines = ref<boolean|null>(false);
-const colorIsolines = ref<boolean|null>(false);
+const showIsolines = ref(false);
+const colorIsolines = ref(false);
 const isoValue = ref((valueMax.value+valueMin.value)/2);
 
 // > Initialize the ui

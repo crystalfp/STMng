@@ -14,6 +14,7 @@ import type {Structure, CtrlParams, ChannelDefinition, AtomRenderInfo,
 
 export class DrawStructure extends NodeCore {
 
+	private readonly id: string;
 	private drawKind = "ball-and-stick";
 	private drawQuality = 4;
 	private drawRoughness = 0.5;
@@ -29,9 +30,10 @@ export class DrawStructure extends NodeCore {
 		{name: "save", type: "send",   callback: this.channelSave.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

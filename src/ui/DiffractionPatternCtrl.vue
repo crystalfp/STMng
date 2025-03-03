@@ -15,10 +15,10 @@ const wavelengthCodes = ref<string[]>([]);
 const wavelengthCode = ref("");
 const wavelengthNumeric = ref(1.5);
 const theta = ref([0, 90]);
-const scaled = ref<boolean|null>(true);
+const scaled = ref(true);
 const enableComputation = ref(false);
 const width = ref(0.25);
-const showHKL = ref<boolean|null>(false);
+const showHKL = ref(false);
 
 // > Properties
 const {id, label} = defineProps<{

@@ -17,6 +17,7 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 
 export class DrawUnitCell extends NodeCore {
 
+	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private repetitionsA = 1;
 	private repetitionsB = 1;
@@ -40,9 +41,10 @@ export class DrawUnitCell extends NodeCore {
 		{name: "origin",	type: "send", 	callback: this.channelOrigin.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

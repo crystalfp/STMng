@@ -21,11 +21,11 @@ export class DrawOrthosliceRenderer {
 	private isolinesGroup: Group | undefined;
 	private readonly isolinesName;
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects
-		this.meshName = "Orthoslice-" + this.id;
-		this.isolinesName = "Isolines-" + this.id;
+		this.meshName = "Orthoslice-" + id;
+		this.isolinesName = "Isolines-" + id;
 
 		// Initialize the colormap
 		this.lut.setMax(10);

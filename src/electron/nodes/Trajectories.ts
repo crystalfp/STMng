@@ -14,6 +14,7 @@ import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class Trajectories extends NodeCore {
 
+	private readonly id: string;
 	private structure: Structure | undefined;
 	private showTrajectories = false;
 	private createTrajectories = false;
@@ -36,10 +37,11 @@ export class Trajectories extends NodeCore {
 		{name: "clouds",	type: "send",   callback: this.channelClouds.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

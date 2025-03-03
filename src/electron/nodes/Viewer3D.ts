@@ -12,15 +12,17 @@ import type {Viewer3DState, ChannelDefinition, CtrlParams} from "@/types";
 
 export class Viewer3D extends NodeCore {
 
+	private readonly id: string;
 	private rawStatus = "";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	// > Load/save status

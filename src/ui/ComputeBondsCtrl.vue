@@ -34,8 +34,8 @@ const maxBondingDistance  = ref(4.50);
 const bondScale           = ref(1.10);
 const maxHBondingDistance = ref(3.00);
 const maxHValenceAngle    = ref(30);
-const enableComputeBonds  = ref<boolean | null>(true);
-const perPairScale        = ref<boolean | null>(false);
+const enableComputeBonds  = ref(true);
+const perPairScale        = ref(false);
 const perPairData         = ref<PairData[]>([]);
 const showScale           = ref<number[]>([]);
 const enlargementKind     = ref("none");
@@ -166,7 +166,7 @@ const resetSliders = (): void => {
   <v-container v-if="perPairScale" class="pa-0">
     <v-table class="px-2 py-1">
       <tr v-for="(item, idx) of perPairData" :key="item.label" class="per-pair-row">
-        <td style="width: 4rem">{{ item.label }}</td>
+        <td class="first-column">{{ item.label }}</td>
         <td><g-slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"
                                     :label="`(${showScale[idx].toFixed(2)})`" label-width="3rem"
                                     :min="0" :max="3.0" :step="0.01" class="mr-0"/></td>
@@ -203,5 +203,9 @@ const resetSliders = (): void => {
 
 .per-pair-row:hover {
   opacity: 1;
+}
+
+.first-column {
+  width: 4rem
 }
 </style>

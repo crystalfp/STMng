@@ -12,11 +12,12 @@ import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure} from "@/types";
 
 /** Line read type */
-enum LineType {
-    header,
-    separator,
-    position,
-}
+const LineType = {
+	__proto__: undefined,
+    header:    0,
+    separator: 1,
+    position:  2,
+} as const;
 
 /**
  * Read the auxiliary file XDATCAR
@@ -34,7 +35,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 	const {crystal, atoms} = mainStructure;
 	const natoms = atoms.length;
 	if(natoms === 0) throw Error("Empty main structure");
-	let lineType: LineType = LineType.header;
+	let lineType: number = LineType.header;
 	let headerLines = 5;
 	let index = 0;
 	const structures: Structure[] = [];

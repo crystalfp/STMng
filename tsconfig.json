@@ -11,7 +11,7 @@
     "useUnknownInCatchVariables": true,
     "useDefineForClassFields": true,
     "moduleDetection": "force",
-    /* "erasableSyntaxOnly": true, */
+    "erasableSyntaxOnly": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

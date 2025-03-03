@@ -17,6 +17,7 @@ import type {Structure, CtrlParams, ChannelDefinition,
 
 export class DiffractionPattern extends NodeCore {
 
+	private readonly id: string;
 	private structure: Structure | undefined;
 	private scaled = true;
 	private thetaLow = 0;
@@ -36,9 +37,10 @@ export class DiffractionPattern extends NodeCore {
 		{name: "compute", type: "send",   callback: this.channelCompute.bind(this)},
 	];
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 		super();
-		this.setupChannels(this.id, this.channels);
+		this.id = id;
+		this.setupChannels(id, this.channels);
 	}
 
 	override fromPreviousNode(data: Structure): void {

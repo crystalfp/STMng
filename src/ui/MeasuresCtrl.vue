@@ -43,7 +43,7 @@ const measurementType = ref<"atoms" | "polyhedra" | "bonds">("atoms");
 const bondData = ref<BondData[]>([]);
 
 /** Show fractional coordinates */
-const useFractional = ref<boolean|null>(false);
+const useFractional = ref(false);
 
 const renderer = new MeasuresRenderer(id);
 

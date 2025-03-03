@@ -15,9 +15,15 @@ export class Slab {
     private readonly interatomicDistances = new Map<number, [number, number][]>();
     private inverseBasis: BasisType = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
-    constructor(private readonly cutoff: number,
-                private readonly isNanocluster=false,
-                private readonly byAtom=false) {
+    private readonly cutoff: number;
+    private readonly isNanocluster: boolean;
+    private readonly byAtom: boolean;
+
+    constructor(cutoff: number, isNanocluster=false, byAtom=false) {
+
+        this.cutoff = cutoff;
+        this.isNanocluster = isNanocluster;
+        this.byAtom = byAtom;
 
         // Initialize try points
 		if(!isNanocluster) this.computeTryPoints(8, 8);

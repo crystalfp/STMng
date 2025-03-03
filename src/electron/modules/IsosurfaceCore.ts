@@ -26,10 +26,15 @@ export class IsosurfaceCore {
 	private readonly faceVertices: number[] = [];
 	private readonly vertexNormals: number[] = [];
 
-	constructor(private readonly dims: PositionType,
-				basis: BasisType,
-				private readonly origin: PositionType,
-			    private readonly values: number[]) {
+	private readonly dims: PositionType;
+	private readonly origin: PositionType;
+	private readonly values: number[];
+
+	constructor(dims: PositionType, basis: BasisType, origin: PositionType, values: number[]) {
+
+		this.dims = dims;
+		this.origin = origin;
+		this.values = values;
 
 		// A point will be added in each direction to accomodate periodic cell boundaries
 		this.cellSides = [

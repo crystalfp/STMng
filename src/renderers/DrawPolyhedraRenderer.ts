@@ -27,10 +27,10 @@ export class DrawPolyhedraRenderer {
 		polygonOffsetFactor: 1
 	});
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects
-		this.name = "DrawPolyhedra-" + this.id;
+		this.name = "DrawPolyhedra-" + id;
 
 		// Prepare the group for the polyhedra and add it to the scene
 		this.group.name = this.name;

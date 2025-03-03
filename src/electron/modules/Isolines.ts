@@ -40,6 +40,10 @@ export class Isolines {
 
 	private isolinesVertices: number[][] = [];
 
+	private readonly volume: number[];
+	private readonly sides: PositionType;
+	private readonly isoValues: number[];
+
 	/**
 	 * Initialize the isolines computation
 	 *
@@ -47,10 +51,11 @@ export class Isolines {
 	 * @param sides - The dimensions of the volumetric data
 	 * @param isoValues - The list of isoValues for which the isolines should be computed
 	 */
-	constructor(private readonly volume: number[],
-				private readonly sides: PositionType,
-				private readonly isoValues: number[]) {
-		// No body necessary
+	constructor(volume: number[], sides: PositionType, isoValues: number[]) {
+
+		this.volume = volume;
+		this.sides = sides;
+		this.isoValues = isoValues;
 	}
 
 	/**

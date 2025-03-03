@@ -26,6 +26,10 @@ export class SpheresCache {
 	private currentMetalness = -1;
 	private currentRoughness = -1;
 
+	private readonly covScale: number;
+	private readonly licoriceRadius: number;
+	private readonly sphereSubdivisions: number[];
+
 	/**
 	 * Constructor
 	 *
@@ -33,10 +37,11 @@ export class SpheresCache {
 	 * @param licoriceRadius - Radius of the sphere for licorice rendering
 	 * @param sphereSubdivisions - Table of sphere subdivisions for each rendering quality
 	 */
-	constructor(private readonly covScale: number,
-				private readonly licoriceRadius: number,
-				private readonly sphereSubdivisions: number[]) {
+	constructor(covScale: number, licoriceRadius: number, sphereSubdivisions: number[]) {
 
+		this.covScale = covScale;
+		this.licoriceRadius = licoriceRadius;
+		this.sphereSubdivisions = sphereSubdivisions;
 		this.currentQuality = this.sphereSubdivisions.length - 1;
 		this.subdivisions = this.sphereSubdivisions[this.currentQuality];
 	}

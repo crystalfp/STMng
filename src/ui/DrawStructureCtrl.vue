@@ -31,7 +31,7 @@ const labelKind = ref("symbol");
 const showStructure = ref(true);
 const showBonds = ref(true);
 const showLabels = ref(true);
-const shadedBonds = ref<boolean|null>(false);
+const shadedBonds = ref(false);
 let renderInfo: StructureRenderInfo;
 
 resetAlertMessage("system");
@@ -155,7 +155,7 @@ const showCombined = computed({
       <v-label text="Visibility" class="no-select" />
     </v-col>
     <v-col>
-      <v-btn-toggle v-model="showCombined" multiple mandatory class="ml-2 mb-2">
+      <v-btn-toggle v-model="showCombined" multiple class="ml-2 mb-2">
         <v-btn value="structure">Structure</v-btn>
         <v-btn value="bonds">Bonds</v-btn>
         <v-btn value="labels">Labels</v-btn>

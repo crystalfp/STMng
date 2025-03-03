@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation is a chemical and crystallographic structure visualizer that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.28.4",
+  "version": "1.28.5",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -20,7 +20,7 @@
     "madge": "sh ./madge.sh",
     "start": "start /D .\\release\\win\\%npm_package_version%\\win-unpacked STMng.exe",
     "oxlint": "oxlint -c ./oxlint.json --tsconfig=tsconfig.json --ignore-pattern=save",
-    "mess": "vue-mess-detector analyze src --group=file --ignore=elementAttributeOrder,shortVariableName,multiAttributeElements,elseCondition",
+    "mess": "vue-mess-detector analyze src --ignore=elementAttributeOrder,shortVariableName,multiAttributeElements,elseCondition",
     "cruise": "depcruise -v -T dot src | dot -T svg | depcruise-wrap-stream-in-html > doc/dependency-graph.html",
     "cruise:err": "depcruise -T err src",
     "cruise:err2": "depcruise -T err-html src > doc/dependency-errors.html",
@@ -93,15 +93,15 @@
     "stylelint-config-standard-vue": "^1.0.0",
     "typedoc": "^0.27.9",
     "typedoc-plugin-missing-exports": "^3.1.0",
-    "typedoc-plugin-vue": "^1.4.0",
+    "typedoc-plugin-vue": "^1.5.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
-    "vite-plugin-dts": "^4.5.1",
+    "vite-plugin-dts": "^4.5.3",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^9.4.3",
-    "vue-tsc": "^2.2.6"
+    "vue-tsc": "^2.2.8"
   }
 }

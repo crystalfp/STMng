@@ -79,8 +79,13 @@ export interface Extra {
     energy?: number;
 }
 
+/** Protein structure data */
 export interface Residues {
+
+    /** Name of the chains present in the PDB file */
     chains: string[];
+
+    /** For each atom the residue and the chain it pertains to */
     atoms: {
         residue: string;
         chain: string;
@@ -186,19 +191,19 @@ export interface Viewer3DState {
     };
     helpers: {
         /** Show cartesian axis centered in the origin */
-        showAxis: boolean | null;
+        showAxis: boolean;
         /** Length of the cartesian axis */
         axisLength: number;
         /** Show grid on the XZ plane */
-        showGridXZ: boolean | null;
+        showGridXZ: boolean;
         /** Show grid on the XY plane */
-        showGridXY: boolean | null;
+        showGridXY: boolean;
         /** Show grid on the YZ plane */
-        showGridYZ: boolean | null;
+        showGridYZ: boolean;
         /** Squares on the side of the grid (an even number) */
         gridSize: number;
         /** Orientation gizmo visibility */
-        showGizmo: boolean | null;
+        showGizmo: boolean;
     };
 }
 

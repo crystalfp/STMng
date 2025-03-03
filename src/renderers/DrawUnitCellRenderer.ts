@@ -44,12 +44,12 @@ export class DrawUnitCellRenderer {
 	private readonly nameSC;
 	private readonly nameBV;
 
-	constructor(private readonly id: string) {
+	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects
-		this.nameUC = "DrawUnitCell-" + this.id;
-		this.nameSC = "DrawSupercell-" + this.id;
-		this.nameBV = "DrawBasisVectors-" + this.id;
+		this.nameUC = "DrawUnitCell-" + id;
+		this.nameSC = "DrawSupercell-" + id;
+		this.nameBV = "DrawBasisVectors-" + id;
 
 		// Prepare the group for the base vectors and add it to the scene
 		this.outBV.name = this.nameBV;

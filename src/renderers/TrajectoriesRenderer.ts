@@ -21,12 +21,12 @@ export class TrajectoriesRenderer {
 	private readonly volumeVertices: number[] = [];
 	private readonly volumeGeometry = new BufferGeometry();
 
-	constructor(private readonly id: string, traceVisible: boolean,
+	constructor(id: string, traceVisible: boolean,
 				positionCloudsSize: number, positionCloudsColor: string) {
 
 		// Prepare the names of the various graphical objects
-		this.groupName = "Trajectories-" + this.id;
-		this.volumeName = "PositionCloud-" + this.id;
+		this.groupName = "Trajectories-" + id;
+		this.volumeName = "PositionCloud-" + id;
 
 		// Prepare the group for the trajectories and add it to the scene
 		this.group.name = this.groupName;

@@ -13,10 +13,12 @@ export class Lattice {
 
 	private readonly lengthsAngles: LengthsAnglesType;
 	private readonly inverseBasis: BasisType;
+	private readonly structure: Structure;
 
-	constructor(private readonly structure: Structure) {
+	constructor(structure: Structure) {
 
-		const {crystal} = this.structure;
+		this.structure = structure;
+		const {crystal} = structure;
 		const {basis} = crystal;
 
 		// Change basis into sides lengths and angles

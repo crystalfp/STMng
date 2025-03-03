@@ -24,7 +24,7 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-const showIsosurface = ref<boolean|null>(false);
+const showIsosurface = ref(false);
 const dataset = ref(0);
 const countDatasets = ref(0);
 const valueMin = ref(-10);
@@ -34,10 +34,10 @@ const step = computed(() => (valueMax.value - valueMin.value)/100);
 const colormapName = ref("rainbow");
 const opacity = ref(1);
 
-const nestedIsosurfaces = ref<boolean|null>(false);
+const nestedIsosurfaces = ref(false);
 const countIsosurfaces = ref(2);
 const limits = ref<number[]>([-10, 10]);
-const limitColormap = ref<boolean|null>(false);
+const limitColormap = ref(false);
 
 // > Initialize the ui
 askNode(id, "init")

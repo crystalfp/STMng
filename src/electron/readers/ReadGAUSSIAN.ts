@@ -14,16 +14,17 @@ import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
 /** Line read type */
-enum LineType {
-    comment1,
-    comment2,
-	origin,
-    basis,
-	orbitals,
-	values,
-    atoms,
-	exit,
-}
+const LineType = {
+	__proto__: undefined,
+    comment1: 0,
+    comment2: 1,
+	origin:   2,
+    basis:    3,
+	orbitals: 4,
+	values:   5,
+    atoms:    6,
+	exit:     7,
+} as const;
 
 export class ReaderGAUSSIAN implements ReaderImplementation {
 
@@ -36,7 +37,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 
-		let lineType: LineType = LineType.comment1;
+		let lineType: number = LineType.comment1;
 		let orbitalsPresent = false;
 		let natoms = 0;
 		let idxBasis = 0;
