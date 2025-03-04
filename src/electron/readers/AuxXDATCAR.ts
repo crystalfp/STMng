@@ -94,6 +94,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 				structure!.atoms.push({
 					atomZ: atoms[index].atomZ,
 					label: atoms[index].label,
+					chain: atoms[index].chain,
 					position
 				});
 				++index;

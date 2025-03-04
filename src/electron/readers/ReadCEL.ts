@@ -119,7 +119,7 @@ export class ReaderCEL implements ReaderImplementation {
 					const label = fields[0] === " " ? getAtomicSymbol(atomZ) : fields[0];
 
 					// Add the atom
-					const atom: Atom = {atomZ, label, position};
+					const atom: Atom = {atomZ, label, chain: "", position};
 					structures[0].atoms.push(atom);
 				}
 

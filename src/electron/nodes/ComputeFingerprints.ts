@@ -707,6 +707,7 @@ export class ComputeFingerprints extends NodeCore {
 			atoms.push({
 				atomZ: atomsZ[i],
 				label: getAtomicSymbol(atomsZ[i]),
+				chain: "",
 				position: [
 					atomsPosition[3*i],
 					atomsPosition[3*i+1],

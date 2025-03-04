@@ -195,6 +195,7 @@ export class ComputeBonds extends NodeCore {
 			outAtoms.push({
 				atomZ: atom.atomZ,
 				label: atom.label,
+				chain: atom.chain,
 				position: [
 					atom.position[0],
 					atom.position[1],
@@ -216,6 +217,7 @@ export class ComputeBonds extends NodeCore {
 				outAtoms.push({
 					atomZ: atom.atomZ,
 					label: atom.label,
+					chain: atom.chain,
 					position: [
 						atom.position[0]+c[0]*basis[0]+c[1]*basis[3]+c[2]*basis[6],
 						atom.position[1]+c[0]*basis[1]+c[1]*basis[4]+c[2]*basis[7],

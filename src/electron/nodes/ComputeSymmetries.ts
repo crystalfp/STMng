@@ -359,6 +359,7 @@ export class ComputeSymmetries extends NodeCore {
 				structure.atoms.push({
 					atomZ: atomsZ[i],
 					label: labels[i] + i.toString(),
+					chain: "",
 					position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 				});
 			}
@@ -495,6 +496,7 @@ export class ComputeSymmetries extends NodeCore {
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
 				label: labels[idx[i]] + labelIdx.toString(),
+				chain: "",
 				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 
@@ -561,6 +563,7 @@ export class ComputeSymmetries extends NodeCore {
 			structure.atoms.push({
 				atomZ: atomsZ[i],
 				label: getAtomicSymbol(atomsZ[i]) + i.toString(),
+				chain: "",
 				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 		}

@@ -155,9 +155,10 @@ export class DrawUnitCell extends NodeCore {
 						];
 
 						atoms.push({
-							position,
 							atomZ: structure.atoms[i].atomZ,
 							label: structure.atoms[i].label,
+							chain: structure.atoms[i].chain+a.toString()+b.toString()+c.toString(),
+							position,
 						});
 					}
 				}

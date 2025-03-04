@@ -147,6 +147,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 					const atom: Atom = {
 						atomZ,
 						label: getAtomicSymbol(atomZ),
+						chain: "",
 						position: [
 							Number.parseFloat(fields[2]),
 							Number.parseFloat(fields[3]),

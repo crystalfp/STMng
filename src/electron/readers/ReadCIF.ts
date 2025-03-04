@@ -279,6 +279,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: label.length > 0 ? label[i] : symbol[i],
+					chain: "",
 					position: fractionalToCartesianCoordinates(this.structures[this.step].crystal.basis,
 															   fx, fy, fz)
 				};
@@ -307,6 +308,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const atom: Atom = {
 					atomZ: getAtomicNumber(symbol),
 					label: label[i],
+					chain: "",
 					position: [x, y, z]
 				};
 				this.structures[this.step].atoms.push(atom);

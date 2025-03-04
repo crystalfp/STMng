@@ -90,9 +90,10 @@ export const adjustOrigin = (structure: Structure,
 		fc[2] = foldIntoUnitCell(fc[2]);
 
 		updatedAtoms.push({
-			position: toCartesianCoordinates(updatedBasis, updatedOrigin, fc),
 			atomZ: atom.atomZ,
-			label: atom.label
+			label: atom.label,
+			chain: atom.chain,
+			position: toCartesianCoordinates(updatedBasis, updatedOrigin, fc)
 		});
 	}
 

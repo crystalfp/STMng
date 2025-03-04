@@ -45,8 +45,9 @@ export class ReaderLAMMPS implements ReaderImplementation {
 				const nf = fields.length; // To check if line has atom charge before coordinates
 				const atomZ = Number.parseInt(fields[1], 10);
 				structure.atoms[atomIdx] = {
-					label: fields[0],
 					atomZ,
+					label: fields[0],
+					chain: "",
 					position: (nf === 5 || nf === 8) ?
 					[
 						Number.parseFloat(fields[2]),

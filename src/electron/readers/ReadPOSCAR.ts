@@ -205,6 +205,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					const atom: Atom = {
 						atomZ,
 						label: "Atom" + atomIdx.toString(),
+						chain: "",
 						position
 					};
 					structures[currentStep].atoms.push(atom);

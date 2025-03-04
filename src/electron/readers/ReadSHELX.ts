@@ -90,7 +90,7 @@ export class ReaderSHELX implements ReaderImplementation {
 				const position = fractionalToCartesianCoordinates(structures[0].crystal.basis, fx, fy, fz);
 
 				// Add the atom
-				const atom: Atom = {atomZ, label: fields[0], position};
+				const atom: Atom = {atomZ, label: fields[0], chain: "", position};
 				structures[0].atoms.push(atom);
 
 				// If the line has a continuation line, mark this to be skipped

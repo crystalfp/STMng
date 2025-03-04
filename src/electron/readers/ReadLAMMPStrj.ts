@@ -149,8 +149,9 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 				case LineType.atom:
 					atomZ = Number.parseInt(fields[1], 10);
 					currentStructure!.atoms[atomIdx] = {
-						label: fields[0],
 						atomZ,
+						label: fields[0],
+						chain: "",
 						position: [
 							Number.parseFloat(fields[2]),
 							Number.parseFloat(fields[3]),
