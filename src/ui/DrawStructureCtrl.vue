@@ -28,7 +28,7 @@ const drawQuality = ref(4);
 const drawRoughness = ref(0.5);
 const drawMetalness = ref(0.6);
 const labelKind = ref("symbol");
-const showStructure = ref(true);
+const showAtoms = ref(true);
 const showBonds = ref(true);
 const showLabels = ref(true);
 const shadedBonds = ref(false);
@@ -44,7 +44,7 @@ askNode(id, "init")
         drawMetalness.value = params.drawMetalness as number ?? 0.6;
         labelKind.value = params.labelKind as string ?? "symbol";
         showBonds.value = params.showBonds as boolean ?? true;
-        showStructure.value = params.showStructure as boolean ?? true;
+        showAtoms.value = params.showAtoms as boolean ?? true;
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
     })
@@ -78,12 +78,12 @@ watch([labelKind, drawKind, shadedBonds], () => {
 });
 
 // Change visibility
-watch([showStructure, showBonds, showLabels], () => {
+watch([showAtoms, showBonds, showLabels], () => {
 
-    renderer.setVisibility(showStructure.value, showBonds.value, showLabels.value);
+    renderer.setVisibility(showAtoms.value, showBonds.value, showLabels.value);
 
     sendToNode(id, "save", {
-        showStructure: showStructure.value,
+        showAtoms: showAtoms.value,
         showBonds: showBonds.value,
         showLabels: showLabels.value
     });
@@ -104,13 +104,13 @@ watch([drawRoughness, drawMetalness, drawQuality], () => {
 const showCombined = computed({
     get: () => {
         const result = [];
-        if(showStructure.value) result.push("structure");
+        if(showAtoms.value) result.push("atoms");
         if(showBonds.value) result.push("bonds");
         if(showLabels.value) result.push("labels");
         return result;
     },
     set: (values) => {
-        showStructure.value = values.includes("structure");
+        showAtoms.value = values.includes("atoms");
         showBonds.value = values.includes("bonds");
         showLabels.value = values.includes("labels");
     }
@@ -156,7 +156,7 @@ const showCombined = computed({
     </v-col>
     <v-col>
       <v-btn-toggle v-model="showCombined" multiple class="ml-2 mb-2">
-        <v-btn value="structure">Structure</v-btn>
+        <v-btn value="atoms">Atoms</v-btn>
         <v-btn value="bonds">Bonds</v-btn>
         <v-btn value="labels">Labels</v-btn>
       </v-btn-toggle>

@@ -459,15 +459,15 @@ export class DrawStructureRenderer {
 	/**
 	 * Set visibility of various part of the structure
 	 *
-	 * @param showStructure - Structure visibility
+	 * @param showAtoms - Atoms visibility
 	 * @param showBonds - Bonds visibility
 	 * @param showLabels - Labels visibility
 	 */
-	setVisibility(showStructure: boolean, showBonds: boolean, showLabels: boolean): void {
+	setVisibility(showAtoms: boolean, showBonds: boolean, showLabels: boolean): void {
 
     	this.labelsGroup.visible = showLabels;
-    	this.bondsGroup.visible = showBonds;
-    	this.out.visible = showStructure;
+    	this.bondsGroup.visible  = showBonds;
+    	this.atomsGroup.visible  = showAtoms;
     	sm.modified();
 	}
 }

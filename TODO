@@ -7,7 +7,6 @@ To do:
   ☐ Check error return from main process to client
   ☐ Color position clouds
   ☐ Copy residues in compute symmetries
-  ☐ Make hide structure disable bonds and labels buttons too
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -68,6 +67,7 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Make hide structure disable bonds and labels buttons too @done(2025-03-04 20:01) @project(To do)
   ✔ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;` @done(2025-03-03 18:32) @project(ToDo eventually)
   ✔ Move styles from App.vue to main.ts @done(2025-03-02 18:19) @project(To do)
   ✔ Change OrbitControl to CameraControls @done(2025-03-02 07:48) @project(To do)

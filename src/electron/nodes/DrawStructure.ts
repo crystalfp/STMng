@@ -20,7 +20,7 @@ export class DrawStructure extends NodeCore {
 	private drawRoughness = 0.5;
 	private drawMetalness = 0.6;
 	private labelKind = "symbol";
-	private showStructure = true;
+	private showAtoms = true;
 	private showBonds = true;
 	private showLabels = true;
 	private shadedBonds = false;
@@ -87,7 +87,7 @@ export class DrawStructure extends NodeCore {
 			drawMetalness: this.drawMetalness,
 			labelKind: this.labelKind,
 			showBonds: this.showBonds,
-			showStructure: this.showStructure,
+			showAtoms: this.showAtoms,
 			showLabels: this.showLabels,
 			shadedBonds: this.shadedBonds,
 		};
@@ -102,7 +102,7 @@ export class DrawStructure extends NodeCore {
 		this.drawMetalness = params.drawMetalness as number ?? 0.6;
 		this.labelKind = params.labelKind as string ?? "symbol";
 		this.showBonds = params.showBonds as boolean ?? true;
-		this.showStructure = params.showStructure as boolean ?? true;
+		this.showAtoms = params.showAtoms as boolean ?? true;
 		this.showLabels = params.showLabels as boolean ?? true;
 		this.shadedBonds = params.shadedBonds as boolean ?? false;
 	}
@@ -122,7 +122,7 @@ export class DrawStructure extends NodeCore {
 			drawMetalness: this.drawMetalness,
 			labelKind: this.labelKind,
 			showBonds: this.showBonds,
-			showStructure: this.showStructure,
+			showAtoms: this.showAtoms,
 			showLabels: this.showLabels,
 			shadedBonds: this.shadedBonds,
 		};
@@ -141,7 +141,7 @@ export class DrawStructure extends NodeCore {
 		if(params.drawMetalness) this.drawMetalness = params.drawMetalness as number;
 		if(params.labelKind)     this.labelKind = params.labelKind as string;
 		if(params.showBonds)     this.showBonds = params.showBonds as boolean;
-		if(params.showStructure) this.showStructure = params.showStructure as boolean;
+		if(params.showAtoms) 	 this.showAtoms = params.showAtoms as boolean;
 		if(params.showLabels)    this.showLabels = params.showLabels as boolean;
 		if(params.shadedBonds)   this.shadedBonds = params.shadedBonds as boolean;
 	}
