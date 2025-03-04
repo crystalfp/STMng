@@ -6,6 +6,8 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Color position clouds
+  ☐ Copy residues in compute symmetries
+  ☐ Make hide structure disable bonds and labels buttons too
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -36,7 +38,6 @@ Global analysis:
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
 
 ToDo eventually:
-  ☐ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;`
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>
   ☐ Use `changelogen`
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
@@ -67,6 +68,7 @@ Reference:
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
 
 Archive:
+  ✔ Instead of enum constant values `const Activation = {__proto__: null, Active: "Active", Inactive: "Inactive"} as const;` @done(2025-03-03 18:32) @project(ToDo eventually)
   ✔ Move styles from App.vue to main.ts @done(2025-03-02 18:19) @project(To do)
   ✔ Change OrbitControl to CameraControls @done(2025-03-02 07:48) @project(To do)
   ✔ Check resizeObserver if it leaks @done(2025-03-02 07:18) @project(Performance)

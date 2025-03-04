@@ -1,0 +1,76 @@
+/**
+ * Render graphical output for Protein structure.
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2025-03-03
+ */
+import {Group, CatmullRomCurve3, Vector3, TubeGeometry, Mesh,
+		MeshStandardMaterial, DoubleSide, IcosahedronGeometry, Color} from "three";
+import {sm} from "@/services/SceneManager";
+
+export class ProteinStructureRenderer {
+
+	private readonly name;
+	private readonly group = new Group();
+	private readonly colors: Color[] = [new Color(0x00FF00), new Color(0x0000FF), new Color(0xFF0000)];
+
+	constructor(id: string) {
+
+		this.name = "ProteinStructure-" + id;
+		this.group.name = this.name;
+		sm.clearAndAddGroup(this.group);
+	}
+
+	/**
+	 * Draw a tube through the given points
+	 *
+	 * @param coordinates - Coordinates of the selected atoms
+	 * @param chainStart - Start index of each chain. There is an entry more so indices chains are (i, i+1)
+	 * @param tubeRadius - Radius of the tube representing the chain
+	 * @param visible - If the tube should be visible
+	 */
+	drawChains(coordinates: number[], chainStart: number[], tubeRadius: number, visible: boolean): void {
+
+		// Remove existing tubes
+		sm.clearGroup(this.name);
+
+		if(!coordinates || coordinates.length === 0 || !visible) return;
+
+		for(let i=0; i < chainStart.length-1; ++i) {
+
+			if(chainStart[i] === chainStart[i+1]) continue;
+
+			const nodes: Vector3[] = [];
+			for(let k=chainStart[i]*3; k < chainStart[i+1]*3; k+=3) {
+				nodes.push(new Vector3(coordinates[k], coordinates[k+1], coordinates[k+2]));
+			}
+			const curve = new CatmullRomCurve3(nodes);
+			const npoints = 30*(chainStart[i+1]-chainStart[i]);
+			const geometry = new TubeGeometry(curve, npoints, tubeRadius, 16, false);
+
+			const color = this.colors[i % this.colors.length];
+			const material = new MeshStandardMaterial({
+				color,
+				roughness: 0.5,
+				metalness: 0.6,
+				side: DoubleSide
+			});
+			const mesh = new Mesh(geometry, material);
+			this.group.add(mesh);
+
+			const top1 = new IcosahedronGeometry(tubeRadius, 9);
+			let k = chainStart[i]*3;
+			top1.translate(coordinates[k], coordinates[k+1], coordinates[k+2]);
+			const mesh1 = new Mesh(top1, material);
+			this.group.add(mesh1);
+
+			const top2 = new IcosahedronGeometry(tubeRadius, 9);
+			k = (chainStart[i+1]-1)*3;
+			top2.translate(coordinates[k], coordinates[k+1], coordinates[k+2]);
+			const mesh2 = new Mesh(top2, material);
+			this.group.add(mesh2);
+		}
+	}
+}
