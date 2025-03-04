@@ -1,21 +1,21 @@
 {
   "graph": {
-    "reader":    {"label": "Reader",            "type": "structure-reader"},
-    "symmetry":  {"label": "Symmetries",        "type": "compute-symmetries",   "in": "reader"},
-    "unit":      {"label": "Draw — Cell",       "type": "draw-unit-cell",       "in": "symmetry"},
-    "bonds":     {"label": "Draw — Bonds",      "type": "compute-bonds",        "in": "unit"},
-    "draw":      {"label": "Draw — Structure",  "type": "draw-structure",       "in": "bonds"},
-    "protein":   {"label": "Protein structure", "type": "protein-structure",    "in": "reader"},
-    "cfp":       {"label": "Fingerprints",      "type": "compute-fingerprints", "in": "bonds"},
-    "polyhedra": {"label": "Polyhedra",         "type": "draw-polyhedra",       "in": "bonds"},
-    "smooth":    {"label": "Interpolate",       "type": "interpolate-volume",   "in": "unit"},
-    "ortho":     {"label": "Orthoslice",        "type": "orthoslice",           "in": "smooth"},
-    "iso":       {"label": "Isosurface",        "type": "isosurface",           "in": "smooth"},
-    "trace":     {"label": "Trajectories",      "type": "draw-trajectories",    "in": "bonds"},
-    "xray":      {"label": "X-Ray diffraction", "type": "diffraction-pattern",  "in": "symmetry"},
-    "measure":   {"label": "Measures",          "type": "measures",             "in": "bonds"},
-    "writer":    {"label": "Writer",            "type": "structure-writer",     "in": "bonds"},
-    "capture":   {"label": "Capture",           "type": "capture-view"},
-    "viewer":    {"label": "Viewer",            "type": "viewer-3d"}
+    "reader":    {"label": "Reader",             "type": "structure-reader"},
+    "symmetry":  {"label": "Symmetries",         "type": "compute-symmetries",   "in": "reader"},
+    "unit":      {"label": "Draw — Cell",        "type": "draw-unit-cell",       "in": "symmetry"},
+    "bonds":     {"label": "Draw — Bonds",       "type": "compute-bonds",        "in": "unit"},
+    "draw":      {"label": "Draw — Structure",   "type": "draw-structure",       "in": "bonds"},
+    "backbone":  {"label": "Structure Backbone", "type": "structure-backbone",   "in": "reader"},
+    "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "bonds"},
+    "polyhedra": {"label": "Polyhedra",          "type": "draw-polyhedra",       "in": "bonds"},
+    "smooth":    {"label": "Interpolate",        "type": "interpolate-volume",   "in": "unit"},
+    "ortho":     {"label": "Orthoslice",         "type": "orthoslice",           "in": "smooth"},
+    "iso":       {"label": "Isosurface",         "type": "isosurface",           "in": "smooth"},
+    "trace":     {"label": "Trajectories",       "type": "draw-trajectories",    "in": "bonds"},
+    "xray":      {"label": "X-Ray diffraction",  "type": "diffraction-pattern",  "in": "symmetry"},
+    "measure":   {"label": "Measures",           "type": "measures",             "in": "bonds"},
+    "writer":    {"label": "Writer",             "type": "structure-writer",     "in": "bonds"},
+    "capture":   {"label": "Capture",            "type": "capture-view"},
+    "viewer":    {"label": "Viewer",             "type": "viewer-3d"}
   }
 }

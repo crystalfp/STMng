@@ -10,7 +10,7 @@ import {Group, CatmullRomCurve3, Vector3, TubeGeometry, Mesh,
 		MeshStandardMaterial, DoubleSide, IcosahedronGeometry, Color} from "three";
 import {sm} from "@/services/SceneManager";
 
-export class ProteinStructureRenderer {
+export class StructureBackboneRenderer {
 
 	private readonly name;
 	private readonly group = new Group();
@@ -18,7 +18,7 @@ export class ProteinStructureRenderer {
 
 	constructor(id: string) {
 
-		this.name = "ProteinStructure-" + id;
+		this.name = "StructureBackbone-" + id;
 		this.group.name = this.name;
 		sm.clearAndAddGroup(this.group);
 	}

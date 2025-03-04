@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the protein structure visualizer.
+ * Controls for the backbone (e.g. protein chains) visualizer.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-02-28
@@ -10,7 +10,7 @@ import {reactive, ref, watch} from "vue";
 import {showAlertMessage} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
-import {ProteinStructureRenderer} from "@/renderers/ProteinStructureRenderer";
+import {StructureBackboneRenderer} from "@/renderers/StructureBackboneRenderer";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -23,7 +23,7 @@ const {id, label} = defineProps<{
 }>();
 
 /** Enable visualization of the backbone */
-const enableProteinStructure = ref(false);
+const enableBackbone = ref(false);
 
 /** Chains present in the input structure and chains selected */
 const chains = ref<string[]>([]);
@@ -33,8 +33,9 @@ const showChains = reactive<Record<string, boolean>>({});
 const selectorKind = ref("label");
 const atomsSelector = ref("");
 
-const renderer = new ProteinStructureRenderer(id);
+const renderer = new StructureBackboneRenderer(id);
 
+/** Nodal points coordinates and various chains start and end indices */
 let coordinates: number[];
 let chainStart: number[];
 
@@ -44,7 +45,7 @@ const showRadius = ref(0.5);
 // Initialize the control
 askNode(id, "init")
     .then((params) => {
-        enableProteinStructure.value = params.enableProteinStructure as boolean ?? false;
+        enableBackbone.value = params.enableStructureBackbone as boolean ?? false;
         chains.value.length = 0;
         for(const key in showChains) {
             if(Object.prototype.hasOwnProperty.call(showChains, key)) {
@@ -61,18 +62,20 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
 
     chains.value.length = 0;
     for(const chain of params.chains as string[] ?? []) {
-        chains.value.push(chain);
-        showChains[chain] = false;
+        const chainToShow = (chain === "") ? "Remaining" : chain;
+        showChains[chainToShow] = true;
+        chains.value.push(chainToShow);
     }
 });
 
-watch([enableProteinStructure, showChains, selectorKind, atomsSelector], () => {
+watch([enableBackbone, showChains, selectorKind, atomsSelector], () => {
 
     const selectedChains: string[] = [];
-    for(const key in showChains) if(showChains[key]) selectedChains.push(key);
-
+    for(const key in showChains) {
+        if(showChains[key]) selectedChains.push(key === "Remaining" ? "" : key);
+    }
     sendToNode(id, "compute", {
-        enableProteinStructure: enableProteinStructure.value!,
+        enableStructureBackbone: enableBackbone.value!,
         selectedChains,
         selectorKind: selectorKind.value,
         atomsSelector: atomsSelector.value,
@@ -86,11 +89,11 @@ receiveFromNode(id, "positions", (params: CtrlParams) => {
     coordinates = params.coordinates as number[] ?? [];
     chainStart = params.chainStart as number[] ?? [];
 
-    renderer.drawChains(coordinates, chainStart, radius.value, enableProteinStructure.value);
+    renderer.drawChains(coordinates, chainStart, radius.value, enableBackbone.value);
 });
 
-watch([radius, enableProteinStructure], () => {
-    renderer.drawChains(coordinates, chainStart, radius.value, enableProteinStructure.value);
+watch([radius, enableBackbone], () => {
+    renderer.drawChains(coordinates, chainStart, radius.value, enableBackbone.value);
 });
 
 // > Template
@@ -100,14 +103,14 @@ watch([radius, enableProteinStructure], () => {
 <template>
 <v-container class="container">
 
-  <v-switch v-model="enableProteinStructure"
-            label="Show protein structure" class="my-4 ml-2" />
+  <v-switch v-model="enableBackbone"
+            label="Show backbone" class="my-4 ml-2" />
   <g-atoms-selector v-model:kind="selectorKind" v-model:selector="atomsSelector"
-                    :disabled="!enableProteinStructure" class="ml-1 mb-6"
-                    title="Select chain atoms by" placeholder="Chain atoms selector" />
-  <v-label v-if="chains.length > 0" class="ml-1 no-select">Show chain:</v-label>
+                    :disabled="!enableBackbone" class="ml-1 mb-6"
+                    title="Select backbone atoms by" placeholder="Atoms selectors" />
+  <v-label v-if="chains.length > 0" class="ml-1 no-select">Select backbone segment:</v-label>
   <v-switch v-for="chain of chains" :key="chain" v-model="showChains[chain]"
-            :disabled="!enableProteinStructure" :label="chain" class="ml-6" />
+            :disabled="!enableBackbone" :label="chain" class="ml-6" />
   <g-slider-with-steppers v-model="radius" class="mt-2"
                           v-model:raw="showRadius" label-width="6rem"
                           :label="`Radius (${showRadius.toFixed(1)})`"

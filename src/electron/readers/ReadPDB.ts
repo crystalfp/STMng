@@ -124,10 +124,6 @@ export class ReaderPDB implements ReaderImplementation {
 					bonds: [],
 					volume: [],
 					extra: {id: currentStructure+2},
-					residues: {
-						chains: [],
-						atoms: []
-					}
 				};
 				structures.push(structure);
 				++currentStructure;
@@ -177,20 +173,19 @@ export class ReaderPDB implements ReaderImplementation {
 						const y = fixedWidthFloat(line, 38, 8);
 						const z = fixedWidthFloat(line, 46, 8);
 
-						const {atoms, residues} = structures[currentStructure];
+						const {atoms} = structures[currentStructure];
 
 						const atom: Atom = {
 							atomZ,
 							label,
+							chain: fixedWidthStringSpaceTrimmed(line, 21, 1),
 							position: [x, y, z]
 						};
 						atoms.push(atom);
 
-						const residueName = fixedWidthStringSpaceTrimmed(line, 17, 3);
-						let chainName = fixedWidthStringSpaceTrimmed(line, 21, 1);
-						if(chainName === "") chainName = "X";
-						if(!residues!.chains.includes(chainName)) residues!.chains.push(chainName);
-						residues!.atoms.push({residue: residueName, chain: chainName});
+						// const residueName = fixedWidthStringSpaceTrimmed(line, 17, 3);
+						// if(!residues!.chains.includes(chainName)) residues!.chains.push(chainName);
+						// residues!.atoms.push({residue: residueName, chain: chainName});
 
 						snMap.set(sn, atomIdx);
 						++atomIdx;

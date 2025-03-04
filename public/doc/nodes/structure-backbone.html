@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng draw-trajectories node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2025-03-04"/>
+  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Structure backbone</title>
+</head>
+
+<body>
+<h1 class="title">Structure backbone</h1>
+<h1 class="subh1">Draw a backbone tube</h1>
+
+<div class="description">
+<p>Draw a backbone tube passing through given atoms and optionally pertains to a specific chain.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Show backbone</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Made backbone one or more chains visible.</td>
+</tr>
+</tr>
+	<td class="c1">Select backbone atoms by</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select the backbone atoms by one of the following items.
+  <dl>
+  <dt>Symbol</dt>
+  <dd>The atom type symbol.</dd>
+  <dt>Label</dt>
+  <dd>The atom label eventually present in the input structure. Note: for proteins the atoms are usually the ones with label "CA".</dd>
+  <dt>Index</dt>
+  <dd>Index of the atom inside the structure. The index starts from zero.</dd>
+  <dt>All</dt>
+  <dd>Select all atoms.</dd>
+  </dl>
+</td>
+</tr>
+<tr>
+	<td class="c1">Backbone atoms selector</td>
+	<td class="c2">text</td>
+	<td class="c3">Space separated list of atoms selectors.</td>
+</tr>
+<tr>
+	<td class="c1">Select backbone segment</td>
+	<td class="c2">list of toggles</td>
+	<td class="c3">One toggle per backbone segment. This control is not present if the input structure has none or zero segments or chains defined.</td>
+</tr>
+<tr>
+	<td class="c1">Radius</td>
+	<td class="c2">slider</td>
+	<td class="c3">Radius of the backbone tube.</td>
+</tr>
+</table>
+
+<h2>Development</h2>
+<table cellpadding="2" cellspacing="2">
+<tr><td class="c1">Node type ID:</td><td>structure-backbone</td></tr>
+<tr><td class="c1">Input type:</td><td>Structure</td></tr>
+<tr><td class="c1">Output type:</td><td>—</td></tr>
+<tr><td class="c1">Adds 3D objects to scene:</td><td>Yes</td></tr>
+</table>
+
+<p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
+
+</body>
+
+</html>

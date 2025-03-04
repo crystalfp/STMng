@@ -29,6 +29,9 @@ export interface Atom {
     /** Label for the atom */
     label: string;
 
+    /** Chain indicator for protein structure (or a generic group indicator). Empty string if none */
+    chain: string;
+
     /** Absolute coordinates of the atom (in Å) [x, y, z] */
     position: PositionType;
 }
@@ -79,19 +82,6 @@ export interface Extra {
     energy?: number;
 }
 
-/** Protein structure data */
-export interface Residues {
-
-    /** Name of the chains present in the PDB file */
-    chains: string[];
-
-    /** For each atom the residue and the chain it pertains to */
-    atoms: {
-        residue: string;
-        chain: string;
-    }[];
-}
-
 /** The whole atomic structure */
 export interface Structure {
 
@@ -109,9 +99,6 @@ export interface Structure {
 
     /** Per structure data */
     extra:      Extra;
-
-    /** Optional data for the primary structure */
-    residues?: Residues;
 }
 
 /**
