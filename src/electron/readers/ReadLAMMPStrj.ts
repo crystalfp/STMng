@@ -73,6 +73,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					case "TIMESTEP":
 						currentStructure = new EmptyStructure();
 						structures.push(currentStructure);
+						currentStructure.extra.step = structures.length;
 						lineType = LineType.step;
 						break;
 					case "NUMBER":

@@ -65,6 +65,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					if(line.trim() === "") break;
 					structures.push(new EmptyStructure());
 					++currentStructure;
+					structures[currentStructure].extra.step = currentStructure + 1;
 					scaleFactor = Number.parseFloat(line);
 					lineType = LineType.basis;
 					break;

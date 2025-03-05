@@ -123,7 +123,7 @@ export class ReaderPDB implements ReaderImplementation {
 					atoms: [],
 					bonds: [],
 					volume: [],
-					extra: {id: currentStructure+2},
+					extra: {step: currentStructure+2},
 				};
 				structures.push(structure);
 				++currentStructure;

@@ -36,6 +36,7 @@ export class ReaderXYZ implements ReaderImplementation {
 				++step;
 				structures.push(new EmptyStructure());
 				atoms = structures[step].atoms;
+				structures[step].extra.step = step+1;
 			}
 			else if(commentLine) {
 				commentLine = false;

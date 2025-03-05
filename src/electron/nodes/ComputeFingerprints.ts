@@ -369,7 +369,7 @@ export class ComputeFingerprints extends NodeCore {
 		let idx = 0;
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 			if(structure.enabled) {
-				ids.push(structure.id);
+				ids.push(structure.step);
 				mappedPoints.push(points[idx]);
 			}
 			++idx;
@@ -563,7 +563,7 @@ export class ComputeFingerprints extends NodeCore {
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
 					if(structure.enabled) {
 						++fpCount;
-						ids.push(structure.id);
+						ids.push(structure.step);
 					}
 				}
 
@@ -611,7 +611,7 @@ export class ComputeFingerprints extends NodeCore {
 
 				const ids: number[] = [];
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(structure.enabled) ids.push(structure.id);
+					if(structure.enabled) ids.push(structure.step);
 				}
 
 				chartData.distances = methodDistances(this.dist.getDistanceMatrix(),
@@ -667,7 +667,7 @@ export class ComputeFingerprints extends NodeCore {
 		if(selectedPoints.length > 0) {
 			let idx = 0;
 			for(const structure of this.accumulator.iterateSelectedStructures()) {
-				if(selectedPoints.includes(idx)) steps.push(structure.id);
+				if(selectedPoints.includes(idx)) steps.push(structure.step);
 				++idx;
 			}
 		}
@@ -699,7 +699,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	convertAccumulatedStructure(structure: StructureReduced): Structure {
 
-		const {atomsZ, atomsPosition, basis, id} = structure;
+		const {atomsZ, atomsPosition, basis, step} = structure;
 		const natoms = atomsZ.length;
 		const atoms: Atom[] = [];
 		for(let i=0; i < natoms; ++i) {
@@ -725,7 +725,7 @@ export class ComputeFingerprints extends NodeCore {
 			atoms,
 			bonds: [],
 			volume: [],
-			extra: {id}
+			extra: {step}
 		};
 	}
 
@@ -1212,7 +1212,7 @@ export class ComputeFingerprints extends NodeCore {
 				const updatedSelectedPoints: number[] = [];
 				let idx = 0;
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(updatedStepsSelection.includes(structure.id)) {
+					if(updatedStepsSelection.includes(structure.step)) {
 						updatedSelectedPoints.push(idx);
 					}
 					++idx;

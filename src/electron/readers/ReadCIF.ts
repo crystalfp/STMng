@@ -71,7 +71,7 @@ class Table {
 	 * The key is normalized converting "." to "_"
 	 *
 	 * @param header - Column to be extracted
-	 * @returns The column as array of strings. If the colum does not exist return empty array.
+	 * @returns The column as array of strings. If the column does not exist return empty array.
 	 */
 	getColumn(header: string): string[] {
 		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
@@ -179,6 +179,7 @@ export class ReaderCIF implements ReaderImplementation {
 				if(this.step < 0 || this.structures[this.step].atoms.length > 0) {
 					++this.step;
 					this.structures.push(new EmptyStructure());
+					this.structures[this.step].extra.step = this.step+1;
 				}
 				basisSides  = [0, 0, 0];
 				basisAngles = [0, 0, 0];
@@ -267,6 +268,7 @@ export class ReaderCIF implements ReaderImplementation {
 			const fracY  = this.tbl.getColumn("_atom_site_fract_y");
 			const fracZ  = this.tbl.getColumn("_atom_site_fract_z");
 			const label  = this.tbl.getColumn("_atom_site_label");
+			const chain  = this.tbl.getColumn("_atom_site_label_asym_id");
 			const symbol = this.tbl.getColumn("_atom_site_type_symbol");
 			const hasSymbol = symbol.length > 0;
 
@@ -279,7 +281,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: label.length > 0 ? label[i] : symbol[i],
-					chain: "",
+					chain: chain[i],
 					position: fractionalToCartesianCoordinates(this.structures[this.step].crystal.basis,
 															   fx, fy, fz)
 				};
@@ -297,6 +299,7 @@ export class ReaderCIF implements ReaderImplementation {
 			const cartnY   = this.tbl.getColumn("_atom_site_cartn_y");
 			const cartnZ   = this.tbl.getColumn("_atom_site_cartn_z");
 			const label    = this.tbl.getColumn("_atom_site_label_atom_id");
+			const chain    = this.tbl.getColumn("_atom_site_label_asym_id");
 			const atomType = this.tbl.getColumn("_atom_site_type_symbol");
 			const hasAtomType = atomType.length > 0;
 			const natoms = cartnX.length;
@@ -308,7 +311,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const atom: Atom = {
 					atomZ: getAtomicNumber(symbol),
 					label: label[i],
-					chain: "",
+					chain: chain[i],
 					position: [x, y, z]
 				};
 				this.structures[this.step].atoms.push(atom);

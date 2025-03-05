@@ -13,7 +13,7 @@ import type {Structure, BasisType} from "@/types";
 export interface StructureReduced {
 
 	/** Index of the structure in the input full set of structures (not selected) */
-	id: number;
+	step: number;
 
 	/** Unit cell basis vectors */
 	basis: BasisType;
@@ -108,7 +108,7 @@ export class FingerprintsAccumulator {
 		// Load the structure clone
 		const entry: StructureReduced = {
 
-			id: extra.id,
+			step: extra.step,
 
 			basis: [
 				basis[0], basis[1], basis[2],
@@ -165,10 +165,10 @@ export class FingerprintsAccumulator {
 		this.accumulator.push(entry);
 
 		// Initialize the mapping between selected structure index and loaded index
-		this.idx2id.set(entry.id, entry.id);
+		this.idx2id.set(entry.step, entry.step);
 
 		// Put it in the list of selected structures
-		this.selectedSteps.push(entry.id);
+		this.selectedSteps.push(entry.step);
 
 		return this.areNanoclusters;
 	}
@@ -237,8 +237,8 @@ export class FingerprintsAccumulator {
 			for(const structure of this.accumulator) {
 				structure.selected = true;
 				structure.selectedIdx = idx++;
-				this.idx2id.set(structure.id, structure.id);
-				this.selectedSteps.push(structure.id);
+				this.idx2id.set(structure.step, structure.step);
+				this.selectedSteps.push(structure.step);
 			}
 			this.countSelected = this.accumulator.length;
 			return {
@@ -271,7 +271,7 @@ export class FingerprintsAccumulator {
 				this.accumulator[i].selected = true;
 				this.accumulator[i].selectedIdx = j;
 				this.idx2id.set(j++, i);
-				this.selectedSteps.push(this.accumulator[i].id);
+				this.selectedSteps.push(this.accumulator[i].step);
 
 			}
 			else this.accumulator[i].selected = false;
@@ -501,7 +501,7 @@ export class FingerprintsAccumulator {
 	getStructureByStep(step: number): StructureReduced | undefined {
 
 		for(const entry of this.accumulator) {
-			if(entry.selected && entry.id === step) return entry;
+			if(entry.selected && entry.step === step) return entry;
 		}
 		return undefined;
 	}

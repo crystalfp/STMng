@@ -76,7 +76,7 @@ export interface Volume {
 export interface Extra {
 
     /** Step index that identifies the structure in a sequence (one based) */
-    id: number;
+    step: number;
 
     /** Structure energy or enthalpy */
     energy?: number;

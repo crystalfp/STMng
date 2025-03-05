@@ -19,5 +19,5 @@ export class EmptyStructure implements Structure {
 	public atoms: Atom[] = [];
 	public bonds: Bond[] = [];
 	public volume: Volume[] = [];
-	public extra: Extra = {id: 1};
+	public extra: Extra = {step: 1};
 }

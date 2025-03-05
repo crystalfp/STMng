@@ -203,7 +203,7 @@ export class StructureReader extends NodeCore {
 		this.structures = await this.reader.readStructure(filename, readerOptions);
 
 		// Set structure id
-		for(let id=0; id < this.structures.length; ++id) this.structures[id].extra.id = id+1;
+		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
 
 		// Clean and check the structure list
 		this.removeEmptyStructures(this.structures);
@@ -503,7 +503,7 @@ export class StructureReader extends NodeCore {
 		this.structures = await this.reader!.readStructure(this.fileToRead, {readHydrogen: this.readHydrogen});
 
 		// Set structure id
-		for(let id=0; id < this.structures.length; ++id) this.structures[id].extra.id = id+1;
+		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
 
 		// Send the updated structure down the pipeline
 		this.toNextNode(this.structures[this.step-1]);

@@ -176,17 +176,17 @@ export const methodEnergyDistance = (energies: number[],
  * @returns Array of order parameter per structure
  */
 export const methodOrder = (accumulator: FingerprintsAccumulator,
-							binWidth: number): [id: number, order: number][]  => {
+							binWidth: number): [step: number, order: number][]  => {
 
 	const sectionsInfo = accumulator.getSectionsInfo();
 	const countSections = sectionsInfo.count;
-	const order: [id: number, order: number][] = [];
+	const order: [step: number, order: number][] = [];
 
 	if(countSections === 1) {
 
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-			const {basis, fingerprint, id, enabled} = structure;
+			const {basis, fingerprint, step, enabled} = structure;
 
 			if(!enabled) continue;
 
@@ -196,7 +196,7 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 			// Compute the degree of order
 			let op = 0;
 			for(let j=0; j < sectionsInfo.length; ++j) op += fingerprint[j]*fingerprint[j];
-			order.push([id, binWidth*op/R0]);
+			order.push([step, binWidth*op/R0]);
 		}
 	}
 	else {
@@ -205,7 +205,7 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-			const {basis, fingerprint, weights, id, enabled} = structure;
+			const {basis, fingerprint, weights, step, enabled} = structure;
 
 			if(!enabled) continue;
 
@@ -227,7 +227,7 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 				degreeOfOrder += binWidth*op/R0*weights[section];
 			}
 
-			order.push([id, degreeOfOrder]);
+			order.push([step, degreeOfOrder]);
 		}
 	}
 
@@ -246,9 +246,9 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 export const methodDistances = (distanceMatrix: DistanceMatrix,
 								steps: number[],
 								enabled: boolean[],
-								row: number): [id: number, order: number][]  => {
+								row: number): [step: number, order: number][]  => {
 
-	const distances: [id: number, order: number][] = [];
+	const distances: [step: number, order: number][] = [];
 	for(let col=0; col < distanceMatrix.matrixSize(); ++col) {
 		if(enabled[col]) {
 			distances.push([steps[col], distanceMatrix.get(row, col)]);

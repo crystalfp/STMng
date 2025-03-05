@@ -71,6 +71,8 @@ export class ReaderPOSCAR implements ReaderImplementation {
 					}
 					structures.push(new EmptyStructure());
 					++currentStep;
+					structures[currentStep].extra.step = currentStep+1;
+
 					scaleFactor = Number.parseFloat(fields[0]);
 					if(scaleFactor === 0) {
 						lineType = LineType.exit;
