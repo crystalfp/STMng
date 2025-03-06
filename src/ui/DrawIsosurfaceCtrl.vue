@@ -83,7 +83,7 @@ receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
     }
 
     // Draw isosurfaces
-    renderer.drawIsosurfaces(indices, vertices, normals, isoValues, opacity.value, showIsosurface.value!);
+    renderer.drawIsosurfaces(indices, vertices, normals, isoValues, opacity.value, showIsosurface.value);
 });
 
 watch([limitColormap, colormapName, limits, valueMin, valueMax], () => {
@@ -103,7 +103,7 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
     sendToNode(id, "change", {
 
         dataset: dataset.value,
-        nestedIsosurfaces: nestedIsosurfaces.value!,
+        nestedIsosurfaces: nestedIsosurfaces.value,
         countIsosurfaces: countIsosurfaces.value,
         limitLow: limits.value[0],
         limitHigh: limits.value[1],
@@ -116,13 +116,13 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
 watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 
     sendToNode(id, "show", {
-        showIsosurface: showIsosurface.value!,
-        limitColormap: limitColormap.value!,
+        showIsosurface: showIsosurface.value,
+        limitColormap: limitColormap.value,
         colormapName: colormapName.value,
         opacity: opacity.value
     });
 
-    renderer.changeRendering(showIsosurface.value!, opacity.value);
+    renderer.changeRendering(showIsosurface.value, opacity.value);
 });
 
 </script>

@@ -51,14 +51,14 @@ const renderer = new DrawPolyhedraRenderer(id);
 watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () => {
 
     sendToNode(id, "look", {
-        showPolyhedra: showPolyhedra.value!,
+        showPolyhedra: showPolyhedra.value,
         color: surfaceColor.value,
-        colorByCenterAtom: colorByCenterAtom.value!,
+        colorByCenterAtom: colorByCenterAtom.value,
         opacityByCenterAtom: opacityByCenterAtom.value
     });
 
     // If only visibility changes
-    if(renderer.changeVisibility(showPolyhedra.value!)) return;
+    if(renderer.changeVisibility(showPolyhedra.value)) return;
 
     // Change material
     if(colorByCenterAtom.value) {
@@ -69,7 +69,7 @@ watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () 
     }
 
     // Redraw polyhedron
-    renderer.drawPolyhedra(colorByCenterAtom.value!, showPolyhedra.value!);
+    renderer.drawPolyhedra(colorByCenterAtom.value, showPolyhedra.value);
 });
 
 watch([labelKind, atomsSelector], () => {
@@ -88,7 +88,7 @@ receivePolyhedraFromNode(id, "vertices",
     renderer.formatPolyhedraData(vertices, centerAtomsColor);
 
     // Render the polyhedron
-    renderer.drawPolyhedra(colorByCenterAtom.value!, showPolyhedra.value!);
+    renderer.drawPolyhedra(colorByCenterAtom.value, showPolyhedra.value);
 });
 
 </script>

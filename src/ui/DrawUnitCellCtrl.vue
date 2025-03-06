@@ -44,7 +44,7 @@ const showRepetitionsC = ref(1);
 const percentA = ref(0);
 const percentB = ref(0);
 const percentC = ref(0);
-const shrink   = ref(true);
+const shrink   = ref(false);
 
 const showPercentA = ref(0);
 const showPercentB = ref(0);
@@ -77,7 +77,7 @@ askNode(id, "init")
         percentA.value = params.percentA as number ?? 0;
         percentB.value = params.percentB as number ?? 0;
         percentC.value = params.percentC as number ?? 0;
-        shrink.value = params.shrink as boolean ?? true;
+        shrink.value = params.shrink as boolean ?? false;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
@@ -87,19 +87,19 @@ const renderer = new DrawUnitCellRenderer(id);
 // Render the unit cell
 receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
 
-    renderer.drawCell(vertices, lineColor.value, dashedLine.value!, showUnitCell.value!, false);
+    renderer.drawCell(vertices, lineColor.value, dashedLine.value, showUnitCell.value, false);
 });
 
 // Render the supercell
 receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
 
-    renderer.drawCell(vertices, supercellColor.value, dashedSupercell.value!, showSupercell.value!, true);
+    renderer.drawCell(vertices, supercellColor.value, dashedSupercell.value, showSupercell.value, true);
 });
 
 // Render the basis vectors
 receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
 
-	renderer.drawBasisVectors(vertices, showBasisVectors.value!);
+	renderer.drawBasisVectors(vertices, showBasisVectors.value);
 });
 
 /**
@@ -119,12 +119,12 @@ const resetSliders = (): void => {
 
 watch([showUnitCell, showSupercell, showBasisVectors], () => {
 
-    renderer.setVisibility(showUnitCell.value!, showSupercell.value!, showBasisVectors.value!);
+    renderer.setVisibility(showUnitCell.value, showSupercell.value, showBasisVectors.value);
 
     sendToNode(id, "visible", {
-        showUnitCell: showUnitCell.value!,
-        showSupercell: showSupercell.value!,
-        showBasisVectors: showBasisVectors.value!
+        showUnitCell: showUnitCell.value,
+        showSupercell: showSupercell.value,
+        showBasisVectors: showBasisVectors.value
     });
 });
 
@@ -140,14 +140,14 @@ watch([repetitionsA, repetitionsB, repetitionsC], () => {
 
 watch([dashedLine, lineColor, dashedSupercell, supercellColor], () => {
 
-    renderer.changeMaterials(lineColor.value, dashedLine.value!,
-                             supercellColor.value, dashedSupercell.value!);
+    renderer.changeMaterials(lineColor.value, dashedLine.value,
+                             supercellColor.value, dashedSupercell.value);
 
     sendToNode(id, "appear", {
-		dashedLine: dashedLine.value!,
+		dashedLine: dashedLine.value,
 		lineColor: lineColor.value,
         supercellColor: supercellColor.value,
-        dashedSupercell: dashedSupercell.value!,
+        dashedSupercell: dashedSupercell.value,
    });
 });
 
@@ -157,9 +157,25 @@ watch([percentA, percentB, percentC, shrink], () => {
         percentA: percentA.value,
         percentB: percentB.value,
         percentC: percentC.value,
-        shrink: shrink.value!
+        shrink: shrink.value
     });
 });
+
+/**
+ * Reset shift sliders to default values
+ */
+const resetShift = (): void => {
+
+    percentA.value = 0;
+    percentB.value = 0;
+    percentC.value = 0;
+    shrink.value = false;
+};
+
+/**
+ * Check if there is no shift
+ */
+const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && percentC.value === 0;
 
 </script>
 
@@ -191,14 +207,17 @@ watch([percentA, percentB, percentC, shrink], () => {
   <v-label class="separator-title">Shift origin</v-label>
   <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
-                          :min="0" :max="50" :step="1" />
+                          :min="-50" :max="50" :step="1" />
   <g-slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
                           :label="`Along b (${showPercentB}%)`" label-width="7.2rem"
-                          :min="0" :max="50" :step="1" />
+                          :min="-50" :max="50" :step="1" />
   <g-slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
-                          :min="0" :max="50" :step="1" />
+                          :min="-50" :max="50" :step="1" />
   <v-switch v-model="shrink" label="Shrink cell" class="ml-4 my-2" />
+  <v-btn block :disabled="noShift()" class="mt-2 mb-4" @click="resetShift">
+    Reset
+  </v-btn>
 
 </v-container>
 </template>

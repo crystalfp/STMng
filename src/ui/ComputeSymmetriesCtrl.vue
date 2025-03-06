@@ -71,14 +71,14 @@ watch([applyInputSymmetries,
        standardizeOnly], () => {
 
     askNode(id, "compute", {
-        applyInputSymmetries: applyInputSymmetries.value!,
-        enableFindSymmetries: enableFindSymmetries.value!,
-        standardizeCell: standardizeCell.value!,
+        applyInputSymmetries: applyInputSymmetries.value,
+        enableFindSymmetries: enableFindSymmetries.value,
+        standardizeCell: standardizeCell.value,
         symprecStandardize: symprecStandardize.value,
         symprecDataset: symprecDataset.value,
-        fillUnitCell: fillUnitCell.value!,
+        fillUnitCell: fillUnitCell.value,
         fillTolerance: fillTolerance.value,
-        standardizeOnly: standardizeOnly.value!
+        standardizeOnly: standardizeOnly.value
     })
     .then((params) => {
         computedSpaceGroup.value = params.computedSpaceGroup as string ?? "";

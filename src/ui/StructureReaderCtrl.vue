@@ -165,9 +165,9 @@ watch([running], async () => {
 watch([loopSteps, stepIncrement, stepBackward, speed], () => {
 
     sendToNode(id, "step-ctrl", {
-        loopSteps: loopSteps.value!,
+        loopSteps: loopSteps.value,
         stepIncrement: stepIncrement.value,
-        stepBackward: stepBackward.value!,
+        stepBackward: stepBackward.value,
         speed: speed.value
     });
 });
@@ -239,14 +239,14 @@ const getAtomsTypes = (): void => {
  */
 const setUseBohr = (): void => {
 
-    sendToNode(id, "bohr", {useBohr: useBohr.value!});
+    sendToNode(id, "bohr", {useBohr: useBohr.value});
 };
 /**
  * On change of the measurement unit
  */
 const setReadHydrogen = (): void => {
 
-    sendToNode(id, "hydrogen", {readHydrogen: readHydrogen.value!});
+    sendToNode(id, "hydrogen", {readHydrogen: readHydrogen.value});
 };
 
 // > Load structure file
@@ -265,7 +265,7 @@ const selectedFile = (filename: string): void => {
             format: format.value,
             fileToRead: filename,
             atomsTypes: atomsTypes.value,
-            useBohr: useBohr.value!,
+            useBohr: useBohr.value,
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);

@@ -96,9 +96,9 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
         maxBondingDistance:  maxBondingDistance.value,
         maxHBondingDistance: maxHBondingDistance.value,
         maxHValenceAngle:    maxHValenceAngle.value,
-        enableComputeBonds:  enableComputeBonds.value!,
+        enableComputeBonds:  enableComputeBonds.value,
         bondScale:           bondScale.value,
-        perPairScale:        perPairScale.value!,
+        perPairScale:        perPairScale.value,
         perPairData:         JSON.stringify(perPairData.value),
         enlargementKind:     enlargementKind.value
     });

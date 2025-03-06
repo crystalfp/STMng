@@ -56,9 +56,9 @@ watch([wavelengthCode, wavelengthNumeric, theta, scaled], () => {
         wavelengthNumeric: wavelengthNumeric.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
-        scaled: scaled.value!,
+        scaled: scaled.value,
         width: width.value,
-        showHKL: showHKL.value!
+        showHKL: showHKL.value
     });
 }, {deep: true});
 
@@ -67,7 +67,7 @@ watch([width, showHKL], () => {
 
     sendToNode(id, "show", {
         width: width.value,
-        showHKL: showHKL.value!
+        showHKL: showHKL.value
     });
 });
 
@@ -86,9 +86,9 @@ const openChartWindow = (): void => {
         wavelengthNumeric: wavelengthNumeric.value,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
-        scaled: scaled.value!,
+        scaled: scaled.value,
         width: width.value,
-        showHKL: showHKL.value!
+        showHKL: showHKL.value
     });
 };
 

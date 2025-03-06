@@ -59,7 +59,7 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 
     renderInfo = updatedRenderInfo;
     renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
-    renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value!);
+    renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value);
     renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
 });
 
@@ -67,13 +67,13 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 watch([labelKind, drawKind, shadedBonds], () => {
 
     if(renderInfo) {
-        renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value!);
+        renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value);
         renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
     }
     sendToNode(id, "save", {
         labelKind: labelKind.value,
         drawKind: drawKind.value,
-        shadedBonds: shadedBonds.value!
+        shadedBonds: shadedBonds.value
     });
 });
 

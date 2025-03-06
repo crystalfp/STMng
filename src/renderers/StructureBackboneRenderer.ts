@@ -7,14 +7,16 @@
  * @since 2025-03-03
  */
 import {Group, CatmullRomCurve3, Vector3, TubeGeometry, Mesh,
-		MeshStandardMaterial, DoubleSide, IcosahedronGeometry, Color} from "three";
+		MeshStandardMaterial, DoubleSide, IcosahedronGeometry} from "three";
 import {sm} from "@/services/SceneManager";
 
 export class StructureBackboneRenderer {
 
 	private readonly name;
 	private readonly group = new Group();
-	private readonly colors: Color[] = [new Color(0x00FF00), new Color(0x0000FF), new Color(0xFF0000)];
+	// private readonly colors: Color[] = [new Color(0x00FF00), new Color(0x0000FF), new Color(0xFF0000)];
+	private readonly colors: string[] = ["#1b9e77", "#d95f02", "#7570b3",
+										 "#e7298a", "#66a61e", "#e6ab02", "#a6761d"];
 
 	constructor(id: string) {
 

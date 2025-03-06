@@ -184,8 +184,8 @@ const resetAccumulator = (): void => {
 watch([fingerprintsAccumulate], () => {
 
     askNode(id, "capture", {
-        fingerprintsAccumulate: controlStore.fingerprintsAccumulate!,
-        areNanoclusters: areNanoclusters.value!
+        fingerprintsAccumulate: controlStore.fingerprintsAccumulate,
+        areNanoclusters: areNanoclusters.value
     })
     .then((params) => {
         setTimeout(() => {
@@ -211,8 +211,8 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
 
     askNode(id, "energy", {
 
-        enableEnergyFiltering: enableEnergyFiltering.value!,
-        thresholdFromMinimum: thresholdFromMinimum.value!,
+        enableEnergyFiltering: enableEnergyFiltering.value,
+        thresholdFromMinimum: thresholdFromMinimum.value,
         energyThreshold: energyThreshold.value,
     })
     .then((params: CtrlParams) => {
@@ -229,7 +229,7 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
 watch([forceCutoff, manualCutoffDistance], () => {
 
     askNode(id, "cutoff", {
-        forceCutoff: forceCutoff.value!,
+        forceCutoff: forceCutoff.value,
         manualCutoffDistance: manualCutoffDistance.value,
     })
     .then((params: CtrlParams) => {
@@ -283,8 +283,8 @@ const computeFingerprints = (): void => {
         binSize: binSize.value,
         peakWidth: peakWidth.value,
         distanceMethod: distanceMethod.value,
-        fixTriangleInequality: fixTriangleInequality.value!,
-        removeDuplicates: removeDuplicates.value!,
+        fixTriangleInequality: fixTriangleInequality.value,
+        removeDuplicates: removeDuplicates.value,
         duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {
@@ -308,8 +308,8 @@ watch([distanceMethod, fixTriangleInequality], () => {
 
     askNode(id, "dist", {
         distanceMethod: distanceMethod.value,
-        fixTriangleInequality: fixTriangleInequality.value!,
-        removeDuplicates: removeDuplicates.value!,
+        fixTriangleInequality: fixTriangleInequality.value,
+        removeDuplicates: removeDuplicates.value,
         duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {
@@ -325,7 +325,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
 watch([removeDuplicates, duplicatesThreshold], () => {
 
   askNode(id, "duplicates", {
-        removeDuplicates: removeDuplicates.value!,
+        removeDuplicates: removeDuplicates.value,
         duplicatesThreshold: duplicatesThreshold.value
     })
     .then((params: CtrlParams) => {

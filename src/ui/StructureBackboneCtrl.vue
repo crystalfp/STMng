@@ -63,7 +63,7 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     chains.value.length = 0;
     for(const chain of params.chains as string[] ?? []) {
         const chainToShow = (chain === "") ? "Remaining" : chain;
-        showChains[chainToShow] = true;
+        showChains[chainToShow] = false;
         chains.value.push(chainToShow);
     }
 });
@@ -72,10 +72,10 @@ watch([enableBackbone, showChains, selectorKind, atomsSelector], () => {
 
     const selectedChains: string[] = [];
     for(const key in showChains) {
-        if(showChains[key]) selectedChains.push(key === "Remaining" ? "" : key);
+        if(showChains[key]) selectedChains.push(key.startsWith("Remaining") ? "" : key);
     }
     sendToNode(id, "compute", {
-        enableStructureBackbone: enableBackbone.value!,
+        enableStructureBackbone: enableBackbone.value,
         selectedChains,
         selectorKind: selectorKind.value,
         atomsSelector: atomsSelector.value,
@@ -96,6 +96,17 @@ watch([radius, enableBackbone], () => {
     renderer.drawChains(coordinates, chainStart, radius.value, enableBackbone.value);
 });
 
+/**
+ * Select or deselect all switches
+ *
+ * @param select - If true set all switches to on, otherwise to off
+ */
+const selectDeselect = (select: boolean): void => {
+    for(const key in showChains) {
+        showChains[key] = select;
+    }
+};
+
 // > Template
 </script>
 
@@ -111,7 +122,15 @@ watch([radius, enableBackbone], () => {
   <v-label v-if="chains.length > 0" class="ml-1 no-select">Select backbone segment:</v-label>
   <v-switch v-for="chain of chains" :key="chain" v-model="showChains[chain]"
             :disabled="!enableBackbone" :label="chain" class="ml-6" />
-  <g-slider-with-steppers v-model="radius" class="mt-2"
+  <v-row v-if="chains.length > 0" class="mt-2">
+    <v-col cols="6">
+      <v-btn block @click="selectDeselect(true)">Select All</v-btn>
+    </v-col>
+    <v-col cols="6">
+      <v-btn block @click="selectDeselect(false)">Deselect All</v-btn>
+    </v-col>
+  </v-row>
+  <g-slider-with-steppers v-model="radius" class="mt-4"
                           v-model:raw="showRadius" label-width="6rem"
                           :label="`Radius (${showRadius.toFixed(1)})`"
                           :min="0" :max="2" :step="0.1" />

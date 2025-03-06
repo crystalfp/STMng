@@ -25,7 +25,7 @@ export class DrawUnitCell extends NodeCore {
 	private percentA = 0;
 	private percentB = 0;
 	private percentC = 0;
-	private shrink = true;
+	private shrink = false;
 	private showUnitCell = true;
 	private dashedLine = false;
 	private showBasisVectors = false;
@@ -109,7 +109,7 @@ export class DrawUnitCell extends NodeCore {
 
 		const {crystal, atoms, extra} = this.inputStructure!;
 
-		return (this.percentA > 0 || this.percentB > 0 || this.percentC > 0) ?
+		return (this.percentA !== 0 || this.percentB !== 0 || this.percentC !== 0) ?
 			adjustOrigin(this.inputStructure!,
 						 this.percentA/100,
 						 this.percentB/100,
@@ -299,7 +299,7 @@ export class DrawUnitCell extends NodeCore {
         this.percentA = params.percentA as number ?? 0;
         this.percentB = params.percentB as number ?? 0;
         this.percentC = params.percentC as number ?? 0;
-        this.shrink = params.shrink as boolean ?? true;
+        this.shrink = params.shrink as boolean ?? false;
 	}
 
 	/**
@@ -468,7 +468,7 @@ export class DrawUnitCell extends NodeCore {
         this.percentA = params.percentA as number ?? 0;
         this.percentB = params.percentB as number ?? 0;
         this.percentC = params.percentC as number ?? 0;
-        this.shrink = params.shrink as boolean ?? true;
+        this.shrink = params.shrink as boolean ?? false;
 
 		if(!this.inputStructure) return;
 

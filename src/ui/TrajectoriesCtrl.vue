@@ -51,7 +51,7 @@ askNode(id, "init")
 
 // > Initialize graphical rendering
 const renderer = new TrajectoriesRenderer(id,
-                                          showTrajectories.value!,
+                                          showTrajectories.value,
                                           positionCloudsSize.value,
                                           positionCloudsColor.value);
 
@@ -108,7 +108,7 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
     renderer.changeCloudsVisibility(after[0]!);
 
     sendToNode(id, "cloud", {
-        showPositionClouds: showPositionClouds.value!,
+        showPositionClouds: showPositionClouds.value,
         positionCloudsSize: positionCloudsSize.value,
         positionCloudsColor: positionCloudsColor.value
     });
@@ -116,7 +116,7 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
 
 /** Receive a set of traces */
 receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): void => {
-    renderer.receiveTraces(segments, colors, showPositionClouds.value!);
+    renderer.receiveTraces(segments, colors, showPositionClouds.value);
 });
 
 /** Simplify label */

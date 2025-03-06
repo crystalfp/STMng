@@ -41,7 +41,7 @@ receiveFromNode(id, "countDatasets", (params: CtrlParams) => {
 
 watch([interpolateVolume, pointsToAdd, dataset], () => {
     sendToNode(id, "change", {
-        interpolateVolume: interpolateVolume.value!,
+        interpolateVolume: interpolateVolume.value,
         pointsToAdd: pointsToAdd.value,
         dataset: dataset.value,
     });
