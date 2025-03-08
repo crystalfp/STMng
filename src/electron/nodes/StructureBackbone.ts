@@ -1,5 +1,5 @@
 /**
- * Display primary structure of PDB data file.
+ * Display primary structure of data that contains eventually chain data per atom.
  *
  * @packageDocumentation
  *
@@ -26,7 +26,6 @@ export class StructureBackbone extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "compute", type: "send",   callback: this.channelCompute.bind(this)},
-		// {name: "window",  type: "send",   callback: this.channelWindow.bind(this)},
 	];
 
 	constructor(id: string) {
@@ -45,6 +44,8 @@ export class StructureBackbone extends NodeCore {
 			this.chains.add(atom.chain);
 		}
 		sendToClient(this.id, "chains", {chains: this.chains.size > 1 ? [...this.chains] : []});
+
+		this.computeBackbone();
 	}
 
 	// > Load/save status
@@ -66,35 +67,16 @@ export class StructureBackbone extends NodeCore {
 		this.radius = params.radius as number ?? 0.5;
 	}
 
-	// > Channel handlers
 	/**
-	 * Channel handler for UI initialization
-	 *
-	 * @returns Parameters to initialize the user interface
+	 * Compute backbone nodes and chain indices and send them to client
 	 */
-	private channelInit(): CtrlParams {
-
-		return {
-			enableStructureBackbone: this.enableStructureBackbone,
-			selectorKind: this.selectorKind,
-			atomsSelector: this.atomsSelector,
-			radius: this.radius,
-		};
-	}
-
-	private channelCompute(params: CtrlParams): void {
-
-        this.enableStructureBackbone = params.enableStructureBackbone as boolean ?? false;
-		this.selectedChains = params.selectedChains as string[] ?? [];
-        this.selectorKind = params.selectorKind as SelectorType ?? "label";
-        this.atomsSelector = params.atomsSelector as string ?? "";
-		this.radius = params.radius as number ?? 0.5;
+	private computeBackbone(): void {
 
 		// Nothing to do
 		if(!this.enableStructureBackbone ||
 			!this.inputStructure ||
 			(this.chains.size > 0 && this.selectedChains.length === 0) ||
-		   (this.atomsSelector === "" && this.selectorKind !== "all")) {
+		    (this.atomsSelector === "" && this.selectorKind !== "all")) {
 
 			sendToClient(this.id, "positions", {coordinates: [], chainStart: []});
 			return;
@@ -133,5 +115,37 @@ export class StructureBackbone extends NodeCore {
 			}
 		}
 		sendToClient(this.id, "positions", {coordinates, chainStart});
+	}
+
+	// > Channel handlers
+	/**
+	 * Channel handler for UI initialization
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelInit(): CtrlParams {
+
+		return {
+			enableStructureBackbone: this.enableStructureBackbone,
+			selectorKind: this.selectorKind,
+			atomsSelector: this.atomsSelector,
+			radius: this.radius,
+		};
+	}
+
+	/**
+	 * Channel handler for structure backbone parameters change
+	 *
+	 * @returns Computed symmetry
+	 */
+	private channelCompute(params: CtrlParams): void {
+
+        this.enableStructureBackbone = params.enableStructureBackbone as boolean ?? false;
+		this.selectedChains = params.selectedChains as string[] ?? [];
+        this.selectorKind = params.selectorKind as SelectorType ?? "label";
+        this.atomsSelector = params.atomsSelector as string ?? "";
+		this.radius = params.radius as number ?? 0.5;
+
+		this.computeBackbone();
 	}
 }

@@ -90,6 +90,7 @@ export class ReaderPDB implements ReaderImplementation {
 		let hasScale1 = false;
 		let hasScale2 = false;
 		let hasScaleAll = false;
+		let hasCryst1 = false;
 		const origin = [0, 0, 0];
 		const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		const snMap = new Map<number, number>();
@@ -113,6 +114,7 @@ export class ReaderPDB implements ReaderImplementation {
 			// Start a new structure
 			if(tryStartStep) {
 				tryStartStep = false;
+				hasCryst1 = false;
 				const structure: Structure = {
 
 					crystal: {
@@ -144,6 +146,7 @@ export class ReaderPDB implements ReaderImplementation {
 					const {basis} = structures[currentStructure].crystal;
 					for(let i=0; i < 9; ++i) basis[i] = matrix[i];
 					structures[currentStructure].crystal.spaceGroup = line.slice(55, 65).trim();
+					hasCryst1 = true;
 					break;
 				}
 
@@ -331,17 +334,20 @@ export class ReaderPDB implements ReaderImplementation {
 
 				if(hasScaleAll) {
 
-					const r = invertBasis(basis);
-
-					structures[currentStructure].crystal.origin = [
-						-(r[0]*origin[0]+r[1]*origin[1]+r[2]*origin[2]),
-						-(r[3]*origin[0]+r[4]*origin[1]+r[5]*origin[2]),
-						-(r[6]*origin[0]+r[7]*origin[1]+r[8]*origin[2])
-					];
-
-					const bb = structures[currentStructure].crystal.basis;
-					for(let i=0; i < 9; ++i) bb[i] = r[i];
 					hasScaleAll = false;
+					const r = invertBasis(basis);
+void origin;
+					// structures[currentStructure].crystal.origin = [
+					// 	-(r[0]*origin[0]+r[1]*origin[1]+r[2]*origin[2]),
+					// 	-(r[3]*origin[0]+r[4]*origin[1]+r[5]*origin[2]),
+					// 	-(r[6]*origin[0]+r[7]*origin[1]+r[8]*origin[2])
+					// ];
+// console.log("BASIS", r);
+// console.log("ORIGIN", structures[currentStructure].crystal.origin);
+					if(!hasCryst1) {
+						const bb = structures[currentStructure].crystal.basis;
+						for(let i=0; i < 9; ++i) bb[i] = r[i];
+					}
 				}
 				break;
 			}

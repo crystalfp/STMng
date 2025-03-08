@@ -8,7 +8,8 @@
  * @since 2024-07-05
  */
 
-import {ref, onMounted, computed, shallowRef, watch, onBeforeUnmount} from "vue";
+import {ref, onMounted, computed, shallowRef, watch} from "vue";
+import {VueDraggable, type SortableEvent} from "vue-draggable-plus";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
@@ -33,6 +34,23 @@ const selectedInput = ref("");
 const disableActions = ref(false);
 const allNodes = ref<{label: string; type: string}[]>([]);
 const projectModified = ref(false);
+
+/**
+ * An entry of the sortable lists
+ * @notExported
+ */
+interface SortableListEntry {
+    name: string;
+    id: string;
+    type: string;
+    isNew: boolean;
+}
+
+/** Sortable lists */
+const listLeft = ref<SortableListEntry[]>([]);
+const listRight: SortableListEntry[] = []; // Not a ref because it is immutable
+const removedIds: string[] = [];
+
 
 /**
  * Information about a node
@@ -274,38 +292,6 @@ const saveProject = (): void => {
     sendToNode("SYSTEM", "modified-project", {projectModified: JSON.stringify(graph)});
 };
 
-/**
- * Shift node position left or right
- *
- * @param event - Keyboard event
- */
-const shiftNode = (event: KeyboardEvent): void => {
-
-    // Activated only with ctrl+← or ctrl+→
-    if(!event.ctrlKey ||
-       (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
-
-    // Find the selected node
-    const nnodes = nodes.value.length;
-    let idxNodeSelected = -1;
-    for(let i=0; i < nnodes; ++i) {
-        if(nodes.value[i].selected) {
-            idxNodeSelected = i;
-            break;
-        }
-    }
-    if(idxNodeSelected === -1) return;
-    const node = nodes.value[idxNodeSelected];
-
-    // Cannot move viewer3d node or the reader node
-    if(node.graphics === "in" || node.id === "reader") return;
-
-    console.log("Push key", event.key, "on node", node.label);
-    console.log("+", graph[node.id].in);
-    event.preventDefault();
-    event.stopPropagation();
-};
-
 /** Receive the initial data and build the initial graph */
 onMounted(() => {
 
@@ -318,6 +304,9 @@ onMounted(() => {
         // Create the initial graph
         createGraph();
 
+        // The immutable list of available nodes
+        listRight.length = 0;
+
         // Get the list of possible nodes
         allNodes.value.length = 0;
         for(const entry of info.allNodes) {
@@ -326,18 +315,28 @@ onMounted(() => {
             const entryType = entry.type;
             const label = entryType[0].toUpperCase() + entryType.slice(1).replaceAll("-", " ");
             allNodes.value.push({label, type: entry.type});
+
+            // The list of available nodes
+            let prefixSequence = 1;
+            let id = entry.idPrefix + prefixSequence.toString();
+            while(id in graph) {
+                ++prefixSequence;
+                id = entry.idPrefix + prefixSequence.toString();
+            }
+
+            listRight.push({name: label, id, type: entry.type, isNew: true});
         }
         nodeToAdd.value = info.allNodes[0].type;
 
         allInfo.value = info.allNodes;
+
+        // Prepare the list of nodes
+        listLeft.value.length = 0;
+        for(const node in graph) {
+            listLeft.value.push({name: graph[node].label, id: node, type: graph[node].type, isNew: false});
+        }
+        removedIds.length = 0;
     });
-
-    document.addEventListener("keydown", shiftNode);
-});
-
-onBeforeUnmount(() => {
-
-    document.removeEventListener("keydown", shiftNode);
 });
 
 /** Close the window on Esc press */
@@ -538,6 +537,83 @@ const addNode = (): void => {
     projectModified.value = true;
 };
 
+/** Reorder the list of nodes in a specific dialog */
+const showReorder = ref(false);
+const hasReordered = ref(false);
+
+/**
+ * Save the reordered nodes and transfer them to the graph editor
+ */
+const saveReorderedNodes = (): void => {
+
+    if(!hasReordered.value) return;
+
+    // TBD Do save
+    console.log("-----");
+    for(const entry of listLeft.value) {
+        console.log(entry.name.padEnd(30), entry.id.padEnd(20), entry.type.padEnd(20), entry.isNew);
+    }
+    console.log("Removed", removedIds);
+
+    showReorder.value = false;
+    hasReordered.value = false;
+};
+
+/**
+ * Check if the id is in use on the left side
+ *
+ * @param id - Id to check
+ * @returns An unique id
+ */
+const makeIdUnique = (id: string): string => {
+
+    let found = true;
+    let seq = 1;
+    // eslint-disable-next-line sonarjs/slow-regex
+    const prefix = id.replace(/\d+$/, "");
+    while(found) {
+        found = false;
+        id = `${prefix}${seq}`;
+        for(const entry of listLeft.value) {
+            if(entry.id === id) {
+                ++seq;
+                found = true;
+                break;
+            }
+        }
+        if(!found) break;
+    }
+    return id;
+};
+
+/**
+ * Clone the element when dragged from right to left list
+ *
+ * @param element - The element to clone
+ * @returns A clone of the element with an unique id
+ */
+const clone = (element: SortableListEntry): SortableListEntry => {
+
+    const id = makeIdUnique(element.id);
+    return {
+        name: `${element.name} (${id})`,
+        id,
+        type: element.type,
+        isNew: true
+    };
+};
+
+/**
+ * The list has been modified
+ */
+const onModified = (): void => {
+    hasReordered.value = true;
+};
+const onRemoved = (entry: SortableEvent): void => {
+    hasReordered.value = true;
+    removedIds.push((entry as SortableEvent&{clonedData: {id: string}}).clonedData.id);
+};
+
 </script>
 
 
@@ -590,6 +666,7 @@ const addNode = (): void => {
     <v-btn v-if="showInfo" :disabled="!projectModified" class="mr-2"
            @click="saveProject">Save modified project</v-btn>
     <v-btn v-if="showInfo" class="mr-2" @click="closeInfo">Dismiss panel</v-btn>
+    <!-- <v-btn @click="showReorder=!showReorder">Reorder nodes</v-btn> -->
     <v-btn v-focus @click="closeWindow('/editor')">Close</v-btn>
   </v-container>
 </div>
@@ -643,6 +720,54 @@ const addNode = (): void => {
   </v-card>
 </v-dialog>
 
+<v-dialog v-model="showReorder">
+  <v-card title="Reorder project nodes" class="mx-auto no-select" elevation="16" width="700">
+    <v-card-text>
+      <v-row class="pb-0">
+        <v-col cols="6">
+          <v-label class="no-select">In use</v-label>
+        </v-col>
+        <v-col cols="6" class="pl-2 no-select">
+          <v-label>Available</v-label>
+        </v-col>
+      </v-row>
+      <v-row style="overflow-y: auto; height: 500px">
+        <v-col cols="6" class="pt-0">
+          <vue-draggable
+            v-model="listLeft"
+            :animation="150"
+            ghostClass="ghost"
+            group="nodes"
+            @update="onModified"
+            @add="onModified"
+            @remove="onRemoved">
+            <div v-for="item in listLeft" :key="item.id" class="cursor-move">
+              {{ item.name }}
+            </div>
+          </vue-draggable>
+        </v-col>
+        <v-col cols="6" class="pt-0">
+          <vue-draggable
+            v-model="listRight"
+            :animation="150"
+            :group="{name: 'nodes', pull: 'clone', put: true}"
+            :sort="false"
+            :clone="clone"
+            ghostClass="ghost">
+            <div v-for="item in listRight" :key="item.id" class="cursor-move">
+              {{ item.name }}
+            </div>
+          </vue-draggable>
+        </v-col>
+      </v-row>
+      <v-label class="mt-4 pb-0">Drag and drop nodes to modify and reorder the project</v-label>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn v-focus @click="showReorder=false">Dismiss</v-btn>
+      <v-btn :disabled="!hasReordered" @click="saveReorderedNodes">Add</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </v-app>
 </template>
 
@@ -690,4 +815,7 @@ const addNode = (): void => {
   user-select: none;
 }
 
+.ghost {
+  background-color: #BFBF00CD;
+}
 </style>

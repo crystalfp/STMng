@@ -100,7 +100,10 @@ watch([drawRoughness, drawMetalness, drawQuality], () => {
     });
 });
 
+const showAll = ref(false);
+
 // Convert the button toggle into three booleans
+// The forth one is setting/deselecting all of them
 const showCombined = computed({
     get: () => {
         const result = [];
@@ -113,6 +116,12 @@ const showCombined = computed({
         showAtoms.value = values.includes("atoms");
         showBonds.value = values.includes("bonds");
         showLabels.value = values.includes("labels");
+        if(values.includes("display")) {
+            showAtoms.value = showAll.value;
+            showBonds.value = showAll.value;
+            showLabels.value = showAll.value;
+            showAll.value = !showAll.value;
+        }
     }
 });
 
@@ -159,6 +168,7 @@ const showCombined = computed({
         <v-btn value="atoms">Atoms</v-btn>
         <v-btn value="bonds">Bonds</v-btn>
         <v-btn value="labels">Labels</v-btn>
+        <v-btn value="display">{{ showAll ? "Show" : "Hide" }}</v-btn>
       </v-btn-toggle>
     </v-col>
   </v-row>

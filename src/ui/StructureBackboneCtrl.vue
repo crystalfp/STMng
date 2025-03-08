@@ -60,11 +60,27 @@ askNode(id, "init")
 
 receiveFromNode(id, "chains", (params: CtrlParams) => {
 
+    const thoseChains = (params.chains as string[] ?? [])
+                                    .map((chain) => (chain === "" ? "Remaining" : chain));
+
+    // If the list of chains has not changed, don't reset the switch values
+    let shouldReset = false;
+    const tcSorted = thoseChains.toSorted((a, b) => a.localeCompare(b));
+    const cSorted = chains.value.toSorted((a, b) => a.localeCompare(b));
+    if(tcSorted.length === cSorted.length) {
+        for(let i = 0; i < tcSorted.length; i++) {
+            if(tcSorted[i] !== cSorted[i]) {
+                shouldReset = true;
+                break;
+            }
+        }
+    }
+    else shouldReset = true;
+
     chains.value.length = 0;
-    for(const chain of params.chains as string[] ?? []) {
-        const chainToShow = (chain === "") ? "Remaining" : chain;
-        showChains[chainToShow] = false;
-        chains.value.push(chainToShow);
+    for(const chain of thoseChains) {
+        if(shouldReset) showChains[chain] = false;
+        chains.value.push(chain);
     }
 });
 

@@ -11,7 +11,6 @@ import {findAndApplySymmetries} from "../modules/NativeFunctions";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
-import {getAtomicSymbol} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
 
@@ -26,6 +25,8 @@ interface ComputeSymmetriesOutput {
 	atomsZ: number[];
 	/** Atoms' computed labels */
 	labels: string[];
+	/** Atoms pertain to this chain (or empty string) */
+	chains: string[];
 	/** Computed atoms' fractional coordinates */
 	fractionalCoordinates: number[];
 	/** True if the cell has been changed */
@@ -134,8 +135,8 @@ export class ComputeSymmetries extends NodeCore {
 		// If no symmetry computation to do, copy input structure to output
 		if(!this.applyInputSymmetries && !this.enableFindSymmetries) {
 
-			this.structure = this.fillUnitCell ? this.fillCellFull(this.inputStructure) : this.inputStructure;
-
+			this.structure = this.fillUnitCell ?
+								this.fillCellFull(this.inputStructure) : this.inputStructure;
 			this.toNextNode(this.structure);
 			this.showComputedSymmetry();
 			return;
@@ -145,7 +146,8 @@ export class ComputeSymmetries extends NodeCore {
 		const noSymmetries = noSymmetriesSpaceGroup.has(crystal.spaceGroup);
 		if(this.applyInputSymmetries && !this.enableFindSymmetries && noSymmetries) {
 
-			this.structure = this.fillUnitCell ? this.fillCellFull(this.inputStructure) : this.inputStructure;
+			this.structure = this.fillUnitCell ?
+								this.fillCellFull(this.inputStructure) : this.inputStructure;
 
 			this.toNextNode(this.structure);
 			this.showComputedSymmetry();
@@ -164,9 +166,8 @@ export class ComputeSymmetries extends NodeCore {
 		try {
 			fractionalCoordinates = cartesianToFractionalCoordinates(this.inputStructure);
 		}
-		// eslint-disable-next-line @stylistic/keyword-spacing
-		catch {
-			sendAlertMessage("Basis matrix is not invertible", "symmetries");
+		catch(error: unknown) {
+			sendAlertMessage((error as Error).message, "symmetries");
 			fractionalCoordinates = [];
 		}
 		if(fractionalCoordinates.length === 0) {
@@ -174,6 +175,24 @@ export class ComputeSymmetries extends NodeCore {
 			this.showComputedSymmetry();
 			return;
 		}
+
+		// Normalize fractional coordinates
+		// for(let i=0; i < fractionalCoordinates.length; ++i) {
+		// 	let fr = fractionalCoordinates[i];
+		// 	if(fr > 1) fr -= 1;
+		// 	else if(fr < 0) fr += 1;
+		// 	fractionalCoordinates[i] = fr;
+		// }
+
+		// TBD
+		// console.log("INPUT:", this.inputStructure.atoms.length);
+		// let iidx = -3;
+		// for(const atom of this.inputStructure.atoms) {
+		// 	iidx += 3;
+		// 	if(atom.label !== "CA" || atom.chain !== "A") continue;
+		// 	console.log(atom.label, atom.chain, atom.position[0].toFixed(3), atom.position[1].toFixed(3), atom.position[2].toFixed(3), fractionalCoordinates[iidx].toFixed(3), fractionalCoordinates[iidx+1].toFixed(3), fractionalCoordinates[iidx+2].toFixed(3));
+		// }
+
 		const basis = new Float64Array(crystal.basis);
 		const natoms = atoms.length;
 		const outAtomsZ = new Int32Array(natoms);
@@ -192,8 +211,18 @@ export class ComputeSymmetries extends NodeCore {
 
 		// Reformat the returned values
 		const atomsZOut = [...computed.atomsZ];
-		const labels = [];
-		for(const atomZ of atomsZOut) labels.push(getAtomicSymbol(atomZ));
+		const labels: string[] = [];
+		const chains: string[] = [];
+
+		const repetitions = Math.ceil(atomsZOut.length/this.inputStructure.atoms.length);
+		for(let i=0; i < repetitions; ++i) {
+
+			for(const atom of this.inputStructure.atoms) {
+				labels.push(atom.label);
+				const chain = i === 0 ? atom.chain : (atom.chain || "Remaining") + i.toString();
+				chains.push(chain);
+			}
+		}
 
 		// Return results to the client
 		const out: ComputeSymmetriesOutput = {
@@ -201,6 +230,7 @@ export class ComputeSymmetries extends NodeCore {
 			spaceGroup: computed.spaceGroup,
 			atomsZ: atomsZOut,
 			labels,
+			chains,
 			fractionalCoordinates: [...computed.fractionalCoordinates],
 			noCellChanges: computed.noCellChanges,
 			status: computed.status,
@@ -208,6 +238,15 @@ export class ComputeSymmetries extends NodeCore {
 		};
 		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
 		if(out.noCellChanges && this.inputStructure) this.structure.volume = volume;
+
+		// TBD
+		// console.log("OUTPUT:", out.atomsZ.length);
+		// let fidx = -3;
+		// for(const atom of this.structure.atoms) {
+		// 	fidx += 3;
+		// 	if(atom.label !== "CA" || atom.chain !== "A") continue;
+		// 	console.log(atom.label, atom.chain, atom.position[0].toFixed(3), atom.position[1].toFixed(3), atom.position[2].toFixed(3), out.fractionalCoordinates[fidx].toFixed(3), out.fractionalCoordinates[fidx+1].toFixed(3), out.fractionalCoordinates[fidx+2].toFixed(3));
+		// }
 
 		this.toNextNode(this.structure);
 
@@ -273,18 +312,19 @@ export class ComputeSymmetries extends NodeCore {
 		// Collect atoms data
 		const atomsZ = [];
 		const labels = [];
+		const chains = [];
 		for(const atom of atoms) {
 			atomsZ.push(atom.atomZ);
 			labels.push(atom.label);
+			chains.push(atom.chain);
 		}
 
 		let fractionalCoordinates: number[] = [];
 		try {
 			fractionalCoordinates = cartesianToFractionalCoordinates(structure);
 		}
-		// eslint-disable-next-line @stylistic/keyword-spacing
-		catch {
-			sendAlertMessage("Basis matrix is not invertible", "symmetries");
+		catch(error: unknown) {
+			sendAlertMessage((error as Error).message, "symmetries");
 			fractionalCoordinates = [];
 		}
 
@@ -295,6 +335,7 @@ export class ComputeSymmetries extends NodeCore {
 			spaceGroup,
 			atomsZ,
 			labels,
+			chains,
 			fractionalCoordinates,
 			noCellChanges: true,	// Ignored
 			status: "",				// Ignored
@@ -318,7 +359,7 @@ export class ComputeSymmetries extends NodeCore {
 		const idx: number[] = [];
 		const MARGIN = 10**this.fillTolerance;
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels, extra} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels, chains, extra} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -358,8 +399,9 @@ export class ComputeSymmetries extends NodeCore {
 
 				structure.atoms.push({
 					atomZ: atomsZ[i],
-					label: labels[i] + i.toString(),
-					chain: "",
+					label: labels[i],
+					// label: labels[i] + i.toString(),
+					chain: chains[i],
 					position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 				});
 			}
@@ -488,19 +530,19 @@ export class ComputeSymmetries extends NodeCore {
 
 		// Finish building the structure removing duplicated atoms
 		natoms = fractionalCoordinates.length / 3;
-		let labelIdx = 0;
+		// let labelIdx = 0;
 		for(let i=0; i < natoms; ++i) {
 
 			if(this.isDuplicated(i, natoms, fractionalCoordinates)) continue;
 
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
-				label: labels[idx[i]] + labelIdx.toString(),
-				chain: "",
+				label: labels[idx[i]], // + labelIdx.toString(),
+				chain: chains[idx[i]],
 				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 
-			++labelIdx;
+			// ++labelIdx;
 		}
 		return structure;
 	}
@@ -544,7 +586,7 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private buildStructure(out: ComputeSymmetriesOutput): Structure {
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, extra} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, chains, extra, labels} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
@@ -562,8 +604,8 @@ export class ComputeSymmetries extends NodeCore {
 
 			structure.atoms.push({
 				atomZ: atomsZ[i],
-				label: getAtomicSymbol(atomsZ[i]) + i.toString(),
-				chain: "",
+				label: labels[i],
+				chain: chains[i],
 				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 		}
