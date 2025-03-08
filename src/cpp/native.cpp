@@ -10,8 +10,8 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	Napi::Env env = info.Env();
 
 	// Check arguments
-	if(info.Length() != 10) {
-    	Napi::TypeError::New(env, "Expecting exactly ten arguments").ThrowAsJavaScriptException();
+	if(info.Length() != 11) {
+    	Napi::TypeError::New(env, "Expecting exactly eleven arguments").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -63,15 +63,21 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 		return info.Env().Undefined();
 	}
 
-	// Argument 8: symprecStandardize
-	if(!info[8].IsNumber()) {
-    	Napi::TypeError::New(env, "Nineth argument should be a number").ThrowAsJavaScriptException();
+	// Argument 8: createPrimitiveCell
+	if(!info[8].IsBoolean()) {
+    	Napi::TypeError::New(env, "Ninth argument should be a boolean").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
-	// Argument 9: symprecDataset
+	// Argument 9: symprecStandardize
 	if(!info[9].IsNumber()) {
     	Napi::TypeError::New(env, "Tenth argument should be a number").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 10: symprecDataset
+	if(!info[9].IsNumber()) {
+    	Napi::TypeError::New(env, "Eleventh argument should be a number").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -126,11 +132,14 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	// Argument 7: boolean
 	bool standardizeOnly = static_cast<bool>(info[7].As<Napi::Boolean>());
 
-	// Argument 8: float
-	double symprecStandardize = static_cast<double>(info[8].As<Napi::Number>());
+	// Argument 8: boolean
+	bool createPrimitiveCell = static_cast<bool>(info[8].As<Napi::Boolean>());
 
 	// Argument 9: float
-	double symprecDataset = static_cast<double>(info[9].As<Napi::Number>());
+	double symprecStandardize = static_cast<double>(info[9].As<Napi::Number>());
+
+	// Argument 10: float
+	double symprecDataset = static_cast<double>(info[10].As<Napi::Number>());
 
 	bool unitCellModified;
 
@@ -143,6 +152,7 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 		enableFindSymmetries,
 		standardizeCell,
 		standardizeOnly,
+		createPrimitiveCell,
 		symprecStandardize,
 		symprecDataset,
 		unitCellModified

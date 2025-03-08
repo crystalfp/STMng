@@ -516,6 +516,7 @@ string doFindAndApplySymmetries(
 	bool enableFindSymmetries,
 	bool standardizeCell,
 	bool standardizeOnly,
+	bool createPrimitiveCell,
 	double symprecStandardize,
 	double symprecDataset,
 	bool& unitCellModified)
@@ -584,7 +585,8 @@ string doFindAndApplySymmetries(
 			dumpPOSCAR(lattice, positions, types, natoms, "Before standardizing");
 #endif
 			num_primitive_atom = spg_standardize_cell(lattice, positions, types,
-													  natoms, 1, 0, symprecStandardize);
+													  natoms, createPrimitiveCell ? 1 : 0,
+													  0, symprecStandardize);
 #ifdef DEBUG
 			dumpPOSCAR(lattice, positions, types, num_primitive_atom, "After standardizing");
 #endif

@@ -68,6 +68,8 @@ export class ComputeSymmetries extends NodeCore {
 	private fillTolerance = -5;
 	private standardizeOnly = false;
 	private computedSpaceGroup = "";
+	private createPrimitiveCell = false;
+
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
@@ -100,6 +102,7 @@ export class ComputeSymmetries extends NodeCore {
 	        fillUnitCell: this.fillUnitCell,
 			fillTolerance: this.fillTolerance,
 	        standardizeOnly: this.standardizeOnly,
+			createPrimitiveCell: this.createPrimitiveCell,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -113,6 +116,7 @@ export class ComputeSymmetries extends NodeCore {
         this.fillUnitCell = params.fillUnitCell as boolean ?? true;
 		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
+        this.createPrimitiveCell = params.createPrimitiveCell as boolean ?? false;
 	}
 
 	// > Compute new structure after finding and applying symmetries
@@ -206,7 +210,7 @@ export class ComputeSymmetries extends NodeCore {
 		const computed = findAndApplySymmetries(basis, crystal.spaceGroup, outAtomsZ,
 												outFractionalCoordinates, applyInputSymmetries,
 												this.enableFindSymmetries, this.standardizeCell,
-												this.standardizeOnly,
+												this.standardizeOnly, this.createPrimitiveCell,
 												symprecStandardize, symprecDataset);
 
 		// Reformat the returned values
@@ -630,6 +634,7 @@ export class ComputeSymmetries extends NodeCore {
 			fillUnitCell: this.fillUnitCell,
 			fillTolerance: this.fillTolerance,
 			standardizeOnly: this.standardizeOnly,
+			createPrimitiveCell: this.createPrimitiveCell,
 		};
 	}
 
@@ -648,6 +653,7 @@ export class ComputeSymmetries extends NodeCore {
         this.fillUnitCell  = params.fillUnitCell as boolean ?? true;
 		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
+        this.createPrimitiveCell = params.createPrimitiveCell as boolean ?? false;
 
 		this.computeSymmetries();
 

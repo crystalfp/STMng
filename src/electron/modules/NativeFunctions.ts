@@ -45,7 +45,7 @@ interface NativeModule {
 	findAndApplySymmetries: (basis: Float64Array, spaceGroup: string, atomsZ: Int32Array,
 							 fractionalCoordinates: Float64Array, applyInputSymmetries: boolean,
 							 enableFindSymmetries: boolean, standardizeCell: boolean,
-							 standardizeOnly: boolean,
+							 standardizeOnly: boolean, createPrimitiveCell: boolean,
 							 symprecStandardize: number, symprecDataset: number) => FindAndApplySymmetriesOutput;
 
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
@@ -63,6 +63,7 @@ export const findAndApplySymmetries = (basis: Float64Array,
 									   enableFindSymmetries: boolean,
 									   standardizeCell: boolean,
 									   standardizeOnly: boolean,
+									   createPrimitiveCell: boolean,
 									   symprecStandardize: number,
 									   symprecDataset: number): FindAndApplySymmetriesOutput =>
 	addon.findAndApplySymmetries(basis,
@@ -73,6 +74,7 @@ export const findAndApplySymmetries = (basis: Float64Array,
 								 enableFindSymmetries,
 								 standardizeCell,
 								 standardizeOnly,
+								 createPrimitiveCell,
 								 symprecStandardize,
 								 symprecDataset);
 

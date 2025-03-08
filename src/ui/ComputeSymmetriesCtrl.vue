@@ -34,6 +34,7 @@ const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
 const fillTolerance = ref(-5);
+const createPrimitiveCell = ref(false);
 
 /**
  * Convert in human readable format the exponent of 10
@@ -57,6 +58,7 @@ askNode(id, "init")
         fillTolerance.value = params.fillTolerance as number ?? -5;
         showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
         standardizeOnly.value = params.standardizeOnly as boolean ?? false;
+        createPrimitiveCell.value = params.createPrimitiveCell as boolean ?? false;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "symmetries"));
@@ -68,6 +70,7 @@ watch([applyInputSymmetries,
        symprecDataset,
        fillUnitCell,
        fillTolerance,
+       createPrimitiveCell,
        standardizeOnly], () => {
 
     askNode(id, "compute", {
@@ -78,7 +81,8 @@ watch([applyInputSymmetries,
         symprecDataset: symprecDataset.value,
         fillUnitCell: fillUnitCell.value,
         fillTolerance: fillTolerance.value,
-        standardizeOnly: standardizeOnly.value
+        standardizeOnly: standardizeOnly.value,
+        createPrimitiveCell: createPrimitiveCell.value
     })
     .then((params) => {
         computedSpaceGroup.value = params.computedSpaceGroup as string ?? "";
@@ -102,15 +106,17 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
   <v-switch v-model="applyInputSymmetries" label="Apply input symmetries" class="mt-2 ml-3" />
   <v-switch v-model="enableFindSymmetries" label="Enable find symmetries" class="ml-3 mt-n2" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
-    <v-switch v-model="standardizeCell"
-              label="Standardize cell" class="ml-3" />
-    <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2 mb-4" />
-    <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
-                        :min="-3" :max="0" :step="0.02" class="ml-2 mb-2">
-      <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
-    </g-debounced-slider>
+    <v-switch v-model="standardizeCell" label="Standardize cell" class="ml-3" />
+    <v-container v-if="standardizeCell" class="pa-0 mt-n2">
+      <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2" />
+      <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-3 mt-n2" />
+      <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
+                        :min="-3" :max="0" :step="0.02" class="ml-2 mt-4">
+        <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
+      </g-debounced-slider>
+    </v-container>
     <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
-                        :min="-3" :max="0" :step="0.02" class="ml-2">
+                        :min="-3" :max="0" :step="0.02" class="ml-2 mt-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="no-select" />
     </g-debounced-slider>
   </v-container>

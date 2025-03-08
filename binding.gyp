@@ -17,7 +17,7 @@
 			],
 			"include_dirs": [
 				"<!@(node -p \"require('node-addon-api').include\")",
-				"src/cpp/spglib-develop/include"
+				"src/cpp/spglib-2.5.0/include"
 			],
 			"dependencies": [
 				"<!(node -p \"require('node-addon-api').gyp\")"
@@ -34,15 +34,15 @@
 					],
 					"libraries": [
 						"-Wl,-rpath=<(module_root_dir)/build/Release",
-						"-L <(module_root_dir)/../spglib-develop -lsymspg -lm"
+						"-L <(module_root_dir)/build/Release -lsymspg -lm"
 					],
 					"copies": [
 					{
 						"destination": "<(module_root_dir)/build/Release",
 						"files": [
-							"<(module_root_dir)/../spglib-develop/libsymspg.so",
-							"<(module_root_dir)/../spglib-develop/libsymspg.so.2",
-							"<(module_root_dir)/../spglib-develop/libsymspg.so.2.3.2"
+							"<(module_root_dir)/src/cpp/spglib-2.5.0/build-linux/libsymspg.so",
+							"<(module_root_dir)/src/cpp/spglib-2.5.0/build-linux/libsymspg.so.2",
+							"<(module_root_dir)/src/cpp/spglib-2.5.0/build-linux/libsymspg.so.2.5.0"
 						]
 					}
 				]
@@ -72,12 +72,12 @@
 						},
 					},
 					"libraries": [
-						"<(module_root_dir)/src/cpp/spglib-develop/Release/symspg.lib"
+						"<(module_root_dir)/src/cpp/spglib-2.5.0/build/Debug/symspg.lib"
 					],
 					"copies": [
 						{
 							"destination": "<(module_root_dir)/build/Release",
-							"files": ["<(module_root_dir)/src/cpp/spglib-develop/Release/symspg.dll"]
+							"files": ["<(module_root_dir)/src/cpp/spglib-2.5.0/build/Debug/symspg.dll"]
 						}
 					]
 				}],

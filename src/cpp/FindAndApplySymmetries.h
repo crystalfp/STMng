@@ -11,6 +11,7 @@ extern std::string doFindAndApplySymmetries(
 	bool enableFindSymmetries,						// Enable find symmetries and standardize cell
 	bool standardizeCell,							// Enable standardize cell
 	bool standardizeOnly,							// Don't compute symmetry after standardization
+	bool createPrimitiveCell,						// Create primitive cell instead of conventional cell
 	double symprecStandardize,						// Tolerance for the standardize cell step
 	double symprecDataset,							// Tolerance for find symmetries
 	bool& unitCellModified							// True if the cell has been modified (out)

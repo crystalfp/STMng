@@ -1,3 +1,4 @@
+import {defineConfig} from "eslint/config";
 import tsParser from "@typescript-eslint/parser";
 import vueParser from "vue-eslint-parser";
 
@@ -16,8 +17,7 @@ import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import * as depend from "eslint-plugin-depend";
 
-/* @type {import('eslint').Linter.Config[]} */
-export default [
+export default defineConfig([
     stylistic.configs.customize({
         flat: true, // required for flat config
         // the following options are the default values
@@ -60,7 +60,6 @@ export default [
             clearTimeout: "readonly",
             console: "readonly",
             Buffer: "readonly",
-            require: "readonly",
             structuredClone: "readonly",
             addEventListener: "readonly",
         },
@@ -413,4 +412,4 @@ export default [
         // "@typescript-eslint/no-floating-promises": "error"
         "sonarjs/fixme-tag": "off",
     }
-}];
+}]);
