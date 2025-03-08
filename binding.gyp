@@ -35,6 +35,7 @@
 					"libraries": [
 						"-Wl,-rpath=<(module_root_dir)/build/Release",
 						"-L <(module_root_dir)/build/Release -lsymspg -lm"
+						# "-L src/cpp/spglib-2.5.0/build-linux -lsymspg -lm"
 					],
 					"copies": [
 					{

@@ -51,7 +51,7 @@ export default defineConfig({
         assetsInlineLimit: 8096,
         reportCompressedSize: false,
         emptyOutDir: true,
-        chunkSizeWarningLimit: 600,
+        chunkSizeWarningLimit: 700,
         rollupOptions: {
             output: {
                 manualChunks: {

@@ -15,6 +15,7 @@ files:
   - "!**/node_modules/**/*.flow"
   - "!**/node_modules/**/tsconfig.tsbuildinfo"
   - "!**/node_modules/**/{test,__tests__,tests,powered-test,example,examples}"
+  - "!**/spglib-2.5.0/**/*.*"
 asarUnpack:
   - dist/bin/ffmpeg.exe
   - dist/bin/ffmpeg
