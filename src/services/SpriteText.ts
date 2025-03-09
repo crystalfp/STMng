@@ -24,6 +24,7 @@ import localRobotoBold from "@/assets/Roboto-Bold.ttf";
  */
 export const spriteText = (text: string,
 						   color: string,
+						   size: number,
 						   position: PositionType): Mesh => {
 
 	const sprite = new TroikaText();
@@ -31,7 +32,7 @@ export const spriteText = (text: string,
 	sprite.font = localRobotoRegular;
 	sprite.text = text;
 	sprite.textAlign = "center";
-	sprite.fontSize = 0.4;
+	sprite.fontSize = size;
 	sprite.color = color;
 	sprite.anchorX = "center";
 	sprite.anchorY = "middle";

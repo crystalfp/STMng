@@ -8,7 +8,7 @@
  */
 import {Group, Vector3, type Material, ConeGeometry,
 		LineDashedMaterial, BufferGeometry, BufferAttribute,
-		CylinderGeometry, MeshBasicMaterial,
+		CylinderGeometry, MeshStandardMaterial, DoubleSide,
 		Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
@@ -130,19 +130,25 @@ export class DrawUnitCellRenderer {
 	* @param axisLabel - Label of the vector
 	* @param group - The arrow is added to this group
 	*/
-	private basisVectorArrow(basis: Vector3, origin: Vector3,
+	private basisVectorArrow(basis: Vector3, origin: Vector3, size: number,
 							 color: string, axisLabel: string, group: Group): void {
 
 		const versor = basis.clone().normalize();
 		const basisLen = basis.length();
 
-		const size = 0.05;
 		const coneSize = 2*size;
 		const coneLen = 5*size;
 
+		const material = new MeshStandardMaterial({
+			color,
+			roughness: 0.5,
+			metalness: 0.6,
+			side: DoubleSide
+		});
+
 		const cylinder = new Mesh(
 			new CylinderGeometry(size, size, basisLen-coneLen, 10),
-			new MeshBasicMaterial({color})
+			material
 		);
 
 		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(...versor));
@@ -151,7 +157,7 @@ export class DrawUnitCellRenderer {
 		// Arrow tips
 		const cone = new Mesh(
 			new ConeGeometry(coneSize, coneLen, 8, 1),
-			new MeshBasicMaterial({color})
+			material
 		);
 
 		cone.quaternion.copy(cylinder.quaternion);
@@ -164,7 +170,7 @@ export class DrawUnitCellRenderer {
 			basis.y+origin.y+versor.y*0.1,
 			basis.z+origin.z+versor.z*0.1
 		];
-		const sprite = spriteText(axisLabel, color, labelPosition);
+		const sprite = spriteText(axisLabel, color, size*5, labelPosition);
 
 		group.add(cylinder, cone, sprite);
 		sm.modified();
@@ -192,9 +198,16 @@ export class DrawUnitCellRenderer {
 		const basisB = new Vector3(vertices[3], vertices[4], vertices[5]);
 		const basisC = new Vector3(vertices[6], vertices[7], vertices[8]);
 
-		this.basisVectorArrow(basisA, originZero, "#FF0000", "a", this.outBV);
-		this.basisVectorArrow(basisB, originZero, "#79FF00", "b", this.outBV);
-		this.basisVectorArrow(basisC, originZero, "#0000FF", "c", this.outBV);
+		// Find the size of the arrows related to the longest axis
+		const la = basisA.length();
+		const lb = basisB.length();
+		const lc = basisC.length();
+		const ltot = Math.max(la, lb, lc);
+		const size = Math.max(0.05, ltot/300);
+
+		this.basisVectorArrow(basisA, originZero, size, "#FF0000", "a", this.outBV);
+		this.basisVectorArrow(basisB, originZero, size, "#79FF00", "b", this.outBV);
+		this.basisVectorArrow(basisC, originZero, size, "#0000FF", "c", this.outBV);
 
 		this.outBV.visible = visible;
 		sm.modified();

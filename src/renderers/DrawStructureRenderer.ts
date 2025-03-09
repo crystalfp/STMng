@@ -448,7 +448,7 @@ export class DrawStructureRenderer {
 
 			const {position} = atom;
 			const labelPosition: PositionType = [position[0], position[1], position[2]+offset];
-			const atomLabel = spriteText(labelText, color, labelPosition);
+			const atomLabel = spriteText(labelText, color, 0.4, labelPosition);
 			this.labelsGroup.add(atomLabel);
 
 			++idx;

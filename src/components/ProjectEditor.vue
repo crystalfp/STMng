@@ -539,14 +539,14 @@ const addNode = (): void => {
 
 /** Reorder the list of nodes in a specific dialog */
 const showReorder = ref(false);
-const hasReordered = ref(false);
+const hasBeenReordered = ref(false);
 
 /**
  * Save the reordered nodes and transfer them to the graph editor
  */
 const saveReorderedNodes = (): void => {
 
-    if(!hasReordered.value) return;
+    if(!hasBeenReordered.value) return;
 
     // TBD Do save
     console.log("-----");
@@ -556,7 +556,7 @@ const saveReorderedNodes = (): void => {
     console.log("Removed", removedIds);
 
     showReorder.value = false;
-    hasReordered.value = false;
+    hasBeenReordered.value = false;
 };
 
 /**
@@ -607,11 +607,23 @@ const clone = (element: SortableListEntry): SortableListEntry => {
  * The list has been modified
  */
 const onModified = (): void => {
-    hasReordered.value = true;
+    hasBeenReordered.value = true;
 };
-const onRemoved = (entry: SortableEvent): void => {
-    hasReordered.value = true;
-    removedIds.push((entry as SortableEvent&{clonedData: {id: string}}).clonedData.id);
+
+
+interface SortableEventExtended extends SortableEvent {
+    clonedData?: unknown;
+}
+
+/**
+ * Handler for removing an element from the list event
+ *
+ * @param entry - The event extended with the cloned data
+ */
+const onRemoved = (entry: SortableEventExtended): void => {
+    hasBeenReordered.value = true;
+    const clonedData = entry.clonedData as SortableListEntry;
+    removedIds.push(clonedData.id);
 };
 
 </script>
@@ -764,7 +776,7 @@ const onRemoved = (entry: SortableEvent): void => {
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="showReorder=false">Dismiss</v-btn>
-      <v-btn :disabled="!hasReordered" @click="saveReorderedNodes">Add</v-btn>
+      <v-btn :disabled="!hasBeenReordered" @click="saveReorderedNodes">Add</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
