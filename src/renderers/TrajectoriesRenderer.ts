@@ -7,10 +7,20 @@
  * @since 2024-12-01
  */
 import {Group, PointsMaterial, BufferGeometry, TextureLoader, type Texture, Points,
-		SRGBColorSpace, AdditiveBlending, Float32BufferAttribute, Vector3,
+		SRGBColorSpace, Float32BufferAttribute, Vector3,
 		LineBasicMaterial, Line} from "three";
 import {sm} from "@/services/SceneManager";
 import spriteImage from "@/assets/volumetric-sprite.png";
+
+/**
+ * Set colorspace on the loaded texture
+ *
+ * @param texture - Loaded texture
+ */
+const setColorSpace = (texture: Texture): void => {
+
+	texture.colorSpace = SRGBColorSpace;
+};
 
 export class TrajectoriesRenderer {
 
@@ -21,6 +31,14 @@ export class TrajectoriesRenderer {
 	private readonly volumeVertices: number[] = [];
 	private readonly volumeGeometry = new BufferGeometry();
 
+	/**
+	 * Trajectory renders constructor
+	 *
+	 * @param id - Id of the node
+	 * @param traceVisible - If the line traces should be visible
+	 * @param positionCloudsSize - Size of the sprites
+	 * @param positionCloudsColor - Initial color of the sprites
+	 */
 	constructor(id: string, traceVisible: boolean,
 				positionCloudsSize: number, positionCloudsColor: string) {
 
@@ -47,20 +65,15 @@ export class TrajectoriesRenderer {
 
 		const textureLoader = new TextureLoader();
 
-		const sprite = textureLoader.load(spriteImage, (texture: Texture): void => {
-
-			texture.colorSpace = SRGBColorSpace;
-		});
+		const sprite = textureLoader.load(spriteImage, setColorSpace);
 
 		this.volumeMaterial = new PointsMaterial({
 			size: positionCloudsSize,
-			map: sprite,
-			blending: AdditiveBlending,
+			alphaMap: sprite,
 			depthTest: false,
-			transparent: true
+			transparent: true,
+			color: positionCloudsColor
 		});
-
-		this.volumeMaterial.color.set(positionCloudsColor);
 
 		this.volumeVertices.length = 0;
 		sm.modified();
@@ -97,7 +110,9 @@ export class TrajectoriesRenderer {
 	 * @param color - The color for the position clouds
 	 */
 	changeColor(color: string): void {
+
 		if(this.volumeMaterial) {
+
 			this.volumeMaterial.color.set(color);
 			sm.modified();
 		}
@@ -109,7 +124,9 @@ export class TrajectoriesRenderer {
 	 * @param size - Cloud size
 	 */
 	changeSize(size: number): void {
+
 		if(this.volumeMaterial) {
+
 			this.volumeMaterial.size = size;
 			sm.modified();
 		}
@@ -121,6 +138,7 @@ export class TrajectoriesRenderer {
 	 * @param visible - Visibility of the position clouds
 	 */
 	changeCloudsVisibility(visible: boolean): void {
+
 		if(visible) this.populateVolume();
 		else sm.deleteMesh(this.volumeName);
 		sm.modified();
@@ -166,6 +184,8 @@ export class TrajectoriesRenderer {
 	 * @param visible - Trace visibility
 	 */
 	setVisibility(visible: boolean): void {
+
 		this.group.visible = visible;
+		sm.modified();
 	}
 }
