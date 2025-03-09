@@ -73,12 +73,12 @@
 						},
 					},
 					"libraries": [
-						"<(module_root_dir)/src/cpp/spglib-2.5.0/build/Debug/symspg.lib"
+						"<(module_root_dir)/src/cpp/spglib-2.5.0/build/Release/symspg.lib"
 					],
 					"copies": [
 						{
 							"destination": "<(module_root_dir)/build/Release",
-							"files": ["<(module_root_dir)/src/cpp/spglib-2.5.0/build/Debug/symspg.dll"]
+							"files": ["<(module_root_dir)/src/cpp/spglib-2.5.0/build/Release/symspg.dll"]
 						}
 					]
 				}],

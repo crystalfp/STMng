@@ -21,7 +21,7 @@ import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/Rout
 import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {BasisType, CtrlParams} from "@/types";
 
-/** List of structures to compare */
+/** List of structures to compare (don't use shallowRef) */
 interface Selection {
 
     /** Structure step */

@@ -2,9 +2,9 @@
   "graph": {
     "reader":    {"label": "Reader",             "type": "structure-reader"},
     "symmetry":  {"label": "Symmetries",         "type": "compute-symmetries",   "in": "reader"},
-    "unit":      {"label": "Draw — Cell",        "type": "draw-unit-cell",       "in": "symmetry"},
     "bonds":     {"label": "Draw — Bonds",       "type": "compute-bonds",        "in": "unit"},
     "draw":      {"label": "Draw — Structure",   "type": "draw-structure",       "in": "bonds"},
+    "unit":      {"label": "Draw — Cell",        "type": "draw-unit-cell",       "in": "symmetry"},
     "backbone":  {"label": "Structure Backbone", "type": "structure-backbone",   "in": "symmetry"},
     "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "bonds"},
     "polyhedra": {"label": "Polyhedra",          "type": "draw-polyhedra",       "in": "bonds"},

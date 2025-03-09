@@ -6,13 +6,13 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-09-24
  */
-import {ref, shallowRef} from "vue";
+import {ref} from "vue";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 
 const text = ref("");
-const showConfirm = shallowRef(false);
+const showConfirm = ref(false);
 
 receiveInWindow((data: string) => {
 

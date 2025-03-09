@@ -42,10 +42,8 @@ win:
     - x64
   artifactName: ${productName}-${version}-setup.${ext}
   extraFiles:
-    - from: src/cpp/spglib-2.5.0/build/Debug/symspg.dll
+    - from: build/Release/symspg.dll
       to: .
-    - from: src/cpp/spglib-2.5.0/build/Debug/symspg.dll
-      to: build/Release/symspg.dll
 nsis:
   oneClick: false
   perMachine: true
