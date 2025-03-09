@@ -8,7 +8,7 @@
  */
 
 import {Group, GridHelper, Mesh, CylinderGeometry,
-		ConeGeometry, MeshBasicMaterial} from "three";
+		ConeGeometry, MeshStandardMaterial, DoubleSide} from "three";
 import {watchEffect, watch} from "vue";
 import {sm} from "./SceneManager";
 import {useConfigStore} from "@/stores/configStore";
@@ -163,52 +163,57 @@ const axisHelper = (group: Group, axisLength: number): void => {
 	const conePosition = axisLength+size;
 	const labelPosition = axisLength+coneLen;
 
+	// Materials for the three axis
+	const materialRed = new MeshStandardMaterial({
+		color: 0xFF0000, // Red - X
+		roughness: 0.5,
+		metalness: 0.6,
+		side: DoubleSide
+	});
+	const materialGreen = new MeshStandardMaterial({
+		color: 0x79FF00, // Green - Y
+		roughness: 0.5,
+		metalness: 0.6,
+		side: DoubleSide
+	});
+	const materialBlue = new MeshStandardMaterial({
+		color: 0x0000FF, // Blue - Z
+		roughness: 0.5,
+		metalness: 0.6,
+		side: DoubleSide
+	});
+
 	// Axis
-	const cylinderX = new Mesh(
-		new CylinderGeometry(size, size, axisLength, 10),
-		new MeshBasicMaterial({color: 0xFF0000}) // Red - X
-	);
+	const cylinderX = new Mesh(new CylinderGeometry(size, size, axisLength, 10), materialRed);
 	cylinderX.position.set(axisLength/2, 0, 0);
 	cylinderX.rotation.set(0, 0, Math.PI / 2);
 
-	const cylinderY = new Mesh(
-		new CylinderGeometry(size, size, axisLength, 10),
-		new MeshBasicMaterial({color: 0x79FF00}) // Green - Y
-	);
+	const cylinderY = new Mesh(new CylinderGeometry(size, size, axisLength, 10), materialGreen);
 	cylinderY.position.set(0, axisLength/2, 0);
 
-	const cylinderZ = new Mesh(
-		new CylinderGeometry(size, size, axisLength, 10),
-		new MeshBasicMaterial({color: 0x0000FF}) // Blue - Z
-	);
+	const cylinderZ = new Mesh(new CylinderGeometry(size, size, axisLength, 10), materialBlue);
 	cylinderZ.position.set(0, 0, axisLength/2);
 	cylinderZ.rotation.set(Math.PI / 2, 0, 0);
 
 	// Arrow tips
-	const coneX = new Mesh(
-		new ConeGeometry(coneSize, coneLen, 8, 1),
-		new MeshBasicMaterial({color: 0xFF0000})
-	);
+	const coneX = new Mesh(new ConeGeometry(coneSize, coneLen, 10, 1), materialRed);
 	coneX.position.set(conePosition, 0, 0);
 	coneX.rotation.set(0, 0, -Math.PI / 2);
 
-	const coneY = new Mesh(
-		new ConeGeometry(coneSize, coneLen, 8, 1),
-		new MeshBasicMaterial({color: 0x79FF00})
-	);
+	const coneY = new Mesh(new ConeGeometry(coneSize, coneLen, 10, 1), materialGreen);
 	coneY.position.set(0, conePosition, 0);
 
-	const coneZ = new Mesh(
-		new ConeGeometry(coneSize, coneLen, 8, 1),
-		new MeshBasicMaterial({color: 0x0000FF})
-	);
+	const coneZ = new Mesh(new ConeGeometry(coneSize, coneLen, 10, 1), materialBlue);
 	coneZ.position.set(0, 0, conePosition);
 	coneZ.rotation.set(Math.PI / 2, 0, 0);
 
+	// Correlate label size to axis length for legibility
+	const labelSize = 0.4 + 0.6*(axisLength-0.5)/19.5;
+
 	// Axis labels
-	const spriteX = spriteText("x", "#FF0000", [labelPosition, 0, 0]);
-	const spriteY = spriteText("y", "#79FF00", [0, labelPosition+3*size, 0]);
-	const spriteZ = spriteText("z", "#0000FF", [0, 0, labelPosition]);
+	const spriteX = spriteText("x", "#FF0000", labelSize, [labelPosition, 0, 0]);
+	const spriteY = spriteText("y", "#79FF00", labelSize, [0, labelPosition+3*size, 0]);
+	const spriteZ = spriteText("z", "#0000FF", labelSize, [0, 0, labelPosition]);
 
 	// Add to the output group
 	group.add(cylinderX, cylinderY, cylinderZ,

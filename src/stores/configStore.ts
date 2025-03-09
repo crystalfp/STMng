@@ -125,7 +125,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.helpers.showGridXY = state.helpers.showGridXY ?? false;
             this.helpers.showGridYZ = state.helpers.showGridYZ ?? false;
             this.helpers.gridSize = state.helpers.gridSize ?? 10;
-            this.helpers.axisLength = state.helpers.axisLength ?? 2;
+            this.helpers.axisLength = state.helpers.axisLength ?? 1;
             this.helpers.showGizmo = state.helpers.showGizmo ?? false;
         }
     }

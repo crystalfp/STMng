@@ -24,7 +24,12 @@ interface DOMContentLoadedEvent {
     };
 }
 
-globalThis.addEventListener("DOMContentLoaded", (loadEvent: Event) => {
+/**
+ * Handler for window content ready
+ *
+ * @param loadEvent - Event fired on DOM content loaded
+ */
+const onContentLoaded = (loadEvent: Event): void => {
 
     // Specific operations for each kind of window opened
     const {href} = (loadEvent as unknown as DOMContentLoadedEvent).target!.location;
@@ -43,4 +48,12 @@ globalThis.addEventListener("DOMContentLoaded", (loadEvent: Event) => {
             refreshMenu: (): void => void ct.refreshMenu()
         });
     }
-});
+};
+
+globalThis.addEventListener("DOMContentLoaded", onContentLoaded);
+
+// eslint-disable-next-line unicorn/prefer-add-event-listener
+window.onbeforeunload = () => {
+
+    globalThis.removeEventListener("DOMContentLoaded", onContentLoaded);
+};

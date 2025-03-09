@@ -16,8 +16,6 @@ import type {PositionType} from "@/types";
 
 // Triangles. Top and bottom facies are not needed
 const indices = [
-    // 0, 1, 2,
-    // 0, 2, 3,
 
     4, 5, 1,
     4, 1, 0,
@@ -30,9 +28,6 @@ const indices = [
 
     1, 5, 6,
     1, 6, 2,
-
-    // 5, 4, 7,
-    // 5, 7, 6,
 ];
 
 export class DrawUnitCellRenderer {
@@ -127,7 +122,7 @@ export class DrawUnitCellRenderer {
 	* @param basis - Basis vector to be show
 	* @param origin - Unit cell origin
 	* @param color - Color of the arrow and the label
-	* @param axisLabel - Label of the vector
+	* @param axisLabel - Label on the vector
 	* @param group - The arrow is added to this group
 	*/
 	private basisVectorArrow(basis: Vector3, origin: Vector3, size: number,
@@ -156,7 +151,7 @@ export class DrawUnitCellRenderer {
 
 		// Arrow tips
 		const cone = new Mesh(
-			new ConeGeometry(coneSize, coneLen, 8, 1),
+			new ConeGeometry(coneSize, coneLen, 10, 1),
 			material
 		);
 
