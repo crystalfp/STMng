@@ -55,7 +55,7 @@ watch([interpolateVolume, pointsToAdd, dataset], () => {
   <v-switch v-model="interpolateVolume"
             label="Interpolate volume data" class="mt-4 ml-4 mb-4" />
 
-  <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+  <g-dataset-selector v-model="dataset" :count-datasets />
 
   <g-debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
                       :disabled="!interpolateVolume" class="ml-2 mt-1">

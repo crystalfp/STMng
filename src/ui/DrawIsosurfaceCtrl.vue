@@ -132,7 +132,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 <v-container class="container">
   <v-switch v-model="showIsosurface" label="Show isosurface" class="mt-4 ml-3 mb-4" />
 
-  <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+  <g-dataset-selector v-model="dataset" :count-datasets />
 
   <v-switch v-model="nestedIsosurfaces" label="Nested isosurfaces" class="mt-1 ml-3 mb-4" />
 
@@ -142,7 +142,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
       <v-label :text="`Number of isosurfaces (${value})`" class="no-select" />
     </g-debounced-slider>
     <g-debounced-range-slider v-slot="{values}" v-model="limits"
-                              :step="step" :min="valueMin" :max="valueMax"
+                              :step :min="valueMin" :max="valueMax"
                               class="ml-4 mt-1 pr-4">
       <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
                class="ml-n2 no-select"/>
@@ -152,7 +152,7 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 
   <v-container v-else class="pa-0">
     <g-debounced-slider v-slot="{value}" v-model="isoValue"
-                        :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1 mb-4">
+                        :step :min="valueMin" :max="valueMax" class="ml-2 mt-1 mb-4">
       <v-label :text="`Isosurface value (${humanFormat(value)})`" class="no-select" />
     </g-debounced-slider>
   </v-container>

@@ -630,7 +630,7 @@ const onRemoved = (entry: SortableEventExtended): void => {
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
 <div class="graph-editor-portal">
   <div class="graph-editor-container">
     <svg width="5000" height="3000" x="0" y="0" viewBox="0 0 5000 3000"
@@ -764,7 +764,7 @@ const onRemoved = (entry: SortableEventExtended): void => {
             :animation="150"
             :group="{name: 'nodes', pull: 'clone', put: true}"
             :sort="false"
-            :clone="clone"
+            :clone
             ghostClass="ghost">
             <div v-for="item in listRight" :key="item.id" class="cursor-move">
               {{ item.name }}

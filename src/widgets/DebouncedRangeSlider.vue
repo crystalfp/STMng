@@ -66,7 +66,7 @@ watch(limitsToDebounce, () => {
   <!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
   <slot :values="limitsToDebounce" />
   <v-range-slider v-model="limitsToDebounce" strict
-                  :step="step" :min="min" :max="max"
+                  :step :min :max
                   class="ml-0 mt-1 pr-2" />
 </v-container>
 </template>

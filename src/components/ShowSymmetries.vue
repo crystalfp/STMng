@@ -36,7 +36,7 @@ closeWithEscape("/symmetries");
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
 <v-container class="symmetry-portal">
   <v-row class="symmetry-container">
     <v-col class="left-col">

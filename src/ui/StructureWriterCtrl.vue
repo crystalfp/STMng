@@ -38,7 +38,6 @@ const outputFileFull = ref("");
 const continuous     = ref(false);
 const finish         = ref(false);
 const writerLabel    = ref("");
-const hint           = computed(() => (writerAccumulate.value ? "Set in Reader" : ""));
 
 // Initialize the control
 resetAlertMessage("structureWriter");
@@ -177,8 +176,8 @@ const selectedSaveFile = (filename: string): void => {
                  kind="save" @selected="selectedSaveFile" />
 
   <v-row class="mt-10" >
-    <v-switch v-model="continuous" label="Continuous write" :hint="hint" persistent-hint
-              class="ml-6 mr-8" :disabled="controlStore.writerAccumulate" />
+    <v-switch v-model="continuous" label="Continuous write" density="compact"
+              class="ml-6 mr-8 mt-n1" :disabled="controlStore.writerAccumulate" />
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>

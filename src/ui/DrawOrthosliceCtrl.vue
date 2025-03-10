@@ -169,7 +169,7 @@ watch([colormapName, colorIsolines], () => {
 <v-container class="container">
   <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 mb-4 ml-3" />
 
-  <g-dataset-selector v-model="dataset" :count-datasets="countDatasets" />
+  <g-dataset-selector v-model="dataset" :count-datasets />
 
   <v-row>
     <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
@@ -189,7 +189,7 @@ watch([colormapName, colorIsolines], () => {
   </g-debounced-slider>
 
   <g-debounced-range-slider v-slot="{values}" v-model="limits"
-                            :step="step" :min="valueMin" :max="valueMax"
+                            :step :min="valueMin" :max="valueMax"
                             class="ml-4 mt-1 pr-4">
     <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
              class="ml-n2 no-select" />
@@ -207,7 +207,7 @@ watch([colormapName, colorIsolines], () => {
   <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mb-5" />
 
   <g-debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
-                      :step="step" :min="valueMin" :max="valueMax" class="ml-2 mt-1">
+                      :step :min="valueMin" :max="valueMax" class="ml-2 mt-1">
     <v-label :text="`Isoline value (${humanFormat(value)})`" class="no-select"/>
   </g-debounced-slider>
 </v-container>

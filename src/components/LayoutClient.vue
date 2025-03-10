@@ -101,7 +101,7 @@ receiveBroadcast((eventType: string) => {
 </script>
 
 <template>
-<v-app :theme="theme" class="app-top">
+<v-app :theme class="app-top">
 <div class="layout-top">
   <div v-show="normalScreen" class="layout-west">
     <controls-container />

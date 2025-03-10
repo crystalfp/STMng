@@ -313,6 +313,7 @@ export default defineConfig([
         // "vue/comment-directive": "warn",
         // "import/no-cycle": "off",
         // "import/namespace": "off",
+        "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
         "import/default": "off",
         // "import/no-named-as-default": "off",
         // "import/no-named-as-default-member": "off",

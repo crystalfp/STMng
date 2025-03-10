@@ -568,7 +568,7 @@ watch([aroundA, aroundB, aroundC],
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
   <div class="compare-grid">
     <div class="side-w px-2">
       <v-label class="sub-tt separator-title first-title">Compare selected</v-label>
@@ -665,6 +665,7 @@ watch([aroundA, aroundB, aroundC],
 .selected {
   background-color: rgb(var(--v-theme-surface-variant), 0.3);
 }
+
 .disabled {
   color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
 }

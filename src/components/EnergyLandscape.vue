@@ -268,7 +268,7 @@ const renderSurface = (): void => {
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
   <div class="landscape-portal">
     <div class="landscape-viewer" ref="view">
     </div>

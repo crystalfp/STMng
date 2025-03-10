@@ -66,7 +66,7 @@ const openSelector = (): void => {
 
 
 <template>
-<v-text-field :model-value="label" :disabled="disabled" :label="title"
+<v-text-field :model-value="label" :disabled :label="title"
               readonly :prepend-icon="mdiFileOutline"
               class="mb-2 mr-0 ml-2 cursor-pointer" hide-details="auto"
               :loading="inProgress" spellcheck="false"

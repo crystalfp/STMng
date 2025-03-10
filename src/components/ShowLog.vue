@@ -42,7 +42,7 @@ const confirmDeletion = (): void => {
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
   <v-row class="log-box pa-0">
     <v-container class="log-text-container">
       <v-textarea :model-value="text" readonly auto-grow hide-details

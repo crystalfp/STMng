@@ -826,7 +826,7 @@ const mousemove = (event: MouseEvent): void => {
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
   <div class="scatterplot-grid">
     <div class="side-w pa-2 mr-2">
       <v-label class="separator-title first-title">Manage selection</v-label>

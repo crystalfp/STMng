@@ -41,7 +41,7 @@ const getSelector = (): void => {
     <v-label :text="title" class="mb-1 ml-1 no-select" />
   </v-col>
   <v-col cols="12" class="pa-0 mb-4">
-    <v-btn-toggle v-model="labelKind" mandatory :disabled="disabled">
+    <v-btn-toggle v-model="labelKind" mandatory :disabled>
       <v-btn value="symbol">Symbol</v-btn>
       <v-btn value="label">Label</v-btn>
       <v-btn value="index">Index</v-btn>

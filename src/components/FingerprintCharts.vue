@@ -244,7 +244,7 @@ watch([fpIndex, chartType, binCount], () => {
 
 
 <template>
-<v-app :theme="theme">
+<v-app :theme>
   <div class="fp-chart-portal">
     <div class="fp-chart-viewer">
       <Scatter :options="chartOptions" :data="chartData" />
