@@ -72,6 +72,17 @@ html {
   letter-spacing: 0.06rem !important;
 }
 
+.column-title {
+  font-size: 1.2rem !important;
+  font-weight: bold;
+  /* width: 100% !important; */
+  justify-content: left !important;
+  user-select: none !important;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  letter-spacing: 0.06rem !important;
+}
+
 /* >> Make labels not selectable */
 .no-select {
   user-select: none !important;

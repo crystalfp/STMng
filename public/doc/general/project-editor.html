@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Chemistry files formats supported by STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2025-03-11"/>
+  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>STMng — Program editor</title>
+
+</head><body>
+<h1>STMng — Program editor documentation</h1>
+
+<p>The loaded project structure could be seen and changed using the <b>File → Project editor</b> menu entry.
+This entry opens the <a href="general/project-editor.html">Project editor</a> in its own window depicted below.</p>
+<p><img src="project-editor.png" alt="Project editor" width="512" height="327"/></p>
+<p>The window title contains the filename of the currently loaded project or the “default project” mark.</p>
+<p>The leftmost column, labelled “In use”, list all the nodes in the current loaded project.</p>
+<p>The second column, labelled “Available”, list all the nodes provided by the application.</p>
+<p>Nodes in the “In use” column could be dragged up and down to change the display order in the application.</p>
+<p>If entries are dragged to the “Available” column, they are removed from the application.</p>
+<p>If entries are dragged from the “Available” column, they are added to the application. In the name a string in parenthesis mark these created nodes.</p>
+<p>Clicking nodes in the “In use” column mark them as selected with a border. Clicking on a selected node deselects it. The selected node show its data in the rightmost column labelled “Node info”. The title and the id of the node from which the data arrives to this node could be edited in the “Edit node" section. Changes are accepted with the “Change node” button. To return to the project original content for this node push “Reset”.</p>
+<p>At the end, “Save modified project” asks for a project filename (<tt>.stm</tt>), save here the modified project and load it in the application. Closing the window with the “Close” button loses the changes.</p>
+
+
+<p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
+
+</body>
+
+</html>

@@ -375,7 +375,6 @@ class ProjectManager {
 	 * @param graph - Project graph from the project editor
 	 * @returns The project file content to be saved
 	 */
-	// async createProjectSave(graph: ClientProjectInfo): Promise<string> {
 	async createProjectSave(graph: ProjectGraph): Promise<string> {
 
 		// Retrieve the state of the nodes

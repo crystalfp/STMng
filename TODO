@@ -45,6 +45,7 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline>
   ☐ If possible remove circular dependencies between modules
+  ☐ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
