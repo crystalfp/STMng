@@ -7,7 +7,7 @@
  * @since 2024-08-20
  */
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
@@ -62,35 +62,44 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
 
+const scales = computed(() => {
+
+    const out = [];
+    for(const pair of perPairData.value) {
+        out.push(pair.scale);
+    }
+    return out;
+});
+
 watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
        maxHValenceAngle, enableComputeBonds, bondScale, perPairScale,
-       perPairData, enlargementKind], (
-        [aminbd, amaxbd, amaxhbd, amaxva, aen, abs, apps, appd, aek],
-        [minbd,  maxbd,  maxhbd,  maxva,  en,  bs,  pps,  ppd,  ek]
+       scales, enlargementKind], (
+        [aminbd, amaxbd, amaxhbd, amaxva, aen, abs, apps, as, aek],
+        [bminbd, bmaxbd, bmaxhbd, bmaxva, ben, bbs, bpps, bs, bek]
        ) => {
 
     // Workaround to avoid firing with no value changed
     let changes = false;
-    if(aminbd !== minbd ||
-       amaxbd !== maxbd ||
-       amaxhbd !== maxhbd ||
-       amaxva !== maxva ||
-       aen !== en ||
-       abs !== bs ||
-       apps !== pps ||
-       appd !== ppd ||
-       aek !== ek) changes = true;
-    else {
-        const len = perPairData.value.length;
-        /* eslint-disable @stylistic/max-statements-per-line */
-        for(let i=0; i < len; ++i) {
-            if(appd[i].atomZi !== ppd[i].atomZi) {changes = true; break;}
-            if(appd[i].atomZi !== ppd[i].atomZi) {changes = true; break;}
-            if(appd[i].scale !== ppd[i].scale)   {changes = true; break;}
-            if(appd[i].label !== ppd[i].label)   {changes = true; break;}
-        }
-        /* eslint-enable @stylistic/max-statements-per-line */
+    if(aminbd  !== bminbd ||
+       amaxbd  !== bmaxbd ||
+       amaxhbd !== bmaxhbd ||
+       amaxva  !== bmaxva ||
+       aen     !== ben ||
+       abs     !== bbs ||
+       apps    !== bpps ||
+       aek     !== bek) {
+        changes = true;
     }
+    else if(apps) {
+        const len = perPairData.value.length;
+        for(let i=0; i < len; ++i) {
+            if(as[i] !== bs[i]) {
+                changes = true;
+                break;
+            }
+        }
+    }
+
     if(changes) sendToNode(id, "changes", {
         minBondingDistance:  minBondingDistance.value,
         maxBondingDistance:  maxBondingDistance.value,

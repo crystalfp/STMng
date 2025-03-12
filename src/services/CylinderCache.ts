@@ -1,0 +1,138 @@
+/**
+ * Caching cylinders.
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle\@ikmail.com"
+ * @since 2025-03-12
+ */
+
+import {Color, CylinderGeometry, InstancedMesh, Material,
+		Mesh, Object3D, Quaternion, Vector3, type Group} from "three";
+import {colorTextureMaterial} from "./HelperMaterials";
+import type {PositionType} from "@/types";
+
+export class CylinderCache {
+
+	private readonly geometry: CylinderGeometry;
+	private readonly cylinderSubdivisions = [0, 3, 5, 10, 16];
+	private readonly shadedBonds;
+	private readonly subdivisions;
+	private readonly drawRoughness: number;
+	private readonly drawMetalness: number;
+	private readonly scales: number[] = [];
+	private readonly centers: number[][] = [];
+	private readonly rotations: Quaternion[] = [];
+	private readonly colors = new Map<string, number[]>();
+	private index = 0;
+
+	/**
+	 * Initialize the cylinder bond cache
+	 *
+	 * @param radius - Radius of the bond
+	 * @param shadedBonds - If the bond color is shaded or in two bands
+	 * @param drawQuality - Rendering quality (1-4)
+	 * @param drawRoughness - Surface roughness (0-1)
+	 * @param drawMetalness - Surface metalness (0-1)
+	 */
+	constructor(radius: number, shadedBonds: boolean,
+				drawQuality: number, drawRoughness: number, drawMetalness: number) {
+
+		this.shadedBonds = shadedBonds;
+		this.subdivisions = this.cylinderSubdivisions[drawQuality];
+		this.drawRoughness = drawRoughness;
+		this.drawMetalness = drawMetalness;
+
+		this.geometry = new CylinderGeometry(radius, radius, 1, this.subdivisions, 1, true);
+	}
+
+	/**
+	 * Add a cylinder bond
+	 *
+	 * @param start - Position of the bond start
+	 * @param end - Position of the bond end
+	 * @param colorStart - Color of the bond start
+	 * @param colorEnd - Color of the bond end
+	 */
+	addCylinder(start: PositionType, end: PositionType,
+				colorStart: string, colorEnd: string): void {
+
+		// Save the cylinder colors
+		const color = `${colorStart}-${colorEnd}`;
+		const colorList = this.colors.get(color);
+		this.colors.set(color, colorList ? [...colorList, this.index] : [this.index]);
+
+		// Cylinder length
+		const dx = end[0] - start[0];
+		const dy = end[1] - start[1];
+		const dz = end[2] - start[2];
+		const len = Math.hypot(dx, dy, dz);
+
+		// Cylinder center point
+		const center = [
+			(start[0] + end[0])/2,
+			(start[1] + end[1])/2,
+			(start[2] + end[2])/2,
+		];
+
+		// Cylinder rotation
+		const quaternion = new Quaternion();
+		quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/len, dy/len, dz/len));
+
+		// Save the cylinder data
+		this.scales.push(len);
+		this.centers.push(center);
+		this.rotations.push(quaternion);
+		++this.index;
+	}
+
+	/**
+	 * Render the cylinder bonds
+	 *
+	 * @param group - The output group where to add the bond
+	 */
+	renderCylinders(group: Group): void {
+
+		// group.clear();
+		const meshes: Mesh[] = [];
+		group.traverse((child) => {
+			if(child.type === "Mesh") meshes.push(child as Mesh);
+		});
+		for(const mesh of meshes) {
+			mesh.geometry.dispose();
+			(mesh.material as Material).dispose();
+			group.remove(mesh);
+		}
+
+		for(const entry of this.colors.keys()) {
+
+			const colors = entry.split("-");
+
+			const meshMaterial = colorTextureMaterial(new Color(colors[0]),
+													  new Color(colors[1]),
+													  this.drawRoughness,
+													  this.drawMetalness,
+													  this.subdivisions,
+													  this.shadedBonds);
+			const indices = this.colors.get(entry)!;
+
+			const count = indices.length;
+
+			const cylinder = new InstancedMesh(this.geometry, meshMaterial, count);
+			cylinder.frustumCulled = false;
+			group.add(cylinder);
+			const dummy = new Object3D();
+
+			for(let i=0; i < count; ++i) {
+				const idx = indices[i];
+				dummy.scale.set(1, this.scales[idx], 1);
+				dummy.position.set(this.centers[idx][0],
+								   this.centers[idx][1],
+								   this.centers[idx][2]);
+				dummy.quaternion.copy(this.rotations[idx]);
+				dummy.updateMatrix();
+				cylinder.setMatrixAt(i, dummy.matrix);
+			}
+		}
+	}
+}

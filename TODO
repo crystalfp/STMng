@@ -6,6 +6,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
+  ☐ Try `material.color.convertSRGBToLinear();` if it changes anything
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -16,6 +17,8 @@ Performance:
   ☐ Investigate lazy load `*Ctrl` components
   ☐ `import('@/components/...')` or `@mouseenter` in fingerprint to have show windows ready
   ☐ Computed that returns object or array: check if the output changes. No deep comparisons are done.
+  ☐ Reuse materials (e.g. for atoms)
+  ☐ Investigate removing `preserveDrawingBuffer`
 
 Functionalities:
   ☐ An option to specify arbitrary section plane

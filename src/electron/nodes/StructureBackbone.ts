@@ -75,7 +75,7 @@ export class StructureBackbone extends NodeCore {
 		// Nothing to do
 		if(!this.enableStructureBackbone ||
 			!this.inputStructure ||
-			(this.chains.size > 0 && this.selectedChains.length === 0) ||
+			(this.chains.size > 1 && this.selectedChains.length === 0) ||
 		    (this.atomsSelector === "" && this.selectorKind !== "all")) {
 
 			sendToClient(this.id, "positions", {coordinates: [], chainStart: []});
@@ -89,9 +89,9 @@ export class StructureBackbone extends NodeCore {
 		const coordinates: number[] = [];
 		const chainStart: number[] = [0];
 		let nodeIndex = 0;
-
 		const len = atoms.length;
-		if(this.chains.size === 0) {
+
+		if(this.chains.size < 2) {
 			for(let i=0; i < len; ++i) {
 
 				if(indexSet.has(i)) {

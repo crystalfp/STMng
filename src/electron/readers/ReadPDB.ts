@@ -8,9 +8,9 @@
  */
 import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
-import {extractBasis, invertBasis} from "../modules/Helpers";
+import {extractBasis} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
-import type {Structure, ReaderImplementation, BasisType,
+import type {Structure, ReaderImplementation,
 			 Atom, Bond, ReaderOptions} from "@/types";
 
 /**
@@ -87,12 +87,12 @@ export class ReaderPDB implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let currentStructure = -1;
-		let hasScale1 = false;
-		let hasScale2 = false;
-		let hasScaleAll = false;
-		let hasCryst1 = false;
-		const origin = [0, 0, 0];
-		const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		// let hasScale1 = false;
+		// let hasScale2 = false;
+		// let hasScaleAll = false;
+		// let hasCryst1 = false;
+		// const origin = [0, 0, 0];
+		// const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		const snMap = new Map<number, number>();
 		let atomIdx = 0;
 		const readHydrogen = options?.readHydrogen ?? false;
@@ -114,7 +114,7 @@ export class ReaderPDB implements ReaderImplementation {
 			// Start a new structure
 			if(tryStartStep) {
 				tryStartStep = false;
-				hasCryst1 = false;
+				// hasCryst1 = false;
 				const structure: Structure = {
 
 					crystal: {
@@ -129,6 +129,8 @@ export class ReaderPDB implements ReaderImplementation {
 				};
 				structures.push(structure);
 				++currentStructure;
+				atomIdx = 0;
+				snMap.clear();
 			}
 
 			switch(recordType) {
@@ -146,7 +148,7 @@ export class ReaderPDB implements ReaderImplementation {
 					const {basis} = structures[currentStructure].crystal;
 					for(let i=0; i < 9; ++i) basis[i] = matrix[i];
 					structures[currentStructure].crystal.spaceGroup = line.slice(55, 65).trim();
-					hasCryst1 = true;
+					// hasCryst1 = true;
 					break;
 				}
 
@@ -274,7 +276,7 @@ export class ReaderPDB implements ReaderImplementation {
 					break;
 				}
 
-				case 4: {
+			 /*	case 4: {
 					// "SCALEx"
 					let seq = line.slice(5, 6);
 					const a = fixedWidthFloat(line, 10,  10);
@@ -322,34 +324,29 @@ export class ReaderPDB implements ReaderImplementation {
 							basis[4] = b;
 							basis[5] = c;
 							break;
-						case "3":
+						case "3": {
 							origin[2] = d;
 							basis[6] = a;
 							basis[7] = b;
 							basis[8] = c;
-							hasScaleAll = true;
+
+							const r = invertBasis(basis);
+							void origin;
+							// structures[currentStructure].crystal.origin = [
+							// 	-(r[0]*origin[0]+r[1]*origin[1]+r[2]*origin[2]),
+							// 	-(r[3]*origin[0]+r[4]*origin[1]+r[5]*origin[2]),
+							// 	-(r[6]*origin[0]+r[7]*origin[1]+r[8]*origin[2])
+							// ];
+							// console.log("BASIS", r);
+							// console.log("ORIGIN", structures[currentStructure].crystal.origin);
+							if(!hasCryst1) {
+								const bb = structures[currentStructure].crystal.basis;
+								for(let i=0; i < 9; ++i) bb[i] = r[i];
+							}
 							break;
+						}
 					}
-				}
-
-				if(hasScaleAll) {
-
-					hasScaleAll = false;
-					const r = invertBasis(basis);
-void origin;
-					// structures[currentStructure].crystal.origin = [
-					// 	-(r[0]*origin[0]+r[1]*origin[1]+r[2]*origin[2]),
-					// 	-(r[3]*origin[0]+r[4]*origin[1]+r[5]*origin[2]),
-					// 	-(r[6]*origin[0]+r[7]*origin[1]+r[8]*origin[2])
-					// ];
-// console.log("BASIS", r);
-// console.log("ORIGIN", structures[currentStructure].crystal.origin);
-					if(!hasCryst1) {
-						const bb = structures[currentStructure].crystal.basis;
-						for(let i=0; i < 9; ++i) bb[i] = r[i];
-					}
-				}
-				break;
+				} */
 			}
 		}
 

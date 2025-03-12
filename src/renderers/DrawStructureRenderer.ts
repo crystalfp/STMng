@@ -8,13 +8,12 @@
  */
 import {Group, Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
 		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
-		Float32BufferAttribute, LineSegments, type ColorRepresentation,
-		FrontSide} from "three";
+		Float32BufferAttribute, LineSegments, FrontSide} from "three";
 import {sm} from "@/services/SceneManager";
-import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {getBoundingBox} from "@/services/BoundingBox";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {SpheresCache} from "@/services/SpheresCache";
+import {CylinderCache} from "@/services/CylinderCache";
 import type {PositionType, StructureRenderInfo} from "@/types";
 
 // > Constants
@@ -22,7 +21,6 @@ const bondRadius = 0.1;
 const sphereSubdivisions   = [0, 0, 1,  3,  9];
 const cylinderSubdivisions = [0, 3, 5, 10, 16];
 const rCovScale = 0.5;
-
 
 export class DrawStructureRenderer {
 
@@ -191,52 +189,6 @@ export class DrawStructureRenderer {
 	}
 
 	/**
-	 * Create a cylinder bond
-	 *
-	 * @param from - Position of the bond start
-	 * @param to - Position of the bond end
-	 * @param radius - Radius of the bond
-	 * @param shadedBonds - If the bond color is shaded or in two bands
-	 * @param colorStart - Color of the bond start
-	 * @param colorEnd - Color of the bond end
-	 * @param group - The output group where to add the bond
-	 */
-	private addCylinder(start: PositionType, end: PositionType,
-						radius: number, shadedBonds: boolean, colorStart: ColorRepresentation,
-						colorEnd: ColorRepresentation, group: Group): void {
-
-		// Create cylinder aligned along Y axis
-		const subdivisions = cylinderSubdivisions[this.drawQuality];
-
-		const dx = end[0] - start[0];
-		const dy = end[1] - start[1];
-		const dz = end[2] - start[2];
-		const len = Math.hypot(dx, dy, dz);
-
-		const geometry = new CylinderGeometry(radius, radius, len, subdivisions, 1, true);
-		const meshMaterial = colorTextureMaterial(new Color(colorStart),
-												  new Color(colorEnd),
-												  this.drawRoughness,
-												  this.drawMetalness,
-												  subdivisions,
-												  shadedBonds);
-		const cylinder = new Mesh(geometry, meshMaterial);
-
-		// Rotate it along the bond direction
-		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/len, dy/len, dz/len));
-
-		// Move it to the midpoint between atoms
-		const midx = (start[0] + end[0])/2;
-		const midy = (start[1] + end[1])/2;
-		const midz = (start[2] + end[2])/2;
-		cylinder.position.set(midx, midy, midz);
-
-		// Add to the scene
-		group.add(cylinder);
-		sm.modified();
-	}
-
-	/**
 	 * Adjust start and end positions of the bond rendered as cylinder to have a better coloring
 	 *
 	 * @param start - Center of the first atom
@@ -330,37 +282,43 @@ export class DrawStructureRenderer {
 
 		// Render bonds
 		switch(drawKind) {
-			case "ball-and-stick":
+			case "ball-and-stick": {
+				const cylinderCache = new CylinderCache(bondRadius, shadedBonds, this.drawQuality,
+														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(bond.type === 1) this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else {
-						const colorFrom    = atomFrom.color;
-						const colorTo      = atomTo.color;
 						const radiusStart  = atomFrom.rCov*rCovScale;
 						const radiusEnd    = atomTo.rCov*rCovScale;
 						const {start, end} = this.adjustLimitsCylinder(atomFrom.position, atomTo.position,
 																	   radiusStart, radiusEnd);
-						this.addCylinder(start, end, bondRadius, shadedBonds, colorFrom, colorTo, this.bondsGroup);
+						cylinderCache.addCylinder(start, end, atomFrom.color, atomTo.color);
 					}
 				}
+				cylinderCache.renderCylinders(this.bondsGroup);
+				sm.modified();
 				break;
-			case "licorice":
+			}
+			case "licorice": {
+				const cylinderCache = new CylinderCache(bondRadius, shadedBonds, this.drawQuality,
+					this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(bond.type === 1) this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else {
-						const colorFrom = atomFrom.color;
-						const colorTo   = atomTo.color;
-						this.addCylinder(atomFrom.position, atomTo.position,
-									bondRadius, shadedBonds, colorFrom, colorTo, this.bondsGroup);
+						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
+												  atomFrom.color, atomTo.color);
 					}
 				}
+				cylinderCache.renderCylinders(this.bondsGroup);
+				sm.modified();
 				break;
+			}
 			case "lines":
 				for(const bond of renderInfo.bonds) {
 
