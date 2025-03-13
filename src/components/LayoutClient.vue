@@ -13,7 +13,7 @@ import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
         receiveNotifications, sendToNode,
         receiveBroadcast} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showAlertMessage, showSystemAlert, type AlertLevel} from "@/services/AlertMessage";
 import {theme} from "@/services/ReceiveTheme";
 
 import Viewer3D from "./Viewer3D.vue";
@@ -29,7 +29,7 @@ globalThis.addEventListener("DOMContentLoaded", () => {
         ++count;
         if(count > 50) {
           clearInterval(timer);
-          showAlertMessage("Waiting too long for IPC to setup");
+          showSystemAlert("Waiting too long for IPC to setup");
         }
         if(isLoaded()) {
             clearInterval(timer);
@@ -59,7 +59,7 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
             sm.dumpScene("Scene 3D");
             break;
         default:
-            showAlertMessage(`Menu entry "${menuEntry}" is not implemented`);
+            showSystemAlert(`Menu entry "${menuEntry}" is not implemented`);
             break;
     }
 });
@@ -68,13 +68,13 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
 const showNotification = ref(false);
 const notificationText = ref("");
 const notificationColor = ref("red-darken-4");
-receiveNotifications((type: "error" | "success", text: string, from: string) => {
+receiveNotifications((type: AlertLevel, text: string, from: string) => {
 
     notificationText.value = text;
-    notificationColor.value = type === "error" ? notificationColor.value : "success";
+    notificationColor.value = type === "error" ? "red-darken-4" : type;
     showNotification.value = true;
 
-    showAlertMessage(text, from);
+    if(from !== "") showAlertMessage(text, from);
 });
 
 /**

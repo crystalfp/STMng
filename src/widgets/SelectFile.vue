@@ -9,7 +9,7 @@
 import {ref} from "vue";
 import {mdiFileOutline} from "@mdi/js";
 import {askNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 
 // > Properties and emits
 const props = withDefaults(defineProps<{
@@ -59,7 +59,7 @@ const openSelector = (): void => {
             }
         })
         .finally(() => inProgress.value = false)
-        .catch((error: Error) => showAlertMessage(`Error from file select: ${error.message}`));
+        .catch((error: Error) => showSystemAlert(`Error from file select: ${error.message}`));
 };
 
 </script>

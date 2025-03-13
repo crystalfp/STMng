@@ -10,7 +10,7 @@
 import {ref, computed, watch} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsosurfacesFromNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawIsosurfaceRenderer} from "@/renderers/DrawIsosurfaceRenderer";
 import type {CtrlParams} from "@/types";
 
@@ -57,7 +57,7 @@ askNode(id, "init")
         limits.value[1] = params.limitHigh as number ?? 10;
         limitColormap.value = params.limitColormap as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // > Initialize graphical rendering
 const renderer = new DrawIsosurfaceRenderer(id);

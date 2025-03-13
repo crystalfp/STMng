@@ -10,7 +10,7 @@
 import {ref, computed, watch} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsoOrthoFromNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawOrthosliceRenderer} from "@/renderers/DrawOrthosliceRenderer";
 import type {CtrlParams} from "@/types";
 
@@ -71,7 +71,7 @@ askNode(id, "init")
             showIsolines.value = false;
         }
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // > Initialize graphical rendering
 const renderer = new DrawOrthosliceRenderer(id);

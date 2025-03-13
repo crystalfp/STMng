@@ -7,7 +7,7 @@
  * @since 2025-02-28
  */
 import {reactive, ref, watch} from "vue";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 import {StructureBackboneRenderer} from "@/renderers/StructureBackboneRenderer";
@@ -56,7 +56,7 @@ askNode(id, "init")
         selectorKind.value = params.selectorKind as string ?? "label";
         atomsSelector.value = params.atomsSelector as string ?? "";
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 receiveFromNode(id, "chains", (params: CtrlParams) => {
 

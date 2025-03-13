@@ -9,7 +9,7 @@
 
 import {computed, ref, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Properties
@@ -60,7 +60,7 @@ askNode(id, "init")
             showScale.value.push(item.scale);
         }
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 const scales = computed(() => {
 
@@ -117,6 +117,7 @@ receiveFromNode(id, "params", (params: CtrlParams) => {
 
     if(params.enableComputeBonds !== undefined) {
 	    enableComputeBonds.value = params.enableComputeBonds as boolean ?? false;
+        showSystemAlert("Too many atoms. Disabled bonds computation", "warning");
     }
     if(params.perPairData !== undefined) {
         perPairData.value.length = 0;

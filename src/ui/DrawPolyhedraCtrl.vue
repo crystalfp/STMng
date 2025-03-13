@@ -9,7 +9,7 @@
 
 import {ref, watch} from "vue";
 import {askNode, sendToNode, receivePolyhedraFromNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawPolyhedraRenderer} from "@/renderers/DrawPolyhedraRenderer";
 
 // > Properties
@@ -42,7 +42,7 @@ askNode(id, "init")
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // > Initialize graphical rendering
 const renderer = new DrawPolyhedraRenderer(id);

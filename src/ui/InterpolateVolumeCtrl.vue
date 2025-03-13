@@ -9,7 +9,7 @@
 
 import {ref, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 // > Properties
@@ -33,7 +33,7 @@ askNode(id, "init")
 		interpolateVolume.value = params.interpolateVolume as boolean ?? false;
 		pointsToAdd.value = params.pointsToAdd as number ?? 1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 receiveFromNode(id, "countDatasets", (params: CtrlParams) => {
     countDatasets.value = params.countDatasets as number ?? 0;

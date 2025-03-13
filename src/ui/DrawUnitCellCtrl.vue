@@ -9,7 +9,7 @@
 
 import {ref, watch} from "vue";
 import {askNode, receiveVerticesFromNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawUnitCellRenderer} from "@/renderers/DrawUnitCellRenderer";
 
 // > Properties
@@ -79,7 +79,7 @@ askNode(id, "init")
         percentC.value = params.percentC as number ?? 0;
         shrink.value = params.shrink as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // > Initialize graphical rendering
 const renderer = new DrawUnitCellRenderer(id);

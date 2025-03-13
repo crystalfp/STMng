@@ -7,8 +7,8 @@
  * @since 2025-03-12
  */
 
-import {Color, CylinderGeometry, InstancedMesh, Material,
-		Mesh, Object3D, Quaternion, Vector3, type Group} from "three";
+import {Color, CylinderGeometry, InstancedMesh, Material, Matrix4,
+		Mesh, Quaternion, Vector3, type Group} from "three";
 import {colorTextureMaterial} from "./HelperMaterials";
 import type {PositionType} from "@/types";
 
@@ -93,7 +93,7 @@ export class CylinderCache {
 	 */
 	renderCylinders(group: Group): void {
 
-		// group.clear();
+		// Remove previous meshes
 		const meshes: Mesh[] = [];
 		group.traverse((child) => {
 			if(child.type === "Mesh") meshes.push(child as Mesh);
@@ -104,6 +104,7 @@ export class CylinderCache {
 			group.remove(mesh);
 		}
 
+		// For each cached cylinder type
 		for(const entry of this.colors.keys()) {
 
 			const colors = entry.split("-");
@@ -121,17 +122,23 @@ export class CylinderCache {
 			const cylinder = new InstancedMesh(this.geometry, meshMaterial, count);
 			cylinder.frustumCulled = false;
 			group.add(cylinder);
-			const dummy = new Object3D();
 
+			// For each instance of the mesh, position it
+			const position = new Vector3();
+			const quaternion = new Quaternion();
+			const scale = new Vector3();
+			const matrix = new Matrix4();
 			for(let i=0; i < count; ++i) {
+
 				const idx = indices[i];
-				dummy.scale.set(1, this.scales[idx], 1);
-				dummy.position.set(this.centers[idx][0],
-								   this.centers[idx][1],
-								   this.centers[idx][2]);
-				dummy.quaternion.copy(this.rotations[idx]);
-				dummy.updateMatrix();
-				cylinder.setMatrixAt(i, dummy.matrix);
+
+				scale.set(1, this.scales[idx], 1);
+				position.set(this.centers[idx][0],
+							 this.centers[idx][1],
+							 this.centers[idx][2]);
+				quaternion.copy(this.rotations[idx]);
+				matrix.compose(position, quaternion, scale);
+				cylinder.setMatrixAt(i, matrix);
 			}
 		}
 	}

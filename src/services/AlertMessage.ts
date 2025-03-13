@@ -18,7 +18,8 @@ import {useMessageStore} from "@/stores/messageStore";
 export const showAlertMessage = (text: string, node?: string): void => {
 
 	const messageStore = useMessageStore();
-	messageStore.system.error = text;
+	messageStore.system.message = text;
+	messageStore.system.level = "error";
 	switch(node) {
 		case "symmetries":
 			messageStore.symmetries.message = text;
@@ -44,7 +45,7 @@ export const showAlertMessage = (text: string, node?: string): void => {
 export const resetAlertMessage = (node: string): void => {
 
 	const messageStore = useMessageStore();
-	messageStore.system.error = "";
+	messageStore.system.message = "";
 	switch(node) {
 		case "symmetries":
 			messageStore.symmetries.message = "";
@@ -89,4 +90,30 @@ export const getAlertMessage = (node: string): string => {
 			return messageStore.fingerprints.message;
 	}
 	return "?";
+};
+
+/** Level for the alert messages */
+export type AlertLevel = "success" | "info" | "warning" | "error";
+
+/**
+ * Show a system alert message
+ *
+ * @param message - The message to display in a popup
+ * @param level - Level of the alert
+ */
+export const showSystemAlert = (message: string, level: AlertLevel = "error"): void => {
+
+	const messageStore = useMessageStore();
+	messageStore.system.message = message;
+	messageStore.system.level = level;
+
+	if(level === "error") {
+		log.error(message);
+	}
+	else if(level === "warning") {
+		log.warn(message);
+	}
+	else {
+		log.info(message);
+	}
 };

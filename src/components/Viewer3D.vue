@@ -20,7 +20,7 @@ import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 /** Convert degrees to radiants */
@@ -134,7 +134,7 @@ const scene = sm.createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        showAlertMessage("Cannot create Viewer3D. Quitting.");
+        showSystemAlert("Cannot create Viewer3D. Quitting.");
         return;
     }
 

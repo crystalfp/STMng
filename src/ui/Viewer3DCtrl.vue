@@ -11,7 +11,7 @@ import {computed, ref, watch} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, sendViewer3DState} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -36,7 +36,7 @@ askNode(id, "init")
 
         configStore.restoreState(params.rawStatus as string);
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // Send state on request from main process
 sendViewer3DState(id, "state", () => configStore.statusToSave);

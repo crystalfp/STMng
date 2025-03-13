@@ -8,7 +8,7 @@
  */
 import {ref, watch, computed} from "vue";
 import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert, resetAlertMessage} from "@/services/AlertMessage";
 import {DrawStructureRenderer} from "@/renderers/DrawStructureRenderer";
 import type {StructureRenderInfo} from "@/types";
 
@@ -48,7 +48,7 @@ askNode(id, "init")
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // > Initialize graphical rendering
 const renderer = new DrawStructureRenderer(id, drawQuality.value,

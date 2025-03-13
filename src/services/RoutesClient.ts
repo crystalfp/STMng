@@ -12,6 +12,7 @@ import {useMessageStore} from "@/stores/messageStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {CtrlParams, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
+import type {AlertLevel} from "./AlertMessage";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -78,22 +79,23 @@ export const receiveMenuSelection = (callback: (menuEntry: string, payload: stri
  *
  * @param callback - Function to be called when a notification arrives
  */
-export const receiveNotifications = (callback: (type: "error" | "success",
+export const receiveNotifications = (callback: (type: AlertLevel,
 												text: string,
 												from: string) => void): void => {
 
 	// Notifications from main process
-	window.electron.ipcRenderer.on("SYSTEM:notification", (_event, type: string, text: string, from: string) =>
-														callback(type as "error" | "success", text, from));
+	window.electron.ipcRenderer.on("SYSTEM:notification",
+		(_event, type: string, text: string, from: string) =>
+							callback(type as AlertLevel, text, from));
 
 	// Notifications from main window
 	watchEffect(() => {
 		const messageStore = useMessageStore();
 
-		const message = messageStore.system.error;
+		const message = messageStore.system.message;
 		if(message) {
-			callback("error", message, "");
-			messageStore.system.error = "";
+			callback(messageStore.system.level, message, "");
+			messageStore.system.message = "";
 		}
 	});
 };

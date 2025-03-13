@@ -7,7 +7,7 @@
  * @since 2024-11-04
  */
 import {ref, watch} from "vue";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
@@ -46,7 +46,7 @@ askNode(id, "init")
         wavelengthCode.value = params.wavelengthCode as string ?? "CuKa";
         wavelengthNumeric.value = params.wavelengthNumeric as number ?? 1.5;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 /** Changing computation parameters */
 watch([wavelengthCode, wavelengthNumeric, theta, scaled], () => {

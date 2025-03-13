@@ -33,7 +33,8 @@ interface MessageState {
 		textT: string;
 	};
 	system: {
-		error: string;
+		message: string;
+		level: "success" | "info" | "warning" | "error";
 	};
 	fingerprints: {
 		message: string;
@@ -54,7 +55,7 @@ export const useMessageStore = defineStore("MessageStore", {
 			typeT: undefined,
 			textT: "",
 		},
-		system: {error: ""},
+		system: {message: "", level: "error"},
 		fingerprints: {message: ""},
 	} as MessageState),
 });

@@ -13,7 +13,7 @@ import {sm} from "@/services/SceneManager";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {MeasuresRenderer} from "@/renderers/MeasuresRenderer";
 import type {SelectedAtom, BondData} from "@/types";
 
@@ -75,7 +75,7 @@ watch(controlStore.atomsSelected, () => {
 
             renderer.measureBonds(params, bondDataTable, pointSize);
         })
-        .catch((error: Error) => showAlertMessage(`Error from computing bonds lengths: ${error.message}`));
+        .catch((error: Error) => showSystemAlert(`Error from computing bonds lengths: ${error.message}`));
         return;
     }
 
@@ -94,7 +94,7 @@ watch(controlStore.atomsSelected, () => {
 
     	renderer.measureAtoms(details.value, pointSize);
     })
-    .catch((error: Error) => showAlertMessage(`Error from computing measures: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from computing measures: ${error.message}`));
 
 }, {deep: true});
 

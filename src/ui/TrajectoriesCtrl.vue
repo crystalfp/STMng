@@ -11,7 +11,7 @@ import {computed, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
 
 // > Properties
@@ -47,7 +47,7 @@ askNode(id, "init")
 		positionCloudsColor.value   = params.positionCloudsColor as string ?? "#BBBBBE";
 		positionCloudsSize.value    = params.positionCloudsSize as number ?? 100;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
 // > Initialize graphical rendering
 const renderer = new TrajectoriesRenderer(id,
