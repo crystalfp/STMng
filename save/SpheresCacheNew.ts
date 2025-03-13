@@ -1,19 +1,10 @@
-/**
- * Cache the atoms' sphere geometries
- *
- * @packageDocumentation
- *
- * @author Mario Valle "mvalle\@ikmail.com"
- * @since 2024-10-06
- */
-import {IcosahedronGeometry, MeshStandardMaterial, FrontSide, Mesh,
-		type Group, InstancedMesh, Matrix4, Quaternion, Vector3} from "three";
+import {Group, InstancedMesh, Matrix4, Quaternion, Vector3} from "three";
 import type {PositionType} from "@/types";
 
 /**
  * Cache the atoms' sphere geometries
  */
-export class SpheresCache {
+export class SpheresCacheNew {
 
 	private readonly geometry: IcosahedronGeometry;
 	private readonly sphereSubdivisions = [0, 0, 1,  3,  9];
@@ -24,7 +15,6 @@ export class SpheresCache {
 	private readonly centers: number[][] = [];
 	private readonly atomMap = new Map<string, number[]>();
 	private index = 0;
-	private readonly mapIndexAtom: number[][] = [];
 
 	/**
 	 * Initialize the spheres cache
@@ -41,13 +31,6 @@ export class SpheresCache {
 		this.geometry = new IcosahedronGeometry(1, this.subdivisions);
 	}
 
-	/**
-	 * Add a sphere to be rendered
-	 *
-	 * @param center - Center of the added sphere
-	 * @param radius - Its radius
-	 * @param color - Its color
-	 */
 	addSphere(center: PositionType, radius: number, color: string): void {
 
 		const atomList = this.atomMap.get(color);
@@ -78,10 +61,10 @@ export class SpheresCache {
 		}
 
 		// For each cached sphere type
-		let index = 0;
 		for(const entry of this.atomMap.entries()) {
 
 			const indices = entry[1];
+
 			const count = indices.length;
 
 			const meshMaterial = new MeshStandardMaterial({
@@ -92,14 +75,12 @@ export class SpheresCache {
 			});
 			const sphere = new InstancedMesh(this.geometry, meshMaterial, count);
 			sphere.frustumCulled = false;
-			sphere.name = "Atom";
-			sphere.userData = {index};
-
 			group.add(sphere);
 
 			// For each instance of the mesh, position it
 			const position = new Vector3();
 			const quaternion = new Quaternion();
+			quaternion.identity();
 			const scale = new Vector3();
 			const matrix = new Matrix4();
 			for(let i=0; i < count; ++i) {
@@ -113,22 +94,23 @@ export class SpheresCache {
 				matrix.compose(position, quaternion, scale);
 				sphere.setMatrixAt(i, matrix);
 			}
-
-			// Save the mapping
-			const out = Array(count).fill(0) as number[];
-			for(let i=0; i < count; ++i) out[i] = indices[i];
-			this.mapIndexAtom[index] = out;
-
-			++index;
 		}
 	}
-
-	/**
-	 * Return the atom mapping
-	 *
-	 * @returns The map from the pair mesh index/instance index to atom index
-	 */
-	returnAtomsMap(): number[][] {
-		return this.mapIndexAtom;
-	}
 }
+
+	// const spheresCache = new SpheresCacheNew(this.drawQuality,
+	// 										 this.drawRoughness,
+	// 						  				 this.drawMetalness);
+
+		// let radius = 1;
+		// switch(drawKind) {
+		// 	case "ball-and-stick":
+		// 		radius = atom.rCov*rCovScale;
+		// 		break;
+		// 	case "van-der-waals":
+		// 		radius = atom.rVdW;
+		// 		break;
+		// }
+		// spheresCache.addSphere(position, radius, atom.color);
+	// spheresCache.renderSpheres(this.atomsGroup);
+				

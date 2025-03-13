@@ -14,6 +14,7 @@ import {getBoundingBox} from "@/services/BoundingBox";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {SpheresCache} from "@/services/SpheresCache";
 import {CylinderCache} from "@/services/CylinderCache";
+import {useControlStore} from "@/stores/controlStore";
 import type {PositionType, StructureRenderInfo} from "@/types";
 
 // > Constants
@@ -29,7 +30,6 @@ export class DrawStructureRenderer {
 	private readonly labelsGroup = new Group();
 	private readonly out = new Group();
 	private readonly outName;
-	private readonly spheresCache = new SpheresCache(rCovScale, bondRadius, sphereSubdivisions);
 	private drawQuality: number;
 	private drawRoughness: number;
 	private drawMetalness: number;
@@ -257,27 +257,36 @@ export class DrawStructureRenderer {
 		// Render atoms if present
 		if(drawKind !== "lines") {
 
-			// Prepare spheres
-			this.spheresCache.prepare(this.drawQuality,
-									  drawKind,
-									  renderInfo.atoms,
-									  this.drawRoughness,
-									  this.drawMetalness);
+			const spheresCache = new SpheresCache(this.drawQuality,
+													this.drawRoughness,
+													this.drawMetalness);
 
 			// Render atoms
-			let index = 0;
 			for(const atom of renderInfo.atoms) {
 
-				const {atomZ, position} = atom;
-
-				const sphere = this.spheresCache.getSphere(atomZ);
-				sphere.position.set(position[0], position[1], position[2]);
-				sphere.name = "Atom";
-				sphere.userData = {index};
-				++index;
-				this.atomsGroup.add(sphere);
-				sm.modified();
+				const {position} = atom;
+				let radius;
+				switch(drawKind) {
+					case "ball-and-stick":
+						radius = atom.rCov*rCovScale;
+						break;
+					case "van-der-waals":
+						radius = atom.rVdW;
+						break;
+					case "licorice":
+						radius = bondRadius;
+						break;
+					default:
+						radius = 1;
+						break;
+				}
+				spheresCache.addSphere(position, radius, atom.color);
 			}
+			spheresCache.renderSpheres(this.atomsGroup);
+			sm.modified();
+
+			const controlStore = useControlStore();
+			controlStore.addSelectionMapping(spheresCache.returnAtomsMap());
 		}
 
 		// Render bonds

@@ -223,7 +223,13 @@ onMounted(() => {
 
             const {object} = intersects[0];
             if(object.name === "Atom") {
-                controlStore.addSelectedAtom(object.userData.index as number);
+
+                // Find the instance of the same mesh
+                const instanceId = intersects[0].instanceId;
+                if(instanceId !== undefined) {
+
+                    controlStore.addSelection(object.userData.index as number, instanceId);
+                }
             }
             else if(object.name === "Polyhedron") {
                 controlStore.deselectPolyhedron();

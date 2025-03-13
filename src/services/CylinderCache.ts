@@ -105,9 +105,9 @@ export class CylinderCache {
 		}
 
 		// For each cached cylinder type
-		for(const entry of this.colors.keys()) {
+		for(const entry of this.colors.entries()) {
 
-			const colors = entry.split("-");
+			const colors = entry[0].split("-");
 
 			const meshMaterial = colorTextureMaterial(new Color(colors[0]),
 													  new Color(colors[1]),
@@ -115,8 +115,7 @@ export class CylinderCache {
 													  this.drawMetalness,
 													  this.subdivisions,
 													  this.shadedBonds);
-			const indices = this.colors.get(entry)!;
-
+			const indices = entry[1];
 			const count = indices.length;
 
 			const cylinder = new InstancedMesh(this.geometry, meshMaterial, count);

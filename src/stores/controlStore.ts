@@ -37,6 +37,7 @@ interface GlobalControls {
 
 	/** Atoms/polyhedra selection */
 	atomsSelected: number[];
+	selectedAtomMap: number[][];
 	polyhedronCurrentIdx: number | undefined;
 	polyhedronNewIdx: number | undefined;
 	polyhedronCurrentColor: number;
@@ -66,6 +67,7 @@ export const useControlStore = defineStore("ControlStore", {
 		hasWriter: false,
 
 		atomsSelected: [],
+		selectedAtomMap: [],
 		polyhedronCurrentIdx: undefined,
 		polyhedronNewIdx: undefined,
 		polyhedronCurrentColor: 0,
@@ -75,27 +77,6 @@ export const useControlStore = defineStore("ControlStore", {
 
     // > Actions
     actions: {
-		/**
-		 * Add an atom to the list of interactively selected atoms
-		 *
-		 * @param index - Index of the atom selected on the screen
-		 */
-        addSelectedAtom(index: number): void {
-
-            // If index already there remove it
-            const existing = this.atomsSelected.indexOf(index);
-            if(existing !== -1) {
-                this.atomsSelected.splice(existing, 1);
-            }
-            else if(this.atomsSelected.length < 3) {
-                this.atomsSelected.push(index);
-            }
-            else {
-                this.atomsSelected[0] = this.atomsSelected[1];
-                this.atomsSelected[1] = this.atomsSelected[2];
-                this.atomsSelected[2] = index;
-            }
-        },
 		/**
 		 * Interactively select a polyhedron
 		 *
@@ -133,6 +114,39 @@ export const useControlStore = defineStore("ControlStore", {
 			this.hasFingerprints = false;
 			this.hasTrajectory = false;
 			this.hasWriter = false;
+		},
+		/**
+		 * Add an atom to the list of interactively selected atoms
+		 *
+		 * @param meshIndex - Index of the instantiated mesh
+		 * @param instanceId - Index of the instantiation of this mesh
+		 */
+		addSelection(meshIndex: number, instanceId: number): void {
+
+			const index = this.selectedAtomMap[meshIndex][instanceId];
+
+			// If index already there remove it
+            const existing = this.atomsSelected.indexOf(index);
+            if(existing !== -1) {
+                this.atomsSelected.splice(existing, 1);
+            }
+            else if(this.atomsSelected.length < 3) {
+                this.atomsSelected.push(index);
+            }
+            else {
+                this.atomsSelected[0] = this.atomsSelected[1];
+                this.atomsSelected[1] = this.atomsSelected[2];
+                this.atomsSelected[2] = index;
+            }
+		},
+		/**
+		 * Save mapping to atom index
+		 *
+		 * @param map - Map from the mesh index/instantiation idx pair to the atom index
+		 */
+		addSelectionMapping(map: number[][]): void {
+
+			this.selectedAtomMap = map;
 		}
     }
 });
