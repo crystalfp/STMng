@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-10-06
  */
-import {IcosahedronGeometry, MeshStandardMaterial, FrontSide, Mesh,
+import {IcosahedronGeometry, MeshStandardMaterial, FrontSide, type Mesh,
 		type Group, InstancedMesh, Matrix4, Quaternion, Vector3} from "three";
 import type {PositionType} from "@/types";
 
@@ -16,8 +16,6 @@ import type {PositionType} from "@/types";
 export class SpheresCache {
 
 	private readonly geometry: IcosahedronGeometry;
-	private readonly sphereSubdivisions = [0, 0, 1,  3,  9];
-	private readonly subdivisions;
 	private readonly drawRoughness: number;
 	private readonly drawMetalness: number;
 	private readonly scales: number[] = [];
@@ -29,16 +27,15 @@ export class SpheresCache {
 	/**
 	 * Initialize the spheres cache
 	 *
-	 * @param drawQuality - Rendering quality (1-4)
+	 * @param subdivisions - Number of icosahedron sides based on rendering quality
 	 * @param drawRoughness - Surface roughness (0-1)
 	 * @param drawMetalness - Surface metalness (0-1)
 	 */
-	constructor(drawQuality: number, drawRoughness: number, drawMetalness: number) {
+	constructor(subdivisions: number, drawRoughness: number, drawMetalness: number) {
 
-		this.subdivisions = this.sphereSubdivisions[drawQuality];
 		this.drawRoughness = drawRoughness;
 		this.drawMetalness = drawMetalness;
-		this.geometry = new IcosahedronGeometry(1, this.subdivisions);
+		this.geometry = new IcosahedronGeometry(1, subdivisions);
 	}
 
 	/**

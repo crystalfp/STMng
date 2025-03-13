@@ -36,7 +36,7 @@ node_modules/.bin/typedoc \
 --placeInternalsInOwningModule \
 --sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
-`/bin/find src -name "*.ts" -type f | grep -v "vite-env"`
+`/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib"`
 fi
 
 # if [ $c = "s" -o $c = "a" ]

@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-01
  */
-import {Group, Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
+import {Group, type Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
 		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
 		Float32BufferAttribute, LineSegments, FrontSide} from "three";
 import {sm} from "@/services/SceneManager";
@@ -257,9 +257,9 @@ export class DrawStructureRenderer {
 		// Render atoms if present
 		if(drawKind !== "lines") {
 
-			const spheresCache = new SpheresCache(this.drawQuality,
-													this.drawRoughness,
-													this.drawMetalness);
+			const spheresCache = new SpheresCache(sphereSubdivisions[this.drawQuality],
+												  this.drawRoughness,
+												  this.drawMetalness);
 
 			// Render atoms
 			for(const atom of renderInfo.atoms) {
@@ -292,7 +292,8 @@ export class DrawStructureRenderer {
 		// Render bonds
 		switch(drawKind) {
 			case "ball-and-stick": {
-				const cylinderCache = new CylinderCache(bondRadius, shadedBonds, this.drawQuality,
+				const cylinderCache = new CylinderCache(bondRadius, shadedBonds,
+														cylinderSubdivisions[this.drawQuality],
 														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
 

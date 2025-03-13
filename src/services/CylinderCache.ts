@@ -7,15 +7,14 @@
  * @since 2025-03-12
  */
 
-import {Color, CylinderGeometry, InstancedMesh, Material, Matrix4,
-		Mesh, Quaternion, Vector3, type Group} from "three";
+import {Color, CylinderGeometry, InstancedMesh, type Material, Matrix4,
+		type Mesh, Quaternion, Vector3, type Group} from "three";
 import {colorTextureMaterial} from "./HelperMaterials";
 import type {PositionType} from "@/types";
 
 export class CylinderCache {
 
 	private readonly geometry: CylinderGeometry;
-	private readonly cylinderSubdivisions = [0, 3, 5, 10, 16];
 	private readonly shadedBonds;
 	private readonly subdivisions;
 	private readonly drawRoughness: number;
@@ -31,19 +30,19 @@ export class CylinderCache {
 	 *
 	 * @param radius - Radius of the bond
 	 * @param shadedBonds - If the bond color is shaded or in two bands
-	 * @param drawQuality - Rendering quality (1-4)
+	 * @param subdivisions - Number of cylinder sides based on rendering quality
 	 * @param drawRoughness - Surface roughness (0-1)
 	 * @param drawMetalness - Surface metalness (0-1)
 	 */
 	constructor(radius: number, shadedBonds: boolean,
-				drawQuality: number, drawRoughness: number, drawMetalness: number) {
+				subdivisions: number, drawRoughness: number, drawMetalness: number) {
 
 		this.shadedBonds = shadedBonds;
-		this.subdivisions = this.cylinderSubdivisions[drawQuality];
+		this.subdivisions = subdivisions;
 		this.drawRoughness = drawRoughness;
 		this.drawMetalness = drawMetalness;
 
-		this.geometry = new CylinderGeometry(radius, radius, 1, this.subdivisions, 1, true);
+		this.geometry = new CylinderGeometry(radius, radius, 1, subdivisions, 1, true);
 	}
 
 	/**
