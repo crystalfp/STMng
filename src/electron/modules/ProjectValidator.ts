@@ -60,7 +60,10 @@ export const projectIsValid = (prj: Project): boolean => {
 	}
 
 	// Check IDs
-	return checkIds(prj);
+	if(!checkIds(prj)) return false;
+
+	// Check for the presence of cycles
+	return checkCycles(prj);
 };
 
 // > Check node IDs in the project
@@ -101,6 +104,141 @@ const checkIds = (prj: Project): boolean => {
 			sendAlertMessage(`Invalid input to node "${id}": ${input}`);
 			return false;
 		}
+	}
+
+	return true;
+};
+
+/** Colors for the graph nodes */
+const WHITE = 0;
+const GRAY  = 1;
+const BLACK = 2;
+
+interface LoopDetectionResult {
+	hasLoop: boolean;
+	loop?: string[];
+}
+
+/**
+ * Detects loops in a directed graph using a graph coloring algorithm.
+ * Algorithm from: https://github.com/dexcodeinc/graph_algorithm.js/blob/master/graph_algorithm.js
+ *
+ * @param vertices - An array of vertices names
+ * @param edges - An array of edges. Each edge is represented as an array of length 2,
+ *    specifying the source and destination vertices. Format: [source, destination].
+ * @returns An object indicating whether a loop is present and, if so, the vertices
+ *    forming the loop. The return value has the following structure:
+ *     - hasLoop: A boolean value indicating whether a loop is present in the graph.
+ *     - loop: An array of vertices forming the loop, listed in the order they are encountered
+ *       during traversal.
+ */
+const hasLoop = (vertices: string[], edges: string[][]): LoopDetectionResult => {
+
+	const colors: Record<string, number> = {};
+	const path: string[] = [];
+
+	// Initialize colors to white
+	for(const vertex of vertices) {
+		colors[vertex] = WHITE;
+	}
+
+	// For all vertices, do DFS traversal
+	for(const vertex of vertices) {
+
+		if(colors[vertex] === WHITE) {
+			const result = hasLoopDFS(vertices, edges, colors, path, vertex);
+
+			if(result.hasLoop) {
+				return result;
+			}
+		}
+	}
+
+	return {
+		hasLoop: false
+	};
+};
+
+/**
+ * Depth first traverse of the graph
+ *
+ * @param vertices - An array of vertices names
+ * @param edges - An array of edges.
+ * @param colors - List of vertices colors
+ * @param path - Traversed path
+ * @param vertex - Vertex from which the DFS should start
+ * @returns An object indicating whether a loop is present and, if so, the vertices forming the loop
+ */
+const hasLoopDFS = (vertices: string[], edges: string[][], colors: Record<string, number>,
+					path: string[], vertex: string): LoopDetectionResult => {
+
+	colors[vertex] = GRAY;
+	path.push(vertex);
+
+	const adjacentEdges: string[][] = [];
+
+	for(const edge of edges) {
+
+		if(edge[0] === vertex) {
+			adjacentEdges.push(edge);
+		}
+	}
+
+	for(const edge of adjacentEdges) {
+
+		const adjVertex = edge[1];
+
+		if(colors[adjVertex] === GRAY) {
+			const loop = path.slice(path.indexOf(adjVertex));
+			return {
+				hasLoop: true,
+				loop: loop
+			};
+		}
+
+		if(colors[adjVertex] === WHITE) {
+			const result = hasLoopDFS(vertices, edges, colors, path, adjVertex);
+			if(result.hasLoop) {
+				return result;
+			}
+		}
+	}
+
+	colors[vertex] = BLACK;
+	path.pop();
+
+	return {hasLoop: false};
+};
+
+/**
+ * Check node IDs in the project
+ *
+ * @param prj - The project
+ * @returns True if there are no problems with the id of the modules
+ */
+const checkCycles = (prj: Project): boolean => {
+
+	const {graph} = prj;
+	const vertices: string[] = [];
+	const edges: string[][] = [];
+
+	for(const node in graph) {
+		vertices.push(node);
+		if(graph[node].in) {
+			const inputs = graph[node].in.replaceAll(" ", "").split(",");
+			for(const input of inputs) {
+				edges.push([input, node]);
+			}
+		}
+	}
+
+	const result = hasLoop(vertices, edges);
+
+	if(result.hasLoop) {
+
+		sendAlertMessage(`Cycle detected in nodes: ${result.loop!.join(", ")}`);
+
+		return false;
 	}
 
 	return true;

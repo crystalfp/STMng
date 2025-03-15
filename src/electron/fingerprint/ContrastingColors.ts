@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-12-30
  */
+import log from "electron-log";
 
 /**
  * RGB color space triple [r, g, b] with values between 0 and 1
@@ -156,7 +157,8 @@ export const contrastingColors = (countColors: number, backgroundColor: RGB): RG
     }
 
     if(countColors > lab.length / 3) {
-        throw new Error("You can't readily distinguish that many colors");
+        log.error(`You can't readily distinguish that many colors ${countColors}. Changed to ${lab.length / 3}.`);
+        countColors = lab.length / 3;
     }
 
     // Distances from the candidate colors to the background colors

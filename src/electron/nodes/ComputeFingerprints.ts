@@ -332,7 +332,7 @@ export class ComputeFingerprints extends NodeCore {
 		const noGroups = options.noGroups ?? false;
 		const countGroups = noGroups ? 0 : this.grouping.getCountGroups();
 
-		//
+		// Prepare data for the plot
 		const values: number[] = [];
 		switch(options.plotType) {
 			case "group":

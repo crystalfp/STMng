@@ -7,6 +7,7 @@
  * @since 2025-02-21
  */
 import {ipcMain, type WebContents} from "electron";
+import log from "electron-log";
 import path from "node:path";
 import type {CtrlParams, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
@@ -187,6 +188,7 @@ export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
 export const sendAlertMessage = (text: string, from?: string): void => {
 
 	mainWinWebContents!.send("SYSTEM:notification", "error", text, from ?? "");
+	log.error(text);
 };
 
 /**

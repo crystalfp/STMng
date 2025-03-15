@@ -108,8 +108,8 @@ receiveBroadcast((eventType: string) => {
   </div>
   <div class="layout-gutter" @click="toggleNormalScreen" />
   <viewer3-d :expanded="!normalScreen" />
-  <v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info"
-              close-on-content-click :color="notificationColor">
+  <v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info" max-width="250"
+              elevation="24" close-on-content-click :color="notificationColor">
     {{ notificationText }}
   </v-snackbar>
 </div>

@@ -112,13 +112,13 @@ class ProjectManager {
 			if(!rawProject) throw Error("Empty project file");
 			this.project = JSON.parse(rawProject) as Project;
 			this.parseProject();
+
+			// Send the needed parts of the project to the client
+			this.sendProject();
 		}
 		catch(error) {
 			sendAlertMessage(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
 		}
-
-		// Send the needed parts of the project to the client
-		this.sendProject();
 	}
 
 	/**
@@ -126,7 +126,17 @@ class ProjectManager {
 	 */
 	sendProject(): void {
 
-		sendProjectUI(this.project ? this.buildProjectInfo() : {});
+		let projectInfo: ClientProjectInfo = {};
+		if(this.project) {
+			try {
+				projectInfo = this.buildProjectInfo();
+			}
+			catch(error) {
+				sendAlertMessage(`Cannot parse project for send. Error: ${(error as Error).message}`);
+			}
+		}
+
+		sendProjectUI(projectInfo);
 	}
 
 	/**
@@ -255,7 +265,15 @@ class ProjectManager {
 	 * @returns JSON encoded project graph info
 	 */
 	projectGraphForEditor(): string {
-		return JSON.stringify({graph: this.buildProjectInfo(), allNodes: this.allNodes});
+
+		let projectInfo: ClientProjectInfo = {};
+		try {
+			projectInfo = this.buildProjectInfo();
+		}
+		catch(error) {
+			sendAlertMessage(`Cannot parse project. Error: ${(error as Error).message}`);
+		}
+		return JSON.stringify({graph: projectInfo, allNodes: this.allNodes});
 	}
 
 	/**

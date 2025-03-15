@@ -17,6 +17,7 @@ import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
         CylinderGeometry, FrontSide} from "three";
 import CameraControls from "camera-controls";
 import {theme} from "@/services/ReceiveTheme";
+import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {BasisType, CtrlParams} from "@/types";
@@ -361,7 +362,8 @@ const loadStructure = (side: Side, step: number): void => {
             nr.setSceneModified();
         })
         .catch((error: Error) => {
-            log.error(error);
+
+            showSystemAlert(`Error getting structure. Error: ${error.message}`);
         });
 };
 

@@ -8,6 +8,7 @@
  */
 import {invertBasis} from "../modules/Helpers";
 import type {BasisType, PositionType} from "@/types";
+import log from "electron-log";
 
 export class Slab {
 
@@ -169,6 +170,14 @@ export class Slab {
 
             // Inverse basis to convert to fractional coordinates
             this.inverseBasis = invertBasis(basis);
+            try {
+                this.inverseBasis = invertBasis(basis);
+            }
+            // eslint-disable-next-line @stylistic/keyword-spacing
+            catch {
+                log.error("In computeInteratomicDistances basis matrix is not invertible");
+                return;
+            }
 
             this.computeExpansion(basis, this.cutoff, expansion);
         }
