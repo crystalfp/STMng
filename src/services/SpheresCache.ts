@@ -74,6 +74,12 @@ export class SpheresCache {
 			group.remove(mesh);
 		}
 
+		// For positioning of the spheres
+		const position = new Vector3();
+		const quaternion = new Quaternion();
+		const scale = new Vector3();
+		const matrix = new Matrix4();
+
 		// For each cached sphere type
 		let index = 0;
 		for(const entry of this.atomMap.entries()) {
@@ -87,6 +93,7 @@ export class SpheresCache {
 				metalness: this.drawMetalness,
 				side: FrontSide,
 			});
+			meshMaterial.color.convertSRGBToLinear();
 			const sphere = new InstancedMesh(this.geometry, meshMaterial, count);
 			sphere.frustumCulled = false;
 			sphere.name = "Atom";
@@ -95,10 +102,6 @@ export class SpheresCache {
 			group.add(sphere);
 
 			// For each instance of the mesh, position it
-			const position = new Vector3();
-			const quaternion = new Quaternion();
-			const scale = new Vector3();
-			const matrix = new Matrix4();
 			for(let i=0; i < count; ++i) {
 
 				const idx = indices[i];
@@ -111,7 +114,7 @@ export class SpheresCache {
 				sphere.setMatrixAt(i, matrix);
 			}
 
-			// Save the mapping
+			// Save the mapping (needed for interactively select atoms)
 			const out = Array(count).fill(0) as number[];
 			for(let i=0; i < count; ++i) out[i] = indices[i];
 			this.mapIndexAtom[index] = out;

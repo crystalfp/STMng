@@ -103,6 +103,12 @@ export class CylinderCache {
 			group.remove(mesh);
 		}
 
+		// For positioning of the cylinders
+		const position = new Vector3();
+		const quaternion = new Quaternion();
+		const scale = new Vector3();
+		const matrix = new Matrix4();
+
 		// For each cached cylinder type
 		for(const entry of this.colors.entries()) {
 
@@ -122,10 +128,6 @@ export class CylinderCache {
 			group.add(cylinder);
 
 			// For each instance of the mesh, position it
-			const position = new Vector3();
-			const quaternion = new Quaternion();
-			const scale = new Vector3();
-			const matrix = new Matrix4();
 			for(let i=0; i < count; ++i) {
 
 				const idx = indices[i];

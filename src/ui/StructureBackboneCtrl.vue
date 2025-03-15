@@ -41,6 +41,8 @@ let chainStart: number[];
 
 const radius = ref(0.5);
 const showRadius = ref(0.5);
+const threshold = ref(0.9);
+const showThreshold = ref(0.9);
 
 // Initialize the control
 askNode(id, "init")
@@ -55,6 +57,10 @@ askNode(id, "init")
         }
         selectorKind.value = params.selectorKind as string ?? "label";
         atomsSelector.value = params.atomsSelector as string ?? "";
+        radius.value = params.radius as number ?? 0.5;
+        showRadius.value = radius.value;
+        threshold.value = params.threshold as number ?? 0.9;
+        showThreshold.value = threshold.value;
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
@@ -84,7 +90,7 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     }
 });
 
-watch([enableBackbone, showChains, selectorKind, atomsSelector], () => {
+watch([enableBackbone, showChains, selectorKind, atomsSelector, threshold], () => {
 
     const selectedChains: string[] = [];
     for(const key in showChains) {
@@ -96,6 +102,7 @@ watch([enableBackbone, showChains, selectorKind, atomsSelector], () => {
         selectorKind: selectorKind.value,
         atomsSelector: atomsSelector.value,
         radius: radius.value,
+        threshold: threshold.value
     });
 
 }, {deep: true});
@@ -131,7 +138,14 @@ const selectDeselect = (select: boolean): void => {
 <v-container class="container">
 
   <v-switch v-model="enableBackbone"
-            label="Show backbone" class="my-4 ml-2" />
+            label="Show backbone" class="mt-4 mb-2 ml-2" />
+  <g-slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
+                          :label="`Threshold (${(showThreshold*100).toFixed(0)}%)`"
+                          :min="0" :max="1" :step="0.1" />
+  <g-slider-with-steppers v-model="radius" class="mb-6"
+                          v-model:raw="showRadius" label-width="8rem"
+                          :label="`Tube radius (${showRadius.toFixed(1)})`"
+                          :min="0" :max="2" :step="0.1" />
   <g-atoms-selector v-model:kind="selectorKind" v-model:selector="atomsSelector"
                     :disabled="!enableBackbone" class="ml-1 mb-6"
                     title="Select backbone atoms by" placeholder="Atoms selectors" />
@@ -146,9 +160,5 @@ const selectDeselect = (select: boolean): void => {
       <v-btn block @click="selectDeselect(false)">Deselect All</v-btn>
     </v-col>
   </v-row>
-  <g-slider-with-steppers v-model="radius" class="mt-4"
-                          v-model:raw="showRadius" label-width="6rem"
-                          :label="`Radius (${showRadius.toFixed(1)})`"
-                          :min="0" :max="2" :step="0.1" />
 </v-container>
 </template>

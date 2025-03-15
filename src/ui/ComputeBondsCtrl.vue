@@ -62,11 +62,19 @@ askNode(id, "init")
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
-const scales = computed(() => {
+const scales = computed((old?: number[]) => {
 
-    const out = [];
+    const out: number[] = [];
     for(const pair of perPairData.value) {
         out.push(pair.scale);
+    }
+
+    // To avoid changes if nothing changed
+    if(old && old.length === out.length) {
+        for(let i=0; i < old.length; ++i) {
+            if(old[i] !== out[i]) return out;
+        }
+        return old;
     }
     return out;
 });

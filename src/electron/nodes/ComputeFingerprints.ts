@@ -70,7 +70,7 @@ export class ComputeFingerprints extends NodeCore {
 	private addedMargin = 0;
 
 	private removeDuplicates = true;
-	private duplicatesThreshold = 0.05;
+	private duplicatesThreshold = 0.015;
 
 	private plotType = "group";
 
@@ -223,7 +223,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.groupingThreshold = params.groupingThreshold as number ?? 0.1;
 		this.addedMargin = params.addedMargin as number ?? 0;
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
-        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
 	}
 
 	/**
@@ -972,7 +972,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.distanceMethod = params.distanceMethod as number ?? 0;
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
-        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
 
 		const resultFP = await this.fp.compute(this.accumulator, {
 			method: this.fingerprintingMethod,
@@ -1028,7 +1028,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.distanceMethod = params.distanceMethod as number ?? 0;
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
-        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
 
 		const result = this.dist.measureAll(this.accumulator,
 											this.distanceMethod,
@@ -1063,7 +1063,7 @@ export class ComputeFingerprints extends NodeCore {
 	private channelDuplicates(params: CtrlParams): CtrlParams {
 
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
-        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.05;
+        this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
 		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
 													this.accumulator,
 													this.dist,

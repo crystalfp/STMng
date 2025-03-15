@@ -6,19 +6,19 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
-  ☐ Try `material.color.convertSRGBToLinear();` if it changes anything
+  ☐ In project editor add check that input/output are connected
+  ☐ In project validator add check for cycles
+  ☐ In project editor enable change node only if content modified
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
-  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
   ☐ Investigate lazy load `*Ctrl` components
-  ☐ `import('@/components/...')` or `@mouseenter` in fingerprint to have show windows ready
-  ☐ Computed that returns object or array: check if the output changes. No deep comparisons are done.
-  ☐ Reuse materials (e.g. for atoms)
-  ☐ Investigate removing `preserveDrawingBuffer`
+  ☐ `import('@/components/...')` on `@mouseenter` in fingerprint to have "show windows" ready
+  ☐ Use InstancedMesh for CompareSelected
+  ☐ Unblock UI when rendering big scene
 
 Functionalities:
   ☐ An option to specify arbitrary section plane
@@ -39,14 +39,13 @@ ToDo eventually:
   ☐ Check <https://github.com/vladimiry/electron-rpc-api> to encapsulate IPC
   ☐ Is there any way to avoid callbacks for repetitive call?
   ☐ Add more `log.info()` or `log.debug()` messages
-  ☐ Unblock UI when rendering big scene
   ☐ Check the order of entries in objects
   ☐ In builder copy only platform specific exe files
   ☐ Unify naming: graph, node, project
   ☐ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
-  ☐ Use fat line <https://github.com/pmndrs/meshline>
+  ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
   ☐ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/>
 
@@ -63,8 +62,13 @@ Reference:
   ☐ Try color adjuster for light/dark <https://frontendmasters.com/blog/tweaking-one-set-of-colors-for-light-dark-modes/>
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
+  ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
 
 Archive:
+  ✔ Computed that returns object or array: check if the output changes. No deep comparisons are done. @done(2025-03-14 07:57) @project(Performance)
+  ✔ Try `material.color.convertSRGBToLinear();` if it changes anything @done(2025-03-14 06:47) @project(To do)
+  ✔ Reuse materials (e.g. for atoms) @done(2025-03-14 06:46) @project(Performance)
+  ✘ Investigate removing `preserveDrawingBuffer` @cancelled(2025-03-13 16:45) @project(Performance)
   ✔ Color position clouds @done(2025-03-09 19:19) @project(To do)
   ✔ Check addEventListener in preload.ts if it leaks @done(2025-03-09 19:19) @project(Performance)
   ✔ Other `ShallowRef` usage? @done(2025-03-09 19:19) @project(Performance)

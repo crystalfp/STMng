@@ -78,7 +78,7 @@ const endMessage = ref("");
 
 // Remove duplicates
 const removeDuplicates = ref(true);
-const duplicatesThreshold = ref(0.05);
+const duplicatesThreshold = ref(0.015);
 const pointsRemoved = ref(-1); // -1 means not run yet
 
 // Classify structures
@@ -137,7 +137,7 @@ askNode(id, "init")
         addedMargin.value = params.addedMargin as number ?? 0;
 
         removeDuplicates.value = params.removeDuplicates as boolean ?? true;
-        duplicatesThreshold.value = params.duplicatesThreshold as number ?? 0.05;
+        duplicatesThreshold.value = params.duplicatesThreshold as number ?? 0.015;
 
         countSelected.value = 0;
         countAccumulated.value = 0;
@@ -493,7 +493,7 @@ const showEnergyLandscape = (): void => {
     <v-switch v-model="removeDuplicates"
             label="Remove" class="ml-2 mr-6 mb-5" />
     <v-number-input :disabled="!removeDuplicates" v-model="duplicatesThreshold"
-            label="Distance threshold" :min="0" :max="1" :step="0.01" :precision="2" class="mt-0"/>
+            label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
   <v-label v-if="pointsRemoved >= 0 && removeDuplicates" class="result-label mt-2">
     {{ `Points removed: ${pointsRemoved} of ${countSelected}` }}

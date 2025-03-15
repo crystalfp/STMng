@@ -78,9 +78,13 @@ export class DrawStructure extends NodeCore {
 		sendToClientForRendering(this.id, "structure", renderInfo);
 	}
 
-	// > Load/save status
-	saveStatus(): string {
-        const statusToSave = {
+	/**
+	 * Collect node status
+	 *
+	 * @returns Collected status
+	 */
+	private collectStatus(): CtrlParams {
+		return {
 			drawKind: this.drawKind,
 			drawQuality: this.drawQuality,
 			drawRoughness: this.drawRoughness,
@@ -91,6 +95,11 @@ export class DrawStructure extends NodeCore {
 			showLabels: this.showLabels,
 			shadedBonds: this.shadedBonds,
 		};
+	}
+
+	// > Load/save status
+	saveStatus(): string {
+        const statusToSave = this.collectStatus();
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
@@ -115,17 +124,7 @@ export class DrawStructure extends NodeCore {
 	 */
 	private channelInit(): CtrlParams {
 
-		return {
-			drawKind: this.drawKind,
-			drawQuality: this.drawQuality,
-			drawRoughness: this.drawRoughness,
-			drawMetalness: this.drawMetalness,
-			labelKind: this.labelKind,
-			showBonds: this.showBonds,
-			showAtoms: this.showAtoms,
-			showLabels: this.showLabels,
-			shadedBonds: this.shadedBonds,
-		};
+		return this.collectStatus();
 	}
 
 	/**
@@ -135,14 +134,14 @@ export class DrawStructure extends NodeCore {
 	 */
 	private channelSave(params: CtrlParams): void {
 
-		if(params.drawKind)	     this.drawKind = params.drawKind as string;
-		if(params.drawQuality)   this.drawQuality = params.drawQuality as number;
-		if(params.drawRoughness) this.drawRoughness = params.drawRoughness as number;
-		if(params.drawMetalness) this.drawMetalness = params.drawMetalness as number;
-		if(params.labelKind)     this.labelKind = params.labelKind as string;
-		if(params.showBonds)     this.showBonds = params.showBonds as boolean;
-		if(params.showAtoms) 	 this.showAtoms = params.showAtoms as boolean;
-		if(params.showLabels)    this.showLabels = params.showLabels as boolean;
-		if(params.shadedBonds)   this.shadedBonds = params.shadedBonds as boolean;
+		if(params.drawKind !== undefined)	   this.drawKind = params.drawKind as string;
+		if(params.drawQuality !== undefined)   this.drawQuality = params.drawQuality as number;
+		if(params.drawRoughness !== undefined) this.drawRoughness = params.drawRoughness as number;
+		if(params.drawMetalness !== undefined) this.drawMetalness = params.drawMetalness as number;
+		if(params.labelKind !== undefined)     this.labelKind = params.labelKind as string;
+		if(params.showBonds !== undefined)     this.showBonds = params.showBonds as boolean;
+		if(params.showAtoms !== undefined) 	   this.showAtoms = params.showAtoms as boolean;
+		if(params.showLabels !== undefined)    this.showLabels = params.showLabels as boolean;
+		if(params.shadedBonds !== undefined)   this.shadedBonds = params.shadedBonds as boolean;
 	}
 }

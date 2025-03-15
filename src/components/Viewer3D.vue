@@ -23,9 +23,6 @@ import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
-/** Convert degrees to radiants */
-const DEG2RAD = Math.PI/180;
-
 // > Access the stores
 const configStore  = useConfigStore();
 const controlStore = useControlStore();
@@ -68,7 +65,7 @@ const copyPerspectiveCamera = (perspectiveCamera: PerspectiveCamera,
 const setOrthographicAspect = (perspectiveCamera: PerspectiveCamera,
                                orthographicCamera: OrthographicCamera, aspect: number): void => {
 
-    const vFov = perspectiveCamera.fov * DEG2RAD;
+    const vFov = perspectiveCamera.fov * MathUtils.DEG2RAD;
     const distance = perspectiveCamera.position.distanceTo(new Vector3(0, 0, 0));
     const halfHeight = Math.tan(vFov / 2) * distance;
     const halfWidth = halfHeight * aspect;
@@ -172,25 +169,25 @@ onMounted(() => {
 
         switch(event.code) {
             case "ArrowLeft":
-                if(event.ctrlKey) void controls.rotate(DEG2RAD, 0, true);
+                if(event.ctrlKey) void controls.rotate(MathUtils.DEG2RAD, 0, true);
                 else if(event.altKey) void controls.forward(-0.1, false);
                 else if(event.shiftKey) void controls.zoom(-0.05, false);
                 else void controls.truck(0.1, 0, false);
                 break;
             case "ArrowRight":
-                if(event.ctrlKey) void controls.rotate(-DEG2RAD, 0, true);
+                if(event.ctrlKey) void controls.rotate(-MathUtils.DEG2RAD, 0, true);
                 else if(event.altKey) void controls.forward(0.1, false);
                 else if(event.shiftKey) void controls.zoom(0.05, false);
                 else void controls.truck(-0.1, 0, false);
                 break;
             case "ArrowUp":
-                if(event.ctrlKey) void controls.rotate(0, DEG2RAD, true);
+                if(event.ctrlKey) void controls.rotate(0, MathUtils.DEG2RAD, true);
                 else if(event.altKey) void controls.forward(0.1, false);
                 else if(event.shiftKey) void controls.zoom(0.05, false);
                 else void controls.truck(0, 0.1, false);
                 break;
             case "ArrowDown":
-                if(event.ctrlKey) void controls.rotate(0, -DEG2RAD, true);
+                if(event.ctrlKey) void controls.rotate(0, -MathUtils.DEG2RAD, true);
                 else if(event.altKey) void controls.forward(-0.1, false);
                 else if(event.shiftKey) void controls.zoom(-0.05, false);
                 else void controls.truck(0, -0.1, false);

@@ -263,9 +263,13 @@ export class DrawUnitCell extends NodeCore {
 		return out;
 	}
 
-	// > Load/save status
-	saveStatus(): string {
-        const statusToSave = {
+	/**
+	 * Collect node status
+	 *
+	 * @returns Collected status
+	 */
+	private collectStatus(): CtrlParams {
+		return {
 			showUnitCell: this.showUnitCell,
 			dashedLine: this.dashedLine,
 			lineColor: this.lineColor,
@@ -281,6 +285,11 @@ export class DrawUnitCell extends NodeCore {
 			percentC: this.percentC,
 			shrink: this.shrink,
 		};
+	}
+
+	// > Load/save status
+	saveStatus(): string {
+        const statusToSave = this.collectStatus();
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
 
@@ -403,22 +412,7 @@ export class DrawUnitCell extends NodeCore {
 	 */
 	private channelInit(): CtrlParams {
 
-		return {
-			showUnitCell: this.showUnitCell,
-			dashedLine: this.dashedLine,
-			lineColor: this.lineColor,
-			showBasisVectors: this.showBasisVectors,
-        	repetitionsA: this.repetitionsA,
-        	repetitionsB: this.repetitionsB,
-        	repetitionsC: this.repetitionsC,
-        	showSupercell: this.showSupercell,
-        	supercellColor: this.supercellColor,
-        	dashedSupercell: this.dashedSupercell,
-			percentA: this.percentA,
-			percentB: this.percentB,
-			percentC: this.percentC,
-			shrink: this.shrink,
-		};
+		return this.collectStatus();
 	}
 
 	/**
