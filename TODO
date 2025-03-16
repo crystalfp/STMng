@@ -7,7 +7,6 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
-  ☐ Add try/catch for XRD Calculator
   ☐ When updated, reinstall `typedoc-plugin-missing-exports`
 
 Performance:
@@ -66,6 +65,7 @@ Reference:
   ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
 
 Archive:
+  ✔ Add try/catch for XRD Calculator @done(2025-03-16 11:07) @project(To do)
   ✔ Close main window should close all secondary windows @done(2025-03-16 10:34) @project(To do)
   ✘ Put setupChannel in NodeCore @cancelled(2025-03-16 10:44) @project(To do)
   ✔ In project validator add check for cycles @done(2025-03-15 17:48) @project(To do)

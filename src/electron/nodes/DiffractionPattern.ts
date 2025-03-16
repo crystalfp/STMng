@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
 import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {sendToClient} from "../modules/ToClient";
+import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
 
@@ -57,8 +57,14 @@ export class DiffractionPattern extends NodeCore {
 		if(hasData && isSecondaryWindowOpen("/chart")) {
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-													 this.thetaLow, this.thetaHigh);
+			try {
+				this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+														this.thetaLow, this.thetaHigh);
+			}
+			catch(error: unknown) {
+				sendAlertMessage(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				return;
+			}
 
 			// Compute chart data
 			const dataToSend = this.createDataForChart();
@@ -353,8 +359,14 @@ export class DiffractionPattern extends NodeCore {
 			this.showHKL = params.showHKL as boolean ?? false;
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-													 this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
+			try {
+				this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+														this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
+			}
+			catch(error: unknown) {
+				sendAlertMessage(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				return;
+			}
 
 			// Compute chart data
 			const dataToSend = this.createDataForChart();
@@ -380,8 +392,14 @@ export class DiffractionPattern extends NodeCore {
 			this.showHKL = params.showHKL as boolean ?? false;
 
 			// Compute spectra
-			this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-		 											 this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
+			try {
+				this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
+														this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
+			}
+			catch(error: unknown) {
+				sendAlertMessage(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				return;
+			}
 
 			// Compute chart data
 			const dataToSend = this.createDataForChart();

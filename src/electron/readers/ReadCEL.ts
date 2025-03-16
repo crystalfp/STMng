@@ -25,6 +25,9 @@ export class ReaderCEL implements ReaderImplementation {
 	 *
 	 * @param filename - File to be read
 	 * @returns The set of structures read
+	 * @throws Error.
+	 * "Missing space group in RGNR", "Invalid space group number", Error from convertSpaceGroupNumber,
+	 * "Invalid atom Z value", "Invalid line" and "Expected N atoms"
 	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 

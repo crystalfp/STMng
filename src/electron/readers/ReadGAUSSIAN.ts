@@ -34,6 +34,9 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 	 * @param filename - File to be read
 	 * @param options - Options for the reader
 	 * @returns The set of structures read
+	 * @throws Error.
+	 * "Malformed file (origin line)", "No atoms in the file", "Malformed file (basis line)",
+	 * "Malformed file (atoms line)"
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 

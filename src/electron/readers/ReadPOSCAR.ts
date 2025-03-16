@@ -35,6 +35,8 @@ export class ReaderPOSCAR implements ReaderImplementation {
 	 * @param filename - File to be read
 	 * @param options - Options for the reader
 	 * @returns The set of structures read
+	 * @throws Error.
+	 * "Invalid scale factor"
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 

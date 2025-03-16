@@ -366,6 +366,8 @@ export class DrawStructureRenderer {
 	 * @param showLabels - Make labels visible
 	 * @param drawKind - Structure draw style
 	 * @param labelKind - Label to be rendered
+	 * @throws Error.
+	 * "Impossible draw kind value"
 	 */
 	drawLabels(renderInfo: StructureRenderInfo, showLabels: boolean,
 			   drawKind: string, labelKind: string): void {

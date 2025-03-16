@@ -132,6 +132,7 @@ export type CtrlParams = Record<string, string | number | boolean | ArrayBuffer 
 
 /** Viewer 3D state */
 export interface Viewer3DState {
+    /** Status related to the camera */
     camera: {
         /** Type of the camera */
         type: "perspective" | "orthographic";
@@ -148,10 +149,12 @@ export interface Viewer3DState {
         /** Point where the camera points */
         forceLookAt: PositionType;
     };
+    /** Status related to the scene */
     scene: {
         /** Scene background color formatted as #RRGGBB */
         background: string;
     };
+    /** Status related to the lighting */
     lights: {
         /** Ambient light color in #RRGGBB format */
         ambientColor: string;
@@ -176,6 +179,7 @@ export interface Viewer3DState {
         /** Vector of the third directional light */
         directional3Position: PositionType;
     };
+    /** Status related to the scene helpers */
     helpers: {
         /** Show cartesian axis centered in the origin */
         showAxis: boolean;
@@ -213,18 +217,27 @@ export interface Project {
 /** Definition of the channels */
 export type ChannelDefinition =
     {
+        /** Name of the channel (used to access it) */
         name: string;
+        /** The channel send a request and wait for a synchronous answer */
         type: "invoke";
+        /** Callback to be invoked when receiving a request */
         callback: ((params: CtrlParams) => CtrlParams);
     } |
     {
+        /** Name of the channel (used to access it) */
         name: string;
+        /** The channel send a request and wait for an asynchronous answer */
         type: "invokeAsync";
+        /** Callback to be invoked when receiving a request */
         callback: ((params: CtrlParams) => Promise<CtrlParams>);
     } |
     {
+        /** Name of the channel (used to access it) */
         name: string;
+        /** The channel send a request but do not want an answer */
         type: "send";
+        /** Callback to be invoked when receiving a request */
         callback: (params: CtrlParams) => void;
     };
 
@@ -392,6 +405,7 @@ type Anchor = "center" | "end" | "start";
 /** Definition of the chart data and options */
 export interface ChartOptions {
     responsive: boolean;
+    /** Maintain aspect ratio of the chart */
     maintainAspectRatio: boolean;
     plugins?: {
         title?: {
@@ -401,12 +415,17 @@ export interface ChartOptions {
             padding?: number;
         };
         legend?: {
+            /** If the legend should be visible */
             display: boolean;
         };
         datalabels?: {
+            /** Color of the label */
             color?: string;
+            /** Routine to format (or create) the data labels */
             formatter?: (value: unknown, context: Context) => string;
+            /** Align the label */
             align?: Align;
+            /** Where to anchor the label */
             anchor?: Anchor;
         };
     };
@@ -441,11 +460,18 @@ export interface ChartOptions {
 }
 
 /** Chart points coordinates */
-export type ChartCoordinates = {x: number; y: number}[];
+export type ChartCoordinates = {
+    /** X coordinate of the point */
+    x: number;
+    /** Y coordinate of the point */
+    y: number;
+}[];
 
 /** Data to be charted */
 export interface ChartData {
+    /** Labels on the X axis */
     labels?: string[];
+    /** One set of data to plot */
     datasets: {
         label: string;
         fill?: boolean;

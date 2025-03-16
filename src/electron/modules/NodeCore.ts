@@ -20,6 +20,7 @@ export abstract class NodeCore {
 
 	/** List of observers from subscribe() to this node */
 	private readonly observersList: Observer[] = [];
+	/** ID of the node */
 	protected readonly id: string;
 
 	/**

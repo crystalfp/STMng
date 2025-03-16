@@ -19,6 +19,8 @@ export class ReaderXYZ implements ReaderImplementation {
 	 *
 	 * @param filename - File to be read
 	 * @returns The set of structures read
+	 * @throws Error.
+	 * "Wrong number of fields"
 	 */
 	async readStructure(filename: string): Promise<Structure[]> {
 

@@ -14,6 +14,8 @@ import type {Structure} from "@/types";
  *
  * @param filename - Filename to be read as ENERGY
  * @param mainStructures - The already read main structures
+ * @throws Error.
+ * Missing main structures
  */
 export const readAuxENERGY = (filename: string, mainStructures: Structure[]): Structure[] => {
 

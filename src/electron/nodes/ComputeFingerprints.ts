@@ -324,6 +324,8 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param options - Options for the scatterplot
 	 * @param hasEnergies - If the accumulated structures have energies
 	 * @returns Data needed by the scatterplot
+	 * @throws Error.
+	 * Invalid plot type
 	 */
 	private prepareScatterplotData(points: number[][],
 								   enabled: boolean[],
