@@ -15,6 +15,7 @@ import {useControlStore} from "@/stores/controlStore";
 import type {BoundingBox} from "./BoundingBox";
 
 /**
+ * Routines related to the 3D scene
  * @notExported
  */
 class SceneManager {
@@ -355,13 +356,13 @@ class SceneManager {
 		this.sceneModified = true;
 	}
 
+	private retry = 0;
 	/**
 	 * Ask if the scene needs rendering because has been changed,
 	 * then reset the modified flag
 	 *
 	 * @returns True if the scene should be rendered
 	 */
-	private retry = 0;
 	needRendering(): boolean {
 
 		if(this.sceneModified) {

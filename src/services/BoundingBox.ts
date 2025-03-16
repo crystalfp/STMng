@@ -8,9 +8,11 @@
  */
 import type {PositionType, StructureRenderInfo} from "@/types";
 
-/** Type of the returning data */
+/** Type of the returned data */
 export interface BoundingBox {
+	/** Center of the bounding box */
 	center: PositionType;
+	/** Sides of the bounding box */
 	side: PositionType;
 }
 

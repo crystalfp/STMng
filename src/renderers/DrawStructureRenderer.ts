@@ -23,6 +23,9 @@ const sphereSubdivisions   = [0, 0, 1,  3,  9];
 const cylinderSubdivisions = [0, 3, 5, 10, 16];
 const rCovScale = 0.5;
 
+/**
+ * Renderer for draw structure graphical output
+ */
 export class DrawStructureRenderer {
 
 	private readonly atomsGroup = new Group();

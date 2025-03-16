@@ -12,15 +12,24 @@ import type {DistanceMatrix} from "./Distances";
 
 /** List of methods names for the UI */
 export interface GroupingMethodName {
+
+	/** Name of the grouping method */
 	label: string;
+	/** If the margin setting should be visible */
 	usingMargin: boolean;
 }
 
+/** Result of grouping */
 interface GroupingResults {
+	/** Count of groups found */
 	countGroups: number;
+	/** Error message if any */
 	error?: string;
 }
 
+/**
+ * Routines related to grouping fingerprints
+ */
 export class Grouping {
 
 	private readonly structureGroup: number[] = [];

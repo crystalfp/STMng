@@ -38,6 +38,7 @@ import {DiffractionPattern} from "../nodes/DiffractionPattern";
 import {StructureBackbone} from "../nodes/StructureBackbone";
 
 /**
+ * Manage everything related to the loaded project
  * @notExported
  */
 class ProjectManager {
@@ -88,6 +89,9 @@ class ProjectManager {
 									   idPrefix: "viewer",    ui: "Viewer3DCtrl"},
 	];
 
+	/**
+	 * Convert the list of node types into a map for performance
+	 */
 	private constructor() {
 
 		for(const entry of this.allNodes) {

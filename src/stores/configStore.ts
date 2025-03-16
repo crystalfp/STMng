@@ -79,6 +79,11 @@ export const useConfigStore = defineStore("ConfigStore", {
 
     // > Actions
     actions: {
+        /**
+         * Restore the status from a provided object
+         *
+         * @param rawState - Viewer3D status in JSON format
+         */
         restoreState(rawState: string | undefined): void {
 
             if(!rawState) return;

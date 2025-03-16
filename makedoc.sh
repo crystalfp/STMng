@@ -25,19 +25,21 @@ then
 echo "--- Extract typescript documentation"
 node_modules/.bin/typedoc \
 --name "See the Molecule new generation" \
+--includeVersion \
 --out "doc/typedoc" \
 --readme none \
+--validation \
 --suppressCommentWarningsInDeclarationFiles \
 --plugin typedoc-plugin-vue \
---plugin typedoc-plugin-missing-exports \
 --disableGit \
 --excludeInternal \
 --excludeExternals \
 --placeInternalsInOwningModule \
 --sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
-`/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib"`
+`/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree`
 fi
+# --plugin typedoc-plugin-missing-exports \
 
 # if [ $c = "s" -o $c = "a" ]
 # then

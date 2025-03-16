@@ -15,9 +15,13 @@ import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types
 
 /** Data for the per atom pair multiplier of the sum of covalent radii */
 interface PairData {
+	/** The atom symbol pair */
     label:  string;
+	/** First atom type */
 	atomZi: number;
+	/** Second atom type */
 	atomZj: number;
+	/** The multiplier for the sum of covalent radii */
     scale:  number;
 }
 
@@ -66,7 +70,6 @@ const atomZForH = new Set([7, 8, 9, 16]);
 
 export class ComputeBonds extends NodeCore {
 
-	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private minBondingDistance  = 0.64;
 	private maxBondingDistance  = 4.50;
@@ -85,9 +88,13 @@ export class ComputeBonds extends NodeCore {
 		{name: "changes",	type: "send",	callback: this.channelChanges.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

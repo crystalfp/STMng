@@ -16,7 +16,6 @@ import type {Structure, CtrlParams,
 
 export class DrawOrthoslice extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 	private dataset = 0;
 	private axis = 0;
@@ -45,9 +44,13 @@ export class DrawOrthoslice extends NodeCore {
 		{name: "show",      type: "send",   callback: this.channelShow.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-        this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

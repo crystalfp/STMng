@@ -15,10 +15,17 @@ import type {Structure, CtrlParams, Viewer3DState, ChannelDefinition} from "@/ty
  */
 type Observer = (data: Structure) => void;
 
+/** Base class for all application nodes */
 export abstract class NodeCore {
 
 	/** List of observers from subscribe() to this node */
 	private readonly observersList: Observer[] = [];
+	protected readonly id: string;
+
+
+	constructor(id = "") {
+		this.id = id;
+	}
 
 	/**
 	 * Add an observer to the current node
@@ -76,6 +83,7 @@ export abstract class NodeCore {
 	 * @param channels - Array of channels definitions
 	 */
 	protected setupChannels(id: string, channels: ChannelDefinition[]): void {
+
 		for(const channel of channels) {
 			const channelName = id + ":" + channel.name;
 			ipcMain.removeHandler(channelName);

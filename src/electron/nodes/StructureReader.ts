@@ -21,8 +21,6 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 
 export class StructureReader extends NodeCore {
 
-	private readonly id: string;
-
 	private loopSteps = false;
 	private stepBackward = false;
 	private step = 1;
@@ -55,9 +53,13 @@ export class StructureReader extends NodeCore {
 		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 		this.toNextNode(new EmptyStructure());
 	}

@@ -11,6 +11,9 @@ import {MeshLambertMaterial, FrontSide, Group, Vector3,
 import {sm} from "@/services/SceneManager";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 
+/**
+ * Renderer for polyhedra graphical output
+ */
 export class DrawPolyhedraRenderer {
 
 	private readonly group = new Group();

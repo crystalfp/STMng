@@ -12,6 +12,9 @@ import {Color, CylinderGeometry, InstancedMesh, type Material, Matrix4,
 import {colorTextureMaterial} from "./HelperMaterials";
 import type {PositionType} from "@/types";
 
+/**
+ * A logical cache for the cylinder instances to be created
+ */
 export class CylinderCache {
 
 	private readonly geometry: CylinderGeometry;

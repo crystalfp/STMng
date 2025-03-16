@@ -56,7 +56,6 @@ const TOL = 10e-5;
 
 export class ComputeSymmetries extends NodeCore {
 
-	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private structure: Structure | undefined;
 	private applyInputSymmetries = true;
@@ -70,16 +69,19 @@ export class ComputeSymmetries extends NodeCore {
 	private computedSpaceGroup = "";
 	private createPrimitiveCell = false;
 
-
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "compute", type: "invoke", callback: this.channelCompute.bind(this)},
 		{name: "window",  type: "send",   callback: this.channelWindow.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

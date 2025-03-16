@@ -14,7 +14,6 @@ import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawPolyhedra extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 	private color = "#FFFFFF80";
 	private labelKind: SelectorType = "symbol";
@@ -30,9 +29,13 @@ export class DrawPolyhedra extends NodeCore {
 		{name: "select",	type: "send", 	callback: this.channelSelect.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

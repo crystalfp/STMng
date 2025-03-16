@@ -11,6 +11,9 @@ import {Group, BufferGeometry, Float32BufferAttribute, MeshBasicMaterial,
 import {Lut} from "three/addons/math/Lut.js";
 import {sm} from "@/services/SceneManager";
 
+/**
+ * Renderer for orthoslice graphical output
+ */
 export class DrawOrthosliceRenderer {
 
 	private readonly lut = new Lut("rainbow", 512);

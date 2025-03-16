@@ -12,10 +12,8 @@ import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
 import {sendToClient} from "../modules/ToClient";
 import type {BasisType, ChannelDefinition, CtrlParams, PositionType, Structure} from "@/types";
 
-
 export class StructureBackbone extends NodeCore {
 
-	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private readonly chains = new Set<string>();
 	private enableStructureBackbone = false;
@@ -25,15 +23,18 @@ export class StructureBackbone extends NodeCore {
 	private radius = 0.5;
 	private threshold = 0.9;
 
-
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "compute", type: "send",   callback: this.channelCompute.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

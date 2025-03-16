@@ -14,7 +14,6 @@ import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class StructureWriter extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 	private format = "";			// Format of the save file
 	private continuous = false;
@@ -27,9 +26,13 @@ export class StructureWriter extends NodeCore {
 		{name: "write",		type: "invokeAsync",	callback: this.channelWrite.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

@@ -17,7 +17,6 @@ import type {Structure, CtrlParams, ChannelDefinition,
 
 export class DiffractionPattern extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 	private scaled = true;
 	private thetaLow = 0;
@@ -37,9 +36,13 @@ export class DiffractionPattern extends NodeCore {
 		{name: "compute", type: "send",   callback: this.channelCompute.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

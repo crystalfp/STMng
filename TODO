@@ -7,8 +7,12 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
-  ☐ In project validator add check for cycles
-  ☐ In project editor enable change node only if content modified
+  ✔ In project validator add check for cycles @done(2025-03-15 17:48)
+  ✔ In project editor enable change node only if content modified @done(2025-03-15 17:48)
+  ☐ Add try/catch for XRD Calculator
+  ☐ Close main window should close all secondary windows
+  ☐ Put setupChannel in NodeCore
+  ☐ When updated, reinstall `typedoc-plugin-missing-exports`
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -48,6 +52,7 @@ ToDo eventually:
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
   ☐ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/>
+  ☐ To move something inside the scene try <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

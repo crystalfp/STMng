@@ -10,6 +10,9 @@ import {invertBasis} from "../modules/Helpers";
 import type {BasisType, PositionType} from "@/types";
 import log from "electron-log";
 
+/**
+ * Infinite slab abstraction
+ */
 export class Slab {
 
     private readonly tryPoints: number[][] = [];
@@ -20,6 +23,13 @@ export class Slab {
     private readonly isNanocluster: boolean;
     private readonly byAtom: boolean;
 
+    /**
+     * Create the slab
+     *
+     * @param cutoff - Cutoss distance
+     * @param isNanocluster - If the structure is a nanocluster without a unit cell
+     * @param byAtom - Store the distance between atoms by atom index instead of by species
+     */
     constructor(cutoff: number, isNanocluster=false, byAtom=false) {
 
         this.cutoff = cutoff;
@@ -153,6 +163,7 @@ export class Slab {
      * Compute the infinite slab for the structure
      *
      * @param basis - Unit cell basis vector
+     * @param natoms - Number of atoms
      * @param atomsZ - Atoms Z values
      * @param atomsPosition - Atoms coordinates
      */

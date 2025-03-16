@@ -11,6 +11,7 @@
 import {getCase, getEdge} from "./IsosurfaceTables";
 import type {PositionType, BasisType} from "@/types";
 
+/** Compute an isosurface of the volumetric data */
 export class IsosurfaceCore {
 
 	private readonly voxelScalars: number[] = [];
@@ -30,6 +31,14 @@ export class IsosurfaceCore {
 	private readonly origin: PositionType;
 	private readonly values: number[];
 
+	/**
+	 * Initialize the isosurface computation
+	 *
+	 * @param dims - Dimensions of the volumetric data
+	 * @param basis - The basis matrix
+	 * @param origin - Unit cell origin
+	 * @param values - Volumetric data
+	 */
 	constructor(dims: PositionType, basis: BasisType, origin: PositionType, values: number[]) {
 
 		this.dims = dims;

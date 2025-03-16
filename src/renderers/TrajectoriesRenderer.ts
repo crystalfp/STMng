@@ -22,6 +22,9 @@ const setColorSpace = (texture: Texture): void => {
 	texture.colorSpace = SRGBColorSpace;
 };
 
+/**
+ * Renderer for trajectory graphical output
+ */
 export class TrajectoriesRenderer {
 
 	private readonly group = new Group();

@@ -9,49 +9,68 @@
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/prevent-abbreviations */
 import type {Lattice} from "./Lattice";
 
+/** A point of the reciprocal lattice */
 export interface ReciprocalPoint {
+    /** Point coordinates */
     coord: number[];
+    /** Distance to the center */
     dist: number;
+    /** Point index */
     index: number;
+    /** Image points */
     image: number[];
 }
 
+/**
+ * Compute Reciprocal lattice for XRD calculations
+ */
 export class ReciprocalLattice {
 
 	private readonly lattice: Lattice;
 
+    /**
+     * Create the reciprocal lattice
+     *
+     * @param lattice - Lattice for which the reciprocal one should be built
+     */
 	constructor(lattice: Lattice) {
         this.lattice = lattice;
     }
 
 	// Find all points within a sphere from the point taking into account
 	// periodic boundary conditions. This includes sites in other periodic images.
-
+    //
 	// Algorithm:
-
+    //
 	// 1. place sphere of radius r in crystal and determine minimum supercell
 	//    (parallelepiped) which would contain a sphere of radius r. for this
 	//    we need the projection of a_1 on a unit vector perpendicular
 	//    to a_2 & a_3 (i.e. the unit vector in the direction b_1) to
 	//    determine how many a_1's it will take to contain the sphere.
-
+    //
 	//    Nxmax = r * length_of_b_1 / (2 Pi)
-
+    //
 	// 2. keep points falling within r.
-
+    //
 	// Args:
 	//     frac_points: All points in the lattice in fractional coordinates.
 	//     center: Cartesian coordinates of center of sphere.
 	//     r: radius of sphere.
 	//     zip_results (bool): Whether to zip the results together to group by
 	//         point, or return the raw frac_coord, dist, index arrays
-
+    //
 	// Returns:
 	//     if zip_results:
 	//         [(frac_coord, dist, index, supercell_image) ...] since most of the time, subsequent
 	//         processing requires the distance, index number of the atom, or index of the image
 	//     else:
 	//         frac_coords, dists, inds, image
+    /**
+     * Find all points within a sphere from the point taking into account periodic boundary conditions
+     *
+     * @param radius - Radius of the sphere
+     * @returns All points within a sphere from the point
+     */
 	getPointsInSphereOrigin(radius: number): ReciprocalPoint[] {
 
         return this.getPointsInSpheres({
@@ -65,7 +84,7 @@ export class ReciprocalLattice {
 
     // For each point in `center_coords`, get all the neighboring points
     // in `all_coords` that are within the cutoff radius `r`.
-
+    //
     // Args:
     //     all_coords: (list of Cartesian coordinates) all available points
     //     center_coords: (list of Cartesian coordinates) all centering points
@@ -74,10 +93,16 @@ export class ReciprocalLattice {
     //     numerical_tol: (float) numerical tolerance
     //     lattice: (Lattice) lattice to consider when PBC is enabled
     //     return_fcoords: (bool) whether to return fractional coords when pbc is set.
-
+    //
     // Returns:
     //     List[List[Tuple[coords, distance, index, image]]]
 	//
+    /**
+     * For each point in `center_coords`, get all the neighboring points that are within the cutoff radius
+     *
+     * @param param0 - Parameters for the computation
+     * @returns List of reciprocal points
+     */
 	getPointsInSpheres({
 		allCoords,
 		centerCoords,

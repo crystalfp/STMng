@@ -14,7 +14,6 @@ import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class Trajectories extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 	private showTrajectories = false;
 	private createTrajectories = false;
@@ -37,10 +36,13 @@ export class Trajectories extends NodeCore {
 		{name: "clouds",	type: "send",   callback: this.channelClouds.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

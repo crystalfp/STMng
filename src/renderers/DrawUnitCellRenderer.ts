@@ -30,6 +30,9 @@ const indices = [
     1, 6, 2,
 ];
 
+/**
+ * Renderer for unit cell graphical output
+ */
 export class DrawUnitCellRenderer {
 
 	private readonly outBV = new Group();

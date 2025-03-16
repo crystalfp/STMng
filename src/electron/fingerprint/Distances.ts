@@ -11,6 +11,9 @@ import {MDS} from "./MultidimensionalScaling";
 import {normalizeCoordinates2D} from "./Helpers";
 import type {FingerprintsAccumulator} from "./Accumulator";
 
+/**
+ * Matrix of distances between fingerprints
+ */
 export class DistanceMatrix {
 
     private readonly distanceMatrix: number[][] = [];
@@ -193,14 +196,23 @@ class Delta {
 	}
 }
 
+/** Result of computing all distances between the computed fingerprints */
 interface DistanceResult {
+    /** Number of distances computed */
     countDistances: number;
+    /** Minimum distance computed */
     distanceMin: number;
+    /** Maximum distance computed */
     distanceMax: number;
+    /** Final message */
     endMessage: string;
+    /** Error message if any */
     error?: string;
 }
 
+/**
+ * Routines related to computing the distance between fingerprints
+ */
 export class Distances {
 
     private readonly distances = new DistanceMatrix();

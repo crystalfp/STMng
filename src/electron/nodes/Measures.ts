@@ -22,7 +22,6 @@ const RAD2DEG = 180/Math.PI;
 
 export class Measures extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
     private distanceAB = -1;
     private distanceBC = -1;
@@ -35,9 +34,13 @@ export class Measures extends NodeCore {
 		{name: "bonds",   type: "invoke", callback: this.channelBonds.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

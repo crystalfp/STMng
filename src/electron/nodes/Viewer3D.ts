@@ -12,16 +12,19 @@ import type {Viewer3DState, ChannelDefinition, CtrlParams} from "@/types";
 
 export class Viewer3D extends NodeCore {
 
-	private readonly id: string;
 	private rawStatus = "";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

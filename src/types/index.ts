@@ -505,11 +505,14 @@ export interface FingerprintingResult {
     /** Length of each section of the fingerprint */
     sectionLength: number;
 
+    /** The computed fingerprint */
     fingerprint: Float64Array;
 
+    /** The set of weights for a multisection fingerprint */
     weights: Float64Array;
 }
 
+/** Data for the fingerprint scatterplot window */
 export interface ScatterplotData {
 
     /** Structures index (the original one, not filtered by energy) */
@@ -541,6 +544,7 @@ export interface ScatterplotData {
     selectedPoints?: number[];
 }
 
+/** Data for the energy landscape window */
 export interface EnergyLandscapeData {
 
     /** Fingerprints projected in 2D. The coordinates are normalized between 0 and 1 */
@@ -550,6 +554,7 @@ export interface EnergyLandscapeData {
     energies: number[];
 }
 
+/** Data for the fingerprint chart window */
 export interface FingerprintsChartData {
 
     /** How many fingerprints have been computed */

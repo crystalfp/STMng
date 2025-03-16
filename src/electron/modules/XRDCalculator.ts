@@ -54,6 +54,9 @@ const WAVELENGTHS: Record<string, number> = {
     AgKb1: 0.497082,
 };
 
+/**
+ * Compute the X-Ray diffraction pattern of a crystal structure
+ */
 export class XRDCalculator {
 
     /** Wavelength for the X-Ray radiation. Defaults to "CuKa", i.e, Cu K_alpha radiation */

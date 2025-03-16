@@ -17,7 +17,6 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 
 export class DrawUnitCell extends NodeCore {
 
-	private readonly id: string;
 	private inputStructure: Structure | undefined;
 	private repetitionsA = 1;
 	private repetitionsB = 1;
@@ -41,9 +40,13 @@ export class DrawUnitCell extends NodeCore {
 		{name: "origin",	type: "send", 	callback: this.channelOrigin.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

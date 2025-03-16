@@ -59,6 +59,16 @@ interface FilteringStatus {
 	error?: string;
 }
 
+/** Data on a fingerprint sections */
+interface SectionsInfo {
+	/** Section count */
+	count: number;
+	/** Section length */
+	length: number;
+	/** Error from getting sections info, if any */
+	error?: string;
+}
+
 /**
  * Accumulate structures for fingerprint calculation.
  */
@@ -454,7 +464,7 @@ export class FingerprintsAccumulator {
 	 *
 	 * @returns Section count and section length
 	 */
-	getSectionsInfo(): {count: number; length: number; error?: string} {
+	getSectionsInfo(): SectionsInfo {
 
 		let count = 0;
 		let length = 0;

@@ -12,6 +12,16 @@ import {getCellVolume} from "./Helpers";
 import type {FingerprintingParameters, FingerprintingResult} from "@/types";
 import type {FingerprintsAccumulator} from "./Accumulator";
 
+/**
+ * Compute the Oganov-Valle fingerprint on a given structure
+ *
+ * @param params - Parameters for the computation
+ * @param basis - Basis vectors for the structure
+ * @param natoms - Number of atoms
+ * @param positions - Position of the atoms
+ * @param atomsZ - Atoms type
+ * @returns The computed fingerprint and weights
+ */
 export const fingerprinting = (params: FingerprintingParameters,
 							   basis: Float64Array,
 							   natoms: number,
@@ -115,6 +125,11 @@ export const fingerprinting = (params: FingerprintingParameters,
 	return {countSections, sectionLength: nbins, fingerprint, weights};
 };
 
+/**
+ * Post computation on all fingerprints. Here removes the centroid
+ *
+ * @param accumulator - The structures accumulator
+ */
 export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void => {
 
     const centroid: number[] = [];

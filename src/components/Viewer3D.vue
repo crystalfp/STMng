@@ -392,9 +392,9 @@ onMounted(() => {
 
     const gizmoOptions: GizmoOptions = {
 
-        size: 150,
+        size: 170,
         placement: "bottom-right",
-        lineWidth: 30,
+        lineWidth: 10,
         resolution: 128,
         background: {enabled: false},
         x: {color: "#FF0000", labelColor: "#000", label: "X"},

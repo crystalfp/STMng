@@ -62,7 +62,14 @@ export const resetAlertMessage = (node: string): void => {
 	}
 };
 
+/**
+ * Check if there is a message for a given node
+ *
+ * @param node - Kind of node to check for messages
+ * @returns True if a message for the given provider is presen
+ */
 export const hasAlertMessage = (node: string): boolean => {
+
 	const messageStore = useMessageStore();
 	switch(node) {
 		case "symmetries":
@@ -77,6 +84,12 @@ export const hasAlertMessage = (node: string): boolean => {
 	return false;
 };
 
+/**
+ * Get the message text for a given node
+ *
+ * @param node - Kind of node to get messages
+ * @returns The message
+ */
 export const getAlertMessage = (node: string): string => {
 	const messageStore = useMessageStore();
 	switch(node) {

@@ -12,6 +12,9 @@ import {sm} from "@/services/SceneManager";
 import {spriteTextAlongBond} from "@/services/SpriteText";
 import type {BondData, CtrlParams, SelectedAtom} from "@/types";
 
+/**
+ * Renderer for measures graphical output
+ */
 export class MeasuresRenderer {
 
 	private readonly group = new Group();

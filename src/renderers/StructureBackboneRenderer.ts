@@ -10,6 +10,9 @@ import {Group, CatmullRomCurve3, Vector3, TubeGeometry, Mesh,
 		MeshStandardMaterial, DoubleSide, IcosahedronGeometry} from "three";
 import {sm} from "@/services/SceneManager";
 
+/**
+ * Renderer for backbone graphical output
+ */
 export class StructureBackboneRenderer {
 
 	private readonly name;
@@ -17,6 +20,11 @@ export class StructureBackboneRenderer {
 	private readonly colors: string[] = ["#1b9e77", "#d95f02", "#7570b3",
 										 "#e7298a", "#66a61e", "#e6ab02", "#a6761d"];
 
+	/**
+	 * Initialize the renderer
+	 *
+	 * @param id - Node id
+	 */
 	constructor(id: string) {
 
 		this.name = "StructureBackbone-" + id;

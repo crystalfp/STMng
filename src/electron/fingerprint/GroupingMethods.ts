@@ -181,6 +181,14 @@ class PseudoSNNGrouping extends GroupingMethod {
 
 abstract class HierarchicalGrouping extends GroupingMethod {
 
+    /**
+     * Maximum distance between elements of two groups
+     *
+     * @param idxi - Indices of the first group elements
+     * @param idxj - Indices of the second group elements
+     * @param distances - Distance matrix
+     * @returns Distance between the two groups
+     */
     protected abstract clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number;
 
     doGrouping(countStructures: number,
@@ -235,6 +243,14 @@ abstract class HierarchicalGrouping extends GroupingMethod {
 // Exported because it is reused in ReduceDuplicates
 export class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
 
+    /**
+     * Maximum distance between elements of two groups
+     *
+     * @param idxi - Indices of the first group elements
+     * @param idxj - Indices of the second group elements
+     * @param distances - Distance matrix
+     * @returns Distance between the two groups
+     */
     protected clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number {
 
         const leni = idxi.length;
@@ -259,6 +275,14 @@ export class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
 
 class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
 
+    /**
+     * Maximum distance between elements of two groups
+     *
+     * @param idxi - Indices of the first group elements
+     * @param idxj - Indices of the second group elements
+     * @param distances - Distance matrix
+     * @returns Distance between the two groups
+     */
     protected clusterDistance(idxi: number[], idxj: number[], distances: DistanceMatrix): number {
 
         const leni = idxi.length;
@@ -285,8 +309,11 @@ class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
 // > Grouping methods list
 /** Type of the table of grouping methods */
 interface OneGroupingMethod {
+    /** Grouping method name */
     label: string;
+    /** If the method needs margin value as input */
     usingMargin: boolean;
+    /** Grouping method object */
     method: GroupingMethod;
 }
 

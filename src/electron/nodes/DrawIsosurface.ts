@@ -14,7 +14,6 @@ import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawIsosurface extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 
     private showIsosurface = false;
@@ -36,9 +35,13 @@ export class DrawIsosurface extends NodeCore {
 		{name: "show",      type: "send",   callback: this.channelShow.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-        this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 

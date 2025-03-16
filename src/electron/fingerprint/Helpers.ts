@@ -87,6 +87,9 @@ export class NeedRendering {
         return false;
     }
 
+    /**
+     * Mark the scene as modified
+     */
     setSceneModified(): void {
         this.isSceneModified = true;
     }

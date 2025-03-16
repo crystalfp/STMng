@@ -49,6 +49,7 @@ const selectedId = ref("");
 const selectedIdx = ref(0);
 const selectedLabel = ref("");
 const selectedInput = ref("");
+const disableNodeChange = ref(true);
 
 /** All the available nodes */
 const allAvailableNodes = ref<OneNodeInfo[]>([]);
@@ -273,6 +274,7 @@ const onDropRight = (entry: SortableEvent): void => {
 const saveEditedNode = (): void => {
 
     projectModified.value = true;
+    disableNodeChange.value = true;
 
     listLeft.value[selectedIdx.value].name = selectedLabel.value;
     listLeft.value[selectedIdx.value].in = selectedInput.value;
@@ -294,6 +296,16 @@ const restoreEditedNode = (): void => {
 
     selectedLabel.value = node.label;
     selectedInput.value = node.in;
+
+    disableNodeChange.value = true;
+};
+
+/**
+ * Enable change node button only when values have changed
+ */
+const nodeChanged = (): void => {
+
+    disableNodeChange.value = false;
 };
 
 </script>
@@ -348,14 +360,14 @@ const restoreEditedNode = (): void => {
         <v-label class="column-title">Edit node</v-label>
         <v-text-field v-model="selectedLabel"
                   label="Node label" class="mt-4"
-                  hide-details="auto"
+                  hide-details="auto" @update:modelValue="nodeChanged"
                   clearable spellcheck="false" />
         <v-select v-if="inputFromOther.length > 0" v-model="selectedInput" :items="inputFromOther"
-                  item-title="label" item-value="id" label="Input from"
+                  item-title="label" item-value="id" label="Input from" @update:modelValue="nodeChanged"
                   variant="solo-filled" hide-details class="mt-4" />
         <v-container class="pl-0">
           <v-btn v-focus @click="restoreEditedNode" class="mr-2 ml-auto">Reset</v-btn>
-          <v-btn @click="saveEditedNode">Change node</v-btn>
+          <v-btn :disabled="disableNodeChange" @click="saveEditedNode">Change node</v-btn>
         </v-container>
       </v-container>
     </div>

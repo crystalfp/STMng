@@ -9,6 +9,7 @@
 
 import type {PositionType} from "@/types";
 
+/** Compute isolines on an orthoslice of the volumetric data */
 export class Isolines {
 
 	// Edges and vertices numbering from https://en.wikipedia.org/wiki/Marching_squares

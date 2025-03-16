@@ -11,6 +11,9 @@ import {Group, BufferGeometry, Float32BufferAttribute,
 import {Lut} from "three/addons/math/Lut.js";
 import {sm} from "@/services/SceneManager";
 
+/**
+ * Renderer for isosurface graphical output
+ */
 export class DrawIsosurfaceRenderer {
 
 	private readonly group = new Group();

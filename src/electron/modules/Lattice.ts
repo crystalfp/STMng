@@ -9,12 +9,20 @@
 import {basisToLengthAngles, invertBasis} from "./Helpers";
 import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
 
+/**
+ * Adapter to the Structure type to provide all the functions needed for X-Ray factors computation
+ */
 export class Lattice {
 
 	private readonly lengthsAngles: LengthsAnglesType;
 	private readonly inverseBasis: BasisType;
 	private readonly structure: Structure;
 
+	/**
+	 * Convert a structure into a lattice
+	 *
+	 * @param structure - Structure to be loaded in a lattice
+	 */
 	constructor(structure: Structure) {
 
 		this.structure = structure;

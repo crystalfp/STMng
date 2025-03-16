@@ -159,7 +159,17 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 // > Preferences
 
 /** Versions of the various application components */
-export interface Versions {app: string; node: string; electron: string; chrome: string}
+export interface Versions {
+	/** The application version */
+	app: string;
+	/** The Node version */
+	node: string;
+	/** The Electron version */
+	electron: string;
+	/** The Chrome version */
+	chrome: string;
+}
+
 /**
  * Return system components versions.
  *

@@ -27,6 +27,7 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 FingerprintsChartData, FingerprintsChartKind,
 			 ScatterplotData} from "@/types";
 
+/** Options for the scatterplot creation */
 interface CreateUpdateScatterplotOptions {
 
 	/** Kind of plot for which the data should be provided */
@@ -41,7 +42,6 @@ interface CreateUpdateScatterplotOptions {
 
 export class ComputeFingerprints extends NodeCore {
 
-	private readonly id: string;
 	private structure: Structure | undefined;
 	private readonly accumulator = new FingerprintsAccumulator();
 	private readonly fp = new Fingerprinting();
@@ -97,9 +97,13 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 
@@ -317,7 +321,8 @@ export class ComputeFingerprints extends NodeCore {
 	 *
 	 * @param points - Points mapped in 2D
 	 * @param enabled - List of enabled status for the points
-	 * @param noGroups - Do not collect the structure groups
+	 * @param options - Options for the scatterplot
+	 * @param hasEnergies - If the accumulated structures have energies
 	 * @returns Data needed by the scatterplot
 	 */
 	private prepareScatterplotData(points: number[][],

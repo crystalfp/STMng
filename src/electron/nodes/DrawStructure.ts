@@ -14,7 +14,6 @@ import type {Structure, CtrlParams, ChannelDefinition, AtomRenderInfo,
 
 export class DrawStructure extends NodeCore {
 
-	private readonly id: string;
 	private drawKind = "ball-and-stick";
 	private drawQuality = 4;
 	private drawRoughness = 0.5;
@@ -30,9 +29,13 @@ export class DrawStructure extends NodeCore {
 		{name: "save", type: "send",   callback: this.channelSave.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
-		super();
-		this.id = id;
+		super(id);
 		this.setupChannels(id, this.channels);
 	}
 
