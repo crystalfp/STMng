@@ -100,6 +100,13 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
 
     // Setup access to client windows
     toClientSetup(mainWin.webContents);
+
+    // Close any opened secondary window
+    mainWin.on("close", () => {
+        for(const win of openedWindows) {
+            if(win[0] !== "/") win[1].close();
+        }
+    });
 };
 
 // > Create a secondary window

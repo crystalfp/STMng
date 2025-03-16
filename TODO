@@ -7,11 +7,7 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
-  ✔ In project validator add check for cycles @done(2025-03-15 17:48)
-  ✔ In project editor enable change node only if content modified @done(2025-03-15 17:48)
   ☐ Add try/catch for XRD Calculator
-  ☐ Close main window should close all secondary windows
-  ☐ Put setupChannel in NodeCore
   ☐ When updated, reinstall `typedoc-plugin-missing-exports`
 
 Performance:
@@ -70,6 +66,10 @@ Reference:
   ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
 
 Archive:
+  ✔ Close main window should close all secondary windows @done(2025-03-16 10:34) @project(To do)
+  ✘ Put setupChannel in NodeCore @cancelled(2025-03-16 10:44) @project(To do)
+  ✔ In project validator add check for cycles @done(2025-03-15 17:48) @project(To do)
+  ✔ In project editor enable change node only if content modified @done(2025-03-15 17:48) @project(To do)
   ✔ Computed that returns object or array: check if the output changes. No deep comparisons are done. @done(2025-03-14 07:57) @project(Performance)
   ✔ Try `material.color.convertSRGBToLinear();` if it changes anything @done(2025-03-14 06:47) @project(To do)
   ✔ Reuse materials (e.g. for atoms) @done(2025-03-14 06:46) @project(Performance)

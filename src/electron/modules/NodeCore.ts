@@ -22,8 +22,13 @@ export abstract class NodeCore {
 	private readonly observersList: Observer[] = [];
 	protected readonly id: string;
 
+	/**
+	 * Create a node
+	 *
+	 * @param id - ID of the created node
+	 */
+	constructor(id: string) {
 
-	constructor(id = "") {
 		this.id = id;
 	}
 

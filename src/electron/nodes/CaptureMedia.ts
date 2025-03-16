@@ -27,7 +27,7 @@ export class CaptureView extends NodeCore {
 	];
 
 	constructor() {
-		super();
+		super("SYSTEM");
 		this.setupChannels("SYSTEM", this.channels);
 	}
 
