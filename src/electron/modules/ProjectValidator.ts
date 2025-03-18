@@ -146,7 +146,7 @@ const hasLoop = (vertices: string[], edges: string[][]): LoopDetectionResult => 
 	for(const vertex of vertices) {
 
 		if(colors[vertex] === WHITE) {
-			const result = hasLoopDFS(vertices, edges, colors, path, vertex);
+			const result = hasLoopDFS(edges, colors, path, vertex);
 
 			if(result.hasLoop) {
 				return result;
@@ -162,14 +162,13 @@ const hasLoop = (vertices: string[], edges: string[][]): LoopDetectionResult => 
 /**
  * Depth first traverse of the graph
  *
- * @param vertices - An array of vertices names
  * @param edges - An array of edges.
  * @param colors - List of vertices colors
  * @param path - Traversed path
  * @param vertex - Vertex from which the DFS should start
  * @returns An object indicating whether a loop is present and, if so, the vertices forming the loop
  */
-const hasLoopDFS = (vertices: string[], edges: string[][], colors: Record<string, number>,
+const hasLoopDFS = (edges: string[][], colors: Record<string, number>,
 					path: string[], vertex: string): LoopDetectionResult => {
 
 	colors[vertex] = GRAY;
@@ -197,7 +196,7 @@ const hasLoopDFS = (vertices: string[], edges: string[][], colors: Record<string
 		}
 
 		if(colors[adjVertex] === WHITE) {
-			const result = hasLoopDFS(vertices, edges, colors, path, adjVertex);
+			const result = hasLoopDFS(edges, colors, path, adjVertex);
 			if(result.hasLoop) {
 				return result;
 			}

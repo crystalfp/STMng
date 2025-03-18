@@ -11,7 +11,6 @@ To do:
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
-  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
   ☐ Investigate lazy load `*Ctrl` components
@@ -63,6 +62,7 @@ Reference:
   ☐ Use `satisfies` <https://dev.to/wasp/ive-been-writing-typescript-without-understanding-it-5ef4>
   ☐ Branded types to distinguish structure id from idx <https://www.learningtypescript.com/articles/branded-types> and <https://github.com/kourge/ts-brand>
   ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
+  ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
 
 Archive:
   ✔ Add try/catch for XRD Calculator @done(2025-03-16 11:07) @project(To do)

@@ -51,9 +51,3 @@ const onContentLoaded = (loadEvent: Event): void => {
 };
 
 globalThis.addEventListener("DOMContentLoaded", onContentLoaded);
-
-// eslint-disable-next-line unicorn/prefer-add-event-listener
-window.onbeforeunload = (): void => {
-
-    globalThis.removeEventListener("DOMContentLoaded", onContentLoaded);
-};

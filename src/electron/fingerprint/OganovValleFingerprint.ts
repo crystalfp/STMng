@@ -22,11 +22,11 @@ import type {FingerprintsAccumulator} from "./Accumulator";
  * @param atomsZ - Atoms type
  * @returns The computed fingerprint and weights
  */
-export const fingerprinting = (params: FingerprintingParameters,
-							   basis: Float64Array,
-							   natoms: number,
-							   positions: Float64Array,
-							   atomsZ: Int32Array): FingerprintingResult => {
+export const fingerprintingOganovValle = (params: FingerprintingParameters,
+										  basis: Float64Array,
+										  natoms: number,
+										  positions: Float64Array,
+										  atomsZ: Int32Array): FingerprintingResult => {
 
 	const {areNanoclusters, cutoffDistance, binSize, peakWidth} = params;
 
