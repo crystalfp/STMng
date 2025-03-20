@@ -14,6 +14,11 @@ import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawOrthosliceRenderer} from "@/renderers/DrawOrthosliceRenderer";
 import type {CtrlParams} from "@/types";
 
+import SelectColormap from "@/widgets/SelectColormap.vue";
+import DatasetSelector from "@/widgets/DatasetSelector.vue";
+import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -169,7 +174,7 @@ watch([colormapName, colorIsolines], () => {
 <v-container class="container">
   <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 mb-4 ml-3" />
 
-  <g-dataset-selector v-model="dataset" :count-datasets />
+  <dataset-selector v-model="dataset" :count-datasets />
 
   <v-row>
     <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
@@ -183,32 +188,32 @@ watch([colormapName, colorIsolines], () => {
       </v-btn-toggle>
     </v-col>
   </v-row>
-  <g-debounced-slider v-slot="{value}" v-model="plane"
+  <debounced-slider v-slot="{value}" v-model="plane"
                       :step="1" :min="0" :max="maxPlane" class="ml-2 my-4">
     <v-label :text="`Plane (${value})`" class="no-select"/>
-  </g-debounced-slider>
+  </debounced-slider>
 
-  <g-debounced-range-slider v-slot="{values}" v-model="limits"
+  <debounced-range-slider v-slot="{values}" v-model="limits"
                             :step :min="valueMin" :max="valueMax"
                             class="ml-4 mt-1 pr-4">
     <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
              class="ml-n2 no-select" />
-  </g-debounced-range-slider>
+  </debounced-range-slider>
 
   <v-switch v-model="useColorClasses" label="Use discrete classes" class="ml-3 mb-4" />
-  <g-debounced-slider v-if="useColorClasses" v-slot="{value}" v-model="colorClasses"
+  <debounced-slider v-if="useColorClasses" v-slot="{value}" v-model="colorClasses"
                       :step="1" :min="2" :max="20" class="ml-2 mt-1 mb-4">
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
-  </g-debounced-slider>
+  </debounced-slider>
 
-  <g-select-colormap v-model="colormapName" class="mx-2" />
+  <select-colormap v-model="colormapName" class="mx-2" />
 
   <v-switch v-model="showIsolines" label="Show isolines" class="mt-6 ml-4" />
   <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mb-5" />
 
-  <g-debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
+  <debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
                       :step :min="valueMin" :max="valueMax" class="ml-2 mt-1">
     <v-label :text="`Isoline value (${humanFormat(value)})`" class="no-select"/>
-  </g-debounced-slider>
+  </debounced-slider>
 </v-container>
 </template>

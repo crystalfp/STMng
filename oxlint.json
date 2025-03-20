@@ -11,6 +11,9 @@
     "style": "warn",
     "suspicious": "warn",
     "restriction": "warn",
+    "correctness": "warn",
+    "pedantic": "warn",
+    "perf": "warn",
     "nursery": "warn"
   },
   "rules": {
@@ -133,7 +136,15 @@
     "no-multi-assign": 0,
     "avoid-new": 0,
     "no-rest-spread-properties": 0,
-    "operator-assignment": 0
+    "operator-assignment": 0,
+    "max-lines": 0,
+    "max-lines-per-function": 0,
+    "max-depth": 0,
+    "max-nested-callbacks": 0,
+    "new-for-builtins": 0,
+    "sort-vars": 0,
+    "max-classes-per-file": 0,
+    "no-await-in-loop": 0
   },
   "settings": {
   },
@@ -160,6 +171,7 @@
   "ignorePatterns": [
     "src/electron/fingerprint/KDtree*",
     "save/*.*",
-    "save/**/*.*"
+    "save/**/*.*",
+    "matrix.ts"
   ]
 }

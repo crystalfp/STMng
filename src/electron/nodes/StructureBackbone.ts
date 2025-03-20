@@ -8,7 +8,7 @@
  */
 import {invertBasis} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
-import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
+import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {sendToClient} from "../modules/ToClient";
 import type {BasisType, ChannelDefinition, CtrlParams, PositionType, Structure} from "@/types";
 

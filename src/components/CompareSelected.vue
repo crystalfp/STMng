@@ -22,6 +22,8 @@ import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/Rout
 import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {BasisType, CtrlParams} from "@/types";
 
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 /** List of structures to compare (don't use shallowRef) */
 interface Selection {
 
@@ -592,17 +594,17 @@ watch([aroundA, aroundB, aroundC],
     <div class="side-n" ref="viewCompare">
     </div>
     <div class="side-s">
-      <g-slider-with-steppers v-model="aroundA"
+      <slider-with-steppers v-model="aroundA"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
                       v-model:raw="showAroundA" label-width="7.4rem"
                       :label="`Around: a (${showAroundA}°)`"
                       :min="-180" :max="180" :step="1" />
-      <g-slider-with-steppers v-model="aroundB"
+      <slider-with-steppers v-model="aroundB"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
                       v-model:raw="showAroundB" label-width="4rem"
                       :label="`b (${showAroundB}°)`"
                       :min="-180" :max="180" :step="1" />
-      <g-slider-with-steppers v-model="aroundC"
+      <slider-with-steppers v-model="aroundC"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
                       v-model:raw="showAroundC" label-width="4rem"
                       :label="`c (${showAroundC}°)`"

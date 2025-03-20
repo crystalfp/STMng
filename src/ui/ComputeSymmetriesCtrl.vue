@@ -12,6 +12,9 @@ import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
+import ErrorAlert from "@/widgets/ErrorAlert.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -110,15 +113,15 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     <v-container v-if="standardizeCell" class="pa-0 mt-n2">
       <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2" />
       <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-3 mt-n2" />
-      <g-debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
+      <debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mt-4">
         <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
-      </g-debounced-slider>
+      </debounced-slider>
     </v-container>
-    <g-debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
+    <debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mt-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="no-select" />
-    </g-debounced-slider>
+    </debounced-slider>
   </v-container>
 
   <v-row class="pl-2 mt-2 align-center">
@@ -139,14 +142,14 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
   </v-row>
 
   <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 my-4" />
-  <g-debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
+  <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
                       :min="-5" :max="-1" :step="0.02" class="ml-2 mb-4">
     <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
 
   <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 
-  <g-error-alert kind="symmetries"/>
+  <error-alert kind="symmetries"/>
 </v-container>
 </template>
 

@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import {selectAtomsByKind, type SelectorType} from "../modules/SelectAtoms";
+import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendPolyhedraToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";

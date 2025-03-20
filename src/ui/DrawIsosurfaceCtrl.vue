@@ -14,6 +14,11 @@ import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawIsosurfaceRenderer} from "@/renderers/DrawIsosurfaceRenderer";
 import type {CtrlParams} from "@/types";
 
+import SelectColormap from "@/widgets/SelectColormap.vue";
+import DatasetSelector from "@/widgets/DatasetSelector.vue";
+import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -132,35 +137,35 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 <v-container class="container">
   <v-switch v-model="showIsosurface" label="Show isosurface" class="mt-4 ml-3 mb-4" />
 
-  <g-dataset-selector v-model="dataset" :count-datasets />
+  <dataset-selector v-model="dataset" :count-datasets />
 
   <v-switch v-model="nestedIsosurfaces" label="Nested isosurfaces" class="mt-1 ml-3 mb-4" />
 
   <v-container v-if="nestedIsosurfaces" class="pa-0 pl-2">
-    <g-debounced-slider v-slot="{value}" v-model="countIsosurfaces"
+    <debounced-slider v-slot="{value}" v-model="countIsosurfaces"
                         :step="1" :min="2" :max="10" class="mb-4">
       <v-label :text="`Number of isosurfaces (${value})`" class="no-select" />
-    </g-debounced-slider>
-    <g-debounced-range-slider v-slot="{values}" v-model="limits"
+    </debounced-slider>
+    <debounced-range-slider v-slot="{values}" v-model="limits"
                               :step :min="valueMin" :max="valueMax"
                               class="ml-4 mt-1 pr-4">
       <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
                class="ml-n2 no-select"/>
-    </g-debounced-range-slider>
+    </debounced-range-slider>
     <v-switch v-model="limitColormap" label="Limit colormap to range" class="mt-1 ml-3 mb-4" />
   </v-container>
 
   <v-container v-else class="pa-0">
-    <g-debounced-slider v-slot="{value}" v-model="isoValue"
+    <debounced-slider v-slot="{value}" v-model="isoValue"
                         :step :min="valueMin" :max="valueMax" class="ml-2 mt-1 mb-4">
       <v-label :text="`Isosurface value (${humanFormat(value)})`" class="no-select" />
-    </g-debounced-slider>
+    </debounced-slider>
   </v-container>
 
-  <g-select-colormap v-model="colormapName" class="mx-2 mb-6" />
+  <select-colormap v-model="colormapName" class="mx-2 mb-6" />
 
-  <g-debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-2">
+  <debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-2">
     <v-label :text="`Opacity (${value.toFixed(1)})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
 </v-container>
 </template>

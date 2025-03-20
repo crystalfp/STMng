@@ -14,6 +14,9 @@ import {askNode} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import type {FileFilter} from "@/types";
 
+import SelectFile from "@/widgets/SelectFile.vue";
+import ErrorAlert from "@/widgets/ErrorAlert.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -171,7 +174,7 @@ const selectedSaveFile = (filename: string): void => {
   <v-select v-model="format" label="File format"
             :items="fileFormats" class="mt-4 mb-4" @update:model-value="writerLabel=''"/>
 
-  <g-select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select output file"
+  <select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select output file"
                  :filter="filterFromFormat(format)"
                  kind="save" @selected="selectedSaveFile" />
 
@@ -185,6 +188,6 @@ const selectedSaveFile = (filename: string): void => {
   <v-alert v-if="finish" title="Done" class="mt-7 cursor-pointer"
            :text="`File written to: ${outputFileFull}`" type="success" density="compact"
            @click="finish=false" />
-  <g-error-alert kind="structureWriter"/>
+  <error-alert kind="structureWriter"/>
   </v-container>
 </template>

@@ -14,6 +14,8 @@ import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams} from "@/types";
 import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
+import ErrorAlert from "@/widgets/ErrorAlert.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -542,6 +544,6 @@ const showEnergyLandscape = (): void => {
     Show energy landscape
   </v-btn>
 
-  <g-error-alert kind="fingerprints" />
+  <error-alert kind="fingerprints" />
 </v-container>
 </template>

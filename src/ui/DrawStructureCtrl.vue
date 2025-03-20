@@ -12,6 +12,8 @@ import {showSystemAlert, resetAlertMessage} from "@/services/AlertMessage";
 import {DrawStructureRenderer} from "@/renderers/DrawStructureRenderer";
 import type {StructureRenderInfo} from "@/types";
 
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -187,13 +189,13 @@ const showCombined = computed({
     </v-col>
   </v-row>
 
-  <g-debounced-slider v-slot="{value}" v-model="drawRoughness"
+  <debounced-slider v-slot="{value}" v-model="drawRoughness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-6">
     <v-label :text="`Roughness (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="drawMetalness"
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="drawMetalness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-4">
     <v-label :text="`Metalness (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
 </v-container>
 </template>

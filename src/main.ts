@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {createApp, defineAsyncComponent} from "vue";
+import {createApp} from "vue";
 import log from "electron-log/renderer";
 import {createPinia} from "pinia";
 import {preloadFonts} from "./services/SpriteText";
@@ -53,7 +53,6 @@ import {VFileInput} from "vuetify/components/VFileInput";
 import {VSelect} from "vuetify/components/VSelect";
 import {VNumberInput} from "vuetify/labs/VNumberInput";
 import {VTextarea} from "vuetify/components/VTextarea";
-// import {VStepperVertical, VStepperVerticalItem} from "vuetify/labs/VStepperVertical";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -89,7 +88,6 @@ const app = createApp(App)
 			VSelect,
 			VNumberInput,
 			VTextarea,
-			// VStepperVertical, VStepperVerticalItem,
 		},
 		theme: {
     		defaultTheme: "dark",
@@ -139,18 +137,6 @@ const app = createApp(App)
 			}
 		}
   	}))
-
-	// Project defined components. The registered name should begin by G (g- in templates)
-	.component("GAlignLabels", defineAsyncComponent(() => import("./widgets/AlignLabels.vue")))
-	.component("GAtomsSelector", defineAsyncComponent(() => import("./widgets/AtomsSelector.vue")))
-	.component("GColorSelector", defineAsyncComponent(() => import("./widgets/ColorSelector.vue")))
-	.component("GDatasetSelector", defineAsyncComponent(() => import("./widgets/DatasetSelector.vue")))
-	.component("GDebouncedRangeSlider", defineAsyncComponent(() => import("./widgets/DebouncedRangeSlider.vue")))
-	.component("GDebouncedSlider", defineAsyncComponent(() => import("./widgets/DebouncedSlider.vue")))
-	.component("GErrorAlert", defineAsyncComponent(() => import("./widgets/ErrorAlert.vue")))
-	.component("GSelectFile", defineAsyncComponent(() => import("./widgets/SelectFile.vue")))
-	.component("GSliderWithSteppers", defineAsyncComponent(() => import("./widgets/SliderWithSteppers.vue")))
-	.component("GSelectColormap", defineAsyncComponent(() => import("./widgets/SelectColormap.vue")))
 
 	// Directive to focus the element when the bound element is mounted into the DOM
     .directive("focus", {mounted(element: HTMLElement) {element.focus();}});

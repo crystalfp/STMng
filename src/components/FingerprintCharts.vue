@@ -15,6 +15,8 @@ import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
 import type {ChartData, ChartOptions, FingerprintsChartData, FingerprintsChartKind} from "@/types";
 
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 /** Setup chart component */
 ChartJS.register(
     CategoryScale,
@@ -259,11 +261,11 @@ watch([fpIndex, chartType, binCount], () => {
           <v-btn value="op">Order param</v-btn>
           <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
         </v-btn-toggle>
-        <g-slider-with-steppers v-show="chartType==='fp' || chartType==='di'" v-model="fpIndex"
+        <slider-with-steppers v-show="chartType==='fp' || chartType==='di'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />
-        <g-slider-with-steppers v-show="chartType==='eh' || chartType==='dh'" v-model="binCount"
+        <slider-with-steppers v-show="chartType==='eh' || chartType==='dh'" v-model="binCount"
                                 v-model:raw="showBinCount" label-width="11rem"
                                 :label="`Bin count (${showBinCount})`"
                                 :min="2" :max="200" :step="1" />

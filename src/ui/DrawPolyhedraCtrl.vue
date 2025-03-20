@@ -12,6 +12,10 @@ import {askNode, sendToNode, receivePolyhedraFromNode} from "@/services/RoutesCl
 import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawPolyhedraRenderer} from "@/renderers/DrawPolyhedraRenderer";
 
+import ColorSelector from "@/widgets/ColorSelector.vue";
+import AtomsChooser from "@/widgets/AtomsChooser.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -98,13 +102,14 @@ receivePolyhedraFromNode(id, "vertices",
 <v-container class="container">
   <v-switch v-model="showPolyhedra" label="Show polyhedra" class="mt-2 ml-4" />
   <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-4 ml-4" />
-  <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
+  <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"
                     class="ml-2 mb-6"
                     title="Select central atoms by" placeholder="Central atoms selector" />
-  <g-slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
+  <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
                           v-model:raw="showOpacity" label-width="7rem"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
                           :min="0" :max="1" :step="0.1" />
-  <g-color-selector v-else v-model="surfaceColor" label="Surface color" :transparency="true" block />
+  <color-selector v-else v-model="surfaceColor" label="Surface color"
+                  :transparency="true" block class="ml-n1"/>
 </v-container>
 </template>

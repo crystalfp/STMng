@@ -12,6 +12,9 @@ import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -163,21 +166,21 @@ const resetSliders = (): void => {
   <v-switch v-model="enableComputeBonds"
             label="Enable compute bonds" class="my-4 ml-2" />
 
-  <g-debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
+  <debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
                       class="ml-2 mb-2 mt-1">
     <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01"
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01"
                       class="ml-2 mb-2">
     <v-label :text="`Bonding max distance (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01"
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01"
                       class="ml-2 mb-2">
     <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
-  <g-debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-2 mb-4">
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-2 mb-4">
     <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
   <v-label class="ml-2 no-select">Sum of covalent radii multiplier</v-label>
   <v-switch v-model="perPairScale" :disabled="perPairData.length < 2"
             label="Multiplier per atom pair" class="ml-2 mt-2 mb-4" />
@@ -185,16 +188,16 @@ const resetSliders = (): void => {
     <v-table class="px-2 py-1">
       <tr v-for="(item, idx) of perPairData" :key="item.label" class="per-pair-row">
         <td class="first-column">{{ item.label }}</td>
-        <td><g-slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"
+        <td><slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"
                                     :label="`(${showScale[idx].toFixed(2)})`" label-width="3rem"
                                     :min="0" :max="3.0" :step="0.01" class="mr-0"/></td>
       </tr>
     </v-table>
   </v-container>
   <v-container v-else class="pa-0 mt-n3">
-    <g-debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01" class="ml-2">
+    <debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01" class="ml-2">
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" class="no-select" />
-    </g-debounced-slider>
+    </debounced-slider>
   </v-container>
   <v-label class="ml-2 mb-1 mt-4 no-select">Add bonded atoms outside unit cell</v-label>
   <v-btn-toggle v-model="enlargementKind" mandatory class="mb-6 ml-2">

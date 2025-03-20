@@ -8,7 +8,8 @@
  */
 import workerpool from "workerpool";
 import {fingerprintingOganovValle} from "./OganovValleFingerprint";
-import type {FingerprintingParameters} from "@/types";
+import {fingerprintingDotMatrix} from "./DotMatrixFingerprint";
+import type {FingerprintingParameters, FingerprintingResult} from "@/types";
 
 /** The results returned to the caller */
 export interface WorkerResults {
@@ -42,19 +43,14 @@ const worker = (params: FingerprintingParameters,
 				atomsZ: Int32Array): WorkerResults => {
 
 	// Compute fingerprint
-	let results: ReturnType<typeof fingerprintingOganovValle>;
+	let results: FingerprintingResult;
 	switch(params.method) {
 		case 0:
 		case 1:
 			results = fingerprintingOganovValle(params, basis, natoms, positions, atomsZ);
 			break;
 		case 2:
-			results = {
-				countSections: 0,
-				sectionLength: 0,
-				fingerprint: new Float64Array(0),
-				weights: new Float64Array(0)
-			};
+			results = fingerprintingDotMatrix(params, basis, natoms, positions, atomsZ);
 			break;
 		default:
 			throw Error(`Invalid fingerprinting method ${params.method}`);

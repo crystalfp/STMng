@@ -12,6 +12,9 @@ import {askNode, receiveVerticesFromNode, sendToNode} from "@/services/RoutesCli
 import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawUnitCellRenderer} from "@/renderers/DrawUnitCellRenderer";
 
+import ColorSelector from "@/widgets/ColorSelector.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -185,15 +188,15 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
   <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-2 ml-4" />
   <v-switch v-model="dashedLine" label="Dashed lines" class="ml-4" />
   <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4 mb-4" />
-  <g-color-selector v-model="lineColor" label="Line color" block />
+  <color-selector v-model="lineColor" label="Line color" block />
   <v-label class="separator-title">Cell repetitions</v-label>
-  <g-slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
+  <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
                           :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
-  <g-slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB"
+  <slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB"
                           :label="`Along b (${showRepetitionsB})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
-  <g-slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
+  <slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
   <v-btn block :disabled="!hasSupercell()" class="mt-2 mb-4" @click="resetSliders">
@@ -203,15 +206,15 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
             label="Show supercell" class="ml-4" />
   <v-switch v-model="dashedSupercell" :disabled="!hasSupercell()"
             label="Dashed lines supercell" class="ml-4 mb-4" />
-  <g-color-selector v-model="supercellColor" label="Line color" block />
+  <color-selector v-model="supercellColor" label="Line color" block />
   <v-label class="separator-title">Shift origin</v-label>
-  <g-slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
+  <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
                           :min="-50" :max="50" :step="1" />
-  <g-slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
+  <slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
                           :label="`Along b (${showPercentB}%)`" label-width="7.2rem"
                           :min="-50" :max="50" :step="1" />
-  <g-slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
+  <slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
                           :min="-50" :max="50" :step="1" />
   <v-switch v-model="shrink" label="Shrink cell" class="ml-4 my-2" />

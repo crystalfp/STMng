@@ -13,7 +13,7 @@ import type {Structure} from "@/types";
 export type SelectorType = "symbol" | "label" | "index" | "all";
 
 /**
- * Select atoms in the structure by the criteria entered in the AtomsSelector widget
+ * Select atoms in the structure by the criteria entered in the AtomsChooser widget
  *
  * @param structure - The structure for which atoms should be selected
  * @param kind - Kind of selection. Could be: "symbol", "label", "index" or "all"

@@ -16,6 +16,8 @@ import {useControlStore} from "@/stores/controlStore";
 import type {FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
+import SelectFile from "@/widgets/SelectFile.vue";
+import ErrorAlert from "@/widgets/ErrorAlert.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -408,10 +410,10 @@ const auxSetup = computed(() => {
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
                 @click:clear="getAtomsTypes"/>
 
-  <g-select-file v-model="label1" class="mt-2" :disabled="format === ''" title="Select input file"
+  <select-file v-model="label1" class="mt-2" :disabled="format === ''" title="Select input file"
                  :filter="filterFromFormat(format)" @selected="selectedFile" />
 
-  <g-select-file v-if="auxSetup.hasAux" v-model="label2" class="mt-2"
+  <select-file v-if="auxSetup.hasAux" v-model="label2" class="mt-2"
                  :filter="auxSetup.filter"
                  :title="auxSetup.title" @selected="selectedAuxFile"/>
 
@@ -453,6 +455,6 @@ const auxSetup = computed(() => {
       </v-btn-toggle>
     </v-row>
   </v-container>
-  <g-error-alert kind="structureReader" />
+  <error-alert kind="structureReader" />
 </v-container>
 </template>

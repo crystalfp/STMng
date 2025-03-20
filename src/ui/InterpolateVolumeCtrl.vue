@@ -12,6 +12,9 @@ import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
+import DatasetSelector from "@/widgets/DatasetSelector.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -55,11 +58,11 @@ watch([interpolateVolume, pointsToAdd, dataset], () => {
   <v-switch v-model="interpolateVolume"
             label="Interpolate volume data" class="mt-4 ml-4 mb-4" />
 
-  <g-dataset-selector v-model="dataset" :count-datasets />
+  <dataset-selector v-model="dataset" :count-datasets />
 
-  <g-debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
+  <debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
                       :disabled="!interpolateVolume" class="ml-2 mt-1">
     <v-label :text="`Points to add (${value})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
 </v-container>
 </template>

@@ -14,6 +14,10 @@ import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClien
 import {showSystemAlert} from "@/services/AlertMessage";
 import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
 
+import ColorSelector from "@/widgets/ColorSelector.vue";
+import AtomsChooser from "@/widgets/AtomsChooser.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -131,24 +135,24 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
 <v-container class="container">
   <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-2 mb-4 ml-2"
             @update:modelValue="renderer.setVisibility(showTrajectories!)" />
-  <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
-  <g-atoms-selector v-model:kind="labelKind" v-model:selector="atomsSelector"
-                    :disabled="trajectoriesRecording" class="ml-1"
+  <v-btn block class="mb-6 ml-0" @click="resetTraces">Clear trajectories</v-btn>
+  <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"
+                    :disabled="trajectoriesRecording" class="ml-0"
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
-  <g-debounced-slider v-slot="{value}" v-model="maxDisplacement"
+  <debounced-slider v-slot="{value}" v-model="maxDisplacement"
                       :disabled="trajectoriesRecording"
                       :step="0.01" :min="0.01" :max="3" class="ml-1 mb-4 mt-8">
     <v-label :text="`Max displacement (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
   <v-switch v-model="showPositionClouds" label="Show position clouds" class="ml-2 mb-4" />
   <v-container v-if="showPositionClouds" class="pa-0 mb-2">
-    <g-debounced-slider v-slot="{value}" v-model="positionCloudsSize"
+    <debounced-slider v-slot="{value}" v-model="positionCloudsSize"
                         :step="1" :min="10" :max="200" class="ml-1 mb-4">
       <v-label :text="`Point sprite size (${value})`" class="no-select" />
-    </g-debounced-slider>
-    <g-color-selector v-model="positionCloudsColor" label="Cloud color" />
+    </debounced-slider>
+    <color-selector v-model="positionCloudsColor" label="Cloud color" block class="mb-2"/>
   </v-container>
-  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
+  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" class="ml-0"
          @click="toggleRecording">{{ startStop }}</v-btn>
 </v-container>
 </template>

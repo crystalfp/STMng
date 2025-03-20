@@ -12,6 +12,9 @@ import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 import {StructureBackboneRenderer} from "@/renderers/StructureBackboneRenderer";
 
+import AtomsChooser from "@/widgets/AtomsChooser.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -139,14 +142,14 @@ const selectDeselect = (select: boolean): void => {
 
   <v-switch v-model="enableBackbone"
             label="Show backbone" class="mt-4 mb-2 ml-2" />
-  <g-slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
+  <slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
                           :label="`Threshold (${(showThreshold*100).toFixed(0)}%)`"
                           :min="0" :max="1" :step="0.1" />
-  <g-slider-with-steppers v-model="radius" class="mb-6"
+  <slider-with-steppers v-model="radius" class="mb-6"
                           v-model:raw="showRadius" label-width="8rem"
                           :label="`Tube radius (${showRadius.toFixed(1)})`"
                           :min="0" :max="2" :step="0.1" />
-  <g-atoms-selector v-model:kind="selectorKind" v-model:selector="atomsSelector"
+  <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
                     :disabled="!enableBackbone" class="ml-1 mb-6"
                     title="Select backbone atoms by" placeholder="Atoms selectors" />
   <v-label v-if="chains.length > 0" class="ml-1 no-select">Select backbone segment:</v-label>

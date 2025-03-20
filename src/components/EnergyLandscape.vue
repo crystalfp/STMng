@@ -23,6 +23,9 @@ import {scatterToUniform} from "@/electron/fingerprint/ScatterToUniform";
 import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {EnergyLandscapeData} from "@/types";
 
+import SelectColormap from "@/widgets/SelectColormap.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 /** The canvas sizes (will be computed during mount or resize) */
 const canvasWidth = ref(500);
 const canvasHeight = ref(300);
@@ -273,19 +276,19 @@ const renderSurface = (): void => {
     <div class="landscape-viewer" ref="view">
     </div>
     <v-container class="landscape-buttons">
-      <g-slider-with-steppers v-model="energyScale" class="mb-2 aa"
+      <slider-with-steppers v-model="energyScale" class="mb-2 aa"
                               v-model:raw="showEnergyScale" label-width="4.9rem"
                               :label="`Scale (${showEnergyScale})`"
                               :min="0" :max="2" :step="0.1" />
-      <g-slider-with-steppers v-model="gridSideExp" class="mb-2 bb"
+      <slider-with-steppers v-model="gridSideExp" class="mb-2 bb"
                               v-model:raw="showGridSideExp" label-width="7.5rem"
                               :label="`Grid side (${2**showGridSideExp})`"
                               :min="6" :max="11" :step="1" />
-      <g-slider-with-steppers v-model="power" class="mb-2 mr-0 cc"
+      <slider-with-steppers v-model="power" class="mb-2 mr-0 cc"
                               v-model:raw="showPower" label-width="5.5rem"
                               :label="`Power (${showPower})`"
                               :min="1" :max="6" :step="0.1" />
-      <g-select-colormap v-model="colormapName" class="dd" />
+      <select-colormap v-model="colormapName" class="dd" />
       <v-btn v-focus @click="closeWindow('/landscape')" class="mt-2 ee">Close</v-btn>
     </v-container>
   </div>

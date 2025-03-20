@@ -16,6 +16,9 @@ import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import {KDTree} from "@/electron/fingerprint/KDtree.js";
 import type {CtrlParams, ScatterplotData} from "@/types";
 
+import SelectFile from "@/widgets/SelectFile.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
 /** One point that goes to the scatterplot */
 interface Glyph {
 
@@ -658,7 +661,7 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
         }
         return out;
     }
-    else if(scatterplotType.value === "silhouette") {
+    if(scatterplotType.value === "silhouette") {
         return [
             {key: 0, color: "green",   label: "Strong"},
             {key: 1, color: "yellow",  label: "Reasonable"},
@@ -840,7 +843,7 @@ const mousemove = (event: MouseEvent): void => {
         </v-btn>
       </v-row>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <g-slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
+      <slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
                               v-model:raw="showSelectedGroup" label-width="7rem"
                               :label="`Group (${showSelectedGroup})`" class="mt-2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
@@ -865,7 +868,7 @@ const mousemove = (event: MouseEvent): void => {
         Export selected
       </v-btn>
 
-      <g-select-file v-if="showSave" class="mt-4" title="Select output file"
+      <select-file v-if="showSave" class="mt-4" title="Select output file"
                      :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
 
       <v-alert v-if="errorMessage !== ''" title="Error" class="mt-7 cursor-pointer"
@@ -905,7 +908,7 @@ const mousemove = (event: MouseEvent): void => {
           <v-btn value="fidelity">Fidelity</v-btn>
           <v-btn value="silhouette" :disabled="scatterplotData?.countGroups === 0">Quality</v-btn>
         </v-btn-toggle>
-        <g-slider-with-steppers v-model="pointRadius"
+        <slider-with-steppers v-model="pointRadius"
                                 v-model:raw="showPointRadius" label-width="9rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />

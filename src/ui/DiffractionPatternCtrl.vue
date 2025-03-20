@@ -11,6 +11,9 @@ import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
+import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+
 const wavelengthCodes = ref<string[]>([]);
 const wavelengthCode = ref("");
 const wavelengthNumeric = ref(1.5);
@@ -102,18 +105,18 @@ const openChartWindow = (): void => {
   <v-number-input v-if="wavelengthCode === 'Manual'" v-model="wavelengthNumeric"
                   label="Numeric wavelength" :precision="6"
                   :min="0.1" :max="4" :step="0.1" class="ml-2 mr-0" />
-  <g-debounced-range-slider v-slot="{values}" v-model="theta"
+  <debounced-range-slider v-slot="{values}" v-model="theta"
                               :step="0.01" :min="0" :max="90"
                               class="ml-4 mt-2 pr-4">
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
-  </g-debounced-range-slider>
+  </debounced-range-slider>
   <v-switch v-model="scaled" label="Chart scaled" class="ml-2" />
   <v-switch v-model="showHKL" label="Show HKL" class="ml-2 mb-6" />
-  <g-debounced-slider v-slot="{value}" v-model="width" :min="0" :max="5" :step="0.05"
+  <debounced-slider v-slot="{value}" v-model="width" :min="0" :max="5" :step="0.05"
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
-  </g-debounced-slider>
+  </debounced-slider>
   <v-btn block @click="openChartWindow" :disabled="!enableComputation">Open chart</v-btn>
 </v-container>
 </template>

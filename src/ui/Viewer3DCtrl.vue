@@ -12,6 +12,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, sendViewer3DState} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
+import AlignLabels from "@/widgets/AlignLabels.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -207,36 +208,36 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
         <v-label text="Directional light 1" class="mb-2 no-select" />
         <v-color-picker v-model="configStore.lights.directional1Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
-        <g-align-labels label-width="4.5rem">
+        <align-labels label-width="4.5rem">
           <v-slider v-model="configStore.lights.directional1Intensity" label="Intensity" density="compact"
                     min="0" max="3" step="0.1" thumb-label />
           <v-slider v-model="alpha1" label="Around X" density="compact"
                     min="-180" max="180" step="1" thumb-label />
           <v-slider v-model="beta1" label="Along X" density="compact"
                     min="-90" max="90" step="1" thumb-label />
-        </g-align-labels>
+        </align-labels>
         <v-label text="Directional light 2" class="mb-2 no-select" />
         <v-color-picker v-model="configStore.lights.directional2Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
-        <g-align-labels label-width="4.5rem">
+        <align-labels label-width="4.5rem">
           <v-slider v-model="configStore.lights.directional2Intensity" label="Intensity" density="compact"
                     min="0" max="3" step="0.1" thumb-label />
           <v-slider v-model="alpha2" label="Around Y" density="compact"
                     min="-180" max="180" step="1" thumb-label />
           <v-slider v-model="beta2" label="Along Y" density="compact"
                     min="-90" max="90" step="1" thumb-label />
-        </g-align-labels>
+        </align-labels>
         <v-label text="Directional light 3" class="mb-2 no-select" />
         <v-color-picker v-model="configStore.lights.directional3Color"
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
-        <g-align-labels label-width="4.5rem">
+        <align-labels label-width="4.5rem">
           <v-slider v-model="configStore.lights.directional3Intensity" label="Intensity" density="compact"
                     min="0" max="3" step="0.1" thumb-label />
           <v-slider v-model="alpha3" label="Around Z" density="compact"
                     min="-180" max="180" step="1" thumb-label />
           <v-slider v-model="beta3" label="Along Z" density="compact"
                     min="-90" max="90" step="1" thumb-label />
-        </g-align-labels>
+        </align-labels>
       </v-expansion-panel-text>
     </v-expansion-panel>
     <v-expansion-panel>
@@ -246,20 +247,20 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       <v-expansion-panel-text>
         <v-switch v-model="configStore.helpers.showAxis"
                   label="Show axis" class="mt-3 mb-4" />
-        <g-align-labels label-width="5rem" class="ml-n4 mt-n5">
+        <align-labels label-width="5rem" class="ml-n4 mt-n5">
           <v-slider v-model="configStore.helpers.axisLength" label="Axis length" density="compact"
                     min="0.5" max="20" step="0.5" thumb-label />
-        </g-align-labels>
+        </align-labels>
         <v-switch v-model="configStore.helpers.showGridXZ"
                   label="Show grid XZ" class="mt-n6" />
         <v-switch v-model="configStore.helpers.showGridXY"
                   label="Show grid XY" />
         <v-switch v-model="configStore.helpers.showGridYZ"
                   label="Show grid YZ" />
-        <g-align-labels label-width="5rem" class="ml-n4">
+        <align-labels label-width="5rem" class="ml-n4">
           <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
                     min="2" max="40" step="2" thumb-label />
-        </g-align-labels>
+        </align-labels>
         <v-switch v-model="configStore.helpers.showGizmo"
                   label="Show orientation axis" class="mt-n6" />
       </v-expansion-panel-text>
