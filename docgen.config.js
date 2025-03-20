@@ -20,7 +20,7 @@ module.exports = {
 						.replace(/[*\n ]+$/, "")
 						.replace(/^\*\n/, "")
 						.replaceAll(/\n *\* */g, "\n")
-						.replaceAll("\\@", "#$%")
+						.replaceAll(String.raw`\@`, "#$%")
 				const values = rawValue.split(/ *@/).map((item) => item.trim());
 
 				for(const vv of values) {

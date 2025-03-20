@@ -89,7 +89,7 @@ const handleDataAvailable = (event: BlobEvent): void => {recordedChunks.push(eve
 /**
  * Saves the video file on stop recording
  */
-async function handleStop(): Promise<void> {
+const handleStop = async (): Promise<void> => {
 
     const blob = new Blob(recordedChunks, {
         type: "video/webm; codecs=vp9"
@@ -109,7 +109,7 @@ async function handleStop(): Promise<void> {
             messageStore.captureMedia.typeM = "error";
             messageStore.captureMedia.textM = error.message;
         });
-}
+};
 
 /**
  * Handle MediaRecording errors

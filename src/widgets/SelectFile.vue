@@ -58,7 +58,7 @@ const openSelector = (): void => {
                 emit("selected", filename);
             }
         })
-        .finally(() => inProgress.value = false)
+        .finally(() => {inProgress.value = false;})
         .catch((error: Error) => showSystemAlert(`Error from file select: ${error.message}`));
 };
 

@@ -8,6 +8,7 @@ To do:
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
   ☐ When updated, reinstall `typedoc-plugin-missing-exports`
+  ☐ Remove global widget and import them where they are used
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

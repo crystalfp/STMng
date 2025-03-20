@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<{
 const value = defineModel<number>();
 
 const valueToDebounce = ref(value.value ?? props.min);
-watch(value, () => valueToDebounce.value = value.value ?? props.min);
+watch(value, () => {valueToDebounce.value = value.value ?? props.min;});
 
 let debouncingTimeoutId: NodeJS.Timeout;
 watch(valueToDebounce, () => {

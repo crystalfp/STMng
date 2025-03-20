@@ -184,11 +184,11 @@ export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.
  * @param defaultValue - Default value for the preference if not in the store
  * @returns The preference value or the default
  */
-export function getPreferenceSync<T>(key: string, defaultValue: T): T {
+export const getPreferenceSync = <T>(key: string, defaultValue: T): T => {
 
     const value = window.electron.ipcRenderer.sendSync("PREFERENCES:GET-SYNC", key) as T;
 	return value ?? defaultValue;
-}
+};
 
 // > Communication from main process
 /**

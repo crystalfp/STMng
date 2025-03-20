@@ -152,7 +152,7 @@ export class Slab {
         const key = this.byAtom ? index : Zi;
 
         if(this.interatomicDistances.has(key)) {
-            this.interatomicDistances.get(key)!.push([Zj, distance]);
+            this.interatomicDistances.get(key)?.push([Zj, distance]);
         }
         else {
             this.interatomicDistances.set(key, [[Zj, distance]]);

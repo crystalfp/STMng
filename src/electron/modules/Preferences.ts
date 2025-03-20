@@ -6,9 +6,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {ipcMain, nativeTheme} from "electron";
+import {ipcMain, nativeTheme, type IpcMainEvent} from "electron";
 import {Store} from "./UserStore";
-import type {IpcMainEvent} from "electron";
 
 /** The accepted preference types */
 type PreferenceEntry = string | number | string[];

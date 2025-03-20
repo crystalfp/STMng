@@ -295,7 +295,7 @@ const computeFingerprints = (): void => {
     })
     .catch((error: Error) => showAlertMessage(`Error from fingerprint computation: ${error.message}`,
                                               "fingerprints"))
-    .finally(() => fingerprintingBusy.value = false);
+    .finally(() => {fingerprintingBusy.value = false;});
 };
 
 /** On changing distance computation parameters */
@@ -365,7 +365,7 @@ const ClassifyStructures = (): void => {
     })
     .catch((error: Error) => showAlertMessage(`Error from grouping structures: ${error.message}`,
                                               "fingerprints"))
-    .finally(() => groupingBusy.value = false);
+    .finally(() => {groupingBusy.value = false;});
 };
 
 /** Enable input of K value */

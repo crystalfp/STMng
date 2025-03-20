@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {app, BrowserWindow, nativeImage, ipcMain} from "electron";
+import {app, BrowserWindow, nativeImage, ipcMain, dialog} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
@@ -101,8 +101,16 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     // Setup access to client windows
     toClientSetup(mainWin.webContents);
 
-    // Close any opened secondary window
-    mainWin.on("close", () => {
+    // Ask confirmation then close any opened secondary window and quit
+    mainWin.on("close", (event) => {
+
+        if(dialog.showMessageBoxSync({
+            type: "question",
+            buttons: ["Yes", "No"],
+            title: "Confirm",
+            message: "Are you sure you want to quit?"
+        }) === 1) event.preventDefault();
+
         for(const win of openedWindows) {
             if(win[0] !== "/") win[1].close();
         }
