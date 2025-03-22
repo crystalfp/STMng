@@ -8,11 +8,10 @@
  */
  /* eslint-disable unicorn/prefer-global-this */
 import {watchEffect} from "vue";
-import {useMessageStore} from "@/stores/messageStore";
+import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {CtrlParams, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
-import type {AlertLevel} from "./AlertMessage";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {

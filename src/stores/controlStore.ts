@@ -29,26 +29,37 @@ interface GlobalControls {
 	/** Capture a STL file */
 	stl: boolean;
 
-	/** Capture for multistep structures */
+	/** Capture for fingerprinting */
 	fingerprintsAccumulate: boolean;
+	/** Capture for trajectory recording */
 	trajectoriesRecording: boolean;
+	/** Capture for writer of multistep structures */
 	writerAccumulate: boolean;
 
-	/** Set if a functionality is present to add its control in StructureReader */
+	/** Set if capture node is present to add its control in StructureReader */
 	hasCapture: boolean;
+	/** Set if the trajectory node is present to add its control in StructureReader */
 	hasTrajectory: boolean;
+	/** Set if fingerprinting node is present to add its control in StructureReader */
 	hasFingerprints: boolean;
+	/** Set if the writer node is present to add its control in StructureReader */
 	hasWriter: boolean;
 
-	/** Atoms/polyhedra selection */
+	/** Atoms selection */
 	atomsSelected: number[];
+	/** To convert selected atom into instance index */
 	selectedAtomMap: number[][];
+	/** Polyhedra selection */
 	polyhedronCurrentIdx: number | undefined;
+	/** New polyhedra selected */
 	polyhedronNewIdx: number | undefined;
+	/** Polyhedra color */
 	polyhedronCurrentColor: number;
+	/** Selected polyhedra color */
 	polyhedronNewColor: number;
 }
 
+/** Access the control store that contains global control variables not saved as status */
 export const useControlStore = defineStore("ControlStore", {
 
     state: () => ({

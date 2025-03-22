@@ -31,6 +31,8 @@ node_modules/.bin/typedoc \
 --validation \
 --suppressCommentWarningsInDeclarationFiles \
 --plugin typedoc-plugin-vue \
+--plugin typedoc-plugin-missing-exports \
+--placeInternalsInOwningModule \
 --disableGit \
 --excludeInternal \
 --excludeExternals \
@@ -38,8 +40,6 @@ node_modules/.bin/typedoc \
 --tsconfig ./tsconfig.json \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree`
 fi
-# --plugin typedoc-plugin-missing-exports \
-# --placeInternalsInOwningModule \
 
 
 # if [ $c = "s" -o $c = "a" ]

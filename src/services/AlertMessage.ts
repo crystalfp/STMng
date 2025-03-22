@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import log from "electron-log";
-import {useMessageStore} from "@/stores/messageStore";
+import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
 
 /**
  * Show error notification
@@ -22,16 +22,16 @@ export const showAlertMessage = (text: string, node?: string): void => {
 	messageStore.system.level = "error";
 	switch(node) {
 		case "symmetries":
-			messageStore.symmetries.message = text;
+			messageStore.symmetries = text;
 			break;
 		case "structureReader":
-			messageStore.structureReader.message = text;
+			messageStore.structureReader = text;
 			break;
 		case "structureWriter":
-			messageStore.structureWriter.message = text;
+			messageStore.structureWriter = text;
 			break;
 		case "fingerprints":
-			messageStore.fingerprints.message = text;
+			messageStore.fingerprints = text;
 			break;
 	}
 	log.error(text);
@@ -48,16 +48,16 @@ export const resetAlertMessage = (node: string): void => {
 	messageStore.system.message = "";
 	switch(node) {
 		case "symmetries":
-			messageStore.symmetries.message = "";
+			messageStore.symmetries = "";
 			break;
 		case "structureReader":
-			messageStore.structureReader.message = "";
+			messageStore.structureReader = "";
 			break;
 		case "structureWriter":
-			messageStore.structureWriter.message = "";
+			messageStore.structureWriter = "";
 			break;
 		case "fingerprints":
-			messageStore.fingerprints.message = "";
+			messageStore.fingerprints = "";
 			break;
 	}
 };
@@ -73,13 +73,13 @@ export const hasAlertMessage = (node: string): boolean => {
 	const messageStore = useMessageStore();
 	switch(node) {
 		case "symmetries":
-			return messageStore.symmetries.message !== "";
+			return messageStore.symmetries !== "";
 		case "structureReader":
-			return messageStore.structureReader.message !== "";
+			return messageStore.structureReader !== "";
 		case "structureWriter":
-			return messageStore.structureWriter.message !== "";
+			return messageStore.structureWriter !== "";
 		case "fingerprints":
-			return messageStore.fingerprints.message !== "";
+			return messageStore.fingerprints !== "";
 	}
 	return false;
 };
@@ -94,19 +94,16 @@ export const getAlertMessage = (node: string): string => {
 	const messageStore = useMessageStore();
 	switch(node) {
 		case "symmetries":
-			return messageStore.symmetries.message;
+			return messageStore.symmetries;
 		case "structureReader":
-			return messageStore.structureReader.message;
+			return messageStore.structureReader;
 		case "structureWriter":
-			return messageStore.structureWriter.message;
+			return messageStore.structureWriter;
 		case "fingerprints":
-			return messageStore.fingerprints.message;
+			return messageStore.fingerprints;
 	}
 	return "?";
 };
-
-/** Level for the alert messages */
-export type AlertLevel = "success" | "info" | "warning" | "error";
 
 /**
  * Show a system alert message

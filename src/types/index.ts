@@ -404,20 +404,29 @@ type Anchor = "center" | "end" | "start";
 
 /** Definition of the chart data and options */
 export interface ChartOptions {
+    /** Resizes the chart canvas when its container does */
     responsive: boolean;
-    /** Maintain aspect ratio of the chart */
+    /** Maintain aspect ratio of the chart when resizing */
     maintainAspectRatio: boolean;
+    /** Inline data related to ChartJS plugins */
     plugins?: {
+        /** Chart title */
         title?: {
+            /** Title text */
             text: string;
+            /** Show the title */
             display: boolean;
+            /** Fonts for the title */
             font: Record<string, number | string>;
+            /** Optional text padding */
             padding?: number;
         };
+        /** Chart legend */
         legend?: {
             /** If the legend should be visible */
             display: boolean;
         };
+        /** Label on data points */
         datalabels?: {
             /** Color of the label */
             color?: string;

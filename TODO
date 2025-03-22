@@ -7,8 +7,6 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
-  ☐ When updated, reinstall `typedoc-plugin-missing-exports`
-  ☐ Remove global widget and import them where they are used
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -66,6 +64,8 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
 
 Archive:
+  ✔ When updated, reinstall `typedoc-plugin-missing-exports` @done(2025-03-22 05:03) @project(To do)
+  ✔ Remove global widget and import them where they are used @done(2025-03-22 05:03) @project(To do)
   ✔ Add try/catch for XRD Calculator @done(2025-03-16 11:07) @project(To do)
   ✔ Close main window should close all secondary windows @done(2025-03-16 10:34) @project(To do)
   ✘ Put setupChannel in NodeCore @cancelled(2025-03-16 10:44) @project(To do)

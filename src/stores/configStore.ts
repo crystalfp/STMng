@@ -9,6 +9,7 @@
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {Viewer3DState} from "@/types";
 
+/** Access the configuration store that contains the shared state of the viewer */
 export const useConfigStore = defineStore("ConfigStore", {
 
     state: () => ({
