@@ -17,7 +17,10 @@ import type {FingerprintingParameters} from "@/types";
 import type {FingerprintsAccumulator} from "./Accumulator";
 import type {WorkerResults} from "./Worker";
 
-/** Computation result for the user interface */
+/**
+ * Computation result for the user interface
+ * @notExported
+ */
 interface FingerprintingComputeResult {
 
 	/** Computed fingerprint length */

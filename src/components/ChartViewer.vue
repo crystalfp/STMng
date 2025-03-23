@@ -62,7 +62,10 @@ receiveInWindow((dataFromMain) => {
 /** Close the window on Esc press */
 closeWithEscape("/chart");
 
-// Reference to the chart
+/**
+ * Reference to the chart
+ * @notExported
+ */
 interface ChartCanvas {
     chart: {
         canvas: HTMLCanvasElement;

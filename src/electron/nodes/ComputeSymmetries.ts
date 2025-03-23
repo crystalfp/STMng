@@ -14,7 +14,10 @@ import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
 
-/** Output from the native module that computes and find symmetries */
+/**
+ * Output from the native module that computes and find symmetries
+ * @notExported
+ */
 interface ComputeSymmetriesOutput {
 
 	/** Computed basis vectors */

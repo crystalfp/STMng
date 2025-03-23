@@ -15,8 +15,14 @@ import {theme} from "@/services/ReceiveTheme";
 const inSymmetry = ref("");
 const outSymmetry = ref("");
 
+/**
+ * Data for the show symmetry window
+ * @notExported
+ */
 interface SymmetriesData {
+    /** Input symmetry group */
     inSymmetry: string;
+    /** Computed output symmetry group */
     outSymmetry: string;
 }
 

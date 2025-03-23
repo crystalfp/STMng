@@ -438,33 +438,53 @@ export interface ChartOptions {
             anchor?: Anchor;
         };
     };
+    /** Charts elements */
     elements?: {
+        /** Data for the line element */
         line: {
+            /** Width of the line */
             borderWidth: number;
         };
     };
+    /** Global layout of the chart */
     layout?: {
+        /** Global padding around the chart */
         padding: number;
     };
+    /** Grid scales */
     scales?: {
-      x: {
-        title: {
-          color: string;
-          display: boolean;
-          text: string;
-          font?: Record<string, number | string>;
+        /** X axis scale */
+        x: {
+            /** Title of the axis */
+            title: {
+                /** Title color */
+                color: string;
+                /** If the title should be visible */
+                display: boolean;
+                /** Text of the axis title */
+                text: string;
+                /** Font for the axis title */
+                font?: Record<string, number | string>;
+            };
+            /** Data for the chart grid lines perpendicular to the X axis */
+            grid: Record<string, string>;
         };
-        grid: Record<string, string>;
-      };
-      y: {
-        title: {
-          color: string;
-          display: boolean;
-          text: string;
-          font?: Record<string, number | string>;
+        /** Y axis scale */
+        y: {
+            /** Title of the axis */
+            title: {
+                /** Title color */
+                color: string;
+                /** If the title should be visible */
+                display: boolean;
+                /** Text of the axis title */
+                text: string;
+                /** Font for the axis title */
+                font?: Record<string, number | string>;
+            };
+            /** Data for the chart grid lines perpendicular to the Y axis */
+            grid: Record<string, string>;
         };
-        grid: Record<string, string>;
-      };
     };
 }
 
@@ -482,17 +502,29 @@ export interface ChartData {
     labels?: string[];
     /** One set of data to plot */
     datasets: {
+        /** Label for the dataset (needed to link to the legend) */
         label: string;
+        /** If the curve should be filled */
         fill?: boolean;
+        /** Color for the curve */
         backgroundColor: string;
+        /** Border color for the points */
         borderColor: string;
+        /** Radius of the points */
         pointRadius?: number;
+        /** Value of the dataset */
         data: number[] | ChartCoordinates;
+        /** If the line should be shown, not only the points */
         showLine?: boolean;
+        /** Data for the optional labels on the points */
         datalabels?: {
+            /** If the label should be show */
             display?: boolean;
+            /** Label color */
             color?: string;
+            /** Label alignment */
             align?: Align;
+            /** Where the label should be anchored */
             anchor?: Anchor;
         };
     }[];

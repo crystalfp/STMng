@@ -15,7 +15,10 @@ import favicon from "../assets/favicon.png";
 // > Setup IPC between main and client
 exposeElectronAPI();
 
-// > Create titlebar and export set title function
+/**
+ * The load event containing the requested location
+ * @notExported
+ */
 interface DOMContentLoadedEvent {
     target: {
         location: {

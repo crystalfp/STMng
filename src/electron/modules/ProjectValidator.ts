@@ -114,8 +114,14 @@ const WHITE = 0;
 const GRAY  = 1;
 const BLACK = 2;
 
+/**
+ * Result of the loop detector
+ * @notExported
+ */
 interface LoopDetectionResult {
+	/** If the graph has loops */
 	hasLoop: boolean;
+	/** Nodes composing the loop */
 	loop?: string[];
 }
 

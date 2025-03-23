@@ -9,14 +9,17 @@
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "@/types";
 
-/** Store content: controls accessed by more than one node */
+/**
+ * Store content: controls accessed by more than one node
+ * @notExported
+ */
 interface GlobalControls {
 
 	/** Reset camera */
 	reset: boolean;
 	/** Scene center */
 	sceneCenter: PositionType;
-	/** Scene sides */
+	/** Scene sides lengths */
 	sceneSides: PositionType;
 
 	/** Force camera position */

@@ -36,11 +36,20 @@ program
 if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
 program.parse(process.argv, {from: "electron"});
 
+/**
+ * Data passed on the command line
+ * @notExported
+ */
 interface ProgramOptions {
+    /** Theme for the application */
     theme?: "dark" | "light";
+    /** Load the default project */
     default?: boolean;
+    /** Verbose messages (for now do nothing) */
     verbose?: boolean;
+    /** Enable developer tools on the production build */
     enable?: boolean;
+    /** Extra command line switches */
     extra?: string;
 }
 const options = program.opts<ProgramOptions>();

@@ -25,10 +25,18 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
+/**
+ * Data for the bond computation by atom type pairs
+ * @notExported
+ */
 interface PairData {
+    /** Label containing the two atom symbols */
     label:  string;
+    /** First atom Z value */
     atomZi: number;
+    /** Second atom Z value */
     atomZj: number;
+    /** Scale value for the bond computation */
     scale:  number;
 }
 

@@ -27,7 +27,10 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 FingerprintsChartData, FingerprintsChartKind,
 			 ScatterplotData} from "@/types";
 
-/** Options for the scatterplot creation */
+/**
+ * Options for the scatterplot creation
+ * @notExported
+ */
 interface CreateUpdateScatterplotOptions {
 
 	/** Kind of plot for which the data should be provided */

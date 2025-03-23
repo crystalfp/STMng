@@ -19,7 +19,10 @@ export interface GroupingMethodName {
 	usingMargin: boolean;
 }
 
-/** Result of grouping */
+/**
+ * Result of grouping
+ * @notExported
+ */
 interface GroupingResults {
 	/** Count of groups found */
 	countGroups: number;

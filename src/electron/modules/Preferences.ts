@@ -9,10 +9,16 @@
 import {ipcMain, nativeTheme, type IpcMainEvent} from "electron";
 import {Store} from "./UserStore";
 
-/** The accepted preference types */
+/**
+ * The accepted preference types
+ * @notExported
+ */
 type PreferenceEntry = string | number | string[];
 
-/** The type of the store */
+/**
+ * The type of the store
+ * @notExported
+ */
 type PreferencesStore = Record<string, PreferenceEntry>;
 
 /** Create the store */

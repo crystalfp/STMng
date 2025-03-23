@@ -196,7 +196,10 @@ class Delta {
 	}
 }
 
-/** Result of computing all distances between the computed fingerprints */
+/**
+ * Result of computing all distances between the computed fingerprints
+ * @notExported
+ */
 interface DistanceResult {
     /** Number of distances computed */
     countDistances: number;

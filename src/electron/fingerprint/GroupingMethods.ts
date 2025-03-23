@@ -307,7 +307,10 @@ class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
 
 
 // > Grouping methods list
-/** Type of the table of grouping methods */
+/**
+ * Type of the table of grouping methods
+ * @notExported
+ */
 interface OneGroupingMethod {
     /** Grouping method name */
     label: string;

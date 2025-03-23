@@ -53,7 +53,8 @@ askNode(id, "init")
         enableBackbone.value = params.enableStructureBackbone as boolean ?? false;
         chains.value.length = 0;
         for(const key in showChains) {
-            if(Object.prototype.hasOwnProperty.call(showChains, key)) {
+            if(Object.hasOwn(showChains, key)) {
+            // if(Object.prototype.hasOwnProperty.call(showChains, key)) {
                 // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete showChains[key];
             }

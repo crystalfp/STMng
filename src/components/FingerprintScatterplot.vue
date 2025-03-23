@@ -19,7 +19,10 @@ import type {CtrlParams, ScatterplotData} from "@/types";
 import SelectFile from "@/widgets/SelectFile.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
-/** One point that goes to the scatterplot */
+/**
+ * One point that goes to the scatterplot
+ * @notExported
+ */
 interface Glyph {
 
     /** The original step number or sequence number for fidelity display */

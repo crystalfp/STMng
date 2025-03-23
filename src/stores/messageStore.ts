@@ -17,7 +17,10 @@ export type AlertLevel = "success" | "info" | "warning" | "error";
  */
 type MessageType = AlertLevel | undefined;
 
-/** COntent of the store */
+/**
+ * Content of the store
+ * @notExported
+ */
 interface MessageState {
 	/** Messages for the symmetry node */
 	symmetries: string;

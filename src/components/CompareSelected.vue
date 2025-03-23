@@ -24,7 +24,10 @@ import type {BasisType, CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
-/** List of structures to compare (don't use shallowRef) */
+/**
+ * List of structures to compare (don't use shallowRef)
+ * @notExported
+ */
 interface Selection {
 
     /** Structure step */
@@ -44,7 +47,10 @@ interface Selection {
 }
 const lines = ref<Selection[]>([]);
 
-/** Side: 0: left, 1: right */
+/**
+ * Side: 0: left, 1: right
+ * @notExported
+ */
 type Side = 0 | 1;
 
 /** The selected step on the two columns (-1 means no selection) */

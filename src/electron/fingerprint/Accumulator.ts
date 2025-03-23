@@ -49,7 +49,10 @@ export interface StructureReduced {
 	weights: number[];
 }
 
-/** Filtering return */
+/**
+ * Filtering return
+ * @notExported
+ */
 interface FilteringStatus {
 	/** Count of selected structures */
 	countSelected: number;
@@ -59,7 +62,10 @@ interface FilteringStatus {
 	error?: string;
 }
 
-/** Data on a fingerprint sections */
+/**
+ * Data on a fingerprint sections
+ * @notExported
+ */
 interface SectionsInfo {
 	/** Section count */
 	count: number;

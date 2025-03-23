@@ -324,7 +324,10 @@ class MinkowskiDistance extends DistanceMethod {
 }
 
 // > Distance measuring methods list
-/** Type of the table of distance measuring methods */
+/**
+ * Type of the table of distance measuring methods
+ * @notExported
+ */
 interface MeasuringMethod {
 
     /** Name of the method */

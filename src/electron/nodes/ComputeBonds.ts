@@ -13,7 +13,10 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell, vectorAngle} from "../modules/Helpers";
 import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
 
-/** Data for the per atom pair multiplier of the sum of covalent radii */
+/**
+ * Data for the per atom pair multiplier of the sum of covalent radii
+ * @notExported
+ */
 interface PairData {
 	/** The atom symbol pair */
     label:  string;

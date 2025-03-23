@@ -36,7 +36,7 @@ node_modules/.bin/typedoc \
 --disableGit \
 --excludeInternal \
 --excludeExternals \
---sourceLinkTemplate "vscode://file$root/{path}:{line}:1" \
+--sourceLinkTemplate "vscode://file$root/src/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree`
 fi
