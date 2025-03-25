@@ -20,6 +20,7 @@ export default {
 		typescript({
 			include: [
 				"OganovValleFingerprint.ts",
+				"DotMatrixFingerprint.ts",
 				"Helpers.ts",
 				"Slab.ts",
 				"Smooth.ts",

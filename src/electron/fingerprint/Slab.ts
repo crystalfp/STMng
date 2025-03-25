@@ -410,4 +410,122 @@ export class Slab {
     reset(): void {
         this.interatomicDistances.clear();
     }
+
+    /**
+     * Compute the vectors on the infinite slab for the structure
+     *
+     * @param basis - Unit cell basis vector
+     * @param natoms - Number of atoms
+     * @param atomsPosition - Atoms coordinates
+     * @param computeFP - Routine that receive the two vectors and accumulate the fingerprint
+     */
+    computeVectorPairs(basis: Float64Array,
+                       natoms: number,
+                       atomsPosition: Float64Array,
+                       computeFP: (vAB: number[], vAC: number[]) => void): void {
+
+        // Compute how many copies of the unit cell are needed to contain the cutoff distance
+        const expansion: PositionType = [0, 0, 0];
+        if(!this.isNanocluster) {
+
+            // Inverse basis to convert to fractional coordinates
+            this.inverseBasis = invertBasis(basis);
+            try {
+                this.inverseBasis = invertBasis(basis);
+            }
+            // eslint-disable-next-line @stylistic/keyword-spacing
+            catch {
+                log.error("In computeVectorPairs basis matrix is not invertible");
+                return;
+            }
+
+            this.computeExpansion(basis, this.cutoff, expansion);
+        }
+
+        // Create the table to decode the fused loop
+        const ex = expansion[0];
+        const ey = expansion[1];
+        const ez = expansion[2];
+        const replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
+        const dd = Array(replicaMaxIndex) as number[];
+
+        // Put the untranslated cell indices
+        dd[0] = 0;
+        dd[1] = 0;
+        dd[2] = 0;
+
+        // Put the translated cells indices
+        let n = 3;
+        for(let di = -ex; di <= ex; ++di) {
+            for(let dj = -ey; dj <= ey; ++dj) {
+                for(let dk = -ez; dk <= ez; ++dk) {
+
+                    if(di === 0 && dj === 0 && dk === 0) continue;
+
+                    dd[n++] = di;
+                    dd[n++] = dj;
+                    dd[n++] = dk;
+                }
+            }
+        }
+
+        // Mark atoms on the border that could become duplicated
+        const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
+
+        // For each atom in the original cell
+        for(let a=0; a < natoms; ++a) {
+
+            const a3 = 3*a;
+            const xa = atomsPosition[a3];
+            const ya = atomsPosition[a3+1];
+            const za = atomsPosition[a3+2];
+
+            // For each replica (included the original cell)
+            for(let replicaB=0; replicaB < replicaMaxIndex; replicaB += 3) {
+
+                for(let b=0; b < natoms; ++b) {
+
+                    if((replicaB === 0 && b === a) || !ok[b]) continue;
+
+                    const b3 = 3*b;
+
+                    const di = dd[replicaB];
+                    const dj = dd[replicaB+1];
+                    const dk = dd[replicaB+2];
+
+                    const xb = atomsPosition[b3]   + di*basis[0] + dj*basis[3] + dk*basis[6];
+                    const yb = atomsPosition[b3+1] + di*basis[1] + dj*basis[4] + dk*basis[7];
+                    const zb = atomsPosition[b3+2] + di*basis[2] + dj*basis[5] + dk*basis[8];
+
+                    const vAB = [xb - xa, yb - ya, zb - za];
+
+                    // For each replica (included the original cell)
+                    for(let replicaC=replicaB; replicaC < replicaMaxIndex; replicaC += 3) {
+
+                        // To avoid computing twice
+                        const start = replicaB === replicaC ? b : 0;
+
+                        for(let c=start; c < natoms; ++c) {
+
+                            if((replicaC === 0 && c === a) || !ok[c]) continue;
+
+                            const c3 = 3*c;
+
+                            const di = dd[replicaC];
+                            const dj = dd[replicaC+1];
+                            const dk = dd[replicaC+2];
+
+                            const xc = atomsPosition[c3]   + di*basis[0] + dj*basis[3] + dk*basis[6];
+                            const yc = atomsPosition[c3+1] + di*basis[1] + dj*basis[4] + dk*basis[7];
+                            const zc = atomsPosition[c3+2] + di*basis[2] + dj*basis[5] + dk*basis[8];
+
+                            const vAC = [xc - xa, yc - ya, zc - za];
+
+                            computeFP(vAB, vAC);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

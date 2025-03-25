@@ -18,7 +18,7 @@ Performance:
   ☐ Unblock UI when rendering big scene
 
 Functionalities:
-  ☐ An option to specify arbitrary section plane
+  ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)

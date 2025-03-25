@@ -50,7 +50,7 @@ const worker = (params: FingerprintingParameters,
 			results = fingerprintingOganovValle(params, basis, natoms, positions, atomsZ);
 			break;
 		case 2:
-			results = fingerprintingDotMatrix(params, basis, natoms, positions, atomsZ);
+			results = fingerprintingDotMatrix(params, basis, natoms, positions);
 			break;
 		default:
 			throw Error(`Invalid fingerprinting method ${params.method}`);

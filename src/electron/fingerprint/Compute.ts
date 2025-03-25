@@ -51,7 +51,7 @@ export class Fingerprinting {
 
 		// Get and verify parameters
 		const {method, cutoffDistance, binSize, peakWidth, areNanoclusters} = params;
-		if(method < 0 || method > 1) {
+		if(method < 0 || method > 2) {
 			return {dimension: 0, error: "Invalid fingerprinting method"};
 		}
 		if(cutoffDistance <= 0 || binSize <= 0 || peakWidth <= 0) {

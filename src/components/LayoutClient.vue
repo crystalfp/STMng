@@ -13,8 +13,9 @@ import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
         receiveNotifications, sendToNode,
         receiveBroadcast} from "@/services/RoutesClient";
-import {showAlertMessage, showSystemAlert, type AlertLevel} from "@/services/AlertMessage";
+import {showAlertMessage, showSystemAlert} from "@/services/AlertMessage";
 import {theme} from "@/services/ReceiveTheme";
+import type {AlertLevel} from "@/stores/messageStore";
 
 import Viewer3D from "./Viewer3D.vue";
 import ControlsContainer from "./ControlsContainer.vue";

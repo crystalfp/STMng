@@ -248,15 +248,6 @@ export class ComputeSymmetries extends NodeCore {
 		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
 		if(out.noCellChanges && this.inputStructure) this.structure.volume = volume;
 
-		// TBD
-		// console.log("OUTPUT:", out.atomsZ.length);
-		// let fidx = -3;
-		// for(const atom of this.structure.atoms) {
-		// 	fidx += 3;
-		// 	if(atom.label !== "CA" || atom.chain !== "A") continue;
-		// 	console.log(atom.label, atom.chain, atom.position[0].toFixed(3), atom.position[1].toFixed(3), atom.position[2].toFixed(3), out.fractionalCoordinates[fidx].toFixed(3), out.fractionalCoordinates[fidx+1].toFixed(3), out.fractionalCoordinates[fidx+2].toFixed(3));
-		// }
-
 		this.toNextNode(this.structure);
 
 		this.computedSpaceGroup = this.structure.crystal.spaceGroup;
@@ -271,7 +262,7 @@ export class ComputeSymmetries extends NodeCore {
 	private showComputedSymmetry(outSymmetry?: string): void {
 
 		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
-		if(outSymmetry === undefined) outSymmetry = inSymmetry;
+		outSymmetry ??= inSymmetry;
 
 		// Update the UI
 		sendToClient(this.id, "show", {inSymmetry, outSymmetry});

@@ -323,7 +323,7 @@ class SceneManager {
 	createSTL(format: "ascii" | "binary"): string | ArrayBuffer {
 
 		// Instance the exporter if not already instanced
-		if(!this.exporter) this.exporter = new STLExporter();
+		this.exporter ??= new STLExporter();
 
 		// Create a group with only atoms and bonds
 		const structure = new Group();
