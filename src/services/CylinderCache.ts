@@ -22,6 +22,7 @@ export class CylinderCache {
 	private readonly subdivisions;
 	private readonly drawRoughness: number;
 	private readonly drawMetalness: number;
+	private readonly radiusScales: number[] = [];
 	private readonly scales: number[] = [];
 	private readonly centers: number[][] = [];
 	private readonly rotations: Quaternion[] = [];
@@ -55,9 +56,11 @@ export class CylinderCache {
 	 * @param end - Position of the bond end
 	 * @param colorStart - Color of the bond start
 	 * @param colorEnd - Color of the bond end
+	 * @param radiusScale - Scaling the radius of the cylinder
 	 */
 	addCylinder(start: PositionType, end: PositionType,
-				colorStart: string, colorEnd: string): void {
+				colorStart: string, colorEnd: string,
+			    radiusScale=1): void {
 
 		// Save the cylinder colors
 		const color = `${colorStart}-${colorEnd}`;
@@ -82,6 +85,7 @@ export class CylinderCache {
 		quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/len, dy/len, dz/len));
 
 		// Save the cylinder data
+		this.radiusScales.push(radiusScale);
 		this.scales.push(len);
 		this.centers.push(center);
 		this.rotations.push(quaternion);
@@ -135,7 +139,8 @@ export class CylinderCache {
 
 				const idx = indices[i];
 
-				scale.set(1, this.scales[idx], 1);
+				const radiusScale = this.radiusScales[idx];
+				scale.set(radiusScale, this.scales[idx], radiusScale);
 				position.set(this.centers[idx][0],
 							 this.centers[idx][1],
 							 this.centers[idx][2]);

@@ -44,8 +44,9 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
-  ☐ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/>
+  ✘ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/> @cancelled(2025-03-25 10:19)
   ☐ To move something inside the scene try <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>
+  ☐ To visualize the project try <https://vueflow.dev/guide/>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

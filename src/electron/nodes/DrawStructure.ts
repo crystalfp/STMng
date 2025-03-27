@@ -23,6 +23,7 @@ export class DrawStructure extends NodeCore {
 	private showBonds = true;
 	private showLabels = true;
 	private shadedBonds = false;
+	private showBondsStrengths = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
@@ -69,7 +70,8 @@ export class DrawStructure extends NodeCore {
 				position: atom.position,
 				color: atomData.color,
 				rCov: atomData.rCov,
-				rVdW: atomData.rVdW
+				rVdW: atomData.rVdW,
+				bondStrength: atomData.bondStrength
 			};
 			renderInfo.atoms.push(atomInfo);
 		}
@@ -97,6 +99,7 @@ export class DrawStructure extends NodeCore {
 			showAtoms: this.showAtoms,
 			showLabels: this.showLabels,
 			shadedBonds: this.shadedBonds,
+			showBondsStrengths: this.showBondsStrengths
 		};
 	}
 
@@ -117,6 +120,7 @@ export class DrawStructure extends NodeCore {
 		this.showAtoms = params.showAtoms as boolean ?? true;
 		this.showLabels = params.showLabels as boolean ?? true;
 		this.shadedBonds = params.shadedBonds as boolean ?? false;
+		this.showBondsStrengths = params.showBondsStrengths as boolean ?? false;
 	}
 
 	// > Channel handlers
@@ -146,5 +150,6 @@ export class DrawStructure extends NodeCore {
 		if(params.showAtoms !== undefined) 	   this.showAtoms = params.showAtoms as boolean;
 		if(params.showLabels !== undefined)    this.showLabels = params.showLabels as boolean;
 		if(params.shadedBonds !== undefined)   this.shadedBonds = params.shadedBonds as boolean;
+		if(params.showBondsStrengths !== undefined) this.showBondsStrengths = params.showBondsStrengths as boolean;
 	}
 }

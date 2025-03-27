@@ -244,7 +244,8 @@ export class DrawStructureRenderer {
 	 * @param drawKind - Structure rendering style
 	 * @param shadedBonds - If the bonds color should be shaded or as two color bands
 	 */
-	drawStructure(renderInfo: StructureRenderInfo, drawKind: string, shadedBonds: boolean): void {
+	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
+				  shadedBonds: boolean, showBondsStrength: boolean): void {
 
 		// Clear previous structure
 		sm.clearGroup(this.outName);
@@ -303,6 +304,15 @@ export class DrawStructureRenderer {
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(bond.type === 1) this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					else if(showBondsStrength) {
+
+						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;
+						const strengthTo   = renderInfo.atoms[bond.to].bondStrength;
+						const strength     = Math.sqrt(strengthFrom*strengthTo)*4;
+
+						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
+												  atomFrom.color, atomTo.color, strength);
+					}
 					else {
 						const radiusStart  = atomFrom.rCov*rCovScale;
 						const radiusEnd    = atomTo.rCov*rCovScale;

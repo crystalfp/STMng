@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Controls for the converter from structure data to graphical objects.
+ * Controls for the render of the structure data to graphical objects.
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-27
@@ -35,6 +35,7 @@ const showBonds = ref(true);
 const showLabels = ref(true);
 const shadedBonds = ref(false);
 let renderInfo: StructureRenderInfo;
+const showBondsStrengths = ref(false);
 
 resetAlertMessage("system");
 askNode(id, "init")
@@ -49,6 +50,7 @@ askNode(id, "init")
         showAtoms.value = params.showAtoms as boolean ?? true;
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
+        showBondsStrengths.value = params.showBondsStrengths as boolean ?? false;
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
@@ -61,21 +63,22 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 
     renderInfo = updatedRenderInfo;
     renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
-    renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value);
+    renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value, showBondsStrengths.value);
     renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
 });
 
 // Change draw parameters
-watch([labelKind, drawKind, shadedBonds], () => {
+watch([labelKind, drawKind, shadedBonds, showBondsStrengths], () => {
 
     if(renderInfo) {
-        renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value);
+        renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value, showBondsStrengths.value);
         renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
     }
     sendToNode(id, "save", {
         labelKind: labelKind.value,
         drawKind: drawKind.value,
-        shadedBonds: shadedBonds.value
+        shadedBonds: shadedBonds.value,
+        showBondsStrengths: showBondsStrengths.value
     });
 });
 
@@ -146,7 +149,9 @@ const showCombined = computed({
     </v-col>
   </v-row>
 
-  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n2 mb-4 ml-4" />
+  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n2 ml-4" />
+  <v-switch v-model="showBondsStrengths" :disabled="drawKind !== 'ball-and-stick'"
+            label="Show bonds strengths" class="mt-n1 mb-5 ml-4" />
 
   <v-row>
     <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">

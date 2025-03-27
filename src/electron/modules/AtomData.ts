@@ -44,7 +44,7 @@ import {publicDirPath} from "./GetPublicPath";
 // ##############################################################################
 
 /**
- * Data from file
+ * Data from atom-data.json file
  * @notExported
  */
 interface OneAtomData {
@@ -63,6 +63,9 @@ interface OneAtomData {
 
 	/** RGB color for visualization (format: "#RRGGBB") */
 	color: string;
+
+	/** The bonding strength. Bond strength is sqrt(bondStrengthI*bondStrengthJ) */
+	bondStrength: number;
 }
 
 /**
@@ -85,6 +88,9 @@ interface AtomAppearance {
 
     /** Maximum number of bonds for the element type */
     maxBonds: number;
+
+	/** The bonding strength. Bond strength is sqrt(bondStrengthI*bondStrengthJ) */
+	bondStrength: number;
 }
 
 class AtomData {
@@ -142,20 +148,21 @@ class AtomData {
 	 */
 	atomicData(atomZ: number): AtomAppearance {
 
-		const {symbol, rCov, rVdW, maxBonds, color} = this.data[atomZ];
+		const {symbol, rCov, rVdW, maxBonds, color, bondStrength} = this.data[atomZ];
 
 		return {
 			symbol,
 			rCov,
 			rVdW,
 			color,
-			maxBonds
+			maxBonds,
+			bondStrength
 		};
 	}
 
 	// > Access the singleton instance
 	/**
-	 * Access the singleton instance.
+	 * Access the singleton instance
 	 *
 	 * This is the static method that controls the access to the singleton instance.
 	 * This implementation let you subclass the Singleton class while keeping

@@ -289,6 +289,9 @@ export interface AtomRenderInfo {
 
 	/** Van der Waals radii (in Angstrom). 2.0 if unknown */
 	rVdW: number;
+
+    /** Value to compute the bond strength */
+    bondStrength: number;
 }
 
 /** Data for structure rendering */
