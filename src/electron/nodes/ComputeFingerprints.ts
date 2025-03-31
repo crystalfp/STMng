@@ -834,7 +834,7 @@ export class ComputeFingerprints extends NodeCore {
 			fingerprintMethods: [
 				"Oganov-Valle fingerprint",
 				"Oganov-Valle per-site fingerprint",
-				"Dot matrix fingerprint"
+				"Dot-matrix fingerprint"
 			],
 			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,

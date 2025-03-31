@@ -26,12 +26,12 @@ const program = new Command("STMng");
 program
     .version(version)
     .description(description)
-    .usage("[options] [project-file]")
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
 	.option("-e, --enable", "enable developer tools in production build")
-	.option("-x, --extra <switches>", "extra command line switches");
+	.option("-x, --extra <switches>", "extra command line switches")
+    .argument("[project-file]", "project file to be loaded");
 
 if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
 program.parse(process.argv, {from: "electron"});

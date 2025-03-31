@@ -422,7 +422,8 @@ export class Slab {
     computeVectorPairs(basis: Float64Array,
                        natoms: number,
                        atomsPosition: Float64Array,
-                       computeFP: (vAB: number[], vAC: number[]) => void): void {
+                       computeFP: (vAB: number[], vAC: number[],
+                                   magnitudeAB: number, magnitudeAC: number) => void): void {
 
         // Compute how many copies of the unit cell are needed to contain the cutoff distance
         const expansion: PositionType = [0, 0, 0];
@@ -498,6 +499,7 @@ export class Slab {
                     const zb = atomsPosition[b3+2] + di*basis[2] + dj*basis[5] + dk*basis[8];
 
                     const vAB = [xb - xa, yb - ya, zb - za];
+                    const magnitudeAB = Math.hypot(vAB[0], vAB[1], vAB[2]);
 
                     // For each replica (included the original cell)
                     for(let replicaC=replicaB; replicaC < replicaMaxIndex; replicaC += 3) {
@@ -520,8 +522,9 @@ export class Slab {
                             const zc = atomsPosition[c3+2] + di*basis[2] + dj*basis[5] + dk*basis[8];
 
                             const vAC = [xc - xa, yc - ya, zc - za];
+                            const magnitudeAC = Math.hypot(vAC[0], vAC[1], vAC[2]);
 
-                            computeFP(vAB, vAC);
+                            computeFP(vAB, vAC, magnitudeAB, magnitudeAC);
                         }
                     }
                 }
