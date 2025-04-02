@@ -11,11 +11,10 @@ To do:
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
-  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/>
+  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> To unblock UI
   ☐ Investigate lazy load `*Ctrl` components
   ☐ `import('@/components/...')` on `@mouseenter` in fingerprint to have "show windows" ready
   ☐ Use InstancedMesh for CompareSelected
-  ☐ Unblock UI when rendering big scene
 
 Functionalities:
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
