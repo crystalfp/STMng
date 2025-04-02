@@ -7,13 +7,13 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
+  ☐ Investigate `v-snackbar-queue` for messages
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> To unblock UI
   ☐ Investigate lazy load `*Ctrl` components
-  ☐ `import('@/components/...')` on `@mouseenter` in fingerprint to have "show windows" ready
   ☐ Use InstancedMesh for CompareSelected
 
 Functionalities:
@@ -43,7 +43,6 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
-  ✘ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/> @cancelled(2025-03-25 10:19)
   ☐ To move something inside the scene try <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>
   ☐ To visualize the project try <https://vueflow.dev/guide/>
   ☐ For the charts <https://unovis.dev/>
@@ -65,6 +64,8 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
 
 Archive:
+  ✘ `import('@/components/...')` on `@mouseenter` in fingerprint to have "show windows" ready @cancelled(2025-04-02 06:37) @project(Performance)
+  ✘ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/> @cancelled(2025-03-25 10:19) @project(ToDo eventually)
   ✔ When updated, reinstall `typedoc-plugin-missing-exports` @done(2025-03-22 05:03) @project(To do)
   ✔ Remove global widget and import them where they are used @done(2025-03-22 05:03) @project(To do)
   ✔ Add try/catch for XRD Calculator @done(2025-03-16 11:07) @project(To do)
