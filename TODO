@@ -8,6 +8,7 @@ To do:
   ☐ Copy residues in compute symmetries
   ☐ In project editor add check that input/output are connected
   ☐ Investigate `v-snackbar-queue` for messages
+  ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

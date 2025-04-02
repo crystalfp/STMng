@@ -104,15 +104,18 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     // Ask confirmation then close any opened secondary window and quit
     mainWin.on("close", (event) => {
 
-        if(dialog.showMessageBoxSync({
+        if(dialog.showMessageBoxSync(mainWin, {
             type: "question",
-            buttons: ["Yes", "No"],
-            title: "Confirm",
-            message: "Are you sure you want to quit?"
+            buttons: ["Quit", "Stay"],
+            title: "Confirm quit application",
+            message: "Do you want to stay or quit the application?",
+            cancelId: 1,
+            defaultId: 0,
         }) === 1) event.preventDefault();
-
-        for(const win of openedWindows) {
-            if(win[0] !== "/") win[1].close();
+        else {
+            for(const win of openedWindows) {
+                if(win[0] !== "/") win[1].close();
+            }
         }
     });
 };
