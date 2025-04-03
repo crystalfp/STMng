@@ -9,6 +9,8 @@ To do:
   ☐ In project editor add check that input/output are connected
   ☐ Investigate `v-snackbar-queue` for messages
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
+  ☐ Use `BatchedText` for labels (it is not documented)
+  ✔ Do not create `DrawBasisVectors` if not visible @done(2025-04-03 09:32)
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

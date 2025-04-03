@@ -46,4 +46,15 @@ declare module "troika-three-text" {
     	public textIndent: number;
     	public unicodeFontsUrl: string;
 	}
+
+	export class BatchedText extends Text {
+
+		constructor();
+		update(camera: Camera): void;
+		addText(text: TroikaText): Text;
+		add(text: TroikaText): Text;
+		public _members: Map<Text, string>;
+		public _text: string;
+		public _scale: Vector3;
+	}
 }

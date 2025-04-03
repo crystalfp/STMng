@@ -11,7 +11,7 @@ import {Group, type Mesh, type MeshStandardMaterial, IcosahedronGeometry, Cylind
 		Float32BufferAttribute, LineSegments, FrontSide} from "three";
 import {sm} from "@/services/SceneManager";
 import {getBoundingBox} from "@/services/BoundingBox";
-import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
+import {spriteText, disposeTextInGroup, BillboardBatchedText} from "@/services/SpriteText";
 import {SpheresCache} from "@/services/SpheresCache";
 import {CylinderCache} from "@/services/CylinderCache";
 import {useControlStore} from "@/stores/controlStore";
@@ -392,6 +392,7 @@ export class DrawStructureRenderer {
 		if(!atoms || atoms.length === 0 || !showLabels) return;
 
 		// Render labels
+		const bbt = new BillboardBatchedText(10);
 		const color = "#FFFFFF";
 		let idx = 0;
 		for(const atom of atoms) {
@@ -432,10 +433,14 @@ export class DrawStructureRenderer {
 			const {position} = atom;
 			const labelPosition: PositionType = [position[0], position[1], position[2]+offset];
 			const atomLabel = spriteText(labelText, color, 0.4, labelPosition);
-			this.labelsGroup.add(atomLabel);
+
+			bbt.add(atomLabel);
 
 			++idx;
 		}
+		bbt.sync();
+		bbt.name = "AtomLabels";
+		this.labelsGroup.add(bbt);
 		sm.modified();
 	}
 

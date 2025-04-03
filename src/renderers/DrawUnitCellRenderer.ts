@@ -41,6 +41,8 @@ export class DrawUnitCellRenderer {
 	private readonly nameUC;
 	private readonly nameSC;
 	private readonly nameBV;
+	private readonly vertices: number[] = [];
+	private alreadyRenderedBV = false;
 
 	constructor(id: string) {
 
@@ -177,24 +179,43 @@ export class DrawUnitCellRenderer {
 	/**
 	 * Draw the unit cell vectors
 	 *
+	 * @param visible - If the vectors are visible when created
 	 * @param vertices - Basis vectors and cell origin
 	 * vertices[0-8] are the basis; vertices[9-11] the origin
-	 * @param visible - If the vectors are visible when created
 	 */
-	drawBasisVectors(vertices: number[], visible: boolean): void {
+	drawBasisVectors(visible: boolean, vertices?: number[]): void {
 
-		// Clear basis vectors
-		sm.clearGroup(this.nameBV);
+		// When receiving new vertices
+		if(vertices) {
 
-		// Not visible, do nothing
-		if(vertices.length < 12) return;
+			// Save vertices
+			for(let i=0; i < 12; ++i) {
+				this.vertices[i] = vertices[i];
+			}
+
+			// Clear basis vectors
+			sm.clearGroup(this.nameBV);
+			this.alreadyRenderedBV = false;
+
+			// Nothing to show
+			if(!visible) return;
+		}
+		else if(this.vertices.length === 0) {
+			// No vertices, nothing to do
+			return;
+		}
+		else if(this.alreadyRenderedBV) {
+			this.outBV.visible = visible;
+			sm.modified();
+			return;
+		}
 
 		// Basis vectors visible, create them
-		const originZero = new Vector3(vertices[9], vertices[10], vertices[11]);
+		const originZero = new Vector3(this.vertices[9], this.vertices[10], this.vertices[11]);
 
-		const basisA = new Vector3(vertices[0], vertices[1], vertices[2]);
-		const basisB = new Vector3(vertices[3], vertices[4], vertices[5]);
-		const basisC = new Vector3(vertices[6], vertices[7], vertices[8]);
+		const basisA = new Vector3(this.vertices[0], this.vertices[1], this.vertices[2]);
+		const basisB = new Vector3(this.vertices[3], this.vertices[4], this.vertices[5]);
+		const basisC = new Vector3(this.vertices[6], this.vertices[7], this.vertices[8]);
 
 		// Find the size of the arrows related to the longest axis
 		const la = basisA.length();
@@ -209,6 +230,8 @@ export class DrawUnitCellRenderer {
 
 		this.outBV.visible = visible;
 		sm.modified();
+
+		this.alreadyRenderedBV = true;
 	}
 
 	/**
@@ -243,7 +266,7 @@ export class DrawUnitCellRenderer {
 
 		if(this.lineUC) this.lineUC.visible = showUnitCell;
 		if(this.lineSC) this.lineSC.visible = showSupercell;
-		this.outBV.visible = showBasisVectors;
+		this.drawBasisVectors(showBasisVectors);
 		sm.modified();
 	}
 }

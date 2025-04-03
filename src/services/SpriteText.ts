@@ -7,8 +7,8 @@
  * @since 2024-07-17
  */
 import log from "electron-log";
-import {type Group, type Mesh, Vector3, type Quaternion} from "three";
-import {Text as TroikaText, preloadFont} from "troika-three-text";
+import {type Group, type Mesh, Vector3, type Quaternion, type Camera} from "three";
+import {Text as TroikaText, preloadFont, BatchedText} from "troika-three-text";
 import type {PositionType} from "@/types";
 
 import localRobotoRegular from "@/assets/Roboto-Regular.ttf";
@@ -59,27 +59,6 @@ const computeLabelPosition = (startPosition: PositionType,
 						      startRadius: number,
 						      endRadius: number,
 						      distance: number): PositionType => {
-
-	// const r1 = [
-	// 	(endPosition[0]-startPosition[0])*startRadius/distance+startPosition[0],
-	// 	(endPosition[1]-startPosition[1])*startRadius/distance+startPosition[1],
-	// 	(endPosition[2]-startPosition[2])*startRadius/distance+startPosition[2],
-	// ];
-	// const r2 = [
-	// 	(startPosition[0]-endPosition[0])*endRadius/distance+endPosition[0],
-	// 	(startPosition[1]-endPosition[1])*endRadius/distance+endPosition[1],
-	// 	(startPosition[2]-endPosition[2])*endRadius/distance+endPosition[2],
-	// ];
-	// return [
-	// 	(r1[0]+r2[0])/2,
-	// 	(r1[1]+r2[1])/2,
-	// 	(r1[2]+r2[2])/2
-	// ];
-
-	// const cA = startRadius/distance;
-	// const cB = endRadius/distance;
-	// const cAB1 = (cA-cB+1)/2;
-	// const cBA1 = (cB-cA+1)/2;
 
 	const cAcB = (startRadius-endRadius)/distance;
 	const cAB1 = (cAcB+1)/2;
@@ -201,3 +180,45 @@ export const preloadFonts = (): void => {
 		() => log.info("Done preloading bold font")
 	);
 };
+
+// usage: add Text with `billboardBatchedText.addText(text)`,
+//        and then add it to three's parent with `group.add(text)`
+export class BillboardBatchedText extends BatchedText {
+
+	public scaleFactor;
+	public _position = new Vector3();
+	public localScale = new Vector3();
+	public _cameraPosition = new Vector3();
+
+	constructor(scaleFactor: number) {
+    	super();
+		this.scaleFactor = scaleFactor;
+  	}
+
+  	override update(camera: Camera): void {
+
+		const texts = [...this._members.keys()];
+
+		camera.getWorldPosition(this._cameraPosition);
+
+		for(const text of texts) {
+
+			const parent = text.parent;
+			if(!parent) continue;
+
+			parent.updateMatrix();
+			parent.updateWorldMatrix(false, false);
+			parent.getWorldPosition(this._position);
+
+			text.position.copy(this._position);
+
+      		camera.getWorldQuaternion(text.quaternion);
+
+      		// Size attenuation
+      		const scale = this.localScale
+							  .subVectors(text.position, this._cameraPosition)
+							  .length() * this.scaleFactor;
+			text.scale.set(scale, scale, scale);
+    	}
+  	}
+}

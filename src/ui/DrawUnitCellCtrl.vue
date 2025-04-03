@@ -102,7 +102,7 @@ receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
 // Render the basis vectors
 receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
 
-	renderer.drawBasisVectors(vertices, showBasisVectors.value);
+	renderer.drawBasisVectors(showBasisVectors.value, vertices);
 });
 
 /**
