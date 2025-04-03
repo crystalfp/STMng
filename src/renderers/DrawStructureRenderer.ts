@@ -392,7 +392,7 @@ export class DrawStructureRenderer {
 		if(!atoms || atoms.length === 0 || !showLabels) return;
 
 		// Render labels
-		const bbt = new BillboardBatchedText(10);
+		const billboardLabels = new BillboardBatchedText();
 		const color = "#FFFFFF";
 		let idx = 0;
 		for(const atom of atoms) {
@@ -434,13 +434,13 @@ export class DrawStructureRenderer {
 			const labelPosition: PositionType = [position[0], position[1], position[2]+offset];
 			const atomLabel = spriteText(labelText, color, 0.4, labelPosition);
 
-			bbt.add(atomLabel);
+			billboardLabels.add(atomLabel);
 
 			++idx;
 		}
-		bbt.sync();
-		bbt.name = "AtomLabels";
-		this.labelsGroup.add(bbt);
+		billboardLabels.sync();
+		billboardLabels.name = "AtomLabels";
+		this.labelsGroup.add(billboardLabels);
 		sm.modified();
 	}
 

@@ -22,6 +22,7 @@ import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/ser
 import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
+import type {BillboardBatchedText} from "@/services/SpriteText";
 
 // > Access the stores
 const configStore  = useConfigStore();
@@ -452,6 +453,11 @@ onMounted(() => {
     const animate = (): void => {
         const doRender = controls.update(clock.getDelta());
         if(doRender || sm.needRendering()) {
+
+            const labels = scene.getObjectByName("AtomLabels") as BillboardBatchedText;
+
+            if(labels) labels.update(camera);
+
             renderer.render(scene, camera);
             if(configStore.helpers.showGizmo) viewportGizmo.render();
         }
@@ -461,6 +467,8 @@ onMounted(() => {
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
     if(configStore.helpers.showGizmo) viewportGizmo.render();
+    const labels = scene.getObjectByName("AtomLabels") as BillboardBatchedText;
+    if(labels) labels.update(camera);
 
     // Start run
     renderer.setAnimationLoop(animate);

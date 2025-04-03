@@ -181,44 +181,58 @@ export const preloadFonts = (): void => {
 	);
 };
 
-// usage: add Text with `billboardBatchedText.addText(text)`,
-//        and then add it to three's parent with `group.add(text)`
+/**
+ * BatchedText with billboard labels
+ * Usage: add Text with `billboardBatchedText.addText(text)`,
+ *        and then add it to three's parent with `group.add(text)`
+ */
 export class BillboardBatchedText extends BatchedText {
 
-	public scaleFactor;
-	public _position = new Vector3();
-	public localScale = new Vector3();
-	public _cameraPosition = new Vector3();
+	// private scaleFactor;
+	// private _position = new Vector3();
+	// private localScale = new Vector3();
+	// private _cameraPosition = new Vector3();
 
-	constructor(scaleFactor: number) {
+	/**
+	 * Build a BillboardBatchedText object
+	 *
+	 * @param scaleFactor - Scale factor for the text size attenuation
+	 */
+	constructor(scaleFactor?: number) {
     	super();
-		this.scaleFactor = scaleFactor;
+		// this.scaleFactor = scaleFactor ?? 0.1;
+		void scaleFactor;
   	}
 
+	/**
+	 * Update the text rotation every frame to face the camera
+	 *
+	 * @param camera - Camera to be used for the text size attenuation
+	 */
   	override update(camera: Camera): void {
 
 		const texts = [...this._members.keys()];
 
-		camera.getWorldPosition(this._cameraPosition);
+		// camera.getWorldPosition(this._cameraPosition);
 
 		for(const text of texts) {
 
-			const parent = text.parent;
-			if(!parent) continue;
+			// const parent = text.parent;
+			// if(!parent) continue;
 
-			parent.updateMatrix();
-			parent.updateWorldMatrix(false, false);
-			parent.getWorldPosition(this._position);
+			// parent.updateMatrix();
+			// parent.updateWorldMatrix(false, false);
+			// parent.getWorldPosition(this._position);
 
-			text.position.copy(this._position);
+			// text.position.copy(this._position);
 
       		camera.getWorldQuaternion(text.quaternion);
 
       		// Size attenuation
-      		const scale = this.localScale
-							  .subVectors(text.position, this._cameraPosition)
-							  .length() * this.scaleFactor;
-			text.scale.set(scale, scale, scale);
+      		// const scale = this.localScale
+			// 				  .subVectors(text.position, this._cameraPosition)
+			// 				  .length() * this.scaleFactor;
+			// text.scale.set(scale, scale, scale);
     	}
   	}
 }

@@ -97,6 +97,7 @@
     "typedoc-plugin-vue": "^1.5.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.4",
+    "vite-plugin-clean": "^2.0.1",
     "vite-plugin-dts": "^4.5.3",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",

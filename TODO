@@ -1,7 +1,6 @@
 Bugs:
 
 To do:
-  ☐ Try to put labels as billboards
   ☐ Option to not fold fractional coordinates inside unit cell
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
@@ -9,8 +8,6 @@ To do:
   ☐ In project editor add check that input/output are connected
   ☐ Investigate `v-snackbar-queue` for messages
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ Use `BatchedText` for labels (it is not documented)
-  ✔ Do not create `DrawBasisVectors` if not visible @done(2025-04-03 09:32)
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -67,6 +64,9 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
 
 Archive:
+  ✔ Try to put labels as billboards @done(2025-04-03 15:14) @project(To do)
+  ✔ Use `BatchedText` for labels (it is not documented) @done(2025-04-03 15:14) @project(To do)
+  ✔ Do not create `DrawBasisVectors` if not visible @done(2025-04-03 09:32) @project(To do)
   ✘ `import('@/components/...')` on `@mouseenter` in fingerprint to have "show windows" ready @cancelled(2025-04-02 06:37) @project(Performance)
   ✘ Migrate stores to Setup Pinia Stores <https://pinia.vuejs.org/core-concepts/> @cancelled(2025-03-25 10:19) @project(ToDo eventually)
   ✔ When updated, reinstall `typedoc-plugin-missing-exports` @done(2025-03-22 05:03) @project(To do)

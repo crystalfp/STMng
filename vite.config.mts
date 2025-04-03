@@ -2,13 +2,12 @@ import {defineConfig} from "vite";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
 import vueDevTools from "vite-plugin-vue-devtools";
+import cleanPlugin from "vite-plugin-clean";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
 
 // https://vitejs.dev/config/
-// eslint-disable-next-line tsdoc/syntax
-/** @type {import('vite').UserConfig} */
 export default defineConfig({
     resolve: {
         alias: {
@@ -17,7 +16,7 @@ export default defineConfig({
         preserveSymlinks: true
     },
     optimizeDeps: {
-        exclude: ["doc", "release", "save", "others", "bugs", "test-data"],
+        exclude: ["doc", "release", "save", "other", "bugs", "test-data"],
         holdUntilCrawlEnd: false
     },
     define: {
@@ -46,6 +45,9 @@ export default defineConfig({
         ]),
         renderer(),
         vueDevTools(),
+        cleanPlugin({
+            targetFiles: ["dist", "dist-electron"]
+        })
     ],
     build: {
         assetsInlineLimit: 8096,
