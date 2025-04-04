@@ -7,8 +7,7 @@
  * @since 2025-03-18
  */
 import {Slab} from "./Slab";
-import {smoothPeak} from "./Smooth";
-import {getCellVolume} from "./Helpers";
+import {getCellVolume, UpperTriangularMatrix} from "./Helpers";
 import type {FingerprintingParameters, FingerprintingResult} from "@/types";
 // import fs from "node:fs";
 /**
@@ -17,53 +16,41 @@ import type {FingerprintingParameters, FingerprintingResult} from "@/types";
  * @param params - General parameters for fingerprinting computation
  * @param natoms - Total number of atoms in the unit cell
  * @param cellVolume - Computed cell volume
- * @param cutoffSquared - Cutoff distance squared
  * @param delta - Bin width
- * @param nbins - Number of bins
- * @param fp - Fingerprint array to be filled
+ * @param fp - Fingerprint upper triangular matrix to be filled
  * @returns The function that takes the vectors from the atom in the unit cell to
- * 				atoms in the extended unit cell
+ * 				atoms in the extended unit cell and their distances to accumulate
+ * 				the fingerprint value
  */
 const setupComputeFP = (params: FingerprintingParameters,
 						natoms: number,
 						cellVolume: number,
-						cutoffSquared: number,
 						delta: number,
-						nbins: number,
-						fp: Float64Array): (vAB: number[], vAC: number[],
+						fp: UpperTriangularMatrix): (vAB: number[], vAC: number[],
 											magnitudeAB: number, magnitudeAC: number) => void => {
 
-	const {areNanoclusters, binSize, peakWidth} = params;
+	const {binSize} = params;
 
 	return (vAB: number[], vAC: number[], magnitudeAB: number, magnitudeAC: number): void => {
 
+		// Row index
+		const row = Math.round(magnitudeAB/delta);
+
+		// Column index
+		const col = Math.round(magnitudeAC/delta);
+
+		// Value to add
 		const dotProduct = vAB[0]*vAC[0] + vAB[1]*vAC[1] + vAB[2]*vAC[2];
-		// const dotProduct = vAB[0]*vAC[0] + vAB[1]*vAC[1] + vAB[2]*vAC[2]/(magnitudeAB*magnitudeAC);
-		const peakPosition = dotProduct + cutoffSquared + 4*peakWidth;
+		const vABcubed = magnitudeAB*magnitudeAB*magnitudeAB;
+		const vACcubed = magnitudeAC*magnitudeAC*magnitudeAC;
+		const peakValue = (dotProduct*dotProduct)/(4*Math.PI*vABcubed*vACcubed*natoms*(binSize/cellVolume));
 
-		// Compute the peak value
-		// const peakValue = areNanoclusters ?
-		// 					1/(Nj*Ni*binSize) :
-		// 					1/(4*Math.PI*Rij*Rij*(Nj/cellVolume)*2*Ni*binSize);
-
-		// const peakValue = 1/(4*Math.PI*magnitudeAB*magnitudeAC*magnitudeAB*magnitudeAC*natoms*(binSize/cellVolume));
-		// const peakValue = 1/(4*Math.PI*magnitudeAB*magnitudeAC*natoms*(binSize/cellVolume));
-		// const peakValue = 1/(4*Math.PI*Math.sqrt(magnitudeAB*magnitudeAC)*natoms*(binSize/cellVolume));
-		const peakValue = 1/(4*Math.PI*natoms*(binSize/cellVolume));
-
-		// Smooth the peak and accumulate
-		smoothPeak(peakValue, peakPosition, delta, nbins, fp, 0, peakWidth);
-
-		void areNanoclusters;
-		void binSize;
-		void cellVolume;
-		void magnitudeAB;
-		void magnitudeAC;
+		fp.add(row, col, peakValue);
 	};
 };
 
 /**
- * Compute the Dot produce matrix fingerprint on a given structure
+ * Compute the Dot product matrix fingerprint on a given structure
  *
  * @param params - Parameters for the computation
  * @param basis - Basis vectors for the structure
@@ -77,34 +64,28 @@ export const fingerprintingDotMatrix = (params: FingerprintingParameters,
 										positions: Float64Array): FingerprintingResult => {
 
 	// Extract the parameters
-	const {areNanoclusters, cutoffDistance, binSize, peakWidth} = params;
+	const {areNanoclusters, cutoffDistance, binSize} = params;
 
 	// Adjust the cutoff distance for the edge effects
-	const cutoffSquared = cutoffDistance*cutoffDistance;
-	// const cutoffSquared = 1;
-	const adjustedCutoffForEdgeEffects = 2*cutoffSquared + 8 * peakWidth;
-	const nbins = Math.ceil(adjustedCutoffForEdgeEffects/binSize);
-	const delta = adjustedCutoffForEdgeEffects/nbins;
+	const nbins = Math.ceil(cutoffDistance/binSize);
+	const delta = cutoffDistance/nbins;
 
 	// Create the infinite slab
-	const slab = new Slab(cutoffDistance+4*peakWidth, areNanoclusters);
+	const slab = new Slab(cutoffDistance, areNanoclusters);
 
 	// Compute cell volume
 	const cellVolume = getCellVolume(basis, areNanoclusters);
 
 	// Initialize the fingerprint histogram
-	const fingerprint = new Float64Array(nbins);
-	fingerprint.fill(0);
-	const computeFP = setupComputeFP(params, natoms, cellVolume, cutoffSquared, delta, nbins, fingerprint);
+	const fp = new UpperTriangularMatrix(nbins);
+	const computeFP = setupComputeFP(params, natoms, cellVolume, delta, fp);
 
 	// Compute the fingerprint
 	slab.computeVectorPairs(basis, natoms, positions, computeFP);
+	const fingerprint = fp.getVector();
 
 	// const fd = fs.openSync("fingerprint.txt", "w");
-	// // Normalize the fingerprint
-	// for(let i=0; i < nbins; ++i) {
-	// 	// fingerprint[i] /= natoms; // TBD
-	// 	// fingerprint[i] -= 10;
+	// for(let i=0; i < fingerprint.length; ++i) {
 	// 	fs.writeSync(fd, `${i} ${fingerprint[i]}\n`);
 	// }
 	// fs.close(fd);
@@ -116,7 +97,7 @@ export const fingerprintingDotMatrix = (params: FingerprintingParameters,
 	// Return the fingerprint
 	return {
 		countSections: 1,
-		sectionLength: nbins,
+		sectionLength: fingerprint.length,
 		fingerprint,
 		weights
 	};
