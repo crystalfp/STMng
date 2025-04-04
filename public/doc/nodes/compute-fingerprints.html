@@ -98,13 +98,14 @@
     <dl>
       <dt>Oganov-Valle fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances.</dd>
       <dt>Oganov-Valle per site fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint” but the centroid of all fingerprints is removed from each fingerprint.</dd>
+      <dt>Dot-matrix fingerprint</dt><dd>This method takes three atoms, one (A) in the unit cell and two (B &amp; C) in the extended unit cell (cells added around the unit cell to cover the cutoff distance). Then fill a square matrix in which row and column indices are computed from the AB and AC distances. The accumulated value is:<br><img src="dot-matrix.png" width="440" height="96" alt="Dot-matrix increment formula"><br>The matrix is then transformed to a vector appending the diagonals of the upper triangle starting from the longest one. <b>Note:</b> this method is quite slow.</dd>
     </dl>
   </td>
 </tr>
 <tr>
   <td class="c1">Peak width</td>
   <td class="c2">numeric field</td>
-  <td class="c3">The distance peaks are smoothed with a gaussian and then binned.</td>
+  <td class="c3">The distance peaks are smoothed with a gaussian and then binned. <b>Note:</b> currently it does nothing for the Dot-matrix fingerprint.</td>
 </tr>
 <tr>
 	<td class="c1">Bin size</td>
