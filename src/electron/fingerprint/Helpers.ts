@@ -50,7 +50,7 @@ export const normalizeCoordinates2D = (points: number[][]): number[][] => {
     if(denY < 1e-10) denY = 1;
 
     const n = points.length;
-    const normalizedPoints: number[][] = Array(n) as number[][];
+    const normalizedPoints: number[][] = Array<number[]>(n);
     for(let i=0; i < n; ++i) {
 
         normalizedPoints[i] = [

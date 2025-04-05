@@ -240,7 +240,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					totalPoints = sides[0]*sides[1]*sides[2];
 					structures[currentStructure].volume.push({
 						sides,
-						values: Array(totalPoints).fill(0) as number[]
+						values: Array<number>(totalPoints).fill(0)
 					});
 					volume = structures[currentStructure].volume.at(-1)!.values;
 					lineType = LineType.volumeValues;

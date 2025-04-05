@@ -119,7 +119,7 @@ export class Grouping {
 		const countStructures = this.structureGroup.length;
 
 		// Extract the size of each group
-		const groupSizes = Array(this.countGroups).fill(0) as number[];
+		const groupSizes = Array<number>(this.countGroups).fill(0);
 		for(const group of this.structureGroup) ++groupSizes[group];
 
 		// The final silhouette coefficient
@@ -151,7 +151,7 @@ export class Grouping {
 			const intra = distanceSum/(groupSizes[gi]-1);
 
 			// Extra-cluster min distance
-			const distancesByGroup = Array(this.countGroups).fill(0) as number[];
+			const distancesByGroup = Array<number>(this.countGroups).fill(0);
 
 			// For all other groups
 			for(let gj=0; gj < this.countGroups; ++gj) {

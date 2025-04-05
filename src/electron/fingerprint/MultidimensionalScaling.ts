@@ -16,8 +16,8 @@
  */
 const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
 
-	const D2 = Array(side) as number[][];
-	for(let i=0; i < side; ++i) D2[i] = Array(side).fill(0) as number[];
+	const D2 = Array<number[]>(side);
+	for(let i=0; i < side; ++i) D2[i] = Array<number>(side).fill(0);
 
 	let pos = 0;
 	for(let i=0; i < side-1; ++i) {
@@ -52,8 +52,10 @@ export const MDS = (distancesVector: number[], pointsCount: number, dimensions =
     const totalMean = rowMeans.reduce((sum, value) => sum + value, 0) / pointsCount;
 
     // 3. Compute double centering matrix
-    const doubleCenteringMatrix = Array(pointsCount) as number[][];
-    for(let row=0; row < pointsCount; ++row) doubleCenteringMatrix[row] = Array(pointsCount).fill(0) as number[];
+    const doubleCenteringMatrix = Array<number[]>(pointsCount);
+    for(let row=0; row < pointsCount; ++row) {
+        doubleCenteringMatrix[row] = Array<number>(pointsCount).fill(0);
+    }
 
     for(let i = 0; i < pointsCount; i++) {
         for(let j = 0; j < pointsCount; j++) {
@@ -65,9 +67,9 @@ export const MDS = (distancesVector: number[], pointsCount: number, dimensions =
     const {eigenvalues, eigenvectors} = powerIteration(doubleCenteringMatrix, dimensions);
 
     // 5. Compute the final coordinates
-    const coordinates = Array(pointsCount) as number[][];
+    const coordinates = Array<number[]>(pointsCount);
     for(let i = 0; i < pointsCount; i++) {
-        coordinates[i] = Array(dimensions).fill(0) as number[];
+        coordinates[i] = Array<number>(dimensions).fill(0);
         for(let j = 0; j < dimensions; j++) {
 
             // Use only positive eigenvalues
@@ -100,7 +102,7 @@ const powerIteration = (matrix: number[][],
 
         // Create a random vector
         // eslint-disable-next-line sonarjs/pseudo-random
-        let vector = Array(n).fill(0).map(() => Math.random() - 0.5);
+        let vector = Array<number>(n).fill(0).map(() => Math.random() - 0.5);
 
         // Normalize the vector
         const norm = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
@@ -152,7 +154,7 @@ const powerIteration = (matrix: number[][],
 const multiplyMatrixVector = (matrix: number[][], vector: number[]): number[] => {
 
     const n = matrix.length;
-    const result = Array(n).fill(0) as number[];
+    const result = Array<number>(n).fill(0);
 
     for(let i = 0; i < n; i++) {
         for(let j = 0; j < n; j++) {

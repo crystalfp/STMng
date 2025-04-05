@@ -141,15 +141,15 @@ export class DrawIsosurface extends NodeCore {
 
                 // Copy results
                 let len = iso.indices.length;
-                indices[i] = Array(len) as number[];
+                indices[i] = Array<number>(len);
                 for(let j=0; j < len; ++j) indices[i][j] = iso.indices[j];
 
                 len = iso.vertices.length;
-                vertices[i] = Array(len) as number[];
+                vertices[i] = Array<number>(len);
                 for(let j=0; j < len; ++j) vertices[i][j] = iso.vertices[j];
 
                 len = iso.normals.length;
-                normals[i] = Array(len) as number[];
+                normals[i] = Array<number>(len);
                 for(let j=0; j < len; ++j) normals[i][j] = iso.normals[j];
 
                 isoValues[i] = isoValue;

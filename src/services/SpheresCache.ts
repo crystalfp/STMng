@@ -115,7 +115,7 @@ export class SpheresCache {
 			}
 
 			// Save the mapping (needed for interactively select atoms)
-			const out = Array(count).fill(0) as number[];
+			const out = Array<number>(count).fill(0);
 			for(let i=0; i < count; ++i) out[i] = indices[i];
 			this.mapIndexAtom[index] = out;
 

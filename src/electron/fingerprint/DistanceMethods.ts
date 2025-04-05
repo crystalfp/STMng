@@ -71,8 +71,8 @@ class CosineDistance extends DistanceMethod {
 
         // Distances per atom
 	    // Mark atoms already paired
-        const aAtomUsed = Array(nsect1).fill(false) as boolean[];
-        const bAtomUsed = Array(nsect2).fill(false) as boolean[];
+        const aAtomUsed = Array<boolean>(nsect1).fill(false);
+        const bAtomUsed = Array<boolean>(nsect2).fill(false);
 
         // Atoms identities
         const aAtomZ = structure1.atomsZ;
@@ -172,8 +172,8 @@ class EuclideanDistance extends DistanceMethod {
 
         // Distances per atom
 	    // Mark atoms already paired
-        const aAtomUsed = Array(nsect1).fill(false) as boolean[];
-        const bAtomUsed = Array(nsect2).fill(false) as boolean[];
+        const aAtomUsed = Array<boolean>(nsect1).fill(false);
+        const bAtomUsed = Array<boolean>(nsect2).fill(false);
 
         // Atoms identities
         const aAtomZ = structure1.atomsZ;
@@ -271,8 +271,8 @@ class MinkowskiDistance extends DistanceMethod {
 
         // Distances per atom
 	    // Mark atoms already paired
-        const aAtomUsed = Array(nsect1).fill(false) as boolean[];
-        const bAtomUsed = Array(nsect2).fill(false) as boolean[];
+        const aAtomUsed = Array<boolean>(nsect1).fill(false);
+        const bAtomUsed = Array<boolean>(nsect2).fill(false);
 
         // Atoms identities
         const aAtomZ = structure1.atomsZ;

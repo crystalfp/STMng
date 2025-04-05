@@ -81,7 +81,7 @@ export class Lattice {
 	 */
 	get matrix(): number[] {
 
-		const out = Array(9).fill(0) as number[];
+		const out = Array<number>(9).fill(0);
 		for(let row=0; row < 3; ++row) {
 			for(let col=0; col < 3; ++col) {
 				out[3*col+row] = this.inverseBasis[3*row+col];

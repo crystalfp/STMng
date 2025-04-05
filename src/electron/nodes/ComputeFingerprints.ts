@@ -246,7 +246,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Create a grid to count points in each cell
 		const gridSide = Math.ceil(Math.sqrt(targetCount));
-		const grid = Array(gridSide * gridSide) as number[][];
+		const grid = Array<number[]>(gridSide * gridSide);
 
 		// Assign one representative point to each grid cells
 		for(const point of points) {
@@ -412,7 +412,7 @@ export class ComputeFingerprints extends NodeCore {
 		const points = this.dist.getProjectedPoints();
 
 		// Filter by enabled status on structures and check if energy present
-		const enabled: boolean[] = Array(this.accumulator.selectedSize()).fill(true) as boolean[];
+		const enabled = Array<boolean>(this.accumulator.selectedSize()).fill(true);
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
 		let idx = 0;
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
@@ -753,8 +753,8 @@ export class ComputeFingerprints extends NodeCore {
 
 		const groups = this.grouping.getGroups();
 
-		const minEnergy = Array(ngroups).fill(Number.POSITIVE_INFINITY) as number[];
-		const minEnergyIdx = Array(ngroups).fill(0) as number[];
+		const minEnergy = Array<number>(ngroups).fill(Number.POSITIVE_INFINITY);
+		const minEnergyIdx = Array<number>(ngroups).fill(0);
 
 		let idx = 0;
 		let onScatterplotIdx = 0;

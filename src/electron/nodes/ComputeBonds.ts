@@ -215,7 +215,7 @@ export class ComputeBonds extends NodeCore {
 		}
 
 		// The first atoms are the ones inside the unit cell
-		this.addType = Array(natoms).fill(1) as number[];
+		this.addType = Array<number>(natoms).fill(1);
 
 		// Add adjacent atoms (don't use for...of)
 		for(let i=0; i < natoms; ++i) {
@@ -301,7 +301,7 @@ export class ComputeBonds extends NodeCore {
 		}
 
 		// Create map of atoms indices after cleaning atoms list
-		const mapPositions = Array(natoms).fill(0) as number[];
+		const mapPositions = Array<number>(natoms).fill(0);
 		let idx = 0;
 		for(let i=0; i < natoms; ++i) {
 			if(this.addType[i] === 1) mapPositions[i] = idx++;

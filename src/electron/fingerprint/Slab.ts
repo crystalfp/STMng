@@ -199,7 +199,7 @@ export class Slab {
         const ez = expansion[2];
         let originalCellIndex;
         const replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
-        const dd = Array(replicaMaxIndex) as number[];
+        const dd = Array<number>(replicaMaxIndex);
 
         let n = 0;
         for(let di = -ex; di <= ex; ++di) {
@@ -299,9 +299,9 @@ export class Slab {
     private getDuplicatedAtomsIndex(atomsPosition: Float64Array, natoms: number): boolean[] {
 
         const len = natoms*3;
-        const fracCoordinates = Array(len);
-        const mark = Array(len).fill(false);
-        const ok = Array(natoms).fill(true) as boolean[];
+        const fracCoordinates = Array<number>(len);
+        const mark = Array<boolean>(len).fill(false);
+        const ok = Array<boolean>(natoms).fill(true);
         const TOL = 1e-2;
 
         // Convert coordinates into fractional coordinates
@@ -448,7 +448,7 @@ export class Slab {
         const ey = expansion[1];
         const ez = expansion[2];
         const replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
-        const dd = Array(replicaMaxIndex) as number[];
+        const dd = Array<number>(replicaMaxIndex);
 
         // Put the untranslated cell indices
         dd[0] = 0;

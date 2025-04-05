@@ -36,7 +36,7 @@ export const methodDistancesHistogram = (distanceMatrix: DistanceMatrix,
 	}
 
 	// Fill bins with distances count or zero if range too small or zero
-	const bins = Array(binCount).fill(0) as number[];
+	const bins = Array<number>(binCount).fill(0);
 	const binWidth = maxDistance/binCount;
 	if(binWidth > 1e-10) {
 
@@ -54,7 +54,7 @@ export const methodDistancesHistogram = (distanceMatrix: DistanceMatrix,
 	}
 
 	// Fill the histogram
-	const distanceHistogram = Array(binCount) as [distance: number, count: number][];
+	const distanceHistogram = Array<[distance: number, count: number]>(binCount);
 	let di = 0;
 	for(let i=0; i < binCount; ++i) {
 
@@ -90,7 +90,7 @@ export const methodEnergiesHistogram = (energies: number[],
 	}
 
 	// Fill bins with energy count or zero if range too small or zero
-	const bins = Array(binCount).fill(0) as number[];
+	const bins = Array<number>(binCount).fill(0);
 	const binWidth = (maxEnergy-minEnergy)/binCount;
 	if(binWidth > 1e-10) {
 		idx = 0;
@@ -105,7 +105,7 @@ export const methodEnergiesHistogram = (energies: number[],
 	}
 
 	// Fill the histogram
-	const energyHistogram = Array(binCount) as [energy: number, count: number][];
+	const energyHistogram = Array<[energy: number, count: number]>(binCount);
 	let en = minEnergy;
 	for(let i=0; i < binCount; ++i) {
 

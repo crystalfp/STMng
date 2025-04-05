@@ -23,7 +23,7 @@ export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
 										energies: number[]): Set<number> => {
 
 	const mappedPoints = MDS(distanceMatrix.toVector(), countPoints, 3);
-	const generalizedPoints = Array(mappedPoints.length) as number[][];
+	const generalizedPoints = Array<number[]>(mappedPoints.length);
 	for(let i=0; i < mappedPoints.length; ++i) {
 		generalizedPoints[i] = [
 			mappedPoints[i][0],

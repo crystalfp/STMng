@@ -130,7 +130,7 @@ export class InterpolateVolume extends NodeCore {
 		const syo = sy + (sy - 1) * pa;
 		const szo = sz + (sz - 1) * pa;
 
-		const outValues = Array(sxo*syo*szo).fill(0) as number[];
+		const outValues = Array<number>(sxo*syo*szo).fill(0);
 
 		// Copy the already known nodes
 		for(let k=0; k < sz; ++k) {
@@ -221,7 +221,7 @@ export class InterpolateVolume extends NodeCore {
 
 		// Reorder the matrix
 		let nn = 0;
-		const c = Array(64).fill(0) as number[];
+		const c = Array<number>(64).fill(0);
 		for(let k=0; k < 4; ++k) {
 			for(let j=0; j < 4; ++j) {
 				for(let i=0; i < 4; ++i) {

@@ -171,7 +171,7 @@ export class IsosurfaceCore {
 	 */
 	private getVoxelScalars(i: number, j: number, k: number): void {
 
-		const ids = Array(8).fill(0) as number[];
+		const ids = Array<number>(8).fill(0);
 
 		// First get the indices for the voxel
 		// (i,i+1),(j,j+1),(k,k+1) - i varies fastest; then j; then k

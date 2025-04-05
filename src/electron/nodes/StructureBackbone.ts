@@ -139,7 +139,7 @@ export class StructureBackbone extends NodeCore {
 
 		// Convert each point into fractional coordinates
 		const inverse = invertBasis(basis);
-		const fractionalCoords = Array(coordinates.length).fill(0) as number[];
+		const fractionalCoords = Array<number>(coordinates.length).fill(0);
 		for(let i=0; i < coordinates.length; i+=3) {
 
 			const cx = coordinates[i]   - origin[0];

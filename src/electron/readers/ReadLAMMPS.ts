@@ -68,12 +68,12 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			}
 			else if(fields[1] === "atoms") {
 				numberAtoms = Number.parseInt(fields[0], 10);
-				structure.atoms = Array(numberAtoms) as Atom[];
+				structure.atoms = Array<Atom>(numberAtoms);
 				atomIdx = 0;
 			}
 			else if(fields[1] === "atom" && fields[2] === "types") {
 				ntypes = Number.parseInt(fields[0], 10);
-				correspond = Array(ntypes+1).fill(0) as number[];
+				correspond = Array<number>(ntypes+1).fill(0);
 			}
 			else if(fields[0] === "Atoms") lineType = "Atoms";
 			else {

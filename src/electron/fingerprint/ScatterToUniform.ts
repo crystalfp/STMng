@@ -58,7 +58,7 @@ export const scatterToUniform = (gridSide: number,
 	// Normalize mapped points coordinates between 0 and 1
 	const normalizedPoints = normalizeCoordinates2D(points);
 
-	const result = Array(gridSide*gridSide).fill(0) as number[];
+	const result = Array<number>(gridSide*gridSide).fill(0);
 
 	if(values.length > 0) {
 

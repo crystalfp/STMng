@@ -36,7 +36,7 @@ export class DistanceMatrix {
         this.id2idx.clear();
 		this.distanceMatrix.length = 0;
         for(let i=0; i < countStructures; ++i) {
-            this.distanceMatrix.push(Array(countStructures-i).fill(0) as number[]);
+            this.distanceMatrix.push(Array<number>(countStructures-i).fill(0));
         }
 
         if(distanceVector) {
@@ -151,7 +151,7 @@ class Delta {
         this.nMinus1 = n-1;
 		this.nTimesNMinus1Divided2 = (n*(n-1))/2;
 		const sz = n*this.nTimesNMinus1Divided2;
-		this.delta = Array(sz).fill(0) as number[];
+		this.delta = Array<number>(sz).fill(0);
 	}
 
     /**

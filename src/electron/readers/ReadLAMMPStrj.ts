@@ -94,7 +94,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 					break;
 				case LineType.natoms:
 					numberAtoms = Number.parseInt(fields[0], 10);
-					currentStructure!.atoms = Array(numberAtoms) as Atom[];
+					currentStructure!.atoms = Array<Atom>(numberAtoms);
 					atomIdx = 0;
 					lineType = LineType.item;
 					break;

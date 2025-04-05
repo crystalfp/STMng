@@ -162,10 +162,10 @@ export const contrastingColors = (countColors: number, backgroundColor: RGB): RG
     }
 
     // Distances from the candidate colors to the background colors
-    let mindist2 = Array(lab.length).fill(Number.POSITIVE_INFINITY) as number[];
+    let mindist2 = Array<number>(lab.length).fill(Number.POSITIVE_INFINITY);
 
     // Prepare output array
-    const colors = Array(countColors) as RGB[];
+    const colors = Array<RGB>(countColors);
 
     // Initialize by making the "previous" color equal to background
     let lastlab = rgb2lab(backgroundColor);

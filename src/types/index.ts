@@ -492,12 +492,12 @@ export interface ChartOptions {
 }
 
 /** Chart points coordinates */
-export type ChartCoordinates = {
+export type ChartCoordinate = {
     /** X coordinate of the point */
     x: number;
     /** Y coordinate of the point */
     y: number;
-}[];
+};
 
 /** Data to be charted */
 export interface ChartData {
@@ -516,7 +516,7 @@ export interface ChartData {
         /** Radius of the points */
         pointRadius?: number;
         /** Value of the dataset */
-        data: number[] | ChartCoordinates;
+        data: number[] | ChartCoordinate[];
         /** If the line should be shown, not only the points */
         showLine?: boolean;
         /** Data for the optional labels on the points */

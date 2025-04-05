@@ -37,7 +37,7 @@ abstract class GroupingMethod {
              threshold: number): number[] {
 
         // The connection matrix between every structure
-        const connection = Array(countStructures*countStructures).fill(0) as number[];
+        const connection = Array<number>(countStructures*countStructures).fill(0);
 
         // Build the connection matrix
         for(let r=0; r < countStructures-1; ++r) {
@@ -156,7 +156,7 @@ class PseudoSNNGrouping extends GroupingMethod {
         }
 
         // Array to keep track of nodes already assigned to a group
-        const assigned = Array(countStructures).fill(false) as boolean[];
+        const assigned = Array<boolean>(countStructures).fill(false);
 
         // For each node do a DFS to extract the nodes
         const result: Set<number>[] = [];

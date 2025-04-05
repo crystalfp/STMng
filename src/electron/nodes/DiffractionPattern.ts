@@ -12,7 +12,7 @@ import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition,
-			 ChartData, ChartOptions, ChartCoordinates} from "@/types";
+			 ChartData, ChartOptions, ChartCoordinate} from "@/types";
 
 
 export class DiffractionPattern extends NodeCore {
@@ -126,8 +126,8 @@ export class DiffractionPattern extends NodeCore {
 		}
 
 		// Chart of the peaks
-		const coords = Array(len) as ChartCoordinates;
-		const labels = Array(len) as string[];
+		const coords = Array<ChartCoordinate>(len);
+		const labels = Array<string>(len);
 		for(let i=0; i < len; ++i) {
 			coords[i] = {x: this.xy.twoTheta[i], y: y[i]};
 			labels[i] = this.xy.label[i];
@@ -237,10 +237,10 @@ export class DiffractionPattern extends NodeCore {
 						y: number[],
 						min: number,
 						max: number,
-						width: number): ChartCoordinates {
+						width: number): ChartCoordinate[] {
 
 		const step = (max-min)/2_000;
-		const out: ChartCoordinates = [];
+		const out: ChartCoordinate[] = [];
 		for(let xx=min; xx <= max; xx += step) {
 			out.push({x: xx, y: 0});
 		}
@@ -281,7 +281,7 @@ export class DiffractionPattern extends NodeCore {
 	 */
 	private hardPeaks(xy: DiffractionPatternResult,
 					  min: number,
-					  max: number): ChartCoordinates {
+					  max: number): ChartCoordinate[] {
 
 		const len = xy.intensity.length;
 		let scale = 1;
@@ -294,7 +294,7 @@ export class DiffractionPattern extends NodeCore {
 			scale = maxIntensity > 0 ? 100/maxIntensity : 1;
 		}
 
-		const out: ChartCoordinates = [];
+		const out: ChartCoordinate[] = [];
 		out.push({x: min, y: 0});
 		for(let i=0; i < len; ++i) {
 			const mean = xy.twoTheta[i];

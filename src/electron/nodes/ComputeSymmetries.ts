@@ -373,7 +373,7 @@ export class ComputeSymmetries extends NodeCore {
 		};
 
 		let natoms = atomsZ.length;
-		const direction = Array(natoms).fill(0) as number[];
+		const direction = Array<number>(natoms).fill(0);
 		for(let i=0; i < natoms; ++i) {
 
 			const k = i*3;

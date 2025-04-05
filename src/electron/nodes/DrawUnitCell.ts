@@ -171,7 +171,7 @@ export class DrawUnitCell extends NodeCore {
 		// Remove duplicates
 		const tol = 1e-5;
 		const outAtoms = atoms.length;
-		const duplicated = Array(outAtoms).fill(false) as boolean[];
+		const duplicated = Array<boolean>(outAtoms).fill(false);
 		for(let i=0; i < outAtoms-1; ++i) {
 			if(duplicated[i]) continue;
 			for(let j=i+1; j < outAtoms; ++j) {

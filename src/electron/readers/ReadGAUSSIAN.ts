@@ -137,7 +137,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 						const nv3 = voxelsPerSide[2];
 
 						nvoxels = nv1*nv2*nv3;
-						voxels = Array(nvoxels).fill(0) as number[];
+						voxels = Array<number>(nvoxels).fill(0);
 						lineType = LineType.atoms;
 					}
 					break;
@@ -192,7 +192,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 						const nx = voxelsPerSide[0]+1;
 						const ny = voxelsPerSide[1]+1;
 						const nz = voxelsPerSide[2]+1;
-						structure.volume[0].values = Array(nx*ny*nz).fill(0) as number[];
+						structure.volume[0].values = Array<number>(nx*ny*nz).fill(0);
 
 						for(let iz=0; iz < nz; ++iz) {
 
