@@ -492,12 +492,12 @@ export interface ChartOptions {
 }
 
 /** Chart points coordinates */
-export type ChartCoordinate = {
+export interface ChartCoordinate {
     /** X coordinate of the point */
     x: number;
     /** Y coordinate of the point */
     y: number;
-};
+}
 
 /** Data to be charted */
 export interface ChartData {

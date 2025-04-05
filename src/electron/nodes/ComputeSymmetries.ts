@@ -283,7 +283,7 @@ export class ComputeSymmetries extends NodeCore {
 	 * @param basis - Structure basis vectors
 	 * @returns Atom position in cartesian coordinates
 	 */
-	private fractionalToPosition(idx: number, fractionalCoordinates: number[], basis: BasisType): PositionType {
+	private static fractionalToPosition(idx: number, fractionalCoordinates: number[], basis: BasisType): PositionType {
 
 		const k = idx*3;
 		const fx = fractionalCoordinates[k];
@@ -400,9 +400,8 @@ export class ComputeSymmetries extends NodeCore {
 				structure.atoms.push({
 					atomZ: atomsZ[i],
 					label: labels[i],
-					// label: labels[i] + i.toString(),
 					chain: chains[i],
-					position: this.fractionalToPosition(i, fractionalCoordinates, basis)
+					position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
 				});
 			}
 			return structure;
@@ -530,19 +529,16 @@ export class ComputeSymmetries extends NodeCore {
 
 		// Finish building the structure removing duplicated atoms
 		natoms = fractionalCoordinates.length / 3;
-		// let labelIdx = 0;
 		for(let i=0; i < natoms; ++i) {
 
-			if(this.isDuplicated(i, natoms, fractionalCoordinates)) continue;
+			if(ComputeSymmetries.isDuplicated(i, natoms, fractionalCoordinates)) continue;
 
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
-				label: labels[idx[i]], // + labelIdx.toString(),
+				label: labels[idx[i]],
 				chain: chains[idx[i]],
-				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
+				position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
-
-			// ++labelIdx;
 		}
 		return structure;
 	}
@@ -555,7 +551,7 @@ export class ComputeSymmetries extends NodeCore {
 	 * @param fractionalCoordinates - Fractional atoms coordinates
 	 * @returns - True if the atom to test has a duplicated one further in the atoms list
 	 */
-	private isDuplicated(idx: number, natoms: number, fractionalCoordinates: number[]): boolean {
+	private static isDuplicated(idx: number, natoms: number, fractionalCoordinates: number[]): boolean {
 
 		const k = idx*3;
 		const fx = fractionalCoordinates[k];
@@ -606,7 +602,7 @@ export class ComputeSymmetries extends NodeCore {
 				atomZ: atomsZ[i],
 				label: labels[i],
 				chain: chains[i],
-				position: this.fractionalToPosition(i, fractionalCoordinates, basis)
+				position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 		}
 

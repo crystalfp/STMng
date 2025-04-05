@@ -454,7 +454,7 @@ export class ComputeBonds extends NodeCore {
 	 * @param atomZ - Atomic number of the X or Y atoms
 	 * @returns True if an H bond could form
 	 */
-	private atomForHBond(atomZ: number): boolean {return atomZForH.has(atomZ);}
+	private static atomForHBond(atomZ: number): boolean {return atomZForH.has(atomZ);}
 
 	// > Compute the valence angle
 	/**
@@ -465,7 +465,7 @@ export class ComputeBonds extends NodeCore {
 	* @param atomY - Atom at the other side
 	* @returns Valence angle in degrees
 	*/
-	private valenceAngle(atomH: Atom, atomX: Atom, atomY: Atom): number {
+	private static valenceAngle(atomH: Atom, atomX: Atom, atomY: Atom): number {
 
 		const v0 = atomH.position[0] - atomX.position[0];
 		const w0 = atomY.position[0] - atomX.position[0];
@@ -555,8 +555,8 @@ export class ComputeBonds extends NodeCore {
 
 				// Check for H-bond
 				if(computeHBonds &&
-				   ((atomZi === 1 && this.atomForHBond(atomZj)) ||
-				    (atomZj === 1 && this.atomForHBond(atomZi))) &&
+				   ((atomZi === 1 && ComputeBonds.atomForHBond(atomZj)) ||
+				    (atomZj === 1 && ComputeBonds.atomForHBond(atomZi))) &&
 				   (distSquared <= maxDistanceHbondSquared) &&
 				   (distSquared > sumRcovSquared)) {
 
@@ -629,8 +629,8 @@ export class ComputeBonds extends NodeCore {
 			}
 
 			const atomX = atoms[idxX];
-			if(!this.atomForHBond(atomX.atomZ) ||
-			   this.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = 99;
+			if(!ComputeBonds.atomForHBond(atomX.atomZ) ||
+			   ComputeBonds.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = 99;
 		}
 
 		// Remove bonds between atoms that have too many bonds

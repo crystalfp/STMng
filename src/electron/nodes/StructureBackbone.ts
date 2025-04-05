@@ -120,7 +120,7 @@ export class StructureBackbone extends NodeCore {
 
 		const {basis, origin} = this.inputStructure.crystal;
 		if(basis.some((x) => x !== 0) && this.threshold < 1) {
-			this.disentangleChains(coordinates, chainStart, basis, origin, this.threshold);
+			StructureBackbone.disentangleChains(coordinates, chainStart, basis, origin, this.threshold);
 		}
 		sendToClient(this.id, "positions", {coordinates, chainStart});
 	}
@@ -134,8 +134,8 @@ export class StructureBackbone extends NodeCore {
 	 * @param origin - Structure origin
 	 * @param threshold - Threshold to select next node to be moved
 	 */
-	private disentangleChains(coordinates: number[], chainStart: number[],
-							  basis: BasisType, origin: PositionType, threshold: number): void {
+	private static disentangleChains(coordinates: number[], chainStart: number[],
+							 		 basis: BasisType, origin: PositionType, threshold: number): void {
 
 		// Convert each point into fractional coordinates
 		const inverse = invertBasis(basis);

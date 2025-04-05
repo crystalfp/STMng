@@ -167,7 +167,7 @@ export class DrawOrthoslice extends NodeCore {
      * @param origin - Origin of the unit cell
      * @param vertices - Where the point coordinates will be put
      */
-    private fractionToAbsolute(fx: number, fy: number, fz: number,
+    private static fractionToAbsolute(fx: number, fy: number, fz: number,
                                basis: BasisType, origin: PositionType,
                                vertices: number[]): void {
 
@@ -185,7 +185,7 @@ export class DrawOrthoslice extends NodeCore {
      * @param slowSide - The index that varies slower than the other
      * @param indices - Where the computed triangles vertices indices goes
      */
-    private generateIndices(fastSide: number, slowSide: number, indices: number[]): void {
+    private static generateIndices(fastSide: number, slowSide: number, indices: number[]): void {
 
         for(let vv=0; vv < slowSide; ++vv) {
             for(let uu=0; uu < fastSide; ++uu) {
@@ -213,8 +213,8 @@ export class DrawOrthoslice extends NodeCore {
      * @param sides - The sides of the grid
      * @returns The RGB color of the point
      */
-    private getValue(nx: number, ny: number, nz: number,
-                     values: number[], sides: PositionType): number {
+    private static getValue(nx: number, ny: number, nz: number,
+                            values: number[], sides: PositionType): number {
 
         if(nx === sides[0]) nx = 0;
         if(ny === sides[1]) ny = 0;
@@ -255,13 +255,13 @@ export class DrawOrthoslice extends NodeCore {
                 fixed = this.plane / sides[0];
                 for(let ny=0; ny <= sides[1]; ++ny) {
                     for(let nz=0; nz <= sides[2]; ++nz) {
-                        this.fractionToAbsolute(fixed, ny/sides[1], nz/sides[2],
+                        DrawOrthoslice.fractionToAbsolute(fixed, ny/sides[1], nz/sides[2],
                                                 basis, origin, this.orthoVertices);
-                        const co = this.getValue(this.plane, ny, nz, values, sides);
+                        const co = DrawOrthoslice.getValue(this.plane, ny, nz, values, sides);
 						this.orthoValues.push(co);
                     }
                 }
-                this.generateIndices(sides[2], sides[1], this.orthoIndices);
+                DrawOrthoslice.generateIndices(sides[2], sides[1], this.orthoIndices);
                 isolines.computeIsolines(2, 1, 0, this.plane, this.orthoVertices);
                 break;
 
@@ -269,13 +269,13 @@ export class DrawOrthoslice extends NodeCore {
                 fixed = this.plane / sides[1];
                 for(let nx=0; nx <= sides[0]; ++nx) {
                     for(let nz=0; nz <= sides[2]; ++nz) {
-                        this.fractionToAbsolute(nx/sides[0], fixed, nz/sides[2],
+                        DrawOrthoslice.fractionToAbsolute(nx/sides[0], fixed, nz/sides[2],
                                                 basis, origin, this.orthoVertices);
-                        const co = this.getValue(nx, this.plane, nz, values, sides);
+                        const co = DrawOrthoslice.getValue(nx, this.plane, nz, values, sides);
 						this.orthoValues.push(co);
                     }
                 }
-                this.generateIndices(sides[2], sides[0], this.orthoIndices);
+                DrawOrthoslice.generateIndices(sides[2], sides[0], this.orthoIndices);
                 isolines.computeIsolines(2, 0, 1, this.plane, this.orthoVertices);
                 break;
 
@@ -283,13 +283,13 @@ export class DrawOrthoslice extends NodeCore {
                 fixed = this.plane / sides[2];
                 for(let nx=0; nx <= sides[0]; ++nx) {
                     for(let ny=0; ny <= sides[1]; ++ny) {
-                        this.fractionToAbsolute(nx/sides[0], ny/sides[1], fixed,
+                        DrawOrthoslice.fractionToAbsolute(nx/sides[0], ny/sides[1], fixed,
                                                 basis, origin, this.orthoVertices);
-                        const co = this.getValue(nx, ny, this.plane, values, sides);
+                        const co = DrawOrthoslice.getValue(nx, ny, this.plane, values, sides);
 						this.orthoValues.push(co);
                    }
                 }
-                this.generateIndices(sides[1], sides[0], this.orthoIndices);
+                DrawOrthoslice.generateIndices(sides[1], sides[0], this.orthoIndices);
                 isolines.computeIsolines(1, 0, 2, this.plane, this.orthoVertices);
                 break;
         }

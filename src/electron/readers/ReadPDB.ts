@@ -255,22 +255,22 @@ export class ReaderPDB implements ReaderImplementation {
 						// Add the bonds
 						const {bonds} = structures[currentStructure];
 						if(ne1 >= 0) {
-							this.checkAndAddBond(from, to1!, snMap, bonds, 0);
+							ReaderPDB.checkAndAddBond(from, to1!, snMap, bonds, 0);
 						}
 						if(ne2 >= 0) {
-							this.checkAndAddBond(from, to2!, snMap, bonds, 0);
+							ReaderPDB.checkAndAddBond(from, to2!, snMap, bonds, 0);
 						}
 						if(ne3 >= 0) {
-							this.checkAndAddBond(from, to3!, snMap, bonds, 0);
+							ReaderPDB.checkAndAddBond(from, to3!, snMap, bonds, 0);
 						}
 						if(ne4 >= 0) {
-							this.checkAndAddBond(from, to4!, snMap, bonds, 0);
+							ReaderPDB.checkAndAddBond(from, to4!, snMap, bonds, 0);
 						}
 						if(ne5 >= 0) {
-							this.checkAndAddBond(from, hb1!, snMap, bonds, 1);
+							ReaderPDB.checkAndAddBond(from, hb1!, snMap, bonds, 1);
 						}
 						if(ne6 >= 0) {
-							this.checkAndAddBond(from, hb2!, snMap, bonds, 1);
+							ReaderPDB.checkAndAddBond(from, hb2!, snMap, bonds, 1);
 						}
 					}
 					break;
@@ -366,7 +366,7 @@ export class ReaderPDB implements ReaderImplementation {
 	 * @param bonds - Bonds list to be updated
 	 * @param type - Type of the bond: 0: normal bond; 1: hydrogen bond
 	 */
-	private checkAndAddBond(from: number, to: number,
+	private static checkAndAddBond(from: number, to: number,
 							snMap: Map<number, number>,
 							bonds: Bond[], type: 0 | 1): void {
 

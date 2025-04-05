@@ -240,7 +240,7 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param targetCount - The maximum number of points after decimation
 	 * @returns The decimated list of points
 	 */
-	private decimatePoints(points: number[][], targetCount: number): number[][] {
+	private static decimatePoints(points: number[][], targetCount: number): number[][] {
 
 		if(points.length <= targetCount) return points;
 
@@ -306,7 +306,7 @@ export class ComputeFingerprints extends NodeCore {
 		fidelities = normalizeCoordinates2D(fidelities);
 
 		// If too many points, decimate them to reduce the number to less than 20'000
-		fidelities = this.decimatePoints(fidelities, 20_000);
+		fidelities = ComputeFingerprints.decimatePoints(fidelities, 20_000);
 
 		return {
 
@@ -707,7 +707,7 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param structure - One structure from the accumulator
 	 * @returns - The structure as a Structure type
 	 */
-	convertAccumulatedStructure(structure: StructureReduced): Structure {
+	private static convertAccumulatedStructure(structure: StructureReduced): Structure {
 
 		const {atomsZ, atomsPosition, basis, step} = structure;
 		const natoms = atomsZ.length;
@@ -1151,7 +1151,7 @@ export class ComputeFingerprints extends NodeCore {
 
 				for(const structure of this.accumulator.iterateSelectedStructures()) {
 					if(indices.includes(idx)) {
-						structures.push(this.convertAccumulatedStructure(structure));
+						structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 						if(hasEnergies) {
 							sorter.push({idx: k++, energy: structure.energy!});
 						}

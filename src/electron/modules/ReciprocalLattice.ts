@@ -202,14 +202,14 @@ export class ReciprocalLattice {
         if(validCoords.length === 0) return [[], [], []];
 
         // Divide the valid 3D space into cubes and compute the cube ids
-        let allCubeIndex = this.computeCubeIndex(validCoords, globalMin, radius);
-        const nxyz = this.computeCubeIndex([globalMax], globalMin, radius)[0];
+        let allCubeIndex = ReciprocalLattice.computeCubeIndex(validCoords, globalMin, radius);
+        const nxyz = ReciprocalLattice.computeCubeIndex([globalMax], globalMin, radius)[0];
         ++nxyz[0]; // nx
         ++nxyz[1]; // ny
         ++nxyz[2]; // nz
 
-        allCubeIndex = this.threeToOne(allCubeIndex, nxyz[1], nxyz[2]);
-        const siteCubeIndex = this.threeToOne(this.computeCubeIndex([centerCoords], globalMin, radius),
+        allCubeIndex = ReciprocalLattice.threeToOne(allCubeIndex, nxyz[1], nxyz[2]);
+        const siteCubeIndex = ReciprocalLattice.threeToOne(ReciprocalLattice.computeCubeIndex([centerCoords], globalMin, radius),
                                               nxyz[1], nxyz[2]);
         const allCubeIndexFlat = allCubeIndex.flat();
         const len = allCubeIndexFlat.length;
@@ -244,7 +244,7 @@ export class ReciprocalLattice {
 
         const ii = centerCoords;
         const jj = siteNeighbors;
-        const l1 = this.threeToOne(jj, nxyz[1], nxyz[2]).flat();
+        const l1 = ReciprocalLattice.threeToOne(jj, nxyz[1], nxyz[2]).flat();
 
         // Use the cube index map to find the all the neighboring
         // coords, images, and indices
@@ -293,7 +293,7 @@ export class ReciprocalLattice {
     // Returns:
     //     np.ndarray: nx3 array int indices
     //
-    private computeCubeIndex(coords: number[][], globalMin: number[], radius: number): number[][] {
+    private static computeCubeIndex(coords: number[][], globalMin: number[], radius: number): number[][] {
 
         const out: number[][] = [];
         for(const coord of coords) {
@@ -315,7 +315,7 @@ export class ReciprocalLattice {
     Returns:
         np.ndarray: nx3 array int indices
      */
-    private threeToOne(label3d: number[][], ny: number, nz: number): number[][] {
+    private static threeToOne(label3d: number[][], ny: number, nz: number): number[][] {
 
         const out: number[][] = [];
         for(const one of label3d) {
@@ -333,7 +333,7 @@ export class ReciprocalLattice {
      * @param nz - number of cells in z direction
      * @returns nx3 array int indices
      */
-    private oneToThree(label1d: number[][], ny: number, nz: number): number[][] {
+    private static oneToThree(label1d: number[][], ny: number, nz: number): number[][] {
 
         const out: number[][] = [];
         for(const label of label1d) {
@@ -365,11 +365,10 @@ export class ReciprocalLattice {
                 }
             }
         }
-        const label3d = label[0].length === 1 ? this.oneToThree(label, nxyz[1], nxyz[2]) : label;
+        const label3d = label[0].length === 1 ?
+                                        ReciprocalLattice.oneToThree(label, nxyz[1], nxyz[2]) : label;
         const allLabels: number[][] = [];
-        // for(let i=0; i < label3d.length; ++i) {
         for(const oneLabel3D of label3d) {
-            // for(let j=0; j < neighbor_vectors.length; ++j) {
             for(const neighborVector of neighborVectors) {
                 allLabels.push([oneLabel3D[0] - neighborVector[0],
                                 oneLabel3D[1] - neighborVector[1],

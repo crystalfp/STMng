@@ -47,7 +47,7 @@ export class DrawPolyhedraRenderer {
 	 * @param bw - True (default) to create contrasting black and white color
 	 * @returns Color for the polyhedra edges
 	 */
-	private createContrastingColor(materialColor: Color, bw=true): number {
+	private static createContrastingColor(materialColor: Color, bw=true): number {
 
 		const {r, g, b} = materialColor;
 
@@ -120,7 +120,7 @@ export class DrawPolyhedraRenderer {
 			mesh.userData = {idx: i};
 
 			// The polyhedron edges
-			const edgeColor = this.createContrastingColor(color);
+			const edgeColor = DrawPolyhedraRenderer.createContrastingColor(color);
 			const edges = new EdgesGeometry(mesh.geometry);
 			const line = new LineSegments(edges, new LineBasicMaterial({color: edgeColor}));
 			this.group.add(line);
@@ -161,7 +161,7 @@ export class DrawPolyhedraRenderer {
 	 * @param color - Color in #RRGGBBAA format
 	 * @returns The color part
 	 */
-	private extractColor(color: string): Color {
+	private static extractColor(color: string): Color {
 
 		const colorString = color.slice(0, 7);
 		return new Color(colorString);
@@ -173,7 +173,7 @@ export class DrawPolyhedraRenderer {
 	 * @param color - Color in #RRGGBBAA format
 	 * @returns The opacity value
 	 */
-	private extractOpacity(color: string): number {
+	private static extractOpacity(color: string): number {
 
 		if(color.length < 9) return 1;
 		return Number.parseInt(color.slice(7, 9), 16) / 255;
@@ -185,7 +185,8 @@ export class DrawPolyhedraRenderer {
 	 * @param surfaceColor - Color to be set in #RRGGBBAA format
 	 */
 	changeColor(surfaceColor: string): void {
-		this.material.color = this.extractColor(surfaceColor);
-		this.material.opacity = this.extractOpacity(surfaceColor);
+
+		this.material.color = DrawPolyhedraRenderer.extractColor(surfaceColor);
+		this.material.opacity = DrawPolyhedraRenderer.extractOpacity(surfaceColor);
 	}
 }

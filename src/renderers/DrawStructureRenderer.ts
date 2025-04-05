@@ -109,7 +109,7 @@ export class DrawStructureRenderer {
 	 * @param to - Position of the bond end
 	 * @param group - The output group where to add the bond
 	 */
-	private addHBond(from: PositionType, to: PositionType, group: Group): void {
+	private static addHBond(from: PositionType, to: PositionType, group: Group): void {
 
 		const material = new LineDashedMaterial({
 								color: 0x777777,
@@ -138,7 +138,7 @@ export class DrawStructureRenderer {
 	 * @param colorTo - Color of the bond end
 	 * @param group - The output group where to add the bond
 	 */
-	private addNormalBond(from: PositionType, to: PositionType,
+	private static addNormalBond(from: PositionType, to: PositionType,
 						  colorFrom: string, colorTo: string, group: Group): void {
 
 		const midX = (from[0]+to[0])/2;
@@ -179,7 +179,7 @@ export class DrawStructureRenderer {
 	 * @param color - Common color of the bonded atoms
 	 * @param group - The output group where to add the bond
 	 */
-	private addNormalBondSameAtoms(from: PositionType, to: PositionType,
+	private static addNormalBondSameAtoms(from: PositionType, to: PositionType,
 								   color: string, group: Group): void {
 
 		const start = new Vector3(from[0], from[1], from[2]);
@@ -303,7 +303,7 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					if(bond.type === 1) DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else if(showBondsStrength) {
 
 						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;
@@ -332,7 +332,7 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					if(bond.type === 1) DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else {
 						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
 												  atomFrom.color, atomTo.color);
@@ -347,15 +347,15 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) this.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					if(bond.type === 1) DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					else if(atomFrom.atomZ === atomTo.atomZ) {
 						const {color, position} = atomFrom;
-						this.addNormalBondSameAtoms(position, atomTo.position, color, this.bondsGroup);
+						DrawStructureRenderer.addNormalBondSameAtoms(position, atomTo.position, color, this.bondsGroup);
 					}
 					else {
 						const colorFrom = atomFrom.color;
 						const colorTo   = atomTo.color;
-						this.addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo, this.bondsGroup);
+						DrawStructureRenderer.addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo, this.bondsGroup);
 					}
 				}
 				break;

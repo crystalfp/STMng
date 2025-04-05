@@ -208,8 +208,8 @@ export class StructureReader extends NodeCore {
 		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
 
 		// Clean and check the structure list
-		this.removeEmptyStructures(this.structures);
-		if(this.checkStructures(this.structures)) {
+		StructureReader.removeEmptyStructures(this.structures);
+		if(StructureReader.checkStructures(this.structures)) {
 			this.toNextNode(this.structures[0]);
 			this.countSteps = this.structures.length;
 			return {countSteps: this.countSteps};
@@ -418,7 +418,7 @@ export class StructureReader extends NodeCore {
 	 * @param structures - Structures read
 	 * @returns True if the structures are valid
 	 */
-	private checkStructures(structures: Structure[]): boolean {
+	private static checkStructures(structures: Structure[]): boolean {
 
 		if(structures.length === 0) return false;
 		for(const structure of structures) {
@@ -433,7 +433,7 @@ export class StructureReader extends NodeCore {
 	 *
 	 * @param structures - List of structures to be pruned
 	 */
-	private removeEmptyStructures(structures: Structure[]): void {
+	private static removeEmptyStructures(structures: Structure[]): void {
 
 		const len = structures.length;
 		if(len === 0) return;

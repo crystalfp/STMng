@@ -50,7 +50,7 @@ class Table {
 			line = `${this.incompleteLine} ${line}`;
 			this.incompleteLine = undefined;
 		}
-		const fields = this.split(line);
+		const fields = Table.split(line);
 		if(fields.length < this.headers.length) this.incompleteLine = line;
 		else this.rows.push(fields);
 	}
@@ -87,7 +87,7 @@ class Table {
 	 * @param line - Line to be split
 	 * @returns The tokens from the given string
 	 */
-	private split(line: string): string[] {
+	private static split(line: string): string[] {
 
 		let result: string[] = [];
 		line = line.replaceAll(/['"]/g, "|").replaceAll(String.raw`\|`, "'");

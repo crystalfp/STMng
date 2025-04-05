@@ -174,8 +174,8 @@ export class FingerprintsAccumulator {
 		else if(this.countSpecies !== entry.species.size) throw Error("Number of species differs");
 
 		entry.minRadius = isNanocluster ?
-								this.getMaxAtomDistance(entry.atomsPosition) :
-								this.getMaxDiagonalLength(basis);
+								FingerprintsAccumulator.getMaxAtomDistance(entry.atomsPosition) :
+								FingerprintsAccumulator.getMaxDiagonalLength(basis);
 
 		// Add to the accumulator
 		this.accumulator.push(entry);
@@ -359,7 +359,7 @@ export class FingerprintsAccumulator {
 	 * @param basis - Structure basis vectors
 	 * @returns Unit cell longest diagonal
 	 */
-	private getMaxDiagonalLength(basis: BasisType): number {
+	private static getMaxDiagonalLength(basis: BasisType): number {
 
 		// First diagonal: a+b+c
 		let dx = basis[0] + basis[3] + basis[6];
@@ -399,7 +399,7 @@ export class FingerprintsAccumulator {
 	 * @param atoms - List of structure atoms
 	 * @returns Max distance between structure atoms
 	 */
-	private getMaxAtomDistance(atomsPosition: number[]): number {
+	private static getMaxAtomDistance(atomsPosition: number[]): number {
 
 		let maxAtomDistance = 0;
 
@@ -460,8 +460,8 @@ export class FingerprintsAccumulator {
 
 		for(const structure of this.accumulator) {
 			structure.minRadius = this.areNanoclusters ?
-										this.getMaxAtomDistance(structure.atomsPosition) :
-										this.getMaxDiagonalLength(structure.basis);
+									FingerprintsAccumulator.getMaxAtomDistance(structure.atomsPosition) :
+									FingerprintsAccumulator.getMaxDiagonalLength(structure.basis);
 		}
 	}
 

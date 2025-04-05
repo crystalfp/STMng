@@ -152,7 +152,7 @@ export class InterpolateVolume extends NodeCore {
 					const ok = getMatrixOrigin(k, sz);
 
 					// Compute matrix
-					const c = this.computeMatrix(oi, oj, ok, volume.values, sx, sy);
+					const c = InterpolateVolume.computeMatrix(oi, oj, ok, volume.values, sx, sy);
 
 					// Cover the border
 					const bi = (i === (sx-2)) ? 1 : 0;
@@ -174,7 +174,7 @@ export class InterpolateVolume extends NodeCore {
 								const fii = ii * 1/(pa+1) + i - oi;
 
 								outValues[((k*(pa+1)+kk)*syo+j*(pa+1)+jj)*sxo+i*(pa+1)+ii] =
-																this.computePoint(fii, fjj, fkk, c);
+													InterpolateVolume.computePoint(fii, fjj, fkk, c);
 							}
 						}
 					}
@@ -196,7 +196,7 @@ export class InterpolateVolume extends NodeCore {
 	 * @param dy - Y dimension of the input data
 	 * @returns The interpolation matrix
 	 */
-	private computeMatrix(oi: number, oj: number, ok: number, volume: number[], dx: number, dy: number): number[] {
+	private static computeMatrix(oi: number, oj: number, ok: number, volume: number[], dx: number, dy: number): number[] {
 
 		// ijk
 		const vv = [];
@@ -242,7 +242,7 @@ export class InterpolateVolume extends NodeCore {
 	 * @param c - Interpolation matrix
 	 * @returns The point value
 	 */
-	private computePoint(x: number, y: number, z: number, c: number[]): number {
+	private static computePoint(x: number, y: number, z: number, c: number[]): number {
 
 		let vv = 0;
 

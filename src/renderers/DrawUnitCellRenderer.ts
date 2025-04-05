@@ -68,7 +68,7 @@ export class DrawUnitCellRenderer {
 	 * @param dashed - If the line should be dashed
 	 * @returns The material to apply to the lines
 	 */
-	private setMaterial(color: string, dashed: boolean): Material {
+	private static setMaterial(color: string, dashed: boolean): Material {
 
 		// eslint-disable-next-line sonarjs/no-selector-parameter
 		return dashed ? new LineDashedMaterial({
@@ -110,7 +110,7 @@ export class DrawUnitCellRenderer {
 		geometry.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
 		const edges = new EdgesGeometry(geometry);
 
-		const line = new LineSegments(edges, this.setMaterial(color, dashed));
+		const line = new LineSegments(edges, DrawUnitCellRenderer.setMaterial(color, dashed));
 		if(dashed) line.computeLineDistances();
 		line.name = name;
         line.visible = visible;
@@ -130,8 +130,8 @@ export class DrawUnitCellRenderer {
 	* @param axisLabel - Label on the vector
 	* @param group - The arrow is added to this group
 	*/
-	private basisVectorArrow(basis: Vector3, origin: Vector3, size: number,
-							 color: string, axisLabel: string, group: Group): void {
+	private static basisVectorArrow(basis: Vector3, origin: Vector3, size: number,
+									color: string, axisLabel: string, group: Group): void {
 
 		const versor = basis.clone().normalize();
 		const basisLen = basis.length();
@@ -224,9 +224,9 @@ export class DrawUnitCellRenderer {
 		const ltot = Math.max(la, lb, lc);
 		const size = Math.max(0.05, ltot/300);
 
-		this.basisVectorArrow(basisA, originZero, size, "#FF0000", "a", this.outBV);
-		this.basisVectorArrow(basisB, originZero, size, "#79FF00", "b", this.outBV);
-		this.basisVectorArrow(basisC, originZero, size, "#0000FF", "c", this.outBV);
+		DrawUnitCellRenderer.basisVectorArrow(basisA, originZero, size, "#FF0000", "a", this.outBV);
+		DrawUnitCellRenderer.basisVectorArrow(basisB, originZero, size, "#79FF00", "b", this.outBV);
+		DrawUnitCellRenderer.basisVectorArrow(basisC, originZero, size, "#0000FF", "c", this.outBV);
 
 		this.outBV.visible = visible;
 		sm.modified();
@@ -245,11 +245,11 @@ export class DrawUnitCellRenderer {
 	changeMaterials(colorUC: string, dashedUC: boolean, colorSC: string, dashedSC: boolean): void {
 
 		if(this.lineSC) {
-			this.lineSC.material = this.setMaterial(colorSC, dashedSC);
+			this.lineSC.material = DrawUnitCellRenderer.setMaterial(colorSC, dashedSC);
 			if(dashedSC) this.lineSC.computeLineDistances();
 		}
 		if(this.lineUC) {
-			this.lineUC.material = this.setMaterial(colorUC, dashedUC);
+			this.lineUC.material = DrawUnitCellRenderer.setMaterial(colorUC, dashedUC);
 			if(dashedUC) this.lineUC.computeLineDistances();
 		}
 		sm.modified();

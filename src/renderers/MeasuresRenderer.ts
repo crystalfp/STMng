@@ -98,7 +98,7 @@ export class MeasuresRenderer {
 	 * @param numberVertices - Total number of vertices
 	 * @returns The polyhedron volume
 	 */
-	private computeVolume(vertices: TypedArray, numberVertices: number): number {
+	private static computeVolume(vertices: TypedArray, numberVertices: number): number {
 
 		let computedVolume = 0;
 		for(let i=0; i < numberVertices/3; ++i) {
@@ -179,6 +179,6 @@ export class MeasuresRenderer {
 	getPolyhedraVolume(): number {
 
         const positions = this.objectNew!.geometry.getAttribute("position");
-        return this.computeVolume(positions.array, positions.count);
+        return MeasuresRenderer.computeVolume(positions.array, positions.count);
 	}
 }

@@ -235,6 +235,7 @@ export default defineConfig([
         // "dot-location": ["error", "property"],
         "no-else-return": "error",
         "no-array-constructor": "error",
+        // "class-methods-use-this": "warn",
         // "no-throw-literal": "off",
         // "@typescript-eslint/only-throw-error": "error",
         // "require-await": "off",

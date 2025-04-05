@@ -251,7 +251,7 @@ class SceneManager {
 	 * @param indent - String to put at the beginning of the line
 	 * @returns The string to add to the whole dump
 	 */
-	private dumpItem(count: number, type: string, name: string, indent: string): string {
+	private static dumpItem(count: number, type: string, name: string, indent: string): string {
 		if(count > 0) {
 			const currentCountString = count > 1 ? ` (${count})` : "";
 			const nameString = name ? ` ${name}` : "";
@@ -278,7 +278,7 @@ class SceneManager {
 
 			if(child.type === "Group") {
 
-				out += this.dumpItem(currentCount, currentType, currentName, indent);
+				out += SceneManager.dumpItem(currentCount, currentType, currentName, indent);
 				currentType = "";
 				currentName = "";
 				currentCount = 0;
@@ -287,7 +287,7 @@ class SceneManager {
 			}
 			else if(child.type !== currentType || child.name !== currentName) {
 
-				out += this.dumpItem(currentCount, currentType, currentName, indent);
+				out += SceneManager.dumpItem(currentCount, currentType, currentName, indent);
 				currentType = child.type;
 				currentName = child.name;
 				currentCount = 1;
@@ -297,7 +297,7 @@ class SceneManager {
 			}
 		}
 
-		out += this.dumpItem(currentCount, currentType, currentName, indent);
+		out += SceneManager.dumpItem(currentCount, currentType, currentName, indent);
 
 		return out;
 	}
@@ -327,12 +327,12 @@ class SceneManager {
 
 		// Create a group with only atoms and bonds
 		const structure = new Group();
-		const atoms = this.scene.getObjectByName("Atoms");
+		const atoms = SceneManager.scene.getObjectByName("Atoms");
 		if(atoms) {
 			const atoms2 = atoms.clone(true);
 			structure.add(atoms2);
 		}
-		const bonds = this.scene.getObjectByName("Bonds");
+		const bonds = SceneManager.scene.getObjectByName("Bonds");
 		if(bonds) {
 			const bonds2 = bonds.clone(true);
 			structure.add(bonds2);

@@ -266,7 +266,7 @@ export class XRDCalculator {
      * @param hkl2 - Second hkl code to compare
      * @returns True if one is a permutation of the other
      */
-    private isPermutation(hkl1: number[], hkl2: number[]): boolean {
+    private static isPermutation(hkl1: number[], hkl2: number[]): boolean {
 
         const thkl1 = hkl1.map((nn) => (nn < 0 ? -nn : nn)).toSorted((a, b) => (a - b));
         const thkl2 = hkl2.map((nn) => (nn < 0 ? -nn : nn)).toSorted((a, b) => (a - b));
@@ -292,7 +292,7 @@ export class XRDCalculator {
             for(const key in unique) {
 
                 const item = unique[key];
-                if(this.isPermutation(hkl, item.idx)) {
+                if(XRDCalculator.isPermutation(hkl, item.idx)) {
                     found = true;
                     item.val.push(hkl);
                 }

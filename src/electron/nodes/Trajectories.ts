@@ -56,7 +56,7 @@ export class Trajectories extends NodeCore {
 
 			const indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
 
-			this.setTraceColor(this.structure, indices, this.tracesColor);
+			Trajectories.setTraceColor(this.structure, indices, this.tracesColor);
 
 			const len = indices.length;
 			if(this.nextSteps) {
@@ -125,7 +125,7 @@ export class Trajectories extends NodeCore {
 		const colors: string[] = [];
 		for(let i=0; i < atomsCount; ++i) {
 			const splitTrace: number[][] = [];
-			this.splitSegments(this.traces[i], this.maxDisplacement, splitTrace);
+			Trajectories.splitSegments(this.traces[i], this.maxDisplacement, splitTrace);
 			for(const trace of splitTrace) {
 				segments.push(trace);
 				colors.push(this.tracesColor[i]);
@@ -141,7 +141,7 @@ export class Trajectories extends NodeCore {
 	 * @param maxLength - Max length of each segment
 	 * @returns An array of segments points
 	 */
-	private splitSegments(points: number[], maxLength: number, segments: number[][]): void {
+	private static splitSegments(points: number[], maxLength: number, segments: number[][]): void {
 
 		// Sanity check
 		const npoints = points.length/3;
@@ -183,9 +183,9 @@ export class Trajectories extends NodeCore {
 	 * @param indices - Indices of the selected atoms
 	 * @param traceColor - The resulting colors
 	 */
-	private setTraceColor(structure: Structure,
-						  indices: number[],
-						  traceColor: string[]): void {
+	private static setTraceColor(structure: Structure,
+						  		 indices: number[],
+						  		 traceColor: string[]): void {
 
 		const len = indices.length;
 		traceColor.length = len;
