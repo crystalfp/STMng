@@ -33,11 +33,8 @@ export const setupSceneHelpers = (): void => {
 
 	watchEffect(() => {
 
-		// Access the scene and set it modified
-		const {scene} = sm;
-
 		// Manage axis helper
-		let axis = scene.getObjectByName("AxisHelper") as Group;
+		let axis = sm.getObjectByName("AxisHelper") as Group;
 		if(configStore.helpers.showAxis) {
 
 			if(axis) {
@@ -51,7 +48,7 @@ export const setupSceneHelpers = (): void => {
 			else {
 				axis = new Group();
 				axis.name = "AxisHelper";
-				scene.add(axis);
+				sm.add(axis);
 				axis.visible = true;
 				axisHelper(axis, configStore.helpers.axisLength);
 				axisLengthPrevious = configStore.helpers.axisLength;
@@ -60,69 +57,69 @@ export const setupSceneHelpers = (): void => {
 		else if(axis) axis.visible = false;
 
 		// Manage XZ helper plane
-		let gridXZ = scene.getObjectByName("GridHelperXZ") as GridHelper;
+		let gridXZ = sm.getObjectByName("GridHelperXZ") as GridHelper;
 		if(configStore.helpers.showGridXZ) {
 			if(gridXZ) {
 				gridXZ.visible = true;
 				if(configStore.helpers.gridSize !== sidePrevious) {
-					scene.remove(gridXZ);
+					sm.remove(gridXZ);
 					gridXZ.dispose();
 					gridXZ = gridHelper("XZ", configStore.helpers.gridSize);
 					gridXZ.visible = true;
-					scene.add(gridXZ);
+					sm.add(gridXZ);
 					sidePrevious = configStore.helpers.gridSize;
 				}
 			}
 			else {
 				gridXZ = gridHelper("XZ", configStore.helpers.gridSize);
 				gridXZ.visible = true;
-				scene.add(gridXZ);
+				sm.add(gridXZ);
 				sidePrevious = configStore.helpers.gridSize;
 			}
 		}
 		else if(gridXZ) gridXZ.visible = false;
 
 		// Manage XY helper plane
-		let gridXY = scene.getObjectByName("GridHelperXY") as GridHelper;
+		let gridXY = sm.getObjectByName("GridHelperXY") as GridHelper;
 		if(configStore.helpers.showGridXY) {
 			if(gridXY) {
 				gridXY.visible = true;
 				if(configStore.helpers.gridSize !== sidePrevious) {
-					scene.remove(gridXY);
+					sm.remove(gridXY);
 					gridXY.dispose();
 					gridXY = gridHelper("XY", configStore.helpers.gridSize);
 					gridXY.visible = true;
-					scene.add(gridXY);
+					sm.add(gridXY);
 					sidePrevious = configStore.helpers.gridSize;
 				}
 			}
 			else {
 				gridXY = gridHelper("XY", configStore.helpers.gridSize);
 				gridXY.visible = true;
-				scene.add(gridXY);
+				sm.add(gridXY);
 				sidePrevious = configStore.helpers.gridSize;
 			}
 		}
 		else if(gridXY) gridXY.visible = false;
 
 		// Manage YZ helper plane
-		let gridYZ = scene.getObjectByName("GridHelperYZ") as GridHelper;
+		let gridYZ = sm.getObjectByName("GridHelperYZ") as GridHelper;
 		if(configStore.helpers.showGridYZ) {
 			if(gridYZ) {
 				gridYZ.visible = true;
 				if(configStore.helpers.gridSize !== sidePrevious) {
-					scene.remove(gridYZ);
+					sm.remove(gridYZ);
 					gridYZ.dispose();
 					gridYZ = gridHelper("YZ", configStore.helpers.gridSize);
 					gridYZ.visible = true;
-					scene.add(gridYZ);
+					sm.add(gridYZ);
 					sidePrevious = configStore.helpers.gridSize;
 				}
 			}
 			else {
 				gridYZ = gridHelper("YZ", configStore.helpers.gridSize);
 				gridYZ.visible = true;
-				scene.add(gridYZ);
+				sm.add(gridYZ);
 				sidePrevious = configStore.helpers.gridSize;
 			}
 		}

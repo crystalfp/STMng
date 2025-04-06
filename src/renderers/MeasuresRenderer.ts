@@ -141,7 +141,7 @@ export class MeasuresRenderer {
 	 */
 	selectPolyhedra(idxNew: number | undefined, idxCurrent: number | undefined): void {
 
-		sm.scene.traverse((object) => {
+		sm.traverse((object) => {
 			if(object.name === "Polyhedron") {
 				if(object.userData.idx === idxNew) {
 					this.objectNew = object as Mesh;

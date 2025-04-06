@@ -146,13 +146,6 @@ class SceneManager {
 	}
 
 	/**
-	 * Access the scene
-	 */
-	get scene(): Scene {
-		return SceneManager.scene;
-	}
-
-	/**
 	 * Add an object to the scene
 	 *
 	 * @param obj - Object to be added to the scene
@@ -160,6 +153,26 @@ class SceneManager {
 	add(obj: Object3D): void {
 		SceneManager.scene.add(obj);
 		this.sceneModified = true;
+	}
+
+	/**
+	 * Remove an object from the scene
+	 *
+	 * @param obj - Object to be removed from the scene
+	 */
+	remove(obj: Object3D): void {
+		SceneManager.scene.remove(obj);
+		this.sceneModified = true;
+	}
+
+	/**
+	 * Get an object by name from the scene
+	 *
+	 * @param name - Name of the object to be retrieved
+	 * @returns The object with the given name or undefined if not found
+	 */
+	getObjectByName(name: string): Object3D | undefined {
+		return SceneManager.scene.getObjectByName(name);
 	}
 
 	/**
@@ -252,6 +265,7 @@ class SceneManager {
 	 * @returns The string to add to the whole dump
 	 */
 	private static dumpItem(count: number, type: string, name: string, indent: string): string {
+
 		if(count > 0) {
 			const currentCountString = count > 1 ? ` (${count})` : "";
 			const nameString = name ? ` ${name}` : "";
@@ -354,6 +368,15 @@ class SceneManager {
 	modified(): void {
 
 		this.sceneModified = true;
+	}
+
+	/**
+	 * Traverse the scene and call the callback for each object
+	 *
+	 * @param callback - Callback to be called for each object in the scene
+	 */
+	traverse(callback: (object: Object3D) => void): void {
+		SceneManager.scene.traverse(callback);
 	}
 
 	private retry = 0;
