@@ -677,7 +677,7 @@ watch([aroundA, aroundB, aroundC],
 }
 
 .disabled {
-  color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+  color: light-dark(rgb(16 16 16 / 0.3), rgb(255 255 255 / 0.3));
 }
 
 .entry {

@@ -54,7 +54,7 @@ export class Fingerprinting {
 		if(method < 0 || method > 2) {
 			return {dimension: 0, error: "Invalid fingerprinting method"};
 		}
-		if(cutoffDistance <= 0 || binSize <= 0 || peakWidth <= 0) {
+		if(cutoffDistance <= 0 || binSize <= 0 || peakWidth < 0) {
 			return {dimension: 0, error: "Invalid fingerprinting parameters"};
 		}
 

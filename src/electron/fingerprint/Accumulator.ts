@@ -449,8 +449,10 @@ export class FingerprintsAccumulator {
 		}
 
 		// Return the cutoff distance (adding a 2% security margin)
-		// return (diameter / 2) * 1.02;
-		return diameter * 0.51;
+		return diameter * 1.02;
+
+		// The old value is (diameter / 2) * 1.02;
+		// return diameter * 0.51;
 	}
 
 	/**

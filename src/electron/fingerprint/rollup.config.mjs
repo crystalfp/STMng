@@ -22,6 +22,7 @@ export default {
 				"OganovValleFingerprint.ts",
 				"DotMatrixFingerprint.ts",
 				"Helpers.ts",
+				"UpperTriangularMatrix.ts",
 				"Slab.ts",
 				"Smooth.ts",
 				"Worker.ts",

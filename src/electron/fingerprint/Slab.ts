@@ -37,7 +37,8 @@ export class Slab {
         this.byAtom = byAtom;
 
         // Initialize try points
-		if(!isNanocluster) this.computeTryPoints(8, 8);
+		if(!isNanocluster) this.computeTryPoints(16, 16);
+		// if(!isNanocluster) this.computeTryPoints(8, 8);
     }
 
 	/**
@@ -422,6 +423,7 @@ export class Slab {
     computeVectorPairs(basis: Float64Array,
                        natoms: number,
                        atomsPosition: Float64Array,
+                       cutoffDistance: number,
                        computeFP: (vAB: number[], vAC: number[],
                                    magnitudeAB: number, magnitudeAC: number) => void): void {
 
@@ -500,6 +502,7 @@ export class Slab {
 
                     const vAB = [xb - xa, yb - ya, zb - za];
                     const magnitudeAB = Math.hypot(vAB[0], vAB[1], vAB[2]);
+                    if(magnitudeAB > cutoffDistance) continue;
 
                     // For each replica (included the original cell)
                     for(let replicaC=replicaB; replicaC < replicaMaxIndex; replicaC += 3) {
@@ -523,6 +526,7 @@ export class Slab {
 
                             const vAC = [xc - xa, yc - ya, zc - za];
                             const magnitudeAC = Math.hypot(vAC[0], vAC[1], vAC[2]);
+                            if(magnitudeAC > cutoffDistance) continue;
 
                             computeFP(vAB, vAC, magnitudeAB, magnitudeAC);
                         }

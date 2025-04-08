@@ -7,7 +7,8 @@
  * @since 2025-03-18
  */
 import {Slab} from "./Slab";
-import {getCellVolume, UpperTriangularMatrix} from "./Helpers";
+import {getCellVolume} from "./Helpers";
+import {UpperTriangularMatrix} from "./UpperTriangularMatrix";
 import type {FingerprintingParameters, FingerprintingResult} from "@/types";
 // import fs from "node:fs";
 /**
@@ -64,24 +65,26 @@ export const fingerprintingDotMatrix = (params: FingerprintingParameters,
 										positions: Float64Array): FingerprintingResult => {
 
 	// Extract the parameters
-	const {areNanoclusters, cutoffDistance, binSize} = params;
+	const {areNanoclusters, cutoffDistance, binSize, peakWidth} = params;
 
 	// Adjust the cutoff distance for the edge effects
-	const nbins = Math.ceil(cutoffDistance/binSize);
-	const delta = cutoffDistance/nbins;
+	const adjustedCutoffForEdgeEffects = cutoffDistance + 4 * peakWidth;
+	const nbins = Math.ceil(adjustedCutoffForEdgeEffects/binSize);
+	const delta = adjustedCutoffForEdgeEffects/nbins;
 
 	// Create the infinite slab
-	const slab = new Slab(cutoffDistance, areNanoclusters);
+	const slab = new Slab(adjustedCutoffForEdgeEffects, areNanoclusters);
 
 	// Compute cell volume
 	const cellVolume = getCellVolume(basis, areNanoclusters);
 
 	// Initialize the fingerprint histogram
 	const fp = new UpperTriangularMatrix(nbins);
+	fp.initSmoothingMatrix(peakWidth, delta, 9, 1e-6);
 	const computeFP = setupComputeFP(params, natoms, cellVolume, delta, fp);
 
 	// Compute the fingerprint
-	slab.computeVectorPairs(basis, natoms, positions, computeFP);
+	slab.computeVectorPairs(basis, natoms, positions, cutoffDistance, computeFP);
 	const fingerprint = fp.getVector();
 
 	// const fd = fs.openSync("fingerprint.txt", "w");

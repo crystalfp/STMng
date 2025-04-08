@@ -469,7 +469,7 @@ const showEnergyLandscape = (): void => {
 
   <v-row class="mr-2">
     <v-number-input v-model="peakWidth" :precision="2"
-                    label="Peak width" :min="0.01" :step="0.01" class="mr-2 ml-2" />
+                    label="Peak width" :min="0" :step="0.01" class="mr-2 ml-2" />
     <v-number-input v-model="binSize" :precision="2"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
