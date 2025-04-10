@@ -30,6 +30,11 @@ export class DrawPolyhedraRenderer {
 		polygonOffsetFactor: 1
 	});
 
+	/**
+	 * Create the renderer
+	 *
+	 * @param id - The node ID
+	 */
 	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects

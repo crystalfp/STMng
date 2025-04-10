@@ -36,6 +36,7 @@ import {Trajectories} from "../nodes/Trajectories";
 import {Viewer3D} from "../nodes/Viewer3D";
 import {DiffractionPattern} from "../nodes/DiffractionPattern";
 import {StructureBackbone} from "../nodes/StructureBackbone";
+import {SliceStructure} from "../nodes/SliceStructure";
 
 /**
  * Manage everything related to the loaded project
@@ -77,6 +78,8 @@ class ProjectManager {
 									   idPrefix: "polyhedra", ui: "DrawPolyhedraCtrl"},
 		{type: "interpolate-volume",   in: true,  out: true,  graphic: "none", handler: InterpolateVolume,
 									   idPrefix: "smooth",    ui: "InterpolateVolumeCtrl"},
+		{type: "slice-structure",      in: true,  out: true,  graphic: "out", handler: SliceStructure,
+									   idPrefix: "smooth",    ui: "SliceStructureCtrl"},
 		{type: "measures",             in: true,  out: false, graphic: "out",  handler: Measures,
 									   idPrefix: "measure",   ui: "MeasuresCtrl"},
 		{type: "structure-writer",     in: true,  out: false, graphic: "none", handler: StructureWriter,

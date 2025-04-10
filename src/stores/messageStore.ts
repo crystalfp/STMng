@@ -30,6 +30,8 @@ interface MessageState {
     structureWriter: string;
 	/** Messages for the fingerprints node */
 	fingerprints: string;
+	/** Messages for the slice structure node */
+	slicer: string;
 	/** Messages for the capture media node */
 	captureMedia: {
 		/** Take snapshot message type */

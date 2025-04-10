@@ -33,6 +33,9 @@ export const showAlertMessage = (text: string, node?: string): void => {
 		case "fingerprints":
 			messageStore.fingerprints = text;
 			break;
+		case "slicer":
+			messageStore.slicer = text;
+			break;
 	}
 	log.error(text);
 };
@@ -59,6 +62,9 @@ export const resetAlertMessage = (node: string): void => {
 		case "fingerprints":
 			messageStore.fingerprints = "";
 			break;
+		case "slicer":
+			messageStore.slicer = "";
+			break;
 	}
 };
 
@@ -80,6 +86,8 @@ export const hasAlertMessage = (node: string): boolean => {
 			return messageStore.structureWriter !== "";
 		case "fingerprints":
 			return messageStore.fingerprints !== "";
+		case "slicer":
+			return messageStore.slicer !== "";
 	}
 	return false;
 };
@@ -101,6 +109,8 @@ export const getAlertMessage = (node: string): string => {
 			return messageStore.structureWriter;
 		case "fingerprints":
 			return messageStore.fingerprints;
+		case "slicer":
+			return messageStore.slicer;
 	}
 	return "?";
 };

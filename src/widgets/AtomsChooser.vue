@@ -9,7 +9,7 @@
 import {ref} from "vue";
 
 // > Properties
-const {disabled = false} = defineProps<{
+const {disabled = false, hide = []} = defineProps<{
 
     /** Title for the widget */
     title: string;
@@ -19,10 +19,21 @@ const {disabled = false} = defineProps<{
 
     /** Disable the component */
     disabled?: boolean;
+
+    /** Hide some of the buttons */
+    hide?: string[];
 }>();
 
 /** Returning kind of atom selection */
 const labelKind = defineModel<string>("kind");
+
+if(hide) {
+    if(!hide.includes("symbol")) labelKind.value = "symbol";
+    else if(!hide.includes("label")) labelKind.value = "label";
+    else if(!hide.includes("index")) labelKind.value = "index";
+    else if(!hide.includes("all")) labelKind.value = "all";
+}
+else labelKind.value = "symbol";
 
 /** Returning selector string */
 const atomsSelector = defineModel<string>("selector");
@@ -30,6 +41,16 @@ const atomsSelector = defineModel<string>("selector");
 const atomsSelectorBase = ref(atomsSelector.value);
 const getSelector = (): void => {
     atomsSelector.value = atomsSelectorBase.value ?? "";
+};
+
+/**
+ * Check if a button should be hidden
+ *
+ * @param name - Name of the button to check
+ * @returns True if the button is not hidden
+ */
+const notHidden = (name: string): boolean => {
+    return !hide?.includes(name);
 };
 
 </script>
@@ -42,10 +63,10 @@ const getSelector = (): void => {
   </v-col>
   <v-col cols="12" class="pa-0 mb-4">
     <v-btn-toggle v-model="labelKind" mandatory :disabled>
-      <v-btn value="symbol">Symbol</v-btn>
-      <v-btn value="label">Label</v-btn>
-      <v-btn value="index">Index</v-btn>
-      <v-btn value="all">All</v-btn>
+      <v-btn v-if="notHidden('symbol')" value="symbol">Symbol</v-btn>
+      <v-btn v-if="notHidden('label')" value="label">Label</v-btn>
+      <v-btn v-if="notHidden('index')" value="index">Index</v-btn>
+      <v-btn v-if="notHidden('all')" value="all">All</v-btn>
     </v-btn-toggle>
   </v-col>
   <v-col cols="12" class="pa-0">

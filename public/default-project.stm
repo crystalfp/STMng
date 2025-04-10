@@ -5,6 +5,7 @@
     "unit":      {"label": "Unit Cell",          "type": "draw-unit-cell",       "in": "symmetry"},
     "bonds":     {"label": "Bonds",              "type": "compute-bonds",        "in": "unit"},
     "draw":      {"label": "Draw structure",     "type": "draw-structure",       "in": "bonds"},
+    "slice":     {"label": "Slice structure",    "type": "slice-structure",      "in": "bonds"},
     "backbone":  {"label": "Structure backbone", "type": "structure-backbone",   "in": "symmetry"},
     "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "bonds"},
     "polyhedra": {"label": "Polyhedra",          "type": "draw-polyhedra",       "in": "bonds"},
