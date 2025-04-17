@@ -10,6 +10,7 @@ import type {BasisType, PositionType} from "@/types";
 
 /**
  * Compute unit cell vertices coordinates
+ * Ordered: (below) 0-1-2-3 (above) 4-5-6-7
  *
  * @param orig - Cell origin
  * @param basis - Basis vectors

@@ -6,6 +6,9 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2025-04-10
  */
+import {Group, SphereGeometry, MeshLambertMaterial, DoubleSide,
+		Mesh, BufferGeometry, Float32BufferAttribute} from "three";
+import {sm} from "@/services/SceneManager";
 
 /**
  * Renderer for polyhedra graphical output
@@ -13,7 +16,13 @@
 export class SliceStructureRenderer {
 
 	private readonly name: string;
-	private readonly name2: string;
+	private readonly group: Group = new Group();
+	private readonly material = new MeshLambertMaterial({
+		color: "#FFFFFF",
+		opacity: 0.5,
+		side: DoubleSide,
+		transparent: true
+	});
 
 	/**
 	 * Create the renderer
@@ -24,13 +33,68 @@ export class SliceStructureRenderer {
 
 		// Prepare the names of the various graphical objects
 		this.name = "SliceStructure-" + id;
-		this.name2 = "SliceStructure2-" + id;
+		this.group.name = this.name;
+		sm.clearAndAddGroup(this.group);
+		sm.clearGroup(this.name);
 	}
 
-	drawSphere(center: number[], radius: number): void {
-		// TBD Implementation for drawing a sphere
-		console.log(`Drawing sphere at ${center.join(", ")} with radius ${radius}`);
-		void this.name;
-		void this.name2;
+	/**
+	 * Render spheres
+	 *
+	 * @param centers - List of center coordinates of the various spheres
+	 * @param radius - Radius of the spheres
+	 * @param visible - Visibility of the spheres
+	 */
+	drawSpheres(centers: number[], radius: number, visible: boolean): void {
+
+		sm.clearGroup(this.name);
+		if(centers.length < 3) return;
+
+		for(let i=0; i < centers.length; i += 3) {
+			const sphere = new Mesh(new SphereGeometry(radius, 32, 32), this.material);
+			sphere.position.set(centers[i], centers[i+1], centers[i+2]);
+			this.group.add(sphere);
+		}
+		this.group.visible = visible;
+		sm.modified();
+	}
+
+	/**
+	 * Draw the polygon intersection of the plane with the unit cell
+	 *
+	 * @param vertices - Vertices of the polygon intersection of the plane with the unit cell
+	 * @param visible - Visibility of the plane
+	 * @param doNotClear - Don't clear the existing plane before adding this one
+	 */
+	drawIntersectedPlane(vertices: number[], visible: boolean, doNotClear=false): void {
+
+		if(!doNotClear) sm.clearGroup(this.name);
+		const nvertices = vertices.length/3;
+		if(nvertices < 3) return;
+
+		const indices = [];
+		for(let i=2; i < nvertices; ++i) {
+			indices.push(0, i-1, i);
+		}
+
+		const geometry = new BufferGeometry();
+		geometry.setIndex(indices);
+		geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+
+		const polygon = new Mesh(geometry, this.material);
+		this.group.add(polygon);
+		this.group.visible = visible;
+		sm.modified();
+	}
+
+	/**
+	 * Set visibility
+	 *
+	 * @param visible - Visibility of the group
+	 */
+	setVisibility(visible: boolean): void {
+
+		this.group.visible = visible;
+		sm.modified();
 	}
 }

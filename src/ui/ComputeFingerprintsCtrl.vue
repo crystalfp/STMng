@@ -425,11 +425,18 @@ const showEnergyLandscape = (): void => {
 <v-container class="container">
   <v-label class="separator-title first-title mt-n1">Accumulated structures</v-label>
 
-  <v-row class="mt-0 mb-2 ml-0 mr-2">
-    <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
-    <v-spacer />
-    <v-btn @click="resetAccumulator">Reset</v-btn>
-  </v-row>
+  <div class="load-grid mr-2">
+    <div class="grid-tr">
+      <v-btn @click="fingerprintsAccumulate=true"
+             :disabled="countAccumulated!==0" class="w-100">Load one</v-btn>
+    </div>
+    <div class="grid-bl">
+      <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
+    </div>
+    <div class="grid-br">
+      <v-btn :disabled="countAccumulated===0" @click="resetAccumulator" class="w-100">Reset</v-btn>
+    </div>
+  </div>
 
   <v-label class="separator-title">Filter structures</v-label>
 
@@ -563,3 +570,32 @@ const showEnergyLandscape = (): void => {
   <error-alert kind="fingerprints" />
 </v-container>
 </template>
+
+<style scoped>
+.load-grid {
+  display: grid;
+  gap: 10px 0;
+  grid-auto-flow: row;
+  grid-template:
+    ".  bb" 1fr
+    "aa cc" 1fr / 0.65fr 0.35fr;
+}
+
+.grid-tr {
+  grid-area: bb;
+  display: flex;
+  justify-content: end;
+}
+
+.grid-bl {
+  grid-area: aa;
+  display: flex;
+  align-items: center;
+}
+
+.grid-br {
+  grid-area: cc;
+  display: flex;
+  justify-content: end;
+}
+</style>

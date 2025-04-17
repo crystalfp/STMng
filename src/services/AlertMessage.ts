@@ -15,7 +15,7 @@ import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
  * @param text - The error message
  * @param node - Node on which the message should be shown. If missing simply log the message
  */
-export const showAlertMessage = (text: string, node?: string): void => {
+export const showAlertMessage = (text: string, node: string): void => {
 
 	const messageStore = useMessageStore();
 	messageStore.system.message = text;

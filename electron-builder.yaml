@@ -29,7 +29,7 @@ linux:
   target:
   - AppImage
   extraFiles:
-    - from: build/Release/libsymspg.so.2.3.2
+    - from: build/Release/libsymspg.so.2.5.0
       to: ./libsymspg.so.2
 mac:
   artifactName: "${productName}_${version}.${ext}"

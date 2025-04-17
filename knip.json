@@ -29,5 +29,6 @@
     "@rollup/plugin-terser",
     "@rollup/plugin-typescript"
   ],
-  "includeEntryExports": true
+  "includeEntryExports": true,
+  "ignore": ["**/KDtree.d.ts"]
 }

@@ -13,6 +13,7 @@ import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import ErrorAlert from "@/widgets/ErrorAlert.vue";
 import {SliceStructureRenderer} from "@/renderers/SliceStructureRenderer";
+import type {CtrlParams} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -27,8 +28,9 @@ const {id, label} = defineProps<{
 // > Initialization
 const enableSlicer = ref(false);
 const showSlicer = ref(false);
-const sliceOutside = ref(false);
+const sliceInside = ref(false);
 const mode = ref("plane");
+const optimizing = ref(false);
 
 /** Sphere cut */
 const selectorKind = ref("symbol");
@@ -54,36 +56,152 @@ const millerK = ref(0);
 const showMillerK = ref(0);
 const millerL = ref(0);
 const showMillerL = ref(0);
+const millerPlaneOffset = ref(0);
+const showMillerPlaneOffset = ref(0);
+const areaEnergy = ref(0);
 
-/** Slab cut */
+/** Slab cut (plane cut plus these) */
 const thickness = ref(1);
 const showThickness = ref(1);
 
 // > Initialize ui
+resetAlertMessage("slicer");
+
 askNode(id, "init")
     .then((params) => {
 
 		enableSlicer.value = params.enableSlicer as boolean ?? false;
+		showSlicer.value = params.showSlicer as boolean ?? false;
+		sliceInside.value = params.sliceInside as boolean ?? false;
 		mode.value = params.mode as string ?? "plane";
+        parallelA.value = params.parallelA as boolean ?? false;
+        percentA.value = params.percentA as number ?? 50;
+        parallelB.value = params.parallelB as boolean ?? false;
+        percentB.value = params.percentB as number ?? 50;
+        parallelC.value = params.parallelC as boolean ?? false;
+        percentC.value = params.percentC as number ?? 50;
+        millerH.value = params.millerH as number ?? 1;
+        millerK.value = params.millerK as number ?? 0;
+        millerL.value = params.millerL as number ?? 0;
+        millerPlaneOffset.value = params.millerPlaneOffset as number ?? 0;
         selectorKind.value = params.selectorKind as string ?? "symbol";
 		atomsSelector.value = params.atomsSelector as string ?? "";
-    })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+        sphereRadius.value = params.sphereRadius as number ?? 1;
+        thickness.value = params.thickness as number ?? 1;
 
-resetAlertMessage("slicer");
+        showPercentA.value = percentA.value;
+        showPercentB.value = percentB.value;
+        showPercentC.value = percentC.value;
+        showMillerH.value = millerH.value;
+        showMillerK.value = millerK.value;
+        showMillerL.value = millerL.value;
+        showMillerPlaneOffset.value = millerPlaneOffset.value;
+        showSphereRadius.value = sphereRadius.value;
+        showThickness.value = thickness.value;
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "slicer"));
 
 // > Initialize graphical rendering
 const renderer = new SliceStructureRenderer(id);
-void renderer; // TBD
 
-watch([selectorKind, atomsSelector], () => {
+/** Change parameters for sphere slice */
+watch([enableSlicer, mode, selectorKind, atomsSelector, sphereRadius, sliceInside], () => {
 
-    sendToNode(id, "select", {
+    if(!enableSlicer.value || mode.value !== "sphere") return;
+
+    askNode(id, "sphere", {
         atomsSelector: atomsSelector.value,
-        selectorKind: selectorKind.value
-    });
+        selectorKind: selectorKind.value,
+        sphereRadius: sphereRadius.value,
+        sliceInside: sliceInside.value
+    })
+    .then((response: CtrlParams) => {
+        renderer.drawSpheres(response.renderingParams as number[] ?? [],
+                             sphereRadius.value,
+                             showSlicer.value);
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI sphere for ${label}: ${error.message}`, "slicer"));
 });
 
+/** Selected plane slice */
+watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
+       parallelC, percentC, sliceInside], () => {
+
+    if(!enableSlicer.value || mode.value !== "plane") return;
+
+    askNode(id, "plane", {
+        parallelA: parallelA.value,
+        percentA: percentA.value,
+        parallelB: parallelB.value,
+        percentB: percentB.value,
+        parallelC: parallelC.value,
+        percentC: percentC.value,
+        sliceInside: sliceInside.value
+    })
+    .then((response: CtrlParams) => {
+        renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI plane for ${label}: ${error.message}`, "slicer"));
+});
+
+/** Slice along a slab */
+watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
+       parallelC, percentC, thickness, sliceInside], () => {
+
+    if(!enableSlicer.value || mode.value !== "slab") return;
+
+    askNode(id, "slab", {
+        parallelA: parallelA.value,
+        percentA: percentA.value,
+        parallelB: parallelB.value,
+        percentB: percentB.value,
+        parallelC: parallelC.value,
+        percentC: percentC.value,
+        thickness: thickness.value,
+        sliceInside: sliceInside.value
+    })
+    .then((response) => {
+        renderer.drawIntersectedPlane(response.intersections1 as number[], showSlicer.value);
+        renderer.drawIntersectedPlane(response.intersections2 as number[], showSlicer.value, true);
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI slab for ${label}: ${error.message}`, "slicer"));
+});
+
+/** Slice along a Miller plane */
+watch([enableSlicer, mode, millerH, millerK, millerL, millerPlaneOffset, sliceInside], () => {
+
+    if(!enableSlicer.value || mode.value !== "miller") return;
+
+    if(!optimizing.value) areaEnergy.value = 0;
+
+    askNode(id, "miller", {
+        millerH: millerH.value,
+        millerK: millerK.value,
+        millerL: millerL.value,
+        millerPlaneOffset: millerPlaneOffset.value,
+        sliceInside: sliceInside.value
+    })
+    .then((response: CtrlParams) => {
+        renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
+    })
+    .catch((error: Error) => showAlertMessage(`Error from UI Miller plane for ${label}: ${error.message}`,
+        "slicer"));
+});
+
+/** Set the other parameters */
+watch([enableSlicer, showSlicer, mode], () => {
+
+    sendToNode(id, "set", {
+        enableSlicer: enableSlicer.value,
+        showSlicer: showSlicer.value,
+        mode: mode.value
+    });
+    renderer.setVisibility(showSlicer.value);
+});
+
+/**
+ * Reset parameters to sane default
+ */
 const resetParameters = (): void => {
 
     parallelA.value = false;
@@ -102,6 +220,8 @@ const resetParameters = (): void => {
     showMillerK.value = 0;
     millerL.value = 0;
     showMillerL.value = 0;
+    millerPlaneOffset.value = 0;
+    showMillerPlaneOffset.value = 0;
 
     sphereRadius.value = 1;
     showSphereRadius.value = 1;
@@ -110,43 +230,45 @@ const resetParameters = (): void => {
     showThickness.value = 1;
 };
 
+/** Check parameters validity */
 watchEffect(() => {
 
     if(parallelA.value && parallelB.value && parallelC.value) {
-      showAlertMessage("Only one or two parallel directions can be selected", "slicer");
+        showAlertMessage("Only one or two parallel directions can be selected", "slicer");
     }
     else if(percentA.value === 0 && percentB.value === 0 && percentC.value === 0) {
-      showAlertMessage("At least one direction must be selected", "slicer");
+        showAlertMessage("At least one direction must be selected", "slicer");
     }
     else if(millerH.value === 0 && millerK.value === 0 && millerL.value === 0) {
-      showAlertMessage("At least one miller index must be selected", "slicer");
+        showAlertMessage("At least one miller index must be selected", "slicer");
     }
     else if(sphereRadius.value <= 0) {
-      showAlertMessage("Sphere radius must be greater than zero", "slicer");
+        showAlertMessage("Sphere radius must be greater than zero", "slicer");
     }
     else if(thickness.value <= 0) {
-      showAlertMessage("Slab thickness must be greater than zero", "slicer");
+        showAlertMessage("Slab thickness must be greater than zero", "slicer");
     }
 });
 
-/*    sendToNode(id, "set", {
-        enableSlicer: enableSlicer.value,
-        showSlicer: showSlicer.value,
-        sliceOutside: sliceOutside.value,
-        mode: mode.value,
-        parallelA: parallelA.value,
-        percentA: percentA.value,
-        parallelB: parallelB.value,
-        percentB: percentB.value,
-        parallelC: parallelC.value,
-        percentC: percentC.value,
-        millerH: millerH.value,
-        millerK: millerK.value,
-        millerL: millerL.value,
-        sphereRadius: sphereRadius.value,
-        thickness: thickness.value
-    });
-    */
+/**
+ * Start optimizing Miller plane offset to minimize the area energy
+ */
+const optimizeOffset = (): void => {
+
+    optimizing.value = true;
+
+    askNode(id, "offset")
+        .then((response: CtrlParams) => {
+            millerPlaneOffset.value = response.millerPlaneOffset as number ?? 0;
+            renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
+            areaEnergy.value = response.minEnergy as number ?? 0;
+
+            showMillerPlaneOffset.value = millerPlaneOffset.value;
+            setTimeout(() => {optimizing.value = false;}, 100);
+
+        })
+        .catch((error: Error) => showSystemAlert(`Error from Miller plane offset for ${label}: ${error.message}`));
+};
 
 </script>
 
@@ -155,7 +277,7 @@ watchEffect(() => {
 <v-container class="container">
   <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-2 ml-3" />
   <v-switch v-model="showSlicer" label="Show slicer" class="ml-3" />
-  <v-switch v-model="sliceOutside" label="Slice outside" class="mb-4 ml-3" />
+  <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />
   <v-row class="mb-2">
     <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
       <v-label text="Mode" class="no-select" />
@@ -185,7 +307,7 @@ watchEffect(() => {
                           v-model:raw="showPercentC" label-width="5rem"
                           :label="`c (${showPercentC.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
-    <slider-with-steppers v-if="mode==='slab'" v-model="thickness" class="mt-2"
+    <slider-with-steppers v-if="mode==='slab'" v-model="thickness" class="mt-6"
                           v-model:raw="showThickness" label-width="8rem"
                           :label="`Thickness (${showThickness.toFixed(1)})`"
                           :min="0.1" :max="10" :step="0.1" />
@@ -203,10 +325,18 @@ watchEffect(() => {
                           v-model:raw="showMillerL" label-width="3rem"
                           :label="`l (${showMillerL.toFixed(0)})`"
                           :min="-9" :max="9" :step="1" />
+    <v-btn block class="mt-4" @click="optimizeOffset">Optimize offset</v-btn>
+    <v-label v-if="areaEnergy > 0" class="result-label mt-4 ml-2">
+        {{ `Area energy: ${areaEnergy.toFixed(3)}` }}
+    </v-label>
+    <slider-with-steppers v-model="millerPlaneOffset"
+                          v-model:raw="showMillerPlaneOffset" label-width="6rem"
+                          :label="`offset (${showMillerPlaneOffset.toFixed(1)})`"
+                          :min="-10" :max="10" :step="0.1" class="mt-3 mb-4"/>
   </v-container>
   <v-container v-else-if="mode==='sphere'" class="pa-0">
     <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
-                      class="ml-2 mb-6" :hide="['symbol', 'all']"
+                      class="ml-2 mb-6" :hide="['all']"
                       title="Select center atom by" placeholder="Central atom selector" />
     <slider-with-steppers v-model="sphereRadius"
                           v-model:raw="showSphereRadius" label-width="7rem"
