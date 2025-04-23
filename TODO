@@ -21,7 +21,7 @@ Functionalities:
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
-  ☐ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view.
+  ✔ Enabling selection of a slab or block of the structure, and enabling deletion of atoms from view. @done(2025-04-17 17:24)
   ☐ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4.
 
 Global analysis:
@@ -43,7 +43,6 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
-  ☐ To move something inside the scene try <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>
   ☐ To visualize the project try <https://vueflow.dev/guide/>
   ☐ For the charts <https://unovis.dev/>
 

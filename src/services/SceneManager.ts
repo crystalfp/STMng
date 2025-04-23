@@ -6,8 +6,8 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {Group, Scene, type Object3D, type Mesh, type Material,
-		DirectionalLight, AmbientLight, Color} from "three";
+import {Group, type Material, Mesh, Scene, type Object3D, type InstancedMesh, MeshBasicMaterial,
+		DirectionalLight, AmbientLight, Color, Matrix4} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
@@ -343,13 +343,40 @@ class SceneManager {
 		const structure = new Group();
 		const atoms = SceneManager.scene.getObjectByName("Atoms");
 		if(atoms) {
-			const atoms2 = atoms.clone(true);
-			structure.add(atoms2);
+
+			atoms.traverse((object) => {
+				if(object.type === "Mesh") {
+					const im = object as InstancedMesh;
+					const ImGeometry = im.geometry;
+					for(let idx = 0; idx < im.count; idx++) {
+						const matrix = new Matrix4();
+						im.getMatrixAt(idx, matrix);
+						const geometry = ImGeometry.clone();
+						geometry.applyMatrix4(matrix);
+						const material = new MeshBasicMaterial({color: 0xFFFF00});
+						const sphere = new Mesh(geometry, material);
+						structure.add(sphere);
+					}
+				}
+			});
 		}
 		const bonds = SceneManager.scene.getObjectByName("Bonds");
 		if(bonds) {
-			const bonds2 = bonds.clone(true);
-			structure.add(bonds2);
+			bonds.traverse((object) => {
+				if(object.type === "Mesh") {
+					const im = object as InstancedMesh;
+					const ImGeometry = im.geometry;
+					for(let idx = 0; idx < im.count; idx++) {
+						const matrix = new Matrix4();
+						im.getMatrixAt(idx, matrix);
+						const geometry = ImGeometry.clone();
+						geometry.applyMatrix4(matrix);
+						const material = new MeshBasicMaterial({color: 0xFFFF00});
+						const cylinder = new Mesh(geometry, material);
+						structure.add(cylinder);
+					}
+				}
+			});
 		}
 
 		// Parse the structure and generate the STL encoded output

@@ -20,7 +20,8 @@ export const createProjectEditor = (projectName: string): void => {
 
 	createSecondaryWindowWithRetry({
 		routerPath: "/editor",
-		width: 1100,
+		width: 1800,
+		// width: 1100,
 		height: 700,
 		title,
 		data: pm.projectGraphForEditor()

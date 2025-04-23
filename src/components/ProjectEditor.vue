@@ -7,12 +7,15 @@
  * @since 2025-03-10
  */
 import {computed, ref} from "vue";
+import {VueFlow, type Node, type Edge, Position, useVueFlow, ConnectionMode, ConnectionLineType,
+        Panel, MarkerType, type GraphEdge, type Connection} from "@vue-flow/core";
 import {VueDraggable, type SortableEvent} from "vue-draggable-plus";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
 import type {ClientProjectInfo, OneNodeInfo, ProjectInfo} from "@/types/NodeInfo";
 import type {ProjectGraph} from "@/types";
+import SpecialNode from "./SpecialNode.vue";
 
 /** The loaded project graph */
 let graph: ClientProjectInfo;
@@ -54,11 +57,103 @@ const disableNodeChange = ref(true);
 /** All the available nodes */
 const allAvailableNodes = ref<OneNodeInfo[]>([]);
 
+// TEST Graph description
+/** The graph description for the Vue Flow graph editor */
+interface GraphFlowItem {
+
+	/** ID of the node */
+	id: string;
+
+    /** The label that appears on the node selector */
+    label: string;
+
+	/** Node id from which the node takes input. If none, it is the empty string */
+	in: string;
+
+    /** True if the node accepts inputs */
+    hasInput: boolean;
+
+	/** True if the node send a structure down the pipeline */
+	hasOutput: boolean;
+
+	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
+	graphic: "none" | "in" | "out";
+
+	/** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+	type: string;
+
+    /** Node position on the graph */
+    position: {x: number; y: number};
+}
+
+/** Graph node additional data */
+interface NodeData {
+    /** The label that appears on the node selector */
+    label: string;
+	/** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+    type: string;
+	/** Node id from which the node takes input. If none, it is the empty string */
+    in: string;
+    /** If generates or accepts graphical output */
+    graphic: string;
+}
+
+/** The graph in format accepted by the graph editor */
+const graphFlow = ref<GraphFlowItem[]>([]);
+
+// Spacing between nodes in the diagonal default layout
+const X_INCREMENT = 150;
+const Y_INCREMENT = 70;
+
+/**
+ * Format graph data for the editor
+ *
+ * @param projectInfo - Project data from the main process
+ */
+const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
+
+    let x = 5;
+    let y = 5;
+
+    graphFlow.value.length = 0;
+    for(const item in projectInfo.graph) {
+
+        const node = projectInfo.graph[item];
+
+        let hasOutput = false;
+        let hasInput = false;
+        let graphic: "none" | "in" | "out" = "none";
+        for(const all of projectInfo.allNodes) {
+            if(all.type === node.type) {
+                hasInput = all.in;
+                hasOutput = all.out;
+                graphic = all.graphic;
+                break;
+            }
+        }
+        graphFlow.value.push({
+            id: item,
+            label: node.label,
+            in: node.in,
+            hasInput,
+            hasOutput,
+            graphic,
+            type: node.type,
+            position: {x, y}
+        });
+
+        x += X_INCREMENT;
+        y += Y_INCREMENT;
+    }
+};
+
 /** Receive the data and build the node lists */
 receiveInWindow((data) => {
 
     const info = JSON.parse(data) as ProjectInfo;
     graph = info.graph;
+
+    prepareGraphFlow(info);
 
     allAvailableNodes.value = info.allNodes;
 
@@ -308,14 +403,220 @@ const nodeChanged = (): void => {
     disableNodeChange.value = false;
 };
 
+// TEST VueFlow
+const {onNodesChange, onEdgesChange, updateNode, findNode, findEdge, updateEdge} = useVueFlow();
+const needPanel = ref(false);
+const nodeInfo = ref<{label: string; value: string}[]>([]);
+
+/** Listen to node selection */
+let x = 0;
+let y = 0;
+onNodesChange((changes) => {
+
+    let showPanel = 0;
+    for(const change of changes) {
+
+        if(change.type === "position") {
+            if(change.position) {
+                x = change.position.x;
+                y = change.position.y;
+            }
+            else {
+                for(const node of graphFlow.value) {
+                    if(node.id === change.id) {
+                        node.position.x = x;
+                        node.position.y = y;
+                    }
+                }
+            }
+        }
+        else if(change.type === "select") {
+            if(change.selected) {
+
+                const node = findNode<NodeData>(change.id);
+                nodeInfo.value.length = 0;
+                if(node) {
+                    nodeInfo.value.push(
+                        {label: "Node id:",    value: change.id},
+                        {label: "Label:",      value: node.data.label},
+                        {label: "Node type:",  value: node.data.type},
+                        {label: "Input from:", value: node.data.in},
+                        {label: "Graphics:",   value: node.data.graphic}
+                    );
+                }
+                updateNode(change.id, {style: {backgroundColor: "#BFBF00"}});
+                showPanel += 1;
+            }
+            else {
+                updateNode(change.id, {style: {backgroundColor: "white"}});
+                showPanel += 2;
+            }
+        }
+    }
+    if(showPanel > 0) needPanel.value = showPanel !== 2;
+});
+
+onEdgesChange((changes) => {
+    console.log("EDGE", changes);
+    for(const change of changes) {
+        if(change.type === "select") {
+            const edge = findEdge(change.id);
+            // const {style} = edge;
+            // edge!.style!.stroke = change.selected ? "red" : "#B1B1B7";
+            // console.log(edge);
+            // updateEdge(edge)
+            // for(const edge of)
+            edge!.class = change.selected ? "edge-selected" : "";
+        }
+    }
+});
+
+// These are our nodes
+const nodes = computed<Node<NodeData>[]>(() => {
+
+    const nodes: Node<NodeData>[] = [];
+    for(const graphNode of graphFlow.value) {
+
+        let type = "default";
+        if(graphNode.hasInput && !graphNode.hasOutput) type = "output";
+        else if(!graphNode.hasInput && graphNode.hasOutput) type = "input";
+        else if(!graphNode.hasInput && !graphNode.hasOutput) type = "none";
+
+        const out: Node<NodeData> = {
+            id: graphNode.id,
+            position: graphNode.position,
+            data: {
+                label: graphNode.label,
+                graphic: graphNode.graphic,
+                type: graphNode.type,
+                in: graphNode.in
+            },
+            type,
+            targetPosition: Position.Left,
+            sourcePosition: Position.Right,
+            width: 100
+        };
+        nodes.push(out);
+    }
+    return nodes;
+});
+
+// These are our edges
+const edges = computed<Edge[]>(() => {
+
+    const edges: Edge[] = [];
+    for(const graphNode of graphFlow.value) {
+
+        if(graphNode.in) {
+            const out: Edge = {
+                id: `${graphNode.in}->${graphNode.id}`,
+                source: graphNode.in,
+                target: graphNode.id,
+                markerEnd: MarkerType.ArrowClosed,
+                type: ConnectionLineType.SmoothStep,
+                style: {strokeWidth: 2, filter: "drop-shadow(1px 1px 1px black) drop-shadow(1px -1px 1px black) drop-shadow(-1px 1px 1px black) drop-shadow(-1px -1px 1px black)"}
+
+            };
+            edges.push(out);
+        }
+    }
+    return edges;
+});
+
+/** Type of the onEdgeUpdate parameters */
+interface EdgeUpdateParams {
+    /** Edge before update */
+    edge: GraphEdge;
+    /** Updated connection */
+    connection: Connection;
+}
+
+/**
+ * Handler for the edge move from a terminal to another
+ *
+ * @param params - Parameters from the edge updated call
+ */
+const onEdgeUpdate = (params: EdgeUpdateParams): void => {
+
+    const {edge, connection} = params;
+    console.log("ONEDGEUPD", edge, connection);
+    updateEdge(edge as GraphEdge, connection as Connection);
+};
+
+/**
+ * Create a connection
+ *
+ * @param params - Connection created
+ */
+const onConnect = (params: Connection): void => {
+
+    let nodeSource: GraphFlowItem | undefined;
+    let nodeTarget: GraphFlowItem | undefined;
+    for(const graphNode of graphFlow.value) {
+        if(graphNode.id === params.source) {
+            nodeSource = graphNode;
+        }
+        else if(graphNode.id === params.target) {
+            nodeTarget = graphNode;
+        }
+    }
+    if(!nodeSource || !nodeTarget) return;
+
+    nodeTarget.in = nodeTarget.in === params.source ? "" : params.source;
+};
+
+interface GraphNodeNew {
+    label: string;
+    type: string;
+    x: number;
+    y: number;
+    in?: string;
+}
+type ProjectGraphNew = Record<string, GraphNodeNew>;
+
+const saveFlowGraph = (): void => {
+
+    const project: ProjectGraphNew = {};
+    for(const node of graphFlow.value) {
+        project[node.id] = {
+            label: node.label,
+            type: node.type,
+            x: Math.round(node.position.x),
+            y: Math.round(node.position.y)
+        };
+        if(node.in !== "") project[node.id].in = node.in;
+        project[node.id].x = Math.round(node.position.x);
+        project[node.id].y = Math.round(node.position.y);
+    }
+
+    console.log(JSON.stringify(project, undefined, 2));
+};
+
+const handleDrop = (event: DragEvent): void => {
+    const nodeType = event.dataTransfer?.getData("node");
+    console.log("Handle drop", nodeType);
+};
+const handleDragOver = (event: DragEvent): void => {
+    console.log("Handle drag over", event);
+    event.preventDefault();
+
+  if(event.dataTransfer) {
+    event.dataTransfer.dropEffect = "move";
+  }
+};
+
+const handleDragStart = (event: DragEvent, nodeType: string): void => {
+    console.log("Drag start", event, nodeType);
+    event.dataTransfer?.setData("node", nodeType);
+};
 </script>
 
 
 <template>
 <v-app :theme>
   <div class="program-editor-container">
-    <div class="tl"><v-label class="column-title">In use</v-label></div>
-    <div class="tc"><v-label class="column-title">Available</v-label></div>
+    <div class="tl"><v-label class="column-title">Current project</v-label></div>
+    <div class="tc"><v-label class="column-title">Available nodes</v-label></div>
     <div class="tr"><v-label class="column-title">Node info</v-label></div>
     <div class="cl">
       <vue-draggable
@@ -348,6 +649,8 @@ const nodeChanged = (): void => {
           {{ item.name }}
         </div>
       </vue-draggable>
+      <div draggable
+      @dragstart="handleDragStart($event, 'someNode')">Test</div>
     </div>
     <div v-if="infoContent.length > 0" class="cr">
       <v-table class="pa-3 mr-5" density="comfortable">
@@ -371,7 +674,38 @@ const nodeChanged = (): void => {
         </v-container>
       </v-container>
     </div>
+    <div class="vv" @drop="handleDrop"
+                    @dragover="handleDragOver">
+      <!-- TBD Graph -->
+      <VueFlow :nodes :edges fit-view-on-init
+                edges-updatable
+                :connection-mode="ConnectionMode.Strict"
+                :connection-radius="30"
+                @edge-update="onEdgeUpdate"
+                @connect="onConnect">
+        <Panel v-if="needPanel" position="top-right">
+          <table class="w-100">
+            <tr v-for="i of nodeInfo" :key="i.label">
+              <td style="width: 30%">{{ i.label }}</td>
+              <td>{{ i.value }}</td>
+            </tr>
+          </table>
+        </Panel>
+        <!-- bind your custom node type to a component by using slots,
+             slot names are always `node-<type>` auto-connect-->
+        <template #node-none="specialNodeProps">
+          <SpecialNode v-bind="specialNodeProps" />
+        </template>
+
+        <!-- bind your custom edge type to a component by using slots,
+             slot names are always `edge-<type>`
+        <template #edge-special="specialEdgeProps">
+          <SpecialEdge v-bind="specialEdgeProps" />
+        </template> -->
+      </VueFlow>
+    </div>
     <div class="bb button-strip pr-7">
+      <v-btn @click="saveFlowGraph">Test save graph</v-btn>
       <v-btn :disabled="!projectModified" @click="saveModifiedProject">Save modified project</v-btn>
       <v-btn v-focus @click="closeWindow('/editor')">Close</v-btn>
     </div>
@@ -380,16 +714,21 @@ const nodeChanged = (): void => {
 </template>
 
 
-<style scoped>
+<style>
+/* these are necessary styles for vue flow */
+@import "@vue-flow/core/dist/style.css";
+
+/* this contains the default theme, these are optional styles */
+@import "@vue-flow/core/dist/theme-default.css";
 
 .program-editor-container {
   display: grid;
   gap: 0 10px;
   grid-auto-flow: row;
   grid-template:
-    "tl tc tr" 3rem
-    "cl cc cr" 1fr
-    "bb bb bb" auto / 300px 250px 1fr;
+    "tl tc tr vv" 3rem
+    "cl cc cr vv" 1fr
+    "bb bb bb bb" auto / 300px 250px 400px 1fr;
   width: 100vw;
   height: 100vh;
   padding: 10px 10px 10px 15px;
@@ -400,8 +739,9 @@ const nodeChanged = (): void => {
 .tr {grid-area: tr;}
 .cl {grid-area: cl; overflow-y: auto;}
 .cc {grid-area: cc; overflow-y: auto;}
-.cr {grid-area: cr; margin-right: 10px;}
+.cr {grid-area: cr; margin-right: 0;}
 .bb {grid-area: bb; padding: 10px 20px 0 0;}
+.vv {grid-area: vv; margin-right: 30px; border: 1px solid light-dark(#808080, #B3B3B3);}
 
 .ghost {
   background-color: #BFBF00CD;
@@ -415,5 +755,17 @@ const nodeChanged = (): void => {
   border: 1px solid transparent;
   user-select: none;
   cursor: move;
+}
+
+.vue-flow__panel {
+  background-color:#2d3748;
+  border-radius: 8px;
+  padding: 7px;
+  margin-right: 10px;
+  width: 350px;
+}
+
+.edge-selected {
+    stroke: red !important
 }
 </style>
