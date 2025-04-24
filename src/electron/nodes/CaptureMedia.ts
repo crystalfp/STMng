@@ -8,12 +8,13 @@
  * @since 2024-07-08
  */
 import {dialog, app} from "electron";
-import {writeFileSync, unlinkSync} from "node:fs";
+import {writeFileSync, unlinkSync, createWriteStream} from "node:fs";
 import path from "node:path";
 import {tmpNameSync} from "tmp";
 import {platform as osPlatform} from "node:os";
 import {fileURLToPath} from "node:url";
 import {execSync} from "node:child_process";
+import pdf from "pdfkit";
 
 import {NodeCore} from "../modules/NodeCore";
 import type {ChannelDefinition, CtrlParams} from "@/types";
@@ -51,10 +52,8 @@ export class CaptureView extends NodeCore {
 
 		const dataURI = params.dataURI as string;
 		if(!dataURI) return {payload: ""};
-
-		// Split the dataURI and extract the image format
-		const data = dataURI.split(",");
-		let format = data[0].replace(/data:image\/([^;]*);base64/, "$1"); // data:image/jpeg;base64
+		let format = params.format as string;
+		if(!["png", "jpeg", "pdf"].includes(format)) return {payload: ""};
 		if(format === "jpeg") format = "jpg";
 
 		// Select the save file
@@ -65,8 +64,26 @@ export class CaptureView extends NodeCore {
 		});
 		if(!filename) return {payload: ""};
 
+		if(format === "pdf") {
+			// console.log("PDF", filename, dataURI);
+			// const pdf = new jsPDF({
+			// 	orientation: "landscape",
+			// 	unit: "mm",
+			// 	format: "a4"
+			// });
+			// pdf.addImage(dataURI, "JPEG", 0, 0, 250, 180);
+			// pdf.save(filename.replaceAll("\\", "/"));
+			const doc = new pdf();
+			doc.pipe(createWriteStream(filename)); // write to PDF
+			doc.image(dataURI);
+			// finalize the PDF and end the stream
+			doc.end();
+			return {payload: filename};
+		}
+
 		// Save the image
 		try {
+			const data = dataURI.split(",");
 			writeFileSync(filename, Buffer.from(data[1], "base64"));
 			return {payload: filename};
 		}

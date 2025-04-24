@@ -316,9 +316,13 @@ onMounted(() => {
         if(controlStore.snapshot) {
 
             controlStore.snapshot = false;
-
-            const mimeType = `image/${configStore.camera.snapshotFormat}`;
-            askNode("SYSTEM", "snapshot", {dataURI: renderer.domElement.toDataURL(mimeType)})
+            let mimeTypeFormat = configStore.camera.snapshotFormat;
+            if(mimeTypeFormat === "pdf") mimeTypeFormat = "jpeg";
+            const mimeType = `image/${mimeTypeFormat}`;
+            askNode("SYSTEM", "snapshot", {
+                dataURI: renderer.domElement.toDataURL(mimeType),
+                format: configStore.camera.snapshotFormat
+            })
                 .then((response: CtrlParams) => {
                     if(response.error) throw Error(response.error as string);
                     if(response.payload === "") return;

@@ -1,13 +1,15 @@
 /**
- * Manage the scene to be show.
+ * Manage the scene to be shown.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-05
  */
-import {Group, type Material, Mesh, Scene, type Object3D, type InstancedMesh, MeshBasicMaterial,
-		DirectionalLight, AmbientLight, Color, Matrix4} from "three";
+import {Group, type Material, Mesh, Scene, type Object3D,
+		type InstancedMesh, MeshBasicMaterial,
+		DirectionalLight, AmbientLight, Color, Matrix4,
+		IcosahedronGeometry, CylinderGeometry} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
@@ -347,13 +349,12 @@ class SceneManager {
 			atoms.traverse((object) => {
 				if(object.type === "Mesh") {
 					const im = object as InstancedMesh;
-					const ImGeometry = im.geometry;
 					for(let idx = 0; idx < im.count; idx++) {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
-						const geometry = ImGeometry.clone();
+						const geometry = new IcosahedronGeometry(1, 18);
 						geometry.applyMatrix4(matrix);
-						const material = new MeshBasicMaterial({color: 0xFFFF00});
+						const material = new MeshBasicMaterial();
 						const sphere = new Mesh(geometry, material);
 						structure.add(sphere);
 					}
@@ -365,13 +366,14 @@ class SceneManager {
 			bonds.traverse((object) => {
 				if(object.type === "Mesh") {
 					const im = object as InstancedMesh;
-					const ImGeometry = im.geometry;
+					const ImGeometry = im.geometry as CylinderGeometry;
+					const radius = ImGeometry.parameters.radiusTop;
 					for(let idx = 0; idx < im.count; idx++) {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
-						const geometry = ImGeometry.clone();
+						const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, true);
 						geometry.applyMatrix4(matrix);
-						const material = new MeshBasicMaterial({color: 0xFFFF00});
+						const material = new MeshBasicMaterial();
 						const cylinder = new Mesh(geometry, material);
 						structure.add(cylinder);
 					}

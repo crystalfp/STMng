@@ -141,7 +141,7 @@ export interface Viewer3DState {
         /** Point where the camera points */
         lookAt: PositionType;
         /** Format of the screenshot */
-        snapshotFormat: "png" | "jpeg";
+        snapshotFormat: "png" | "jpeg" | "pdf";
         /** STL file format */
         stlFormat: "ascii" | "binary";
         /** Position of the camera */

@@ -107,7 +107,7 @@ const makeImage = (): void => {
         }
 
         const dataURI = canvas.toDataURL("image/png");
-        askNode("SYSTEM", "snapshot", {dataURI})
+        askNode("SYSTEM", "snapshot", {dataURI, format: "png"})
             .then((response) => {
 
                 if(!transparent.value) {

@@ -139,7 +139,7 @@ export class DrawStructureRenderer {
 	 * @param group - The output group where to add the bond
 	 */
 	private static addNormalBond(from: PositionType, to: PositionType,
-						  colorFrom: string, colorTo: string, group: Group): void {
+						  		 colorFrom: string, colorTo: string, group: Group): void {
 
 		const midX = (from[0]+to[0])/2;
 		const midY = (from[1]+to[1])/2;
@@ -303,7 +303,10 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					if(bond.type === 1) {
+						DrawStructureRenderer.addHBond(atomFrom.position,
+													   atomTo.position, this.bondsGroup);
+					}
 					else if(showBondsStrength) {
 
 						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;

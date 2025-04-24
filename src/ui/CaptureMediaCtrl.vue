@@ -27,12 +27,13 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
 
 <template>
 <v-container class="container">
-  <v-label class="mt-4 separator-title">Snapshot</v-label>
+  <v-label class="mt-n1 separator-title first-title">Snapshot</v-label>
   <v-row class="mt-4">
   <v-label class="pb-3 ml-3 mr-4 no-select">Format:</v-label>
   <v-btn-toggle v-model="configStore.camera.snapshotFormat" mandatory class="mb-3">
     <v-btn value="jpeg">JPEG</v-btn>
     <v-btn value="png">PNG</v-btn>
+    <v-btn value="pdf">PDF</v-btn>
   </v-btn-toggle>
   </v-row>
   <v-btn block class="mt-6" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
