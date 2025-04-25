@@ -317,9 +317,10 @@ onMounted(() => {
 
             controlStore.snapshot = false;
             let mimeTypeFormat = configStore.camera.snapshotFormat;
+            const channel = mimeTypeFormat === "pdf" ? "snapshotPDF" : "snapshot";
             if(mimeTypeFormat === "pdf") mimeTypeFormat = "jpeg";
             const mimeType = `image/${mimeTypeFormat}`;
-            askNode("SYSTEM", "snapshot", {
+            askNode("SYSTEM", channel, {
                 dataURI: renderer.domElement.toDataURL(mimeType),
                 format: configStore.camera.snapshotFormat
             })

@@ -7,14 +7,14 @@
  * @author Mario Valle "mvalle\@ikmail.com"
  * @since 2024-07-08
  */
-import {dialog, app} from "electron";
-import {writeFileSync, unlinkSync, createWriteStream} from "node:fs";
+import {dialog, app, BrowserWindow, type PrintToPDFOptions} from "electron";
+import {writeFileSync, unlinkSync} from "node:fs";
+import {writeFile} from "node:fs/promises";
 import path from "node:path";
 import {tmpNameSync} from "tmp";
 import {platform as osPlatform} from "node:os";
 import {fileURLToPath} from "node:url";
 import {execSync} from "node:child_process";
-import pdf from "pdfkit";
 
 import {NodeCore} from "../modules/NodeCore";
 import type {ChannelDefinition, CtrlParams} from "@/types";
@@ -22,9 +22,10 @@ import type {ChannelDefinition, CtrlParams} from "@/types";
 export class CaptureView extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "snapshot",	type: "invoke", 	callback: this.channelSnapshot.bind(this)},
-		{name: "movie",		type: "invoke", 	callback: this.channelMovie.bind(this)},
-		{name: "stl",		type: "invoke", 	callback: this.channelSTL.bind(this)},
+		{name: "snapshot",	  type: "invoke", 	   callback: this.channelSnapshot.bind(this)},
+		{name: "snapshotPDF", type: "invokeAsync", callback: this.channelSnapshotPDF.bind(this)},
+		{name: "movie",		  type: "invoke", 	   callback: this.channelMovie.bind(this)},
+		{name: "stl",		  type: "invoke", 	   callback: this.channelSTL.bind(this)},
 	];
 
 	constructor() {
@@ -53,7 +54,7 @@ export class CaptureView extends NodeCore {
 		const dataURI = params.dataURI as string;
 		if(!dataURI) return {payload: ""};
 		let format = params.format as string;
-		if(!["png", "jpeg", "pdf"].includes(format)) return {payload: ""};
+		if(!["png", "jpeg"].includes(format)) return {payload: ""};
 		if(format === "jpeg") format = "jpg";
 
 		// Select the save file
@@ -64,23 +65,6 @@ export class CaptureView extends NodeCore {
 		});
 		if(!filename) return {payload: ""};
 
-		if(format === "pdf") {
-			// console.log("PDF", filename, dataURI);
-			// const pdf = new jsPDF({
-			// 	orientation: "landscape",
-			// 	unit: "mm",
-			// 	format: "a4"
-			// });
-			// pdf.addImage(dataURI, "JPEG", 0, 0, 250, 180);
-			// pdf.save(filename.replaceAll("\\", "/"));
-			const doc = new pdf();
-			doc.pipe(createWriteStream(filename)); // write to PDF
-			doc.image(dataURI);
-			// finalize the PDF and end the stream
-			doc.end();
-			return {payload: filename};
-		}
-
 		// Save the image
 		try {
 			const data = dataURI.split(",");
@@ -90,6 +74,51 @@ export class CaptureView extends NodeCore {
 		catch(error) {
 			return {error: `Cannot save image file "${filename}". Error: ${(error as Error).message}`};
 		}
+	}
+
+	/**
+	 * Channel handler for taking a screenshot in PDF format
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelSnapshotPDF(params: CtrlParams): Promise<CtrlParams> {
+
+		const dataURI = params.dataURI as string;
+		if(!dataURI) return {payload: ""};
+		const format = params.format as string;
+		if(format !== "pdf") return {payload: ""};
+
+		// Select the save file
+		const filename = dialog.showSaveDialogSync({
+			title: "Save snapshot file",
+			defaultPath: `snapshot.${format}`,
+			filters: [{name: format, extensions: [format]}]
+		});
+		if(!filename) return {payload: ""};
+
+		// Open the browser in background
+		const options: PrintToPDFOptions = {
+			landscape: true,
+			scale: 1.4,
+			printBackground: false,
+			pageSize: "A4" as "A4" | "Letter"
+		};
+		const windowPDF = new BrowserWindow({show : false});
+		try {
+			await windowPDF.loadURL(dataURI);
+			const data = await windowPDF.webContents.printToPDF(options);
+			await writeFile(filename, data);
+			windowPDF.close();
+			windowPDF.destroy();
+		}
+		catch(error) {
+			windowPDF.close();
+			windowPDF.destroy();
+			return {error: `Cannot save PDF file "${filename}". Error: ${(error as Error).message}`};
+		}
+
+		return {payload: filename};
 	}
 
 	/**
