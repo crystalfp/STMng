@@ -20,7 +20,9 @@ const projectSchema = vObject({
 				vObject({
 					label: vPipe(vString(), vNonEmpty("Missing label")),
 					type: vPipe(vString(), vNonEmpty("Missing type")),
-					in: vOptional(vString())
+					in: vOptional(vString()),
+					x: vOptional(vNumber()),
+					y: vOptional(vNumber())
 				}),
 	),
 	currentId: vOptional(vPipe(vString(), vNonEmpty("Invalid currentId"))),

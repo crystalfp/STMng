@@ -15,9 +15,8 @@ import type {NodeCore} from "@/electron/modules/NodeCore";
  *  - "out": generates graphical output
  *  - "in": the viewer
  *  - "none": is pure computation
- * @notExported
  */
-type GraphicType = "none" | "in" | "out";
+export type GraphicType = "none" | "in" | "out";
 
 // > Project information to the client
 /** One UI module description */
@@ -40,6 +39,12 @@ export interface ClientProjectInfoItem {
 
 	/** Which kind of graphical object this node generates or consume */
 	graphic: GraphicType;
+
+    /** X position on the graph editor */
+	x?: number;
+
+	/** Y position on the graph editor */
+	y?: number;
 }
 
 /** Description of one available node */
@@ -55,7 +60,7 @@ export interface OneNodeInfo {
 	out: boolean;
 
 	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
-	graphic: "none" | "in" | "out";
+	graphic: GraphicType;
 
 	/** Prefix to automatically generate id by project editor */
 	idPrefix: string;

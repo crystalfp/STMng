@@ -109,7 +109,7 @@ export type LengthsAnglesType = [a: number, b: number, c: number,
 
 // > The project structure
 /**
- * Project node description
+ * Project node description in the file
  * @notExported
  */
 interface GraphNode {
@@ -122,6 +122,12 @@ interface GraphNode {
 
     /** Comma separated list of node ids from which the node takes inputs */
 	in?: string;
+
+    /** X position on the graph editor */
+    x?: number;
+
+    /** Y position on the graph editor */
+    y?: number;
 }
 
 /** The project graph */
