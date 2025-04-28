@@ -90,7 +90,7 @@ class Table {
 	private static split(line: string): string[] {
 
 		let result: string[] = [];
-		line = line.replaceAll(/['"]/g, "|").replaceAll(String.raw`\|`, "'");
+		line = line.replaceAll(/["']/g, "|").replaceAll(String.raw`\|`, "'");
 		const special = line.split("|");
 
 		let odd = true;
@@ -204,7 +204,7 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_symmetry.space_group_name_h-m":
 				case "_symmetry_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
-						value.replace(/^['"]([^'"]+)['"]/, "$1");
+						value.replace(/^["']([^"']+)["']/, "$1");
 					break;
 				case "_cell_length_a":
 				case "_cell.length_a":

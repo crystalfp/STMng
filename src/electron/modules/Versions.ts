@@ -21,7 +21,6 @@ export const setupChannelVersions = (): void => {
 
 		let appVersion = "0.0.0";
 		const projectDir = path.dirname(fileURLToPath(import.meta.url));
-
 		const pkgFile = path.join(projectDir, "..", "package.json");
 		if(existsSync(pkgFile)) {
 

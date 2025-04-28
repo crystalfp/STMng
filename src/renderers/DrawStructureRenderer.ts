@@ -268,14 +268,14 @@ export class DrawStructureRenderer {
 			// Render atoms
 			for(const atom of renderInfo.atoms) {
 
-				const {position} = atom;
+				const {position, rCov, rVdW, color} = atom;
 				let radius;
 				switch(drawKind) {
 					case "ball-and-stick":
-						radius = atom.rCov*rCovScale;
+						radius = rCov*rCovScale;
 						break;
 					case "van-der-waals":
-						radius = atom.rVdW;
+						radius = rVdW;
 						break;
 					case "licorice":
 						radius = bondRadius;
@@ -284,7 +284,7 @@ export class DrawStructureRenderer {
 						radius = 1;
 						break;
 				}
-				spheresCache.addSphere(position, radius, atom.color);
+				spheresCache.addSphere(position, radius, color);
 			}
 			spheresCache.renderSpheres(this.atomsGroup);
 			sm.modified();

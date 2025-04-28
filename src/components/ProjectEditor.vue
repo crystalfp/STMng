@@ -44,7 +44,7 @@ interface GraphFlowItem {
     position: {x: number; y: number};
 }
 
-/** Graph node additional data */
+/** VueFlow graph node additional data */
 interface NodeData {
     /** The label that appears on the node selector */
     label: string;
@@ -56,7 +56,7 @@ interface NodeData {
     graphic: string;
 }
 
-/** The graph in format accepted by the graph editor */
+/** The graph in the format accepted by the graph editor */
 const graphFlow = ref<GraphFlowItem[]>([]);
 
 // Spacing between nodes in the diagonal default layout
@@ -179,7 +179,13 @@ const projectModified = ref(false);
 const {onNodesChange, onEdgesChange, updateNode, findNode,
        findEdge, updateEdge, screenToFlowCoordinate} = useVueFlow();
 const needPanel = ref(false);
-const nodeInfo = ref<{label: string; value: string}[]>([]);
+
+interface OneNodeInfo {
+    id: string;
+    label: string;
+    value: string;
+}
+const nodeInfo = ref<OneNodeInfo[]>([]);
 
 /** Listen to node selection */
 let x = 0;
@@ -211,11 +217,11 @@ onNodesChange((changes) => {
                 nodeInfo.value.length = 0;
                 if(node) {
                     nodeInfo.value.push(
-                        {label: "Node id:",    value: change.id},
-                        {label: "Label:",      value: node.data.label},
-                        {label: "Node type:",  value: node.data.type},
-                        {label: "Input from:", value: node.data.in},
-                        {label: "Graphics:",   value: node.data.graphic}
+                        {id: "id", label: "Node id:",    value: change.id},
+                        {id: "lb", label: "Label:",      value: node.data.label},
+                        {id: "ty", label: "Node type:",  value: node.data.type},
+                        {id: "in", label: "Input from:", value: node.data.in},
+                        {id: "gr", label: "Graphics:",   value: node.data.graphic}
                     );
                 }
                 updateNode(change.id, {style: {backgroundColor: "#BFBF00"}});
@@ -341,6 +347,22 @@ const onConnect = (params: Connection): void => {
 };
 
 /**
+ * Compare element in node list to produce the saved graph
+ *
+ * @param a - First element in the node list
+ * @param b - Second element in the node list
+ */
+const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
+
+    const dx = a.position.x - b.position.x;
+    if(dx < 10 && dx > -10) {
+        const dy = a.position.y - b.position.y;
+        return dy;
+    }
+    return dx;
+};
+
+/**
  * Save the modified project
  */
 const saveProjectGraph = (): void => {
@@ -348,8 +370,11 @@ const saveProjectGraph = (): void => {
     if(!projectModified.value) return;
     projectModified.value = false;
 
+    // Sort the node left to right and top to bottom
+    const sortedGraph = graphFlow.value.toSorted(sortGraph);
+
     const graph: ProjectGraph = {};
-    for(const node of graphFlow.value) {
+    for(const node of sortedGraph) {
         graph[node.id] = {
             label: node.label,
             type: node.type,
@@ -357,8 +382,6 @@ const saveProjectGraph = (): void => {
             y: Math.round(node.position.y)
         };
         if(node.in !== "") graph[node.id].in = node.in;
-        graph[node.id].x = Math.round(node.position.x);
-        graph[node.id].y = Math.round(node.position.y);
     }
 
     sendToNode("SYSTEM", "modified-project", {
@@ -366,6 +389,53 @@ const saveProjectGraph = (): void => {
     });
 };
 
+// For node deletion
+const showConfirm = ref(false);
+const selectedLabel = ref("");
+let selectedId = "";
+
+/**
+ * Delete the selected node
+ *
+ * @param node - Selected node data
+ */
+const deleteNode = (node: OneNodeInfo[]): void => {
+
+    selectedId = "";
+    for(const info of node) {
+        if(info.id === "id") {
+            selectedId = info.value;
+        }
+        else if(info.id === "lb") {
+            selectedLabel.value = info.value;
+        }
+    }
+    if(selectedId) showConfirm.value = true;
+};
+
+/**
+ * Confirmed deletion of the selected node
+ */
+const confirmDeletion = (): void => {
+
+    // Close the dialog
+    showConfirm.value = false;
+
+    for(let idx = 0; idx < graphFlow.value.length; ++idx) {
+        if(graphFlow.value[idx].id === selectedId) {
+            graphFlow.value.splice(idx, 1);
+            projectModified.value = true;
+            needPanel.value = false;
+            return;
+        }
+    }
+};
+
+/**
+ * Drop a node into the graph
+ *
+ * @param event - Drag event
+ */
 const handleDrop = (event: DragEvent): void => {
 
     const nodeModel = JSON.parse(event.dataTransfer?.getData("node") ?? "{}") as AvailableNode;
@@ -408,22 +478,61 @@ const handleDrop = (event: DragEvent): void => {
     graphFlow.value.push(node);
 };
 
+/**
+ * Enter the graph area with a node to add
+ *
+ * @param event - Drag event
+ */
 const handleDragOver = (event: DragEvent): void => {
-    // console.log("Handle drag over", event);
+
     event.preventDefault();
 
-  if(event.dataTransfer) {
-    event.dataTransfer.dropEffect = "move";
-  }
+    if(event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+    }
 };
 
+/**
+ * Start dragging from the available nodes list
+ *
+ * @param event - Drag event
+ * @param nodeModel - Node from the available nodes list
+ */
 const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
-    console.log("Drag start", event, nodeModel);
+
     if(event.dataTransfer) {
         event.dataTransfer.setData("node", JSON.stringify(nodeModel));
         event.dataTransfer.effectAllowed = "move";
     }
 };
+
+/**
+ * Update node label on the graph
+ *
+ * @param label - Edited label
+ */
+const updateLabel = (label: string): void => {
+
+    if(!label) return;
+
+    let id;
+    for(const entry of nodeInfo.value) {
+        if(entry.id === "id") {
+            id = entry.value;
+            break;
+        }
+    }
+    if(!id) return;
+
+    for(const entry of graphFlow.value) {
+        if(entry.id === id) {
+            entry.label = label;
+            projectModified.value = true;
+            break;
+        }
+    }
+};
+
 </script>
 
 
@@ -437,9 +546,7 @@ const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
         {{ item.label }}
       </div>
     </div>
-    <div class="vv" @drop="handleDrop"
-                    @dragover="handleDragOver">
-      <!-- TBD Graph -->
+    <div class="vv" @drop="handleDrop" @dragover="handleDragOver">
       <VueFlow :nodes :edges fit-view-on-init
                 edges-updatable
                 :connection-mode="ConnectionMode.Strict"
@@ -448,11 +555,15 @@ const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
                 @connect="onConnect">
         <Panel v-if="needPanel" position="top-right">
           <table class="w-100">
-            <tr v-for="i of nodeInfo" :key="i.label">
-              <td style="width: 30%">{{ i.label }}</td>
-              <td>{{ i.value }}</td>
+            <tr v-for="ni of nodeInfo" :key="ni.id">
+              <td class="info-line">{{ ni.label }}</td>
+              <td v-if="ni.id === 'lb'">
+                <v-text-field v-model="ni.value" :hide-details="true" density="compact"
+                              @update:modelValue="updateLabel"/></td>
+              <td v-else><v-label>{{ ni.value }}</v-label></td>
             </tr>
           </table>
+          <v-btn block @click="deleteNode(nodeInfo)">Delete node</v-btn>
         </Panel>
         <!-- bind your custom node type to a component by using slots,
              slot names are always `node-<type>` auto-connect-->
@@ -472,15 +583,25 @@ const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
       <v-btn v-focus @click="closeWindow('/editor')">Close</v-btn>
     </div>
   </div>
+
+<v-dialog v-model="showConfirm">
+  <v-card title="Confirm deletion" :text='`Do you want to remove the "${selectedLabel}" node?`'
+          class="mx-auto no-select" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
+        <v-btn @click="confirmDeletion">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </v-app>
 </template>
 
 
 <style>
-/* these are necessary styles for vue flow */
+/* These are necessary styles for vue flow */
 @import "@vue-flow/core/dist/style.css";
 
-/* this contains the default theme, these are optional styles */
+/* This contains the default theme, these are optional styles */
 @import "@vue-flow/core/dist/theme-default.css";
 
 .program-editor-container {
@@ -508,7 +629,7 @@ const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
 }
 
 .vue-flow__panel {
-  background-color:#2d3748;
+  background-color:#2d3748C0;
   border-radius: 8px;
   padding: 7px;
   margin-right: 10px;
@@ -516,6 +637,11 @@ const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
 }
 
 .edge-selected {
-    stroke: red !important
+  stroke: red !important
+}
+
+.info-line {
+  width: 30%;
+  height: 43px;
 }
 </style>

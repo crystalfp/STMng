@@ -82,7 +82,7 @@ export class StructureBackbone extends NodeCore {
 			return;
 		}
 
-		const {atoms} = this.inputStructure;
+		const {atoms, crystal} = this.inputStructure;
 
 		const indices = selectAtomsByKind(this.inputStructure, this.selectorKind, this.atomsSelector);
 		const indexSet = new Set(indices);
@@ -118,7 +118,7 @@ export class StructureBackbone extends NodeCore {
 			}
 		}
 
-		const {basis, origin} = this.inputStructure.crystal;
+		const {basis, origin} = crystal;
 		if(basis.some((x) => x !== 0) && this.threshold < 1) {
 			StructureBackbone.disentangleChains(coordinates, chainStart, basis, origin, this.threshold);
 		}

@@ -223,10 +223,10 @@ export class ComputeSymmetries extends NodeCore {
 		const labels: string[] = [];
 		const chains: string[] = [];
 
-		const repetitions = Math.ceil(atomsZOut.length/this.inputStructure.atoms.length);
+		const repetitions = Math.ceil(atomsZOut.length/atoms.length);
 		for(let i=0; i < repetitions; ++i) {
 
-			for(const atom of this.inputStructure.atoms) {
+			for(const atom of atoms) {
 				labels.push(atom.label);
 				const chain = i === 0 ? atom.chain : (atom.chain || "Remaining") + i.toString();
 				chains.push(chain);
