@@ -9,6 +9,7 @@
 import {computed, ref} from "vue";
 import {VueFlow, type Node, type Edge, Position, useVueFlow, ConnectionMode, ConnectionLineType,
         Panel, MarkerType, type GraphEdge, type Connection} from "@vue-flow/core";
+import log from "electron-log";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
@@ -374,10 +375,43 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
     return dx;
 };
 
+// To show error messages
+const showNotification = ref(false);
+const notificationText = ref("");
+
 /**
  * Save the modified project
  */
 const saveProjectGraph = (): void => {
+
+    for(const node of graphFlow.value) {
+        for(const availableNode of availableNodes.value) {
+            if(node.type === availableNode.type) {
+                if(node.in === "" && availableNode.hasInput) {
+                    notificationText.value = `Node "${node.label}" input is unconnected`;
+                    showNotification.value = true;
+                    log.error(notificationText.value);
+                    return;
+                }
+                if(availableNode.hasOutput) {
+                    let isConnected = false;
+                    for(const node2 of graphFlow.value) {
+                        if(node2.in === node.id) {
+                            isConnected = true;
+                            break;
+                        }
+                    }
+                    if(!isConnected) {
+                        notificationText.value = `Node "${node.label}" output is unconnected`;
+                        showNotification.value = true;
+                        log.error(notificationText.value);
+                        return;
+                    }
+                }
+                break;
+            }
+        }
+    }
 
     if(!projectModified.value) return;
     projectModified.value = false;
@@ -605,6 +639,12 @@ const updateLabel = (label: string): void => {
     </v-card-actions>
   </v-card>
 </v-dialog>
+
+<v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info" max-width="250"
+              elevation="24" close-on-content-click color="red-darken-4">
+    {{ notificationText }}
+</v-snackbar>
+
 </v-app>
 </template>
 
