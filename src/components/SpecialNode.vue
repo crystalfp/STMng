@@ -13,7 +13,7 @@ defineProps<NodeProps>();
 </script>
 
 <template>
-  <div class="vue-flow__node-default">
-    <div>{{ data.label }}</div>
-  </div>
+<div>
+  <div>{{ data.label }}</div>
+</div>
 </template>

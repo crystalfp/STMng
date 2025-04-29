@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation entry point for the STMng application">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2025-04-15"/>
+  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>STMng documentation</title>
   <link rel="stylesheet" href="style.css" />
@@ -11,7 +17,8 @@
 <header>
 <h1 class="title">STMng documentation</h1>
 <p>
-See The Molecule new generation (STMng) is a chemical and crystallographic structures visualization tool
+See The Molecule new generation (STMng) is a chemical and
+crystallographic structures visualization tool
 that implements some of the STM4 functionalities.
 </p>
 </header>
@@ -22,6 +29,7 @@ that implements some of the STM4 functionalities.
         <td>The file formats read by STMng.</td></tr>
     <tr><td class="m1"><a href="general/atom-data.html">Atom data provenance</a></td>
         <td>The source of the atomic data used by STMng.</td></tr>
+    <tr><td><a href="general/project-editor.html">Project editor</a></td><td>The editor for the loaded project file.</td></tr>
   </table>
 </details>
 <details>
@@ -84,17 +92,18 @@ that implements some of the STM4 functionalities.
     <li><b>graph</b> List the loaded nodes and their interconnections</li>
     <li><b>viewer</b> Optional section to collect the viewer 3D parameters</li>
     <li><b>ui</b> Optional section to collect the parameters for each node</li>
-    <li><b>currentId</b> Optional parameter to set the initial ui panel to this node key</li>
   </ul>
   <h2>Graph content</h2>
   <p>This section is a JSON record with the unique identifier of the node as key and the following content:</p>
   <ul>
     <li><b>label:</b> The label that appear in the UI selection panel</li>
     <li><b>type:</b> The type of node, that is its functionality</li>
-    <li><b>in:</b> The id of the node from which this node takes the input. It is missing if the node has no input or if the input come from the graphical scene</li>
+    <li><b>x:</b> The (optional) X position of the node in the project editor</li>
+    <li><b>y:</b> The (optional) Y position of the node in the project editor</li>
+    <li><b>in:</b> The id of the node from which this node takes the input. It is missing if the node has no input or if the input come only from the graphical scene</li>
   </ul>
   <h2>Project editor</h2>
-  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="general/project-editor.html">Project editor</a>. This editor enables the modification of the currently loaded project that at the end could be saved and loaded becoming the current project.</p>
+  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="general/project-editor.html">Project editor</a>. This editor makes possible the modification of the currently loaded project that, at the end, could be saved and becomes the current project.</p>
 </details>
 <details>
   <summary>Main menu and application shortcuts</summary>
@@ -145,7 +154,7 @@ that implements some of the STM4 functionalities.
     <tr>
       <td class="c1">Project editor</td>
       <td class="c2"></td>
-      <td class="c3">Open the project editor window</td>
+      <td class="c3">Open the <a href="general/project-editor.html">project editor</a> window</td>
     </tr>
     <tr>
       <td class="c1">Quit application</td>
@@ -166,7 +175,7 @@ that implements some of the STM4 functionalities.
     <tr>
       <td class="c1">Toggle full screen</td>
       <td class="c2">F11</td>
-      <td class="c3">Toggle full screen</td>
+      <td class="c3">Toggle the application full screen</td>
     </tr>
     <tr>
       <td class="c1">Dark theme</td>
@@ -235,36 +244,83 @@ that implements some of the STM4 functionalities.
 <details>
   <summary>Interaction with the viewers</summary>
   <p>Interacting with the viewer means moving the camera around the visualized object.</p>
-  <p>This interaction is done through mouse movements and keyboard arrows. Note that the same mouse actions are applicable to the Energy Landscape viewer but not the keyboard arrows shortcuts.</p>
+  <p>This interaction is done through mouse movements and keyboard arrows. Note that the same mouse actions are applicable to the Energy Landscape and Compare Structures viewers, but not the keyboard arrows shortcuts.</p>
   <h2>Terminology</h2>
-  <ul>
-    <li><b>Rotate:</b> Rotate the camera around the scene center</li>
-    <li><b>Pan:</b> Move the camera on the viewer plane</li>
-    <li><b>Zoom:</b> Change the magnification of the camera without moving it</li>
-    <li><b>Dolly:</b> Move the camera perpendicular to the viewer plane</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Rotate</td>
+      <td class="c3">Rotate the camera around the scene center</td>
+    </tr>
+    <tr>
+      <td class="c1">Pan</td>
+      <td class="c3">Move the camera on the viewer plane</td>
+    </tr>
+    <tr>
+      <td class="c1">Zoom</td>
+      <td class="c3">Change the magnification of the camera without moving it</td>
+    </tr>
+    <tr>
+      <td class="c1">Dolly</td>
+      <td class="c3">Move the camera perpendicular to the viewer plane</td>
+    </tr>
+  </tbody>
+  </table>
+
   <h2>Mouse</h2>
-  <ul>
-    <li><b>Drag with left mouse button:</b> Rotate</li>
-    <li><b>Drag with right mouse button:</b> Pan</li>
-    <li><b>Drag with center mouse button:</b> Dolly</li>
-    <li><b>Mouse wheel:</b> Zoom</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Drag with left mouse button</td>
+      <td class="c3">Rotate</td>
+    </tr>
+    <tr>
+      <td class="c1">Drag with right mouse button</td>
+      <td class="c3">Pan</td>
+    </tr>
+    <tr>
+      <td class="c1">Drag with center mouse button</td>
+      <td class="c3">Dolly</td>
+    </tr>
+    <tr>
+      <td class="c1">Mouse wheel</td>
+      <td class="c3">Zoom</td>
+    </tr>
+  </tbody>
+  </table>
+
   <h2>Keyboard arrows</h2>
-  <ul>
-    <li><b>Any arrow:</b> Pan</li>
-    <li><b>Control + any arrow:</b> Rotate</li>
-    <li><b>Shift + any arrow:</b> Zoom (Left and Down do the same, as do Right and Up)</li>
-    <li><b>Alt + any arrow:</b> Dolly (Left and Down do the same, as do Right and Up)</li>
-  </ul>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Any arrow</td>
+      <td class="c3">Pan</td>
+    </tr>
+    <tr>
+      <td class="c1">Control + any arrow</td>
+      <td class="c3">Rotate</td>
+    </tr>
+    <tr>
+      <td class="c1">Shift + any arrow</td>
+      <td class="c3">Zoom (Left and Down do the same, as do Right and Up)</td>
+    </tr>
+    <tr>
+      <td class="c1">Alt + any arrow</td>
+      <td class="c3">Dolly (Left and Down do the same, as do Right and Up)</td>
+    </tr>
+  </tbody>
+  </table>
 </details>
 <details>
   <summary>Command line options</summary>
   <code>
 Usage: STMng [options] [project-file]
 
-See The Molecule new generation is a chemical structure visualizer that inherits
-some functionalities of STM4
+See The Molecule new generation is a chemical and crystallographic structure
+visualizer that inherits some functionalities of STM4
+
+Arguments:
+  project-file            project file to be loaded
 
 Options:
   -V, --version           output the version number
@@ -274,7 +330,7 @@ Options:
   -e, --enable            enable developer tools in production build
   -x, --extra &lt;switches&gt;  extra command line switches
   -h, --help              display help for command
-  </code>
+</code>
 <p>The “<tt>-x</tt>” switch pass the given switches to the internal processes. If more than one, they are
 comma separated and if they pass a value, switch and value are separated by a “<tt>=</tt>”.</p>
 <p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>

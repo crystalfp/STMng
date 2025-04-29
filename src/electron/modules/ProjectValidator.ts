@@ -25,7 +25,6 @@ const projectSchema = vObject({
 					y: vOptional(vNumber())
 				}),
 	),
-	currentId: vOptional(vPipe(vString(), vNonEmpty("Invalid currentId"))),
 	ui: vOptional(vRecord(
 						vPipe(vString(), vNonEmpty("Missing id")),
 						vRecord(

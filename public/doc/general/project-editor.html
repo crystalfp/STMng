@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="author" content="Mario Valle">
-  <meta name="Description" content="Chemistry files formats supported by STMng visualization tool"/>
+  <meta name="Description" content="Program file editor for the STMng visualization tool"/>
   <meta name="keywords" content="STMng,chemistry visualization">
-  <meta name="date" content="2025-03-11"/>
+  <meta name="date" content="2025-04-29"/>
   <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
   <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
   <link rel="stylesheet" href="../style.css" type="text/css">
@@ -19,14 +19,14 @@
 
 <p>The loaded project structure could be seen and changed using the <b>File → Project editor</b> menu entry.
 This entry opens the <a href="general/project-editor.html">Project editor</a> in its own window depicted below.</p>
-<p><img src="project-editor.png" alt="Project editor" width="512" height="327"/></p>
+<p><img src="project-editor.png" alt="Project editor" width="1024" height="550"/></p>
 <p>The window title contains the filename of the currently loaded project or the “default project” mark.</p>
-<p>The leftmost column, labelled “In use”, list all the nodes in the current loaded project.</p>
-<p>The second column, labelled “Available”, list all the nodes provided by the application.</p>
-<p>Nodes in the “In use” column could be dragged up and down to change the display order in the application.</p>
-<p>If entries are dragged to the “Available” column, they are removed from the application.</p>
-<p>If entries are dragged from the “Available” column, they are added to the application. In the name a string in parenthesis mark these created nodes.</p>
-<p>Clicking nodes in the “In use” column mark them as selected with a border. Clicking on a selected node deselects it. The selected node show its data in the rightmost column labelled “Node info”. The title and the id of the node from which the data arrives to this node could be edited in the “Edit node" section. Changes are accepted with the “Change node” button. To return to the project original content for this node push “Reset”.</p>
+<p>The leftmost column, labelled “Available nodes”, list all the nodes types provided by the application.</p>
+<p>Nodes from this column could be dragged to the graph chart on the right to create a new node in the project. In the name a string in parenthesis mark these created nodes.</p>
+<p>Clicking a node in the graph chart marks it as selected with a yellow background. Clicking on the chart background deselects it. The selected node show its data in the top right panel. The label of the node could be edited in the panel. With a button the node could be also deleted after a confirmation dialog.</p>
+<p>The nodes’ positions could be changed by dragging the nodes around.</p>
+<p>The connection between nodes is done clicking on the output port (the rightmost one) and when the cursor becomes a black cross <img src=crosshair.png width="36" height="36">, dragging it to a free input port (the left one). If a connection is redone, it is deleted. </p>
+<p>Going to one end of the connection the cursor changes to <img src="move.png" width="34" height="34"> then this end of the connection can be drag to another connection point.</p>
 <p>At the end, “Save modified project” asks for a project filename (<tt>.stm</tt>), save here the modified project and load it in the application. Closing the window with the “Close” button loses the changes.</p>
 
 <h2>Credits</h2>

@@ -1,5 +1,5 @@
 /**
- * Slice structure along a plane or along a sphere
+ * Slice structure along a plane or a sphere
  *
  * @packageDocumentation
  *

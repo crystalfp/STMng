@@ -44,14 +44,18 @@ interface GraphFlowItem {
     position: {x: number; y: number};
 }
 
-/** VueFlow graph node additional data */
+/** VueFlow graph node additional data (the "data" object inside Node) */
 interface NodeData {
+
     /** The label that appears on the node selector */
     label: string;
-	/** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+
+    /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
     type: string;
-	/** Node id from which the node takes input. If none, it is the empty string */
+
+    /** Node id from which the node takes input. If none, it is the empty string */
     in: string;
+
     /** If generates or accepts graphical output */
     graphic: string;
 }
@@ -63,7 +67,7 @@ const graphFlow = ref<GraphFlowItem[]>([]);
 const X_INCREMENT = 150;
 const Y_INCREMENT = 70;
 
-/** Available nodes */
+/** Available node */
 interface AvailableNode {
 
     /** ID of the node */
@@ -158,6 +162,7 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
 
         availableNodes.value.push(availableNode);
     }
+    availableNodes.value.sort((a: AvailableNode, b: AvailableNode) => a.label.localeCompare(b.label));
 };
 
 /** Receive the data and build the graph data and available nodes list */
@@ -175,21 +180,28 @@ closeWithEscape("/editor");
 /** If the project has been modified */
 const projectModified = ref(false);
 
-// TEST VueFlow
-const {onNodesChange, onEdgesChange, updateNode, findNode,
-       findEdge, updateEdge, screenToFlowCoordinate} = useVueFlow();
+// VueFlow related routines
+const {onNodesChange, updateNode, findNode,
+       updateEdge, screenToFlowCoordinate} = useVueFlow();
 const needPanel = ref(false);
 
+/** Node information for the panel inside the graph chart */
 interface OneNodeInfo {
+
+    /** Unique identifier */
     id: string;
+
+    /** The table line label */
     label: string;
+
+    /** The corresponding value */
     value: string;
 }
 const nodeInfo = ref<OneNodeInfo[]>([]);
 
 /** Listen to node selection */
-let x = 0;
-let y = 0;
+let x: number;
+let y: number;
 onNodesChange((changes) => {
 
     let showPanel = 0;
@@ -200,15 +212,16 @@ onNodesChange((changes) => {
                 x = change.position.x;
                 y = change.position.y;
             }
-            else {
+            else if(x !== undefined) {
                 for(const node of graphFlow.value) {
                     if(node.id === change.id) {
                         node.position.x = x;
                         node.position.y = y;
+                        projectModified.value = true;
+                        break;
                     }
                 }
             }
-            projectModified.value = true;
         }
         else if(change.type === "select") {
             if(change.selected) {
@@ -224,31 +237,16 @@ onNodesChange((changes) => {
                         {id: "gr", label: "Graphics:",   value: node.data.graphic}
                     );
                 }
-                updateNode(change.id, {style: {backgroundColor: "#BFBF00"}});
+                updateNode(change.id, {class: "vue-flow__node-default mark"});
                 showPanel += 1;
             }
             else {
-                updateNode(change.id, {style: {backgroundColor: "white"}});
+                updateNode(change.id, {class: "vue-flow__node-default"});
                 showPanel += 2;
             }
         }
     }
     if(showPanel > 0) needPanel.value = showPanel !== 2;
-});
-
-onEdgesChange((changes) => {
-    console.log("EDGE", changes);
-    for(const change of changes) {
-        if(change.type === "select") {
-            const edge = findEdge(change.id);
-            // const {style} = edge;
-            // edge!.style!.stroke = change.selected ? "red" : "#B1B1B7";
-            // console.log(edge);
-            // updateEdge(edge)
-            // for(const edge of)
-            edge!.class = change.selected ? "edge-selected" : "";
-        }
-    }
 });
 
 /** Graph nodes */
@@ -276,10 +274,17 @@ const nodes = computed<Node<NodeData>[]>(() => {
             sourcePosition: Position.Right,
             width: 100
         };
+        if(type === "none") out.class = "vue-flow__node-default";
         nodes.push(out);
     }
     return nodes;
 });
+
+const crossingLinesFilter =
+                    "drop-shadow(1px 1px 1px black) " +
+                    "drop-shadow(1px -1px 1px black) " +
+                    "drop-shadow(-1px 1px 1px black) " +
+                    "drop-shadow(-1px -1px 1px black)";
 
 /** Graph edges */
 const edges = computed<Edge[]>(() => {
@@ -294,8 +299,7 @@ const edges = computed<Edge[]>(() => {
                 target: graphNode.id,
                 markerEnd: MarkerType.ArrowClosed,
                 type: ConnectionLineType.SmoothStep,
-                style: {strokeWidth: 2, filter: "drop-shadow(1px 1px 1px black) drop-shadow(1px -1px 1px black) drop-shadow(-1px 1px 1px black) drop-shadow(-1px -1px 1px black)"}
-
+                style: {strokeWidth: 2, filter: crossingLinesFilter}
             };
             edges.push(out);
         }
@@ -319,8 +323,16 @@ interface EdgeUpdateParams {
 const onEdgeUpdate = (params: EdgeUpdateParams): void => {
 
     const {edge, connection} = params;
-    console.log("ONEDGEUPD", edge, connection);
     updateEdge(edge as GraphEdge, connection as Connection);
+    projectModified.value = true;
+    for(const graphNode of graphFlow.value) {
+        if(graphNode.id === edge.targetNode.id) {
+            graphNode.in = "";
+        }
+        else if(graphNode.id === connection.target) {
+            graphNode.in = connection.source;
+        }
+    }
 };
 
 /**
@@ -566,7 +578,7 @@ const updateLabel = (label: string): void => {
           <v-btn block @click="deleteNode(nodeInfo)">Delete node</v-btn>
         </Panel>
         <!-- bind your custom node type to a component by using slots,
-             slot names are always `node-<type>` auto-connect-->
+             slot names are always `node-<type>` auto-connect -->
         <template #node-none="specialNodeProps">
           <SpecialNode v-bind="specialNodeProps" />
         </template>
@@ -636,12 +648,12 @@ const updateLabel = (label: string): void => {
   width: 350px;
 }
 
-.edge-selected {
-  stroke: red !important
-}
-
 .info-line {
   width: 30%;
   height: 43px;
+}
+
+.mark {
+  background-color: #BFBF00 !important;
 }
 </style>

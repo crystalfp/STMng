@@ -210,9 +210,6 @@ export interface Project {
     /** The graph structure as read from file (The key is the node id) */
     graph: ProjectGraph;
 
-    /** The id of the selected node */
-    currentId?: string;
-
     /** The state of the viewer */
     viewer?: Viewer3DState;
 
