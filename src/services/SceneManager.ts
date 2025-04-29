@@ -9,7 +9,7 @@
 import {Group, type Material, Mesh, Scene, type Object3D,
 		type InstancedMesh, MeshBasicMaterial,
 		DirectionalLight, AmbientLight, Color, Matrix4,
-		IcosahedronGeometry, CylinderGeometry} from "three";
+		CylinderGeometry, SphereGeometry} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
@@ -352,7 +352,7 @@ class SceneManager {
 					for(let idx = 0; idx < im.count; idx++) {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
-						const geometry = new IcosahedronGeometry(1, 18);
+						const geometry = new SphereGeometry(1, 18, 18);
 						geometry.applyMatrix4(matrix);
 						const material = new MeshBasicMaterial();
 						const sphere = new Mesh(geometry, material);
@@ -371,7 +371,7 @@ class SceneManager {
 					for(let idx = 0; idx < im.count; idx++) {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
-						const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, true);
+						const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, false);
 						geometry.applyMatrix4(matrix);
 						const material = new MeshBasicMaterial();
 						const cylinder = new Mesh(geometry, material);
