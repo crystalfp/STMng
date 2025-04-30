@@ -8,13 +8,13 @@
  */
 import {computed, ref} from "vue";
 import {VueFlow, type Node, type Edge, Position, useVueFlow, ConnectionMode, ConnectionLineType,
-        Panel, MarkerType, type GraphEdge, type Connection} from "@vue-flow/core";
+        Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {closeWithEscape} from "@/services/CaptureEscape";
 import {theme} from "@/services/ReceiveTheme";
-import type {ProjectInfo, GraphicType} from "@/types/NodeInfo";
 import SpecialNode from "./SpecialNode.vue";
+import type {ProjectInfo, GraphicType} from "@/types/NodeInfo";
 import type {ProjectGraph} from "@/types";
 
 /** The graph description for the Vue Flow graph editor */
@@ -181,10 +181,11 @@ closeWithEscape("/editor");
 /** If the project has been modified */
 const projectModified = ref(false);
 
+/** Show the info panel */
+const showPanel = ref(false);
+
 // VueFlow related routines
-const {onNodesChange, updateNode, findNode,
-       updateEdge, screenToFlowCoordinate} = useVueFlow();
-const needPanel = ref(false);
+const {onNodesChange, updateNode, findNode, screenToFlowCoordinate} = useVueFlow();
 
 /** Node information for the panel inside the graph chart */
 interface OneNodeInfo {
@@ -201,53 +202,59 @@ interface OneNodeInfo {
 const nodeInfo = ref<OneNodeInfo[]>([]);
 
 /** Listen to node selection */
-let x: number;
-let y: number;
+let x: number | undefined;
+let y: number | undefined;
 onNodesChange((changes) => {
 
-    let showPanel = 0;
+    let panelRequest = 0;
     for(const change of changes) {
 
-        if(change.type === "position") {
-            if(change.position) {
-                x = change.position.x;
-                y = change.position.y;
-            }
-            else if(x !== undefined) {
-                for(const node of graphFlow.value) {
-                    if(node.id === change.id) {
-                        node.position.x = x;
-                        node.position.y = y;
-                        projectModified.value = true;
-                        break;
+        switch(change.type) {
+            case "position": {
+                if(change.position) {
+                    x = change.position.x;
+                    y = change.position.y;
+                }
+                else if(x !== undefined && y !== undefined) {
+                    for(const node of graphFlow.value) {
+                        if(node.id === change.id) {
+                            node.position.x = x;
+                            node.position.y = y;
+                            projectModified.value = true;
+                            x = undefined;
+                            y = undefined;
+                            break;
+                        }
                     }
                 }
+                break;
             }
-        }
-        else if(change.type === "select") {
-            if(change.selected) {
+            case "select": {
+                if(change.selected) {
 
-                const node = findNode<NodeData>(change.id);
-                nodeInfo.value.length = 0;
-                if(node) {
-                    nodeInfo.value.push(
-                        {id: "id", label: "Node id:",    value: change.id},
-                        {id: "lb", label: "Label:",      value: node.data.label},
-                        {id: "ty", label: "Node type:",  value: node.data.type},
-                        {id: "in", label: "Input from:", value: node.data.in},
-                        {id: "gr", label: "Graphics:",   value: node.data.graphic}
-                    );
+                    const node = findNode<NodeData>(change.id);
+                    nodeInfo.value.length = 0;
+                    if(node) {
+                        nodeInfo.value.push(
+                            {id: "id", label: "Node id:",    value: change.id},
+                            {id: "lb", label: "Label:",      value: node.data.label},
+                            {id: "ty", label: "Node type:",  value: node.data.type},
+                            {id: "in", label: "Input from:", value: node.data.in},
+                            {id: "gr", label: "Graphics:",   value: node.data.graphic}
+                        );
+                    }
+                    updateNode(change.id, {class: "vue-flow__node-default mark"});
+                    panelRequest += 1;
                 }
-                updateNode(change.id, {class: "vue-flow__node-default mark"});
-                showPanel += 1;
-            }
-            else {
-                updateNode(change.id, {class: "vue-flow__node-default"});
-                showPanel += 2;
+                else {
+                    updateNode(change.id, {class: "vue-flow__node-default"});
+                    panelRequest += 2;
+                }
+                break;
             }
         }
     }
-    if(showPanel > 0) needPanel.value = showPanel !== 2;
+    if(panelRequest > 0) showPanel.value = panelRequest !== 2;
 });
 
 /** Graph nodes */
@@ -281,11 +288,15 @@ const nodes = computed<Node<NodeData>[]>(() => {
     return nodes;
 });
 
-const crossingLinesFilter =
+const crossingLinesFilter = theme.value === "dark" ?
                     "drop-shadow(1px 1px 1px black) " +
                     "drop-shadow(1px -1px 1px black) " +
                     "drop-shadow(-1px 1px 1px black) " +
-                    "drop-shadow(-1px -1px 1px black)";
+                    "drop-shadow(-1px -1px 1px black)" :
+                    "drop-shadow(1px 1px 1px white) " +
+                    "drop-shadow(1px -1px 1px white) " +
+                    "drop-shadow(-1px 1px 1px white) " +
+                    "drop-shadow(-1px -1px 1px white)";
 
 /** Graph edges */
 const edges = computed<Edge[]>(() => {
@@ -324,10 +335,9 @@ interface EdgeUpdateParams {
 const onEdgeUpdate = (params: EdgeUpdateParams): void => {
 
     const {edge, connection} = params;
-    updateEdge(edge as GraphEdge, connection as Connection);
     projectModified.value = true;
     for(const graphNode of graphFlow.value) {
-        if(graphNode.id === edge.targetNode.id) {
+        if(graphNode.id === edge.target) {
             graphNode.in = "";
         }
         else if(graphNode.id === connection.target) {
@@ -471,7 +481,7 @@ const confirmDeletion = (): void => {
         if(graphFlow.value[idx].id === selectedId) {
             graphFlow.value.splice(idx, 1);
             projectModified.value = true;
-            needPanel.value = false;
+            showPanel.value = false;
             return;
         }
     }
@@ -579,6 +589,18 @@ const updateLabel = (label: string): void => {
     }
 };
 
+/**
+ * Handle VueFlow specific errors
+ *
+ * @param error - Error from VueFlow
+ */
+const handleError = (error: VueFlowError): void => {
+
+    notificationText.value = `Error from VueFlow: ${error.message}`;
+    showNotification.value = true;
+    log.error(notificationText.value);
+};
+
 </script>
 
 
@@ -594,12 +616,16 @@ const updateLabel = (label: string): void => {
     </div>
     <div class="vv" @drop="handleDrop" @dragover="handleDragOver">
       <VueFlow :nodes :edges fit-view-on-init
+                :delete-key-code="null"
                 edges-updatable
+                snap-to-grid
+                :snap-grid="[30, 30]"
                 :connection-mode="ConnectionMode.Strict"
                 :connection-radius="30"
+                @error="handleError"
                 @edge-update="onEdgeUpdate"
                 @connect="onConnect">
-        <Panel v-if="needPanel" position="top-right">
+        <Panel v-if="showPanel" position="top-right">
           <table class="w-100">
             <tr v-for="ni of nodeInfo" :key="ni.id">
               <td class="info-line">{{ ni.label }}</td>
@@ -681,7 +707,7 @@ const updateLabel = (label: string): void => {
 }
 
 .vue-flow__panel {
-  background-color:#2d3748C0;
+  background-color: light-dark(#AAAAAAC0, #2D3748C0);
   border-radius: 8px;
   padding: 7px;
   margin-right: 10px;
@@ -694,6 +720,6 @@ const updateLabel = (label: string): void => {
 }
 
 .mark {
-  background-color: #BFBF00 !important;
+  background-color: #DDDD00 !important;
 }
 </style>

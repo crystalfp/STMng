@@ -5,14 +5,13 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
-  ☐ In project editor add check that input/output are connected
   ☐ Investigate `v-snackbar-queue` for messages
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
-  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> To unblock UI
+  ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
   ☐ Investigate lazy load `*Ctrl` components
 
 Functionalities:
@@ -59,6 +58,7 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
 
 Archive:
+  ✔ In project editor add check that input/output are connected @done(2025-04-29 16:12) @project(To do)
   ✔ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG @done(2025-04-25 16:44) @project(ToDo eventually)
   ✔ To visualize the project try <https://vueflow.dev/guide/> @done(2025-04-25 16:44) @project(ToDo eventually)
   ✘ Use InstancedMesh for CompareSelected @cancelled(2025-04-25 16:43) @project(Performance)
