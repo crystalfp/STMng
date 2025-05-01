@@ -61,10 +61,10 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
         app.quit();
     }
 
-    // Attach fullscreen(f11 and not 'maximized') && focus listeners
+    // Attach fullscreen (f11 and not 'maximized') && focus listeners
     attachTitlebarToWindow(mainWin);
 
-    // Open main window full screen (use show() to have a normal window for testing)
+    // Open main window full screen
     mainWin.once("ready-to-show", () => {
 
         mainWin.maximize();
@@ -162,12 +162,13 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         void secondaryWin.loadURL(`file://${mainSourceDirectory}/../dist/index.html#${params.routerPath}`);
     }
     secondaryWin.once("ready-to-show", () => {
+        if(params.data) setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 200);
         secondaryWin?.show();
     });
 
-    if(params.data) secondaryWin.once("show", () => {
-        setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 200);
-    });
+    // if(params.data) secondaryWin.once("show", () => {
+    //     setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 200);
+    // });
 
     // Manage the list of opened windows
     openedWindows.set(params.routerPath, secondaryWin);

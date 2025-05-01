@@ -210,7 +210,7 @@ onNodesChange((changes) => {
     for(const change of changes) {
 
         switch(change.type) {
-            case "position": {
+            case "position":
                 if(change.position) {
                     x = change.position.x;
                     y = change.position.y;
@@ -228,8 +228,8 @@ onNodesChange((changes) => {
                     }
                 }
                 break;
-            }
-            case "select": {
+
+            case "select":
                 if(change.selected) {
 
                     const node = findNode<NodeData>(change.id);
@@ -251,7 +251,6 @@ onNodesChange((changes) => {
                     panelRequest += 2;
                 }
                 break;
-            }
         }
     }
     if(panelRequest > 0) showPanel.value = panelRequest !== 2;
