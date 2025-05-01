@@ -27,7 +27,9 @@ This entry opens the <b>Project editor</b> in its own window depicted below.</p>
 <p>The nodes’ positions could be changed by dragging the nodes around. To move a group of nodes use shift-drag to draw a rectangular selection, then drag them. Using ctrl-click multiple nodes could be selected. For multi node selections the panel show info only for the last node selected.</p>
 <p>The connection between nodes is done clicking on the output port (the rightmost one) and, when the cursor becomes a black cross <img src=crosshair.png width="36" height="36">, dragging it to a free input port (the left one). If a connection is redone, it is deleted.</p>
 <p>Going to one end of the connection the cursor changes to <img src="move.png" width="34" height="34"> then this end can be drag to another connection point.</p>
+<p>The graph could be zoomed using the mouse wheel.</p>
 <p>At the end, “Save modified project” asks for a project filename (<tt>.stm</tt>), save here the modified project and load it in the application. Closing the window with the “Close” button loses the changes. If there are errors (unconnected ports) the project cannot be saved.</p>
+<p>The “New project” button empties the graph leaving only the “Viewer” node to build a new graph. This button is enabled only when there are no pending changes to be saved in the graph.</p>
 
 <h2>Credits</h2>
 <p>The graph display uses the excellent <a href="https://vueflow.dev/">Vue Flow</a> component.</p>

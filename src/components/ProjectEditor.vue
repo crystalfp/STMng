@@ -239,7 +239,11 @@ onNodesChange((changes) => {
                             {id: "id", label: "Node id:",    value: change.id},
                             {id: "lb", label: "Label:",      value: node.data.label},
                             {id: "ty", label: "Node type:",  value: node.data.type},
-                            {id: "in", label: "Input from:", value: node.data.in},
+                        );
+                        if(node.data.in !== "") {
+                            nodeInfo.value.push({id: "in", label: "Input from:", value: node.data.in});
+                        }
+                        nodeInfo.value.push(
                             {id: "gr", label: "Graphics:",   value: node.data.graphic}
                         );
                     }
@@ -600,6 +604,25 @@ const handleError = (error: VueFlowError): void => {
     log.error(notificationText.value);
 };
 
+/**
+ * Create a new, empty project
+ */
+const createProjectGraph = (): void => {
+
+    graphFlow.value.length = 0;
+    graphFlow.value.push({
+        id: "viewer",
+        label: "Viewer",
+        in: "",
+        hasInput: false,
+        hasOutput: false,
+        graphic: "in",
+        type: "viewer-3d",
+        position: {x: 360, y: 300}
+    });
+    projectModified.value = true;
+};
+
 </script>
 
 
@@ -625,7 +648,7 @@ const handleError = (error: VueFlowError): void => {
                 @edge-update="onEdgeUpdate"
                 @connect="onConnect">
         <Panel v-if="showPanel" position="top-right">
-          <table class="w-100">
+          <table class="w-100 mb-2">
             <tr v-for="ni of nodeInfo" :key="ni.id">
               <td class="info-line">{{ ni.label }}</td>
               <td v-if="ni.id === 'lb'">
@@ -650,6 +673,7 @@ const handleError = (error: VueFlowError): void => {
       </VueFlow>
     </div>
     <div class="bb button-strip pr-7">
+      <v-btn :disabled="projectModified" @click="createProjectGraph">New project</v-btn>
       <v-btn :disabled="!projectModified" @click="saveProjectGraph">Save modified project</v-btn>
       <v-btn v-focus @click="closeWindow('/editor')">Close</v-btn>
     </div>
