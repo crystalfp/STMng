@@ -8,7 +8,7 @@
  */
 
 import {pm} from "./ProjectManager";
-import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
+import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "./WindowsUtilities";
 
 /**
@@ -18,7 +18,7 @@ export const createProjectEditor = (projectName: string): void => {
 
 	const title = projectName === "" ? "View default project" : `View "${projectName}" project`;
 
-	createSecondaryWindowWithRetry({
+	createSecondaryWindow({
 		routerPath: "/editor",
 		width: 1800,
 		height: 800,

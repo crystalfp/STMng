@@ -162,13 +162,9 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         void secondaryWin.loadURL(`file://${mainSourceDirectory}/../dist/index.html#${params.routerPath}`);
     }
     secondaryWin.once("ready-to-show", () => {
-        if(params.data) setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 200);
         secondaryWin?.show();
+        if(params.data) setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 500);
     });
-
-    // if(params.data) secondaryWin.once("show", () => {
-    //     setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 200);
-    // });
 
     // Manage the list of opened windows
     openedWindows.set(params.routerPath, secondaryWin);
