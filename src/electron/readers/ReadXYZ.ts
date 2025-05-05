@@ -30,10 +30,10 @@ export class ReaderXYZ implements ReaderImplementation {
 		let step = -1;
 		let atoms;
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
-		for await (const line of reader) {
+		for await (const lineRaw of reader) {
 
 			if(numberAtoms === 0) {
-				numberAtoms = Number.parseInt(line, 10);
+				numberAtoms = Number.parseInt(lineRaw, 10);
 				commentLine = true;
 				++step;
 				structures.push(new EmptyStructure());
@@ -44,8 +44,10 @@ export class ReaderXYZ implements ReaderImplementation {
 				commentLine = false;
 			}
 			else {
-				const fields = line.trim().split(/\s+/);
-				if(fields.length !== 4) throw Error(`Wrong number of fields in "${line}"`);
+				const line = lineRaw.trim();
+				if(line === "") throw Error("Invalid empty line found");
+				const fields = line.split(/\s+/);
+				if(fields.length < 4) throw Error(`Insufficient number of fields in "${line}"`);
 				const position: [number, number, number] = [
 					Number.parseFloat(fields[1]),
 					Number.parseFloat(fields[2]),

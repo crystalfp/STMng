@@ -228,11 +228,12 @@ const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomType
 
 /**
  * Get atoms types field value on blur or ENTER pressed.
- * If field empty do nothing
+ * If field empty return to default atoms types
  */
 const getAtomsTypes = (): void => {
 
-    if(!atomsTypes.value) return;
+    resetAlertMessage("structureReader");
+
     sendToNode(id, "types", {atomsTypes: atomsTypes.value});
 };
 

@@ -53,7 +53,12 @@ export class ReaderPOSCAR implements ReaderImplementation {
 		let atomIdx = 0;
 
 		const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
-		for await (const line of stream) {
+		for await (const lineRaw of stream) {
+
+			// Remove comments and "selective" line
+			const pos = lineRaw.indexOf("!");
+			const line = (pos === -1) ? lineRaw.trim() : lineRaw.slice(0, pos).trim();
+			if(line.toLowerCase().startsWith("sel")) continue;
 
 			switch(lineType) {
 
@@ -67,7 +72,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						break;
 					}
 					const fields = line.trim().split(/\s+/);
-					if(fields.length > 1) {
+					if(fields.length === 0) {
 						lineType = LineType.exit;
 						break;
 					}
@@ -128,7 +133,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						atomsCount.length = 0;
 						for(const field of fields) {
 							const count = Number.parseInt(field, 10);
-							atomsCount.push(count);
+							if(count > 0) atomsCount.push(count);
 						}
 
 						// Already has the atoms types
@@ -193,7 +198,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 				case LineType.atoms: {
 					const fields = line.trim().split(/\s+/);
-
 					const position = cartesian ? [
 											Number.parseFloat(fields[0]) * scaleFactor,
 											Number.parseFloat(fields[1]) * scaleFactor,
