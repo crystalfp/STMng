@@ -53,7 +53,8 @@ import {VFileInput} from "vuetify/components/VFileInput";
 import {VSelect} from "vuetify/components/VSelect";
 import {VNumberInput} from "vuetify/components/VNumberInput";
 import {VTextarea} from "vuetify/components/VTextarea";
-import {VTooltip} from "vuetify/components/VTooltip";
+// import {VTooltip} from "vuetify/components/VTooltip";
+// import {Tooltip} from "vuetify/directives/tooltip";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -89,8 +90,11 @@ const app = createApp(App)
 			VSelect,
 			VNumberInput,
 			VTextarea,
-			VTooltip,
+			// VTooltip,
 		},
+		// directives: {
+		// 	Tooltip,
+		// },
 		theme: {
     		defaultTheme: "dark",
   		},

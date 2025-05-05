@@ -78,7 +78,7 @@ class ProjectManager {
 									   idPrefix: "polyhedra", ui: "DrawPolyhedraCtrl"},
 		{type: "interpolate-volume",   in: true,  out: true,  graphic: "none", handler: InterpolateVolume,
 									   idPrefix: "smooth",    ui: "InterpolateVolumeCtrl"},
-		{type: "slice-structure",      in: true,  out: true,  graphic: "out", handler: SliceStructure,
+		{type: "slice-structure",      in: true,  out: true,  graphic: "out",  handler: SliceStructure,
 									   idPrefix: "smooth",    ui: "SliceStructureCtrl"},
 		{type: "measures",             in: true,  out: false, graphic: "out",  handler: Measures,
 									   idPrefix: "measure",   ui: "MeasuresCtrl"},

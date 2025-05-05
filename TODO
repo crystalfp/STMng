@@ -7,7 +7,6 @@ To do:
   ☐ Copy residues in compute symmetries
   ☐ Investigate `v-snackbar-queue` for messages
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ Document "Optimize plane offset" in slice structure
   ☐ See if it is needed to convert NodeInfo in ProjectEditor to object from array
 
 Performance:
@@ -46,7 +45,6 @@ Nice to have/Future:
   ☐ Label color (contrasting with atom color)
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Rendering spheres using sprites (as in VMD)
-  ☐ Add tooltips using `v-tooltip` directive
   ☐ Move to WebGPURenderer
   ☐ Simplify error messages for user, leaving full message in log
 
@@ -60,6 +58,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Document "Optimize plane offset" in slice structure @done(2025-05-04 11:26) @project(To do)
+  ✘ Add tooltips using `v-tooltip` directive @cancelled(2025-05-05 06:53) @project(Nice to have/Future)
   ✔ Add "New" button to project editor to load an empty project @done(2025-05-01 15:09) @project(To do)
   ✔ In project editor add check that input/output are connected @done(2025-04-29 16:12) @project(To do)
   ✔ Output PDF <https://www.npmjs.com/package/image-to-pdf> or, better, SVG @done(2025-04-25 16:44) @project(ToDo eventually)
