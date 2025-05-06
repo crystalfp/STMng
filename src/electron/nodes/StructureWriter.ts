@@ -123,6 +123,11 @@ export class StructureWriter extends NodeCore {
 					writer = new WriterCHGCAR();
 					break;
 				}
+				case "PDB": {
+					const {WriterPDB} = await import("../writers/WritePDB");
+					writer = new WriterPDB();
+					break;
+				}
 				default: throw Error("Invalid format");
 			}
 		}

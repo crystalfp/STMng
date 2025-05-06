@@ -33,7 +33,7 @@ controlStore.hasWriter = true;
 const {writerAccumulate} = storeToRefs(controlStore);
 
 /** Formats that could be saved */
-const fileFormats = ["CHGCAR", "CIF", "POSCAR", "Shel-X", "XYZ"];
+const fileFormats = ["CHGCAR", "CIF", "PDB", "POSCAR", "Shel-X", "XYZ"];
 
 const format         = ref("");
 const outputFile     = ref("");
@@ -120,20 +120,24 @@ const filterFromFormat = (fileFormat: string): string => {
     let filter: FileFilter[];
 	switch(fileFormat) {
         case "CHGCAR":
-            filter = [{name: "CHGCAR",	extensions: ["chgcar"]},
-                      {name: "All",	extensions: ["*"]}];
+            filter = [{name: "CHGCAR", extensions: ["chgcar"]},
+                      {name: "All",    extensions: ["*"]}];
             break;
         case "CIF":
             filter = [{name: "CIF",	extensions: ["cif"]},
                       {name: "All",	extensions: ["*"]}];
             break;
         case "POSCAR":
-            filter = [{name: "POSCAR",	extensions: ["poscar"]},
+            filter = [{name: "POSCAR", extensions: ["poscar"]},
+                      {name: "All",	   extensions: ["*"]}];
+            break;
+        case "PDB":
+            filter = [{name: "PDB",	extensions: ["pdb"]},
                       {name: "All",	extensions: ["*"]}];
             break;
         case "Shel-X":
-            filter = [{name: "Shel-X",	extensions: ["res"]},
-                      {name: "All",	extensions: ["*"]}];
+            filter = [{name: "Shel-X", extensions: ["res"]},
+                      {name: "All",	   extensions: ["*"]}];
             break;
         case "XYZ":
             filter = [{name: "XYZ",	extensions: ["xyz"]},

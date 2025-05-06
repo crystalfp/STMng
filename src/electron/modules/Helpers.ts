@@ -222,6 +222,14 @@ export const format = (value: number): string => value.toFixed(6).padStart(10, "
 export const hasNoUnitCell = (basis: BasisType): boolean => basis.every((value) => value === 0);
 
 /**
+ * Check if there is a basis matrix
+ *
+ * @param basis - The basis matrix to test
+ * @returns True if the basis has vectors defined
+ */
+export const hasUnitCell = (basis: BasisType): boolean => basis.some((value) => value !== 0);
+
+/**
  * Get the volume value range
  *
  * @param structure - The structure with volumetric data
