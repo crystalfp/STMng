@@ -1,5 +1,5 @@
 /**
- * Slice structure along a plane or a sphere
+ * Slice structure along a plane, a sphere or a slab
  *
  * @packageDocumentation
  *
@@ -10,9 +10,9 @@ import {hasNoUnitCell} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, ChannelDefinition, CtrlParams, BasisType} from "@/types";
 import {findIntersections} from "../modules/UnitCellIntersections";
 import {getAtomData} from "../modules/AtomData";
+import type {Structure, ChannelDefinition, CtrlParams, BasisType} from "@/types";
 
 /**
  * Slice plane parameters
@@ -79,7 +79,11 @@ export class SliceStructure extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data || data.atoms.length === 0) return;
+		if(!data || data.atoms.length === 0) {
+			this.toNextNode(new EmptyStructure());
+			return;
+		}
+
 		this.structure = data;
 
 		this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);

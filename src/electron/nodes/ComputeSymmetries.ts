@@ -12,6 +12,7 @@ import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
+import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
 
 /**
@@ -90,8 +91,12 @@ export class ComputeSymmetries extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
+		if(!data || data.atoms.length === 0) {
+			this.toNextNode(new EmptyStructure());
+			return;
+		}
+
 		this.inputStructure = data;
-		if(!this.inputStructure) return;
 
 		this.computeSymmetries();
 	}

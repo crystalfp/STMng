@@ -1,4 +1,5 @@
 Bugs:
+  ☐ Behavior of "show slicer". Should be independent from enable slicer
 
 To do:
   ☐ Option to not fold fractional coordinates inside unit cell on read
