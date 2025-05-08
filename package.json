@@ -37,7 +37,6 @@
     "commander": "^13.1.0",
     "custom-electron-titlebar": "^4.2.8",
     "electron-log": "^5.4.0",
-    "js-yaml": "^4.1.0",
     "pinia": "^3.0.2",
     "three": "^0.176.0",
     "three-viewport-gizmo": "^2.2.0",
@@ -48,7 +47,8 @@
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1",
     "vuetify": "^3.8.4",
-    "workerpool": "^9.2.0"
+    "workerpool": "^9.2.0",
+    "yaml": "^2.7.1"
   },
   "devDependencies": {
     "@electron-toolkit/preload": "^3.0.2",
