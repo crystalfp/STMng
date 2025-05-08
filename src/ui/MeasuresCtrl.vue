@@ -3,7 +3,7 @@
  * @component
  * Controls for the measure atoms positions, distances and angles node.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-09
  */
 

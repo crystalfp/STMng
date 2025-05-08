@@ -6,7 +6,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-24
  */
 import {createReadStream} from "node:fs";

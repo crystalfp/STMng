@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-05
  */
 /** Matrix 64x64 of coefficients to compute values interpolation in volume */

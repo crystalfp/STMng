@@ -3,7 +3,7 @@
  * @component
  * Show a button to change a color.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 import {ref} from "vue";

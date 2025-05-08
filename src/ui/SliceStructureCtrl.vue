@@ -3,7 +3,7 @@
  * @component
  * Controls for the slice structure node.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-09
  */
 import {ref, watch, watchEffect} from "vue";
@@ -105,18 +105,21 @@ askNode(id, "init")
 const renderer = new SliceStructureRenderer(id);
 
 /** Change parameters for sphere slice */
-watch([enableSlicer, mode, selectorKind, atomsSelector, sphereRadius, sliceInside], () => {
+watch([enableSlicer, mode, selectorKind, atomsSelector,
+       sphereRadius, sliceInside, showSlicer], () => {
 
-    if(!enableSlicer.value || mode.value !== "sphere") return;
+    if((!enableSlicer.value && !showSlicer.value) || mode.value !== "sphere") return;
 
     askNode(id, "sphere", {
         atomsSelector: atomsSelector.value,
         selectorKind: selectorKind.value,
         sphereRadius: sphereRadius.value,
-        sliceInside: sliceInside.value
+        sliceInside: sliceInside.value,
+        showSlicer: showSlicer.value,
+        enableSlicer: enableSlicer.value
     })
     .then((response: CtrlParams) => {
-        renderer.drawSpheres(response.renderingParams as number[] ?? [],
+        renderer.drawSpheres(response.renderingParams as number[],
                              sphereRadius.value,
                              showSlicer.value);
     })
@@ -125,9 +128,9 @@ watch([enableSlicer, mode, selectorKind, atomsSelector, sphereRadius, sliceInsid
 
 /** Selected plane slice */
 watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
-       parallelC, percentC, sliceInside], () => {
+       parallelC, percentC, sliceInside, showSlicer], () => {
 
-    if(!enableSlicer.value || mode.value !== "plane") return;
+    if((!enableSlicer.value && !showSlicer.value) || mode.value !== "plane") return;
 
     askNode(id, "plane", {
         parallelA: parallelA.value,
@@ -136,7 +139,9 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
         percentB: percentB.value,
         parallelC: parallelC.value,
         percentC: percentC.value,
-        sliceInside: sliceInside.value
+        sliceInside: sliceInside.value,
+        showSlicer: showSlicer.value,
+        enableSlicer: enableSlicer.value
     })
     .then((response: CtrlParams) => {
         renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
@@ -146,9 +151,9 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
 
 /** Slice along a slab */
 watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
-       parallelC, percentC, thickness, sliceInside], () => {
+       parallelC, percentC, thickness, sliceInside, showSlicer], () => {
 
-    if(!enableSlicer.value || mode.value !== "slab") return;
+    if((!enableSlicer.value && !showSlicer.value) || mode.value !== "slab") return;
 
     askNode(id, "slab", {
         parallelA: parallelA.value,
@@ -158,7 +163,9 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
         parallelC: parallelC.value,
         percentC: percentC.value,
         thickness: thickness.value,
-        sliceInside: sliceInside.value
+        sliceInside: sliceInside.value,
+        showSlicer: showSlicer.value,
+        enableSlicer: enableSlicer.value
     })
     .then((response) => {
         renderer.drawIntersectedPlane(response.intersections1 as number[], showSlicer.value);
@@ -168,9 +175,10 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
 });
 
 /** Slice along a Miller plane */
-watch([enableSlicer, mode, millerH, millerK, millerL, millerPlaneOffset, sliceInside], () => {
+watch([enableSlicer, mode, millerH, millerK, millerL,
+       millerPlaneOffset, sliceInside, showSlicer], () => {
 
-    if(!enableSlicer.value || mode.value !== "miller") return;
+    if((!enableSlicer.value && !showSlicer.value) || mode.value !== "miller") return;
 
     if(!optimizing.value) areaEnergy.value = 0;
 
@@ -179,7 +187,9 @@ watch([enableSlicer, mode, millerH, millerK, millerL, millerPlaneOffset, sliceIn
         millerK: millerK.value,
         millerL: millerL.value,
         millerPlaneOffset: millerPlaneOffset.value,
-        sliceInside: sliceInside.value
+        sliceInside: sliceInside.value,
+        showSlicer: showSlicer.value,
+        enableSlicer: enableSlicer.value
     })
     .then((response: CtrlParams) => {
         renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
@@ -276,7 +286,7 @@ const optimizeOffset = (): void => {
 <template>
 <v-container class="container">
   <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-2 ml-3" />
-  <v-switch v-model="showSlicer" label="Show slicer" class="ml-3" />
+  <v-switch v-model="showSlicer" label="Show slicer geometry" class="ml-3" />
   <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />
   <v-row class="mb-2">
     <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">

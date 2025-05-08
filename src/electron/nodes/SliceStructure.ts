@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-09
  */
 import {hasNoUnitCell} from "../modules/Helpers";
@@ -54,7 +54,8 @@ export class SliceStructure extends NodeCore {
 	private planeRenderingIntersections: number[] = [];
 	private planeRenderingIntersections2: number[] = [];
 
-	private millerPlaneNormal: number[] = [];
+	private planesNormals: number[] = [];
+	private planesPoints: number[] = [];
 	private millerPlanePoint: number[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
@@ -86,6 +87,7 @@ export class SliceStructure extends NodeCore {
 
 		this.structure = data;
 
+		if(this.enableSlicer || this.showSlicer) this.prepareSlicerGeometry();
 		this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);
 	}
 
@@ -146,6 +148,211 @@ export class SliceStructure extends NodeCore {
         this.thickness = params.thickness as number ?? 1;
 	}
 
+	private prepareSlicerGeometry(): void {
+
+		if(this.mode === "sphere") {
+			this.prepareSphereSlicerGeometry();
+			return;
+		}
+		if(hasNoUnitCell(this.structure!.crystal.basis)) {
+			return;
+		}
+		switch(this.mode) {
+			case "plane":  return this.preparePlaneSlicerGeometry();
+			case "miller": return this.prepareMillerSlicerGeometry();
+			case "slab":   return this.prepareSlabSlicerGeometry();
+		}
+	}
+
+	private prepareSphereSlicerGeometry(): void {
+
+		const centerAtomsIdx = selectAtomsByKind(this.structure!,
+												 this.selectorKind,
+												 this.atomsSelector);
+
+		this.sphereRenderingParams.length = 0;
+		for(const idx of centerAtomsIdx) {
+
+			const center = this.structure!.atoms[idx].position;
+			this.sphereRenderingParams.push(center[0], center[1], center[2]);
+		}
+	}
+
+	/**
+	 * Prepare the plane intersections with the unit cell and the plane parameters
+	 */
+	private preparePlaneSlicerGeometry(): void {
+
+		const pa = this.percentA/100;
+		const pb = this.percentB/100;
+		const pc = this.percentC/100;
+
+		const {crystal} = this.structure!;
+		const {basis, origin} = crystal;
+
+		const points = [
+			pa*basis[0]+origin[0],
+			pa*basis[1]+origin[1],
+			pa*basis[2]+origin[2],
+			pb*basis[3]+origin[0],
+			pb*basis[4]+origin[1],
+			pb*basis[5]+origin[2],
+			pc*basis[6]+origin[0],
+			pc*basis[7]+origin[1],
+			pc*basis[8]+origin[2]
+		];
+
+		const parallelCode = (this.parallelA ? 1 : 0) + (this.parallelB ? 2 : 0) + (this.parallelC ? 4 : 0);
+
+		const {normal, point} = this.createPlane(points, parallelCode, basis);
+
+		this.planesNormals = [
+			normal[0],
+			normal[1],
+			normal[2]
+		];
+		this.planesPoints = [
+			point[0],
+			point[1],
+			point[2]
+		];
+
+		this.planeRenderingIntersections = findIntersections(basis, origin, normal, point).flat();
+	}
+
+	/**
+	 * Prepare a plane identified by its (hkl) Miller indices
+	 */
+	private prepareMillerSlicerGeometry(): void {
+
+		const {crystal} = this.structure!;
+		const {basis, origin} = crystal;
+		let parallelCode = 0;
+		const points = Array<number>(9).fill(0);
+
+		if(this.millerH === 0) {
+			parallelCode += 1;
+		}
+		else {
+			const h = 1/this.millerH;
+			const pa = h < 0 ? 1+h : h;
+			points[0] = pa*basis[0]+origin[0];
+			points[1] = pa*basis[1]+origin[1];
+			points[2] = pa*basis[2]+origin[2];
+		}
+
+		if(this.millerK === 0) {
+			parallelCode += 2;
+		}
+		else {
+			const k = 1/this.millerK;
+			const pb = k < 0 ? 1+k : k;
+			points[3] = pb*basis[3]+origin[0];
+			points[4] = pb*basis[4]+origin[1];
+			points[5] = pb*basis[5]+origin[2];
+		}
+
+		if(this.millerL === 0) {
+			parallelCode += 4;
+		}
+		else {
+			const l = 1/this.millerL;
+			const pc = l < 0 ? 1+l : l;
+			points[6] = pc*basis[6]+origin[0];
+			points[7] = pc*basis[7]+origin[1];
+			points[8] = pc*basis[8]+origin[2];
+		}
+
+		const {normal, point} = this.createPlane(points, parallelCode, basis);
+
+		this.planesNormals = [
+			normal[0],
+			normal[1],
+			normal[2]
+		];
+		this.millerPlanePoint = [
+			point[0],
+			point[1],
+			point[2]
+		];
+
+		if(this.millerPlaneOffset !== 0) {
+			point[0] += this.millerPlaneOffset*normal[0];
+			point[1] += this.millerPlaneOffset*normal[1];
+			point[2] += this.millerPlaneOffset*normal[2];
+		}
+
+		this.planesPoints = [
+			point[0],
+			point[1],
+			point[2]
+		];
+
+		this.planeRenderingIntersections = findIntersections(basis, origin, normal, point).flat();
+	}
+
+	private prepareSlabSlicerGeometry(): void {
+
+		const pa = this.percentA/100;
+		const pb = this.percentB/100;
+		const pc = this.percentC/100;
+
+		const {crystal} = this.structure!;
+		const {basis, origin} = crystal;
+
+		const points = [
+			pa*basis[0]+origin[0],
+			pa*basis[1]+origin[1],
+			pa*basis[2]+origin[2],
+			pb*basis[3]+origin[0],
+			pb*basis[4]+origin[1],
+			pb*basis[5]+origin[2],
+			pc*basis[6]+origin[0],
+			pc*basis[7]+origin[1],
+			pc*basis[8]+origin[2]
+		];
+
+		const parallelCode = (this.parallelA ? 1 : 0) + (this.parallelB ? 2 : 0) + (this.parallelC ? 4 : 0);
+
+		const {normal, point} = this.createPlane(points, parallelCode, basis);
+
+		this.planesNormals = [
+			normal[0],
+			normal[1],
+			normal[2]
+		];
+
+		const halfThickness = this.thickness/2;
+		const offsetAlongNormal = [
+			halfThickness*normal[0],
+			halfThickness*normal[1],
+			halfThickness*normal[2]
+		];
+
+		const pt1 = [
+			point[0]+offsetAlongNormal[0],
+			point[1]+offsetAlongNormal[1],
+			point[2]+offsetAlongNormal[2]
+		];
+		const pt2 = [
+			point[0]-offsetAlongNormal[0],
+			point[1]-offsetAlongNormal[1],
+			point[2]-offsetAlongNormal[2]
+		];
+
+		this.planesPoints = [
+			pt1[0],
+			pt1[1],
+			pt1[2],
+			pt2[0],
+			pt2[1],
+			pt2[2]
+		];
+
+		this.planeRenderingIntersections  = findIntersections(basis, origin, normal, pt1).flat();
+		this.planeRenderingIntersections2 = findIntersections(basis, origin, normal, pt2).flat();
+	}
+
 	/**
 	 * Slice structure according to the mode
 	 *
@@ -156,9 +363,7 @@ export class SliceStructure extends NodeCore {
 		if(!this.structure) return new EmptyStructure();
 
 		if(this.mode === "sphere") {
-			const selectedIdx = selectAtomsByKind(this.structure,
-												  this.selectorKind, this.atomsSelector);
-			return this.sliceSphere(selectedIdx);
+			return this.sliceSphere();
 		}
 
 		if(hasNoUnitCell(this.structure.crystal.basis)) {
@@ -167,7 +372,7 @@ export class SliceStructure extends NodeCore {
 
 		switch(this.mode) {
 			case "plane":  return this.slicePlane();
-			case "miller": return this.sliceMiller();
+			case "miller": return this.slicePlane();
 			case "slab":   return this.sliceSlab();
 		}
 		return this.structure;
@@ -230,23 +435,19 @@ export class SliceStructure extends NodeCore {
 	 * @param centerAtomsIdx - Indices of center atoms
 	 * @returns Structure with atoms sliced by the sphere
 	 */
-	private sliceSphere(centerAtomsIdx: number[]): Structure {
+	private sliceSphere(): Structure {
 
 		const natoms = this.structure!.atoms.length;
 		const inside = Array<boolean>(natoms).fill(false);
-		this.sphereRenderingParams.length = 0;
 
-		for(const idx of centerAtomsIdx) {
-
-			const center = this.structure!.atoms[idx].position;
-			this.sphereRenderingParams.push(center[0], center[1], center[2]);
+		for(let k=0; k < this.sphereRenderingParams.length; k+=3) {
 
 			for(let i=0; i < natoms; ++i) {
 
 				const {position} = this.structure!.atoms[i];
-				const distance = Math.hypot(position[0]-center[0],
-										    position[1]-center[1],
-										    position[2]-center[2]);
+				const distance = Math.hypot(position[0]-this.sphereRenderingParams[k+0],
+										    position[1]-this.sphereRenderingParams[k+1],
+										    position[2]-this.sphereRenderingParams[k+2]);
 
 				if(distance <= this.sphereRadius) inside[i] = true;
 			}
@@ -372,111 +573,16 @@ export class SliceStructure extends NodeCore {
 	 */
 	private slicePlane(): Structure {
 
-		const pa = this.percentA/100;
-		const pb = this.percentB/100;
-		const pc = this.percentC/100;
-
-		const {crystal, atoms} = this.structure!;
-		const {basis, origin} = crystal;
+		const {atoms} = this.structure!;
 		const natoms = atoms.length;
-
-		const points = [
-			pa*basis[0]+origin[0],
-			pa*basis[1]+origin[1],
-			pa*basis[2]+origin[2],
-			pb*basis[3]+origin[0],
-			pb*basis[4]+origin[1],
-			pb*basis[5]+origin[2],
-			pc*basis[6]+origin[0],
-			pc*basis[7]+origin[1],
-			pc*basis[8]+origin[2]
-		];
-
-		const parallelCode = (this.parallelA ? 1 : 0) + (this.parallelB ? 2 : 0) + (this.parallelC ? 4 : 0);
-
-		const {normal, point} = this.createPlane(points, parallelCode, basis);
-
-		this.planeRenderingIntersections = findIntersections(basis, origin, normal, point).flat();
 
 		const inside = Array<boolean>(natoms).fill(false);
 
 		for(let i=0; i < natoms; ++i) {
 			const {position} = atoms[i];
-			const dot = normal[0]*(position[0]-point[0]) +
-						normal[1]*(position[1]-point[1]) +
-						normal[2]*(position[2]-point[2]);
-			if(dot >= 0) inside[i] = true;
-		}
-
-		return this.selectAtoms(inside);
-	}
-
-	/**
-	 * Slice according to a plane identified by its (hkl) Miller indices
-	 *
-	 * @returns Sliced structure
-	 */
-	private sliceMiller(): Structure {
-
-		const {crystal, atoms} = this.structure!;
-		const {basis, origin} = crystal;
-		const natoms = atoms.length;
-		let parallelCode = 0;
-		const points = Array<number>(9).fill(0);
-
-		if(this.millerH === 0) {
-			parallelCode += 1;
-		}
-		else {
-			const h = 1/this.millerH;
-			const pa = h < 0 ? 1+h : h;
-			points[0] = pa*basis[0]+origin[0];
-			points[1] = pa*basis[1]+origin[1];
-			points[2] = pa*basis[2]+origin[2];
-		}
-
-		if(this.millerK === 0) {
-			parallelCode += 2;
-		}
-		else {
-			const k = 1/this.millerK;
-			const pb = k < 0 ? 1+k : k;
-			points[3] = pb*basis[3]+origin[0];
-			points[4] = pb*basis[4]+origin[1];
-			points[5] = pb*basis[5]+origin[2];
-		}
-
-		if(this.millerL === 0) {
-			parallelCode += 4;
-		}
-		else {
-			const l = 1/this.millerL;
-			const pc = l < 0 ? 1+l : l;
-			points[6] = pc*basis[6]+origin[0];
-			points[7] = pc*basis[7]+origin[1];
-			points[8] = pc*basis[8]+origin[2];
-		}
-
-		const {normal, point} = this.createPlane(points, parallelCode, basis);
-
-		this.millerPlaneNormal = normal;
-		this.millerPlanePoint = point;
-
-		if(this.millerPlaneOffset !== 0) {
-			point[0] += this.millerPlaneOffset*normal[0];
-			point[1] += this.millerPlaneOffset*normal[1];
-			point[2] += this.millerPlaneOffset*normal[2];
-		}
-
-		this.planeRenderingIntersections = findIntersections(basis, origin, normal, point).flat();
-
-		const inside = Array<boolean>(natoms).fill(false);
-
-		for(let i=0; i < natoms; ++i) {
-			const {position} = atoms[i];
-			const dot = normal[0]*(position[0]-point[0]) +
-						normal[1]*(position[1]-point[1]) +
-						normal[2]*(position[2]-point[2]);
+			const dot = this.planesNormals[0]*(position[0]-this.planesPoints[0]) +
+						this.planesNormals[1]*(position[1]-this.planesPoints[1]) +
+						this.planesNormals[2]*(position[2]-this.planesPoints[2]);
 			if(dot >= 0) inside[i] = true;
 		}
 
@@ -528,13 +634,13 @@ export class SliceStructure extends NodeCore {
 		const {basis, origin} = crystal;
 
 		const point = [
-			this.millerPlanePoint[0] + offset*this.millerPlaneNormal[0],
-			this.millerPlanePoint[1] + offset*this.millerPlaneNormal[1],
-			this.millerPlanePoint[2] + offset*this.millerPlaneNormal[2]
+			this.millerPlanePoint[0] + offset*this.planesNormals[0],
+			this.millerPlanePoint[1] + offset*this.planesNormals[1],
+			this.millerPlanePoint[2] + offset*this.planesNormals[2]
 		];
 
 		const intersections = findIntersections(basis, origin,
-												this.millerPlaneNormal, point);
+												this.planesNormals, point);
 
 		if(intersections.length === 0) return 0;
 
@@ -548,15 +654,15 @@ export class SliceStructure extends NodeCore {
 
 			const {position: pFrom, atomZ: zFrom} = atoms[from];
 
-			const dotFrom = this.millerPlaneNormal[0]*(pFrom[0]-this.millerPlanePoint[0]) +
-							this.millerPlaneNormal[1]*(pFrom[1]-this.millerPlanePoint[1]) +
-							this.millerPlaneNormal[2]*(pFrom[2]-this.millerPlanePoint[2]);
+			const dotFrom = this.planesNormals[0]*(pFrom[0]-this.millerPlanePoint[0]) +
+							this.planesNormals[1]*(pFrom[1]-this.millerPlanePoint[1]) +
+							this.planesNormals[2]*(pFrom[2]-this.millerPlanePoint[2]);
 
 			const {position: pTo, atomZ: zTo} = atoms[to];
 
-			const dotTo = this.millerPlaneNormal[0]*(pTo[0]-this.millerPlanePoint[0]) +
-						  this.millerPlaneNormal[1]*(pTo[1]-this.millerPlanePoint[1]) +
-						  this.millerPlaneNormal[2]*(pTo[2]-this.millerPlanePoint[2]);
+			const dotTo = this.planesNormals[0]*(pTo[0]-this.millerPlanePoint[0]) +
+						  this.planesNormals[1]*(pTo[1]-this.millerPlanePoint[1]) +
+						  this.planesNormals[2]*(pTo[2]-this.millerPlanePoint[2]);
 
 			if((dotFrom >= 0 && dotTo < 0) || (dotFrom < 0 && dotTo >= 0)) {
 
@@ -609,53 +715,18 @@ export class SliceStructure extends NodeCore {
 	 */
 	private sliceSlab(): Structure {
 
-		const pa = this.percentA/100;
-		const pb = this.percentB/100;
-		const pc = this.percentC/100;
-
-		const {crystal, atoms} = this.structure!;
-		const {basis, origin} = crystal;
+		const {atoms} = this.structure!;
 		const natoms = atoms.length;
-
-		const points = [
-			pa*basis[0]+origin[0],
-			pa*basis[1]+origin[1],
-			pa*basis[2]+origin[2],
-			pb*basis[3]+origin[0],
-			pb*basis[4]+origin[1],
-			pb*basis[5]+origin[2],
-			pc*basis[6]+origin[0],
-			pc*basis[7]+origin[1],
-			pc*basis[8]+origin[2]
-		];
-
-		const parallelCode = (this.parallelA ? 1 : 0) + (this.parallelB ? 2 : 0) + (this.parallelC ? 4 : 0);
-
-		const {normal, point} = this.createPlane(points, parallelCode, basis);
-
-		const pt1 = [
-			point[0]+normal[0]*this.thickness/2,
-			point[1]+normal[1]*this.thickness/2,
-			point[2]+normal[2]*this.thickness/2
-		];
-		const pt2 = [
-			point[0]-normal[0]*this.thickness/2,
-			point[1]-normal[1]*this.thickness/2,
-			point[2]-normal[2]*this.thickness/2
-		];
-
-		this.planeRenderingIntersections  = findIntersections(basis, origin, normal, pt1).flat();
-		this.planeRenderingIntersections2 = findIntersections(basis, origin, normal, pt2).flat();
 
 		const inside = Array<boolean>(natoms).fill(false);
 		for(let i=0; i < natoms; ++i) {
 			const {position} = atoms[i];
-			const dot1 = normal[0]*(position[0]-pt1[0]) +
-						 normal[1]*(position[1]-pt1[1]) +
-						 normal[2]*(position[2]-pt1[2]);
-			const dot2 = normal[0]*(position[0]-pt2[0]) +
-						 normal[1]*(position[1]-pt2[1]) +
-						 normal[2]*(position[2]-pt2[2]);
+			const dot1 = this.planesNormals[0]*(position[0]-this.planesPoints[0]) +
+						 this.planesNormals[1]*(position[1]-this.planesPoints[1]) +
+						 this.planesNormals[2]*(position[2]-this.planesPoints[2]);
+			const dot2 = this.planesNormals[0]*(position[0]-this.planesPoints[3]) +
+						 this.planesNormals[1]*(position[1]-this.planesPoints[4]) +
+						 this.planesNormals[2]*(position[2]-this.planesPoints[5]);
 			if(dot1 <= 0 && dot2 >= 0) inside[i] = true;
 		}
 
@@ -684,8 +755,11 @@ export class SliceStructure extends NodeCore {
 		this.atomsSelector = params.atomsSelector as string ?? "";
         this.sphereRadius = params.sphereRadius as number ?? 1;
         this.sliceInside = params.sliceInside as boolean ?? false;
+		this.showSlicer = params.showSlicer as boolean ?? false;
+		this.enableSlicer = params.enableSlicer as boolean ?? false;
 
-		this.toNextNode(this.sliceStructure());
+		if(this.showSlicer || this.enableSlicer) this.prepareSphereSlicerGeometry();
+		this.toNextNode(this.enableSlicer ? this.sliceSphere() : this.structure!);
 
 		return {renderingParams: this.sphereRenderingParams};
 	}
@@ -704,8 +778,11 @@ export class SliceStructure extends NodeCore {
         this.parallelC = params.parallelC as boolean ?? false;
         this.percentC = params.percentC as number ?? 50;
         this.sliceInside = params.sliceInside as boolean ?? false;
+		this.showSlicer = params.showSlicer as boolean ?? false;
+		this.enableSlicer = params.enableSlicer as boolean ?? false;
 
-		this.toNextNode(this.sliceStructure());
+		if(this.showSlicer || this.enableSlicer) this.preparePlaneSlicerGeometry();
+		this.toNextNode(this.enableSlicer ? this.slicePlane() : this.structure!);
 
 		return {
 			intersections: this.planeRenderingIntersections
@@ -724,8 +801,11 @@ export class SliceStructure extends NodeCore {
         this.millerL = params.millerL as number ?? 0;
 		this.millerPlaneOffset = params.millerPlaneOffset as number ?? 0;
         this.sliceInside = params.sliceInside as boolean ?? false;
+		this.showSlicer = params.showSlicer as boolean ?? false;
+		this.enableSlicer = params.enableSlicer as boolean ?? false;
 
-		this.toNextNode(this.sliceStructure());
+		if(this.showSlicer || this.enableSlicer) this.prepareMillerSlicerGeometry();
+		this.toNextNode(this.enableSlicer ? this.slicePlane() : this.structure!);
 
 		return {
 			intersections: this.planeRenderingIntersections
@@ -763,8 +843,11 @@ export class SliceStructure extends NodeCore {
         this.percentC = params.percentC as number ?? 50;
 		this.thickness = params.thickness as number ?? 1;
         this.sliceInside = params.sliceInside as boolean ?? false;
+		this.showSlicer = params.showSlicer as boolean ?? false;
+		this.enableSlicer = params.enableSlicer as boolean ?? false;
 
-		this.toNextNode(this.sliceStructure());
+		if(this.showSlicer || this.enableSlicer) this.prepareSlabSlicerGeometry();
+		this.toNextNode(this.enableSlicer ? this.sliceSlab() : this.structure!);
 
 		return {
 			intersections1: this.planeRenderingIntersections,

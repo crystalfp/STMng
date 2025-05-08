@@ -3,7 +3,7 @@
  * @component
  * Main entry point of the application. It defines the general layout of the screen.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 

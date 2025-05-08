@@ -21,9 +21,9 @@
 <h1 class="subh1">Remove part of the structure</h1>
 
 <div class="description">
-<p>Remove part of a structure using a sphere, a plane or a pair of planes. The removed part could be iside or outside the selected geometry.</p>
+<p>Remove part of a structure using a sphere, a plane or a pair of planes. The removed part could be inside or outside the selected geometry.</p>
 <p>The spheres that delimit the cut are centered on selected atoms.</p>
-<p>The plane that delimits the cut is selected by giving the points along the basis vectors where the plane passes and/or the basis vector(s) that should be parallel to the plane. The intersections could also be given with Miller indices <i>(hkl)</i>.</p>
+<p>The plane that delimits the cut is selected by giving its intersect with the basis vectors and/or the basis vector(s) that should be parallel to the plane. The intersections could also be given with Miller indices <i>(hkl)</i>.</p>
 <p>A pair of planes with the same distance from the selected plane delimits a slab that cuts the structure.</p>
 <p>If the geometric parameters make no sense (e.g. plane parallel to three axis) an error is shown.</p>
 </div>
@@ -36,19 +36,19 @@
 	<td class="c3">Enable the structure slicing.</td>
 </tr>
 <tr>
-	<td class="c1">Show slicer</td>
+	<td class="c1">Show slicer geometry</td>
 	<td class="c2">toggle</td>
-	<td class="c3">Show the slicer geometry.</td>
+	<td class="c3">Show the slicer geometry independently from the effective slicing of the structure.</td>
 </tr>
 <tr>
 	<td class="c1">Slice inside</td>
 	<td class="c2">toggle</td>
-	<td class="c3">Reverse the removed part of the structure.</td>
+	<td class="c3">Reverse the side of the removed part of the structure.</td>
 </tr>
 <tr>
 	<td class="c1">Mode</td>
 	<td class="c2">radio buttons</td>
-	<td class="c3">Select the geometry that cut the structure.
+	<td class="c3">Select the geometry that cuts the structure.
   <dl>
   <dt>Plane</dt>
   <dd>The cutting geometry is a plane.</dd>
@@ -57,7 +57,7 @@
   <dt>Sphere</dt>
   <dd>The cutting geometries are spheres centered on selected atoms.</dd>
   <dt>Slab</dt>
-  <dd>The slab is determined by two parallel planes at a set distance.</dd>
+  <dd>The slab is determined by two parallel planes at a given distance.</dd>
   </dl></td>
 </tr>
 <tr>
@@ -68,11 +68,11 @@
   <dt>Plane</dt>
   <dd>For each base vector there is a toggle that determine if the plane is parallel to the vector and a slider that fix the intersection with the vector as a percentage of the vector length.</dd>
   <dt>Miller</dt>
-  <dd>Three sliders set the <i>(hkl)</i> indices. Another slider sets the offset of the plane from the computed one. The button “Optimize offset” changes the offset trying to find the minimum area energy on the cutting plane.</dd>
+  <dd>Three sliders set the Miller <i>(hkl)</i> indices. Another slider sets the offset of the plane from the computed one. The button “Optimize offset” changes the offset trying to find the minimum area energy on the cutting plane.</dd>
   <dt>Sphere</dt>
   <dd>An atom selector selects the center atom of the spheres. A slider sets the common radius.</dd>
   <dt>Slab</dt>
-  <dd>The two planes delimiting the slab are equidistant from a plane defined as in the "Plane" mode. The slab planes are distant half the set thickness from the defined plane.</dd>
+  <dd>The two planes delimiting the slab are equidistant from a plane defined as in the “Plane” mode. The slab planes are distant half the set thickness from the defined plane.</dd>
   </dl></td>
 </tr>
 <tr>

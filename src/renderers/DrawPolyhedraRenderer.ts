@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-11-29
  */
 import {MeshLambertMaterial, FrontSide, Group, Vector3,

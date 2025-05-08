@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-10
  */
 import {Group, SphereGeometry, MeshLambertMaterial, DoubleSide,
@@ -48,7 +48,7 @@ export class SliceStructureRenderer {
 	drawSpheres(centers: number[], radius: number, visible: boolean): void {
 
 		sm.clearGroup(this.name);
-		if(centers.length < 3) return;
+		if(!centers || centers.length < 3) return;
 
 		for(let i=0; i < centers.length; i += 3) {
 			const sphere = new Mesh(new SphereGeometry(radius, 32, 32), this.material);
@@ -69,11 +69,12 @@ export class SliceStructureRenderer {
 	drawIntersectedPlane(vertices: number[], visible: boolean, doNotClear=false): void {
 
 		if(!doNotClear) sm.clearGroup(this.name);
-		const nvertices = vertices.length/3;
-		if(nvertices < 3) return;
+		if(!vertices) return;
+		const nVertices = vertices.length/3;
+		if(nVertices < 3) return;
 
 		const indices = [];
-		for(let i=2; i < nvertices; ++i) {
+		for(let i=2; i < nVertices; ++i) {
 			indices.push(0, i-1, i);
 		}
 

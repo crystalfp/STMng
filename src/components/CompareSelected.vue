@@ -3,7 +3,7 @@
  * @component
  * Compare two structures selected in the scatterplot.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-24
  */
 import {onBeforeUnmount, onMounted, ref, useTemplateRef, watch} from "vue";

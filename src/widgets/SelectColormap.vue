@@ -3,7 +3,7 @@
  * @component
  * Selector for the colormaps provided by Lut
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-01-16
  */
 

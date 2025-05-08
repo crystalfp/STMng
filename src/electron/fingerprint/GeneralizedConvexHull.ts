@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-01-23
  */
 import {quickHull} from "@derschmale/tympanum";

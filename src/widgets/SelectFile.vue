@@ -3,7 +3,7 @@
  * @component
  * Widget to select a file. The selector is called in the main process.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-22
  */
 import {ref} from "vue";

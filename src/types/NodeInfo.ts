@@ -4,7 +4,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-12-24
  */
 import type {NodeCore} from "@/electron/modules/NodeCore";

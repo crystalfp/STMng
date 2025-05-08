@@ -3,7 +3,7 @@
  * @component
  * Select the volumetric dataset.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-12-05
  */
 

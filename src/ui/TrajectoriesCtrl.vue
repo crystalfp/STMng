@@ -3,7 +3,7 @@
  * @component
  * Controls for the atoms' trajectories visualization.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-12
  */
 

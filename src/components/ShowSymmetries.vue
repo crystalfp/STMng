@@ -3,7 +3,7 @@
  * @component
  * Show symmetries in a secondary window.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 

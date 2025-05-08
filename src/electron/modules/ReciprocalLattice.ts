@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-26
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/prevent-abbreviations */

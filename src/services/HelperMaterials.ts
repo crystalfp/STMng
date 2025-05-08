@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-01
  */
 import {type Color, type Material, DataTexture, MeshStandardMaterial, FrontSide} from "three";

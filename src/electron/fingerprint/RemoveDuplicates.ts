@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-19
  */
 import type {FingerprintsAccumulator, StructureReduced} from "./Accumulator";

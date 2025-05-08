@@ -4,7 +4,7 @@
  * Enable capture switches for the Structure reader module.
  * Each switch is enabled if the corresponding `has*` variable is set in the controlStore.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-26
  */
 import {computed} from "vue";

@@ -3,7 +3,7 @@
  * @component
  * Show the energy surface resulting from fingerprint computation.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-01-14
  */
 import {onMounted, ref, watch, computed, useTemplateRef, onBeforeUnmount} from "vue";

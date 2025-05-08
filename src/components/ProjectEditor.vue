@@ -3,7 +3,7 @@
  * @component
  * Show the structure of the loaded project and makes possible to edit it.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-03-10
  */
 import {computed, ref} from "vue";

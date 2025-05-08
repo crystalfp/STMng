@@ -3,7 +3,7 @@
  * @component
  * Slider with increment/decrement buttons and debouncing.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 import {mdiMinus, mdiPlus} from "@mdi/js";

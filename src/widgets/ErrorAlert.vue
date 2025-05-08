@@ -3,7 +3,7 @@
  * @component
  * Show an error alert in the UI container for a given node.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-15
  */
 import {resetAlertMessage, hasAlertMessage, getAlertMessage} from "@/services/AlertMessage";

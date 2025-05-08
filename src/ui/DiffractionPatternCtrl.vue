@@ -3,7 +3,7 @@
  * @component
  * Controls for the X-Ray diffraction pattern computation.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-11-04
  */
 import {ref, watch} from "vue";

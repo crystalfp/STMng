@@ -3,7 +3,7 @@
  * @component
  * Controls for the backbone (e.g. protein chains) visualizer.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-28
  */
 import {reactive, ref, watch} from "vue";

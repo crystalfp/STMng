@@ -3,7 +3,7 @@
  * @component
  * Show the scatterplot resulting from fingerprint computation.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-12-26
  */
 import {computed, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";

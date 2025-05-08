@@ -3,7 +3,7 @@
  * @component
  * Controls for the symmetry find and apply node.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-20
  */
 

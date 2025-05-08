@@ -3,7 +3,7 @@
  * @component
  * Show a chart in a secondary window.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-05
  */
 import {ref, shallowRef, useTemplateRef} from "vue";

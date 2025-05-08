@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-06
  */
 import {IcosahedronGeometry, MeshStandardMaterial, FrontSide, type Mesh,

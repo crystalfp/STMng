@@ -3,7 +3,7 @@
  * @component
  * Node without input and output for the project visualization.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-18
  */
 import type {NodeProps} from "@vue-flow/core";

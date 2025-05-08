@@ -3,7 +3,7 @@
  * @component
  * Show the charts resulting from fingerprint computation.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-01-20
  */
 import {ref, shallowRef, watch} from "vue";

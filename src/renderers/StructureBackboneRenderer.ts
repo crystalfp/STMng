@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-03-03
  */
 import {Group, CatmullRomCurve3, Vector3, TubeGeometry, Mesh,

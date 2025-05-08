@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-12-01
  */
 import {Group, BufferGeometry, Float32BufferAttribute, MeshBasicMaterial,

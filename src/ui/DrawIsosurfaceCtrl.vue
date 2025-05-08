@@ -3,7 +3,7 @@
  * @component
  * Controls for isosurfaces computation.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 

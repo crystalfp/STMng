@@ -3,7 +3,7 @@
  *
  * @packageDocumentation
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-24
  */
 import type {Structure, Crystal, Atom, Bond, Volume, Extra} from "@/types";

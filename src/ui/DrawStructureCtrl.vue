@@ -3,7 +3,7 @@
  * @component
  * Controls for the render of the structure data to graphical objects.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-27
  */
 import {ref, watch, computed} from "vue";

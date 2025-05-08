@@ -3,7 +3,7 @@
  * @component
  * Controls for bonds computation.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-20
  */
 

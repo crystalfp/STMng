@@ -3,7 +3,7 @@
  * @component
  * Show the application log. Can also clean it.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-24
  */
 import {ref} from "vue";

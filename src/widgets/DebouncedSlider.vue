@@ -4,7 +4,7 @@
  * Debounced slider.
  * In the slot the value not yet debounced is made available.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 

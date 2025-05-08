@@ -3,7 +3,7 @@
  * @component
  * Controls for the capture media node.
  *
- * @author Mario Valle "mvalle\@ikmail.com"
+ * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
 import {useConfigStore} from "@/stores/configStore";
