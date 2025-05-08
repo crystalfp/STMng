@@ -1,5 +1,4 @@
 Bugs:
-  ☐ Behavior of "show slicer". Should be independent from enable slicer
 
 To do:
   ☐ Option to not fold fractional coordinates inside unit cell on read
@@ -59,6 +58,7 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Behavior of "show slicer". Should be independent from enable slicer @done(2025-05-08 14:44) @project(Bugs)
   ✔ Document "Optimize plane offset" in slice structure @done(2025-05-04 11:26) @project(To do)
   ✘ Add tooltips using `v-tooltip` directive @cancelled(2025-05-05 06:53) @project(Nice to have/Future)
   ✔ Add "New" button to project editor to load an empty project @done(2025-05-01 15:09) @project(To do)

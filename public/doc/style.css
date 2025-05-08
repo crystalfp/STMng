@@ -42,13 +42,14 @@ h3 {
 
 header {
   margin-bottom: 1rem;
+  width: 910px;
 }
 
 details {
   border: 1px solid #AAAAAA;
   border-radius: 4px;
   padding: 0.5rem 0.5rem 0;
-  width: 50%;
+  width: 900px;
 }
 
 summary {
@@ -158,4 +159,8 @@ dt {
 
 .alternate tr:nth-child(odd) {
   background: #D0E4F5;
+}
+
+details > h2:first-of-type {
+  margin-top: 0;
 }

@@ -54,10 +54,13 @@ watch(value, () => {valueToDebounce.value = value.value ?? props.min;});
 /**
  * Decrement the value
  */
-const decrement = (): void => {
+const decrement = (event: MouseEvent): void => {
 
+    let delta = props.step;
+    if(event.ctrlKey) delta *= event.shiftKey ? 100 : 10;
+    else if(event.shiftKey) delta *= 100;
     let vv = valueToDebounce.value ?? props.min;
-    vv -= props.step;
+    vv -= delta;
     if(vv < props.min) vv = props.min;
     valueToDebounce.value = vv;
 };
@@ -65,10 +68,13 @@ const decrement = (): void => {
 /**
  * Increment the value
  */
-const increment = (): void => {
+const increment = (event: MouseEvent): void => {
 
+    let delta = props.step;
+    if(event.ctrlKey) delta *= event.shiftKey ? 100 : 10;
+    else if(event.shiftKey) delta *= 100;
     let vv = valueToDebounce.value ?? props.min;
-    vv += props.step;
+    vv += delta;
     if(vv > props.max) vv = props.max;
     valueToDebounce.value = vv;
 };

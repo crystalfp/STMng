@@ -15,13 +15,20 @@
 </head>
 <body>
 <header>
-<h1 class="title">STMng documentation</h1>
-<p>
-See The Molecule new generation (STMng) is a chemical and
-crystallographic structures visualization tool
-that implements some of the STM4 functionalities.
-</p>
+<img src="title.png" width="900" height="507" alt="See The Molecule new generation (STMng) documentation">
+<p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization tool that implements some of the functionalities of the old STM4 visualization tool.</p>
+<p>Unlike its predecessor, STMng is built on top of open source frameworks and libraries.</p>
+<button onclick="toggleDetails()">Toggle cards visibility</button>
 </header>
+<details>
+  <summary>STMng screen</summary>
+  <img src="screen.png" width="899" height="482" alt="Main parts of the STMng application screen">
+  <p>At startup the screen is divided in two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
+  <p>Click on the separator between the two areas (the <b>Gutter</b>) hide the node control panel. Clicking again on it, that is on the left of the full screen viewer, unhide the panel.</p>
+  <p>On the title bar of the application window is visible the currently loaded project: the project file name or the “default project” mark.</p>
+  <p>The Node controls panel contains the <b>Node selector</b> that selects the node for which the controls are shown. Then the controls specific for the node. At the end there is a button that <b>Reset the camera position</b> in the viewer.</p>
+  <p>Some nodes and menu entries open a <b>secondary window</b> that can be positioned freely and resized with data and controls specific for its functionality.</p>
+</details>
 <details>
   <summary>General information</summary>
   <table>
@@ -34,8 +41,8 @@ that implements some of the STM4 functionalities.
 </details>
 <details>
   <summary>Available nodes</summary>
-  <p>Nodes are the building blocks of the graph that control the STMng behavior. Each node could have inputs and/or outputs and could generate graphical objects to be visualized.</p>
-  <p>The application provides these listed nodes, but the ones made available to the user are collected in the loaded project. All available nodes are present in the “default” project.</p>
+  <p>Nodes are the building blocks of the graph that controls the STMng behavior. Each node could have inputs and/or outputs and could generate graphical objects to be visualized.</p>
+  <p>The application provides these listed nodes, but the ones made available to the user are collected in the loaded project. Instead all available nodes are present in the “default” project.</p>
   <table>
     <tr><td class="m1"><a href="nodes/capture-view.html">Capture view</a></td>
         <td>Capture the viewer content as snapshot or movie.</td></tr>
@@ -89,11 +96,11 @@ that implements some of the STM4 functionalities.
   <p>The project or the default project are automatically loaded on application start.
   The project file could also be loaded from the command line.</p>
   <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
-  with the following content:</p>
+  containing a JSON record with the following keys:</p>
   <ul>
     <li><b>graph</b> List the loaded nodes and their interconnections</li>
     <li><b>viewer</b> Optional section to collect the viewer 3D parameters</li>
-    <li><b>ui</b> Optional section to collect the parameters for each node</li>
+    <li><b>ui</b> Optional section that collects the parameters for each node</li>
   </ul>
   <h2>Graph content</h2>
   <p>This section is a JSON record with the unique identifier of the node as key and the following content:</p>
@@ -102,7 +109,7 @@ that implements some of the STM4 functionalities.
     <li><b>type:</b> The type of node, that is its functionality</li>
     <li><b>x:</b> The (optional) X position of the node in the project editor</li>
     <li><b>y:</b> The (optional) Y position of the node in the project editor</li>
-    <li><b>in:</b> The id of the node from which this node takes the input. It is missing if the node has no input or if the input come only from the graphical scene</li>
+    <li><b>in:</b> The id of the node from which this node takes the input. It is missing if the node has no input or if the input comes only from the graphical scene</li>
   </ul>
   <h2>Project editor</h2>
   <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="general/project-editor.html">Project editor</a>. This editor makes possible the modification of the currently loaded project that, at the end, could be saved and becomes the current project.</p>
@@ -244,9 +251,16 @@ that implements some of the STM4 functionalities.
   </table>
 </details>
 <details>
+  <summary>Convenient shortcuts</summary>
+  <h2>Sliders with increment/decrement buttons</h2>
+  <p>Clicking on the increment (<tt>+</tt>) or decrement (<tt>-</tt>) buttons with <tt>Ctrl</tt> key pushed multiplies the value change by 10. If the <tt>Shift</tt> key is pushed (alone or together with <tt>Ctrl</tt> key), the value is multiplied by 100.</p>
+  <h2>Gutter</h2>
+  <p>Clicking on the separator between the node interfaces panel and the viewer (the gutter) hides the node controls. Clicking again on the left side of the viewer unhide the panel.</p>
+</details>
+<details>
   <summary>Interaction with the viewers</summary>
   <p>Interacting with the viewer means moving the camera around the visualized object.</p>
-  <p>This interaction is done through mouse movements and keyboard arrows. Note that the same mouse actions are applicable to the Energy Landscape and Compare Structures viewers, but not the keyboard arrows shortcuts.</p>
+  <p>This interaction is done through mouse movements and using the keyboard arrows. Note that the same mouse actions are applicable to the Energy Landscape and Compare Structures viewers, but not the keyboard arrows shortcuts.</p>
   <h2>Terminology</h2>
   <table class="menu">
   <tbody>
@@ -338,5 +352,48 @@ comma separated and if they pass a value, switch and value are separated by a �
 <p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>
 <p>Developer tools can be enabled in production also with the “<tt>STM_NG_ENABLE</tt>” environment variable set to any value.</p>
 </details>
+<details>
+  <summary>License</summary>
+
+<div style="float:left;margin: 5px 10px 3px 0">
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="img"><img alt="Licenza Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" width="88" height="31" /></a>
+</div>
+
+<p style="margin-top:0"><span itemprop="work">STMng</span> by <a href="mailto:mvalle@ikmail.com?Subject=Contact%20from%20STMng" itemprop="author">Mario Valle</a> is licensed under Creative Commons License <i>Attribution, Non Commercial, Share Alike 4.0 International</i> (CC BY-NC-SA 4.0)</p>
+<div style="clear:both;">&nbsp;</div>
+
+<p style="margin-top:-2rem">You are free to:</p>
+<ul style="list-style-type: none;">
+<li><strong>Share</strong> &mdash; copy and redistribute the material in any medium or format.</li>
+<li><strong>Adapt</strong> &mdash; remix, transform, and build upon the material.</li>
+</ul>
+
+<p>Under the following terms:</p>
+<ul style="list-style-type: none;">
+<li><strong>Attribution</strong> &mdash; You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
+
+<li><strong>Non Commercial</strong> &mdash; You may not use the material for commercial purposes.</li>
+
+<li><strong>Share Alike</strong> &mdash; If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.</li>
+</ul>
+
+<p>This is a human-readable summary of (and not a substitute for) the <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">license</a>. More information can be found at: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" itemprop="license">creativecommons.org/licenses/by-nc-sa/4.0/</a></p>
+
+</details>
+<script>
+  let areOpen = false;
+  const toggleDetails = () => {
+    if(areOpen) {
+      document.body.querySelectorAll('details')
+        .forEach((e) => {e.removeAttribute('open')})
+        areOpen = false
+    }
+    else {
+      document.body.querySelectorAll('details')
+        .forEach((e) => {e.setAttribute('open',true);})
+      areOpen = true
+    }
+  }
+</script>
 </body>
 </html>
