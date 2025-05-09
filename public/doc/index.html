@@ -18,7 +18,7 @@
 <img src="title.png" width="900" height="507" alt="See The Molecule new generation (STMng) documentation">
 <p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization tool that implements some of the functionalities of the old STM4 visualization tool.</p>
 <p>Unlike its predecessor, STMng is built on top of open source frameworks and libraries.</p>
-<button onclick="toggleDetails()">Toggle cards visibility</button>
+<button onclick="toggleDetails()" class="toggle-button">Toggle cards visibility</button>
 </header>
 <details>
   <summary>STMng screen</summary>
@@ -52,12 +52,10 @@
         <td>Compute fingerprints for a set of structures.</td></tr>
     <tr><td><a href="nodes/compute-symmetries.html">Compute symmetries</a></td>
         <td>Find and apply symmetries to the structure.</td></tr>
-    <tr><td><a href="nodes/structure-backbone.html">Draw a backbone tube</a></td>
-        <td>Draw a backbone tube passing through given atoms optionally of a specific chain.</td></tr>
-    <tr><td><a href="nodes/slice-structure.html">Slice the structure</a></td>
-        <td>Slice the structure along various geometries.</td></tr>
     <tr><td><a href="nodes/diffraction-pattern.html">Compute X-Ray diffraction</a></td>
         <td>Compute and display the X-Ray diffraction spectra.</td></tr>
+    <tr><td><a href="nodes/structure-backbone.html">Draw a backbone tube</a></td>
+        <td>Draw a backbone tube passing through given atoms optionally of a specific chain.</td></tr>
     <tr><td><a href="nodes/draw-polyhedra.html">Draw polyhedra</a></td>
         <td>Draw a convex hull around atoms.</td></tr>
     <tr><td><a href="nodes/draw-structure.html">Draw structure</a></td>
@@ -74,6 +72,8 @@
         <td>Interactively measure distances, angles and polyhedra volume.</td></tr>
     <tr><td><a href="nodes/orthoslice.html">Orthoslice</a></td>
         <td>Draw orthoslices and isolines of volumetric data.</td></tr>
+    <tr><td><a href="nodes/slice-structure.html">Slice the structure</a></td>
+        <td>Slice the structure along various geometries.</td></tr>
     <tr><td><a href="nodes/structure-reader.html">Structure reader</a></td>
         <td>Read a file containing one or more atomic structures.</td></tr>
     <tr><td><a href="nodes/structure-writer.html">Structure writer</a></td>
@@ -353,6 +353,14 @@ comma separated and if they pass a value, switch and value are separated by a ‚Ä
 <p>Developer tools can be enabled in production also with the ‚Äú<tt>STM_NG_ENABLE</tt>‚Äù environment variable set to any value.</p>
 </details>
 <details>
+  <summary>Technology</summary>
+  <p>STMng is an <a href="https://www.electronjs.org/">ElectronJS</a> multiplatform application written in <a href="https://www.typescriptlang.org/">Typescript</a> with small interface parts written in C++.</p>
+  <p>The user interface is based on the <a href="https://vuejs.org/">Vue</a> framework with <a href="https://vuetifyjs.com/en/">Vuetify</a> widgets.</p>
+  <a>The 3D viewer uses <a href="https://threejs.org/">three.js</a> interface to WebGL provided by the Chromium browser integrated inside ElectronJS.</a>
+  <p>The development toolchain is based on <a href="https://vite.dev/">Vite</a>, the final build for production uses <a href="https://www.electron.build/">electron-builder</a>. The bundling of the code for the parallel computations is done by <a href="https://rollupjs.org/">Rollup</a>.</p>
+  <p>Credits for specific libraries used are listed in the respective node documentation pages.</p>
+</details>
+<details>
   <summary>License</summary>
 
 <div style="float:left;margin: 5px 10px 3px 0">
@@ -378,7 +386,6 @@ comma separated and if they pass a value, switch and value are separated by a ‚Ä
 </ul>
 
 <p>This is a human-readable summary of (and not a substitute for) the <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">license</a>. More information can be found at: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" itemprop="license">creativecommons.org/licenses/by-nc-sa/4.0/</a></p>
-
 </details>
 <script>
   let areOpen = false;

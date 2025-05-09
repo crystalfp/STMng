@@ -8,7 +8,7 @@
  */
 import {ref, watch, watchEffect} from "vue";
 import {askNode, sendToNode} from "@/services/RoutesClient";
-import {showSystemAlert, showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import ErrorAlert from "@/widgets/ErrorAlert.vue";
@@ -260,26 +260,6 @@ watchEffect(() => {
     }
 });
 
-/**
- * Start optimizing Miller plane offset to minimize the area energy
- */
-const optimizeOffset = (): void => {
-
-    optimizing.value = true;
-
-    askNode(id, "offset")
-        .then((response: CtrlParams) => {
-            millerPlaneOffset.value = response.millerPlaneOffset as number ?? 0;
-            renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
-            areaEnergy.value = response.minEnergy as number ?? 0;
-
-            showMillerPlaneOffset.value = millerPlaneOffset.value;
-            setTimeout(() => {optimizing.value = false;}, 100);
-
-        })
-        .catch((error: Error) => showSystemAlert(`Error from Miller plane offset for ${label}: ${error.message}`));
-};
-
 </script>
 
 
@@ -335,10 +315,6 @@ const optimizeOffset = (): void => {
                           v-model:raw="showMillerL" label-width="3rem"
                           :label="`l (${showMillerL.toFixed(0)})`"
                           :min="-9" :max="9" :step="1" />
-    <v-btn block class="mt-4" @click="optimizeOffset">Optimize offset</v-btn>
-    <v-label v-if="areaEnergy > 0" class="result-label mt-4 ml-2">
-        {{ `Area energy: ${areaEnergy.toFixed(3)}` }}
-    </v-label>
     <slider-with-steppers v-model="millerPlaneOffset"
                           v-model:raw="showMillerPlaneOffset" label-width="6rem"
                           :label="`offset (${showMillerPlaneOffset.toFixed(1)})`"

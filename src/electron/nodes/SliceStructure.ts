@@ -11,7 +11,6 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {findIntersections} from "../modules/UnitCellIntersections";
-import {getAtomData} from "../modules/AtomData";
 import type {Structure, ChannelDefinition, CtrlParams, BasisType} from "@/types";
 
 /**
@@ -56,7 +55,6 @@ export class SliceStructure extends NodeCore {
 
 	private planesNormals: number[] = [];
 	private planesPoints: number[] = [];
-	private millerPlanePoint: number[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -65,7 +63,6 @@ export class SliceStructure extends NodeCore {
 		{name: "miller",	type: "invoke",	callback: this.channelMiller.bind(this)},
 		{name: "slab",		type: "invoke",	callback: this.channelSlab.bind(this)},
 		{name: "set",		type: "send", 	callback: this.channelSet.bind(this)},
-		{name: "offset",	type: "invoke",	callback: this.channelOffset.bind(this)},
 	];
 
 	/**
@@ -277,11 +274,6 @@ export class SliceStructure extends NodeCore {
 			normal[0],
 			normal[1],
 			normal[2]
-		];
-		this.millerPlanePoint = [
-			point[0],
-			point[1],
-			point[2]
 		];
 
 		if(this.millerPlaneOffset !== 0) {
@@ -603,126 +595,6 @@ export class SliceStructure extends NodeCore {
 	}
 
 	/**
-	 * Compute area of the plane inside the unit cell
-	 *
-	 * @param intersections - Coordinates of the points of intersection between the plane
-	 * 						  and the unit cell
-	 * @returns Area of the plane inside the unit cell
-	 */
-	private computeArea(intersections: number[][]): number {
-
-		let area = 0;
-		for(let i=2; i < intersections.length; ++i) {
-			// a: 0, b: i-1, c: i
-			const v0 = [intersections[i][0]-intersections[i-1][0],
-						intersections[i][1]-intersections[i-1][1],
-						intersections[i][2]-intersections[i-1][2]];
-
-			const v1 = [intersections[0][0]-intersections[i-1][0],
-						intersections[0][1]-intersections[i-1][1],
-						intersections[0][2]-intersections[i-1][2]];
-			// _v0.subVectors( this.c, this.b );
-			// _v1.subVectors( this.a, this.b );
-			// A x B = (AyBz − AzBy, AzBx − AxBz, AxBy − AyBx)
-
-			const cross = [
-				v0[1]*v1[2] - v0[2]*v1[1],
-				v0[2]*v1[0] - v0[0]*v1[2],
-				v0[0]*v1[1] - v0[1]*v1[0]
-			];
-			area += Math.hypot(cross[0], cross[1], cross[2])*0.5;
-		}
-
-		return area;
-	}
-
-	/**
-	 * Compute the area energy of the plane due to cutting bonds
-	 *
-	 * @param offset - Offset of the Miller plane from the computed position
-	 * @returns Energy of the plane. Zero if no intersection with bonds
-	 */
-	private areaEnergy(offset: number): number {
-
-		const {crystal, atoms, bonds} = this.structure!;
-		const {basis, origin} = crystal;
-
-		const point = [
-			this.millerPlanePoint[0] + offset*this.planesNormals[0],
-			this.millerPlanePoint[1] + offset*this.planesNormals[1],
-			this.millerPlanePoint[2] + offset*this.planesNormals[2]
-		];
-
-		const intersections = findIntersections(basis, origin,
-												this.planesNormals, point);
-
-		if(intersections.length === 0) return 0;
-
-		const area = this.computeArea(intersections);
-
-		let strength = 0;
-		for(const bond of bonds) {
-
-			const {from, to, type} = bond;
-			if(type !== 0) continue;
-
-			const {position: pFrom, atomZ: zFrom} = atoms[from];
-
-			const dotFrom = this.planesNormals[0]*(pFrom[0]-this.millerPlanePoint[0]) +
-							this.planesNormals[1]*(pFrom[1]-this.millerPlanePoint[1]) +
-							this.planesNormals[2]*(pFrom[2]-this.millerPlanePoint[2]);
-
-			const {position: pTo, atomZ: zTo} = atoms[to];
-
-			const dotTo = this.planesNormals[0]*(pTo[0]-this.millerPlanePoint[0]) +
-						  this.planesNormals[1]*(pTo[1]-this.millerPlanePoint[1]) +
-						  this.planesNormals[2]*(pTo[2]-this.millerPlanePoint[2]);
-
-			if((dotFrom >= 0 && dotTo < 0) || (dotFrom < 0 && dotTo >= 0)) {
-
-				const strengthFrom = getAtomData(zFrom).bondStrength;
-				const strengthTo   = getAtomData(zTo).bondStrength;
-
-				strength += Math.sqrt(strengthFrom*strengthTo);
-			}
-		}
-
-		return area*strength;
-	}
-
-	/**
-	 * Compute the offset that gives the minimum of area energy
-	 *
-	 * @returns The minimal area energy
-	 */
-	private optimizeOffset(maxOffset: number, step: number): number {
-
-		let minEnergy = this.areaEnergy(0);
-		let minOffset = 0;
-
-		for(let offset=0; offset < maxOffset; offset += step) {
-
-			const energyP = this.areaEnergy(offset);
-			if(energyP > 0 && energyP < minEnergy) {
-				minEnergy = energyP;
-				minOffset = offset;
-			}
-
-			const energyN = this.areaEnergy(-offset);
-			if(energyN > 0 && energyN < minEnergy) {
-				minEnergy = energyN;
-				minOffset = -offset;
-			}
-
-			if(energyN === 0 && energyP === 0) break;
-		}
-
-		this.millerPlaneOffset = minOffset;
-
-		return minEnergy;
-	}
-
-	/**
 	 * Slice the structure inside or outside two parallel planes
 	 *
 	 * @returns The sliced structure
@@ -823,22 +695,6 @@ export class SliceStructure extends NodeCore {
 
 		return {
 			intersections: this.planeRenderingIntersections
-		};
-	}
-
-	/**
-	 * Channel handler for the change of Miller plane offset from the computed position
-	 */
-	private channelOffset(): CtrlParams {
-
-		const energy = this.optimizeOffset(10, 0.1);
-
-		this.toNextNode(this.sliceStructure());
-
-		return {
-			intersections: this.planeRenderingIntersections,
-			millerPlaneOffset: this.millerPlaneOffset,
-			minEnergy: energy
 		};
 	}
 
