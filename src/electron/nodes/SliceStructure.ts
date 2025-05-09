@@ -148,6 +148,9 @@ export class SliceStructure extends NodeCore {
         this.thickness = params.thickness as number ?? 1;
 	}
 
+	/**
+	 * Compute the slicer parameters and the slicer geometry parameters
+	 */
 	private prepareSlicerGeometry(): void {
 
 		if(this.mode === "sphere") {
@@ -164,6 +167,9 @@ export class SliceStructure extends NodeCore {
 		}
 	}
 
+	/**
+	 * Prepare the sphere geometries
+	 */
 	private prepareSphereSlicerGeometry(): void {
 
 		const centerAtomsIdx = selectAtomsByKind(this.structure!,
@@ -202,7 +208,9 @@ export class SliceStructure extends NodeCore {
 			pc*basis[8]+origin[2]
 		];
 
-		const parallelCode = (this.parallelA ? 1 : 0) + (this.parallelB ? 2 : 0) + (this.parallelC ? 4 : 0);
+		const parallelCode = (this.parallelA ? 1 : 0) +
+							 (this.parallelB ? 2 : 0) +
+							 (this.parallelC ? 4 : 0);
 
 		const {normal, point} = this.createPlane(points, parallelCode, basis);
 
@@ -291,6 +299,9 @@ export class SliceStructure extends NodeCore {
 		this.planeRenderingIntersections = findIntersections(basis, origin, normal, point).flat();
 	}
 
+	/**
+	 * Prepare the slab planes
+	 */
 	private prepareSlabSlicerGeometry(): void {
 
 		const pa = this.percentA/100;
@@ -312,7 +323,9 @@ export class SliceStructure extends NodeCore {
 			pc*basis[8]+origin[2]
 		];
 
-		const parallelCode = (this.parallelA ? 1 : 0) + (this.parallelB ? 2 : 0) + (this.parallelC ? 4 : 0);
+		const parallelCode = (this.parallelA ? 1 : 0) +
+							 (this.parallelB ? 2 : 0) +
+							 (this.parallelC ? 4 : 0);
 
 		const {normal, point} = this.createPlane(points, parallelCode, basis);
 
@@ -430,7 +443,7 @@ export class SliceStructure extends NodeCore {
 	}
 
 	/**
-	 * Slice structure according to a sphere and save the center coordinates
+	 * Slice structure according to a sphere
 	 *
 	 * @param centerAtomsIdx - Indices of center atoms
 	 * @returns Structure with atoms sliced by the sphere
@@ -457,7 +470,8 @@ export class SliceStructure extends NodeCore {
 	}
 
 	/**
-	 * Compute cross product and normalize result
+	 * Compute cross product and normalize the result
+	 * A x B = (AyBz − AzBy, AzBx − AxBz, AxBy − AyBx)
 	 *
 	 * @param a - First vector
 	 * @param aStart - Index in which start the coordinates in the first vector
@@ -465,9 +479,8 @@ export class SliceStructure extends NodeCore {
 	 * @param bStart - Index in which start the coordinates in the second vector
 	 * @returns Normalized vector resulting from cross product of the two vectors
 	 */
-	private crossProductAndNormalize(a: number[], aStart: number, b: number[], bStart: number): number[] {
-
-		// A x B = (AyBz − AzBy, AzBx − AxBz, AxBy − AyBx)
+	private crossProductAndNormalize(a: number[], aStart: number,
+									 b: number[], bStart: number): number[] {
 
 		const cross = [
 			a[aStart+1]*b[bStart+2] - a[aStart+2]*b[bStart+1],
@@ -510,7 +523,7 @@ export class SliceStructure extends NodeCore {
 	 * Create the plane
 	 *
 	 * @param points - The points A, B, C through which the plane must pass
-	 * @param parallelCode - To which axis the plane is parallel:
+	 * @param parallelCode - Code that identifies to which axis the plane is parallel:
 	 * 						 parallelA * 1 + parallelB * 2 + parallelC * 4
 	 * @param basis - The structure basis vectors
 	 * @returns The normal of the plane and a point on the plane
@@ -567,7 +580,7 @@ export class SliceStructure extends NodeCore {
 	}
 
 	/**
-	 * Slice structure according to a plane and save the plane intersections with the unit cell
+	 * Slice structure according to a plane
 	 *
 	 * @returns Sliced structure
 	 */
@@ -592,7 +605,8 @@ export class SliceStructure extends NodeCore {
 	/**
 	 * Compute area of the plane inside the unit cell
 	 *
-	 * @param intersections - Coordinates of the points of intersection between the plane and the unit cell
+	 * @param intersections - Coordinates of the points of intersection between the plane
+	 * 						  and the unit cell
 	 * @returns Area of the plane inside the unit cell
 	 */
 	private computeArea(intersections: number[][]): number {
@@ -866,6 +880,9 @@ export class SliceStructure extends NodeCore {
         this.showSlicer = params.showSlicer as boolean ?? false;
         this.mode = params.mode as string ?? "plane";
 
-		if(this.structure) this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);
+		if(this.structure) {
+			if(this.enableSlicer || this.showSlicer) this.prepareSlicerGeometry();
+			this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);
+		}
 	}
 }

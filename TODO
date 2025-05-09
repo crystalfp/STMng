@@ -5,9 +5,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
-  ☐ Investigate `v-snackbar-queue` for messages
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ See if it is needed to convert NodeInfo in ProjectEditor to object from array
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -58,6 +56,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Investigate `v-snackbar-queue` for messages @done(2025-05-09 06:46) @project(To do)
+  ✘ See if it is needed to convert NodeInfo in ProjectEditor to object from array @cancelled(2025-05-09 05:51) @project(To do)
   ✔ Behavior of "show slicer". Should be independent from enable slicer @done(2025-05-08 14:44) @project(Bugs)
   ✔ Document "Optimize plane offset" in slice structure @done(2025-05-04 11:26) @project(To do)
   ✘ Add tooltips using `v-tooltip` directive @cancelled(2025-05-05 06:53) @project(Nice to have/Future)

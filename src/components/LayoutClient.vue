@@ -66,15 +66,10 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
 });
 
 // > Visualize notifications and errors from main process
-const showNotification = ref(false);
-const notificationText = ref("");
-const notificationColor = ref("red-darken-4");
+const notificationQueue = ref<{text: string; color: string}[]>([]);
 receiveNotifications((type: AlertLevel, text: string, from: string) => {
 
-    notificationText.value = text;
-    notificationColor.value = type === "error" ? "red-darken-4" : type;
-    showNotification.value = true;
-
+    notificationQueue.value.push({text, color: type === "error" ? "red-darken-4" : type});
     if(from !== "") showAlertMessage(text, from);
 });
 
@@ -109,10 +104,8 @@ receiveBroadcast((eventType: string) => {
   </div>
   <div class="layout-gutter" @click="toggleNormalScreen" />
   <viewer3-d :expanded="!normalScreen" />
-  <v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info" max-width="250"
-              elevation="24" close-on-content-click :color="notificationColor">
-    {{ notificationText }}
-  </v-snackbar>
+  <v-snackbar-queue v-model="notificationQueue" multi-line timeout="6000"
+                    timer="info" max-width="250" close-on-content-click />
 </div>
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
 </v-app>

@@ -46,7 +46,6 @@ import {VAlert} from "vuetify/components/VAlert";
 import {VDivider} from "vuetify/components/VDivider";
 import {VIcon} from "vuetify/components/VIcon";
 import {VBtnToggle} from "vuetify/components/VBtnToggle";
-import {VSnackbar} from "vuetify/components/VSnackbar";
 import {VTable} from "vuetify/components/VTable";
 import {VRangeSlider} from "vuetify/components/VRangeSlider";
 import {VFileInput} from "vuetify/components/VFileInput";
@@ -55,6 +54,7 @@ import {VNumberInput} from "vuetify/components/VNumberInput";
 import {VTextarea} from "vuetify/components/VTextarea";
 // import {VTooltip} from "vuetify/components/VTooltip";
 // import {Tooltip} from "vuetify/directives/tooltip";
+import {VSnackbarQueue} from "vuetify/components/VSnackbarQueue";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -83,7 +83,6 @@ const app = createApp(App)
 			VDivider,
 			VIcon,
 			VBtnToggle,
-			VSnackbar,
 			VTable,
 			VRangeSlider,
 			VFileInput,
@@ -91,6 +90,7 @@ const app = createApp(App)
 			VNumberInput,
 			VTextarea,
 			// VTooltip,
+			VSnackbarQueue
 		},
 		// directives: {
 		// 	Tooltip,

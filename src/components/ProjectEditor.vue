@@ -389,8 +389,7 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
 };
 
 // To show error messages
-const showNotification = ref(false);
-const notificationText = ref("");
+const notificationQueue = ref<string[]>([]);
 
 /**
  * Save the modified project
@@ -401,9 +400,9 @@ const saveProjectGraph = (): void => {
         for(const availableNode of availableNodes.value) {
             if(node.type === availableNode.type) {
                 if(node.in === "" && availableNode.hasInput) {
-                    notificationText.value = `Node "${node.label}" input is unconnected`;
-                    showNotification.value = true;
-                    log.error(notificationText.value);
+                    const notification = `Node "${node.label}" input is unconnected`;
+                    notificationQueue.value.push(notification);
+                    log.error(notification);
                     return;
                 }
                 if(availableNode.hasOutput) {
@@ -415,9 +414,9 @@ const saveProjectGraph = (): void => {
                         }
                     }
                     if(!isConnected) {
-                        notificationText.value = `Node "${node.label}" output is unconnected`;
-                        showNotification.value = true;
-                        log.error(notificationText.value);
+                        const notification = `Node "${node.label}" output is unconnected`;
+                        notificationQueue.value.push(notification);
+                        log.error(notification);
                         return;
                     }
                 }
@@ -599,9 +598,9 @@ const updateLabel = (label: string): void => {
  */
 const handleError = (error: VueFlowError): void => {
 
-    notificationText.value = `Error from VueFlow: ${error.message}`;
-    showNotification.value = true;
-    log.error(notificationText.value);
+    const notification = `Error from VueFlow: ${error.message}`;
+    notificationQueue.value.push(notification);
+    log.error(notification);
 };
 
 /**
@@ -689,10 +688,8 @@ const createProjectGraph = (): void => {
   </v-card>
 </v-dialog>
 
-<v-snackbar v-model="showNotification" multi-line timeout="6000" timer="info" max-width="250"
-              elevation="24" close-on-content-click color="red-darken-4">
-    {{ notificationText }}
-</v-snackbar>
+<v-snackbar-queue v-model="notificationQueue" multi-line timeout="6000" timer="info" max-width="250"
+                  close-on-content-click color="red-darken-4" />
 
 </v-app>
 </template>
