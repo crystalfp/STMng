@@ -15,7 +15,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {MeasuresRenderer} from "@/renderers/MeasuresRenderer";
-import type {SelectedAtom, BondData} from "@/types";
+import type {SelectedAtom, BondData, CtrlParams} from "@/types";
 
 // > Properties
 const {id} = defineProps<{
@@ -45,6 +45,14 @@ const bondData = ref<BondData[]>([]);
 /** Show fractional coordinates */
 const useFractional = ref(false);
 
+/** Structure summary */
+const natoms = ref(0);
+const nbonds = ref(0);
+const step = ref(1);
+const counts = ref<{symbol: string; count: number}[]>([]);
+const uc = ref<number[]>([]);
+
+/** Renderer */
 const renderer = new MeasuresRenderer(id);
 
 // Watch atoms selection
@@ -100,9 +108,32 @@ watch(controlStore.atomsSelected, () => {
 }, {deep: true});
 
 // Remove selection on structure change
-receiveFromNode(id, "reset", () => {
+receiveFromNode(id, "new", (params: CtrlParams) => {
+
     controlStore.deselectAll();
     renderer.clearOutput();
+    if((params.natoms ?? 0) === 0) return;
+
+    // Visualize summary
+    natoms.value = params.natoms as number ?? 0;
+    nbonds.value = params.nbonds as number ?? 0;
+    step.value = params.step as number ?? 1;
+    const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, number>;
+    counts.value.length = 0;
+    for(const entry in countsRaw) {
+        counts.value.push({symbol: entry, count: countsRaw[entry]});
+    }
+    uc.value.length = 9;
+    for(let i=0; i < 9; ++i) uc.value[i] = 0;
+    const lengthsAngles = params.lengthsAngles as number[] ?? [];
+    for(let i=0; i < 6; ++i) {
+        uc.value[i] = lengthsAngles[i] ?? 0;
+    }
+
+    const origin = params.origin as number[] ?? [];
+    for(let i=0; i < 3; ++i) {
+        uc.value[i+6] = origin[i] ?? 0;
+    }
 });
 
 // Watch polyhedra selection
@@ -170,6 +201,41 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
 <template>
 <v-container class="container">
+  <v-container v-if="natoms > 0" class="pa-0 ml-2">
+    <v-label class="mt-4 mb-1 no-select">Structure summary</v-label>
+    <v-table class="pl-2 pr-4 py-1">
+      <tr><td>Step:</td><td class="right">{{ step }}</td></tr>
+      <tr><td>Atoms count:</td><td class="right">{{ natoms }}</td></tr>
+      <tr v-for="atom in counts" :key="atom.symbol">
+        <td>{{ `&nbsp;&nbsp;&nbsp;&nbsp;${atom.symbol}:` }}</td>
+        <td class="right">{{ atom.count }}</td>
+      </tr>
+      <tr><td>Bonds count:</td><td class="right">{{ nbonds }}</td></tr>
+    </v-table>
+    <v-container v-if="uc[0] > 0" class="pa-0">
+      <v-label class="mt-4 mb-1 no-select">Unit cell</v-label>
+      <v-table class="pl-2 pr-4 py-1">
+        <tr>
+          <td>Sides:</td>
+          <td class="w-4 right">{{ uc[0].toFixed(3) }}</td>
+          <td class="w-4 right">{{ uc[1].toFixed(3) }}</td>
+          <td class="w-4 right">{{ uc[2].toFixed(3) }}</td>
+        </tr>
+        <tr>
+          <td>Angles:</td>
+          <td class="w-4 right">{{ uc[3].toFixed(3) }}</td>
+          <td class="w-4 right">{{ uc[4].toFixed(3) }}</td>
+          <td class="w-4 right">{{ uc[5].toFixed(3) }}</td>
+        </tr>
+        <tr>
+          <td>Origin:</td>
+          <td class="w-4 right">{{ uc[6].toFixed(3) }}</td>
+          <td class="w-4 right">{{ uc[7].toFixed(3) }}</td>
+          <td class="w-4 right">{{ uc[8].toFixed(3) }}</td>
+        </tr>
+      </v-table>
+    </v-container>
+  </v-container>
   <v-label class="ml-2 mb-1 mt-4 no-select">Measurement type</v-label>
   <v-btn-toggle v-model="measurementType" mandatory class="ml-2 mb-6">
     <v-btn value="atoms">Atoms</v-btn>
@@ -262,6 +328,10 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
 .w-3 {
   width: 3rem
+}
+
+.w-4 {
+  width: 4rem
 }
 
 .w-9 {

@@ -8,9 +8,9 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import {getAtomData} from "../modules/AtomData";
+import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/ToClient";
-import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
+import {basisToLengthAngles, cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 SelectedAtom, PositionType, BondData} from "@/types";
 
@@ -46,7 +46,7 @@ export class Measures extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		sendToClient(this.id, "reset");
+		sendToClient(this.id, "new", this.summarizeStructure(data));
 		if(!data || data.atoms.length === 0) return;
 		this.structure = data;
 	}
@@ -56,6 +56,36 @@ export class Measures extends NodeCore {
 
 	loadStatus(): void {
 		// No body necessary
+	}
+
+	/**
+	 * Create structure summary
+	 *
+	 * @param structure - The current structure to summarize
+	 * @returns Summary to be visualized by the client
+	 */
+	private summarizeStructure(structure: Structure): CtrlParams {
+
+		if(!structure || structure.atoms.length === 0) return {natoms: 0};
+		const species = new Map<number, number>();
+		for(const atom of structure.atoms) {
+			const count = species.get(atom.atomZ) ?? 0;
+			species.set(atom.atomZ, count+1);
+		}
+		const counts: Record<string, number> = {};
+		for(const entry of species) {
+			counts[getAtomicSymbol(entry[0])] = entry[1];
+		}
+
+		const lengthsAngles = basisToLengthAngles(structure.crystal.basis);
+		return {
+			step: structure.extra.step,
+			natoms: structure.atoms.length,
+			nbonds: structure.bonds.length,
+			counts: JSON.stringify(counts),
+			lengthsAngles,
+			origin: structure.crystal.origin,
+		};
 	}
 
 	/**
