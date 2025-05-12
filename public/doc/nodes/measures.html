@@ -21,7 +21,21 @@
 <h1 class="subh1">Measure distance and angles</h1>
 
 <div class="description">
-<p>This module provides three types of measurement:</p>
+<p>This module provides three types of measurements and a summary of the current structure.</p>
+<p>The structure summary shows:</p>
+<ul>
+	<li><b>Step:</b> The step of the current visualized structure.</li>
+	<li><b>Atom count:</b> The total number of atoms subdivided by atom type in the following lines.</li>
+	<li><b>Bonds count:</b> The number of bonds present and, if present, how may of them are H bonds.</li>
+</ul>
+<p>The unit cell summary shows:</p>
+<ul>
+	<li><b>Sides:</b> The sides of the unit cell <i>(a, b, c)</i>.</li>
+	<li><b>Angles:</b> The angles (in degrees) of the unit cell <i>(α, β, γ)</i>.</li>
+	<li><b>Origin:</b> The origin of the unit cell <i>(x, y, z)</i>.</li>
+</ul>
+
+<p>The module provides three types of measurements:</p>
 <dl>
 <dt>Atoms</dt>
 <dd>Clicking (Ctrl-Click) on one to three atoms gives their coordinates, distances and angle.</dd>
@@ -36,7 +50,7 @@
 These lines are colored like the atoms selection marker.</li>
 <li>Distances between pair or atoms.</li>
 <li>Angle (in degrees) created by the three atoms.</li>
-<li>The information provided depends on the number of atoms selected. If more than three atoms are selected the first entered will be deselected. Selecting again a selected atom deselects it.</li>
+<li>The information provided depends on the number of atoms selected. If more than three atoms are selected the first one will be deselected. Selecting again a selected atom deselects it.</li>
 </ul>
 
 <p>The results table shows, when the measurement type <b>Polyhedra</b> is selected:</p>
@@ -49,9 +63,19 @@ These lines are colored like the atoms selection marker.</li>
 <h2>Controls</h2>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Chart type</td>
+	<td class="c1">Structure summary</td>
+	<td class="c2">table</td>
+	<td class="c3">Here the structure summary appears.</td>
+</tr>
+<tr>
+	<td class="c1">Unit cell</td>
+	<td class="c2">table</td>
+	<td class="c3">If the structure has an unit cell, here its summary appears.</td>
+</tr>
+<tr>
+	<td class="c1">Measurement type</td>
 	<td class="c2">radio button</td>
-	<td class="c3">Selects the type of measurement to make: <b>Atoms</b>, <b>Polyhedra</b>, <b>Bonds</b></td>
+	<td class="c3">Selects the measurement to make: <b>Atoms</b>, <b>Polyhedra</b> or <b>Bonds</b></td>
 </tr>
 <tr>
 	<td class="c1">Show fractional coordinates</td>

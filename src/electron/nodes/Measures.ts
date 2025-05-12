@@ -77,11 +77,17 @@ export class Measures extends NodeCore {
 			counts[getAtomicSymbol(entry[0])] = entry[1];
 		}
 
+		let nhbonds = 0;
+		for(const bond of structure.bonds) {
+			if(bond.type === 1) ++nhbonds;
+		}
+
 		const lengthsAngles = basisToLengthAngles(structure.crystal.basis);
 		return {
 			step: structure.extra.step,
 			natoms: structure.atoms.length,
 			nbonds: structure.bonds.length,
+			nhbonds,
 			counts: JSON.stringify(counts),
 			lengthsAngles,
 			origin: structure.crystal.origin,

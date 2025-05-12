@@ -7,7 +7,7 @@
  * @since 2024-08-09
  */
 
-import {ref, watch, shallowRef} from "vue";
+import {ref, watch, shallowRef, computed} from "vue";
 import {storeToRefs} from "pinia";
 import {sm} from "@/services/SceneManager";
 import {useControlStore} from "@/stores/controlStore";
@@ -48,6 +48,7 @@ const useFractional = ref(false);
 /** Structure summary */
 const natoms = ref(0);
 const nbonds = ref(0);
+const nhbonds = ref(0);
 const step = ref(1);
 const counts = ref<{symbol: string; count: number}[]>([]);
 const uc = ref<number[]>([]);
@@ -117,6 +118,7 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
     // Visualize summary
     natoms.value = params.natoms as number ?? 0;
     nbonds.value = params.nbonds as number ?? 0;
+    nhbonds.value = params.nhbonds as number ?? 0;
     step.value = params.step as number ?? 1;
     const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, number>;
     counts.value.length = 0;
@@ -134,6 +136,12 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
     for(let i=0; i < 3; ++i) {
         uc.value[i+6] = origin[i] ?? 0;
     }
+});
+
+const bondsLabel = computed<string>(() => {
+    return (nhbonds.value === 0) ?
+                      nbonds.value.toString() :
+                      `${nbonds.value} (of which ${nhbonds.value} H bonds)`;
 });
 
 // Watch polyhedra selection
@@ -210,7 +218,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
         <td>{{ `&nbsp;&nbsp;&nbsp;&nbsp;${atom.symbol}:` }}</td>
         <td class="right">{{ atom.count }}</td>
       </tr>
-      <tr><td>Bonds count:</td><td class="right">{{ nbonds }}</td></tr>
+      <tr><td>Bonds count:</td><td class="right">{{ bondsLabel }}</td></tr>
     </v-table>
     <v-container v-if="uc[0] > 0" class="pa-0">
       <v-label class="mt-4 mb-1 no-select">Unit cell</v-label>
