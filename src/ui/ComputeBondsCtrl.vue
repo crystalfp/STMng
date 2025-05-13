@@ -136,7 +136,9 @@ receiveFromNode(id, "params", (params: CtrlParams) => {
 
     if(params.enableComputeBonds !== undefined) {
 	    enableComputeBonds.value = params.enableComputeBonds as boolean ?? false;
-        showSystemAlert("Too many atoms. Disabled bonds computation", "warning");
+        const maxAtoms = params.maxAtoms as number ?? 0;
+        const mm = maxAtoms > 0 ? `More than ${maxAtoms} atoms` : "Too many atoms";
+        showSystemAlert(`${mm}. Disabled bonds computation`, "warning");
     }
     if(params.perPairData !== undefined) {
         perPairData.value.length = 0;

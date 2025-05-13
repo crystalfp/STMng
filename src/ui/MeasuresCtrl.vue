@@ -108,7 +108,7 @@ watch(controlStore.atomsSelected, () => {
 
 }, {deep: true});
 
-// Remove selection on structure change
+// Remove selection on structure change and prepare structure summary data
 receiveFromNode(id, "new", (params: CtrlParams) => {
 
     controlStore.deselectAll();
@@ -139,9 +139,12 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
 });
 
 const bondsLabel = computed<string>(() => {
-    return (nhbonds.value === 0) ?
-                      nbonds.value.toString() :
-                      `${nbonds.value} (of which ${nhbonds.value} H bonds)`;
+
+    const nhb = nhbonds.value;
+    const nb = nbonds.value.toString();
+    if(nhb === 0) return nb;
+    if(nhb > 1) return `${nb} (of which ${nhb} H bonds)`;
+    return `${nb} (of which 1 H bond)`;
 });
 
 // Watch polyhedra selection

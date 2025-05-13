@@ -70,6 +70,7 @@ const displacementCoefficients = [
 /** Possible atoms Z values that form a H bond */
 const atomZForH = new Set([7, 8, 9, 16]);
 
+const MAX_ATOMS_FOR_BONDS = 1_000;
 
 export class ComputeBonds extends NodeCore {
 
@@ -114,10 +115,11 @@ export class ComputeBonds extends NodeCore {
 		this.createPairData();
 
 		// Disable bonds computation if there are too many atoms
-		if((this.inputStructure?.atoms?.length ?? 0) > 500) {
+		if((this.inputStructure?.atoms?.length ?? 0) > MAX_ATOMS_FOR_BONDS) {
 			this.enableComputeBonds = false;
 			sendToClient(this.id, "params", {
-				enableComputeBonds: false
+				enableComputeBonds: false,
+				maxAtoms: MAX_ATOMS_FOR_BONDS
 			});
 		}
 		else {

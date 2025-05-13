@@ -1,6 +1,7 @@
 Bugs:
-  ☐ Too small number of atoms to disable bonds computation (see: D:\ChemData\formats\cif\nank0104a.ccdc.cif)
+  ✔ Too small number of atoms to disable bonds computation (see: D:\ChemData\formats\cif\nank0104a.ccdc.cif) @done(2025-05-13 07:21)
   ☐ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3)
+  ☐ When fp accumulate not visible, reset its value to false (otherwise: "Number of species differs")
 
 To do:
   ☐ Option to not fold fractional coordinates inside unit cell on read
