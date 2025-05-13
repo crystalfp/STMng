@@ -81,6 +81,12 @@ askNode(id, "init")
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
 
+// Reset accumulate for fingerprint when changing to a single step structure
+watch([countSteps], (after: [number], before: [number]) => {
+
+    if(before[0] > 1 && after[0] === 1) controlStore.fingerprintsAccumulate = false;
+});
+
 // Manage the step selection
 watch([step], (
        after:  [number],

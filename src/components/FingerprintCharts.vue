@@ -148,7 +148,7 @@ receiveInWindow((dataFromMain) => {
 
     /** The received data */
     const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
-    const {fingerprint, energyDistance, energyHistogram, order, distances,
+    const {fingerprint, energy, energyDistance, energyHistogram, order, distances,
            distanceHistogram, haveEnergies: haveE, haveDistances: haveD} = fingerprintChartData;
 
     // Disable buttons if no energy or distances provided
@@ -180,6 +180,14 @@ receiveInWindow((dataFromMain) => {
         chartData.value = buildChartData("Fingerprint", lineCoordinates, true, 0);
 
         chartOptions.value = buildChartOptions("Distance", "Fingerprint value");
+    }
+    else if(energy) {
+        const lineCoordinates = energy.map((value) => ({x: value[0], y: value[1]}));
+
+        chartData.value = buildChartData("Energy", lineCoordinates, false, 4);
+
+        chartOptions.value = buildChartOptions("Structure step",
+                                               "Energy");
     }
     else if(energyDistance) {
 
@@ -252,15 +260,7 @@ watch([fpIndex, chartType, binCount], () => {
       <Scatter :options="chartOptions" :data="chartData" />
     </div>
     <v-container class="fp-chart-buttons">
-      <div class="buttons-line">
-        <v-btn-toggle v-model="chartType" mandatory>
-          <v-btn value="fp">Fingerprint</v-btn>
-          <v-btn value="ed" :disabled="!haveEnergies || !haveDistances">Energy-Dist</v-btn>
-          <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
-          <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
-          <v-btn value="op">Order param</v-btn>
-          <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
-        </v-btn-toggle>
+      <div class="buttons-line1">
         <slider-with-steppers v-show="chartType==='fp' || chartType==='di'" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
@@ -269,6 +269,17 @@ watch([fpIndex, chartType, binCount], () => {
                                 v-model:raw="showBinCount" label-width="11rem"
                                 :label="`Bin count (${showBinCount})`"
                                 :min="2" :max="200" :step="1" />
+    </div>
+      <div class="buttons-line">
+        <v-btn-toggle v-model="chartType" mandatory>
+          <v-btn value="fp">Fingerprint</v-btn>
+          <v-btn value="en" :disabled="!haveEnergies">Energy</v-btn>
+          <v-btn value="ed" :disabled="!haveEnergies || !haveDistances">Energy-Dist</v-btn>
+          <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
+          <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
+          <v-btn value="op">Order param</v-btn>
+          <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
+        </v-btn-toggle>
         <v-btn v-focus @click="closeWindow('/fp-charts')">Close</v-btn>
       </div>
     </v-container>
@@ -309,6 +320,14 @@ watch([fpIndex, chartType, binCount], () => {
   gap: 10px;
   padding-right: 40px !important;
   padding-left: 0;
+}
+
+.buttons-line1 {
+  max-width: 3000px !important;
+  width: 100vw;
+  padding-right: 25px;
+  padding-left: 0;
+  margin: -44px 0 28px -5px;
 }
 
 </style>

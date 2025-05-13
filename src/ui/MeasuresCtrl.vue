@@ -120,18 +120,22 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
     nbonds.value = params.nbonds as number ?? 0;
     nhbonds.value = params.nhbonds as number ?? 0;
     step.value = params.step as number ?? 1;
+
+    // Counts by atom type
     const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, number>;
     counts.value.length = 0;
     for(const entry in countsRaw) {
         counts.value.push({symbol: entry, count: countsRaw[entry]});
     }
+    counts.value.sort((a, b) => a.symbol.localeCompare(b.symbol));
+
+    // Unit cell. The values are: [a, b, c, α, β, γ, x0, y0, z0]
     uc.value.length = 9;
     for(let i=0; i < 9; ++i) uc.value[i] = 0;
     const lengthsAngles = params.lengthsAngles as number[] ?? [];
     for(let i=0; i < 6; ++i) {
         uc.value[i] = lengthsAngles[i] ?? 0;
     }
-
     const origin = params.origin as number[] ?? [];
     for(let i=0; i < 3; ++i) {
         uc.value[i+6] = origin[i] ?? 0;

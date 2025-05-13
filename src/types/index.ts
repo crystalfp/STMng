@@ -659,16 +659,20 @@ export interface FingerprintsChartData {
 
     /** Distances from a given fingerprint chart */
     distances?: [id: number, y: number][];
+
+    /** Energy by step */
+    energy?: [id: number, energy: number][];
 }
 
 /**
  * Type of chart to display in the fingerprints chart window
  *
  * - "fp" one fingerprint
+ * - "en" energy vs. step
  * - "ed" energy from minimum vs. distance
  * - "eh" energy histogram
  * - "dh" distances histogram
- * - "op" order parameter
+ * - "op" order parameter vs. step
  * - "di" distances from a given fingerprint
  */
-export type FingerprintsChartKind = "fp" | "ed" | "eh" | "dh" | "op" | "di";
+export type FingerprintsChartKind = "fp" | "en" | "ed" | "eh" | "dh" | "op" | "di";

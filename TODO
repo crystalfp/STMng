@@ -1,7 +1,6 @@
 Bugs:
-  ✔ Too small number of atoms to disable bonds computation (see: D:\ChemData\formats\cif\nank0104a.ccdc.cif) @done(2025-05-13 07:21)
   ☐ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3)
-  ☐ When fp accumulate not visible, reset its value to false (otherwise: "Number of species differs")
+  ☐ Loading B40_0_6.xyz briefly appears a computed symmetry
 
 To do:
   ☐ Option to not fold fractional coordinates inside unit cell on read
@@ -9,12 +8,10 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ Add energy by step chart
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
-  ✔ Investigate lazy load `*Ctrl` components @done(2025-05-12 07:39)
 
 Functionalities:
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
@@ -60,6 +57,10 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Add energy by step chart @done(2025-05-13 10:37) @project(To do)
+  ✔ Investigate lazy load `*Ctrl` components @done(2025-05-12 07:39) @project(Performance)
+  ✔ Too small number of atoms to disable bonds computation (see: D:\ChemData\formats\cif\nank0104a.ccdc.cif) @done(2025-05-13 07:21) @project(Bugs)
+  ✔ When fp accumulate not visible, reset its value to false (otherwise: "Number of species differs") @done(2025-05-13 08:52) @project(Bugs)
   ✔ Investigate `v-snackbar-queue` for messages @done(2025-05-09 06:46) @project(To do)
   ✘ See if it is needed to convert NodeInfo in ProjectEditor to object from array @cancelled(2025-05-09 05:51) @project(To do)
   ✔ Behavior of "show slicer". Should be independent from enable slicer @done(2025-05-08 14:44) @project(Bugs)
