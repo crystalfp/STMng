@@ -202,6 +202,8 @@ export class ComputeFingerprints extends NodeCore {
 			energyThreshold: this.energyThreshold,
 			thresholdFromMinimum: this.thresholdFromMinimum,
 			areNanoclusters: this.areNanoclusters,
+			forceCutoff: this.forceCutoff,
+			manualCutoffDistance: this.manualCutoffDistance,
         	fingerprintingMethod: this.fingerprintingMethod,
         	binSize: this.binSize,
         	peakWidth: this.peakWidth,
@@ -221,6 +223,8 @@ export class ComputeFingerprints extends NodeCore {
 		this.thresholdFromMinimum = params.thresholdFromMinimum as boolean ?? false;
 		this.energyThreshold = params.energyThreshold as number ?? 0;
         this.areNanoclusters = params.areNanoclusters as boolean ?? false;
+		this.forceCutoff = params.forceCutoff as boolean ?? false;
+		this.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
         this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
