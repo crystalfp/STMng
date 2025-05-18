@@ -122,6 +122,9 @@ export default defineConfig([
         ...typescriptPlugin.configs["strict-type-checked"].rules,
         ...depend.configs["flat/recommended"].rules,
 
+        // > ******************* language rules ***********************
+        "no-unassigned-vars": "warn",
+
         // "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
         // "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
         "@typescript-eslint/no-unnecessary-condition": "off",
@@ -255,7 +258,7 @@ export default defineConfig([
         "no-loss-of-precision": "error",
         // "no-mixed-spaces-and-tabs": "off",
 
-        // ******************* stylistic ***********************
+        // > ******************* stylistic ***********************
         "@stylistic/lines-between-class-members": "warn",
         "@stylistic/quotes": ["warn", "double", {avoidEscape: true}],
         "@stylistic/space-before-function-paren": [
@@ -311,7 +314,7 @@ export default defineConfig([
         "@stylistic/array-bracket-spacing": ["warn", "never"],
         "@stylistic/arrow-parens": ["warn", "always"],
 
-        // ******************* unicorn ***********************
+        // > ******************* unicorn ***********************
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],
         // "unicorn/no-console-spaces": "warn",
         // "unicorn/prefer-string-replace-all": "warn",
@@ -357,7 +360,7 @@ export default defineConfig([
         // "unicorn/prefer-add-event-listener": "warn",
         "unicorn/switch-case-braces": "off",
 
-        // ******************* sonarjs ***********************
+        // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],
         // "sonarjs/no-duplicate-string": ["off", 6],
         // "sonarjs/elseif-without-else": "off",
@@ -376,7 +379,7 @@ export default defineConfig([
         "sonarjs/no-unenclosed-multiline-block": "off",
         "sonarjs/fixme-tag": "off",
 
-        // ******************* other plugins ***********************
+        // > ******************* other plugins ***********************
         // "promise/no-return-wrap": "warn",
         // "promise/no-promise-in-callback": "warn",
         // "promise/no-nesting": "warn",

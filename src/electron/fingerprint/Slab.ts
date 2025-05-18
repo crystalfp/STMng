@@ -38,7 +38,6 @@ export class Slab {
 
         // Initialize try points
 		if(!isNanocluster) this.computeTryPoints(16, 16);
-		// if(!isNanocluster) this.computeTryPoints(8, 8);
     }
 
 	/**
@@ -216,29 +215,29 @@ export class Slab {
         }
 
         // Mark atoms on the border that could become duplicated
-        const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
+        // const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
 
         // For each replica (included the original cell)
         for(let replica=0; replica < replicaMaxIndex; replica += 3) {
 
             // Copy the atoms in the unit cell replicas
-            for(let i=0; i < natoms; ++i) {
+            for(let i=0, i3=0; i < natoms; ++i, i3+=3) {
 
-                const x = atomsPosition[3*i];
-                const y = atomsPosition[3*i+1];
-                const z = atomsPosition[3*i+2];
+                const x = atomsPosition[i3];
+                const y = atomsPosition[i3+1];
+                const z = atomsPosition[i3+2];
 
                 const Zi = atomsZ[i];
 
                 if(replica === originalCellIndex) {
 
-                    for(let j=i+1; j < natoms; ++j) {
+                    for(let j=i+1, j3=j*3; j < natoms; ++j, j3+=3) {
 
-                        if(!this.isNanocluster && !ok[j]) continue;
+                        // if(!this.isNanocluster && !ok[j]) continue;
 
-                        const dx = atomsPosition[3*j]   - x;
-                        const dy = atomsPosition[3*j+1] - y;
-                        const dz = atomsPosition[3*j+2] - z;
+                        const dx = atomsPosition[j3]   - x;
+                        const dy = atomsPosition[j3+1] - y;
+                        const dz = atomsPosition[j3+2] - z;
 
                         const distSquared = dx*dx+dy*dy+dz*dz;
                         if(distSquared >= TOL_SQUARED) {
@@ -257,13 +256,13 @@ export class Slab {
                     const oy = y + di*basis[1] + dj*basis[4] + dk*basis[7];
                     const oz = z + di*basis[2] + dj*basis[5] + dk*basis[8];
 
-                    for(let j=0; j < natoms; ++j) {
+                    for(let j=0, j3=0; j < natoms; ++j, j3+=3) {
 
-                        if(!ok[j]) continue;
+                        // if(!ok[j]) continue;
 
-                        const dx = atomsPosition[3*j+0] - ox;
-                        const dy = atomsPosition[3*j+1] - oy;
-                        const dz = atomsPosition[3*j+2] - oz;
+                        const dx = atomsPosition[j3+0] - ox;
+                        const dy = atomsPosition[j3+1] - oy;
+                        const dz = atomsPosition[j3+2] - oz;
 
                         const distSquared = dx*dx+dy*dy+dz*dz;
 
@@ -295,6 +294,7 @@ export class Slab {
      * List atoms that will be duplicated on replicated unit cell
      *
      * @param atomsPosition - List of atom coordinates
+     * @param natoms - Number of atoms
      * @returns List of will be duplicated marks per atom
      */
     private getDuplicatedAtomsIndex(atomsPosition: Float64Array, natoms: number): boolean[] {
@@ -302,6 +302,7 @@ export class Slab {
         const len = natoms*3;
         const fracCoordinates = Array<number>(len);
         const mark = Array<boolean>(len).fill(false);
+        const inside = Array<boolean>(natoms);
         const ok = Array<boolean>(natoms).fill(true);
         const TOL = 1e-2;
 
@@ -318,27 +319,30 @@ export class Slab {
 			fracCoordinates[i3+1] = fy;
 			fracCoordinates[i3+2] = fz;
 
-            // Mark coordinates that are near a border
-            mark[i3]   = fx < TOL || (1-fx) < TOL;
-            mark[i3+1] = fy < TOL || (1-fy) < TOL;
-            mark[i3+2] = fz < TOL || (1-fz) < TOL;
+            // Mark coordinates that are near a border and summarize them if all are inside the cell
+            mark[i3]   = (fx < TOL && fx > -TOL) || (fx > (1-TOL) && fx < (1+TOL));
+            mark[i3+1] = (fy < TOL && fy > -TOL) || (fy > (1-TOL) && fy < (1+TOL));
+            mark[i3+2] = (fz < TOL && fz > -TOL) || (fz > (1-TOL) && fz < (1+TOL));
+            inside[i] = !mark[i3] && !mark[i3+1] && !mark[i3+2];
         }
 
         // Check if all atoms are far from the borders
-        if(mark.every((v) => !v)) return ok;
+        if(inside.every(Boolean)) return ok;
 
         // For every pair of atoms
         for(let i=0, i3=0; i < natoms-1; ++i, i3+=3) {
 
-            if(!ok[i] && !mark[i3] && !mark[i3+1] && !mark[i3+2]) continue;
+            // Interior, no problem
+            if(inside[i]) continue;
 
             for(let j=i+1, j3=j*3; j < natoms; ++j, j3+=3) {
 
                 // Interior, no problem
-                if(!ok[j] && !mark[j3] && !mark[j3+1] && !mark[j3+2]) continue;
+                if(inside[j]) continue;
 
                 // In a corner
                 if(mark[i3] && mark[j3] && mark[i3+1] && mark[j3+1] && mark[i3+2] && mark[j3+2]) {
+                    ok[i] = false;
                     ok[j] = false;
                     continue;
                 }
@@ -347,6 +351,7 @@ export class Slab {
                 if(mark[i3] && mark[j3] && mark[i3+1] && mark[j3+1]) {
                     const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
                     if(dz < TOL && dz > -TOL) {
+                        ok[i] = false;
                         ok[j] = false;
                         continue;
                     }
@@ -356,6 +361,7 @@ export class Slab {
                 if(mark[i3] && mark[j3] && mark[i3+2] && mark[j3+2]) {
                     const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
                     if(dy < TOL && dy > -TOL) {
+                        ok[i] = false;
                         ok[j] = false;
                         continue;
                     }
@@ -363,8 +369,9 @@ export class Slab {
 
                 // Both on the X axis
                 if(mark[i3+1] && mark[j3+1] && mark[i3+2] && mark[j3+2]) {
-                    const dx = fracCoordinates[i3]   - fracCoordinates[j3];
+                    const dx = fracCoordinates[i3] - fracCoordinates[j3];
                     if(dx < TOL && dx > -TOL) {
+                        ok[i] = false;
                         ok[j] = false;
                         continue;
                     }
@@ -375,6 +382,7 @@ export class Slab {
                     const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
                     const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
                     if(dy < TOL && dy > -TOL && dz < TOL && dz > -TOL) {
+                        ok[i] = false;
                         ok[j] = false;
                         continue;
                     }
@@ -385,6 +393,7 @@ export class Slab {
                     const dx = fracCoordinates[i3]   - fracCoordinates[j3];
                     const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
                     if(dx < TOL && dx > -TOL && dz < TOL && dz > -TOL) {
+                        ok[i] = false;
                         ok[j] = false;
                         continue;
                     }
@@ -395,6 +404,7 @@ export class Slab {
                     const dx = fracCoordinates[i3]   - fracCoordinates[j3];
                     const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
                     if(dx < TOL && dx > -TOL && dy < TOL && dy > -TOL) {
+                        ok[i] = false;
                         ok[j] = false;
                         continue;
                     }

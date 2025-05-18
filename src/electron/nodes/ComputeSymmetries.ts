@@ -14,6 +14,7 @@ import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
+import {pointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
 
 /**
  * Output from the native module that computes and find symmetries
@@ -97,7 +98,8 @@ export class ComputeSymmetries extends NodeCore {
 		}
 
 		this.inputStructure = data;
-
+// console.log(pointGroupAnalyzer(data)); // TBD
+void pointGroupAnalyzer;
 		this.computeSymmetries();
 	}
 

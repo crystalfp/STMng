@@ -1,5 +1,5 @@
 Bugs:
-  ☐ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3)
+  ✔ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3) @done(2025-05-18 17:32)
   ☐ Loading B40_0_6.xyz briefly appears a computed symmetry
 
 To do:
@@ -8,6 +8,8 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
+  ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
+  ☐ Fix getDuplicatedAtomsIndex() return value usage
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
