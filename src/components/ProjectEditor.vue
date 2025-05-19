@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-03-10
  */
-import {computed, ref} from "vue";
+import {computed, ref, onMounted} from "vue";
 import {VueFlow, type Node, type Edge, Position, useVueFlow, ConnectionMode, ConnectionLineType,
         Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
@@ -622,6 +622,63 @@ const createProjectGraph = (): void => {
     projectModified.value = true;
 };
 
+// > Exit guards
+const showConfirmExit = ref(false);
+/**
+ * Exit check before unload handler
+ *
+ * @param event - The before unload event
+ */
+const beforeClose = (event: BeforeUnloadEvent): void => {
+
+    if(projectModified.value) {
+        showConfirmExit.value = true;
+        event.preventDefault();
+    }
+};
+
+/**
+ * Add event listener for window closing
+ */
+onMounted(() => {
+
+    window.addEventListener("beforeunload", beforeClose);
+});
+
+/**
+ * Exit from the exit confirmation dialog without saving modifications
+ */
+const exitWithoutSave = (): void => {
+
+    window.removeEventListener("beforeunload", beforeClose);
+    closeWindow("/editor");
+};
+
+/**
+ * Exit from the exit confirmation dialog saving modifications
+ */
+const exitAndSave = (): void => {
+
+    showConfirmExit.value = false;
+    window.removeEventListener("beforeunload", beforeClose);
+    saveProjectGraph();
+    closeWindow("/editor");
+};
+
+/**
+ * Exit request with check if modifications saved
+ */
+const tryToExit = (): void => {
+
+    if(projectModified.value) {
+        showConfirmExit.value = true;
+    }
+    else {
+        window.removeEventListener("beforeunload", beforeClose);
+        closeWindow("/editor");
+    }
+};
+
 </script>
 
 
@@ -674,7 +731,7 @@ const createProjectGraph = (): void => {
     <div class="bb button-strip pr-7">
       <v-btn :disabled="projectModified" @click="createProjectGraph">New project</v-btn>
       <v-btn :disabled="!projectModified" @click="saveProjectGraph">Save modified project</v-btn>
-      <v-btn v-focus @click="closeWindow('/editor')">Close</v-btn>
+      <v-btn v-focus @click="tryToExit">Close</v-btn>
     </div>
   </div>
 
@@ -684,6 +741,17 @@ const createProjectGraph = (): void => {
     <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
         <v-btn @click="confirmDeletion">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="showConfirmExit">
+  <v-card title="Confirm exit" text="Project modified. Do you want to save it?"
+          class="mx-auto no-select" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirmExit=false">Dismiss</v-btn>
+        <v-btn @click="exitWithoutSave">Exit</v-btn>
+        <v-btn @click="exitAndSave">Save</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>

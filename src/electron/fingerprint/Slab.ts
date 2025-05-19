@@ -291,131 +291,6 @@ export class Slab {
     }
 
     /**
-     * List atoms that will be duplicated on replicated unit cell
-     *
-     * @param atomsPosition - List of atom coordinates
-     * @param natoms - Number of atoms
-     * @returns List of will be duplicated marks per atom
-     */
-    private getDuplicatedAtomsIndex(atomsPosition: Float64Array, natoms: number): boolean[] {
-
-        const len = natoms*3;
-        const fracCoordinates = Array<number>(len);
-        const mark = Array<boolean>(len).fill(false);
-        const inside = Array<boolean>(natoms);
-        const ok = Array<boolean>(natoms).fill(true);
-        const TOL = 1e-2;
-
-        // Convert coordinates into fractional coordinates
-        for(let i=0, i3=0; i < natoms; ++i, i3+=3) {
-
-            const x = atomsPosition[i3];
-            const y = atomsPosition[i3+1];
-            const z = atomsPosition[i3+2];
-			const fx = x*this.inverseBasis[0]+y*this.inverseBasis[3]+z*this.inverseBasis[6];
-			const fy = x*this.inverseBasis[1]+y*this.inverseBasis[4]+z*this.inverseBasis[7];
-			const fz = x*this.inverseBasis[2]+y*this.inverseBasis[5]+z*this.inverseBasis[8];
-			fracCoordinates[i3]   = fx;
-			fracCoordinates[i3+1] = fy;
-			fracCoordinates[i3+2] = fz;
-
-            // Mark coordinates that are near a border and summarize them if all are inside the cell
-            mark[i3]   = (fx < TOL && fx > -TOL) || (fx > (1-TOL) && fx < (1+TOL));
-            mark[i3+1] = (fy < TOL && fy > -TOL) || (fy > (1-TOL) && fy < (1+TOL));
-            mark[i3+2] = (fz < TOL && fz > -TOL) || (fz > (1-TOL) && fz < (1+TOL));
-            inside[i] = !mark[i3] && !mark[i3+1] && !mark[i3+2];
-        }
-
-        // Check if all atoms are far from the borders
-        if(inside.every(Boolean)) return ok;
-
-        // For every pair of atoms
-        for(let i=0, i3=0; i < natoms-1; ++i, i3+=3) {
-
-            // Interior, no problem
-            if(inside[i]) continue;
-
-            for(let j=i+1, j3=j*3; j < natoms; ++j, j3+=3) {
-
-                // Interior, no problem
-                if(inside[j]) continue;
-
-                // In a corner
-                if(mark[i3] && mark[j3] && mark[i3+1] && mark[j3+1] && mark[i3+2] && mark[j3+2]) {
-                    ok[i] = false;
-                    ok[j] = false;
-                    continue;
-                }
-
-                // Both on the Z axis
-                if(mark[i3] && mark[j3] && mark[i3+1] && mark[j3+1]) {
-                    const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
-                    if(dz < TOL && dz > -TOL) {
-                        ok[i] = false;
-                        ok[j] = false;
-                        continue;
-                    }
-                }
-
-                // Both on the Y axis
-                if(mark[i3] && mark[j3] && mark[i3+2] && mark[j3+2]) {
-                    const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
-                    if(dy < TOL && dy > -TOL) {
-                        ok[i] = false;
-                        ok[j] = false;
-                        continue;
-                    }
-                }
-
-                // Both on the X axis
-                if(mark[i3+1] && mark[j3+1] && mark[i3+2] && mark[j3+2]) {
-                    const dx = fracCoordinates[i3] - fracCoordinates[j3];
-                    if(dx < TOL && dx > -TOL) {
-                        ok[i] = false;
-                        ok[j] = false;
-                        continue;
-                    }
-                }
-
-                // Both on the YZ plane
-                if(mark[i3] && mark[j3]) {
-                    const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
-                    const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
-                    if(dy < TOL && dy > -TOL && dz < TOL && dz > -TOL) {
-                        ok[i] = false;
-                        ok[j] = false;
-                        continue;
-                    }
-                }
-
-                // Both on the XZ plane
-                if(mark[i3+1] && mark[j3+1]) {
-                    const dx = fracCoordinates[i3]   - fracCoordinates[j3];
-                    const dz = fracCoordinates[i3+2] - fracCoordinates[j3+2];
-                    if(dx < TOL && dx > -TOL && dz < TOL && dz > -TOL) {
-                        ok[i] = false;
-                        ok[j] = false;
-                        continue;
-                    }
-                }
-
-                // Both on the XY plane
-                if(mark[i3+2] && mark[j3+2]) {
-                    const dx = fracCoordinates[i3]   - fracCoordinates[j3];
-                    const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
-                    if(dx < TOL && dx > -TOL && dy < TOL && dy > -TOL) {
-                        ok[i] = false;
-                        ok[j] = false;
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return ok;
-    }
-
-    /**
      * Reset allocated memory
      */
     reset(): void {
@@ -483,7 +358,7 @@ export class Slab {
         }
 
         // Mark atoms on the border that could become duplicated
-        const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
+        // const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
 
         // For each atom in the original cell
         for(let a=0; a < natoms; ++a) {
@@ -498,7 +373,7 @@ export class Slab {
 
                 for(let b=0; b < natoms; ++b) {
 
-                    if((replicaB === 0 && b === a) || !ok[b]) continue;
+                    if(replicaB === 0 && b === a) continue;
 
                     const b3 = 3*b;
 
@@ -522,7 +397,7 @@ export class Slab {
 
                         for(let c=start; c < natoms; ++c) {
 
-                            if((replicaC === 0 && c === a) || !ok[c]) continue;
+                            if(replicaC === 0 && c === a) continue;
 
                             const c3 = 3*c;
 

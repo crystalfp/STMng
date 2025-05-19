@@ -196,9 +196,13 @@ export const computeEigen = (matrix: Matrix): EigenResult => {
     // For simplicity, we'll use power iteration on the remaining matrix
     const lastEigenvector = powerIteration(remainingMatrix).eigenvector;
     eigenvectors.push(lastEigenvector);
-verify(matrix, eigenvalues, eigenvectors); // TBD
+
     return {eigenvalues, eigenvectors};
 };
+/*
+
+verify(matrix, eigenvalues, eigenvectors);
+
 
 const verify = (matrix: Matrix, eigenvalues: number[], eigenvectors: Matrix): void => {
 
@@ -230,3 +234,4 @@ const verify = (matrix: Matrix, eigenvalues: number[], eigenvectors: Matrix): vo
         console.log("---");
     }
 };
+*/

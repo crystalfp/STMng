@@ -1,5 +1,4 @@
 Bugs:
-  ✔ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3) @done(2025-05-18 17:32)
   ☐ Loading B40_0_6.xyz briefly appears a computed symmetry
 
 To do:
@@ -8,8 +7,7 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
-  ☐ Fix getDuplicatedAtomsIndex() return value usage
+  ☐ Add exit guard in main window substituting the native confirmation dialog
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -41,6 +39,7 @@ ToDo eventually:
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
   ☐ For the charts <https://unovis.dev/>
+  ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -48,6 +47,7 @@ Nice to have/Future:
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Move to WebGPURenderer
   ☐ Simplify error messages for user, leaving full message in log
+  ☐ Explore WASM <https://dev.to/omriluz1/exploring-the-intersection-of-javascript-and-webassembly-simd-5fd1>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
@@ -59,6 +59,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3) @done(2025-05-18 17:32) @project(Bugs)
+  ✔ Fix getDuplicatedAtomsIndex() return value usage @done(2025-05-19 06:38) @project(To do)
   ✔ Add energy by step chart @done(2025-05-13 10:37) @project(To do)
   ✔ Investigate lazy load `*Ctrl` components @done(2025-05-12 07:39) @project(Performance)
   ✔ Too small number of atoms to disable bonds computation (see: D:\ChemData\formats\cif\nank0104a.ccdc.cif) @done(2025-05-13 07:21) @project(Bugs)
