@@ -17,7 +17,7 @@ import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
 import CameraControls from "camera-controls";
 import {Lut} from "three/addons/math/Lut.js";
 import {theme} from "@/services/ReceiveTheme";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {scatterToUniform} from "@/electron/fingerprint/ScatterToUniform";
 import {NeedRendering} from "@/electron/fingerprint/Helpers";
@@ -171,8 +171,8 @@ receiveInWindow((dataFromMain) => {
     renderSurface();
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/landscape");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/fp-landscape"});
 
 watch([gridSide, power], () => {
 
@@ -289,7 +289,7 @@ const renderSurface = (): void => {
                               :label="`Power (${showPower})`"
                               :min="1" :max="6" :step="0.1" />
       <select-colormap v-model="colormapName" class="dd" />
-      <v-btn v-focus @click="closeWindow('/landscape')" class="mt-2 ee">Close</v-btn>
+      <v-btn v-focus @click="closeWindow('/fp-landscape')" class="mt-2 ee">Close</v-btn>
     </v-container>
   </div>
 </v-app>

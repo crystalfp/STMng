@@ -17,26 +17,27 @@
 <header>
 <img src="title.png" width="900" height="507" alt="See The Molecule new generation (STMng) documentation">
 <p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization tool that implements some of the functionalities of the old STM4 visualization tool.</p>
+<p>The primary use of this tool is to analyze the output of the <a href="https://uspex-team.org/">USPEX</a> computational material discovery system.</p>
 <p>Unlike its predecessor, STMng is built on top of open source frameworks and libraries.</p>
 <button onclick="toggleDetails()" class="toggle-button">Toggle cards visibility</button>
 </header>
 <details>
   <summary>STMng screen</summary>
   <img src="screen.png" width="899" height="482" alt="Main parts of the STMng application screen">
-  <p>At startup the screen is divided in two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
-  <p>Click on the separator between the two areas (the <b>Gutter</b>) hide the node control panel. Clicking again on it, that is on the left of the full screen viewer, unhide the panel.</p>
-  <p>On the title bar of the application window is visible the currently loaded project: the project file name or the “default project” mark.</p>
-  <p>The Node controls panel contains the <b>Node selector</b> that selects the node for which the controls are shown. Then the controls specific for the node. At the end there is a button that <b>Reset the camera position</b> in the viewer.</p>
-  <p>Some nodes and menu entries open a <b>secondary window</b> that can be positioned freely and resized with data and controls specific for its functionality.</p>
+  <p>The main STMng screen is divided in two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
+  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hide the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel.</p>
+  <p>On the title bar of the window is visible the currently loaded
+    <span onclick="openDetails('#project'); return false;">project</span>: the project file name or the “default project” mark.</p>
+  <p>The Node controls panel contains the <b>Node selector</b> that selects the node for which the controls are shown. Then the controls specific for the selected node. At the end there is a button that <b>resets the camera position</b> in the viewer.</p>
+  <p>Some nodes and menu entries open a <span onclick="openDetails('#secondary'); return false;">secondary window</span> that can be positioned freely and resized with data and controls specific for its functionality.</p>
 </details>
 <details>
   <summary>General information</summary>
   <table>
     <tr><td class="m1"><a href="general/formats.html">Supported formats</a></td>
-        <td>The file formats read by STMng.</td></tr>
+        <td>The file formats read and written by STMng.</td></tr>
     <tr><td class="m1"><a href="general/atom-data.html">Atom data provenance</a></td>
         <td>The source of the atomic data used by STMng.</td></tr>
-    <tr><td><a href="general/project-editor.html">Project editor</a></td><td>The editor for the loaded project file.</td></tr>
   </table>
 </details>
 <details>
@@ -82,11 +83,32 @@
         <td>The viewer frame.</td></tr>
   </table>
 </details>
+<details id="secondary">
+  <summary>Secondary windows documentation</summary>
+  <table>
+    <tr><td class="m1"><a href="secondary/chart.html">X-Ray diffraction chart</a></td>
+        <td>The window show the diffraction spectra</td></tr>
+    <tr><td class="m1"><a href="secondary/compare.html">Compare structures</a></td>
+        <td>Visually compare pair of structures.</td></tr>
+    <tr><td class="m1"><a href="secondary/fp-charts.html">Fingerprints charts</a></td>
+        <td>This window shows various charts related to fingerprinting.</td></tr>
+    <tr><td class="m1"><a href="secondary/fp-landscape.html">Fingerprints energy landscape</a></td>
+        <td>Show the energy surface interpolating the computed fingerprints.</td></tr>
+    <tr><td class="m1"><a href="secondary/fp-scatterplot.html">Fingerprints scatterplot</a></td>
+        <td>Show the fingerprints as points in a 2D space.</td></tr>
+    <tr><td class="m1"><a href="secondary/log.html">Application log visualizer</a></td>
+        <td>Show the application messages log.</td></tr>
+    <tr><td class="m1"><a href="secondary/project-editor.html">Project editor</a></td>
+        <td>The editor for the loaded project file.</td></tr>
+    <tr><td class="m1"><a href="secondary/symmetries.html">Show structure symmetries</a></td>
+        <td>Show structure symmetries in input and output from the Symmetry node.</td></tr>
+  </table>
+</details>
 <details>
   <summary>Old STM4 documentation</summary>
   <p>Access the old STM4 <a href="stm4/index.html">documentation pages</a> related to the new nodes.</p>
 </details>
-<details>
+<details id="project">
   <summary>Project: the node graph description</summary>
   <p>The <b>project</b> is the description of the nodes used, their interconnections
   and their parameters.</p>
@@ -112,7 +134,7 @@
     <li><b>in:</b> The id of the node from which this node takes the input. It is missing if the node has no input or if the input comes only from the graphical scene</li>
   </ul>
   <h2>Project editor</h2>
-  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="general/project-editor.html">Project editor</a>. This editor makes possible the modification of the currently loaded project that, at the end, could be saved and becomes the current project.</p>
+  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="secondary/project-editor.html">Project editor</a>. This editor makes possible the modification of the currently loaded project that, at the end, could be saved and becomes the current project.</p>
 </details>
 <details>
   <summary>Main menu and application shortcuts</summary>
@@ -163,7 +185,7 @@
     <tr>
       <td class="c1">Project editor</td>
       <td class="c2"></td>
-      <td class="c3">Open the <a href="general/project-editor.html">project editor</a> window</td>
+      <td class="c3">Open the <a href="secondary/project-editor.html">project editor</a> window</td>
     </tr>
     <tr>
       <td class="c1">Quit application</td>
@@ -256,6 +278,13 @@
   <p>Clicking on the increment (<tt>+</tt>) or decrement (<tt>-</tt>) buttons with <tt>Ctrl</tt> key pushed multiplies the value change by 10. If the <tt>Shift</tt> key is pushed (alone or together with <tt>Ctrl</tt> key), the value is multiplied by 100.</p>
   <h2>Gutter</h2>
   <p>Clicking on the separator between the node interfaces panel and the viewer (the gutter) hides the node controls. Clicking again on the left side of the viewer unhide the panel.</p>
+  <h2>Secondary windows</h2>
+  <p>On all secondary window the following keys are active:</p>
+  <dl>
+    <dt>Escape</dt><dd>Closes the window.</dd>
+    <dt>F1</dt><dd>Opens the help file for the current window.</dd>
+    <dt>F12</dt><dd>During development or calling STMng with the “<tt>-e</tt>” command line option, opens the development tools for the current window.</dd>
+  </dl>
 </details>
 <details>
   <summary>Interaction with the viewers</summary>
@@ -400,6 +429,9 @@ comma separated and if they pass a value, switch and value are separated by a �
         .forEach((e) => {e.setAttribute('open',true);})
       areOpen = true
     }
+  }
+  const openDetails = (anchor) => {
+    document.querySelector(anchor).setAttribute('open',true);
   }
 </script>
 </body>

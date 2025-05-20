@@ -85,7 +85,7 @@ setupChannelVersions();
 setupChannelFileSelector();
 setupChannelProject();
 setupChannelLogFile();
-setupChannelMenu();
+setupChannelMenu(isDevelopment);
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

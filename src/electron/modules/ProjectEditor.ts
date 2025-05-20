@@ -19,7 +19,7 @@ export const createProjectEditor = (projectName: string): void => {
 	const title = projectName === "" ? "View default project" : `View "${projectName}" project`;
 
 	createSecondaryWindow({
-		routerPath: "/editor",
+		routerPath: "/project-editor",
 		width: 1800,
 		height: 800,
 		title,
@@ -32,7 +32,7 @@ export const createProjectEditor = (projectName: string): void => {
  */
 export const sendProjectToEditor = (): void => {
 
-	if(isSecondaryWindowOpen("/editor")) {
-		sendToSecondaryWindow("/editor", pm.projectGraphForEditor());
+	if(isSecondaryWindowOpen("/project-editor")) {
+		sendToSecondaryWindow("/project-editor", pm.projectGraphForEditor());
 	}
 };

@@ -243,14 +243,26 @@ export const broadcastMessage = (eventType: string, ...params: (boolean | string
 
 // > Show developer tools on each secondary window open
 /**
- * Show developer tools on each secondary window open
+ * Show developer tools on each secondary window open or on a single one
+ *
+ * @param path - Path to the window on which the developer tools should be opened
  */
 // eslint-disable-next-line unicorn/prevent-abbreviations
-export const showDevToolsOnSecondaryWindows = (): void => {
+export const showDevToolsOnSecondaryWindows = (path?: string): void => {
 
-    for(const win of openedWindows) {
-        if(win[0] === "/") continue;
-        win[1].webContents.closeDevTools();
-        win[1].webContents.openDevTools();
+    if(path) {
+        const win = openedWindows.get(path);
+        if(win) {
+
+            win.webContents.closeDevTools();
+            win.webContents.openDevTools();
+        }
+    }
+    else {
+        for(const win of openedWindows) {
+            if(win[0] === "/") continue;
+            win[1].webContents.closeDevTools();
+            win[1].webContents.openDevTools();
+        }
     }
 };

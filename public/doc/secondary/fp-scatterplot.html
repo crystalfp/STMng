@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Fingerprints scatterplot for the STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2025-05-20"/>
+  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>STMng — Fingerprints scatterplot</title>
+
+</head><body>
+<h1>STMng — Fingerprints scatterplot window</h1>
+<p>The scatterplot window shows the fingerprints as points in a 2D space. The points are colored by the associated value.</p>
+<p>This window shows five different kinds of scatterplot:</p>
+<dl style="margin-left: 20px;">
+  <dt>Group</dt><dd>One point for each structure colored by group.</dd>
+  <dt>Energy</dt><dd>One point for each structure colored by energy.</dd>
+  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for badly mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 20,000.</dd>
+  <dt>Quality</dt><dd>Grouping quality using the
+      <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1, that show perfect association of the point to the group, to -1, that show that the point is in the wrong group. There are two special cases: 1) the point is alone in a group and 2) the point is on the border between two groups.</dd>
+  <dt>From min</dt><dd>One point for each structure colored by its distance from the point with minimum energy.</dd>
+</dl>
+<p>The grouping quality color scale is:</p>
+<ul>
+<li><span style="width: 150px; background-color: green; color: green">⬚</span> Strong (silhouette &gt; 0.7)</li>
+<li><span style="width: 150px; background-color: yellow; color: yellow">⬚</span> Reasonable (silhouette &gt; 0.5)</li>
+<li><span style="width: 150px; background-color: orange; color: orange">⬚</span> Weak (silhouette &gt; 0.25)</li>
+<li><span style="width: 150px; background-color: red; color: red">⬚</span> Bad (silhouette &gt; 0.05)</li>
+<li><span style="width: 150px; background-color: #bd0000; color: #bd0000">⬚</span> Very bad (silhouette &lt; -0.05)</li>
+<li><span style="width: 150px; background-color: #00c0ff; color: #00c0ff">⬚</span> Cannot measure (group of one element)</li>
+<li><span style="width: 150px; background-color: white">⬚</span> On the border between two groups (silhouette between -0.05 and 0.05)</li>
+</ul>
+<p>Clicking on one point select it and show a small popup.</p>
+<p>Dragging the mouse with the right button down makes a rectangular selection that selects all points inside. If done with the control key pressed, deselects all selected points inside the selection.</p>
+<p>Note that due to the random initialization of the projection method, sometime the direction of the axis flips.</p>
+<p>Besides the scatterplot kind selector, the scatterplot window has the following controls:</p>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Point radius</td>
+	<td class="c2">slider</td>
+	<td class="c3">Radius of the scatterplot points.</td>
+</tr>
+<tr>
+  <td class="c1">Deselect</td>
+  <td class="c2">button</td>
+  <td class="c3">Deselect all selected points.</td>
+</tr>
+<tr>
+	<td class="c1">Show legend</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Show a legend for the current type of plot.</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window.</td>
+</tr>
+</table>
+
+<p>The left side of the window contains controls to manage point selection.</p>
+<table cellpadding="2" cellspacing="2">
+<tr>
+  <td class="c1">Select all</td>
+  <td class="c2">button</td>
+  <td class="c3">Select all points.</td>
+</tr>
+<tr>
+  <td class="c1">Deselect all</td>
+  <td class="c2">button</td>
+  <td class="c3">Deselect all selected points.</td>
+</tr>
+<tr>
+	<td class="c1">Group</td>
+	<td class="c2">slider</td>
+	<td class="c3">Select one of the groups present.</td>
+</tr>
+<tr>
+  <td class="c1">Select group</td>
+  <td class="c2">button</td>
+  <td class="c3">Select all points pertaining to the selected group.</td>
+</tr>
+<tr>
+  <td class="c1">Compare selected</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the window to <a href="compare.html">visually compare pairs of structures</a>. The function is available when at least two points are selected in the scatterplot.</td>
+</tr>
+<tr>
+  <td class="c1">Export selected</td>
+  <td class="c2">button</td>
+  <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy file. The entries are sorted on increasing energy. If no energy has been loaded, the energy file is not created and the structures are unsorted.</td>
+</tr>
+</table>
+
+<p><a href="../nodes/compute-fingerprints.html" title="Return to Fingerprinting documentation" class="back">Back to Fingerprinting &crarr;</a></p>
+
+</body>
+</html>

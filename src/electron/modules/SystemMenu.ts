@@ -23,30 +23,44 @@ import type {CtrlParams} from "@/types";
 /**
  * Open documentation file
  *
- * @param node - Node name for which the documentation should be shown.
-   If missing show general STMng documentation
- * @returns Promise from openExternal
- * @throws Error.
- * If the help file is not found
+ * @param kind - Kind of help file to visualize:
+ *      - "top": Main entry point of documentation
+ *      - "node": Help for node of the given type
+ *      - "secondary": Help for a secondary window
+ * @param file - Node name or window path for which the documentation should be shown.
+ * @returns Promise from openExternal or error from open file
  */
-const openDocumentation = (node?: string): Promise<void> => {
+const openDocumentation = (kind: "top" | "node" | "secondary", file?: string): Promise<void> => {
 
     const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
     let url;
-    if(node) {
-        url = app.isPackaged ?
-            path.resolve(process.resourcesPath, `app.asar.unpacked/dist/doc/nodes/${node}.html`) :
-            path.join(mainSourceDirectory, "..", "public", "doc", "nodes", `${node}.html`);
 
+    switch(kind) {
+        case "node":
+            url = app.isPackaged ?
+                path.resolve(process.resourcesPath,
+                    `app.asar.unpacked/dist/doc/nodes/${file}.html`) :
+                path.join(mainSourceDirectory, "..", "public", "doc", "nodes", `${file}.html`);
+            break;
+        case "secondary":
+            url = app.isPackaged ?
+                path.resolve(process.resourcesPath,
+                    `app.asar.unpacked/dist/doc/secondary/${file}.html`) :
+                path.join(mainSourceDirectory, "..", "public", "doc", "secondary", `${file}.html`);
+            break;
+        // case "top":
+        default:
+            file = "index";
+            url = app.isPackaged ?
+                path.resolve(process.resourcesPath,
+                    "app.asar.unpacked/dist/doc/index.html") :
+                path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
+            break;
     }
-    else {
-        url = app.isPackaged ?
-            path.resolve(process.resourcesPath, "app.asar.unpacked/dist/doc/index.html") :
-            path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
+    if(existsSync(url)) {
+        return shell.openExternal(`file:///${url}`);
     }
-
-    if(!existsSync(url)) throw Error("Help file not found");
-    return shell.openExternal(`file:///${url}`);
+    return Promise.reject(new Error(`Help file "${file}.html" not found`));
 };
 
 let systemMenu: Menu;
@@ -203,7 +217,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     label: "STMng documentation",
                     accelerator: "F1",
                     click() {
-                        openDocumentation()
+                        openDocumentation("top")
                             .catch((error: Error) => {
                                 sendAlertMessage(`Error getting help for "STMng": ${error.message}`);
                             });
@@ -217,7 +231,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                         getCurrentNode().then((currentNode) => {
                             if(!currentNode) currentNode = "../index";
                             currentNodeInError = currentNode;
-                            return openDocumentation(currentNode);
+                            return openDocumentation("node", currentNode);
                         })
                         .catch((error: Error) => {
                             sendAlertMessage(`Error getting help for "${currentNodeInError}": ${error.message}`);
@@ -265,7 +279,7 @@ export const disableSaveProjectEntry = (disable: boolean): void => {
 /**
  * Setup channel to toggle extended view from client
  */
-export const setupChannelMenu = (): void => {
+export const setupChannelMenu = (isDevelopment: boolean): void => {
 
     ipcMain.on("SYSTEM:extended", (_event, params: CtrlParams) => {
 
@@ -274,6 +288,26 @@ export const setupChannelMenu = (): void => {
         if(entry) {
             entry.checked = !params.normalScreen;
             refreshSystemMenu();
+        }
+    });
+
+    ipcMain.on("SYSTEM:secondary-key", (_event, params: CtrlParams) => {
+
+        const key = params.key as string;
+        if(!key) return;
+        const request = params.request as string;
+        if(!request) return;
+
+        // Show help for the secondary window
+        if(key === "F1") {
+            openDocumentation("secondary", request)
+                .catch((error: Error) => {
+                    sendAlertMessage(`Error getting help for "${request}" window: ${error.message}`);
+                });
+        }
+        // Open developer tools on the secondary window
+        else if(key === "F12" && isDevelopment) {
+            showDevToolsOnSecondaryWindows(request);
         }
     });
 };

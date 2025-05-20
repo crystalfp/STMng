@@ -7,7 +7,7 @@
  * @since 2024-09-24
  */
 import {ref} from "vue";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 
@@ -25,8 +25,8 @@ receiveInWindow((data: string) => {
     }
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/log");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/log"});
 
 /**
  * Ask confirmation for deleting the log content

@@ -14,7 +14,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {Context} from "chartjs-plugin-datalabels";
 import log from "electron-log";
 import {askNode, closeWindow, receiveInWindow} from "@/services/RoutesClient";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import type {ChartParams, ChartData, ChartOptions} from "@/types";
 
@@ -59,8 +59,8 @@ receiveInWindow((dataFromMain) => {
     chartOptions.value = options;
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/chart");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/chart"});
 
 /**
  * Reference to the chart

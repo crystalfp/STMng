@@ -45,6 +45,7 @@ class SceneManager {
 			SceneManager.scene.background = new Color(configStore.scene.background);
 			this.sceneModified = true;
 		});
+		this.sceneModified = true;
 		return SceneManager.scene;
 	}
 

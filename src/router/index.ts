@@ -25,7 +25,7 @@ export const router = createRouter({
             component: (): Component => import("@/components/ChartViewer.vue")
         },
         {
-            path: "/editor",
+            path: "/project-editor",
             component: (): Component => import("@/components/ProjectEditor.vue")
         },
         {
@@ -37,11 +37,11 @@ export const router = createRouter({
             component: (): Component => import("@/components/ShowLog.vue")
         },
         {
-            path: "/scatter",
+            path: "/fp-scatterplot",
             component: (): Component => import("@/components/FingerprintScatterplot.vue")
         },
         {
-            path: "/landscape",
+            path: "/fp-landscape",
             component: (): Component => import("@/components/EnergyLandscape.vue")
         },
         {

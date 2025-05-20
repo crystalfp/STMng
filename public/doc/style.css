@@ -169,5 +169,16 @@ details > h2:first-of-type {
   background-color: #FF6400;
   color: white;
   font-size: 110%;
-  padding: 5px;
+  padding: 5px 10px 6px 10px;
+}
+
+span[onclick] {
+  text-decoration: underline;
+  color: blue;
+  cursor:pointer;
+}
+
+.color-word {
+    padding: 0 10px;
+    color: white;
 }

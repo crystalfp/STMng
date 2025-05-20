@@ -409,7 +409,7 @@ export class ComputeFingerprints extends NodeCore {
 	private createUpdateScatterplot(opKind: "update" | "create",
 									options: CreateUpdateScatterplotOptions = {}): void {
 
-		const scatterplotOpen = isSecondaryWindowOpen("/scatter");
+		const scatterplotOpen = isSecondaryWindowOpen("/fp-scatterplot");
 		if(opKind !== "create" && !scatterplotOpen) return;
 
 		// Take the points projected to 2D
@@ -438,13 +438,13 @@ export class ComputeFingerprints extends NodeCore {
 		// If it is open, update the scatterplot window
 		if(scatterplotOpen) {
 
-			sendToSecondaryWindow("/scatter", dataToSend);
+			sendToSecondaryWindow("/fp-scatterplot", dataToSend);
 		}
 		else {
 
 			// Create the scatterplot window
 			createSecondaryWindowWithRetry({
-				routerPath: "/scatter",
+				routerPath: "/fp-scatterplot",
 				width: 1600,
 				height: 900,
 				title: "Fingerprints scatterplot",
@@ -461,7 +461,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private createUpdateLandscape(opKind: "update" | "create"): void {
 
-		const landscapeOpen = isSecondaryWindowOpen("/landscape");
+		const landscapeOpen = isSecondaryWindowOpen("/fp-landscape");
 		if(opKind !== "create" && !landscapeOpen) return;
 
 		// Should have energies
@@ -509,13 +509,13 @@ export class ComputeFingerprints extends NodeCore {
 		// If it is open, update the energy landscape window
 		if(landscapeOpen) {
 
-			sendToSecondaryWindow("/landscape", dataToSend);
+			sendToSecondaryWindow("/fp-landscape", dataToSend);
 		}
 		else {
 
 			// Create the energy landscape window
 			createSecondaryWindowWithRetry({
-				routerPath: "/landscape",
+				routerPath: "/fp-landscape",
 				width: 1500,
 				height: 900,
 				title: "Fingerprints energy landscape",

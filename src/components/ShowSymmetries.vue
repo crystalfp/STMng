@@ -9,7 +9,7 @@
 
 import {ref, nextTick} from "vue";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 
 const inSymmetry = ref("");
@@ -35,8 +35,8 @@ receiveInWindow((data) => {
     });
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/symmetries");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/symmetries"});
 
 </script>
 

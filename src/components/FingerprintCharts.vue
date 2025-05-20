@@ -7,7 +7,7 @@
  * @since 2025-01-20
  */
 import {ref, shallowRef, watch} from "vue";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {Scatter} from "vue-chartjs";
@@ -237,8 +237,8 @@ receiveInWindow((dataFromMain) => {
     }
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/fp-charts");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/fp-charts"});
 
 /** Send user choices to the main process */
 watch([fpIndex, chartType, binCount], () => {

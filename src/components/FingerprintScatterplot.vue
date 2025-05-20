@@ -9,7 +9,7 @@
 import {computed, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
@@ -538,8 +538,8 @@ receiveInWindow((dataFromMain) => {
     drawPoints();
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/scatter");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/fp-scatterplot"});
 
 /**
  * Select all points
@@ -919,7 +919,7 @@ const mousemove = (event: MouseEvent): void => {
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
-        <v-btn v-focus @click="closeWindow('/scatter')" class="mr-2 mb-4">Close</v-btn>
+        <v-btn v-focus @click="closeWindow('/fp-scatterplot')" class="mr-2 mb-4">Close</v-btn>
       </div>
     </div>
   </div>

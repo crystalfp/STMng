@@ -11,7 +11,7 @@ import {VueFlow, type Node, type Edge, Position, useVueFlow, ConnectionMode, Con
         Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
-import {closeWithEscape} from "@/services/CaptureEscape";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import SpecialNode from "./SpecialNode.vue";
 import type {ProjectInfo, GraphicType} from "@/types/NodeInfo";
@@ -175,8 +175,8 @@ receiveInWindow((data) => {
     prepareAvailableNodes(info);
 });
 
-/** Close the window on Esc press */
-closeWithEscape("/editor");
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys({path: "/project-editor"});
 
 /** If the project has been modified */
 const projectModified = ref(false);
@@ -651,7 +651,7 @@ onMounted(() => {
 const exitWithoutSave = (): void => {
 
     window.removeEventListener("beforeunload", beforeClose);
-    closeWindow("/editor");
+    closeWindow("/project-editor");
 };
 
 /**
@@ -662,7 +662,7 @@ const exitAndSave = (): void => {
     showConfirmExit.value = false;
     window.removeEventListener("beforeunload", beforeClose);
     saveProjectGraph();
-    closeWindow("/editor");
+    closeWindow("/project-editor");
 };
 
 /**
@@ -675,7 +675,7 @@ const tryToExit = (): void => {
     }
     else {
         window.removeEventListener("beforeunload", beforeClose);
-        closeWindow("/editor");
+        closeWindow("/project-editor");
     }
 };
 
