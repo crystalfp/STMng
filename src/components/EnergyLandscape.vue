@@ -172,7 +172,7 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys({path: "/fp-landscape"});
+handleSpecialKeys("/fp-landscape");
 
 watch([gridSide, power], () => {
 

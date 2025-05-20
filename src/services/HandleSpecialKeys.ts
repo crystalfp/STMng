@@ -1,5 +1,5 @@
 /**
- * Setup an handler for Esc press to close a given window
+ * Setup an handler for special keys (Esc, F1, F12) on secondary windows
  *
  * @packageDocumentation
  *
@@ -10,37 +10,10 @@ import {onBeforeUnmount, onMounted} from "vue";
 import {closeWindow, sendToNode} from "./RoutesClient";
 
 /**
- * Setup handler for the Escape key to close a secondary window
- *
- * @param windowRouterPath - Router path for the window to be closed
- */
-export const closeWithEscape = (windowRouterPath: string): void => {
-
-	const escapeHandler = (event: KeyboardEvent): void => {
-		if(event.key === "Escape") {
-			closeWindow(windowRouterPath);
-			event.preventDefault();
-			document.removeEventListener("keydown", escapeHandler);
-		}
-	};
-
-	onMounted(() => {
-		document.addEventListener("keydown", escapeHandler);
-	});
-
-	onBeforeUnmount(() => {
-		document.removeEventListener("keydown", escapeHandler);
-	});
-};
-
-/**
  * Parameters to the handleSpecialKeys routine
  * @notExported
  */
 interface SpecialKeysOptions {
-
-	/** Path to the secondary window */
-	path: string;
 
 	/** If true or not present, enable Escape key handling (close window) */
 	escape?: boolean;
@@ -55,31 +28,30 @@ interface SpecialKeysOptions {
 /**
  * Setup handler for the special keys on a secondary window
  *
+ * @param windowPath - Path to the secondary window
  * @param options - Options for the handler
  */
-export const handleSpecialKeys = (options: SpecialKeysOptions): void => {
+export const handleSpecialKeys = (windowPath: string, options: SpecialKeysOptions = {}): void => {
 
-	const escape = options.escape ?? true;
-	const f1 = options.f1 ?? true;
-	const f12 = options.f12 ?? true;
+	const {escape=true, f1=true, f12=true} = options;
 
 	const specialKeysHandler = (event: KeyboardEvent): void => {
 
 		if(event.key === "Escape" && escape) {
-			closeWindow(options.path);
+			closeWindow(windowPath);
 		}
 		else if(event.key === "F1" && f1) {
 			// Handle help
 			sendToNode("SYSTEM", "secondary-key", {
         		key: "F1",
-        		request: options.path.slice(1)
+        		request: windowPath.slice(1)
 		    });
 		}
 		else if(event.key === "F12" && f12) {
 			// Handle devtools
 			sendToNode("SYSTEM", "secondary-key", {
         		key: "F12",
-        		request: options.path
+        		request: windowPath
 		    });
 		}
 		event.preventDefault();

@@ -238,7 +238,7 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys({path: "/fp-charts"});
+handleSpecialKeys("/fp-charts");
 
 /** Send user choices to the main process */
 watch([fpIndex, chartType, binCount], () => {

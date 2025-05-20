@@ -26,7 +26,7 @@ receiveInWindow((data: string) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys({path: "/log"});
+handleSpecialKeys("/log");
 
 /**
  * Ask confirmation for deleting the log content

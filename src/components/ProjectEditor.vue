@@ -176,7 +176,7 @@ receiveInWindow((data) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys({path: "/project-editor"});
+handleSpecialKeys("/project-editor");
 
 /** If the project has been modified */
 const projectModified = ref(false);
