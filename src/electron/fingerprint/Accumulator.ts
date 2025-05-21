@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-12-07
  */
-import {hasNoUnitCell} from "../modules/Helpers";
+import {hasNoUnitCell, isNormalBond} from "../modules/Helpers";
 import type {Structure, BasisType} from "@/types";
 
 /** Essential part of the structure to be accumulated */
@@ -165,8 +165,7 @@ export class FingerprintsAccumulator {
 		}
 
 		for(const bond of bonds) {
-			if(bond.type !== 0) continue;
-			entry.bonds.push(bond.from, bond.to);
+			if(isNormalBond(bond)) entry.bonds.push(bond.from, bond.to);
 		}
 
 		// Check all structures have the same number of species

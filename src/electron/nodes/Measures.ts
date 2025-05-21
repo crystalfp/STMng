@@ -10,7 +10,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/ToClient";
-import {basisToLengthAngles, cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
+import {basisToLengthAngles, cartesianToFractionalCoordinates, hasNoUnitCell, isHydrogenBond} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 SelectedAtom, PositionType, BondData} from "@/types";
 
@@ -79,7 +79,7 @@ export class Measures extends NodeCore {
 
 		let nhbonds = 0;
 		for(const bond of structure.bonds) {
-			if(bond.type === 1) ++nhbonds;
+			if(isHydrogenBond(bond)) ++nhbonds;
 		}
 
 		const lengthsAngles = basisToLengthAngles(structure.crystal.basis);

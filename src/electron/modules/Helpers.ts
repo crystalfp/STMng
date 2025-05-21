@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
+import type {BasisType, Bond, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 /** Convert degrees to radiants and viceversa */
 const DEG2RAD = Math.PI/180;
@@ -253,3 +253,19 @@ export const getValueLimits = (structure: Structure, dataset: number): [number, 
 
 	return [minValue, maxValue];
 };
+
+/**
+ * Check bond type normal
+ *
+ * @param bond - Bond to check
+ * @returns True if it is a normal bond
+ */
+export const isNormalBond = (bond: Bond): boolean => bond.type === 0;
+
+/**
+ * Check bond type hydrogen
+ *
+ * @param bond - Bond to check
+ * @returns True if it is a hydrogen bond
+ */
+export const isHydrogenBond = (bond: Bond): boolean => bond.type === 1;

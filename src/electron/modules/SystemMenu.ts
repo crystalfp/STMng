@@ -11,7 +11,7 @@ import path from "node:path";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import {broadcastMessage, showDevToolsOnSecondaryWindows} from "./WindowsUtilities";
+import {broadcastMessage, showDevToolsOnSecondaryWindow} from "./WindowsUtilities";
 import {refreshSystemMenu, openMenuEntry, sendAlertMessage,
         getCurrentNode} from "./ToClient";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
@@ -167,15 +167,6 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     label: "Toggle DevTools"
                 },
                 {
-                    label: "DevTools on secondary",
-                    enabled: isDevelopment,
-                    visible: isDevelopment,
-                    accelerator: "CommandOrControl+F12",
-                    click() {
-                        showDevToolsOnSecondaryWindows();
-                    }
-                },
-                {
                     label: "Show scene 3D",
                     enabled: isDevelopment,
                     visible: isDevelopment,
@@ -307,7 +298,7 @@ export const setupChannelMenu = (isDevelopment: boolean): void => {
         }
         // Open developer tools on the secondary window
         else if(key === "F12" && isDevelopment) {
-            showDevToolsOnSecondaryWindows(request);
+            showDevToolsOnSecondaryWindow(request);
         }
     });
 };

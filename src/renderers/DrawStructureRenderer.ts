@@ -15,6 +15,7 @@ import {spriteText, disposeTextInGroup, BillboardBatchedText} from "@/services/S
 import {SpheresCache} from "@/services/SpheresCache";
 import {CylinderCache} from "@/services/CylinderCache";
 import {useControlStore} from "@/stores/controlStore";
+import {isHydrogenBond, isNormalBond} from "@/electron/modules/Helpers";
 import type {PositionType, StructureRenderInfo} from "@/types";
 
 // > Constants
@@ -303,7 +304,7 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) {
+					if(isHydrogenBond(bond)) {
 						DrawStructureRenderer.addHBond(atomFrom.position,
 													   atomTo.position, this.bondsGroup);
 					}
@@ -335,10 +336,16 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					if(isNormalBond(bond)) {
+						DrawStructureRenderer.addHBond(atomFrom.position,
+													   atomTo.position,
+													   this.bondsGroup);
+					}
 					else {
-						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
-												  atomFrom.color, atomTo.color);
+						cylinderCache.addCylinder(atomFrom.position,
+												  atomTo.position,
+												  atomFrom.color,
+												  atomTo.color);
 					}
 				}
 				cylinderCache.renderCylinders(this.bondsGroup);
@@ -350,7 +357,9 @@ export class DrawStructureRenderer {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
-					if(bond.type === 1) DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					if(isHydrogenBond(bond)) {
+						DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
+					}
 					else if(atomFrom.atomZ === atomTo.atomZ) {
 						const {color, position} = atomFrom;
 						DrawStructureRenderer.addNormalBondSameAtoms(position, atomTo.position, color, this.bondsGroup);

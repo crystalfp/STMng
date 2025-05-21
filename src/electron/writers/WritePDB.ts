@@ -8,7 +8,7 @@
  */
 
 import {openSync, closeSync, writeSync} from "node:fs";
-import {basisToLengthAngles, hasUnitCell, invertBasis} from "../modules/Helpers";
+import {basisToLengthAngles, hasUnitCell, invertBasis, isNormalBond} from "../modules/Helpers";
 import {getAtomicSymbol} from "../modules/AtomData";
 import type {WriterImplementation, Structure, CtrlParams} from "@/types";
 import log from "electron-log";
@@ -104,12 +104,12 @@ export class WriterPDB implements WriterImplementation {
 
                         for(const bond of bonds) {
                             if(bond.from === i && bond.to === j) {
-                                if(bond.type === 0) ib[i].push(j);
+                                if(isNormalBond(bond)) ib[i].push(j);
                                 else ihb[i].push(j);
                             }
                             else if(bond.from === j && bond.to === i) {
 
-                                if(bond.type === 0) ib[j].push(i);
+                                if(isNormalBond(bond)) ib[j].push(i);
                                 else ihb[j].push(i);
                             }
                         }

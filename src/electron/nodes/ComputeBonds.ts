@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/ToClient";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {hasNoUnitCell, vectorAngle} from "../modules/Helpers";
+import {hasNoUnitCell, isHydrogenBond, isNormalBond, vectorAngle} from "../modules/Helpers";
 import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
 
 /**
@@ -71,6 +71,14 @@ const displacementCoefficients = [
 const atomZForH = new Set([7, 8, 9, 16]);
 
 const MAX_ATOMS_FOR_BONDS = 1_000;
+
+/** Bond type values */
+const BondType = {
+	__proto__: undefined,
+    normal: 	0,
+    hydrogen:   1,
+    invalid:   99
+} as const;
 
 export class ComputeBonds extends NodeCore {
 
@@ -332,7 +340,7 @@ export class ComputeBonds extends NodeCore {
 		for(const bond of bonds) {
 
 			const {from, to, type} = bond;
-			if(type !== 0) continue;
+			if(type !== BondType.normal) continue;
 			if(from === startIdx) {
 				if(this.addType[to] === 2) {
 					this.addType[to] = 22;
@@ -357,7 +365,7 @@ export class ComputeBonds extends NodeCore {
 		for(const bond of structure.bonds) {
 
 			const {from, to, type} = bond;
-			if(type !== 0) continue;
+			if(type !== BondType.normal) continue;
 			if(this.addType[from] === 1 && this.addType[to] === 2) {
 				this.addType[to] = 22;
 				this.markingConnected(structure.bonds, to);
@@ -562,12 +570,12 @@ export class ComputeBonds extends NodeCore {
 				   (distSquared <= maxDistanceHbondSquared) &&
 				   (distSquared > sumRcovSquared)) {
 
-					bonds.push({from: i, to: j, type: 1});
+					bonds.push({from: i, to: j, type: BondType.hydrogen});
 				}
 
 				// Check for ordinary bond
 				else if(distSquared <= sumRcovSquared) {
-					bonds.push({from: i, to: j, type: 0});
+					bonds.push({from: i, to: j, type: BondType.normal});
 				}
 			}
 		}
@@ -577,7 +585,7 @@ export class ComputeBonds extends NodeCore {
 		const countBonds = bonds.length;
 		for(let i=0; i < countBonds; ++i) {
 
-			if(bonds[i].type !== 1) continue;
+			if(!isHydrogenBond(bonds[i])) continue;
 
 			const idx1 = bonds[i].from;
 			const idx2 = bonds[i].to;
@@ -594,13 +602,13 @@ export class ComputeBonds extends NodeCore {
 
 			for(let j=0; j < countBonds; ++j) {
 
-				if(bonds[j].type === 1 || bonds[j].type === 99) continue;
+				if(!isNormalBond(bonds[j])) continue;
 
 				if(bonds[j].from === idxH) {
 					idxX = bonds[j].to;
 					break;
 				}
-				if(bonds[j].to   === idxH) {
+				if(bonds[j].to === idxH) {
 					idxX = bonds[j].from;
 					break;
 				}
@@ -625,14 +633,16 @@ export class ComputeBonds extends NodeCore {
 				const sumCov = (rCH + rCY)*this.boundingScale(atomH.atomZ, atomY.atomZ);
 				const sumCovSquared = sumCov*sumCov;
 
-				bonds[i].type = distSquared <= sumCovSquared ? 0 : 99;
+				bonds[i].type = distSquared <= sumCovSquared ? BondType.normal : BondType.invalid;
 
 				continue;
 			}
 
 			const atomX = atoms[idxX];
 			if(!ComputeBonds.atomForHBond(atomX.atomZ) ||
-			   ComputeBonds.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) bonds[i].type = 99;
+			   ComputeBonds.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) {
+				bonds[i].type = BondType.invalid;
+			}
 		}
 
 		// Remove bonds between atoms that have too many bonds
@@ -641,7 +651,7 @@ export class ComputeBonds extends NodeCore {
 		// Clean up bonds list removing invalid bonds
 		const outBonds: Bond[] = [];
 		for(let i=0; i < countBonds; ++i) {
-			if(bonds[i].type !== 99) outBonds.push(bonds[i]);
+			if(bonds[i].type !== BondType.invalid) outBonds.push(bonds[i]);
 		}
 
 		return outBonds;
