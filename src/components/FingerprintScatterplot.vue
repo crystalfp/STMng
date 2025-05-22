@@ -838,36 +838,37 @@ const mousemove = (event: MouseEvent): void => {
       <v-label class="separator-title first-title">Manage selection</v-label>
 
       <v-row class="ga-3 mt-2 mb-5 ml-1 mr-n1 two-buttons">
-        <v-btn @click="selectAll" :disabled="!scatterplotData?.points.length" class="left">
+        <v-btn :disabled="!scatterplotData?.points.length" class="left" @click="selectAll">
           Select all
         </v-btn>
-        <v-btn @click="resetSelected" :disabled="noSelectedPoints" class="right">
+        <v-btn :disabled="noSelectedPoints" class="right" @click="resetSelected">
           Deselect all
         </v-btn>
       </v-row>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <slider-with-steppers v-model="selectedGroup" :disabled="!scatterplotData?.countGroups"
-                              v-model:raw="showSelectedGroup" label-width="7rem"
+      <slider-with-steppers v-model="selectedGroup" v-model:raw="showSelectedGroup"
+                              :disabled="!scatterplotData?.countGroups" label-width="7rem"
                               :label="`Group (${showSelectedGroup})`" class="mt-2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
-      <v-btn @click="selectByGroup" :disabled="!scatterplotData?.countGroups"
-             block class="mt-4 ml-1 mb-4">
+      <v-btn :disabled="!scatterplotData?.countGroups"
+             block class="mt-4 ml-1 mb-4" @click="selectByGroup">
         Select group
       </v-btn>
-      <v-btn @click="selectByCriteria('min-energy')" :disabled="!scatterplotData?.hasEnergies"
-             block class="mt-4 ml-1 mb-4">
+      <v-btn :disabled="!scatterplotData?.hasEnergies"
+             block class="mt-4 ml-1 mb-4" @click="selectByCriteria('min-energy')">
         Min energy per group
       </v-btn>
-      <v-btn @click="selectByCriteria('convex-hull')" :disabled="!scatterplotData?.hasEnergies"
-             block class="mt-4 ml-1 mb-4">
+      <v-btn :disabled="!scatterplotData?.hasEnergies"
+             block class="mt-4 ml-1 mb-4" @click="selectByCriteria('convex-hull')">
         Gen. convex hull
       </v-btn>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <v-btn block class="mt-4 mb-4 ml-1" @click="compareSelected" :disabled="selectedPoints.size < 2">
+      <v-btn block class="mt-4 mb-4 ml-1" :disabled="selectedPoints.size < 2"
+             @click="compareSelected">
         Compare selected
       </v-btn>
       <v-divider thickness="2" class="mr-n1 ml-1"/>
-      <v-btn @click="showSave = !showSave" :disabled="noSelectedPoints" block class="mt-4 ml-1">
+      <v-btn :disabled="noSelectedPoints" block class="mt-4 ml-1" @click="showSave = !showSave">
         Export selected
       </v-btn>
 
@@ -915,11 +916,11 @@ const mousemove = (event: MouseEvent): void => {
                                 v-model:raw="showPointRadius" label-width="9rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn @click="resetSelected" :disabled="selectedPoints.size === 0">Deselect</v-btn>
+        <v-btn :disabled="selectedPoints.size === 0" @click="resetSelected">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
-        <v-btn v-focus @click="closeWindow('/fp-scatterplot')" class="mr-2 mb-4">Close</v-btn>
+        <v-btn v-focus class="mr-2 mb-4" @click="closeWindow('/fp-scatterplot')">Close</v-btn>
       </div>
     </div>
   </div>

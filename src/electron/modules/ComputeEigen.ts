@@ -7,7 +7,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-05-13
  */
-type Matrix = number[][];
+export type Matrix = number[][];
 type Vector = number[];
 interface EigenResult {
     eigenvalues: number[];

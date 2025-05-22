@@ -273,23 +273,23 @@ const renderSurface = (): void => {
 <template>
 <v-app :theme>
   <div class="landscape-portal">
-    <div class="landscape-viewer" ref="view">
+    <div ref="view" class="landscape-viewer">
     </div>
     <v-container class="landscape-buttons">
-      <slider-with-steppers v-model="energyScale" class="mb-2 aa"
-                              v-model:raw="showEnergyScale" label-width="4.9rem"
+      <slider-with-steppers v-model="energyScale" v-model:raw="showEnergyScale"
+                              class="mb-2 aa" label-width="4.9rem"
                               :label="`Scale (${showEnergyScale})`"
                               :min="0" :max="2" :step="0.1" />
-      <slider-with-steppers v-model="gridSideExp" class="mb-2 bb"
-                              v-model:raw="showGridSideExp" label-width="7.5rem"
+      <slider-with-steppers v-model="gridSideExp" v-model:raw="showGridSideExp"
+                              class="mb-2 bb" label-width="7.5rem"
                               :label="`Grid side (${2**showGridSideExp})`"
                               :min="6" :max="11" :step="1" />
-      <slider-with-steppers v-model="power" class="mb-2 mr-0 cc"
-                              v-model:raw="showPower" label-width="5.5rem"
+      <slider-with-steppers v-model="power" v-model:raw="showPower"
+                              class="mb-2 mr-0 cc" label-width="5.5rem"
                               :label="`Power (${showPower})`"
                               :min="1" :max="6" :step="0.1" />
       <select-colormap v-model="colormapName" class="dd" />
-      <v-btn v-focus @click="closeWindow('/fp-landscape')" class="mt-2 ee">Close</v-btn>
+      <v-btn v-focus class="mt-2 ee" @click="closeWindow('/fp-landscape')">Close</v-btn>
     </v-container>
   </div>
 </v-app>

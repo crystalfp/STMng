@@ -61,10 +61,10 @@ sendCurrentNode(() => {
   variant="solo-filled" rounded="0" />
 </v-container>
 <v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
-  <component v-show="panel.id === selectedTabId" :is="panel.ctrl" :id="panel.id" :label="panel.label" />
+  <component :is="panel.ctrl" v-show="panel.id === selectedTabId" :id="panel.id" :label="panel.label" />
 </v-container>
-<v-btn density="comfortable" variant="tonal" rounded="0"
-       @click="controlStore.reset = true" class="mb-n4">Reset camera</v-btn>
+<v-btn density="comfortable" variant="tonal" rounded="0" class="mb-n4"
+       @click="controlStore.reset = true">Reset camera</v-btn>
 </template>
 
 

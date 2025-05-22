@@ -597,26 +597,23 @@ watch([aroundA, aroundB, aroundC],
       <v-btn class="sub-bl" :disabled="selectedStep0 === -1" @click="remove(0)">Remove</v-btn>
       <v-btn class="sub-br" :disabled="selectedStep1 === -1" @click="remove(1)">Remove</v-btn>
     </div>
-    <div class="side-n" ref="viewCompare">
+    <div ref="viewCompare" class="side-n">
     </div>
     <div class="side-s">
-      <slider-with-steppers v-model="aroundA"
+      <slider-with-steppers v-model="aroundA" v-model:raw="showAroundA"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
-                      v-model:raw="showAroundA" label-width="7.4rem"
-                      :label="`Around: a (${showAroundA}°)`"
+                      label-width="7.4rem" :label="`Around: a (${showAroundA}°)`"
                       :min="-180" :max="180" :step="1" />
-      <slider-with-steppers v-model="aroundB"
+      <slider-with-steppers v-model="aroundB" v-model:raw="showAroundB"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
-                      v-model:raw="showAroundB" label-width="4rem"
-                      :label="`b (${showAroundB}°)`"
+                      label-width="4rem" :label="`b (${showAroundB}°)`"
                       :min="-180" :max="180" :step="1" />
-      <slider-with-steppers v-model="aroundC"
+      <slider-with-steppers v-model="aroundC" v-model:raw="showAroundC"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
-                      v-model:raw="showAroundC" label-width="4rem"
-                      :label="`c (${showAroundC}°)`"
+                      label-width="4rem" :label="`c (${showAroundC}°)`"
                       :min="-180" :max="180" :step="1" />
-      <v-btn v-focus @click="resetRotations"
-             :disabled="selectedStep0 === -1 || selectedStep1 === -1">Reset</v-btn>
+      <v-btn v-focus :disabled="selectedStep0 === -1 || selectedStep1 === -1"
+             @click="resetRotations">Reset</v-btn>
       <v-btn v-focus @click="closeWindow('/compare')">Close</v-btn>
     </div>
   </div>

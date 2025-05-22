@@ -283,22 +283,22 @@ watchEffect(() => {
   </v-row>
   <v-container v-if="mode==='plane' || mode==='slab'" class="pa-0">
     <v-switch v-model="parallelA" label="Parallel to a" class="mt-2 ml-4" />
-    <slider-with-steppers v-model="percentA" :disabled="parallelA"
-                          v-model:raw="showPercentA" label-width="5rem"
+    <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
+                          :disabled="parallelA" label-width="5rem"
                           :label="`a (${showPercentA.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
     <v-switch v-model="parallelB" label="Parallel to b" class="mt-2 ml-4" />
-    <slider-with-steppers v-model="percentB" :disabled="parallelB"
-                          v-model:raw="showPercentB" label-width="5rem"
+    <slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
+                          :disabled="parallelB" label-width="5rem"
                           :label="`b (${showPercentB.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
     <v-switch v-model="parallelC" label="Parallel to c" class="mt-2 ml-4" />
-    <slider-with-steppers v-model="percentC" :disabled="parallelC"
-                          v-model:raw="showPercentC" label-width="5rem"
+    <slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
+                          :disabled="parallelC" label-width="5rem"
                           :label="`c (${showPercentC.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
-    <slider-with-steppers v-if="mode==='slab'" v-model="thickness" class="mt-6"
-                          v-model:raw="showThickness" label-width="8rem"
+    <slider-with-steppers v-if="mode==='slab'" v-model="thickness" v-model:raw="showThickness"
+                          class="mt-6" label-width="8rem"
                           :label="`Thickness (${showThickness.toFixed(1)})`"
                           :min="0.1" :max="10" :step="0.1" />
   </v-container>
@@ -329,7 +329,7 @@ watchEffect(() => {
                           :label="`Radius (${showSphereRadius.toFixed(1)})`"
                           :min="0.1" :max="50" :step="0.1" />
   </v-container>
-  <v-btn block @click="resetParameters" class="mt-6">Reset parameters</v-btn>
+  <v-btn block class="mt-6" @click="resetParameters">Reset parameters</v-btn>
   <error-alert kind="slicer" />
 </v-container>
 </template>

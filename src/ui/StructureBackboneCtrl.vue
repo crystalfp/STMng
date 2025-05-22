@@ -146,8 +146,8 @@ const selectDeselect = (select: boolean): void => {
   <slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
                           :label="`Threshold (${(showThreshold*100).toFixed(0)}%)`"
                           :min="0" :max="1" :step="0.1" />
-  <slider-with-steppers v-model="radius" class="mb-6"
-                          v-model:raw="showRadius" label-width="8rem"
+  <slider-with-steppers v-model="radius" v-model:raw="showRadius"
+                          label-width="8rem" class="mb-6"
                           :label="`Tube radius (${showRadius.toFixed(1)})`"
                           :min="0" :max="2" :step="0.1" />
   <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"

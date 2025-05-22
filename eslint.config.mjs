@@ -401,6 +401,7 @@ export default defineConfig([
         // "import/no-named-as-default": "off",
         // "import/no-named-as-default-member": "off",
         "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
+        "vue/attributes-order": "warn",
         "import/default": "off",
         "tsdoc/syntax": "warn",
         "promise/always-return": "off",

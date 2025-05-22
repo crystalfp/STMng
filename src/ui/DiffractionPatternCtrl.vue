@@ -117,6 +117,6 @@ const openChartWindow = (): void => {
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
-  <v-btn block @click="openChartWindow" :disabled="!enableComputation">Open chart</v-btn>
+  <v-btn block :disabled="!enableComputation" @click="openChartWindow">Open chart</v-btn>
 </v-container>
 </template>

@@ -427,14 +427,14 @@ const showEnergyLandscape = (): void => {
 
   <div class="load-grid mr-2">
     <div class="grid-tr">
-      <v-btn @click="fingerprintsAccumulate=true"
-             :disabled="countAccumulated!==0" class="w-100">Load one</v-btn>
+      <v-btn :disabled="countAccumulated!==0" class="w-100"
+             @click="fingerprintsAccumulate=true">Load one</v-btn>
     </div>
     <div class="grid-bl">
       <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     </div>
     <div class="grid-br">
-      <v-btn :disabled="countAccumulated===0" @click="resetAccumulator" class="w-100">Reset</v-btn>
+      <v-btn :disabled="countAccumulated===0" class="w-100" @click="resetAccumulator">Reset</v-btn>
     </div>
   </div>
 
@@ -505,7 +505,7 @@ const showEnergyLandscape = (): void => {
         {{ `Distances computed: ${countDistances}` }}
       </v-label>
     </v-col>
-      <v-col cols="12" v-if="endMessage !== '' && fixTriangleInequality" class="mt-n4">
+      <v-col v-if="endMessage !== '' && fixTriangleInequality" cols="12" class="mt-n4">
         <v-label class="result-label">
           {{ endMessage }}
         </v-label>
@@ -517,7 +517,7 @@ const showEnergyLandscape = (): void => {
   <v-row class="ml-0 mr-2 pt-3">
     <v-switch v-model="removeDuplicates"
             label="Remove" class="ml-2 mr-6 mb-5" />
-    <v-number-input :disabled="!removeDuplicates" v-model="duplicatesThreshold"
+    <v-number-input v-model="duplicatesThreshold" :disabled="!removeDuplicates"
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
   <v-label v-if="pointsRemoved >= 0 && removeDuplicates" class="result-label mt-2">
