@@ -46,7 +46,7 @@
     "vue": "^3.5.14",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1",
-    "vuetify": "^3.8.5",
+    "vuetify": "^3.8.6",
     "workerpool": "^9.2.0",
     "yaml": "^2.8.0"
   },
@@ -72,7 +72,6 @@
     "eslint-formatter-codeframe": "^7.32.1",
     "eslint-import-resolver-typescript": "^4.3.5",
     "eslint-plugin-depend": "^1.2.0",
-    "eslint-plugin-electron-extension": "^1.1.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-promise": "^7.2.1",

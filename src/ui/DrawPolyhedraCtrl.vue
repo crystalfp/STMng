@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {askNode, sendToNode, receivePolyhedraFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawPolyhedraRenderer} from "@/renderers/DrawPolyhedraRenderer";
@@ -34,6 +34,7 @@ const atomsSelector = ref("");
 const colorByCenterAtom = ref(false);
 const opacityByCenterAtom = ref(0.5);
 const showOpacity = ref(0.5);
+const addTriangles = ref(false);
 
 // > Initialize ui
 askNode(id, "init")
@@ -45,6 +46,7 @@ askNode(id, "init")
 		showPolyhedra.value = params.showPolyhedra as boolean ?? true;
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
+        addTriangles.value = params.addTriangles as boolean ?? false;
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
@@ -76,11 +78,12 @@ watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () 
     renderer.drawPolyhedra(colorByCenterAtom.value, showPolyhedra.value);
 });
 
-watch([labelKind, atomsSelector], () => {
+watch([labelKind, atomsSelector, addTriangles], () => {
 
     sendToNode(id, "select", {
         atomsSelector: atomsSelector.value,
-        labelKind: labelKind.value
+        labelKind: labelKind.value,
+        addTriangles: addTriangles.value
     });
 });
 
@@ -95,16 +98,21 @@ receivePolyhedraFromNode(id, "vertices",
     renderer.drawPolyhedra(colorByCenterAtom.value, showPolyhedra.value);
 });
 
+const showLabel = computed(() => {
+    return addTriangles.value ? "Show polyhedra & triangles" : "Show polyhedra";
+});
+
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showPolyhedra" label="Show polyhedra" class="mt-2 ml-4" />
+  <v-switch v-model="showPolyhedra" :label="showLabel" class="mt-2 ml-4" />
+  <v-switch v-model="addTriangles" label="Add triangles" class="ml-4" />
   <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-4 ml-4" />
   <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"
-                    class="ml-2 mb-6"
-                    title="Select central atoms by" placeholder="Central atoms selector" />
+                 class="ml-2 mb-6"
+                 title="Select central atoms by" placeholder="Central atoms selector" />
   <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
                           v-model:raw="showOpacity" label-width="7rem"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"

@@ -22,6 +22,7 @@ export class DrawPolyhedra extends NodeCore {
 	private colorByCenterAtom = true;
 	private opacityByCenterAtom = 0.5;
 	private readonly centerAtomsColor: string[] = [];
+	private addTriangles = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
@@ -65,7 +66,8 @@ export class DrawPolyhedra extends NodeCore {
 			atomsSelector: this.atomsSelector,
 			showPolyhedra: this.showPolyhedra,
 			colorByCenterAtom: this.colorByCenterAtom,
-			opacityByCenterAtom: this.opacityByCenterAtom
+			opacityByCenterAtom: this.opacityByCenterAtom,
+			addTriangles: this.addTriangles
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
@@ -78,6 +80,7 @@ export class DrawPolyhedra extends NodeCore {
 		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
 		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
 		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
+		this.addTriangles = params.addTriangles as boolean ?? false;
 	}
 
 	/**
@@ -92,7 +95,7 @@ export class DrawPolyhedra extends NodeCore {
 
 		// Sanity checks
 		const natoms = atoms.length;
-		if(natoms < 4) return [];
+		if(natoms < 3) return [];
 		if(bonds.length === 0) return [];
 
 		// Select the polyhedra center atoms
@@ -113,7 +116,8 @@ export class DrawPolyhedra extends NodeCore {
 				}
 			}
 
-			if(connected.length > 3) {
+			if(connected.length > 3 || (connected.length === 3 && this.addTriangles)) {
+
 				islands.push(connected);
 
 				if(this.colorByCenterAtom) {
@@ -151,7 +155,8 @@ export class DrawPolyhedra extends NodeCore {
 			atomsSelector: this.atomsSelector,
 			showPolyhedra: this.showPolyhedra,
 			colorByCenterAtom: this.colorByCenterAtom,
-			opacityByCenterAtom: this.opacityByCenterAtom
+			opacityByCenterAtom: this.opacityByCenterAtom,
+			addTriangles: this.addTriangles
 		};
 	}
 
@@ -177,6 +182,7 @@ export class DrawPolyhedra extends NodeCore {
 
 		this.labelKind = params.labelKind as SelectorType ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
+		this.addTriangles = params.addTriangles as boolean ?? false;
 
 		// Extract the polyhedrons vertices and send to client
 		if(!this.structure) return;

@@ -7,7 +7,8 @@
  * @since 2024-11-29
  */
 import {MeshLambertMaterial, FrontSide, Group, Vector3,
-		Color, Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
+		Color, Mesh, EdgesGeometry, LineSegments, LineBasicMaterial,
+		BufferGeometry, DoubleSide} from "three";
 import {sm} from "@/services/SceneManager";
 import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
 
@@ -104,21 +105,34 @@ export class DrawPolyhedraRenderer {
 
 		for(let i=0; i < this.countPolyhedra; ++i) {
 
-			// The polyhedron
 			const mesh = new Mesh();
-			mesh.geometry = new ConvexGeometry(this.polyhedraVertices[i]);
-			mesh.name = "Polyhedron";
-			let color;
-			if(colorByCenterAtom) {
-				const polyhedraMaterial = this.material.clone();
-				color = new Color(this.centerAtomColorList[i]);
-				polyhedraMaterial.color = color;
-				mesh.material = polyhedraMaterial;
+			let side;
+
+			if(this.polyhedraVertices[i].length === 3) {
+
+				// If it is a triangle
+				mesh.geometry = new BufferGeometry().setFromPoints(this.polyhedraVertices[i]);
+				mesh.name = "Triangle";
+				side = DoubleSide;
 			}
 			else {
-				mesh.material = this.material.clone();
+				// The polyhedron
+				mesh.geometry = new ConvexGeometry(this.polyhedraVertices[i]);
+				mesh.name = "Polyhedron";
+				side = FrontSide;
+			}
+
+			let color;
+			const material = this.material.clone();
+			if(colorByCenterAtom) {
+				color = new Color(this.centerAtomColorList[i]);
+				material.color = color;
+			}
+			else {
 				color = this.material.color;
 			}
+			mesh.material = material;
+			mesh.material.side = side;
 			this.group.add(mesh);
 
 			// Identify the polyhedron

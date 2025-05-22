@@ -12,7 +12,6 @@ import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
 import tsdocPlugin from "eslint-plugin-tsdoc";
-import electronPlugin from "eslint-plugin-electron-extension";
 import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import * as depend from "eslint-plugin-depend";
@@ -88,13 +87,12 @@ export default defineConfig([
         sonarjs: sonarjsPlugin,
         regexp: regexpPlugin,
         tsdoc: tsdocPlugin,
-        "electron-extension": electronPlugin,
         "@stylistic": stylistic,
         depend: depend,
     },
     settings: {
-        "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx"]},
-        "import/extensions": [".js", ".ts", ".vue", ".mts"],
+        "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx", ".mts"]},
+        "import/extensions": [".js", ".ts", ".vue", ".mts", ".mjs"],
         "import/ignore": ["node_modules"],
         "import/resolver": {
             "typescript": {"alwaysTryTypes": true},
@@ -397,14 +395,14 @@ export default defineConfig([
         // "vue/no-v-html": "off",
         // "vue/multi-word-component-names": "off",
         // "vue/comment-directive": "warn",
-        // "import/no-cycle": "off",
+        // "import/no-cycle": "error",
+        "import/no-unresolved": "error",
         // "import/namespace": "off",
         // "import/no-named-as-default": "off",
         // "import/no-named-as-default-member": "off",
         "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
         "import/default": "off",
         "tsdoc/syntax": "warn",
-        // "electron-extension/no-incompatible-api": "warn",
         "promise/always-return": "off",
         "promise/catch-or-return": ["warn", {allowFinally: true}],
         "security/detect-non-literal-fs-filename": "off",

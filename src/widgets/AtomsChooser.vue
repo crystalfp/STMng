@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 
 // > Properties
 const {disabled = false, hide = []} = defineProps<{
@@ -38,9 +38,13 @@ else labelKind.value = "symbol";
 /** Returning selector string */
 const atomsSelector = defineModel<string>("selector");
 
-const atomsSelectorBase = ref(atomsSelector.value);
+const atomsSelectorInternal = ref(atomsSelector.value);
+watchEffect(() => {
+    atomsSelectorInternal.value = atomsSelector.value;
+});
+
 const getSelector = (): void => {
-    atomsSelector.value = atomsSelectorBase.value ?? "";
+    atomsSelector.value = atomsSelectorInternal.value ?? "";
 };
 
 /**
@@ -70,7 +74,7 @@ const notHidden = (name: string): boolean => {
     </v-btn-toggle>
   </v-col>
   <v-col cols="12" class="pa-0">
-    <v-text-field v-model="atomsSelectorBase" :label="placeholder"
+    <v-text-field v-model="atomsSelectorInternal" :label="placeholder"
                   :disabled="labelKind === 'all' || disabled"
                   placeholder="Space separated list"
                   hide-details="auto" clearable spellcheck="false"
