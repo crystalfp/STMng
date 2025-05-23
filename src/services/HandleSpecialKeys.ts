@@ -21,7 +21,8 @@ interface SpecialKeysOptions {
 	/** If true or not present, enable F1 key handling (show window help) */
 	f1?: boolean;
 
-	/** If true or not present, enable F12 key handling (open DevTools on the window) */
+	/** If true or not present, enable F12 key handling
+	 * (open DevTools on the window on developer mode) */
 	f12?: boolean;
 }
 
@@ -39,6 +40,7 @@ export const handleSpecialKeys = (windowPath: string, options: SpecialKeysOption
 
 		if(event.key === "Escape" && escape) {
 			closeWindow(windowPath);
+			event.preventDefault();
 		}
 		else if(event.key === "F1" && f1) {
 			// Handle help
@@ -46,6 +48,7 @@ export const handleSpecialKeys = (windowPath: string, options: SpecialKeysOption
         		key: "F1",
         		request: windowPath.slice(1)
 		    });
+			event.preventDefault();
 		}
 		else if(event.key === "F12" && f12) {
 			// Handle devtools
@@ -53,8 +56,8 @@ export const handleSpecialKeys = (windowPath: string, options: SpecialKeysOption
         		key: "F12",
         		request: windowPath
 		    });
+			event.preventDefault();
 		}
-		event.preventDefault();
 	};
 
 	onMounted(() => {

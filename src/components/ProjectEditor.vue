@@ -7,7 +7,7 @@
  * @since 2025-03-10
  */
 import {computed, ref, onMounted} from "vue";
-import {VueFlow, type Node, type Edge, Position, useVueFlow, ConnectionMode, ConnectionLineType,
+import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLineType, Position,
         Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
@@ -479,12 +479,23 @@ const confirmDeletion = (): void => {
     // Close the dialog
     showConfirm.value = false;
 
+    let found = false;
     for(let idx = 0; idx < graphFlow.value.length; ++idx) {
+
         if(graphFlow.value[idx].id === selectedId) {
             graphFlow.value.splice(idx, 1);
             projectModified.value = true;
             showPanel.value = false;
-            return;
+            found = true;
+            break;
+        }
+    }
+    if(found) {
+        for(const node of graphFlow.value) {
+            if(node.in === selectedId) {
+                node.in = "";
+                break;
+            }
         }
     }
 };
@@ -746,11 +757,11 @@ const tryToExit = (): void => {
 </v-dialog>
 
 <v-dialog v-model="showConfirmExit">
-  <v-card title="Confirm exit" text="Project modified. Do you want to save it?"
+  <v-card title="Confirm editor close" text="Project modified. Do you want to save it?"
           class="mx-auto no-select" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirmExit=false">Dismiss</v-btn>
-        <v-btn @click="exitWithoutSave">Exit</v-btn>
+        <v-btn @click="exitWithoutSave">Close</v-btn>
         <v-btn @click="exitAndSave">Save</v-btn>
     </v-card-actions>
   </v-card>
