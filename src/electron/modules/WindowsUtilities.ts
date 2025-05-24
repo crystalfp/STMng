@@ -155,37 +155,25 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
     secondaryWin.removeMenu();
 
     // Load the content and show it
-    if(VITE_DEV_SERVER_URL) {
-        void secondaryWin.loadURL(`${VITE_DEV_SERVER_URL}#${params.routerPath}`);
-    }
-    else {
-        void secondaryWin.loadURL(`file://${mainSourceDirectory}/../dist/index.html#${params.routerPath}`);
-    }
-    secondaryWin.once("ready-to-show", () => {
-        secondaryWin?.show();
-        if(params.data) setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 500);
-    });
+    const url = VITE_DEV_SERVER_URL ?
+                        `${VITE_DEV_SERVER_URL}#${params.routerPath}` :
+                        `file://${mainSourceDirectory}/../dist/index.html#${params.routerPath}`;
+    secondaryWin.loadURL(url)
+        .then(() => {
+            secondaryWin.show();
+            if(params.data) {
+                setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 600);
+            }
 
-    // Manage the list of opened windows
-    openedWindows.set(params.routerPath, secondaryWin);
-    secondaryWin.on("close", () => {
-        openedWindows.delete(params.routerPath);
-    });
-};
-
-/**
- * Create a secondary window with retry to send data that could be not yet ready
- *
- * @param params - Params for the created window
- */
-export const createSecondaryWindowWithRetry = (params: WindowsParams): void => {
-
-    // Create the window
-    createSecondaryWindow(params);
-
-    // Workaround for content not appearing due to timing
-    const {routerPath, data} = params;
-    setTimeout(() => sendToSecondaryWindow(routerPath, data), 800);
+            // Manage the list of opened windows
+            openedWindows.set(params.routerPath, secondaryWin);
+            secondaryWin.on("close", () => {
+                openedWindows.delete(params.routerPath);
+            });
+        })
+        .catch((error: Error) => {
+            log.error(error);
+        });
 };
 
 // > Close the secondary window

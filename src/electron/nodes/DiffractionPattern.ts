@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
+import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition,
@@ -411,7 +411,7 @@ export class DiffractionPattern extends NodeCore {
 			}
 			else {
 
-				createSecondaryWindowWithRetry({
+				createSecondaryWindow({
 					routerPath: "/chart",
 					width: 1067,
 					height: 800,

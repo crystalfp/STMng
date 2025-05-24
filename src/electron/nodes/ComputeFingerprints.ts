@@ -9,7 +9,7 @@
 import {ipcMain} from "electron";
 import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
+import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
@@ -443,7 +443,7 @@ export class ComputeFingerprints extends NodeCore {
 		else {
 
 			// Create the scatterplot window
-			createSecondaryWindowWithRetry({
+			createSecondaryWindow({
 				routerPath: "/fp-scatterplot",
 				width: 1600,
 				height: 900,
@@ -514,7 +514,7 @@ export class ComputeFingerprints extends NodeCore {
 		else {
 
 			// Create the energy landscape window
-			createSecondaryWindowWithRetry({
+			createSecondaryWindow({
 				routerPath: "/fp-landscape",
 				width: 1500,
 				height: 900,
@@ -659,7 +659,7 @@ export class ComputeFingerprints extends NodeCore {
 		else {
 
 			// Create the charts window
-			createSecondaryWindowWithRetry({
+			createSecondaryWindow({
 				routerPath: "/fp-charts",
 				width: 1500,
 				height: 900,
@@ -711,7 +711,7 @@ export class ComputeFingerprints extends NodeCore {
 		else {
 
 			// Create the scatterplot window
-			createSecondaryWindowWithRetry({
+			createSecondaryWindow({
 				routerPath: "/compare",
 				width: 1600,
 				height: 900,

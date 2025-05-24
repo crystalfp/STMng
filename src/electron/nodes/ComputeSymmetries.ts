@@ -8,13 +8,13 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
-import {createSecondaryWindowWithRetry, isSecondaryWindowOpen,
+import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
-import {pointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
+import {PointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
 
 /**
  * Output from the native module that computes and find symmetries
@@ -98,8 +98,11 @@ export class ComputeSymmetries extends NodeCore {
 		}
 
 		this.inputStructure = data;
-// console.log(pointGroupAnalyzer(data)); // TBD
-void pointGroupAnalyzer;
+
+		// TEST Testing PointGroupAnalyzer
+		const pga = new PointGroupAnalyzer(this.inputStructure);
+		console.log(pga.analyze());
+
 		this.computeSymmetries();
 	}
 
@@ -191,23 +194,6 @@ void pointGroupAnalyzer;
 			this.showComputedSymmetry();
 			return;
 		}
-
-		// Normalize fractional coordinates
-		// for(let i=0; i < fractionalCoordinates.length; ++i) {
-		// 	let fr = fractionalCoordinates[i];
-		// 	if(fr > 1) fr -= 1;
-		// 	else if(fr < 0) fr += 1;
-		// 	fractionalCoordinates[i] = fr;
-		// }
-
-		// TBD
-		// console.log("INPUT:", this.inputStructure.atoms.length);
-		// let iidx = -3;
-		// for(const atom of this.inputStructure.atoms) {
-		// 	iidx += 3;
-		// 	if(atom.label !== "CA" || atom.chain !== "A") continue;
-		// 	console.log(atom.label, atom.chain, atom.position[0].toFixed(3), atom.position[1].toFixed(3), atom.position[2].toFixed(3), fractionalCoordinates[iidx].toFixed(3), fractionalCoordinates[iidx+1].toFixed(3), fractionalCoordinates[iidx+2].toFixed(3));
-		// }
 
 		const basis = new Float64Array(crystal.basis);
 		const natoms = atoms.length;
@@ -678,7 +664,7 @@ void pointGroupAnalyzer;
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
 		else {
-			createSecondaryWindowWithRetry({
+			createSecondaryWindow({
 				routerPath: "/symmetries",
 				width: 700,
 				height: 400,
