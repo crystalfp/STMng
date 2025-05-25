@@ -198,7 +198,6 @@ export default defineConfig([
         // "@typescript-eslint/return-await": "error",
         // "dot-notation": "off",
         // "@typescript-eslint/dot-notation": "off",
-        "eol-last": ["error", "always"],
         // "newline-per-chained-call": ["error", {ignoreChainWithDepth: 3}],
         // "nonblock-statement-body-position": ["warn", "beside"],
         // "space-infix-ops": "off",
@@ -263,29 +262,13 @@ export default defineConfig([
             "error", {anonymous: "never", named: "never", asyncArrow: "always"}
         ],
         "@stylistic/comma-spacing": ["error", {before: false, after: true}],
-        "@stylistic/keyword-spacing": ["warn",
-            {before: true, after: false, overrides: {
-                    else: {after: true},
-                    return: {after: true},
-                    try: {after: true},
-                    catch: {after: false},
-                    case: {after: true},
-                    const: {after: true},
-                    throw: {after: true},
-                    let: {after: true},
-                    do: {after: true},
-                    of: {after: true},
-                    as: {after: true},
-                    finally: {after: true},
-                    from: {after: true},
-                    import: {after: true},
-                    export: {after: true},
-                    default: {after: true},
-                    type: {after: true},
-                    await: {after: true},
-                }
-            }
-        ],
+        "@stylistic/keyword-spacing": ["warn", {before: true, after: true, overrides: {
+            if: {after: false},
+            switch: {after: false},
+            catch: {after: false},
+            while: {after: false},
+            for: {after: false},
+        }}],
         "@stylistic/object-curly-spacing": ["warn", "never"],
         "@stylistic/brace-style": ["warn", "stroustrup", {allowSingleLine: true}],
         "@stylistic/no-multi-spaces": "off",
@@ -313,6 +296,8 @@ export default defineConfig([
         "@stylistic/arrow-parens": ["warn", "always"],
         "@stylistic/yield-star-spacing": ["error", {after: true, before: false}],
         "@stylistic/generator-star-spacing": ["error", {after: true, before: false}],
+        "@stylistic/eol-last": ["error", "always"],
+        "@stylistic/new-parens": "error",
 
         // > ******************* unicorn ***********************
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],

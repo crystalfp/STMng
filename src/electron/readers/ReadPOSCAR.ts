@@ -82,8 +82,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 					scaleFactor = Number.parseFloat(fields[0]);
 					if(scaleFactor === 0) {
-						lineType = LineType.exit;
-						break;
+						throw Error("Invalid scale factor");
 					}
 					atomsZ.length = 0;
 					base = 0;
@@ -110,9 +109,6 @@ export class ReaderPOSCAR implements ReaderImplementation {
 										basis[2]*basis[3]*basis[7] - basis[2]*basis[4]*basis[6] -
 										basis[1]*basis[3]*basis[8] - basis[0]*basis[5]*basis[7];
 							scaleFactor = Math.cbrt(-scaleFactor/Vuc);
-						}
-						else if(scaleFactor === 0) {
-							throw Error("Invalid scale factor");
 						}
 
 						// Adjust the basis scale
