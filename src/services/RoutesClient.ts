@@ -118,6 +118,16 @@ export const sendCurrentNode = (callback: () => string): void => {
 	});
 };
 
+/**
+ * Handle exit application confirmation
+ *
+ * @param callback - Function to call on exit confirmation request
+ */
+export const handleExitConfirmation = (callback: () => void): void => {
+
+    window.electron.ipcRenderer.on("WINDOW:CONFIRM-EXIT", () => callback());
+};
+
 // > Project
 /**
  * Receive the project information to build the controls/ui

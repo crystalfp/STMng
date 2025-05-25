@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {app, BrowserWindow, nativeImage, ipcMain, dialog} from "electron";
+import {app, BrowserWindow, nativeImage, ipcMain} from "electron";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
@@ -21,6 +21,9 @@ const openedWindows = new Map<string, BrowserWindow>();
 
 /** The main window */
 let mainWin: BrowserWindow;
+
+/** True if this is the final exit without confirmation */
+let finalExit = false;
 
 /** Access needed directories */
 const {VITE_DEV_SERVER_URL} = process.env;
@@ -95,6 +98,12 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     ipcMain.on("WINDOW:CLOSE",
                (_event, routerPath: string): void => closeSecondaryWindow(routerPath));
 
+    // Functions to manage a request to close the application
+    ipcMain.on("WINDOW:EXIT-CONFIRMED", (): void => {
+        finalExit = true;
+        app.quit();
+    });
+
     // Setup the system menu
     setupMenu(isDevelopment);
 
@@ -104,18 +113,14 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     // Ask confirmation then close any opened secondary window and quit
     mainWin.on("close", (event) => {
 
-        if(dialog.showMessageBoxSync(mainWin, {
-            type: "question",
-            buttons: ["Quit", "Stay"],
-            title: "Confirm quit application",
-            message: "Do you want to stay or quit the application?",
-            cancelId: 1,
-            defaultId: 0,
-        }) === 1) event.preventDefault();
-        else {
+        if(finalExit) {
             for(const win of openedWindows) {
                 if(win[0] !== "/") win[1].close();
             }
+        }
+        else {
+            event.preventDefault();
+            mainWin.webContents.mainFrame.send("WINDOW:CONFIRM-EXIT");
         }
     });
 };

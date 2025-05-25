@@ -53,17 +53,17 @@ const confirmDeletion = (): void => {
       <v-btn v-focus @click="closeWindow('/log')">Close</v-btn>
     </v-container>
   </v-row>
-</v-app>
 
-<v-dialog v-model="showConfirm">
-  <v-card title="Confirm" text="Do you want to clear the application log file?"
-          class="mx-auto no-select" elevation="16" max-width="500">
-   <v-card-actions>
-      <v-btn @click="showConfirm=false">Dismiss</v-btn>
-      <v-btn @click="confirmDeletion">Yes</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
+  <v-dialog v-model="showConfirm">
+    <v-card title="Confirm" text="Do you want to clear the application log file?"
+            class="mx-auto no-select" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
+        <v-btn @click="confirmDeletion">Yes</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</v-app>
 </template>
 
 <style scoped>

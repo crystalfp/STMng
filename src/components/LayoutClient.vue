@@ -12,7 +12,8 @@ import {sm} from "@/services/SceneManager";
 import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
         receiveNotifications, sendToNode,
-        receiveBroadcast} from "@/services/RoutesClient";
+        receiveBroadcast,
+        handleExitConfirmation} from "@/services/RoutesClient";
 import {showAlertMessage, showSystemAlert} from "@/services/AlertMessage";
 import {theme} from "@/services/ReceiveTheme";
 import type {AlertLevel} from "@/stores/messageStore";
@@ -94,6 +95,14 @@ receiveBroadcast((eventType: string) => {
     }
 });
 
+// TEST Exit
+const showExitConfirm = ref(false);
+handleExitConfirmation(() => showExitConfirm.value = true);
+const confirmedExit = (): void => {
+    showExitConfirm.value = false;
+    sendToNode("WINDOW", "EXIT-CONFIRMED");
+};
+
 </script>
 
 <template>
@@ -108,6 +117,16 @@ receiveBroadcast((eventType: string) => {
                     timer="info" max-width="250" close-on-content-click />
 </div>
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
+
+  <v-dialog v-model="showExitConfirm">
+    <v-card title="Confirm exit application" text="Do you want to quit the application?"
+            class="mx-auto no-select" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showExitConfirm=false">Dismiss</v-btn>
+        <v-btn @click="confirmedExit">Yes</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </v-app>
 </template>
 
