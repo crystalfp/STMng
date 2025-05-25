@@ -19,14 +19,14 @@ import * as depend from "eslint-plugin-depend";
 export default defineConfig([
     stylistic.configs.customize({
         flat: true, // required for flat config
-        // the following options are the default values
         indent: 4,
         quotes: "double",
         semi: true,
         jsx: false,
         blockSpacing: false,
-    }),
-    {
+        arrowParens: true,
+        blockSpacing: false,
+    }), {
     ignores: [
         "src/vite-env.d.ts",
 		"src/assets",
@@ -311,6 +311,8 @@ export default defineConfig([
         "@stylistic/array-bracket-newline": ["warn", "consistent"],
         "@stylistic/array-bracket-spacing": ["warn", "never"],
         "@stylistic/arrow-parens": ["warn", "always"],
+        "@stylistic/yield-star-spacing": ["error", {after: true, before: false}],
+        "@stylistic/generator-star-spacing": ["error", {after: true, before: false}],
 
         // > ******************* unicorn ***********************
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],
