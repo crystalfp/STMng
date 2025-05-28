@@ -83,6 +83,12 @@ export class ComputeFingerprints extends NodeCore {
 	private channelOpened = false;
 	private channelChartsOpened = false;
 
+	private readonly fingerprintMethodsNames = [
+		"Oganov-Valle fingerprint",
+		"Oganov-Valle per-site fingerprint",
+		"Dot-matrix fingerprint"
+	];
+
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      	type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "capture",   	type: "invoke", callback: this.channelCapture.bind(this)},
@@ -226,6 +232,8 @@ export class ComputeFingerprints extends NodeCore {
 		this.forceCutoff = params.forceCutoff as boolean ?? false;
 		this.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
         this.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
+		if(this.fingerprintingMethod >= this.fingerprintMethodsNames.length ||
+		   this.fingerprintingMethod < 0) this.fingerprintingMethod = 0;
         this.binSize = params.binSize as number ?? 0.05;
         this.peakWidth = params.peakWidth as number ?? 0.02;
 		this.distanceMethod = params.distanceMethod as number ?? 0;
@@ -851,11 +859,7 @@ export class ComputeFingerprints extends NodeCore {
 			forceCutoff: this.forceCutoff,
 			manualCutoffDistance: this.manualCutoffDistance,
 
-			fingerprintMethods: [
-				"Oganov-Valle fingerprint",
-				"Oganov-Valle per-site fingerprint",
-				"Dot-matrix fingerprint"
-			],
+			fingerprintMethods: this.fingerprintMethodsNames,
 			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,

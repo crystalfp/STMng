@@ -95,9 +95,11 @@ receiveBroadcast((eventType: string) => {
     }
 });
 
-// TEST Exit
+// Application exit confirmation
 const showExitConfirm = ref(false);
-handleExitConfirmation(() => showExitConfirm.value = true);
+handleExitConfirmation(() => {
+    showExitConfirm.value = true;
+});
 const confirmedExit = (): void => {
     showExitConfirm.value = false;
     sendToNode("WINDOW", "EXIT-CONFIRMED");

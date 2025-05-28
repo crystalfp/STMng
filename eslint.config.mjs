@@ -25,7 +25,6 @@ export default defineConfig([
         jsx: false,
         blockSpacing: false,
         arrowParens: true,
-        blockSpacing: false,
     }), {
     ignores: [
         "src/vite-env.d.ts",

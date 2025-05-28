@@ -161,9 +161,9 @@ export const methodEnergyDistance = (energies: number[],
 	}
 
 	// Order by increasing distances
-	energyDistance.sort((a, b) => a[0] - b[0]);
-
-	return energyDistance;
+	// energyDistance.sort((a, b) => a[0] - b[0]);
+	// return energyDistance;
+	return energyDistance.toSorted((a, b) => a[0] - b[0]);
 };
 
 /**

@@ -2,45 +2,52 @@
   "graph": {
     "reader": {
       "label": "Reader",
-      "type": "structure-reader"
+      "type": "structure-reader",
+      "x": 5,
+      "y": 5
     },
     "cfp": {
       "label": "Fingerprints",
       "type": "compute-fingerprints",
-      "in": "reader"
-    },
-    "unit": {
-      "label": "Cell",
-      "type": "draw-unit-cell",
+      "x": 300,
+      "y": 0,
       "in": "reader"
     },
     "bonds": {
       "label": "Bonds",
       "type": "compute-bonds",
+      "x": 455,
+      "y": 215,
       "in": "unit"
     },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
+      "x": 605,
+      "y": 285,
       "in": "bonds"
     },
-    "measure": {
-      "label": "Measures",
-      "type": "measures",
-      "in": "bonds"
+    "unit": {
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "x": 690,
+      "y": 330,
+      "in": "reader"
     },
     "viewer": {
       "label": "Viewer",
-      "type": "viewer-3d"
+      "type": "viewer-3d",
+      "x": 905,
+      "y": 425
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        4.330834550000001,
-        4.3991050000000005,
-        18.34293
+        5,
+        2.9999999999999987,
+        5.000000000000001
       ],
       "lookAt": [
         4.330834550000001,
@@ -105,6 +112,7 @@
       "format": "POSCAR",
       "atomsTypes": "",
       "useBohr": true,
+      "readHydrogen": false,
       "stepIncrement": 1,
       "speed": 0
     },
@@ -113,30 +121,18 @@
       "energyThreshold": 0,
       "thresholdFromMinimum": false,
       "areNanoclusters": false,
-      "fingerprintingMethod": 3,
+      "forceCutoff": false,
+      "manualCutoffDistance": 10,
+      "fingerprintingMethod": 0,
       "binSize": 0.05,
       "peakWidth": 0.02,
       "distanceMethod": 0,
       "fixTriangleInequality": false,
       "groupingMethod": 0,
       "groupingThreshold": 7,
-      "addedMargin": 0
-    },
-    "unit": {
-      "showUnitCell": true,
-      "dashedLine": false,
-      "lineColor": "#0000FF",
-      "showBasisVectors": false,
-      "repetitionsA": 1,
-      "repetitionsB": 1,
-      "repetitionsC": 1,
-      "showSupercell": false,
-      "supercellColor": "#02A502",
-      "dashedSupercell": false,
-      "percentA": 0,
-      "percentB": 0,
-      "percentC": 0,
-      "shrink": true
+      "addedMargin": 0,
+      "removeDuplicates": true,
+      "duplicatesThreshold": 0.015
     },
     "bonds": {
       "minBondingDistance": 0.64,
@@ -156,9 +152,26 @@
       "drawMetalness": 0.6,
       "labelKind": "symbol",
       "showBonds": true,
-      "showStructure": true,
+      "showAtoms": true,
       "showLabels": true,
-      "shadedBonds": false
+      "shadedBonds": false,
+      "showBondsStrengths": false
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": true
     }
   }
 }

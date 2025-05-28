@@ -8,40 +8,8 @@
  */
 import type {BasisType, PositionType} from "@/types";
 import {computeCellVertices} from "../modules/ComputeCellVertices";
-
-/**
- * Normalize a vector
- *
- * @param v - Vector to be normalized
- * @returns Normalized vector
- */
-const normalize = (v: number[]): number[] => {
-	const length = Math.hypot(v[0], v[1], v[2]);
-	return [v[0] / length, v[1] / length, v[2] / length];
-};
-
-/**
- * Compute a cross product
- *
- * @param a - First vector
- * @param b - Second vector
- * @returns Cross product between the two vectors
- */
-const crossProduct = (a: number[], b: number[]): number[] => [
-		a[1] * b[2] - a[2] * b[1],
-		a[2] * b[0] - a[0] * b[2],
-		a[0] * b[1] - a[1] * b[0]
-	];
-
-/**
- * Compute a dot product
- *
- * @param a - First vector
- * @param b - Second vector
- * @returns Dot product between the two vectors
- */
-const dotProduct = (a: number[], b: number[]): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-
+import {normalize} from "./LinearAlgebra";
+import {cross, dot} from "mathjs";
 /**
  * Compute distance of a point from a plane
  *
@@ -57,7 +25,7 @@ const distanceFromPlane = (point: number[], normal: number[], planePoint: number
 		point[1] - planePoint[1],
 		point[2] - planePoint[2]
 	];
-	return dotProduct(vec, normal);
+	return dot(vec, normal);
 };
 
 /**
@@ -109,23 +77,24 @@ const orderIntersectionPoints = (points: number[][], normal: number[]): number[]
 		centroid[1] += point[1];
 		centroid[2] += point[2];
 	}
-	centroid[0] /= points.length;
-	centroid[1] /= points.length;
-	centroid[2] /= points.length;
+	const npoints = points.length;
+	centroid[0] /= npoints;
+	centroid[1] /= npoints;
+	centroid[2] /= npoints;
 
 	// Find two vectors perpendicular to the plane normal and to each other
 	const v1 = normal[0] !== 0 || normal[1] !== 0
 					? normalize([-normal[1], normal[0], 0])
 					: normalize([0, -normal[2], normal[1]]);
-	const v2 = crossProduct(normal, v1);
+	const v2 = cross(normal, v1);
 
-	return points.sort((a: number[], b: number[]) => {
+	return points.toSorted((a: number[], b: number[]) => {
 
 		const vecA = [a[0]-centroid[0], a[1]-centroid[1], a[2]-centroid[2]];
 		const vecB = [b[0]-centroid[0], b[1]-centroid[1], b[2]-centroid[2]];
 
-		const angleA = Math.atan2(dotProduct(vecA, v2), dotProduct(vecA, v1));
-		const angleB = Math.atan2(dotProduct(vecB, v2), dotProduct(vecB, v1));
+		const angleA = Math.atan2(dot(vecA, v2), dot(vecA, v1));
+		const angleB = Math.atan2(dot(vecB, v2), dot(vecB, v1));
 
 		return angleA - angleB;
 	});

@@ -7,8 +7,6 @@ To do:
   ☐ Check error return from main process to client
   ☐ Copy residues in compute symmetries
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ Add exit guard in main window substituting the native confirmation dialog
-  ☐ "Invalid "POSCAR" file content" make it more informative in the log
   ☐ Unify viewer3D setup between Compare e Landscape
 
 Performance:
@@ -62,6 +60,9 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Add exit guard in main window substituting the native confirmation dialog @done(2025-05-26 14:44) @project(To do)
+  ✔ "Invalid "POSCAR" file content" make it more informative in the log @done(2025-05-26 14:44) @project(To do)
+  ✔ Unify vector operations in a distinct file @done(2025-05-26 14:44) @project(To do)
   ✘ Loading B40_0_6.xyz briefly appears a computed symmetry @cancelled(2025-05-23 06:56) @project(Bugs)
   ✔ Add handlers for F1 and F12 in secondary windows @done(2025-05-20 16:52) @project(To do)
   ✔ Asymptote problem in compute fingerprints. They go to 0.5, not 0 (for AlO.poscar step 1, 3, 4 7-12 goes to zero, steps 2, 6 goes to three different values, step 5 to -0.3) @done(2025-05-18 17:32) @project(Bugs)

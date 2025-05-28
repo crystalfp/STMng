@@ -7,55 +7,13 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-05-13
  */
-export type Matrix = number[][];
+import {dotProduct, normalize, multiplyMatrixVector, type Matrix} from "./LinearAlgebra";
+
 type Vector = number[];
 interface EigenResult {
     eigenvalues: number[];
     eigenvectors: Matrix;
 }
-
-/**
- * Normalize a vector to unit length
- *
- * @param v - Vector to normalize
- * @returns Normalized vector
- */
-const normalize = (v: Vector): Vector => {
-    const magnitude = Math.sqrt(v.reduce((sum, value) => sum + value * value, 0));
-    return v.map((value) => value / magnitude);
-};
-
-/**
- * Multiply a matrix by a vector
- *
- * @param matrix - Matrix to be multiplied
- * @param vector - Vector multiplier
- * @returns Result of matrix x vector
- */
-const matrixVectorMultiply = (matrix: Matrix, vector: Vector): Vector => {
-
-    const result: Vector = [];
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for(let i = 0; i < matrix.length; i++) {
-        let sum = 0;
-        for(let j = 0; j < vector.length; j++) {
-            sum += matrix[i][j] * vector[j];
-        }
-        result.push(sum);
-    }
-    return result;
-};
-
-/**
- * Calculate the dot product of two vectors
- *
- * @param v1 - First vector
- * @param v2 - Second vector
- * @returns Dot product of the two vectors
- */
-const dotProduct = (v1: Vector, v2: Vector): number => {
-    return v1.reduce((sum, value, i) => sum + value * v2[i], 0);
-};
 
 /**
  * Outer product of two vectors (returns a matrix)
@@ -133,13 +91,13 @@ const powerIteration = (matrix: Matrix,
     for(let iter = 0; iter < iterations; iter++) {
 
         // Multiply matrix by the current approximation
-        const product = matrixVectorMultiply(matrix, eigenvector);
+        const product = multiplyMatrixVector(matrix, eigenvector);
 
         // Find the new approximation for the eigenvector
         eigenvector = normalize(product);
 
         // Calculate the eigenvalue using the Rayleigh quotient
-        const Av = matrixVectorMultiply(matrix, eigenvector);
+        const Av = multiplyMatrixVector(matrix, eigenvector);
         eigenvalue = dotProduct(eigenvector, Av);
 
         // Check for convergence
