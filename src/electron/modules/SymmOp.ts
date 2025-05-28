@@ -6,8 +6,9 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-05-26
  */
-import {multiplyMatrices, invertMatrix, normalize, type Matrix} from "./LinearAlgebra";
+import {normalize, type Matrix} from "./LinearAlgebra";
 import type {PositionType} from "@/types";
+import {inv, multiply} from "mathjs";
 
 /**
  * Represents a symmetry operation in Cartesian space using a 4x4 affine matrix.
@@ -177,9 +178,9 @@ export class SymmOp {
 				[0, 0, 1, -origin[2]],
 				[0, 0, 0, 1]
 			];
-			const m1 = multiplyMatrices(mirrorMatrix, translation);
-			const translationInverse = invertMatrix(translation);
-			mirrorMatrix = multiplyMatrices(translationInverse, m1);
+			const m1 = multiply(mirrorMatrix, translation);
+			const translationInverse = inv(translation);
+			mirrorMatrix = multiply(translationInverse, m1);
 		}
 		return new SymmOp(mirrorMatrix);
 	}

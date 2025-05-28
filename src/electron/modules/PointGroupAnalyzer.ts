@@ -9,9 +9,9 @@
  */
 import type {Structure} from "@/types";
 import {getAtomData} from "./AtomData";
-import {crossProduct, dotProduct, type Matrix} from "./LinearAlgebra";
+import type {Matrix} from "./LinearAlgebra";
 import {SymmOp} from "./SymmOp";
-import {eigs} from "mathjs";
+import {eigs, dot, cross} from "mathjs";
 
 export class PointGroupAnalyzer {
 
@@ -264,8 +264,8 @@ export class PointGroupAnalyzer {
 			const testSet = clusteredSites[key];
 			const validSet = testSet.filter((idx) => {
 				const coords = this.centeredStructure[idx];
-				const cross = crossProduct(coords, axis);
-				return Math.hypot(...cross) > this.tolerance;
+				const crossProduct = cross(coords, axis) as number[];
+				return Math.hypot(...crossProduct) > this.tolerance;
 			});
 			if(validSet.length > 0) validSets.push(validSet);
 		}
@@ -311,7 +311,7 @@ export class PointGroupAnalyzer {
 					c1[1] - c2[1],
 					c1[2] - c2[2]
 				];
-				if(dotProduct(normal, mainAxis) < this.tolerance) {
+				if(dot(normal, mainAxis) < this.tolerance) {
 					const op = SymmOp.reflection(normal);
 					if(this.isValidOp(op)) {
 						if(this.rotSym.length > 1) {
@@ -323,7 +323,7 @@ export class PointGroupAnalyzer {
 									symm[1]-mainAxis[1],
 									symm[2]-mainAxis[2]
 								);
-								const len2 = dotProduct([symm[0], symm[1], symm[2]], normal);
+								const len2 = dot([symm[0], symm[1], symm[2]], normal);
 								if(len1 >= this.tolerance && len2 < this.tolerance) {
 									mirrorType = "v";
 									break;
@@ -455,7 +455,7 @@ export class PointGroupAnalyzer {
 					const d1 = [c[1][0] - c[0][0], c[1][1] - c[0][1], c[1][2] - c[0][2]];
 					const d2 = [c[2][0] - c[0][0], c[2][1] - c[0][1], c[2][2] - c[0][2]];
 
-					const testAxis = crossProduct(d1, d2);
+					const testAxis = cross(d1, d2) as number[];
 					if(Math.hypot(...testAxis) > this.tolerance) {
 						for(let r=3; r < 6; ++r) {
 							if(rotPresent[r]) continue;
