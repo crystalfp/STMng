@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-05-26
  */
+/** 2D Matrix type */
 export type Matrix = number[][];
 
 /**

@@ -17,6 +17,7 @@ import {normalize, type Matrix} from "./LinearAlgebra";
  */
 export class SymmOp {
 
+	/** The affine matrix */
     public readonly matrix: Matrix;
 
     /**

@@ -765,7 +765,8 @@ export class PointGroupAnalyzer {
 	 *
 	 * @param idxi - Indices of the first group elements
 	 * @param idxj - Indices of the second group elements
-	 * @param distances - Distance matrix
+	 * @param values - Values associated to each point.
+	 * 					The distance is the difference between these values
 	 * @returns Distance between the two groups
 	 */
 	protected clusterDistance(idxi: number[], idxj: number[], values: number[]): number {

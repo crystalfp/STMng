@@ -10,11 +10,11 @@ module.exports = {
                 astPath
             ) => {
 
-                const cd = astPath.tokens.filter(
+                const cd = astPath.tokens.find(
 												token => token.type === 'CommentBlock' &&
 												token.value.includes('@component')
 											)
-				const rawValue = cd[0].value
+				const rawValue = cd.value
 						.replaceAll("\r", "")
 						.replace(/^[*\n ]+/, "")
 						.replace(/[*\n ]+$/, "")
