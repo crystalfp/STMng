@@ -53,7 +53,9 @@ export class ReaderXYZ implements ReaderImplementation {
 					Number.parseFloat(fields[2]),
 					Number.parseFloat(fields[3]),
 				];
-				atoms!.push({position, label: fields[0], chain: "", atomZ: getAtomicNumber(fields[0])});
+				const atomZ = getAtomicNumber(fields[0]);
+				if(atomZ === 0) throw Error(`Unknown atom in "${line}"`);
+				atoms!.push({position, label: fields[0], chain: "", atomZ});
 
 				--numberAtoms;
 			}

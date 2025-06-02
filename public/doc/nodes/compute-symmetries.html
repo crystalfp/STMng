@@ -21,7 +21,7 @@
 <h1 class="subh1">Compute and apply symmetries</h1>
 
 <div class="description">
-<p>Apply the symmetries present in the input structure using the <a href="https://cci.lbl.gov/sginfo/">SgInfo</a> library. Then search for symmetries using the <a href="https://spglib.readthedocs.io/en/latest/">Spglib</a> library. This step could also standardize the structure cell.</p>
+<p>Apply the symmetries present in the input structure using the <a href="https://cci.lbl.gov/sginfo/">SgInfo</a> library. Then search for symmetries using the <a href="https://spglib.readthedocs.io/en/latest/">Spglib</a> library. This step could also standardize the structure cell and compute the Point group of the output structure.</p>
 </div>
 
 <h2>Controls</h2>
@@ -82,6 +82,26 @@
 	<td class="c3">Tolerance used when checking if an atom is on the boundary of the cell.</td>
 </tr>
 <tr>
+	<td class="c1">Compute point group</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Compute point group (Schoenflies symbol) for the output structure.</td>
+</tr>
+<tr>
+	<td class="c1">Position tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Distance tolerance to consider sites as symmetrically equivalent. This control appears only when “Compute point group” switch is set.</td>
+</tr>
+<tr>
+	<td class="c1">Eigenvalues tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance to compare eigen values of the inertia tensor. This control appears only when “Compute point group” switch is set.</td>
+</tr>
+<tr>
+	<td class="c1">Point group</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">The Schoenflies symbol of the detected point group. This output appears only when “Compute point group” switch is set.</td>
+</tr>
+<tr>
 	<td class="c1">Show symmetries dialog</td>
 	<td class="c2">button</td>
 	<td class="c3">Open a window to <a href="../secondary/symmetries.html">show input and output symmetries</a>.</td>
@@ -99,6 +119,7 @@
 <h2>Credits</h2>
 <p>Apply symmetries uses the <a href="https://cci.lbl.gov/sginfo/">SgInfo</a> library.</p>
 <p>Find symmetries and standardize cell use the <a href="https://spglib.readthedocs.io/en/latest/">Spglib</a> library.</p>
+<p>The point group analyzer is the porting of the <a href="https://pymatgen.org/">Pymatgen</a> class <a href="https://pymatgen.org/pymatgen.symmetry.html#pymatgen.symmetry.analyzer.PointGroupAnalyzer"> PointGroupAnalyzer</a>.</p>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
 

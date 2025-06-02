@@ -6,12 +6,11 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-05-26
  */
-import {normalize, type Matrix} from "./LinearAlgebra";
-import type {PositionType} from "@/types";
 import {inv, multiply} from "mathjs";
+import {normalize, type Matrix} from "./LinearAlgebra";
 
 /**
- * Represents a symmetry operation in Cartesian space using a 4x4 affine matrix.
+ * SymmOp represents a symmetry operation in Cartesian space using a 4x4 affine matrix.
  * It consists of a rotation plus a translation. Implementation is as an affine
  * transformation matrix of rank 4 for efficiency.
  * Read: https://wikipedia.org/wiki/Affine_transformation.
@@ -22,9 +21,10 @@ export class SymmOp {
 
     /**
 	 * Initialize the SymmOp from a 4x4 affine transformation matrix.
-        In general, this constructor should not be used unless you are
-        transferring rotations. Use the static constructors instead to
-        generate a SymmOp from proper rotations and translation.
+     * In general, this constructor should not be used unless you are
+     * transferring rotations. Use the static constructors instead to
+     * generate a SymmOp from proper rotations and translation.
+	 *
      * @param matrix - The 4x4 matrix representing the symmetry operation.
      *                 The first 3x3 part is the rotation/reflection,
      *                 and the first 3 elements of the last column are the translation.
@@ -82,7 +82,7 @@ export class SymmOp {
 	 * @param origin - Origin of the inversion operation. Defaults to [0, 0, 0].
 	 * @returns SymmOp representing an inversion operation about the origin.
 	 */
-	static inversion(origin: PositionType = [0, 0, 0]): SymmOp {
+	static inversion(origin = [0, 0, 0]): SymmOp {
 
 		const mat: Matrix = [
 			[-1, 0,  0,  0],
@@ -107,7 +107,7 @@ export class SymmOp {
 	 * @param angle - Angle of rotation (in degrees)
 	 * @returns SymmOp for a rotation about given axis and translation.
 	 */
-	static from_axis_angle_and_translation(axis: number[], angle: number): SymmOp {
+	static fromAxisAngleAndTranslation(axis: number[], angle: number): SymmOp {
 
 		angle *= Math.PI / 180;
         const co = Math.cos(angle);
@@ -128,7 +128,7 @@ export class SymmOp {
         rotationMatrix[2][1] = unitVector[1] * unitVector[2] * (1 - co) + unitVector[0] * si;
         rotationMatrix[2][2] = co + unitVector[2] ** 2 * (1 - co);
 
-		return SymmOp.from_rotation_and_translation(rotationMatrix, [0, 0, 0]);
+		return SymmOp.fromRotationAndTranslation(rotationMatrix, [0, 0, 0]);
 	}
 
 	/**
@@ -138,9 +138,8 @@ export class SymmOp {
 	 * @param translation - (3x1 array): Translation vector
 	 * @returns SymmOp object
 	 */
-	static from_rotation_and_translation(
-        rotation: Matrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-        translation: number[] = [0, 0, 0]): SymmOp {
+	static fromRotationAndTranslation(rotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+									  translation = [0, 0, 0]): SymmOp {
 
 		const affineMatrix: Matrix = [
 			[rotation[0][0], rotation[0][1], rotation[0][2], translation[0]],
@@ -184,4 +183,21 @@ export class SymmOp {
 		}
 		return new SymmOp(mirrorMatrix);
 	}
+
+    /**
+     * Get a roto-reflection symmetry operation.
+     *
+     * @param axis - Axis of rotation / mirror normal
+     * @param angle - Angle in degrees
+     * @returns Roto-reflection operation
+     */
+  	static rotoreflection(axis: number[], angle: number): SymmOp {
+
+		const rotation = this.fromAxisAngleAndTranslation(axis, angle);
+    	const reflection = this.reflection(axis);
+
+    	// Combined operation
+		const matrix = multiply(rotation.matrix, reflection.matrix);
+        return new SymmOp(matrix);
+    }
 }

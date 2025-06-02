@@ -6,10 +6,11 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-15
  */
-import type {BasisType, PositionType} from "@/types";
+import {cross, dot} from "mathjs";
 import {computeCellVertices} from "../modules/ComputeCellVertices";
 import {normalize} from "./LinearAlgebra";
-import {cross, dot} from "mathjs";
+import type {BasisType, PositionType} from "@/types";
+
 /**
  * Compute distance of a point from a plane
  *

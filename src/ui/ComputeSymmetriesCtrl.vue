@@ -39,6 +39,11 @@ const computedSpaceGroup = ref("");
 const fillTolerance = ref(-5);
 const createPrimitiveCell = ref(false);
 
+const computePointGroup = ref(false);
+const pointGroup = ref("");
+const positionTolerance = ref(0.3);
+const eigenvalueTolerance = ref(0.01);
+
 /**
  * Convert in human readable format the exponent of 10
  *
@@ -62,6 +67,11 @@ askNode(id, "init")
         showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
         standardizeOnly.value = params.standardizeOnly as boolean ?? false;
         createPrimitiveCell.value = params.createPrimitiveCell as boolean ?? false;
+
+        computePointGroup.value = params.computePointGroup as boolean ?? false;
+        pointGroup.value = params.pointGroup as string ?? "";
+        positionTolerance.value = params.positionTolerance as number ?? 0.3;
+        eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                               "symmetries"));
@@ -76,7 +86,7 @@ watch([applyInputSymmetries,
        createPrimitiveCell,
        standardizeOnly], () => {
 
-    askNode(id, "compute", {
+    sendToNode(id, "compute", {
         applyInputSymmetries: applyInputSymmetries.value,
         enableFindSymmetries: enableFindSymmetries.value,
         standardizeCell: standardizeCell.value,
@@ -86,12 +96,20 @@ watch([applyInputSymmetries,
         fillTolerance: fillTolerance.value,
         standardizeOnly: standardizeOnly.value,
         createPrimitiveCell: createPrimitiveCell.value
-    })
-    .then((params) => {
-        computedSpaceGroup.value = params.computedSpaceGroup as string ?? "";
-    })
-    .catch((error: Error) => showAlertMessage(`Error from ${label}: ${error.message}`,
-                                              "symmetries"));
+    });
+});
+
+watch([
+    computePointGroup,
+    positionTolerance,
+    eigenvalueTolerance
+], () => {
+
+    sendToNode(id, "do-point-group", {
+        computePointGroup: computePointGroup.value,
+        positionTolerance: positionTolerance.value,
+        eigenvalueTolerance: eigenvalueTolerance.value,
+    });
 });
 
 receiveFromNode(id, "show", (params: CtrlParams) => {
@@ -99,6 +117,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     if(params.inSymmetry !== undefined) inputSpaceGroup.value = params.inSymmetry as string;
     if(params.outSymmetry !== undefined) computedSpaceGroup.value = params.outSymmetry as string;
     if(params.enableFindSymmetries !== undefined) enableFindSymmetries.value = params.enableFindSymmetries as boolean;
+    if(params.pointGroup !== undefined) pointGroup.value = params.pointGroup as string;
 });
 
 </script>
@@ -141,11 +160,31 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     </v-col>
   </v-row>
 
-  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 my-4" />
+  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4 mb-n2" />
   <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
-                      :min="-5" :max="-1" :step="0.02" class="ml-2 mb-4">
+                      :min="-5" :max="-1" :step="0.02" class="ml-2 mb-3 mt-6">
     <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
   </debounced-slider>
+
+  <v-switch v-model="computePointGroup" label="Compute point group" class="ml-3 mb-4" />
+  <v-container v-if="computePointGroup" class="pa-0">
+    <debounced-slider v-slot="{value}" v-model="positionTolerance"
+                      :min="0.01" :max="1" :step="0.01" class="ml-2 mb-2 mt-4">
+      <v-label :text="`Position tolerance (${value})`" class="no-select" />
+    </debounced-slider>
+    <debounced-slider v-slot="{value}" v-model="eigenvalueTolerance"
+                      :min="0.001" :max="0.1" :step="0.001" class="ml-2 mb-4 mt-2">
+      <v-label :text="`Eigenvalues tolerance (${value})`" class="no-select" />
+    </debounced-slider>
+    <v-row class="pl-2 mb-4 align-center">
+      <v-col cols="5">
+        <v-label text="Point group:" class="result-label no-select" />
+      </v-col>
+      <v-col cols="7">
+        <v-label :text="pointGroup" class="show-symmetry" />
+      </v-col>
+    </v-row>
+  </v-container>
 
   <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 

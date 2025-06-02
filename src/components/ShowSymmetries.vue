@@ -14,6 +14,7 @@ import {theme} from "@/services/ReceiveTheme";
 
 const inSymmetry = ref("");
 const outSymmetry = ref("");
+const pointGroup = ref("");
 
 /**
  * Data for the show symmetry window
@@ -24,6 +25,8 @@ interface SymmetriesData {
     inSymmetry: string;
     /** Computed output symmetry group */
     outSymmetry: string;
+    /** Computed point group */
+    pointGroup: string;
 }
 
 receiveInWindow((data) => {
@@ -32,6 +35,7 @@ receiveInWindow((data) => {
         const decodedData = JSON.parse(data) as SymmetriesData;
         inSymmetry.value  = decodedData.inSymmetry;
         outSymmetry.value = decodedData.outSymmetry;
+        pointGroup.value  = decodedData.pointGroup;
     });
 });
 
@@ -50,6 +54,9 @@ handleSpecialKeys("/symmetries");
       <v-label :text="inSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
     <v-col class="right-col">
+      <v-label v-if="pointGroup!==''" class="text-h5 justify-center mt-n2 w-100">Point group</v-label>
+      <v-label v-if="pointGroup!==''" :text="pointGroup" class="justify-center w-100 my-2 result-color"
+                style="font-family: monospace;" />
       <v-label class="text-h5 justify-center mt-n2 w-100">Output symmetry</v-label>
       <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
@@ -87,6 +94,8 @@ handleSpecialKeys("/symmetries");
   overflow-wrap: break-word;
   white-space: break-spaces;
   font-family: monospace;
+  color: light-dark(#7ca911, #baf434) !important;
+  opacity: 1 !important;
 }
 
 .left-col {
@@ -97,4 +106,10 @@ handleSpecialKeys("/symmetries");
 .right-col {
   flex: 1;
 }
+
+.result-color {
+  color: light-dark(#7ca911, #baf434) !important;
+  opacity: 1 !important;
+}
+
 </style>

@@ -13,8 +13,8 @@ import {createSecondaryWindow, isSecondaryWindowOpen,
 import {sendAlertMessage, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
 import {PointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
+import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
 
 /**
  * Output from the native module that computes and find symmetries
@@ -63,6 +63,7 @@ export class ComputeSymmetries extends NodeCore {
 
 	private inputStructure: Structure | undefined;
 	private structure: Structure | undefined;
+	private outputStructure: Structure | undefined;
 	private applyInputSymmetries = true;
 	private enableFindSymmetries = true;
 	private standardizeCell = true;
@@ -73,11 +74,17 @@ export class ComputeSymmetries extends NodeCore {
 	private standardizeOnly = false;
 	private computedSpaceGroup = "";
 	private createPrimitiveCell = false;
+	private computePointGroup = false;
+	private pointGroup = "";
+	private positionTolerance = 0.3;
+	private eigenvalueTolerance = 0.01;
+	private pointGroupAnalyzer = new PointGroupAnalyzer();
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
-		{name: "compute", type: "invoke", callback: this.channelCompute.bind(this)},
-		{name: "window",  type: "send",   callback: this.channelWindow.bind(this)},
+		{name: "init",   		 type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "compute", 		 type: "send",   callback: this.channelCompute.bind(this)},
+		{name: "window",  		 type: "send",   callback: this.channelWindow.bind(this)},
+		{name: "do-point-group", type: "send",   callback: this.channelDoPointGroup.bind(this)},
 	];
 
 	/**
@@ -99,11 +106,20 @@ export class ComputeSymmetries extends NodeCore {
 
 		this.inputStructure = data;
 
-		// TEST Testing PointGroupAnalyzer
-		const pga = new PointGroupAnalyzer(this.inputStructure);
-		console.log(pga.analyze());
+		this.outputStructure = this.computeSymmetries();
+		if(this.outputStructure) this.toNextNode(this.outputStructure);
+		else {
+			this.displaySymmetries("");
+			return;
+		}
 
-		this.computeSymmetries();
+		this.pointGroup = this.computePointGroup ? this.pointGroupAnalyzer.analyze(
+				this.outputStructure,
+				this.positionTolerance,
+				this.eigenvalueTolerance
+			) : "";
+
+		this.displaySymmetries(this.pointGroup, this.outputStructure.crystal.spaceGroup);
 	}
 
 	// > Load/save status
@@ -118,6 +134,9 @@ export class ComputeSymmetries extends NodeCore {
 			fillTolerance: this.fillTolerance,
 	        standardizeOnly: this.standardizeOnly,
 			createPrimitiveCell: this.createPrimitiveCell,
+			computePointGroup: this.computePointGroup,
+			positionTolerance: this.positionTolerance,
+			eigenvalueTolerance: this.eigenvalueTolerance,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -132,13 +151,18 @@ export class ComputeSymmetries extends NodeCore {
 		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
         this.createPrimitiveCell = params.createPrimitiveCell as boolean ?? false;
+        this.computePointGroup = params.computePointGroup as boolean ?? false;
+        this.positionTolerance = params.positionTolerance as number ?? 0.3;
+        this.eigenvalueTolerance = params.eigenvalueTolerance as number ?? 0.01;
 	}
 
 	// > Compute new structure after finding and applying symmetries
 	/**
 	 * Compute new structure after finding and applying symmetries
+	 *
+	 * @returns The structure with the computed symmetries
 	 */
-	private computeSymmetries(): void {
+	private computeSymmetries(): Structure | undefined {
 
 		// If no structure do nothing
 		if(!this.inputStructure) return;
@@ -146,9 +170,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		// If no unit cell or no atoms, copy input structure to output
 		if(crystal === undefined || hasNoUnitCell(crystal.basis) || atoms.length === 0) {
-			this.toNextNode(this.inputStructure);
-			this.showComputedSymmetry();
-			return;
+			return this.inputStructure;
 		}
 
 		// If no symmetry computation to do, copy input structure to output
@@ -156,9 +178,7 @@ export class ComputeSymmetries extends NodeCore {
 
 			this.structure = this.fillUnitCell ?
 								this.fillCellFull(this.inputStructure) : this.inputStructure;
-			this.toNextNode(this.structure);
-			this.showComputedSymmetry();
-			return;
+			return this.structure;
 		}
 
 		// If only apply symmetries, but no symmetry, copy input structure to output
@@ -168,9 +188,7 @@ export class ComputeSymmetries extends NodeCore {
 			this.structure = this.fillUnitCell ?
 								this.fillCellFull(this.inputStructure) : this.inputStructure;
 
-			this.toNextNode(this.structure);
-			this.showComputedSymmetry();
-			return;
+			return this.structure;
 		}
 
 		// If input has volume data, disable find symmetries
@@ -190,9 +208,7 @@ export class ComputeSymmetries extends NodeCore {
 			fractionalCoordinates = [];
 		}
 		if(fractionalCoordinates.length === 0) {
-			this.toNextNode(this.inputStructure);
-			this.showComputedSymmetry();
-			return;
+			return this.inputStructure;
 		}
 
 		const basis = new Float64Array(crystal.basis);
@@ -241,31 +257,35 @@ export class ComputeSymmetries extends NodeCore {
 		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
 		if(out.noCellChanges && this.inputStructure) this.structure.volume = volume;
 
-		this.toNextNode(this.structure);
-
 		this.computedSpaceGroup = this.structure.crystal.spaceGroup;
-		this.showComputedSymmetry(this.computedSpaceGroup);
+
+		return this.structure;
 	}
 
 	/**
-	 * Send computed symmetry to the secondary window that displays it
+	 * Send computed symmetry to the UI and to the secondary window that displays it
 	 *
+	 * @param pointGroup - Point group symbol or empty string if not computed
 	 * @param outSymmetry - Computed symmetry
 	 */
-	private showComputedSymmetry(outSymmetry?: string): void {
+	private displaySymmetries(pointGroup: string, outSymmetry?: string): void {
 
 		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
 		outSymmetry ??= inSymmetry;
 
 		// Update the UI
-		sendToClient(this.id, "show", {inSymmetry, outSymmetry});
+		sendToClient(this.id, "show", {inSymmetry, outSymmetry, pointGroup});
 
 		// Update the dialog if it is open
-		const dataToSend = JSON.stringify({
-			inSymmetry,
-			outSymmetry
-		});
-		sendToSecondaryWindow("/symmetries", dataToSend);
+		if(isSecondaryWindowOpen("/symmetries")) {
+
+			const dataToSend = JSON.stringify({
+				inSymmetry,
+				outSymmetry,
+				pointGroup
+			});
+			sendToSecondaryWindow("/symmetries", dataToSend);
+		}
 	}
 
 	/**
@@ -620,6 +640,10 @@ export class ComputeSymmetries extends NodeCore {
 			fillTolerance: this.fillTolerance,
 			standardizeOnly: this.standardizeOnly,
 			createPrimitiveCell: this.createPrimitiveCell,
+			computePointGroup: this.computePointGroup,
+			positionTolerance: this.positionTolerance,
+			eigenvalueTolerance: this.eigenvalueTolerance,
+			pointGroup: this.pointGroup,
 		};
 	}
 
@@ -628,7 +652,7 @@ export class ComputeSymmetries extends NodeCore {
 	 *
 	 * @returns Computed symmetry
 	 */
-	private channelCompute(params: CtrlParams): CtrlParams {
+	private channelCompute(params: CtrlParams): void {
 
         this.applyInputSymmetries = params.applyInputSymmetries as boolean ?? true;
         this.enableFindSymmetries = params.enableFindSymmetries as boolean ?? true;
@@ -640,11 +664,35 @@ export class ComputeSymmetries extends NodeCore {
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
         this.createPrimitiveCell = params.createPrimitiveCell as boolean ?? false;
 
-		this.computeSymmetries();
+		this.outputStructure = this.computeSymmetries();
+		if(this.outputStructure) this.toNextNode(this.outputStructure);
+		this.pointGroup = this.computePointGroup ? this.pointGroupAnalyzer.analyze(
+				this.outputStructure,
+				this.positionTolerance,
+				this.eigenvalueTolerance
+			) : "";
 
-		return {
-			computedSpaceGroup: this.computedSpaceGroup
-		};
+		this.displaySymmetries(this.pointGroup, this.outputStructure?.crystal.spaceGroup);
+	}
+
+	/**
+	 * Channel handler for point group parameters change
+	 *
+	 * @param params - Point group analyzer parameters
+	 */
+	private channelDoPointGroup(params: CtrlParams): void {
+
+		this.computePointGroup = params.computePointGroup as boolean ?? false;
+        this.positionTolerance = params.positionTolerance as number ?? 0.3;
+        this.eigenvalueTolerance = params.eigenvalueTolerance as number ?? 0.01;
+
+		this.pointGroup = this.computePointGroup ? this.pointGroupAnalyzer.analyze(
+				this.outputStructure,
+				this.positionTolerance,
+				this.eigenvalueTolerance
+			) : "";
+
+		this.displaySymmetries(this.pointGroup, this.outputStructure?.crystal.spaceGroup);
 	}
 
 	/**
@@ -656,7 +704,8 @@ export class ComputeSymmetries extends NodeCore {
 
 		const dataToSend = JSON.stringify({
 			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
-			outSymmetry: this.computedSpaceGroup
+			outSymmetry: this.computedSpaceGroup,
+			pointGroup: this.pointGroup
 		});
 
 		if(isSecondaryWindowOpen("/symmetries")) {
