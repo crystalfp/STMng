@@ -204,7 +204,7 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_symmetry.space_group_name_h-m":
 				case "_symmetry_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
-						value.replace(/^["']([^"']+)["']/, "$1");
+						ws.slice(1).join(" ").replace(/^["']([^"']+)["']/, "$1");
 					break;
 				case "_cell_length_a":
 				case "_cell.length_a":
@@ -217,10 +217,11 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_cell_length_c":
 				case "_cell.length_c":
 					basisSides[2] = Number.parseFloat(value);
-					if(basisAngles[0] !== 0 && basisAngles[1] !== 0 && basisAngles[2] !== 0) {
-					this.structures[this.step].crystal.basis =
-						extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
-									 basisAngles[0], basisAngles[1], basisAngles[2]);
+					if(basisSides[0] !== 0 && basisSides[1] !== 0 && basisSides[2] !== 0 &&
+					   basisAngles[0] !== 0 && basisAngles[1] !== 0 && basisAngles[2] !== 0) {
+						this.structures[this.step].crystal.basis =
+								extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
+											 basisAngles[0], basisAngles[1], basisAngles[2]);
 					}
 					break;
 				case "_cell_angle_alpha":
@@ -234,10 +235,11 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_cell_angle_gamma":
 				case "_cell.angle_gamma":
 					basisAngles[2] = Number.parseFloat(value);
-					if(basisSides[0] !== 0 && basisSides[1] !== 0 && basisSides[2] !== 0) {
-					this.structures[this.step].crystal.basis =
-							extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
-										 basisAngles[0], basisAngles[1], basisAngles[2]);
+					if(basisSides[0] !== 0 && basisSides[1] !== 0 && basisSides[2] !== 0 &&
+					   basisAngles[0] !== 0 && basisAngles[1] !== 0 && basisAngles[2] !== 0) {
+						this.structures[this.step].crystal.basis =
+								extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
+											 basisAngles[0], basisAngles[1], basisAngles[2]);
 					}
 					break;
 			}
@@ -262,7 +264,8 @@ export class ReaderCIF implements ReaderImplementation {
 		// this.tbl.dump();
 		if(this.tbl.hasColumn("_atom_site_fract_x")) {
 
-			if(hasNoUnitCell(this.structures[this.step].crystal.basis)) return;
+			const {basis} = this.structures[this.step].crystal;
+			if(hasNoUnitCell(basis)) throw Error("Invalid unit cell parameters");
 
 			const fracX  = this.tbl.getColumn("_atom_site_fract_x");
 			const fracY  = this.tbl.getColumn("_atom_site_fract_y");
@@ -282,8 +285,7 @@ export class ReaderCIF implements ReaderImplementation {
 					atomZ: getAtomicNumber(az),
 					label: label.length > 0 ? label[i] : symbol[i],
 					chain: chain[i],
-					position: fractionalToCartesianCoordinates(this.structures[this.step].crystal.basis,
-															   fx, fy, fz)
+					position: fractionalToCartesianCoordinates(basis, fx, fy, fz)
 				};
 				this.structures[this.step].atoms.push(atom);
 			}

@@ -1,5 +1,6 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
+  ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
 
 To do:
   ☐ Option to not fold fractional coordinates inside unit cell on read

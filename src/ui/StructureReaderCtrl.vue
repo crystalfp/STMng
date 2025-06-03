@@ -269,6 +269,7 @@ const selectedFile = (filename: string): void => {
     step.value = 1;
     fileToRead.value = filename;
     inProgress.value = true;
+    resetAlertMessage("structureReader");
 
     askNode(id, "read", {
             format: format.value,

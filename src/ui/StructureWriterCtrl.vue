@@ -159,6 +159,8 @@ const filterFromFormat = (fileFormat: string): string => {
  */
 const selectedSaveFile = (filename: string): void => {
 
+    resetAlertMessage("structureWriter");
+
     if(filename) {
         outputFileFull.value = filename;
         const pos = filename.lastIndexOf("/");

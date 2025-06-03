@@ -181,7 +181,7 @@ export class PointGroupAnalyzer {
 
 		if(this.rotSym.length === 0) {
 			log.debug("Accidental spherical top!");
-			return this.procSymTop();
+			this.schSymbol = this.procSymTop();
 		}
 
 		let currentRot = -1;
@@ -212,7 +212,7 @@ export class PointGroupAnalyzer {
 			return "I";
 		}
 
-		return "";
+		return this.schSymbol;
 	}
 
 	/**
