@@ -9,6 +9,7 @@ To do:
   ☐ Copy residues in compute symmetries
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Unify viewer3D setup between Compare e Landscape
+  ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

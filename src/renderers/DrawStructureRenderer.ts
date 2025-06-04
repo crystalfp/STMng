@@ -330,22 +330,23 @@ export class DrawStructureRenderer {
 				break;
 			}
 			case "licorice": {
-				const cylinderCache = new CylinderCache(bondRadius, shadedBonds, this.drawQuality,
-					this.drawRoughness, this.drawMetalness);
+				const cylinderCache = new CylinderCache(bondRadius, shadedBonds,
+														cylinderSubdivisions[this.drawQuality],
+														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(isNormalBond(bond)) {
-						DrawStructureRenderer.addHBond(atomFrom.position,
-													   atomTo.position,
-													   this.bondsGroup);
-					}
-					else {
 						cylinderCache.addCylinder(atomFrom.position,
 												  atomTo.position,
 												  atomFrom.color,
 												  atomTo.color);
+					}
+					else {
+						DrawStructureRenderer.addHBond(atomFrom.position,
+													   atomTo.position,
+													   this.bondsGroup);
 					}
 				}
 				cylinderCache.renderCylinders(this.bondsGroup);
