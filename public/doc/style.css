@@ -70,6 +70,8 @@ details[open] summary {
 
 code {
   white-space: pre-wrap;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 110%;
 }
 
 tt {
