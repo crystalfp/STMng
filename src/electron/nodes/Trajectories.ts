@@ -10,7 +10,9 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient} from "../modules/ToClient";
-import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
+import {createSecondaryWindow, isSecondaryWindowOpen,
+		sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement} from "@/types";
 
 export class Trajectories extends NodeCore {
 
@@ -26,6 +28,7 @@ export class Trajectories extends NodeCore {
 	private nextSteps = false;
 	private positionCloudsColor = "#BBBBBE";
 	private positionCloudsSize = 100;
+	private readonly meanDisplacement: MeanDisplacement[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -34,6 +37,7 @@ export class Trajectories extends NodeCore {
 		{name: "select",	type: "send",   callback: this.channelSelect.bind(this)},
 		{name: "gap",		type: "send",   callback: this.channelGap.bind(this)},
 		{name: "clouds",	type: "send",   callback: this.channelClouds.bind(this)},
+		{name: "means",  	type: "send",   callback: this.channelMeans.bind(this)},
 	];
 
 	/**
@@ -60,7 +64,8 @@ export class Trajectories extends NodeCore {
 
 			const len = indices.length;
 			if(this.nextSteps) {
-				// After the first step increase the points size if the number of atoms traced increases
+				// After the first step increase the points size
+				// if the number of atoms traced increases
 				if(len > this.traces.length) {
 					const previousLength = this.traces.length;
 					this.traces.length = len;
@@ -88,6 +93,11 @@ export class Trajectories extends NodeCore {
 
 			// Create lines
 			this.sendLines(indices.length);
+
+			// Compute mean position and displacement
+			this.computeMeanPositionAndDisplacement(indices);
+
+			this.sendMeanDisplacement();
 		}
 	}
 
@@ -197,6 +207,75 @@ export class Trajectories extends NodeCore {
 		}
 	}
 
+	/**
+	 * Compute mean positions and displacements
+	 *
+	 * @param indices - Indices of selected atoms
+	 */
+	private computeMeanPositionAndDisplacement(indices: number[]): void {
+
+		const {atoms} = this.structure!;
+		this.meanDisplacement.length = 0;
+
+		for(let i=0; i < this.traces.length; ++i) {
+
+			const trace = this.traces[i];
+
+			// Compute mean position
+			let meanX = 0;
+			let meanY = 0;
+			let meanZ = 0;
+			let steps = 0;
+
+			for(let j=0; j < trace.length; j+=3) {
+				meanX += trace[j];
+				meanY += trace[j+1];
+				meanZ += trace[j+2];
+				++steps;
+			}
+
+			meanX /= steps;
+			meanY /= steps;
+			meanZ /= steps;
+
+			// Compute displacement
+			let displacement = 0;
+			for(let j=0; j < trace.length; j+=3) {
+
+				const dx = trace[j] - meanX;
+				const dy = trace[j+1] - meanY;
+				const dz = trace[j+2] - meanZ;
+				displacement += Math.hypot(dx, dy, dz);
+			}
+			displacement /= steps;
+
+			// Send results
+			const {atomZ} = atoms[indices[i]];
+			const atomType = getAtomData(atomZ).symbol;
+
+			this.meanDisplacement.push({
+				index: indices[i],
+				atomType,
+				meanX,
+				meanY,
+				meanZ,
+				displacement
+			});
+		}
+	}
+
+	/**
+	 * Send updated mean positions and displacements to client
+	 */
+	private sendMeanDisplacement(): void {
+
+		if(isSecondaryWindowOpen("/displacements")) {
+
+			const dataToSend = JSON.stringify(this.meanDisplacement);
+			sendToSecondaryWindow("/displacements", dataToSend);
+		}
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -272,5 +351,27 @@ export class Trajectories extends NodeCore {
 	    this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
         this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
         this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
+	}
+
+	/**
+	 * Channel handler for displaying mean positions and displacements dialog
+	 */
+	private channelMeans(): void {
+
+		const dataToSend = JSON.stringify(this.meanDisplacement);
+
+		if(isSecondaryWindowOpen("/displacements")) {
+
+			sendToSecondaryWindow("/displacements", dataToSend);
+		}
+		else {
+			createSecondaryWindow({
+				routerPath: "/displacements",
+				width: 650,
+				height: 400,
+				title: "Show mean positions and displacements",
+				data: dataToSend
+			});
+		}
 	}
 }

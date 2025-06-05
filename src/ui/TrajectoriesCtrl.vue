@@ -152,6 +152,8 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
     </debounced-slider>
     <color-selector v-model="positionCloudsColor" label="Cloud color" block class="mb-2"/>
   </v-container>
+  <v-btn block class="ml-0 mb-5"
+         @click="sendToNode(id, 'means')">Show averages</v-btn>
   <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" class="ml-0"
          @click="toggleRecording">{{ startStop }}</v-btn>
 </v-container>

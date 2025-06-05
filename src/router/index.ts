@@ -52,5 +52,9 @@ export const router = createRouter({
             path: "/compare",
             component: (): Component => import("@/components/CompareSelected.vue")
         },
+        {
+            path: "/displacements",
+            component: (): Component => import("@/components/ShowDisplacements.vue")
+        },
     ],
 });

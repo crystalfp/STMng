@@ -696,9 +696,7 @@ export class ComputeSymmetries extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for symmetry parameters change
-	 *
-	 * @returns Computed symmetry
+	 * Channel handler for symmetry dialog display
 	 */
 	private channelWindow(): void {
 

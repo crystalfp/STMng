@@ -293,7 +293,7 @@ export const setupChannelMenu = (isDevelopment: boolean): void => {
         if(key === "F1") {
             openDocumentation("secondary", request)
                 .catch((error: Error) => {
-                    sendAlertMessage(`Error getting help for "${request}" window: ${error.message}`);
+                    sendAlertMessage(`Error getting help for secondary window: ${error.message}`);
                 });
         }
         // Open developer tools on the secondary window

@@ -93,7 +93,7 @@ export class ComputeBonds extends NodeCore {
 	private perPairData: PairData[] = [];
 	private addType: number[]   = []; // 1: atom in unit cell; 2: atom outside unit cell
 	private inputNumAtoms		= 0;
-	private enlargementKind		= "none";
+	private enlargementKind		= "outside";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
@@ -707,7 +707,7 @@ export class ComputeBonds extends NodeCore {
 		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
 		this.bondScale    		 = params.bondScale as number ?? 1.1;
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "none";
+		this.enlargementKind     = params.enlargementKind as string ?? "outside";
 		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 	}
 
@@ -746,7 +746,7 @@ export class ComputeBonds extends NodeCore {
 		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
 		this.bondScale    		 = params.bondScale as number ?? 1.1;
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "none";
+		this.enlargementKind     = params.enlargementKind as string ?? "outside";
 		this.perPairData         = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
 		this.addBonds();

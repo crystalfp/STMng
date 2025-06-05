@@ -49,7 +49,7 @@ const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
 const perPairData         = ref<PairData[]>([]);
 const showScale           = ref<number[]>([]);
-const enlargementKind     = ref("none");
+const enlargementKind     = ref("outside");
 
 // Initialize the control
 askNode(id, "init")
@@ -62,7 +62,7 @@ askNode(id, "init")
         enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
         bondScale.value      	    = params.bondScale as number ?? 1.1;
         perPairScale.value        = params.perPairScale as boolean ?? false;
-        enlargementKind.value     = params.enlargementKind as string ?? "none";
+        enlargementKind.value     = params.enlargementKind as string ?? "outside";
 
         perPairData.value.length = 0;
         const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
