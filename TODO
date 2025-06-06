@@ -2,6 +2,11 @@ Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
 
+For the tutorial:
+  ☐ Check light mode
+  ☐ Check tab order
+  ☐ Prepare slides and agenda
+
 To do:
   ☐ Option to not fold fractional coordinates inside unit cell on read
   ☐ Put read filename in window title

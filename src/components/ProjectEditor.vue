@@ -748,7 +748,7 @@ const tryToExit = (): void => {
 
 <v-dialog v-model="showConfirm">
   <v-card title="Confirm deletion" :text='`Do you want to remove the "${selectedLabel}" node?`'
-          class="mx-auto no-select" elevation="16" max-width="500">
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
         <v-btn @click="confirmDeletion">Yes</v-btn>
@@ -758,7 +758,7 @@ const tryToExit = (): void => {
 
 <v-dialog v-model="showConfirmExit">
   <v-card title="Confirm editor close" text="Project modified. Do you want to save it?"
-          class="mx-auto no-select" elevation="16" max-width="500">
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirmExit=false">Dismiss</v-btn>
         <v-btn @click="exitWithoutSave">Close</v-btn>

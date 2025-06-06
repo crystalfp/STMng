@@ -129,3 +129,11 @@ html {
   width: 100vw;
   gap: 10px;
 }
+
+/* > Buttons in dialog with focus */
+.focus-visible-buttons .v-btn:focus {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+  background-color: rgb(var(--v-theme-primary), 0.3) !important;
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary));
+}

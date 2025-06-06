@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {createApp} from "vue";
+import {createApp, nextTick} from "vue";
 import log from "electron-log/renderer";
 import {createPinia} from "pinia";
 import {preloadFonts} from "./services/SpriteText";
@@ -145,7 +145,12 @@ const app = createApp(App)
   	}))
 
 	// Directive to focus the element when the bound element is mounted into the DOM
-    .directive("focus", {mounted(element: HTMLElement) {element.focus();}});
+    .directive("focus", {
+  		mounted(element: HTMLElement) {
+    		// Use nextTick to ensure DOM is ready
+    		void nextTick(() => {element.focus();});
+		}
+	});
 
 // Add global error handlers
 app.config.errorHandler = (error: unknown): void => {

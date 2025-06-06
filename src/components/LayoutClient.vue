@@ -122,7 +122,7 @@ const confirmedExit = (): void => {
 
   <v-dialog v-model="showExitConfirm">
     <v-card title="Confirm exit application" text="Do you want to quit the application?"
-            class="mx-auto no-select" elevation="16" max-width="500">
+            class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showExitConfirm=false">Dismiss</v-btn>
         <v-btn @click="confirmedExit">Yes</v-btn>
