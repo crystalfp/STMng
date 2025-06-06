@@ -31,6 +31,7 @@ const {id, label} = defineProps<{
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
 controlStore.hasTrajectory = true;
+controlStore.trajectoriesHasSelector = false;
 
 const showTrajectories = ref(false);
 const labelKind = ref("symbol");
@@ -87,6 +88,9 @@ watch(trajectoriesRecording, () => {
 
 /** Capture selection of atoms to trace */
 watch([labelKind, atomsSelector], () => {
+
+    controlStore.trajectoriesHasSelector = atomsSelector.value.trim() !== "" ||
+                                           labelKind.value === "all";
 
     sendToNode(id, "select", {
         labelKind: labelKind.value,

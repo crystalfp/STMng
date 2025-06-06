@@ -30,6 +30,7 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
             label="Movie from steps" />
   <v-switch v-if="controlStore.hasTrajectory"
             v-model="controlStore.trajectoriesRecording"
+            :disabled="!controlStore.trajectoriesHasSelector"
             label="Record trajectories" />
   <v-switch v-if="controlStore.hasFingerprints"
             v-model="controlStore.fingerprintsAccumulate"

@@ -6,13 +6,16 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-09
  */
+import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient} from "../modules/ToClient";
+import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement, BasisType} from "@/types";
+
 
 export class Trajectories extends NodeCore {
 
@@ -29,6 +32,9 @@ export class Trajectories extends NodeCore {
 	private positionCloudsColor = "#BBBBBE";
 	private positionCloudsSize = 100;
 	private readonly meanDisplacement: MeanDisplacement[] = [];
+	private inverse: BasisType | undefined;
+	private hasUnitCell = false;
+	private indices: number[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -52,17 +58,17 @@ export class Trajectories extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
+		if(!data) return;
 		this.structure = data;
-		if(!this.structure) return;
 		if(this.createTrajectories) {
 
-			const {atoms} = this.structure;
+			const {atoms, crystal} = this.structure;
 
-			const indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
+			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
 
-			Trajectories.setTraceColor(this.structure, indices, this.tracesColor);
+			Trajectories.setTraceColor(this.structure, this.indices, this.tracesColor);
 
-			const len = indices.length;
+			const len = this.indices.length;
 			if(this.nextSteps) {
 				// After the first step increase the points size
 				// if the number of atoms traced increases
@@ -83,7 +89,7 @@ export class Trajectories extends NodeCore {
 
 			// Record coordinates
 			let trajectoryIndex = 0;
-			for(const idx of indices) {
+			for(const idx of this.indices) {
 
 				const {position} = atoms[idx];
 
@@ -92,12 +98,22 @@ export class Trajectories extends NodeCore {
 			}
 
 			// Create lines
-			this.sendLines(indices.length);
+			this.sendLines(this.indices.length);
 
-			// Compute mean position and displacement
-			this.computeMeanPositionAndDisplacement(indices);
+			this.hasUnitCell = false;
+			if(hasUnitCell(crystal.basis)) {
 
-			this.sendMeanDisplacement();
+				try {
+					this.inverse = invertBasis(crystal.basis);
+					this.hasUnitCell = true;
+				}
+				// eslint-disable-next-line @stylistic/keyword-spacing
+				catch {
+					log.error("In Trajectories basis matrix is not invertible");
+				}
+			}
+
+			this.sendMeanDisplacement(this.indices);
 		}
 	}
 
@@ -208,18 +224,136 @@ export class Trajectories extends NodeCore {
 	}
 
 	/**
+	 * Compute jump cancel offset
+	 *
+	 * @param dx - Delta X from the last position
+	 * @param dy - Delta Y from the last position
+	 * @param dz - Delta Z from the last position
+	 * @returns 3D offset to cancel the position jump
+	 */
+	private computeOffset(dx: number, dy: number, dz: number): number[] {
+
+		const TOL = 0.1;
+		const inv = this.inverse!;
+		const da = inv[0]*dx + inv[1]*dy + inv[2]*dz;
+		const db = inv[3]*dx + inv[4]*dy + inv[5]*dz;
+		const dc = inv[6]*dx + inv[7]*dy + inv[8]*dz;
+
+		const ada = Math.abs(da);
+		const adb = Math.abs(db);
+		const adc = Math.abs(dc);
+
+		if(ada < TOL && adb < TOL && adc < TOL) return [0, 0, 0];
+
+		const bb = this.structure?.crystal.basis;
+		if(!bb) return [0, 0, 0];
+
+		if(ada > adb) {
+			if(ada > adc) {
+				// a
+				return da > 0 ? [-bb[0], -bb[1], -bb[2]] : [bb[0], bb[1], bb[2]];
+			}
+			if(adb > adc) {
+				// b
+				return db > 0 ? [-bb[3], -bb[4], -bb[5]] : [bb[3], bb[4], bb[5]];
+			}
+			// c
+			return dc > 0 ? [-bb[6], -bb[7], -bb[8]] : [bb[6], bb[7], bb[8]];
+		}
+		if(adb > adc) {
+			// b
+			return db > 0 ? [-bb[3], -bb[4], -bb[5]] : [bb[3], bb[4], bb[5]];
+		}
+		// c
+		return dc > 0 ? [-bb[6], -bb[7], -bb[8]] : [bb[6], bb[7], bb[8]];
+	}
+
+	/**
+	 * Remove jumps on the other side of the cell from a trace
+	 *
+	 * @param trace - The atoms traces
+	 * @param firstJump - index of the first position at the first jump
+	 * @returns A new trace without the jumps
+	 */
+	private removeJumps(trace: number[], firstJump: number): number[] {
+
+		const cleanedTrace: number[] = [];
+		for(let i=0; i < firstJump; i+=3) {
+			cleanedTrace.push(trace[i], trace[i+1], trace[i+2]);
+		}
+		let lastX = trace[firstJump-3];
+		let lastY = trace[firstJump-2];
+		let lastZ = trace[firstJump-1];
+
+		for(let i=firstJump; i < trace.length; i+=3) {
+
+			const dx = trace[i]   - lastX;
+			const dy = trace[i+1] - lastY;
+			const dz = trace[i+2] - lastZ;
+
+			const offset = this.computeOffset(dx, dy, dz);
+
+			offset[0] += trace[i];
+			offset[1] += trace[i+1];
+			offset[2] += trace[i+2];
+
+			cleanedTrace.push(offset[0], offset[1], offset[2]);
+
+			lastX = offset[0];
+			lastY = offset[1];
+			lastZ = offset[2];
+		}
+
+		return cleanedTrace;
+	}
+
+	/**
 	 * Compute mean positions and displacements
 	 *
 	 * @param indices - Indices of selected atoms
 	 */
 	private computeMeanPositionAndDisplacement(indices: number[]): void {
 
-		const {atoms} = this.structure!;
 		this.meanDisplacement.length = 0;
+		if(indices.length === 0) return;
+		const {atoms} = this.structure!;
 
-		for(let i=0; i < this.traces.length; ++i) {
+		const currentTraces: number[][] = [];
+		for(const trace of this.traces) {
+			currentTraces.push(trace);
+		}
 
-			const trace = this.traces[i];
+		if(this.hasUnitCell) {
+
+			for(let i=0; i < currentTraces.length; ++i) {
+
+				const trace = currentTraces[i];
+
+				let lastX = trace[0];
+				let lastY = trace[1];
+				let lastZ = trace[2];
+
+				// eslint-disable-next-line sonarjs/no-redundant-assignments
+				for(let j=3; j < trace.length; j+=3) {
+
+					const dx = trace[j]   - lastX;
+					const dy = trace[j+1] - lastY;
+					const dz = trace[j+2] - lastZ;
+					const length = Math.hypot(dx, dy, dz);
+					if(length > this.maxDisplacement) {
+						currentTraces[i] = this.removeJumps(trace, j);
+						break;
+					}
+					lastX = trace[j];
+					lastY = trace[j+1];
+					lastZ = trace[j+2];
+				}
+			}
+		}
+
+		for(let i=0; i < currentTraces.length; ++i) {
+
+			const trace = currentTraces[i];
 
 			// Compute mean position
 			let meanX = 0;
@@ -265,11 +399,16 @@ export class Trajectories extends NodeCore {
 	}
 
 	/**
-	 * Send updated mean positions and displacements to client
+	 * Compute and send updated mean positions and displacements to client
+	 *
+	 * @param indices - Indices of selected atoms
 	 */
-	private sendMeanDisplacement(): void {
+	private sendMeanDisplacement(indices: number[]): void {
 
 		if(isSecondaryWindowOpen("/displacements")) {
+
+			// Compute mean position and displacement
+			this.computeMeanPositionAndDisplacement(indices);
 
 			const dataToSend = JSON.stringify(this.meanDisplacement);
 			sendToSecondaryWindow("/displacements", dataToSend);
@@ -303,6 +442,8 @@ export class Trajectories extends NodeCore {
 		this.traces.length = 0;
 		this.tracesColor.length = 0;
 		this.nextSteps = false;
+		this.meanDisplacement.length = 0;
+		this.sendMeanDisplacement([]);
 	}
 
 	/**
@@ -357,6 +498,9 @@ export class Trajectories extends NodeCore {
 	 * Channel handler for displaying mean positions and displacements dialog
 	 */
 	private channelMeans(): void {
+
+		// Compute mean position and displacement
+		this.computeMeanPositionAndDisplacement(this.indices);
 
 		const dataToSend = JSON.stringify(this.meanDisplacement);
 

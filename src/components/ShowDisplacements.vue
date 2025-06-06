@@ -77,25 +77,26 @@ handleSpecialKeys("/displacements");
   flex-direction: row;
   margin: 0;
   height: 100%;
-  /* padding-top: 15px; */
   max-width: 3000px !important;
 }
 
 th {
-  text-align: left
+  text-align: left;
+  color: light-dark(#7ca911, #baf434) !important;
 }
+
 .right {
   text-align: right
 }
+
 .w-1 {
   width: 1rem
 }
+
 .w-2 {
   width: 2rem
 }
-.w-3 {
-  width: 3rem
-}
+
 .w-4 {
   width: 4rem
 }

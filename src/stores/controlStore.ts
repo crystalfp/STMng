@@ -36,6 +36,8 @@ interface GlobalControls {
 	fingerprintsAccumulate: boolean;
 	/** Capture for trajectory recording */
 	trajectoriesRecording: boolean;
+	/** Atoms selector has been set */
+	trajectoriesHasSelector: boolean;
 	/** Capture for writer of multistep structures */
 	writerAccumulate: boolean;
 
@@ -78,6 +80,7 @@ export const useControlStore = defineStore("ControlStore", {
 
 		fingerprintsAccumulate: false,
 		trajectoriesRecording: false,
+		trajectoriesHasSelector: false,
 		writerAccumulate: false,
 
 		hasCapture: false,
