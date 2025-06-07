@@ -10,7 +10,7 @@ import {computed, ref, onMounted} from "vue";
 import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLineType, Position,
         Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
-import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow, askNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import SpecialNode from "./SpecialNode.vue";
@@ -426,7 +426,6 @@ const saveProjectGraph = (): void => {
     }
 
     if(!projectModified.value) return;
-    projectModified.value = false;
 
     // Sort the node left to right and top to bottom
     const sortedGraph = graphFlow.value.toSorted(sortGraph);
@@ -442,8 +441,14 @@ const saveProjectGraph = (): void => {
         if(node.in !== "") graph[node.id].in = node.in;
     }
 
-    sendToNode("SYSTEM", "modified-project", {
+    askNode("SYSTEM", "modified-project", {
         projectModified: JSON.stringify(graph)
+    })
+    .then((result) => {
+        if(result.saved) projectModified.value = false;
+    })
+    .catch((error: Error) => {
+        log.error("Error from project save. Error:", error.message);
     });
 };
 

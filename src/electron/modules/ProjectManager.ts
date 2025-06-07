@@ -481,10 +481,10 @@ export const setupChannelProject = (): void => {
 		pm.sendProject();
 	});
 
-	ipcMain.on("SYSTEM:modified-project", (_event, params: CtrlParams): void => {
+	ipcMain.handle("SYSTEM:modified-project", (_event, params: CtrlParams) => {
 
 		const prj = params.projectModified as string;
-		if(!prj) return;
+		if(!prj) return {saved: false};
 
 		const file = dialog.showSaveDialogSync({
 			title: "Save modified project",
@@ -505,5 +505,8 @@ export const setupChannelProject = (): void => {
 					sendAlertMessage(`Cannot write modified project file. Error: ${error.message}`);
 				});
 		}
+		else return {saved: false};
+
+		return {saved: true};
 	});
 };

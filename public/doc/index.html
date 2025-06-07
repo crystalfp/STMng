@@ -16,9 +16,9 @@
 <body>
 <header>
 <img src="title.png" width="900" height="506" alt="See The Molecule new generation (STMng) documentation">
-<p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization tool that implements some of the functionalities of the old <a href="http://mariovalle.name/STM4/index.html">STM4</a> visualization tool.</p>
-<p>The primary use of this tool is to analyze the output of the <a href="https://uspex-team.org/">USPEX</a> computational material discovery system.</p>
-<p>Unlike its predecessor, STMng is built on top of open source frameworks and libraries.</p>
+<p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old <a href="http://mariovalle.name/STM4/index.html">STM4</a> visualization tool.</p>
+<p>The STMng primary use is to analyze the results of the <a href="https://uspex-team.org/">USPEX</a> computational material discovery system.</p>
+<p>Unlike its predecessor, STMng is built on top of <span onclick="openDetails('#tech'); return false;">open source frameworks and libraries</span>.</p>
 <button onclick="toggleDetails()" class="toggle-button">Toggle cards visibility</button>
 </header>
 <details>
@@ -394,11 +394,11 @@ comma separated and if they pass a value, switch and value are separated by a �
 <p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>
 <p>Developer tools can be enabled in production also with the “<tt>STM_NG_ENABLE</tt>” environment variable set to any value.</p>
 </details>
-<details>
+<details id="tech">
   <summary>Technology</summary>
   <p>STMng is an <a href="https://www.electronjs.org/">ElectronJS</a> multiplatform application written in <a href="https://www.typescriptlang.org/">Typescript</a> with small interface parts written in C++.</p>
   <p>The user interface is based on the <a href="https://vuejs.org/">Vue</a> framework with <a href="https://vuetifyjs.com/en/">Vuetify</a> widgets.</p>
-  <a>The 3D viewer uses <a href="https://threejs.org/">three.js</a> interface to WebGL provided by the Chromium browser integrated inside ElectronJS.</a>
+  <a>The 3D viewer uses the <a href="https://threejs.org/">three.js</a> interface to WebGL provided by the Chromium browser integrated inside ElectronJS.</a>
   <p>The development toolchain is based on <a href="https://vite.dev/">Vite</a>, the final build for production uses <a href="https://www.electron.build/">electron-builder</a>. The bundling of the code for the parallel computations is done by <a href="https://rollupjs.org/">Rollup</a>.</p>
   <p>Credits for specific libraries used are listed in the respective node documentation pages.</p>
 </details>
@@ -444,7 +444,9 @@ comma separated and if they pass a value, switch and value are separated by a �
     }
   }
   const openDetails = (anchor) => {
-    document.querySelector(anchor).setAttribute('open',true);
+    const element = document.querySelector(anchor);
+    element.setAttribute('open',true);
+    element.scrollIntoView();
   }
 </script>
 </body>

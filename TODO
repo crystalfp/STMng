@@ -1,12 +1,9 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
-  ☐ Modify project, save but cancel. The project modified is marked as not modified
   ☐ Load 2_5298595329376014525.cif, backbone select atoms 0 1 7 → nothing appears
 
 For the tutorial:
-  ✔ Check light mode @done(2025-06-06 18:07)
-  ☐ Check tab order
   ☐ Prepare slides and agenda
 
 To do:
@@ -69,6 +66,9 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Check tab order @done(2025-06-07 05:55) @project(For the tutorial)
+  ✔ Modify project, save but cancel. The project modified is marked as not modified @done(2025-06-07 05:54) @project(Bugs)
+  ✔ Check light mode @done(2025-06-06 18:07) @project(For the tutorial)
   ✔ Add exit guard in main window substituting the native confirmation dialog @done(2025-05-26 14:44) @project(To do)
   ✔ "Invalid "POSCAR" file content" make it more informative in the log @done(2025-05-26 14:44) @project(To do)
   ✔ Unify vector operations in a distinct file @done(2025-05-26 14:44) @project(To do)
