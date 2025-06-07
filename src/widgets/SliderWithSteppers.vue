@@ -96,10 +96,10 @@ watch(valueToDebounce, () => {
 <v-slider v-model="valueToDebounce" :min :max :step :label
           :disabled hide-details class="slider-with-stepper">
   <template #prepend>
-    <v-btn :icon="mdiMinus" size="small" variant="text" class="ml-n2" @click="decrement" />
+    <v-btn :icon="mdiMinus" size="small" variant="text" @click="decrement" />
   </template>
   <template #append>
-    <v-btn :icon="mdiPlus" size="small" variant="text" class="mr-n2" @click="increment" />
+    <v-btn :icon="mdiPlus" size="small" variant="text" @click="increment" />
   </template>
 </v-slider>
 </template>

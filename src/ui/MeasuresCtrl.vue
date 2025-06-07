@@ -217,7 +217,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 <template>
 <v-container class="container">
   <v-container v-if="natoms > 0" class="pa-0 ml-2">
-    <v-label class="mt-4 mb-1 no-select">Structure summary</v-label>
+    <v-label class="simple-title mb-n2">Structure summary</v-label>
     <v-table class="pl-2 pr-4 py-1">
       <tr><td>Step:</td><td class="right">{{ step }}</td></tr>
       <tr><td>Atoms count:</td><td class="right">{{ natoms }}</td></tr>
@@ -251,7 +251,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
       </v-table>
     </v-container>
   </v-container>
-  <v-label class="ml-2 mb-1 mt-4 no-select">Measurement type</v-label>
+  <v-label class="mt-4 separator-title">Measurement type</v-label>
   <v-btn-toggle v-model="measurementType" mandatory class="ml-2 mb-6">
     <v-btn value="atoms">Atoms</v-btn>
     <v-btn value="polyhedra">Polyhedra</v-btn>

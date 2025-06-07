@@ -56,10 +56,13 @@ watch(valueToDebounce, () => {
 /**
  * Decrement the value
  */
-const decrement = (): void => {
+const decrement = (event: MouseEvent): void => {
 
+    let delta = props.step;
+    if(event.ctrlKey) delta *= event.shiftKey ? 100 : 10;
+    else if(event.shiftKey) delta *= 100;
     let vv = valueToDebounce.value;
-    vv -= props.step;
+    vv -= delta;
     if(vv < props.min) vv = props.min;
     valueToDebounce.value = vv;
 };
@@ -67,10 +70,13 @@ const decrement = (): void => {
 /**
  * Increment the value
  */
-const increment = (): void => {
+const increment = (event: MouseEvent): void => {
 
+    let delta = props.step;
+    if(event.ctrlKey) delta *= event.shiftKey ? 100 : 10;
+    else if(event.shiftKey) delta *= 100;
     let vv = valueToDebounce.value;
-    vv += props.step;
+    vv += delta;
     if(vv > props.max) vv = props.max;
     valueToDebounce.value = vv;
 };
@@ -82,12 +88,12 @@ const increment = (): void => {
 <v-container class="pa-0 ma-0 pr-2">
   <!-- @slot Here add the slider label (the not yet debounced value is available as {value}) -->
   <slot :value="valueToDebounce" />
-  <v-slider v-model="valueToDebounce" :min :max :step :disabled hide-details>
+  <v-slider v-model="valueToDebounce" :min :max :step :disabled hide-details class="ml-n2">
     <template #prepend>
-      <v-btn :icon="mdiMinus" size="small" variant="text" class="ml-n2 mr-n2" @click="decrement" />
+      <v-btn :icon="mdiMinus" size="small" variant="text" @click="decrement" />
     </template>
     <template #append>
-      <v-btn :icon="mdiPlus" size="small" variant="text" class="mr-n2" @click="increment" />
+      <v-btn :icon="mdiPlus" size="small" variant="text" @click="increment" />
     </template>
   </v-slider>
 </v-container>

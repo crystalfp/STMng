@@ -1,9 +1,11 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
+  ☐ Modify project, save but cancel. The project modified is marked as not modified
+  ☐ Load 2_5298595329376014525.cif, backbone select atoms 0 1 7 → nothing appears
 
 For the tutorial:
-  ☐ Check light mode
+  ✔ Check light mode @done(2025-06-06 18:07)
   ☐ Check tab order
   ☐ Prepare slides and agenda
 
