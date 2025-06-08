@@ -132,6 +132,11 @@ export class StructureReader extends NodeCore {
 						this.reader = new ReaderXYZ();
 					}
 					break;
+				case "XDATCAR5": {
+						const {ReaderXDATCAR5} = await import("../readers/ReadXDATCAR5");
+						this.reader = new ReaderXDATCAR5();
+					}
+					break;
 				case "Shel-X": {
 						const {ReaderSHELX} = await import("../readers/ReadSHELX");
 						this.reader = new ReaderSHELX();

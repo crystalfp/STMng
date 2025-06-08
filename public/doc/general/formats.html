@@ -89,7 +89,7 @@
     <td>RW</td>
     <td></td>
     <td>From VASP, also as concatenated file</td>
-    <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a> <a href="#note7">7</a></td>
+    <td><a href="https://www.vasp.at/wiki/index.php/POSCAR">site</a> <a href="#note7">7</a></td>
 </tr>
 <tr>
     <td>POSCAR + ENERGY</td>
@@ -105,7 +105,7 @@
     <td>R</td>
     <td></td>
     <td>Another VASP animated format</td>
-    <td><a href="http://cms.mpi.univie.ac.at/vasp/">site</a></td>
+    <td><a href="https://www.vasp.at/">site</a></td>
 </tr>
 <tr>
     <td>Shel-X</td>
@@ -114,6 +114,14 @@
     <td></td>
     <td>Shel-X crystallography program</td>
     <td><a href="http://shelx.uni-ac.gwdg.de/SHELX/index.php">site</a></td>
+</tr>
+<tr>
+    <td>XDATCAR5</td>
+    <td>*.xdatcar or *.xdatcar5</td>
+    <td>R</td>
+    <td></td>
+    <td>Another VASP animated format with fixed cell</td>
+    <td><a href="https://www.vasp.at/">ref</a> <a href="#note9">9</a></td>
 </tr>
 <tr>
     <td>XYZ</td>
@@ -251,6 +259,7 @@
 <li><a id="note6"></a>In the unit cell file each block of three lines contains three floats and refers to one frame. The nine numbers define the three base vectors (one by line).</li>
 <li><a id="note7"></a>Read the old and new versions (the one with element names). Write only the new version.</li>
 <li><a id="note8"></a>The energy file has one energy or enthalpy value per line and there are as many lines as the number of structures in the associated POSCAR file. The write is done from the fingerprint scatterplot window for the selected structures.</li>
+<li><a id="note9"></a>No documentation is found on this format. It is a POSCAR file followed by a separation line and a set of atoms coordinates for the remaining steps.</li>
 </ol>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
