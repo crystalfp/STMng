@@ -72,7 +72,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 						break;
 					}
 					const fields = line.trim().split(/\s+/);
-					if(fields.length === 0) {
+					if(fields.length === 0 || fields.length > 1) {
 						lineType = LineType.exit;
 						break;
 					}

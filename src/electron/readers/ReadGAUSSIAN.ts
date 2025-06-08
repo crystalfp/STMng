@@ -67,7 +67,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 				case LineType.comment2:
 					lineType = LineType.origin;
 					break;
-				case LineType.origin: {
+				case LineType.origin:
 
 					if(fields.length < 4) throw Error("Malformed file (origin line)");
 					natoms = Number.parseInt(fields[0], 10);
@@ -85,7 +85,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 					lineType = LineType.basis;
 					break;
-				}
 				case LineType.basis: {
 
 					if(fields.length < 4) throw Error(`Malformed file (basis line ${idxBasis+1})`);

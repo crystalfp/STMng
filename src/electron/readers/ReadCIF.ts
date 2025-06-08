@@ -274,6 +274,8 @@ export class ReaderCIF implements ReaderImplementation {
 			const chain  = this.tbl.getColumn("_atom_site_label_asym_id");
 			const symbol = this.tbl.getColumn("_atom_site_type_symbol");
 			const hasSymbol = symbol.length > 0;
+			const hasChain = chain.length > 0;
+			const hasLabel = label.length > 0;
 
 			const natoms = fracX.length;
 			for(let i=0; i < natoms; ++i) {
@@ -283,8 +285,8 @@ export class ReaderCIF implements ReaderImplementation {
 				const az = (hasSymbol ? symbol[i] : label[i]).replaceAll(/[^a-z]/gi, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
-					label: label.length > 0 ? label[i] : symbol[i],
-					chain: chain[i],
+					label: hasLabel ? label[i] : symbol[i],
+					chain: hasChain ? chain[i] : "",
 					position: fractionalToCartesianCoordinates(basis, fx, fy, fz)
 				};
 				this.structures[this.step].atoms.push(atom);
@@ -304,6 +306,7 @@ export class ReaderCIF implements ReaderImplementation {
 			const chain    = this.tbl.getColumn("_atom_site_label_asym_id");
 			const atomType = this.tbl.getColumn("_atom_site_type_symbol");
 			const hasAtomType = atomType.length > 0;
+			const hasChain = chain.length > 0;
 			const natoms = cartnX.length;
 			for(let i=0; i < natoms; ++i) {
 				const x = Number.parseFloat(cartnX[i]);
@@ -313,7 +316,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const atom: Atom = {
 					atomZ: getAtomicNumber(symbol),
 					label: label[i],
-					chain: chain[i],
+					chain: hasChain ? chain[i] : "",
 					position: [x, y, z]
 				};
 				this.structures[this.step].atoms.push(atom);

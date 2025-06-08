@@ -222,7 +222,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
       <tr><td>Step:</td><td class="right">{{ step }}</td></tr>
       <tr><td>Atoms count:</td><td class="right">{{ natoms }}</td></tr>
       <tr v-for="atom in counts" :key="atom.symbol">
-        <td>{{ `&nbsp;&nbsp;&nbsp;&nbsp;${atom.symbol}:` }}</td>
+        <td style="padding-left: 1rem;">{{ atom.symbol }}</td>
         <td class="right">{{ atom.count }}</td>
       </tr>
       <tr><td>Bonds count:</td><td class="right">{{ bondsLabel }}</td></tr>

@@ -84,19 +84,23 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 				}
 				const fields = line.trim().split(/\s+/);
 
-				const position = fractionalToCartesianCoordinates(
-									crystal.basis,
-									Number.parseFloat(fields[0]),
-									Number.parseFloat(fields[1]),
-									Number.parseFloat(fields[2]),
-								 );
+				if(/\d+/.test(fields[0])) {
+					const position = fractionalToCartesianCoordinates(
+										crystal.basis,
+										Number.parseFloat(fields[0]),
+										Number.parseFloat(fields[1]),
+										Number.parseFloat(fields[2]),
+									);
 
-				structure!.atoms.push({
-					atomZ: atoms[index].atomZ,
-					label: atoms[index].label,
-					chain: atoms[index].chain,
-					position
-				});
+					structure!.atoms.push({
+						atomZ: atoms[index].atomZ,
+						label: atoms[index].label,
+						chain: atoms[index].chain,
+						position
+					});
+				}
+				else throw Error("Invalid XDATCAR format (non numeric position)");
+
 				++index;
 				if(index === natoms) lineType = LineType.separator;
 				break;
