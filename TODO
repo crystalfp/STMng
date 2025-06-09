@@ -1,7 +1,6 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
-  ✔ Load 2_5298595329376014525.cif, backbone select atoms 0 1 7 → nothing appears @done(2025-06-08 07:27)
 
 For the tutorial:
   ☐ Prepare slides and agenda
@@ -14,7 +13,6 @@ To do:
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Unify viewer3D setup between Compare e Landscape
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
-  ☐ Add XDATCAR5 reader
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -67,6 +65,10 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Add XDATCAR5 reader @done(2025-06-09 07:17) @project(To do)
+  ✘ Use `Array.from()` instead of for + push @cancelled(2025-06-09 11:28) @project(To do)
+  ✔ Load 2_5298595329376014525.cif, backbone select atoms 0 1 7 → nothing appears @done(2025-06-08 07:27) @project(Bugs)
+  ✔ Use static variables to detect channel already setup @done(2025-06-09 07:56) @project(Bugs)
   ✔ Check tab order @done(2025-06-07 05:55) @project(For the tutorial)
   ✔ Modify project, save but cancel. The project modified is marked as not modified @done(2025-06-07 05:54) @project(Bugs)
   ✔ Check light mode @done(2025-06-06 18:07) @project(For the tutorial)

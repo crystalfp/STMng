@@ -689,6 +689,6 @@ export interface MeanDisplacement {
 	meanY: number;
   /** Mean position Z coordinate */
 	meanZ: number;
-  /** Mean displacement from the average position */
+  /** Mean squared displacement from the average position */
 	displacement: number;
 }

@@ -7,15 +7,15 @@
  * @since 2024-07-09
  */
 import log from "electron-log";
+import {ipcMain} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
-import {sendTracesToClient} from "../modules/ToClient";
+import {sendToClient, sendTracesToClient} from "../modules/ToClient";
 import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement, BasisType} from "@/types";
-
 
 export class Trajectories extends NodeCore {
 
@@ -35,6 +35,9 @@ export class Trajectories extends NodeCore {
 	private inverse: BasisType | undefined;
 	private hasUnitCell = false;
 	private indices: number[] = [];
+	private static channelOpened = false;
+	private showMarker = false;
+	private sizeMarkers = 1;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -60,13 +63,11 @@ export class Trajectories extends NodeCore {
 
 		if(!data) return;
 		this.structure = data;
-		if(this.createTrajectories) {
+		if(this.createTrajectories || isSecondaryWindowOpen("/displacements")) {
 
 			const {atoms, crystal} = this.structure;
 
 			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
-
-			Trajectories.setTraceColor(this.structure, this.indices, this.tracesColor);
 
 			const len = this.indices.length;
 			if(this.nextSteps) {
@@ -98,7 +99,10 @@ export class Trajectories extends NodeCore {
 			}
 
 			// Create lines
-			this.sendLines(this.indices.length);
+			if(this.createTrajectories) {
+				Trajectories.setTraceColor(this.structure, this.indices, this.tracesColor);
+				this.sendLines(this.indices.length);
+			}
 
 			this.hasUnitCell = false;
 			if(hasUnitCell(crystal.basis)) {
@@ -109,7 +113,7 @@ export class Trajectories extends NodeCore {
 				}
 				// eslint-disable-next-line @stylistic/keyword-spacing
 				catch {
-					log.error("In Trajectories basis matrix is not invertible");
+					log.error("Basis matrix in Trajectories is not invertible");
 				}
 			}
 
@@ -126,7 +130,9 @@ export class Trajectories extends NodeCore {
 			maxDisplacement: this.maxDisplacement,
 			showPositionClouds: this.showPositionClouds,
 			positionCloudsColor: this.positionCloudsColor,
-			positionCloudsSize: this.positionCloudsSize
+			positionCloudsSize: this.positionCloudsSize,
+			showMarker: this.showMarker,
+			sizeMarkers: this.sizeMarkers
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
@@ -139,6 +145,8 @@ export class Trajectories extends NodeCore {
 		this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
 		this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
 		this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
+		this.showMarker 		 = params.showMarker as boolean ?? false;
+		this.sizeMarkers 		 = params.sizeMarkers as number ?? 1;
 	}
 
 	// > Trace lines methods
@@ -376,10 +384,10 @@ export class Trajectories extends NodeCore {
 			let displacement = 0;
 			for(let j=0; j < trace.length; j+=3) {
 
-				const dx = trace[j] - meanX;
+				const dx = trace[j]   - meanX;
 				const dy = trace[j+1] - meanY;
 				const dz = trace[j+2] - meanZ;
-				displacement += Math.hypot(dx, dy, dz);
+				displacement += dx*dx+dy*dy+dz*dz;
 			}
 			displacement /= steps;
 
@@ -412,7 +420,25 @@ export class Trajectories extends NodeCore {
 
 			const dataToSend = JSON.stringify(this.meanDisplacement);
 			sendToSecondaryWindow("/displacements", dataToSend);
+			this.sendMarkers(this.showMarker, this.sizeMarkers, this.meanDisplacement);
 		}
+	}
+
+	private sendMarkers(showMarker: boolean,
+					    sizeMarkers: number,
+						meanDisplacement: MeanDisplacement[]): void {
+
+		const positions = [];
+		if(showMarker) {
+			for(const entry of meanDisplacement) {
+				positions.push(entry.meanX, entry.meanY, entry.meanZ);
+			}
+		}
+		sendToClient(this.id, "set-markers", {
+			showMarker,
+			sizeMarkers,
+			positions
+		});
 	}
 
 	// > Channel handlers
@@ -443,6 +469,7 @@ export class Trajectories extends NodeCore {
 		this.tracesColor.length = 0;
 		this.nextSteps = false;
 		this.meanDisplacement.length = 0;
+		this.showMarker = false;
 		this.sendMeanDisplacement([]);
 	}
 
@@ -511,11 +538,22 @@ export class Trajectories extends NodeCore {
 		else {
 			createSecondaryWindow({
 				routerPath: "/displacements",
-				width: 650,
+				width: 550,
 				height: 400,
 				title: "Show mean positions and displacements",
 				data: dataToSend
 			});
 		}
+
+		// If channel not already opened, open it
+		if(Trajectories.channelOpened) return;
+		Trajectories.channelOpened = true;
+
+		ipcMain.on("SYSTEM:show-markers", (_event, params: CtrlParams) => {
+
+			this.showMarker = params.visible as boolean ?? false;
+			this.sizeMarkers = params.size as number ?? 1;
+			this.sendMarkers(this.showMarker, this.sizeMarkers, this.meanDisplacement);
+		});
 	}
 }

@@ -4,7 +4,6 @@
     "src/main.ts",
     "src/electron/main.ts",
     "src/electron/preload.ts",
-    "eslint.config.mjs",
     "src/components/*.vue",
     "src/ui/*.vue",
     "src/router/index.ts",

@@ -80,7 +80,7 @@ export class ComputeFingerprints extends NodeCore {
 	private chartType: FingerprintsChartKind = "fp";
 	private lambda = 0;
 
-	private channelOpened = false;
+	private static channelOpened = false;
 	private channelChartsOpened = false;
 
 	private readonly fingerprintMethodsNames = [
@@ -1154,132 +1154,133 @@ export class ComputeFingerprints extends NodeCore {
 
 		this.createUpdateScatterplot("create", {plotType: this.plotType});
 
-		if(!this.channelOpened) {
-			this.channelOpened = true;
+		// If not already opened, open the channels
+		if(ComputeFingerprints.channelOpened) return;
+		ComputeFingerprints.channelOpened = true;
 
-			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			ipcMain.on("SYSTEM:selected-points", async (_event, params: CtrlParams): Promise<void> => {
+		ipcMain.on("SYSTEM:selected-points",
+					// eslint-disable-next-line @typescript-eslint/no-misused-promises
+					async (_event, params: CtrlParams): Promise<void> => {
 
-				const points = params.points as string;
-				if(!points)	return;
-				const indices = params.points as number[];
-				if(indices.length === 0) return;
-				const filename = params.filename as string;
-				if(!filename) return;
+			const points = params.points as string;
+			if(!points)	return;
+			const indices = params.points as number[];
+			if(indices.length === 0) return;
+			const filename = params.filename as string;
+			if(!filename) return;
 
-				const sorter: {idx: number; energy: number}[] = [];
-				let structures: Structure[] = [];
-				let idx = 0;
-				let k = 0;
-				const hasEnergies = this.accumulator.accumulatedHaveEnergies();
+			const sorter: {idx: number; energy: number}[] = [];
+			let structures: Structure[] = [];
+			let idx = 0;
+			let k = 0;
+			const hasEnergies = this.accumulator.accumulatedHaveEnergies();
 
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(indices.includes(idx)) {
-						structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
-						if(hasEnergies) {
-							sorter.push({idx: k++, energy: structure.energy!});
-						}
+			for(const structure of this.accumulator.iterateSelectedStructures()) {
+				if(indices.includes(idx)) {
+					structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
+					if(hasEnergies) {
+						sorter.push({idx: k++, energy: structure.energy!});
 					}
-					++idx;
 				}
+				++idx;
+			}
 
-				if(structures.length === 0) return;
+			if(structures.length === 0) return;
 
-				const sortedStructures: Structure[] = [];
-				const energies: string[] = [];
-				if(sorter.length > 0) {
-					sorter.sort((a, b) => a.energy - b.energy);
+			const sortedStructures: Structure[] = [];
+			const energies: string[] = [];
+			if(sorter.length > 0) {
+				sorter.sort((a, b) => a.energy - b.energy);
 
-					for(const entry of sorter) {
-						sortedStructures.push(structures[entry.idx]);
-						energies.push(entry.energy.toString());
-					}
-					structures = sortedStructures;
+				for(const entry of sorter) {
+					sortedStructures.push(structures[entry.idx]);
+					energies.push(entry.energy.toString());
 				}
-				const {WriterPOSCAR} = await import("../writers/WritePOSCAR");
-				const writer = new WriterPOSCAR();
-				const sts = writer.writeStructure(filename, structures);
+				structures = sortedStructures;
+			}
+			const {WriterPOSCAR} = await import("../writers/WritePOSCAR");
+			const writer = new WriterPOSCAR();
+			const sts = writer.writeStructure(filename, structures);
 
-				if(sts.error) sendAlertMessage(sts.error as string, "fingerprints");
+			if(sts.error) sendAlertMessage(sts.error as string, "fingerprints");
 
-				if(energies.length > 0) {
-					const pos = filename.lastIndexOf(".");
-					const energyFilename = pos > 0 ?
-												`${filename.slice(0, pos)}.energy` :
-												`${filename}.energy`;
-					writeFileSync(energyFilename, energies.join("\n"), "utf8");
+			if(energies.length > 0) {
+				const pos = filename.lastIndexOf(".");
+				const energyFilename = pos > 0 ?
+											`${filename.slice(0, pos)}.energy` :
+											`${filename}.energy`;
+				writeFileSync(energyFilename, energies.join("\n"), "utf8");
+			}
+		});
+
+		ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {
+
+			this.plotType = params.plotType as string ?? "group";
+
+			this.createUpdateScatterplot("update", {plotType: this.plotType});
+		});
+
+		ipcMain.handle("SYSTEM:get-selections", (_event, params: CtrlParams): CtrlParams => {
+
+			const criteria = params.criteria as string ?? "";
+
+			let selectedPoints: number[] = [];
+			switch(criteria) {
+				case "min-energy":
+					selectedPoints = this.selectMinEnergyPerGroup();
+					break;
+				case "convex-hull":
+					selectedPoints = this.selectByConvexHull();
+					break;
+			}
+			return {selectedPoints};
+		});
+
+		ipcMain.on("SYSTEM:compare", (_event, params: CtrlParams): void => {
+
+			const selectedPoints = params.selectedPoints as number[] ?? [];
+			this.createUpdateCompare("create", selectedPoints);
+		});
+
+		ipcMain.on("SYSTEM:updated-selection", (_event, params: CtrlParams): void => {
+
+			const updatedStepsSelection = params.updatedStepsSelection as number[] ?? [];
+
+			const updatedSelectedPoints: number[] = [];
+			let idx = 0;
+			for(const structure of this.accumulator.iterateSelectedStructures()) {
+				if(updatedStepsSelection.includes(structure.step)) {
+					updatedSelectedPoints.push(idx);
 				}
-			});
+				++idx;
+			}
+			this.createUpdateScatterplot("update", {plotType: this.plotType,
+													selectedPoints: updatedSelectedPoints
+													});
+		});
 
-			ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {
+		ipcMain.handle("SYSTEM:get-structure", (_event, params: CtrlParams): CtrlParams => {
 
-				this.plotType = params.plotType as string ?? "group";
+			const empty: CtrlParams = {};
+			const step = params.step as number;
+			if(step === undefined) return empty;
+			const structure = this.accumulator.getStructureByStep(step);
+			if(!structure) return empty;
 
-				this.createUpdateScatterplot("update", {plotType: this.plotType});
-			});
+			const out: CtrlParams = {
+				basis: structure.basis as number[],
+				positions: structure.atomsPosition as number[],
+				radii: [],
+				bonds: []
+			};
 
-			ipcMain.handle("SYSTEM:get-selections", (_event, params: CtrlParams): CtrlParams => {
+			for(const atomZ of structure.atomsZ) {
+				(out.radii as number[]).push(getAtomData(atomZ).rCov/2);
+			}
+			out.bonds = [...structure.bonds];
 
-				const criteria = params.criteria as string ?? "";
-
-				let selectedPoints: number[] = [];
-				switch(criteria) {
-					case "min-energy":
-						selectedPoints = this.selectMinEnergyPerGroup();
-						break;
-					case "convex-hull":
-						selectedPoints = this.selectByConvexHull();
-						break;
-				}
-				return {selectedPoints};
-			});
-
-			ipcMain.on("SYSTEM:compare", (_event, params: CtrlParams): void => {
-
-				const selectedPoints = params.selectedPoints as number[] ?? [];
-				this.createUpdateCompare("create", selectedPoints);
-			});
-
-			ipcMain.on("SYSTEM:updated-selection", (_event, params: CtrlParams): void => {
-
-				const updatedStepsSelection = params.updatedStepsSelection as number[] ?? [];
-
-				const updatedSelectedPoints: number[] = [];
-				let idx = 0;
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(updatedStepsSelection.includes(structure.step)) {
-						updatedSelectedPoints.push(idx);
-					}
-					++idx;
-				}
-				this.createUpdateScatterplot("update", {plotType: this.plotType,
-														selectedPoints: updatedSelectedPoints
-													   });
-			});
-
-			ipcMain.handle("SYSTEM:get-structure", (_event, params: CtrlParams): CtrlParams => {
-
-				const empty: CtrlParams = {};
-				const step = params.step as number;
-				if(step === undefined) return empty;
-				const structure = this.accumulator.getStructureByStep(step);
-				if(!structure) return empty;
-
-				const out: CtrlParams = {
-					basis: structure.basis as number[],
-					positions: structure.atomsPosition as number[],
-					radii: [],
-					bonds: []
-				};
-
-				for(const atomZ of structure.atomsZ) {
-					(out.radii as number[]).push(getAtomData(atomZ).rCov/2);
-				}
-				out.bonds = [...structure.bonds];
-
-				return out;
-			});
-		}
+			return out;
+		});
 	}
 
 	/**
