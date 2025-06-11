@@ -358,16 +358,10 @@ export class Trajectories extends NodeCore {
 				}
 			}
 		}
-		// 	console.log("LEN", atoms.length, indices.length, currentTraces.length);
-		// for(let i=0; i < indices.length; ++i) {
-		// 	const idx = indices[i];
-		// 	const trace = currentTraces[i];
-		// }
 
+		for(const idx of indices) {
 
-		for(let i=0; i < currentTraces.length; ++i) {
-
-			const trace = currentTraces[i];
+			const trace = currentTraces[idx];
 
 			// Compute mean position
 			let meanX = 0;
@@ -398,11 +392,11 @@ export class Trajectories extends NodeCore {
 			displacement /= steps;
 
 			// Send results
-			const {atomZ} = atoms[indices[i]];
+			const {atomZ} = atoms[idx];
 			const atomType = getAtomData(atomZ).symbol;
 
 			this.meanDisplacement.push({
-				index: indices[i],
+				index: idx,
 				atomType,
 				meanX,
 				meanY,
