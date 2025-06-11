@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-28
  */
-import {invertBasis} from "../modules/Helpers";
+import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {sendToClient} from "../modules/ToClient";
@@ -119,7 +119,7 @@ export class StructureBackbone extends NodeCore {
 		}
 
 		const {basis, origin} = crystal;
-		if(basis.some((x) => x !== 0) && this.threshold < 1) {
+		if(hasUnitCell(basis) && this.threshold < 1) {
 			StructureBackbone.disentangleChains(coordinates, chainStart, basis, origin, this.threshold);
 		}
 		sendToClient(this.id, "positions", {coordinates, chainStart});
@@ -139,7 +139,7 @@ export class StructureBackbone extends NodeCore {
 
 		// Convert each point into fractional coordinates
 		const inverse = invertBasis(basis);
-		const fractionalCoords = Array<number>(coordinates.length).fill(0);
+		const fractionalCoords = Array<number>(coordinates.length);
 		for(let i=0; i < coordinates.length; i+=3) {
 
 			const cx = coordinates[i]   - origin[0];
@@ -154,6 +154,7 @@ export class StructureBackbone extends NodeCore {
 		// Follow each chain moving each next node near the previous one
 		for(let i=0; i < chainStart.length-1; ++i) {
 
+			// Skip empty chains
 			if(chainStart[i] === chainStart[i+1]) continue;
 
 			for(let j=chainStart[i]; j < chainStart[i+1]-1; ++j) {

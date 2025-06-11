@@ -358,6 +358,12 @@ export class Trajectories extends NodeCore {
 				}
 			}
 		}
+		// 	console.log("LEN", atoms.length, indices.length, currentTraces.length);
+		// for(let i=0; i < indices.length; ++i) {
+		// 	const idx = indices[i];
+		// 	const trace = currentTraces[i];
+		// }
+
 
 		for(let i=0; i < currentTraces.length; ++i) {
 
@@ -538,7 +544,7 @@ export class Trajectories extends NodeCore {
 		else {
 			createSecondaryWindow({
 				routerPath: "/displacements",
-				width: 550,
+				width: 670,
 				height: 400,
 				title: "Show mean positions and displacements",
 				data: dataToSend

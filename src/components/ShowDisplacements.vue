@@ -67,7 +67,7 @@ watch([showMarkers, sizeMarkers], () => {
       <v-switch v-model="showMarkers" class="ml-2" label="Show markers"/>
       <slider-with-steppers v-model="sizeMarkers" v-model:raw="showSizeMarkers"
                       :disabled="!showMarkers"
-                      label-width="8rem" :label="`Marker size (${showSizeMarkers})`"
+                      label-width="7.6rem" :label="`Marker size (${showSizeMarkers})`"
                       :min="0.1" :max="4" :step="0.1" />
       <v-btn v-focus @click="closeWindow('/displacements')">Close</v-btn>
     </v-container>
