@@ -22,6 +22,11 @@ interface GlobalControls {
 	/** Scene sides lengths */
 	sceneSides: PositionType;
 
+	/** Forced camera view direction */
+	viewDirection: string;
+	/** Cell basis */
+	basis: number[];
+
 	/** Force camera position */
 	force: boolean;
 
@@ -71,6 +76,9 @@ export const useControlStore = defineStore("ControlStore", {
 		reset: false,
 		sceneCenter: [0, 0, 0],
 		sceneSides: [1, 1, 1],
+
+		viewDirection: "",
+		basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
 
 		force: false,
 

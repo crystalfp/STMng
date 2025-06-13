@@ -10,6 +10,7 @@ import {ref, watch, computed} from "vue";
 import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert, resetAlertMessage} from "@/services/AlertMessage";
 import {DrawStructureRenderer} from "@/renderers/DrawStructureRenderer";
+import {useControlStore} from "@/stores/controlStore";
 import type {StructureRenderInfo} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
@@ -36,6 +37,9 @@ const showLabels = ref(true);
 const shadedBonds = ref(false);
 let renderInfo: StructureRenderInfo;
 const showBondsStrengths = ref(false);
+
+// > Access the stores
+const controlStore = useControlStore();
 
 resetAlertMessage("system");
 askNode(id, "init")
@@ -65,6 +69,9 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
     renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
     renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value, showBondsStrengths.value);
     renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
+
+    // Save basis to orient camera along cell sides
+    for(let i=0; i < 9; ++i) controlStore.basis[i] = renderInfo.cell.basis[i];
 });
 
 // Change draw parameters

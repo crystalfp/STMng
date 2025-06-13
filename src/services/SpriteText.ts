@@ -171,13 +171,13 @@ export const preloadFonts = (): void => {
 			font: localRobotoRegular,
 			characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz"
 		},
-		() => log.info("Done preloading regular font")
+		() => log.debug("Done preloading regular font")
 	);
 	preloadFont({
 			font: localRobotoBold,
 			characters: "0123456789."
 		},
-		() => log.info("Done preloading bold font")
+		() => log.debug("Done preloading bold font")
 	);
 };
 
@@ -188,11 +188,6 @@ export const preloadFonts = (): void => {
  */
 export class BillboardBatchedText extends BatchedText {
 
-	// private scaleFactor;
-	// private _position = new Vector3();
-	// private localScale = new Vector3();
-	// private _cameraPosition = new Vector3();
-
 	/**
 	 * Build a BillboardBatchedText object
 	 *
@@ -200,7 +195,6 @@ export class BillboardBatchedText extends BatchedText {
 	 */
 	constructor(scaleFactor?: number) {
     	super();
-		// this.scaleFactor = scaleFactor ?? 0.1;
 		void scaleFactor;
   	}
 
@@ -213,26 +207,9 @@ export class BillboardBatchedText extends BatchedText {
 
 		const texts = [...this._members.keys()];
 
-		// camera.getWorldPosition(this._cameraPosition);
-
 		for(const text of texts) {
 
-			// const parent = text.parent;
-			// if(!parent) continue;
-
-			// parent.updateMatrix();
-			// parent.updateWorldMatrix(false, false);
-			// parent.getWorldPosition(this._position);
-
-			// text.position.copy(this._position);
-
       		camera.getWorldQuaternion(text.quaternion);
-
-      		// Size attenuation
-      		// const scale = this.localScale
-			// 				  .subVectors(text.position, this._cameraPosition)
-			// 				  .length() * this.scaleFactor;
-			// text.scale.set(scale, scale, scale);
     	}
   	}
 }

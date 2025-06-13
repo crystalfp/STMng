@@ -282,6 +282,85 @@ onMounted(() => {
         }
     });
 
+    // Move camera to look along an axis or along a crystal basis
+    watchEffect(() => {
+
+        const vd = controlStore.viewDirection;
+        if(vd === "") return;
+        const sign = vd[0];
+        const axis = vd[1];
+
+        const dx = configStore.camera.position[0]-configStore.camera.lookAt[0];
+        const dy = configStore.camera.position[1]-configStore.camera.lookAt[1];
+        const dz = configStore.camera.position[2]-configStore.camera.lookAt[2];
+        const distance = Math.hypot(dx, dy, dz);
+
+        switch(axis) {
+        case "x":
+            configStore.camera.position[0] = sign === "+" ?
+                                                    configStore.camera.lookAt[0] + distance :
+                                                    configStore.camera.lookAt[0] - distance;
+            configStore.camera.position[1] = configStore.camera.lookAt[1];
+            configStore.camera.position[2] = configStore.camera.lookAt[2];
+            break;
+        case "y":
+            configStore.camera.position[0] = configStore.camera.lookAt[0];
+            configStore.camera.position[1] = sign === "+" ?
+                                                    configStore.camera.lookAt[1] + distance :
+                                                    configStore.camera.lookAt[1] - distance;
+            configStore.camera.position[2] = configStore.camera.lookAt[2];
+            break;
+        case "z":
+            configStore.camera.position[0] = configStore.camera.lookAt[0];
+            configStore.camera.position[1] = configStore.camera.lookAt[1];
+            configStore.camera.position[2] = sign === "+" ?
+                                                    configStore.camera.lookAt[2] + distance :
+                                                    configStore.camera.lookAt[2] - distance;
+            break;
+        case "a": {
+            const len = Math.hypot(controlStore.basis[0],
+                                   controlStore.basis[1],
+                                   controlStore.basis[2]);
+            const m = (sign === "+" ? distance : -distance)/len;
+            configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[0]*m;
+            configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[1]*m;
+            configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[2]*m;
+            }
+            break;
+        case "b": {
+            const len = Math.hypot(controlStore.basis[3],
+                                   controlStore.basis[4],
+                                   controlStore.basis[5]);
+            const m = (sign === "+" ? distance : -distance)/len;
+            configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[3]*m;
+            configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[4]*m;
+            configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[5]*m;
+            }
+            break;
+        case "c": {
+            const len = Math.hypot(controlStore.basis[6],
+                                   controlStore.basis[7],
+                                   controlStore.basis[8]);
+            const m = (sign === "+" ? distance : -distance)/len;
+            configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[6]*m;
+            configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[7]*m;
+            configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[8]*m;
+            }
+            break;
+        default:
+            return;
+        }
+        void controls.setLookAt(configStore.camera.position[0],
+                                configStore.camera.position[1],
+                                configStore.camera.position[2],
+                                configStore.camera.lookAt[0],
+                                configStore.camera.lookAt[1],
+                                configStore.camera.lookAt[2],
+                                true);
+        sm.modified();
+        controlStore.viewDirection = "";
+    });
+
     // Force camera position if requested
     watchEffect(() => {
 
@@ -295,17 +374,7 @@ onMounted(() => {
 							        configStore.camera.lookAt[0],
                                     configStore.camera.lookAt[1],
                                     configStore.camera.lookAt[2],
-                                    false);
-            if(configStore.camera.type === "perspective") {
-                cameraPerspective.position.set(...configStore.camera.position);
-                cameraPerspective.lookAt(new Vector3(...configStore.camera.lookAt));
-                cameraPerspective.updateProjectionMatrix();
-            }
-            else {
-                cameraOrthographic.position.set(...configStore.camera.position);
-                cameraOrthographic.lookAt(new Vector3(...configStore.camera.lookAt));
-                cameraOrthographic.updateProjectionMatrix();
-            }
+                                    true);
             sm.modified();
         }
     });

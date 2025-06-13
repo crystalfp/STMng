@@ -120,15 +120,15 @@ const confirmedExit = (): void => {
 </div>
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
 
-  <v-dialog v-model="showExitConfirm">
-    <v-card title="Confirm exit application" text="Do you want to quit the application?"
-            class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
-    <v-card-actions>
-        <v-btn v-focus @click="showExitConfirm=false">Dismiss</v-btn>
-        <v-btn @click="confirmedExit">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+<v-dialog v-model="showExitConfirm">
+  <v-card title="Confirm exit application" text="Do you want to quit the application?"
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+  <v-card-actions>
+      <v-btn v-focus @click="showExitConfirm=false">Dismiss</v-btn>
+      <v-btn @click="confirmedExit">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </v-app>
 </template>
 
