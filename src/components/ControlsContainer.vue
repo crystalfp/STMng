@@ -6,7 +6,7 @@
 * @author Mario Valle "mvalle at ikmail.com"
 * @since 2024-07-11
 */
-import {mdiAlphaXBoxOutline, mdiAlphaABoxOutline, mdiAlphaRBoxOutline,
+import {mdiAlphaXBoxOutline, mdiAlphaABoxOutline, mdiAlphaHBoxOutline,
         mdiPlusMinusVariant} from "@mdi/js";
 import {ref, defineAsyncComponent, markRaw, watch, computed} from "vue";
 import {useControlStore} from "@/stores/controlStore";
@@ -109,8 +109,6 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
   <component :is="panel.ctrl" v-show="panel.id === selectedTabId"
   			 :id="panel.id" :label="panel.label" />
 </v-container>
-<!-- <v-btn density="comfortable" variant="tonal" rounded="0" class="mb-n4"
-       @click="controlStore.reset = true">Reset camera</v-btn> -->
 <v-row class="justify-center w-100">
     <v-spacer />
     <v-col v-if="showPanel===0">
@@ -121,7 +119,7 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
     </v-col>
     <v-col v-if="showPanel===1">
       <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false" rounded="0"  class="muted" density="compact">
-        <v-btn value="1" :icon="hasCell ? mdiAlphaABoxOutline : mdiAlphaRBoxOutline"/>
+        <v-btn value="1" :icon="hasCell ? mdiAlphaABoxOutline : mdiAlphaHBoxOutline"/>
         <v-btn value="x">X</v-btn>
         <v-btn value="y">Y</v-btn>
         <v-btn value="z">Z</v-btn>
@@ -130,7 +128,7 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
     </v-col>
     <v-col v-if="showPanel===2">
       <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false" rounded="0" class="muted" density="compact">
-        <v-btn value="2" :icon="mdiAlphaRBoxOutline"/>
+        <v-btn value="2" :icon="mdiAlphaHBoxOutline"/>
         <v-btn value="a">a</v-btn>
         <v-btn value="b">b</v-btn>
         <v-btn value="c">c</v-btn>
