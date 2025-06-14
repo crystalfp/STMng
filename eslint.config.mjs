@@ -41,6 +41,7 @@ export default defineConfig([
     ],
     languageOptions: {
         parser: vueParser,
+        ecmaVersion: "latest",
         globals: {
             document: "readonly",
             window: "readonly",

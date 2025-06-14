@@ -16,7 +16,7 @@ import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions, ReaderImpl
 // Import the readers
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
-										   "LAMMPStrj", "POSCAR + XDATCAR",
+										   "LAMMPStrj", "POSCAR + XDATCAR", "XDATCAR5",
 										   "POSCAR + ENERGY"]);
 
 export class StructureReader extends NodeCore {
@@ -32,6 +32,7 @@ export class StructureReader extends NodeCore {
     private atomsTypes = "";
 	private useBohr = true;
 	private readHydrogen = false;
+	private energyPerAtom = false;
 	private fileToRead = "";
 	private auxFileToRead = "";
 	private reader: ReaderImplementation | undefined;
@@ -48,6 +49,7 @@ export class StructureReader extends NodeCore {
 		{name: "formats",	type: "send",        callback: this.channelFormats.bind(this)},
 		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
 		{name: "hydrogen",	type: "send",        callback: this.channelReadHydrogen.bind(this)},
+		{name: "per-atom",	type: "send",        callback: this.channelPerAtom.bind(this)},
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
 		{name: "step",		type: "invoke",      callback: this.channelStep.bind(this)},
 		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
@@ -73,6 +75,7 @@ export class StructureReader extends NodeCore {
       		atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
 			readHydrogen: this.readHydrogen,
+			energyPerAtom: this.energyPerAtom,
 			stepIncrement: this.stepIncrement,
 			speed: this.speed,
 		};
@@ -86,6 +89,7 @@ export class StructureReader extends NodeCore {
     	this.atomsTypes    = params.atomsTypes as string ?? "";
     	this.useBohr       = params.useBohr as boolean ?? true;
         this.readHydrogen  = params.readHydrogen as boolean ?? false;
+		this.energyPerAtom = params.energyPerAtom as boolean ?? false;
 		this.stepIncrement = params.stepIncrement as number ?? 1;
         this.speed         = params.speed as number ?? 1;
 	}
@@ -105,6 +109,7 @@ export class StructureReader extends NodeCore {
 			atomsTypes: this.atomsTypes,
 			useBohr: this.useBohr,
 			readHydrogen: this.readHydrogen,
+			energyPerAtom: this.energyPerAtom,
 			fileToRead: this.fileToRead,
 			auxFileToRead: this.auxFileToRead,
 			stepIncrement: this.stepIncrement,
@@ -258,10 +263,26 @@ export class StructureReader extends NodeCore {
 		this.changeBohrUnits();
 	}
 
+	/**
+	 * Channel handler for the change of read hydrogen atoms
+	 *
+	 * @param params - Parameters from the client
+	 */
 	private channelReadHydrogen(params: CtrlParams): void {
 
 		this.readHydrogen = params.readHydrogen as boolean;
 		void this.changeReadHydrogen();
+	}
+
+	/**
+	 * Channel handler for the change of energy per atom in file
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelPerAtom(params: CtrlParams): void {
+
+		this.energyPerAtom = params.energyPerAtom as boolean;
+		// TBD
 	}
 
 	/**
@@ -286,7 +307,7 @@ export class StructureReader extends NodeCore {
 					break;
 				case "POSCAR + ENERGY": {
 						const {readAuxENERGY} = await import("../readers/AuxENERGY");
-						this.structures = readAuxENERGY(filename, this.structures);
+						this.structures = readAuxENERGY(filename, this.structures, this.energyPerAtom);
 					}
 					break;
 				default:

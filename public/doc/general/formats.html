@@ -56,8 +56,8 @@
     <td>R</td>
     <td>Yes</td>
     <td>Gaussian format containing also volume data</td>
-    <td><a href="http://gaussian.com/cubegen/">ref</a>
-	<a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/cubeplugin.html">note</a></td>
+    <td><a href="http://gaussian.com/cubegen/">site</a>
+	<a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/cubeplugin.html">ref</a></td>
 </tr>
 <tr>
     <td>LAMMPS</td>
@@ -81,10 +81,10 @@
     <td>RW</td>
     <td></td>
     <td>Protein Data Bank</td>
-    <td><a href="https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html" title="Format">ref</a></td>
+    <td><a href="https://www.wwpdb.org/documentation/file-format-content/format33/v3.3.html">ref</a></td>
 </tr>
 <tr>
-    <td>Poscar</td>
+    <td>POSCAR</td>
     <td>*POSCAR*</td>
     <td>RW</td>
     <td></td>
@@ -96,7 +96,7 @@
     <td>*POSCAR* + *.energy or *.enthalpy</td>
     <td>RW</td>
     <td></td>
-    <td>Read also a structure energy or enthalpy file</td>
+    <td>Read also a structure or atom energy or enthalpy file</td>
     <td><a href="https://www.vasp.at/wiki/index.php/POSCAR">site</a> <a href="#note8">8</a></td>
 </tr>
 <tr>
@@ -120,16 +120,15 @@
     <td>*.xdatcar or *.xdatcar5</td>
     <td>R</td>
     <td></td>
-    <td>A VASP 5.2 animated format with fixed cell</td>
+    <td>The new VASP 5.2 animated format (similar to POSCAR)</td>
     <td><a href="https://www.vasp.at/">ref</a> <a href="#note9">9</a></td>
-    <!-- https://www.ks.uiuc.edu/Research/vmd/plugins/doxygen/vasp5xdatcarplugin_8c.html -->
 </tr>
 <tr>
     <td>XYZ</td>
     <td>*.xyz</td>
     <td>RW</td>
     <td></td>
-    <td>The simple xyz format (also know as Kino), animated also</td>
+    <td>Simple xyz format (also know as Kino), animated also</td>
     <td><a href="http://www.ks.uiuc.edu/Research/vmd/plugins/molfile/xyzplugin.html">ref</a></td>
 </tr>
 </table>
@@ -190,7 +189,7 @@
     <td>R</td>
     <td></td>
     <td>From MDL</td>
-    <td><a href="http://www.mdl.com/downloads/public/ctfile/ctfile.pdf" title="Format">ref</a></td>
+    <td><a href="http://www.mdl.com/downloads/public/ctfile/ctfile.pdf">ref</a></td>
 </tr>
 <tr>
     <td>MOL2 Tripos</td>
@@ -198,7 +197,7 @@
     <td>R </td>
     <td></td>
     <td>From Tripos</td>
-    <td><a href="http://www.tripos.com/mol2/mol2_format2.html" title="Format">ref</a></td>
+    <td><a href="http://www.tripos.com/mol2/mol2_format2.html">ref</a></td>
 </tr>
 <tr>
     <td>PDB-Q</td>
@@ -259,7 +258,7 @@
 <li><a id="note5"></a>Seems no more active</li>
 <li><a id="note6"></a>In the unit cell file each block of three lines contains three floats and refers to one frame. The nine numbers define the three base vectors (one by line).</li>
 <li><a id="note7"></a>Read the old and new versions (the one with element names). Write only the new version.</li>
-<li><a id="note8"></a>The energy file has one energy or enthalpy value per line and there are as many lines as the number of structures in the associated POSCAR file. The write is done from the fingerprint scatterplot window for the selected structures.</li>
+<li><a id="note8"></a>The energy file has one energy or enthalpy value per line and there are as many lines as the number of structures in the associated POSCAR file. The energy value is per atom or per structure. The write is done from the fingerprint scatterplot window for the selected structures and the energy is per atom.</li>
 <li><a id="note9"></a>No documentation has been found on this format, but seems produced by VASP 5.2 for which no CONTCAR (or POSCAR) file is needed. It is a POSCAR file followed by a separation line and a set of atoms coordinates for the remaining steps.</li>
 </ol>
 

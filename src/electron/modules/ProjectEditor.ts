@@ -13,6 +13,8 @@ import {createSecondaryWindow, isSecondaryWindowOpen,
 
 /**
  * Create the project editor/viewer window
+ *
+ * @param projectName - Name of the loaded project or empty string if default project is loaded
  */
 export const createProjectEditor = (projectName: string): void => {
 

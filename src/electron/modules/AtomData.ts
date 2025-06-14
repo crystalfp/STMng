@@ -248,7 +248,7 @@ class AtomData {
 export const getAtomicNumber = (symbol: string): number => AtomData.getInstance().atomicNumber(symbol);
 
 /**
- * Convert the atom Z value into atom symbol
+ * Convert the atom Z value into atomic symbol
  *
  * @param atomZ - Atom Z value
  * @returns The corresponding atomic symbol
@@ -256,9 +256,9 @@ export const getAtomicNumber = (symbol: string): number => AtomData.getInstance(
 export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance().atomicSymbol(atomZ);
 
 /**
- * Return other information on the atom with given Z value
+ * Return information on the atom with given Z value
  *
  * @param atomZ - Z value of the atom that should be retrieved
- * @returns Structure containing symbol, radii, max number of bonds and color
+ * @returns Structure containing the atom data
  */
 export const getAtomData = (atomZ: number): AtomInfo => AtomData.getInstance().atomicData(atomZ);

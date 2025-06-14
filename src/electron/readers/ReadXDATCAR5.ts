@@ -1,5 +1,7 @@
 /**
  * Reader for XDATCAR5 formatted files
+ * @remarks The only documentation of the format is in:
+ * https://www.ks.uiuc.edu/Research/vmd/plugins/doxygen/vasp5xdatcarplugin_8c.html
  *
  * @packageDocumentation
  *

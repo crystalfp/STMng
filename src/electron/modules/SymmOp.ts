@@ -22,14 +22,14 @@ export class SymmOp {
 
     /**
 	 * Initialize the SymmOp from a 4x4 affine transformation matrix.
-     * In general, this constructor should not be used unless you are
-     * transferring rotations. Use the static constructors instead to
-     * generate a SymmOp from proper rotations and translation.
-	 *
+       In general, this constructor should not be used unless you are
+       transferring rotations. Use the static constructors instead to
+       generate a SymmOp from proper rotations and translation.
+
      * @param matrix - The 4x4 matrix representing the symmetry operation.
-     *                 The first 3x3 part is the rotation/reflection,
-     *                 and the first 3 elements of the last column are the translation.
-     *                 The last row is typically [0, 0, 0, 1].
+                       The first 3x3 part is the rotation/reflection,
+                       and the first 3 elements of the last column are the translation.
+                       The last row is typically [0, 0, 0, 1].
      */
     constructor(matrix: Matrix) {
         if(matrix.length !== 4 || matrix.some((row) => row.length !== 4)) {
@@ -104,7 +104,7 @@ export class SymmOp {
 	 * Generate a SymmOp for a rotation about a given axis plus translation.
 	 *
 	 * @param axis - The axis of rotation in Cartesian space. For example,
-     *            	 [1, 0, 0] indicates rotation about x-axis.
+                	 [1, 0, 0] indicates rotation about x-axis.
 	 * @param angle - Angle of rotation (in degrees)
 	 * @returns SymmOp for a rotation about given axis and translation.
 	 */

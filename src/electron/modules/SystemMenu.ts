@@ -69,8 +69,8 @@ let systemMenu: Menu;
 /**
  * Prepare the application menu
  *
- * @param isDevelopment - Set if the application is running under development or have developer tools
-   set in production
+ * @param isDevelopment - Set if the application is running under development or
+ *                        have developer tools set in production
  */
 export const setupMenu = (isDevelopment: boolean): void => {
 
@@ -269,6 +269,9 @@ export const disableSaveProjectEntry = (disable: boolean): void => {
 
 /**
  * Setup channel to toggle extended view from client
+ *
+ * @param isDevelopment - Set if the application is running under development or
+ *                        have developer tools set in production
  */
 export const setupChannelMenu = (isDevelopment: boolean): void => {
 

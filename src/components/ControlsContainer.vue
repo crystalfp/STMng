@@ -147,6 +147,6 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
 }
 
 .muted {
-  color: rgb(var(--v-theme-primary)) !important
+  color: rgb(var(--v-theme-primary), var(--v-medium-emphasis-opacity)) !important
 }
 </style>

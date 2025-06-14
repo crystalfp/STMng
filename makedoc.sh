@@ -28,7 +28,7 @@ node_modules/.bin/typedoc \
 --includeVersion \
 --out "doc/typedoc" \
 --readme none \
---validation \
+--validation.notDocumented \
 --suppressCommentWarningsInDeclarationFiles \
 --plugin typedoc-plugin-vue \
 --plugin typedoc-plugin-missing-exports \

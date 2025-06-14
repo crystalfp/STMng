@@ -60,7 +60,8 @@ const auxFileToRead = ref("");      // Path to the auxiliary file to read
 const useBohr       = ref(true);    // Use Bohr units
 const stepIncrement = ref(1);       // How many step skip every tick
 const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
-const readHydrogen  = ref(false);   // Read also hydrogen atoms for PDB reader
+const readHydrogen  = ref(false);   // Read also hydrogen atoms for the PDB reader
+const energyPerAtom = ref(false);   // Energy file has energy per atom and not per structure
 
 const controlStore = useControlStore();
 
@@ -79,6 +80,7 @@ askNode(id, "init")
         auxFileToRead.value = params.auxFileToRead as string ?? "";
         stepIncrement.value = params.stepIncrement as number ?? 1;
         speed.value         = params.speed as number ?? 1;
+        energyPerAtom.value = params.energyPerAtom as boolean ?? false;
     })
     .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
 
@@ -223,7 +225,8 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR",
                                            "LAMMPS",
                                            "LAMMPStrj",
                                            "POSCAR + XDATCAR",
-                                           "POSCAR + ENERGY"]);
+                                           "POSCAR + ENERGY",
+                                           "XDATCAR5"]);
 
 /**
  * Check if the format needs the atom types
@@ -257,6 +260,14 @@ const setUseBohr = (): void => {
 const setReadHydrogen = (): void => {
 
     sendToNode(id, "hydrogen", {readHydrogen: readHydrogen.value});
+};
+
+/**
+ * On change of the energy per atom in file
+ */
+const setEnergyPerAtom = (): void => {
+
+    sendToNode(id, "per-atom", {energyPerAtom: energyPerAtom.value});
 };
 
 // > Load structure file
@@ -425,6 +436,10 @@ const auxSetup = computed(() => {
 
   <select-file v-model="label1" class="mt-2" :disabled="format === ''" title="Select input file"
                  :filter="filterFromFormat(format)" @selected="selectedFile" />
+
+  <v-switch v-if="format === 'POSCAR + ENERGY'" v-model="energyPerAtom"
+            label="File has energy per atom" class="ml-4 mt-4 mb-3"
+            @update:model-value="setEnergyPerAtom" />
 
   <select-file v-if="auxSetup.hasAux" v-model="label2" class="mt-2"
                  :filter="auxSetup.filter"

@@ -14,10 +14,13 @@ import type {Structure} from "@/types";
  *
  * @param filename - Filename to be read as ENERGY
  * @param mainStructures - The already read main structures
+ * @param energyPerAtom - True if the energy file has energy per atom instead of per structure
  * @throws Error.
  * Missing main structures
  */
-export const readAuxENERGY = (filename: string, mainStructures: Structure[]): Structure[] => {
+export const readAuxENERGY = (filename: string,
+							  mainStructures: Structure[],
+							  energyPerAtom: boolean): Structure[] => {
 
 	// Sanity check
 	if(mainStructures.length === 0) throw Error("Missing main structures");
@@ -34,7 +37,10 @@ export const readAuxENERGY = (filename: string, mainStructures: Structure[]): St
 
 	let idx = 0;
 	for(const structure of mainStructures) {
-		structure.extra.energy = energies[idx++];
+		const energyFromFile = energies[idx++];
+		structure.extra.energy = energyPerAtom ?
+										energyFromFile :
+										energyFromFile/structure.atoms.length;
 	}
 
 	return mainStructures;
