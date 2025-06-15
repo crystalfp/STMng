@@ -38,6 +38,14 @@ export class DrawStructureRenderer {
 	private drawRoughness: number;
 	private drawMetalness: number;
 
+	/**
+	 * Build the renderer
+	 *
+	 * @param id - The corresponding node ID
+	 * @param drawQuality - Draw quality for the graphical objects
+	 * @param drawRoughness - Surface roughness
+	 * @param drawMetalness - Surface metalness
+	 */
 	constructor(id: string, drawQuality: number,
 				drawRoughness: number, drawMetalness: number) {
 

@@ -20,6 +20,11 @@ export class DrawIsosurfaceRenderer {
 	private readonly name;
 	private readonly lut = new Lut("rainbow", 512);
 
+	/**
+	 * Build the renderer
+	 *
+	 * @param id - The corresponding node ID
+	 */
 	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects

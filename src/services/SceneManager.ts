@@ -27,6 +27,9 @@ class SceneManager {
 	private exporter: STLExporter | undefined;
 	private sceneModified = true;
 
+	/**
+	 * Initialize the graphical scene
+	 */
 	private constructor() {
 		this.clearScene();
 	}

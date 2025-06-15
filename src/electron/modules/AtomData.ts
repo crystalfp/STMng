@@ -159,7 +159,7 @@ class AtomData {
 	private readonly symbol2atomZ = new Map<string, number>();
 
 	/**
-	 * Build the class by loading the atomic data from file
+	 * Build the class by loading the atomic data
 	 */
 	private constructor() {
 

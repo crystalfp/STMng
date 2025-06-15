@@ -24,6 +24,11 @@ export class DrawOrthosliceRenderer {
 	private isolinesGroup: Group | undefined;
 	private readonly isolinesName;
 
+	/**
+	 * Build the renderer
+	 *
+	 * @param id - The corresponding node ID
+	 */
 	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects

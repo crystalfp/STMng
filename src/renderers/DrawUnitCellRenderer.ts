@@ -44,6 +44,11 @@ export class DrawUnitCellRenderer {
 	private readonly vertices: number[] = [];
 	private alreadyRenderedBV = false;
 
+	/**
+	 * Build the renderer
+	 *
+	 * @param id - The corresponding node ID
+	 */
 	constructor(id: string) {
 
 		// Prepare the names of the various graphical objects

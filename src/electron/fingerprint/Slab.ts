@@ -26,7 +26,7 @@ export class Slab {
     /**
      * Create the slab
      *
-     * @param cutoff - Cutoss distance
+     * @param cutoff - Cutoff distance
      * @param isNanocluster - If the structure is a nanocluster without a unit cell
      * @param byAtom - Store the distance between atoms by atom index instead of by species
      */

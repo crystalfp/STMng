@@ -20,6 +20,11 @@ export class MeasuresRenderer {
 	private readonly group = new Group();
 	private readonly groupName;
 
+	/**
+	 * Build the renderer
+	 *
+	 * @param id - The corresponding node ID
+	 */
 	constructor(id: string) {
 
 		// Prepare the output group

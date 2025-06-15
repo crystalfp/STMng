@@ -146,6 +146,11 @@ class Delta {
     private readonly nMinus1;
 	private readonly nTimesNMinus1Divided2;
 
+    /**
+     * Build the correction matrix to fix the triangle inequality
+     *
+     * @param n - Side of the matrix
+     */
 	constructor(n: number) {
 
         this.nMinus1 = n-1;

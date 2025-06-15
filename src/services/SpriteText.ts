@@ -183,20 +183,9 @@ export const preloadFonts = (): void => {
 
 /**
  * BatchedText with billboard labels
- * Usage: add Text with `billboardBatchedText.addText(text)`,
- *        and then add it to three's parent with `group.add(text)`
+ * Usage: add Text with `billboardBatchedText.addText(text)`
  */
 export class BillboardBatchedText extends BatchedText {
-
-	/**
-	 * Build a BillboardBatchedText object
-	 *
-	 * @param scaleFactor - Scale factor for the text size attenuation
-	 */
-	constructor(scaleFactor?: number) {
-    	super();
-		void scaleFactor;
-  	}
 
 	/**
 	 * Update the text rotation every frame to face the camera

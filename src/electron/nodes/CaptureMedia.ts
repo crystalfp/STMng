@@ -28,6 +28,9 @@ export class CaptureView extends NodeCore {
 		{name: "stl",		  type: "invoke", 	   callback: this.channelSTL.bind(this)},
 	];
 
+	/**
+	 * Create the node
+	 */
 	constructor() {
 		super("SYSTEM");
 		this.setupChannels("SYSTEM", this.channels);
