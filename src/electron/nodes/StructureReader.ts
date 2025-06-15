@@ -33,6 +33,7 @@ export class StructureReader extends NodeCore {
 	private useBohr = true;
 	private readHydrogen = false;
 	private energyPerAtom = false;
+	private appendFile = false;
 	private fileToRead = "";
 	private auxFileToRead = "";
 	private reader: ReaderImplementation | undefined;
@@ -53,6 +54,7 @@ export class StructureReader extends NodeCore {
 		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
 		{name: "step",		type: "invoke",      callback: this.channelStep.bind(this)},
 		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
+		{name: "append",	type: "send",      	 callback: this.channelAppend.bind(this)},
 	];
 
 	/**
@@ -212,7 +214,11 @@ export class StructureReader extends NodeCore {
 		}
 
 		// Read the file
-		this.structures = await this.reader.readStructure(filename, readerOptions);
+		const structures = await this.reader.readStructure(filename, readerOptions);
+
+		// Append if so requested
+		this.structures = this.appendFile ? [...this.structures, ...structures] : structures;
+		this.appendFile = false;
 
 		// Set structure id
 		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
@@ -282,7 +288,16 @@ export class StructureReader extends NodeCore {
 	private channelPerAtom(params: CtrlParams): void {
 
 		this.energyPerAtom = params.energyPerAtom as boolean;
-		// TBD
+	}
+
+	/**
+	 * Channel handler for the change of energy per atom in file
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelAppend(params: CtrlParams): void {
+
+		this.appendFile = params.appendFile as boolean;
 	}
 
 	/**

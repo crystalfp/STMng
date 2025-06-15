@@ -62,6 +62,7 @@ const stepIncrement = ref(1);       // How many step skip every tick
 const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
 const readHydrogen  = ref(false);   // Read also hydrogen atoms for the PDB reader
 const energyPerAtom = ref(false);   // Energy file has energy per atom and not per structure
+const appendFile    = ref(false);   // The file will be appended to the list of steps
 
 const controlStore = useControlStore();
 
@@ -270,6 +271,14 @@ const setEnergyPerAtom = (): void => {
     sendToNode(id, "per-atom", {energyPerAtom: energyPerAtom.value});
 };
 
+/**
+ * On change of the append file status
+ */
+const setAppendFile = (): void => {
+
+    sendToNode(id, "append", {appendFile: appendFile.value});
+};
+
 // > Load structure file
 /**
  * Start loading a structure file
@@ -294,6 +303,7 @@ const selectedFile = (filename: string): void => {
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
             setTimeout(() => {controlStore.reset = true;}, 20);
+            appendFile.value = false;
         })
         .catch((error: Error) => {
             inProgress.value = false;
@@ -434,8 +444,12 @@ const auxSetup = computed(() => {
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
                 @click:clear="getAtomsTypes"/>
 
+  <v-switch v-model="appendFile"
+            label="Append" class="ml-4 mt-4 mb-3"
+            @update:model-value="setAppendFile" />
+
   <select-file v-model="label1" class="mt-2" :disabled="format === ''" title="Select input file"
-                 :filter="filterFromFormat(format)" @selected="selectedFile" />
+               :filter="filterFromFormat(format)" @selected="selectedFile" />
 
   <v-switch v-if="format === 'POSCAR + ENERGY'" v-model="energyPerAtom"
             label="File has energy per atom" class="ml-4 mt-4 mb-3"

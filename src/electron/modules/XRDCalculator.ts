@@ -99,7 +99,7 @@ export class XRDCalculator {
                                 (WAVELENGTHS[wavelengthCode] ?? WAVELENGTHS.CuKa);
 
         // Obtained from Bragg condition.
-		// Note that reciprocal lattice vector length is 1 / d_hkl.
+		// Remember that reciprocal lattice vector length is 1 / d_hkl.
         // rLimits is [min_r, max_r]
         const rLimits = [2 * Math.sin((thetaLow  * Math.PI/180) / 2) / this.wavelength,
                          2 * Math.sin((thetaHigh * Math.PI/180) / 2) / this.wavelength];

@@ -75,10 +75,10 @@ export interface Volume {
 /** Extra per structure data */
 export interface Extra {
 
-    /** Step index that identifies the structure in a sequence (one based) */
+    /** Step index that identifies the structure in a sequence (1-based) */
     step: number;
 
-    /** Structure energy or enthalpy */
+    /** Structure energy or enthalpy per atom */
     energy?: number;
 }
 
@@ -210,10 +210,10 @@ export interface Project {
     /** The graph structure as read from file (The key is the node id) */
     graph: ProjectGraph;
 
-    /** The state of the viewer */
+    /** The parameters for the viewer */
     viewer?: Viewer3DState;
 
-    /** The state of the other nodes (The key is the node id) */
+    /** The parameters for the other nodes (The key is the node id) */
     ui?: Record<string, CtrlParams>;
 }
 
