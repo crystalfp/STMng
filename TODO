@@ -2,6 +2,7 @@ Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
   ☐ Fix atom reordering in trajectories
+  ☐ ffmpeg output to application log
 
 For the tutorial:
   ☐ Prepare slides and agenda

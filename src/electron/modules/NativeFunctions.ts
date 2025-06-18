@@ -57,6 +57,7 @@ interface NativeModule {
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
 }
 
+// oxlint-disable-next-line first
 import {createRequire} from "node:module";
 const rq = createRequire(import.meta.url);
 const addon = rq("../build/Release/native") as NativeModule;

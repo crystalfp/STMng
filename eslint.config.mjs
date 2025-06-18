@@ -16,7 +16,7 @@ import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import * as depend from "eslint-plugin-depend";
 
-export default defineConfig([
+const config = defineConfig([
     stylistic.configs.customize({
         flat: true, // required for flat config
         indent: 4,
@@ -397,3 +397,5 @@ export default defineConfig([
         "security/detect-object-injection": "off",
     }
 }]);
+
+export default config;

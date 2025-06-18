@@ -510,18 +510,14 @@ export class ComputeBonds extends NodeCore {
 		// The computed bonds
 		const bonds: Bond[] = [];
 
-		const {maxHValenceAngle, minBondingDistance,
-			   maxBondingDistance, maxHBondingDistance,
-			   enlargementKind, addType} = this;
-
 		// Minimum covalent radius is 0.32 for He, so no bond shorter than .64 could exist
-		const minDistanceSquared = minBondingDistance*minBondingDistance;
+		const minDistanceSquared = this.minBondingDistance*this.minBondingDistance;
 
 		// Maximum covalent radius is 2.25 for Cs, so no bonds longer than 4.50 could exist
-		const maxDistanceSquared = maxBondingDistance*maxBondingDistance;
+		const maxDistanceSquared = this.maxBondingDistance*this.maxBondingDistance;
 
 		// Maximum distance for an H bond
-		const maxDistanceHbondSquared = maxHBondingDistance*maxHBondingDistance;
+		const maxDistanceHbondSquared = this.maxHBondingDistance*this.maxHBondingDistance;
 
 		// Maximum angle to form a H bond (already in maxHValenceAngle)
 
@@ -542,7 +538,7 @@ export class ComputeBonds extends NodeCore {
 				const positionJ = atoms[j].position;
 
 				// Don't compute bonds between external atoms
-				if(enlargementKind === "outside" && addType[i] === 2 && addType[j] === 2) continue;
+				if(this.enlargementKind === "outside" && this.addType[i] === 2 && this.addType[j] === 2) continue;
 
 				// Never bond hydrogens to each other...
 				// if(atomZi === 1 && atomZj === 1) continue;
@@ -553,7 +549,7 @@ export class ComputeBonds extends NodeCore {
 				const dz = positionI[2] - positionJ[2];
 
 				// If atoms are distant along one axis, it is sure they cannot bind
-				if(dx > maxBondingDistance || dy > maxBondingDistance || dz > maxBondingDistance) continue;
+				if(dx > this.maxBondingDistance || dy > this.maxBondingDistance || dz > this.maxBondingDistance) continue;
 
 				// Check more precise limits
 				const distSquared = dx*dx+dy*dy+dz*dz;
@@ -640,7 +636,7 @@ export class ComputeBonds extends NodeCore {
 
 			const atomX = atoms[idxX];
 			if(!ComputeBonds.atomForHBond(atomX.atomZ) ||
-			   ComputeBonds.valenceAngle(atomH, atomX, atomY) > maxHValenceAngle) {
+			   ComputeBonds.valenceAngle(atomH, atomX, atomY) > this.maxHValenceAngle) {
 				bonds[i].type = BondType.invalid;
 			}
 		}
