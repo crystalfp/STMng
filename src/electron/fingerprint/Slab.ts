@@ -160,7 +160,7 @@ export class Slab {
     }
 
     /**
-     * Compute the infinite slab for the structure
+     * Compute the interatomic distances inside the infinite slab
      *
      * @param basis - Unit cell basis vector
      * @param natoms - Number of atoms

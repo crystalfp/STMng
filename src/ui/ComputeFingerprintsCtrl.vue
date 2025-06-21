@@ -487,6 +487,7 @@ const showEnergyLandscape = (): void => {
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
     {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
   <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
+  <error-alert kind="fingerprints" />
 
   <v-label class="separator-title">Compute distances</v-label>
 
@@ -567,7 +568,6 @@ const showEnergyLandscape = (): void => {
     Show energy landscape
   </v-btn>
 
-  <error-alert kind="fingerprints" />
 </v-container>
 </template>
 

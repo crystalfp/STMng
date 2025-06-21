@@ -7,7 +7,7 @@
     "draw":      {"label": "Draw structure",     "type": "draw-structure",       "in": "slice"},
     "slice":     {"label": "Slice structure",    "type": "slice-structure",      "in": "bonds"},
     "backbone":  {"label": "Structure backbone", "type": "structure-backbone",   "in": "symmetry"},
-    "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "bonds"},
+    "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "symmetry"},
     "polyhedra": {"label": "Polyhedra",          "type": "draw-polyhedra",       "in": "bonds"},
     "smooth":    {"label": "Interpolate volume", "type": "interpolate-volume",   "in": "unit"},
     "ortho":     {"label": "Orthoslice",         "type": "orthoslice",           "in": "smooth"},

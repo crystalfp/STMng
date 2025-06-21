@@ -31,6 +31,7 @@ const enableBackbone = ref(false);
 /** Chains present in the input structure and chains selected */
 const chains = ref<string[]>([]);
 const showChains = reactive<Record<string, boolean>>({});
+const hasCell = ref(false);
 
 /** Atoms selector for the nodes through which the backbone passes */
 const selectorKind = ref("label");
@@ -42,8 +43,8 @@ const renderer = new StructureBackboneRenderer(id);
 let coordinates: number[];
 let chainStart: number[];
 
-const radius = ref(0.5);
-const showRadius = ref(0.5);
+const radius = ref(0.3);
+const showRadius = ref(0.3);
 const threshold = ref(0.9);
 const showThreshold = ref(0.9);
 
@@ -61,7 +62,7 @@ askNode(id, "init")
         }
         selectorKind.value = params.selectorKind as string ?? "label";
         atomsSelector.value = params.atomsSelector as string ?? "";
-        radius.value = params.radius as number ?? 0.5;
+        radius.value = params.radius as number ?? 0.3;
         showRadius.value = radius.value;
         threshold.value = params.threshold as number ?? 0.9;
         showThreshold.value = threshold.value;
@@ -72,6 +73,8 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
 
     const thoseChains = (params.chains as string[] ?? [])
                                     .map((chain) => (chain === "" ? "Remaining" : chain));
+
+    hasCell.value = params.hasCell as boolean ?? false;
 
     // If the list of chains has not changed, don't reset the switch values
     let shouldReset = false;
@@ -94,7 +97,7 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     }
 });
 
-watch([enableBackbone, showChains, selectorKind, atomsSelector, threshold], () => {
+watch([enableBackbone, showChains, selectorKind, atomsSelector, threshold, radius], () => {
 
     const selectedChains: string[] = [];
     for(const key in showChains) {
@@ -145,7 +148,7 @@ const selectDeselect = (select: boolean): void => {
             label="Show backbone" class="mt-4 mb-2 ml-2" />
   <slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
                           :label="`Threshold (${(showThreshold*100).toFixed(0)}%)`"
-                          :min="0" :max="1" :step="0.1" />
+                          :min="0" :max="1" :step="0.1" :disabled="!hasCell"/>
   <slider-with-steppers v-model="radius" v-model:raw="showRadius"
                           label-width="8rem" class="mb-6"
                           :label="`Tube radius (${showRadius.toFixed(1)})`"

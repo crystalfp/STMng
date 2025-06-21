@@ -3,6 +3,8 @@ Bugs:
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
   ☐ Fix atom reordering in trajectories
   ☐ ffmpeg output to application log
+  ☐ Use `Promise.allSettled()` to Produce an error message from workerpool that show the step.
+  ☐ OganovValleFingerprinting: reduce peak memory usage
 
 For the tutorial:
   ☐ Prepare slides and agenda
@@ -51,6 +53,7 @@ ToDo eventually:
   ☐ If possible remove circular dependencies between modules
   ☐ For the charts <https://unovis.dev/>
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
+  ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

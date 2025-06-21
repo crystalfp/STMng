@@ -20,7 +20,7 @@ export class StructureBackbone extends NodeCore {
 	private selectorKind: SelectorType = "label";
 	private atomsSelector = "";
 	private selectedChains: string[] = [];
-	private radius = 0.5;
+	private radius = 0.3;
 	private threshold = 0.9;
 
 	private readonly channels: ChannelDefinition[] = [
@@ -47,7 +47,10 @@ export class StructureBackbone extends NodeCore {
 		for(const atom of data.atoms) {
 			this.chains.add(atom.chain);
 		}
-		sendToClient(this.id, "chains", {chains: this.chains.size > 1 ? [...this.chains] : []});
+		sendToClient(this.id, "chains", {
+			chains: this.chains.size > 1 ? [...this.chains] : [],
+			hasCell: hasUnitCell(data.crystal.basis)
+		});
 
 		this.computeBackbone();
 	}
@@ -63,7 +66,7 @@ export class StructureBackbone extends NodeCore {
         this.enableStructureBackbone = params.enableStructureBackbone as boolean ?? false;
         this.selectorKind = params.selectorKind as SelectorType ?? "label";
         this.atomsSelector = params.atomsSelector as string ?? "";
-		this.radius = params.radius as number ?? 0.5;
+		this.radius = params.radius as number ?? 0.3;
 		this.threshold = params.threshold as number ?? 0.9;
 	}
 
@@ -223,7 +226,7 @@ export class StructureBackbone extends NodeCore {
 		this.selectedChains = params.selectedChains as string[] ?? [];
         this.selectorKind = params.selectorKind as SelectorType ?? "label";
         this.atomsSelector = params.atomsSelector as string ?? "";
-		this.radius = params.radius as number ?? 0.5;
+		this.radius = params.radius as number ?? 0.3;
 		this.threshold = params.threshold as number ?? 0.9;
 
 		this.computeBackbone();
