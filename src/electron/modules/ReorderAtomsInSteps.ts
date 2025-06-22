@@ -8,30 +8,58 @@
  */
 import type {Structure, PositionType, BasisType} from "@/types";
 import {hasUnitCell} from "./Helpers";
+import {getAtomicSymbol} from "./AtomData";
 
+/** Selected atoms positions */
 interface Positions {
+	/** Selected atoms coordinates */
 	positions: PositionType[];
+	/** Their indices inside the structure */
 	idx: number[];
 }
 
+/** Distance computation result */
 interface Distance {
+	/** Distance between the atoms */
 	distance: number;
+	/** Offset added to remove jumps between sides of the unit cell */
 	offset: PositionType;
 }
 
+/** Values for the greedy algorithm to find correspondences */
 interface Cost {
+	/** Index of the previous step atom */
 	initial: number;
+	/** Index of the current step atom */
 	final: number;
+	/** Distance between the atoms */
 	cost: number;
+	/** Offset eventually added to cancel jump */
 	offset: PositionType;
 }
 
+interface Averages {
+	position: PositionType;
+	count: number;
+	displacement: number;
+	atomZ: number;
+}
+interface AveragesResult {
+	position: PositionType;
+	displacement: number;
+	atomType: string;
+	index: number;
+}
+
+/** Adjust position of atoms to reduce non-physical movements */
 export class ReorderAtomsInSteps {
 
 	private previousStep = new Map<number, Positions>();
 	private currentStep = new Map<number, Positions>();
 	private basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private hasUnitCell = false;
+
+	private readonly averages = new Map<number, Averages>();
 
 	/**
 	 * Initialize the algorithm
@@ -41,35 +69,44 @@ export class ReorderAtomsInSteps {
 		this.currentStep.clear();
 		this.basis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.hasUnitCell = false;
+		this.averages.clear();
 	}
 
 	/**
-	 * Load a new step
+	 * Load a step and transform it
 	 *
 	 * @param structure - Structure at the given step
-	 * @param indices - Indices of selected atoms
-	 * @returns The updated positions and indices for the loaded step
+	 * @param indices - Indices of selected atoms in the structure
+	 * @returns The updated positions and reordered indices for the loaded step
 	 */
-	loadStep(structure: Structure, indices: number[]): Positions {
+	loadStep(structure: Structure, indices: number[]): AveragesResult[] {
+console.log("--- LOAD");
 
-		const updatedPositions: Positions = {positions: [], idx: []};
-
-		// The first step saves the position and returns it
+		// The first step saves the position and returns it unchanged
 		if(this.previousStep.size === 0) {
+console.log("FIRST");
 
 			this.loadCurrentStep(structure, indices);
 
 			for(const specie of this.currentStep.values()) {
+console.log("species", specie);
+				for(let i=0; i < specie.positions.length; ++i) {
 
-				for(const pp of specie.positions) {
-					updatedPositions.positions.push(pp);
-				}
-				for(const idx of specie.idx) {
-					updatedPositions.idx.push(idx);
+					const pp = specie.positions[i];
+					const idx = specie.idx[i];
+
+					this.averages.set(idx, {
+						position: [...pp],
+						count: 1,
+						displacement: 0,
+						atomZ: structure.atoms[idx].atomZ
+					});
 				}
 			}
+console.log("END FIRST");
 		}
 		else {
+console.log("NEXT");
 
 			// Move current step to previous step
 			this.previousStep.clear();
@@ -84,10 +121,38 @@ export class ReorderAtomsInSteps {
 
 				const entry = this.currentStep.get(specie);
 				if(!entry) continue;
+console.log("entry", entry);
 
 				if(entry.idx.length === 1) {
-					updatedPositions.positions.push(entry.positions[0]);
-					updatedPositions.idx.push(entry.idx[0]);
+
+					if(this.averages.has(entry.idx[0])) {
+						const avg = this.averages.get(entry.idx[0])!;
+						const pp: PositionType = [
+							avg.position[0] + entry.positions[0][0],
+							avg.position[1] + entry.positions[0][1],
+							avg.position[2] + entry.positions[0][2]
+						];
+						const count = avg.count + 1;
+						const dx = pp[0]/count - entry.positions[0][0];
+						const dy = pp[1]/count - entry.positions[0][1];
+						const dz = pp[2]/count - entry.positions[0][2];
+						const displacement = dx*dx + dy*dy + dz*dz + avg.displacement;
+
+						this.averages.set(entry.idx[0], {
+							position: pp,
+							count,
+							displacement,
+							atomZ: structure.atoms[entry.idx[0]].atomZ
+						});
+					}
+					else {
+						this.averages.set(entry.idx[0], {
+							position: [...entry.positions[0]],
+							count: 1,
+							displacement: 0,
+							atomZ: structure.atoms[entry.idx[0]].atomZ
+						});
+					}
 				}
 				else {
 
@@ -96,18 +161,56 @@ export class ReorderAtomsInSteps {
 
   					// Sort by cost (greedy approach)
   					cost.sort((a, b) => a.cost - b.cost);
-				}
 
-				for(const pp of entry.positions) { // TBD
-					updatedPositions.positions.push(pp);
-				}
-				for(const idx of entry.idx) {
-					updatedPositions.idx.push(idx);
+  					// Assign greedily
+					const n = this.previousStep.get(specie)!.positions.length;
+					const assignment = Array<number>(n).fill(-1);
+					const usedFinalPositions = new Set<number>();
+  					for(const assign of cost) {
+						if(assignment[assign.initial] === -1 && !usedFinalPositions.has(assign.final)) {
+							assignment[assign.initial] = assign.final;
+							usedFinalPositions.add(assign.final);
+						}
+					}
+
+					// Reorder values
+					// TBD
+					for(const entry of assignment) {
+						console.log(entry, "->", assignment[entry]);
+					}
 				}
 			}
 		}
 
-		return updatedPositions;
+		return this.prepareResults();
+	}
+
+	/**
+	 * Format the average position and displacement
+	 *
+	 * @returns Formatted accumulated results
+	 */
+	private prepareResults(): AveragesResult[] {
+
+		const results: AveragesResult[] = [];
+
+		for(const index of this.averages.keys()) {
+
+			const entry = this.averages.get(index)!;
+
+			const avgEntry: AveragesResult = {
+				position: [entry.position[0]/entry.count,
+						   entry.position[1]/entry.count,
+						   entry.position[2]/entry.count],
+				displacement: entry.displacement/entry.count,
+				atomType: getAtomicSymbol(entry.atomZ),
+				index
+			};
+
+			results.push(avgEntry);
+		}
+
+		return results;
 	}
 
 	/**

@@ -16,6 +16,7 @@ import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement, BasisType} from "@/types";
+import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
 
 export class Trajectories extends NodeCore {
 
@@ -38,6 +39,8 @@ export class Trajectories extends NodeCore {
 	private static channelOpened = false;
 	private showMarker = false;
 	private sizeMarkers = 1;
+	private disentangler = new ReorderAtomsInSteps();
+
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -326,6 +329,9 @@ export class Trajectories extends NodeCore {
 		if(indices.length === 0) return;
 		const {atoms} = this.structure!;
 
+		// TEST
+		this.disentangler.loadStep(this.structure!, indices);
+
 		const currentTraces: number[][] = [];
 		for(const trace of this.traces) {
 			currentTraces.push(trace);
@@ -359,9 +365,10 @@ export class Trajectories extends NodeCore {
 			}
 		}
 
-		for(const idx of indices) {
+		for(let i=0; i < indices.length; ++i) {
 
-			const trace = currentTraces[idx];
+			const idx = indices[i];
+			const trace = currentTraces[i];
 
 			// Compute mean position
 			let meanX = 0;
@@ -471,6 +478,7 @@ export class Trajectories extends NodeCore {
 		this.meanDisplacement.length = 0;
 		this.showMarker = false;
 		this.sendMeanDisplacement([]);
+		this.disentangler.init();
 	}
 
 	/**

@@ -5,6 +5,8 @@ Bugs:
   ☐ ffmpeg output to application log
   ☐ Use `Promise.allSettled()` to Produce an error message from workerpool that show the step.
   ☐ OganovValleFingerprinting: reduce peak memory usage
+  ☐ Billboard also for Bonds lengths labels
+  ☐ Add a timeout for success messages (eg. in CaptureMedia)
 
 For the tutorial:
   ☐ Prepare slides and agenda
