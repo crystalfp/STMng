@@ -15,7 +15,6 @@
     "vue-docgen-cli",
     "@mdi/svg",
     "eslint-formatter-codeframe",
-    "eslint-import-resolver-typescript",
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
