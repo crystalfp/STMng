@@ -1158,16 +1158,15 @@ export class ComputeFingerprints extends NodeCore {
 		if(ComputeFingerprints.channelOpened) return;
 		ComputeFingerprints.channelOpened = true;
 
-		ipcMain.on("SYSTEM:selected-points",
-					// eslint-disable-next-line @typescript-eslint/no-misused-promises
-					async (_event, params: CtrlParams): Promise<void> => {
+		ipcMain.handle("SYSTEM:selected-points",
+					   async (_event, params: CtrlParams): Promise<CtrlParams> => {
 
 			const points = params.points as string;
-			if(!points)	return;
+			if(!points)	return {error: "No points selected"};
 			const indices = params.points as number[];
-			if(indices.length === 0) return;
+			if(indices.length === 0) return {error: "No points selected"};
 			const filename = params.filename as string;
-			if(!filename) return;
+			if(!filename) return {error: "No filename provided"};
 
 			const sorter: {idx: number; energy: number}[] = [];
 			let structures: Structure[] = [];
@@ -1179,13 +1178,13 @@ export class ComputeFingerprints extends NodeCore {
 				if(indices.includes(idx)) {
 					structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 					if(hasEnergies) {
-						sorter.push({idx: k++, energy: structure.energy!});
+						sorter.push({idx: k++, energy: structure.energy!*structure.atomsZ.length});
 					}
 				}
 				++idx;
 			}
 
-			if(structures.length === 0) return;
+			if(structures.length === 0) return {error: "No structures to save"};
 
 			const sortedStructures: Structure[] = [];
 			const energies: string[] = [];
@@ -1194,7 +1193,7 @@ export class ComputeFingerprints extends NodeCore {
 
 				for(const entry of sorter) {
 					sortedStructures.push(structures[entry.idx]);
-					energies.push(entry.energy.toString());
+					energies.push(entry.energy.toFixed(4));
 				}
 				structures = sortedStructures;
 			}
@@ -1202,15 +1201,24 @@ export class ComputeFingerprints extends NodeCore {
 			const writer = new WriterPOSCAR();
 			const sts = writer.writeStructure(filename, structures);
 
-			if(sts.error) sendAlertMessage(sts.error as string, "fingerprints");
+			if(sts.error) return {error: sts.error};
+			const returnStatus = {structurePath: filename, energyPath: ""};
 
 			if(energies.length > 0) {
 				const pos = filename.lastIndexOf(".");
 				const energyFilename = pos > 0 ?
 											`${filename.slice(0, pos)}.energy` :
 											`${filename}.energy`;
-				writeFileSync(energyFilename, energies.join("\n"), "utf8");
+				try {
+					writeFileSync(energyFilename, energies.join("\n"), "utf8");
+				}
+				catch(error: unknown) {
+					return {error: `Error writing energy file: ${(error as Error).message}`};
+				}
+				returnStatus.energyPath = energyFilename;
 			}
+
+			return returnStatus;
 		});
 
 		ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {

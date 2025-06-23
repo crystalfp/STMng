@@ -73,6 +73,7 @@ const noSelectedPoints = computed(() => selectedPoints.size === 0);
 let canvas: HTMLCanvasElement | null;
 
 const errorMessage = ref("");
+const successMessage = ref("");
 
 /**
  * Convert point coordinates into screen coordinates
@@ -620,9 +621,18 @@ const selectedSaveFile = (filename: string): void => {
 
     if(filename) {
 
-        sendToNode("SYSTEM", "selected-points", {
+        askNode("SYSTEM", "selected-points", {
             filename,
             points: [...selectedPoints],
+        })
+        .then((status: CtrlParams) => {
+
+            if(status.error) throw Error(status.error as string);
+            const energy = status.energyPath as string ? ` and ${status.energyPath as string}` : "";
+            successMessage.value = `Saved ${status.structurePath as string}${energy}`;
+        })
+        .catch((error: Error) => {
+            errorMessage.value = `Error from saving selected points ${error.message}`;
         });
     }
     showSave.value = false;
@@ -875,10 +885,11 @@ const mousemove = (event: MouseEvent): void => {
       <select-file v-if="showSave" class="mt-4" title="Select output file"
                      :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
 
-      <v-alert v-if="errorMessage !== ''" title="Error" class="mt-7 cursor-pointer"
+      <v-alert v-if="errorMessage !== ''" title="Error" class="mt-4 ml-1 cursor-pointer"
          :text="errorMessage" type="error" density="compact"
          color="red" @click="errorMessage=''" />
-
+      <v-alert v-if="successMessage !== ''" title="Success!" :text="successMessage"
+        type="success" density="compact" class="mt-4 ml-1 cursor-pointer" @click="successMessage=''"/>
     </div>
 
     <div class="side-n">
