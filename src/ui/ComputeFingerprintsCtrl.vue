@@ -441,7 +441,7 @@ const showEnergyLandscape = (): void => {
   <v-label class="separator-title">Filter structures</v-label>
 
   <v-switch v-model="enableEnergyFiltering" :disabled="!haveEnergies"
-            label="Filter by energy" class="ml-2 mt-n2" />
+            label="Filter by energy per atom" class="ml-2 mt-n2" />
   <v-switch v-model="thresholdFromMinimum" :disabled="!enableEnergyFiltering || !haveEnergies"
             label="Threshold from minimum energy" class="ml-2 mt-n2 mb-4" />
   <v-row>

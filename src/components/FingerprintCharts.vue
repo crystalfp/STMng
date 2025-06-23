@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-01-20
  */
-import {ref, shallowRef, watch} from "vue";
+import {computed, ref, shallowRef, watch} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
@@ -250,6 +250,10 @@ watch([fpIndex, chartType, binCount], () => {
     });
 });
 
+/** Helpers to show sliders */
+const showStepSlider = computed(() => ["fp", "di"].includes(chartType.value));
+const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value));
+
 </script>
 
 
@@ -261,11 +265,11 @@ watch([fpIndex, chartType, binCount], () => {
     </div>
     <v-container class="fp-chart-buttons">
       <div class="buttons-line1">
-        <slider-with-steppers v-show="chartType==='fp' || chartType==='di'" v-model="fpIndex"
+        <slider-with-steppers v-show="showStepSlider" v-model="fpIndex"
                                 v-model:raw="showFpIndex" label-width="11rem"
                                 :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
                                 :min="0" :max="countFingerprints-1" :step="1" />
-        <slider-with-steppers v-show="chartType==='eh' || chartType==='dh'" v-model="binCount"
+        <slider-with-steppers v-show="showBinCountSlider" v-model="binCount"
                                 v-model:raw="showBinCount" label-width="11rem"
                                 :label="`Bin count (${showBinCount})`"
                                 :min="2" :max="200" :step="1" />

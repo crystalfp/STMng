@@ -153,16 +153,15 @@ export const methodEnergyDistance = (energies: number[],
 
 	// Compute distances
 	const len = distanceMatrix.matrixSize();
+	idx = 0;
 	for(let col=0; col < len; ++col) {
 		if(enabled[col]) {
 			const distance = distanceMatrix.get(minEnergyIdx, col);
-			energyDistance[col][0] = distance;
+			energyDistance[idx++][0] = distance;
 		}
 	}
 
 	// Order by increasing distances
-	// energyDistance.sort((a, b) => a[0] - b[0]);
-	// return energyDistance;
 	return energyDistance.toSorted((a, b) => a[0] - b[0]);
 };
 
