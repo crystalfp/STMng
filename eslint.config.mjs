@@ -259,7 +259,7 @@ const config = defineConfig([
         "@stylistic/lines-between-class-members": "warn",
         "@stylistic/quotes": ["warn", "double", {avoidEscape: true}],
         "@stylistic/space-before-function-paren": [
-            "error", {anonymous: "never", named: "never", asyncArrow: "always"}
+            "error", {anonymous: "never", named: "never", asyncArrow: "always", catch: "never"}
         ],
         "@stylistic/comma-spacing": ["error", {before: false, after: true}],
         "@stylistic/keyword-spacing": ["warn", {before: true, after: true, overrides: {
@@ -289,8 +289,6 @@ const config = defineConfig([
         "@stylistic/indent": "off",
         "@stylistic/no-tabs": "off",
         "@stylistic/no-mixed-spaces-and-tabs": "off",
-        // "@stylistic/func-call-spacing": "warn",
-        "@stylistic/space-before-function-paren": ["error", "never"],
         "@stylistic/member-delimiter-style": "warn",
         "@stylistic/array-bracket-newline": ["warn", "consistent"],
         "@stylistic/array-bracket-spacing": ["warn", "never"],

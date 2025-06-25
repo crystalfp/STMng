@@ -2,7 +2,7 @@ import {defineConfig} from "vite";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
 import vueDevTools from "vite-plugin-vue-devtools";
-import cleanPlugin from "vite-plugin-clean";
+// import cleanPlugin from "vite-plugin-clean";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
@@ -45,9 +45,9 @@ export default defineConfig({
         ]),
         renderer(),
         vueDevTools(),
-        cleanPlugin({
-            targetFiles: ["dist", "dist-electron"]
-        })
+        // cleanPlugin({
+        //     targetFiles: ["dist", "dist-electron"]
+        // })
     ],
     build: {
         assetsInlineLimit: 8096,

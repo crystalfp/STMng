@@ -445,7 +445,10 @@ const saveProjectGraph = (): void => {
         projectModified: JSON.stringify(graph)
     })
     .then((result) => {
-        if(result.saved) projectModified.value = false;
+        if(result.saved) {
+            projectModified.value = false;
+            showConfirmNew.value = false;
+        }
     })
     .catch((error: Error) => {
         log.error("Error from project save. Error:", error.message);
@@ -695,6 +698,14 @@ const tryToExit = (): void => {
     }
 };
 
+const showConfirmNew = ref(false);
+
+const confirmNewProject = (): void => {
+
+    if(projectModified.value) showConfirmNew.value = true;
+    else createProjectGraph();
+};
+
 </script>
 
 
@@ -745,7 +756,7 @@ const tryToExit = (): void => {
       </VueFlow>
     </div>
     <div class="bb button-strip pr-7">
-      <v-btn :disabled="projectModified" @click="createProjectGraph">New project</v-btn>
+      <v-btn @click="confirmNewProject">New project</v-btn>
       <v-btn :disabled="!projectModified" @click="saveProjectGraph">Save modified project</v-btn>
       <v-btn v-focus @click="tryToExit">Close</v-btn>
     </div>
@@ -768,6 +779,17 @@ const tryToExit = (): void => {
         <v-btn v-focus @click="showConfirmExit=false">Dismiss</v-btn>
         <v-btn @click="exitWithoutSave">Discard</v-btn>
         <v-btn @click="exitAndSave">Save</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="showConfirmNew">
+  <v-card title="Discard editor content?" text="Project modified. Do you want to save it?"
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirmNew=false">Dismiss</v-btn>
+        <v-btn @click="showConfirmNew=false;createProjectGraph()">Discard</v-btn>
+        <v-btn @click="saveProjectGraph">Save</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>

@@ -157,7 +157,7 @@ app.config.errorHandler = (error: unknown, instance: unknown, info: string) => {
 
 	log.error(`%cUnhandled exception: %c${(error as Error).message}\n`,
 			  "color: red", "color: unset",
-			  `In component ${instance as string}\n`,
+			  `In component ${JSON.stringify(instance)}\n`,
 			  `Error info: ${info}\n`,
 			   (error as Error).stack);
 };
