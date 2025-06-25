@@ -39,10 +39,11 @@ interface Cost {
 }
 
 interface Averages {
-	position: PositionType;
+	meanPosition: PositionType;
 	count: number;
-	displacement: number;
+	squaredDisplacement: number;
 	atomZ: number;
+	idx: number;
 }
 interface AveragesResult {
 	position: PositionType;
@@ -54,12 +55,13 @@ interface AveragesResult {
 /** Adjust position of atoms to reduce non-physical movements */
 export class ReorderAtomsInSteps {
 
+	/** Key is atomZ */
 	private previousStep = new Map<number, Positions>();
 	private currentStep = new Map<number, Positions>();
 	private basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private hasUnitCell = false;
 
-	private readonly averages = new Map<number, Averages>();
+	private readonly averages: Averages[] = [];
 
 	/**
 	 * Initialize the algorithm
@@ -69,7 +71,7 @@ export class ReorderAtomsInSteps {
 		this.currentStep.clear();
 		this.basis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.hasUnitCell = false;
-		this.averages.clear();
+		this.averages.length = 0;
 	}
 
 	/**
@@ -80,103 +82,87 @@ export class ReorderAtomsInSteps {
 	 * @returns The updated positions and reordered indices for the loaded step
 	 */
 	loadStep(structure: Structure, indices: number[]): AveragesResult[] {
-console.log("--- LOAD");
 
 		// The first step saves the position and returns it unchanged
-		if(this.previousStep.size === 0) {
-console.log("FIRST");
+		if(this.currentStep.size === 0) {
 
 			this.loadCurrentStep(structure, indices);
 
-			for(const specie of this.currentStep.values()) {
-console.log("species", specie);
-				for(let i=0; i < specie.positions.length; ++i) {
+			for(const specie of this.currentStep) {
 
-					const pp = specie.positions[i];
-					const idx = specie.idx[i];
+				for(let i=0; i < specie[1].positions.length; ++i) {
 
-					this.averages.set(idx, {
-						position: [...pp],
+					const pp = specie[1].positions[i];
+					const idx = specie[1].idx[i];
+
+					this.averages.push({
+						meanPosition: [...pp],
 						count: 1,
-						displacement: 0,
-						atomZ: structure.atoms[idx].atomZ
+						squaredDisplacement: 0,
+						atomZ: specie[0],
+						idx
 					});
 				}
 			}
-console.log("END FIRST");
 		}
 		else {
-console.log("NEXT");
 
 			// Move current step to previous step
 			this.previousStep.clear();
-			this.previousStep = this.currentStep;
+			this.previousStep = new Map<number, Positions>(this.currentStep);
 			this.currentStep.clear();
 
 			// Load current step
 			this.loadCurrentStep(structure, indices);
 
 			// For each specie analyze the differences
-			for(const specie of this.currentStep.keys()) {
+			for(const specie of this.currentStep) {
 
-				const entry = this.currentStep.get(specie);
-				if(!entry) continue;
-console.log("entry", entry);
+				const cost = this.computeCostArray(this.previousStep.get(specie[0])!.positions,
+													specie[1].positions);
 
-				if(entry.idx.length === 1) {
+				// Sort by cost (greedy approach)
+				cost.sort((a, b) => a.cost - b.cost);
 
-					if(this.averages.has(entry.idx[0])) {
-						const avg = this.averages.get(entry.idx[0])!;
-						const pp: PositionType = [
-							avg.position[0] + entry.positions[0][0],
-							avg.position[1] + entry.positions[0][1],
-							avg.position[2] + entry.positions[0][2]
-						];
-						const count = avg.count + 1;
-						const dx = pp[0]/count - entry.positions[0][0];
-						const dy = pp[1]/count - entry.positions[0][1];
-						const dz = pp[2]/count - entry.positions[0][2];
-						const displacement = dx*dx + dy*dy + dz*dz + avg.displacement;
-
-						this.averages.set(entry.idx[0], {
-							position: pp,
-							count,
-							displacement,
-							atomZ: structure.atoms[entry.idx[0]].atomZ
-						});
-					}
-					else {
-						this.averages.set(entry.idx[0], {
-							position: [...entry.positions[0]],
-							count: 1,
-							displacement: 0,
-							atomZ: structure.atoms[entry.idx[0]].atomZ
-						});
+				// Assign greedily
+				const n = this.previousStep.get(specie[0])!.positions.length;
+				const assignment = Array<number>(n).fill(-1);
+				const usedFinalPositions = new Set<number>();
+				for(const assign of cost) {
+					if(assignment[assign.initial] === -1 && !usedFinalPositions.has(assign.final)) {
+						assignment[assign.initial] = assign.final;
+						usedFinalPositions.add(assign.final);
 					}
 				}
-				else {
 
-					const cost = this.computeCostArray(this.previousStep.get(specie)!.positions,
-											   		   entry.positions);
+				// Reorder values
+				for(const entry of assignment) {
 
-  					// Sort by cost (greedy approach)
-  					cost.sort((a, b) => a.cost - b.cost);
+					const previousIdx = this.previousStep.get(specie[0])!.idx[entry];
+					const currentIdx = this.currentStep.get(specie[0])!.idx[assignment[entry]];
+					// console.log(entry, "->", assignment[entry], "=", previousIdx, "=>", currentIdx);
 
-  					// Assign greedily
-					const n = this.previousStep.get(specie)!.positions.length;
-					const assignment = Array<number>(n).fill(-1);
-					const usedFinalPositions = new Set<number>();
-  					for(const assign of cost) {
-						if(assignment[assign.initial] === -1 && !usedFinalPositions.has(assign.final)) {
-							assignment[assign.initial] = assign.final;
-							usedFinalPositions.add(assign.final);
+					for(const avg of this.averages) {
+						if(avg.idx === previousIdx && avg.atomZ === specie[0]) {
+							const position =
+								this.currentStep.get(specie[0])!.positions[assignment[entry]];
+							const pp: PositionType = [
+								avg.meanPosition[0] + position[0],
+								avg.meanPosition[1] + position[1],
+								avg.meanPosition[2] + position[2]
+							];
+							const count = avg.count + 1;
+							const dx = pp[0]/count - position[0];
+							const dy = pp[1]/count - position[1];
+							const dz = pp[2]/count - position[2];
+							const displacement = dx*dx + dy*dy + dz*dz + avg.squaredDisplacement;
+
+							avg.meanPosition = pp;
+							avg.count = count;
+							avg.squaredDisplacement = displacement;
+							avg.idx = currentIdx;
+							break;
 						}
-					}
-
-					// Reorder values
-					// TBD
-					for(const entry of assignment) {
-						console.log(entry, "->", assignment[entry]);
 					}
 				}
 			}
@@ -194,17 +180,15 @@ console.log("entry", entry);
 
 		const results: AveragesResult[] = [];
 
-		for(const index of this.averages.keys()) {
-
-			const entry = this.averages.get(index)!;
+		for(const avg of this.averages) {
 
 			const avgEntry: AveragesResult = {
-				position: [entry.position[0]/entry.count,
-						   entry.position[1]/entry.count,
-						   entry.position[2]/entry.count],
-				displacement: entry.displacement/entry.count,
-				atomType: getAtomicSymbol(entry.atomZ),
-				index
+				position: [avg.meanPosition[0]/avg.count,
+						   avg.meanPosition[1]/avg.count,
+						   avg.meanPosition[2]/avg.count],
+				displacement: avg.squaredDisplacement/avg.count,
+				atomType: getAtomicSymbol(avg.atomZ),
+				index: avg.idx
 			};
 
 			results.push(avgEntry);
@@ -217,7 +201,7 @@ console.log("entry", entry);
 	 * Load current step atoms' positions
 	 *
 	 * @param structure - Structure at the given step
-	 * @param indices - Indices of selected atoms
+	 * @param indices - Indices of the atoms selected
 	 */
 	private loadCurrentStep(structure: Structure, indices: number[]): void {
 

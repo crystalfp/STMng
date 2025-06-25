@@ -6,16 +6,14 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-09
  */
-import log from "electron-log";
 import {ipcMain} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendToClient, sendTracesToClient} from "../modules/ToClient";
-import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement, BasisType} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement} from "@/types";
 import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
 
 export class Trajectories extends NodeCore {
@@ -33,8 +31,6 @@ export class Trajectories extends NodeCore {
 	private positionCloudsColor = "#BBBBBE";
 	private positionCloudsSize = 100;
 	private readonly meanDisplacement: MeanDisplacement[] = [];
-	private inverse: BasisType | undefined;
-	private hasUnitCell = false;
 	private indices: number[] = [];
 	private static channelOpened = false;
 	private showMarker = false;
@@ -68,7 +64,7 @@ export class Trajectories extends NodeCore {
 		this.structure = data;
 		if(this.createTrajectories || isSecondaryWindowOpen("/displacements")) {
 
-			const {atoms, crystal} = this.structure;
+			const {atoms} = this.structure;
 
 			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
 
@@ -105,19 +101,6 @@ export class Trajectories extends NodeCore {
 			if(this.createTrajectories) {
 				Trajectories.setTraceColor(this.structure, this.indices, this.tracesColor);
 				this.sendLines(this.indices.length);
-			}
-
-			this.hasUnitCell = false;
-			if(hasUnitCell(crystal.basis)) {
-
-				try {
-					this.inverse = invertBasis(crystal.basis);
-					this.hasUnitCell = true;
-				}
-				// eslint-disable-next-line @stylistic/keyword-spacing
-				catch {
-					log.error("Basis matrix in Trajectories is not invertible");
-				}
 			}
 
 			this.sendMeanDisplacement(this.indices);
@@ -235,90 +218,6 @@ export class Trajectories extends NodeCore {
 	}
 
 	/**
-	 * Compute jump cancel offset
-	 *
-	 * @param dx - Delta X from the last position
-	 * @param dy - Delta Y from the last position
-	 * @param dz - Delta Z from the last position
-	 * @returns 3D offset to cancel the position jump
-	 */
-	private computeOffset(dx: number, dy: number, dz: number): number[] {
-
-		const TOL = 0.1;
-		const inv = this.inverse!;
-		const da = inv[0]*dx + inv[1]*dy + inv[2]*dz;
-		const db = inv[3]*dx + inv[4]*dy + inv[5]*dz;
-		const dc = inv[6]*dx + inv[7]*dy + inv[8]*dz;
-
-		const ada = Math.abs(da);
-		const adb = Math.abs(db);
-		const adc = Math.abs(dc);
-
-		if(ada < TOL && adb < TOL && adc < TOL) return [0, 0, 0];
-
-		const bb = this.structure?.crystal.basis;
-		if(!bb) return [0, 0, 0];
-
-		if(ada > adb) {
-			if(ada > adc) {
-				// a
-				return da > 0 ? [-bb[0], -bb[1], -bb[2]] : [bb[0], bb[1], bb[2]];
-			}
-			if(adb > adc) {
-				// b
-				return db > 0 ? [-bb[3], -bb[4], -bb[5]] : [bb[3], bb[4], bb[5]];
-			}
-			// c
-			return dc > 0 ? [-bb[6], -bb[7], -bb[8]] : [bb[6], bb[7], bb[8]];
-		}
-		if(adb > adc) {
-			// b
-			return db > 0 ? [-bb[3], -bb[4], -bb[5]] : [bb[3], bb[4], bb[5]];
-		}
-		// c
-		return dc > 0 ? [-bb[6], -bb[7], -bb[8]] : [bb[6], bb[7], bb[8]];
-	}
-
-	/**
-	 * Remove jumps on the other side of the cell from a trace
-	 *
-	 * @param trace - The atoms traces
-	 * @param firstJump - index of the first position at the first jump
-	 * @returns A new trace without the jumps
-	 */
-	private removeJumps(trace: number[], firstJump: number): number[] {
-
-		const cleanedTrace: number[] = [];
-		for(let i=0; i < firstJump; i+=3) {
-			cleanedTrace.push(trace[i], trace[i+1], trace[i+2]);
-		}
-		let lastX = trace[firstJump-3];
-		let lastY = trace[firstJump-2];
-		let lastZ = trace[firstJump-1];
-
-		for(let i=firstJump; i < trace.length; i+=3) {
-
-			const dx = trace[i]   - lastX;
-			const dy = trace[i+1] - lastY;
-			const dz = trace[i+2] - lastZ;
-
-			const offset = this.computeOffset(dx, dy, dz);
-
-			offset[0] += trace[i];
-			offset[1] += trace[i+1];
-			offset[2] += trace[i+2];
-
-			cleanedTrace.push(offset[0], offset[1], offset[2]);
-
-			lastX = offset[0];
-			lastY = offset[1];
-			lastZ = offset[2];
-		}
-
-		return cleanedTrace;
-	}
-
-	/**
 	 * Compute mean positions and displacements
 	 *
 	 * @param indices - Indices of selected atoms
@@ -327,11 +226,24 @@ export class Trajectories extends NodeCore {
 
 		this.meanDisplacement.length = 0;
 		if(indices.length === 0) return;
-		const {atoms} = this.structure!;
 
-		// TEST
-		this.disentangler.loadStep(this.structure!, indices);
+		// Compute average position and displacement
+		const averageResults = this.disentangler.loadStep(this.structure!, indices);
 
+		for(const avg of averageResults) {
+
+			this.meanDisplacement.push({
+				index: avg.index,
+				atomType: avg.atomType,
+				meanX: avg.position[0],
+				meanY: avg.position[1],
+				meanZ: avg.position[2],
+				displacement: avg.displacement
+			});
+		}
+
+		/*
+		// const {atoms} = this.structure!;
 		const currentTraces: number[][] = [];
 		for(const trace of this.traces) {
 			currentTraces.push(trace);
@@ -411,6 +323,7 @@ export class Trajectories extends NodeCore {
 				displacement
 			});
 		}
+			*/
 	}
 
 	/**
@@ -431,6 +344,13 @@ export class Trajectories extends NodeCore {
 		}
 	}
 
+	/**
+	 * Send markers to the viewer
+	 *
+	 * @param showMarker - If the marker should be visible
+	 * @param sizeMarkers - Size of the marker
+	 * @param meanDisplacement - Positions of the markers and other info
+	 */
 	private sendMarkers(showMarker: boolean,
 					    sizeMarkers: number,
 						meanDisplacement: MeanDisplacement[]): void {
@@ -489,6 +409,12 @@ export class Trajectories extends NodeCore {
 	private channelRun(params: CtrlParams): void {
 
 		this.createTrajectories = params.createTrajectories as boolean ?? false;
+
+		if(this.createTrajectories && this.structure && isSecondaryWindowOpen("/displacements")) {
+
+			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
+			this.disentangler.loadStep(this.structure, this.indices);
+		}
 	}
 
 	/**

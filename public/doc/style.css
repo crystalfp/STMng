@@ -163,6 +163,10 @@ dt {
   background: #D0E4F5;
 }
 
+.alternate td, .alternate th {
+  padding-left: 0.2rem;
+}
+
 details > h2:first-of-type {
   margin-top: 0;
 }

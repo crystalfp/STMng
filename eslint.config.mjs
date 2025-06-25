@@ -290,7 +290,7 @@ const config = defineConfig([
         "@stylistic/no-tabs": "off",
         "@stylistic/no-mixed-spaces-and-tabs": "off",
         // "@stylistic/func-call-spacing": "warn",
-        "@stylistic/space-before-function-paren": "off",
+        "@stylistic/space-before-function-paren": ["error", "never"],
         "@stylistic/member-delimiter-style": "warn",
         "@stylistic/array-bracket-newline": ["warn", "consistent"],
         "@stylistic/array-bracket-spacing": ["warn", "never"],

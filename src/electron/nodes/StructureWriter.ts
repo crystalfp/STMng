@@ -8,9 +8,9 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
+import {hasNoUnitCell} from "../modules/Helpers";
+import {sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
-
-// import {WriterPOSCAR} from "../writers/WritePOSCAR";
 
 export class StructureWriter extends NodeCore {
 
@@ -20,6 +20,7 @@ export class StructureWriter extends NodeCore {
 	private outputFilename = "";	// Selected save file full path
 	private captureData = false;
 	private readonly capturedStructures: Structure[] = [];
+	private hasNoUnitCell = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",			callback: this.channelInit.bind(this)},
@@ -38,9 +39,14 @@ export class StructureWriter extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data || data.atoms.length === 0) return;
+		if(!data || data.atoms.length === 0) {
+			this.hasNoUnitCell = true;
+			return;
+		}
 		if(this.captureData) this.capturedStructures.push(data);
 		else this.structure = data;
+		this.hasNoUnitCell = hasNoUnitCell(data.crystal.basis);
+		sendToClient(this.id, "has-no-unit-cell", {hasNoUnitCell: this.hasNoUnitCell});
 	}
 
 	// > Load/save status
@@ -70,6 +76,7 @@ export class StructureWriter extends NodeCore {
 			format: this.format,
 			continuous: this.continuous,
 			outputFilename: this.outputFilename,
+			hasNoUnitCell: this.hasNoUnitCell,
 		};
 	}
 
@@ -132,7 +139,8 @@ export class StructureWriter extends NodeCore {
 			}
 		}
 		catch(error) {
-			const message = `Format "${this.format}" is not implemented. Error: ${(error as Error).message}`;
+			const message = `Format "${this.format}" is not implemented.` +
+							` Error: ${(error as Error).message}`;
 			log.error(message);
 			return {error: message};
 		}

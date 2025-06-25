@@ -766,7 +766,7 @@ const tryToExit = (): void => {
           class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirmExit=false">Dismiss</v-btn>
-        <v-btn @click="exitWithoutSave">Close</v-btn>
+        <v-btn @click="exitWithoutSave">Discard</v-btn>
         <v-btn @click="exitAndSave">Save</v-btn>
     </v-card-actions>
   </v-card>

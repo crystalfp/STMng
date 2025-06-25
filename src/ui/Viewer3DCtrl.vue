@@ -266,5 +266,6 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
+  <v-btn block class="mt-2" @click="configStore.resetViewer">Restore viewer settings</v-btn>
 </v-container>
 </template>

@@ -133,6 +133,52 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.helpers.gridSize = state.helpers.gridSize ?? 10;
             this.helpers.axisLength = state.helpers.axisLength ?? 1;
             this.helpers.showGizmo = state.helpers.showGizmo ?? false;
+        },
+        resetViewer(): void {
+
+            this.camera.type = "orthographic";
+            this.camera.position[0] = 5;
+            this.camera.position[1] = 3;
+            this.camera.position[2] = 5;
+            this.camera.lookAt[0] = 0;
+            this.camera.lookAt[1] = 0;
+            this.camera.lookAt[2] = 0;
+            this.camera.snapshotFormat = "png";
+            this.camera.stlFormat = "binary";
+            this.camera.forcePosition[0] = 5;
+            this.camera.forcePosition[1] = 3;
+            this.camera.forcePosition[2] = 5;
+            this.camera.forceLookAt[0] = 0;
+            this.camera.forceLookAt[1] = 0;
+            this.camera.forceLookAt[2] = 0;
+
+    		this.scene.background = "#90CEEC";
+
+            this.lights.ambientColor = "#FFFFFF";
+			this.lights.ambientIntensity = 0.5;
+			this.lights.directional1Color = "#FFFFFF";
+			this.lights.directional1Intensity = 1.5;
+			this.lights.directional2Color = "#FFFFFF";
+			this.lights.directional2Intensity = 1.5;
+			this.lights.directional3Color = "#FFFFFF";
+			this.lights.directional3Intensity = 1.5;
+			this.lights.directional1Position[0] = 0;
+			this.lights.directional1Position[1] = 1;
+			this.lights.directional1Position[2] = 0;
+			this.lights.directional2Position[0] = 0.5774;
+			this.lights.directional2Position[1] = 0.5774;
+			this.lights.directional2Position[2] = 0.5774;
+			this.lights.directional3Position[0] = -0.5774;
+			this.lights.directional3Position[1] = -0.5774;
+			this.lights.directional3Position[2] = -0.5774;
+
+            this.helpers.showAxis = false;
+            this.helpers.showGridXZ = false;
+            this.helpers.showGridXY = false;
+            this.helpers.showGridYZ = false;
+            this.helpers.gridSize = 10;
+            this.helpers.axisLength = 1;
+            this.helpers.showGizmo = false;
         }
     }
 });

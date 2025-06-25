@@ -10,9 +10,9 @@
 import {ref, computed, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
-import {askNode} from "@/services/RoutesClient";
+import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
-import type {FileFilter} from "@/types";
+import type {CtrlParams, FileFilter} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
 import ErrorAlert from "@/widgets/ErrorAlert.vue";
@@ -34,6 +34,7 @@ const {writerAccumulate} = storeToRefs(controlStore);
 
 /** Formats that could be saved */
 const fileFormats = ["CHGCAR", "CIF", "PDB", "POSCAR", "Shel-X", "XYZ"];
+const fileFormatsNoUC = ["PDB", "XYZ"];
 
 const format         = ref("");
 const outputFile     = ref("");
@@ -41,6 +42,7 @@ const outputFileFull = ref("");
 const continuous     = ref(false);
 const finish         = ref(false);
 const writerLabel    = ref("");
+const hasNoUnitCell  = ref(true);
 
 // Initialize the control
 resetAlertMessage("structureWriter");
@@ -54,6 +56,7 @@ askNode(id, "init").then((params) => {
         const pos = outputFileFull.value.lastIndexOf("/");
         outputFile.value = outputFileFull.value.slice(pos+1);
     }
+    hasNoUnitCell.value = params.hasNoUnitCell as boolean ?? true;
 })
 .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
                                           "structureWriter"));
@@ -68,6 +71,10 @@ const captureButtonLabel = computed(() => {
 watch([writerAccumulate], () => {
 
     continuous.value = writerAccumulate.value;
+});
+
+receiveFromNode(id, "has-no-unit-cell", (params: CtrlParams) => {
+    hasNoUnitCell.value = params.hasNoUnitCell as boolean ?? false;
 });
 
 /**
@@ -88,7 +95,7 @@ const startStopCapture = (): void => {
                 if("error" in params) throw Error(params.error as string);
                 finish.value = !controlStore.writerAccumulate;
             })
-            .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
+            .catch((error: Error) => showAlertMessage(`Error writing structure: ${error.message}`,
                                                       "structureWriter"));
     }
     else {
@@ -178,7 +185,7 @@ const selectedSaveFile = (filename: string): void => {
 <template>
 <v-container class="container">
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4 mb-4" @update:model-value="writerLabel=''"/>
+            :items="hasNoUnitCell? fileFormatsNoUC : fileFormats" class="mt-4 mb-4" @update:model-value="writerLabel=''"/>
 
   <select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select output file"
                  :filter="filterFromFormat(format)"
