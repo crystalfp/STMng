@@ -458,8 +458,8 @@ const drawPoints = (): void => {
     let valueLine = "";
     switch(scatterplotType.value) {
         case "group":       valueLine = `Group: ${value}`; break;
-        case "energy":      valueLine = `Energy: ${value.toFixed(3)}`; break;
-        case "silhouette":  valueLine = `Silhouette: ${value.toFixed(2)}`; break;
+        case "energy":      valueLine = `Energy: ${value.toFixed(4)}`; break;
+        case "silhouette":  valueLine = `Quality: ${value.toFixed(2)}`; break;
     }
 
     const {sx, sy} = pointToScreen(px, py);
@@ -700,7 +700,7 @@ const legendContinue = computed(() => {
         return {
             min: minEnergy.toFixed(4),
             max: maxEnergy.toFixed(4),
-            header: "Energy",
+            header: "Energy by atom",
             footer: ""
         };
     case "fidelity":
