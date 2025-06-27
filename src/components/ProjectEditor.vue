@@ -605,6 +605,8 @@ const updateLabel = (label: string): void => {
         if(entry.id === id) {
             entry.label = label;
             projectModified.value = true;
+            updateNode(entry.id, {class: "vue-flow__node-default mark"});
+
             break;
         }
     }
