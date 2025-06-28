@@ -192,6 +192,18 @@ export const sendAlertMessage = (text: string, from?: string): void => {
 };
 
 /**
+ * Send error notification from main process
+ *
+ * @param message - Complete text of the notification
+ * @param userMessage - Simplified text of the notification for the user
+ */
+export const sendDoubleAlertMessage = (message: string, userMessage: string, from?: string): void => {
+
+	mainWinWebContents!.send("SYSTEM:notification", "error", userMessage, from ?? "");
+	log.error(message);
+};
+
+/**
  * Push polyhedra data to the client
  *
  * @param id - ID of the node sending the parameters

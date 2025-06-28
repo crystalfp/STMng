@@ -28,7 +28,28 @@ interface FingerprintingComputeResult {
 
 	/** Error from fingerprinting, if any */
 	error?: string;
+
+	/** Simplified error for users */
+	userError?: string;
 }
+
+/**
+ * Type guard for rejected promise
+ *
+ * @param input - Value to check
+ * @returns True if input is a rejected promise
+ */
+const isRejected = (input: PromiseSettledResult<unknown>): input is PromiseRejectedResult =>
+  input.status === "rejected";
+
+/**
+ * Type guard for fulfilled promise
+ *
+ * @param input - Value to check
+ * @returns True if input is a fulfilled promise
+ */
+const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> =>
+  input.status === "fulfilled";
 
 /**
  * Routines related to computing fingerprinting for a set of structures
@@ -73,7 +94,7 @@ export class Fingerprinting {
 			maxWorkers: Math.min(availableParallelism, countStructures),
 			workerType: "process"
 		});
-		const promises: ReturnType<typeof pool.exec>[] = [];
+		const promises: workerpool.Promise<WorkerResults>[] = [];
 
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
@@ -95,12 +116,12 @@ export class Fingerprinting {
 				lenZ,
 				positions,
 				atomsZ,
-			], {transfer: [basis.buffer, positions.buffer, atomsZ.buffer]});
+			], {transfer: [basis.buffer, positions.buffer, atomsZ.buffer]}) as workerpool.Promise<WorkerResults>;
 
 			promises.push(result);
 		}
 
-		const results = await Promise.all(promises).catch((error) => {
+		const results = await Promise.allSettled(promises).catch((error) => {
 			log.error("Error from the worker pool.", error);
 			return [];
 		});
@@ -116,34 +137,45 @@ export class Fingerprinting {
 		let fingerprintSize = 0;
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
-			const {countSections, sectionLength, fp, w} = results[idx++] as WorkerResults;
-
-			if(countSections === 0 || sectionLength === 0) {
-				return {dimension: 0, error: "No fingerprint"};
-			}
-			const fingerprintArray = fp.message as Float64Array;
-			const weightsArray = w.message as Float64Array;
-
-			// Get fingerprint size
-			if(fingerprintSize === 0) fingerprintSize = countSections*sectionLength;
-			if(fingerprintSize !== countSections*sectionLength) {
-				return {dimension: 0, error: "Fingerprinting dimension has changed"};
+			const oneResult = results[idx];
+			if(isRejected(oneResult)) {
+				const reason = oneResult.reason as string;
+				return {dimension: 0,
+						userError: `Probable out of memory error on step ${structure.step}`,
+						error: `Error on step ${structure.step}\n${reason}`};
 			}
 
-			// Access the structure
-			const {fingerprint, weights} = structure;
+			if(isFulfilled(oneResult)) {
+				const {countSections, sectionLength, fp, w} = oneResult.value;
+				++idx;
 
-			// Save the resulting fingerprint dimension
-			structure.countSections = countSections;
-			structure.sectionLength = sectionLength;
+				if(countSections === 0 || sectionLength === 0) {
+					return {dimension: 0, error: `No fingerprint computed for step ${structure.step}`};
+				}
+				const fingerprintArray = fp.message as Float64Array;
+				const weightsArray = w.message as Float64Array;
 
-			// Save the fingerprint
-			fingerprint.length = fingerprintSize;
-			for(let i=0; i < fingerprintSize; ++i) fingerprint[i] = fingerprintArray[i];
+				// Get fingerprint size
+				if(fingerprintSize === 0) fingerprintSize = countSections*sectionLength;
+				if(fingerprintSize !== countSections*sectionLength) {
+					return {dimension: 0, error: `Fingerprinting dimension has changed for step ${structure.step}`};
+				}
 
-			// Save the weights
-			weights.length = countSections;
-			for(let i=0; i < countSections; ++i) weights[i] = weightsArray[i];
+				// Access the structure
+				const {fingerprint, weights} = structure;
+
+				// Save the resulting fingerprint dimension
+				structure.countSections = countSections;
+				structure.sectionLength = sectionLength;
+
+				// Save the fingerprint
+				fingerprint.length = fingerprintSize;
+				for(let i=0; i < fingerprintSize; ++i) fingerprint[i] = fingerprintArray[i];
+
+				// Save the weights
+				weights.length = countSections;
+				for(let i=0; i < countSections; ++i) weights[i] = weightsArray[i];
+			}
 		}
 
 		// For methods that need a last global step

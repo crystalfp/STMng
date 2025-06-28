@@ -254,6 +254,7 @@ const config = defineConfig([
         // "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],
         "no-loss-of-precision": "error",
         // "no-mixed-spaces-and-tabs": "off",
+        "no-duplicate-imports": ["error", {"allowSeparateTypeImports": true}],
 
         // > ******************* stylistic ***********************
         "@stylistic/lines-between-class-members": "warn",

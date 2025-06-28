@@ -11,7 +11,7 @@ import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {sendAlertMessage, sendToClient} from "../modules/ToClient";
+import {sendAlertMessage, sendDoubleAlertMessage, sendToClient} from "../modules/ToClient";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
@@ -1018,7 +1018,10 @@ export class ComputeFingerprints extends NodeCore {
 		});
 
 		if(resultFP.error) {
-			sendAlertMessage(resultFP.error, "fingerprints");
+
+			if(resultFP.userError) sendDoubleAlertMessage(resultFP.error, resultFP.userError, "fingerprints");
+			else sendAlertMessage(resultFP.error, "fingerprints");
+
 			return {
 				resultDimensionality: 0,
 				countDistances: 0,
