@@ -35,7 +35,7 @@ export const toClientSetup = (webContents: WebContents): void => {
 export const askClient = (id: string, channel: string): Promise<string> => {
 
 	const channelName = id + ":" + channel;
-	return new Promise((resolve) => {
+	return new Promise<string>((resolve) => {
 		mainWinWebContents!.send(channelName);
 		ipcMain.once(channelName + "-response", (_event: unknown, answer: string): void => resolve(answer));
 	});
@@ -165,7 +165,7 @@ export const getCurrentNode = (): Promise<string> => {
 
 	mainWinWebContents!.send("PROJECT:ASK-CURRENT-NODE");
 
-	return new Promise((resolve) => {
+	return new Promise<string>((resolve) => {
 		ipcMain.on("PROJECT:GET-CURRENT-NODE", (_event: unknown, answer: string): void => resolve(answer));
 	});
 };

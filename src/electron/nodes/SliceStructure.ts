@@ -30,7 +30,7 @@ export class SliceStructure extends NodeCore {
 	private enableSlicer = false;
 	private showSlicer = false;
 	private sliceInside = false;
-	private mode = "plane"; // "plane", "sphere", "miller", "slab"
+	private mode = "plane"; // "plane", "sphere", "miller", "slab", "indices"
 
 	private selectorKind: SelectorType = "symbol";
 	private atomsSelector = "";
@@ -62,6 +62,7 @@ export class SliceStructure extends NodeCore {
 		{name: "plane",		type: "invoke",	callback: this.channelPlane.bind(this)},
 		{name: "miller",	type: "invoke",	callback: this.channelMiller.bind(this)},
 		{name: "slab",		type: "invoke",	callback: this.channelSlab.bind(this)},
+		{name: "direct",	type: "send",	callback: this.channelDirect.bind(this)},
 		{name: "set",		type: "send", 	callback: this.channelSet.bind(this)},
 	];
 
@@ -619,6 +620,23 @@ export class SliceStructure extends NodeCore {
 		return this.selectAtoms(inside);
 	}
 
+	/**
+	 * Slice the structure to the given atoms
+	 *
+	 * @returns The sliced structure
+	 */
+	private sliceDirect(): Structure {
+
+		const selectedAtoms = selectAtomsByKind(this.structure!,
+												this.selectorKind,
+												this.atomsSelector);
+
+		const inside = Array<boolean>(this.structure!.atoms.length).fill(false);
+		for(const idx of selectedAtoms) inside[idx] = true;
+
+		return this.selectAtoms(inside);
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -723,6 +741,21 @@ export class SliceStructure extends NodeCore {
 			intersections1: this.planeRenderingIntersections,
 			intersections2: this.planeRenderingIntersections2
 		};
+	}
+
+	/**
+	 * Channel handler for the change of direct atom selection parameters
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelDirect(params: CtrlParams): void {
+
+		this.selectorKind = params.selectorKind as SelectorType ?? "symbol";
+		this.atomsSelector = params.atomsSelector as string ?? "";
+        this.sliceInside = params.sliceInside as boolean ?? false;
+		this.enableSlicer = params.enableSlicer as boolean ?? false;
+
+		this.toNextNode(this.enableSlicer ? this.sliceDirect() : this.structure!);
 	}
 
 	/**

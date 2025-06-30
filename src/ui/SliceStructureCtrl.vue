@@ -30,7 +30,15 @@ const enableSlicer = ref(false);
 const showSlicer = ref(false);
 const sliceInside = ref(false);
 const mode = ref("plane");
-const optimizing = ref(false);
+
+/** Available modes */
+const modeList = ref([
+    {label: "Plane",    value: "plane"},
+    {label: "Miller",   value: "miller"},
+    {label: "Sphere",   value: "sphere"},
+    {label: "Slab",     value: "slab"},
+    {label: "Direct",   value: "direct"},
+]);
 
 /** Sphere cut */
 const selectorKind = ref("symbol");
@@ -58,7 +66,6 @@ const millerL = ref(0);
 const showMillerL = ref(0);
 const millerPlaneOffset = ref(0);
 const showMillerPlaneOffset = ref(0);
-const areaEnergy = ref(0);
 
 /** Slab cut (plane cut plus these) */
 const thickness = ref(1);
@@ -180,8 +187,6 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
 
     if((!enableSlicer.value && !showSlicer.value) || mode.value !== "miller") return;
 
-    if(!optimizing.value) areaEnergy.value = 0;
-
     askNode(id, "miller", {
         millerH: millerH.value,
         millerK: millerK.value,
@@ -196,6 +201,20 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
     })
     .catch((error: Error) => showAlertMessage(`Error from UI Miller plane for ${label}: ${error.message}`,
         "slicer"));
+});
+
+/** Change parameters for indexed slice */
+watch([enableSlicer, mode, selectorKind,
+       atomsSelector, sliceInside], () => {
+
+    if(!enableSlicer.value || mode.value !== "direct") return;
+
+    sendToNode(id, "direct", {
+        sliceInside: sliceInside.value,
+        atomsSelector: atomsSelector.value,
+        selectorKind: selectorKind.value,
+        enableSlicer: enableSlicer.value
+    });
 });
 
 /** Set the other parameters */
@@ -238,6 +257,9 @@ const resetParameters = (): void => {
 
     thickness.value = 1;
     showThickness.value = 1;
+
+    selectorKind.value = "symbol";
+    atomsSelector.value = "";
 };
 
 /** Check parameters validity */
@@ -266,21 +288,16 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-2 ml-3" />
-  <v-switch v-model="showSlicer" label="Show slicer geometry" class="ml-3" />
+  <v-switch v-model="showSlicer" :disabled="mode==='indices'"
+            label="Show slicer geometry" class="ml-3" />
   <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />
-  <v-row class="mb-2">
-    <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
-      <v-label text="Mode" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="mode" mandatory class="mb-2 ml-2">
-        <v-btn value="plane">Plane</v-btn>
-        <v-btn value="miller">Miller</v-btn>
-        <v-btn value="sphere">Sphere</v-btn>
-        <v-btn value="slab">Slab</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+  <v-select v-model="mode"
+    :items="modeList"
+    label="Slice mode"
+    item-title="label"
+    item-value="value"
+    class="ml-2 mb-6" />
+
   <v-container v-if="mode==='plane' || mode==='slab'" class="pa-0">
     <v-switch v-model="parallelA" label="Parallel to a" class="mt-2 ml-4" />
     <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
@@ -328,6 +345,11 @@ watchEffect(() => {
                           v-model:raw="showSphereRadius" label-width="7rem"
                           :label="`Radius (${showSphereRadius.toFixed(1)})`"
                           :min="0.1" :max="50" :step="0.1" />
+  </v-container>
+  <v-container v-else-if="mode==='indices'" class="pa-0">
+    <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
+                      class="ml-2 mb-6" :hide="['all']"
+                      title="Select atoms by" placeholder="Atom selector" />
   </v-container>
   <v-btn block class="mt-6" @click="resetParameters">Reset parameters</v-btn>
   <error-alert kind="slicer" />
