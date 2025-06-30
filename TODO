@@ -3,22 +3,19 @@ Bugs:
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
   ☐ Fix atom reordering in trajectories
   ☐ ffmpeg output to application log
-  ☐ Use `Promise.allSettled()` to Produce an error message from workerpool that show the step.
+  ✔ Use `Promise.allSettled()` to Produce an error message from workerpool that show the step. @done(2025-06-30 08:17)
   ☐ OganovValleFingerprinting: reduce peak memory usage
   ☐ Billboard also for Bonds lengths labels
   ☐ Add a timeout for success messages (eg. in CaptureMedia)
-
-For the tutorial:
-  ☐ Prepare slides and agenda
 
 Latest requests:
   ☐ Show average structure in trajectories instead of markers
 
 To do:
-  ☐ Option to not fold fractional coordinates inside unit cell on read
+  ✔ Option to not fold fractional coordinates inside unit cell on read @done(2025-06-30 08:17)
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
-  ☐ Copy residues in compute symmetries
+  ✘ Copy residues in compute symmetries @cancelled(2025-06-30 08:17)
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Unify viewer3D setup between Compare e Landscape
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>

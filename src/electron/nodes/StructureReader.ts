@@ -11,7 +11,8 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertMessage} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, CtrlParams, ChannelDefinition, ReaderOptions, ReaderImplementation} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition,
+			 ReaderOptions, ReaderImplementation} from "@/types";
 
 // Import the readers
 
@@ -189,6 +190,11 @@ export class StructureReader extends NodeCore {
 				case "PDB": {
 						const {ReaderPDB} = await import("../readers/ReadPDB");
 						this.reader = new ReaderPDB();
+					}
+					break;
+				case "Quantum ESPRESSO": {
+						const {ReaderQUANTUM} = await import("../readers/ReadQUANTUM");
+						this.reader = new ReaderQUANTUM();
 					}
 					break;
 				default: throw Error("Format not implemented");
@@ -414,7 +420,8 @@ export class StructureReader extends NodeCore {
 			if(currentAtomsZ.size > typesAfter.length) {
 				const missing = currentAtomsZ.size - typesAfter.length;
 				const plural = missing === 1 ? "" : "s";
-				sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`, "structureReader");
+				sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`,
+								 "structureReader");
 				return;
 			}
 		}

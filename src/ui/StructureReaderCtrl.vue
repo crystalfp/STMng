@@ -41,6 +41,7 @@ const fileFormats = [
     "POSCAR",
     "POSCAR + ENERGY",
     "POSCAR + XDATCAR",
+    "Quantum ESPRESSO",
     "Shel-X",
     "XDATCAR5",
     "XYZ"
@@ -376,6 +377,10 @@ const filterFromFormat = (fileFormat: string): string => {
         case "POSCAR + ENERGY":
 			filter = [{name: "POSCAR",	        extensions: ["poscar", "poscars", "contcar"]},
 					  {name: "All",		        extensions: ["*"]}];
+            break;
+		case "Quantum ESPRESSO":
+			filter = [{name: "Quantum ESPRESSO", extensions: ["in"]},
+					  {name: "All",		         extensions: ["*"]}];
             break;
 		case "Shel-X":
 			filter = [{name: "Shel-X",	        extensions: ["res", "ins"]},

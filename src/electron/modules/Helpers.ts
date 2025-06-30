@@ -75,12 +75,12 @@ export const fractionalToCartesianCoordinates = (basis: BasisType,
 												 fx: number, fy: number, fz: number,
 												 origin?: PositionType): PositionType => {
 
-	if(fx < 0) fx += 1;
-	else if(fx > 1) fx -= 1;
-	if(fy < 0) fy += 1;
-	else if(fy > 1) fy -= 1;
-	if(fz < 0) fz += 1;
-	else if(fz > 1) fz -= 1;
+	// if(fx < 0) fx += 1;
+	// else if(fx > 1) fx -= 1;
+	// if(fy < 0) fy += 1;
+	// else if(fy > 1) fy -= 1;
+	// if(fz < 0) fz += 1;
+	// else if(fz > 1) fz -= 1;
 
 	if(origin) {
 		return [
