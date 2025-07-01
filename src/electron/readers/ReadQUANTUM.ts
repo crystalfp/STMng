@@ -60,36 +60,39 @@ export class ReaderQUANTUM implements ReaderImplementation {
 		let basisLine = 0;
 		let alat = 0;
 		let spaceGroupNumber = 0;
+		let inputAtoms = 0;
 
 		for(const line of lines) {
+
 			if(inPositions) {
 				const fields = line.split(" ");
-				if(fields.length >= 4) {
-					label.push(fields[0]);
-					let type = fields[0].replace(/\d+/, "");
-					let zz = getAtomicNumber(type);
+				label.push(fields[0]);
+				let type = fields[0].replace(/\d+/, "");
+				let zz = getAtomicNumber(type);
+				if(zz === 0) {
+					if(type.length > 2) {
+						type = type.slice(0, 2);
+						zz = getAtomicNumber(type);
+					}
 					if(zz === 0) {
-						if(type.length > 2) {
-							type = type.slice(0, 2);
-							zz = getAtomicNumber(type);
-						}
-						if(zz === 0) {
-							type = type.slice(0, 1);
-							zz = getAtomicNumber(type);
-						}
-						atomZ.push(zz);
+						type = type.slice(0, 1);
+						zz = getAtomicNumber(type);
 					}
 					atomZ.push(zz);
-
-					const x = Number.parseFloat(fields[1]);
-					const y = Number.parseFloat(fields[2]);
-					const z = Number.parseFloat(fields[3]);
-					positions.push([x, y, z]);
-					continue;
 				}
-				inPositions = false;
+				atomZ.push(zz);
+
+				const x = Number.parseFloat(fields[1]);
+				const y = Number.parseFloat(fields[2]);
+				const z = Number.parseFloat(fields[3]);
+				positions.push([x, y, z]);
+				--inputAtoms;
+				if(inputAtoms === 0) {
+					inPositions = false;
+				}
 			}
 			else if(inBasis) {
+
 				const fields = line.split(" ");
 				const x = Number.parseFloat(fields[0]);
 				const y = Number.parseFloat(fields[1]);
@@ -104,6 +107,9 @@ export class ReaderQUANTUM implements ReaderImplementation {
 			}
 			else if(line.startsWith("ibrav")) {
 				ibrav = Number.parseInt(line.split("=")[1], 10);
+			}
+			else if(line.startsWith("nat=")) {
+				inputAtoms = Number.parseInt(line.split("=")[1], 10);
 			}
 			else if(line.startsWith("celldm")) {
 				const fields = line.split(/[()=]/);
@@ -137,8 +143,10 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				positionKind = line.split(" ")[1].replaceAll(/[{}]/g, "");
 			}
 			else if(line.startsWith("CELL_PARAMETERS")) {
+				inPositions = false;
 				inBasis = true;
 				basisKind = line.split(" ")[1].replaceAll(/[{}]/g, "");
+				basisLine = 0;
 			}
 		}
 

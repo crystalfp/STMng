@@ -43,7 +43,7 @@ module.exports = {
         ]
 	},
 	templates: {
-		component: (renderedUsage, doc, config, fileName, requiresMd, { isSubComponent, hasSubComponents }) => {
+		component: (renderedUsage, doc, config, _fileName, requiresMd, { isSubComponent, hasSubComponents }) => {
 			const { displayName, description, docsBlocks, tags, functional, since, author } = doc;
 			const { deprecated, version, see, link } = tags || {};
 			const frontMatter = [];
