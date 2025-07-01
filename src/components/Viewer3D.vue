@@ -152,7 +152,8 @@ onMounted(() => {
     const renderer = new WebGLRenderer({
         antialias: true,
         preserveDrawingBuffer: true,
-        powerPreference: "high-performance"
+        powerPreference: "high-performance",
+        alpha: true
     });
     renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -389,20 +390,47 @@ onMounted(() => {
             const channel = mimeTypeFormat === "pdf" ? "snapshotPDF" : "snapshot";
             if(mimeTypeFormat === "pdf") mimeTypeFormat = "jpeg";
             const mimeType = `image/${mimeTypeFormat}`;
+
+            // If requested png with transparent background
+            if(configStore.camera.snapshotTransparent && mimeTypeFormat === "png") {
+                sm.transparentSceneBackground(true);
+                setTimeout(() => {
+                    askNode("SYSTEM", channel, {
+                        dataURI: renderer.domElement.toDataURL(mimeType),
+                        format: configStore.camera.snapshotFormat
+                    })
+                    .then((response: CtrlParams) => {
+                        if(response.error) throw Error(response.error as string);
+                        if(response.payload === "") return;
+                        messageStore.captureMedia.typeS = "success";
+                        messageStore.captureMedia.textS = response.payload as string;
+                    })
+                    .catch((error: Error) => {
+                        messageStore.captureMedia.typeS = "error";
+                        messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
+                    })
+                    .finally(() => {
+                        if(configStore.camera.snapshotTransparent) sm.transparentSceneBackground(false);
+                    });
+                }, 200);
+                return;
+            }
+
+            // For snapshots without transparent background
             askNode("SYSTEM", channel, {
                 dataURI: renderer.domElement.toDataURL(mimeType),
                 format: configStore.camera.snapshotFormat
             })
-                .then((response: CtrlParams) => {
-                    if(response.error) throw Error(response.error as string);
-                    if(response.payload === "") return;
-                    messageStore.captureMedia.typeS = "success";
-                    messageStore.captureMedia.textS = response.payload as string;
-                })
-                .catch((error: Error) => {
-                    messageStore.captureMedia.typeS = "error";
-                    messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
-                });
+            .then((response: CtrlParams) => {
+                if(response.error) throw Error(response.error as string);
+                if(response.payload === "") return;
+                messageStore.captureMedia.typeS = "success";
+                messageStore.captureMedia.textS = response.payload as string;
+            })
+            .catch((error: Error) => {
+                messageStore.captureMedia.typeS = "error";
+                messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
+            });
         }
     });
 

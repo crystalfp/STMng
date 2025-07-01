@@ -19,6 +19,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             position: [5, 3, 5],
             lookAt: [0, 0, 0],
             snapshotFormat: "png",
+            snapshotTransparent: false,
             stlFormat: "binary",
             forcePosition: [5, 3, 5],
             forceLookAt: [0, 0, 0],

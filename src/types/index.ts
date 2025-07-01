@@ -148,6 +148,8 @@ export interface Viewer3DState {
         lookAt: PositionType;
         /** Format of the screenshot */
         snapshotFormat: "png" | "jpeg" | "pdf";
+        /** Make scene background transparent (for png snapshot) */
+        snapshotTransparent: boolean;
         /** STL file format */
         stlFormat: "ascii" | "binary";
         /** Position of the camera */

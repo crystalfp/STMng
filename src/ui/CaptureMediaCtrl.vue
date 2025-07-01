@@ -36,7 +36,10 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
     <v-btn value="pdf">PDF</v-btn>
   </v-btn-toggle>
   </v-row>
-  <v-btn block class="mt-6" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
+  <v-switch v-model="configStore.camera.snapshotTransparent"
+            :disabled="configStore.camera.snapshotFormat!=='png'"
+            label="Transparent background" class="mt-4 ml-2" />
+  <v-btn block class="mt-4" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
   <v-alert v-if="messageStore.captureMedia.typeS !== undefined"
            :title="messageStore.captureMedia.typeS === 'error' ? 'Error' : 'Success!'"
            :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"

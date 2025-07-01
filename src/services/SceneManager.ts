@@ -53,6 +53,20 @@ class SceneManager {
 	}
 
 	/**
+	 * Make the scene background transparent
+	 *
+	 * @param transparent - True to make the scene background transparent
+	 */
+	transparentSceneBackground(transparent: boolean): void {
+
+		const configStore = useConfigStore();
+
+		// eslint-disable-next-line unicorn/no-null
+		SceneManager.scene.background = transparent ? null : new Color(configStore.scene.background);
+		this.sceneModified = true;
+	}
+
+	/**
 	 * Remove objects with children
 	 *
 	 * @param object - The object to remove
