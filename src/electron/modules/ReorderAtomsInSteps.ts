@@ -38,17 +38,29 @@ interface Cost {
 	offset: PositionType;
 }
 
+/** Accumulated values to compute averages */
 interface Averages {
+	/** Accumulated positions */
 	meanPosition: PositionType;
+	/** Accumulated steps count */
 	count: number;
+	/** Accumulated squared displacements */
 	squaredDisplacement: number;
+	/** Corresponding atom type */
 	atomZ: number;
+	/** Corresponding atom index */
 	idx: number;
 }
+
+/** Computed average positions and displacements */
 interface AveragesResult {
+	/** Mean position */
 	position: PositionType;
+	/** Mean squared displacement */
 	displacement: number;
+	/** Corresponding atom symbol */
 	atomType: string;
+	/** Corresponding atom index */
 	index: number;
 }
 

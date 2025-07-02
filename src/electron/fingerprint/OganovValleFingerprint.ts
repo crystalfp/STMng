@@ -57,14 +57,16 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 	const fingerprint = new Float64Array(nbins*countSections);
 	fingerprint.fill(-1);
 
-	// With the infinite slab compute interatomic distances
-	slab.computeInteratomicDistances(basis, natoms, atomsZ, positions);
-
 	// Create ordered list of atom z values and list of positions
 	const orderedZ = [...species.keys()].toSorted((a, b) => a-b);
 	const atomsIdx = new Map<number, number>();
 	let pos = 0;
 	for(const atomZ of orderedZ) atomsIdx.set(atomZ, pos++);
+
+	// Prepare for computing distances
+	if(slab.prepareComputingDistances(basis) !== "") {
+		return {countSections: 0, sectionLength: 0, fingerprint, weights: new Float64Array(0)};
+	}
 
 	// For each pair of Z values, compute the peak, smooth and accumulate it
 	for(const Zi of orderedZ) {
@@ -72,7 +74,8 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 		const Ni = species.get(Zi)!;
 		const Pi = atomsIdx.get(Zi)!;
 
-		const distances = slab.getDistancesForZ(Zi);
+		// With the infinite slab compute interatomic distances from Zi atoms
+		const distances = slab.computeDistancesForZ(Zi, basis, natoms, atomsZ, positions);
 		for(const [Zj, Rij] of distances) {
 
 			const Nj = species.get(Zj)!;
@@ -95,8 +98,8 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 			smoothPeak(fing, Rij, delta, nbins, fingerprint,
 						idxSection*nbins, peakWidth);
 		}
+		slab.reset();
 	}
-	slab.reset();
 
 	// Compute weights
 	const len = orderedZ.length;

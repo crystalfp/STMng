@@ -99,6 +99,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.lookAt[1] = state.camera.lookAt[1];
             this.camera.lookAt[2] = state.camera.lookAt[2];
             this.camera.snapshotFormat = state.camera.snapshotFormat ?? "png";
+            this.camera.snapshotTransparent = state.camera.snapshotTransparent ?? false;
             this.camera.stlFormat = state.camera.stlFormat ?? "binary";
             this.camera.forcePosition[0] = state.camera.forcePosition?.[0] ?? 5;
             this.camera.forcePosition[1] = state.camera.forcePosition?.[1] ?? 3;
@@ -135,6 +136,9 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.helpers.axisLength = state.helpers.axisLength ?? 1;
             this.helpers.showGizmo = state.helpers.showGizmo ?? false;
         },
+        /**
+         * Reset the viewer to the factory defaults
+         */
         resetViewer(): void {
 
             this.camera.type = "orthographic";
@@ -145,6 +149,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.lookAt[1] = 0;
             this.camera.lookAt[2] = 0;
             this.camera.snapshotFormat = "png";
+            this.camera.snapshotTransparent = false;
             this.camera.stlFormat = "binary";
             this.camera.forcePosition[0] = 5;
             this.camera.forcePosition[1] = 3;

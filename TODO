@@ -3,7 +3,7 @@ Bugs:
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
   ☐ Fix atom reordering in trajectories
   ☐ ffmpeg output to application log
-  ☐ OganovValleFingerprinting: reduce peak memory usage
+  ✔ OganovValleFingerprinting: reduce peak memory usage @done(2025-07-02 13:53)
   ☐ Billboard also for Bonds lengths labels
   ☐ Add a timeout for success messages (eg. in CaptureMedia)
 

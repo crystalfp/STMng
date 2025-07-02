@@ -16,25 +16,26 @@ import log from "electron-log";
 export class Slab {
 
     private readonly tryPoints: number[][] = [];
-    private readonly interatomicDistances = new Map<number, [number, number][]>();
     private inverseBasis: BasisType = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
     private readonly cutoff: number;
     private readonly isNanocluster: boolean;
-    private readonly byAtom: boolean;
+
+    private originalCellIndex = 0;
+    private dd: number[] = [];
+    private replicaMaxIndex = 0;
+    private distancesFromZ: [atomZ: number, distance: number][] = [];
 
     /**
      * Create the slab
      *
      * @param cutoff - Cutoff distance
      * @param isNanocluster - If the structure is a nanocluster without a unit cell
-     * @param byAtom - Store the distance between atoms by atom index instead of by species
      */
-    constructor(cutoff: number, isNanocluster=false, byAtom=false) {
+    constructor(cutoff: number, isNanocluster=false) {
 
         this.cutoff = cutoff;
         this.isNanocluster = isNanocluster;
-        this.byAtom = byAtom;
 
         // Initialize try points
 		if(!isNanocluster) this.computeTryPoints(16, 16);
@@ -140,54 +141,26 @@ export class Slab {
 	}
 
     /**
-     * Store the distance between atoms "i" and "j" by specie or by atom index
-     *
-     * @param index - Index of the atom "i"
-     * @param Zi - Atom Z of the atom "i"
-     * @param Zj - Atom Z of the atom "j"
-     * @param distance - Distance between the two atoms
-     */
-    private storeDistance(index: number, Zi: number, Zj: number, distance: number): void {
-
-        const key = this.byAtom ? index : Zi;
-
-        if(this.interatomicDistances.has(key)) {
-            this.interatomicDistances.get(key)?.push([Zj, distance]);
-        }
-        else {
-            this.interatomicDistances.set(key, [[Zj, distance]]);
-        }
-    }
-
-    /**
-     * Compute the interatomic distances inside the infinite slab
+     * Prepare supporting data for computing interatomic distances
      *
      * @param basis - Unit cell basis vector
-     * @param natoms - Number of atoms
-     * @param atomsZ - Atoms Z values
-     * @param atomsPosition - Atoms coordinates
+     * @returns On error the error text, on success an empty string
      */
-    computeInteratomicDistances(basis: Float64Array,
-                                natoms: number,
-                                atomsZ: Int32Array,
-                                atomsPosition: Float64Array): void {
-
-        const TOL = 1e-2;
-        const TOL_SQUARED = TOL*TOL;
+    prepareComputingDistances(basis: Float64Array): string {
 
         // Compute how many copies of the unit cell are needed to contain the cutoff distance
         const expansion: PositionType = [0, 0, 0];
         if(!this.isNanocluster) {
 
             // Inverse basis to convert to fractional coordinates
-            this.inverseBasis = invertBasis(basis);
             try {
                 this.inverseBasis = invertBasis(basis);
             }
             // eslint-disable-next-line @stylistic/keyword-spacing
             catch {
-                log.error("In computeInteratomicDistances basis matrix is not invertible");
-                return;
+                const error = "In prepareComputingDistances basis matrix is not invertible";
+                log.error(error);
+                return error;
             }
 
             this.computeExpansion(basis, this.cutoff, expansion);
@@ -197,43 +170,60 @@ export class Slab {
         const ex = expansion[0];
         const ey = expansion[1];
         const ez = expansion[2];
-        let originalCellIndex;
-        const replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
-        const dd = Array<number>(replicaMaxIndex);
+        this.replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
+        this.dd.length = this.replicaMaxIndex;
 
         let n = 0;
         for(let di = -ex; di <= ex; ++di) {
             for(let dj = -ey; dj <= ey; ++dj) {
                 for(let dk = -ez; dk <= ez; ++dk) {
-                    dd[n++] = di;
-                    dd[n++] = dj;
-                    dd[n++] = dk;
+                    this.dd[n++] = di;
+                    this.dd[n++] = dj;
+                    this.dd[n++] = dk;
 
-                    if(di === 0 && dj === 0 && dk === 0) originalCellIndex = n-3;
+                    if(di === 0 && dj === 0 && dk === 0) this.originalCellIndex = n-3;
                 }
             }
         }
 
-        // Mark atoms on the border that could become duplicated
-        // const ok = this.getDuplicatedAtomsIndex(atomsPosition, natoms);
+        return "";
+    }
+
+    /**
+     * Compute the interatomic distances inside the infinite slab from the given atom type
+     *
+     * @param fromZ - Atom type from which the distance should be computed
+     * @param basis - Unit cell basis vector
+     * @param natoms - Number of atoms
+     * @param atomsZ - Atoms Z values
+     * @param atomsPosition - Atoms coordinates
+     * @returns Array of pairs remote atom type, distance
+     */
+    computeDistancesForZ(fromZ: number,
+                         basis: Float64Array,
+                         natoms: number,
+                         atomsZ: Int32Array,
+                         atomsPosition: Float64Array): [atomZ: number, distance: number][] {
+
+        const TOL = 1e-2;
+        const TOL_SQUARED = TOL*TOL;
+        this.distancesFromZ.length = 0;
 
         // For each replica (included the original cell)
-        for(let replica=0; replica < replicaMaxIndex; replica += 3) {
+        for(let replica=0; replica < this.replicaMaxIndex; replica += 3) {
 
             // Copy the atoms in the unit cell replicas
             for(let i=0, i3=0; i < natoms; ++i, i3+=3) {
+
+                if(atomsZ[i] !== fromZ) continue;
 
                 const x = atomsPosition[i3];
                 const y = atomsPosition[i3+1];
                 const z = atomsPosition[i3+2];
 
-                const Zi = atomsZ[i];
-
-                if(replica === originalCellIndex) {
+                if(replica === this.originalCellIndex) {
 
                     for(let j=i+1, j3=j*3; j < natoms; ++j, j3+=3) {
-
-                        // if(!this.isNanocluster && !ok[j]) continue;
 
                         const dx = atomsPosition[j3]   - x;
                         const dy = atomsPosition[j3+1] - y;
@@ -243,22 +233,20 @@ export class Slab {
                         if(distSquared >= TOL_SQUARED) {
                             const distance = Math.sqrt(distSquared);
                             const Zj = atomsZ[j];
-                            this.storeDistance(i, Zi, Zj, distance);
+                            this.distancesFromZ.push([Zj, distance]);
                         }
                     }
                 }
                 else {
-                    const di = dd[replica];
-                    const dj = dd[replica+1];
-                    const dk = dd[replica+2];
+                    const di = this.dd[replica];
+                    const dj = this.dd[replica+1];
+                    const dk = this.dd[replica+2];
 
                     const ox = x + di*basis[0] + dj*basis[3] + dk*basis[6];
                     const oy = y + di*basis[1] + dj*basis[4] + dk*basis[7];
                     const oz = z + di*basis[2] + dj*basis[5] + dk*basis[8];
 
                     for(let j=0, j3=0; j < natoms; ++j, j3+=3) {
-
-                        // if(!ok[j]) continue;
 
                         const dx = atomsPosition[j3+0] - ox;
                         const dy = atomsPosition[j3+1] - oy;
@@ -269,32 +257,20 @@ export class Slab {
                         if(distSquared >= TOL_SQUARED) {
                             const distance = Math.sqrt(distSquared);
                             const Zj = atomsZ[j];
-                            this.storeDistance(i, Zi, Zj, distance);
+                            this.distancesFromZ.push([Zj, distance]);
                         }
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Return the computed interatomic distances from a given type
-     *
-     * @param atomZ - Atom type from which the distance should be computed
-     * @returns Array of pairs remote atom type, distance
-     */
-    getDistancesForZ(atomZ: number): [atomZ: number, distance: number][] {
-
-        const distances = this.interatomicDistances.get(atomZ);
-
-        return distances ?? [];
+        return this.distancesFromZ;
     }
 
     /**
      * Reset allocated memory
      */
     reset(): void {
-        this.interatomicDistances.clear();
+        this.distancesFromZ.length = 0;
     }
 
     /**
