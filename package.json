@@ -13,6 +13,7 @@
     "dev": "vite",
     "prebuild": "node-gyp rebuild && electron-builder install-app-deps && sh ./rollup.sh",
     "build": "vue-tsc && vite build && electron-builder",
+    "build:fix": "vue-tsc && electron-builder install-app-deps && sh ./rollup.sh && vite build && electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
     "lint": "eslint -f codeframe src",
@@ -36,7 +37,7 @@
     "commander": "^14.0.0",
     "custom-electron-titlebar": "^4.2.8",
     "electron-log": "^5.4.1",
-    "mathjs": "^14.5.2",
+    "mathjs": "^14.5.3",
     "pinia": "^3.0.3",
     "three": "^0.178.0",
     "three-viewport-gizmo": "^2.2.0",
@@ -65,8 +66,8 @@
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
     "@vitejs/plugin-vue": "^6.0.0",
-    "dependency-cruiser": "^16.10.3",
-    "electron": "^37.1.0",
+    "dependency-cruiser": "^16.10.4",
+    "electron": "^37.2.0",
     "electron-builder": "^26.0.12",
     "eslint": "^9.30.1",
     "eslint-formatter-codeframe": "^7.32.1",
@@ -83,7 +84,7 @@
     "eslint-plugin-vue": "^10.3.0",
     "node-addon-api": "^8.4.0",
     "postcss-html": "^1.8.0",
-    "stylelint": "^16.21.0",
+    "stylelint": "^16.21.1",
     "stylelint-config-recommended-scss": "^15.0.1",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^38.0.0",
@@ -93,7 +94,7 @@
     "typedoc-plugin-missing-exports": "^4.0.0",
     "typedoc-plugin-vue": "^1.5.0",
     "typescript": "^5.8.3",
-    "vite": "^7.0.0",
+    "vite": "^7.0.2",
     "vite-plugin-clean-pattern": "^1.0.6",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-electron": "^0.29.0",
@@ -101,6 +102,6 @@
     "vite-plugin-vue-devtools": "^7.7.7",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.0.0"
+    "vue-tsc": "^3.0.1"
   }
 }

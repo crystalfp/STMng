@@ -8,7 +8,7 @@
  */
 import {ref, watch, computed} from "vue";
 import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/RoutesClient";
-import {showSystemAlert, resetAlertMessage} from "@/services/AlertMessage";
+import {showSystemAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {DrawStructureRenderer} from "@/renderers/DrawStructureRenderer";
 import {useControlStore} from "@/stores/controlStore";
 import type {StructureRenderInfo} from "@/types";
@@ -41,7 +41,7 @@ const showBondsStrengths = ref(false);
 // > Access the stores
 const controlStore = useControlStore();
 
-resetAlertMessage("system");
+resetNodeAlert();
 askNode(id, "init")
     .then((params) => {
 

@@ -11,11 +11,11 @@ import {ref, computed, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import type {CtrlParams, FileFilter} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
-import ErrorAlert from "@/widgets/ErrorAlert.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -40,12 +40,11 @@ const format         = ref("");
 const outputFile     = ref("");
 const outputFileFull = ref("");
 const continuous     = ref(false);
-const finish         = ref(false);
 const writerLabel    = ref("");
 const hasNoUnitCell  = ref(true);
 
 // Initialize the control
-resetAlertMessage("structureWriter");
+resetNodeAlert();
 askNode(id, "init").then((params) => {
 
     format.value = params.format as string ?? "";
@@ -58,8 +57,8 @@ askNode(id, "init").then((params) => {
     }
     hasNoUnitCell.value = params.hasNoUnitCell as boolean ?? true;
 })
-.catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
-                                          "structureWriter"));
+.catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                                       "structureWriter"));
 
 /** Define the label for the capture button */
 const captureButtonLabel = computed(() => {
@@ -93,10 +92,13 @@ const startStopCapture = (): void => {
             })
             .then((params) => {
                 if("error" in params) throw Error(params.error as string);
-                finish.value = !controlStore.writerAccumulate;
+                if(!controlStore.writerAccumulate) {
+                    showNodeAlert(`File written to: ${outputFileFull.value}`,
+                                  "structureWriter", {level: "success"});
+                }
             })
-            .catch((error: Error) => showAlertMessage(`Error writing structure: ${error.message}`,
-                                                      "structureWriter"));
+            .catch((error: Error) => showNodeAlert(`Error writing structure: ${error.message}`,
+                                                   "structureWriter"));
     }
     else {
         controlStore.writerAccumulate = true;
@@ -107,11 +109,12 @@ const startStopCapture = (): void => {
             })
             .then((params) => {
                 if("error" in params) throw Error(params.error as string);
-                finish.value = true;
+                showNodeAlert(`File written to: ${outputFileFull.value}`,
+                              "structureWriter", {level: "success"});
             })
             .finally(() => {controlStore.writerAccumulate = false;})
-            .catch((error: Error) => showAlertMessage(`Error writing: ${error.message}`,
-                                                      "structureWriter"));
+            .catch((error: Error) => showNodeAlert(`Error writing: ${error.message}`,
+                                                   "structureWriter"));
     }
 };
 
@@ -166,7 +169,7 @@ const filterFromFormat = (fileFormat: string): string => {
  */
 const selectedSaveFile = (filename: string): void => {
 
-    resetAlertMessage("structureWriter");
+    resetNodeAlert();
 
     if(filename) {
         outputFileFull.value = filename;
@@ -198,9 +201,6 @@ const selectedSaveFile = (filename: string): void => {
       {{ captureButtonLabel }}
     </v-btn>
   </v-row>
-  <v-alert v-if="finish" title="Done" class="mt-7 cursor-pointer"
-           :text="`File written to: ${outputFileFull}`" type="success" density="compact"
-           @click="finish=false" />
-  <error-alert kind="structureWriter"/>
+  <node-alert node="structureWriter" class="mt-7" />
   </v-container>
 </template>

@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {sendAlertMessage, sendToClient} from "../modules/ToClient";
+import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {PointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
@@ -204,7 +204,7 @@ export class ComputeSymmetries extends NodeCore {
 			fractionalCoordinates = cartesianToFractionalCoordinates(this.inputStructure);
 		}
 		catch(error: unknown) {
-			sendAlertMessage((error as Error).message, "symmetries");
+			sendAlertToClient((error as Error).message, {node: "symmetries"});
 			fractionalCoordinates = [];
 		}
 		if(fractionalCoordinates.length === 0) {
@@ -337,7 +337,7 @@ export class ComputeSymmetries extends NodeCore {
 			fractionalCoordinates = cartesianToFractionalCoordinates(structure);
 		}
 		catch(error: unknown) {
-			sendAlertMessage((error as Error).message, "symmetries");
+			sendAlertToClient((error as Error).message, {node: "symmetries"});
 			fractionalCoordinates = [];
 		}
 

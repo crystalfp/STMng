@@ -13,7 +13,7 @@ import path from "node:path";
 import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
-import {sendProjectUI, sendAlertMessage, sendProjectPath} from "./ToClient";
+import {sendProjectUI, sendAlertToClient, sendProjectPath} from "./ToClient";
 import type {Project, CtrlParams, ProjectGraph} from "@/types";
 import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo} from "@/types/NodeInfo";
 import type {NodeCore} from "./NodeCore";
@@ -124,7 +124,7 @@ class ProjectManager {
 			this.sendProject();
 		}
 		catch(error) {
-			sendAlertMessage(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
+			sendAlertToClient(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
 		}
 	}
 
@@ -139,7 +139,7 @@ class ProjectManager {
 				projectInfo = this.buildProjectInfo();
 			}
 			catch(error) {
-				sendAlertMessage(`Cannot parse project for send. Error: ${(error as Error).message}`);
+				sendAlertToClient(`Cannot parse project for send. Error: ${(error as Error).message}`);
 			}
 		}
 
@@ -280,7 +280,7 @@ class ProjectManager {
 			projectInfo = this.buildProjectInfo();
 		}
 		catch(error) {
-			sendAlertMessage(`Cannot parse project. Error: ${(error as Error).message}`);
+			sendAlertToClient(`Cannot parse project. Error: ${(error as Error).message}`);
 		}
 		return JSON.stringify({graph: projectInfo, allNodes: this.allNodes});
 	}
@@ -308,7 +308,7 @@ class ProjectManager {
 
 		const filename = getProjectPath();
 		if(filename) void this.saveProjectAs(filename);
-		else sendAlertMessage("Cannot save project. Filename not set");
+		else sendAlertToClient("Cannot save project. Filename not set");
 	}
 
 	/**
@@ -337,7 +337,7 @@ class ProjectManager {
 			sendProjectPath(filename);
 		}
 		else {
-			sendAlertMessage(`Project file "${filename}" does not exist. Loading default project`);
+			sendAlertToClient(`Project file "${filename}" does not exist. Loading default project`);
 
 			removeProjectPath();
 			filename = this.getDefaultProject();
@@ -373,7 +373,7 @@ class ProjectManager {
 			}
 			if(existsSync(filename)) sendProjectPath(filename);
 			else {
-				sendAlertMessage(`Project file "${filename}" does not exist. Loading default project`);
+				sendAlertToClient(`Project file "${filename}" does not exist. Loading default project`);
 				removeProjectPath();
 				filename = this.getDefaultProject();
 				sendProjectPath();
@@ -502,7 +502,7 @@ export const setupChannelProject = (): void => {
 					pm.loadProjectAndRemember(file);
 				})
 				.catch((error: Error) => {
-					sendAlertMessage(`Cannot write modified project file. Error: ${error.message}`);
+					sendAlertToClient(`Cannot write modified project file. Error: ${error.message}`);
 				});
 		}
 		else return {saved: false};

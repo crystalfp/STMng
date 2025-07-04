@@ -8,10 +8,10 @@
  */
 import {ref, watch, watchEffect} from "vue";
 import {askNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
-import ErrorAlert from "@/widgets/ErrorAlert.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
 import {SliceStructureRenderer} from "@/renderers/SliceStructureRenderer";
 import type {CtrlParams} from "@/types";
 
@@ -72,7 +72,7 @@ const thickness = ref(1);
 const showThickness = ref(1);
 
 // > Initialize ui
-resetAlertMessage("slicer");
+resetNodeAlert();
 
 askNode(id, "init")
     .then((params) => {
@@ -106,7 +106,7 @@ askNode(id, "init")
         showSphereRadius.value = sphereRadius.value;
         showThickness.value = thickness.value;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`, "slicer"));
 
 // > Initialize graphical rendering
 const renderer = new SliceStructureRenderer(id);
@@ -130,7 +130,7 @@ watch([enableSlicer, mode, selectorKind, atomsSelector,
                              sphereRadius.value,
                              showSlicer.value);
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI sphere for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => showNodeAlert(`Error from UI sphere for ${label}: ${error.message}`, "slicer"));
 });
 
 /** Selected plane slice */
@@ -153,7 +153,7 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
     .then((response: CtrlParams) => {
         renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI plane for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => showNodeAlert(`Error from UI plane for ${label}: ${error.message}`, "slicer"));
 });
 
 /** Slice along a slab */
@@ -178,7 +178,7 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
         renderer.drawIntersectedPlane(response.intersections1 as number[], showSlicer.value);
         renderer.drawIntersectedPlane(response.intersections2 as number[], showSlicer.value, true);
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI slab for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => showNodeAlert(`Error from UI slab for ${label}: ${error.message}`, "slicer"));
 });
 
 /** Slice along a Miller plane */
@@ -199,7 +199,7 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
     .then((response: CtrlParams) => {
         renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI Miller plane for ${label}: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from UI Miller plane for ${label}: ${error.message}`,
         "slicer"));
 });
 
@@ -266,19 +266,19 @@ const resetParameters = (): void => {
 watchEffect(() => {
 
     if(parallelA.value && parallelB.value && parallelC.value) {
-        showAlertMessage("Only one or two parallel directions can be selected", "slicer");
+        showNodeAlert("Only one or two parallel directions can be selected", "slicer");
     }
     else if(percentA.value === 0 && percentB.value === 0 && percentC.value === 0) {
-        showAlertMessage("At least one direction must be selected", "slicer");
+        showNodeAlert("At least one direction must be selected", "slicer");
     }
     else if(millerH.value === 0 && millerK.value === 0 && millerL.value === 0) {
-        showAlertMessage("At least one miller index must be selected", "slicer");
+        showNodeAlert("At least one miller index must be selected", "slicer");
     }
     else if(sphereRadius.value <= 0) {
-        showAlertMessage("Sphere radius must be greater than zero", "slicer");
+        showNodeAlert("Sphere radius must be greater than zero", "slicer");
     }
     else if(thickness.value <= 0) {
-        showAlertMessage("Slab thickness must be greater than zero", "slicer");
+        showNodeAlert("Slab thickness must be greater than zero", "slicer");
     }
 });
 
@@ -352,6 +352,8 @@ watchEffect(() => {
                       title="Select atoms by" placeholder="Atom selector" />
   </v-container>
   <v-btn block class="mt-6" @click="resetParameters">Reset parameters</v-btn>
-  <error-alert kind="slicer" />
+
+  <node-alert node="slicer" />
+
 </v-container>
 </template>

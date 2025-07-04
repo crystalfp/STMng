@@ -14,7 +14,7 @@ import {isLoaded, handleFullscreen, receiveRefreshMenu,
         receiveNotifications, sendToNode,
         receiveBroadcast,
         handleExitConfirmation} from "@/services/RoutesClient";
-import {showAlertMessage, showSystemAlert} from "@/services/AlertMessage";
+import {showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
 import {theme} from "@/services/ReceiveTheme";
 import type {AlertLevel} from "@/stores/messageStore";
 
@@ -71,7 +71,7 @@ const notificationQueue = ref<{text: string; color: string}[]>([]);
 receiveNotifications((type: AlertLevel, text: string, from: string) => {
 
     notificationQueue.value.push({text, color: type === "error" ? "red-darken-4" : type});
-    if(from !== "") showAlertMessage(text, from);
+    if(from !== "") showNodeAlert(text, from);
 });
 
 /**

@@ -11,6 +11,7 @@ import log from "electron-log";
 import path from "node:path";
 import type {CtrlParams, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
+import type {AlertLevel} from "@/stores/messageStore";
 
 /** Saved access to client window */
 let mainWinWebContents: WebContents | undefined;
@@ -181,25 +182,22 @@ export const sendProjectUI = (clientProjectInfo: ClientProjectInfo): void => {
 };
 
 /**
- * Send error notification from main process
- *
- * @param text - Text of the notification
- */
-export const sendAlertMessage = (text: string, from?: string): void => {
-
-	mainWinWebContents!.send("SYSTEM:notification", "error", text, from ?? "");
-	log.error(text);
-};
-
-/**
- * Send error notification from main process
+ * Send error notification from main process to main window
  *
  * @param message - Complete text of the notification
- * @param userMessage - Simplified text of the notification for the user
+ * @param options - Optional parameters
+	- userMessage: Simplified text of the notification for the user (default same as message)
+	- level: Notification level (default "error")
+	- node: From which node the alert originates
  */
-export const sendDoubleAlertMessage = (message: string, userMessage: string, from?: string): void => {
+export const sendAlertToClient = (message: string,
+								  options: {
+										userMessage?: string;
+								   		level?: AlertLevel;
+								   		node?: string;} = {}): void => {
 
-	mainWinWebContents!.send("SYSTEM:notification", "error", userMessage, from ?? "");
+	const {userMessage=message, level="error", node=""} = options;
+	mainWinWebContents!.send("SYSTEM:notification", level, userMessage, node);
 	log.error(message);
 };
 

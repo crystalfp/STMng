@@ -12,7 +12,7 @@ import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 // eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindow} from "./WindowsUtilities";
-import {refreshSystemMenu, openMenuEntry, sendAlertMessage,
+import {refreshSystemMenu, openMenuEntry, sendAlertToClient,
         getCurrentNode} from "./ToClient";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
@@ -210,7 +210,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                     click() {
                         openDocumentation("top")
                             .catch((error: Error) => {
-                                sendAlertMessage(`Error getting help for "STMng": ${error.message}`);
+                                sendAlertToClient(`Error getting help for "STMng": ${error.message}`);
                             });
                     },
                 },
@@ -225,7 +225,7 @@ export const setupMenu = (isDevelopment: boolean): void => {
                             return openDocumentation("node", currentNode);
                         })
                         .catch((error: Error) => {
-                            sendAlertMessage(`Error getting help for "${currentNodeInError}": ${error.message}`);
+                            sendAlertToClient(`Error getting help for "${currentNodeInError}": ${error.message}`);
                         });
                     }
                 },
@@ -296,7 +296,7 @@ export const setupChannelMenu = (isDevelopment: boolean): void => {
         if(key === "F1") {
             openDocumentation("secondary", request)
                 .catch((error: Error) => {
-                    sendAlertMessage(`Error getting help for secondary window: ${error.message}`);
+                    sendAlertToClient(`Error getting help for secondary window: ${error.message}`);
                 });
         }
         // Open developer tools on the secondary window

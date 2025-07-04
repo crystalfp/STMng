@@ -15,19 +15,17 @@ import CameraControls from "camera-controls";
 import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
-import {useMessageStore} from "@/stores/messageStore";
 import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
-import {showSystemAlert} from "@/services/AlertMessage";
+import {showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 import type {BillboardBatchedText} from "@/services/SpriteText";
 
 // > Access the stores
 const configStore  = useConfigStore();
 const controlStore = useControlStore();
-const messageStore = useMessageStore();
 
 // > Properties
 const props = defineProps<{
@@ -102,13 +100,11 @@ const handleStop = async (): Promise<void> => {
         .then((sts) => {
             if(sts.error) throw Error(sts.error as string);
             if(sts.payload) {
-                messageStore.captureMedia.typeM = "success";
-                messageStore.captureMedia.textM = sts.payload as string;
+                showNodeAlert(sts.payload as string, "captureMovie", {level: "success"});
             }
         })
         .catch((error: Error) => {
-            messageStore.captureMedia.typeM = "error";
-            messageStore.captureMedia.textM = error.message;
+            showNodeAlert(error.message, "captureMovie");
         });
 };
 
@@ -118,8 +114,8 @@ const handleStop = async (): Promise<void> => {
  * @param event - Error event
  */
 const handleError = (event: Event): void => {
-    messageStore.captureMedia.typeM = "error";
-    messageStore.captureMedia.textM = (event as unknown as {error: {name: string}}).error.name;
+    const error = (event as unknown as {error: {name: string}}).error.name;
+    showNodeAlert(error, "captureMovie");
 };
 
 // Reference to the view
@@ -402,12 +398,12 @@ onMounted(() => {
                     .then((response: CtrlParams) => {
                         if(response.error) throw Error(response.error as string);
                         if(response.payload === "") return;
-                        messageStore.captureMedia.typeS = "success";
-                        messageStore.captureMedia.textS = response.payload as string;
+                        showNodeAlert(response.payload as string, "captureSnapshot",
+                                      {level: "success"});
                     })
                     .catch((error: Error) => {
-                        messageStore.captureMedia.typeS = "error";
-                        messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
+                        showNodeAlert(`Error saving snapshot. Error: ${error.message}`,
+                                      "captureSnapshot");
                     })
                     .finally(() => {
                         if(configStore.camera.snapshotTransparent) sm.transparentSceneBackground(false);
@@ -424,12 +420,12 @@ onMounted(() => {
             .then((response: CtrlParams) => {
                 if(response.error) throw Error(response.error as string);
                 if(response.payload === "") return;
-                messageStore.captureMedia.typeS = "success";
-                messageStore.captureMedia.textS = response.payload as string;
+                showNodeAlert(response.payload as string, "captureSnapshot",
+                              {level: "success"});
             })
             .catch((error: Error) => {
-                messageStore.captureMedia.typeS = "error";
-                messageStore.captureMedia.textS = `Error saving snapshot. Error: ${error.message}`;
+                showNodeAlert(`Error saving snapshot. Error: ${error.message}`,
+                              "captureSnapshot");
             });
         }
     });
@@ -442,17 +438,19 @@ onMounted(() => {
             controlStore.stl = false;
 
             const result = sm.createSTL(configStore.camera.stlFormat);
-            askNode("SYSTEM", "stl", {binary: configStore.camera.stlFormat === "binary", content: result})
-                .then((response: CtrlParams) => {
-                    if(response.error) throw Error(response.error as string);
-                    if(response.payload === "") return;
-                    messageStore.captureMedia.typeT = "success";
-                    messageStore.captureMedia.textT = response.payload as string;
-                })
-                .catch((error: Error) => {
-                    messageStore.captureMedia.typeT = "error";
-                    messageStore.captureMedia.textT = `Error saving STL file. Error: ${error.message}`;
-                });
+            askNode("SYSTEM", "stl", {
+                binary: configStore.camera.stlFormat === "binary",
+                content: result
+            })
+            .then((response: CtrlParams) => {
+                if(response.error) throw Error(response.error as string);
+                if(response.payload === "") return;
+                showNodeAlert(response.payload as string, "captureSTL", {level: "success"});
+            })
+            .catch((error: Error) => {
+                showNodeAlert(`Error saving STL file. Error: ${error.message}`,
+                                "captureSTL");
+            });
         }
     });
 

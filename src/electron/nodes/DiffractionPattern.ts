@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {sendAlertMessage, sendToClient} from "../modules/ToClient";
+import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ChartData, ChartOptions, ChartCoordinate} from "@/types";
 
@@ -62,7 +62,7 @@ export class DiffractionPattern extends NodeCore {
 														this.thetaLow, this.thetaHigh);
 			}
 			catch(error: unknown) {
-				sendAlertMessage(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
 				return;
 			}
 
@@ -364,7 +364,7 @@ export class DiffractionPattern extends NodeCore {
 														this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
 			}
 			catch(error: unknown) {
-				sendAlertMessage(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
 				return;
 			}
 
@@ -397,7 +397,7 @@ export class DiffractionPattern extends NodeCore {
 														this.thetaLow, this.thetaHigh, this.wavelengthNumeric);
 			}
 			catch(error: unknown) {
-				sendAlertMessage(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
 				return;
 			}
 

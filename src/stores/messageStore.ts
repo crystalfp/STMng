@@ -12,41 +12,10 @@ import {defineStore, acceptHMRUpdate} from "pinia";
 export type AlertLevel = "success" | "info" | "warning" | "error";
 
 /**
- * Kind of message from capture media
- * @notExported
- */
-type MessageType = AlertLevel | undefined;
-
-/**
  * Content of the store
  * @notExported
  */
 interface MessageState {
-	/** Messages for the symmetry node */
-	symmetries: string;
-	/** Messages for the structure reader node */
-    structureReader: string;
-	/** Messages for the structure writer node */
-    structureWriter: string;
-	/** Messages for the fingerprints node */
-	fingerprints: string;
-	/** Messages for the slice structure node */
-	slicer: string;
-	/** Messages for the capture media node */
-	captureMedia: {
-		/** Take snapshot message type */
-		typeS: MessageType;
-		/** Take snapshot message text */
-		textS: string;
-		/** Create movie message type */
-		typeM: MessageType;
-		/** Create movie message text */
-		textM: string;
-		/** Export STL file message type */
-		typeT: MessageType;
-		/** Export STL file message text */
-		textT: string;
-	};
 	/** System messages */
 	system: {
 		/** Message text */
@@ -54,25 +23,23 @@ interface MessageState {
 		/** Kind of message */
 		level: AlertLevel;
 	};
+
+	/** Origin node for the (non-system) message */
+	node: string;
+	/** Level of the message (normally it is "error") */
+	level: AlertLevel;
+	/** Text of the message */
+	text: string;
 }
 
 /** Access the message store that contains messages that flow from computations to the UI */
 export const useMessageStore = defineStore("MessageStore", {
 
     state: () => ({
-        symmetries: "",
-        structureReader: "",
-        structureWriter: "",
-		fingerprints: "",
-		captureMedia: {
-			typeS: undefined,
-			textS: "",
-			typeM: undefined,
-			textM: "",
-			typeT: undefined,
-			textT: "",
-		},
 		system: {message: "", level: "error"},
+		node: "",
+		level: "error",
+		text: ""
 	} as MessageState),
 });
 

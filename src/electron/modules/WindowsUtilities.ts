@@ -12,7 +12,7 @@ import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
-import {toClientSetup, sendAlertMessage} from "./ToClient";
+import {toClientSetup, sendAlertToClient} from "./ToClient";
 import favicon from "../../assets/favicon.png";
 import type {WindowsParams} from "@/types";
 
@@ -154,7 +154,7 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         }
     });
     if(!secondaryWin) {
-        sendAlertMessage("Cannot create secondary window");
+        sendAlertToClient("Cannot create secondary window");
         return;
     }
     secondaryWin.removeMenu();

@@ -8,13 +8,12 @@
  */
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
-import {useMessageStore} from "@/stores/messageStore";
 import {computed} from "vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
 
 // > Access the stores
 const configStore = useConfigStore();
 const controlStore = useControlStore();
-const messageStore = useMessageStore();
 
 // Show this module has been loaded
 controlStore.hasCapture = true;
@@ -40,20 +39,12 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
             :disabled="configStore.camera.snapshotFormat!=='png'"
             label="Transparent background" class="mt-4 ml-2" />
   <v-btn block class="mt-4" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
-  <v-alert v-if="messageStore.captureMedia.typeS !== undefined"
-           :title="messageStore.captureMedia.typeS === 'error' ? 'Error' : 'Success!'"
-           :text="messageStore.captureMedia.textS" :type="messageStore.captureMedia.typeS"
-           density="compact" class="mt-4 cursor-pointer"
-           @click="messageStore.captureMedia.typeS=undefined" />
+  <node-alert node="captureSnapshot" class="mt-4" />
 
   <v-label class="mt-10 separator-title">Movie</v-label>
   <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
         @click="controlStore.movie = !controlStore.movie">{{ startStop }}</v-btn>
-  <v-alert v-if="messageStore.captureMedia.typeM !== undefined"
-           :title="messageStore.captureMedia.typeM === 'error' ? 'Error' : 'Success!'"
-           :text="messageStore.captureMedia.textM" :type="messageStore.captureMedia.typeM"
-           density="compact" class="mt-4 cursor-pointer"
-           @click="messageStore.captureMedia.typeM=undefined" />
+  <node-alert node="captureMovie" class="mt-4" />
 
   <v-label class="mt-10 separator-title">STL</v-label>
   <v-row class="mt-4">
@@ -64,10 +55,6 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
   </v-btn-toggle>
   </v-row>
   <v-btn block class="mt-3" @click="controlStore.stl = true">Capture geometry</v-btn>
-  <v-alert v-if="messageStore.captureMedia.typeT !== undefined"
-           :title="messageStore.captureMedia.typeT === 'error' ? 'Error' : 'Success!'"
-           :text="messageStore.captureMedia.textT" :type="messageStore.captureMedia.typeT"
-           density="compact" class="mt-4 cursor-pointer"
-           @click="messageStore.captureMedia.typeT=undefined" />
+  <node-alert node="captureSTL" class="mt-4" />
 </v-container>
 </template>

@@ -8,7 +8,7 @@
  */
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
-import {sendAlertMessage} from "../modules/ToClient";
+import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition,
@@ -420,8 +420,8 @@ export class StructureReader extends NodeCore {
 			if(currentAtomsZ.size > typesAfter.length) {
 				const missing = currentAtomsZ.size - typesAfter.length;
 				const plural = missing === 1 ? "" : "s";
-				sendAlertMessage(`Missing ${missing} atom symbol${plural} in the renamed list`,
-								 "structureReader");
+				sendAlertToClient(`Missing ${missing} atom symbol${plural} in the renamed list`,
+								  {node: "structureReader"});
 				return;
 			}
 		}
@@ -433,8 +433,8 @@ export class StructureReader extends NodeCore {
 
 			const to = getAtomicNumber(typesAfter[idx]);
 			if(to === 0) {
-				sendAlertMessage(`Invalid symbol "${typesAfter[idx]}" in the renamed list`,
-								 "structureReader");
+				sendAlertToClient(`Invalid symbol "${typesAfter[idx]}" in the renamed list`,
+								 {node: "structureReader"});
 				return;
 			}
 			mapAtomZ.set(from, to);
@@ -449,7 +449,8 @@ export class StructureReader extends NodeCore {
 				const renamedAtomZ = mapAtomZ.get(atom.atomZ);
 				if(renamedAtomZ === undefined) {
 
-					sendAlertMessage(`Invalid mapping for atomZ of ${atom.atomZ}`, "structureReader");
+					sendAlertToClient(`Invalid mapping for atomZ of ${atom.atomZ}`,
+									  {node: "structureReader"});
 					return;
 				}
 				atom.atomZ = renamedAtomZ;

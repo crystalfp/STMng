@@ -9,11 +9,11 @@
 
 import {ref, watch} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
-import ErrorAlert from "@/widgets/ErrorAlert.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -53,7 +53,7 @@ const eigenvalueTolerance = ref(0.01);
 const showExponential = (value: number): string => (10**value).toExponential(2);
 
 // Initialize the control
-resetAlertMessage("symmetries");
+resetNodeAlert();
 askNode(id, "init")
     .then((params) => {
 
@@ -73,8 +73,8 @@ askNode(id, "init")
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
-                                              "symmetries"));
+    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                                           "symmetries"));
 
 watch([applyInputSymmetries,
        enableFindSymmetries,
@@ -188,7 +188,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
 
   <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
 
-  <error-alert kind="symmetries"/>
+  <node-alert node="symmetries" />
 </v-container>
 </template>
 

@@ -8,13 +8,13 @@
  */
 import {ref, computed, watch} from "vue";
 import {storeToRefs} from "pinia";
-import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {useControlStore} from "@/stores/controlStore";
 import type {CtrlParams} from "@/types";
 import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
-import ErrorAlert from "@/widgets/ErrorAlert.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -62,7 +62,7 @@ interface GroupingMethodsNames {
 }
 
 // Prepare the error messages
-resetAlertMessage("fingerprints");
+resetNodeAlert();
 
 // Accumulate structures
 const countAccumulated = ref(0);
@@ -164,7 +164,7 @@ askNode(id, "init")
         countGroups.value = 0;
         pointsRemoved.value = -1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
 
 /** Receive the parameters of structure loaded */
@@ -213,7 +213,7 @@ watch([fingerprintsAccumulate], () => {
             areNanoclusters.value = params.areNanoclusters as boolean ?? false;
         }, 50);
     })
-    .catch((error: Error) => showAlertMessage(`Error from toggle capture for ${label}: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from toggle capture for ${label}: ${error.message}`,
                                               "fingerprints"));
 });
 
@@ -239,7 +239,7 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
         energyThresholdEffective.value = params.energyThresholdEffective as number ?? 0;
         cutoffDistance.value = params.cutoffDistance as number ?? 0;
     })
-    .catch((error: Error) => showAlertMessage(`Error from energy settings for ${label}: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from energy settings for ${label}: ${error.message}`,
                                               "fingerprints"));
 });
 
@@ -258,7 +258,7 @@ watch([forceCutoff, manualCutoffDistance], () => {
         countDistances.value = 0;
         countGroups.value = 0;
     })
-    .catch((error: Error) => showAlertMessage(`Error from cutoff setting for ${label}: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from cutoff setting for ${label}: ${error.message}`,
                                               "fingerprints"));
 
 });
@@ -311,7 +311,7 @@ const computeFingerprints = (): void => {
         endMessage.value = params.endMessage as string ?? "";
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from fingerprint computation: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from fingerprint computation: ${error.message}`,
                                               "fingerprints"))
     .finally(() => {fingerprintingBusy.value = false;});
 };
@@ -335,7 +335,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
         endMessage.value = params.endMessage as string ?? "";
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from distance computation: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from distance computation: ${error.message}`,
                                               "fingerprints"));
 });
 
@@ -349,7 +349,7 @@ watch([removeDuplicates, duplicatesThreshold], () => {
     .then((params: CtrlParams) => {
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
-    .catch((error: Error) => showAlertMessage(`Error from duplicates removal: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from duplicates removal: ${error.message}`,
                                               "fingerprints"));
 });
 
@@ -381,7 +381,7 @@ const ClassifyStructures = (): void => {
     .then((params: CtrlParams) => {
         countGroups.value = params.countGroups as number ?? 0;
     })
-    .catch((error: Error) => showAlertMessage(`Error from grouping structures: ${error.message}`,
+    .catch((error: Error) => showNodeAlert(`Error from grouping structures: ${error.message}`,
                                               "fingerprints"))
     .finally(() => {groupingBusy.value = false;});
 };
@@ -487,7 +487,7 @@ const showEnergyLandscape = (): void => {
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
     {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
   <v-label v-if="fingerprintingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
-  <error-alert kind="fingerprints" />
+  <node-alert node="fingerprints" />
 
   <v-label class="separator-title">Compute distances</v-label>
 

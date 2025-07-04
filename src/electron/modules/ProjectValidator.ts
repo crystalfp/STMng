@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {sendAlertMessage} from "./ToClient";
+import {sendAlertToClient} from "./ToClient";
 import type {Project} from "@/types";
 
 import {object as vObject, record as vRecord, pipe as vPipe,
@@ -55,7 +55,7 @@ export const projectIsValid = (prj: Project): boolean => {
 		for(const entry in nested) {
 			errorMessage += `  ${entry}: "${nested[entry]?.join("; ")}"\n`;
 		}
-		sendAlertMessage(errorMessage);
+		sendAlertToClient(errorMessage);
 
 		return false;
 	}
@@ -83,12 +83,12 @@ const checkIds = (prj: Project): boolean => {
 	for(const id in prj.graph) {
 
 		if(reservedIds.has(id)) {
-			sendAlertMessage(`Reserved id "${id}" cannot be used`);
+			sendAlertToClient(`Reserved id "${id}" cannot be used`);
 			return false;
 		}
 
 		if(ids.has(id)) {
-			sendAlertMessage(`Duplicated id "${id}"`);
+			sendAlertToClient(`Duplicated id "${id}"`);
 			return false;
 		}
 		ids.add(id);
@@ -102,7 +102,7 @@ const checkIds = (prj: Project): boolean => {
 
 		for(const input of inputs) {
 			if(ids.has(input)) continue;
-			sendAlertMessage(`Invalid input to node "${id}": ${input}`);
+			sendAlertToClient(`Invalid input to node "${id}": ${input}`);
 			return false;
 		}
 	}
@@ -242,7 +242,7 @@ const checkCycles = (prj: Project): boolean => {
 
 	if(result.hasLoop) {
 
-		sendAlertMessage(`Cycle detected in nodes: ${result.loop!.join(", ")}`);
+		sendAlertToClient(`Cycle detected in nodes: ${result.loop!.join(", ")}`);
 
 		return false;
 	}

@@ -11,13 +11,13 @@ import {ref, watch, computed} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {askNode, sendToNode} from "@/services/RoutesClient";
-import {showAlertMessage, resetAlertMessage} from "@/services/AlertMessage";
+import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import type {FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
 import SelectFile from "@/widgets/SelectFile.vue";
-import ErrorAlert from "@/widgets/ErrorAlert.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -68,7 +68,7 @@ const appendFile    = ref(false);   // The file will be appended to the list of 
 const controlStore = useControlStore();
 
 // Initialize the control
-resetAlertMessage("structureReader");
+resetNodeAlert();
 askNode(id, "init")
     .then((params) => {
 
@@ -84,7 +84,7 @@ askNode(id, "init")
         speed.value         = params.speed as number ?? 1;
         energyPerAtom.value = params.energyPerAtom as boolean ?? false;
     })
-    .catch((error: Error) => showAlertMessage(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
+    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
 
 // Reset accumulate for fingerprint when changing to a single step structure
 watch([countSteps], (after: [number], before: [number]) => {
@@ -106,7 +106,7 @@ watch([step], (
             if("error" in params) throw Error(params.error as string);
         })
         .catch((error: Error) => {
-            showAlertMessage(`Error from stepping: ${error.message}`, "structureReader");
+            showNodeAlert(`Error from stepping: ${error.message}`, "structureReader");
         });
 });
 
@@ -168,7 +168,7 @@ watch([running], async () => {
             if(!running.value) break;
         }
         catch(error: unknown) {
-            showAlertMessage(`Error from stepping: ${(error as Error).message}`, "structureReader");
+            showNodeAlert(`Error from stepping: ${(error as Error).message}`, "structureReader");
         }
     }
 
@@ -244,7 +244,7 @@ const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomType
  */
 const getAtomsTypes = (): void => {
 
-    resetAlertMessage("structureReader");
+    resetNodeAlert();
 
     sendToNode(id, "types", {atomsTypes: atomsTypes.value});
 };
@@ -291,7 +291,7 @@ const selectedFile = (filename: string): void => {
     step.value = 1;
     fileToRead.value = filename;
     inProgress.value = true;
-    resetAlertMessage("structureReader");
+    resetNodeAlert();
 
     askNode(id, "read", {
             format: format.value,
@@ -308,7 +308,7 @@ const selectedFile = (filename: string): void => {
         })
         .catch((error: Error) => {
             inProgress.value = false;
-            showAlertMessage(`Error from load file: ${error.message}`, "structureReader");
+            showNodeAlert(`Error from load file: ${error.message}`, "structureReader");
         });
 };
 
@@ -329,7 +329,7 @@ const selectedAuxFile = (filename: string): void => {
             countSteps.value = params.countSteps as number ?? 1;
         })
         .catch((error: Error) => {
-            showAlertMessage(`Error loading auxiliary file: ${error.message}`, "structureReader");
+            showNodeAlert(`Error loading auxiliary file: ${error.message}`, "structureReader");
         });
 };
 
@@ -502,6 +502,6 @@ const auxSetup = computed(() => {
       </v-btn-toggle>
     </v-row>
   </v-container>
-  <error-alert kind="structureReader" />
+  <node-alert node="structureReader" />
 </v-container>
 </template>

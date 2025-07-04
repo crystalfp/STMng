@@ -10,7 +10,7 @@ import {app, ipcMain} from "electron";
 import path from "node:path";
 import {readFileSync, copyFileSync, writeFileSync} from "node:fs";
 import {createSecondaryWindow} from "./WindowsUtilities";
-import {sendAlertMessage} from "./ToClient";
+import {sendAlertToClient} from "./ToClient";
 
 /**
  * Open a secondary window to show the current log file
@@ -30,7 +30,7 @@ export const showLogFile = (): void => {
 		});
 	}
 	catch(error: unknown) {
-		sendAlertMessage(`Error getting log file: ${(error as Error).message}`);
+		sendAlertToClient(`Error getting log file: ${(error as Error).message}`);
 	}
 };
 

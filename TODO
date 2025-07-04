@@ -3,9 +3,7 @@ Bugs:
   ☐ ALPO.CEL No Apply symm+Enable find does not apply found symmetries.
   ☐ Fix atom reordering in trajectories
   ☐ ffmpeg output to application log
-  ✔ OganovValleFingerprinting: reduce peak memory usage @done(2025-07-02 13:53)
   ☐ Billboard also for Bonds lengths labels
-  ☐ Add a timeout for success messages (eg. in CaptureMedia)
 
 Latest requests:
   ☐ Show average structure in trajectories instead of markers
@@ -69,6 +67,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ OganovValleFingerprinting: reduce peak memory usage @done(2025-07-02 13:53) @project(Bugs)
+  ✔ Add a timeout for success messages (eg. in CaptureMedia) @done(2025-07-03 09:25) @project(Bugs)
   ✔ Use `Promise.allSettled()` to Produce an error message from workerpool that show the step. @done(2025-06-30 08:17) @project(Bugs)
   ✔ Option to not fold fractional coordinates inside unit cell on read @done(2025-06-30 08:17) @project(To do)
   ✘ Copy residues in compute symmetries @cancelled(2025-06-30 08:17) @project(To do)

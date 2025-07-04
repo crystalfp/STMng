@@ -11,7 +11,7 @@ import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {sendAlertMessage, sendDoubleAlertMessage, sendToClient} from "../modules/ToClient";
+import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
@@ -127,7 +127,7 @@ export class ComputeFingerprints extends NodeCore {
 			this.areNanoclusters = this.accumulator.add(structure, this.areNanoclusters);
 		}
 		catch(error: unknown) {
-			sendAlertMessage((error as Error).message, "fingerprints");
+			sendAlertToClient((error as Error).message, {node: "fingerprints"});
 		}
 		sendToClient(this.id, "has-energies", {
 			haveEnergies: this.accumulator.accumulatedHaveEnergies()
@@ -180,7 +180,7 @@ export class ComputeFingerprints extends NodeCore {
 													   this.energyThreshold,
 													   this.thresholdFromMinimum);
 		if(status.error) {
-			sendAlertMessage(status.error, "fingerprints");
+			sendAlertToClient(status.error, {node: "fingerprints"});
 			sendToClient(this.id, "load", {
 				countSelected: 0,
 				countAccumulated: this.accumulator.size(),
@@ -897,7 +897,7 @@ export class ComputeFingerprints extends NodeCore {
 														   this.energyThreshold,
 														   this.thresholdFromMinimum);
 			if(status.error) {
-				sendAlertMessage(status.error, "fingerprints");
+				sendAlertToClient(status.error, {node: "fingerprints"});
 				return {
 					countSelected: 0,
 					countAccumulated: this.accumulator.size(),
@@ -949,7 +949,7 @@ export class ComputeFingerprints extends NodeCore {
 														this.energyThreshold,
 														this.thresholdFromMinimum);
 		if(status.error) {
-			sendAlertMessage(status.error, "fingerprints");
+			sendAlertToClient(status.error, {node: "fingerprints"});
 			return {
 				countSelected: 0,
 				countAccumulated: this.accumulator.size(),
@@ -1019,8 +1019,8 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(resultFP.error) {
 
-			if(resultFP.userError) sendDoubleAlertMessage(resultFP.error, resultFP.userError, "fingerprints");
-			else sendAlertMessage(resultFP.error, "fingerprints");
+			if(resultFP.userError) sendAlertToClient(resultFP.error, {userMessage: resultFP.userError, node: "fingerprints"});
+			else sendAlertToClient(resultFP.error, {node: "fingerprints"});
 
 			return {
 				resultDimensionality: 0,
@@ -1033,7 +1033,7 @@ export class ComputeFingerprints extends NodeCore {
 			this.distanceMethod,
 			this.fixTriangleInequality);
 
-		if(resultDist.error) sendAlertMessage(resultDist.error, "fingerprints");
+		if(resultDist.error) sendAlertToClient(resultDist.error, {node: "fingerprints"});
 
 		// Project points to 2D
 		this.dist.projectPoints();
@@ -1072,7 +1072,7 @@ export class ComputeFingerprints extends NodeCore {
 											this.distanceMethod,
 											this.fixTriangleInequality);
 
-		if(result.error) sendAlertMessage(result.error, "fingerprints");
+		if(result.error) sendAlertToClient(result.error, {node: "fingerprints"});
 
 		// Project points to 2D
 		this.dist.projectPoints();
@@ -1142,7 +1142,7 @@ export class ComputeFingerprints extends NodeCore {
 		const result = this.grouping.group(this.accumulator, this.dist.getDistanceMatrix(),
 										   this.groupingMethod, this.groupingThreshold, this.addedMargin);
 
-		if(result.error) sendAlertMessage(result.error, "fingerprints");
+		if(result.error) sendAlertToClient(result.error, {node: "fingerprints"});
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({plotType: this.plotType});
