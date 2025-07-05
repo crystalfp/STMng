@@ -106,11 +106,11 @@ export class DrawUnitCell extends NodeCore {
 	}
 
 	/**
-	 * Adjust origin if any of the percentages is greather than zero
+	 * Adjust origin if any of the percentages is greater than zero
 	 */
 	private adjustStructureOrigin(): Structure {
 
-		const {crystal, atoms, extra} = this.inputStructure!;
+		const {crystal, atoms, extra, volume} = this.inputStructure!;
 
 		return (this.percentA !== 0 || this.percentB !== 0 || this.percentC !== 0) ?
 			adjustOrigin(this.inputStructure!,
@@ -123,7 +123,7 @@ export class DrawUnitCell extends NodeCore {
 				crystal,
 				atoms,
 				bonds: [],
-				volume: [],
+				volume,
 				extra
 			};
 	}

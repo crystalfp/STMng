@@ -1,39 +1,61 @@
 {
   "graph": {
     "reader": {
-      "label": "Structure reader",
+      "label": "Structure reader (reader)",
       "type": "structure-reader",
-      "x": 180,
-      "y": 180
+      "x": -150,
+      "y": -150
+    },
+    "unit": {
+      "label": "Draw unit cell (unit)",
+      "type": "draw-unit-cell",
+      "x": 0,
+      "y": -120,
+      "in": "reader"
+    },
+    "symmetry": {
+      "label": "Compute symmetries (symmetry)",
+      "type": "compute-symmetries",
+      "x": 150,
+      "y": -120,
+      "in": "unit"
+    },
+    "bonds": {
+      "label": "Compute bonds (bonds)",
+      "type": "compute-bonds",
+      "x": 300,
+      "y": -90,
+      "in": "symmetry"
     },
     "draw": {
-      "label": "Draw structure",
+      "label": "Draw structure (draw)",
       "type": "draw-structure",
-      "x": 510,
-      "y": 210,
-      "in": "reader"
+      "x": 480,
+      "y": 60,
+      "in": "bonds"
     },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d",
-      "x": 630,
-      "y": 390
+      "x": 540,
+      "y": 150
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        5,
-        2.9999999999999987,
-        5.000000000000001
+        -36.436100421834425,
+        12.875788745387723,
+        27.503495014161665
       ],
       "lookAt": [
-        0,
-        0,
-        0
+        1.40319285231085,
+        1.40319285231085,
+        11.2255428184868
       ],
       "snapshotFormat": "png",
+      "snapshotTransparent": true,
       "stlFormat": "binary",
       "forcePosition": [
         5,
@@ -75,25 +97,67 @@
       ]
     },
     "helpers": {
-      "showAxis": false,
+      "showAxis": true,
       "showGridXZ": false,
       "showGridXY": false,
       "showGridYZ": false,
       "gridSize": 10,
       "axisLength": 1,
-      "showGizmo": false
+      "showGizmo": true
     }
   },
   "ui": {
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "",
+      "format": "Quantum ESPRESSO",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,
+      "energyPerAtom": false,
       "stepIncrement": 1,
       "speed": 1
+    },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": true,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": false
+    },
+    "symmetry": {
+      "applyInputSymmetries": false,
+      "enableFindSymmetries": false,
+      "standardizeCell": false,
+      "symprecStandardize": -1,
+      "symprecDataset": -1,
+      "fillUnitCell": true,
+      "fillTolerance": -4.02,
+      "standardizeOnly": false,
+      "createPrimitiveCell": false,
+      "computePointGroup": false,
+      "positionTolerance": 0.3,
+      "eigenvalueTolerance": 0.01
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "perPairData": "[]",
+      "enlargementKind": "outside"
     },
     "draw": {
       "drawKind": "ball-and-stick",

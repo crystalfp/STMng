@@ -132,7 +132,7 @@ export const spriteTextAlongBond = (text: string,
 	// Compute the offset from the center of the bond
 	const offset = new Vector3(0, 1, 0);
 	offset.applyQuaternion(sprite.quaternion);
-	offset.normalize().multiplyScalar(0.17);
+	offset.normalize().multiplyScalar(sprite.fontSize);
 
 	// Set center of label offset by the vector computed
 	const pos = computeLabelPosition(startPosition, endPosition,
