@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{
 
     /** Module that had generated the message */
     node: string;
-
+    /** Time to make a success message disappears */
     timeout?: number;
 }>(), {timeout: 5_000});
 
@@ -24,6 +24,7 @@ const {node, level, text} = storeToRefs(messageStore);
 
 const showMessage = ref(false);
 const messageTitle = computed(() => (level.value === "error" ? "Error" : "Success!"));
+const alertColor = computed(() => (level.value === "error" ? "red-darken-4" : level.value));
 
 let timerID: NodeJS.Timeout;
 
@@ -65,13 +66,8 @@ watch([node], () => {
          :title="messageTitle"
          :text
          :type="level"
+         :color="alertColor"
          density="compact"
          class="cursor-pointer"
          @click="closeMessage" />
-
 </template>
-
-
-<style scoped>
-
-</style>

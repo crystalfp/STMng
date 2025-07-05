@@ -314,12 +314,13 @@ static void applySymmetriesInput(string& spaceGroup,
 #ifdef DEBUG
 				printf("Lattice indicator: %d\n", lattice_indicator);
 #endif
-				// Lattice type: 1=P, 2=I, 3=rhombohedral obverse on hexagonal axes, 4=F, 5=A, 6=B, 7=C. N
-				// must be made negative if the structure is non-centrosymmetric.
+				// Lattice type:
+				//    1=P, 2=I, 3=rhombohedral obverse on hexagonal axes, 4=F, 5=A, 6=B, 7=C.
+				// N must be made negative if the structure is non-centrosymmetric.
 
 				if(lattice_indicator < 0)
 				{
-					// mark non-centrosymmetric
+					// Mark non-centrosymmetric
 					if(AddInversion2ListSeitzMx(&SgInfo) != 0)
 					{
 						error = SgError;
@@ -596,7 +597,7 @@ string doFindAndApplySymmetries(
 
 				status += "Skipping cell standardization: ";
 				status += spg_get_error_message(code);
-				status += "\n";
+				status += ".\n";
 				num_primitive_atom = natoms;
 			}
 			else unitCellModified = true;
@@ -640,7 +641,7 @@ string doFindAndApplySymmetries(
 		if(dataset == NULL)
 		{
 			SpglibError code = spg_get_error_code();
-			status += "Failed to get dataset: ";
+			status += "Failed to get spglib dataset: ";
 			status += spg_get_error_message(code);
 			status += "\n";
 		}
@@ -667,6 +668,8 @@ string doFindAndApplySymmetries(
 
 			// Release the dataset
 			spg_free_dataset(dataset);
+
+			applySymmetriesInput(spaceGroup, fractionalCoordinates, atomsZ, status);
 		}
 
 		free(types);

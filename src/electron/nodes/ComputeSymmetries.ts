@@ -259,6 +259,10 @@ export class ComputeSymmetries extends NodeCore {
 
 		this.computedSpaceGroup = this.structure.crystal.spaceGroup;
 
+		if(computed.status !== "") {
+			sendAlertToClient(computed.status, {node: "symmetries"});
+		}
+
 		return this.structure;
 	}
 
