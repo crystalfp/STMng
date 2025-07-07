@@ -157,7 +157,7 @@
       "bondScale": 1.1,
       "perPairScale": false,
       "perPairData": "[]",
-      "enlargementKind": "outside"
+      "enlargementKind": "neighbors"
     },
     "draw": {
       "drawKind": "ball-and-stick",

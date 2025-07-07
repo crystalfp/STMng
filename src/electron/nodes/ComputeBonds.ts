@@ -93,7 +93,7 @@ export class ComputeBonds extends NodeCore {
 	private perPairData: PairData[] = [];
 	private addType: number[]   = []; // 1: atom in unit cell; 2: atom outside unit cell
 	private inputNumAtoms		= 0;
-	private enlargementKind		= "outside";
+	private enlargementKind		= "neighbors";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
@@ -335,7 +335,7 @@ export class ComputeBonds extends NodeCore {
 	 * @param bonds - The bonds part of the augmented structure
 	 * @param startIdx - Starting index for the serie
 	 */
-	private markingConnected(bonds: Bond[], startIdx: number): void {
+	private markConnected(bonds: Bond[], startIdx: number): void {
 
 		for(const bond of bonds) {
 
@@ -344,11 +344,11 @@ export class ComputeBonds extends NodeCore {
 			if(from === startIdx) {
 				if(this.addType[to] === 2) {
 					this.addType[to] = 22;
-					this.markingConnected(bonds, to);
+					this.markConnected(bonds, to);
 				}
 			}
 			else if(to === startIdx && this.addType[from] === 2) {
-				this.markingConnected(bonds, from);
+				this.markConnected(bonds, from);
 				this.addType[from] = 22;
 			}
 		}
@@ -368,11 +368,93 @@ export class ComputeBonds extends NodeCore {
 			if(type !== BondType.normal) continue;
 			if(this.addType[from] === 1 && this.addType[to] === 2) {
 				this.addType[to] = 22;
-				this.markingConnected(structure.bonds, to);
+				this.markConnected(structure.bonds, to);
 			}
 			else if(this.addType[to] === 1 && this.addType[from] === 2) {
 				this.addType[from] = 22;
-				this.markingConnected(structure.bonds, from);
+				this.markConnected(structure.bonds, from);
+			}
+		}
+
+		// Remove unneeded bonds
+		for(let i=structure.bonds.length-1; i >= 0; --i) {
+			const {from, to} = structure.bonds[i];
+			if(this.addType[from] === 2 || this.addType[to] === 2) {
+				structure.bonds.splice(i, 1);
+			}
+		}
+
+		// Preparing the atoms index mapping before removing outside not connected atoms
+		const mapIdx = new Map<number, number>();
+		const len = this.addType.length;
+		for(let i=0, j=0; i < len; ++i) {
+			if(this.addType[i] === 1 || this.addType[i] === 22) {
+				mapIdx.set(i, j);
+				++j;
+			}
+		}
+
+		// Remove unmarked atoms
+		for(let i=len-1; i >= 0; --i) {
+			if(this.addType[i] === 2) {
+				this.addType.splice(i, 1);
+				structure.atoms.splice(i, 1);
+			}
+		}
+
+		// Remap indices of atoms in the bonds
+		for(let i=structure.bonds.length-1; i >= 0; --i) {
+			structure.bonds[i].from = mapIdx.get(structure.bonds[i].from)!;
+			structure.bonds[i].to = mapIdx.get(structure.bonds[i].to)!;
+		}
+	}
+
+	/**
+	 * Leave atoms that could create a polyhedra with one outside atom
+	 *
+	 * @param structure - The augmented structure with the 26 cell replicas
+	 */
+	private leavePolyhedraAtoms(structure: Structure): void {
+
+		const mark = new Map<number, number[]>();
+
+		// The starting points are the outside atoms connected to one inside atom
+		for(const bond of structure.bonds) {
+
+			const {from, to, type} = bond;
+			if(type !== BondType.normal) continue;
+			if(this.addType[from] === 1 && this.addType[to] === 2) {
+				this.addType[to] = 22;
+				mark.set(to, []);
+			}
+			else if(this.addType[to] === 1 && this.addType[from] === 2) {
+				this.addType[from] = 22;
+				mark.set(from, []);
+			}
+		}
+
+		// Get atoms connected to these outside atoms
+		for(const bond of structure.bonds) {
+
+			const {from, to, type} = bond;
+			if(type !== BondType.normal) continue;
+			if(this.addType[from] === 22) {
+				mark.get(from)?.push(to);
+			}
+			else if(this.addType[to] === 22) {
+				mark.get(to)?.push(from);
+			}
+		}
+
+		// Mark outside atoms that could form a polyhedra
+		for(const idx of mark.keys()) {
+			const connected = mark.get(idx)!;
+			if(connected.length >= 4) {
+				for(const to of connected) {
+					if(this.addType[to] === 2) {
+						this.addType[to] = 22;
+					}
+				}
 			}
 		}
 
@@ -445,8 +527,21 @@ export class ComputeBonds extends NodeCore {
 
 				const enlargedStructure = this.addOutsideAtoms();
 				enlargedStructure.bonds = this.computeBonds(enlargedStructure);
-				if(this.enlargementKind === "outside") this.clearOutsideAtoms(enlargedStructure);
-				else this.leaveConnectedAtoms(enlargedStructure);
+
+				switch(this.enlargementKind) {
+					case "neighbors":
+						this.clearOutsideAtoms(enlargedStructure);
+						break;
+					case "polyhedra":
+						this.leavePolyhedraAtoms(enlargedStructure);
+						break;
+					case "connected":
+						this.leaveConnectedAtoms(enlargedStructure);
+						break;
+					default:
+						throw Error("Unknown enlargement type");
+				}
+
 				this.toNextNode(enlargedStructure);
 			}
 		}
@@ -538,7 +633,9 @@ export class ComputeBonds extends NodeCore {
 				const positionJ = atoms[j].position;
 
 				// Don't compute bonds between external atoms
-				if(this.enlargementKind === "outside" && this.addType[i] === 2 && this.addType[j] === 2) continue;
+				if(this.enlargementKind === "neighbors" &&
+				   this.addType[i] === 2 &&
+				   this.addType[j] === 2) continue;
 
 				// Never bond hydrogens to each other...
 				// if(atomZi === 1 && atomZj === 1) continue;
@@ -703,7 +800,7 @@ export class ComputeBonds extends NodeCore {
 		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
 		this.bondScale    		 = params.bondScale as number ?? 1.1;
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "outside";
+		this.enlargementKind     = params.enlargementKind as string ?? "neighbors";
 		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 	}
 
@@ -742,7 +839,7 @@ export class ComputeBonds extends NodeCore {
 		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
 		this.bondScale    		 = params.bondScale as number ?? 1.1;
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "outside";
+		this.enlargementKind     = params.enlargementKind as string ?? "neighbors";
 		this.perPairData         = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
 		this.addBonds();

@@ -49,7 +49,7 @@ const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
 const perPairData         = ref<PairData[]>([]);
 const showScale           = ref<number[]>([]);
-const enlargementKind     = ref("outside");
+const enlargementKind     = ref("neighbors");
 
 // Initialize the control
 askNode(id, "init")
@@ -62,7 +62,7 @@ askNode(id, "init")
         enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
         bondScale.value      	    = params.bondScale as number ?? 1.1;
         perPairScale.value        = params.perPairScale as boolean ?? false;
-        enlargementKind.value     = params.enlargementKind as string ?? "outside";
+        enlargementKind.value     = params.enlargementKind as string ?? "neighbors";
 
         perPairData.value.length = 0;
         const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
@@ -151,7 +151,7 @@ receiveFromNode(id, "params", (params: CtrlParams) => {
 });
 
 /**
- * Reset sliders to default values
+ * Reset sliders and enlargement kind to default values
  */
 const resetSliders = (): void => {
     minBondingDistance.value  = 0.64;
@@ -165,6 +165,7 @@ const resetSliders = (): void => {
         showScale.value[i] = 1.1;
         ++i;
     }
+    enlargementKind.value = "neighbors";
 };
 
 </script>
@@ -212,8 +213,9 @@ const resetSliders = (): void => {
   <v-label class="ml-2 mb-1 mt-4 no-select">Add bonded atoms outside unit cell</v-label>
   <v-btn-toggle v-model="enlargementKind" mandatory class="mb-6 ml-2">
     <v-btn value="none">None</v-btn>
-    <v-btn value="outside">Neighbors</v-btn>
-    <v-btn value="connected">Connected</v-btn>
+    <v-btn value="neighbors">Neighbors</v-btn>
+    <v-btn value="connected">Full</v-btn>
+    <v-btn value="polyhedra">Poly</v-btn>
   </v-btn-toggle>
 
   <v-btn block class="mt-2" @click="resetSliders">Reset parameters</v-btn>

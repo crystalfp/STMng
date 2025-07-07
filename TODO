@@ -4,8 +4,11 @@ Bugs:
   ☐ ffmpeg output to application log
   ☐ Billboard also for Bonds lengths labels
 
-Latest requests:
+Latest requests (backlog):
   ☐ Show average structure in trajectories instead of markers
+  ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
+  ☐ Would it be possible to determine effective dimensionality of the energy landscape?
+  ☐ Find prototype structure
 
 To do:
   ☐ Put read filename in window title
@@ -24,7 +27,7 @@ Functionalities:
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
-  ☐ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4.
+  ✘ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4. @cancelled(2025-07-06 06:16)
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -40,7 +43,6 @@ ToDo eventually:
   ☐ Check the order of entries in objects
   ☐ In builder copy only platform specific exe files
   ☐ Unify naming: graph, node, project
-  ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
