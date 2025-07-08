@@ -40,6 +40,19 @@ watch([showMarkers, sizeMarkers], () => {
     });
 });
 
+/**
+ * Format a number as fixed or exponential format
+ *
+ * @param value - Number to be formatted
+ * @param digits - Number of digits before changing to exponential notation
+ */
+const format = (value: number, digits=4): string => {
+
+    const limit = 10**(-digits);
+    if(value < -limit || value > limit) return value.toFixed(digits);
+    return value.toExponential(digits);
+};
+
 </script>
 
 
@@ -59,7 +72,7 @@ watch([showMarkers, sizeMarkers], () => {
           <td class="w-1 right">{{ `[ ${e.meanX.toFixed(3)},` }}</td>
           <td class="w-1 right">{{ `${e.meanY.toFixed(3)},` }}</td>
           <td class="w-1 right">{{ `${e.meanZ.toFixed(3)} ]` }}</td>
-          <td class="w-4 right pr-4">{{ e.displacement.toFixed(4) }}</td>
+          <td class="w-4 right pr-4">{{ format(e.displacement) }}</td>
         </tr>
       </v-table>
     </v-container>

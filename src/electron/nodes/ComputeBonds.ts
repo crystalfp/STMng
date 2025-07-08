@@ -376,37 +376,7 @@ export class ComputeBonds extends NodeCore {
 			}
 		}
 
-		// Remove unneeded bonds
-		for(let i=structure.bonds.length-1; i >= 0; --i) {
-			const {from, to} = structure.bonds[i];
-			if(this.addType[from] === 2 || this.addType[to] === 2) {
-				structure.bonds.splice(i, 1);
-			}
-		}
-
-		// Preparing the atoms index mapping before removing outside not connected atoms
-		const mapIdx = new Map<number, number>();
-		const len = this.addType.length;
-		for(let i=0, j=0; i < len; ++i) {
-			if(this.addType[i] === 1 || this.addType[i] === 22) {
-				mapIdx.set(i, j);
-				++j;
-			}
-		}
-
-		// Remove unmarked atoms
-		for(let i=len-1; i >= 0; --i) {
-			if(this.addType[i] === 2) {
-				this.addType.splice(i, 1);
-				structure.atoms.splice(i, 1);
-			}
-		}
-
-		// Remap indices of atoms in the bonds
-		for(let i=structure.bonds.length-1; i >= 0; --i) {
-			structure.bonds[i].from = mapIdx.get(structure.bonds[i].from)!;
-			structure.bonds[i].to = mapIdx.get(structure.bonds[i].to)!;
-		}
+		this.removeUnmarkedAtoms(structure);
 	}
 
 	/**
@@ -449,7 +419,7 @@ export class ComputeBonds extends NodeCore {
 		// Mark outside atoms that could form a polyhedra
 		for(const idx of mark.keys()) {
 			const connected = mark.get(idx)!;
-			if(connected.length >= 4) {
+			if(connected.length >= 3) {
 				for(const to of connected) {
 					if(this.addType[to] === 2) {
 						this.addType[to] = 22;
@@ -458,13 +428,26 @@ export class ComputeBonds extends NodeCore {
 			}
 		}
 
+		this.removeUnmarkedAtoms(structure);
+	}
+
+	/**
+	 * Remove unneeded outside atoms and bonds not marked to be retained (addType === 22)
+	 *
+	 * @param structure - The augmented structure with the 26 cell replicas
+	 */
+	private removeUnmarkedAtoms(structure: Structure): void {
+
 		// Remove unneeded bonds
-		for(let i=structure.bonds.length-1; i >= 0; --i) {
-			const {from, to} = structure.bonds[i];
-			if(this.addType[from] === 2 || this.addType[to] === 2) {
-				structure.bonds.splice(i, 1);
+		const updatedBonds: Bond[] = [];
+		for(const bond of structure.bonds) {
+			const {from, to, type} = bond;
+			if(this.addType[from] !== 2 && this.addType[to] !== 2) {
+				updatedBonds.push({from, to, type});
 			}
 		}
+		structure.bonds.length = 0;
+		for(const bond of updatedBonds) structure.bonds.push(bond);
 
 		// Preparing the atoms index mapping before removing outside not connected atoms
 		const mapIdx = new Map<number, number>();
@@ -477,12 +460,15 @@ export class ComputeBonds extends NodeCore {
 		}
 
 		// Remove unmarked atoms
-		for(let i=len-1; i >= 0; --i) {
-			if(this.addType[i] === 2) {
-				this.addType.splice(i, 1);
-				structure.atoms.splice(i, 1);
+		const updatedAtoms: Atom[] = [];
+		for(let i=0; i < len; ++i) {
+			if(this.addType[i] !== 2) {
+				const {atomZ, label, chain, position} = structure.atoms[i];
+				updatedAtoms.push({atomZ, label, chain, position});
 			}
 		}
+		structure.atoms.length = 0;
+		for(const atom of updatedAtoms) structure.atoms.push(atom);
 
 		// Remap indices of atoms in the bonds
 		for(let i=structure.bonds.length-1; i >= 0; --i) {
