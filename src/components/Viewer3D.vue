@@ -347,7 +347,7 @@ onMounted(() => {
         default:
             return;
         }
-        void controls.setLookAt(configStore.camera.position[0],
+        void controls.normalizeRotations().setLookAt(configStore.camera.position[0],
                                 configStore.camera.position[1],
                                 configStore.camera.position[2],
                                 configStore.camera.lookAt[0],
@@ -365,7 +365,7 @@ onMounted(() => {
 
             controlStore.force = false;
 
-	        void controls.setLookAt(configStore.camera.position[0],
+	        void controls.normalizeRotations().setLookAt(configStore.camera.position[0],
                                     configStore.camera.position[1],
                                     configStore.camera.position[2],
 							        configStore.camera.lookAt[0],
@@ -536,7 +536,7 @@ onMounted(() => {
     viewportGizmo.addEventListener("start", () => (controls.enabled = false));
     viewportGizmo.addEventListener("end", () => (controls.enabled = true));
     viewportGizmo.addEventListener("change", () => {
-        void controls.setPosition(...camera.position.toArray());
+        void controls.normalizeRotations().setPosition(...camera.position.toArray());
     });
 
     controls.addEventListener("update", () => {
@@ -545,7 +545,7 @@ onMounted(() => {
     });
 
     // Set the target
-    void controls.setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
+    void controls.normalizeRotations().setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
     camera.lookAt(viewportGizmo.target);
 
     // Rendering function for the run

@@ -32,7 +32,7 @@
     "@electron-toolkit/preload": "^3.0.2",
     "@mdi/js": "^7.4.47",
     "@vue-flow/core": "^1.45.0",
-    "camera-controls": "^2.10.1",
+    "camera-controls": "^3.0.0",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "commander": "^14.0.0",

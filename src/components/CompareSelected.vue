@@ -184,8 +184,13 @@ const centerCamera = (center: [number, number, number]): void => {
     camera.lookAt(new Vector3(...center));
 	controls.setOrbitPoint(...center);
 	const maxSide = Math.max(center[0], center[1], center[2]);
-	void controls.setLookAt(center[0], center[1], center[2] + 2*maxSide,
-							center[0], center[1], center[2], false);
+	void controls.normalizeRotations().setLookAt(center[0],
+                                                 center[1],
+                                                 center[2] + 2*maxSide,
+							                     center[0],
+                                                 center[1],
+                                                 center[2],
+                                                 false);
     void controls.zoomTo(1, true);
 
     camera.updateProjectionMatrix();
