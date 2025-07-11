@@ -14,6 +14,7 @@ import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
 import {sendProjectUI, sendAlertToClient, sendProjectPath} from "./ToClient";
+import {disableSaveProjectEntry} from "./SystemMenu";
 import type {Project, CtrlParams, ProjectGraph} from "@/types";
 import type {ClientProjectInfo, ClientProjectInfoItem, OneNodeInfo} from "@/types/NodeInfo";
 import type {NodeCore} from "./NodeCore";
@@ -500,6 +501,7 @@ export const setupChannelProject = (): void => {
 				.then((content) => {
 					writeFileSync(file, content, "utf8");
 					pm.loadProjectAndRemember(file);
+					disableSaveProjectEntry(false);
 				})
 				.catch((error: Error) => {
 					sendAlertToClient(`Cannot write modified project file. Error: ${error.message}`);

@@ -14,7 +14,8 @@ import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {PointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
-import type {Structure, CtrlParams, ChannelDefinition, BasisType, PositionType, Extra} from "@/types";
+import type {Structure, Atom, CtrlParams, ChannelDefinition,
+			 BasisType, PositionType, Extra} from "@/types";
 
 /**
  * Output from the native module that computes and find symmetries
@@ -57,7 +58,46 @@ const Z_ANY = 0x004;
 const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1"]);
 
 /** Tolerance to check for coincident atoms */
-const TOL = 10e-5;
+const TOL = 1e-3;
+
+/** Tolerance to check for coincident atoms on output is 1/10 of minimum rCov */
+const TOL2 = 3e-2;
+
+/**
+ * Remove duplicated atoms in cartesian space
+ *
+ * @param structure - Output structure to be cleaned
+ */
+const removeDuplicates = (structure: Structure): void => {
+
+	const natoms = structure.atoms.length;
+	if(natoms === 0) return;
+	const {atoms} = structure;
+	const uniqueAtoms: Atom[] = [];
+
+	for(let i=0; i < natoms; ++i) {
+
+		const atom = atoms[i];
+
+		let unique = true;
+		for(let j=i+1; j < natoms; ++j) {
+
+			const atom2 = atoms[j];
+			if(atom.atomZ === atom2.atomZ) {
+				const dx = atom.position[0] - atom2.position[0];
+				const dy = atom.position[1] - atom2.position[1];
+				const dz = atom.position[2] - atom2.position[2];
+				if(Math.abs(dx) < TOL2 && Math.abs(dy) < TOL2 && Math.abs(dz) < TOL2) {
+					unique = false;
+					break;
+				}
+			}
+		}
+		if(unique) uniqueAtoms.push(atom);
+	}
+
+	structure.atoms = uniqueAtoms;
+};
 
 export class ComputeSymmetries extends NodeCore {
 
@@ -107,7 +147,11 @@ export class ComputeSymmetries extends NodeCore {
 		this.inputStructure = data;
 
 		this.outputStructure = this.computeSymmetries();
-		if(this.outputStructure) this.toNextNode(this.outputStructure);
+
+		if(this.outputStructure) {
+			removeDuplicates(this.outputStructure);
+			this.toNextNode(this.outputStructure);
+		}
 		else {
 			this.displaySymmetries("");
 			return;
@@ -579,12 +623,12 @@ export class ComputeSymmetries extends NodeCore {
 
 			const t = j*3;
 			const dx = fractionalCoordinates[t] - fx;
-			const dy = fractionalCoordinates[t+1] - fy;
-			const dz = fractionalCoordinates[t+2] - fz;
-
 			if(dx > TOL || dx < -TOL) continue;
+			const dy = fractionalCoordinates[t+1] - fy;
 			if(dy > TOL || dy < -TOL) continue;
+			const dz = fractionalCoordinates[t+2] - fz;
 			if(dz > TOL || dz < -TOL) continue;
+
 			return true;
 		}
 		return false;
