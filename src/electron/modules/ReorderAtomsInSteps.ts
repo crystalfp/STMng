@@ -28,9 +28,9 @@ interface Distance {
 
 /** Values for the greedy algorithm to find correspondences */
 interface Cost {
-	/** Index of the previous step atom */
+	/** Index of the previous step atom (same specie) */
 	initial: number;
-	/** Index of the current step atom */
+	/** Index of the current step atom (same specie) */
 	final: number;
 	/** Distance between the atoms */
 	cost: number;
@@ -50,6 +50,8 @@ interface Averages {
 	atomZ: number;
 	/** Corresponding atom index */
 	idx: number;
+	/** Sequence number in the same specie set of atoms */
+	seq: number;
 }
 
 /** Computed average positions and displacements */
@@ -112,7 +114,8 @@ export class ReorderAtomsInSteps {
 						count: 1,
 						squaredDisplacement: 0,
 						atomZ: specie[0],
-						idx
+						idx,
+						seq: i
 					});
 				}
 			}
@@ -131,42 +134,53 @@ export class ReorderAtomsInSteps {
 			for(const specie of this.currentStep) {
 
 				const cost = this.computeCostArray(this.previousStep.get(specie[0])!.positions,
-													specie[1].positions);
+												   specie[1].positions);
 
 				// Sort by cost (greedy approach)
 				cost.sort((a, b) => a.cost - b.cost);
 
 				// Assign greedily
-				const n = this.previousStep.get(specie[0])!.positions.length;
-				const assignment = Array<number>(n).fill(-1);
-				const usedFinalPositions = new Set<number>();
-				for(const assign of cost) {
-					if(assignment[assign.initial] === -1 && !usedFinalPositions.has(assign.final)) {
-						assignment[assign.initial] = assign.final;
-						usedFinalPositions.add(assign.final);
+				const np = this.previousStep.get(specie[0])!.positions.length;
+				const pairedPrevious = Array<number>(np).fill(-1);
+				const nc = specie[1].positions.length;
+				const pairedCurrent = Array<number>(nc).fill(-1);
+				let n = Math.min(np, nc);
+				const paired = new Map<number, number>();
+
+				for(let i=0; i < cost.length; ++i) {
+					const previous = cost[i].initial;
+					const current = cost[i].final;
+					if(pairedPrevious[previous] === -1 && pairedCurrent[current] === -1) {
+						pairedPrevious[previous] = i;
+						pairedCurrent[current] = i;
+						paired.set(previous, current);
+						--n;
+						if(n === 0) break;
 					}
 				}
 
 				// Reorder values
-				for(const entry of assignment) {
+				for(const pair of paired) {
 
-					const previousIdx = this.previousStep.get(specie[0])!.idx[entry];
-					const currentIdx = this.currentStep.get(specie[0])!.idx[assignment[entry]];
-					// console.log(entry, "->", assignment[entry], "=", previousIdx, "=>", currentIdx);
+					const previous = pair[0];
+					const current = pair[1];
+
+					const currentIdx = this.currentStep.get(specie[0])!.idx[current];
 
 					for(const avg of this.averages) {
-						if(avg.idx === previousIdx && avg.atomZ === specie[0]) {
+						if(avg.seq === previous && avg.atomZ === specie[0]) {
+							const {offset} = cost[pairedPrevious[previous]];
 							const position =
-								this.currentStep.get(specie[0])!.positions[assignment[entry]];
+								this.currentStep.get(specie[0])!.positions[current];
 							const pp: PositionType = [
-								avg.meanPosition[0] + position[0],
-								avg.meanPosition[1] + position[1],
-								avg.meanPosition[2] + position[2]
+								avg.meanPosition[0] + position[0] - offset[0],
+								avg.meanPosition[1] + position[1] - offset[1],
+								avg.meanPosition[2] + position[2] - offset[2]
 							];
 							const count = avg.count + 1;
-							const dx = pp[0]/count - position[0];
-							const dy = pp[1]/count - position[1];
-							const dz = pp[2]/count - position[2];
+							const dx = pp[0]/count - position[0] + offset[0];
+							const dy = pp[1]/count - position[1] + offset[1];
+							const dz = pp[2]/count - position[2] + offset[2];
 							const displacement = dx*dx + dy*dy + dz*dz + avg.squaredDisplacement;
 
 							avg.meanPosition = pp;
@@ -275,6 +289,13 @@ export class ReorderAtomsInSteps {
 		return {distance, offset: [0, 0, 0]};
 	}
 
+	/**
+	 * Compute the cost array
+	 *
+	 * @param points1 - Atoms positions in the previous step
+	 * @param points2 - Atoms positions in the current step
+	 * @returns - Cost array to be reordered to find atoms correspondences
+	 */
 	private computeCostArray(points1: PositionType[], points2: PositionType[]): Cost[] {
 
 		const costArray: Cost[] = [];

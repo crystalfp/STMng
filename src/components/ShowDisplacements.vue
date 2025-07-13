@@ -11,21 +11,19 @@ import {ref, nextTick, watch} from "vue";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import type {MeanDisplacement} from "@/types";
+
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
 const means = ref<MeanDisplacement[]>([]);
 
-receiveInWindow((data) => {
-
-    void nextTick().then(() => {
+receiveInWindow((data) => void nextTick().then(() => {
 
         means.value.length = 0;
         const decodedData = JSON.parse(data) as MeanDisplacement[];
         for(const entry of decodedData) {
             means.value.push(entry);
         }
-    });
-});
+    }));
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys("/displacements");
@@ -33,24 +31,26 @@ handleSpecialKeys("/displacements");
 const showMarkers = ref(false);
 const showSizeMarkers = ref(1);
 const sizeMarkers = ref(1);
-watch([showMarkers, sizeMarkers], () => {
-    sendToNode("SYSTEM", "show-markers", {
+watch([showMarkers, sizeMarkers], () => sendToNode("SYSTEM", "show-markers", {
         visible: showMarkers.value,
         size: sizeMarkers.value
-    });
-});
+    }));
+
+/** Number of digits before changing to exponential notation */
+const FORMAT_MAX_DIGITS = 4;
+const FORMAT_LIMIT = 10**(-FORMAT_MAX_DIGITS);
 
 /**
- * Format a number as fixed or exponential format
+ * Format a number as fixed or exponential format if it is too small
  *
  * @param value - Number to be formatted
- * @param digits - Number of digits before changing to exponential notation
  */
-const format = (value: number, digits=4): string => {
+const format = (value: number): string => {
 
-    const limit = 10**(-digits);
-    if(value < -limit || value > limit) return value.toFixed(digits);
-    return value.toExponential(digits);
+    if(value < -FORMAT_LIMIT || value > FORMAT_LIMIT || value === 0) {
+        return value.toFixed(FORMAT_MAX_DIGITS);
+    }
+    return value.toExponential(FORMAT_MAX_DIGITS-2);
 };
 
 </script>
@@ -80,7 +80,8 @@ const format = (value: number, digits=4): string => {
       <v-switch v-model="showMarkers" class="ml-2" label="Show markers"/>
       <slider-with-steppers v-model="sizeMarkers" v-model:raw="showSizeMarkers"
                       :disabled="!showMarkers"
-                      label-width="7.6rem" :label="`Marker size (${showSizeMarkers})`"
+                      label-width="7.6rem"
+                      :label="`Marker size (${showSizeMarkers})`"
                       :min="0.1" :max="4" :step="0.1" />
       <v-btn v-focus @click="closeWindow('/displacements')">Close</v-btn>
     </v-container>

@@ -60,8 +60,8 @@ const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1"]);
 /** Tolerance to check for coincident atoms */
 const TOL = 1e-3;
 
-/** Tolerance to check for coincident atoms on output is 1/10 of minimum rCov */
-const TOL2 = 3e-2;
+/** Tolerance to check for coincident atoms on output is 1/3 of minimum rCov */
+const TOL2 = 0.1;
 
 /**
  * Remove duplicated atoms in cartesian space

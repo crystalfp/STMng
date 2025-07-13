@@ -22,7 +22,6 @@ export class DrawPolyhedra extends NodeCore {
 	private colorByCenterAtom = true;
 	private opacityByCenterAtom = 0.5;
 	private readonly centerAtomsColor: string[] = [];
-	private addTriangles = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
@@ -67,7 +66,6 @@ export class DrawPolyhedra extends NodeCore {
 			showPolyhedra: this.showPolyhedra,
 			colorByCenterAtom: this.colorByCenterAtom,
 			opacityByCenterAtom: this.opacityByCenterAtom,
-			addTriangles: this.addTriangles
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
@@ -80,7 +78,6 @@ export class DrawPolyhedra extends NodeCore {
 		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
 		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
 		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
-		this.addTriangles = params.addTriangles as boolean ?? false;
 	}
 
 	/**
@@ -116,7 +113,8 @@ export class DrawPolyhedra extends NodeCore {
 				}
 			}
 
-			if(connected.length > 3 || (connected.length === 3 && this.addTriangles)) {
+			// Add triangles and polyhedra
+			if(connected.length >= 3) {
 
 				islands.push(connected);
 
@@ -156,7 +154,6 @@ export class DrawPolyhedra extends NodeCore {
 			showPolyhedra: this.showPolyhedra,
 			colorByCenterAtom: this.colorByCenterAtom,
 			opacityByCenterAtom: this.opacityByCenterAtom,
-			addTriangles: this.addTriangles
 		};
 	}
 
@@ -182,7 +179,6 @@ export class DrawPolyhedra extends NodeCore {
 
 		this.labelKind = params.labelKind as SelectorType ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
-		this.addTriangles = params.addTriangles as boolean ?? false;
 
 		// Extract the polyhedrons vertices and send to client
 		if(!this.structure) return;

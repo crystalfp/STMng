@@ -59,9 +59,9 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        -1.4999999432409723,
-        4.997147936846208,
-        31.185972070919412
+        -13.308681282858068,
+        8.873518636021684,
+        25.90706670637692
       ],
       "lookAt": [
         2.2275699646165004,
@@ -139,7 +139,7 @@
       "symprecStandardize": -1,
       "symprecDataset": -1,
       "fillUnitCell": true,
-      "fillTolerance": -5,
+      "fillTolerance": -1.86,
       "standardizeOnly": false,
       "createPrimitiveCell": false,
       "computePointGroup": false,
