@@ -57,11 +57,8 @@ const Z_ANY = 0x004;
 /** Space groups that are not symmetries */
 const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1"]);
 
-/** Tolerance to check for coincident atoms */
-const TOL = 1e-3;
-
-/** Tolerance to check for coincident atoms on output is 1/3 of minimum rCov */
-const TOL2 = 0.1;
+/** Tolerance to check for coincident atoms on output is 2/3 of minimum rCov */
+const TOL = 0.21;
 
 /**
  * Remove duplicated atoms in cartesian space
@@ -87,7 +84,7 @@ const removeDuplicates = (structure: Structure): void => {
 				const dx = atom.position[0] - atom2.position[0];
 				const dy = atom.position[1] - atom2.position[1];
 				const dz = atom.position[2] - atom2.position[2];
-				if(Math.abs(dx) < TOL2 && Math.abs(dy) < TOL2 && Math.abs(dz) < TOL2) {
+				if(Math.abs(dx) < TOL && Math.abs(dy) < TOL && Math.abs(dz) < TOL) {
 					unique = false;
 					break;
 				}
@@ -588,11 +585,9 @@ export class ComputeSymmetries extends NodeCore {
 			}
 		}
 
-		// Finish building the structure removing duplicated atoms
+		// Finish building the structure (removing duplicated atoms is done afterwards)
 		natoms = fractionalCoordinates.length / 3;
 		for(let i=0; i < natoms; ++i) {
-
-			if(ComputeSymmetries.isDuplicated(i, natoms, fractionalCoordinates)) continue;
 
 			structure.atoms.push({
 				atomZ: atomsZ[idx[i]],
@@ -602,36 +597,6 @@ export class ComputeSymmetries extends NodeCore {
 			});
 		}
 		return structure;
-	}
-
-	/**
-	 * Check if the atom to test has a duplicated one further in the atoms list
-	 *
-	 * @param idx - Index of the atom to test
-	 * @param natoms - Total number of atoms
-	 * @param fractionalCoordinates - Fractional atoms coordinates
-	 * @returns - True if the atom to test has a duplicated one further in the atoms list
-	 */
-	private static isDuplicated(idx: number, natoms: number, fractionalCoordinates: number[]): boolean {
-
-		const k = idx*3;
-		const fx = fractionalCoordinates[k];
-		const fy = fractionalCoordinates[k+1];
-		const fz = fractionalCoordinates[k+2];
-
-		for(let j=idx+1; j < natoms; ++j) {
-
-			const t = j*3;
-			const dx = fractionalCoordinates[t] - fx;
-			if(dx > TOL || dx < -TOL) continue;
-			const dy = fractionalCoordinates[t+1] - fy;
-			if(dy > TOL || dy < -TOL) continue;
-			const dz = fractionalCoordinates[t+2] - fz;
-			if(dz > TOL || dz < -TOL) continue;
-
-			return true;
-		}
-		return false;
 	}
 
 	// > Build structure from the output of the symmetries computation

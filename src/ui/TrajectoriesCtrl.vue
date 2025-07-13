@@ -45,13 +45,13 @@ const positionCloudsColor = ref("#BBBBBE");
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
-        showTrajectories.value      = params.showTrajectories as boolean ?? false;
-        labelKind.value             = params.labelKind as string ?? "symbol";
-        atomsSelector.value         = params.atomsSelector as string ?? "";
-        maxDisplacement.value       = params.maxDisplacement as number ?? 1;
-        showPositionClouds.value    = params.showPositionClouds as boolean ?? false;
-		positionCloudsColor.value   = params.positionCloudsColor as string ?? "#BBBBBE";
-		positionCloudsSize.value    = params.positionCloudsSize as number ?? 100;
+        showTrajectories.value    = params.showTrajectories as boolean ?? false;
+        labelKind.value           = params.labelKind as string ?? "symbol";
+        atomsSelector.value       = params.atomsSelector as string ?? "";
+        maxDisplacement.value     = params.maxDisplacement as number ?? 1;
+        showPositionClouds.value  = params.showPositionClouds as boolean ?? false;
+		positionCloudsColor.value = params.positionCloudsColor as string ?? "#BBBBBE";
+		positionCloudsSize.value  = params.positionCloudsSize as number ?? 100;
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
