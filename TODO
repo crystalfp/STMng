@@ -1,6 +1,5 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
-  ☐ Fix atom reordering in trajectories
   ☐ ffmpeg output to application log
   ☐ Billboard also for Bonds lengths labels
 
@@ -27,7 +26,6 @@ Functionalities:
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
-  ✘ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4. @cancelled(2025-07-06 06:16)
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -68,6 +66,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Fix atom reordering in trajectories @done(2025-07-13 10:30) @project(Bugs)
+  ✘ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4. @cancelled(2025-07-06 06:16) @project(Functionalities)
   ✔ ALPO.CEL No Apply symm+Enable find does not apply found symmetries. @done(2025-07-05 16:00) @project(Bugs)
   ✔ Al001.fire.in after shift along c +50%, the fill unit cell does not work anymore @done(2025-07-05 05:37) @project(Bugs)
   ✔ OganovValleFingerprinting: reduce peak memory usage @done(2025-07-02 13:53) @project(Bugs)
