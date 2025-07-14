@@ -14,6 +14,7 @@ import {useControlStore} from "@/stores/controlStore";
 import type {StructureRenderInfo} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import ColorSelector from "@/widgets/ColorSelector.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -37,6 +38,8 @@ const showLabels = ref(true);
 const shadedBonds = ref(false);
 let renderInfo: StructureRenderInfo;
 const showBondsStrengths = ref(false);
+const atomColoring = ref("type");
+const atomColor = ref("#888888");
 
 // > Access the stores
 const controlStore = useControlStore();
@@ -55,6 +58,8 @@ askNode(id, "init")
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
         showBondsStrengths.value = params.showBondsStrengths as boolean ?? false;
+        atomColoring.value = params.atomColoring as string ?? "type";
+        atomColor.value = params.atomColor as string ?? "#888888";
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
@@ -67,7 +72,9 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 
     renderInfo = updatedRenderInfo;
     renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
-    renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value, showBondsStrengths.value);
+    renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
+                           showBondsStrengths.value, atomColoring.value,
+                           atomColor.value);
     renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
 
     // Save basis to orient camera along cell sides
@@ -75,17 +82,22 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 });
 
 // Change draw parameters
-watch([labelKind, drawKind, shadedBonds, showBondsStrengths], () => {
+watch([labelKind, drawKind, shadedBonds, showBondsStrengths,
+       atomColoring, atomColor], () => {
 
     if(renderInfo) {
-        renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value, showBondsStrengths.value);
+        renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
+                               showBondsStrengths.value, atomColoring.value,
+                               atomColor.value);
         renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
     }
     sendToNode(id, "save", {
         labelKind: labelKind.value,
         drawKind: drawKind.value,
         shadedBonds: shadedBonds.value,
-        showBondsStrengths: showBondsStrengths.value
+        showBondsStrengths: showBondsStrengths.value,
+        atomColoring: atomColoring.value,
+        atomColor: atomColor.value
     });
 });
 
@@ -175,6 +187,22 @@ const showCombined = computed({
 
   <v-row>
     <v-col cols="12" class="pa-0 ml-5 mb-n2">
+      <v-label text="Atom color" class="no-select" />
+    </v-col>
+    <v-col>
+      <v-btn-toggle v-model="atomColoring" mandatory class="ml-2">
+        <v-btn value="type">Type</v-btn>
+        <v-btn value="mono">Mono</v-btn>
+      </v-btn-toggle>
+    </v-col>
+    <v-col v-if="atomColoring==='mono'" cols="11" class="ml-2 mt-n2 mb-n4">
+      <color-selector v-model="atomColor" label="Atom mono color"
+                      block class="mb-2"/>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12" class="pa-0 ml-5 mb-n2 mt-3">
       <v-label text="Visibility" class="no-select" />
     </v-col>
     <v-col>

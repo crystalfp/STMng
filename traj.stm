@@ -194,7 +194,9 @@
       "showAtoms": true,
       "showLabels": true,
       "shadedBonds": false,
-      "showBondsStrengths": false
+      "showBondsStrengths": false,
+      "atomColoring": "mono",
+      "atomColor": "#F20F0F"
     }
   }
 }

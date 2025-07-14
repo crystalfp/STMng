@@ -252,9 +252,14 @@ export class DrawStructureRenderer {
 	 * @param renderInfo - The structure to be rendered
 	 * @param drawKind - Structure rendering style
 	 * @param shadedBonds - If the bonds color should be shaded or as two color bands
+	 * @param atomColoring - How the atoms should be colored. Valid values are:
+	 		- type: colored by atom type
+			- mono: monochrome coloring
+	 * @param atomColor - Color to use for monochrome coloring
 	 */
 	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
-				  shadedBonds: boolean, showBondsStrength: boolean): void {
+				  shadedBonds: boolean, showBondsStrength: boolean,
+				  atomColoring: string, atomColor: string): void {
 
 		// Clear previous structure
 		sm.clearGroup(this.outName);
@@ -293,7 +298,8 @@ export class DrawStructureRenderer {
 						radius = 1;
 						break;
 				}
-				spheresCache.addSphere(position, radius, color);
+				const sphereColor = atomColoring === "mono" ? atomColor : color;
+				spheresCache.addSphere(position, radius, sphereColor);
 			}
 			spheresCache.renderSpheres(this.atomsGroup);
 			sm.modified();
@@ -321,16 +327,20 @@ export class DrawStructureRenderer {
 						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;
 						const strengthTo   = renderInfo.atoms[bond.to].bondStrength;
 						const strength     = Math.sqrt(strengthFrom*strengthTo)*4;
-
+						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
+						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
 						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
-												  atomFrom.color, atomTo.color, strength);
+												  colorFrom, colorTo, strength);
 					}
 					else {
 						const radiusStart  = atomFrom.rCov*rCovScale;
 						const radiusEnd    = atomTo.rCov*rCovScale;
-						const {start, end} = this.adjustLimitsCylinder(atomFrom.position, atomTo.position,
+						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
+						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
+						const {start, end} = this.adjustLimitsCylinder(atomFrom.position,
+																	   atomTo.position,
 																	   radiusStart, radiusEnd);
-						cylinderCache.addCylinder(start, end, atomFrom.color, atomTo.color);
+						cylinderCache.addCylinder(start, end, colorFrom, colorTo);
 					}
 				}
 				cylinderCache.renderCylinders(this.bondsGroup);
@@ -346,10 +356,11 @@ export class DrawStructureRenderer {
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(isNormalBond(bond)) {
+						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
+						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
 						cylinderCache.addCylinder(atomFrom.position,
 												  atomTo.position,
-												  atomFrom.color,
-												  atomTo.color);
+												  colorFrom, colorTo);
 					}
 					else {
 						DrawStructureRenderer.addHBond(atomFrom.position,
@@ -371,14 +382,23 @@ export class DrawStructureRenderer {
 					}
 					else if(atomFrom.atomZ === atomTo.atomZ) {
 						const {color, position} = atomFrom;
-						DrawStructureRenderer.addNormalBondSameAtoms(position, atomTo.position, color, this.bondsGroup);
+						const colorBoth = atomColoring === "mono" ? atomColor : color;
+						DrawStructureRenderer.addNormalBondSameAtoms(position,
+																	 atomTo.position,
+																	 colorBoth,
+																	 this.bondsGroup);
 					}
 					else {
-						const colorFrom = atomFrom.color;
-						const colorTo   = atomTo.color;
-						DrawStructureRenderer.addNormalBond(atomFrom.position, atomTo.position, colorFrom, colorTo, this.bondsGroup);
+						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
+						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
+						DrawStructureRenderer.addNormalBond(atomFrom.position,
+															atomTo.position,
+															colorFrom,
+															colorTo,
+															this.bondsGroup);
 					}
 				}
+				sm.modified();
 				break;
 			case "van-der-waals":
 				// Do nothing
