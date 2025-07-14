@@ -138,6 +138,25 @@ export class DistanceMatrix {
 
         return out;
     }
+
+    /**
+     * Normalize distances to [0..1]
+     */
+    normalize(): void {
+
+        let max = 0;
+        for(let i=0; i < this.side-1; ++i) {
+            for(let j=1; j < this.side-i; ++j) {
+                const d = this.distanceMatrix[i][j];
+                if(d > max) max = d;
+            }
+        }
+        for(let i=0; i < this.side-1; ++i) {
+            for(let j=1; j < this.side-i; ++j) {
+                this.distanceMatrix[i][j] /= max;
+            }
+        }
+    }
 }
 
 class Delta {
@@ -202,16 +221,12 @@ class Delta {
 }
 
 /**
- * Result of computing all distances between the computed fingerprints
+ * Result of computing all distances between the fingerprints
  * @notExported
  */
 interface DistanceResult {
     /** Number of distances computed */
     countDistances: number;
-    /** Minimum distance computed */
-    distanceMin: number;
-    /** Maximum distance computed */
-    distanceMax: number;
     /** Final message */
     endMessage: string;
     /** Error message if any */
@@ -260,45 +275,39 @@ export class Distances {
 
         const countDistances = this.distances.init(accumulator.selectedSize());
 
-        let distanceMin = Number.POSITIVE_INFINITY;
-        let distanceMax = 0;
-
         for(const pair of accumulator.iterateSelectedStructurePairs()) {
 
             const distance = measuringMethods[distanceMethod].method.computeDistance(pair[0], pair[1]);
 
             const sts = this.distances.set(pair[0].selectedIdx, pair[1].selectedIdx, distance);
-            if(!sts) return {countDistances,
-                             distanceMin: 0,
-                             distanceMax: 10,
-                             endMessage: "Error",
-                             error: "Indices out of range"};
-
-            if(distance < distanceMin) distanceMin = distance;
-            if(distance > distanceMax) distanceMax = distance;
+            if(!sts) return {
+                countDistances,
+                endMessage: "Error",
+                error: "Indices out of range"
+            };
         }
+
+        let endMessage = "Done";
 
         if(fixTriangleInequality) {
 
             const sts = this.fixTriangleInequalityViolations();
 
-            if(sts === -1) return {
-                countDistances,
-                distanceMin: 0,
-                distanceMax: 10,
-                endMessage: "Error",
-                error: "Max iterations exceeded"
-            };
-            let endMessage;
             switch(sts) {
                 case 0:  endMessage = "Fix: no change"; break;
                 case 1:  endMessage = "Fixed triangle inequality"; break;
-                default: endMessage = "Fix: done"; break;
+                case -1:
+                    return {
+                        countDistances,
+                        endMessage: "Error",
+                        error: "Max iterations exceeded"
+                    };
             }
-            return {countDistances, distanceMin, distanceMax, endMessage};
         }
 
-        return {countDistances, distanceMin, distanceMax, endMessage: "Fix: done"};
+        this.distances.normalize();
+
+        return {countDistances, endMessage};
     }
 
     /**
@@ -329,7 +338,9 @@ export class Distances {
     /**
      * Fix triangular inequality violations
      *
-     * @returns 0 if everything is OK; 1 if had to fix triangular inequalities; -1 if maxIterations exceeded
+     * @returns 0 if everything is OK;
+     *          1 if had to fix triangular inequalities;
+     *         -1 if maxIterations exceeded
      */
     private fixTriangleInequalityViolations(maxIterations=10): number {
 

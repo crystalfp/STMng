@@ -1019,7 +1019,9 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(resultFP.error) {
 
-			if(resultFP.userError) sendAlertToClient(resultFP.error, {userMessage: resultFP.userError, node: "fingerprints"});
+			if(resultFP.userError) sendAlertToClient(resultFP.error,
+													{userMessage: resultFP.userError,
+													 node: "fingerprints"});
 			else sendAlertToClient(resultFP.error, {node: "fingerprints"});
 
 			return {
