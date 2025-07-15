@@ -7,6 +7,7 @@
  * @since 2024-07-05
  */
 import {ref, watchEffect} from "vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {disabled = false, hide = []} = defineProps<{
@@ -61,25 +62,20 @@ const notHidden = (name: string): boolean => {
 
 
 <template>
-<v-row class="pa-0 mt-2">
-  <v-col cols="12" class="pa-0">
-    <v-label :text="title" class="mb-1 ml-1 no-select" />
-  </v-col>
-  <v-col cols="12" class="pa-0 mb-4">
-    <v-btn-toggle v-model="labelKind" mandatory :disabled>
-      <v-btn v-if="notHidden('symbol')" value="symbol">Symbol</v-btn>
-      <v-btn v-if="notHidden('label')" value="label">Label</v-btn>
-      <v-btn v-if="notHidden('index')" value="index">Index</v-btn>
-      <v-btn v-if="notHidden('all')" value="all">All</v-btn>
-    </v-btn-toggle>
-  </v-col>
-  <v-col cols="12" class="pa-0">
+<titled-slot :title class="ml-1">
+  <v-btn-toggle v-model="labelKind" mandatory :disabled>
+    <v-btn v-if="notHidden('symbol')" value="symbol">Symbol</v-btn>
+    <v-btn v-if="notHidden('label')" value="label">Label</v-btn>
+    <v-btn v-if="notHidden('index')" value="index">Index</v-btn>
+    <v-btn v-if="notHidden('all')" value="all">All</v-btn>
+  </v-btn-toggle>
+  <template #extra>
     <v-text-field v-model="atomsSelectorInternal" :label="placeholder"
-                  :disabled="labelKind === 'all' || disabled"
+                  :disabled="labelKind === 'all' || disabled" class="mt-n2"
                   placeholder="Space separated list"
                   hide-details="auto" clearable spellcheck="false"
                   @blur="getSelector" @keyup.enter="getSelector"
-                  @click:clear="getSelector"/>
-  </v-col>
-</v-row>
+                  @click:clear="getSelector" />
+  </template>
+</titled-slot>
 </template>

@@ -102,40 +102,43 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
 
 <template>
 <v-container class="pa-0 title-container">
-  <v-select v-model="selectedTabId" :items="uiList" item-title="label" item-value="id"
-  			variant="solo-filled" rounded="0" />
+  <v-select v-model="selectedTabId" :items="uiList" item-title="label"
+            item-value="id" variant="solo-filled" rounded="0" />
 </v-container>
 <v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
   <component :is="panel.ctrl" v-show="panel.id === selectedTabId"
   			 :id="panel.id" :label="panel.label" />
 </v-container>
 <v-row class="justify-center w-100">
-    <v-spacer />
-    <v-col v-if="showPanel===0">
-      <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false" rounded="0" class="muted" density="compact">
-        <v-btn value="0" :icon="mdiAlphaXBoxOutline"/>
-		<v-btn value="r">Reset camera</v-btn>
-      </v-btn-toggle>
-    </v-col>
-    <v-col v-if="showPanel===1">
-      <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false" rounded="0"  class="muted" density="compact">
-        <v-btn value="1" :icon="hasCell ? mdiAlphaABoxOutline : mdiAlphaHBoxOutline"/>
-        <v-btn value="x">X</v-btn>
-        <v-btn value="y">Y</v-btn>
-        <v-btn value="z">Z</v-btn>
-        <v-btn value="s" :icon="mdiPlusMinusVariant"/>
-      </v-btn-toggle>
-    </v-col>
-    <v-col v-if="showPanel===2">
-      <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false" rounded="0" class="muted" density="compact">
-        <v-btn value="2" :icon="mdiAlphaHBoxOutline"/>
-        <v-btn value="a">a</v-btn>
-        <v-btn value="b">b</v-btn>
-        <v-btn value="c">c</v-btn>
-        <v-btn value="s" :icon="mdiPlusMinusVariant"/>
-      </v-btn-toggle>
-    </v-col>
-    <v-spacer />
+  <v-spacer />
+  <v-col v-if="showPanel===0">
+    <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false"
+                  rounded="0" class="muted" density="compact">
+      <v-btn value="0" :icon="mdiAlphaXBoxOutline"/>
+  <v-btn value="r">Reset camera</v-btn>
+    </v-btn-toggle>
+  </v-col>
+  <v-col v-if="showPanel===1">
+    <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false"
+                  rounded="0" class="muted" density="compact">
+      <v-btn value="1" :icon="hasCell ? mdiAlphaABoxOutline : mdiAlphaHBoxOutline"/>
+      <v-btn value="x">X</v-btn>
+      <v-btn value="y">Y</v-btn>
+      <v-btn value="z">Z</v-btn>
+      <v-btn value="s" :icon="mdiPlusMinusVariant"/>
+    </v-btn-toggle>
+  </v-col>
+  <v-col v-if="showPanel===2">
+    <v-btn-toggle v-model="lookAxis" mandatory variant="text" :divided="false"
+                  rounded="0" class="muted" density="compact">
+      <v-btn value="2" :icon="mdiAlphaHBoxOutline"/>
+      <v-btn value="a">a</v-btn>
+      <v-btn value="b">b</v-btn>
+      <v-btn value="c">c</v-btn>
+      <v-btn value="s" :icon="mdiPlusMinusVariant"/>
+    </v-btn-toggle>
+  </v-col>
+  <v-spacer />
 </v-row>
 </template>
 

@@ -14,6 +14,7 @@ import type {CtrlParams} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -210,15 +211,17 @@ const resetSliders = (): void => {
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" class="no-select" />
     </debounced-slider>
   </v-container>
-  <v-label class="ml-2 mb-1 mt-4 no-select">Add bonded atoms outside unit cell</v-label>
-  <v-btn-toggle v-model="enlargementKind" mandatory class="mb-6 ml-2">
-    <v-btn value="none">None</v-btn>
-    <v-btn value="neighbors">Neighbors</v-btn>
-    <v-btn value="connected">Full</v-btn>
-    <v-btn value="polyhedra">Poly</v-btn>
-  </v-btn-toggle>
 
-  <v-btn block class="mt-2" @click="resetSliders">Reset parameters</v-btn>
+  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-4 ml-2">
+    <v-btn-toggle v-model="enlargementKind" mandatory>
+      <v-btn value="none">None</v-btn>
+      <v-btn value="neighbors">Neighbors</v-btn>
+      <v-btn value="connected">Full</v-btn>
+      <v-btn value="polyhedra">Poly</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
+
+  <v-btn block @click="resetSliders">Reset parameters</v-btn>
 
 </v-container>
 </template>

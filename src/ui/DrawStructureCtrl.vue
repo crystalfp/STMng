@@ -15,6 +15,7 @@ import type {StructureRenderInfo} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import ColorSelector from "@/widgets/ColorSelector.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -154,80 +155,55 @@ const showCombined = computed({
 
 <template>
 <v-container class="container">
-  <v-row>
-    <v-col cols="12" class="pa-0 ml-5 mt-6 mb-n2">
-      <v-label text="Structure rendering mode" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="drawKind" mandatory class="mb-6 ml-2">
-        <v-btn value="ball-and-stick">CPK</v-btn>
-        <v-btn value="van-der-waals">VdW</v-btn>
-        <v-btn value="licorice">Licorice</v-btn>
-        <v-btn value="lines">Lines</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+  <titled-slot title="Structure rendering mode" class="my-6 ml-2">
+    <v-btn-toggle v-model="drawKind" mandatory>
+      <v-btn value="ball-and-stick">CPK</v-btn>
+      <v-btn value="van-der-waals">VdW</v-btn>
+      <v-btn value="licorice">Licorice</v-btn>
+      <v-btn value="lines">Lines</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
 
-  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n2 ml-4" />
+  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n4 ml-4" />
   <v-switch v-model="showBondsStrengths" :disabled="drawKind !== 'ball-and-stick'"
             label="Show bonds strengths" class="mt-n1 mb-5 ml-4" />
 
-  <v-row>
-    <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
-      <v-label text="Atom label" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="labelKind" mandatory class="mb-2 ml-2">
-        <v-btn value="symbol">Symbol</v-btn>
-        <v-btn value="label">Label</v-btn>
-        <v-btn value="index">Index</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+  <titled-slot title="Atom label" class="mb-2 ml-2">
+    <v-btn-toggle v-model="labelKind" mandatory>
+      <v-btn value="symbol">Symbol</v-btn>
+      <v-btn value="label">Label</v-btn>
+      <v-btn value="index">Index</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
 
-  <v-row>
-    <v-col cols="12" class="pa-0 ml-5 mb-n2">
-      <v-label text="Atom color" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="atomColoring" mandatory class="ml-2">
-        <v-btn value="type">Type</v-btn>
-        <v-btn value="mono">Mono</v-btn>
-      </v-btn-toggle>
-    </v-col>
-    <v-col v-if="atomColoring==='mono'" cols="11" class="ml-2 mt-n2 mb-n4">
-      <color-selector v-model="atomColor" label="Atom mono color"
-                      block class="mb-2"/>
-    </v-col>
-  </v-row>
+  <titled-slot title="Atom color" class="mb-2 ml-2">
+    <v-btn-toggle v-model="atomColoring" mandatory>
+      <v-btn value="type">Type</v-btn>
+      <v-btn value="mono">Mono</v-btn>
+    </v-btn-toggle>
+    <template #extra>
+      <color-selector v-if="atomColoring==='mono'" v-model="atomColor"
+                      label="Atom mono color" block class="mb-2" />
+    </template>
+  </titled-slot>
 
-  <v-row>
-    <v-col cols="12" class="pa-0 ml-5 mb-n2 mt-3">
-      <v-label text="Visibility" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="showCombined" multiple class="ml-2 mb-2">
-        <v-btn value="atoms">Atoms</v-btn>
-        <v-btn value="bonds">Bonds</v-btn>
-        <v-btn value="labels">Labels</v-btn>
-        <v-btn value="display">{{ showAll ? "Show" : "Hide" }}</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+  <titled-slot title="Visibility" class="mb-2 ml-2 mt-n4">
+    <v-btn-toggle v-model="showCombined" multiple>
+      <v-btn value="atoms">Atoms</v-btn>
+      <v-btn value="bonds">Bonds</v-btn>
+      <v-btn value="labels">Labels</v-btn>
+      <v-btn value="display">{{ showAll ? "Show" : "Hide" }}</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
 
-  <v-row>
-    <v-col cols="12" class="pa-0 ml-5 mb-n2">
-      <v-label text="Quality" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="drawQuality" mandatory class="ml-2">
-        <v-btn :value="1">Low</v-btn>
-        <v-btn :value="2">Medium</v-btn>
-        <v-btn :value="3">Good</v-btn>
-        <v-btn :value="4">Best</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+  <titled-slot title="Quality" class="ml-2">
+    <v-btn-toggle v-model="drawQuality" mandatory>
+      <v-btn :value="1">Low</v-btn>
+      <v-btn :value="2">Medium</v-btn>
+      <v-btn :value="3">Good</v-btn>
+      <v-btn :value="4">Best</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
 
   <debounced-slider v-slot="{value}" v-model="drawRoughness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-6">

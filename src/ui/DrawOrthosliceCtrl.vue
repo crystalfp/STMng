@@ -18,6 +18,7 @@ import SelectColormap from "@/widgets/SelectColormap.vue";
 import DatasetSelector from "@/widgets/DatasetSelector.vue";
 import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -176,18 +177,14 @@ watch([colormapName, colorIsolines], () => {
 
   <dataset-selector v-model="dataset" :count-datasets />
 
-  <v-row>
-    <v-col cols="12" class="pa-0 ml-5 mt-2 mb-n2">
-      <v-label text="Axis" class="no-select" />
-    </v-col>
-    <v-col>
-      <v-btn-toggle v-model="axis" mandatory class="mb-2 ml-2">
-        <v-btn :value="0">X</v-btn>
-        <v-btn :value="1">Y</v-btn>
-        <v-btn :value="2">Z</v-btn>
-      </v-btn-toggle>
-    </v-col>
-  </v-row>
+  <titled-slot title="Axis" class="mt-2 mb-2 ml-2">
+    <v-btn-toggle v-model="axis" mandatory>
+      <v-btn :value="0">X</v-btn>
+      <v-btn :value="1">Y</v-btn>
+      <v-btn :value="2">Z</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
+
   <debounced-slider v-slot="{value}" v-model="plane"
                       :step="1" :min="0" :max="maxPlane" class="ml-2 my-4">
     <v-label :text="`Plane (${value})`" class="no-select"/>

@@ -18,6 +18,7 @@ import type {FileFilter} from "@/types";
 import EnableCapture from "@/components/EnableCapture.vue";
 import SelectFile from "@/widgets/SelectFile.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -493,14 +494,15 @@ const auxSetup = computed(() => {
               @click="step = countSteps; running = false" />
       <v-spacer />
     </v-row>
-    <v-row>
-      <v-label class="mb-n2 ml-3 mr-4 no-select">Speed:</v-label>
-      <v-btn-toggle v-model="speed" mandatory class="mt-8 mb-6">
+
+    <titled-slot title="Speed:" inline class="mt-10 mb-6 ml-0">
+      <v-btn-toggle v-model="speed" mandatory>
         <v-btn>Fast</v-btn>
         <v-btn>Medium</v-btn>
         <v-btn>Slow</v-btn>
       </v-btn-toggle>
-    </v-row>
+    </titled-slot>
+
   </v-container>
   <node-alert node="structureReader" />
 </v-container>
