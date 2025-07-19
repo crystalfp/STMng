@@ -267,7 +267,9 @@
 <li><a id="note6"></a>In the unit cell file each block of three lines contains three floats and refers to one frame. The nine numbers define the three base vectors (one by line).</li>
 <li><a id="note7"></a>Read the old and new versions (the one with element names). Write only the new version.</li>
 <li><a id="note8"></a>The energy file has one energy or enthalpy value per line and there are as many lines as the number of structures in the associated POSCAR file. The energy value is per atom or per structure. The write is done from the fingerprint scatterplot window for the selected structures and the energy is per atom.</li>
-<li><a id="note9"></a>No documentation has been found on this format, but seems produced by VASP 5.2 for which no CONTCAR (or POSCAR) file is needed. It is a POSCAR file followed by a separation line and a set of atoms coordinates for the remaining steps.</li>
+<li><a id="note9"></a>The only documentation of this format is in this
+    <a href="https://www.ks.uiuc.edu/Research/vmd/plugins/doxygen/vasp5xdatcarplugin_8c.html">VMD plugin</a>.
+    This format seems produced by VASP 5.2 for which no CONTCAR (or POSCAR) file is needed. In the fixed cell variant it is a POSCAR file followed by a separation line and a set of atoms coordinates for the remaining steps. Instead, the variable cell variant is a concatenation of POSCAR formatted steps.</li>
 </ol>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>

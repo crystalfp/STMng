@@ -249,10 +249,14 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 					};
 					structures.push(structure);
 					++currentStep;
-					lineType = LineType.atoms;
 					currentIdx = 0;
 					currentCount = atomsCount[0];
 					atomIdx = 0;
+
+					// Discriminate between fixed and variable cell sub-formats
+					const kind = line.trim().toLowerCase();
+					lineType = kind.startsWith("direct configuration=") ?
+											LineType.atoms : LineType.scale;
 				}
 			}
 			if(lineType === LineType.exit) break;
