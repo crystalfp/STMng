@@ -85,7 +85,7 @@ class ProjectManager {
 									   idPrefix: "measure",   ui: "MeasuresCtrl"},
 		{type: "structure-writer",     in: true,  out: false, graphic: "none", handler: StructureWriter,
 									   idPrefix: "writer",    ui: "StructureWriterCtrl"},
-		{type: "draw-trajectories",    in: true,  out: false, graphic: "out",  handler: Trajectories,
+		{type: "draw-trajectories",    in: true,  out: true,  graphic: "out",  handler: Trajectories,
 									   idPrefix: "trace",     ui: "TrajectoriesCtrl"},
 		{type: "capture-view",         in: false, out: false, graphic: "none", handler: CaptureView,
 									   idPrefix: "capture",   ui: "CaptureMediaCtrl"},

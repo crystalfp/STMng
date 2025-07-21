@@ -6,9 +6,10 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-06-15
  */
-import type {Structure, PositionType, BasisType} from "@/types";
-import {hasUnitCell} from "./Helpers";
+import type {Structure, Atom, PositionType, BasisType} from "@/types";
+import {cartesianToFractionalCoordinates, hasUnitCell} from "./Helpers";
 import {getAtomicSymbol} from "./AtomData";
+import {EmptyStructure} from "./EmptyStructure";
 
 /** Selected atoms positions */
 interface Positions {
@@ -55,15 +56,24 @@ interface Averages {
 }
 
 /** Computed average positions and displacements */
-interface AveragesResult {
+export interface AveragesResult {
 	/** Mean position */
 	position: PositionType;
 	/** Mean squared displacement */
 	displacement: number;
 	/** Corresponding atom symbol */
 	atomType: string;
+	/** Corresponding atom Z value */
+	atomZ: number;
 	/** Corresponding atom index */
 	index: number;
+	/** True if position is in fractional coordinates */
+	isFractional: boolean;
+}
+
+interface AverageResultsAndStructure {
+	averages: AveragesResult[];
+	structure: Structure;
 }
 
 /** Adjust position of atoms to reduce non-physical movements */
@@ -77,15 +87,22 @@ export class ReorderAtomsInSteps {
 
 	private readonly averages: Averages[] = [];
 
+	private averageBasis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+	private steps = 0;
+
 	/**
 	 * Initialize the algorithm
 	 */
 	init(): void {
+
 		this.previousStep.clear();
 		this.currentStep.clear();
 		this.basis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		this.hasUnitCell = false;
 		this.averages.length = 0;
+
+		this.averageBasis = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.steps = 0;
 	}
 
 	/**
@@ -95,7 +112,10 @@ export class ReorderAtomsInSteps {
 	 * @param indices - Indices of selected atoms in the structure
 	 * @returns The updated positions and reordered indices for the loaded step
 	 */
-	loadStep(structure: Structure, indices: number[]): AveragesResult[] {
+	loadStep(structure: Structure, indices: number[]): AverageResultsAndStructure {
+
+		// Sanity check
+		if(indices.length === 0) return {averages: [], structure: new EmptyStructure()};
 
 		// The first step saves the position and returns it unchanged
 		if(this.currentStep.size === 0) {
@@ -194,7 +214,11 @@ export class ReorderAtomsInSteps {
 			}
 		}
 
-		return this.prepareResults();
+		// Prepare results
+		const results = this.prepareResults();
+		const outStructure = this.prepareMeanStructure(results, structure);
+
+		return {averages: results, structure: outStructure};
 	}
 
 	/**
@@ -214,13 +238,68 @@ export class ReorderAtomsInSteps {
 						   avg.meanPosition[2]/avg.count],
 				displacement: avg.squaredDisplacement/avg.count,
 				atomType: getAtomicSymbol(avg.atomZ),
-				index: avg.idx
+				atomZ: avg.atomZ,
+				index: avg.idx,
+				isFractional: false
 			};
 
 			results.push(avgEntry);
 		}
 
 		return results;
+	}
+
+	/**
+	 * Compute mean structure and convert positions to fractional
+	 *
+	 * @param results - Average positions for this step
+	 * @param inputStructure - Step input structure
+	 * @returns Average structure
+	 */
+	prepareMeanStructure(results: AveragesResult[], inputStructure: Structure): Structure {
+
+		const atoms: Atom[] = [];
+
+		for(const entry of results) {
+			atoms.push({
+				atomZ: entry.atomZ,
+				label: entry.atomType,
+				chain: "",
+				position: [entry.position[0], entry.position[1], entry.position[2]],
+			});
+		}
+		const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+		if(this.steps > 0) {
+			for(let i=0; i < 9; ++i) basis[i] = this.averageBasis[i]/this.steps;
+		}
+
+		const structure: Structure = {
+			crystal: {
+				basis,
+				origin: [0, 0, 0],
+				spaceGroup: inputStructure.crystal.spaceGroup
+			},
+			atoms,
+			bonds: [],
+			volume: [],
+			extra: inputStructure.extra
+		};
+
+		if(this.steps > 0) {
+
+			const fc = cartesianToFractionalCoordinates(structure);
+
+			let idx = 0;
+			for(const entry of results) {
+
+				entry.position[0] = fc[idx++];
+				entry.position[1] = fc[idx++];
+				entry.position[2] = fc[idx++];
+				entry.isFractional = true;
+			}
+		}
+
+		return structure;
 	}
 
 	/**
@@ -243,6 +322,11 @@ export class ReorderAtomsInSteps {
 			else {
 				this.currentStep.set(atom.atomZ, {positions: [atom.position], idx: [idx]});
 			}
+		}
+
+		if(this.hasUnitCell) {
+			for(let i=0; i < 9; ++i) this.averageBasis[i] += this.basis[i];
+			++this.steps;
 		}
 	}
 

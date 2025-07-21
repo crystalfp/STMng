@@ -678,19 +678,3 @@ export interface FingerprintsChartData {
  * - "di" distances from a given fingerprint
  */
 export type FingerprintsChartKind = "fp" | "en" | "ed" | "eh" | "dh" | "op" | "di";
-
-/** The payload to be visualized */
-export interface MeanDisplacement {
-  /** Index of the selected atom */
-	index: number;
-  /** Atomic symbol */
-	atomType: string;
-  /** Mean position X coordinate */
-	meanX: number;
-  /** Mean position Y coordinate */
-	meanY: number;
-  /** Mean position Z coordinate */
-	meanZ: number;
-  /** Mean squared displacement from the average position */
-	displacement: number;
-}

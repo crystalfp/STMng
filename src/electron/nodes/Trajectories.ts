@@ -6,14 +6,13 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-09
  */
-import {ipcMain} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
-import {sendToClient, sendTracesToClient} from "../modules/ToClient";
+import {sendTracesToClient} from "../modules/ToClient";
 import {createSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import type {Structure, CtrlParams, ChannelDefinition, MeanDisplacement} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
 
 export class Trajectories extends NodeCore {
@@ -30,11 +29,7 @@ export class Trajectories extends NodeCore {
 	private nextSteps = false;
 	private positionCloudsColor = "#BBBBBE";
 	private positionCloudsSize = 100;
-	private readonly meanDisplacement: MeanDisplacement[] = [];
 	private indices: number[] = [];
-	private static channelOpened = false;
-	private showMarker = false;
-	private sizeMarkers = 1;
 	private disentangler = new ReorderAtomsInSteps();
 
 
@@ -117,8 +112,6 @@ export class Trajectories extends NodeCore {
 			showPositionClouds: this.showPositionClouds,
 			positionCloudsColor: this.positionCloudsColor,
 			positionCloudsSize: this.positionCloudsSize,
-			showMarker: this.showMarker,
-			sizeMarkers: this.sizeMarkers
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
@@ -131,8 +124,6 @@ export class Trajectories extends NodeCore {
 		this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
 		this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
 		this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
-		this.showMarker 		 = params.showMarker as boolean ?? false;
-		this.sizeMarkers 		 = params.sizeMarkers as number ?? 1;
 	}
 
 	// > Trace lines methods
@@ -218,154 +209,22 @@ export class Trajectories extends NodeCore {
 	}
 
 	/**
-	 * Compute mean positions and displacements
-	 *
-	 * @param indices - Indices of selected atoms
-	 */
-	private computeMeanPositionAndDisplacement(indices: number[]): void {
-
-		this.meanDisplacement.length = 0;
-		if(indices.length === 0) return;
-
-		// Compute average position and displacement
-		const averageResults = this.disentangler.loadStep(this.structure!, indices);
-
-		for(const avg of averageResults) {
-
-			this.meanDisplacement.push({
-				index: avg.index,
-				atomType: avg.atomType,
-				meanX: avg.position[0],
-				meanY: avg.position[1],
-				meanZ: avg.position[2],
-				displacement: avg.displacement
-			});
-		}
-
-		/*
-		// const {atoms} = this.structure!;
-		const currentTraces: number[][] = [];
-		for(const trace of this.traces) {
-			currentTraces.push(trace);
-		}
-
-		if(this.hasUnitCell) {
-
-			for(let i=0; i < currentTraces.length; ++i) {
-
-				const trace = currentTraces[i];
-
-				let lastX = trace[0];
-				let lastY = trace[1];
-				let lastZ = trace[2];
-
-				// eslint-disable-next-line sonarjs/no-redundant-assignments
-				for(let j=3; j < trace.length; j+=3) {
-
-					const dx = trace[j]   - lastX;
-					const dy = trace[j+1] - lastY;
-					const dz = trace[j+2] - lastZ;
-					const length = Math.hypot(dx, dy, dz);
-					if(length > this.maxDisplacement) {
-						currentTraces[i] = this.removeJumps(trace, j);
-						break;
-					}
-					lastX = trace[j];
-					lastY = trace[j+1];
-					lastZ = trace[j+2];
-				}
-			}
-		}
-
-		for(let i=0; i < indices.length; ++i) {
-
-			const idx = indices[i];
-			const trace = currentTraces[i];
-
-			// Compute mean position
-			let meanX = 0;
-			let meanY = 0;
-			let meanZ = 0;
-			let steps = 0;
-
-			for(let j=0; j < trace.length; j+=3) {
-				meanX += trace[j];
-				meanY += trace[j+1];
-				meanZ += trace[j+2];
-				++steps;
-			}
-
-			meanX /= steps;
-			meanY /= steps;
-			meanZ /= steps;
-
-			// Compute displacement
-			let displacement = 0;
-			for(let j=0; j < trace.length; j+=3) {
-
-				const dx = trace[j]   - meanX;
-				const dy = trace[j+1] - meanY;
-				const dz = trace[j+2] - meanZ;
-				displacement += dx*dx+dy*dy+dz*dz;
-			}
-			displacement /= steps;
-
-			// Send results
-			const {atomZ} = atoms[idx];
-			const atomType = getAtomData(atomZ).symbol;
-
-			this.meanDisplacement.push({
-				index: idx,
-				atomType,
-				meanX,
-				meanY,
-				meanZ,
-				displacement
-			});
-		}
-			*/
-	}
-
-	/**
 	 * Compute and send updated mean positions and displacements to client
 	 *
 	 * @param indices - Indices of selected atoms
 	 */
 	private sendMeanDisplacement(indices: number[]): void {
 
+		// Compute average position and displacement
+		const averageResults = this.disentangler.loadStep(this.structure!, indices);
+
 		if(isSecondaryWindowOpen("/displacements")) {
 
-			// Compute mean position and displacement
-			this.computeMeanPositionAndDisplacement(indices);
-
-			const dataToSend = JSON.stringify(this.meanDisplacement);
+			const dataToSend = JSON.stringify(averageResults.averages);
 			sendToSecondaryWindow("/displacements", dataToSend);
-			this.sendMarkers(this.showMarker, this.sizeMarkers, this.meanDisplacement);
 		}
-	}
 
-	/**
-	 * Send markers to the viewer
-	 *
-	 * @param showMarker - If the marker should be visible
-	 * @param sizeMarkers - Size of the marker
-	 * @param meanDisplacement - Positions of the markers and other info
-	 */
-	private sendMarkers(showMarker: boolean,
-					    sizeMarkers: number,
-						meanDisplacement: MeanDisplacement[]): void {
-
-		const positions = [];
-		if(showMarker) {
-			for(const entry of meanDisplacement) {
-				positions.push(entry.meanX, entry.meanY, entry.meanZ);
-			}
-		}
-		sendToClient(this.id, "set-markers", {
-			showMarker,
-			sizeMarkers,
-			positions
-		});
+		this.toNextNode(averageResults.structure);
 	}
 
 	// > Channel handlers
@@ -395,8 +254,6 @@ export class Trajectories extends NodeCore {
 		this.traces.length = 0;
 		this.tracesColor.length = 0;
 		this.nextSteps = false;
-		this.meanDisplacement.length = 0;
-		this.showMarker = false;
 		this.sendMeanDisplacement([]);
 		this.disentangler.init();
 	}
@@ -413,7 +270,12 @@ export class Trajectories extends NodeCore {
 		if(this.createTrajectories && this.structure && isSecondaryWindowOpen("/displacements")) {
 
 			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
-			this.disentangler.loadStep(this.structure, this.indices);
+			const averageResults = this.disentangler.loadStep(this.structure, this.indices);
+
+			const dataToSend = JSON.stringify(averageResults.averages);
+			sendToSecondaryWindow("/displacements", dataToSend);
+
+			this.toNextNode(averageResults.structure);
 		}
 	}
 
@@ -460,10 +322,10 @@ export class Trajectories extends NodeCore {
 	 */
 	private channelMeans(): void {
 
-		// Compute mean position and displacement
-		this.computeMeanPositionAndDisplacement(this.indices);
+		// Compute average position and displacement
+		const averageResults = this.disentangler.loadStep(this.structure!, this.indices);
 
-		const dataToSend = JSON.stringify(this.meanDisplacement);
+		const dataToSend = JSON.stringify(averageResults.averages);
 
 		if(isSecondaryWindowOpen("/displacements")) {
 
@@ -479,15 +341,6 @@ export class Trajectories extends NodeCore {
 			});
 		}
 
-		// If channel not already opened, open it
-		if(Trajectories.channelOpened) return;
-		Trajectories.channelOpened = true;
-
-		ipcMain.on("SYSTEM:show-markers", (_event, params: CtrlParams) => {
-
-			this.showMarker = params.visible as boolean ?? false;
-			this.sizeMarkers = params.size as number ?? 1;
-			this.sendMarkers(this.showMarker, this.sizeMarkers, this.meanDisplacement);
-		});
+		this.toNextNode(averageResults.structure);
 	}
 }

@@ -7,34 +7,30 @@
  * @since 2025-06-04
  */
 import {theme} from "@/services/ReceiveTheme";
-import {ref, nextTick, watch} from "vue";
-import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {ref, nextTick} from "vue";
+import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import type {MeanDisplacement} from "@/types";
+import type {AveragesResult} from "@/electron/modules/ReorderAtomsInSteps";
 
-import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+const means = ref<AveragesResult[]>([]);
 
-const means = ref<MeanDisplacement[]>([]);
+const coordinates = ref("(cartesian)");
 
 receiveInWindow((data) => void nextTick().then(() => {
 
-        means.value.length = 0;
-        const decodedData = JSON.parse(data) as MeanDisplacement[];
-        for(const entry of decodedData) {
-            means.value.push(entry);
-        }
-    }));
+    means.value.length = 0;
+    coordinates.value = "(cartesian)";
+    const decodedData = JSON.parse(data) as AveragesResult[];
+    if(decodedData.length > 0) {
+
+        for(const entry of decodedData) means.value.push(entry);
+
+        if(decodedData[0].isFractional) coordinates.value = "(fractional)";
+    }
+}));
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys("/displacements");
-
-const showMarkers = ref(false);
-const showSizeMarkers = ref(1);
-const sizeMarkers = ref(1);
-watch([showMarkers, sizeMarkers], () => sendToNode("SYSTEM", "show-markers", {
-        visible: showMarkers.value,
-        size: sizeMarkers.value
-    }));
 
 /** Number of digits before changing to exponential notation */
 const FORMAT_MAX_DIGITS = 4;
@@ -63,26 +59,20 @@ const format = (value: number): string => {
       <v-table class="pa-1 w-100 bg-transparent" density="default">
         <tr>
           <th colspan="2">Atom (index)</th>
-          <th class="pl-4" colspan="3">Mean position</th>
+          <th class="pl-4" colspan="3">Mean position {{ coordinates }}</th>
           <th class="pl-10">MSD</th>
         </tr>
         <tr v-for="e of means" :key="e.index">
           <td class="w-2">{{ e.atomType }}</td>
           <td class="w-4">{{ `(${e.index}):` }}</td>
-          <td class="w-1 right">{{ `[ ${e.meanX.toFixed(3)},` }}</td>
-          <td class="w-1 right">{{ `${e.meanY.toFixed(3)},` }}</td>
-          <td class="w-1 right">{{ `${e.meanZ.toFixed(3)} ]` }}</td>
+          <td class="w-1 right">{{ `[ ${e.position[0].toFixed(3)},` }}</td>
+          <td class="w-1 right">{{ `${e.position[1].toFixed(3)},` }}</td>
+          <td class="w-1 right">{{ `${e.position[2].toFixed(3)} ]` }}</td>
           <td class="w-4 right pr-4">{{ format(e.displacement) }}</td>
         </tr>
       </v-table>
     </v-container>
-    <v-container class="button-strip justify-space-between">
-      <v-switch v-model="showMarkers" class="ml-2" label="Show markers"/>
-      <slider-with-steppers v-model="sizeMarkers" v-model:raw="showSizeMarkers"
-                      :disabled="!showMarkers"
-                      label-width="7.6rem"
-                      :label="`Marker size (${showSizeMarkers})`"
-                      :min="0.1" :max="4" :step="0.1" />
+    <v-container class="button-strip justify-end">
       <v-btn v-focus @click="closeWindow('/displacements')">Close</v-btn>
     </v-container>
   </v-container>

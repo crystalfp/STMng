@@ -10,10 +10,9 @@
 import {computed, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
-import {askNode, receiveFromNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
+import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
-import type {CtrlParams} from "@/types";
 
 import ColorSelector from "@/widgets/ColorSelector.vue";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
@@ -132,16 +131,6 @@ receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): vo
 const startStop = computed(() => (controlStore.trajectoriesRecording ?
                                             "Stop trajectories" :
                                             "Start trajectories"));
-
-/** Draw markers */
-receiveFromNode(id, "set-markers", (params: CtrlParams) => {
-
-    const showMarker = params.showMarker as boolean ?? false;
-	const sizeMarkers = params.sizeMarkers as number ?? 1;
-    const positions = params.positions as number[] ?? [];
-
-    renderer.setMarkers(showMarker, sizeMarkers, positions);
-});
 
 </script>
 

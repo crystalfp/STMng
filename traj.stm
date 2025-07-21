@@ -3,70 +3,77 @@
     "reader": {
       "label": "Reader",
       "type": "structure-reader",
-      "x": 870,
-      "y": 390
+      "x": 720,
+      "y": 420
     },
     "symmetry": {
       "label": "Symmetries",
       "type": "compute-symmetries",
-      "x": 1020,
-      "y": 390,
+      "x": 870,
+      "y": 420,
       "in": "reader"
+    },
+    "unit": {
+      "label": "Unit cell",
+      "type": "draw-unit-cell",
+      "x": 1020,
+      "y": 420,
+      "in": "symmetry"
     },
     "bonds": {
       "label": "Bonds",
       "type": "compute-bonds",
       "x": 1170,
-      "y": 480,
-      "in": "symmetry"
-    },
-    "unit": {
-      "label": "Unit cell",
-      "type": "draw-unit-cell",
-      "x": 1290,
-      "y": 570,
-      "in": "bonds"
-    },
-    "trace": {
-      "label": "Trajectories",
-      "type": "draw-trajectories",
-      "x": 1470,
-      "y": 690,
-      "in": "unit"
-    },
-    "measure": {
-      "label": "Measures",
-      "type": "measures",
-      "x": 1590,
-      "y": 630,
+      "y": 390,
       "in": "unit"
     },
     "draw": {
       "label": "Draw",
       "type": "draw-structure",
-      "x": 1740,
-      "y": 480,
+      "x": 1290,
+      "y": 390,
+      "in": "bonds"
+    },
+    "trace": {
+      "label": "Trajectories",
+      "type": "draw-trajectories",
+      "x": 1410,
+      "y": 450,
       "in": "unit"
+    },
+    "unit1": {
+      "label": "Average unit cell",
+      "type": "draw-unit-cell",
+      "x": 1560,
+      "y": 510,
+      "in": "trace"
+    },
+    "draw1": {
+      "label": "Draw average",
+      "type": "draw-structure",
+      "x": 1710,
+      "y": 570,
+      "in": "unit1"
     },
     "viewer": {
       "label": "Viewer",
       "type": "viewer-3d",
-      "x": 1740,
-      "y": 600
+      "x": 1800,
+      "y": 630
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        -13.308681282858068,
-        8.873518636021684,
-        25.90706670637692
+        2.6379282083333337,
+        9.869979041666667,
+        39.82676333333333
       ],
       "lookAt": [
-        2.2275699646165004,
-        3.8582643561305,
-        4.740822209796
+        2.6379282083333337,
+        9.869979041666666,
+        3.564341333333333
       ],
       "snapshotFormat": "png",
       "snapshotTransparent": false,
@@ -124,7 +131,7 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "LAMMPStrj",
+      "format": "XYZ",
       "atomsTypes": "mg c o",
       "useBohr": true,
       "readHydrogen": false,
@@ -133,29 +140,18 @@
       "speed": 1
     },
     "symmetry": {
-      "applyInputSymmetries": false,
+      "applyInputSymmetries": true,
       "enableFindSymmetries": true,
-      "standardizeCell": false,
+      "standardizeCell": true,
       "symprecStandardize": -1,
       "symprecDataset": -1,
       "fillUnitCell": true,
-      "fillTolerance": -1.86,
+      "fillTolerance": -5,
       "standardizeOnly": false,
       "createPrimitiveCell": false,
       "computePointGroup": false,
       "positionTolerance": 0.3,
       "eigenvalueTolerance": 0.01
-    },
-    "bonds": {
-      "minBondingDistance": 0.64,
-      "maxBondingDistance": 4.5,
-      "maxHBondingDistance": 3,
-      "maxHValenceAngle": 30,
-      "enableComputeBonds": true,
-      "bondScale": 1.1,
-      "perPairScale": false,
-      "perPairData": "[]",
-      "enlargementKind": "none"
     },
     "unit": {
       "showUnitCell": true,
@@ -173,16 +169,16 @@
       "percentC": 0,
       "shrink": false
     },
-    "trace": {
-      "showTrajectories": false,
-      "labelKind": "symbol",
-      "atomsSelector": "c",
-      "maxDisplacement": 1,
-      "showPositionClouds": false,
-      "positionCloudsColor": "#BBBBBE",
-      "positionCloudsSize": 100,
-      "showMarker": false,
-      "sizeMarkers": 1
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "perPairData": "[]",
+      "enlargementKind": "none"
     },
     "draw": {
       "drawKind": "ball-and-stick",
@@ -195,8 +191,47 @@
       "showLabels": true,
       "shadedBonds": false,
       "showBondsStrengths": false,
+      "atomColoring": "type",
+      "atomColor": "#888888"
+    },
+    "trace": {
+      "showTrajectories": false,
+      "labelKind": "index",
+      "atomsSelector": "1 6",
+      "maxDisplacement": 1,
+      "showPositionClouds": false,
+      "positionCloudsColor": "#BBBBBE",
+      "positionCloudsSize": 100
+    },
+    "unit1": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": false
+    },
+    "draw1": {
+      "drawKind": "ball-and-stick",
+      "drawQuality": 4,
+      "drawRoughness": 0.5,
+      "drawMetalness": 0.6,
+      "labelKind": "symbol",
+      "showBonds": true,
+      "showAtoms": true,
+      "showLabels": true,
+      "shadedBonds": false,
+      "showBondsStrengths": false,
       "atomColoring": "mono",
-      "atomColor": "#F20F0F"
+      "atomColor": "#0925F2"
     }
   }
 }
