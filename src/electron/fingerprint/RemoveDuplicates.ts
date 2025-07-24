@@ -87,7 +87,8 @@ export const removeDuplicatePoints = (enabled: boolean,
             structures[minEnergyIdx].enabled = true;
             ++countEnabled;
         }
-        // Else finds the most central point using the sum of distances (geometric median)
+        // Else finds the most central point using
+        // the sum of distances (geometric median)
         else {
 
             let medianDistance = Number.POSITIVE_INFINITY;
