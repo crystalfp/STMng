@@ -4,7 +4,6 @@ Bugs:
   ☐ Billboard also for Bonds lengths labels
 
 Latest requests (backlog):
-  ☐ Show average structure in trajectories instead of markers
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
   ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Find prototype structure
@@ -13,7 +12,7 @@ To do:
   ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
-  ☐ Unify viewer3D setup between Compare e Landscape
+  ☐ Unify viewer3D setup between Compare and Landscape
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
 
 Performance:
@@ -24,7 +23,6 @@ Performance:
 Functionalities:
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
-  ☐ Coloring atoms according to their coordination number
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
 
 Global analysis:
@@ -66,6 +64,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Show average structure in trajectories instead of markers @done(2025-07-25 07:03) @project(Latest requests (backlog))
+  ✔ Coloring atoms according to their coordination number @done(2025-07-25 15:39) @project(Functionalities)
   ✔ Fix atom reordering in trajectories @done(2025-07-13 10:30) @project(Bugs)
   ✘ Add torsion angle to measures: Torsion angle formed by four atoms (four atoms picked). Torsion angle is the angle formed between the planes containing atoms 1,2,3 and 2,3,4. @cancelled(2025-07-06 06:16) @project(Functionalities)
   ✔ ALPO.CEL No Apply symm+Enable find does not apply found symmetries. @done(2025-07-05 16:00) @project(Bugs)

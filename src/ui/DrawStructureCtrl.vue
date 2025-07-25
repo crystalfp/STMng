@@ -11,7 +11,7 @@ import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/Route
 import {showSystemAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {DrawStructureRenderer} from "@/renderers/DrawStructureRenderer";
 import {useControlStore} from "@/stores/controlStore";
-import type {StructureRenderInfo} from "@/types";
+import type {StructureRenderInfo, ColoringType} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import ColorSelector from "@/widgets/ColorSelector.vue";
@@ -39,7 +39,7 @@ const showLabels = ref(true);
 const shadedBonds = ref(false);
 let renderInfo: StructureRenderInfo;
 const showBondsStrengths = ref(false);
-const atomColoring = ref("type");
+const atomColoring = ref<ColoringType>("type");
 const atomColor = ref("#888888");
 
 // > Access the stores
@@ -59,7 +59,7 @@ askNode(id, "init")
         showLabels.value = params.showLabels as boolean ?? true;
         shadedBonds.value = params.shadedBonds as boolean ?? false;
         showBondsStrengths.value = params.showBondsStrengths as boolean ?? false;
-        atomColoring.value = params.atomColoring as string ?? "type";
+        atomColoring.value = params.atomColoring as ColoringType ?? "type";
         atomColor.value = params.atomColor as string ?? "#888888";
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
@@ -180,6 +180,7 @@ const showCombined = computed({
     <v-btn-toggle v-model="atomColoring" mandatory>
       <v-btn value="type">Type</v-btn>
       <v-btn value="mono">Mono</v-btn>
+      <v-btn value="bonds">Bonds</v-btn>
     </v-btn-toggle>
     <template #extra>
       <color-selector v-if="atomColoring==='mono'" v-model="atomColor"

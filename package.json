@@ -38,7 +38,7 @@
     "commander": "^14.0.0",
     "custom-electron-titlebar": "^4.2.8",
     "electron-log": "^5.4.1",
-    "mathjs": "^14.5.3",
+    "mathjs": "^14.6.0",
     "pinia": "^3.0.3",
     "three": "^0.178.0",
     "three-viewport-gizmo": "^2.2.0",

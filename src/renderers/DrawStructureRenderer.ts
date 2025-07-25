@@ -16,13 +16,25 @@ import {SpheresCache} from "@/services/SpheresCache";
 import {CylinderCache} from "@/services/CylinderCache";
 import {useControlStore} from "@/stores/controlStore";
 import {isHydrogenBond, isNormalBond} from "@/electron/modules/Helpers";
-import type {PositionType, StructureRenderInfo} from "@/types";
+import type {PositionType, StructureRenderInfo, ColoringType, AtomRenderInfo} from "@/types";
 
 // > Constants
-const bondRadius = 0.1;
-const sphereSubdivisions   = [0, 0, 1,  3,  9];
-const cylinderSubdivisions = [0, 3, 5, 10, 16];
-const rCovScale = 0.5;
+const BOND_RADIUS = 0.1;
+const SPHERE_SUBDIVISIONS   = [0, 0, 1,  3,  9];
+const CYLINDER_SUBDIVISIONS = [0, 3, 5, 10, 16];
+const R_COV_SCALE = 0.5;
+
+/** Color scale for the number of bonds */
+const COLOR_SCALE = [
+	"#0054ad",
+	"#007cbb",
+	"#00a1bd",
+	"#00c5b0",
+	"#00e889",
+	"#98fa53",
+	"#ffff00"
+];
+const MAX_NUM_BONDS = COLOR_SCALE.length-1;
 
 /**
  * Renderer for draw structure graphical output
@@ -80,8 +92,8 @@ export class DrawStructureRenderer {
 		this.drawRoughness = drawRoughness;
 		this.drawMetalness = drawMetalness;
 
-		const detail = sphereSubdivisions[drawQuality];
-		const segments = cylinderSubdivisions[drawQuality];
+		const detail = SPHERE_SUBDIVISIONS[drawQuality];
+		const segments = CYLINDER_SUBDIVISIONS[drawQuality];
 		this.out.traverse((object) => {
 			if(object.type !== "Mesh") return;
 			const mesh = object as Mesh;
@@ -104,7 +116,7 @@ export class DrawStructureRenderer {
 					const {radiusTop, radiusBottom, height} = cylinder.parameters;
 
 					mesh.geometry = new CylinderGeometry(radiusTop, radiusBottom,
-															   height, segments, 1, true);
+														 height, segments, 1, true);
 				}
 			}
 		});
@@ -189,7 +201,7 @@ export class DrawStructureRenderer {
 	 * @param group - The output group where to add the bond
 	 */
 	private static addNormalBondSameAtoms(from: PositionType, to: PositionType,
-								   color: string, group: Group): void {
+										  color: string, group: Group): void {
 
 		const start = new Vector3(from[0], from[1], from[2]);
 		const end   = new Vector3(to[0], to[1], to[2]);
@@ -247,19 +259,41 @@ export class DrawStructureRenderer {
 	}
 
 	/**
+	 * Compute atom color
+	 *
+	 * @param atomColoring - Color scheme for atom coloring
+	 * @param atom - Atom data
+	 * @param monochromeColor - Color for monochrome coloring
+	 * @returns The atom color
+	 */
+	private computeAtomColor(atomColoring: ColoringType,
+							 atom: AtomRenderInfo,
+							 monochromeColor: string): string {
+
+		switch(atomColoring) {
+			case "mono":
+				return monochromeColor;
+			case "type":
+				return atom.color;
+			case "bonds":
+				return COLOR_SCALE[Math.min(atom.bondCount, MAX_NUM_BONDS)];
+			default:
+				return "#000000";
+		}
+	}
+
+	/**
 	 * Convert the structure data into 3D objects
 	 *
 	 * @param renderInfo - The structure to be rendered
 	 * @param drawKind - Structure rendering style
 	 * @param shadedBonds - If the bonds color should be shaded or as two color bands
-	 * @param atomColoring - How the atoms should be colored. Valid values are:
-	 		- type: colored by atom type
-			- mono: monochrome coloring
+	 * @param atomColoring - How the atoms should be colored
 	 * @param atomColor - Color to use for monochrome coloring
 	 */
 	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
 				  shadedBonds: boolean, showBondsStrength: boolean,
-				  atomColoring: string, atomColor: string): void {
+				  atomColoring: ColoringType, atomColor: string): void {
 
 		// Clear previous structure
 		sm.clearGroup(this.outName);
@@ -275,30 +309,31 @@ export class DrawStructureRenderer {
 		// Render atoms if present
 		if(drawKind !== "lines") {
 
-			const spheresCache = new SpheresCache(sphereSubdivisions[this.drawQuality],
+			const spheresCache = new SpheresCache(SPHERE_SUBDIVISIONS[this.drawQuality],
 												  this.drawRoughness,
 												  this.drawMetalness);
 
 			// Render atoms
 			for(const atom of renderInfo.atoms) {
 
-				const {position, rCov, rVdW, color} = atom;
+				const {position, rCov, rVdW} = atom;
 				let radius;
 				switch(drawKind) {
 					case "ball-and-stick":
-						radius = rCov*rCovScale;
+						radius = rCov*R_COV_SCALE;
 						break;
 					case "van-der-waals":
 						radius = rVdW;
 						break;
 					case "licorice":
-						radius = bondRadius;
+						radius = BOND_RADIUS;
 						break;
 					default:
-						radius = 1;
+						radius = R_COV_SCALE;
 						break;
 				}
-				const sphereColor = atomColoring === "mono" ? atomColor : color;
+
+				const sphereColor = this.computeAtomColor(atomColoring, atom, atomColor);
 				spheresCache.addSphere(position, radius, sphereColor);
 			}
 			spheresCache.renderSpheres(this.atomsGroup);
@@ -311,8 +346,8 @@ export class DrawStructureRenderer {
 		// Render bonds
 		switch(drawKind) {
 			case "ball-and-stick": {
-				const cylinderCache = new CylinderCache(bondRadius, shadedBonds,
-														cylinderSubdivisions[this.drawQuality],
+				const cylinderCache = new CylinderCache(BOND_RADIUS, shadedBonds,
+														CYLINDER_SUBDIVISIONS[this.drawQuality],
 														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
 
@@ -327,16 +362,16 @@ export class DrawStructureRenderer {
 						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;
 						const strengthTo   = renderInfo.atoms[bond.to].bondStrength;
 						const strength     = Math.sqrt(strengthFrom*strengthTo)*4;
-						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
-						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
 						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
 												  colorFrom, colorTo, strength);
 					}
 					else {
-						const radiusStart  = atomFrom.rCov*rCovScale;
-						const radiusEnd    = atomTo.rCov*rCovScale;
-						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
-						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
+						const radiusStart  = atomFrom.rCov*R_COV_SCALE;
+						const radiusEnd    = atomTo.rCov*R_COV_SCALE;
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
 						const {start, end} = this.adjustLimitsCylinder(atomFrom.position,
 																	   atomTo.position,
 																	   radiusStart, radiusEnd);
@@ -348,16 +383,16 @@ export class DrawStructureRenderer {
 				break;
 			}
 			case "licorice": {
-				const cylinderCache = new CylinderCache(bondRadius, shadedBonds,
-														cylinderSubdivisions[this.drawQuality],
+				const cylinderCache = new CylinderCache(BOND_RADIUS, shadedBonds,
+														CYLINDER_SUBDIVISIONS[this.drawQuality],
 														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
 
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(isNormalBond(bond)) {
-						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
-						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
 						cylinderCache.addCylinder(atomFrom.position,
 												  atomTo.position,
 												  colorFrom, colorTo);
@@ -380,17 +415,31 @@ export class DrawStructureRenderer {
 					if(isHydrogenBond(bond)) {
 						DrawStructureRenderer.addHBond(atomFrom.position, atomTo.position, this.bondsGroup);
 					}
-					else if(atomFrom.atomZ === atomTo.atomZ) {
+					else if(atomColoring === "mono") {
+						DrawStructureRenderer.addNormalBondSameAtoms(atomFrom.position,
+																	 atomTo.position,
+																	 atomColor,
+																	 this.bondsGroup);
+
+					}
+					else if(atomColoring === "type" && atomFrom.atomZ === atomTo.atomZ) {
 						const {color, position} = atomFrom;
-						const colorBoth = atomColoring === "mono" ? atomColor : color;
 						DrawStructureRenderer.addNormalBondSameAtoms(position,
 																	 atomTo.position,
-																	 colorBoth,
+																	 color,
+																	 this.bondsGroup);
+					}
+					else if(atomColoring === "bonds" && atomFrom.bondCount === atomTo.bondCount) {
+						const {position} = atomFrom;
+						const color = this.computeAtomColor(atomColoring, atomFrom, atomColor);
+						DrawStructureRenderer.addNormalBondSameAtoms(position,
+																	 atomTo.position,
+																	 color,
 																	 this.bondsGroup);
 					}
 					else {
-						const colorFrom = atomColoring === "mono" ? atomColor : atomFrom.color;
-						const colorTo   = atomColoring === "mono" ? atomColor : atomTo.color;
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
 						DrawStructureRenderer.addNormalBond(atomFrom.position,
 															atomTo.position,
 															colorFrom,
@@ -434,20 +483,20 @@ export class DrawStructureRenderer {
 
 		// Render labels
 		const billboardLabels = new BillboardBatchedText();
-		const color = "#FFFFFF";
+		const LABEL_COLOR = "#FFFFFF";
 		let idx = 0;
 		for(const atom of atoms) {
 
 			let offset = 0;
 			switch(drawKind) {
 				case "ball-and-stick":
-					offset = atom.rCov * rCovScale * 1.3;
+					offset = atom.rCov * R_COV_SCALE * 1.3;
 					break;
 				case "van-der-waals":
 					offset = atom.rVdW * 1.3;
 					break;
 				case "licorice":
-					offset = bondRadius * 2.5;
+					offset = BOND_RADIUS * 2.5;
 					break;
 				case "lines":
 					offset = 0.1;
@@ -473,7 +522,7 @@ export class DrawStructureRenderer {
 
 			const {position} = atom;
 			const labelPosition: PositionType = [position[0], position[1], position[2]+offset];
-			const atomLabel = spriteText(labelText, color, 0.4, labelPosition);
+			const atomLabel = spriteText(labelText, LABEL_COLOR, 0.4, labelPosition);
 
 			billboardLabels.add(atomLabel);
 

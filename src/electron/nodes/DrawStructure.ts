@@ -73,13 +73,16 @@ export class DrawStructure extends NodeCore {
 				color: atomData.color,
 				rCov: atomData.rCov,
 				rVdW: atomData.rVdW,
-				bondStrength: atomData.bondStrength
+				bondStrength: atomData.bondStrength,
+				bondCount: 0
 			};
 			renderInfo.atoms.push(atomInfo);
 		}
 
 		for(const bond of data.bonds) {
 			renderInfo.bonds.push(bond);
+			++renderInfo.atoms[bond.from].bondCount;
+			++renderInfo.atoms[bond.to].bondCount;
 		}
 
 		sendToClientForRendering(this.id, "structure", renderInfo);

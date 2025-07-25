@@ -297,6 +297,9 @@ export interface AtomRenderInfo {
 
     /** Value to compute the bond strength */
     bondStrength: number;
+
+    /** Coordination number */
+    bondCount: number;
 }
 
 /** Data for structure rendering */
@@ -678,3 +681,10 @@ export interface FingerprintsChartData {
  * - "di" distances from a given fingerprint
  */
 export type FingerprintsChartKind = "fp" | "en" | "ed" | "eh" | "dh" | "op" | "di";
+
+/** Type of coloring of the structure:
+        - type: usual coloring by atom type
+        - mono: monochrome coloring
+        - bonds: colored by coordination number
+ */
+export type ColoringType = "type" | "mono" | "bonds";
