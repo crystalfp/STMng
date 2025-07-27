@@ -25,7 +25,7 @@ export class DrawStructure extends NodeCore {
 	private shadedBonds = false;
 	private showBondsStrengths = false;
 	private atomColoring = "type";
-	private atomColor = "#888888";
+	private monochromeColor = "#888888";
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
@@ -106,7 +106,7 @@ export class DrawStructure extends NodeCore {
 			shadedBonds: this.shadedBonds,
 			showBondsStrengths: this.showBondsStrengths,
 			atomColoring: this.atomColoring,
-			atomColor: this.atomColor
+			monochromeColor: this.monochromeColor
 		};
 	}
 
@@ -129,7 +129,7 @@ export class DrawStructure extends NodeCore {
 		this.shadedBonds = params.shadedBonds as boolean ?? false;
 		this.showBondsStrengths = params.showBondsStrengths as boolean ?? false;
         this.atomColoring = params.atomColoring as string ?? "type";
-        this.atomColor = params.atomColor as string ?? "#888888";
+        this.monochromeColor = params.monochromeColor as string ?? "#888888";
 	}
 
 	// > Channel handlers
@@ -161,6 +161,6 @@ export class DrawStructure extends NodeCore {
 		if(params.shadedBonds !== undefined)   this.shadedBonds = params.shadedBonds as boolean;
 		if(params.showBondsStrengths !== undefined) this.showBondsStrengths = params.showBondsStrengths as boolean;
 		if(params.atomColoring !== undefined)  this.atomColoring = params.atomColoring as string;
-		if(params.atomColor !== undefined)	   this.atomColor = params.atomColor as string;
+		if(params.monochromeColor !== undefined) this.monochromeColor = params.monochromeColor as string;
 	}
 }

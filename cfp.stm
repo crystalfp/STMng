@@ -55,6 +55,7 @@
         0.74651
       ],
       "snapshotFormat": "png",
+      "snapshotTransparent": false,
       "stlFormat": "binary",
       "forcePosition": [
         5,
@@ -113,6 +114,7 @@
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,
+      "energyPerAtom": false,
       "stepIncrement": 1,
       "speed": 0
     },
@@ -121,7 +123,7 @@
       "energyThreshold": 0,
       "thresholdFromMinimum": false,
       "areNanoclusters": false,
-      "forceCutoff": false,
+      "forceCutoff": true,
       "manualCutoffDistance": 10,
       "fingerprintingMethod": 0,
       "binSize": 0.05,
@@ -155,7 +157,9 @@
       "showAtoms": true,
       "showLabels": true,
       "shadedBonds": false,
-      "showBondsStrengths": false
+      "showBondsStrengths": false,
+      "atomColoring": "type",
+      "monochromeColor": "#888888"
     },
     "unit": {
       "showUnitCell": true,

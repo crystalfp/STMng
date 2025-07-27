@@ -5,7 +5,6 @@ Bugs:
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
-  ☐ Would it be possible to determine effective dimensionality of the energy landscape?
   ☐ Find prototype structure
 
 To do:
@@ -64,6 +63,7 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Would it be possible to determine effective dimensionality of the energy landscape? @done(2025-07-27 07:50) @project(Latest requests (backlog))
   ✔ Show average structure in trajectories instead of markers @done(2025-07-25 07:03) @project(Latest requests (backlog))
   ✔ Coloring atoms according to their coordination number @done(2025-07-25 15:39) @project(Functionalities)
   ✔ Fix atom reordering in trajectories @done(2025-07-13 10:30) @project(Bugs)

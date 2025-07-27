@@ -363,6 +363,7 @@ const config = defineConfig([
         // "sonarjs/no-one-iteration-loop": "warn",
         "sonarjs/no-unenclosed-multiline-block": "off",
         "sonarjs/fixme-tag": "off",
+        "sonarjs/no-labels": "off",
 
         // > ******************* other plugins ***********************
         // "promise/no-return-wrap": "warn",

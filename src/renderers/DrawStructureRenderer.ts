@@ -289,11 +289,11 @@ export class DrawStructureRenderer {
 	 * @param drawKind - Structure rendering style
 	 * @param shadedBonds - If the bonds color should be shaded or as two color bands
 	 * @param atomColoring - How the atoms should be colored
-	 * @param atomColor - Color to use for monochrome coloring
+	 * @param monochromeColor - Color to use for monochrome structure coloring
 	 */
 	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
 				  shadedBonds: boolean, showBondsStrength: boolean,
-				  atomColoring: ColoringType, atomColor: string): void {
+				  atomColoring: ColoringType, monochromeColor: string): void {
 
 		// Clear previous structure
 		sm.clearGroup(this.outName);
@@ -333,7 +333,7 @@ export class DrawStructureRenderer {
 						break;
 				}
 
-				const sphereColor = this.computeAtomColor(atomColoring, atom, atomColor);
+				const sphereColor = this.computeAtomColor(atomColoring, atom, monochromeColor);
 				spheresCache.addSphere(position, radius, sphereColor);
 			}
 			spheresCache.renderSpheres(this.atomsGroup);
@@ -362,16 +362,16 @@ export class DrawStructureRenderer {
 						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;
 						const strengthTo   = renderInfo.atoms[bond.to].bondStrength;
 						const strength     = Math.sqrt(strengthFrom*strengthTo)*4;
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
 												  colorFrom, colorTo, strength);
 					}
 					else {
 						const radiusStart  = atomFrom.rCov*R_COV_SCALE;
 						const radiusEnd    = atomTo.rCov*R_COV_SCALE;
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						const {start, end} = this.adjustLimitsCylinder(atomFrom.position,
 																	   atomTo.position,
 																	   radiusStart, radiusEnd);
@@ -391,8 +391,8 @@ export class DrawStructureRenderer {
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(isNormalBond(bond)) {
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						cylinderCache.addCylinder(atomFrom.position,
 												  atomTo.position,
 												  colorFrom, colorTo);
@@ -418,7 +418,7 @@ export class DrawStructureRenderer {
 					else if(atomColoring === "mono") {
 						DrawStructureRenderer.addNormalBondSameAtoms(atomFrom.position,
 																	 atomTo.position,
-																	 atomColor,
+																	 monochromeColor,
 																	 this.bondsGroup);
 
 					}
@@ -431,15 +431,15 @@ export class DrawStructureRenderer {
 					}
 					else if(atomColoring === "bonds" && atomFrom.bondCount === atomTo.bondCount) {
 						const {position} = atomFrom;
-						const color = this.computeAtomColor(atomColoring, atomFrom, atomColor);
+						const color = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
 						DrawStructureRenderer.addNormalBondSameAtoms(position,
 																	 atomTo.position,
 																	 color,
 																	 this.bondsGroup);
 					}
 					else {
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, atomColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, atomColor);
+						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						DrawStructureRenderer.addNormalBond(atomFrom.position,
 															atomTo.position,
 															colorFrom,

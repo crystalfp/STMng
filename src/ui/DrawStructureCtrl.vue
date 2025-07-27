@@ -40,7 +40,7 @@ const shadedBonds = ref(false);
 let renderInfo: StructureRenderInfo;
 const showBondsStrengths = ref(false);
 const atomColoring = ref<ColoringType>("type");
-const atomColor = ref("#888888");
+const monochromeColor = ref("#888888");
 
 // > Access the stores
 const controlStore = useControlStore();
@@ -60,7 +60,7 @@ askNode(id, "init")
         shadedBonds.value = params.shadedBonds as boolean ?? false;
         showBondsStrengths.value = params.showBondsStrengths as boolean ?? false;
         atomColoring.value = params.atomColoring as ColoringType ?? "type";
-        atomColor.value = params.atomColor as string ?? "#888888";
+        monochromeColor.value = params.monochromeColor as string ?? "#888888";
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 
@@ -75,7 +75,7 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
     renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
     renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
                            showBondsStrengths.value, atomColoring.value,
-                           atomColor.value);
+                           monochromeColor.value);
     renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
 
     // Save basis to orient camera along cell sides
@@ -84,12 +84,12 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 
 // Change draw parameters
 watch([labelKind, drawKind, shadedBonds, showBondsStrengths,
-       atomColoring, atomColor], () => {
+       atomColoring, monochromeColor], () => {
 
     if(renderInfo) {
         renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
                                showBondsStrengths.value, atomColoring.value,
-                               atomColor.value);
+                               monochromeColor.value);
         renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
     }
     sendToNode(id, "save", {
@@ -98,7 +98,7 @@ watch([labelKind, drawKind, shadedBonds, showBondsStrengths,
         shadedBonds: shadedBonds.value,
         showBondsStrengths: showBondsStrengths.value,
         atomColoring: atomColoring.value,
-        atomColor: atomColor.value
+        monochromeColor: monochromeColor.value
     });
 });
 
@@ -183,7 +183,7 @@ const showCombined = computed({
       <v-btn value="bonds">Bonds</v-btn>
     </v-btn-toggle>
     <template #extra>
-      <color-selector v-if="atomColoring==='mono'" v-model="atomColor"
+      <color-selector v-if="atomColoring==='mono'" v-model="monochromeColor"
                       label="Atom mono color" block class="mb-2" />
     </template>
   </titled-slot>

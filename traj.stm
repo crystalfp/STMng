@@ -192,7 +192,7 @@
       "shadedBonds": false,
       "showBondsStrengths": false,
       "atomColoring": "type",
-      "atomColor": "#888888"
+      "monochromeColor": "#888888"
     },
     "trace": {
       "showTrajectories": false,
@@ -231,7 +231,7 @@
       "shadedBonds": false,
       "showBondsStrengths": false,
       "atomColoring": "mono",
-      "atomColor": "#0925F2"
+      "monochromeColor": "#0925F2"
     }
   }
 }

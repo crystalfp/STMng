@@ -22,6 +22,7 @@ import {methodDistances, methodDistancesHistogram, methodEnergiesHistogram,
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {generalizedConvexHull4D} from "../fingerprint/GeneralizedConvexHull";
 import {removeDuplicatePoints} from "../fingerprint/RemoveDuplicates";
+import {embeddedDimensionEstimator} from "../fingerprint/DimensionEstimation";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 EnergyLandscapeData, PositionType,
 			 FingerprintsChartData, FingerprintsChartKind,
@@ -1027,7 +1028,8 @@ export class ComputeFingerprints extends NodeCore {
 			return {
 				resultDimensionality: 0,
 				countDistances: 0,
-				endMessage: ""
+				endMessage: "",
+				embeddedDimension: 0
 			};
 		}
 
@@ -1049,11 +1051,15 @@ export class ComputeFingerprints extends NodeCore {
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
+		// Compute embedded dimension of the fingerprints space
+		const embeddedDimension = embeddedDimensionEstimator(this.accumulator);
+
 		return {
 			resultDimensionality: resultFP.dimension,
 			countDistances: resultDist.countDistances,
 			endMessage: resultDist.endMessage,
-			pointsRemoved
+			pointsRemoved,
+			embeddedDimension
 		};
 	}
 
