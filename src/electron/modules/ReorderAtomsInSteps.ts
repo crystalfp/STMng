@@ -71,8 +71,11 @@ export interface AveragesResult {
 	isFractional: boolean;
 }
 
+/** Result of the reordering */
 interface AverageResultsAndStructure {
+	/** Average values (mean position and MSD) */
 	averages: AveragesResult[];
+	/** Mean structure */
 	structure: Structure;
 }
 

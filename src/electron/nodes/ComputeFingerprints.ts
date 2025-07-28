@@ -1051,7 +1051,7 @@ export class ComputeFingerprints extends NodeCore {
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
-		// Compute embedded dimension of the fingerprints space
+		// Compute the intrinsic dimension of the fingerprints space
 		const embeddedDimension = embeddedDimensionEstimator(this.accumulator);
 
 		return {

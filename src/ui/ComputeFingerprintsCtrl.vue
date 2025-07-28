@@ -493,7 +493,7 @@ const showEnergyLandscape = (): void => {
   <v-label v-if="fingerprintingBusy" class="mt-4 result-label">Working&hellip;</v-label>
   <v-label v-if="embeddedDimension > 0 && !fingerprintingBusy"
            class="mt-n2 result-label">
-            {{ `Embedded dimension: ${embeddedDimension.toFixed(2)}` }}</v-label>
+            {{ `Intrinsic dimension: ${embeddedDimension.toFixed(2)}` }}</v-label>
   </v-row>
   <node-alert node="fingerprints" />
 
