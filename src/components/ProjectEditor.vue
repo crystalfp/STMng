@@ -93,6 +93,9 @@ interface AvailableNode {
 /** List of available nodes */
 const availableNodes = ref<AvailableNode[]>([]);
 
+/** Path to the current loaded project file or empty for default project */
+const currentProjectPath = ref("");
+
 /**
  * Format graph data for the editor
  *
@@ -169,8 +172,11 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
 /** Receive the data and build the graph data and available nodes list */
 receiveInWindow((data) => {
 
+    if(!data) return;
+
     const info = JSON.parse(data) as ProjectInfo;
 
+    currentProjectPath.value = info.projectPath;
     prepareGraphFlow(info);
     prepareAvailableNodes(info);
 });
@@ -393,8 +399,10 @@ const notificationQueue = ref<string[]>([]);
 
 /**
  * Save the modified project
+ *
+ * @param saveAs - True if the project filename should be asked
  */
-const saveProjectGraph = (): void => {
+const saveProjectGraph = (saveAs: boolean): void => {
 
     for(const node of graphFlow.value) {
         for(const availableNode of availableNodes.value) {
@@ -442,7 +450,8 @@ const saveProjectGraph = (): void => {
     }
 
     askNode("SYSTEM", "modified-project", {
-        projectModified: JSON.stringify(graph)
+        projectModified: JSON.stringify(graph),
+        projectPath: saveAs ? "" : currentProjectPath.value
     })
     .then((result) => {
         if(result.saved) {
@@ -682,7 +691,7 @@ const exitAndSave = (): void => {
 
     showConfirmExit.value = false;
     window.removeEventListener("beforeunload", beforeClose);
-    saveProjectGraph();
+    saveProjectGraph(true);
     closeWindow("/project-editor");
 };
 
@@ -759,7 +768,9 @@ const confirmNewProject = (): void => {
     </div>
     <div class="bb button-strip pr-7">
       <v-btn @click="confirmNewProject">New project</v-btn>
-      <v-btn :disabled="!projectModified" @click="saveProjectGraph">Save modified project</v-btn>
+      <v-btn :disabled="!projectModified || currentProjectPath===''"
+             @click="saveProjectGraph(false)">Save</v-btn>
+      <v-btn :disabled="!projectModified" @click="saveProjectGraph(true)">Save as…</v-btn>
       <v-btn v-focus @click="tryToExit">Close</v-btn>
     </div>
   </div>

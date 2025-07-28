@@ -83,4 +83,7 @@ export interface ProjectInfo {
 
 	/** All available nodes info */
 	allNodes: OneNodeInfo[];
+
+	/** Currently loaded project file path or empty string if default project */
+	projectPath: string;
 }

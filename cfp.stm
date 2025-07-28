@@ -13,26 +13,33 @@
       "y": 0,
       "in": "reader"
     },
+    "measure": {
+      "label": "Measures (measure)",
+      "type": "measures",
+      "x": 300,
+      "y": 120,
+      "in": "reader"
+    },
+    "unit": {
+      "label": "Cell",
+      "type": "draw-unit-cell",
+      "x": 300,
+      "y": 300,
+      "in": "reader"
+    },
     "bonds": {
       "label": "Bonds",
       "type": "compute-bonds",
-      "x": 455,
-      "y": 215,
+      "x": 480,
+      "y": 300,
       "in": "unit"
     },
     "draw": {
       "label": "Structure",
       "type": "draw-structure",
-      "x": 605,
-      "y": 285,
+      "x": 660,
+      "y": 300,
       "in": "bonds"
-    },
-    "unit": {
-      "label": "Cell",
-      "type": "draw-unit-cell",
-      "x": 690,
-      "y": 330,
-      "in": "reader"
     },
     "viewer": {
       "label": "Viewer",
@@ -136,6 +143,22 @@
       "removeDuplicates": true,
       "duplicatesThreshold": 0.015
     },
+    "unit": {
+      "showUnitCell": true,
+      "dashedLine": false,
+      "lineColor": "#0000FF",
+      "showBasisVectors": false,
+      "repetitionsA": 1,
+      "repetitionsB": 1,
+      "repetitionsC": 1,
+      "showSupercell": false,
+      "supercellColor": "#02A502",
+      "dashedSupercell": false,
+      "percentA": 0,
+      "percentB": 0,
+      "percentC": 0,
+      "shrink": true
+    },
     "bonds": {
       "minBondingDistance": 0.64,
       "maxBondingDistance": 4.5,
@@ -160,22 +183,6 @@
       "showBondsStrengths": false,
       "atomColoring": "type",
       "monochromeColor": "#888888"
-    },
-    "unit": {
-      "showUnitCell": true,
-      "dashedLine": false,
-      "lineColor": "#0000FF",
-      "showBasisVectors": false,
-      "repetitionsA": 1,
-      "repetitionsB": 1,
-      "repetitionsC": 1,
-      "showSupercell": false,
-      "supercellColor": "#02A502",
-      "dashedSupercell": false,
-      "percentA": 0,
-      "percentB": 0,
-      "percentC": 0,
-      "shrink": true
     }
   }
 }

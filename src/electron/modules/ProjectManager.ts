@@ -282,8 +282,14 @@ class ProjectManager {
 		}
 		catch(error) {
 			sendAlertToClient(`Cannot parse project. Error: ${(error as Error).message}`);
+			return "";
 		}
-		return JSON.stringify({graph: projectInfo, allNodes: this.allNodes});
+
+		return JSON.stringify({
+			graph: projectInfo,
+			allNodes: this.allNodes,
+			projectPath: getProjectPath()
+		});
 	}
 
 	/**
@@ -487,7 +493,9 @@ export const setupChannelProject = (): void => {
 		const prj = params.projectModified as string;
 		if(!prj) return {saved: false};
 
-		const file = dialog.showSaveDialogSync({
+		const currentFilename = params.projectPath as string;
+
+		const file = currentFilename || dialog.showSaveDialogSync({
 			title: "Save modified project",
 			filters: [
 				{name: "STMng project", extensions: ["stm"]},
