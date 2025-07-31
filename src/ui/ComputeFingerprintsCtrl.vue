@@ -86,7 +86,10 @@ const binSize = ref(0.05);
 const peakWidth = ref(0.02);
 const resultDimensionality = ref(0);
 const fingerprintingBusy = ref(false);
-const embeddedDimension = ref(0);
+const intrinsicDimension = ref(0);
+const minLocalDimension = ref(0);
+const maxLocalDimension = ref(0);
+const theoreticalDimension = ref(0);
 
 // Compute distances
 const distanceMethod = ref(0);
@@ -311,7 +314,10 @@ const computeFingerprints = (): void => {
         countDistances.value = params.countDistances as number ?? 0;
         endMessage.value = params.endMessage as string ?? "";
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
-        embeddedDimension.value = params.embeddedDimension as number ?? 0;
+        intrinsicDimension.value = params.intrinsicDimension as number ?? 0;
+        minLocalDimension.value = params.minLocalDimension as number ?? 0;
+        maxLocalDimension.value = params.maxLocalDimension as number ?? 0;
+        theoreticalDimension.value = params.theoreticalDimension as number ?? 0;
     })
     .catch((error: Error) => showNodeAlert(`Error from fingerprint computation: ${error.message}`,
                                               "fingerprints"))
@@ -491,9 +497,12 @@ const showEnergyLandscape = (): void => {
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
     {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
   <v-label v-if="fingerprintingBusy" class="mt-4 result-label">Working&hellip;</v-label>
-  <v-label v-if="embeddedDimension > 0 && !fingerprintingBusy"
+  <v-label v-if="intrinsicDimension > 0 && !fingerprintingBusy"
            class="mt-n2 result-label">
-            {{ `Intrinsic dimension: ${embeddedDimension.toFixed(2)}` }}</v-label>
+            {{ `Intrinsic dimension: ${intrinsicDimension.toFixed(2)} (theory: ${theoreticalDimension.toFixed(2)})` }}</v-label>
+  <v-label v-if="intrinsicDimension > 0 && !fingerprintingBusy"
+           class="result-label">
+            {{ `Local dimension range: ${minLocalDimension.toFixed(2)} — ${maxLocalDimension.toFixed(2)}` }}</v-label>
   </v-row>
   <node-alert node="fingerprints" />
 

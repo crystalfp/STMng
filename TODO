@@ -13,6 +13,8 @@ To do:
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Unify viewer3D setup between Compare and Landscape
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
+  ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
+  ☐ Next vuetify release: check if the 12px margin for v-select has been fixed
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

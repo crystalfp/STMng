@@ -11,27 +11,41 @@ import type {FingerprintsAccumulator} from "./Accumulator";
 
 const TOL = 1e-10;
 
+/** Result of the estimator */
+interface EstimatorResult {
+    /** Minimum local dimension computed value */
+    min: number;
+    /** Maximum local dimension computed value */
+    max: number;
+    /** Estimated intrinsic dimensionality */
+    avg: number;
+    /** Theoretical value for the intrinsic dimensionality */
+    theory: number;
+}
+
 /**
  * Compute the estimate of the embedded space dimension
  *
  * @param accumulator - Source of the computed fingerprints
  * @returns The estimated embedded dimension
  */
-export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator): number => {
+export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator): EstimatorResult => {
 
     const {count, length, error} = accumulator.getSectionsInfo();
-    if(error) return 0;
+    if(error) return {min: 0, max: 0, avg: 0, theory: 0};
     const dimension = count * length;
     const sourceFingerprints: number[][] = [];
     const fingerprints: number[][] = [];
+    let atomCount = 0;
 
     // Collect computed fingerprints
     for(const structure of accumulator.iterateSelectedStructures()) {
 
         sourceFingerprints.push(structure.fingerprint);
         fingerprints.push([]);
+        atomCount += structure.atomsZ.length;
     }
-    if(sourceFingerprints.length === 0) return 0;
+    if(sourceFingerprints.length === 0) return {min: 0, max: 0, avg: 0, theory: 0};
 
     // Remove coordinates equal for all fingerprints
     for(let idx = 0; idx < dimension; ++idx) {
@@ -60,8 +74,18 @@ export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator)
     //         console.log(`  Confidence: ${(result.confidence * 100).toFixed(1)}%`);
     //     }
     // }
+    const {estimatedDimension, details} = estimator.mleDimension();
 
-    return estimator.mleDimension().estimatedDimension;
+    let minLD = Number.POSITIVE_INFINITY;
+    let maxLD = Number.NEGATIVE_INFINITY;
+    for(const ld of (details as {localDimensions: number[]}).localDimensions) {
+        if(ld > maxLD) maxLD = ld;
+        if(ld < minLD) minLD = ld;
+    }
+
+    atomCount /= sourceFingerprints.length;
+
+    return {min: minLD, max: maxLD, avg: estimatedDimension, theory: 3*atomCount-3};
 };
 
 /** Estimator result */
@@ -260,6 +284,7 @@ class DimensionEstimator {
         }
 
         const meanDimension = dimensions.length > 0 ?
+            // dimensions.length / dimensions.reduce((sum, d) => sum + 1/d, 0)
             dimensions.reduce((sum, d) => sum + d, 0) / dimensions.length
             : 1;
 

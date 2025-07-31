@@ -1052,14 +1052,17 @@ export class ComputeFingerprints extends NodeCore {
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
 		// Compute the intrinsic dimension of the fingerprints space
-		const embeddedDimension = embeddedDimensionEstimator(this.accumulator);
+		const estimatorResult = embeddedDimensionEstimator(this.accumulator);
 
 		return {
 			resultDimensionality: resultFP.dimension,
 			countDistances: resultDist.countDistances,
 			endMessage: resultDist.endMessage,
 			pointsRemoved,
-			embeddedDimension
+			intrinsicDimension: estimatorResult.avg,
+			minLocalDimension: estimatorResult.min,
+			maxLocalDimension: estimatorResult.max,
+			theoreticalDimension: estimatorResult.theory
 		};
 	}
 
