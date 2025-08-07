@@ -49,7 +49,7 @@
       "in": "trace"
     },
     "draw1": {
-      "label": "Draw average",
+      "label": "Average structure",
       "type": "draw-structure",
       "x": 1710,
       "y": 570,
