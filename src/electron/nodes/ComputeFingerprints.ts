@@ -779,7 +779,6 @@ export class ComputeFingerprints extends NodeCore {
 		   !this.accumulator.accumulatedHaveEnergies()) return [];
 		const ngroups = this.grouping.getCountGroups();
 		if(ngroups === 0) return [];
-
 		const groups = this.grouping.getGroups();
 
 		const minEnergy = Array<number>(ngroups).fill(Number.POSITIVE_INFINITY);

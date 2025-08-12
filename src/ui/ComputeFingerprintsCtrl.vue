@@ -196,6 +196,7 @@ const resetAccumulator = (): void => {
     countSelected.value = 0;
     countAccumulated.value = 0;
     resultDimensionality.value = 0;
+    intrinsicDimension.value = 0;
     countDistances.value = 0;
     countGroups.value = 0;
     haveEnergies.value = false;
