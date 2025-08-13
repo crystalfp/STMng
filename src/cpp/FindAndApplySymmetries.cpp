@@ -669,7 +669,7 @@ string doFindAndApplySymmetries(
 			// Release the dataset
 			spg_free_dataset(dataset);
 
-			applySymmetriesInput(spaceGroup, fractionalCoordinates, atomsZ, status);
+			// applySymmetriesInput(spaceGroup, fractionalCoordinates, atomsZ, status);
 		}
 
 		free(types);
