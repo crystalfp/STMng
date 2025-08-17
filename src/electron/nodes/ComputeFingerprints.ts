@@ -1159,18 +1159,16 @@ export class ComputeFingerprints extends NodeCore {
 
 			const sorter: {idx: number; energy: number}[] = [];
 			let structures: Structure[] = [];
-			let idx = 0;
 			let k = 0;
 			const hasEnergies = this.accumulator.accumulatedHaveEnergies();
 
-			for(const structure of this.accumulator.iterateSelectedStructures()) {
-				if(indices.includes(idx)) {
-					structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
-					if(hasEnergies) {
-						sorter.push({idx: k++, energy: structure.energy!*structure.atomsZ.length});
-					}
+			for(const ii of indices) {
+				const structure = this.accumulator.getStructureByStep(ii);
+				if(!structure) return {error: `Invalid step: ${ii}`};
+				structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
+				if(hasEnergies) {
+					sorter.push({idx: k++, energy: structure.energy!*structure.atomsZ.length});
 				}
-				++idx;
 			}
 
 			if(structures.length === 0) return {error: "No structures to save"};
