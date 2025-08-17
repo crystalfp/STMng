@@ -15,26 +15,37 @@ import type {DistanceMatrix} from "./Distances";
  *
  * @param distanceMatrix - Distances between points
  * @param countPoints - How many points present
+ * @param enabled - If the point is enabled or not
  * @param energies - Corresponding energies
  * @returns List of indices of the selected points
  */
 export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
 										countPoints: number,
-										energies: number[]): Set<number> => {
+										enabled: boolean[],
+										energies: number[]): number[] => {
 
+	// Project points to 3D
 	const mappedPoints = MDS(distanceMatrix.toVector(), countPoints, 3);
-	const generalizedPoints = Array<number[]>(mappedPoints.length);
-	for(let i=0; i < mappedPoints.length; ++i) {
-		generalizedPoints[i] = [
-			mappedPoints[i][0],
-			mappedPoints[i][1],
-			mappedPoints[i][2],
-			energies[i]
-		];
+
+	// Prepare 4D points
+	const generalizedPoints: number[][] = [];
+	let idx = 0;
+	for(const mappedPoint of mappedPoints) {
+		if(enabled[idx]) {
+			generalizedPoints.push([
+				mappedPoint[0],
+				mappedPoint[1],
+				mappedPoint[2],
+				energies[idx]
+			]);
+		}
+		++idx;
 	}
 
+	// Create the 4D convex hull
 	const hull = quickHull(generalizedPoints);
 
+	// Extract the lower side vertices
 	const vertices = new Set<number>();
 	for(const facet of hull) {
 		if(facet.plane[3] <= 0) {
@@ -42,5 +53,5 @@ export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
 		}
 	}
 
-	return vertices;
+	return [...vertices];
 };

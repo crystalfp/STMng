@@ -106,7 +106,7 @@ export class FingerprintsAccumulator {
 		// Check structure not empty
 		if(atoms.length === 0) throw Error("Empty structure loaded");
 
-		// Check if this structure is a nanocluster because no unit cell
+		// Check if this structure is a nanocluster because has no unit cell
 		if(!isNanocluster && hasNoUnitCell(basis)) isNanocluster = true;
 
 		// It is the first structure
@@ -326,6 +326,20 @@ export class FingerprintsAccumulator {
 	}
 
 	/**
+	 * Iterator on the selected and enabled structures
+	 *
+	 * @returns An iterator on the selected and enabled structures
+	 */
+	* iterateSelectedEnabledStructures(): Generator<StructureReduced> {
+
+		for(const entry of this.accumulator) {
+			if(entry.selected && entry.enabled) {
+				yield entry;
+			}
+		}
+	}
+
+	/**
 	 * Iterator on selected structure pairs
 	 *
 	 * @returns An iterator on selected structure pairs
@@ -521,5 +535,19 @@ export class FingerprintsAccumulator {
 			if(entry.selected && entry.step === step) return entry;
 		}
 		return undefined;
+	}
+
+	/**
+	 * Get enabled status of selected structures
+	 *
+	 * @returns For each selected structure its enabled status
+	 */
+	getEnabledStructures(): boolean[] {
+
+		const enabled = [];
+		for(const entry of this.accumulator) {
+			if(entry.selected) enabled.push(entry.enabled);
+		}
+		return enabled;
 	}
 }

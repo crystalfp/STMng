@@ -183,11 +183,9 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 	if(countSections === 1) {
 
-		for(const structure of accumulator.iterateSelectedStructures()) {
+		for(const structure of accumulator.iterateSelectedEnabledStructures()) {
 
-			const {basis, fingerprint, step, enabled} = structure;
-
-			if(!enabled) continue;
+			const {basis, fingerprint, step} = structure;
 
 			const Vuc = getCellVolume(basis);
 			const R0 = Math.cbrt(Vuc);
@@ -202,11 +200,9 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 		const sectionWidth = sectionsInfo.length;
 
-		for(const structure of accumulator.iterateSelectedStructures()) {
+		for(const structure of accumulator.iterateSelectedEnabledStructures()) {
 
-			const {basis, fingerprint, weights, step, enabled} = structure;
-
-			if(!enabled) continue;
+			const {basis, fingerprint, weights, step} = structure;
 
 			let degreeOfOrder = 0;
 

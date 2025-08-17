@@ -240,8 +240,7 @@ abstract class HierarchicalGrouping extends GroupingMethod {
     }
 }
 
-// Exported because it is reused in ReduceDuplicates
-export class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
+class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
 
     /**
      * Maximum distance between elements of two groups
@@ -273,7 +272,8 @@ export class HierarchicalSingleLinkageGrouping extends HierarchicalGrouping {
     }
 }
 
-class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
+// Exported because it is reused in ReduceDuplicates
+export class HierarchicalCompleteLinkageGrouping extends HierarchicalGrouping {
 
     /**
      * Maximum distance between elements of two groups

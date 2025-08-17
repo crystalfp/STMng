@@ -8,7 +8,8 @@
  */
 import type {FingerprintsAccumulator, StructureReduced} from "./Accumulator";
 import type {Distances} from "./Distances";
-import {HierarchicalSingleLinkageGrouping} from "./GroupingMethods";
+// import {HierarchicalSingleLinkageGrouping} from "./GroupingMethods";
+import {HierarchicalCompleteLinkageGrouping} from "./GroupingMethods";
 
 /**
  * Puts enabled true to the lowest energy structure per group
@@ -40,7 +41,8 @@ export const removeDuplicatePoints = (enabled: boolean,
     const hasEnergies = accumulator.accumulatedHaveEnergies();
 
     // Do the grouping
-    const grouper = new HierarchicalSingleLinkageGrouping();
+    // const grouper = new HierarchicalSingleLinkageGrouping();
+    const grouper = new HierarchicalCompleteLinkageGrouping();
     const groups = grouper.doGrouping(countStructures, distanceMatrix, threshold);
     const countGroups = groups.length;
     if(countGroups === 0) {

@@ -150,7 +150,7 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
             nodeIntegration: false,
             contextIsolation: true,
             defaultFontSize: 18,
-            devTools: import.meta.env.DEV
+            devTools: true
         }
     });
     if(!secondaryWin) {
@@ -164,21 +164,22 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
                         `${VITE_DEV_SERVER_URL}#${params.routerPath}` :
                         `file://${mainSourceDirectory}/../dist/index.html#${params.routerPath}`;
     secondaryWin.loadURL(url)
-        .then(() => {
-            secondaryWin.show();
-            if(params.data) {
-                setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 600);
-            }
-
-            // Manage the list of opened windows
-            openedWindows.set(params.routerPath, secondaryWin);
-            secondaryWin.on("close", () => {
-                openedWindows.delete(params.routerPath);
-            });
-        })
         .catch((error: Error) => {
             log.error(error);
         });
+
+    secondaryWin.once("ready-to-show", () => {
+        if(params.data) {
+            setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 600);
+        }
+        secondaryWin.show();
+
+        // Manage the list of opened windows
+        openedWindows.set(params.routerPath, secondaryWin);
+        secondaryWin.on("close", () => {
+            openedWindows.delete(params.routerPath);
+        });
+    });
 };
 
 // > Close the secondary window

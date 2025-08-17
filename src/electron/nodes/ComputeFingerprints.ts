@@ -147,7 +147,6 @@ export class ComputeFingerprints extends NodeCore {
 			this.doFiltering();
 		}
 		else {
-			this.setCutoffDistance();
 
 			sendToClient(this.id, "load", {
 				countSelected: this.accumulator.selectedSize(),
@@ -335,7 +334,7 @@ export class ComputeFingerprints extends NodeCore {
 	/**
 	 * Prepare the data to visualize the scatterplot chart
 	 *
-	 * @param points - Points mapped in 2D
+	 * @param points - Points mapped in 2D (ignoring enabled value)
 	 * @param enabled - List of enabled status for the points
 	 * @param options - Options for the scatterplot
 	 * @param hasEnergies - If the accumulated structures have energies
@@ -369,10 +368,8 @@ export class ComputeFingerprints extends NodeCore {
 				}
 				break;
 			case "energy":
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(structure.enabled) {
-						values.push(structure.energy ?? 0);
-					}
+				for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
+					values.push(structure.energy ?? 0);
 				}
 				break;
 			case "silhouette": {
@@ -425,12 +422,8 @@ export class ComputeFingerprints extends NodeCore {
 		const points = this.dist.getProjectedPoints();
 
 		// Filter by enabled status on structures and check if energy present
-		const enabled = Array<boolean>(this.accumulator.selectedSize()).fill(true);
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
-		let idx = 0;
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			enabled[idx++] = structure.enabled;
-		}
+		const enabled = this.accumulator.getEnabledStructures();
 
 		// Collect and prepare the data for the scatterplot
 		const scatterplotData = options.plotType === "fidelity" ?
@@ -478,7 +471,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Collect energies per structure
 		const energies: number[] = [];
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
+		for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
 			energies.push(structure.energy!);
 		}
 
@@ -557,10 +550,7 @@ export class ComputeFingerprints extends NodeCore {
 			haveDistances
 		};
 
-		const enabled: boolean[] = [];
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			enabled.push(structure.enabled);
-		}
+		const enabled = this.accumulator.getEnabledStructures();
 
 		switch(kind) {
 
@@ -585,11 +575,9 @@ export class ComputeFingerprints extends NodeCore {
 
 					// Collect energies
 					chartData.energy = [];
-					for(const structure of this.accumulator.iterateSelectedStructures()) {
+					for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
 
-						const {energy, step, enabled} = structure;
-
-						if(!enabled) continue;
+						const {energy, step} = structure;
 
 						chartData.energy.push([step, energy ?? 0]);
 					}
@@ -599,11 +587,9 @@ export class ComputeFingerprints extends NodeCore {
 			case "fp": {
 				let fpCount = 0;
 				const ids: number[] = [];
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(structure.enabled) {
-						++fpCount;
-						ids.push(structure.step);
-					}
+				for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
+					++fpCount;
+					ids.push(structure.step);
 				}
 
 				chartData.countFingerprints = fpCount;
@@ -649,8 +635,8 @@ export class ComputeFingerprints extends NodeCore {
 			case "di": {
 
 				const ids: number[] = [];
-				for(const structure of this.accumulator.iterateSelectedStructures()) {
-					if(structure.enabled) ids.push(structure.step);
+				for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
+					ids.push(structure.step);
 				}
 
 				chartData.distances = methodDistances(this.dist.getDistanceMatrix(),
@@ -816,28 +802,18 @@ export class ComputeFingerprints extends NodeCore {
 		   !this.accumulator.accumulatedHaveEnergies()) return [];
 
 		const energies: number[] = [];
+		const enabled: boolean[] = [];
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
 
 			const energy = structure.energy!;
 			energies.push(energy);
+			enabled.push(structure.enabled);
 		}
 
-		const idxOnHull = generalizedConvexHull4D(this.dist.getDistanceMatrix(),
-												  countPoints,
-												  energies);
-
-		let idx = 0;
-		let onScatterplotIdx = 0;
-		const selectedIdx: number[] = [];
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			if(structure.enabled) {
-				if(idxOnHull.has(idx)) selectedIdx.push(onScatterplotIdx);
-				++onScatterplotIdx;
-			}
-			++idx;
-		}
-
-		return selectedIdx;
+		return generalizedConvexHull4D(this.dist.getDistanceMatrix(),
+									   countPoints,
+									   enabled,
+									   energies);
 	}
 
 	// > Channel handlers
