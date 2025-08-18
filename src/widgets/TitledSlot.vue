@@ -14,6 +14,7 @@ const {title, inline=false} = defineProps<{
     /** Title for the slot */
     title: string;
 
+    /** True if the label is on the same line as the slot */
     inline?: boolean;
 }>();
 
@@ -37,7 +38,7 @@ const slots = useSlots();
     <slot />
   </v-col>
   <v-col v-if="slots.extra" cols="12" class="ml-n3">
-    <!-- @slot Here add other component that should align with the rest -->
+    <!-- @slot Here add another (optional) component that should align with the rest -->
     <slot name="extra" />
   </v-col>
 </v-row>

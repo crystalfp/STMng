@@ -150,6 +150,16 @@ const showCombined = computed({
     }
 });
 
+// Disable controls depending on the status
+const disableShadedBonds = computed(() =>
+    (drawKind.value !== "ball-and-stick" && drawKind.value !== "licorice") ||
+    !showBonds.value
+);
+
+const disableBondsStrengths = computed(() =>
+    drawKind.value !== "ball-and-stick" || !showBonds.value
+);
+
 </script>
 
 
@@ -164,12 +174,13 @@ const showCombined = computed({
     </v-btn-toggle>
   </titled-slot>
 
-  <v-switch v-model="shadedBonds" label="Smooth color bonds" class="mt-n4 ml-4" />
-  <v-switch v-model="showBondsStrengths" :disabled="drawKind !== 'ball-and-stick'"
+  <v-switch v-model="shadedBonds" :disabled="disableShadedBonds"
+            label="Smooth color bonds" class="mt-n4 ml-4" />
+  <v-switch v-model="showBondsStrengths" :disabled="disableBondsStrengths"
             label="Show bonds strengths" class="mt-n1 mb-5 ml-4" />
 
   <titled-slot title="Atom label" class="mb-2 ml-2">
-    <v-btn-toggle v-model="labelKind" mandatory>
+    <v-btn-toggle v-model="labelKind" :disabled="!showLabels" mandatory>
       <v-btn value="symbol">Symbol</v-btn>
       <v-btn value="label">Label</v-btn>
       <v-btn value="index">Index</v-btn>
@@ -177,7 +188,7 @@ const showCombined = computed({
   </titled-slot>
 
   <titled-slot title="Atom color" class="mb-2 ml-2">
-    <v-btn-toggle v-model="atomColoring" mandatory>
+    <v-btn-toggle v-model="atomColoring" :disabled="!showAtoms || drawKind === 'lines'" mandatory>
       <v-btn value="type">Type</v-btn>
       <v-btn value="mono">Mono</v-btn>
       <v-btn value="bonds">Bonds</v-btn>

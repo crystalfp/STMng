@@ -7,7 +7,7 @@
  * @since 2024-08-09
  */
 
-import {ref, watch, shallowRef, computed} from "vue";
+import {ref, watch, computed} from "vue";
 import {storeToRefs} from "pinia";
 import {sm} from "@/services/SceneManager";
 import {useControlStore} from "@/stores/controlStore";
@@ -37,7 +37,7 @@ const distanceBC = ref(-1);
 const distanceAC = ref(-1);
 const angleABC   = ref(-1);
 const volume     = ref(-1);
-const details    = shallowRef<SelectedAtom[]>([]);
+const details    = ref<SelectedAtom[]>([]);
 
 const measurementType = ref<"atoms" | "polyhedra" | "bonds">("atoms");
 const bondData = ref<BondData[]>([]);
