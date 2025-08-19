@@ -596,6 +596,7 @@ export class ComputeSymmetries extends NodeCore {
 				position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
 			});
 		}
+
 		return structure;
 	}
 
@@ -678,7 +679,16 @@ export class ComputeSymmetries extends NodeCore {
         this.createPrimitiveCell = params.createPrimitiveCell as boolean ?? false;
 
 		this.outputStructure = this.computeSymmetries();
-		if(this.outputStructure) this.toNextNode(this.outputStructure);
+
+		if(this.outputStructure) {
+			removeDuplicates(this.outputStructure);
+			this.toNextNode(this.outputStructure);
+		}
+		else {
+			this.displaySymmetries("");
+			return;
+		}
+
 		this.pointGroup = this.computePointGroup ? this.pointGroupAnalyzer.analyze(
 				this.outputStructure,
 				this.positionTolerance,

@@ -155,7 +155,7 @@ export class SliceStructure extends NodeCore {
 			this.prepareSphereSlicerGeometry();
 			return;
 		}
-		if(hasNoUnitCell(this.structure!.crystal.basis)) {
+		if(!this.structure || hasNoUnitCell(this.structure.crystal.basis)) {
 			return;
 		}
 		switch(this.mode) {
@@ -187,11 +187,13 @@ export class SliceStructure extends NodeCore {
 	 */
 	private preparePlaneSlicerGeometry(): void {
 
+		if(!this.structure) return;
+
 		const pa = this.percentA/100;
 		const pb = this.percentB/100;
 		const pc = this.percentC/100;
 
-		const {crystal} = this.structure!;
+		const {crystal} = this.structure;
 		const {basis, origin} = crystal;
 
 		const points = [
@@ -443,14 +445,16 @@ export class SliceStructure extends NodeCore {
 	 */
 	private sliceSphere(): Structure {
 
-		const natoms = this.structure!.atoms.length;
+		if(!this.structure) return new EmptyStructure();
+
+		const natoms = this.structure.atoms.length;
 		const inside = Array<boolean>(natoms).fill(false);
 
 		for(let k=0; k < this.sphereRenderingParams.length; k+=3) {
 
 			for(let i=0; i < natoms; ++i) {
 
-				const {position} = this.structure!.atoms[i];
+				const {position} = this.structure.atoms[i];
 				const distance = Math.hypot(position[0]-this.sphereRenderingParams[k+0],
 										    position[1]-this.sphereRenderingParams[k+1],
 										    position[2]-this.sphereRenderingParams[k+2]);
@@ -579,7 +583,9 @@ export class SliceStructure extends NodeCore {
 	 */
 	private slicePlane(): Structure {
 
-		const {atoms} = this.structure!;
+		if(!this.structure) return new EmptyStructure();
+
+		const {atoms} = this.structure;
 		const natoms = atoms.length;
 
 		const inside = Array<boolean>(natoms).fill(false);
@@ -602,7 +608,9 @@ export class SliceStructure extends NodeCore {
 	 */
 	private sliceSlab(): Structure {
 
-		const {atoms} = this.structure!;
+		if(!this.structure) return new EmptyStructure();
+
+		const {atoms} = this.structure;
 		const natoms = atoms.length;
 
 		const inside = Array<boolean>(natoms).fill(false);

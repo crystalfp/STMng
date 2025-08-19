@@ -12,7 +12,7 @@
     "src/cpp",
     "src/electron/fingerprint/rollup.config.mjs",
     "src/electron/fingerprint/KDtree.js",
-    "save/*"
+    "save/**"
   ],
   "rules": {
     "for-direction": "error",
