@@ -117,7 +117,7 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "POSCAR",
+      "format": "POSCAR + ENERGY",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,

@@ -611,9 +611,10 @@ const selectByGroup = (): void => {
 
 // > Save selected to the selected file name
 const showSave = ref(false);
+const saveEnergyPerAtom = ref(false);
 
 /**
- * Save selected to the selected file name
+ * Save selected structures to the chosen file name
  *
  * @param filename - Selected filename
  */
@@ -621,8 +622,8 @@ const selectedSaveFile = (filename: string): void => {
 
     if(filename) {
 
-        // selectedPoints contains the index on the on-screen glyph
-        // So should be converted into the step value
+        // selectedPoints contains the index on the on-screen glyph,
+        // so it should be converted into the step value
         const selectedSteps = [];
         for(const idx of selectedPoints) {
             selectedSteps.push(glyphs[idx].id);
@@ -631,6 +632,7 @@ const selectedSaveFile = (filename: string): void => {
         askNode("SYSTEM", "selected-points", {
             filename,
             points: selectedSteps,
+            saveEnergyPerAtom: saveEnergyPerAtom.value
         })
         .then((status: CtrlParams) => {
 
@@ -891,6 +893,8 @@ const mousemove = (event: MouseEvent): void => {
 
       <select-file v-if="showSave" class="mt-4" title="Select output file"
                      :filter="filterPOSCAR" kind="save" @selected="selectedSaveFile" />
+      <v-switch v-if="showSave && scatterplotData?.hasEnergies" v-model="saveEnergyPerAtom"
+                class="ml-4 mt-2" label="Save energy per atom"/>
 
       <v-alert v-if="errorMessage !== ''" title="Error" class="mt-4 ml-1 cursor-pointer"
          :text="errorMessage" type="error" density="compact"

@@ -85,7 +85,7 @@ export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator)
 
     atomCount /= sourceFingerprints.length;
 
-    return {min: minLD, max: maxLD, avg: estimatedDimension, theory: 3*atomCount-3};
+    return {min: minLD, max: maxLD, avg: estimatedDimension, theory: 3*atomCount+3};
 };
 
 /** Estimator result */

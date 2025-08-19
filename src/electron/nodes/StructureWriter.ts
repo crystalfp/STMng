@@ -12,6 +12,10 @@ import {hasNoUnitCell} from "../modules/Helpers";
 import {sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
+// Statically imported because it is used also in compute fingerprints to
+// export selected structures
+import {WriterPOSCAR} from "../writers/WritePOSCAR";
+
 export class StructureWriter extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -116,7 +120,7 @@ export class StructureWriter extends NodeCore {
 					break;
 				}
 				case "POSCAR": {
-					const {WriterPOSCAR} = await import("../writers/WritePOSCAR");
+					// const {WriterPOSCAR} = await import("../writers/WritePOSCAR");
 					writer = new WriterPOSCAR();
 					break;
 				}

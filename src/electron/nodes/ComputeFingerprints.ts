@@ -28,6 +28,8 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 FingerprintsChartData, FingerprintsChartKind,
 			 ScatterplotData} from "@/types";
 
+import {WriterPOSCAR} from "../writers/WritePOSCAR";
+
 /**
  * Options for the scatterplot creation
  * @notExported
@@ -1147,8 +1149,10 @@ export class ComputeFingerprints extends NodeCore {
 		if(ComputeFingerprints.channelOpened) return;
 		ComputeFingerprints.channelOpened = true;
 
+		const writer = new WriterPOSCAR();
+
 		ipcMain.handle("SYSTEM:selected-points",
-					   async (_event, params: CtrlParams): Promise<CtrlParams> => {
+					   (_event, params: CtrlParams): CtrlParams => {
 
 			const points = params.points as string;
 			if(!points)	return {error: "No points selected"};
@@ -1156,6 +1160,7 @@ export class ComputeFingerprints extends NodeCore {
 			if(indices.length === 0) return {error: "No points selected"};
 			const filename = params.filename as string;
 			if(!filename) return {error: "No filename provided"};
+			const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
 
 			const sorter: {idx: number; energy: number}[] = [];
 			let structures: Structure[] = [];
@@ -1167,7 +1172,10 @@ export class ComputeFingerprints extends NodeCore {
 				if(!structure) return {error: `Invalid step: ${ii}`};
 				structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 				if(hasEnergies) {
-					sorter.push({idx: k++, energy: structure.energy!*structure.atomsZ.length});
+
+					let energy = structure.energy!;
+					if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
+					sorter.push({idx: k++, energy});
 				}
 			}
 
@@ -1184,8 +1192,6 @@ export class ComputeFingerprints extends NodeCore {
 				}
 				structures = sortedStructures;
 			}
-			const {WriterPOSCAR} = await import("../writers/WritePOSCAR");
-			const writer = new WriterPOSCAR();
 			const sts = writer.writeStructure(filename, structures);
 
 			if(sts.error) return {error: sts.error};
