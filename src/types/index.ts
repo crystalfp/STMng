@@ -572,6 +572,9 @@ export interface FingerprintingParameters {
 
     /** Width of the smoothing Gaussian */
 	peakWidth: number;
+
+    /** Parallelization method: true is by multi-process, else threads */
+    processParallelism: boolean;
 }
 
 /** Result from computing fingerprint */

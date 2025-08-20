@@ -52,9 +52,9 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        5,
-        2.9999999999999987,
-        5.000000000000001
+        4.330834550000001,
+        4.3991050000000005,
+        18.34293
       ],
       "lookAt": [
         4.330834550000001,
@@ -130,7 +130,7 @@
       "energyThreshold": 0,
       "thresholdFromMinimum": false,
       "areNanoclusters": false,
-      "forceCutoff": true,
+      "forceCutoff": false,
       "manualCutoffDistance": 10,
       "fingerprintingMethod": 0,
       "binSize": 0.05,
@@ -141,7 +141,8 @@
       "groupingThreshold": 7,
       "addedMargin": 0,
       "removeDuplicates": true,
-      "duplicatesThreshold": 0.015
+      "duplicatesThreshold": 0.015,
+      "processParallelism": true
     },
     "unit": {
       "showUnitCell": true,

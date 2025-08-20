@@ -67,6 +67,7 @@ export class ComputeFingerprints extends NodeCore {
 	private fingerprintingMethod = 0;
 	private binSize = 0.05;
 	private peakWidth = 0.02;
+	private processParallelism = false;
 
 	private distanceMethod = 0;
 	private fixTriangleInequality = false;
@@ -222,6 +223,7 @@ export class ComputeFingerprints extends NodeCore {
 			addedMargin: this.addedMargin,
 			removeDuplicates: this.removeDuplicates,
 			duplicatesThreshold: this.duplicatesThreshold,
+			processParallelism: this.processParallelism
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -245,6 +247,7 @@ export class ComputeFingerprints extends NodeCore {
 		this.addedMargin = params.addedMargin as number ?? 0;
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
         this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+		this.processParallelism = params.processParallelism as boolean ?? false;
 	}
 
 	/**
@@ -986,13 +989,15 @@ export class ComputeFingerprints extends NodeCore {
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
         this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+		this.processParallelism = params.processParallelism as boolean ?? false;
 
 		const resultFP = await this.fp.compute(this.accumulator, {
 			method: this.fingerprintingMethod,
 			areNanoclusters: this.areNanoclusters,
 			cutoffDistance: this.cutoffDistance,
 			binSize: this.binSize,
-			peakWidth: this.peakWidth
+			peakWidth: this.peakWidth,
+			processParallelism: this.processParallelism
 		});
 
 		if(resultFP.error) {

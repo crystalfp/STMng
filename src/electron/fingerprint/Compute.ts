@@ -71,7 +71,8 @@ export class Fingerprinting {
 		if(countStructures === 0) return {dimension: 0, error: "No structures selected"};
 
 		// Get and verify parameters
-		const {method, cutoffDistance, binSize, peakWidth, areNanoclusters} = params;
+		const {method, cutoffDistance, binSize, peakWidth,
+			   areNanoclusters, processParallelism} = params;
 		if(method < 0 || method > 2) {
 			return {dimension: 0, error: "Invalid fingerprinting method"};
 		}
@@ -92,8 +93,7 @@ export class Fingerprinting {
 		const pool = workerpool.pool(worker, {
 			minWorkers: "max",
 			maxWorkers: Math.min(availableParallelism, countStructures),
-			workerType: "thread" // TEST
-			// workerType: "process"
+			workerType: processParallelism ? "process" : "thread"
 		});
 		const promises: workerpool.Promise<WorkerResults>[] = [];
 

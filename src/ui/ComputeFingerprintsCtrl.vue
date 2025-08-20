@@ -90,6 +90,7 @@ const intrinsicDimension = ref(0);
 const minLocalDimension = ref(0);
 const maxLocalDimension = ref(0);
 const theoreticalDimension = ref(0);
+const processParallelism = ref(false);
 
 // Compute distances
 const distanceMethod = ref(0);
@@ -139,6 +140,7 @@ askNode(id, "init")
         fingerprintingMethod.value = params.fingerprintingMethod as number ?? 0;
         binSize.value = params.binSize as number ?? 0.05;
         peakWidth.value = params.peakWidth as number ?? 0.02;
+        processParallelism.value = params.processParallelism as boolean ?? false;
 
         const dms = JSON.parse(params.distanceMethods as string ?? "[]") as string[];
         len = dms.length;
@@ -308,7 +310,8 @@ const computeFingerprints = (): void => {
         distanceMethod: distanceMethod.value,
         fixTriangleInequality: fixTriangleInequality.value,
         removeDuplicates: removeDuplicates.value,
-        duplicatesThreshold: duplicatesThreshold.value
+        duplicatesThreshold: duplicatesThreshold.value,
+        processParallelism: processParallelism.value
     })
     .then((params: CtrlParams) => {
         resultDimensionality.value = params.resultDimensionality as number ?? 0;
@@ -489,6 +492,7 @@ const showEnergyLandscape = (): void => {
     <v-number-input v-model="binSize" :precision="2"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
+  <v-switch v-model="processParallelism" label="Multi process parallelism" class="ml-2 mb-2"/>
   <v-btn block :disabled="countSelected === 0"
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
     Compute fingerprints & distances

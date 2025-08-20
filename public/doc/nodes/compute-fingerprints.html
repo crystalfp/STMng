@@ -119,6 +119,11 @@
 	<td class="c3">To convert smoothed distance peaks into a vector of values, that is, the fingerprint, the smoothed interatomic distances are binned to this size.</td>
 </tr>
 <tr>
+	<td class="c1">Multi process parallelism</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Select to parallelize computation using multiple processes. If not set the parallelization is done using threads in a single process. The multi-process method is slower, but gives more memory to each computation. Select it if selecting parallelization on threads has memory problems.</td>
+</tr>
+<tr>
   <td class="c1">Compute fingerprints &amp; distances</td>
   <td class="c2">button</td>
   <td class="c3">Compute the fingerprints for the selected structures and their distances.</td>
@@ -131,7 +136,7 @@
 <tr>
 	<td class="c1">Intrinsic dimension &amp; theoretical value</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">Estimation of the dimensionality of the embedded fingerprint space (the subspace containing the fingerprints that is embedded in the fingerprint space). The estimation is done using a Maximum Likelihood Estimator that provides local dimension estimates. The theory gives a value of <tt>3 * numAtoms - 3</tt>.</td>
+	<td class="c3">Estimation of the dimensionality of the embedded fingerprint space (the subspace containing the fingerprints that is embedded in the fingerprint space). The estimation is done using a Maximum Likelihood Estimator that provides local dimension estimates. The theory gives a value of <tt>3 * numAtoms + 3</tt> (three coordinates per atom, less three for an atom fixed in the origin, plus six cell parameters).</td>
 </tr>
 <tr>
 	<td class="c1">Local dimension range</td>
