@@ -73,7 +73,8 @@
         0,
         0,
         0
-      ]
+      ],
+      "autoReset": true
     },
     "scene": {
       "background": "#90CEEC"
@@ -117,7 +118,7 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "POSCAR + ENERGY",
+      "format": "POSCAR",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,

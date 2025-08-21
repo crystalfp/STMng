@@ -180,6 +180,14 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
     </v-expansion-panel>
     <v-expansion-panel>
       <v-expansion-panel-title>
+        Camera position auto reset
+      </v-expansion-panel-title>
+      <v-expansion-panel-text>
+        <v-switch v-model="configStore.camera.autoReset" label="Enable position auto reset" />
+      </v-expansion-panel-text>
+    </v-expansion-panel>
+    <v-expansion-panel>
+      <v-expansion-panel-title>
         Scene
       </v-expansion-panel-title>
       <v-expansion-panel-text>

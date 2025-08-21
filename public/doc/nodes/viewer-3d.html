@@ -21,10 +21,11 @@
 <h1 class="subh1">Viewer 3D controls</h1>
 
 <div class="description">
-<p>Interface to the 3D viewer. Its parameters are grouped under six collapsable categories:</p>
+<p>Controls the 3D viewer parameters. These are grouped under seven collapsable categories:</p>
 <ul>
 	<li>Camera type</li>
 	<li>Camera positioning</li>
+	<li>Camera position auto reset</li>
 	<li>Scene</li>
 	<li>Ambient light</li>
 	<li>Directional lights</li>
@@ -42,7 +43,12 @@
 <tr>
 	<td class="c1">Camera positioning</td>
 	<td class="c2">group</td>
-	<td class="c3">Enable saving and setting the camera position to have reproducible view of the structure.</td>
+	<td class="c3">Enable saving and setting the camera position to have reproducible visualizations.</td>
+</tr>
+<tr>
+	<td class="c1">Camera position auto reset</td>
+	<td class="c2">group</td>
+	<td class="c3">Set the camera position to be reset on every new structure visualized.</td>
 </tr>
 <tr>
 	<td class="c1">Scene</td>
@@ -64,8 +70,8 @@
 	<td class="c2">group</td>
 	<td class="c3">Enable five helper objects:
   <ul>
-  <li>Axis: the cartesian axis from the space origin with setting of the axis length.</li>
-  <li>Grids: along XZ, XY and YZ planes with setting of their side.</li>
+  <li>Axis: the cartesian axis centered on the space origin with a setting of the axis length.</li>
+  <li>Grids: planes through the origin along XZ, XY and YZ with a setting of their side.</li>
   <li>Orientation axis: Widget that show the camera orientation.</li>
   </ul>
   </td>
@@ -73,7 +79,7 @@
 <tr>
 	<td class="c1">Restore viewer settings</td>
 	<td class="c2">button</td>
-	<td class="c3">Restore the viewer settings to the initial ones.</td>
+	<td class="c3">Restore the viewer settings to the factory ones.</td>
 </tr>
 
 </table>

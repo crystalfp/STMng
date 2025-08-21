@@ -156,6 +156,8 @@ export interface Viewer3DState {
         forcePosition: PositionType;
         /** Point where the camera points */
         forceLookAt: PositionType;
+        /** Auto reset the camera at each new step or file */
+	    autoReset: boolean;
     };
     /** Status related to the scene */
     scene: {

@@ -13,6 +13,7 @@ import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
 import {askNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
+import {useConfigStore} from "@/stores/configStore";
 import type {FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
@@ -67,6 +68,7 @@ const energyPerAtom = ref(false);   // Energy file has energy per atom and not p
 const appendFile    = ref(false);   // The file will be appended to the list of steps
 
 const controlStore = useControlStore();
+const configStore  = useConfigStore();
 
 // Initialize the control
 resetNodeAlert();
@@ -105,6 +107,7 @@ watch([step], (
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
+            if(configStore.camera.autoReset) setTimeout(() => {controlStore.reset = true;}, 20);
         })
         .catch((error: Error) => {
             showNodeAlert(`Error from stepping: ${error.message}`, "structureReader");
@@ -166,6 +169,7 @@ watch([running], async () => {
             const response = await askNode(id, "step", {step: nextStep});
             if("error" in response) throw Error(response.error as string);
             step.value = response.step as number;
+            if(configStore.camera.autoReset) setTimeout(() => {controlStore.reset = true;}, 20);
             if(!running.value) break;
         }
         catch(error: unknown) {

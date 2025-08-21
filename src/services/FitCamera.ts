@@ -63,13 +63,18 @@ export const fitOrthographicCameraToObject = (camera: OrthographicCamera,
 	const controlStore = useControlStore();
 	const {sceneCenter, sceneSides} = controlStore;
 
-    camera.lookAt(new Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]));
+	camera.lookAt(new Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]));
 
 	// Set camera to rotate around center of loaded object
 	controls.setOrbitPoint(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
 	const maxSide = Math.max(sceneSides[0], sceneSides[1], sceneSides[2]);
-	void controls.normalizeRotations().setLookAt(sceneCenter[0], sceneCenter[1], sceneCenter[2] + 2*maxSide,
-							sceneCenter[0], sceneCenter[1], sceneCenter[2], false);
+	void controls.normalizeRotations().setLookAt(sceneCenter[0],
+												 sceneCenter[1],
+												 sceneCenter[2] + 2*maxSide,
+												 sceneCenter[0],
+												 sceneCenter[1],
+												 sceneCenter[2],
+												 false);
 	void controls.zoomTo(1, true);
 	camera.updateProjectionMatrix();
 
