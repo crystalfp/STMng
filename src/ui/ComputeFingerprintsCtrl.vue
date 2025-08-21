@@ -286,6 +286,7 @@ watch([fingerprintingMethod, binSize, peakWidth], () => {
     resultDimensionality.value = 0;
     countDistances.value = 0;
     countGroups.value = 0;
+    intrinsicDimension.value = 0;
 
     sendToNode(id, "fp-params", {
         fingerprintingMethod: fingerprintingMethod.value,
@@ -302,6 +303,7 @@ const computeFingerprints = (): void => {
     resultDimensionality.value = 0;
     countDistances.value = 0;
     countGroups.value = 0;
+    intrinsicDimension.value = 0;
 
     askNode(id, "fp", {
         fingerprintingMethod: fingerprintingMethod.value,

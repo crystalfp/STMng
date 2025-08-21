@@ -87,16 +87,24 @@ export class Fingerprinting {
 													 "app.asar.unpacked/dist/Worker.js") :
 							path.join(mainSourceDirectory, "..", "public", "Worker.js");
 
-		// Prepare the worker pool
+		// Compute the parallelism
 		let availableParallelism = os.availableParallelism();
-		availableParallelism = availableParallelism > 1 ? availableParallelism-1 : 1;
+		if(availableParallelism > 1) {
+			availableParallelism = (processParallelism ?
+											2*availableParallelism :
+											availableParallelism)-1;
+		}
+		if(countStructures < availableParallelism) availableParallelism = countStructures;
+
+		// Prepare the worker pool
 		const pool = workerpool.pool(worker, {
 			minWorkers: "max",
-			maxWorkers: Math.min(availableParallelism, countStructures),
+			maxWorkers: availableParallelism,
 			workerType: processParallelism ? "process" : "thread"
 		});
 		const promises: workerpool.Promise<WorkerResults>[] = [];
 
+		// For each structure, compute the fingerprint
 		for(const structure of accumulator.iterateSelectedStructures()) {
 
 			// Extract data to send to the worker

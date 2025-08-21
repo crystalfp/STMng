@@ -423,6 +423,9 @@ export class ComputeFingerprints extends NodeCore {
 		const scatterplotOpen = isSecondaryWindowOpen("/fp-scatterplot");
 		if(opKind !== "create" && !scatterplotOpen) return;
 
+		// Project points to 2D
+		if(opKind === "create") this.dist.projectPoints();
+
 		// Take the points projected to 2D
 		const points = this.dist.getProjectedPoints();
 
@@ -1021,20 +1024,17 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(resultDist.error) sendAlertToClient(resultDist.error, {node: "fingerprints"});
 
-		// Project points to 2D
-		this.dist.projectPoints();
-
 		// Remove duplicates
 		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
 													this.accumulator,
 													this.dist,
 													this.duplicatesThreshold);
 
-		// Update the scatterplot if it is open
-		this.updateVisualizations({noGroups: true, plotType: this.plotType});
-
 		// Compute the intrinsic dimension of the fingerprints space
 		const estimatorResult = embeddedDimensionEstimator(this.accumulator);
+
+		// Update the scatterplot if it is open
+		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
 		return {
 			resultDimensionality: resultFP.dimension,
