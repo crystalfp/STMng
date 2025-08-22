@@ -46,6 +46,14 @@ interface CreateUpdateScatterplotOptions {
 	selectedPoints?: number[];
 }
 
+/** The auxiliary file to sort structures on energy */
+type SorterArray = {
+	/** Index of the structure in the structures array */
+	idx: number;
+	/** Corresponding energy */
+	energy: number;
+}[];
+
 export class ComputeFingerprints extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -86,6 +94,7 @@ export class ComputeFingerprints extends NodeCore {
 
 	private static channelOpened = false;
 	private channelChartsOpened = false;
+	private channelExportOpened = false;
 
 	private readonly fingerprintMethodsNames = [
 		"Oganov-Valle fingerprint",
@@ -108,6 +117,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
 		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
+		{name: "export",		type: "send",	callback: this.channelExport.bind(this)},
 	];
 
 	/**
@@ -1167,7 +1177,7 @@ export class ComputeFingerprints extends NodeCore {
 			if(!filename) return {error: "No filename provided"};
 			const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
 
-			const sorter: {idx: number; energy: number}[] = [];
+			const sorter: SorterArray = [];
 			let structures: Structure[] = [];
 			let k = 0;
 			const hasEnergies = this.accumulator.accumulatedHaveEnergies();
@@ -1325,5 +1335,236 @@ export class ComputeFingerprints extends NodeCore {
 				this.createUpdateCharts("update", this.chartType, this.lambda);
 			});
 		}
+	}
+
+	/**
+	 * Channel handler for fingerprint structure export
+	 */
+	private channelExport(): void {
+
+		const chartsOpen = isSecondaryWindowOpen("/fp-export");
+		const hasEnergy = this.accumulator.accumulatedHaveEnergies();
+
+		const dataToSend = JSON.stringify({hasEnergy});
+
+		// If it is open, update the export window
+		if(chartsOpen) {
+
+			sendToSecondaryWindow("/fp-export", dataToSend);
+		}
+		else {
+
+			// Create the export window
+			createSecondaryWindow({
+				routerPath: "/fp-export",
+				width: 370,
+				height: 500,
+				title: "Export fingerprint results",
+				data: dataToSend
+			});
+		}
+
+		if(!this.channelExportOpened) {
+			this.channelExportOpened = true;
+
+			const writer = new WriterPOSCAR();
+
+			ipcMain.handle("SYSTEM:export-points", (_event: unknown, params: CtrlParams): CtrlParams => {
+
+				const kind = params.kind as string;
+				const filename = params.filename as string;
+				const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
+
+				const structures: Structure[] = [];
+				const sorter: SorterArray = [];
+
+				switch(kind) {
+					case "all":
+						this.getAllEnabledStructures(saveEnergyPerAtom, structures, sorter);
+						break;
+					case "min":
+						this.getMinEnergyPerGroup(saveEnergyPerAtom, structures, sorter);
+						break;
+					case "hull":
+						this.getGeneralizedConvexHull(saveEnergyPerAtom, structures, sorter);
+						break;
+					default:
+						return {error: "Invalid kind"};
+				}
+
+				return this.exportStructuresAndEnergy(filename, writer, structures, sorter);
+			});
+		}
+	}
+
+	/**
+	 * Export all enabled structures
+	 *
+	 * @param saveEnergyPerAtom - True if the energy saved should be per atom
+	 * @param structures - Resulting structures to be exported
+	 * @param sorter - Auxiliary list of energies for output sorting
+	 */
+	private getAllEnabledStructures(saveEnergyPerAtom: boolean,
+									structures: Structure[],
+									sorter: SorterArray): void {
+
+		structures.length = 0;
+		sorter.length = 0;
+		let k = 0;
+
+		const haveEnergies = this.accumulator.accumulatedHaveEnergies();
+		for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
+			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
+			if(haveEnergies) {
+
+				let energy = structure.energy!;
+				if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
+				sorter.push({idx: k++, energy});
+			}
+		}
+	}
+
+	/**
+	 * Export all enabled structures
+	 *
+	 * @param saveEnergyPerAtom - True if the energy saved should be per atom
+	 * @param structures - Resulting structures to be exported
+	 * @param sorter - Auxiliary list of energies for output sorting
+	 */
+	private getMinEnergyPerGroup(saveEnergyPerAtom: boolean,
+								 structures: Structure[],
+								 sorter: SorterArray): void {
+
+		structures.length = 0;
+		sorter.length = 0;
+
+		if(!this.accumulator.accumulatedHaveEnergies()) return;
+		const ngroups = this.grouping.getCountGroups();
+		if(ngroups === 0) return;
+		const groups = this.grouping.getGroups();
+
+		const minEnergy = Array<number>(ngroups).fill(Number.POSITIVE_INFINITY);
+		const minEnergyIdx = Array<number>(ngroups).fill(0);
+
+		let idx = 0;
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+
+			if(structure.enabled) {
+
+				const energy = structure.energy!;
+				const group = groups[idx];
+				if(energy < minEnergy[group]) {
+					minEnergy[group] = energy;
+					minEnergyIdx[group] = idx;
+				}
+			}
+			++idx;
+		}
+
+		for(let k=0; k < ngroups; ++k) {
+
+			const idx = minEnergyIdx[k];
+			const structure = this.accumulator.getStructureByStep(idx);
+			if(!structure) continue;
+			let energy = minEnergy[k];
+			if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
+			sorter.push({idx: k, energy});
+			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
+		}
+	}
+
+	/**
+	 * Compute the 4D convex hull and take the lower half points
+	 *
+	 * @param saveEnergyPerAtom - True if the energy saved should be per atom
+	 * @param structures - Resulting structures to be exported
+	 * @param sorter - Auxiliary list of energies for output sorting
+	 */
+	private getGeneralizedConvexHull(saveEnergyPerAtom: boolean,
+									 structures: Structure[],
+									 sorter: SorterArray): void {
+
+		structures.length = 0;
+		sorter.length = 0;
+
+		const countPoints = this.accumulator.selectedSize();
+		if(countPoints === 0 ||
+		   !this.accumulator.accumulatedHaveEnergies()) return;
+
+		const energies: number[] = [];
+		const enabled: boolean[] = [];
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
+
+			const energy = structure.energy!;
+			energies.push(energy);
+			enabled.push(structure.enabled);
+		}
+
+		const indices = generalizedConvexHull4D(this.dist.getDistanceMatrix(),
+												countPoints,
+												enabled,
+												energies);
+
+		let k = 0;
+		for(const idx of indices) {
+
+			const structure = this.accumulator.getStructureByStep(idx);
+			if(!structure) continue;
+			let energy = structure.energy!;
+			if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
+			sorter.push({idx: k++, energy});
+			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
+		}
+	}
+
+	/**
+	 * Export structures and energies
+	 *
+	 * @param filename - Structure file name. The energy file is derived from it
+	 * @param writer - The structure writer to use (POSCAR format)
+	 * @param structures - Resulting structures to be exported
+	 * @param sorter - Auxiliary list of energies for output sorting
+	 * @returns File names or error message
+	 */
+	private exportStructuresAndEnergy(filename: string,
+									  writer: WriterPOSCAR,
+									  structures: Structure[],
+									  sorter: SorterArray): CtrlParams {
+
+		if(structures.length === 0) return {error: "No structures to save"};
+
+		const sortedStructures: Structure[] = [];
+		let energies = "";
+		if(sorter.length > 0) {
+
+			sorter.sort((a, b) => a.energy - b.energy);
+
+			for(const entry of sorter) {
+				sortedStructures.push(structures[entry.idx]);
+				energies += `${entry.energy.toFixed(4)}\n`;
+			}
+			structures = sortedStructures;
+		}
+		const sts = writer.writeStructure(filename, structures);
+
+		if(sts.error) return {error: `Error writing structures file: ${sts.error as string}`};
+		const returnStatus = {structurePath: filename, energyPath: ""};
+
+		if(energies.length > 0) {
+
+			const pos = filename.lastIndexOf(".");
+			const energyFilename = pos > 0 ?
+										`${filename.slice(0, pos)}.energy` :
+										`${filename}.energy`;
+			try {
+				writeFileSync(energyFilename, energies, "utf8");
+			}
+			catch(error: unknown) {
+				return {error: `Error writing energy file: ${(error as Error).message}`};
+			}
+			returnStatus.energyPath = energyFilename;
+		}
+
+		return returnStatus;
 	}
 }

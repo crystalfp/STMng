@@ -12,7 +12,7 @@ import type {Component} from "vue";
 
 import LayoutClient from "@/components/LayoutClient.vue";
 
-/** Routes for the external windows created */
+/** Routes for the main and the secondary windows created */
 export const router = createRouter({
     history: createWebHashHistory(),
     routes:  [
@@ -47,6 +47,10 @@ export const router = createRouter({
         {
             path: "/fp-charts",
             component: (): Component => import("@/components/FingerprintCharts.vue")
+        },
+        {
+            path: "/fp-export",
+            component: (): Component => import("@/components/FingerprintExport.vue")
         },
         {
             path: "/compare",

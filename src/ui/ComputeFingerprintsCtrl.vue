@@ -412,6 +412,13 @@ const adjInteger = (): void => {
 };
 
 /**
+ * Open a secondary window to export results
+ */
+const exportResults = (): void => {
+    sendToNode(id, "export");
+};
+
+/**
  * Open a secondary window showing the resulting scatterplot
  */
 const showScatterplot = (): void => {
@@ -579,6 +586,10 @@ const showEnergyLandscape = (): void => {
 
   <v-label class="separator-title">Show results</v-label>
 
+  <v-btn block class="mb-2"
+         :disabled="countDistances === 0" @click="exportResults">
+    Export results
+  </v-btn>
   <v-btn block class="mb-2"
          :disabled="countDistances === 0" @click="showScatterplot">
     Show scatterplot
