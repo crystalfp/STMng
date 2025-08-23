@@ -28,16 +28,16 @@ export const removeDuplicatePoints = (enabled: boolean,
     // If reduction not enabled, set enabled on all structures
     if(!enabled) {
         accumulator.setEnableStatus(true);
-        return 0;
+        return -1;
     }
 
     // Access useful variables
-    const countStructures = accumulator.selectedSize();
-    if(countStructures === 0)  {
-        accumulator.setEnableStatus(true);
-        return 0;
-    }
     const distanceMatrix = distances.getDistanceMatrix();
+    const countStructures = accumulator.selectedSize();
+    if(countStructures === 0 || distanceMatrix.matrixSize() === 0)  {
+        accumulator.setEnableStatus(true);
+        return -1;
+    }
     const hasEnergies = accumulator.accumulatedHaveEnergies();
 
     // Do the grouping
@@ -47,7 +47,7 @@ export const removeDuplicatePoints = (enabled: boolean,
     const countGroups = groups.length;
     if(countGroups === 0) {
         accumulator.setEnableStatus(true);
-        return 0;
+        return -1;
     }
 // console.log("GROUPS", countStructures, countGroups);
 // for(const group of groups) {

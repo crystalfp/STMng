@@ -22,12 +22,19 @@ export class WriterPOSCAR implements WriterImplementation {
 
 				// Access the structure
 				const {crystal, atoms, extra} = structure;
-				const {basis} = crystal;
 
 				// Step label
 				const step = (extra.step === undefined) ? "" : ` (step: ${extra.step})`;
 
+				// Extra sanity check
+				if(!crystal || atoms.length === 0) {
+					closeSync(fd);
+					return {payload: "Error",
+							error: `Cannot write POSCAR if structure is malformed${step}`};
+				}
+
 				// If no unit cell return error
+				const {basis} = crystal;
 				if(hasNoUnitCell(basis)) {
 					closeSync(fd);
 					return {payload: "Error",
