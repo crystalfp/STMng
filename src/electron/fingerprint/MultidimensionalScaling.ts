@@ -9,10 +9,10 @@
 import {eigs} from "mathjs";
 
 /**
- * Transform a distances vector into a squared matrix of distances
+ * Transform a distances vector into a matrix of distances squared
  *
  * @param vector - Upper triangular of side x side matrix
- * @param side - Size of the original square symmetrical matrix
+ * @param side - Side of the original square symmetrical matrix
  * @returns Square matrix of squared input values
  */
 const vector2squaredMatrix = (vector: number[], side: number): number[][] => {
