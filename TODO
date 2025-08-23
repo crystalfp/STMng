@@ -54,6 +54,7 @@ Nice to have/Future:
   ☐ Move to WebGPURenderer
   ☐ Simplify error messages for user, leaving full message in log
   ☐ Explore WASM <https://dev.to/omriluz1/exploring-the-intersection-of-javascript-and-webassembly-simd-5fd1>
+  ☐ Experiment with alphaHash for transparency <https://github.com/mrdoob/three.js/blob/master/examples/webgl_materials_alphahash.html>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
