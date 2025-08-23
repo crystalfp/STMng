@@ -181,7 +181,7 @@ const disableBondsStrengths = computed(() =>
   <v-switch v-model="showBondsStrengths" :disabled="disableBondsStrengths"
             label="Show bonds strengths" class="mt-n1 mb-5 ml-4" />
   <debounced-slider v-slot="{value}" v-model="bondsRadiusMultiplier" :disabled="disableShadedBonds"
-                      :min="0.1" :max="3" :step="0.1" class="ml-2 mt-n2 mb-6">
+                      :min="0.1" :max="2" :step="0.1" class="ml-2 mt-n2 mb-6">
     <v-label :text="`Bonds radius multiplier (${value.toFixed(1)})`" class="no-select" />
   </debounced-slider>
 

@@ -151,7 +151,7 @@ const confirmedExit = (): void => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 505px;
   padding: 0;
   margin: 12px 12px 0 12px; /* this currently works */
   /* margin: 0; when fixed vuetify VSelect dropdown menu */
