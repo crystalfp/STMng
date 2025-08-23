@@ -35,7 +35,7 @@
       "in": "unit"
     },
     "draw": {
-      "label": "Structure",
+      "label": "Draw Structure",
       "type": "draw-structure",
       "x": 660,
       "y": 300,
@@ -184,7 +184,8 @@
       "shadedBonds": false,
       "showBondsStrengths": false,
       "atomColoring": "type",
-      "monochromeColor": "#888888"
+      "monochromeColor": "#888888",
+      "bondsRadiusMultiplier": 1
     }
   }
 }

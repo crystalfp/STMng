@@ -293,7 +293,8 @@ export class DrawStructureRenderer {
 	 */
 	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
 				  shadedBonds: boolean, showBondsStrength: boolean,
-				  atomColoring: ColoringType, monochromeColor: string): void {
+				  atomColoring: ColoringType, monochromeColor: string,
+				  bondsRadiusMultiplier: number): void {
 
 		// Clear previous structure
 		sm.clearGroup(this.outName);
@@ -326,7 +327,7 @@ export class DrawStructureRenderer {
 						radius = rVdW;
 						break;
 					case "licorice":
-						radius = BOND_RADIUS;
+						radius = BOND_RADIUS*bondsRadiusMultiplier;
 						break;
 					default:
 						radius = R_COV_SCALE;
@@ -346,7 +347,8 @@ export class DrawStructureRenderer {
 		// Render bonds
 		switch(drawKind) {
 			case "ball-and-stick": {
-				const cylinderCache = new CylinderCache(BOND_RADIUS, shadedBonds,
+				const cylinderCache = new CylinderCache(BOND_RADIUS*bondsRadiusMultiplier,
+														shadedBonds,
 														CYLINDER_SUBDIVISIONS[this.drawQuality],
 														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
@@ -383,7 +385,8 @@ export class DrawStructureRenderer {
 				break;
 			}
 			case "licorice": {
-				const cylinderCache = new CylinderCache(BOND_RADIUS, shadedBonds,
+				const cylinderCache = new CylinderCache(BOND_RADIUS*bondsRadiusMultiplier,
+														shadedBonds,
 														CYLINDER_SUBDIVISIONS[this.drawQuality],
 														this.drawRoughness, this.drawMetalness);
 				for(const bond of renderInfo.bonds) {
