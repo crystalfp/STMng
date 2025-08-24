@@ -319,7 +319,9 @@ const config = defineConfig([
                     db: false,
                     obj: false,
                     ext: false,
-                    dist: false
+                    dist: false,
+                    dev: false,
+                    temp: false
                 },
                 checkFilenames: false
             }

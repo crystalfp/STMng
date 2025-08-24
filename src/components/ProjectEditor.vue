@@ -566,12 +566,11 @@ const handleDrop = (event: DragEvent): void => {
 
 /**
  * Enter the graph area with a node to add
+ * @remarks preventDefault is on the v-on call
  *
  * @param event - Drag event
  */
 const handleDragOver = (event: DragEvent): void => {
-
-    event.preventDefault();
 
     if(event.dataTransfer) {
         event.dataTransfer.dropEffect = "move";
@@ -730,7 +729,7 @@ const confirmNewProject = (): void => {
         {{ item.label }}
       </div>
     </div>
-    <div class="vv" @drop="handleDrop" @dragover="handleDragOver">
+    <div class="vv" @drop="handleDrop" @dragover.prevent="handleDragOver">
       <VueFlow :nodes :edges fit-view-on-init
                 :delete-key-code="null"
                 edges-updatable

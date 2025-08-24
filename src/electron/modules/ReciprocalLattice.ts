@@ -6,7 +6,6 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-26
  */
-/* eslint-disable eslint-comments/disable-enable-pair, unicorn/prevent-abbreviations */
 import type {Lattice} from "./Lattice";
 
 /** A point of the reciprocal lattice */
