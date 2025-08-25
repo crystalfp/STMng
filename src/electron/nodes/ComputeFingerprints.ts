@@ -30,6 +30,8 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 
+import {MDS} from "../modules/NativeFunctions";
+
 /**
  * Options for the scatterplot creation
  * @notExported
@@ -1374,6 +1376,20 @@ export class ComputeFingerprints extends NodeCore {
 				const kind = params.kind as string;
 				const filename = params.filename as string;
 				const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
+
+				// TEST
+				// const distanceMatrix = this.dist.getDistanceMatrix();
+				// const distances = distanceMatrix.toVector();
+				// const countPoints = distanceMatrix.matrixSize();
+				// const enable = this.accumulator.getEnabledStructures();
+				// console.time("MDS");
+				// const result = MDS(distances, countPoints, enable, 2);
+				// console.timeEnd("MDS");
+				// console.log("NATIVE TEST", result);
+
+				MDS([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 5, [true, true, false, true, false], 2);
+
+				// END TEST
 
 				const structures: Structure[] = [];
 				const sorter: SorterArray = [];

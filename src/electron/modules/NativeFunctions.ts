@@ -55,6 +55,9 @@ interface NativeModule {
 							 symprecStandardize: number, symprecDataset: number) => FindAndApplySymmetriesOutput;
 
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
+
+	MDS: (distancesVector: Float64Array, pointsCount: number,
+		  enabled: Uint8Array, dimensions: number) => number[];
 }
 
 // oxlint-disable-next-line first
@@ -111,3 +114,41 @@ export const findAndApplySymmetries = (basis: Float64Array,
 export const convertSpaceGroupNumber = (spaceGroupNumber: number,
 										variation: number): ConvertSpaceGroupNumberOutput =>
 	addon.convertSpaceGroupNumber(spaceGroupNumber, variation);
+
+/**
+ * Compute Multidimensional Scaling (MDS)
+ *
+ * @param distancesVector - Distances vector (upper triangular of NxN symmetrical distance matrix)
+ * @param pointsCount - Number of points (N), that is, the side of the distance matrix
+ * @param pointsEnabled - Mark which of the `pointsCount` points is enabled. (default: all are enabled)
+ * @param dimensions - Dimension of the output space (default: 2)
+ * @returns Array of points coordinates in the output space (of dimension `dimensions`)
+ */
+export const MDS = (distancesVector: number[],
+					pointsCount: number,
+					pointsEnabled: boolean[] = [],
+					dimensions = 2): number[][] => {
+
+	const enabled = pointsEnabled.length === pointsCount ?
+									new Uint8Array(pointsEnabled.map((b) => (b ? 1 : 0))) :
+									new Uint8Array(Array<number>(pointsCount).fill(1));
+
+	const distances = new Float64Array(distancesVector);
+
+	// The routine computes the multidimensional scaling of only the enabled points
+	// The points coordinates are then normalized between 0 and 1
+	const result = addon.MDS(distances, pointsCount, enabled, dimensions);
+
+	// Include in output also the non-enabled points
+	const mappedPoints = Array<number[]>(pointsCount);
+	for(let i=0, j=0; i < pointsCount; ++i) {
+		mappedPoints[i] = Array<number>(dimensions);
+		if(pointsEnabled[i]) {
+			for(let k=0; k < dimensions; ++k) mappedPoints[i][k] = result[j*dimensions+k];
+			++j;
+		}
+		else for(let k=0; k < dimensions; ++k) mappedPoints[i][k] = 0;
+	}
+
+	return mappedPoints;
+};

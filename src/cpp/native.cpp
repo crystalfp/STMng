@@ -2,6 +2,7 @@
 #include <string>
 #include "FindAndApplySymmetries.h"
 #include "ConvertSpaceGroupNumber.h"
+#include "MDS.h"
 
 using namespace std;
 
@@ -222,12 +223,88 @@ Napi::Value convertSpaceGroupNumber(const Napi::CallbackInfo& info) {
 	return obj;
 }
 
+#include <iostream>
+
+Napi::Value MDS(const Napi::CallbackInfo& info) {
+
+	Napi::Env env = info.Env();
+
+	// Check arguments
+	if(info.Length() != 4) {
+    	Napi::TypeError::New(env, "Expecting exactly four arguments").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 0: distancesVector
+	if(!info[0].IsTypedArray()) {
+    	Napi::TypeError::New(env, "First argument should be a typed array").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 1: pointsCount
+	if(!info[1].IsNumber()) {
+    	Napi::TypeError::New(env, "Second argument should be a number").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 2: enabled
+	if(!info[2].IsTypedArray()) {
+    	Napi::TypeError::New(env, "Third argument should be a typed array").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 3: dimensions
+	if(!info[3].IsNumber()) {
+    	Napi::TypeError::New(env, "Fourth argument should be a number").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 0: array of floats
+	Napi::TypedArray typedArray = info[0].As<Napi::TypedArray>();
+	if(typedArray.TypedArrayType() != napi_float64_array) {
+		Napi::Error::New(info.Env(), "Argument 0: expected a Float64Array").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+	Napi::Float64Array distancesArray = typedArray.As<Napi::Float64Array>();
+	size_t distancesLength = distancesArray.ElementLength();
+	std::vector<double_t> distances(distancesArray.Data(), distancesArray.Data() + distancesLength);
+
+	// Argument 1: integer
+	int pointsCount = static_cast<int>(info[1].As<Napi::Number>());
+
+	// Argument 2: array of boolean
+    typedArray = info[2].As<Napi::TypedArray>();
+    if(typedArray.TypedArrayType() != napi_uint8_array) {
+        Napi::Error::New(env, "Argument 2: expected a Uint8Array").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    Napi::Uint8Array enableArray = typedArray.As<Napi::Uint8Array>();
+    size_t enableLength = enableArray.ElementLength();
+	std::vector<uint8_t> enable(enableArray.Data(), enableArray.Data() + enableLength);
+
+	// Argument 3: integer
+	int dimensions = static_cast<int>(info[3].As<Napi::Number>());
+
+	std::vector<double_t> points;
+	doMDS(distances, pointsCount, enable, dimensions, points);
+
+	int nPointsPerDimension = points.size();
+
+	Napi::Float64Array pointsOut = Napi::Float64Array::New(env, nPointsPerDimension);
+	for(size_t i=0; i < nPointsPerDimension; ++i) pointsOut[i] = points[i];
+
+	return pointsOut;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
 	exports.Set(Napi::String::New(env, "findAndApplySymmetries"),
 				Napi::Function::New(env, findAndApplySymmetries));
 	exports.Set(Napi::String::New(env, "convertSpaceGroupNumber"),
 				Napi::Function::New(env, convertSpaceGroupNumber));
+	exports.Set(Napi::String::New(env, "MDS"),
+				Napi::Function::New(env, MDS));
 	return exports;
 }
 

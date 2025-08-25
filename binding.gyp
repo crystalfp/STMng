@@ -13,11 +13,13 @@
 				"src/cpp/sginfo/sgio.c",
 				"src/cpp/sginfo/sgsi.c",
 				"src/cpp/FindAndApplySymmetries.cpp",
-				"src/cpp/ConvertSpaceGroupNumber.cpp"
+				"src/cpp/ConvertSpaceGroupNumber.cpp",
+				"src/cpp/MDS.cpp"
 			],
 			"include_dirs": [
 				"<!@(node -p \"require('node-addon-api').include\")",
-				"src/cpp/spglib-2.5.0/include"
+				"src/cpp/spglib-2.5.0/include",
+				"src/cpp"
 			],
 			"dependencies": [
 				"<!(node -p \"require('node-addon-api').gyp\")"
