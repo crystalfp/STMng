@@ -1,7 +1,9 @@
 
 #include "MDS.h"
+#include <climits>
 // Eigen: a C++ template library for linear algebra https://eigen.tuxfamily.org/
 #define EIGEN_NO_DEBUG
+#define EIGEN_VECTORIZE
 #include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
@@ -80,8 +82,8 @@ void doMDS(
 
     // 6. Compute the final coordinates and range for normalization
 	points.resize(enabledSide*dimensions);
-	std::vector<double_t> min(dimensions, 1e200);
-	std::vector<double_t> max(dimensions, -1e200);
+	std::vector<double_t> min(dimensions, DBL_MAX);
+	std::vector<double_t> max(dimensions, -DBL_MAX);
 	size_t last = enabledSide-1;
     for(size_t i = 0; i < enabledSide; ++i) {
         for(size_t j = 0; j < dimensions; ++j) {

@@ -60,7 +60,8 @@
 							"EnableFunctionLevelLinking": "true",
 							"EnableIntrinsicFunctions": "true",
 							"RuntimeTypeInfo": "false",
-							"AdditionalOptions": [ "/EHsc" ]
+							"AdditionalOptions": [ "/EHsc" ],
+							"EnableEnhancedInstructionSet": 2
 						},
 						"VCLibrarianTool": {
 							"AdditionalOptions": [

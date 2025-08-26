@@ -48,6 +48,11 @@ const erfTable = [
     0.9999999986, 0.9999999988, 0.9999999990, 0.9999999992
 ];
 
+// Precomputed 1/6, 1/3, 1/2
+const inv6 = 0.1666666666666667;
+const inv3 = 0.3333333333333333;
+const inv2 = 0.5;
+
 /**
  * Compute 0.5*(1.+erf(x))
  *
@@ -68,12 +73,18 @@ const gaussianIntegral = (x: number): number => {
 	// Compute the reduced x: it is between 0 and 1
 	const t = x/LOOKUP_STEP - idx;
 
+	// Precompute some table values
+	const et0 = erfTable[idx];
+	const et1 = erfTable[idx+1];
+	const et2 = erfTable[idx+2];
+	const et3 = erfTable[idx+3];
+
 	// Compute the value by cubic interpolation between the previous point,
     // the point at the start of the interval and two points after
-	const aa = -1/6*erfTable[idx] + 1/2*erfTable[idx+1] - 1/2*erfTable[idx+2] + 1/6*erfTable[idx+3];
-	const bb =  1/2*erfTable[idx] -     erfTable[idx+1] + 1/2*erfTable[idx+2];
-	const cc = -1/3*erfTable[idx] - 1/2*erfTable[idx+1] +     erfTable[idx+2] - 1/6*erfTable[idx+3];
-	const dd =                          erfTable[idx+1];
+	const aa = -inv6*et0 + inv2*et1 - inv2*et2 + inv6*et3;
+	const bb =  inv2*et0 -      et1 + inv2*et2;
+	const cc = -inv3*et0 - inv2*et1 +      et2 - inv6*et3;
+	const dd =                  et1;
 
 	return ((aa*t + bb)*t + cc)*t + dd;
 };

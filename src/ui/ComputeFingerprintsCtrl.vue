@@ -169,6 +169,7 @@ askNode(id, "init")
         countDistances.value = 0;
         countGroups.value = 0;
         pointsRemoved.value = -1;
+        intrinsicDimension.value = 0;
     })
     .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
                                               "fingerprints"));
@@ -264,6 +265,7 @@ watch([forceCutoff, manualCutoffDistance], () => {
         resultDimensionality.value = 0;
         countDistances.value = 0;
         countGroups.value = 0;
+        intrinsicDimension.value = 0;
     })
     .catch((error: Error) => showNodeAlert(`Error from cutoff setting for ${label}: ${error.message}`,
                                               "fingerprints"));

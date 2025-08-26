@@ -46,6 +46,8 @@ ToDo eventually:
   ☐ For the charts <https://unovis.dev/>
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
   ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
+  ☐ Convert the full native MDS routine to use Eigen
+  ☐ Linear interpolation in `Smooth.ts`
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
