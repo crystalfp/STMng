@@ -7,8 +7,8 @@
  * @since 2025-01-23
  */
 import {quickHull} from "@derschmale/tympanum";
-import {MDS} from "./MultidimensionalScaling";
 import type {DistanceMatrix} from "./Distances";
+import {MDS} from "../modules/NativeFunctions";
 
 /**
  * Compute the 4D convex hull and take the lower half points
@@ -25,7 +25,7 @@ export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
 										energies: number[]): number[] => {
 
 	// Project points to 3D
-	const mappedPoints = MDS(distanceMatrix.toVector(), countPoints, 3);
+	const mappedPoints = MDS(distanceMatrix.toVector(), countPoints, enabled, 3);
 
 	// Prepare 4D points
 	const generalizedPoints: number[][] = [];

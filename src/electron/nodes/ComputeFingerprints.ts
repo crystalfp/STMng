@@ -30,8 +30,6 @@ import type {Structure, Atom, CtrlParams, ChannelDefinition,
 
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 
-import {MDS} from "../modules/NativeFunctions";
-
 /**
  * Options for the scatterplot creation
  * @notExported
@@ -435,15 +433,17 @@ export class ComputeFingerprints extends NodeCore {
 		const scatterplotOpen = isSecondaryWindowOpen("/fp-scatterplot");
 		if(opKind !== "create" && !scatterplotOpen) return;
 
+		// Filter by enabled status on structures
+		const enabled = this.accumulator.getEnabledStructures();
+
 		// Project points to 2D
-		if(opKind === "create") this.dist.projectPoints();
+		if(opKind === "create") this.dist.projectPoints(enabled);
 
 		// Take the points projected to 2D
 		const points = this.dist.getProjectedPoints();
 
-		// Filter by enabled status on structures and check if energy present
+		// Check if energy present
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
-		const enabled = this.accumulator.getEnabledStructures();
 
 		// Collect and prepare the data for the scatterplot
 		const scatterplotData = options.plotType === "fidelity" ?
@@ -1079,14 +1079,17 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(result.error) sendAlertToClient(result.error, {node: "fingerprints"});
 
-		// Project points to 2D
-		this.dist.projectPoints();
-
 		// Remove duplicates
 		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
 													this.accumulator,
 													this.dist,
 													this.duplicatesThreshold);
+
+		// Filter by enabled status on structures
+		const enabled = this.accumulator.getEnabledStructures();
+
+		// Project points to 2D
+		this.dist.projectPoints(enabled);
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
@@ -1376,20 +1379,6 @@ export class ComputeFingerprints extends NodeCore {
 				const kind = params.kind as string;
 				const filename = params.filename as string;
 				const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
-
-				// TEST
-				// const distanceMatrix = this.dist.getDistanceMatrix();
-				// const distances = distanceMatrix.toVector();
-				// const countPoints = distanceMatrix.matrixSize();
-				// const enable = this.accumulator.getEnabledStructures();
-				// console.time("MDS");
-				// const result = MDS(distances, countPoints, enable, 2);
-				// console.timeEnd("MDS");
-				// console.log("NATIVE TEST", result);
-
-				MDS([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 5, [true, true, false, true, false], 2);
-
-				// END TEST
 
 				const structures: Structure[] = [];
 				const sorter: SorterArray = [];

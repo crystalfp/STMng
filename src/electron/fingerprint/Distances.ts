@@ -7,9 +7,8 @@
  * @since 2024-12-17
  */
 import {measuringMethods} from "./DistanceMethods";
-import {MDS} from "./MultidimensionalScaling";
-import {normalizeCoordinates2D} from "./Helpers";
 import type {FingerprintsAccumulator} from "./Accumulator";
+import {MDS} from "../modules/NativeFunctions";
 
 /**
  * Matrix of distances between fingerprints
@@ -129,10 +128,10 @@ export class DistanceMatrix {
 
         const out: number[] = [];
 
-        for(let i=0; i < this.side-1; ++i) {
+        for(let row=0; row < this.side-1; ++row) {
 
-            for(let j=1; j < this.side-i; ++j) {
-                out.push(this.distanceMatrix[i][j]);
+            for(let col=1; col < this.side-row; ++col) {
+                out.push(this.distanceMatrix[row][col]);
             }
         }
 
@@ -406,9 +405,11 @@ export class Distances {
     }
 
     /**
-     * Create points in 2D [0..1]x[0..1] that keep distances as best as possible
+     * Create points in 2D [0..1]x[0..1] that best preserve distances
+     *
+     * @param enabled - If the corresponding point is enabled
      */
-    projectPoints(): void {
+    projectPoints(enabled: boolean[]): void {
 
         // No distances, no projected points
         if(this.distances.matrixSize() === 0) {
@@ -417,16 +418,14 @@ export class Distances {
         }
 
         const distanceVector = this.distances.toVector();
-		const mappedPoints = MDS(distanceVector, this.distances.matrixSize());
-
-		// Normalize mapped points coordinates between 0 and 1
-        this.projectedPoints = normalizeCoordinates2D(mappedPoints);
+        const countPoints = this.distances.matrixSize();
+        this.projectedPoints = MDS(distanceVector, countPoints, enabled);
     }
 
     /**
      * Return the projected points
      *
-     * @returns Points in 2D [0..1]x[0..1] that keep distances as best as possible
+     * @returns Points in 2D [0..1]x[0..1] that best preserve distances
      */
     getProjectedPoints(): number[][] {
 
