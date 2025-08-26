@@ -10,7 +10,6 @@ import {Menu, shell, app, nativeTheme, dialog, ipcMain, type MenuItemConstructor
 import path from "node:path";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
-// eslint-disable-next-line unicorn/prevent-abbreviations
 import {broadcastMessage, showDevToolsOnSecondaryWindow} from "./WindowsUtilities";
 import {refreshSystemMenu, openMenuEntry, sendAlertToClient,
         getCurrentNode} from "./ToClient";

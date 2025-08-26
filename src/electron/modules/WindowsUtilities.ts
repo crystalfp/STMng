@@ -241,7 +241,6 @@ export const broadcastMessage = (eventType: string, ...params: (boolean | string
  *
  * @param path - Path to the window on which the developer tools should be opened
  */
-// eslint-disable-next-line unicorn/prevent-abbreviations
 export const showDevToolsOnSecondaryWindow = (path: string): void => {
 
     const win = openedWindows.get(path);

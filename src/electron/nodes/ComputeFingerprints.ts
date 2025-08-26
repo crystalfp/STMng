@@ -433,15 +433,17 @@ export class ComputeFingerprints extends NodeCore {
 		const scatterplotOpen = isSecondaryWindowOpen("/fp-scatterplot");
 		if(opKind !== "create" && !scatterplotOpen) return;
 
+		// Filter by enabled status on structures
+		const enabled = this.accumulator.getEnabledStructures();
+
 		// Project points to 2D
-		if(opKind === "create") this.dist.projectPoints();
+		if(opKind === "create") this.dist.projectPoints(enabled);
 
 		// Take the points projected to 2D
 		const points = this.dist.getProjectedPoints();
 
-		// Filter by enabled status on structures and check if energy present
+		// Check if energy present
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
-		const enabled = this.accumulator.getEnabledStructures();
 
 		// Collect and prepare the data for the scatterplot
 		const scatterplotData = options.plotType === "fidelity" ?
@@ -1077,14 +1079,17 @@ export class ComputeFingerprints extends NodeCore {
 
 		if(result.error) sendAlertToClient(result.error, {node: "fingerprints"});
 
-		// Project points to 2D
-		this.dist.projectPoints();
-
 		// Remove duplicates
 		const pointsRemoved = removeDuplicatePoints(this.removeDuplicates,
 													this.accumulator,
 													this.dist,
 													this.duplicatesThreshold);
+
+		// Filter by enabled status on structures
+		const enabled = this.accumulator.getEnabledStructures();
+
+		// Project points to 2D
+		this.dist.projectPoints(enabled);
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});

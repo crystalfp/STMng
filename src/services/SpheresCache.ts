@@ -93,7 +93,7 @@ export class SpheresCache {
 				metalness: this.drawMetalness,
 				side: FrontSide,
 			});
-			meshMaterial.color.convertSRGBToLinear();
+
 			const sphere = new InstancedMesh(this.geometry, meshMaterial, count);
 			sphere.frustumCulled = false;
 			sphere.name = "Atom";
