@@ -46,8 +46,6 @@ ToDo eventually:
   ☐ For the charts <https://unovis.dev/>
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
   ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
-  ☐ Convert the full native MDS routine to use Eigen
-  ☐ Linear interpolation in `Smooth.ts`
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -68,6 +66,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Use linear interpolation in `Smooth.ts` @done(2025-08-27 12:07) @project(ToDo eventually)
+  ✔ Convert the full native MDS routine to use Eigen @done(2025-08-27 10:48) @project(ToDo eventually)
   ✔ Would it be possible to determine effective dimensionality of the energy landscape? @done(2025-07-27 07:50) @project(Latest requests (backlog))
   ✔ Show average structure in trajectories instead of markers @done(2025-07-25 07:03) @project(Latest requests (backlog))
   ✔ Coloring atoms according to their coordination number @done(2025-07-25 15:39) @project(Functionalities)

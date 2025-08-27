@@ -135,7 +135,8 @@ export const MDS = (distancesVector: number[],
 
 	const distances = new Float64Array(distancesVector);
 
-	// The routine computes the multidimensional scaling of only the enabled points
+	// The routine computes the multidimensional scaling of only
+	// the enabled points
 	// The points coordinates are then normalized between 0 and 1
 	const result = addon.MDS(distances, pointsCount, enabled, dimensions);
 

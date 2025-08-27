@@ -26,11 +26,7 @@ void doMDS(
 	}
 
 	// 2. Create the matrix of distances squared
-	std::vector<std::vector<float_t> > D2(enabledSide);
-	for(size_t i=0; i < enabledSide; ++i) {
-		std::vector<float_t> rowVector(enabledSide, 0.F);
-		D2[i] = rowVector;
-	}
+	Eigen::MatrixXf D2(enabledSide, enabledSide);
 
 	for(size_t row=0; row < count-1; ++row) {
 
@@ -49,28 +45,21 @@ void doMDS(
 			size_t ecol = mapIndex[col];
 
 			float v = distances[idx];
-			D2[erow][ecol] = D2[ecol][erow] = v*v;
+			D2(erow, ecol) = D2(ecol, erow) = v*v;
 		}
 	}
+	D2.diagonal().setConstant(0.F);
 
 	// 3. Compute row and total averages
-    std::vector<float_t> rowMeans(enabledSide);
-	float totalMean = 0.F;
-	for(size_t row=0; row < enabledSide; ++row) {
-
-		float mean = 0.F;
-		for(const auto x: D2[row]) mean += x;
-		mean /= enabledSide;
-		rowMeans[row] = mean;
-		totalMean += mean;
-	}
-	totalMean /= enabledSide;
+	float scale = 1.0F/enabledSide;
+	Eigen::VectorXf rowMeans = D2.rowwise().sum() * scale;
+	float totalMean = rowMeans.sum() * scale;
 
     // 4. Compute double centering matrix
 	Eigen::MatrixXf doubleCenteringMatrix(enabledSide, enabledSide);
     for(size_t i = 0; i < enabledSide; i++) {
         for(size_t j = 0; j < enabledSide; j++) {
-            doubleCenteringMatrix(i, j) = -0.5F * (D2[i][j] - rowMeans[i] - rowMeans[j] + totalMean);
+            doubleCenteringMatrix(i, j) = -0.5F * (D2(i, j) - rowMeans(i) - rowMeans(j) + totalMean);
         }
     }
 
