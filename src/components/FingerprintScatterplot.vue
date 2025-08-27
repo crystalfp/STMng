@@ -54,6 +54,7 @@ const scatterplotType = ref("group");
 const pointRadius = ref(5);
 const showPointRadius = ref(5);
 const fgColor = "#575757";
+const noValueColor = "#4359FF";
 
 /** The received data */
 const scatterplotData = ref<ScatterplotData | undefined>();
@@ -145,7 +146,7 @@ const pointsByGroup = (): Glyph[] => {
     for(let i=0; i < n; ++i) {
 
         // Get the color corresponding to the group of the point
-        const color = noGroups ? "#0000FF" : groupColors[values[i]];
+        const color = noGroups ? noValueColor : groupColors[values[i]];
 
         out.push({
             id: id[i],
@@ -189,7 +190,7 @@ const pointsByEnergy = (): Glyph[] => {
     const out: Glyph[] = [];
     for(let i=0; i < n; ++i) {
 
-        const color = lut ? `#${lut.getColor(values[i]).getHexString()}` : "#0000FF";
+        const color = lut ? `#${lut.getColor(values[i]).getHexString()}` : noValueColor;
 
         out.push({
             id: id[i],
@@ -247,7 +248,7 @@ const pointsByEfficiency = (): Glyph[] => {
         if(delta < 0) delta = -delta;
         overallQuality += delta;
 
-        const color = lut ? `#${lut.getColor(maxDelta-delta).getHexString()}` : "#0000FF";
+        const color = lut ? `#${lut.getColor(maxDelta-delta).getHexString()}` : noValueColor;
 
         out.push({
             id: i,
@@ -673,7 +674,7 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
 
     if(scatterplotType.value === "group") {
         if(!scatterplotData.value || scatterplotData.value.countGroups === 0) {
-            return [{key: 0, color: "#0000FF", label: "No groups"}];
+            return [{key: 0, color: noValueColor, label: "No groups"}];
         }
         const out = [];
         let group = 0;
