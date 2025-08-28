@@ -32,6 +32,8 @@ void doMDS(
 
 		if(enable[row] == 0) continue;
 
+		size_t erow = mapIndex[row];
+
 		for(size_t col=row+1; col < count; ++col) {
 
 			if(enable[col] == 0) continue;
@@ -41,14 +43,13 @@ void doMDS(
 			size_t idx = count*row-(row*(row+1))/2+col-row-1;
 
 			// Map indices to the ones with disabled points removed
-			size_t erow = mapIndex[row];
 			size_t ecol = mapIndex[col];
 
 			float v = distances[idx];
 			D2(erow, ecol) = D2(ecol, erow) = v*v;
 		}
+		D2(erow, erow) = 0.F;
 	}
-	D2.diagonal().setConstant(0.F);
 
 	// 3. Compute row and total averages
 	float scale = 1.0F/enabledSide;

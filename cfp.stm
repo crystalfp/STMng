@@ -52,14 +52,14 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        4.330834550000001,
-        4.3991050000000005,
-        18.34293
+        4.052425,
+        2.586350000000001,
+        18.42395
       ],
       "lookAt": [
-        4.330834550000001,
-        4.399105,
-        0.74651
+        4.052425,
+        2.58635,
+        2.21425
       ],
       "snapshotFormat": "png",
       "snapshotTransparent": false,
@@ -131,7 +131,7 @@
       "energyThreshold": 0,
       "thresholdFromMinimum": false,
       "areNanoclusters": false,
-      "forceCutoff": false,
+      "forceCutoff": true,
       "manualCutoffDistance": 10,
       "fingerprintingMethod": 0,
       "binSize": 0.05,
