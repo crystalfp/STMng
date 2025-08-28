@@ -1,6 +1,6 @@
 
 #include "MDS.h"
-#include <climits>
+#include <cfloat>
 // Eigen: a C++ template library for linear algebra https://eigen.tuxfamily.org/
 #define EIGEN_NO_DEBUG
 #define EIGEN_VECTORIZE
