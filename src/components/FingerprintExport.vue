@@ -59,6 +59,19 @@ const selectedExportFile = (filename: string): void => {
     showExport.value = false;
 };
 
+/**
+ * Toggle export operation
+ *
+ * @param exportKind - Function to be activated
+ */
+const toggleExport = (exportKind: string): void => {
+
+    kind.value = exportKind;
+    showExport.value = !showExport.value;
+    errorMessage.value = "";
+    successMessage.value = "";
+};
+
 </script>
 
 
@@ -66,15 +79,15 @@ const selectedExportFile = (filename: string): void => {
 <v-app :theme class="d-flex">
   <v-container class="flex-1-1">
   <v-btn block class="mb-2"
-         @click="kind='all'; showExport = !showExport">
+         @click="toggleExport('all')">
     Export results
   </v-btn>
-  <v-btn :disabled="!hasEnergies"
-          block class="mt-4 mb-4" @click="kind='min'; showExport = !showExport">
+  <v-btn :disabled="!hasEnergies" block class="mt-4 mb-4"
+         @click="toggleExport('min')">
     Min energy per group
   </v-btn>
-  <v-btn :disabled="!hasEnergies"
-          block class="mt-4 mb-4" @click="kind='hull'; showExport = !showExport">
+  <v-btn :disabled="!hasEnergies" block class="mt-4 mb-4"
+         @click="toggleExport('hull')">
     Gen. convex hull
   </v-btn>
 
@@ -82,14 +95,15 @@ const selectedExportFile = (filename: string): void => {
                :filter="filterPOSCAR" kind="save" @selected="selectedExportFile" />
   <v-switch v-if="showExport && hasEnergies" v-model="saveEnergyPerAtom"
                class="ml-2 mt-2" label="Save energy per atom"/>
-      <v-alert v-if="errorMessage !== ''" title="Error" class="mt-4 ml-1 cursor-pointer"
-         :text="errorMessage" type="error" density="compact"
-         color="red" @click="errorMessage=''" />
-      <v-alert v-if="successMessage !== ''" title="Success!" :text="successMessage"
-        type="success" density="compact" class="mt-4 ml-1 cursor-pointer" @click="successMessage=''"/>
-</v-container>
-<v-container class="d-flex flex-0-1 justify-end">
-  <v-btn v-focus @click="closeWindow('/fp-export')">Close</v-btn>
-</v-container>
+  <v-alert v-if="errorMessage !== ''" title="Error" class="mt-4 ml-1 cursor-pointer"
+      :text="errorMessage" type="error" density="compact"
+      color="red" @click="errorMessage=''" />
+  <v-alert v-if="successMessage !== ''" title="Success!" :text="successMessage"
+      type="success" density="compact" class="mt-4 ml-1 cursor-pointer"
+      @click="successMessage=''"/>
+  </v-container>
+  <v-container class="d-flex flex-0-1 justify-end">
+    <v-btn v-focus @click="closeWindow('/fp-export')">Close</v-btn>
+  </v-container>
 </v-app>
 </template>

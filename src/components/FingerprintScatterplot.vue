@@ -269,7 +269,7 @@ const pointsByEfficiency = (): Glyph[] => {
  *
  * @returns The list of points as glyphs
  */
- const pointsBySilhouettes = (): Glyph[] => {
+const pointsBySilhouettes = (): Glyph[] => {
 
     if(!scatterplotData.value || scatterplotData.value.values.length === 0) return [];
 
@@ -321,6 +321,7 @@ const showSelectionRectangle = ref(false);
 
 let glyphs: Glyph[] = [];
 let tree: KDTree;
+
 /**
  * Draw points on the canvas
  */
@@ -420,7 +421,7 @@ const drawPoints = (): void => {
  *
  * @param event - To obtain the click coordinates
  */
- const pointClicked = (event: MouseEvent): void => {
+const pointClicked = (event: MouseEvent): void => {
 
     // Do not allow selection of points in fidelity mode
     if(scatterplotType.value === "fidelity") return;
@@ -546,21 +547,28 @@ handleSpecialKeys("/fp-scatterplot");
 /**
  * Select all points
  */
- const selectAll = (): void => {
+const selectAll = (): void => {
 
-if(!scatterplotData) return;
+    errorMessage.value = "";
+    successMessage.value = "";
 
-  const cnt = scatterplotData.value?.points.length;
-  if(!cnt) return;
+    if(!scatterplotData) return;
 
-  selectedPoints.clear();
-  for(let i=0; i < cnt; ++i) selectedPoints.add(i);
+    const cnt = scatterplotData.value?.points.length;
+    if(!cnt) return;
+
+    selectedPoints.clear();
+    for(let i=0; i < cnt; ++i) selectedPoints.add(i);
 };
 
 /**
  * Reset the selected points
  */
 const resetSelected = (): void => {
+
+    errorMessage.value = "";
+    successMessage.value = "";
+
     selectedPoints.clear();
     textShow.value = false;
 };
@@ -573,6 +581,9 @@ const showSelectedGroup = ref(0);
  * Selected all points pertaining to a group
  */
 const selectByGroup = (): void => {
+
+    errorMessage.value = "";
+    successMessage.value = "";
 
     if(!scatterplotData.value ||
         scatterplotData.value.countGroups === 0) return;
@@ -590,7 +601,10 @@ const selectByGroup = (): void => {
 /**
  * Select the point by the given criteria
  */
- const selectByCriteria = (criteria: string): void => {
+const selectByCriteria = (criteria: string): void => {
+
+    errorMessage.value = "";
+    successMessage.value = "";
 
     askNode("SYSTEM", "get-selections", {
         criteria
@@ -655,6 +669,9 @@ const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
  * Compare structures selected
  */
 const compareSelected = (): void => {
+
+    errorMessage.value = "";
+    successMessage.value = "";
 
     if(selectedPoints.size < 2) return;
 
