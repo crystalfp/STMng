@@ -139,7 +139,7 @@
       "distanceMethod": 0,
       "fixTriangleInequality": false,
       "groupingMethod": 0,
-      "groupingThreshold": 7,
+      "groupingThreshold": 0.5,
       "addedMargin": 0,
       "removeDuplicates": true,
       "duplicatesThreshold": 0.015,

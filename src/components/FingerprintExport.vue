@@ -64,7 +64,7 @@ const selectedExportFile = (filename: string): void => {
  *
  * @param exportKind - Function to be activated
  */
-const toggleExport = (exportKind: string): void => {
+const toggleExport = (exportKind: "all" | "min"): void => {
 
     kind.value = exportKind;
     showExport.value = !showExport.value;
@@ -85,10 +85,6 @@ const toggleExport = (exportKind: string): void => {
   <v-btn :disabled="!hasEnergies" block class="mt-4 mb-4"
          @click="toggleExport('min')">
     Min energy per group
-  </v-btn>
-  <v-btn :disabled="!hasEnergies" block class="mt-4 mb-4"
-         @click="toggleExport('hull')">
-    Gen. convex hull
   </v-btn>
 
   <select-file v-if="showExport" class="mt-4 ml-n1" title="Select output file"

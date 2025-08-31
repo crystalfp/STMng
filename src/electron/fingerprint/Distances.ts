@@ -426,14 +426,13 @@ export class Distances {
         }
 
         // Check if enabled status changed
-        let enabledChanged = false;
+        let enabledChanged = true;
         if(this.cachedProjectedPoints) {
 
             enabledChanged = this.enabledPrevious.length !== enabled.length ||
                              this.enabledPrevious.some((value, i) => value !== enabled[i]);
 
-            if(enabledChanged) this.enabledPrevious = [...enabled];
-            else return;
+            if(!enabledChanged) return;
         }
 
         // Recompute projections if not cached or enabled changed
@@ -442,6 +441,7 @@ export class Distances {
         this.projectedPoints = result.points2D;
         this.projectedPoints3D = result.points3D;
         this.cachedProjectedPoints = true;
+        if(enabledChanged) this.enabledPrevious = [...enabled];
     }
 
     /**

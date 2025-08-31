@@ -254,6 +254,8 @@ export class ComputeFingerprints extends NodeCore {
 		this.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
 		this.groupingMethod = params.groupingMethod as number ?? 0;
 		this.groupingThreshold = params.groupingThreshold as number ?? 0.1;
+		if(this.groupingThreshold > 1.8) this.groupingThreshold = 1.8;
+		if(this.groupingThreshold < 0.01) this.groupingThreshold = 0.01;
 		this.addedMargin = params.addedMargin as number ?? 0;
         this.removeDuplicates = params.removeDuplicates as boolean ?? true;
         this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
@@ -1381,9 +1383,6 @@ export class ComputeFingerprints extends NodeCore {
 					case "min":
 						this.getMinEnergyPerGroup(saveEnergyPerAtom, structures, sorter);
 						break;
-					case "hull":
-						this.getGeneralizedConvexHull(saveEnergyPerAtom, structures, sorter);
-						break;
 					default:
 						return {error: "Invalid kind"};
 				}
@@ -1465,48 +1464,6 @@ export class ComputeFingerprints extends NodeCore {
 			let energy = minEnergy[k];
 			if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
 			sorter.push({idx: k, energy});
-			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
-		}
-	}
-
-	/**
-	 * Compute the 4D convex hull and take the lower half points
-	 *
-	 * @param saveEnergyPerAtom - True if the energy saved should be per atom
-	 * @param structures - Resulting structures to be exported
-	 * @param sorter - Auxiliary list of energies for output sorting
-	 */
-	private getGeneralizedConvexHull(saveEnergyPerAtom: boolean,
-									 structures: Structure[],
-									 sorter: SorterArray): void {
-
-		structures.length = 0;
-		sorter.length = 0;
-
-		const countPoints = this.accumulator.selectedSize();
-		if(countPoints === 0 ||
-		   !this.accumulator.accumulatedHaveEnergies()) return;
-
-		const energies: number[] = [];
-		const enabled: boolean[] = [];
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
-
-			const energy = structure.energy!;
-			energies.push(energy);
-			enabled.push(structure.enabled);
-		}
-
-		const mappedPoints = this.dist.getProjectedPoints3D(enabled);
-		const indices = generalizedConvexHull4D(mappedPoints, enabled, energies);
-
-		let k = 0;
-		for(const idx of indices) {
-
-			const structure = this.accumulator.getStructureByStep(idx);
-			if(!structure) continue;
-			let energy = structure.energy!;
-			if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
-			sorter.push({idx: k++, energy});
 			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 		}
 	}
