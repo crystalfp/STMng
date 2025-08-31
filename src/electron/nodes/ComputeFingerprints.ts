@@ -436,11 +436,8 @@ export class ComputeFingerprints extends NodeCore {
 		// Filter by enabled status on structures
 		const enabled = this.accumulator.getEnabledStructures();
 
-		// Project points to 2D
-		if(opKind === "create") this.dist.projectPoints(enabled);
-
 		// Take the points projected to 2D
-		const points = this.dist.getProjectedPoints();
+		const points = this.dist.getProjectedPoints(enabled);
 
 		// Check if energy present
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
@@ -506,8 +503,11 @@ export class ComputeFingerprints extends NodeCore {
 			energies[i] = (energies[i] - minEnergy) / (maxEnergy - minEnergy);
 		}
 
+		// Filter by enabled status on structures
+		const enabled = this.accumulator.getEnabledStructures();
+
 		// Take the distance matrix and project it in 2D
-		const points = this.dist.getProjectedPoints();
+		const points = this.dist.getProjectedPoints(enabled);
 
 		// Filter points as enabled during grouping
 		const filteredPoints: number[][] = [];
@@ -829,11 +829,8 @@ export class ComputeFingerprints extends NodeCore {
 			energies.push(energy);
 			enabled.push(structure.enabled);
 		}
-
-		return generalizedConvexHull4D(this.dist.getDistanceMatrix(),
-									   countPoints,
-									   enabled,
-									   energies);
+		const points3D = this.dist.getProjectedPoints3D(enabled);
+		return generalizedConvexHull4D(points3D, enabled, energies);
 	}
 
 	// > Channel handlers
@@ -1084,12 +1081,6 @@ export class ComputeFingerprints extends NodeCore {
 													this.accumulator,
 													this.dist,
 													this.duplicatesThreshold);
-
-		// Filter by enabled status on structures
-		const enabled = this.accumulator.getEnabledStructures();
-
-		// Project points to 2D
-		this.dist.projectPoints(enabled);
 
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
@@ -1505,10 +1496,8 @@ export class ComputeFingerprints extends NodeCore {
 			enabled.push(structure.enabled);
 		}
 
-		const indices = generalizedConvexHull4D(this.dist.getDistanceMatrix(),
-												countPoints,
-												enabled,
-												energies);
+		const mappedPoints = this.dist.getProjectedPoints3D(enabled);
+		const indices = generalizedConvexHull4D(mappedPoints, enabled, energies);
 
 		let k = 0;
 		for(const idx of indices) {

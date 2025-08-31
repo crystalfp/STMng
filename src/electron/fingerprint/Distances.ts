@@ -239,6 +239,9 @@ export class Distances {
 
     private readonly distances = new DistanceMatrix();
     private projectedPoints: number[][] = [];
+    private projectedPoints3D: number[][] = [];
+    private cachedProjectedPoints = false;
+    private enabledPrevious: boolean[] = [];
 
     /**
      * Return the list of methods names
@@ -305,6 +308,7 @@ export class Distances {
         }
 
         this.distances.normalize();
+        this.cachedProjectedPoints = false;
 
         return {countDistances, endMessage};
     }
@@ -405,30 +409,62 @@ export class Distances {
     }
 
     /**
-     * Create points in 2D [0..1]x[0..1] that best preserve distances
+     * Check if projected points are cached and valid, otherwise compute them
      *
-     * @param enabled - If the corresponding point is enabled
+     * @param enabled - Enabled status for the selected points
      */
-    projectPoints(enabled: boolean[]): void {
+    private checkAndFillCache(enabled: boolean[]): void {
 
         // No distances, no projected points
-        if(this.distances.matrixSize() === 0) {
+        const countPoints = this.distances.matrixSize();
+        if(countPoints === 0) {
             this.projectedPoints = [];
+            this.projectedPoints3D = [];
+            this.enabledPrevious = [];
+            this.cachedProjectedPoints = false;
             return;
         }
 
+        // Check if enabled status changed
+        let enabledChanged = false;
+        if(this.cachedProjectedPoints) {
+
+            enabledChanged = this.enabledPrevious.length !== enabled.length ||
+                             this.enabledPrevious.some((value, i) => value !== enabled[i]);
+
+            if(enabledChanged) this.enabledPrevious = [...enabled];
+            else return;
+        }
+
+        // Recompute projections if not cached or enabled changed
         const distanceVector = this.distances.toVector();
-        const countPoints = this.distances.matrixSize();
-        this.projectedPoints = MDS(distanceVector, countPoints, enabled);
+        const result = MDS(distanceVector, countPoints, enabled);
+        this.projectedPoints = result.points2D;
+        this.projectedPoints3D = result.points3D;
+        this.cachedProjectedPoints = true;
     }
 
     /**
-     * Return the projected points
+     * Return the projected points in 2D
      *
      * @returns Points in 2D [0..1]x[0..1] that best preserve distances
      */
-    getProjectedPoints(): number[][] {
+    getProjectedPoints(enabled: boolean[]): number[][] {
+
+        this.checkAndFillCache(enabled);
 
         return this.projectedPoints;
+    }
+
+    /**
+     * Return the projected points in 3D
+     *
+     * @returns Points in 3D [0..1]x[0..1]x[0..1] that best preserve distances
+     */
+    getProjectedPoints3D(enabled: boolean[]): number[][] {
+
+        this.checkAndFillCache(enabled);
+
+        return this.projectedPoints3D;
     }
 }

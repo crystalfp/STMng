@@ -7,25 +7,19 @@
  * @since 2025-01-23
  */
 import {quickHull} from "@derschmale/tympanum";
-import type {DistanceMatrix} from "./Distances";
-import {MDS} from "../modules/NativeFunctions";
 
 /**
- * Compute the 4D convex hull and take the lower half points
+ * Compute the 4D convex hull and take the lower half points starting
+ * from 3D projected points
  *
- * @param distanceMatrix - Distances between points
- * @param countPoints - How many points present
+ * @param mappedPoints - Points projected to 3D
  * @param enabled - If the point is enabled or not
  * @param energies - Corresponding energies
  * @returns List of indices of the selected points
  */
-export const generalizedConvexHull4D = (distanceMatrix: DistanceMatrix,
-										countPoints: number,
+export const generalizedConvexHull4D = (mappedPoints: number[][],
 										enabled: boolean[],
 										energies: number[]): number[] => {
-
-	// Project points to 3D
-	const mappedPoints = MDS(distanceMatrix.toVector(), countPoints, enabled, 3);
 
 	// Prepare 4D points
 	const generalizedPoints: number[][] = [];

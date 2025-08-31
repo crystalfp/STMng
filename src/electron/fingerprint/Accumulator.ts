@@ -287,7 +287,6 @@ export class FingerprintsAccumulator {
 				this.accumulator[i].selectedIdx = j;
 				this.idx2id.set(j++, i);
 				this.selectedSteps.push(this.accumulator[i].step);
-
 			}
 			else this.accumulator[i].selected = false;
 		}
@@ -463,9 +462,6 @@ export class FingerprintsAccumulator {
 
 		// Return the cutoff distance (adding a 2% security margin)
 		return diameter * 1.02;
-
-		// The old value is (diameter / 2) * 1.02;
-		// return diameter * 0.51;
 	}
 
 	/**

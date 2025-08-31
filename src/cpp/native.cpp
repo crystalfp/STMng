@@ -223,15 +223,13 @@ Napi::Value convertSpaceGroupNumber(const Napi::CallbackInfo& info) {
 	return obj;
 }
 
-#include <iostream>
-
 Napi::Value MDS(const Napi::CallbackInfo& info) {
 
 	Napi::Env env = info.Env();
 
 	// Check arguments
-	if(info.Length() != 4) {
-    	Napi::TypeError::New(env, "Expecting exactly four arguments").ThrowAsJavaScriptException();
+	if(info.Length() != 3) {
+    	Napi::TypeError::New(env, "Expecting exactly three arguments").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -250,12 +248,6 @@ Napi::Value MDS(const Napi::CallbackInfo& info) {
 	// Argument 2: enabled
 	if(!info[2].IsTypedArray()) {
     	Napi::TypeError::New(env, "Third argument should be a typed array").ThrowAsJavaScriptException();
-		return info.Env().Undefined();
-	}
-
-	// Argument 3: dimensions
-	if(!info[3].IsNumber()) {
-    	Napi::TypeError::New(env, "Fourth argument should be a number").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -283,18 +275,27 @@ Napi::Value MDS(const Napi::CallbackInfo& info) {
     size_t enableLength = enableArray.ElementLength();
 	std::vector<uint8_t> enable(enableArray.Data(), enableArray.Data() + enableLength);
 
-	// Argument 3: integer
-	int dimensions = static_cast<int>(info[3].As<Napi::Number>());
+	// Execute the native function
+	std::vector<double_t> points2D;
+	std::vector<double_t> points3D;
+	doMDS(distances, pointsCount, enable, points2D, points3D);
 
-	std::vector<double_t> points;
-	doMDS(distances, pointsCount, enable, dimensions, points);
+	size_t nPointsPerDimension = points2D.size();
 
-	int nPointsPerDimension = points.size();
+	Napi::Float64Array points2DOut = Napi::Float64Array::New(env, nPointsPerDimension);
+	for(size_t i=0; i < nPointsPerDimension; ++i) points2DOut[i] = points2D[i];
 
-	Napi::Float64Array pointsOut = Napi::Float64Array::New(env, nPointsPerDimension);
-	for(size_t i=0; i < nPointsPerDimension; ++i) pointsOut[i] = points[i];
+	nPointsPerDimension = points3D.size();
 
-	return pointsOut;
+	Napi::Float64Array points3DOut = Napi::Float64Array::New(env, nPointsPerDimension);
+	for(size_t i=0; i < nPointsPerDimension; ++i) points3DOut[i] = points3D[i];
+
+	// Return the data
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("points2D", points2DOut);
+	obj.Set("points3D", points3DOut);
+
+	return obj;
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {

@@ -12,8 +12,8 @@ void doMDS(
 	std::vector<double_t> distances,	// Distances vector
 	int count,							// Side of the distance matrix
 	std::vector<uint8_t> enable,		// Mark enabled points
-	int dimensions,						// Dimension of the output space
-	std::vector<double_t>& points		// Projected points
+	std::vector<double_t>& points2D,	// Projected points in 2D
+	std::vector<double_t>& points3D		// Projected points in 3D
 )
 {
 	// 1. Count the number of enabled points and map indices to the enabled ones
@@ -71,29 +71,66 @@ void doMDS(
 	Eigen::MatrixXf eigenvectors = es.eigenvectors().real();
 
     // 6. Compute the final coordinates and range for normalization
-	points.resize(enabledSide*dimensions);
-	std::vector<double_t> min(dimensions, DBL_MAX);
-	std::vector<double_t> max(dimensions, -DBL_MAX);
+	points2D.resize(enabledSide*2);
+	points3D.resize(enabledSide*3);
+	std::vector<double_t> min2D(2,  DBL_MAX);
+	std::vector<double_t> max2D(2, -DBL_MAX);
+	std::vector<double_t> min3D(3,  DBL_MAX);
+	std::vector<double_t> max3D(3, -DBL_MAX);
 	size_t last = enabledSide-1;
     for(size_t i = 0; i < enabledSide; ++i) {
-        for(size_t j = 0; j < dimensions; ++j) {
 
-			size_t idx = last-j;
-            double eigenvalue = eigenvalues(idx);
-			double value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
-			if(value < min[j]) min[j] = value;
-			if(value > max[j]) max[j] = value;
-			points[i*dimensions+j] = value;
-        }
+		// Unroll the loop on dimensions
+		size_t i2 = i*2;
+		size_t i3 = i*3;
+		size_t idx = last;
+		double eigenvalue = eigenvalues(idx);
+		double value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
+		if(value < min2D[0]) min2D[0] = value;
+		if(value > max2D[0]) max2D[0] = value;
+		if(value < min3D[0]) min3D[0] = value;
+		if(value > max3D[0]) max3D[0] = value;
+		points2D[i2] = value;
+		points3D[i3] = value;
+
+		idx = last-1;
+		eigenvalue = eigenvalues(idx);
+		value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
+		if(value < min2D[1]) min2D[1] = value;
+		if(value > max2D[1]) max2D[1] = value;
+		if(value < min3D[1]) min3D[1] = value;
+		if(value > max3D[1]) max3D[1] = value;
+		points2D[i2+1] = value;
+		points3D[i3+1] = value;
+
+		idx = last-2;
+		eigenvalue = eigenvalues(idx);
+		value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
+		if(value < min3D[2]) min3D[2] = value;
+		if(value > max3D[2]) max3D[2] = value;
+		points3D[i3+2] = value;
     }
 
 	// 7. Normalize coordinates values
-	std::vector<double_t> den(dimensions);
-    for(size_t j = 0; j < dimensions; ++j) den[j] = max[j]-min[j];
-    for(size_t i = 0; i < enabledSide; ++i) {
-        for(size_t j = 0; j < dimensions; ++j) {
+	// Unroll loops on dimensions
+	std::vector<double_t> den2D(2);
+	den2D[0] = max2D[0] - min2D[0];
+	den2D[1] = max2D[1] - min2D[1];
 
-			points[i*dimensions+j] = (points[i*dimensions+j] - min[j])/den[j];
-		}
+	std::vector<double_t> den3D(3);
+	den3D[0] = max3D[0] - min3D[0];
+	den3D[1] = max3D[1] - min3D[1];
+	den3D[2] = max3D[2] - min3D[2];
+
+    for(size_t i = 0; i < enabledSide; ++i) {
+
+		size_t i2 = i*2;
+		points2D[i2]   = (points2D[i2]   - min2D[0]) / den2D[0];
+		points2D[i2+1] = (points2D[i2+1] - min2D[1]) / den2D[1];
+
+		size_t i3 = i*3;
+		points3D[i3]   = (points3D[i3]   - min3D[0]) / den3D[0];
+		points3D[i3+1] = (points3D[i3+1] - min3D[1]) / den3D[1];
+		points3D[i3+2] = (points3D[i3+2] - min3D[2]) / den3D[2];
 	}
 }

@@ -6,6 +6,9 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-24
  */
+import {createRequire} from "node:module";
+const rq = createRequire(import.meta.url);
+const addon = rq("../build/Release/native") as NativeModule;
 
 /**
  * Type of the native code output
@@ -44,6 +47,27 @@ interface ConvertSpaceGroupNumberOutput {
 }
 
 /**
+ * Result of native module MDS that project points in 2D and 3D
+ * @notExported
+ */
+interface MDS2D3DOutput {
+	/** Points projected in 2D: [x0, y0, x1, y1, ...] */
+	points2D: number[];
+	/** Points projected in 3D: [x0, y0, z0, x1, y1, z1, ...] */
+	points3D: number[];
+}
+
+/**
+ * Result of MDS that project points in 2D and 3D
+ */
+interface MDSOutput {
+	/** Points projected in 2D: [[x0, y0], [x1, y1], ...] */
+	points2D: number[][];
+	/** Points projected in 3D: [[x0, y0, z0], [x1, y1, z1], ...] */
+	points3D: number[][];
+}
+
+/**
  * Types of the native module exported functions
  * @notExported
  */
@@ -56,14 +80,8 @@ interface NativeModule {
 
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
 
-	MDS: (distancesVector: Float64Array, pointsCount: number,
-		  enabled: Uint8Array, dimensions: number) => number[];
+	MDS: (distancesVector: Float64Array, pointsCount: number, enabled: Uint8Array) => MDS2D3DOutput;
 }
-
-// oxlint-disable-next-line first
-import {createRequire} from "node:module";
-const rq = createRequire(import.meta.url);
-const addon = rq("../build/Release/native") as NativeModule;
 
 /**
  * Find and apply symmetries
@@ -118,38 +136,58 @@ export const convertSpaceGroupNumber = (spaceGroupNumber: number,
 /**
  * Compute Multidimensional Scaling (MDS)
  *
- * @param distancesVector - Distances vector (upper triangular of NxN symmetrical distance matrix)
+ * @param distancesVector - Distances vector (upper triangular of NxN symmetrical distances matrix)
  * @param pointsCount - Number of points (N), that is, the side of the distance matrix
- * @param pointsEnabled - Mark which of the `pointsCount` points is enabled. (default: all are enabled)
- * @param dimensions - Dimension of the output space (default: 2)
- * @returns Array of points coordinates in the output space (of dimension `dimensions`)
+ * @param pointsEnabled - Mark which of the `pointsCount` points is enabled
+ * @returns Arrays of points coordinates in the 2D and 3D output space
  */
 export const MDS = (distancesVector: number[],
 					pointsCount: number,
-					pointsEnabled: boolean[] = [],
-					dimensions = 2): number[][] => {
+					pointsEnabled: boolean[]): MDSOutput => {
 
-	const enabled = pointsEnabled.length === pointsCount ?
-									new Uint8Array(pointsEnabled.map((b) => (b ? 1 : 0))) :
-									new Uint8Array(Array<number>(pointsCount).fill(1));
-
+	const enabled = new Uint8Array(pointsEnabled.map((b) => (b ? 1 : 0)));
 	const distances = new Float64Array(distancesVector);
 
-	// The routine computes the multidimensional scaling of only
-	// the enabled points
-	// The points coordinates are then normalized between 0 and 1
-	const result = addon.MDS(distances, pointsCount, enabled, dimensions);
+	// The routine computes the multidimensional scaling
+	// of only the enabled points
+	// The points coordinates are also normalized between 0 and 1
+	const {points2D, points3D} = addon.MDS(distances, pointsCount, enabled);
 
-	// Include in output also the non-enabled points
-	const mappedPoints = Array<number[]>(pointsCount);
+	// Include in 2D output also the non-enabled points
+	const mappedPoints2D = Array<number[]>(pointsCount);
 	for(let i=0, j=0; i < pointsCount; ++i) {
-		mappedPoints[i] = Array<number>(dimensions);
+		mappedPoints2D[i] = Array<number>(2);
 		if(pointsEnabled[i]) {
-			for(let k=0; k < dimensions; ++k) mappedPoints[i][k] = result[j*dimensions+k];
-			++j;
+
+			mappedPoints2D[i][0] = points2D[j];
+			mappedPoints2D[i][1] = points2D[j+1];
+
+			j += 2;
 		}
-		else for(let k=0; k < dimensions; ++k) mappedPoints[i][k] = 0;
+		else {
+			mappedPoints2D[i][0] = 0;
+			mappedPoints2D[i][1] = 0;
+		}
 	}
 
-	return mappedPoints;
+	// Include in 3D output also the non-enabled points
+	const mappedPoints3D = Array<number[]>(pointsCount);
+	for(let i=0, j=0; i < pointsCount; ++i) {
+		mappedPoints3D[i] = Array<number>(3);
+		if(pointsEnabled[i]) {
+
+			mappedPoints3D[i][0] = points3D[j];
+			mappedPoints3D[i][1] = points3D[j+1];
+			mappedPoints3D[i][2] = points3D[j+2];
+
+			j += 3;
+		}
+		else {
+			mappedPoints3D[i][0] = 0;
+			mappedPoints3D[i][1] = 0;
+			mappedPoints3D[i][2] = 0;
+		}
+	}
+
+	return {points2D: mappedPoints2D, points3D: mappedPoints3D};
 };
