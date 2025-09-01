@@ -47,7 +47,7 @@ interface CreateUpdateScatterplotOptions {
 }
 
 /** The auxiliary file to sort structures on energy */
-type SorterArray = {
+export type SorterArray = {
 	/** Index of the structure in the structures array */
 	idx: number;
 	/** Corresponding energy */
@@ -114,7 +114,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "duplicates",	type: "invoke",	callback: this.channelDuplicates.bind(this)},
 		{name: "group",			type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "group-params",	type: "send",	callback: this.channelGroupParams.bind(this)},
-		{name: "scatter",		type: "send",	callback: this.channelScatter.bind(this)},
+		{name: "scatter",		type: "invoke",	callback: this.channelScatter.bind(this)},
 		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
 		{name: "export",		type: "send",	callback: this.channelExport.bind(this)},
@@ -1154,12 +1154,12 @@ export class ComputeFingerprints extends NodeCore {
 	/**
 	 * Channel handler for opening scatterplot on the results
 	 */
-	private channelScatter(): void {
+	private channelScatter(): CtrlParams {
 
 		this.createUpdateScatterplot("create", {plotType: this.plotType});
 
 		// If not already opened, open the channels
-		if(ComputeFingerprints.channelOpened) return;
+		if(ComputeFingerprints.channelOpened) return {status: "opened"};
 		ComputeFingerprints.channelOpened = true;
 
 		const writer = new WriterPOSCAR();
@@ -1167,22 +1167,20 @@ export class ComputeFingerprints extends NodeCore {
 		ipcMain.handle("SYSTEM:selected-points",
 					   (_event, params: CtrlParams): CtrlParams => {
 
-			const points = params.points as string;
-			if(!points)	return {error: "No points selected"};
-			const indices = params.points as number[];
-			if(indices.length === 0) return {error: "No points selected"};
+			const steps = params.points as number[];
+			if(steps.length === 0) return {error: "No points selected"};
 			const filename = params.filename as string;
 			if(!filename) return {error: "No filename provided"};
 			const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
 
 			const sorter: SorterArray = [];
-			let structures: Structure[] = [];
+			const structures: Structure[] = [];
 			let k = 0;
 			const hasEnergies = this.accumulator.accumulatedHaveEnergies();
 
-			for(const ii of indices) {
-				const structure = this.accumulator.getStructureByStep(ii);
-				if(!structure) return {error: `Invalid step: ${ii}`};
+			for(const step of steps) {
+				const structure = this.accumulator.getStructureByStep(step);
+				if(!structure) return {error: `Invalid step: ${step}`};
 				structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 				if(hasEnergies) {
 
@@ -1191,40 +1189,7 @@ export class ComputeFingerprints extends NodeCore {
 					sorter.push({idx: k++, energy});
 				}
 			}
-
-			if(structures.length === 0) return {error: "No structures to save"};
-
-			const sortedStructures: Structure[] = [];
-			const energies: string[] = [];
-			if(sorter.length > 0) {
-				sorter.sort((a, b) => a.energy - b.energy);
-
-				for(const entry of sorter) {
-					sortedStructures.push(structures[entry.idx]);
-					energies.push(entry.energy.toFixed(4));
-				}
-				structures = sortedStructures;
-			}
-			const sts = writer.writeStructure(filename, structures);
-
-			if(sts.error) return {error: sts.error};
-			const returnStatus = {structurePath: filename, energyPath: ""};
-
-			if(energies.length > 0) {
-				const pos = filename.lastIndexOf(".");
-				const energyFilename = pos > 0 ?
-											`${filename.slice(0, pos)}.energy` :
-											`${filename}.energy`;
-				try {
-					writeFileSync(energyFilename, energies.join("\n"), "utf8");
-				}
-				catch(error: unknown) {
-					return {error: `Error writing energy file: ${(error as Error).message}`};
-				}
-				returnStatus.energyPath = energyFilename;
-			}
-
-			return returnStatus;
+			return this.exportStructuresAndEnergy(filename, writer, structures, sorter);
 		});
 
 		ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {
@@ -1295,6 +1260,8 @@ export class ComputeFingerprints extends NodeCore {
 
 			return out;
 		});
+
+		return {status: "done"};
 	}
 
 	/**
@@ -1486,7 +1453,8 @@ export class ComputeFingerprints extends NodeCore {
 
 		const sortedStructures: Structure[] = [];
 		let energies = "";
-		if(sorter.length > 0) {
+		const hasEnergies = sorter.length > 0;
+		if(hasEnergies) {
 
 			sorter.sort((a, b) => a.energy - b.energy);
 
@@ -1494,14 +1462,15 @@ export class ComputeFingerprints extends NodeCore {
 				sortedStructures.push(structures[entry.idx]);
 				energies += `${entry.energy.toFixed(4)}\n`;
 			}
-			structures = sortedStructures;
 		}
-		const sts = writer.writeStructure(filename, structures);
+		const sts = writer.writeStructure(filename,
+										  hasEnergies ? sortedStructures :
+										  				structures);
 
 		if(sts.error) return {error: `Error writing structures file: ${sts.error as string}`};
 		const returnStatus = {structurePath: filename, energyPath: ""};
 
-		if(energies.length > 0) {
+		if(hasEnergies) {
 
 			const pos = filename.lastIndexOf(".");
 			const energyFilename = pos > 0 ?

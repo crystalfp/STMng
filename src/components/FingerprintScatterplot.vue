@@ -639,7 +639,7 @@ const selectedSaveFile = (filename: string): void => {
 
         // selectedPoints contains the index on the on-screen glyph,
         // so it should be converted into the step value
-        const selectedSteps = [];
+        const selectedSteps: number[] = [];
         for(const idx of selectedPoints) {
             selectedSteps.push(glyphs[idx].id);
         }

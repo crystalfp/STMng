@@ -117,6 +117,9 @@ const controlStore = useControlStore();
 controlStore.hasFingerprints = true;
 const {fingerprintsAccumulate} = storeToRefs(controlStore);
 
+// Display wait message when scatterplot requested
+const working = ref(false);
+
 // > Initialize the ui
 askNode(id, "init")
     .then((params) => {
@@ -424,7 +427,13 @@ const exportResults = (): void => {
  * Open a secondary window showing the resulting scatterplot
  */
 const showScatterplot = (): void => {
-    sendToNode(id, "scatter");
+
+    askNode(id, "scatter")
+        .catch((error: Error) => showNodeAlert(`Error opening scatterplot: ${error.message}`,
+                                               "fingerprints"))
+        .finally(() => {
+            working.value = false;
+        });
 };
 
 /**
@@ -512,7 +521,7 @@ const showEnergyLandscape = (): void => {
   <v-row class="ml-0 mt-1 mb-2">
   <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
     {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
-  <v-label v-if="fingerprintingBusy" class="mt-4 result-label">Working&hellip;</v-label>
+  <v-label v-if="fingerprintingBusy" class="mt-4 result-label cursor-wait">Working&hellip;</v-label>
   <v-label v-if="intrinsicDimension > 0 && !fingerprintingBusy"
            class="mt-n2 result-label">
             {{ `Intrinsic dimension: ${intrinsicDimension.toFixed(2)} (theory: ${theoreticalDimension.toFixed(2)})` }}</v-label>
@@ -583,7 +592,7 @@ const showEnergyLandscape = (): void => {
     <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">
       {{ `Found ${countGroups} groups` }}
     </v-label>
-    <v-label v-if="groupingBusy" class="mt-4 mb-2 result-label">Working&hellip;</v-label>
+    <v-label v-if="groupingBusy" class="mt-4 mb-2 result-label cursor-wait">Working&hellip;</v-label>
   </v-container>
 
   <v-label class="separator-title">Show results</v-label>
@@ -592,10 +601,11 @@ const showEnergyLandscape = (): void => {
          :disabled="countDistances === 0" @click="exportResults">
     Export results
   </v-btn>
-  <v-btn block class="mb-2"
-         :disabled="countDistances === 0" @click="showScatterplot">
+  <v-btn v-if="!working" block class="mb-2"
+         :disabled="countDistances === 0" @click="working=true;showScatterplot()">
     Show scatterplot
   </v-btn>
+  <v-label v-else class="result-label mb-3 mt-1 cursor-wait">Show scatterplot working&hellip;</v-label>
   <v-btn block class="mb-2"
          :disabled="!resultDimensionality" @click="showCharts">
     Show charts
