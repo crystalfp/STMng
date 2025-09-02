@@ -745,7 +745,7 @@ const confirmNewProject = (): void => {
             <tr v-for="ni of nodeInfo" :key="ni.id">
               <td class="info-line">{{ ni.label }}</td>
               <td v-if="ni.id === 'lb'">
-                <v-text-field v-model="ni.value" :hide-details="true" density="compact"
+                <v-text-field v-model.trim="ni.value" :hide-details="true" density="compact"
                               @update:modelValue="updateLabel"/></td>
               <td v-else><v-label>{{ ni.value }}</v-label></td>
             </tr>

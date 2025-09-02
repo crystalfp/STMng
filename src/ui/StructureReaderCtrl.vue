@@ -446,7 +446,7 @@ const auxSetup = computed(() => {
             :items="fileFormats" class="mt-4 mb-4"
             @update:model-value="setFormat" />
 
-  <v-text-field v-if="needsAtomTypes(format)" v-model="atomsTypes"
+  <v-text-field v-if="needsAtomTypes(format)" v-model.trim="atomsTypes"
                 label="Atoms types"
                 placeholder="Space separated list" class="mb-6"
                 hide-details="auto"

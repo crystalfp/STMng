@@ -46,7 +46,10 @@ interface CreateUpdateScatterplotOptions {
 	selectedPoints?: number[];
 }
 
-/** The auxiliary array item to sort structures on energy */
+/**
+ * The auxiliary array item to sort structures on energy
+ * @notExported
+ */
 interface SorterItem {
 
 	/** Index of the structure in the structures array */

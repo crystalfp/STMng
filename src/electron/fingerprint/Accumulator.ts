@@ -540,7 +540,7 @@ export class FingerprintsAccumulator {
 	 */
 	getEnabledStructures(): boolean[] {
 
-		const enabled = [];
+		const enabled: boolean[] = [];
 		for(const entry of this.accumulator) {
 			if(entry.selected) enabled.push(entry.enabled);
 		}

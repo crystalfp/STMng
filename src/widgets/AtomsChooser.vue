@@ -70,7 +70,7 @@ const notHidden = (name: string): boolean => {
     <v-btn v-if="notHidden('all')" value="all">All</v-btn>
   </v-btn-toggle>
   <template #extra>
-    <v-text-field v-model="atomsSelectorInternal" :label="placeholder"
+    <v-text-field v-model.trim="atomsSelectorInternal" :label="placeholder"
                   :disabled="labelKind === 'all' || disabled" class="mt-n2"
                   placeholder="Space separated list"
                   hide-details="auto" clearable spellcheck="false"
