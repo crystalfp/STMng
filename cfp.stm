@@ -52,14 +52,14 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        4.052425,
-        2.586350000000001,
-        18.42395
+        3.457289,
+        1.7327160000000026,
+        52.945932500000005
       ],
       "lookAt": [
-        4.052425,
-        2.58635,
-        2.21425
+        3.457289,
+        1.732716,
+        10.5551145
       ],
       "snapshotFormat": "png",
       "snapshotTransparent": false,
@@ -118,7 +118,7 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "POSCAR",
+      "format": "POSCAR + ENERGY",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,
@@ -127,9 +127,9 @@
       "speed": 0
     },
     "cfp": {
-      "enableEnergyFiltering": false,
-      "energyThreshold": 0,
-      "thresholdFromMinimum": false,
+      "enableEnergyFiltering": true,
+      "energyThreshold": 0.5,
+      "thresholdFromMinimum": true,
       "areNanoclusters": false,
       "forceCutoff": true,
       "manualCutoffDistance": 10,
@@ -139,11 +139,11 @@
       "distanceMethod": 0,
       "fixTriangleInequality": false,
       "groupingMethod": 0,
-      "groupingThreshold": 0.5,
+      "groupingThreshold": 0.1,
       "addedMargin": 0,
       "removeDuplicates": true,
       "duplicatesThreshold": 0.015,
-      "processParallelism": true
+      "processParallelism": false
     },
     "unit": {
       "showUnitCell": true,

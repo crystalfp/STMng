@@ -605,7 +605,7 @@ const showEnergyLandscape = (): void => {
          :disabled="countDistances === 0" @click="working=true;showScatterplot()">
     Show scatterplot
   </v-btn>
-  <v-label v-else class="result-label mb-3 mt-1 cursor-wait">Show scatterplot working&hellip;</v-label>
+  <v-label v-else class="result-label mb-3 mt-1 cursor-wait">Show scatterplot is working&hellip;</v-label>
   <v-btn block class="mb-2"
          :disabled="!resultDimensionality" @click="showCharts">
     Show charts

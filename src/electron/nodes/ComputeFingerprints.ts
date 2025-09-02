@@ -46,13 +46,15 @@ interface CreateUpdateScatterplotOptions {
 	selectedPoints?: number[];
 }
 
-/** The auxiliary file to sort structures on energy */
-export type SorterArray = {
+/** The auxiliary array item to sort structures on energy */
+interface SorterItem {
+
 	/** Index of the structure in the structures array */
 	idx: number;
+
 	/** Corresponding energy */
 	energy: number;
-}[];
+}
 
 export class ComputeFingerprints extends NodeCore {
 
@@ -749,16 +751,16 @@ export class ComputeFingerprints extends NodeCore {
 		const {atomsZ, atomsPosition, basis, step} = structure;
 		const natoms = atomsZ.length;
 		const atoms: Atom[] = [];
-		for(let i=0; i < natoms; ++i) {
+		for(let i=0, i3=0; i < natoms; ++i, i3+=3) {
 
 			atoms.push({
 				atomZ: atomsZ[i],
 				label: getAtomicSymbol(atomsZ[i]),
 				chain: "",
 				position: [
-					atomsPosition[3*i],
-					atomsPosition[3*i+1],
-					atomsPosition[3*i+2],
+					atomsPosition[i3],
+					atomsPosition[i3+1],
+					atomsPosition[i3+2],
 				]
 			});
 		}
@@ -1173,7 +1175,7 @@ export class ComputeFingerprints extends NodeCore {
 			if(!filename) return {error: "No filename provided"};
 			const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
 
-			const sorter: SorterArray = [];
+			const sorter: SorterItem[] = [];
 			const structures: Structure[] = [];
 			let k = 0;
 			const hasEnergies = this.accumulator.accumulatedHaveEnergies();
@@ -1341,7 +1343,7 @@ export class ComputeFingerprints extends NodeCore {
 				const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
 
 				const structures: Structure[] = [];
-				const sorter: SorterArray = [];
+				const sorter: SorterItem[] = [];
 
 				switch(kind) {
 					case "all":
@@ -1368,7 +1370,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private getAllEnabledStructures(saveEnergyPerAtom: boolean,
 									structures: Structure[],
-									sorter: SorterArray): void {
+									sorter: SorterItem[]): void {
 
 		structures.length = 0;
 		sorter.length = 0;
@@ -1395,7 +1397,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private getMinEnergyPerGroup(saveEnergyPerAtom: boolean,
 								 structures: Structure[],
-								 sorter: SorterArray): void {
+								 sorter: SorterItem[]): void {
 
 		structures.length = 0;
 		sorter.length = 0;
@@ -1406,7 +1408,7 @@ export class ComputeFingerprints extends NodeCore {
 		const groups = this.grouping.getGroups();
 
 		const minEnergy = Array<number>(ngroups).fill(Number.POSITIVE_INFINITY);
-		const minEnergyIdx = Array<number>(ngroups).fill(0);
+		const minEnergyStep = Array<number>(ngroups).fill(0);
 
 		let idx = 0;
 		for(const structure of this.accumulator.iterateSelectedStructures()) {
@@ -1417,7 +1419,7 @@ export class ComputeFingerprints extends NodeCore {
 				const group = groups[idx];
 				if(energy < minEnergy[group]) {
 					minEnergy[group] = energy;
-					minEnergyIdx[group] = idx;
+					minEnergyStep[group] = structure.step;
 				}
 			}
 			++idx;
@@ -1425,8 +1427,8 @@ export class ComputeFingerprints extends NodeCore {
 
 		for(let k=0; k < ngroups; ++k) {
 
-			const idx = minEnergyIdx[k];
-			const structure = this.accumulator.getStructureByStep(idx);
+			const step = minEnergyStep[k];
+			const structure = this.accumulator.getStructureByStep(step);
 			if(!structure) continue;
 			let energy = minEnergy[k];
 			if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
@@ -1447,7 +1449,7 @@ export class ComputeFingerprints extends NodeCore {
 	private exportStructuresAndEnergy(filename: string,
 									  writer: WriterPOSCAR,
 									  structures: Structure[],
-									  sorter: SorterArray): CtrlParams {
+									  sorter: SorterItem[]): CtrlParams {
 
 		if(structures.length === 0) return {error: "No structures to save"};
 
