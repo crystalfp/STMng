@@ -1172,7 +1172,7 @@ export class ComputeFingerprints extends NodeCore {
 		ipcMain.handle("SYSTEM:selected-points",
 					   (_event, params: CtrlParams): CtrlParams => {
 
-			const steps = params.points as number[];
+			const steps = params.selectedSteps as number[];
 			if(steps.length === 0) return {error: "No points selected"};
 			const filename = params.filename as string;
 			if(!filename) return {error: "No filename provided"};

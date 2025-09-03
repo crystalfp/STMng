@@ -637,7 +637,7 @@ const selectedSaveFile = (filename: string): void => {
 
     if(filename) {
 
-        // selectedPoints contains the index on the on-screen glyph,
+        // selectedPoints contains the index of the on-screen glyph,
         // so it should be converted into the step value
         const selectedSteps: number[] = [];
         for(const idx of selectedPoints) {
@@ -646,7 +646,7 @@ const selectedSaveFile = (filename: string): void => {
 
         askNode("SYSTEM", "selected-points", {
             filename,
-            points: selectedSteps,
+            selectedSteps,
             saveEnergyPerAtom: saveEnergyPerAtom.value
         })
         .then((status: CtrlParams) => {

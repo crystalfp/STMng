@@ -15,7 +15,7 @@ import {quickHull} from "@derschmale/tympanum";
  * @param mappedPoints - Points projected to 3D
  * @param enabled - If the point is enabled or not
  * @param energies - Corresponding energies
- * @returns List of indices of the selected points
+ * @returns List of indices of the selected and enabled points
  */
 export const generalizedConvexHull4D = (mappedPoints: number[][],
 										enabled: boolean[],
@@ -40,6 +40,7 @@ export const generalizedConvexHull4D = (mappedPoints: number[][],
 	const hull = quickHull(generalizedPoints);
 
 	// Extract the lower side vertices
+	// The plane is encoded as (normal[4], offset)
 	const vertices = new Set<number>();
 	for(const facet of hull) {
 		if(facet.plane[3] <= 0) {
