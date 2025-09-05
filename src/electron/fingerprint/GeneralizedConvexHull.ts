@@ -10,7 +10,7 @@ import {quickHull} from "@derschmale/tympanum";
 
 /**
  * Compute the 4D convex hull and take the lower half points starting
- * from 3D projected points
+ * from 3D projected points plus energies
  *
  * @param mappedPoints - Points projected to 3D
  * @param enabled - If the point is enabled or not

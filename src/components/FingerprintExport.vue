@@ -9,7 +9,7 @@
 import {ref} from "vue";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {closeWindow, receiveInWindow, askNode, /* sendToNode */} from "@/services/RoutesClient";
+import {closeWindow, receiveInWindow, askNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
@@ -21,8 +21,7 @@ const saveEnergyPerAtom = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
 
-const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
-                                     {name: "All",    extensions: ["*"]}]);
+const filterPOSCAR = '[{"name":"POSCAR","extensions":["poscar"]},{"name":"All","extensions":["*"]}]';
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys("/fp-export");

@@ -662,8 +662,7 @@ const selectedSaveFile = (filename: string): void => {
     showSave.value = false;
 };
 
-const filterPOSCAR = JSON.stringify([{name: "POSCAR", extensions: ["poscar"]},
-                                     {name: "All",    extensions: ["*"]}]);
+const filterPOSCAR = '[{"name":"POSCAR","extensions":["poscar"]},{"name":"All","extensions":["*"]}]';
 
 /**
  * Compare structures selected

@@ -1,24 +1,95 @@
 from pymatgen.core.structure import Structure
-# from pymatgen.analysis.prototypes import StructureAnalyzer
+from pymatgen.analysis.prototypes import AflowPrototypeMatcher
+from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
-# Load structure from file (e.g., POSCAR or CIF)
-structure = Structure.from_file("POSCAR")
+class StructureAnalyzer:
+    def __init__(self, structure, symprec=1e-3):
+        """
+        Initialize analyzer.
 
-# Initialize the analyzer
-analyzer = StructureAnalyzer(structure)
+        Args:
+            structure (Structure): pymatgen Structure object.
+            symprec (float): Symmetry tolerance.
+        """
+        self.structure = structure
+        self.matcher = AflowPrototypeMatcher()
+        self.symprec = symprec
 
-# 1. Match the structure to a prototype
-match_info = analyzer.match_to_prototype()
-print("Matched Prototype:", match_info or "No match found")
+    def match_to_prototype(self):
+        """
+        Match the structure to AFLOW prototypes.
+        Returns:
+            list of dicts with prototype info, or empty list.
+        """
+        return self.matcher.get_prototypes(self.structure)
 
-# 2. Get symmetry information
-sym_info = analyzer.symmetry_info()
-print("Symmetry Information:", sym_info)
+    def symmetry_info(self):
+        """
+        Get symmetry information using SpacegroupAnalyzer.
+        Returns:
+            dict with space group info.
+        """
+        sga = SpacegroupAnalyzer(self.structure, symprec=self.symprec)
+        return {
+            "spacegroup_symbol": sga.get_space_group_symbol(),
+            "spacegroup_number": sga.get_space_group_number(),
+            "hall_symbol": sga.get_hall(),
+            "crystal_system": sga.get_crystal_system(),
+            "point_group": sga.get_point_group_symbol()
+        }
 
-# 3. Get degrees of freedom
-dof_info = analyzer.degrees_of_freedom()
-print("Degrees of Freedom:", dof_info)
+    def degrees_of_freedom(self, mode="cartesian"):
+        """
+        Estimate degrees of freedom.
+        Args:
+            mode (str): 'cartesian' = 3N atoms, 'lattice' = 6 independent params,
+                        'total' = lattice + cartesian
+        Returns:
+            dict with DoF.
+        """
+        n_atoms = len(self.structure)
+        dof = {}
+        if mode in ("cartesian", "total"):
+            dof["cartesian_dof"] = 3 * n_atoms
+        if mode in ("lattice", "total"):
+            dof["lattice_dof"] = 6  # a,b,c, α,β,γ (assuming no symmetry constraints)
+        return dof
 
-# 4. Generate structures from a known prototype
-generated_structures = analyzer.generate_from_prototype("AB_cF8_216_a_b", ["Ga", "As"])
-print(f"Generated {len(generated_structures)} structures from prototype 'AB_cF8_216_a_b'")
+    def generate_prototype(self, prototype_name, species, **lattice_kwargs):
+        """
+        Generate a structure from a named prototype.
+        Args:
+            prototype_name (str): e.g. 'zincblende', 'rocksalt'.
+            species (list of str): species corresponding to distinct sites.
+            lattice_kwargs: lattice parameters (e.g. a=5.65).
+        Returns:
+            Structure
+        """
+        return Structure.from_prototype(prototype_name, species, **lattice_kwargs)
+
+if __name__ == "__main__":
+    # Load a structure from file (e.g., POSCAR, CIF)
+    structure = Structure.from_file("GaAs.vasp")
+    # structure = Structure.from_file("test-data/POSCAR/after.poscar")
+
+    analyzer = StructureAnalyzer(structure)
+
+    match_info = analyzer.match_to_prototype()
+    print("Matched Prototype(s):", match_info or "No match found")
+
+    sym_info = analyzer.symmetry_info()
+    print("Symmetry Information:", sym_info)
+
+    dof_info = analyzer.degrees_of_freedom(mode="total")
+    print("Degrees of Freedom:", dof_info)
+
+    # Example: Generate zincblende GaAs (cubic, a = 5.65 Å)
+    generated = analyzer.generate_prototype("zincblende", ["Ga", "As"], a=5.65)
+    print("\nGenerated prototype structure:")
+    print(generated)
+
+    # --- SAVE structure ---
+    generated.to(fmt="poscar", filename="POSCAR_generated")
+    generated.to(fmt="cif", filename="GaAs_generated.cif")
+    print("\nSaved generated structure to 'POSCAR_generated' and 'GaAs_generated.cif'")
+

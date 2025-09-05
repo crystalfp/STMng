@@ -130,33 +130,29 @@ const filterFromFormat = (fileFormat: string): string => {
     let filter: FileFilter[];
 	switch(fileFormat) {
         case "CHGCAR":
-            filter = [{name: "CHGCAR", extensions: ["chgcar"]},
-                      {name: "All",    extensions: ["*"]}];
+            filter = [{name: "CHGCAR", extensions: ["chgcar"]}];
             break;
         case "CIF":
-            filter = [{name: "CIF",	extensions: ["cif"]},
-                      {name: "All",	extensions: ["*"]}];
+            filter = [{name: "CIF",	extensions: ["cif"]}];
             break;
         case "POSCAR":
-            filter = [{name: "POSCAR", extensions: ["poscar"]},
-                      {name: "All",	   extensions: ["*"]}];
+            filter = [{name: "POSCAR", extensions: ["poscar"]}];
             break;
         case "PDB":
-            filter = [{name: "PDB",	extensions: ["pdb"]},
-                      {name: "All",	extensions: ["*"]}];
+            filter = [{name: "PDB",	extensions: ["pdb"]}];
             break;
         case "Shel-X":
-            filter = [{name: "Shel-X", extensions: ["res"]},
-                      {name: "All",	   extensions: ["*"]}];
+            filter = [{name: "Shel-X", extensions: ["res"]}];
             break;
         case "XYZ":
-            filter = [{name: "XYZ",	extensions: ["xyz"]},
-                      {name: "All",	extensions: ["*"]}];
+            filter = [{name: "XYZ",	extensions: ["xyz"]}];
             break;
         default:
-            filter = [{name: "All",	extensions: ["*"]}];
+            filter = [];
             break;
 	}
+
+    filter.push({name: "All", extensions: ["*"]});
 
     return JSON.stringify(filter);
 };

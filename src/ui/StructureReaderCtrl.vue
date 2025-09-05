@@ -350,59 +350,62 @@ const filterFromFormat = (fileFormat: string): string => {
     let filter: FileFilter[];
 	switch(fileFormat) {
 		case "CHGCAR":
-			filter = [{name: "CHGCAR",	        extensions: ["chgcar"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "CHGCAR",
+                       extensions: ["chgcar"]}];
             break;
 		case "CEL":
-			filter = [{name: "CEL",		        extensions: ["cel"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "CEL",
+                       extensions: ["cel"]}];
             break;
 		case "CIF":
-			filter = [{name: "CIF",		        extensions: ["cif"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "CIF",
+                       extensions: ["cif"]}];
             break;
     	case "Gaussian Cube":
-			filter = [{name: "Gaussian Cube",	extensions: ["cube"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "Gaussian Cube",
+                       extensions: ["cube"]}];
             break;
     	case "LAMMPS":
-			filter = [{name: "LAMMPS",	        extensions: ["lmp"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "LAMMPS",
+                       extensions: ["lmp"]}];
             break;
     	case "LAMMPStrj":
-			filter = [{name: "LAMMPStrj",	    extensions: ["lammpstrj"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "LAMMPStrj",
+                       extensions: ["lammpstrj"]}];
             break;
     	case "PDB":
-			filter = [{name: "PDB",	            extensions: ["pdb"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "PDB",
+                       extensions: ["pdb"]}];
             break;
 		case "POSCAR":
 		case "POSCAR + XDATCAR":
         case "POSCAR + ENERGY":
-			filter = [{name: "POSCAR",	        extensions: ["poscar", "poscars", "contcar"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "POSCAR",
+                       extensions: ["poscar", "poscars", "contcar", "vasp"]}];
             break;
 		case "Quantum ESPRESSO":
-			filter = [{name: "Quantum ESPRESSO", extensions: ["in"]},
-					  {name: "All",		         extensions: ["*"]}];
+			filter = [{name:       "Quantum ESPRESSO",
+                       extensions: ["in"]}];
             break;
 		case "Shel-X":
-			filter = [{name: "Shel-X",	        extensions: ["res", "ins"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "Shel-X",
+                       extensions: ["res", "ins"]}];
             break;
 		case "XDATCAR5":
-			filter = [{name: "XDATCAR5",		extensions: ["xdatcar", "xdatcar5"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "XDATCAR5",
+                       extensions: ["xdatcar", "xdatcar5"]}];
             break;
 		case "XYZ":
-			filter = [{name: "XYZ",		        extensions: ["xyz"]},
-					  {name: "All",		        extensions: ["*"]}];
+			filter = [{name:       "XYZ",
+                       extensions: ["xyz"]}];
             break;
         default:
-            filter = [{name: "All",	extensions: ["*"]}];
+            filter = [];
             break;
 	}
+
+    // Adding the default entry at the end
+    filter.push({name: "All", extensions: ["*"]});
 
     return JSON.stringify(filter);
 };
