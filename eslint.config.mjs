@@ -248,8 +248,8 @@ const config = defineConfig([
         "@typescript-eslint/no-non-null-assertion": "off",
         // "arrow-body-style": "warn",
         // "@typescript-eslint/consistent-type-imports": "error",
-        // "@typescript-eslint/no-misused-promises": "error",
-        // "@typescript-eslint/no-floating-promises": "error"
+        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/no-floating-promises": "error",
         // "@typescript-eslint/prefer-string-starts-ends-with": "warn",
         // "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],
         "no-loss-of-precision": "error",

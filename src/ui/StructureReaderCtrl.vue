@@ -282,6 +282,12 @@ const setEnergyPerAtom = (): void => {
  */
 const setAppendFile = (): void => {
 
+    if(appendFile.value) {
+
+        // Clean the labels of the file selectors
+        label1.value = "";
+        label2.value = "";
+    }
     sendToNode(id, "append", {appendFile: appendFile.value});
 };
 
