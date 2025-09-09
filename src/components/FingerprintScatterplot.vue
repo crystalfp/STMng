@@ -55,6 +55,8 @@ const pointRadius = ref(5);
 const showPointRadius = ref(5);
 const fgColor = "#575757";
 const noValueColor = "#4359FF";
+const colormapName = computed(() => (theme.value === "dark" ? "blackbody" : "rainbow"));
+const COLORMAP_LENGTH = 128;
 
 /** The received data */
 const scatterplotData = ref<ScatterplotData | undefined>();
@@ -180,7 +182,9 @@ const pointsByEnergy = (): Glyph[] => {
     }
 
     // Generate the colormap
-    const lut = (maxEnergy - minEnergy) < 1e-10 ? undefined : new Lut("blackbody", 512);
+    const lut = (maxEnergy - minEnergy) < 1e-10 ?
+                                    undefined :
+                                    new Lut(colormapName.value, COLORMAP_LENGTH);
     if(lut) {
         lut.setMin(minEnergy);
         lut.setMax(maxEnergy);
@@ -232,7 +236,8 @@ const pointsByEfficiency = (): Glyph[] => {
     maxDelta = Math.max(maxDelta, minDelta);
 
     // Generate the colormap
-    const lut = maxDelta < 1e-10 ? undefined : new Lut("blackbody", 512);
+    const lut = maxDelta < 1e-10 ?
+                        undefined : new Lut(colormapName.value, COLORMAP_LENGTH);
     if(lut) {
         lut.setMin(0);
         lut.setMax(maxDelta);
@@ -716,7 +721,7 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
 });
 
 // Create the color scale for the legend
-const lut2 = new Lut("blackbody", 128);
+const lut2 = new Lut(colormapName.value, COLORMAP_LENGTH);
 const colorScale = lut2.createCanvas().toDataURL();
 
 const legendContinue = computed(() => {

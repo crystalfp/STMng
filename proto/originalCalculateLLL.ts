@@ -1,4 +1,3 @@
-
 /**
  * Perform a Lenstra-Lenstra-Lovasz lattice basis reduction to obtain a
  * c-reduced basis. This method returns a basis which is as "good" as
@@ -6,35 +5,35 @@
  *
  * This basis is used for all the periodic boundary condition calculations.
  *
- * @param basis - The lattice matrix (assumed to be 3x3)
+ * @param matrix - The lattice matrix (assumed to be 3x3)
  * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-export const calculateLLL = (basis: number[][],
-                             delta: number = 0.75): [number[][], number[][]] => {
-
+function calculateLLL(matrix: number[][], delta: number = 0.75): [number[][], number[][]] {
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
-    const a = transpose(copyMatrix(basis));
+    const a = transpose(copyMatrix(matrix));
 
     const b = createZeroMatrix(3, 3);  // Vectors after the Gram-Schmidt process
     const u = createZeroMatrix(3, 3);  // Gram-Schmidt coefficients
     const m = new Array(3).fill(0);    // These are the norm squared of each vec
 
     // Initialize first column
-    for(let i = 0; i < 3; i++) b[i][0] = a[i][0];
+    for (let i = 0; i < 3; i++) {
+        b[i][0] = a[i][0];
+    }
     m[0] = dotProduct(getColumn(b, 0), getColumn(b, 0));
 
     // Gram-Schmidt process for remaining columns
-    for(let i = 1; i < 3; i++) {
+    for (let i = 1; i < 3; i++) {
         // Calculate u[i, :i] = np.dot(a[:, i].T, b[:, :i]) / m[:i]
-        for(let j = 0; j < i; j++) {
+        for (let j = 0; j < i; j++) {
             u[i][j] = dotProduct(getColumn(a, i), getColumn(b, j)) / m[j];
         }
 
         // Calculate b[:, i] = a[:, i] - np.dot(b[:, :i], u[i, :i].T)
         const temp = matrixVectorMultiply(getColumns(b, 0, i), getRow(u, i, 0, i));
-        for(let row = 0; row < 3; row++) {
+        for (let row = 0; row < 3; row++) {
             b[row][i] = a[row][i] - temp[row];
         }
 
@@ -44,20 +43,20 @@ export const calculateLLL = (basis: number[][],
     let k = 2;
     const mapping = createIdentityMatrix(3);
 
-    while(k <= 3) {
+    while (k <= 3) {
         // Size reduction
-        for(let i = k - 1; i > 0; i--) {
+        for (let i = k - 1; i > 0; i--) {
             const q = Math.round(u[k - 1][i - 1]);
-            if(q !== 0) {
+            if (q !== 0) {
                 // Reduce the k-th basis vector
-                for(let row = 0; row < 3; row++) {
+                for (let row = 0; row < 3; row++) {
                     a[row][k - 1] -= q * a[row][i - 1];
                     mapping[row][k - 1] -= q * mapping[row][i - 1];
                 }
 
                 // Update the GS coefficients
                 const uu = [...u[i - 1].slice(0, i - 1), 1];
-                for(let j = 0; j < i; j++) {
+                for (let j = 0; j < i; j++) {
                     u[k - 1][j] -= q * uu[j];
                 }
             }
@@ -66,37 +65,35 @@ export const calculateLLL = (basis: number[][],
         // Check the Lovasz condition
         const leftSide = dotProduct(getColumn(b, k - 1), getColumn(b, k - 1));
         const rightSide = (delta - Math.abs(u[k - 1][k - 2]) ** 2) *
-                           dotProduct(getColumn(b, k - 2), getColumn(b, k - 2));
+                         dotProduct(getColumn(b, k - 2), getColumn(b, k - 2));
 
-        if(leftSide >= rightSide) {
+        if (leftSide >= rightSide) {
             // Increment k if the Lovasz condition holds
             k += 1;
-        }
-        else {
+        } else {
             // If the Lovasz condition fails, swap the k-th and (k-1)-th basis vector
             swapColumns(a, k - 1, k - 2);
             swapColumns(mapping, k - 1, k - 2);
 
             // Update the Gram-Schmidt coefficients
-            for(let s = k - 1; s < k + 1; s++) {
+            for (let s = k - 1; s < k + 1; s++) {
                 // u[s - 1, : (s - 1)] = np.dot(a[:, s - 1].T, b[:, : (s - 1)]) / m[: (s - 1)]
-                for(let j = 0; j < s - 1; j++) {
+                for (let j = 0; j < s - 1; j++) {
                     u[s - 1][j] = dotProduct(getColumn(a, s - 1), getColumn(b, j)) / m[j];
                 }
 
                 // b[:, s - 1] = a[:, s - 1] - np.dot(b[:, : (s - 1)], u[s - 1, : (s - 1)].T)
                 const temp = matrixVectorMultiply(getColumns(b, 0, s - 1), getRow(u, s - 1, 0, s - 1));
-                for(let row = 0; row < 3; row++) {
+                for (let row = 0; row < 3; row++) {
                     b[row][s - 1] = a[row][s - 1] - temp[row];
                 }
 
                 m[s - 1] = dotProduct(getColumn(b, s - 1), getColumn(b, s - 1));
             }
 
-            if(k > 2) {
+            if (k > 2) {
                 k -= 1;
-            }
-            else {
+            } else {
                 // We have to do p/q, so do lstsq(q.T, p.T).T instead
                 const aSubMatrix = getColumns(a, k, 3);
                 const bSubMatrix = getColumns(b, k - 2, k);
@@ -106,8 +103,8 @@ export const calculateLLL = (basis: number[][],
                 const result = transpose(leastSquares(transpose(q), transpose(p)));
 
                 // u[k:3, (k - 2) : k] = result
-                for(let i = k; i < 3; i++) {
-                    for(let j = k - 2; j < k; j++) {
+                for (let i = k; i < 3; i++) {
+                    for (let j = k - 2; j < k; j++) {
                         u[i][j] = result[i - k][j - (k - 2)];
                     }
                 }
@@ -116,45 +113,35 @@ export const calculateLLL = (basis: number[][],
     }
 
     return [transpose(a), transpose(mapping)];
-};
+}
 
 // Helper functions
-const createZeroMatrix = (rows: number, cols: number): number[][] => {
+export function createZeroMatrix(rows: number, cols: number): number[][] {
+    return Array(rows).fill(0).map(() => Array(cols).fill(0));
+}
 
-    const matrix = Array<number[]>(rows);
-    for(let i = 0; i < rows; i++) {
-        matrix[i] = Array<number>(cols).fill(0);
-    }
-    return matrix;
-};
-
-const createIdentityMatrix = (size: number): number[][] => {
-
-    const matrix = Array<number[]>(size);
-    for(let i = 0; i < size; i++) {
-        matrix[i] = Array<number>(size).fill(0);
+export function createIdentityMatrix(size: number): number[][] {
+    const matrix = createZeroMatrix(size, size);
+    for (let i = 0; i < size; i++) {
         matrix[i][i] = 1;
     }
     return matrix;
-};
+}
 
-const createDiagonalMatrix = (values: number[]): number[][] => {
-
+export function createDiagonalMatrix(values: number[]): number[][] {
     const size = values.length;
-    const matrix = Array<number[]>(size);
-    for(let i = 0; i < size; i++) {
-        matrix[i] = Array<number>(size).fill(0);
+    const matrix = createZeroMatrix(size, size);
+    for (let i = 0; i < size; i++) {
         matrix[i][i] = values[i];
     }
-
     return matrix;
-};
+}
 
-function copyMatrix(matrix: number[][]): number[][] {
+export function copyMatrix(matrix: number[][]): number[][] {
     return matrix.map(row => [...row]);
 }
 
-function transpose(matrix: number[][]): number[][] {
+export function transpose(matrix: number[][]): number[][] {
     const rows = matrix.length;
     const cols = matrix[0].length;
     const result = createZeroMatrix(cols, rows);
@@ -167,27 +154,27 @@ function transpose(matrix: number[][]): number[][] {
     return result;
 }
 
-function getColumn(matrix: number[][], col: number): number[] {
+export function getColumn(matrix: number[][], col: number): number[] {
     return matrix.map(row => row[col]);
 }
 
-function getColumns(matrix: number[][], startCol: number, endCol: number): number[][] {
+export function getColumns(matrix: number[][], startCol: number, endCol: number): number[][] {
     return matrix.map(row => row.slice(startCol, endCol));
 }
 
-function getRow(matrix: number[][], row: number, startCol: number, endCol: number): number[] {
+export function getRow(matrix: number[][], row: number, startCol: number, endCol: number): number[] {
     return matrix[row].slice(startCol, endCol);
 }
 
-function dotProduct(a: number[], b: number[]): number {
+export function dotProduct(a: number[], b: number[]): number {
     return a.reduce((sum, val, i) => sum + val * b[i], 0);
 }
 
-function matrixVectorMultiply(matrix: number[][], vector: number[]): number[] {
+export function matrixVectorMultiply(matrix: number[][], vector: number[]): number[] {
     return matrix.map(row => dotProduct(row, vector));
 }
 
-function matrixMultiply(a: number[][], b: number[][]): number[][] {
+export function matrixMultiply(a: number[][], b: number[][]): number[][] {
     const result = createZeroMatrix(a.length, b[0].length);
 
     for (let i = 0; i < a.length; i++) {
@@ -200,7 +187,7 @@ function matrixMultiply(a: number[][], b: number[][]): number[][] {
     return result;
 }
 
-function swapColumns(matrix: number[][], col1: number, col2: number): void {
+export function swapColumns(matrix: number[][], col1: number, col2: number): void {
     for (let i = 0; i < matrix.length; i++) {
         const temp = matrix[i][col1];
         matrix[i][col1] = matrix[i][col2];
@@ -208,7 +195,7 @@ function swapColumns(matrix: number[][], col1: number, col2: number): void {
     }
 }
 
-function leastSquares(a: number[][], b: number[][]): number[][] {
+export function leastSquares(a: number[][], b: number[][]): number[][] {
     // Simple implementation using normal equations: (A^T * A)^-1 * A^T * b
     // For a more robust implementation, consider using SVD or QR decomposition
     const aT = transpose(a);
@@ -241,18 +228,4 @@ function matrixInverse(matrix: number[][]): number[][] {
     throw new Error('Matrix inversion not implemented for matrices larger than 2x2');
 }
 
-export const getNiggliReducedLattice = (matrix: number[][]): number[][] => {
-	const [reducedMatrix, _] = calculateLLL(matrix);
-	return reducedMatrix;
-};
-
-const basis = [
-    [7.283, 0.47121, -0.27644],
-    [1.3812, 7.0908, -0.25494],
-    [-0.0025309, 1.2362, 2.0244]
-];
-
-const result = calculateLLL(basis);
-
-console.log(result[0]);
-console.log(result[1]);
+export { calculateLLL };

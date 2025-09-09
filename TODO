@@ -3,6 +3,7 @@ Bugs:
   ☐ ffmpeg output to application log
   ☐ Billboard also for Bonds lengths labels
   ☐ Trajectory is slow
+  ✔ Fix colormap for fidelity chart and light theme @done(2025-09-09 05:49)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -56,6 +57,7 @@ Nice to have/Future:
   ☐ Simplify error messages for user, leaving full message in log
   ☐ Explore WASM <https://dev.to/omriluz1/exploring-the-intersection-of-javascript-and-webassembly-simd-5fd1>
   ☐ Experiment with alphaHash for transparency <https://github.com/mrdoob/three.js/blob/master/examples/webgl_materials_alphahash.html>
+  ☐ Use ideas from [ndarray](https://github.com/scijs/ndarray) for multidimensional arrays
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
