@@ -3,11 +3,13 @@ Bugs:
   ☐ ffmpeg output to application log
   ☐ Billboard also for Bonds lengths labels
   ☐ Trajectory is slow
-  ✔ Fix colormap for fidelity chart and light theme @done(2025-09-09 05:49)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
   ☐ Find prototype structure
+  ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
+  ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
+  ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
 
 To do:
   ☐ Put read filename in window title
@@ -22,11 +24,6 @@ Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
   ☐ Nice ideas in <https://ruoyusun.com/2024/01/23/cividle-optimization>
-
-Functionalities:
-  ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
-  ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
-  ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
@@ -69,6 +66,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Add to reload client the cleaning of the scene @done(2025-09-10 09:13) @project(To do)
+  ✔ Fix colormap for fidelity chart and light theme @done(2025-09-09 05:49) @project(Bugs)
   ✔ Append should clean the input filename, after reading the append switch should be reset @done(2025-09-05 15:14) @project(Bugs)
   ✔ Use linear interpolation in `Smooth.ts` @done(2025-08-27 12:07) @project(ToDo eventually)
   ✔ Convert the full native MDS routine to use Eigen @done(2025-08-27 10:48) @project(ToDo eventually)

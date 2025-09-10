@@ -60,6 +60,9 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
         case "show-scene":
             sm.dumpScene("Scene 3D");
             break;
+        case "clear-scene":
+            sm.clearScene();
+            break;
         default:
             showSystemAlert(`Menu entry "${menuEntry}" is not implemented`);
             break;

@@ -105,7 +105,7 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     });
 
     // Setup the system menu
-    setupMenu(isDevelopment);
+    setupMenu(isDevelopment, mainWin);
 
     // Setup access to client windows
     toClientSetup(mainWin.webContents);

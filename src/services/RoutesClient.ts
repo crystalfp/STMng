@@ -153,7 +153,7 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 
 	if(project) {
 		let idx = project.lastIndexOf("\\");
-		if(idx < 0) {idx = project.lastIndexOf("/");}
+		if(idx < 0) idx = project.lastIndexOf("/");
     	window.api.setTitle(baseTitle + " — " + project.slice(idx+1));
 	}
     else window.api.setTitle(baseTitle + " — default project");

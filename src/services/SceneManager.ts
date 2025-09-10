@@ -26,6 +26,8 @@ class SceneManager {
 	private static readonly scene = new Scene();
 	private exporter: STLExporter | undefined;
 	private sceneModified = true;
+	private readonly preserve = new Set(["AmbientLight", "DirectionalLight",
+										 "Scene", "Group"]);
 
 	/**
 	 * Initialize the graphical scene
@@ -67,45 +69,36 @@ class SceneManager {
 	}
 
 	/**
-	 * Remove objects with children
-	 *
-	 * @param object - The object to remove
-	 */
-	private removeObjectsWithChildren(object: Object3D): void {
-
-        if(object.children.length > 0) {
-            for(let idx = object.children.length - 1; idx >= 0; idx--) {
-                this.removeObjectsWithChildren(object.children[idx]);
-            }
-        }
-
-		if(object.type === "Mesh") {
-			const mesh =  object as Mesh;
-
-			if(mesh.geometry) {
-				mesh.geometry.dispose();
-			}
-			if(mesh.material) {
-				(mesh.material as Material).dispose();
-			}
-        }
-
-        object.removeFromParent();
-	}
-
-	private readonly lights = new Set(["AmbientLight", "DirectionalLight"]);
-
-	/**
 	 * Clear the scene of all graphical objects
 	 */
 	clearScene(): void {
 
-		for(const object of SceneManager.scene.children) {
+		const meshList: Mesh[] = [];
+		const otherList: Object3D[] = [];
 
-			if(this.lights.has(object.type)) continue;
-			this.removeObjectsWithChildren(object);
-			this.sceneModified = true;
+		SceneManager.scene.traverse((object) => {
+
+			if(this.preserve.has(object.type)) return;
+
+			if(object.type === "Mesh") {
+				meshList.push(object as Mesh);
+			}
+			else {
+				otherList.push(object);
+			}
+		});
+
+		for(const mesh of meshList) {
+			if(mesh.geometry) mesh.geometry.dispose();
+			if(mesh.material) (mesh.material as Material).dispose();
+			mesh.removeFromParent();
+			SceneManager.scene.remove(mesh);
 		}
+		for(const other of otherList) {
+			SceneManager.scene.remove(other);
+		}
+
+		this.sceneModified = true;
 	}
 
 	/**

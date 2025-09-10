@@ -6,7 +6,8 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {Menu, shell, app, nativeTheme, dialog, ipcMain, type MenuItemConstructorOptions} from "electron";
+import {Menu, shell, app, nativeTheme, dialog, ipcMain,
+        type MenuItemConstructorOptions, type BrowserWindow} from "electron";
 import path from "node:path";
 import {existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
@@ -68,10 +69,11 @@ let systemMenu: Menu;
 /**
  * Prepare the application menu
  *
- * @param isDevelopment - Set if the application is running under development or
- *                        have developer tools set in production
+ * @param isDevelopment - Set if the application is running under development
+ *  or have developer tools set in production
+ * @param mainWindow - Main application window for reload menu entry
  */
-export const setupMenu = (isDevelopment: boolean): void => {
+export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): void => {
 
     const template: MenuItemConstructorOptions[] = [
         {
@@ -151,12 +153,23 @@ export const setupMenu = (isDevelopment: boolean): void => {
         {
             label: "&View",
             submenu: [
-                {role: "reload"},
                 {
-                    role: "forceReload",
+                    label: "Reload",
+                    accelerator: "CommandOrControl+R",
+                    click() {
+                        mainWindow.reload();
+                        openMenuEntry("clear-scene");
+                    }
+                },
+                {
+                    label: "Force reload",
+                    accelerator: "CommandOrControl+Shift+R",
                     enabled: isDevelopment,
                     visible: isDevelopment,
-                    label: "Force reload"
+                    click() {
+                        mainWindow.webContents.reloadIgnoringCache();
+                        openMenuEntry("clear-scene");
+                    }
                 },
                 {
                     role: "toggleDevTools",
