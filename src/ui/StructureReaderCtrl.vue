@@ -10,7 +10,7 @@
 import {ref, watch, computed} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
-import {askNode, sendToNode} from "@/services/RoutesClient";
+import {askNode, sendToNode, setReadPathInTitle} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
@@ -419,6 +419,9 @@ const filterFromFormat = (fileFormat: string): string => {
 // To clear the select atoms labels
 const label1 = ref("");
 const label2 = ref("");
+
+// Add loaded file to the window title
+watch(label1, () => setReadPathInTitle(label1.value));
 
 /** Data for formats that have an auxiliary file */
 const auxSetup = computed(() => {

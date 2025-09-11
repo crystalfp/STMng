@@ -105,7 +105,7 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
   <v-select v-model="selectedTabId" :items="uiList" item-title="label"
             item-value="id" variant="solo-filled" rounded="0" />
 </v-container>
-<v-container v-for="panel of panelList" :key="panel.id" class="pa-0">
+<v-container v-for="panel of panelList" :key="panel.id" class="py-0 px-2">
   <component :is="panel.ctrl" v-show="panel.id === selectedTabId"
   			 :id="panel.id" :label="panel.label" />
 </v-container>

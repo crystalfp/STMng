@@ -12,13 +12,11 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
 
 To do:
-  ☐ Put read filename in window title
   ☐ Check error return from main process to client
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Unify viewer3D setup between Compare and Landscape
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
   ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
-  ☐ Next vuetify release: check if the 12px margin for v-select has been fixed
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -66,6 +64,8 @@ Reference:
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
 
 Archive:
+  ✔ Next vuetify release: check if the 12px margin for v-select has been fixed @done(2025-09-11 09:22) @project(To do)
+  ✔ Put read filename in window title @done(2025-09-11 08:46) @project(To do)
   ✔ Add to reload client the cleaning of the scene @done(2025-09-10 09:13) @project(To do)
   ✔ Fix colormap for fidelity chart and light theme @done(2025-09-09 05:49) @project(Bugs)
   ✔ Append should clean the input filename, after reading the append switch should be reset @done(2025-09-05 15:14) @project(Bugs)

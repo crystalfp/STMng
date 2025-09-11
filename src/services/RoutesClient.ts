@@ -151,18 +151,42 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 	const project = window.electron.ipcRenderer
 							.sendSync("PREFERENCES:GET-SYNC", "LastProjectLoaded") as string;
 
+	let titleAndProject = "";
 	if(project) {
 		let idx = project.lastIndexOf("\\");
 		if(idx < 0) idx = project.lastIndexOf("/");
-    	window.api.setTitle(baseTitle + " — " + project.slice(idx+1));
+    	titleAndProject = baseTitle + "\u2003—\u2003" + project.slice(idx+1);
 	}
-    else window.api.setTitle(baseTitle + " — default project");
+    else titleAndProject = baseTitle + "\u2003—\u2003default project";
+	window.api.setTitle(titleAndProject);
+	window.electron.ipcRenderer.send("PREFERENCES:SET",
+									 {key: "CurrentTitleAndProject", value: titleAndProject});
 
 	// Receive title updates
 	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
 
-		window.api.setTitle(baseTitle + " — " + (projectPath || "default project"));
+		titleAndProject = baseTitle + "\u2003—\u2003" + (projectPath || "default project");
+		window.api.setTitle(titleAndProject);
+		window.electron.ipcRenderer.send("PREFERENCES:SET",
+										 {key: "CurrentTitleAndProject", value: titleAndProject});
 	});
+};
+
+/**
+ * Set the loaded file into the title
+ *
+ * @param filename - The currently loaded filename or an empty string if none
+ */
+export const setReadPathInTitle = (filename: string): void => {
+
+	const titleAndProject = window.electron.ipcRenderer
+							.sendSync("PREFERENCES:GET-SYNC", "CurrentTitleAndProject") as string;
+
+	if(!titleAndProject) return;
+	if(filename) {
+		window.api.setTitle(titleAndProject + "\u2003—\u2003" + filename);
+	}
+	else window.api.setTitle(titleAndProject);
 };
 
 // > Preferences
