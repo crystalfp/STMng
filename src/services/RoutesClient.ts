@@ -9,6 +9,7 @@
  /* eslint-disable unicorn/prefer-global-this */
 import {watchEffect} from "vue";
 import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
+import {useControlStore} from "@/stores/controlStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {CtrlParams, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
@@ -159,16 +160,16 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 	}
     else titleAndProject = baseTitle + "\u2003—\u2003default project";
 	window.api.setTitle(titleAndProject);
-	window.electron.ipcRenderer.send("PREFERENCES:SET",
-									 {key: "CurrentTitleAndProject", value: titleAndProject});
+
+	const controlStore = useControlStore();
+	controlStore.currentTitleAndProject = titleAndProject;
 
 	// Receive title updates
 	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
 
 		titleAndProject = baseTitle + "\u2003—\u2003" + (projectPath || "default project");
 		window.api.setTitle(titleAndProject);
-		window.electron.ipcRenderer.send("PREFERENCES:SET",
-										 {key: "CurrentTitleAndProject", value: titleAndProject});
+		controlStore.currentTitleAndProject = titleAndProject;
 	});
 };
 
@@ -179,9 +180,8 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
  */
 export const setReadPathInTitle = (filename: string): void => {
 
-	const titleAndProject = window.electron.ipcRenderer
-							.sendSync("PREFERENCES:GET-SYNC", "CurrentTitleAndProject") as string;
-
+	const controlStore = useControlStore();
+	const titleAndProject = controlStore.currentTitleAndProject;
 	if(!titleAndProject) return;
 	if(filename) {
 		window.api.setTitle(titleAndProject + "\u2003—\u2003" + filename);

@@ -59,6 +59,7 @@ interface GlobalControls {
 	atomsSelected: number[];
 	/** To convert selected atom into instance index */
 	selectedAtomMap: number[][];
+
 	/** Polyhedra selection */
 	polyhedronCurrentIdx: number | undefined;
 	/** New polyhedra selected */
@@ -67,6 +68,9 @@ interface GlobalControls {
 	polyhedronCurrentColor: number;
 	/** Selected polyhedra color */
 	polyhedronNewColor: number;
+
+	/** Current title and project */
+	currentTitleAndProject: string;
 }
 
 /** Access the control store that contains global control variables not saved as status */
@@ -102,6 +106,8 @@ export const useControlStore = defineStore("ControlStore", {
 		polyhedronNewIdx: undefined,
 		polyhedronCurrentColor: 0,
 		polyhedronNewColor: 0,
+
+		currentTitleAndProject: ""
 
 	} as GlobalControls),
 
