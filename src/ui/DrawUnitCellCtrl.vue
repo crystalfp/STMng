@@ -185,7 +185,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-2 ml-4" />
+  <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-4 ml-4" />
   <v-switch v-model="dashedLine" label="Dashed lines" class="ml-4" />
   <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4 mb-4" />
   <color-selector v-model="lineColor" label="Line color" block />

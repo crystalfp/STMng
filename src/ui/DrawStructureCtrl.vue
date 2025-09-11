@@ -167,7 +167,7 @@ const disableBondsStrengths = computed(() =>
 
 <template>
 <v-container class="container">
-  <titled-slot title="Structure rendering mode" class="my-6 ml-2">
+  <titled-slot title="Structure rendering mode" class="mt-4 mb-6 ml-2">
     <v-btn-toggle v-model="drawKind" mandatory>
       <v-btn value="ball-and-stick">CPK</v-btn>
       <v-btn value="van-der-waals">VdW</v-btn>

@@ -127,6 +127,7 @@ export class DrawPolyhedraRenderer {
 			if(colorByCenterAtom) {
 				color = new Color(this.centerAtomColorList[i]);
 				material.color = color;
+				material.color.convertSRGBToLinear();
 			}
 			else {
 				color = this.material.color;

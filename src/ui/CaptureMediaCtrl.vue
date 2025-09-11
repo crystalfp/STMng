@@ -27,7 +27,7 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
 
 <template>
 <v-container class="container">
-  <v-label class="mt-n1 separator-title first-title">Snapshot</v-label>
+  <v-label class="mt-1 separator-title first-title">Snapshot</v-label>
 
   <titled-slot title="Format:" inline class="mt-4 ml-0 mb-3">
     <v-btn-toggle v-model="configStore.camera.snapshotFormat" mandatory>

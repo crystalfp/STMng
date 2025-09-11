@@ -137,7 +137,7 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-2 mb-4 ml-2"
+  <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-4 mb-4 ml-2"
             @update:modelValue="renderer.setVisibility(showTrajectories!)" />
   <v-btn block class="mb-6 ml-0" @click="resetTraces">Clear trajectories</v-btn>
   <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"

@@ -154,9 +154,9 @@ const confirmedExit = (): void => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 505px;
+  width: 515px;
   padding: 0;
-   margin: 0;
+  margin: 0;
 }
 
 .layout-gutter {

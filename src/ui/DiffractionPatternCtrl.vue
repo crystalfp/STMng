@@ -100,7 +100,7 @@ const openChartWindow = (): void => {
 
 <template>
 <v-container class="container">
-  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 mt-2 mb-4"
+  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 my-4"
             label="Wavelength"/>
   <v-number-input v-if="wavelengthCode === 'Manual'" v-model="wavelengthNumeric"
                   label="Numeric wavelength" :precision="6"

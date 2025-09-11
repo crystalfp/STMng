@@ -173,7 +173,7 @@ watch([colormapName, colorIsolines], () => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-2 mb-4 ml-3" />
+  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-4 mb-4 ml-3" />
 
   <dataset-selector v-model="dataset" :count-datasets />
 

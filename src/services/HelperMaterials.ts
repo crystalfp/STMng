@@ -30,13 +30,15 @@ export const colorTextureMaterial = (colorFrom: Color,
 	const size = width * height;
 	const data = new Uint8Array(4 * size);
 
-	const rf = Math.floor(colorFrom.r * 255);
-	const gf = Math.floor(colorFrom.g * 255);
-	const bf = Math.floor(colorFrom.b * 255);
+	const cf = colorFrom.convertSRGBToLinear();
+	const rf = Math.floor(cf.r * 255);
+	const gf = Math.floor(cf.g * 255);
+	const bf = Math.floor(cf.b * 255);
 
-	const rt = Math.floor(colorTo.r * 255);
-	const gt = Math.floor(colorTo.g * 255);
-	const bt = Math.floor(colorTo.b * 255);
+	const ct = colorTo.convertSRGBToLinear();
+	const rt = Math.floor(ct.r * 255);
+	const gt = Math.floor(ct.g * 255);
+	const bt = Math.floor(ct.b * 255);
 
 	for(let h = 0; h < height; ++h) {
 

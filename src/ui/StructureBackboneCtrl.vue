@@ -145,7 +145,7 @@ const selectDeselect = (select: boolean): void => {
 <v-container class="container">
 
   <v-switch v-model="enableBackbone"
-            label="Show backbone" class="mt-4 mb-2 ml-2" />
+            label="Show backbone" class="mt-6 mb-2 ml-2" />
   <slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
                           :label="`Threshold (${(showThreshold*100).toFixed(0)}%)`"
                           :min="0" :max="1" :step="0.1" :disabled="!hasCell"/>

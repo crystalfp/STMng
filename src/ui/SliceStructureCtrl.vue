@@ -287,7 +287,7 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-2 ml-3" />
+  <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-4 ml-3" />
   <v-switch v-model="showSlicer" :disabled="mode==='indices'"
             label="Show slicer geometry" class="ml-3" />
   <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />

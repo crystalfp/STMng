@@ -216,7 +216,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
 <template>
 <v-container class="container">
-  <v-container v-if="natoms > 0" class="pa-0 ml-2">
+  <v-container v-if="natoms > 0" class="mt-n1 pa-0 ml-2">
     <v-label class="simple-title mb-2">Structure summary</v-label>
     <v-table class="pl-2 pr-4 py-1">
       <tr><td>Step:</td><td class="right">{{ step }}</td></tr>

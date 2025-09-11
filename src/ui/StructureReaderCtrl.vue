@@ -455,7 +455,7 @@ const auxSetup = computed(() => {
 <v-container class="container">
 
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="mt-4 mb-4"
+            :items="fileFormats" class="my-4"
             @update:model-value="setFormat" />
 
   <v-text-field v-if="needsAtomTypes(format)" v-model.trim="atomsTypes"
