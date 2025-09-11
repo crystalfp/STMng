@@ -43,9 +43,12 @@
     "troika-three-text.d.ts",
     "src/**/*.ts",
     "src/**/*.vue",
-    "package.json"
+    "package.json",
+    "proto/**/*.ts"
   ],
   "exclude": [
-    "src/cpp/spglib*/**/*.ts"
+    "src/cpp/spglib*/**/*.ts",
+    "proto/PymatgenLattice - Copy.ts",
+    "proto/originalCalculateLLL.ts"
   ]
 }

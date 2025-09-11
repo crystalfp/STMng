@@ -14,14 +14,14 @@ import {transpose, zeros, column, dot, identity, diag,
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
 export const calculateLLL = (basis: number[][],
-                             delta: number = 0.75): [number[][], number[][]] => {
+                             delta = 0.75): [number[][], number[][]] => {
 
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
     const a = transpose(matrix(basis));
     const b = matrix(zeros(3, 3));  // Vectors after the Gram-Schmidt process
     const u = matrix(zeros(3, 3));  // Gram-Schmidt coefficients
-    const m = new Array(3).fill(0); // These are the norm squared of each vec
+    const m = Array(3).fill(0); // These are the norm squared of each vec
 
     // Initialize first column
     b.subset(index([0, 1, 2], 0), column(a, 0))

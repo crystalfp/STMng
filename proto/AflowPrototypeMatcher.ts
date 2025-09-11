@@ -1,7 +1,7 @@
 import type {Structure} from "../src/types";
 import {createReadStream} from "node:fs";
 import {createGunzip} from "node:zlib";
-import { getNiggliReducedLattice } from "./PymatgenLattice";
+import {getNiggliReducedLattice} from "./PymatgenLattice";
 
 
 export interface Prototype {
@@ -46,23 +46,23 @@ export class AflowPrototypeMatcher {
 	private readonly initialLtol: number;
 	private readonly initialStol: number;
 	private readonly initialAngleTol: number;
-	private readonly aflowPrototypeLibrary: {snl: SNL, dct: LibraryEntry}[] = [];
+	private readonly aflowPrototypeLibrary: {snl: SNL; dct: LibraryEntry}[] = [];
 
 	/**
 	 * Tolerances as defined in StructureMatcher. Tolerances will be
      * gradually decreased until only a single match is found (if possible).
 	 *
-	 * @param initial_ltol - fractional length tolerance
-	 * @param initial_stol - site tolerance
-	 * @param initial_angle_tol - angle tolerance
+	 * @param initialLtol - fractional length tolerance
+	 * @param initialStol - site tolerance
+	 * @param initialAngleTol - angle tolerance
 	 */
-	constructor(initial_ltol = 0.2,
-        		initial_stol = 0.3,
-        		initial_angle_tol = 5) {
+	constructor(initialLtol = 0.2,
+        		initialStol = 0.3,
+        		initialAngleTol = 5) {
 
-		this.initialLtol = initial_ltol;
-		this.initialStol = initial_stol;
-		this.initialAngleTol = initial_angle_tol;
+		this.initialLtol = initialLtol;
+		this.initialStol = initialStol;
+		this.initialAngleTol = initialAngleTol;
 
 		// Read compressed AFLOW prototypes
 		const gunzip = createGunzip();
@@ -70,8 +70,8 @@ export class AflowPrototypeMatcher {
 		const stream = source.pipe(gunzip);
 
 		let rawResult = "";
-		stream.on("data", (chunk) => {
-    		rawResult += chunk.toString();
+		stream.on("data", (chunk: Buffer) => {
+    		rawResult += chunk.toString("utf8");
 		});
 		stream.on("end", () => {
 			// Preprocess AFLOW prototypes
@@ -90,6 +90,9 @@ export class AflowPrototypeMatcher {
 	getPrototypes(structure: Structure): Prototype[] {
 
 		void structure;
+		void this.initialAngleTol;
+		void this.initialLtol;
+		void this.initialStol;
 
 		const prototypes: Prototype[] = [];
 
@@ -106,7 +109,9 @@ export class AflowPrototypeMatcher {
  */
 const getReducedStructure = (snl: SNL): SNL => {
 
-	const reducedLattice = getNiggliReducedLattice(snl.lattice.matrix)
+	const reducedLattice = getNiggliReducedLattice(snl.lattice.matrix);
+
+	void reducedLattice; // TBD
 	return snl;
 };
 

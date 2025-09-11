@@ -9,14 +9,14 @@
  * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-function calculateLLL(matrix: number[][], delta: number = 0.75): [number[][], number[][]] {
+function calculateLLL(matrix: number[][], delta = 0.75): [number[][], number[][]] {
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
     const a = transpose(copyMatrix(matrix));
 
     const b = createZeroMatrix(3, 3);  // Vectors after the Gram-Schmidt process
     const u = createZeroMatrix(3, 3);  // Gram-Schmidt coefficients
-    const m = new Array(3).fill(0);    // These are the norm squared of each vec
+    const m = Array(3).fill(0);    // These are the norm squared of each vec
 
     // Initialize first column
     for (let i = 0; i < 3; i++) {
