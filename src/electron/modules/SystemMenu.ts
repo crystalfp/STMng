@@ -157,18 +157,8 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     label: "Reload",
                     accelerator: "CommandOrControl+R",
                     click() {
+                        setTimeout(() => openMenuEntry("clear-scene"), 600);
                         mainWindow.reload();
-                        openMenuEntry("clear-scene");
-                    }
-                },
-                {
-                    label: "Force reload",
-                    accelerator: "CommandOrControl+Shift+R",
-                    enabled: isDevelopment,
-                    visible: isDevelopment,
-                    click() {
-                        mainWindow.webContents.reloadIgnoringCache();
-                        openMenuEntry("clear-scene");
                     }
                 },
                 {

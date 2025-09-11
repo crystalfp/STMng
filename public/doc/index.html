@@ -48,7 +48,7 @@
     <tr><td><a href="nodes/diffraction-pattern.html">Compute X-Ray diffraction</a></td>
         <td>Compute and display the X-Ray diffraction spectra.</td></tr>
     <tr><td><a href="nodes/structure-backbone.html">Draw a backbone tube</a></td>
-        <td>Draw a backbone tube passing through given atoms optionally of a specific chain.</td></tr>
+        <td>Draw a backbone tube passing through selected atoms or chain.</td></tr>
     <tr><td><a href="nodes/draw-polyhedra.html">Draw polyhedra</a></td>
         <td>Draw polyhedra and triangles around selected atoms.</td></tr>
     <tr><td><a href="nodes/draw-structure.html">Draw structure</a></td>
@@ -70,7 +70,7 @@
     <tr><td><a href="nodes/structure-reader.html">Structure reader</a></td>
         <td>Read a file containing one or more atomic structures.</td></tr>
     <tr><td><a href="nodes/structure-writer.html">Structure writer</a></td>
-        <td>Writes a single or a sequence of structures to a specific format structure file.</td></tr>
+        <td>Writes a single or a sequence of structures to a given format structure file.</td></tr>
     <tr><td><a href="nodes/viewer-3d.html">Viewer 3D</a></td>
         <td>The viewer frame.</td></tr>
   </table>
@@ -93,7 +93,7 @@
     <tr><td class="m1"><a href="secondary/project-editor.html">Project editor</a></td>
         <td>The editor for the loaded project file.</td></tr>
     <tr><td class="m1"><a href="secondary/symmetries.html">Show structure symmetries</a></td>
-        <td>Show structure symmetries in input and output from the Symmetry node.</td></tr>
+        <td>Show structure symmetries in input and output from the <a href="nodes/compute-symmetries.html">Symmetry</a> node.</td></tr>
     <tr><td class="m1"><a href="secondary/displacements.html">Show trajectory displacements</a></td>
         <td>Show atom’s trajectory mean positions and displacements.</td></tr>
   </table>
@@ -184,7 +184,7 @@
     <tr>
       <td class="c1">Load project from…</td>
       <td class="c2">Control+O</td>
-      <td class="c3">Select and load a project file</td>
+      <td class="c3">Select and load a <span onclick="openDetails('#project'); return false;">project</span> file</td>
     </tr>
     <tr>
       <td class="c1">Load default project</td>
@@ -194,7 +194,7 @@
     <tr>
       <td class="c1">Save project</td>
       <td class="c2">Control+S</td>
-      <td class="c3">Save the project to the file from which has been loaded</td>
+      <td class="c3">Save the project to the file from which has been loaded. Disabled if the loaded project is the default one</td>
     </tr>
     <tr>
       <td class="c1">Save project as…</td>
@@ -209,7 +209,7 @@
     <tr>
       <td class="c1">Quit application</td>
       <td class="c2">Control+Q</td>
-      <td class="c3">Quit the application without asking confirmation</td>
+      <td class="c3">Quit the application asking confirmation</td>
     </tr>
   </tbody>
   </table>
@@ -235,18 +235,13 @@
     <tr>
       <td class="c1">Extend viewer</td>
       <td class="c2">Control+E</td>
-      <td class="c3">Toggle the viewer extension, that is, hide the control panel on the left. The same effect is obtained clicking on the separator between the two panels</td>
+      <td class="c3">Toggle the viewer extension, that is, hide the control panel on the left. The same effect is obtained clicking on the separator between the two panels (the <b>Gutter</b>)</td>
     </tr>
   </tbody>
   </table>
   <p>During development or calling STMng with the “<tt>-e</tt>” command line option, the following keys are also available:</p>
   <table class="menu">
   <tbody>
-    <tr>
-      <td class="c1">Force reload</td>
-      <td class="c2">Control+Shift+R</td>
-      <td class="c3">Force reload of the application</td>
-    </tr>
     <tr>
       <td class="c1">Toggle DevTools</td>
       <td class="c2">F12</td>
@@ -276,7 +271,7 @@
     <tr>
       <td class="c1">Show application log</td>
       <td class="c2"></td>
-      <td class="c3">Open the application log file in a new window. Here it is possible also to clear it</td>
+      <td class="c3">Open the <a href="secondary/log.html">application log file viewer</a></td>
     </tr>
     <tr>
       <td class="c1">About</td>
@@ -293,7 +288,7 @@
   <h2>Gutter</h2>
   <p>Clicking on the separator between the node interfaces panel and the viewer (the gutter) hides the node controls. Clicking again on the left side of the viewer unhide the panel.</p>
   <h2>Secondary windows</h2>
-  <p>On all secondary windows the following keys are active:</p>
+  <p>On all <span onclick="openDetails('#secondary'); return false;">secondary windows</span> the following keys are active:</p>
   <dl>
     <dt>ESC</dt><dd>Closes the window.</dd>
     <dt>F1</dt><dd>Opens the help file for the current window.</dd>
