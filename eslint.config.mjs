@@ -14,7 +14,7 @@ import regexpPlugin from "eslint-plugin-regexp";
 import tsdocPlugin from "eslint-plugin-tsdoc";
 import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
-import * as depend from "eslint-plugin-depend";
+import depend from "eslint-plugin-depend";
 
 const config = defineConfig([
     stylistic.configs.customize({
@@ -376,9 +376,9 @@ const config = defineConfig([
         // "promise/no-nesting": "warn",
         // "promise/no-callback-in-promise": "warn",
         // "security/detect-child-process": "warn",
-        // "depend/ban-dependencies": ["error", {
-        //                             "presets": ["native", "microutilities", "preferred"]
-        // }],
+        "depend/ban-dependencies": ["warn", {
+                                    "presets": ["native", "microutilities", "preferred"]
+        }],
         // "vue/first-attribute-linebreak": "off",
         // "vue/html-indent": "off",
         // "vue/max-attributes-per-line": "off",

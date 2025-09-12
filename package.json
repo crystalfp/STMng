@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation (STMng) is a chemical and crystallographic structure visualization and analysis tool that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.42.6",
+  "version": "1.42.7",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -35,7 +35,7 @@
     "camera-controls": "^3.1.0",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "commander": "^14.0.0",
+    "commander": "^14.0.1",
     "custom-electron-titlebar": "^4.2.8",
     "electron-log": "^5.4.3",
     "mathjs": "^14.7.0",
@@ -85,10 +85,10 @@
     "node-addon-api": "^8.5.0",
     "postcss-html": "^1.8.0",
     "stylelint": "^16.24.0",
-    "stylelint-config-recommended-scss": "^16.0.0",
+    "stylelint-config-recommended-scss": "^16.0.1",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^39.0.0",
-    "stylelint-config-standard-scss": "^15.0.1",
+    "stylelint-config-standard-scss": "^16.0.0",
     "stylelint-config-standard-vue": "^1.0.0",
     "typedoc": "^0.28.12",
     "typedoc-plugin-missing-exports": "^4.1.0",
@@ -99,9 +99,9 @@
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",
-    "vite-plugin-vue-devtools": "^8.0.1",
+    "vite-plugin-vue-devtools": "^8.0.2",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.0.6"
+    "vue-tsc": "^3.0.7"
   }
 }
