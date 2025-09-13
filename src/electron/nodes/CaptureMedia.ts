@@ -7,14 +7,19 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-08
  */
-import {dialog, app, BrowserWindow, type PrintToPDFOptions} from "electron";
-import {writeFileSync, unlinkSync} from "node:fs";
+import {dialog, BrowserWindow, type PrintToPDFOptions} from "electron";
+import {writeFileSync} from "node:fs";
 import {writeFile} from "node:fs/promises";
 import path from "node:path";
-import {tmpNameSync} from "tmp";
-import {platform as osPlatform} from "node:os";
-import {fileURLToPath} from "node:url";
-import {execSync} from "node:child_process";
+
+import {Input, Output,
+		BufferTarget, Conversion,
+		WEBM,
+		BufferSource,
+		Mp4OutputFormat,
+		OggOutputFormat,
+		MkvOutputFormat,
+		QUALITY_HIGH} from "mediabunny";
 
 import {NodeCore} from "../modules/NodeCore";
 import type {ChannelDefinition, CtrlParams} from "@/types";
@@ -24,7 +29,7 @@ export class CaptureView extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "snapshot",	  type: "invoke", 	   callback: this.channelSnapshot.bind(this)},
 		{name: "snapshotPDF", type: "invokeAsync", callback: this.channelSnapshotPDF.bind(this)},
-		{name: "movie",		  type: "invoke", 	   callback: this.channelMovie.bind(this)},
+		{name: "movie",		  type: "invokeAsync", callback: this.channelMovie.bind(this)},
 		{name: "stl",		  type: "invoke", 	   callback: this.channelSTL.bind(this)},
 	];
 
@@ -130,85 +135,82 @@ export class CaptureView extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private channelMovie(params: CtrlParams): CtrlParams {
+	private async channelMovie(params: CtrlParams): Promise<CtrlParams> {
 
 		const buffer = params.buffer as ArrayBuffer;
 		if(!buffer) return {payload: ""};
 
-		const width = params.width as number;
-		const height = params.height as number;
+		let width = params.width as number;
+		let height = params.height as number;
 
 		const filename = dialog.showSaveDialogSync({
 			title: "Save movie",
 			filters: [
 				{name: "WEBm", extensions: ["webm"]},
 				{name: "mp4",  extensions: ["mp4"]},
-				{name: "avi",  extensions: ["avi"]},
+				{name: "ogg",  extensions: ["ogg"]},
+				{name: "mkv",  extensions: ["mkv"]},
 			]
 		});
 		if(!filename) return {payload: ""};
 
 		const format = path.extname(filename);
-		if(format !== ".webm") {
-
-			// Save the movie to a temporary WEBM formatted file
-			const webmFile = tmpNameSync({prefix: "stm-ng", postfix: ".webm"});
+		if(format === ".webm") {
 			try {
-				writeFileSync(webmFile, Buffer.from(buffer));
-			}
-			catch(error) {
-				return {error: `Cannot save temporary movie file. Error: ${(error as Error).message}`};
-			}
-
-			// Select the platform executable
-			let ffmpegExe;
-			const platform = osPlatform();
-			switch(platform) {
-				case "win32":
-					ffmpegExe = "ffmpeg.exe";
-					break;
-				case "linux":
-					ffmpegExe = "ffmpeg";
-					break;
-				default:
-					return {error: `Platform "${platform}" is not supported`};
-			}
-
-			// Find the ffmpeg executable
-			const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-			const ffmpeg = app.isPackaged ?
-								path.resolve(process.resourcesPath,
-											 `app.asar.unpacked/dist/bin/${ffmpegExe}`) :
-								path.join(mainSourceDirectory, "..", "public", "bin", ffmpegExe);
-
-			// Setup movie format specific options
-			let opt = "";
-			if(format === ".mp4") {
-
-				let vf = "";
-				if(width % 2 !== 0 || height % 2 !== 0) {
-
-					const w2 = Math.floor(width/2)*2;
-					const h2 = Math.floor(height/2)*2;
-					vf = ` -vf "scale=${w2}:${h2}"`;
-				}
-
-				opt = " -movflags +frag_keyframe+separate_moof+omit_tfhd_offset+empty_moov" + vf;
-			}
-
-			// Call ffmpeg to do the format conversion
-			try {
-				// eslint-disable-next-line sonarjs/os-command
-				execSync(`"${ffmpeg}" -y -i ${webmFile}${opt} ${filename}`, {windowsHide: true});
-				unlinkSync(webmFile);
+				writeFileSync(filename, Buffer.from(buffer));
 				return {payload: filename};
 			}
 			catch(error) {
-				return {error: `Cannot convert movie file. Error: ${(error as Error).message}`};
+				return {error: `Cannot save movie file "${filename}". Error: ${(error as Error).message}`};
 			}
 		}
+
+		const input = new Input({
+			formats: [WEBM],
+			source: new BufferSource(buffer),
+		});
+
+		let formatter;
+		switch(format) {
+			case ".mp4":
+				formatter = new Mp4OutputFormat({fastStart: "in-memory"});
+				break;
+			case ".ogg":
+				formatter = new OggOutputFormat();
+				break;
+			case ".mkv":
+				formatter = new MkvOutputFormat();
+				break;
+			default:
+				return {error: `Movie format "${format}" is not supported`};
+		}
+
+		if(width % 2 !== 0 || height % 2 !== 0) {
+
+			width = Math.floor(width/2)*2;
+			height = Math.floor(height/2)*2;
+		}
+
+		const output = new Output({
+			format: formatter,
+			target: new BufferTarget(),
+		});
+
 		try {
-			writeFileSync(filename, Buffer.from(buffer));
+			const conversion = await Conversion.init({
+				input,
+				output,
+				video: {
+					width,
+					height,
+					fit: "contain",
+					bitrate: QUALITY_HIGH
+				},
+			});
+
+			await conversion.execute();
+			if(!output.target.buffer) throw Error("Invalid output buffer");
+			writeFileSync(filename, Buffer.from(output.target.buffer));
 			return {payload: filename};
 		}
 		catch(error) {
