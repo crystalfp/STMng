@@ -1,4 +1,3 @@
-
 /**
  * Perform a Lenstra-Lenstra-Lovasz lattice basis reduction to obtain a
  * c-reduced basis. This method returns a basis which is as "good" as
@@ -10,8 +9,8 @@
  * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-export const calculateLLL = (basis: number[][],
-                             delta = 0.75): [number[][], number[][]] => {
+export const computeLLL = (basis: number[][],
+                           delta = 0.75): [number[][], number[][]] => {
 
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
@@ -19,7 +18,7 @@ export const calculateLLL = (basis: number[][],
 
     const b = createZeroMatrix(3, 3);   // Vectors after the Gram-Schmidt process
     const u = createZeroMatrix(3, 3);   // Gram-Schmidt coefficients
-    const m = Array(3).fill(0);         // These are the norm squared of each vec
+    const m = Array<number>(3).fill(0); // These are the norm squared of each vec
 
     // Initialize first column
     for(let i = 0; i < 3; i++) b[i][0] = a[i][0];
@@ -151,16 +150,18 @@ const createDiagonalMatrix = (values: number[]): number[][] => {
 };
 
 function copyMatrix(matrix: number[][]): number[][] {
-    return matrix.map(row => [...row]);
+    return matrix.map((row) => [...row]);
 }
 
 function transpose(matrix: number[][]): number[][] {
+
     const rows = matrix.length;
     const cols = matrix[0].length;
+    // eslint-disable-next-line sonarjs/arguments-order
     const result = createZeroMatrix(cols, rows);
 
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
+    for(let i = 0; i < rows; i++) {
+        for(let j = 0; j < cols; j++) {
             result[j][i] = matrix[i][j];
         }
     }
@@ -168,11 +169,11 @@ function transpose(matrix: number[][]): number[][] {
 }
 
 function getColumn(matrix: number[][], col: number): number[] {
-    return matrix.map(row => row[col]);
+    return matrix.map((row) => row[col]);
 }
 
 function getColumns(matrix: number[][], startCol: number, endCol: number): number[][] {
-    return matrix.map(row => row.slice(startCol, endCol));
+    return matrix.map((row) => row.slice(startCol, endCol));
 }
 
 function getRow(matrix: number[][], row: number, startCol: number, endCol: number): number[] {
@@ -180,19 +181,19 @@ function getRow(matrix: number[][], row: number, startCol: number, endCol: numbe
 }
 
 function dotProduct(a: number[], b: number[]): number {
-    return a.reduce((sum, val, i) => sum + val * b[i], 0);
+    return a.reduce((sum, value, i) => sum + value * b[i], 0);
 }
 
 function matrixVectorMultiply(matrix: number[][], vector: number[]): number[] {
-    return matrix.map(row => dotProduct(row, vector));
+    return matrix.map((row) => dotProduct(row, vector));
 }
 
 function matrixMultiply(a: number[][], b: number[][]): number[][] {
     const result = createZeroMatrix(a.length, b[0].length);
 
-    for (let i = 0; i < a.length; i++) {
-        for (let j = 0; j < b[0].length; j++) {
-            for (let k = 0; k < a[0].length; k++) {
+    for(let i = 0; i < a.length; i++) {
+        for(let j = 0; j < b[0].length; j++) {
+            for(let k = 0; k < a[0].length; k++) {
                 result[i][j] += a[i][k] * b[k][j];
             }
         }
@@ -201,7 +202,8 @@ function matrixMultiply(a: number[][], b: number[][]): number[][] {
 }
 
 function swapColumns(matrix: number[][], col1: number, col2: number): void {
-    for (let i = 0; i < matrix.length; i++) {
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for(let i = 0; i < matrix.length; i++) {
         const temp = matrix[i][col1];
         matrix[i][col1] = matrix[i][col2];
         matrix[i][col2] = temp;
@@ -225,10 +227,10 @@ function matrixInverse(matrix: number[][]): number[][] {
     // Simplified 2x2 matrix inverse implementation
     // For larger matrices or production code, use a proper linear algebra library
     const n = matrix.length;
-    if (n === 2) {
+    if(n === 2) {
         const det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-        if (Math.abs(det) < 1e-10) {
-            throw new Error('Matrix is singular');
+        if(Math.abs(det) < 1e-10) {
+            throw new Error("Matrix is singular");
         }
         return [
             [matrix[1][1] / det, -matrix[0][1] / det],
@@ -238,11 +240,11 @@ function matrixInverse(matrix: number[][]): number[][] {
 
     // For larger matrices, you'd need Gaussian elimination or LU decomposition
     // This is a placeholder - use a proper math library in production
-    throw new Error('Matrix inversion not implemented for matrices larger than 2x2');
+    throw new Error("Matrix inversion not implemented for matrices larger than 2x2");
 }
 
 export const getNiggliReducedLattice = (matrix: number[][]): number[][] => {
-	const [reducedMatrix, _] = calculateLLL(matrix);
+	const [reducedMatrix] = computeLLL(matrix);
 	return reducedMatrix;
 };
 
@@ -252,7 +254,7 @@ const basis = [
     [-0.0025309, 1.2362, 2.0244]
 ];
 
-const result = calculateLLL(basis);
+const result = computeLLL(basis);
 
 console.log(result[0]);
 console.log(result[1]);

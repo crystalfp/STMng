@@ -13,7 +13,7 @@ import {transpose, zeros, column, dot, identity, diag,
  * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-export const calculateLLL = (basis: number[][],
+export const computeLLL = (basis: number[][],
                              delta = 0.75): [number[][], number[][]] => {
 
     // Transpose the lattice matrix first so that basis vectors are columns.
@@ -237,7 +237,7 @@ function matrixInverse(matrix: number[][]): number[][] {
 }
 
 export const getNiggliReducedLattice = (matrix: number[][]): number[][] => {
-	const [reducedMatrix, _] = calculateLLL(matrix);
+	const [reducedMatrix, _] = computeLLL(matrix);
 	return reducedMatrix;
 };
 
@@ -247,7 +247,7 @@ const basis = [
     [-0.0025309, 1.2362, 2.0244]
 ];
 
-const result = calculateLLL(basis);
+const result = computeLLL(basis);
 
 console.log(result[0]);
 console.log(result[1]);

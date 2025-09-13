@@ -9,7 +9,7 @@
  * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-function calculateLLL(matrix: number[][], delta = 0.75): [number[][], number[][]] {
+function computeLLL(matrix: number[][], delta = 0.75): [number[][], number[][]] {
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
     const a = transpose(copyMatrix(matrix));
@@ -228,4 +228,4 @@ function matrixInverse(matrix: number[][]): number[][] {
     throw new Error('Matrix inversion not implemented for matrices larger than 2x2');
 }
 
-export { calculateLLL };
+export { computeLLL };
