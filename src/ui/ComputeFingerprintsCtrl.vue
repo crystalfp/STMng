@@ -519,15 +519,15 @@ const showEnergyLandscape = (): void => {
   </v-btn>
 
   <v-row class="ml-0 mt-1 mb-2">
-  <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
-    {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
-  <v-label v-if="fingerprintingBusy" class="mt-4 result-label cursor-wait">Working&hellip;</v-label>
-  <v-label v-if="intrinsicDimension > 0 && !fingerprintingBusy"
-           class="mt-n2 result-label">
-            {{ `Intrinsic dimension: ${intrinsicDimension.toFixed(2)} (theory: ${theoreticalDimension.toFixed(2)})` }}</v-label>
-  <v-label v-if="intrinsicDimension > 0 && !fingerprintingBusy"
-           class="result-label">
-            {{ `Local dimension range: ${minLocalDimension.toFixed(2)} — ${maxLocalDimension.toFixed(2)}` }}</v-label>
+    <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
+      {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
+    <v-label v-if="fingerprintingBusy" class="mt-4 result-label cursor-wait">Working&hellip;</v-label>
+    <v-container v-if="intrinsicDimension > 0 && !fingerprintingBusy" class="pa-0 my-n2">
+      <v-label class="result-label">
+              {{ `Intrinsic dimension: ${intrinsicDimension.toFixed(2)} (theory: ${theoreticalDimension.toFixed(2)})` }}</v-label>
+      <v-label class="result-label">
+              {{ `Local dimension range: ${minLocalDimension.toFixed(2)} — ${maxLocalDimension.toFixed(2)}` }}</v-label>
+    </v-container>
   </v-row>
   <node-alert node="fingerprints" />
 

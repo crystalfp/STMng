@@ -91,7 +91,8 @@ const handleDataAvailable = (event: BlobEvent): void => {recordedChunks.push(eve
 const handleStop = async (): Promise<void> => {
 
     const blob = new Blob(recordedChunks, {
-        type: "video/webm; codecs=vp9"
+        type: "video/webm;codecs=h264"
+        // type: "video/webm;codecs=vp9"
     });
 
     const buffer = await blob.arrayBuffer();
@@ -467,8 +468,11 @@ onMounted(() => {
             stream = renderer.domElement.captureStream(25);
 
             // Create the Media Recorder
-            const options = {mimeType: "video/webm; codecs=vp9"};
-            mediaRecorder = new MediaRecorder(stream, options);
+            mediaRecorder = new MediaRecorder(stream, {
+                mimeType: "video/webm;codecs=h264",
+                // mimeType: "video/webm;codecs=vp9",
+                videoBitsPerSecond: 8e6
+            });
 
             // Register event handlers and start recording
             mediaRecorder.ondataavailable = handleDataAvailable;

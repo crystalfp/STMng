@@ -46,7 +46,7 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
   <v-label class="mt-10 separator-title">Movie</v-label>
   <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
         @click="controlStore.movie = !controlStore.movie">{{ startStop }}</v-btn>
-  <node-alert node="captureMovie" class="mt-4" />
+  <node-alert node="captureMovie" :timeout="0" class="mt-4" />
 
   <v-label class="mt-10 separator-title">STL</v-label>
 

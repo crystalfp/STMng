@@ -22,6 +22,7 @@ import {Input, Output,
 		QUALITY_HIGH} from "mediabunny";
 
 import {NodeCore} from "../modules/NodeCore";
+import {sendAlertToClient} from "../modules/ToClient";
 import type {ChannelDefinition, CtrlParams} from "@/types";
 
 export class CaptureView extends NodeCore {
@@ -214,7 +215,11 @@ export class CaptureView extends NodeCore {
 			return {payload: filename};
 		}
 		catch(error) {
-			return {error: `Cannot save movie file "${filename}". Error: ${(error as Error).message}`};
+			const cause = (error as Error).message;
+			const message = `Cannot save movie file "${filename}". Error: ${cause}`;
+			const userMessage = `Cannot save movie file: ${cause}`;
+			sendAlertToClient(message, {level: "error", node: "CaptureView", userMessage});
+			return {error: message};
 		}
 	}
 

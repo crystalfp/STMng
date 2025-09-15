@@ -1,6 +1,6 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
-  ☐ ffmpeg output to application log
+  ✘ ffmpeg output to application log @cancelled(2025-09-13 17:45)
   ☐ Billboard also for Bonds lengths labels
   ☐ Trajectory is slow
 
