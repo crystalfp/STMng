@@ -9,20 +9,9 @@
  */
 import {dialog, BrowserWindow, type PrintToPDFOptions} from "electron";
 import {writeFileSync} from "node:fs";
-import {writeFile} from "node:fs/promises";
 import path from "node:path";
-
-import {Input, Output,
-		BufferTarget, Conversion,
-		WEBM,
-		BufferSource,
-		Mp4OutputFormat,
-		OggOutputFormat,
-		MkvOutputFormat,
-		QUALITY_HIGH} from "mediabunny";
-
+import {writeFile} from "node:fs/promises";
 import {NodeCore} from "../modules/NodeCore";
-import {sendAlertToClient} from "../modules/ToClient";
 import type {ChannelDefinition, CtrlParams} from "@/types";
 
 export class CaptureView extends NodeCore {
@@ -30,7 +19,8 @@ export class CaptureView extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "snapshot",	  type: "invoke", 	   callback: this.channelSnapshot.bind(this)},
 		{name: "snapshotPDF", type: "invokeAsync", callback: this.channelSnapshotPDF.bind(this)},
-		{name: "movie",		  type: "invokeAsync", callback: this.channelMovie.bind(this)},
+		{name: "movie-start", type: "invoke",	   callback: this.channelMovieStart.bind(this)},
+		{name: "movie",		  type: "invoke", 	   callback: this.channelMovie.bind(this)},
 		{name: "stl",		  type: "invoke", 	   callback: this.channelSTL.bind(this)},
 	];
 
@@ -131,95 +121,43 @@ export class CaptureView extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for creating a movie
+	 * Channel handler for selecting the output movie file
 	 *
-	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private async channelMovie(params: CtrlParams): Promise<CtrlParams> {
-
-		const buffer = params.buffer as ArrayBuffer;
-		if(!buffer) return {payload: ""};
-
-		let width = params.width as number;
-		let height = params.height as number;
+	private channelMovieStart(): CtrlParams {
 
 		const filename = dialog.showSaveDialogSync({
 			title: "Save movie",
 			filters: [
 				{name: "WEBm", extensions: ["webm"]},
 				{name: "mp4",  extensions: ["mp4"]},
-				{name: "ogg",  extensions: ["ogg"]},
 				{name: "mkv",  extensions: ["mkv"]},
 			]
 		});
+		if(filename) return {filename, extension: path.extname(filename)};
+		return {filename: "", extension: ""};
+	}
+
+	/**
+	 * Channel handler for creating a movie
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private channelMovie(params: CtrlParams): CtrlParams {
+
+		const buffer = params.buffer as ArrayBuffer;
+		if(!buffer) return {payload: ""};
+		const filename = params.filename as string;
 		if(!filename) return {payload: ""};
 
-		const format = path.extname(filename);
-		if(format === ".webm") {
-			try {
-				writeFileSync(filename, Buffer.from(buffer));
-				return {payload: filename};
-			}
-			catch(error) {
-				return {error: `Cannot save movie file "${filename}". Error: ${(error as Error).message}`};
-			}
-		}
-
-		const input = new Input({
-			formats: [WEBM],
-			source: new BufferSource(buffer),
-		});
-
-		let formatter;
-		switch(format) {
-			case ".mp4":
-				formatter = new Mp4OutputFormat({fastStart: "in-memory"});
-				break;
-			case ".ogg":
-				formatter = new OggOutputFormat();
-				break;
-			case ".mkv":
-				formatter = new MkvOutputFormat();
-				break;
-			default:
-				return {error: `Movie format "${format}" is not supported`};
-		}
-
-		if(width % 2 !== 0 || height % 2 !== 0) {
-
-			width = Math.floor(width/2)*2;
-			height = Math.floor(height/2)*2;
-		}
-
-		const output = new Output({
-			format: formatter,
-			target: new BufferTarget(),
-		});
-
 		try {
-			const conversion = await Conversion.init({
-				input,
-				output,
-				video: {
-					width,
-					height,
-					fit: "contain",
-					bitrate: QUALITY_HIGH
-				},
-			});
-
-			await conversion.execute();
-			if(!output.target.buffer) throw Error("Invalid output buffer");
-			writeFileSync(filename, Buffer.from(output.target.buffer));
+			writeFileSync(filename, Buffer.from(buffer));
 			return {payload: filename};
 		}
 		catch(error) {
-			const cause = (error as Error).message;
-			const message = `Cannot save movie file "${filename}". Error: ${cause}`;
-			const userMessage = `Cannot save movie file: ${cause}`;
-			sendAlertToClient(message, {level: "error", node: "CaptureView", userMessage});
-			return {error: message};
+			return {error: `Cannot save movie file "${filename}". Error: ${(error as Error).message}`};
 		}
 	}
 

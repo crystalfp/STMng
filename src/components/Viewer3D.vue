@@ -20,6 +20,7 @@ import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
+import {CaptureMovie} from "@/services/CaptureMovie";
 import type {CtrlParams} from "@/types";
 import type {BillboardBatchedText} from "@/services/SpriteText";
 
@@ -72,51 +73,6 @@ const setOrthographicAspect = (perspectiveCamera: PerspectiveCamera,
     orthographicCamera.bottom = -halfHeight;
     orthographicCamera.left = -halfWidth;
     orthographicCamera.right = halfWidth;
-};
-
-// > Movie and screenshot support
-// All recorded chunks captured
-const recordedChunks: Blob[] = [];
-
-/**
- * Save data chunk from MediaRecorder
- *
- * @param event - Data from MediaRecorder
- */
-const handleDataAvailable = (event: BlobEvent): void => {recordedChunks.push(event.data);};
-
-/**
- * Saves the video file on stop recording
- */
-const handleStop = async (): Promise<void> => {
-
-    const blob = new Blob(recordedChunks, {
-        type: "video/webm;codecs=h264"
-        // type: "video/webm;codecs=vp9"
-    });
-
-    const buffer = await blob.arrayBuffer();
-
-    askNode("SYSTEM", "movie", {buffer, width: cnv.value!.clientWidth, height: cnv.value!.clientHeight})
-        .then((sts) => {
-            if(sts.error) throw Error(sts.error as string);
-            if(sts.payload) {
-                showNodeAlert(sts.payload as string, "captureMovie", {level: "success"});
-            }
-        })
-        .catch((error: Error) => {
-            showNodeAlert(error.message, "captureMovie");
-        });
-};
-
-/**
- * Handle MediaRecording errors
- *
- * @param event - Error event
- */
-const handleError = (event: Event): void => {
-    const error = (event as unknown as {error: {name: string}}).error.name;
-    showNodeAlert(error, "captureMovie");
 };
 
 // Reference to the view
@@ -457,35 +413,34 @@ onMounted(() => {
 
     // Record movie
     let movieCaptureRunning = false;
-    let mediaRecorder: MediaRecorder;
-    let stream: MediaStream;
+    let capturer: CaptureMovie;
     watchEffect(() => {
         if(controlStore.movie) {
 
-            movieCaptureRunning = true;
+            askNode("SYSTEM", "movie-start")
+                .then((params: CtrlParams) => {
 
-            // Capturing movie at 25 fps
-            stream = renderer.domElement.captureStream(25);
+                    const filename = params.filename as string;
+                    if(!filename) return;
+                    const extension = params.extension as string;
 
-            // Create the Media Recorder
-            mediaRecorder = new MediaRecorder(stream, {
-                mimeType: "video/webm;codecs=h264",
-                // mimeType: "video/webm;codecs=vp9",
-                videoBitsPerSecond: 8e6
-            });
+                    movieCaptureRunning = true;
 
-            // Register event handlers and start recording
-            mediaRecorder.ondataavailable = handleDataAvailable;
-            mediaRecorder.onstop = handleStop;
-            // eslint-disable-next-line unicorn/prefer-add-event-listener
-            mediaRecorder.onerror = handleError;
-            mediaRecorder.start();
+                    capturer = new CaptureMovie(renderer.domElement,
+                                                extension,
+                                                25,
+                                                cnv.value!.clientWidth,
+                                                cnv.value!.clientHeight);
+                    return capturer.saveFrames(filename);
+                })
+                .catch((error: Error) => {
+                    showNodeAlert(error.message, "captureMovie");
+                    showSystemAlert(error.message);
+                });
         }
         else if(movieCaptureRunning) {
             movieCaptureRunning = false;
-            mediaRecorder.stop();
-            const tracks = stream.getTracks();
-            for(const track of tracks) track.stop();
+            capturer.finishFrames();
         }
     });
 
