@@ -22,8 +22,8 @@ export class CaptureMovie {
     private timestamp = 0;
     private readonly FRAME_MSEC: number;
     private readonly FRAME_SEC: number;
-    private readonly width: number;
-    private readonly height: number;
+    // private readonly width: number;
+    // private readonly height: number;
 
     /**
      * Initialize the movie capturer
@@ -31,24 +31,18 @@ export class CaptureMovie {
      * @param canvas - The viewer3D canvas
      * @param extension - The save filename extension that determines the movie format
      * @param fps - Movie frames per second
-	 * @param width - Canvas width
-	 * @param height - Canvas height
      */
-    constructor(canvas: HTMLCanvasElement, extension: string, fps: number,
-				width: number, height: number) {
+    constructor(canvas: HTMLCanvasElement, extension: string, fps = 25) {
 
         // Frame duration
         this.FRAME_MSEC = Math.round(1000/fps);
         this.FRAME_SEC  = this.FRAME_MSEC/1000;
 
         // Frame dimensions
-        this.width  = width;
-        this.height = height;
-		if(this.width % 2 !== 0 || this.height % 2 !== 0) {
-
-			this.width = Math.floor(this.width/2)*2;
-			this.height = Math.floor(this.height/2)*2;
-		}
+        // const width = canvas.clientWidth;
+        // const height = canvas.clientHeight;
+		// this.width  = (width % 2 === 0) ? width : width-1;
+        // this.height = (height % 2 === 0) ? height : height-1;
 
         // Initialize the formatter and frame capturer
         let formatter;

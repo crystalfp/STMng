@@ -426,11 +426,7 @@ onMounted(() => {
 
                     movieCaptureRunning = true;
 
-                    capturer = new CaptureMovie(renderer.domElement,
-                                                extension,
-                                                25,
-                                                cnv.value!.clientWidth,
-                                                cnv.value!.clientHeight);
+                    capturer = new CaptureMovie(renderer.domElement, extension);
                     return capturer.saveFrames(filename);
                 })
                 .catch((error: Error) => {
