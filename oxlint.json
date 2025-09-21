@@ -6,6 +6,16 @@
   "env": {
     "es2025": true
   },
+  "plugins": [
+      "vue",
+      "eslint",
+      "typescript",
+      "import",
+      "promise",
+      "node",
+      "unicorn",
+      "oxc"
+  ],
   "ignorePatterns": [
     "src/vite-env.d.ts",
     "src/assets",
