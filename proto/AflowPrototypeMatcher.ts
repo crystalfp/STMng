@@ -76,7 +76,7 @@ export class AflowPrototypeMatcher {
 		stream.on("end", () => {
 			// Preprocess AFLOW prototypes
 			const AFLOW_PROTOTYPE_LIBRARY = JSON.parse(rawResult) as LibraryEntry[];
-			console.log(JSON.stringify(AFLOW_PROTOTYPE_LIBRARY, undefined, 2));
+			// console.log(JSON.stringify(AFLOW_PROTOTYPE_LIBRARY, undefined, 2));
 
 			for(const dct of AFLOW_PROTOTYPE_LIBRARY) {
 

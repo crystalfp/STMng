@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     if match_info:
         print("Number of prototypes:", len(match_info))
-        print(match_info[0]['snl'])
-        print(match_info[0]['tags'])
+        # print(match_info[0]['snl'])
+        # print(match_info[0]['tags'])
     else:
         print("No prototype match found.")

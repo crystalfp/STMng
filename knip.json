@@ -31,7 +31,8 @@
     "@rollup/plugin-commonjs",
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-terser",
-    "@rollup/plugin-typescript"
+    "@rollup/plugin-typescript",
+    "oxlint-tsgolint"
   ],
   "includeEntryExports": true,
   "ignore": ["**/KDtree.d.ts"]

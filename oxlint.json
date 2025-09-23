@@ -8,9 +8,9 @@
   },
   "plugins": [
       "vue",
+      "import",
       "eslint",
       "typescript",
-      "import",
       "promise",
       "node",
       "unicorn",
@@ -50,6 +50,7 @@
     "no-ex-assign": "error",
     "no-extra-boolean-cast": "error",
     "no-fallthrough": "error",
+    "no-floating-promises": "error",
     "no-func-assign": "error",
     "no-global-assign": "error",
     "no-import-assign": "error",

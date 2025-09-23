@@ -121,6 +121,7 @@ const config = defineConfig([
         ...typescriptPlugin.configs["recommended-type-checked"].rules,
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
         ...typescriptPlugin.configs["strict-type-checked"].rules,
+        // oxlint-disable-next-line no-named-as-default-member
         ...depend.configs["flat/recommended"].rules,
 
         // > ******************* language rules ***********************
