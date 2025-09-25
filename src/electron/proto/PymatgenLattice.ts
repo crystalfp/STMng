@@ -1,5 +1,30 @@
+/**
+ * Routines translated from Pymatgen lattice.py file
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2025-09-24
+ */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 import {extractBasis} from "@/electron/modules/Helpers";
+import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
+        copyMatrix, reciprocaCrystallographyclLatticeLengths,
+        transpose, dotProduct, getColumn, matrixVectorMultiply,
+        getColumns,
+        getRow,
+        swapColumns,
+        matrixMultiply,
+        leastSquares,
+        getFractionalCoords,
+        range,
+        vectorsMatrixMultiply,
+        cartesianProduct,
+        getCartesianCoords,
+        cellAngle,
+        solveLinearSystem,
+        determinant,
+        calculateVolume} from "./Utility.ts";
 
 /**
  * Perform a Lenstra-Lenstra-Lovasz lattice basis reduction to obtain a
@@ -119,294 +144,6 @@ export const computeLLL = (basis: number[][],
 
     return [transpose(a), transpose(mapping)];
 };
-
-// Helper functions
-const createZeroMatrix = (rows: number, cols: number): number[][] => {
-
-    const matrix = Array<number[]>(rows);
-    for(let i = 0; i < rows; i++) {
-        matrix[i] = Array<number>(cols).fill(0);
-    }
-    return matrix;
-};
-
-const createIdentityMatrix = (size: number): number[][] => {
-
-    const matrix = Array<number[]>(size);
-    for(let i = 0; i < size; i++) {
-        matrix[i] = Array<number>(size).fill(0);
-        matrix[i][i] = 1;
-    }
-    return matrix;
-};
-
-const createDiagonalMatrix = (values: number[]): number[][] => {
-
-    const size = values.length;
-    const matrix = Array<number[]>(size);
-    for(let i = 0; i < size; i++) {
-        matrix[i] = Array<number>(size).fill(0);
-        matrix[i][i] = values[i];
-    }
-
-    return matrix;
-};
-
-function copyMatrix(matrix: number[][]): number[][] {
-    return matrix.map((row) => [...row]);
-}
-
-function transpose(matrix: number[][]): number[][] {
-
-    const rows = matrix.length;
-    const cols = matrix[0].length;
-    // eslint-disable-next-line sonarjs/arguments-order
-    const result = createZeroMatrix(cols, rows);
-
-    for(let i = 0; i < rows; i++) {
-        for(let j = 0; j < cols; j++) {
-            result[j][i] = matrix[i][j];
-        }
-    }
-    return result;
-}
-
-function getColumn(matrix: number[][], col: number): number[] {
-    return matrix.map((row) => row[col]);
-}
-
-function getColumns(matrix: number[][], startCol: number, endCol: number): number[][] {
-    return matrix.map((row) => row.slice(startCol, endCol));
-}
-
-function getRow(matrix: number[][], row: number, startCol: number, endCol: number): number[] {
-    return matrix[row].slice(startCol, endCol);
-}
-
-function dotProduct(a: number[], b: number[]): number {
-    return a.reduce((sum, value, i) => sum + value * b[i], 0);
-}
-
-function matrixVectorMultiply(matrix: number[][], vector: number[]): number[] {
-    return matrix.map((row) => dotProduct(row, vector));
-}
-
-function matrixMultiply(a: number[][], b: number[][]): number[][] {
-    const result = createZeroMatrix(a.length, b[0].length);
-
-    for(let i = 0; i < a.length; i++) {
-        for(let j = 0; j < b[0].length; j++) {
-            for(let k = 0; k < a[0].length; k++) {
-                result[i][j] += a[i][k] * b[k][j];
-            }
-        }
-    }
-    return result;
-}
-
-function swapColumns(matrix: number[][], col1: number, col2: number): void {
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for(let i = 0; i < matrix.length; i++) {
-        const temp = matrix[i][col1];
-        matrix[i][col1] = matrix[i][col2];
-        matrix[i][col2] = temp;
-    }
-}
-
-function leastSquares(a: number[][], b: number[][]): number[][] {
-    // Simple implementation using normal equations: (A^T * A)^-1 * A^T * b
-    // For a more robust implementation, consider using SVD or QR decomposition
-    const aT = transpose(a);
-    const aTa = matrixMultiply(aT, a);
-    const aTb = matrixMultiply(aT, b);
-
-    // This is a simplified inverse calculation for small matrices
-    // In production, you'd want to use a proper linear algebra library
-    const aTaInv = matrixInverse(aTa);
-    return matrixMultiply(aTaInv, aTb);
-}
-
-function matrixInverse(matrix: number[][]): number[][] {
-    // Simplified 2x2 matrix inverse implementation
-    // For larger matrices or production code, use a proper linear algebra library
-    const n = matrix.length;
-    if(n === 2) {
-        const det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-        if(Math.abs(det) < 1e-10) {
-            throw new Error("Matrix is singular");
-        }
-        return [
-            [matrix[1][1] / det, -matrix[0][1] / det],
-            [-matrix[1][0] / det, matrix[0][0] / det]
-        ];
-    }
-
-    // For larger matrices, you'd need Gaussian elimination or LU decomposition
-    // This is a placeholder - use a proper math library in production
-    throw new Error("Matrix inversion not implemented for matrices larger than 2x2");
-}
-
-// Matrix determinant helper
-const determinant = (matrix: number[][]): number => {
-    return (
-        matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
-        matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
-        matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0])
-    );
-};
-
-const invertLattice = (lattice: number[][]): number[][] => {
-
-	// Compute the determinant of the basis matrix
-	const det = determinant(lattice);
-
-	// Check if the determinant is zero, which means the matrix is not invertible
-	if(det === 0) throw Error("Basis matrix is not invertible");
-
-	// Compute the inverse basis matrix
-	const invDet = 1 / det;
-	return [
-		[(lattice[1][1] * lattice[2][2] - lattice[1][2] * lattice[2][1]) * invDet,
-		 (lattice[0][2] * lattice[2][1] - lattice[0][1] * lattice[2][2]) * invDet,
-		 (lattice[0][1] * lattice[1][2] - lattice[0][2] * lattice[1][1]) * invDet],
-		[(lattice[1][2] * lattice[2][0] - lattice[1][0] * lattice[2][2]) * invDet,
-		 (lattice[0][0] * lattice[2][2] - lattice[0][2] * lattice[2][0]) * invDet,
-		 (lattice[0][2] * lattice[1][0] - lattice[0][0] * lattice[1][2]) * invDet],
-		[(lattice[1][0] * lattice[2][1] - lattice[1][1] * lattice[2][0]) * invDet,
-		 (lattice[0][1] * lattice[2][0] - lattice[0][0] * lattice[2][1]) * invDet,
-		 (lattice[0][0] * lattice[1][1] - lattice[0][1] * lattice[1][0]) * invDet]
-	];
-};
-
-// Note: it is the crystallographyc reciprocal lattice
-const reciprocalLatticeLengths = (lattice: number[][]): number[] => {
-
-    const m = invertLattice(lattice);
-
-    return [
-        Math.hypot(m[0][0], m[1][0], m[2][0]),
-        Math.hypot(m[0][1], m[1][1], m[2][1]),
-        Math.hypot(m[0][2], m[1][2], m[2][2])
-    ];
-};
-
-// Helper method to solve linear system Ax = b
-function solveLinearSystem(A: number[][], b: number[][]): number[][] | null {
-
-    // Simple 3x3 matrix inverse and multiplication
-    const det = determinant(A);
-    if(Math.abs(det) < 1e-10) return null;
-
-    // Calculate inverse matrix
-    const invA: number[][] = [
-      [
-        (A[1][1] * A[2][2] - A[1][2] * A[2][1]) / det,
-        (A[0][2] * A[2][1] - A[0][1] * A[2][2]) / det,
-        (A[0][1] * A[1][2] - A[0][2] * A[1][1]) / det
-      ],
-      [
-        (A[1][2] * A[2][0] - A[1][0] * A[2][2]) / det,
-        (A[0][0] * A[2][2] - A[0][2] * A[2][0]) / det,
-        (A[0][2] * A[1][0] - A[0][0] * A[1][2]) / det
-      ],
-      [
-        (A[1][0] * A[2][1] - A[1][1] * A[2][0]) / det,
-        (A[0][1] * A[2][0] - A[0][0] * A[2][1]) / det,
-        (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / det
-      ]
-    ];
-
-    // Multiply invA * b
-    return matrixMultiply(invA, b);
-}
-
-// const crossProduct = (a: number[], b: number[]): number[] => {
-
-//     return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
-// };
-
-const calculateVolume = (m: number[][]): number => {
-
-    // Calculate determinant of 3x3 matrix
-    return Math.abs(
-        m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
-        m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
-        m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
-    );
-};
-
-const cellAngle = (v1: number[], v2: number[]): number => {
-
-    const dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-    const mag1 = Math.hypot(...v1);
-    const mag2 = Math.hypot(...v2);
-    return Math.acos(dot / (mag1 * mag2))*180/Math.PI;
-};
-
-/**
- * Convert fractional coordinates to cartesian coordinates
- */
-const getCartesianCoords = (fracPoints: number[][], lattice: number[][]): number[][] => {
-
-    const out: number[][] = [];
-    for(const pt of fracPoints) {
-
-        out.push([
-            pt[0]*lattice[0][0] + pt[1]*lattice[1][0] + pt[2]*lattice[2][0],
-            pt[0]*lattice[0][1] + pt[1]*lattice[1][1] + pt[2]*lattice[2][1],
-            pt[0]*lattice[0][2] + pt[1]*lattice[1][2] + pt[2]*lattice[2][2],
-        ]);
-    }
-
-    return out;
-};
-
-const getFractionalCoords = (cartesianPoints: number[][], lattice: number[][]): number[][] => {
-
-    const fractionalCoords: number[][] = [];
-
-    const inverse = invertLattice(lattice);
-
-    for(const point of cartesianPoints) {
-
-        fractionalCoords.push([point[0]*inverse[0][0] + point[1]*inverse[1][0] + point[2]*inverse[2][0],
-							   point[0]*inverse[0][1] + point[1]*inverse[1][1] + point[2]*inverse[2][1],
-							   point[0]*inverse[0][2] + point[1]*inverse[1][2] + point[2]*inverse[2][2]]);
-	}
-
-	return fractionalCoords;
-};
-
-
-function range(start: number, end: number): number[] {
-
-    const result: number[] = [];
-    for(let i = start; i < end; ++i) {
-        result.push(i);
-    }
-    return result;
-}
-
-function vectorMatrixMultiply(vectors: number[][], matrix: number[][]): number[][] {
-  return vectors.map((vector) => {
-    const result: number[] = [];
-    for(let j = 0; j < matrix[0].length; j++) {
-      result[j] = 0;
-      for(let k = 0; k < vector.length; k++) {
-        result[j] += vector[k] * matrix[k][j];
-      }
-    }
-    return result;
-  });
-}
-
-function cartesianProduct<T>(...arrays: T[][]): T[][] {
-    // eslint-disable-next-line unicorn/no-array-reduce
-    return arrays.reduce<T[][]>((accumulator, current) =>
-        accumulator.flatMap((a) => current.map((b) => [...a, b])),
-        [[]]
-    );
-}
 
 function computeCubeIndex(coords: number[][], globalMin: number[], r: number): number[][] {
     return coords.map((coord) =>
@@ -547,7 +284,7 @@ export function getPointsInSpheres(
         }
 
         // Compute reciprocal lattice
-        const recipLengths = reciprocalLatticeLengths(lattice);
+        const recipLengths = reciprocaCrystallographyclLatticeLengths(lattice);
         const maxr = recipLengths.map((len) => Math.ceil((r + 0.15) * len));
 
         const fracCoords = getFractionalCoords(centerCoords, lattice);
@@ -577,7 +314,7 @@ export function getPointsInSpheres(
             coord.map((value, j) => value - allFracCoords[i][j])
         );
 
-        const coordsInCell = vectorMatrixMultiply(allFracCoords, matrix);
+        const coordsInCell = vectorsMatrixMultiply(allFracCoords, matrix);
 
         // Filter coordinates for each image
         const allValidCoords: number[][] = [];
@@ -587,7 +324,7 @@ export function getPointsInSpheres(
         const images = cartesianProduct(...allRanges);
 
         for(const image of images) {
-            const imageMatrix = vectorMatrixMultiply([image], matrix)[0];
+            const imageMatrix = vectorsMatrixMultiply([image], matrix)[0];
             const coords = coordsInCell.map((coord) =>
                 coord.map((value, i) => value + imageMatrix[i])
             );
@@ -642,6 +379,10 @@ export function getPointsInSpheres(
     let index = 0;
     for(const cubeIdx of allCubeIndex1D) {
 
+        cubeToCoords[cubeIdx] ??= [];
+        cubeToImages[cubeIdx] ??= [];
+        cubeToIndices[cubeIdx] ??= [];
+
         cubeToCoords[cubeIdx].push(validCoords[index]);
         cubeToImages[cubeIdx].push(validImages[index]);
         cubeToIndices[cubeIdx].push(validIndices[index]);
@@ -649,10 +390,9 @@ export function getPointsInSpheres(
     }
 
     // Find all neighboring cubes for each atom in the lattice cell
-  const siteNeighbors = findNeighbors(siteCubeIndex, nx, ny, nz);
-  const neighbors: NeighborResult[][] = [];
+    const siteNeighbors = findNeighbors(siteCubeIndex, nx, ny, nz);
+    const neighbors: NeighborResult[][] = [];
 
-//   centerCoords.forEach((centerCoord, centerIdx) => {
     let centerIdx = 0;
     for(const centerCoord of centerCoords) {
 
@@ -746,16 +486,16 @@ function* findAllMappings(
     otherLattice: number[][],
     ltol = 1e-5,
     atol = 1,
-    skipRotationMatrix = false): Generator<[number[][], number[][] | null, number[][]]> {
+    skipRotationMatrix = false): Generator<[number[][], number[][] | undefined, number[][]]> {
 
     const lengths = [
         Math.hypot(...otherLattice[0]),
         Math.hypot(...otherLattice[1]),
         Math.hypot(...otherLattice[2])
     ];
-    const alpha = cellAngle(otherLattice[0], otherLattice[1]);
-    const beta  = cellAngle(otherLattice[1], otherLattice[2]);
-    const gamma = cellAngle(otherLattice[0], otherLattice[2]);
+    const alpha = cellAngle(otherLattice[2], otherLattice[1]);
+    const beta  = cellAngle(otherLattice[0], otherLattice[2]);
+    const gamma = cellAngle(otherLattice[0], otherLattice[1]);
 
     // Get points in sphere around origin
     const maxLength = Math.max(...lengths);
@@ -777,6 +517,7 @@ function* findAllMappings(
             return ratio < (1 + ltol) && ratio > 1 / (1 + ltol);
         });
     });
+    // console.log("IIII", inds);
     // Get candidate vectors for each lattice direction
     const cA = cart.filter((_, idx) => inds[0][idx]);
     const cB = cart.filter((_, idx) => inds[1][idx]);
@@ -805,10 +546,16 @@ function* findAllMappings(
     const gammaTarget = Array(gammaAngles.length).fill(null).map(() =>
         Array<number>(gammaAngles[0].length).fill(gamma)
     );
+    // console.log("====");
+    // console.log(cA, cB, lA, lB);
+    // console.log("+++ gammaAngles", gammaAngles);
 
     const alphaB = isClose(alphaAngles, alphaTarget, atol);
     const betaB  = isClose(betaAngles, betaTarget, atol);
     const gammaB = isClose(gammaAngles, gammaTarget, atol);
+// console.log("+++ alpha", alphaB);
+// console.log("+++ beta", betaB);
+// console.log("+++ gamma", gammaB);
 
     // Find valid combinations
     for(let idx = 0; idx < gammaB.length; idx++) {
@@ -838,7 +585,7 @@ function* findAllMappings(
             [cC[k][0], cC[k][1], cC[k][2]]
           ];
 
-          let rotationM: number[][] | null = null;
+          let rotationM: number[][] | undefined;
           if(!skipRotationMatrix) {
             rotationM = solveLinearSystem(alignedM, otherLattice);
           }
@@ -853,7 +600,7 @@ const findMapping = (
     otherLattice: number[][],
     ltol = 1e-5,
     atol = 1,
-    skipRotationMatrix = false): [number[][], number[][] | null, number[][]] | null => {
+    skipRotationMatrix = false): [number[][], number[][] | undefined, number[][]] | null => {
 
     const generator = findAllMappings(otherLattice, ltol, atol, skipRotationMatrix);
     const result = generator.next();
@@ -1065,15 +812,3 @@ export const getNiggliReducedLattice = (matrix: number[][], tol = 1e-5): number[
 
     throw new Error("Can't find niggli");
 };
-
-const basis = [
-    [7.283, 0.47121, -0.27644],
-    [1.3812, 7.0908, -0.25494],
-    [-0.0025309, 1.2362, 2.0244]
-];
-
-const result = computeLLL(basis);
-
-// console.log(result[0]);
-// console.log(result[1]);
-void result;

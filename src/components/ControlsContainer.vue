@@ -143,9 +143,8 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
 </template>
 
 
-<style>
-/* Style cannot be scoped */
-.title-container .v-select__selection-text {
+<style scoped>
+.title-container :deep(.v-select__selection-text) {
   font-size: 140%;
 }
 

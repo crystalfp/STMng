@@ -226,9 +226,8 @@ const resetSliders = (): void => {
 </v-container>
 </template>
 
-<style>
-/* Cannot be scoped otherwise it is ignored */
-.v-table__wrapper {
+<style scoped>
+:deep(.v-table__wrapper) {
   overflow-y: hidden
 }
 

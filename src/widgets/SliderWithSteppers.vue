@@ -105,10 +105,9 @@ watch(valueToDebounce, () => {
 </template>
 
 
-<style>
-/* Style cannot be scoped */
+<style scoped>
 
-.slider-with-stepper .v-slider__label {
+.slider-with-stepper :deep(.v-slider__label) {
   /* stylelint-disable value-keyword-case */
   width: v-bind(labelWidth);
   user-select: none;
