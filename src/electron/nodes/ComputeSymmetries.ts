@@ -138,10 +138,18 @@ export class ComputeSymmetries extends NodeCore {
 
 		if(!data || data.atoms.length === 0) {
 			this.toNextNode(new EmptyStructure());
+			sendToClient(this.id, "input-symmetries", {noInputSymmetries: true});
 			return;
 		}
 
 		this.inputStructure = data;
+
+		const noInputSymmetries = noSymmetriesSpaceGroup.has(data.crystal.spaceGroup);
+
+		sendToClient(this.id, "input-symmetries", {
+			noInputSymmetries,
+			applyInputSymmetries: this.applyInputSymmetries
+		});
 
 		this.outputStructure = this.computeSymmetries();
 

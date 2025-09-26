@@ -27,6 +27,7 @@ const {id, label} = defineProps<{
 
 // > Get and set ui parameters from the switchboard
 const applyInputSymmetries = ref(true);
+const disableInputSymmetries = ref(false);
 const enableFindSymmetries = ref(true);
 const standardizeCell = ref(true);
 const symprecStandardize = ref(-1);
@@ -120,13 +121,30 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     if(params.pointGroup !== undefined) pointGroup.value = params.pointGroup as string;
 });
 
+receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
+
+    if(params.noInputSymmetries === undefined) return;
+
+    const noInputSymmetries = params.noInputSymmetries as boolean;
+    if(noInputSymmetries) {
+        disableInputSymmetries.value = true;
+        applyInputSymmetries.value = false;
+    }
+    else {
+        disableInputSymmetries.value = false;
+        applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
+    }
+});
+
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-switch v-model="applyInputSymmetries" label="Apply input symmetries" class="mt-2 ml-3" />
-  <v-switch v-model="enableFindSymmetries" label="Enable find symmetries" class="ml-3 mt-n2" />
+  <v-switch v-model="applyInputSymmetries" :disabled="disableInputSymmetries"
+            label="Apply input symmetries" class="mt-2 ml-3" />
+  <v-switch v-model="enableFindSymmetries"
+            label="Enable find symmetries" class="ml-3 mt-n2" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
     <v-switch v-model="standardizeCell" label="Standardize cell" class="ml-3" />
     <v-container v-if="standardizeCell" class="pa-0 mt-n2">
@@ -143,7 +161,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     </debounced-slider>
   </v-container>
 
-  <v-row class="pl-2 mt-2 align-center">
+  <v-row v-if="!disableInputSymmetries" class="pl-2 mt-2 align-center">
     <v-col cols="5">
       <v-label text="Input symmetry:" class="result-label no-select" />
     </v-col>
@@ -151,7 +169,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
       <v-label :text="inputSpaceGroup" class="show-symmetry" />
     </v-col>
   </v-row>
-  <v-row class="pl-2 mt-2 align-center">
+  <v-row v-if="enableFindSymmetries" class="pl-2 mt-2 align-center">
     <v-col cols="5">
       <v-label text="Final symmetry:" class="result-label no-select" />
     </v-col>
