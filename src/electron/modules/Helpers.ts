@@ -6,6 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
+import {getAtomicSymbol} from "./AtomData";
 import type {BasisType, Bond, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 /** Convert degrees to radiants and viceversa */
@@ -203,6 +204,148 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
 	}
 
 	return fractionalCoords;
+};
+
+/** Output from reducing to fractional coordinates */
+interface ReducedToFractional {
+
+	/** Atoms without duplicates */
+	atoms: {
+		/** Fractional coordinates */
+		frac: PositionType;
+		/** Atom symbol */
+		symbol: string;
+		/** Atomic number */
+		atomZ: number;
+		/** Atom label */
+		label: string;
+		/** Chain label */
+		chain: string;
+	}[];
+
+	/** List of atom species */
+	atomSymbols: string[];
+
+	/** Cound of atoms of each specie */
+	atomCount: number[];
+
+	/** List of atomic numbers */
+	atomZ: number[];
+}
+
+/**
+ * Compute list of fractional coordinates removing duplicated atoms
+ * on the cell boundaries
+ *
+ * @param structure - Structure from which the fractional coordinates
+ * 					  should be computed
+ * @returns List of non duplicated atoms
+ */
+export const reducingToFractionalCoordinates = (structure: Structure): ReducedToFractional => {
+
+	const out: ReducedToFractional = {
+		atoms: [],
+		atomSymbols: [],
+		atomCount: [],
+		atomZ: []
+	};
+
+	// Get the structure
+	const {crystal, atoms} = structure;
+	const {basis, origin} = crystal;
+
+	// Compute inverse matrix
+	const inverse = invertBasis(basis);
+
+	// For each atom compute the initial fractional coordinates
+	for(const atom of atoms) {
+
+		const {position, atomZ, label, chain} = atom;
+
+		const cx = position[0] - origin[0];
+		const cy = position[1] - origin[1];
+		const cz = position[2] - origin[2];
+
+		out.atoms.push({
+			frac: [cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
+				   cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
+				   cx*inverse[2] + cy*inverse[5] + cz*inverse[8]],
+			symbol: getAtomicSymbol(atomZ),
+			atomZ,
+			label,
+			chain
+		});
+	}
+
+	// Sort the atoms on symbol
+	out.atoms.sort((a, b) => a.symbol.localeCompare(b.symbol));
+
+	// Count the input atoms per specie
+	let previous = "";
+	let idx = -1;
+	for(const atom of out.atoms) {
+		if(atom.symbol === previous) {
+			++out.atomCount[idx];
+		}
+		else {
+			out.atomSymbols.push(atom.symbol);
+			out.atomZ.push(atom.atomZ);
+			out.atomCount.push(1);
+			++idx;
+			previous = atom.symbol;
+		}
+	}
+
+	// Remove duplicates per specie
+	let start = 0;
+	const TOL = 1e-4;
+	const countNew = [...out.atomCount];
+	idx = 0;
+	for(const count of out.atomCount) {
+		if(count > 1) {
+			const duplicated = Array<boolean>(count).fill(false);
+			let hasDuplicates = false;
+			for(let i=0; i<count-1; ++i) {
+				if(duplicated[i]) continue;
+
+				for(let j=i+1; j < count; ++j) {
+					if(duplicated[j]) continue;
+
+					const fi = out.atoms[i+start].frac;
+					const fj = out.atoms[j+start].frac;
+
+					const fdx = Math.abs(fi[0] - fj[0]);
+					if(fdx < TOL || (fdx < 1 + TOL && fdx > 1 - TOL)) {
+						const fdy = Math.abs(fi[1] - fj[1]);
+						if(fdy < TOL || (fdy < 1 + TOL && fdy > 1 - TOL)) {
+							const fdz = Math.abs(fi[2] - fj[2]);
+							if(fdz < TOL || (fdz < 1 + TOL && fdz > 1 - TOL)) {
+								duplicated[j] = true;
+								hasDuplicates = true;
+							}
+						}
+					}
+				}
+			}
+			if(hasDuplicates) {
+				for(let i=count-1; i>=0; --i) {
+					if(duplicated[i]) {
+						out.atoms.splice(i+start, 1);
+						--countNew[idx];
+					}
+				}
+			}
+		}
+
+		// Next specie
+		start += countNew[idx];
+		++idx;
+	}
+
+	// Update atoms counts
+	out.atomCount = countNew;
+
+	return out;
 };
 
 /**

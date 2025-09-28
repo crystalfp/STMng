@@ -8,8 +8,7 @@
  */
 
 import {openSync, writeSync, closeSync} from "node:fs";
-import {cartesianToFractionalCoordinates, format, hasNoUnitCell} from "../modules/Helpers";
-import {getAtomicSymbol} from "../modules/AtomData";
+import {format, hasNoUnitCell, reducingToFractionalCoordinates} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterPOSCAR implements WriterImplementation {
@@ -49,44 +48,26 @@ export class WriterPOSCAR implements WriterImplementation {
 				writeSync(fd, `${format(basis[3])} ${format(basis[4])} ${format(basis[5])}\n`);
 				writeSync(fd, `${format(basis[6])} ${format(basis[7])} ${format(basis[8])}\n`);
 
-				// Atoms symbols
-				const atomSymbols = new Map<number, string>();
-				for(const atom of atoms) {
-					const symbol = getAtomicSymbol(atom.atomZ);
-					atomSymbols.set(atom.atomZ, symbol);
-				}
-
-				// Atom counts
-				const atomCounts = new Map<number, number>();
-				for(const atom of atoms) {
-
-					const count = atomCounts.get(atom.atomZ);
-					atomCounts.set(atom.atomZ, count ? count+1 : 1);
-				}
+				// Compute fractional coordinates removing duplicates
+				const reduced = reducingToFractionalCoordinates(structure);
 
 				let line = "";
-				for(const item of atomCounts) {
-					line += ` ${atomSymbols.get(item[0])}`;
+				for(const item of reduced.atomSymbols) {
+					line += ` ${item}`;
 				}
 				line += "\n";
-				for(const item of atomCounts) {
-					line += ` ${item[1]}`;
+				for(const item of reduced.atomCount) {
+					line += ` ${item}`;
 				}
 				line += "\nDirect\n";
 				writeSync(fd, line);
 
-				const fc = cartesianToFractionalCoordinates(structure);
-				for(const item of atomCounts) {
-					let idx = 0;
-					for(const atom of atoms) {
-						if(atom.atomZ === item[0]) {
-							const x = format(fc[idx]);
-							const y = format(fc[idx+1]);
-							const z = format(fc[idx+2]);
-							writeSync(fd, `${x} ${y} ${z}\n`);
-						}
-						idx += 3;
-					}
+				for(const atom of reduced.atoms) {
+					const fc = atom.frac;
+					const x = format(fc[0]);
+					const y = format(fc[1]);
+					const z = format(fc[2]);
+					writeSync(fd, `${x} ${y} ${z}\n`);
 				}
 			}
 			closeSync(fd);

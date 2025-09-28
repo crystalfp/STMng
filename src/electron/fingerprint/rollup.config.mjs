@@ -26,6 +26,7 @@ export default {
 				"Slab.ts",
 				"Smooth.ts",
 				"Worker.ts",
+				"../modules/AtomData.ts",
 				"../modules/Helpers.ts",
 			],
 			tsconfig: false,

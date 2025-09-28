@@ -496,7 +496,7 @@ function* findAllMappings(
     const alpha = cellAngle(otherLattice[2], otherLattice[1]);
     const beta  = cellAngle(otherLattice[0], otherLattice[2]);
     const gamma = cellAngle(otherLattice[0], otherLattice[1]);
-
+console.log("++++", alpha, beta, gamma, lengths);
     // Get points in sphere around origin
     const maxLength = Math.max(...lengths);
     const sphereData = getPointsInSphere([[0, 0, 0]], [0, 0, 0], maxLength * (1 + ltol), otherLattice);

@@ -8,8 +8,7 @@
  */
 
 import {openSync, writeSync, closeSync} from "node:fs";
-import {getAtomicSymbol} from "../modules/AtomData";
-import {cartesianToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
+import {reducingToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterCIF implements WriterImplementation {
@@ -29,7 +28,7 @@ export class WriterCIF implements WriterImplementation {
 			for(const structure of structures) {
 
 				// Access the structure
-				const {crystal, atoms} = structure;
+				const {crystal} = structure;
 				const {basis, spaceGroup} = crystal;
 
 				// Start data block
@@ -53,9 +52,8 @@ export class WriterCIF implements WriterImplementation {
 
 					if(spaceGroup.startsWith("(")) {
 
-						const pos = spaceGroup.indexOf(")");
 						// Ignore lattice type
-
+						const pos = spaceGroup.indexOf(")");
 						writeSync(fd, "\nloop_\n_symmetry_equiv_pos_as_xyz\n");
 						const symms = spaceGroup.slice(pos+1).split("\n");
 						for(const symm of symms) writeSync(fd, `'${symm}'\n`);
@@ -78,14 +76,14 @@ export class WriterCIF implements WriterImplementation {
 								 "_atom_site_fract_y\n" +
 								 "_atom_site_fract_z\n");
 
-				const fc = cartesianToFractionalCoordinates(structure);
-				let idx = 0;
-				for(const atom of atoms) {
-					const name = getAtomicSymbol(atom.atomZ);
-					writeSync(fd, `${name.padEnd(4)} ${atom.label.padEnd(7)} ` +
-								  `${format(fc[idx])} ${format(fc[idx+1])} ` +
-								  `${format(fc[idx+2])}\n`);
-					idx += 3;
+				// Compute fractional coordinates removing duplicates
+				const reduced = reducingToFractionalCoordinates(structure);
+
+				for(const atom of reduced.atoms) {
+
+					const fc = atom.frac;
+					writeSync(fd, `${atom.symbol.padEnd(4)} ${atom.label.padEnd(7)} ` +
+								  `${format(fc[0])} ${format(fc[1])} ${format(fc[2])}\n`);
 				}
 
 				++step;

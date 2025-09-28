@@ -8,8 +8,7 @@
  */
 
 import {openSync, writeSync, closeSync} from "node:fs";
-import {getAtomicSymbol} from "../modules/AtomData";
-import {cartesianToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
+import {reducingToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterSHELX implements WriterImplementation {
@@ -19,7 +18,7 @@ export class WriterSHELX implements WriterImplementation {
 			const fd = openSync(filename, "w");
 
 			// Access the structure
-			const {crystal, atoms} = structures[0];
+			const {crystal} = structures[0];
 			const {basis, spaceGroup} = crystal;
 
 			// Comment line
@@ -54,47 +53,38 @@ export class WriterSHELX implements WriterImplementation {
 				}
 			}
 
-			// Atom counts and indices
-			const atomCounts = new Map<number, number>();
-			for(const atom of atoms) {
-
-				const count = atomCounts.get(atom.atomZ);
-				atomCounts.set(atom.atomZ, count ? count+1 : 1);
-			}
-			const atomIndices = new Map<number, number>();
-			let idx = 1;
-			for(const item of atomCounts) {
-				atomIndices.set(item[0], idx);
-				++idx;
-			}
+			// Compute fractional coordinates removing duplicates
+			const reduced = reducingToFractionalCoordinates(structures[0]);
 
     		// The SFAC line
 			let line = "SFAC";
-			for(const item of atomCounts) {
-				line += ` ${getAtomicSymbol(item[0])}`;
+			for(const item of reduced.atomSymbols) {
+				line += ` ${item}`;
 			}
-			line += "\n";
-			writeSync(fd, line);
+			line += "\nUNIT";
 
 			// The counts
-			line = "UNIT";
-			for(const item of atomCounts) {
-				line += ` ${item[1]}`;
+			for(const item of reduced.atomCount) {
+				line += ` ${item}`;
 			}
 			line += "\n";
 			writeSync(fd, line);
 
-			// Output coordinates
-			const fc = cartesianToFractionalCoordinates(structures[0]);
+			// Atom specie indices
+			const atomIndices = new Map<number, number>();
+			let idx = 1;
+			for(const atomZ of reduced.atomZ) {
+				atomIndices.set(atomZ, idx);
+				++idx;
+			}
 
-			idx = 0;
-			for(const atom of atoms) {
-				const name = getAtomicSymbol(atom.atomZ);
+			// Output coordinates
+			for(const atom of reduced.atoms) {
 				const pos = atomIndices.get(atom.atomZ)!;
-				writeSync(fd, `${name.padEnd(4)} ${pos.toString().padEnd(4)} ` +
-							  `${format(fc[idx])} ${format(fc[idx+1])} ` +
-							  `${format(fc[idx+2])}   11.00000   0\n`);
-				idx += 3;
+				const fc = atom.frac;
+				writeSync(fd, `${atom.symbol.padEnd(4)} ${pos.toString().padEnd(4)} ` +
+							  `${format(fc[0])} ${format(fc[1])} ` +
+							  `${format(fc[2])}   11.00000   0\n`);
 			}
 
 			writeSync(fd, "END\n");
