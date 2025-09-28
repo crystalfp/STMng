@@ -211,6 +211,10 @@ interface ReducedToFractional {
 
 	/** Atoms without duplicates */
 	atoms: {
+		/** Atom index in the input structure */
+		index: number;
+		/** Cartesian coordinates */
+		cart: PositionType;
 		/** Fractional coordinates */
 		frac: PositionType;
 		/** Atom symbol */
@@ -235,7 +239,8 @@ interface ReducedToFractional {
 
 /**
  * Compute list of fractional coordinates removing duplicated atoms
- * on the cell boundaries
+ * on the cell boundaries.
+ * If there is no unit cell, nothing is removed
  *
  * @param structure - Structure from which the fractional coordinates
  * 					  should be computed
@@ -254,10 +259,12 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 	const {crystal, atoms} = structure;
 	const {basis, origin} = crystal;
 
-	// Compute inverse matrix
-	const inverse = invertBasis(basis);
+	// Compute inverse matrix or leave it if not present
+	const noUnitCell = hasNoUnitCell(basis);
+	const inverse = noUnitCell ? basis : invertBasis(basis);
 
 	// For each atom compute the initial fractional coordinates
+	let index = 0;
 	for(const atom of atoms) {
 
 		const {position, atomZ, label, chain} = atom;
@@ -267,14 +274,18 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 		const cz = position[2] - origin[2];
 
 		out.atoms.push({
-			frac: [cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
-				   cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
-				   cx*inverse[2] + cy*inverse[5] + cz*inverse[8]],
+			index,
+			cart: position,
+			frac: noUnitCell ? [0, 0, 0] :
+					[cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
+				     cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
+				     cx*inverse[2] + cy*inverse[5] + cz*inverse[8]],
 			symbol: getAtomicSymbol(atomZ),
 			atomZ,
 			label,
 			chain
 		});
+		++index;
 	}
 
 	// Sort the atoms on symbol
@@ -295,6 +306,9 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 			previous = atom.symbol;
 		}
 	}
+
+	// No unit cell so no reduction
+	if(noUnitCell) return out;
 
 	// Remove duplicates per specie
 	let start = 0;

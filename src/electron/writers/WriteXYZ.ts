@@ -6,10 +6,8 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-
 import {openSync, writeSync, closeSync} from "node:fs";
-import {getAtomicSymbol} from "../modules/AtomData";
-import {format} from "../modules/Helpers";
+import {format, reducingToFractionalCoordinates} from "../modules/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterXYZ implements WriterImplementation {
@@ -20,15 +18,16 @@ export class WriterXYZ implements WriterImplementation {
 			const fd = openSync(filename, "w");
 			for(const structure of structures) {
 
-				const {atoms} = structure;
+				// Remove duplicates
+				const reduced = reducingToFractionalCoordinates(structure);
 
-				writeSync(fd, `  ${atoms.length}\n\n`);
+				writeSync(fd, `  ${reduced.atoms.length}\n\n`);
 
-				for(const atom of atoms) {
-					const symbol = getAtomicSymbol(atom.atomZ).padEnd(2, " ");
-					const x = format(atom.position[0]);
-					const y = format(atom.position[1]);
-					const z = format(atom.position[2]);
+				for(const atom of reduced.atoms) {
+					const symbol = atom.symbol.padEnd(2, " ");
+					const x = format(atom.cart[0]);
+					const y = format(atom.cart[1]);
+					const z = format(atom.cart[2]);
 					writeSync(fd, `${symbol} ${x} ${y} ${z}\n`);
 				}
 			}

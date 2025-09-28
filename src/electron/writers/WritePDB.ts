@@ -8,8 +8,7 @@
  */
 
 import {openSync, closeSync, writeSync} from "node:fs";
-import {basisToLengthAngles, hasUnitCell, invertBasis, isNormalBond} from "../modules/Helpers";
-import {getAtomicSymbol} from "../modules/AtomData";
+import {basisToLengthAngles, hasUnitCell, invertBasis, isNormalBond, reducingToFractionalCoordinates} from "../modules/Helpers";
 import type {WriterImplementation, Structure, CtrlParams} from "@/types";
 import log from "electron-log";
 export class WriterPDB implements WriterImplementation {
@@ -28,7 +27,7 @@ export class WriterPDB implements WriterImplementation {
                 if(multiple) writeSync(fd, "HEADER\n");
 
                 // Access the structure
-                const {crystal, atoms, bonds} = structure;
+                const {crystal, bonds} = structure;
                 const {basis, origin, spaceGroup} = crystal;
 
                 if(hasUnitCell(basis)) {
@@ -80,34 +79,46 @@ export class WriterPDB implements WriterImplementation {
                     }
                 }
 
-                for(let i=0; i < atoms.length; ++i) {
+                // Remove duplicates
+				const reduced = reducingToFractionalCoordinates(structure);
 
-                    const {atomZ, label, chain, position} = atoms[i];
+                for(let i=0; i < reduced.atoms.length; ++i) {
+
+                    const {symbol, label, chain, cart} = reduced.atoms[i];
                     const labelShort = label.length > 4 ? label.slice(-4) : label.padStart(4, " ");
                     const chainId = chain === "" ? "A" : chain;
                     writeSync(fd, "ATOM  " + i.toString().padStart(5, " ") + " " +
                         labelShort + "     " +
                         chainId + "   1    " +
-                        position[0].toFixed(3).padStart(8, " ") +
-                        position[1].toFixed(3).padStart(8, " ") +
-                        position[2].toFixed(3).padStart(8, " ") +
+                        cart[0].toFixed(3).padStart(8, " ") +
+                        cart[1].toFixed(3).padStart(8, " ") +
+                        cart[2].toFixed(3).padStart(8, " ") +
                         "  1.00  1.00          " +
-                        getAtomicSymbol(atomZ).padStart(2, " ") + "\n");
+                        symbol.padStart(2, " ") + "\n");
                 }
 
                 if(bonds.length === 0) continue;
 
-                const ib  = Array.from({length: atoms.length}, () => []) as number[][];
-                const ihb = Array.from({length: atoms.length}, () => []) as number[][];
-                for(let i=0; i < atoms.length-1; ++i) {
-                    for(let j=i+1; j < atoms.length; ++j) {
+                // Map atoms positions for bonds
+                const mapAtoms = new Map<number, number>();
+                for(let i=0; i < reduced.atoms.length; ++i) {
+                    mapAtoms.set(reduced.atoms[i].index, i);
+                }
+
+                const ib  = Array.from({length: reduced.atoms.length}, () => []) as number[][];
+                const ihb = Array.from({length: reduced.atoms.length}, () => []) as number[][];
+                for(let i=0; i < reduced.atoms.length-1; ++i) {
+                    for(let j=i+1; j < reduced.atoms.length; ++j) {
 
                         for(const bond of bonds) {
-                            if(bond.from === i && bond.to === j) {
+                            const from = mapAtoms.get(bond.from);
+                            const to = mapAtoms.get(bond.to);
+
+                            if(from === i && to === j) {
                                 if(isNormalBond(bond)) ib[i].push(j);
                                 else ihb[i].push(j);
                             }
-                            else if(bond.from === j && bond.to === i) {
+                            else if(from === j && to === i) {
 
                                 if(isNormalBond(bond)) ib[j].push(i);
                                 else ihb[j].push(i);
@@ -116,7 +127,7 @@ export class WriterPDB implements WriterImplementation {
                     }
                 }
 
-                for(let i=0; i < atoms.length; ++i) {
+                for(let i=0; i < reduced.atoms.length; ++i) {
 
                     const nb = ib[i].length;
                     const nhb = ihb[i].length;
