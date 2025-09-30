@@ -9,7 +9,7 @@
 import {app, ipcMain} from "electron";
 import path from "node:path";
 import {readFileSync, copyFileSync, writeFileSync} from "node:fs";
-import {createSecondaryWindow} from "./WindowsUtilities";
+import {createOrUpdateSecondaryWindow} from "./WindowsUtilities";
 import {sendAlertToClient} from "./ToClient";
 
 /**
@@ -21,7 +21,7 @@ export const showLogFile = (): void => {
 	const logPath = path.join(directory, "logs", "main.log");
 	try {
 		const log = readFileSync(logPath, "utf8");
-		createSecondaryWindow({
+		createOrUpdateSecondaryWindow({
 			routerPath: "/log",
 			width: 1400,
 			height: 900,

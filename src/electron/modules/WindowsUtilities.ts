@@ -182,6 +182,24 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
     });
 };
 
+/**
+ * Create a secondary window or update its data if already open
+ *
+ * @param params - Params for the created window
+ */
+export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
+
+    let isOpen = params.alreadyOpen;
+    isOpen ??= openedWindows.has(params.routerPath);
+
+    if(isOpen) {
+        sendToSecondaryWindow(params.routerPath, params.data);
+    }
+    else {
+        createSecondaryWindow(params);
+    }
+};
+
 // > Close the secondary window
 /**
  * Close the secondary window

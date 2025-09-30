@@ -39,7 +39,6 @@ ToDo eventually:
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
   ☐ For the charts <https://unovis.dev/>
-  ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
   ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
 
 Nice to have/Future:
@@ -50,6 +49,7 @@ Nice to have/Future:
   ☐ Simplify error messages for user, leaving full message in log
   ☐ Explore WASM <https://dev.to/omriluz1/exploring-the-intersection-of-javascript-and-webassembly-simd-5fd1>
   ☐ Experiment with alphaHash for transparency <https://github.com/mrdoob/three.js/blob/master/examples/webgl_materials_alphahash.html>
+  ☐ Volume rendering <https://github.com/Donitzo/three.js-volume-renderer>
   ☐ Use ideas from [ndarray](https://github.com/scijs/ndarray) for multidimensional arrays
 
 Reference:
@@ -60,6 +60,7 @@ Reference:
   ☐ ThreeJS optimizations <https://discoverthreejs.com/tips-and-tricks/>
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
+  ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
   ✘ ffmpeg output to application log @cancelled(2025-09-13 17:45) @project(Bugs)

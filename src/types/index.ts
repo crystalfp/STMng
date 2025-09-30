@@ -336,6 +336,9 @@ export interface WindowsParams {
 
     /** Data to be passed to the window when it is ready */
     data: string;
+
+    /** If the window is already open checked elsewhere */
+    alreadyOpen?: boolean;
 }
 
 /** Interface exposed by all format writers */

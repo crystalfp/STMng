@@ -9,8 +9,7 @@
 import {ipcMain} from "electron";
 import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
-import {createSecondaryWindow, isSecondaryWindowOpen,
-		sendToSecondaryWindow} from "../modules/WindowsUtilities";
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
 import {Fingerprinting} from "../fingerprint/Compute";
@@ -461,22 +460,15 @@ export class ComputeFingerprints extends NodeCore {
 
 		const dataToSend = JSON.stringify(scatterplotData);
 
-		// If it is open, update the scatterplot window
-		if(scatterplotOpen) {
-
-			sendToSecondaryWindow("/fp-scatterplot", dataToSend);
-		}
-		else {
-
-			// Create the scatterplot window
-			createSecondaryWindow({
-				routerPath: "/fp-scatterplot",
-				width: 1600,
-				height: 900,
-				title: "Fingerprints scatterplot",
-				data: dataToSend
-			});
-		}
+		// Create the scatterplot window. If it is open, update it
+		createOrUpdateSecondaryWindow({
+			routerPath: "/fp-scatterplot",
+			width: 1600,
+			height: 900,
+			title: "Fingerprints scatterplot",
+			data: dataToSend,
+			alreadyOpen: scatterplotOpen
+		});
 	}
 
 	/**
@@ -535,22 +527,15 @@ export class ComputeFingerprints extends NodeCore {
 		};
 		const dataToSend = JSON.stringify(energyLandscapeData);
 
-		// If it is open, update the energy landscape window
-		if(landscapeOpen) {
-
-			sendToSecondaryWindow("/fp-landscape", dataToSend);
-		}
-		else {
-
-			// Create the energy landscape window
-			createSecondaryWindow({
-				routerPath: "/fp-landscape",
-				width: 1500,
-				height: 900,
-				title: "Fingerprints energy landscape",
-				data: dataToSend
-			});
-		}
+		// Create the energy landscape window. If it is open, update it
+		createOrUpdateSecondaryWindow({
+			routerPath: "/fp-landscape",
+			width: 1500,
+			height: 900,
+			title: "Fingerprints energy landscape",
+			data: dataToSend,
+			alreadyOpen: landscapeOpen
+		});
 	}
 
 	/**
@@ -673,22 +658,15 @@ export class ComputeFingerprints extends NodeCore {
 		}
 		const dataToSend = JSON.stringify(chartData);
 
-		// If it is open, update the charts window
-		if(chartsOpen) {
-
-			sendToSecondaryWindow("/fp-charts", dataToSend);
-		}
-		else {
-
-			// Create the charts window
-			createSecondaryWindow({
-				routerPath: "/fp-charts",
-				width: 1500,
-				height: 900,
-				title: "Fingerprints charts",
-				data: dataToSend
-			});
-		}
+		// Create the charts window. If it is open, update it
+		createOrUpdateSecondaryWindow({
+			routerPath: "/fp-charts",
+			width: 1500,
+			height: 900,
+			title: "Fingerprints charts",
+			data: dataToSend,
+			alreadyOpen: chartsOpen
+		});
 	}
 
 	/**
@@ -725,22 +703,15 @@ export class ComputeFingerprints extends NodeCore {
 		}
 		const dataToSend = JSON.stringify(steps);
 
-		// If it is open, update the compare window
-		if(compareWindowOpen) {
-
-			sendToSecondaryWindow("/compare", dataToSend);
-		}
-		else {
-
-			// Create the scatterplot window
-			createSecondaryWindow({
-				routerPath: "/compare",
-				width: 1600,
-				height: 900,
-				title: "Compare selected structures",
-				data: dataToSend
-			});
-		}
+		// Create the scatterplot window. If it is open, update it
+		createOrUpdateSecondaryWindow({
+			routerPath: "/compare",
+			width: 1600,
+			height: 900,
+			title: "Compare selected structures",
+			data: dataToSend,
+			alreadyOpen: compareWindowOpen
+		});
 	}
 
 	/**
@@ -1312,27 +1283,18 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	private channelExport(): void {
 
-		const chartsOpen = isSecondaryWindowOpen("/fp-export");
 		const hasEnergy = this.accumulator.accumulatedHaveEnergies();
 
 		const dataToSend = JSON.stringify({hasEnergy});
 
-		// If it is open, update the export window
-		if(chartsOpen) {
-
-			sendToSecondaryWindow("/fp-export", dataToSend);
-		}
-		else {
-
-			// Create the export window
-			createSecondaryWindow({
-				routerPath: "/fp-export",
-				width: 370,
-				height: 500,
-				title: "Export fingerprint results",
-				data: dataToSend
-			});
-		}
+		// Create the export window. If it is open, update it
+		createOrUpdateSecondaryWindow({
+			routerPath: "/fp-export",
+			width: 370,
+			height: 500,
+			title: "Export fingerprint results",
+			data: dataToSend
+		});
 
 		if(!this.channelExportOpened) {
 			this.channelExportOpened = true;

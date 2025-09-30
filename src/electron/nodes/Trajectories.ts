@@ -10,7 +10,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendTracesToClient} from "../modules/ToClient";
-import {createSecondaryWindow, isSecondaryWindowOpen,
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
@@ -327,19 +327,13 @@ export class Trajectories extends NodeCore {
 
 		const dataToSend = JSON.stringify(averageResults.averages);
 
-		if(isSecondaryWindowOpen("/displacements")) {
-
-			sendToSecondaryWindow("/displacements", dataToSend);
-		}
-		else {
-			createSecondaryWindow({
-				routerPath: "/displacements",
-				width: 670,
-				height: 400,
-				title: "Show mean positions and displacements",
-				data: dataToSend
-			});
-		}
+		createOrUpdateSecondaryWindow({
+			routerPath: "/displacements",
+			width: 670,
+			height: 400,
+			title: "Show mean positions and displacements",
+			data: dataToSend
+		});
 
 		this.toNextNode(averageResults.structure);
 	}

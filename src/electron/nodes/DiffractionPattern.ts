@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import {createSecondaryWindow, isSecondaryWindowOpen,
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition,
@@ -405,20 +405,13 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// if already open, update chart, otherwise create the window
-			if(isSecondaryWindowOpen("/chart")) {
-
-				sendToSecondaryWindow("/chart", dataToSend);
-			}
-			else {
-
-				createSecondaryWindow({
-					routerPath: "/chart",
-					width: 1067,
-					height: 800,
-					title: this.chartTitle,
-					data: dataToSend
-				});
-			}
+			createOrUpdateSecondaryWindow({
+				routerPath: "/chart",
+				width: 1067,
+				height: 800,
+				title: this.chartTitle,
+				data: dataToSend
+			});
 		}
 	}
 }

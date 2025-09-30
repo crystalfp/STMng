@@ -8,7 +8,7 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
-import {createSecondaryWindow, isSecondaryWindowOpen,
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
@@ -737,18 +737,12 @@ export class ComputeSymmetries extends NodeCore {
 			pointGroup: this.pointGroup
 		});
 
-		if(isSecondaryWindowOpen("/symmetries")) {
-
-			sendToSecondaryWindow("/symmetries", dataToSend);
-		}
-		else {
-			createSecondaryWindow({
-				routerPath: "/symmetries",
-				width: 700,
-				height: 400,
-				title: "Show symmetries",
-				data: dataToSend
-			});
-		}
+		createOrUpdateSecondaryWindow({
+			routerPath: "/symmetries",
+			width: 700,
+			height: 400,
+			title: "Show symmetries",
+			data: dataToSend
+		});
 	}
 }

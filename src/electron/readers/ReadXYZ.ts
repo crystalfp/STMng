@@ -10,7 +10,7 @@ import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, ReaderImplementation} from "@/types";
+import type {Structure, Atom, ReaderImplementation} from "@/types";
 
 export class ReaderXYZ implements ReaderImplementation {
 
@@ -28,7 +28,7 @@ export class ReaderXYZ implements ReaderImplementation {
 		let commentLine = false;
 		let numberAtoms = 0;
 		let step = -1;
-		let atoms;
+		let atoms: Atom[];
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const lineRaw of reader) {
 
@@ -54,7 +54,7 @@ export class ReaderXYZ implements ReaderImplementation {
 					Number.parseFloat(fields[3]),
 				];
 				const atomZ = getAtomicNumber(fields[0]);
-				if(atomZ === 0) throw Error(`Unknown atom in "${line}"`);
+				if(atomZ === 0) throw Error(`Unknown atom type in "${line}"`);
 				atoms!.push({position, label: fields[0], chain: "", atomZ});
 
 				--numberAtoms;
