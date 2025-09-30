@@ -54,8 +54,8 @@ interface SiteElement {
  */
 export const getPrimitiveStructure = (structure: SNL): SNL => {
 
-    console.log("========");
-    console.log(structure);
+    // console.log("========");
+    // console.log(structure);
 
     // Group sites by species string
     const sites: SiteElement[] = [];

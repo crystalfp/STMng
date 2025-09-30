@@ -7,14 +7,14 @@
  * @since 2024-07-05
  */
 import log from "electron-log";
+import tmp from "tmp";
+import {unlinkSync, writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
-
-// Import the readers
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 										   "LAMMPStrj", "POSCAR + XDATCAR", "XDATCAR5",
@@ -36,7 +36,6 @@ export class StructureReader extends NodeCore {
 	private energyPerAtom = false;
 	private appendFile = false;
 	private fileToRead = "";
-	private auxFileToRead = "";
 	private reader: ReaderImplementation | undefined;
 
 	/** Steps to add at each tick */
@@ -45,17 +44,19 @@ export class StructureReader extends NodeCore {
 	private structures: Structure[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",      callback: this.channelInit.bind(this)},
-		{name: "read",		type: "invokeAsync", callback: this.channelRead.bind(this)},
-		{name: "types",		type: "send",        callback: this.channelTypes.bind(this)},
-		{name: "formats",	type: "send",        callback: this.channelFormats.bind(this)},
-		{name: "bohr",		type: "send",        callback: this.channelUseBohr.bind(this)},
-		{name: "hydrogen",	type: "send",        callback: this.channelReadHydrogen.bind(this)},
-		{name: "per-atom",	type: "send",        callback: this.channelPerAtom.bind(this)},
-		{name: "aux",		type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
-		{name: "step",		type: "invoke",      callback: this.channelStep.bind(this)},
-		{name: "step-ctrl",	type: "send",      	 callback: this.channelStepCtrl.bind(this)},
-		{name: "append",	type: "send",      	 callback: this.channelAppend.bind(this)},
+		{name: "init",			type: "invoke",      callback: this.channelInit.bind(this)},
+		{name: "read",			type: "invokeAsync", callback: this.channelRead.bind(this)},
+		{name: "types",			type: "send",        callback: this.channelTypes.bind(this)},
+		{name: "formats",		type: "send",        callback: this.channelFormats.bind(this)},
+		{name: "bohr",			type: "send",        callback: this.channelUseBohr.bind(this)},
+		{name: "hydrogen",		type: "send",        callback: this.channelReadHydrogen.bind(this)},
+		{name: "per-atom",		type: "send",        callback: this.channelPerAtom.bind(this)},
+		{name: "aux",			type: "invokeAsync", callback: this.channelAuxRead.bind(this)},
+		{name: "step",			type: "invoke",      callback: this.channelStep.bind(this)},
+		{name: "step-ctrl",		type: "send",      	 callback: this.channelStepCtrl.bind(this)},
+		{name: "append",		type: "send",      	 callback: this.channelAppend.bind(this)},
+		{name: "read-dropped",	type: "invokeAsync", callback: this.channelReadDropped.bind(this)},
+		{name: "aux-dropped",	type: "invokeAsync", callback: this.channelAuxDropped.bind(this)},
 	];
 
 	/**
@@ -113,8 +114,6 @@ export class StructureReader extends NodeCore {
 			useBohr: this.useBohr,
 			readHydrogen: this.readHydrogen,
 			energyPerAtom: this.energyPerAtom,
-			fileToRead: this.fileToRead,
-			auxFileToRead: this.auxFileToRead,
 			stepIncrement: this.stepIncrement,
 			speed: this.speed
 		};
@@ -316,9 +315,10 @@ export class StructureReader extends NodeCore {
 
 		const mainFormat = params.format as string ?? "";
 		const filename = params.auxFileToRead as string;
-		this.auxFileToRead = filename;
 
 		try {
+
+			if(!filename) throw Error("No auxiliary file selected");
 
 			switch(mainFormat) {
 				case "POSCAR + XDATCAR": {
@@ -385,6 +385,46 @@ export class StructureReader extends NodeCore {
         this.stepIncrement = params.stepIncrement as number ?? 1;
         this.stepBackward = params.stepBackward as boolean ?? false;
         this.speed = params.speed as number ?? 1;
+	}
+
+	/**
+	 * Channel handler for the dropped file read
+	 *
+	 * @param params - Parameters from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelReadDropped(params: CtrlParams): Promise<CtrlParams> {
+
+		const name = tmp.tmpNameSync({prefix: "stm-ng-"});
+		writeFileSync(name, params.fileContent as string, "utf8");
+
+		const response = await this.channelRead({
+			format: params.format,
+			fileToRead: name,
+			useBohr: params.useBohr,
+			atomsTypes: params.atomsTypes
+		});
+		unlinkSync(name);
+		return response;
+	}
+
+	/**
+	 * Channel handler for the dropped auxiliary file read
+	 *
+	 * @param params - Parameters from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelAuxDropped(params: CtrlParams): Promise<CtrlParams> {
+
+		const name = tmp.tmpNameSync({prefix: "stm-ng-"});
+		writeFileSync(name, params.auxFileContent as string, "utf8");
+
+		const response = await this.channelAuxRead({
+			format: params.format,
+            auxFileToRead: name,
+		});
+		unlinkSync(name);
+		return response;
 	}
 
 	// > Helper functions

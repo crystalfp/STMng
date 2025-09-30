@@ -413,21 +413,21 @@ const saveProjectGraph = (saveAs: boolean): void => {
                     log.error(notification);
                     return;
                 }
-                if(availableNode.hasOutput) {
-                    let isConnected = false;
-                    for(const node2 of graphFlow.value) {
-                        if(node2.in === node.id) {
-                            isConnected = true;
-                            break;
-                        }
-                    }
-                    if(!isConnected) {
-                        const notification = `Node "${node.label}" output is unconnected`;
-                        notificationQueue.value.push(notification);
-                        log.error(notification);
-                        return;
-                    }
-                }
+                // if(availableNode.hasOutput) {
+                //     let isConnected = false;
+                //     for(const node2 of graphFlow.value) {
+                //         if(node2.in === node.id) {
+                //             isConnected = true;
+                //             break;
+                //         }
+                //     }
+                //     if(!isConnected) {
+                //         const notification = `Node "${node.label}" output is unconnected`;
+                //         notificationQueue.value.push(notification);
+                //         log.error(notification);
+                //         return;
+                //     }
+                // }
                 break;
             }
         }

@@ -17,11 +17,15 @@ const props = withDefaults(defineProps<{
     /** Disable the widget */
     disabled?: boolean;
 
-    /** If the selector is for an existing file to be read ("load") or a new file to be saved ("save") */
+    /** If the selector is for an existing file to be read ("load")
+     * or a new file to be saved ("save") */
     kind?: "load" | "save";
 
-    /** Title for the display field */
+    /** Title for the file selector */
     title: string;
+
+    /** Title for the display field */
+    label?: string;
 
     /** JSON encoded filter for the file selector */
     filter: string;
@@ -33,6 +37,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
     /** The filename that has been selected */
     selected: [filename: string];
+    /** The dropped file content */
+    dropped: [content: string];
 }>();
 
 /** Label to be show (the file selected) */
@@ -62,13 +68,84 @@ const openSelector = (): void => {
         .catch((error: Error) => showSystemAlert(`Error from file select: ${error.message}`));
 };
 
+// > Drag and drop support
+/** Drop active class */
+const dropActive = ref("");
+
+/**
+ * On dropping a file
+ *
+ * @param event - Drop event
+ */
+const onDrop = (event: DragEvent): void => {
+
+    dropActive.value = "placeholder";
+
+    const dt = event.dataTransfer;
+    if(!dt) return;
+
+    inProgress.value = true;
+
+    const filename = dt.files[0].name;
+    dt.files[0].text()
+        .then((content: string) => {
+            label.value = filename;
+            console.log(`${filename} <${content}>`); // TBD
+            emit("dropped", content);
+        })
+        .finally(() => {inProgress.value = false;})
+        .catch((error: Error) => {
+            label.value = "";
+            showSystemAlert(`Error from file drop: ${error.message}`);
+        });
+};
+
+/**
+ * Check if the file could be dropped
+ *
+ * @param event - Drop event
+ */
+const onDragOver = (event: DragEvent): void => {
+
+    const dt = event.dataTransfer;
+    if(!dt) return;
+    if(dt.types.includes("Files") && props.kind === "load" && !props.disabled) {
+        dt.dropEffect = "move";
+        dropActive.value = "drop";
+    }
+    else dt.dropEffect = "none";
+};
+
+/**
+ * Remove the drop zone marker on leaving
+ */
+const onDragLeave = (): void => {
+    dropActive.value = "placeholder";
+};
+
 </script>
 
-
 <template>
-<v-text-field :model-value="label" :disabled :label="title"
-              readonly :prepend-icon="mdiFileOutline"
-              class="mb-2 mr-0 ml-2 cursor-pointer" hide-details="auto"
-              :loading="inProgress" spellcheck="false"
-              @click="openSelector"/>
+<div :class="dropActive"
+      @drop.prevent="onDrop"
+      @dragover.prevent="onDragOver"
+      @dragleave.prevent="onDragLeave">
+  <v-text-field :model-value="label" :disabled :label="props.label ?? props.title"
+                readonly :prepend-icon="mdiFileOutline"
+                class="mb-2 mr-0 ml-2 cursor-pointer" hide-details="auto"
+                :loading="inProgress" spellcheck="false"
+                @click="openSelector"/>
+</div>
 </template>
+
+<style scoped>
+.drop {
+  border: 4px dashed red;
+  border-radius: 12px;
+  background-color: gray;
+}
+
+.placeholder {
+  border: 4px solid transparent;
+}
+</style>

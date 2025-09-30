@@ -186,11 +186,11 @@ const selectedSaveFile = (filename: string): void => {
   <v-select v-model="format" label="File format"
             :items="hasNoUnitCell? fileFormatsNoUC : fileFormats" class="mt-4 mb-4" @update:model-value="writerLabel=''"/>
 
-  <select-file v-model="writerLabel" class="mt-2" :disabled="format === ''" title="Select output file"
+  <select-file v-model="writerLabel" :disabled="format === ''" title="Select output file"
                  :filter="filterFromFormat(format)"
                  kind="save" @selected="selectedSaveFile" />
 
-  <v-row class="mt-10" >
+  <v-row class="mt-6" >
     <v-switch v-model="continuous" label="Continuous write" density="compact"
               class="ml-6 mr-8 mt-n1" :disabled="controlStore.writerAccumulate" />
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">

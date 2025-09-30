@@ -306,6 +306,7 @@ export function getPointsInSpheres(
 
         // Get fractional coordinates and wrap periodic boundaries
         const imageOffsets = getFractionalCoords(allCoords, lattice);
+
         const allFracCoords = imageOffsets.map((coord) =>
             coord.map((value, i) => (pbcArray[i] ? value % 1 : value))
         );
@@ -324,11 +325,12 @@ export function getPointsInSpheres(
         const images = cartesianProduct(...allRanges);
 
         for(const image of images) {
+
             const imageMatrix = vectorsMatrixMultiply([image], matrix)[0];
             const coords = coordsInCell.map((coord) =>
                 coord.map((value, i) => value + imageMatrix[i])
             );
-
+            // console.log("coords", coords);
             const validIndexBool = coords.map((coord) =>
                 coord.every((value, i) => value > globalMin[i] && value < globalMax[i])
             );
@@ -481,8 +483,8 @@ function getPointsInSphere(
     return neighbors;
 }
 
-
 function* findAllMappings(
+    lattice: number[][],
     otherLattice: number[][],
     ltol = 1e-5,
     atol = 1,
@@ -496,17 +498,20 @@ function* findAllMappings(
     const alpha = cellAngle(otherLattice[2], otherLattice[1]);
     const beta  = cellAngle(otherLattice[0], otherLattice[2]);
     const gamma = cellAngle(otherLattice[0], otherLattice[1]);
-console.log("++++", alpha, beta, gamma, lengths);
+
     // Get points in sphere around origin
     const maxLength = Math.max(...lengths);
-    const sphereData = getPointsInSphere([[0, 0, 0]], [0, 0, 0], maxLength * (1 + ltol), otherLattice);
-
+    const sphereData = getPointsInSphere([[0, 0, 0]], [0, 0, 0], maxLength * (1 + ltol), lattice);
     const frac: number[][] = [];
     const dist: number[] = [];
     for(const entry of sphereData) {
         frac.push(entry.coord);
         dist.push(entry.distance);
     }
+    console.log("++++");
+    console.log("frac", frac);
+    console.log("dist", dist);
+
     const cart = getCartesianCoords(frac, otherLattice);
 
     // Filter points by distance for each lattice parameter
@@ -597,12 +602,13 @@ console.log("++++", alpha, beta, gamma, lengths);
 }
 
 const findMapping = (
+    lattice: number[][],
     otherLattice: number[][],
     ltol = 1e-5,
     atol = 1,
     skipRotationMatrix = false): [number[][], number[][] | undefined, number[][]] | null => {
 
-    const generator = findAllMappings(otherLattice, ltol, atol, skipRotationMatrix);
+    const generator = findAllMappings(lattice, otherLattice, ltol, atol, skipRotationMatrix);
     const result = generator.next();
     return result.done ? null : result.value;
 };
@@ -612,15 +618,15 @@ const findMapping = (
         proposed by R. W. Grosse-Kunstleve, N. K. Sauter, & P. D. Adams,
         Acta Crystallographica Section A Foundations of Crystallography, 2003,
         60(1), 1-6. doi:10.1107/S010876730302186X.
- * @param matrix - The input lattice
+ * @param lattice - The input lattice
  * @param tol - The numerical tolerance. The default of 1e-5 should
  *              result in stable behavior for most cases.
  * @returns Niggli-reduced lattice
  */
-export const getNiggliReducedLattice = (matrix: number[][], tol = 1e-5): number[][] => {
+export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number[][] => {
 
     // lll reduction is more stable for skewed cells
-	const [reducedMatrix] = computeLLL(matrix);
+	const [reducedMatrix] = computeLLL(lattice);
 
     // Compute cell volume
     const eps = tol * Math.cbrt(calculateVolume(reducedMatrix));
@@ -788,13 +794,13 @@ export const getNiggliReducedLattice = (matrix: number[][], tol = 1e-5): number[
 
     const ll = extractBasis(a, b, c, alpha, beta, gamma);
 
-    const lattice = [
+    const otherLattice = [
         [ll[0], ll[1], ll[2]],
         [ll[3], ll[4], ll[5]],
         [ll[6], ll[7], ll[8]]
     ];
 
-    const mapped = findMapping(lattice, eps, 1, true);
+    const mapped = findMapping(lattice, otherLattice, eps, 1, true);
     if(mapped !== null && mapped[0].length > 0) {
 
         if(determinant(mapped[0]) > 0) {

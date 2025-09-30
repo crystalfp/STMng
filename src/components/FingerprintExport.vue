@@ -87,7 +87,8 @@ const toggleExport = (exportKind: "all" | "min"): void => {
   </v-btn>
 
   <select-file v-if="showExport" class="mt-4 ml-n1" title="Select output file"
-               :filter="filterPOSCAR" kind="save" @selected="selectedExportFile" />
+               :filter="filterPOSCAR" kind="save"
+               @selected="selectedExportFile" />
   <v-switch v-if="showExport && hasEnergies" v-model="saveEnergyPerAtom"
                class="ml-2 mt-2" label="Save energy per atom"/>
   <v-alert v-if="errorMessage !== ''" title="Error" class="mt-4 ml-1 cursor-pointer"
