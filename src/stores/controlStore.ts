@@ -71,6 +71,9 @@ interface GlobalControls {
 
 	/** Current title and project */
 	currentTitleAndProject: string;
+
+	/** Dragging file from outside */
+	draggingFile: boolean;
 }
 
 /** Access the control store that contains global control variables not saved as status */
@@ -107,7 +110,9 @@ export const useControlStore = defineStore("ControlStore", {
 		polyhedronCurrentColor: 0,
 		polyhedronNewColor: 0,
 
-		currentTitleAndProject: ""
+		currentTitleAndProject: "",
+
+		draggingFile: false
 
 	} as GlobalControls),
 

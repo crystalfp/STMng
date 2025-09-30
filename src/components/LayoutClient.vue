@@ -16,10 +16,15 @@ import {isLoaded, handleFullscreen, receiveRefreshMenu,
         handleExitConfirmation} from "@/services/RoutesClient";
 import {showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
 import {theme} from "@/services/ReceiveTheme";
+import {useControlStore} from "@/stores/controlStore";
+
 import type {AlertLevel} from "@/stores/messageStore";
 
 import Viewer3D from "./Viewer3D.vue";
 import ControlsContainer from "./ControlsContainer.vue";
+
+// > Access the store
+const controlStore = useControlStore();
 
 /** Normal/Expanded viewer window */
 const normalScreen = ref(true);
@@ -42,6 +47,21 @@ globalThis.addEventListener("DOMContentLoaded", () => {
             });
             setProjectPathInTitle("See the Molecole new generation");
             receiveRefreshMenu();
+
+            // Show drop target on entering the application
+            const dom = document.querySelector<HTMLDivElement>(".app-top");
+            if(dom) {
+                dom.addEventListener("dragenter", (event: DragEvent) => {
+
+                    if(event.dataTransfer?.types.includes("Files")) {
+                        controlStore.draggingFile = true;
+                    }
+                });
+                dom.addEventListener("dragleave", () => {
+
+                    controlStore.draggingFile = false;
+                });
+            }
         }
     }, 20);
 });

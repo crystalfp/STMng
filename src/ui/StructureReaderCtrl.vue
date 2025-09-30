@@ -515,10 +515,10 @@ const auxSetup = computed(() => {
                 @click:clear="getAtomsTypes"/>
 
   <v-switch v-model="appendFile"
-            label="Append" class="ml-4 mt-4 mb-3"
+            label="Append" class="ml-4 mt-4"
             @update:model-value="setAppendFile" />
 
-  <select-file v-model="label1" class="mt-2" :disabled="format === ''"
+  <select-file v-model="label1" :disabled="format === ''"
                label="Select or drop input file"
                title="Select input file"
                :filter="filterFromFormat(format)"
@@ -526,15 +526,15 @@ const auxSetup = computed(() => {
                @dropped="droppedFile" />
 
   <v-switch v-if="format === 'POSCAR + ENERGY'" v-model="energyPerAtom"
-            label="File has energy per atom" class="ml-4 mt-4 mb-3"
+            label="File has energy per atom" class="ml-4 mt-2"
             @update:model-value="setEnergyPerAtom" />
 
-  <select-file v-if="auxSetup.hasAux" v-model="label2" class="mt-2"
-                 :filter="auxSetup.filter"
-                 :label="auxSetup.label"
-                 :title="auxSetup.title"
-                 @selected="selectedAuxFile"
-                 @dropped="droppedAuxFile" />
+  <select-file v-if="auxSetup.hasAux" v-model="label2"
+               :filter="auxSetup.filter"
+               :label="auxSetup.label"
+               :title="auxSetup.title"
+               @selected="selectedAuxFile"
+               @dropped="droppedAuxFile" />
 
   <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
             label="Use Bohr units" class="ml-4 mt-4" @update:model-value="setUseBohr" />

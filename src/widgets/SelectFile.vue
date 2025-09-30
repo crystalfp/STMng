@@ -6,10 +6,11 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-22
  */
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {mdiFileOutline} from "@mdi/js";
 import {askNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
+import {useControlStore} from "@/stores/controlStore";
 
 // > Properties and emits
 const props = withDefaults(defineProps<{
@@ -69,8 +70,17 @@ const openSelector = (): void => {
 };
 
 // > Drag and drop support
-/** Drop active class */
-const dropActive = ref("");
+
+/** Class to mark drop target */
+const dropActive = ref("placeholder");
+
+// To show the drop target on entering the application
+const controlStore = useControlStore();
+watchEffect(() => {
+
+    dropActive.value = props.kind === "load" && !props.disabled && controlStore.draggingFile?
+                            "drop" : "placeholder";
+});
 
 /**
  * On dropping a file
@@ -90,7 +100,6 @@ const onDrop = (event: DragEvent): void => {
     dt.files[0].text()
         .then((content: string) => {
             label.value = filename;
-            console.log(`${filename} <${content}>`); // TBD
             emit("dropped", content);
         })
         .finally(() => {inProgress.value = false;})
@@ -120,7 +129,7 @@ const onDragOver = (event: DragEvent): void => {
  * Remove the drop zone marker on leaving
  */
 const onDragLeave = (): void => {
-    dropActive.value = "placeholder";
+    // dropActive.value = "placeholder";
 };
 
 </script>
@@ -134,18 +143,20 @@ const onDragLeave = (): void => {
                 readonly :prepend-icon="mdiFileOutline"
                 class="mb-2 mr-0 ml-2 cursor-pointer" hide-details="auto"
                 :loading="inProgress" spellcheck="false"
-                @click="openSelector"/>
+                @click="openSelector" />
 </div>
 </template>
 
 <style scoped>
 .drop {
-  border: 4px dashed red;
+  border: 6px dashed red;
   border-radius: 12px;
-  background-color: gray;
+  /* background-color: gray; */
+  padding: 10px 8px 6px 0;
 }
 
 .placeholder {
-  border: 4px solid transparent;
+  border: 6px solid transparent;
+  padding: 10px 8px 6px 0;
 }
 </style>
