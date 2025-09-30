@@ -59,10 +59,13 @@ export interface OneNodeInfo {
 	/** True if the node send a structure down the pipeline */
 	out: boolean;
 
+	/** True if the output could remain unconnected */
+	opt: boolean;
+
 	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
 	graphic: GraphicType;
 
-	/** Prefix to automatically generate id by project editor */
+	/** Prefix for the automatically generate id by project editor */
 	idPrefix: string;
 
 	/** The name of the node ui component */

@@ -83,6 +83,9 @@ interface AvailableNode {
     /** True if the node send a structure down the pipeline */
     hasOutput: boolean;
 
+    /** True if the output could remain unconnected */
+    hasOptionalOutput: boolean;
+
     /** "out": generates graphical output, "in": the viewer, "none": is pure computation */
     graphic: GraphicType;
 
@@ -160,6 +163,7 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
             label: item.type[0].toUpperCase() + item.type.slice(1).replaceAll("-", " "),
             hasInput: item.in,
             hasOutput: item.out,
+            hasOptionalOutput: item.opt,
             graphic: item.graphic,
             type: item.type
         };
@@ -404,6 +408,7 @@ const notificationQueue = ref<string[]>([]);
  */
 const saveProjectGraph = (saveAs: boolean): void => {
 
+    let hasErrors = false;
     for(const node of graphFlow.value) {
         for(const availableNode of availableNodes.value) {
             if(node.type === availableNode.type) {
@@ -411,29 +416,29 @@ const saveProjectGraph = (saveAs: boolean): void => {
                     const notification = `Node "${node.label}" input is unconnected`;
                     notificationQueue.value.push(notification);
                     log.error(notification);
-                    return;
+                    hasErrors = true;
                 }
-                // if(availableNode.hasOutput) {
-                //     let isConnected = false;
-                //     for(const node2 of graphFlow.value) {
-                //         if(node2.in === node.id) {
-                //             isConnected = true;
-                //             break;
-                //         }
-                //     }
-                //     if(!isConnected) {
-                //         const notification = `Node "${node.label}" output is unconnected`;
-                //         notificationQueue.value.push(notification);
-                //         log.error(notification);
-                //         return;
-                //     }
-                // }
+                if(availableNode.hasOutput && !availableNode.hasOptionalOutput) {
+                    let isConnected = false;
+                    for(const node2 of graphFlow.value) {
+                        if(node2.in === node.id) {
+                            isConnected = true;
+                            break;
+                        }
+                    }
+                    if(!isConnected) {
+                        const notification = `Node "${node.label}" output is unconnected`;
+                        notificationQueue.value.push(notification);
+                        log.error(notification);
+                        hasErrors = true;
+                    }
+                }
                 break;
             }
         }
     }
 
-    if(!projectModified.value) return;
+    if(hasErrors || !projectModified.value) return;
 
     // Sort the node left to right and top to bottom
     const sortedGraph = graphFlow.value.toSorted(sortGraph);
