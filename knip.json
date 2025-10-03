@@ -25,7 +25,6 @@
     "typedoc",
     "typedoc-plugin-vue",
     "typedoc-plugin-missing-exports",
-    "@types/eslint",
     "postcss-scss",
     "vite-plugin-dts",
     "@rollup/plugin-commonjs",

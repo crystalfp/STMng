@@ -61,7 +61,6 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.4",
     "@stylistic/eslint-plugin": "^5.4.0",
-    "@types/eslint": "^9.6.1",
     "@types/three": "^0.180.0",
     "@types/tmp": "^0.2.6",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
