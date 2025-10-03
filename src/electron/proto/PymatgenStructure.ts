@@ -54,7 +54,7 @@ interface SiteElement {
  */
 export const getPrimitiveStructure = (structure: SNL): SNL => {
 
-    // console.log("========");
+    console.log("========");
     // console.log(structure);
 
     // Group sites by species string
@@ -63,9 +63,9 @@ export const getPrimitiveStructure = (structure: SNL): SNL => {
         sites.push({element: site.species[0].element, frac: site.abc, cart: site.xyz});
     }
     sites.sort((a, b) => a.element.localeCompare(b.element));
-    // for(const s of sites) {
-    //     console.log(`${s.element.padStart(2, " ")} [${s.frac[0].toFixed(3)}, ${s.frac[1].toFixed(3)}, ${s.frac[2].toFixed(3)}] -> [${s.cart[0].toFixed(3)}, ${s.cart[1].toFixed(3)}, ${s.cart[2].toFixed(3)}]`);
-    // }
+    for(const s of sites) {
+        console.log(`${s.element.padStart(2, " ")} [${s.frac[0].toFixed(3)}, ${s.frac[1].toFixed(3)}, ${s.frac[2].toFixed(3)}] -> [${s.cart[0].toFixed(3)}, ${s.cart[1].toFixed(3)}, ${s.cart[2].toFixed(3)}]`);
+    }
     const map = new Map<string, SiteElement[]>();
     for(const element of sites) {
         const key = element.element;
@@ -78,7 +78,7 @@ export const getPrimitiveStructure = (structure: SNL): SNL => {
     const groupedFracCoords = groupedSites.map((group) =>
       group.map((s) => s.frac)
     );
-    // console.log("GROUPED FRACT", groupedFracCoords);
+    console.log("GROUPED FRACT", groupedFracCoords);
 
     // minVecs are approximate periodicities of the cell. The exact
     // periodicities from the supercell matrices are checked against these first
@@ -86,13 +86,13 @@ export const getPrimitiveStructure = (structure: SNL): SNL => {
     const minFracCoords = groupedFracCoords.reduce((min, current) =>
         (current.length < min.length ? current : min)
     );
-    // console.log("MIN FRACT", minFracCoords);
+    console.log("MIN FRACT", minFracCoords);
 
     const minVecs = minFracCoords.map((coord) =>
       coord.map((value, idx) => value - minFracCoords[0][idx])
     );
-    // console.log("MIN VEC", minVecs);
-void minVecs;
+    console.log("MIN VEC", minVecs);
+
     // Fractional tolerance in the supercell
     // const superFtol = structure.lattice.abc.map((value) => tolerance / value);
     // const superFtol2 = superFtol.map((value) => value * 2);

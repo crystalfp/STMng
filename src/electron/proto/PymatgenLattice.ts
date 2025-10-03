@@ -155,6 +155,18 @@ function threeToOne(indices: number[][], ny: number, nz: number): number[] {
     return indices.map(([x, y, z]) => x * ny * nz + y * nz + z);
 }
 
+/**
+ * Given a cube index, find the neighbor cube indices.
+
+    Args:
+        label: (array) (n,) or (n x 3) indice array
+        nx: (int) number of cells in y direction
+        ny: (int) number of cells in y direction
+        nz: (int) number of cells in z direction
+
+    Returns:
+        Neighbor cell indices.
+ */
 function findNeighbors(siteIndices: number[], nx: number, ny: number, nz: number): number[][][] {
 
     return siteIndices.map((index) => {
@@ -165,18 +177,21 @@ function findNeighbors(siteIndices: number[], nx: number, ny: number, nz: number
 
         // Find all neighboring cubes (including the cube itself)
         const neighbors: number[][] = [];
-        for(let dx = -1; dx <= 1; dx++) {
-            for(let dy = -1; dy <= 1; dy++) {
-                for(let dz = -1; dz <= 1; dz++) {
+        for(let dx = 1; dx >= -1; --dx) {
+            for(let dy = 1; dy >= -1; --dy) {
+                for(let dz = 1; dz >= -1; --dz) {
                     const nxNew = x + dx;
                     const nyNew = y + dy;
                     const nzNew = z + dz;
-                    if(nxNew >= 0 && nxNew < nx && nyNew >= 0 && nyNew < ny && nzNew >= 0 && nzNew < nz) {
+                    if(nxNew >= 0 && nxNew < nx &&
+                       nyNew >= 0 && nyNew < ny &&
+                       nzNew >= 0 && nzNew < nz) {
                         neighbors.push([nxNew, nyNew, nzNew]);
                     }
                 }
             }
         }
+
         return neighbors;
     });
 }
@@ -374,20 +389,31 @@ export function getPointsInSpheres(
     );
 
     // Create cube index to coordinates, images, and indices map
-    const cubeToCoords: Record<number, number[][]> = {};
-    const cubeToImages: Record<number, number[][]> = {};
-    const cubeToIndices: Record<number, number[]> = {};
+    const cubeToCoords2 = new Map<number, number[][]>();
+    const cubeToImages2 = new Map<number, number[][]>();
+    const cubeToIndices2 = new Map<number, number[]>();
 
     let index = 0;
     for(const cubeIdx of allCubeIndex1D) {
 
-        cubeToCoords[cubeIdx] ??= [];
-        cubeToImages[cubeIdx] ??= [];
-        cubeToIndices[cubeIdx] ??= [];
-
-        cubeToCoords[cubeIdx].push(validCoords[index]);
-        cubeToImages[cubeIdx].push(validImages[index]);
-        cubeToIndices[cubeIdx].push(validIndices[index]);
+        if(cubeToCoords2.has(cubeIdx)) {
+            cubeToCoords2.get(cubeIdx)!.push(validCoords[index]);
+        }
+        else {
+            cubeToCoords2.set(cubeIdx, [validCoords[index]]);
+        }
+        if(cubeToImages2.has(cubeIdx)) {
+            cubeToImages2.get(cubeIdx)!.push(validImages[index]);
+        }
+        else {
+            cubeToImages2.set(cubeIdx, [validImages[index]]);
+        }
+        if(cubeToIndices2.has(cubeIdx)) {
+            cubeToIndices2.get(cubeIdx)!.push(validIndices[index]);
+        }
+        else {
+            cubeToIndices2.set(cubeIdx, [validIndices[index]]);
+        }
         ++index;
     }
 
@@ -401,16 +427,16 @@ export function getPointsInSpheres(
         const neighborCubes = siteNeighbors[centerIdx];
         const neighborCubes1D = threeToOne(neighborCubes, ny, nz);
 
-        const validCubes = neighborCubes1D.filter((k) => cubeToCoords[k] && cubeToCoords[k].length > 0);
+        const validCubes = neighborCubes1D.filter((k) => cubeToCoords2.get(k) && cubeToCoords2.get(k)!.length > 0);
 
         if(validCubes.length === 0) {
             neighbors.push([]);
             break;
         }
 
-        const nnCoords = validCubes.flatMap((k) => cubeToCoords[k]);
-        const nnImages = validCubes.flatMap((k) => cubeToImages[k]);
-        const nnIndices = validCubes.flatMap((k) => cubeToIndices[k]);
+        const nnCoords = validCubes.flatMap((k) => cubeToCoords2.get(k)!);
+        const nnImages = validCubes.flatMap((k) => cubeToImages2.get(k)!);
+        const nnIndices = validCubes.flatMap((k) => cubeToIndices2.get(k)!);
 
         const distances = nnCoords.map((coord) =>
             norm(coord.map((value, i) => value - centerCoord[i]))
@@ -442,7 +468,6 @@ export function getPointsInSpheres(
     neighbors.push(nns);
     ++centerIdx;
   }
-
   return neighbors;
 }
 
@@ -483,6 +508,32 @@ function getPointsInSphere(
     return neighbors;
 }
 
+/**
+ * Find all mappings between current lattice and another lattice.
+
+        Args:
+            other_lattice (Lattice): Another lattice that is equivalent to this one.
+            ltol (float): Tolerance for matching lengths. Defaults to 1e-5.
+            atol (float): Tolerance for matching angles. Defaults to 1.
+            skip_rotation_matrix (bool): Whether to skip calculation of the
+                rotation matrix
+
+        Yields:
+            (aligned_lattice, rotation_matrix, scale_matrix) if a mapping is
+            found. aligned_lattice is a rotated version of other_lattice that
+            has the same lattice parameters, but which is aligned in the
+            coordinate system of this lattice so that translational points
+            match up in 3D. rotation_matrix is the rotation that has to be
+            applied to other_lattice to obtain aligned_lattice, i.e.,
+            aligned_matrix = np.inner(other_lattice, rotation_matrix) and
+            op = SymmOp.from_rotation_and_translation(rotation_matrix)
+            aligned_matrix = op.operate_multi(latt.matrix)
+            Finally, scale_matrix is the integer matrix that expresses
+            aligned_matrix as a linear combination of this
+            lattice, i.e., aligned_matrix = np.dot(scale_matrix, self.matrix)
+
+            None is returned if no matches are found.
+*/
 function* findAllMappings(
     lattice: number[][],
     otherLattice: number[][],
@@ -508,11 +559,8 @@ function* findAllMappings(
         frac.push(entry.coord);
         dist.push(entry.distance);
     }
-    console.log("++++");
-    console.log("frac", frac);
-    console.log("dist", dist);
 
-    const cart = getCartesianCoords(frac, otherLattice);
+    const cart = getCartesianCoords(frac, lattice);
 
     // Filter points by distance for each lattice parameter
     const inds = lengths.map((ln) => {
@@ -522,7 +570,7 @@ function* findAllMappings(
             return ratio < (1 + ltol) && ratio > 1 / (1 + ltol);
         });
     });
-    // console.log("IIII", inds);
+
     // Get candidate vectors for each lattice direction
     const cA = cart.filter((_, idx) => inds[0][idx]);
     const cB = cart.filter((_, idx) => inds[1][idx]);
@@ -551,56 +599,80 @@ function* findAllMappings(
     const gammaTarget = Array(gammaAngles.length).fill(null).map(() =>
         Array<number>(gammaAngles[0].length).fill(gamma)
     );
-    // console.log("====");
-    // console.log(cA, cB, lA, lB);
-    // console.log("+++ gammaAngles", gammaAngles);
 
     const alphaB = isClose(alphaAngles, alphaTarget, atol);
     const betaB  = isClose(betaAngles, betaTarget, atol);
     const gammaB = isClose(gammaAngles, gammaTarget, atol);
-// console.log("+++ alpha", alphaB);
-// console.log("+++ beta", betaB);
-// console.log("+++ gamma", gammaB);
 
     // Find valid combinations
-    for(let idx = 0; idx < gammaB.length; idx++) {
-      for(let j = 0; j < gammaB[idx].length; j++) {
-        if(!gammaB[idx][j]) continue;
+    for(let idx = 0; idx < gammaB.length; ++idx) {
+        for(let j = 0; j < gammaB[idx].length; ++j) {
+            if(!gammaB[idx][j]) continue;
 
-        for(let k = 0; k < alphaB.length; k++) {
+            for(let k = 0; k < alphaB[j].length; k++) {
 
-            if(!alphaB[j]?.[k] || !betaB[idx]?.[k]) continue;
+                if(!alphaB[j][k] || !betaB[idx][k]) continue;
 
-          // Create scale matrix from fractional coordinates
-          const scaleM = [
-            [fA[idx][0], fA[idx][1], fA[idx][2]],
-            [fB[j][0], fB[j][1], fB[j][2]],
-            [fC[k][0], fC[k][1], fC[k][2]]
-          ];
+                // Create scale matrix from fractional coordinates
+                const scaleM = [
+                    [fA[idx][0], fA[idx][1], fA[idx][2]],
+                    [fB[j][0], fB[j][1], fB[j][2]],
+                    [fC[k][0], fC[k][1], fC[k][2]]
+                ];
 
-          // Check determinant
-          if(Math.abs(determinant(scaleM)) < 1e-8) {
-            continue;
-          }
+                // Check determinant
+                if(Math.abs(determinant(scaleM)) < 1e-8) {
+                    continue;
+                }
 
-          // Create aligned matrix from Cartesian coordinates
-          const alignedM = [
-            [cA[idx][0], cA[idx][1], cA[idx][2]],
-            [cB[j][0], cB[j][1], cB[j][2]],
-            [cC[k][0], cC[k][1], cC[k][2]]
-          ];
+                // Create aligned matrix from Cartesian coordinates
+                const alignedM = [
+                    [cA[idx][0], cA[idx][1], cA[idx][2]],
+                    [cB[j][0], cB[j][1], cB[j][2]],
+                    [cC[k][0], cC[k][1], cC[k][2]]
+                ];
 
-          let rotationM: number[][] | undefined;
-          if(!skipRotationMatrix) {
-            rotationM = solveLinearSystem(alignedM, otherLattice);
-          }
+                let rotationM: number[][] | undefined;
+                if(!skipRotationMatrix) {
+                    rotationM = solveLinearSystem(alignedM, otherLattice);
+                }
 
-          yield [alignedM, rotationM, scaleM];
+                yield [alignedM, rotationM, scaleM];
+            }
         }
-      }
     }
 }
 
+/**
+ * Find a mapping between current lattice and another lattice. There
+        are an infinite number of choices of basis vectors for two entirely
+        equivalent lattices. This method returns a mapping that maps
+        other_lattice to this lattice.
+
+        Args:
+            other_lattice (Lattice): Another lattice that is equivalent to
+                this one.
+            ltol (float): Tolerance for matching lengths. Defaults to 1e-5.
+            atol (float): Tolerance for matching angles. Defaults to 1.
+            skip_rotation_matrix (bool): Whether to skip calculation of the rotation matrix.
+                Defaults to False.
+
+        Returns:
+            tuple[Lattice, NDArray[np.float_], NDArray[np.float_]]: (aligned_lattice, rotation_matrix, scale_matrix)
+            if a mapping is found. aligned_lattice is a rotated version of other_lattice that
+            has the same lattice parameters, but which is aligned in the
+            coordinate system of this lattice so that translational points
+            match up in 3D. rotation_matrix is the rotation that has to be
+            applied to other_lattice to obtain aligned_lattice, i.e.,
+            aligned_matrix = np.inner(other_lattice, rotation_matrix) and
+            op = SymmOp.from_rotation_and_translation(rotation_matrix)
+            aligned_matrix = op.operate_multi(latt.matrix)
+            Finally, scale_matrix is the integer matrix that expresses
+            aligned_matrix as a linear combination of this
+            lattice, i.e., aligned_matrix = np.dot(scale_matrix, self.matrix)
+
+            None is returned if no matches are found.
+ */
 const findMapping = (
     lattice: number[][],
     otherLattice: number[][],

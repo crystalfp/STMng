@@ -7,7 +7,7 @@
  * @since 2024-08-09
  */
 
-import {ref, watch, computed} from "vue";
+import {ref, reactive, watch, computed} from "vue";
 import {storeToRefs} from "pinia";
 import {sm} from "@/services/SceneManager";
 import {useControlStore} from "@/stores/controlStore";
@@ -37,10 +37,10 @@ const distanceBC = ref(-1);
 const distanceAC = ref(-1);
 const angleABC   = ref(-1);
 const volume     = ref(-1);
-const details    = ref<SelectedAtom[]>([]);
+const details    = reactive<SelectedAtom[]>([]);
 
 const measurementType = ref<"atoms" | "polyhedra" | "bonds">("atoms");
-const bondData = ref<BondData[]>([]);
+const bondData = reactive<BondData[]>([]);
 
 /** Show fractional coordinates */
 const useFractional = ref(false);
@@ -50,8 +50,8 @@ const natoms = ref(0);
 const nbonds = ref(0);
 const nhbonds = ref(0);
 const step = ref(1);
-const counts = ref<{symbol: string; count: number}[]>([]);
-const uc = ref<number[]>([]);
+const counts = reactive<{symbol: string; count: number}[]>([]);
+const uc = reactive<number[]>([]);
 
 /** Renderer */
 const renderer = new MeasuresRenderer(id);
@@ -63,8 +63,8 @@ watch(controlStore.atomsSelected, () => {
     const nselected = controlStore.atomsSelected.length;
     if(nselected === 0) {
         renderer.clearOutput();
-        bondData.value.length = 0;
-        details.value.length = 0;
+        bondData.length = 0;
+        details.length = 0;
         distanceAB.value = -1;
         return;
     }
@@ -80,8 +80,8 @@ watch(controlStore.atomsSelected, () => {
 
             const bondDataTable = JSON.parse(params.labels as string ?? "[]") as BondData[];
             bondDataTable.sort((a, b) => a.idx - b.idx);
-            bondData.value.length = 0;
-            for(const bd of bondDataTable) bondData.value.push(bd);
+            bondData.length = 0;
+            for(const bd of bondDataTable) bondData.push(bd);
 
             renderer.measureBonds(params, bondDataTable, pointSize);
         })
@@ -100,9 +100,11 @@ watch(controlStore.atomsSelected, () => {
         distanceBC.value = params.distanceBC as number ?? -1;
         distanceAC.value = params.distanceAC as number ?? -1;
         angleABC.value   = params.angleABC as number ?? -1;
-        details.value    = JSON.parse(params.details as string ?? "[]") as SelectedAtom[];
+        const rawDetails = JSON.parse(params.details as string ?? "[]") as SelectedAtom[];
+        details.length = 0;
+        for(const atom of rawDetails) details.push(atom);
 
-    	renderer.measureAtoms(details.value, pointSize);
+    	  renderer.measureAtoms(details, pointSize);
     })
     .catch((error: Error) => showSystemAlert(`Error from computing measures: ${error.message}`));
 
@@ -123,22 +125,22 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
 
     // Counts by atom type
     const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, number>;
-    counts.value.length = 0;
+    counts.length = 0;
     for(const entry in countsRaw) {
-        counts.value.push({symbol: entry, count: countsRaw[entry]});
+        counts.push({symbol: entry, count: countsRaw[entry]});
     }
-    counts.value.sort((a, b) => a.symbol.localeCompare(b.symbol));
+    counts.sort((a, b) => a.symbol.localeCompare(b.symbol));
 
     // Unit cell. The values are: [a, b, c, α, β, γ, x0, y0, z0]
-    uc.value.length = 9;
-    for(let i=0; i < 9; ++i) uc.value[i] = 0;
+    uc.length = 9;
+    for(let i=0; i < 9; ++i) uc[i] = 0;
     const lengthsAngles = params.lengthsAngles as number[] ?? [];
     for(let i=0; i < 6; ++i) {
-        uc.value[i] = lengthsAngles[i] ?? 0;
+        uc[i] = lengthsAngles[i] ?? 0;
     }
     const origin = params.origin as number[] ?? [];
     for(let i=0; i < 3; ++i) {
-        uc.value[i+6] = origin[i] ?? 0;
+        uc[i+6] = origin[i] ?? 0;
     }
 });
 
@@ -260,7 +262,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
   <v-container v-if="measurementType === 'atoms'" class="pa-0">
     <v-switch v-model="useFractional" label="Show fractional coordinates"
-              class="ml-4"/>
+              class="ml-4" :disabled="uc[0] === 0"/>
     <v-label v-if="details.length > 0"
              class="simple-title mb-2">Selected atoms</v-label>
     <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">

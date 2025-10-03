@@ -7,7 +7,7 @@
  * @since 2024-08-20
  */
 
-import {computed, ref, watch} from "vue";
+import {computed, ref, reactive, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
@@ -48,8 +48,8 @@ const maxHBondingDistance = ref(3.00);
 const maxHValenceAngle    = ref(30);
 const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
-const perPairData         = ref<PairData[]>([]);
-const showScale           = ref<number[]>([]);
+const perPairData         = reactive<PairData[]>([]);
+const showScale           = reactive<number[]>([]);
 const enlargementKind     = ref("neighbors");
 
 // Initialize the control
@@ -65,11 +65,11 @@ askNode(id, "init")
         perPairScale.value        = params.perPairScale as boolean ?? false;
         enlargementKind.value     = params.enlargementKind as string ?? "neighbors";
 
-        perPairData.value.length = 0;
+        perPairData.length = 0;
         const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
         for(const item of pairData) {
-            perPairData.value.push(item);
-            showScale.value.push(item.scale);
+            perPairData.push(item);
+            showScale.push(item.scale);
         }
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
@@ -77,7 +77,7 @@ askNode(id, "init")
 const scales = computed((old?: number[]) => {
 
     const out: number[] = [];
-    for(const pair of perPairData.value) {
+    for(const pair of perPairData) {
         out.push(pair.scale);
     }
 
@@ -111,7 +111,7 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
         changes = true;
     }
     else if(apps) {
-        const len = perPairData.value.length;
+        const len = perPairData.length;
         for(let i=0; i < len; ++i) {
             if(as[i] !== bs[i]) {
                 changes = true;
@@ -128,7 +128,7 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
         enableComputeBonds:  enableComputeBonds.value,
         bondScale:           bondScale.value,
         perPairScale:        perPairScale.value,
-        perPairData:         JSON.stringify(perPairData.value),
+        perPairData:         JSON.stringify(perPairData),
         enlargementKind:     enlargementKind.value
     });
 }, {deep: true});
@@ -142,11 +142,11 @@ receiveFromNode(id, "params", (params: CtrlParams) => {
         showSystemAlert(`${mm}. Disabled bonds computation`, "warning");
     }
     if(params.perPairData !== undefined) {
-        perPairData.value.length = 0;
+        perPairData.length = 0;
         const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
         for(const item of pairData) {
-            perPairData.value.push(item);
-            showScale.value.push(item.scale);
+            perPairData.push(item);
+            showScale.push(item.scale);
         }
     }
 });
@@ -161,9 +161,9 @@ const resetSliders = (): void => {
     maxHValenceAngle.value    = 30;
     bondScale.value           = 1.1;
     let i = 0;
-    for(const item of perPairData.value) {
+    for(const item of perPairData) {
         item.scale = 1.1;
-        showScale.value[i] = 1.1;
+        showScale[i] = 1.1;
         ++i;
     }
     enlargementKind.value = "neighbors";

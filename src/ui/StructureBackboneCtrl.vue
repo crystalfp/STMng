@@ -29,7 +29,7 @@ const {id, label} = defineProps<{
 const enableBackbone = ref(false);
 
 /** Chains present in the input structure and chains selected */
-const chains = ref<string[]>([]);
+const chains = reactive<string[]>([]);
 const showChains = reactive<Record<string, boolean>>({});
 const hasCell = ref(false);
 
@@ -52,7 +52,7 @@ const showThreshold = ref(0.9);
 askNode(id, "init")
     .then((params) => {
         enableBackbone.value = params.enableStructureBackbone as boolean ?? false;
-        chains.value.length = 0;
+        chains.length = 0;
         for(const key in showChains) {
             if(Object.hasOwn(showChains, key)) {
 
@@ -79,7 +79,7 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     // If the list of chains has not changed, don't reset the switch values
     let shouldReset = false;
     const tcSorted = thoseChains.toSorted((a, b) => a.localeCompare(b));
-    const cSorted = chains.value.toSorted((a, b) => a.localeCompare(b));
+    const cSorted = chains.toSorted((a, b) => a.localeCompare(b));
     if(tcSorted.length === cSorted.length) {
         for(let i = 0; i < tcSorted.length; i++) {
             if(tcSorted[i] !== cSorted[i]) {
@@ -90,10 +90,10 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     }
     else shouldReset = true;
 
-    chains.value.length = 0;
+    chains.length = 0;
     for(const chain of thoseChains) {
         if(shouldReset) showChains[chain] = false;
-        chains.value.push(chain);
+        chains.push(chain);
     }
 });
 

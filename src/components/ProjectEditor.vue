@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-03-10
  */
-import {computed, ref, onMounted} from "vue";
+import {computed, ref, reactive, onMounted} from "vue";
 import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLineType, Position,
         Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
@@ -62,7 +62,7 @@ interface NodeData {
 }
 
 /** The graph in the format accepted by the graph editor */
-const graphFlow = ref<GraphFlowItem[]>([]);
+const graphFlow = reactive<GraphFlowItem[]>([]);
 
 // Spacing between nodes in the diagonal default layout
 const X_INCREMENT = 150;
@@ -94,7 +94,7 @@ interface AvailableNode {
 }
 
 /** List of available nodes */
-const availableNodes = ref<AvailableNode[]>([]);
+const availableNodes = reactive<AvailableNode[]>([]);
 
 /** Path to the current loaded project file or empty for default project */
 const currentProjectPath = ref("");
@@ -109,7 +109,7 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
     let x = 5;
     let y = 5;
 
-    graphFlow.value.length = 0;
+    graphFlow.length = 0;
     for(const item in projectInfo.graph) {
 
         const node = projectInfo.graph[item];
@@ -129,7 +129,7 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
             x = node.x;
             y = node.y;
         }
-        graphFlow.value.push({
+        graphFlow.push({
             id: item,
             label: node.label,
             in: node.in,
@@ -152,7 +152,7 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
  */
  const prepareAvailableNodes = (projectInfo: ProjectInfo): void => {
 
-    availableNodes.value.length = 0;
+    availableNodes.length = 0;
     for(const item of projectInfo.allNodes) {
 
         if(item.type === "viewer-3d") continue;
@@ -168,9 +168,9 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
             type: item.type
         };
 
-        availableNodes.value.push(availableNode);
+        availableNodes.push(availableNode);
     }
-    availableNodes.value.sort((a: AvailableNode, b: AvailableNode) => a.label.localeCompare(b.label));
+    availableNodes.sort((a: AvailableNode, b: AvailableNode) => a.label.localeCompare(b.label));
 };
 
 /** Receive the data and build the graph data and available nodes list */
@@ -209,7 +209,7 @@ interface OneNodeInfo {
     /** The corresponding value */
     value: string;
 }
-const nodeInfo = ref<OneNodeInfo[]>([]);
+const nodeInfo = reactive<OneNodeInfo[]>([]);
 
 /** Listen to node selection */
 let x: number | undefined;
@@ -226,7 +226,7 @@ onNodesChange((changes) => {
                     y = change.position.y;
                 }
                 else if(x !== undefined && y !== undefined) {
-                    for(const node of graphFlow.value) {
+                    for(const node of graphFlow) {
                         if(node.id === change.id) {
                             node.position.x = x;
                             node.position.y = y;
@@ -243,17 +243,17 @@ onNodesChange((changes) => {
                 if(change.selected) {
 
                     const node = findNode<NodeData>(change.id);
-                    nodeInfo.value.length = 0;
+                    nodeInfo.length = 0;
                     if(node) {
-                        nodeInfo.value.push(
+                        nodeInfo.push(
                             {id: "id", label: "Node id:",    value: change.id},
                             {id: "lb", label: "Label:",      value: node.data.label},
                             {id: "ty", label: "Node type:",  value: node.data.type},
                         );
                         if(node.data.in !== "") {
-                            nodeInfo.value.push({id: "in", label: "Input from:", value: node.data.in});
+                            nodeInfo.push({id: "in", label: "Input from:", value: node.data.in});
                         }
-                        nodeInfo.value.push(
+                        nodeInfo.push(
                             {id: "gr", label: "Graphics:",   value: node.data.graphic}
                         );
                     }
@@ -274,7 +274,7 @@ onNodesChange((changes) => {
 const nodes = computed<Node<NodeData>[]>(() => {
 
     const nodes: Node<NodeData>[] = [];
-    for(const graphNode of graphFlow.value) {
+    for(const graphNode of graphFlow) {
 
         let type = "default";
         if(graphNode.hasInput && !graphNode.hasOutput) type = "output";
@@ -315,7 +315,7 @@ const crossingLinesFilter = theme.value === "dark" ?
 const edges = computed<Edge[]>(() => {
 
     const edges: Edge[] = [];
-    for(const graphNode of graphFlow.value) {
+    for(const graphNode of graphFlow) {
 
         if(graphNode.in) {
             const out: Edge = {
@@ -349,7 +349,7 @@ const onEdgeUpdate = (params: EdgeUpdateParams): void => {
 
     const {edge, connection} = params;
     projectModified.value = true;
-    for(const graphNode of graphFlow.value) {
+    for(const graphNode of graphFlow) {
         if(graphNode.id === edge.target) {
             graphNode.in = "";
         }
@@ -368,7 +368,7 @@ const onConnect = (params: Connection): void => {
 
     let nodeSource: GraphFlowItem | undefined;
     let nodeTarget: GraphFlowItem | undefined;
-    for(const graphNode of graphFlow.value) {
+    for(const graphNode of graphFlow) {
         if(graphNode.id === params.source) {
             nodeSource = graphNode;
         }
@@ -399,7 +399,7 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
 };
 
 // To show error messages
-const notificationQueue = ref<string[]>([]);
+const notificationQueue = reactive<string[]>([]);
 
 /**
  * Save the modified project
@@ -409,18 +409,18 @@ const notificationQueue = ref<string[]>([]);
 const saveProjectGraph = (saveAs: boolean): void => {
 
     let hasErrors = false;
-    for(const node of graphFlow.value) {
-        for(const availableNode of availableNodes.value) {
+    for(const node of graphFlow) {
+        for(const availableNode of availableNodes) {
             if(node.type === availableNode.type) {
                 if(node.in === "" && availableNode.hasInput) {
                     const notification = `Node "${node.label}" input is unconnected`;
-                    notificationQueue.value.push(notification);
+                    notificationQueue.push(notification);
                     log.error(notification);
                     hasErrors = true;
                 }
                 if(availableNode.hasOutput && !availableNode.hasOptionalOutput) {
                     let isConnected = false;
-                    for(const node2 of graphFlow.value) {
+                    for(const node2 of graphFlow) {
                         if(node2.in === node.id) {
                             isConnected = true;
                             break;
@@ -428,7 +428,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
                     }
                     if(!isConnected) {
                         const notification = `Node "${node.label}" output is unconnected`;
-                        notificationQueue.value.push(notification);
+                        notificationQueue.push(notification);
                         log.error(notification);
                         hasErrors = true;
                     }
@@ -441,7 +441,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
     if(hasErrors || !projectModified.value) return;
 
     // Sort the node left to right and top to bottom
-    const sortedGraph = graphFlow.value.toSorted(sortGraph);
+    const sortedGraph = graphFlow.toSorted(sortGraph);
 
     const graph: ProjectGraph = {};
     for(const node of sortedGraph) {
@@ -502,10 +502,10 @@ const confirmDeletion = (): void => {
     showConfirm.value = false;
 
     let found = false;
-    for(let idx = 0; idx < graphFlow.value.length; ++idx) {
+    for(let idx = 0; idx < graphFlow.length; ++idx) {
 
-        if(graphFlow.value[idx].id === selectedId) {
-            graphFlow.value.splice(idx, 1);
+        if(graphFlow[idx].id === selectedId) {
+            graphFlow.splice(idx, 1);
             projectModified.value = true;
             showPanel.value = false;
             found = true;
@@ -513,7 +513,7 @@ const confirmDeletion = (): void => {
         }
     }
     if(found) {
-        for(const node of graphFlow.value) {
+        for(const node of graphFlow) {
             if(node.in === selectedId) {
                 node.in = "";
                 break;
@@ -538,7 +538,7 @@ const handleDrop = (event: DragEvent): void => {
     let found = true;
     while(found) {
         found = false;
-        for(const entry of graphFlow.value) {
+        for(const entry of graphFlow) {
             if(entry.id === id) {
                 found = true;
                 ++seq;
@@ -566,7 +566,7 @@ const handleDrop = (event: DragEvent): void => {
         type: nodeModel.type,
         position
     };
-    graphFlow.value.push(node);
+    graphFlow.push(node);
 };
 
 /**
@@ -606,7 +606,7 @@ const updateLabel = (label: string): void => {
     if(!label) return;
 
     let id;
-    for(const entry of nodeInfo.value) {
+    for(const entry of nodeInfo) {
         if(entry.id === "id") {
             id = entry.value;
             break;
@@ -614,7 +614,7 @@ const updateLabel = (label: string): void => {
     }
     if(!id) return;
 
-    for(const entry of graphFlow.value) {
+    for(const entry of graphFlow) {
         if(entry.id === id) {
             entry.label = label;
             projectModified.value = true;
@@ -633,7 +633,7 @@ const updateLabel = (label: string): void => {
 const handleError = (error: VueFlowError): void => {
 
     const notification = `Error from VueFlow: ${error.message}`;
-    notificationQueue.value.push(notification);
+    notificationQueue.push(notification);
     log.error(notification);
 };
 
@@ -642,8 +642,8 @@ const handleError = (error: VueFlowError): void => {
  */
 const createProjectGraph = (): void => {
 
-    graphFlow.value.length = 0;
-    graphFlow.value.push({
+    graphFlow.length = 0;
+    graphFlow.push({
         id: "viewer",
         label: "Viewer",
         in: "",

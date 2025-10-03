@@ -7,23 +7,23 @@
  * @since 2025-06-04
  */
 import {theme} from "@/services/ReceiveTheme";
-import {ref, nextTick} from "vue";
+import {ref, reactive, nextTick} from "vue";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import type {AveragesResult} from "@/electron/modules/ReorderAtomsInSteps";
 
-const means = ref<AveragesResult[]>([]);
+const means = reactive<AveragesResult[]>([]);
 
 const coordinates = ref("(cartesian)");
 
 receiveInWindow((data) => void nextTick().then(() => {
 
-    means.value.length = 0;
+    means.length = 0;
     coordinates.value = "(cartesian)";
     const decodedData = JSON.parse(data) as AveragesResult[];
     if(decodedData.length > 0) {
 
-        for(const entry of decodedData) means.value.push(entry);
+        for(const entry of decodedData) means.push(entry);
 
         if(decodedData[0].isFractional) coordinates.value = "(fractional)";
     }

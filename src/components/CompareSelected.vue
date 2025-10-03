@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-24
  */
-import {onBeforeUnmount, onMounted, ref, useTemplateRef, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref, reactive, useTemplateRef, watch} from "vue";
 import log from "electron-log";
 import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, Group, LineBasicMaterial, BufferGeometry,
@@ -45,7 +45,7 @@ interface Selection {
     /** Disabled on the right column */
     disabled1: boolean;
 }
-const lines = ref<Selection[]>([]);
+const lines = reactive<Selection[]>([]);
 
 /**
  * Side: 0: left, 1: right
@@ -398,7 +398,7 @@ const unloadStructure = (side: Side): void => {
 const updateSelection = (): void => {
 
     const steps = [];
-    for(const entry of lines.value) steps.push(entry.step);
+    for(const entry of lines) steps.push(entry.step);
     sendToNode("SYSTEM", "updated-selection", {updatedStepsSelection: steps});
 };
 
@@ -407,9 +407,9 @@ receiveInWindow((dataFromMain) => {
 
     const steps = JSON.parse(dataFromMain) as number[];
     const len = steps.length;
-    lines.value.length = 0;
+    lines.length = 0;
     if(len === 0) return;
-    for(let i=0; i < len; ++i) lines.value.push({
+    for(let i=0; i < len; ++i) lines.push({
         step: steps[i], selected0: false, selected1: false, disabled0: false, disabled1: false
     });
 });
@@ -422,9 +422,9 @@ receiveInWindow((dataFromMain) => {
  */
 const findIdx = (step: number): number => {
 
-    const len = lines.value.length;
+    const len = lines.length;
     for(let idx=0; idx < len; ++idx) {
-        if(lines.value[idx].step === step) return idx;
+        if(lines[idx].step === step) return idx;
     }
     log.error("Step not found");
     return 0;
@@ -439,12 +439,12 @@ const findIdx = (step: number): number => {
 const enableAllExcept = (side: Side, idx?: number): void => {
 
     if(side) {
-        for(const entry of lines.value) entry.disabled1 = false;
-        if(idx !== undefined) lines.value[idx].disabled1 = true;
+        for(const entry of lines) entry.disabled1 = false;
+        if(idx !== undefined) lines[idx].disabled1 = true;
     }
     else {
-        for(const entry of lines.value) entry.disabled0 = false;
-        if(idx !== undefined) lines.value[idx].disabled0 = true;
+        for(const entry of lines) entry.disabled0 = false;
+        if(idx !== undefined) lines[idx].disabled0 = true;
     }
 };
 
@@ -461,22 +461,22 @@ const select = (side: Side, step: number): void => {
     if(side) {
         if(step === selectedStep0.value) return;
         if(step === selectedStep1.value) {
-            lines.value[idx].selected1 = false;
+            lines[idx].selected1 = false;
             selectedStep1.value = -1;
             unloadStructure(1);
             enableAllExcept(0);
         }
         else if(selectedStep1.value === -1) {
-            lines.value[idx].selected1 = true;
+            lines[idx].selected1 = true;
             selectedStep1.value = step;
             loadStructure(1, step);
             enableAllExcept(0, idx);
         }
         else {
             const idx1 = findIdx(selectedStep1.value);
-            lines.value[idx1].selected1 = false;
+            lines[idx1].selected1 = false;
             unloadStructure(1);
-            lines.value[idx].selected1 = true;
+            lines[idx].selected1 = true;
             selectedStep1.value = step;
             loadStructure(1, step);
             enableAllExcept(0, idx);
@@ -485,22 +485,22 @@ const select = (side: Side, step: number): void => {
     else {
         if(step === selectedStep1.value) return;
         if(step === selectedStep0.value) {
-            lines.value[idx].selected0 = false;
+            lines[idx].selected0 = false;
             selectedStep0.value = -1;
             unloadStructure(0);
             enableAllExcept(1);
         }
         else if(selectedStep0.value === -1) {
-            lines.value[idx].selected0 = true;
+            lines[idx].selected0 = true;
             selectedStep0.value = step;
             loadStructure(0, step);
             enableAllExcept(1, idx);
         }
         else {
             const idx0 = findIdx(selectedStep0.value);
-            lines.value[idx0].selected0 = false;
+            lines[idx0].selected0 = false;
             unloadStructure(0);
-            lines.value[idx].selected0 = true;
+            lines[idx].selected0 = true;
             selectedStep0.value = step;
             loadStructure(0, step);
             enableAllExcept(1, idx);
@@ -535,7 +535,7 @@ const remove = (side: Side): void => {
 
     const idx = findIdx(step);
     unloadStructure(side);
-    lines.value.splice(idx, 1);
+    lines.splice(idx, 1);
     updateSelection();
 };
 

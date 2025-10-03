@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import log from "electron-log";
-import tmp from "tmp";
+import {tmpNameSync} from "tmp";
 import {unlinkSync, writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
@@ -218,8 +218,15 @@ export class StructureReader extends NodeCore {
 			readerOptions = {useBohr: this.useBohr, readHydrogen: this.readHydrogen};
 		}
 
-		// Read the file
-		const structures = await this.reader.readStructure(filename, readerOptions);
+		// Read the file and catch format errors
+		const structures = await this.reader.readStructure(filename, readerOptions)
+			.catch((error: Error) => {
+				message = `Format "${requestedFormat}" error: ${(error as Error).message}`;
+				return message;
+			});
+		if(typeof structures === "string") {
+			return {error: structures};
+		}
 
 		// Append if so requested
 		this.structures = this.appendFile ? [...this.structures, ...structures] : structures;
@@ -395,7 +402,7 @@ export class StructureReader extends NodeCore {
 	 */
 	private async channelReadDropped(params: CtrlParams): Promise<CtrlParams> {
 
-		const name = tmp.tmpNameSync({prefix: "stm-ng-"});
+		const name = tmpNameSync({prefix: "stm-ng-"});
 		writeFileSync(name, params.fileContent as string, "utf8");
 
 		const response = await this.channelRead({
@@ -416,7 +423,7 @@ export class StructureReader extends NodeCore {
 	 */
 	private async channelAuxDropped(params: CtrlParams): Promise<CtrlParams> {
 
-		const name = tmp.tmpNameSync({prefix: "stm-ng-"});
+		const name = tmpNameSync({prefix: "stm-ng-"});
 		writeFileSync(name, params.auxFileContent as string, "utf8");
 
 		const response = await this.channelAuxRead({

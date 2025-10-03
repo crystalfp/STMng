@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-11-04
  */
-import {ref, watch} from "vue";
+import {ref, reactive, watch} from "vue";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
@@ -14,10 +14,10 @@ import type {CtrlParams} from "@/types";
 import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 
-const wavelengthCodes = ref<string[]>([]);
+const wavelengthCodes = reactive<string[]>([]);
 const wavelengthCode = ref("");
 const wavelengthNumeric = ref(1.5);
-const theta = ref([0, 90]);
+const theta = reactive([0, 90]);
 const scaled = ref(true);
 const enableComputation = ref(false);
 const width = ref(0.25);
@@ -38,14 +38,14 @@ askNode(id, "init")
     .then((params) => {
         enableComputation.value = params.enableComputation as boolean ?? false;
         scaled.value = params.scaled as boolean ?? true;
-        theta.value[0] = params.thetaLow as number ?? 0;
-        theta.value[1] = params.thetaHigh as number ?? 90;
+        theta[0] = params.thetaLow as number ?? 0;
+        theta[1] = params.thetaHigh as number ?? 90;
         width.value = params.width as number ?? 0.25;
 		showHKL.value = params.showHKL as boolean ?? false;
         const codes = params.wavelengthCodes as string[] ?? [];
-        wavelengthCodes.value.length = 0;
-        for(const code of codes) wavelengthCodes.value.push(code);
-        wavelengthCodes.value.push("Manual");
+        wavelengthCodes.length = 0;
+        for(const code of codes) wavelengthCodes.push(code);
+        wavelengthCodes.push("Manual");
         wavelengthCode.value = params.wavelengthCode as string ?? "CuKa";
         wavelengthNumeric.value = params.wavelengthNumeric as number ?? 1.5;
     })
@@ -57,8 +57,8 @@ watch([wavelengthCode, wavelengthNumeric, theta, scaled], () => {
     sendToNode(id, "compute", {
         wavelengthCode: wavelengthCode.value,
         wavelengthNumeric: wavelengthNumeric.value,
-        thetaLow: theta.value[0],
-        thetaHigh: theta.value[1],
+        thetaLow: theta[0],
+        thetaHigh: theta[1],
         scaled: scaled.value,
         width: width.value,
         showHKL: showHKL.value
@@ -87,8 +87,8 @@ const openChartWindow = (): void => {
     sendToNode(id, "open", {
         wavelengthCode: wavelengthCode.value,
         wavelengthNumeric: wavelengthNumeric.value,
-        thetaLow: theta.value[0],
-        thetaHigh: theta.value[1],
+        thetaLow: theta[0],
+        thetaHigh: theta[1],
         scaled: scaled.value,
         width: width.value,
         showHKL: showHKL.value

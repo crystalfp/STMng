@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, computed, watch} from "vue";
+import {ref, reactive, computed, watch} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsoOrthoFromNode, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
@@ -37,7 +37,7 @@ const showOrthoslice = ref(false);
 const countDatasets = ref(0);
 const maxPlane = ref(0);
 const colormapName = ref("rainbow");
-const limits = ref<number[]>([-10, 10]); // User selected limits
+const limits = reactive([-10, 10]); // User selected limits
 const valueMin = ref(-10); // Range of the values in the volume
 const valueMax = ref(10);
 const useColorClasses = ref(false);
@@ -69,8 +69,8 @@ askNode(id, "init")
         if(isoValue.value > valueMax.value) isoValue.value = valueMax.value;
         if(isoValue.value < valueMin.value) isoValue.value = valueMin.value;
 
-        limits.value[0] = valueMin.value;
-        limits.value[1] = valueMax.value;
+        limits[0] = valueMin.value;
+        limits[1] = valueMax.value;
 
         if(countDatasets.value === 0) {
             showOrthoslice.value = false;
@@ -106,8 +106,8 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
     if(isoValue.value < valueMin.value) isoValue.value = valueMin.value;
 
     if(params.limitLow !== undefined) {
-        limits.value[0] = params.limitLow as number;
-        limits.value[1] = params.limitHigh as number;
+        limits[0] = params.limitLow as number;
+        limits[1] = params.limitHigh as number;
     }
 
     if(countDatasets.value === 0) {
@@ -124,7 +124,7 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
     currentIsolineValues = isolineValues;
 
     // Update the colormap
-    renderer.setLut(colormapName.value, limits.value[0], limits.value[1],
+    renderer.setLut(colormapName.value, limits[0], limits[1],
                     useColorClasses.value, colorClasses.value);
 
     // Draw orthoslice and isolines
@@ -145,8 +145,8 @@ watch([dataset, axis, plane, colorClasses, useColorClasses,
         isoValue: isoValue.value,
         showOrthoslice: showOrthoslice.value,
         showIsolines: showIsolines.value,
-        limitLow: limits.value[0],
-        limitHigh: limits.value[1],
+        limitLow: limits[0],
+        limitHigh: limits[1],
     });
 
     renderer.setVisibility(showIsolines.value, showOrthoslice.value);
@@ -159,7 +159,7 @@ watch([colormapName, colorIsolines], () => {
         colorIsolines: colorIsolines.value,
     });
 
-    renderer.setLut(colormapName.value, limits.value[0], limits.value[1],
+    renderer.setLut(colormapName.value, limits[0], limits[1],
                     useColorClasses.value, colorClasses.value);
 
     // Draw orthoslice and isolines

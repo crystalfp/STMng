@@ -8,7 +8,7 @@
 */
 import {mdiAlphaXBoxOutline, mdiAlphaABoxOutline, mdiAlphaHBoxOutline,
         mdiPlusMinusVariant} from "@mdi/js";
-import {ref, defineAsyncComponent, markRaw, watch, computed} from "vue";
+import {ref, reactive, defineAsyncComponent, markRaw, watch, computed} from "vue";
 import {useControlStore} from "@/stores/controlStore";
 import {receiveProjectUI, sendToNode, sendCurrentNode} from "@/services/RoutesClient";
 
@@ -20,8 +20,8 @@ const controlStore = useControlStore();
 const selectedTabId = ref("");
 
 // Don't use shallowRef here
-const uiList = ref<ClientProjectInfoItem[]>([]);
-const panelList = ref<{id: string; label: string; ctrl: unknown}[]>([]);
+const uiList = reactive<ClientProjectInfoItem[]>([]);
+const panelList = reactive<{id: string; label: string; ctrl: unknown}[]>([]);
 
 /** When the project is loaded request the project data */
 sendToNode("SYSTEM", "project");
@@ -32,22 +32,22 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 	controlStore.resetCapabilityIndicators();
 
 	// Get the node UI list and select the first one
-	uiList.value.length = 0;
-	panelList.value.length = 0;
+	uiList.length = 0;
+	panelList.length = 0;
 	for(const id in clientProjectInfo) {
 
 		const info = clientProjectInfo[id];
-		uiList.value.push(info);
+		uiList.push(info);
 		const {ui, label} = info;
-		panelList.value.push({id, label, ctrl: markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`)))});
+		panelList.push({id, label, ctrl: markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`)))});
 	}
-	selectedTabId.value = uiList.value[0].id;
+	selectedTabId.value = uiList[0].id;
 });
 
 /* Return to the main process the type of the current node open in the UI */
 sendCurrentNode(() => {
 
-	for(const item of uiList.value) {
+	for(const item of uiList) {
 		if(item.id === selectedTabId.value) return item.type;
 	}
 	return "";

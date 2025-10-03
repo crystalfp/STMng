@@ -294,6 +294,7 @@ const setAppendFile = (): void => {
  */
 const selectedFile = (filename: string): void => {
 
+    countSteps.value = 1;
     step.value = 1;
     inProgress.value = true;
     resetNodeAlert();

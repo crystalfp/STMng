@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-01-20
  */
-import {computed, ref, shallowRef, watch} from "vue";
+import {computed, ref, reactive, shallowRef, watch} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
@@ -34,7 +34,7 @@ const chartType = ref<FingerprintsChartKind>("fp");
 const fpIndex = ref(0);
 const showFpIndex = ref(0);
 const countFingerprints = ref(0);
-const ids = ref<number[]>([]);
+const ids = reactive<number[]>([]);
 const binCount = ref(50);
 const showBinCount = ref(50);
 
@@ -165,8 +165,8 @@ receiveInWindow((dataFromMain) => {
 
         countFingerprints.value = count;
 
-        ids.value.length = 0;
-        for(const id of structureIds) ids.value.push(id);
+        ids.length = 0;
+        for(const id of structureIds) ids.push(id);
 
         const lineCoordinates: {x: number; y: number}[] = [];
         let previousY = fingerprint[0][1];

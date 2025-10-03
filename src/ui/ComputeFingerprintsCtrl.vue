@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {ref, computed, watch} from "vue";
+import {ref, reactive, computed, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
@@ -80,7 +80,7 @@ const countSelected = ref(0);
 const forceCutoff = ref(false);
 const cutoffDistance = ref(0);
 const manualCutoffDistance = ref(10);
-const fingerprintMethodsNames = ref<FPmethodName[]>([]);
+const fingerprintMethodsNames = reactive<FPmethodName[]>([]);
 const fingerprintingMethod = ref(0);
 const binSize = ref(0.05);
 const peakWidth = ref(0.02);
@@ -95,7 +95,7 @@ const processParallelism = ref(false);
 // Compute distances
 const distanceMethod = ref(0);
 const fixTriangleInequality = ref(false);
-const distanceMethods = ref<DistanceMethodsNames[]>([]);
+const distanceMethods = reactive<DistanceMethodsNames[]>([]);
 const countDistances = ref(0);
 const endMessage = ref("");
 
@@ -105,7 +105,7 @@ const duplicatesThreshold = ref(0.015);
 const pointsRemoved = ref(-1); // -1 means not run yet
 
 // Classify structures
-const groupingMethods = ref<GroupingMethodsNames[]>([]);
+const groupingMethods = reactive<GroupingMethodsNames[]>([]);
 const groupingMethod = ref(0);
 const groupingThreshold = ref(0.1);
 const addedMargin = ref(0); // (1+addedMargin) was called "K" in the old code
@@ -137,8 +137,8 @@ askNode(id, "init")
 
         const fpmn = params.fingerprintMethods as string[] ?? [];
         let len = fpmn.length;
-        fingerprintMethodsNames.value.length = 0;
-        for(let i=0; i < len; ++i) fingerprintMethodsNames.value.push({value: i, label: fpmn[i]});
+        fingerprintMethodsNames.length = 0;
+        for(let i=0; i < len; ++i) fingerprintMethodsNames.push({value: i, label: fpmn[i]});
 
         fingerprintingMethod.value = params.fingerprintingMethod as number ?? 0;
         binSize.value = params.binSize as number ?? 0.05;
@@ -147,17 +147,17 @@ askNode(id, "init")
 
         const dms = JSON.parse(params.distanceMethods as string ?? "[]") as string[];
         len = dms.length;
-        distanceMethods.value.length = 0;
-        for(let i=0; i < len; ++i) distanceMethods.value.push({value: i, label: dms[i]});
+        distanceMethods.length = 0;
+        for(let i=0; i < len; ++i) distanceMethods.push({value: i, label: dms[i]});
 
         distanceMethod.value = params.distanceMethod as number ?? 0;
         fixTriangleInequality.value = params.fixTriangleInequality as boolean ?? false;
 
         const gms = JSON.parse(params.groupingMethods as string ?? "[]") as GroupingMethodName[];
         len = gms.length;
-        groupingMethods.value.length = 0;
+        groupingMethods.length = 0;
         for(let i=0; i < len; ++i) {
-            groupingMethods.value.push({value: i, label: gms[i].label, usingMargin: gms[i].usingMargin});
+            groupingMethods.push({value: i, label: gms[i].label, usingMargin: gms[i].usingMargin});
         }
         groupingMethod.value = params.groupingMethod as number ?? 0;
         groupingThreshold.value = params.groupingThreshold as number ?? 0.1;
@@ -401,13 +401,12 @@ const ClassifyStructures = (): void => {
         countGroups.value = params.countGroups as number ?? 0;
     })
     .catch((error: Error) => showNodeAlert(`Error from grouping structures: ${error.message}`,
-                                              "fingerprints"))
+                                           "fingerprints"))
     .finally(() => {groupingBusy.value = false;});
 };
 
 /** Enable input of K value */
-const useMargin = computed(() => groupingMethods
-                                        .value[groupingMethod.value]?.usingMargin ?? false);
+const useMargin = computed(() => groupingMethods[groupingMethod.value]?.usingMargin ?? false);
 
 /**
  * Adjust addedMargin to be an integer on blur or Enter key
