@@ -133,7 +133,7 @@ export class PointGroupAnalyzer {
 
 		// Test for linear molecule
 		const eigZero = Math.abs(v1*v2*v3) < this.eigenTolerance;
-		// console.log(eigZero);
+
 		if(eigZero) {
 			log.debug("Linear molecule detected");
 			return this.procLinear();
@@ -142,7 +142,7 @@ export class PointGroupAnalyzer {
 		const eigAllSame = Math.abs(v1 - v2) < this.eigenTolerance &&
 						   Math.abs(v1 - v3) < this.eigenTolerance &&
 						   Math.abs(v2 - v3) < this.eigenTolerance;
-		// console.log(eigAllSame);
+
 		if(eigAllSame) {
 			log.debug("Spherical top molecule detected");
 			return this.procSphTop();
@@ -151,7 +151,7 @@ export class PointGroupAnalyzer {
 		const eigAllDiff = Math.abs(v1 - v2) > this.eigenTolerance &&
 						   Math.abs(v1 - v3) > this.eigenTolerance &&
 						   Math.abs(v2 - v3) > this.eigenTolerance;
-		// console.log(eigAllDiff);
+
 		if(eigAllDiff) {
 			log.debug("Asymmetric top molecule detected");
       		return this.procAsymTop();

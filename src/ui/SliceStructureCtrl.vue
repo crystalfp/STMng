@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-09
  */
-import {ref, watch, watchEffect} from "vue";
+import {ref, reactive, watch, watchEffect} from "vue";
 import {askNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
@@ -29,10 +29,13 @@ const {id, label} = defineProps<{
 const enableSlicer = ref(false);
 const showSlicer = ref(false);
 const sliceInside = ref(false);
-const mode = ref("plane");
+
+type ValidModes = "plane" | "miller" | "sphere" | "slab" | "direct";
+
+const mode = ref<ValidModes>("plane");
 
 /** Available modes */
-const modeList = ref([
+const modeList = reactive<{label: string; value: ValidModes}[]>([
     {label: "Plane",    value: "plane"},
     {label: "Miller",   value: "miller"},
     {label: "Sphere",   value: "sphere"},
@@ -80,7 +83,7 @@ askNode(id, "init")
 		enableSlicer.value = params.enableSlicer as boolean ?? false;
 		showSlicer.value = params.showSlicer as boolean ?? false;
 		sliceInside.value = params.sliceInside as boolean ?? false;
-		mode.value = params.mode as string ?? "plane";
+		mode.value = params.mode as ValidModes ?? "plane";
         parallelA.value = params.parallelA as boolean ?? false;
         percentA.value = params.percentA as number ?? 50;
         parallelB.value = params.parallelB as boolean ?? false;
@@ -203,7 +206,7 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
         "slicer"));
 });
 
-/** Change parameters for indexed slice */
+/** Change parameters for direct atoms slicer */
 watch([enableSlicer, mode, selectorKind,
        atomsSelector, sliceInside], () => {
 
@@ -215,6 +218,7 @@ watch([enableSlicer, mode, selectorKind,
         selectorKind: selectorKind.value,
         enableSlicer: enableSlicer.value
     });
+    showSlicer.value = false;
 });
 
 /** Set the other parameters */
@@ -288,7 +292,7 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-4 ml-3" />
-  <v-switch v-model="showSlicer" :disabled="mode==='indices'"
+  <v-switch v-model="showSlicer" :disabled="mode==='direct'"
             label="Show slicer geometry" class="ml-3" />
   <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />
   <v-select v-model="mode"
@@ -346,7 +350,7 @@ watchEffect(() => {
                           :label="`Radius (${showSphereRadius.toFixed(1)})`"
                           :min="0.1" :max="50" :step="0.1" />
   </v-container>
-  <v-container v-else-if="mode==='indices'" class="pa-0">
+  <v-container v-else-if="mode==='direct'" class="pa-0 pt-4">
     <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
                       class="ml-2 mb-6" :hide="['all']"
                       title="Select atoms by" placeholder="Atom selector" />

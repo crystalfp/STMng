@@ -11,7 +11,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {findIntersections} from "../modules/UnitCellIntersections";
-import type {Structure, ChannelDefinition, CtrlParams, BasisType} from "@/types";
+import type {Structure, ChannelDefinition, CtrlParams, BasisType, PositionType} from "@/types";
 
 /**
  * Slice plane parameters
@@ -30,7 +30,7 @@ export class SliceStructure extends NodeCore {
 	private enableSlicer = false;
 	private showSlicer = false;
 	private sliceInside = false;
-	private mode = "plane"; // "plane", "sphere", "miller", "slab", "indices"
+	private mode = "plane"; // "plane", "sphere", "miller", "slab", "direct"
 
 	private selectorKind: SelectorType = "symbol";
 	private atomsSelector = "";
@@ -183,18 +183,17 @@ export class SliceStructure extends NodeCore {
 	}
 
 	/**
-	 * Prepare the plane intersections with the unit cell and the plane parameters
+	 * Unify the plane creation in the simple case
+	 *
+	 * @param basis - Structure basis
+	 * @param origin - Structure origin
+	 * @returns Normal and a point to define the plane
 	 */
-	private preparePlaneSlicerGeometry(): void {
-
-		if(!this.structure) return;
+	private createSimplePlane(basis: BasisType, origin: PositionType): PlaneParams {
 
 		const pa = this.percentA/100;
 		const pb = this.percentB/100;
 		const pc = this.percentC/100;
-
-		const {crystal} = this.structure;
-		const {basis, origin} = crystal;
 
 		const points = [
 			pa*basis[0]+origin[0],
@@ -212,7 +211,18 @@ export class SliceStructure extends NodeCore {
 							 (this.parallelB ? 2 : 0) +
 							 (this.parallelC ? 4 : 0);
 
-		const {normal, point} = this.createPlane(points, parallelCode, basis);
+		return this.createPlane(points, parallelCode, basis);
+	}
+
+	/**
+	 * Prepare the plane intersections with the unit cell and the plane parameters
+	 */
+	private preparePlaneSlicerGeometry(): void {
+
+		const {crystal} = this.structure!;
+		const {basis, origin} = crystal;
+
+		const {normal, point} = this.createSimplePlane(basis, origin);
 
 		this.planesNormals = [
 			normal[0],
@@ -299,30 +309,10 @@ export class SliceStructure extends NodeCore {
 	 */
 	private prepareSlabSlicerGeometry(): void {
 
-		const pa = this.percentA/100;
-		const pb = this.percentB/100;
-		const pc = this.percentC/100;
-
 		const {crystal} = this.structure!;
 		const {basis, origin} = crystal;
 
-		const points = [
-			pa*basis[0]+origin[0],
-			pa*basis[1]+origin[1],
-			pa*basis[2]+origin[2],
-			pb*basis[3]+origin[0],
-			pb*basis[4]+origin[1],
-			pb*basis[5]+origin[2],
-			pc*basis[6]+origin[0],
-			pc*basis[7]+origin[1],
-			pc*basis[8]+origin[2]
-		];
-
-		const parallelCode = (this.parallelA ? 1 : 0) +
-							 (this.parallelB ? 2 : 0) +
-							 (this.parallelC ? 4 : 0);
-
-		const {normal, point} = this.createPlane(points, parallelCode, basis);
+		const {normal, point} = this.createSimplePlane(basis, origin);
 
 		this.planesNormals = [
 			normal[0],

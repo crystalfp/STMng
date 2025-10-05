@@ -32,15 +32,13 @@ const config = defineConfig([
         "src/cpp",
         "src/electron/fingerprint/rollup.config.mjs",
         "src/electron/fingerprint/KDtree.js",
-        "proto/PymatgenLattice - Copy.ts",
-        "proto/originalCalculateLLL.ts"
+        "proto-test"
     ]}, {
     files: [
         "src/**/*.ts",
         "src/**/*.vue",
         "eslint.config.mjs",
-        "vite.config.mts",
-        "proto/*.ts"
+        "vite.config.mts"
     ],
     languageOptions: {
         parser: vueParser,

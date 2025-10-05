@@ -49,10 +49,7 @@ export const removeDuplicatePoints = (enabled: boolean,
         accumulator.setEnableStatus(true);
         return -1;
     }
-// console.log("GROUPS", countStructures, countGroups);
-// for(const group of groups) {
-//     if(group.size > 1) console.log(group);
-// }
+
     // Make an index of the structures
     const structures: StructureReduced[] = [];
     for(const structure of accumulator.iterateSelectedStructures()) {
