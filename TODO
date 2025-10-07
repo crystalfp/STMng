@@ -1,6 +1,5 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
-  ☐ Billboard also for Bonds lengths labels
   ☐ Trajectory is slow
 
 Latest requests (backlog):
@@ -16,16 +15,18 @@ To do:
   ☐ Unify viewer3D setup between Compare and Landscape
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
   ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
+  ☐ Add type for atom selector kind
+  ☐ Billboard also for Bonds lengths labels
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
   ☐ Nice ideas in <https://ruoyusun.com/2024/01/23/cividle-optimization>
+  ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
 
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
   ☐ Memory leak detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
-  ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
 
 ToDo eventually:
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>

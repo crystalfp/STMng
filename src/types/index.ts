@@ -696,3 +696,8 @@ export type FingerprintsChartKind = "fp" | "en" | "ed" | "eh" | "dh" | "op" | "d
         - bonds: colored by coordination number
  */
 export type ColoringType = "type" | "mono" | "bonds";
+
+/**
+ * Slicing modes for the Slicer module
+ */
+export type SlicingModes = "plane" | "miller" | "sphere" | "slab" | "direct";

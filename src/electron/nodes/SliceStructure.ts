@@ -11,7 +11,8 @@ import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {findIntersections} from "../modules/UnitCellIntersections";
-import type {Structure, ChannelDefinition, CtrlParams, BasisType, PositionType} from "@/types";
+import type {Structure, ChannelDefinition, CtrlParams,
+			 BasisType, PositionType, SlicingModes} from "@/types";
 
 /**
  * Slice plane parameters
@@ -30,7 +31,7 @@ export class SliceStructure extends NodeCore {
 	private enableSlicer = false;
 	private showSlicer = false;
 	private sliceInside = false;
-	private mode = "plane"; // "plane", "sphere", "miller", "slab", "direct"
+	private mode: SlicingModes = "plane";
 
 	private selectorKind: SelectorType = "symbol";
 	private atomsSelector = "";
@@ -129,7 +130,7 @@ export class SliceStructure extends NodeCore {
 		this.enableSlicer = params.enableSlicer as boolean ?? false;
 		this.showSlicer = params.showSlicer as boolean ?? false;
 		this.sliceInside = params.sliceInside as boolean ?? false;
-		this.mode = params.mode as string ?? "plane";
+		this.mode = params.mode as SlicingModes ?? "plane";
         this.parallelA = params.parallelA as boolean ?? false;
         this.percentA = params.percentA as number ?? 50;
         this.parallelB = params.parallelB as boolean ?? false;
@@ -765,7 +766,7 @@ export class SliceStructure extends NodeCore {
 
         this.enableSlicer = params.enableSlicer as boolean ?? false;
         this.showSlicer = params.showSlicer as boolean ?? false;
-        this.mode = params.mode as string ?? "plane";
+        this.mode = params.mode as SlicingModes ?? "plane";
 
 		if(this.structure) {
 			if(this.enableSlicer || this.showSlicer) this.prepareSlicerGeometry();

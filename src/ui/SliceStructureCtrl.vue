@@ -13,7 +13,7 @@ import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import {SliceStructureRenderer} from "@/renderers/SliceStructureRenderer";
-import type {CtrlParams} from "@/types";
+import type {CtrlParams, SlicingModes} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -29,13 +29,10 @@ const {id, label} = defineProps<{
 const enableSlicer = ref(false);
 const showSlicer = ref(false);
 const sliceInside = ref(false);
-
-type ValidModes = "plane" | "miller" | "sphere" | "slab" | "direct";
-
-const mode = ref<ValidModes>("plane");
+const mode = ref<SlicingModes>("plane");
 
 /** Available modes */
-const modeList = reactive<{label: string; value: ValidModes}[]>([
+const modeList = reactive<{label: string; value: SlicingModes}[]>([
     {label: "Plane",    value: "plane"},
     {label: "Miller",   value: "miller"},
     {label: "Sphere",   value: "sphere"},
@@ -83,7 +80,7 @@ askNode(id, "init")
 		enableSlicer.value = params.enableSlicer as boolean ?? false;
 		showSlicer.value = params.showSlicer as boolean ?? false;
 		sliceInside.value = params.sliceInside as boolean ?? false;
-		mode.value = params.mode as ValidModes ?? "plane";
+		mode.value = params.mode as SlicingModes ?? "plane";
         parallelA.value = params.parallelA as boolean ?? false;
         percentA.value = params.percentA as number ?? 50;
         parallelB.value = params.parallelB as boolean ?? false;
@@ -343,14 +340,14 @@ watchEffect(() => {
   </v-container>
   <v-container v-else-if="mode==='sphere'" class="pa-0">
     <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
-                      class="ml-2 mb-6" :hide="['all']"
+                      class="ml-2 mb-4 mt-2" :hide="['all']"
                       title="Select center atom by" placeholder="Central atom selector" />
     <slider-with-steppers v-model="sphereRadius"
                           v-model:raw="showSphereRadius" label-width="7rem"
                           :label="`Radius (${showSphereRadius.toFixed(1)})`"
                           :min="0.1" :max="50" :step="0.1" />
   </v-container>
-  <v-container v-else-if="mode==='direct'" class="pa-0 pt-4">
+  <v-container v-else-if="mode==='direct'" class="pa-0 pt-2">
     <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
                       class="ml-2 mb-6" :hide="['all']"
                       title="Select atoms by" placeholder="Atom selector" />

@@ -21,9 +21,9 @@
 <h1 class="subh1">Remove part of the structure</h1>
 
 <div class="description">
-<p>Remove part of a structure using a sphere, a plane or a pair of planes. The removed part could be inside or outside the selected geometry.</p>
-<p>Also the atoms could be selected by symbol, label or index. In this case no geometry appears to show the slice.</p>
-<p>The spheres that delimit the cut are centered on selected atoms.</p>
+<p>Remove part of a structure using a sphere, a plane or a pair of planes. Also specific atoms could be directly selected for removal by symbol, label or index. The removed part could be inside or outside the selected geometry or list of atoms.</p>
+<p>No geometry appears to show the slice when directly select atoms for removal.</p>
+<p>The spheres that delimit the cut are centered on the selected atoms.</p>
 <p>The plane that delimits the cut is selected by giving its intersect with the basis vectors and/or the basis vector(s) that should be parallel to the plane. The intersections could also be given with Miller indices <i>(hkl)</i>.</p>
 <p>A pair of planes with the same distance from the selected plane delimits a slab that cuts the structure.</p>
 <p>If the geometric parameters make no sense (e.g. plane parallel to three axis) an error is shown.</p>
@@ -39,7 +39,7 @@
 <tr>
 	<td class="c1">Show slicer geometry</td>
 	<td class="c2">toggle</td>
-	<td class="c3">Show the slicer geometry independently from the effective slicing of the structure. This is disabled if the selection is direct, without a geometry.</td>
+	<td class="c3">Show the slicer geometry independently from the effective slicing of the structure. This is disabled if the selection is direct, without showing the geometry.</td>
 </tr>
 <tr>
 	<td class="c1">Slice inside</td>
@@ -77,7 +77,7 @@
   <dt>Slab</dt>
   <dd>The two planes delimiting the slab are equidistant from a plane defined as in the “Plane” mode. The slab planes are distant half the set thickness from the defined plane.</dd>
   <dt>Direct</dt>
-  <dd>An atom selector selects the atoms.</dd>
+  <dd>An atom selector to select the atoms.</dd>
   </dl></td>
 </tr>
 <tr>
