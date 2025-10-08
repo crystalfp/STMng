@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, reactive, shallowRef, defineAsyncComponent} from "vue";
+import {ref, shallowRef, defineAsyncComponent} from "vue";
 import {sm} from "@/services/SceneManager";
 import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
@@ -90,10 +90,10 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
 });
 
 // > Visualize notifications and errors from main process
-const notificationQueue = reactive<{text: string; color: string}[]>([]);
+const notificationQueue = ref<{text: string; color: string}[]>([]);
 receiveNotifications((type: AlertLevel, text: string, from: string) => {
 
-    notificationQueue.push({text, color: type === "error" ? "red-darken-4" : type});
+    notificationQueue.value.push({text, color: type === "error" ? "red-darken-4" : type});
     if(from !== "") showNodeAlert(text, from);
 });
 

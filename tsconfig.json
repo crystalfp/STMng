@@ -44,11 +44,9 @@
     "src/**/*.ts",
     "src/**/*.vue",
     "package.json",
-    "proto/**/*.ts"
   ],
   "exclude": [
     "src/cpp/spglib*/**/*.ts",
-    "proto/PymatgenLattice - Copy.ts",
-    "proto/originalCalculateLLL.ts"
+    "src/electron/proto/**/*.ts"
   ]
 }

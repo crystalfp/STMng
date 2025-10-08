@@ -399,7 +399,7 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
 };
 
 // To show error messages
-const notificationQueue = reactive<string[]>([]);
+const notificationQueue = ref<string[]>([]);
 
 /**
  * Save the modified project
@@ -414,7 +414,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
             if(node.type === availableNode.type) {
                 if(node.in === "" && availableNode.hasInput) {
                     const notification = `Node "${node.label}" input is unconnected`;
-                    notificationQueue.push(notification);
+                    notificationQueue.value.push(notification);
                     log.error(notification);
                     hasErrors = true;
                 }
@@ -428,7 +428,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
                     }
                     if(!isConnected) {
                         const notification = `Node "${node.label}" output is unconnected`;
-                        notificationQueue.push(notification);
+                        notificationQueue.value.push(notification);
                         log.error(notification);
                         hasErrors = true;
                     }
@@ -633,7 +633,7 @@ const updateLabel = (label: string): void => {
 const handleError = (error: VueFlowError): void => {
 
     const notification = `Error from VueFlow: ${error.message}`;
-    notificationQueue.push(notification);
+    notificationQueue.value.push(notification);
     log.error(notification);
 };
 

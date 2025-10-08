@@ -17,7 +17,7 @@ import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 const wavelengthCodes = reactive<string[]>([]);
 const wavelengthCode = ref("");
 const wavelengthNumeric = ref(1.5);
-const theta = reactive([0, 90]);
+const theta = ref([0, 90]);
 const scaled = ref(true);
 const enableComputation = ref(false);
 const width = ref(0.25);
@@ -38,8 +38,8 @@ askNode(id, "init")
     .then((params) => {
         enableComputation.value = params.enableComputation as boolean ?? false;
         scaled.value = params.scaled as boolean ?? true;
-        theta[0] = params.thetaLow as number ?? 0;
-        theta[1] = params.thetaHigh as number ?? 90;
+        theta.value[0] = params.thetaLow as number ?? 0;
+        theta.value[1] = params.thetaHigh as number ?? 90;
         width.value = params.width as number ?? 0.25;
 		showHKL.value = params.showHKL as boolean ?? false;
         const codes = params.wavelengthCodes as string[] ?? [];
@@ -57,8 +57,8 @@ watch([wavelengthCode, wavelengthNumeric, theta, scaled], () => {
     sendToNode(id, "compute", {
         wavelengthCode: wavelengthCode.value,
         wavelengthNumeric: wavelengthNumeric.value,
-        thetaLow: theta[0],
-        thetaHigh: theta[1],
+        thetaLow: theta.value[0],
+        thetaHigh: theta.value[1],
         scaled: scaled.value,
         width: width.value,
         showHKL: showHKL.value
@@ -87,8 +87,8 @@ const openChartWindow = (): void => {
     sendToNode(id, "open", {
         wavelengthCode: wavelengthCode.value,
         wavelengthNumeric: wavelengthNumeric.value,
-        thetaLow: theta[0],
-        thetaHigh: theta[1],
+        thetaLow: theta.value[0],
+        thetaHigh: theta.value[1],
         scaled: scaled.value,
         width: width.value,
         showHKL: showHKL.value

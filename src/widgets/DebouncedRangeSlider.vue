@@ -7,7 +7,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-import {reactive, watch} from "vue";
+import {ref, watch} from "vue";
 
 // > Properties
 const props = withDefaults(defineProps<{
@@ -34,16 +34,16 @@ const props = withDefaults(defineProps<{
 /** Returning the debounced slider value */
 const value = defineModel<number[]>();
 
-const limitsToDebounce = reactive<number[]>(value.value ?? [props.min, props.max]);
+const limitsToDebounce = ref<number[]>(value.value ?? [props.min, props.max]);
 watch(value, () => {
 
     if(value.value) {
-        limitsToDebounce[0] = value.value[0];
-        limitsToDebounce[1] = value.value[1];
+        limitsToDebounce.value[0] = value.value[0];
+        limitsToDebounce.value[1] = value.value[1];
     }
     else {
-        limitsToDebounce[0] = props.min;
-        limitsToDebounce[1] = props.max;
+        limitsToDebounce.value[0] = props.min;
+        limitsToDebounce.value[1] = props.max;
     }
 });
 
@@ -53,8 +53,8 @@ watch(limitsToDebounce, () => {
     clearTimeout(debouncingTimeoutId);
 
     debouncingTimeoutId = setTimeout(() => {
-        value.value![0] = limitsToDebounce[0];
-        value.value![1] = limitsToDebounce[1];
+        value.value![0] = limitsToDebounce.value[0];
+        value.value![1] = limitsToDebounce.value[1];
     }, props.timeout);
 });
 

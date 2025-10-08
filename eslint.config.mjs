@@ -323,7 +323,8 @@ const config = defineConfig([
                     ext: false,
                     dist: false,
                     dev: false,
-                    temp: false
+                    temp: false,
+                    e: false
                 },
                 checkFilenames: false
             }
