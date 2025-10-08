@@ -141,7 +141,7 @@ const getHnf = function* (formUnits: number): Generator<[number, number[][][]]> 
 
 
 const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): number[][] => {
-    return vectors.map(vec => {
+    return vectors.map((vec) => {
         const result: number[] = [];
         for(let j = 0; j < matrix[0].length; j++) {
             result[j] = 0;
@@ -259,8 +259,8 @@ console.log("MINVECS", minVecs);
             nonNbrs[i] = [];
             for(let j = 0; j < gfCoords.length; j++) {
 
-                const fdist = gfCoords[i].map((val, idx) => {
-                    let diff = val - gfCoords[j][idx];
+                const fdist = gfCoords[i].map((value, idx) => {
+                    let diff = value - gfCoords[j][idx];
                     diff = diff - Math.round(diff);
                     return Math.abs(diff);
                 });
@@ -391,12 +391,12 @@ continue;
 
             // Add new sites, averaging positions
             const added = Array<boolean>(gsites.length).fill(false);
-            const fracCoordsNew = allFrac.map((coord) => coord.map(val => val % 1));
+            const fracCoordsNew = allFrac.map((coord) => coord.map((val) => val % 1));
 
             for(let grpIdx = 0; grpIdx < groups.length; grpIdx++) {
                 if(!added[grpIdx]) {
                     const group = groups[grpIdx];
-                    const inds = group.map((val, idx) => val ? idx : -1).filter(idx => idx >= 0);
+                    const inds = group.map((val, idx) => val ? idx : -1).filter((idx) => idx >= 0);
 
                     for(const ind of inds) added[ind] = true;
 
@@ -404,7 +404,7 @@ continue;
                     for(let innerIdx = 1; innerIdx < inds.length; innerIdx++) {
                         const ind = inds[innerIdx];
                         const offset = fracCoordsNew[ind].map((val, idx) => val - coords[idx]);
-                        const adjustedOffset = offset.map(val => val - Math.round(val));
+                        const adjustedOffset = offset.map((val) => val - Math.round(val));
                         coords = coords.map((coord, idx) =>
                             coord + adjustedOffset[idx] / (innerIdx + 1)
                         );
@@ -430,13 +430,13 @@ continue;
 
             const lattNew: Lattice = {
                 matrix: lattMatrixNew,
-                abc: lattMatrixNew.map(row => Math.sqrt(row.reduce((sum, val) => sum + val * val, 0)))
+                abc: lattMatrixNew.map((row) => Math.sqrt(row.reduce((sum, val) => sum + val * val, 0)))
             };
 
             const struct: Structure = {
                 _sites: coordsNew.map((coord, idx) => ({
                     frac_coords: coord,
-                    species_string: spNew[idx]?.toString() || '',
+                    species_string: spNew[idx]?.toString() || "",
                     properties: Object.fromEntries(
                         Object.entries(propsNew).map(([k, v]) => [k, v[idx]])
                     ),
