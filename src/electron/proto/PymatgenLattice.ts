@@ -345,7 +345,7 @@ export function getPointsInSpheres(
             const coords = coordsInCell.map((coord) =>
                 coord.map((value, i) => value + imageMatrix[i])
             );
-            // console.log("coords", coords);
+
             const validIndexBool = coords.map((coord) =>
                 coord.every((value, i) => value > globalMin[i] && value < globalMax[i])
             );
