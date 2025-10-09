@@ -13,25 +13,33 @@ import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
         Box3, Sphere, MathUtils, Clock} from "three";
 
+/** Simple 3D viewer */
 export class SimpleViewer {
 
 	private readonly scene = new Scene();
 	private resizeObserver: ResizeObserver | undefined;
+	/** The canvas sizes (will be computed during mount or resize) */
 	private canvasWidth = 500;
 	private canvasHeight = 500;
-	private camera: PerspectiveCamera | undefined;
+	private camera: PerspectiveCamera | OrthographicCamera | undefined;
 	private renderer: WebGLRenderer | undefined;
+	private controls: CameraControls | undefined;
     private isSceneModified = true;
     private retry = 0;
 	private readonly isPerspective: boolean;
 
-
-	constructor(container: HTMLElement,
+	/**
+	 * Create the simple viewer 3D
+	 *
+	 * @param containerSelector - CSS Selector of the viewer container
+	 * @param isPerspective - True for a perspective viewer, otherwise orthographic
+	 * @param extraOnMounted - Optional routine to be called during onMounted phase
+	 */
+	constructor(containerSelector: string,
 				isPerspective: boolean,
 				extraOnMounted?: (scene: Scene) => void) {
 
 		this.isPerspective = isPerspective;
-		void this.isPerspective; // TBD
 
 		onMounted(() => {
 
@@ -48,11 +56,26 @@ export class SimpleViewer {
 					}
 				}
 
-				this.camera!.aspect = this.canvasWidth/this.canvasHeight;
+				if(this.isPerspective) {
+					const camera = this.camera as PerspectiveCamera;
+					camera.aspect = this.canvasWidth/this.canvasHeight;
+				}
+				else {
+					const camera = this.camera as OrthographicCamera;
+					const hh = 7.8;
+					const hw = hh * this.canvasWidth/this.canvasHeight;
+					camera.left   = -hw;
+					camera.right  =  hw;
+					camera.top    =  hh;
+					camera.bottom = -hh;
+				}
 				this.camera!.updateProjectionMatrix();
 				this.renderer!.setSize(this.canvasWidth, this.canvasHeight);
 				this.setSceneModified();
 			});
+
+			const container = document.querySelector<HTMLElement>(containerSelector);
+			if(!container) return;
 
 			this.init(container);
 			this.resizeObserver.observe(container);
@@ -68,25 +91,39 @@ export class SimpleViewer {
 		});
 	}
 
-	private init(dom: HTMLElement): void {
+	/**
+	 * Initialize the viewer in the given container
+	 *
+	 * @param container - Viewer container
+	 */
+	private init(container: HTMLElement): void {
 
 		this.scene.background = new Color("#90CEEC");
 
-		const camera = new PerspectiveCamera(30, this.canvasWidth/this.canvasHeight);
-		camera.position.set(1.7, 2.1, 1.9);
-		camera.lookAt(this.scene.position);
+		if(this.isPerspective) {
+			this.camera = new PerspectiveCamera(30, this.canvasWidth/this.canvasHeight);
+			this.camera.position.set(1.7, 2.1, 1.9);
+		}
+		else {
+			const hh = 7.8;
+			const hw = hh * this.canvasWidth/this.canvasHeight;
+			this.camera = new OrthographicCamera(-hw, hw, hh, -hh, 0.1, 500);
+			this.camera.position.set(7.7, 8.5, 7.6);
+			this.camera.zoom = 1;
+		}
+		this.camera.lookAt(this.scene.position);
 
-		const renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
-		renderer.setSize(this.canvasWidth, this.canvasHeight);
-		document.body.append(renderer.domElement);
-		dom.append(renderer.domElement);
+		this.renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
+		this.renderer.setSize(this.canvasWidth, this.canvasHeight);
+		document.body.append(this.renderer.domElement);
+		container.append(this.renderer.domElement);
 
 		// Add mouse controls to move the camera
 		const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2, WebGLRenderer,
 							Raycaster, Vector4, Quaternion, Matrix4, Spherical,
 							Box3, Sphere, MathUtils};
 		CameraControls.install({THREE: subsetOfTHREE});
-		const controls = new CameraControls(camera, renderer.domElement);
+		this.controls = new CameraControls(this.camera, this.renderer.domElement);
 
 		const light = new DirectionalLight("white", 3);
 		light.position.set(0, 1, 0);
@@ -98,18 +135,43 @@ export class SimpleViewer {
 		const clock = new Clock();
 		const animationLoop = (): void => {
 
-			const doRender = controls.update(clock.getDelta());
+			const doRender = this.controls!.update(clock.getDelta());
 			if(doRender || this.needRendering()) {
 
-				light.position.copy(camera.position);
-				renderer.render(this.scene, camera);
+				light.position.copy(this.camera!.position);
+				this.renderer!.render(this.scene, this.camera!);
 			}
 		};
-		renderer.setAnimationLoop(animationLoop);
+		this.renderer.setAnimationLoop(animationLoop);
 	}
 
+	/**
+	 * Get the scene
+	 *
+	 * @returns The scene
+	 */
 	getScene(): Scene {
 		return this.scene;
+	}
+
+	/**
+	 * Center the camera and the controls
+	 *
+	 * @param center - Coordinates of the center of the structure
+	 */
+	centerCamera(center: [number, number, number]): void {
+
+		if(!this.camera || !this.controls) return;
+		this.camera.lookAt(new Vector3(...center));
+		this.controls.setOrbitPoint(...center);
+		const maxSide = Math.max(center[0], center[1], center[2]);
+		void this.controls
+					.normalizeRotations()
+					.setLookAt(center[0], center[1], center[2] + 2*maxSide,
+							   center[0], center[1], center[2], false);
+		void this.controls.zoomTo(1, true);
+
+		this.camera.updateProjectionMatrix();
 	}
 
 	/**

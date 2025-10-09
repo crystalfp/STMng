@@ -61,36 +61,3 @@ export const normalizeCoordinates2D = (points: number[][]): number[][] => {
 
     return normalizedPoints;
 };
-
-/** For rendering the scene if modified */
-export class NeedRendering {
-
-    private isSceneModified = true;
-    private retry = 0;
-
-    /**
-     * Ask if the scene needs rendering because has been changed,
-     * then reset the modified flag
-     *
-     * @returns True if the scene should be rendered
-     */
-    needRendering(): boolean {
-
-        if(this.isSceneModified) {
-            if(this.retry > 2) {
-                this.isSceneModified = false;
-                this.retry = 0;
-            }
-            ++this.retry;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Mark the scene as modified
-     */
-    setSceneModified(): void {
-        this.isSceneModified = true;
-    }
-}

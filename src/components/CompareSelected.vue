@@ -6,20 +6,17 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-24
  */
-import {onBeforeUnmount, onMounted, ref, reactive, useTemplateRef, watch} from "vue";
+import {ref, reactive, watch} from "vue";
 import log from "electron-log";
-import {Scene, Color, OrthographicCamera, WebGLRenderer, DirectionalLight,
-        AmbientLight, Group, LineBasicMaterial, BufferGeometry,
-        Vector3, Vector2, Vector4, Quaternion, Matrix4, Spherical, Box3,
-        Sphere, MathUtils, Raycaster,
+import {Scene, Group, LineBasicMaterial, BufferGeometry,
+        Vector3, Quaternion, MathUtils,
         BufferAttribute, EdgesGeometry, LineSegments,
-        Clock, IcosahedronGeometry, MeshStandardMaterial, Mesh,
+        IcosahedronGeometry, MeshStandardMaterial, Mesh,
         CylinderGeometry, FrontSide} from "three";
-import CameraControls from "camera-controls";
+import {SimpleViewer} from "@/services/SimpleViewer";
 import {theme} from "@/services/ReceiveTheme";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
-import {NeedRendering} from "@/electron/fingerprint/Helpers";
 import type {BasisType, CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
@@ -57,144 +54,20 @@ type Side = 0 | 1;
 const selectedStep0 = ref(-1);
 const selectedStep1 = ref(-1);
 
-/** Reference to the view */
-const cnv = useTemplateRef<HTMLElement>("viewCompare");
-
-/** The canvas sizes (will be computed during mount or resize) */
-const canvasWidth = ref(500);
-const canvasHeight = ref(300);
-
 /** Graphical variables */
-let scene: Scene;
-let camera: OrthographicCamera;
-let renderer: WebGLRenderer;
 let groupRight: Group;
 let groupLeft: Group;
-let controls: CameraControls;
-
-/** For rendering the scene if modified */
-const nr = new NeedRendering();
 
 /**
  * Initialize the viewer
  */
-const initViewer = (): void => {
-
-    if(!cnv.value) return;
-
-    scene = new Scene();
-    scene.background = new Color("#90CEEC");
-
-    const hh = 7.8;
-    const hw = hh * canvasWidth.value/canvasHeight.value;
-    camera = new OrthographicCamera(-hw, hw, hh, -hh, 0.1, 500);
-    camera.position.set(7.7, 8.5, 7.6);
-    camera.lookAt(scene.position);
-    camera.zoom = 1;
-
-    renderer = new WebGLRenderer({antialias: true, powerPreference: "high-performance"});
-    renderer.setSize(canvasWidth.value, canvasHeight.value);
-    document.body.append(renderer.domElement);
-    cnv.value.append(renderer.domElement);
-
-    // Add mouse controls to move the camera
-    const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2, WebGLRenderer,
-                           Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-                           Box3, Sphere, MathUtils};
-    CameraControls.install({THREE: subsetOfTHREE});
-    controls = new CameraControls(camera, renderer.domElement);
-
-    const light = new DirectionalLight("white", 3);
-    light.position.set(0, 1, 0);
-    scene.add(light);
-    const ambient = new AmbientLight("#BBBBBB", 1);
-    scene.add(ambient);
+const sv = new SimpleViewer(".side-n", false, (scene: Scene) => {
 
     groupLeft = new Group();
     scene.add(groupLeft);
     groupRight = new Group();
     scene.add(groupRight);
-
-    // Rendering function for the run
-    const clock = new Clock();
-    const animationLoop = (): void => {
-
-        const doRender = controls.update(clock.getDelta());
-        if(doRender || nr.needRendering()) {
-
-            light.position.copy(camera.position);
-            renderer.render(scene, camera);
-        }
-    };
-    renderer.setAnimationLoop(animationLoop);
-};
-
-let resizeObserver: ResizeObserver;
-
-onMounted(() => {
-
-    resizeObserver = new ResizeObserver((entries) => {
-
-        for(const entry of entries) {
-            if(entry.borderBoxSize) {
-                canvasWidth.value = entry.borderBoxSize[0].inlineSize;
-                canvasHeight.value = entry.borderBoxSize[0].blockSize;
-            }
-            else {
-                canvasWidth.value = entry.contentRect.width;
-                canvasHeight.value = entry.contentRect.height;
-            }
-        }
-
-        const hh = 7.8;
-        const hw = hh * canvasWidth.value/canvasHeight.value;
-        camera.left   = -hw;
-        camera.right  =  hw;
-        camera.top    =  hh;
-        camera.bottom = -hh;
-
-        camera.updateProjectionMatrix();
-        renderer.setSize(canvasWidth.value, canvasHeight.value);
-        nr.setSceneModified();
-    });
-
-    // Get the canvas size
-    const canvas = document.querySelector<HTMLDivElement>(".side-n");
-    if(!canvas) return;
-    resizeObserver.observe(canvas);
-
-    initViewer();
 });
-
-onBeforeUnmount(() => {
-
-    resizeObserver.disconnect();
-    // eslint-disable-next-line unicorn/no-null
-    renderer.setAnimationLoop(null);
-    renderer.dispose();
-});
-
-/**
- * Center the camera and the controls
- *
- * @param center - Coordinates of the center of the structure
- */
-const centerCamera = (center: [number, number, number]): void => {
-
-    camera.lookAt(new Vector3(...center));
-	controls.setOrbitPoint(...center);
-	const maxSide = Math.max(center[0], center[1], center[2]);
-	void controls.normalizeRotations().setLookAt(center[0],
-                                                 center[1],
-                                                 center[2] + 2*maxSide,
-							                     center[0],
-                                                 center[1],
-                                                 center[2],
-                                                 false);
-    void controls.zoomTo(1, true);
-
-    camera.updateProjectionMatrix();
-};
 
 const colors = [
     "blue",
@@ -370,9 +243,9 @@ const loadStructure = (side: Side, step: number): void => {
                 nb = new Vector3(bb[3], bb[4], bb[5]).normalize();
                 nc = new Vector3(bb[6], bb[7], bb[8]).normalize();
 
-                centerCamera(center);
+                sv.centerCamera(center);
             }
-            nr.setSceneModified();
+            sv.setSceneModified();
         })
         .catch((error: Error) => {
 
@@ -389,7 +262,7 @@ const unloadStructure = (side: Side): void => {
 
     if(side) groupRight.clear();
     else     groupLeft.clear();
-    nr.setSceneModified();
+    sv.setSceneModified();
 };
 
 /**
@@ -576,7 +449,7 @@ watch([aroundA, aroundB, aroundC],
         const angle = (cAfter-cBefore)*MathUtils.DEG2RAD;
         groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(nc, angle));
     }
-    nr.setSceneModified();
+    sv.setSceneModified();
 });
 
 </script>
@@ -602,8 +475,7 @@ watch([aroundA, aroundB, aroundC],
       <v-btn class="sub-bl" :disabled="selectedStep0 === -1" @click="remove(0)">Remove</v-btn>
       <v-btn class="sub-br" :disabled="selectedStep1 === -1" @click="remove(1)">Remove</v-btn>
     </div>
-    <div ref="viewCompare" class="side-n">
-    </div>
+    <div class="side-n" />
     <div class="side-s">
       <slider-with-steppers v-model="aroundA" v-model:raw="showAroundA"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
