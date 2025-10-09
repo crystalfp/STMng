@@ -15,6 +15,7 @@ import {DrawPolyhedraRenderer} from "@/renderers/DrawPolyhedraRenderer";
 import ColorSelector from "@/widgets/ColorSelector.vue";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+import type {AtomSelectorModes} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -29,7 +30,7 @@ const {id, label} = defineProps<{
 // > Initialization
 const showPolyhedra = ref(true);
 const surfaceColor = ref("#FFFFFF80");
-const labelKind = ref("symbol");
+const labelKind = ref<AtomSelectorModes>("symbol");
 const atomsSelector = ref("");
 const colorByCenterAtom = ref(false);
 const opacityByCenterAtom = ref(0.5);
@@ -40,7 +41,7 @@ askNode(id, "init")
     .then((params) => {
 
 		surfaceColor.value = params.color as string ?? "#FFFFFF80";
-		labelKind.value = params.labelKind as string ?? "symbol";
+		labelKind.value = params.labelKind as AtomSelectorModes ?? "symbol";
 		atomsSelector.value = params.atomsSelector as string ?? "";
 		showPolyhedra.value = params.showPolyhedra as boolean ?? true;
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;

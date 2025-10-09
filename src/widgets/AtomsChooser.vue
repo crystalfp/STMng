@@ -8,6 +8,7 @@
  */
 import {ref, watchEffect} from "vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
+import type {AtomSelectorModes} from "@/types";
 
 // > Properties
 const {disabled = false, hide = []} = defineProps<{
@@ -26,7 +27,7 @@ const {disabled = false, hide = []} = defineProps<{
 }>();
 
 /** Returning kind of atom selection */
-const labelKind = defineModel<string>("kind");
+const labelKind = defineModel<AtomSelectorModes>("kind");
 
 if(hide) {
     if(!hide.includes("symbol")) labelKind.value = "symbol";

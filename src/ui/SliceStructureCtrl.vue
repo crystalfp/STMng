@@ -13,7 +13,7 @@ import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import {SliceStructureRenderer} from "@/renderers/SliceStructureRenderer";
-import type {CtrlParams, SlicingModes} from "@/types";
+import type {CtrlParams, SlicingModes, AtomSelectorModes} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -41,7 +41,7 @@ const modeList = reactive<{label: string; value: SlicingModes}[]>([
 ]);
 
 /** Sphere cut */
-const selectorKind = ref("symbol");
+const selectorKind = ref<AtomSelectorModes>("symbol");
 const atomsSelector = ref("");
 const sphereRadius = ref(1);
 const showSphereRadius = ref(1);
@@ -91,7 +91,7 @@ askNode(id, "init")
         millerK.value = params.millerK as number ?? 0;
         millerL.value = params.millerL as number ?? 0;
         millerPlaneOffset.value = params.millerPlaneOffset as number ?? 0;
-        selectorKind.value = params.selectorKind as string ?? "symbol";
+        selectorKind.value = params.selectorKind as AtomSelectorModes ?? "symbol";
 		atomsSelector.value = params.atomsSelector as string ?? "";
         sphereRadius.value = params.sphereRadius as number ?? 1;
         thickness.value = params.thickness as number ?? 1;

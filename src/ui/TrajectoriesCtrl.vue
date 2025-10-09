@@ -17,6 +17,7 @@ import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
 import ColorSelector from "@/widgets/ColorSelector.vue";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import type {AtomSelectorModes} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -34,7 +35,7 @@ controlStore.hasTrajectory = true;
 controlStore.trajectoriesHasSelector = false;
 
 const showTrajectories = ref(false);
-const labelKind = ref("symbol");
+const labelKind = ref<AtomSelectorModes>("symbol");
 const atomsSelector = ref("");
 const maxDisplacement = ref(1);
 const showPositionClouds = ref(false);
@@ -45,7 +46,7 @@ const positionCloudsColor = ref("#BBBBBE");
 askNode(id, "init")
     .then((params) => {
         showTrajectories.value    = params.showTrajectories as boolean ?? false;
-        labelKind.value           = params.labelKind as string ?? "symbol";
+        labelKind.value           = params.labelKind as AtomSelectorModes ?? "symbol";
         atomsSelector.value       = params.atomsSelector as string ?? "";
         maxDisplacement.value     = params.maxDisplacement as number ?? 1;
         showPositionClouds.value  = params.showPositionClouds as boolean ?? false;

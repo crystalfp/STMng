@@ -43,6 +43,10 @@ export class SimpleViewer {
 
 		onMounted(() => {
 
+			// Access the viewer container
+			const container = document.querySelector<HTMLElement>(containerSelector);
+			if(!container) return;
+
 			this.resizeObserver = new ResizeObserver((entries) => {
 
 				for(const entry of entries) {
@@ -73,9 +77,6 @@ export class SimpleViewer {
 				this.renderer!.setSize(this.canvasWidth, this.canvasHeight);
 				this.setSceneModified();
 			});
-
-			const container = document.querySelector<HTMLElement>(containerSelector);
-			if(!container) return;
 
 			this.init(container);
 			this.resizeObserver.observe(container);
@@ -155,23 +156,21 @@ export class SimpleViewer {
 	}
 
 	/**
-	 * Center the camera and the controls
+	 * Get the camera
 	 *
-	 * @param center - Coordinates of the center of the structure
+	 * @returns The camera
 	 */
-	centerCamera(center: [number, number, number]): void {
+	getCamera(): PerspectiveCamera | OrthographicCamera | undefined {
+		return this.camera;
+	}
 
-		if(!this.camera || !this.controls) return;
-		this.camera.lookAt(new Vector3(...center));
-		this.controls.setOrbitPoint(...center);
-		const maxSide = Math.max(center[0], center[1], center[2]);
-		void this.controls
-					.normalizeRotations()
-					.setLookAt(center[0], center[1], center[2] + 2*maxSide,
-							   center[0], center[1], center[2], false);
-		void this.controls.zoomTo(1, true);
-
-		this.camera.updateProjectionMatrix();
+	/**
+	 * Get the controls
+	 *
+	 * @returns The controls
+	 */
+	getControls(): CameraControls | undefined {
+		return this.controls;
 	}
 
 	/**

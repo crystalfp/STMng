@@ -9,8 +9,8 @@
 import {reactive, ref, watch} from "vue";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
-import type {CtrlParams} from "@/types";
 import {StructureBackboneRenderer} from "@/renderers/StructureBackboneRenderer";
+import type {AtomSelectorModes, CtrlParams} from "@/types";
 
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
@@ -34,7 +34,7 @@ const showChains = reactive<Record<string, boolean>>({});
 const hasCell = ref(false);
 
 /** Atoms selector for the nodes through which the backbone passes */
-const selectorKind = ref("label");
+const selectorKind = ref<AtomSelectorModes>("label");
 const atomsSelector = ref("");
 
 const renderer = new StructureBackboneRenderer(id);
@@ -60,7 +60,7 @@ askNode(id, "init")
                 delete showChains[key];
             }
         }
-        selectorKind.value = params.selectorKind as string ?? "label";
+        selectorKind.value = params.selectorKind as AtomSelectorModes ?? "label";
         atomsSelector.value = params.atomsSelector as string ?? "";
         radius.value = params.radius as number ?? 0.3;
         showRadius.value = radius.value;

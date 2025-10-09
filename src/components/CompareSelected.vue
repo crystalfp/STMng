@@ -221,6 +221,30 @@ let nb = new Vector3(0, 1, 0);
 let nc = new Vector3(0, 0, 1);
 
 /**
+ * Center the camera and the controls
+ *
+ * @param center - Coordinates of the center of the structure
+ */
+const centerCamera = (center: [number, number, number]): void => {
+
+    const camera = sv.getCamera();
+    if(!camera) return;
+    const controls = sv.getControls();
+    if(!controls) return;
+
+    camera.lookAt(new Vector3(...center));
+    controls.setOrbitPoint(...center);
+    const maxSide = Math.max(center[0], center[1], center[2]);
+    void controls
+            .normalizeRotations()
+            .setLookAt(center[0], center[1], center[2] + 2*maxSide,
+                       center[0], center[1], center[2], false);
+    void controls.zoomTo(1, true);
+
+    camera.updateProjectionMatrix();
+};
+
+/**
  * Load the requested structure
  *
  * @param side - Side of the list (0: left, 1: right)
@@ -243,7 +267,7 @@ const loadStructure = (side: Side, step: number): void => {
                 nb = new Vector3(bb[3], bb[4], bb[5]).normalize();
                 nc = new Vector3(bb[6], bb[7], bb[8]).normalize();
 
-                sv.centerCamera(center);
+                centerCamera(center);
             }
             sv.setSceneModified();
         })
