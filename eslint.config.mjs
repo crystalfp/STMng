@@ -16,7 +16,7 @@ import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
 
-const config = defineConfig([
+export default defineConfig([
     stylistic.configs.customize({
         flat: true, // required for flat config
         indent: 4,
@@ -32,7 +32,8 @@ const config = defineConfig([
         "src/cpp",
         "src/electron/fingerprint/rollup.config.mjs",
         "src/electron/fingerprint/KDtree.js",
-        "proto-test"
+        "proto-test",
+        "src/electron/proto/StructureMatcher.ts"
     ]}, {
     files: [
         "src/**/*.ts",
@@ -66,7 +67,10 @@ const config = defineConfig([
         parserOptions: {
             parser: tsParser,
             ecmaFeatures: {impliedStrict: true},
-            projectService: true,
+            projectService: {
+                // allowDefaultProject: ["src/electron/proto/*.ts"],
+                defaultProject: "tsconfig.json",
+            },
             warnOnUnsupportedTypeScriptVersion: false,
             extraFileExtensions: [".vue"],
             vueFeatures: {filter: false},
@@ -300,6 +304,7 @@ const config = defineConfig([
         "@stylistic/generator-star-spacing": ["error", {after: true, before: false}],
         "@stylistic/eol-last": ["error", "always"],
         "@stylistic/new-parens": "error",
+        "@stylistic/quote-props": ["warn", "as-needed"],
 
         // > ******************* unicorn ***********************
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],
@@ -349,6 +354,8 @@ const config = defineConfig([
         // "unicorn/no-null": "off",
         // "unicorn/prefer-add-event-listener": "warn",
         "unicorn/switch-case-braces": "off",
+        "unicorn/prefer-json-parse-buffer": "off",
+        "unicorn/prefer-class-fields": "warn",
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],
@@ -369,6 +376,8 @@ const config = defineConfig([
         "sonarjs/no-unenclosed-multiline-block": "off",
         "sonarjs/fixme-tag": "off",
         "sonarjs/no-labels": "off",
+        "sonarjs/todo-tag": "off",
+        "sonarjs/pseudo-random": "off",
 
         // > ******************* other plugins ***********************
         // "promise/no-return-wrap": "warn",
@@ -395,6 +404,7 @@ const config = defineConfig([
         // "import/no-named-as-default-member": "off",
         "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
         "vue/attributes-order": "warn",
+        "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
         "import/default": "off",
         "tsdoc/syntax": "warn",
         "promise/always-return": "off",
@@ -403,5 +413,3 @@ const config = defineConfig([
         "security/detect-object-injection": "off",
     }
 }]);
-
-export default config;

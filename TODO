@@ -15,6 +15,7 @@ To do:
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
   ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
   ☐ Billboard also for Bonds lengths labels
+  ☐ Dynamic load ViewportGizmo
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

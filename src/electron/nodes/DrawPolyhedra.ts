@@ -42,7 +42,7 @@ export class DrawPolyhedra extends NodeCore {
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
-		if(!data || data.atoms.length === 0 || data.bonds.length === 0) {
+		if(!data?.atoms.length || data.bonds.length === 0) {
 			sendPolyhedraToClient(this.id, "vertices", [], []);
 			return;
 		}

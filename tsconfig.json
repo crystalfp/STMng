@@ -44,9 +44,9 @@
     "src/**/*.ts",
     "src/**/*.vue",
     "package.json",
+    "src/electron/proto/types.ts"
   ],
   "exclude": [
-    "src/cpp/spglib*/**/*.ts",
-    "src/electron/proto/**/*.ts"
+    "src/cpp/spglib*/**/*.ts"
   ]
 }

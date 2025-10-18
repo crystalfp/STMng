@@ -114,7 +114,7 @@ export class ComputeBonds extends NodeCore {
 
 		this.inputStructure = data;
 
-		if(!this.inputStructure || this.inputStructure.atoms.length === 0) {
+		if(!this.inputStructure?.atoms.length) {
 			this.toNextNode(new EmptyStructure());
 			return;
 		}

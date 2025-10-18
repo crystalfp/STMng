@@ -1,0 +1,113 @@
+<script setup lang="ts">
+/**
+ * @component
+ * Controls for the prototype matcher node.
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2025-10-18
+ */
+import {ref, watch} from "vue";
+import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
+import {askNode, receiveFromNode} from "@/services/RoutesClient";
+import type {CtrlParams} from "@/types";
+
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
+
+const enableProto = ref(false);
+const lengthTolerance = ref(0.2);
+const siteTolerance = ref(0.3);
+const angleTolerance = ref(5);
+const match = ref("");
+
+// > Properties
+const {id, label} = defineProps<{
+
+    /** Its own module id */
+    id: string;
+
+    /** Label on the node selector */
+    label: string;
+}>();
+
+// > Initialize ui
+resetNodeAlert();
+
+askNode(id, "init")
+    .then((params) => {
+		enableProto.value = params.enabled as boolean ?? false;
+		lengthTolerance.value = params.lengthTolerance as number ?? 0.2;
+		siteTolerance.value = params.siteTolerance as number ?? 0.3;
+		angleTolerance.value = params.angleTolerance as number ?? 5;
+		match.value = params.match as string ?? "";
+    })
+    .catch((error: Error) =>
+            showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
+            "prototypeMatcher"));
+
+/** Changed module enable status */
+watch([enableProto], () => {
+
+    askNode(id, "enable", {enabled: enableProto.value})
+        .then((params) => {
+            if(params.error) throw Error(params.error as string);
+            match.value = params.match as string ?? "";
+        })
+        .catch((error: Error) => showNodeAlert(`Error from "${label}": ${error.message}`,
+                                                "prototypeMatcher"));
+});
+
+/** Changed computing tolerances */
+watch([lengthTolerance, siteTolerance, angleTolerance], () => {
+
+    if(!enableProto.value) return;
+    askNode(id, "tolerances", {
+            lengthTolerance: lengthTolerance.value,
+            siteTolerance: siteTolerance.value,
+            angleTolerance: angleTolerance.value
+        })
+        .then((params) => {
+            if(params.error) throw Error(params.error as string);
+            match.value = params.match as string ?? "";
+        })
+        .catch((error: Error) => showNodeAlert(`Error from "${label}": ${error.message}`,
+                                                "prototypeMatcher"));
+});
+
+/** Receive result of the matching */
+receiveFromNode(id, "match", (params: CtrlParams) => {
+    if(params.error) {
+        showNodeAlert(`Error from "${label}": ${params.error as string}`,
+                      "prototypeMatcher");
+        match.value = "";
+    }
+    else {
+        match.value = params.match as string ?? "";
+    }
+});
+
+</script>
+
+
+<template>
+<v-container class="container">
+  <v-switch v-model="enableProto" label="Enable prototype matcher" class="mt-6 ml-3" />
+  <debounced-slider v-slot="{value}" v-model="lengthTolerance" :disabled="!enableProto"
+                      :min="0.05" :max="0.4" :step="0.05" class="ml-2 mb-3 mt-6">
+    <v-label :text="`Length tolerance (${value.toFixed(2)})`" class="no-select" />
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="siteTolerance" :disabled="!enableProto"
+                      :min="0.05" :max="0.6" :step="0.05" class="ml-2 mb-3 mt-2">
+    <v-label :text="`Site tolerance (${value.toFixed(2)})`" class="no-select" />
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="angleTolerance" :disabled="!enableProto"
+                      :min="0.5" :max="10" :step="0.5" class="ml-2 mb-3 mt-2">
+    <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
+  </debounced-slider>
+  <v-label v-if="enableProto" class="result-label mt-4 ml-2 mb-6">
+    {{ match || "No match" }}
+  </v-label>
+  <node-alert node="prototypeMatcher" />
+
+</v-container>
+</template>

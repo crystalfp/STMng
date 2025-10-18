@@ -103,7 +103,8 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
 <template>
 <v-container class="pa-0 title-container">
   <v-select v-model="selectedTabId" :items="uiList" item-title="label"
-            item-value="id" variant="solo-filled" rounded="0" />
+            item-value="id" variant="solo-filled" rounded="0"
+            :menu-props="{stickToTarget: true}"/>
 </v-container>
 <v-container v-for="panel of panelList" :key="panel.id" class="px-2 py-0">
   <component :is="panel.ctrl" v-show="panel.id === selectedTabId"

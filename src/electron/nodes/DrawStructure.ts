@@ -45,7 +45,7 @@ export class DrawStructure extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data || data.atoms.length === 0) {
+		if(!data?.atoms.length) {
 
 			sendToClientForRendering(this.id, "structure", {
 				atoms: [],

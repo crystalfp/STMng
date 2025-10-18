@@ -47,7 +47,7 @@ export class Measures extends NodeCore {
 	override fromPreviousNode(data: Structure): void {
 
 		sendToClient(this.id, "new", this.summarizeStructure(data));
-		if(!data || data.atoms.length === 0) return;
+		if(!data?.atoms.length) return;
 		this.structure = data;
 	}
 
@@ -66,7 +66,7 @@ export class Measures extends NodeCore {
 	 */
 	private summarizeStructure(structure: Structure): CtrlParams {
 
-		if(!structure || structure.atoms.length === 0) return {natoms: 0};
+		if(!structure?.atoms.length) return {natoms: 0};
 		const species = new Map<number, number>();
 		for(const atom of structure.atoms) {
 			const count = species.get(atom.atomZ) ?? 0;

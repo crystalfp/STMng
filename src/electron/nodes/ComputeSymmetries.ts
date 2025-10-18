@@ -136,7 +136,7 @@ export class ComputeSymmetries extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data || data.atoms.length === 0) {
+		if(!data?.atoms.length) {
 			this.toNextNode(new EmptyStructure());
 			sendToClient(this.id, "input-symmetries", {noInputSymmetries: true});
 			return;

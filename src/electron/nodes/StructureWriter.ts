@@ -43,7 +43,7 @@ export class StructureWriter extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data || data.atoms.length === 0) {
+		if(!data?.atoms.length) {
 			this.hasNoUnitCell = true;
 			return;
 		}

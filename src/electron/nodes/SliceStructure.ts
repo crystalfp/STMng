@@ -79,7 +79,7 @@ export class SliceStructure extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data || data.atoms.length === 0) {
+		if(!data?.atoms.length) {
 			this.toNextNode(new EmptyStructure());
 			return;
 		}

@@ -38,6 +38,7 @@ import {Viewer3D} from "../nodes/Viewer3D";
 import {DiffractionPattern} from "../nodes/DiffractionPattern";
 import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
+import {PrototypeMatcher} from "../nodes/PrototypeMatcher";
 
 /**
  * Manage everything related to the loaded project
@@ -110,6 +111,9 @@ class ProjectManager {
 		{type: "viewer-3d",            	in: false, out: false, opt: false, graphic: "in",
 										handler: Viewer3D,
 									   	idPrefix: "viewer",    ui: "Viewer3DCtrl"},
+		{type: "prototype-matcher",     in: true,  out: false, opt: false, graphic: "none",
+										handler: PrototypeMatcher,
+									   	idPrefix: "matcher", ui: "PrototypeMatcherCtrl"},
 	];
 
 	/**

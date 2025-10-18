@@ -54,7 +54,7 @@ export class DrawUnitCell extends NodeCore {
 
 		// No data, output an empty structure
 		this.inputStructure = data;
-		if(!this.inputStructure|| this.inputStructure.atoms.length === 0) {
+		if(!this.inputStructure?.atoms.length) {
 			this.toNextNode(new EmptyStructure());
 			sendVerticesToClient(this.id, "cell", []);
 			return;
