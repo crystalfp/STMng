@@ -13,6 +13,7 @@ export interface Prototype {
 
 export interface Lattice {
 	matrix: number[][];
+	// pbc: [boolean, boolean, boolean];
 	a: number;
 	b: number;
 	c: number;
@@ -41,4 +42,22 @@ export interface LibraryEntry {
 	snl: SNL;
 	about: Record<string, unknown>;
 	tags: Record<string, string>;
+}
+
+
+export interface PrototypeEntry {
+	structure: {
+		"@module": string;
+		"@class": string;
+		charge: number;
+		lattice: Lattice;
+		properties: unknown;
+		sites: Site[];
+	};
+	tags: {
+		pearson: string;
+		aflow: string;
+		strukturbericht: string;
+		mineral: string;
+	};
 }

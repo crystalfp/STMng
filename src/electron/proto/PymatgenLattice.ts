@@ -7,7 +7,7 @@
  * @since 2025-09-24
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
-import {extractBasis} from "@/electron/modules/Helpers";
+import {extractBasis} from "../modules/Helpers";
 import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         copyMatrix, reciprocaCrystallographyclLatticeLengths,
         transpose, dotProduct, getColumn, matrixVectorMultiply,

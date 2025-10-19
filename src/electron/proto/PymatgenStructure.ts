@@ -7,9 +7,9 @@
  * @since 2025-09-24
  */
 import {getNiggliReducedLattice} from "./PymatgenLattice";
-import type {SNL} from "./types";
+import type {Lattice, Site, SNL} from "./types";
 import {inv, multiply, transpose} from "mathjs";
-let count = 0;
+import {calculateVolume, cellAngle} from "./Utility";
 
 /**
  * Get a reduced structure
@@ -48,6 +48,11 @@ interface SiteElement {
     cart: number[];
 }
 
+const pbc = (value: number): number => {
+    if(value > 0.5-1e-5 && value < 0.5+1e-5) return value;
+    return value - Math.round(value);
+};
+
 /**
  * Get the fractional coords in fc1 that have coordinates
  * within tolerance to some coordinate in fc2.
@@ -72,7 +77,7 @@ const pbcCoordIntersection = (
     // Apply periodic boundary conditions: dist -= round(dist)
     const distPbc: number[][][] = dist.map((row) =>
         row.map((point) =>
-            point.map((value) => value - Math.round(value)))
+            point.map((value) => pbc(value)))
     );
 
     // Check if all coordinates are within tolerance
@@ -227,26 +232,15 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
     const superFtol  = abc.map((value) => tolerance / value);
     const superFtol2 = superFtol.map((value) => value * 2);
 
-    /// eslint-disable-next-line unicorn/no-process-exit
-    // if(count === 8) process.exit(0);
-    console.log(count, "*====*");
-    ++count;
-
-console.log("FTOL2", superFtol2);
-// console.log("FRAC", groupedFracCoords);
     // Reduce min_vecs by enforcing mapping constraints
     for(const group of [...groupedFracCoords].toSorted((a, b) => a.length - b.length)) {
         for(const fracCoords of group) {
             const shiftedGroup = group.map((coord) =>
                 coord.map((value, idx) => value - fracCoords[idx])
             );
-console.log("IN", minVecs);
-console.log("SHIFT", shiftedGroup);
             minVecs = pbcCoordIntersection(minVecs, shiftedGroup, superFtol2);
-console.log("OUT", minVecs);
         }
     }
-console.log("MINVECS", minVecs);
 
     // We can't let sites match to their neighbors in the supercell
     const groupedNonNbrs: boolean[][][] = [];
@@ -273,11 +267,6 @@ console.log("MINVECS", minVecs);
     }
     const numberFu = gcdArray(groupedSites.map((group) => group.length));
 
-    /// eslint-disable-next-line unicorn/no-process-exit
-    // if(count === 8) process.exit(0);
-    // console.log(count, "+====+");
-    // ++count;
-
     for(const [size, ms] of getHnf(numberFu)) {
 
         const invMs = ms.map((m) => inv(m));
@@ -286,11 +275,10 @@ console.log("MINVECS", minVecs);
         const validIndices: number[] = [];
 
         for(let i = 0; i < invMs.length; i++) {
-// console.log("...");
+
             const invM = invMs[i];
             let allClose = true;
-// console.log("INVM", invM);
-// console.log("MINVECS", minVecs);
+
             for(let row = 0; row < 3; row++) {
                 let anyClose = false;
                 for(const minVec of minVecs) {
@@ -299,8 +287,7 @@ console.log("MINVECS", minVecs);
                         diff = diff - Math.round(diff);
                         return Math.abs(diff);
                     });
-// console.log("TOL", superFtol);
-                    // console.log("DIST", dist);
+
                     if(dist.every((d, idx) => d < superFtol[idx])) {
                         anyClose = true;
                         break;
@@ -308,7 +295,6 @@ console.log("MINVECS", minVecs);
                 }
                 if(!anyClose) {
                     allClose = false;
-                    // console.log("ALL");
                     break;
                 }
             }
@@ -317,160 +303,202 @@ console.log("MINVECS", minVecs);
                 validIndices.push(i);
             }
         }
-// console.log("VALID", validIndices);
-continue;
 
-      for(const idx of validIndices) {
-        const invM = invMs[idx];
-        const lattMat = ms[idx];
+        for(const idx of validIndices) {
 
-        const mNew = multiply(invM, structure.lattice.matrix);
-        const ftol = mNew.map((row) =>
-            tolerance / Math.sqrt(row.reduce((sum, value) => sum + value * value, 0))
-        );
+            const invM = invMs[idx];
+            const lattMat = ms[idx];
 
-        let valid = true;
-        const coordsNew: number[][] = [];
-        const spNew: any[] = [];
-        const propsNew: Record<string, any[]> = {};
-        const labelsNew: string[] = [];
+            const mNew = multiply(invM, structure.lattice.matrix);
+            const ftol = mNew.map((row) =>
+                tolerance / Math.sqrt(row.reduce((sum, value) => sum + value * value, 0))
+            );
 
-        for(let groupIdx = 0; groupIdx < groupedSites.length && valid; groupIdx++) {
+            let valid = true;
+            const coordsNew: number[][] = [];
+            const spNew: string[] = [];
+            const labelsNew: string[] = [];
 
-            const gsites = groupedSites[groupIdx];
-            const gfCoords = groupedFracCoords[groupIdx];
-            const nonNbrs = groupedNonNbrs[groupIdx];
+            for(let groupIdx = 0; groupIdx < groupedSites.length && valid; groupIdx++) {
 
-            const allFrac = vectorsMatrixMultiply(gfCoords, lattMat);
+                const gsites = groupedSites[groupIdx];
+                const gfCoords = groupedFracCoords[groupIdx];
+                const nonNbrs = groupedNonNbrs[groupIdx];
 
-            // Calculate grouping of equivalent sites
-            const closeInPrim: boolean[][] = [];
-            for(let i = 0; i < allFrac.length; i++) {
-                closeInPrim[i] = [];
-                for(let j = 0; j < allFrac.length; j++) {
-                    const fdist = allFrac[i].map((val, idx) => {
-                        let diff = val - allFrac[j][idx];
-                        return Math.abs(diff - Math.round(diff));
-                    });
-                    closeInPrim[i][j] = fdist.every((d, idx) => d < ftol[idx]);
+                const allFrac = vectorsMatrixMultiply(gfCoords, lattMat);
+
+                // Calculate grouping of equivalent sites
+                const closeInPrim: boolean[][] = [];
+                for(let i = 0; i < allFrac.length; i++) {
+                    closeInPrim[i] = [];
+                    for(let j = 0; j < allFrac.length; j++) {
+                        const fdist = allFrac[i].map((value, idx) => {
+                            const diff = value - allFrac[j][idx];
+                            return Math.abs(diff - Math.round(diff));
+                        });
+                        closeInPrim[i][j] = fdist.every((d, idx) => d < ftol[idx]);
+                    }
                 }
-            }
 
-            const groups: boolean[][] = closeInPrim.map((row, i) =>
-                row.map((value, j) => value && nonNbrs[i][j])
-            );
+                const groups: boolean[][] = closeInPrim.map((row, i) =>
+                    row.map((value, j) => value && nonNbrs[i][j])
+                );
 
-            // Check that groups are correct
-            const groupSums = groups[0].map((_, colIdx) =>
-                groups.reduce((sum, row) => sum + (row[colIdx] ? 1 : 0), 0)
-            );
+                // Check that groups are correct
+                const groupSums = groups[0].map((_, colIdx) =>
+                    groups.reduce((sum, row) => sum + (row[colIdx] ? 1 : 0), 0)
+                );
 
-            if(!groupSums.every((sum) => sum === size)) {
-                valid = false;
-                break;
-            }
+                if(!groupSums.every((sum) => sum === size)) {
+                    valid = false;
+                    break;
+                }
 
-            // Check that groups are all cliques
-            for(const group of groups) {
+                // Check that groups are all cliques
+                for(const group of groups) {
 
-                const groupIndices = group.map((val, idx) => val ? idx : -1).filter(idx => idx >= 0);
+                    const groupIndices = group
+                                            .map((value, idx) => (value ? idx : -1))
+                                            .filter((idx) => idx >= 0);
 
-                for(const idx1 of groupIndices) {
-                    for(const idx2 of groupIndices) {
-                        if(!groups[idx1][idx2]) {
-                            valid = false;
-                            break;
+                    for(const idx1 of groupIndices) {
+                        for(const idx2 of groupIndices) {
+                            if(!groups[idx1][idx2]) {
+                                valid = false;
+                                break;
+                            }
                         }
+                        if(!valid) break;
                     }
                     if(!valid) break;
                 }
+
                 if(!valid) break;
-            }
 
-            if(!valid) break;
+                // Add new sites, averaging positions
+                const added = Array<boolean>(gsites.length).fill(false);
+                const fracCoordsNew = allFrac.map((coord) => coord.map((value) => value % 1));
 
-            // Add new sites, averaging positions
-            const added = Array<boolean>(gsites.length).fill(false);
-            const fracCoordsNew = allFrac.map((coord) => coord.map((val) => val % 1));
+                for(let grpIdx = 0; grpIdx < groups.length; grpIdx++) {
+                    if(!added[grpIdx]) {
+                        const group = groups[grpIdx];
+                        const inds = group
+                                        .map((value, idx) => (value ? idx : -1))
+                                        .filter((idx) => idx >= 0);
 
-            for(let grpIdx = 0; grpIdx < groups.length; grpIdx++) {
-                if(!added[grpIdx]) {
-                    const group = groups[grpIdx];
-                    const inds = group.map((val, idx) => val ? idx : -1).filter((idx) => idx >= 0);
+                        for(const ind of inds) added[ind] = true;
 
-                    for(const ind of inds) added[ind] = true;
+                        let coords = [...fracCoordsNew[inds[0]]];
+                        for(let innerIdx = 1; innerIdx < inds.length; innerIdx++) {
+                            const ind = inds[innerIdx];
+                            // eslint-disable-next-line no-loop-func
+                            const offset = fracCoordsNew[ind].map((value, idx) => value - coords[idx]);
+                            const adjustedOffset = offset.map((value) => value - Math.round(value));
+                            coords = coords.map((coord, idx) =>
+                                coord + adjustedOffset[idx] / (innerIdx + 1)
+                            );
+                        }
 
-                    let coords = [...fracCoordsNew[inds[0]]];
-                    for(let innerIdx = 1; innerIdx < inds.length; innerIdx++) {
-                        const ind = inds[innerIdx];
-                        const offset = fracCoordsNew[ind].map((val, idx) => val - coords[idx]);
-                        const adjustedOffset = offset.map((val) => val - Math.round(val));
-                        coords = coords.map((coord, idx) =>
-                            coord + adjustedOffset[idx] / (innerIdx + 1)
-                        );
+                        spNew.push(gsites[inds[0]].element);
+                        labelsNew.push(gsites[inds[0]].element);
+
+                        coordsNew.push(coords);
                     }
-
-                    spNew.push(gsites[inds[0]].species);
-                    labelsNew.push(gsites[inds[0]].label);
-
-                    for(const k in gsites[inds[0]].properties) {
-                        if(!propsNew[k]) propsNew[k] = [];
-                        propsNew[k].push(gsites[inds[0]].properties[k]);
-                    }
-
-                    coordsNew.push(coords);
                 }
             }
-        }
 
-        if(valid) {
+            if(valid) {
 
-            const invLattMat = inv(lattMat);
-            const lattMatrixNew = multiply(invLattMat, structure.lattice.matrix);
+                const invLattMat = inv(lattMat);
+                const lattMatrixNew = multiply(invLattMat, structure.lattice.matrix);
 
-            const lattNew: Lattice = {
-                matrix: lattMatrixNew,
-                abc: lattMatrixNew.map((row) => Math.sqrt(row.reduce((sum, val) => sum + val * val, 0)))
-            };
+                const lattNew: Lattice = {
+                    matrix: lattMatrixNew,
+                    a: Math.hypot(lattMatrixNew[0][0], lattMatrixNew[0][1], lattMatrixNew[0][2]),
+                    b: Math.hypot(lattMatrixNew[1][0], lattMatrixNew[1][1], lattMatrixNew[1][2]),
+                    c: Math.hypot(lattMatrixNew[2][0], lattMatrixNew[2][1], lattMatrixNew[2][2]),
+                    alpha: cellAngle(lattMatrixNew[1], lattMatrixNew[2]),
+                    beta:  cellAngle(lattMatrixNew[0], lattMatrixNew[2]),
+                    gamma: cellAngle(lattMatrixNew[0], lattMatrixNew[1]),
+                    volume: calculateVolume(lattMatrixNew),
+                };
 
-            const struct: Structure = {
-                _sites: coordsNew.map((coord, idx) => ({
-                    frac_coords: coord,
-                    species_string: spNew[idx]?.toString() || "",
-                    properties: Object.fromEntries(
-                        Object.entries(propsNew).map(([k, v]) => [k, v[idx]])
-                    ),
-                    label: labelsNew[idx],
-                    species: spNew[idx]
-                })),
-                lattice: lattNew
-            };
+                const struct: SNL = {
+                    sites: coordsNew.map((coord, idx): Site => ({
+                        abc: coord,
+                        xyz: multiply(invLattMat, coord),
+                        label: labelsNew[idx],
+                        species: [
+                            {element: spNew[idx], occu: 1}
+                        ]
+                    })),
+                    lattice: lattNew
+                };
 
-            // Recursively call to get the most primitive structure
-            const primitive = getPrimitiveStructure(
-                struct,
-                tolerance,
-                useSiteProps,
-                constrainLatt
-            );
+                // Recursively call to get the most primitive structure
+                const primitive = getPrimitiveStructure(
+                    struct,
+                    tolerance,
+                    useSiteProps,
+                    constrainLatt
+                );
 
-            if(!constrainLatt || (Array.isArray(constrainLatt) && constrainLatt.length === 0)) {
-                return primitive;
+                if(!constrainLatt || (Array.isArray(constrainLatt) && constrainLatt.length === 0)) {
+                    return primitive;
+                }
+                /*
+                // Check lattice constraints
+                if(Array.isArray(constrainLatt)) {
+                    // Implementation would need lattice parameter extraction logic
+                    return primitive;
+                }
+                else {
+                    const keys = Object.keys(constrainLatt);
+                    // Would need to implement lattice parameter comparison
+                    return primitive;
+                }
+                */
             }
-
-            // Check lattice constraints
-            if(Array.isArray(constrainLatt)) {
-                // Implementation would need lattice parameter extraction logic
-                return primitive;
-            }
-            else {
-                const keys = Object.keys(constrainLatt);
-                // Would need to implement lattice parameter comparison
-                return primitive;
-            }
-        }
         }
     }
 
 	return structure;
+};
+
+export const scaleLattice = (lattice: Lattice, scale: number): void => {
+
+    for(let row=0; row < 3; ++row) {
+        for(let col=0; col < 3; ++col) lattice.matrix[row][col] *= scale;
+    }
+    lattice.a *= scale;
+    lattice.b *= scale;
+    lattice.c *= scale;
+    lattice.volume *= scale ** 3;
+};
+
+export const getElements = (structure: SNL): string[] => {
+
+    const elements = new Set<string>();
+    for(const site of structure.sites)  {
+        for(const species of site.species) {
+            elements.add(species.element);
+        }
+    }
+    return [...elements];
+};
+
+export const getComposition = (structure: SNL): Map<string, number> => {
+
+    const composition = new Map<string, number>();
+    for(const site of structure.sites) {
+        for(const species of site.species) {
+            if(composition.has(species.element)) {
+                composition.set(species.element, composition.get(species.element)! + species.occu);
+            }
+            else {
+                composition.set(species.element, species.occu);
+            }
+        }
+    }
+    return composition;
 };

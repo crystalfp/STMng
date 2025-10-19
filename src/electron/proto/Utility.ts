@@ -404,3 +404,17 @@ export const cartesianProduct = (...arrays: number[][]): number[][] => {
         [[]]
     );
 };
+
+
+// Helper methods for vector operations
+export const subtractVectors = (v1: number[], v2: number[]): number[] => {
+    return v1.map((value, i) => value - v2[i]);
+};
+
+export const addVectors = (v1: number[], v2: number[]): number[] => {
+    return v1.map((value, i) => value + v2[i]);
+};
+
+export const norm = (vector: number[]): number => {
+    return Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
+};

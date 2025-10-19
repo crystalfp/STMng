@@ -1,0 +1,653 @@
+/**
+ * Porting of StructureMatcher class from
+ * pymatgen/analysis/structure_matcher.py
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2025-10-14
+ */
+/* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
+
+import {LinearAssignment} from "./LinearAssignment.ts";
+import {getComposition, getElements, getReducedStructure, scaleLattice} from "./PymatgenStructure.ts";
+import {addVectors, norm, subtractVectors} from "./Utility.ts";
+import type {Lattice, SNL} from "./types";
+
+type Mapping = Record<string, unknown>;
+
+interface MatchResult {
+    rms: number;
+    maxDist: number;
+    mask: number[][];
+    cost: number;
+    mapping: Mapping;
+}
+
+interface SupercellResult {
+  s1Coords: number[][];
+  s2Coords: number[][];
+  avgLattice: Lattice;
+  supercellMatrix: number[][];
+}
+
+/**
+ * Match structures by similarity.
+
+    Algorithm:
+    1. Given two structures: s1 and s2
+    2. Optional: Reduce to primitive cells.
+    3. If the number of sites do not match, return False
+    4. Reduce to s1 and s2 to Niggli Cells
+    5. Optional: Scale s1 and s2 to same volume.
+    6. Optional: Remove oxidation states associated with sites
+    7. Find all possible lattice vectors for s2 within shell of ltol.
+    8. For s1, translate an atom in the smallest set to the origin
+    9. For s2: find all valid lattices from permutations of the list
+       of lattice vectors (invalid if: det(Lattice Matrix) less than half
+       volume of original s2 lattice)
+    10. For each valid lattice:
+
+        a. If the lattice angles of are within tolerance of s1,
+           basis change s2 into new lattice.
+        b. For each atom in the smallest set of s2:
+
+            i. Translate to origin and compare fractional sites in
+            structure within a fractional tolerance.
+            ii. If true:
+
+                ia. Convert both lattices to Cartesian and place
+                both structures on an average lattice
+                ib. Compute and return the average and max rms
+                displacement between the two structures normalized
+                by the average free length per atom
+
+                if fit function called:
+                    if normalized max rms displacement is less than
+                    stol. Return True
+
+                if get_rms_dist function called:
+                    if normalized average rms displacement is less
+                    than the stored rms displacement, store and
+                    continue. (This function will search all possible
+                    lattices for the smallest average rms displacement
+                    between the two structures)
+*/
+export class StructureMatcher {
+
+	public ltol: number;
+	public stol: number;
+	public angle_tol: number;
+
+    /**
+        Args:
+            ltol (float): Fractional length tolerance. Default is 0.2.
+            stol (float): Site tolerance. Defined as the fraction of the
+                average free length per atom := ( V / Nsites ) ** (1/3)
+                Default is 0.3.
+            angle_tol (float): Angle tolerance in degrees. Default is 5 degrees.
+            primitive_cell (bool): If true: input structures will be reduced to
+                primitive cells prior to matching. Default to True.
+            scale (bool): Input structures are scaled to equivalent volume if
+               true; For exact matching, set to False.
+            attempt_supercell (bool): If set to True and number of sites in
+                cells differ after a primitive cell reduction (divisible by an
+                integer) attempts to generate a supercell transformation of the
+                smaller cell which is equivalent to the larger structure.
+            allow_subset (bool): Allow one structure to match to the subset of
+                another structure. Eg. Matching of an ordered structure onto a
+                disordered one, or matching a delithiated to a lithiated
+                structure. This option cannot be combined with
+                attempt_supercell, or with structure grouping.
+            comparator (Comparator): A comparator object implementing an equals
+                method that declares equivalency of sites. Default is
+                SpeciesComparator, which implies rigid species
+                mapping, i.e., Fe2+ only matches Fe2+ and not Fe3+.
+
+                Other comparators are provided, e.g. ElementComparator which
+                matches only the elements and not the species.
+
+                The reason why a comparator object is used instead of
+                supplying a comparison function is that it is not possible to
+                pickle a function, which makes it otherwise difficult to use
+                StructureMatcher with Python's multiprocessing.
+            supercell_size (str or list): Method to use for determining the
+                size of a supercell (if applicable). Possible values are
+                'num_sites', 'num_atoms', 'volume', or an element or list of elements
+                present in both structures.
+            ignored_species (list): A list of ions to be ignored in matching.
+                Useful for matching structures that have similar frameworks
+                except for certain ions, e.g. Li-ion intercalation frameworks.
+                This is more useful than allow_subset because it allows better
+                control over what species are ignored in the matching.
+    */
+	constructor(
+		ltol = 0.2,
+        stol = 0.3,
+        angleTol = 5,
+        // primitiveCell = true,
+        // scale = true,
+        // attemptSupercell = false,
+        // allowSubset = false,
+        // comparator: AbstractComparator | None = None,
+        // supercellSize: "num_sites" | "num_atoms" | "volume" = "num_sites",
+        // ignoredSpecies = [],
+	) {
+		this.ltol = ltol;
+        this.stol = stol;
+        this.angle_tol = angleTol;
+        // this._comparator = comparator or SpeciesComparator()
+        // this._primitive_cell = primitive_cell
+        // this._scale = scale
+        // this._supercell = attempt_supercell
+        // this._supercell_size = supercell_size
+        // this._subset = allow_subset
+        // this._ignored_species = ignored_species
+	}
+
+    /**
+     * Rescales, finds the reduced structures (primitive and niggli),
+        and finds fu, the supercell size to make struct1 comparable to s2.
+        If skip_structure_reduction is True, skip to get reduced structures
+        (by primitive transformation and niggli reduction).
+        This option is useful for fitting a set of structures several times.
+     */
+    private preprocess(struct1: SNL, struct2: SNL, skipStructureReduction = false):
+        {struct1: SNL; struct2: SNL; fu: number; s1Supercell: boolean} {
+
+        const fu = 1;
+        const s1Supercell = true;
+
+        if(skipStructureReduction) {
+            // Need to copy original structures to rescale lattices later
+            struct1 = structuredClone(struct1);
+            struct2 = structuredClone(struct2);
+        }
+        else {
+            struct1 = getReducedStructure(struct1);
+            struct2 = getReducedStructure(struct2);
+        }
+
+        // Rescale lattice to same volume
+        const ratio = (struct2.lattice.volume / struct1.lattice.volume) ** (1 / 6);
+        scaleLattice(struct1.lattice, ratio);
+        scaleLattice(struct2.lattice, 1/ratio);
+
+        return {struct1, struct2, fu, s1Supercell};
+    }
+
+	/**
+        Performs an anonymous fitting, which allows distinct species in one structure to map
+        to another. e.g. to compare if the Li2O and Na2O structures are similar.
+
+        Args:
+            struct1 (Structure): 1st structure
+            struct2 (Structure): 2nd structure
+            niggli (bool): If true, perform Niggli reduction for struct1 and struct2
+            skip_structure_reduction (bool): Defaults to False
+                If True, skip to get a primitive structure and perform Niggli reduction for struct1 and struct2
+
+        Returns:
+            bool: True if a species mapping can map struct1 to struct2
+	*/
+	fitAnonymous(struct1: SNL, struct2: SNL, skipStructureReduction = false): [Map<string, string>, MatchResult][] | null {
+
+        const {struct1: s1, struct2: s2, fu, s1Supercell} = this.preprocess(struct1, struct2, skipStructureReduction);
+
+        const matches = this.anonymousMatch(s1, s2, fu, s1Supercell);
+
+        return matches;
+	}
+
+    private getHash(composition: Map<string, number>): string {
+
+        let natoms = 0;
+        for(const count of composition.values()) {
+            natoms += count;
+        }
+        let hash = "";
+        for(const [k, v] of composition) {
+            const count = (v/natoms).toFixed(8);
+            hash += `${k}${count}`;
+        }
+        return hash;
+    }
+
+    private replaceSpecies(mappedStruct: SNL, spMapping: Map<string, string>): void {
+
+        for(const site of mappedStruct.sites) {
+            const mappedElement = spMapping.get(site.species[0].element)!;
+            site.species[0].element = mappedElement;
+            site.label = mappedElement;
+        }
+    }
+
+    /**
+     * Tries all permutations of matching struct1 to struct2.
+     *
+     * @param struct1 - First structure
+     * @param struct2 - Second structure
+     * @param fu - Factor of unit cell of struct1 to match to struct2
+     * @param s1Supercell - whether to create the supercell of struct1 (vs struct2)
+     * @param useRms - Whether to minimize the rms of the matching
+     * @param breakOnMatch - Whether to break search on first match
+     * @param singleMatch - Whether to return only the best match
+     * @returns List of (mapping, match) tuples
+     */
+    private anonymousMatch(
+        struct1: SNL,
+        struct2: SNL,
+        fu: number,
+        s1Supercell = true,
+        useRms = false,
+        breakOnMatch = true,
+        singleMatch = true
+    ): [Map<string, string>, MatchResult][] | null {
+
+        // Check that species lists are comparable
+        const sp1 = getElements(struct1);
+        const sp2 = getElements(struct2);
+
+        if(sp1.length !== sp2.length) return null;
+
+        const ratio = s1Supercell ? fu : 1 / fu;
+        const swapped = struct1.sites.length * ratio < struct2.sites.length;
+        const s1Comp = getComposition(struct1);
+        const s2Comp = getComposition(struct2);
+        const matches: [Map<string, string>, MatchResult][] = [];
+
+        // Generate all permutations of sp2
+        for(const perm of this.permutations(sp2)) {
+
+            // Create species mapping
+            const spMapping = new Map<string, string>();
+            for(let i = 0; i < sp1.length; i++) {
+                spMapping.set(sp1[i], perm[i]);
+            }
+
+            // Do quick check that compositions are compatible
+            const mappedComp = new Map<string, number>(
+                [...s1Comp].map(([k, v]) => [spMapping.get(k)!, v])
+            );
+            if(this.getHash(mappedComp) !== this.getHash(s2Comp)) continue;
+
+            const mappedStruct = structuredClone(struct1);
+            this.replaceSpecies(mappedStruct, spMapping);
+
+            const match: MatchResult | null = swapped ? this.strictMatch(
+                    struct2,
+                    mappedStruct,
+                    fu,
+                    !s1Supercell,
+                    useRms,
+                    breakOnMatch
+                ) : this.strictMatch(
+                    mappedStruct,
+                    struct2,
+                    fu,
+                    s1Supercell,
+                    useRms,
+                    breakOnMatch
+                );
+
+            if(match) {
+                matches.push([spMapping, match]);
+                if(singleMatch) {
+                    break;
+                }
+            }
+        }
+
+        return matches;
+    }
+
+    // Helper method to generate permutations
+    private* permutations<T>(list: T[]): Generator<T[]> {
+
+        if(list.length <= 1) {
+            yield list;
+            return;
+        }
+
+        for(let i = 0; i < list.length; i++) {
+            const rest = [...list.slice(0, i), ...list.slice(i + 1)];
+            for(const perm of this.permutations(rest)) {
+                yield [list[i], ...perm];
+            }
+        }
+    }
+
+    /**
+     * Get mask for matching struct2 to struct1. If struct1 has sites
+        a b c, and fu = 2, assumes supercells of struct2 will be ordered
+        aabbcc (rather than abcabc).
+
+        Returns:
+            mask, struct1 translation indices, struct2 translation index
+
+     * @param struct1
+     * @param struct2
+     * @param fu
+     * @param s1Supercell
+     * @returns
+     */
+    private getMask(
+        struct1: SNL,
+        struct2: SNL,
+        fu: number,
+        s1Supercell: boolean,
+    ): [number[][], number[], number] {
+
+        const s1SpeciesAndOccu = getComposition(struct1);
+        const s2SpeciesAndOccu = getComposition(struct2);
+
+        // Initialize 3D mask array
+        const mask: boolean[][][] = Array(s2SpeciesAndOccu.size)
+            .fill(null)
+            .map(() =>
+            Array(s1SpeciesAndOccu.size)
+                .fill(null)
+                .map(() => Array<boolean>(fu).fill(false))
+            );
+
+        // Group struct2 species
+        const inner: [[string, number], [number, number]][] = [];
+        let currentSp2 = null;
+        let groupStart = 0;
+
+        for(let i = 0; i < s2SpeciesAndOccu.size; i++) {
+            const sp2 = [...s2SpeciesAndOccu][i];
+
+            if(currentSp2 === null || !this.areSpeciesEqual(currentSp2, sp2)) {
+                if(currentSp2 !== null) {
+                    inner.push([currentSp2, [groupStart, i - 1]]);
+                }
+                currentSp2 = sp2;
+                groupStart = i;
+            }
+        }
+        if(currentSp2 !== null) {
+            inner.push([currentSp2, [groupStart, s2SpeciesAndOccu.size - 1]]);
+        }
+
+        // Group struct1 species and fill mask
+        currentSp2 = null;
+        let group2Start = 0;
+
+        for(let i = 0; i <= s1SpeciesAndOccu.size; i++) {
+            const sp1 = i < s1SpeciesAndOccu.size ? [...s1SpeciesAndOccu][i] : null;
+
+            if(currentSp2 === null || sp1 === null || !this.areSpeciesEqual(currentSp2, sp1)) {
+                if(currentSp2 !== null) {
+                    const group2: [number, number] = [group2Start, i - 1];
+
+                    for(const [sp2, group1] of inner) {
+                        const value = currentSp2[0] !== sp2[0];
+                        for(let j = group1[0]; j <= group1[1]; j++) {
+                            for(let k = group2[0]; k <= group2[1]; k++) {
+                                for(let l = 0; l < fu; l++) {
+                                    mask[j][k][l] = value;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(sp1 !== null) {
+                    currentSp2 = sp1;
+                    group2Start = i;
+                }
+            }
+        }
+
+        // Reshape mask based on s1_supercell
+        let flatMask: boolean[][];
+
+        if(s1Supercell) {
+            flatMask = mask.map((row) => row.flat());
+        }
+        else {
+            // Roll axis and reshape
+            const rolled: boolean[][] = Array(mask.length * fu)
+                    .fill(null)
+                    .map(() => Array<boolean>(s1SpeciesAndOccu.size).fill(false));
+
+            for(let i = 0; i < mask.length; i++) {
+                for(let j = 0; j < mask[i].length; j++) {
+                    for(let k = 0; k < fu; k++) {
+                        rolled[i * fu + k][j] = mask[i][j][k];
+                    }
+                }
+            }
+            flatMask = rolled;
+        }
+
+        // Convert boolean to int (0 or 1)
+        const intMask = flatMask.map((row) => row.map((value) => (value ? 1 : 0))) as number[][];
+
+        // Find best translation indices
+        const sums = intMask.map((row) => row.reduce((a, b) => a + b, 0));
+        const idx = sums.indexOf(Math.max(...sums));
+
+        const inds: number[] = [];
+        for(let i = 0; i < intMask[idx].length; i++) {
+            if(intMask[idx][i] === 0) {
+                inds.push(i);
+            }
+        }
+
+        if(s1Supercell) {
+            // Remove symmetrically equivalent s1 indices
+            const filteredInds: number[] = [];
+            for(let i = 0; i < inds.length; i += fu) {
+                filteredInds.push(inds[i]);
+            }
+            return [intMask, filteredInds, idx];
+        }
+
+        return [intMask, inds, idx];
+    }
+
+    // Helper function to compare species
+    private areSpeciesEqual(sp1: [string, number], sp2: [string, number]): boolean {
+        return sp1[0] === sp2[0] && sp1[1] === sp2[1];
+    }
+
+    /**
+     * Compute all supercells of one structure close to the lattice of the other
+     * If s1_supercell is true, it makes the supercells of struct1, otherwise
+     * it makes them of struct2.
+     *
+     * @yields s1_coords, s2_coords, average_lattice, supercell_matrix
+     */
+    private* getSupercells(
+        struct1: SNL,
+        struct2: SNL,
+        fu: number,
+        s1Supercell: boolean
+    ): Generator<SupercellResult> {
+
+        // FIXME
+        // void struct1;
+        // void struct2;
+        // void fu;
+        // void s1Supercell;
+
+        // yield {
+        //     s1Coords: [],
+        //     s2Coords: [],
+        //     avgLattice: {} as Lattice,
+        //     supercellMatrix: []
+        // };
+
+        const scGenerator = function* (
+            this: StructureComparator,
+            s1: SNL,
+            s2: SNL
+        ): Generator<SupercellResult> {
+      const s2_fc = s2.frac_coords.map((coord) => [...coord]);
+
+      if (fu === 1) {
+        const cc = s1.cart_coords.map(coord => [...coord]);
+
+        for (const [latt, sc_m] of this._get_lattices(s2.lattice, s1, fu)) {
+          let fc = latt.get_fractional_coords(cc);
+
+          // fc -= np.floor(fc)
+          fc = fc.map(coord =>
+            coord.map(val => val - Math.floor(val))
+          );
+
+          yield {
+            s1Coords: fc,
+            s2Coords: s2_fc,
+            avgLattice: avLat(latt, s2.lattice),
+            supercellMatrix: sc_m
+          };
+        }
+      } else {
+        const fc_init = s1.frac_coords.map(coord => [...coord]);
+
+        for(const [latt, sc_m] of this._get_lattices(s2.lattice, s1, fu)) {
+          // fc = np.dot(fc_init, np.linalg.inv(sc_m))
+          const sc_m_inv = matrixInverse(sc_m);
+          let fc = matrixMultiply(fc_init, sc_m_inv);
+
+          const lp = latticePointsInSupercell(sc_m);
+
+          // fc = (fc[:, None, :] + lp[None, :, :]).reshape((-1, 3))
+          const expanded_fc: number[][] = [];
+          for (let i = 0; i < fc.length; i++) {
+            for (let j = 0; j < lp.length; j++) {
+              expanded_fc.push([
+                fc[i][0] + lp[j][0],
+                fc[i][1] + lp[j][1],
+                fc[i][2] + lp[j][2]
+              ]);
+            }
+          }
+          fc = expanded_fc;
+
+          // fc -= np.floor(fc)
+          fc = fc.map((coord) =>
+            coord.map((value) => value - Math.floor(value))
+          );
+
+          yield {
+            s1Coords: fc,
+            s2Coords: s2_fc,
+            avgLattice: avLat(latt, s2.lattice),
+            supercellMatrix: sc_m
+          };
+        }
+      }
+    }.bind(this);
+
+        if(s1Supercell) {
+            yield* scGenerator(struct1, struct2);
+        }
+        else {
+            for(const result of scGenerator(struct2, struct1)) {
+                // Reorder generator output so s1 is still first
+                yield {
+                    s1Coords: result.s2_coords,
+                    s2Coords: result.s1_coords,
+                    avgLattice: result.avg_lattice,
+                    supercellMatrix: result.supercell_matrix
+                };
+            }
+        }
+    }
+
+    /**
+     * Matches struct2 onto struct1 (which should contain all sites in struct2).
+     *
+     * @param struct1 - structure to match onto
+     * @param struct2 - structure to match
+     * @param fu - size of supercell to create
+     * @param s1Supercell - whether to create the supercell of struct1 (vs struct2)
+     * @param useRms - whether to minimize the rms of the matching
+     * @param breakOnMatch - whether to stop search at first match
+     * @returns MatchResult object if a match is found, else null
+     */
+    private strictMatch(
+        struct1: SNL,
+        struct2: SNL,
+        fu: number,
+        s1Supercell = true,
+        useRms = false,
+        breakOnMatch = false
+    ): MatchResult | null {
+
+        if(fu < 1) {
+            throw new Error("fu cannot be less than 1");
+        }
+
+        const [mask, s1TInds, s2TInd] = this.getMask(struct1, struct2, fu, s1Supercell);
+
+        if(mask.length > mask[0].length) {
+            throw new Error("after supercell creation, struct1 must have more sites than struct2");
+        }
+
+        // check that a valid mapping exists
+        if(mask[0].length !== mask.length) {
+            return null;
+        }
+
+        if(new LinearAssignment(mask).minCost > 0) {
+            return null;
+        }
+
+        let bestMatch: [number, number[], number[][], number[], Mapping] | null = null;
+
+    // loop over all lattices
+    for(const {s1Coords: s1fc, s2Coords: s2fc, avgLattice: avgL, supercellMatrix: scM} of this.getSupercells(struct1, struct2, fu, s1Supercell)) {
+        // compute fractional tolerance
+        const normalization = Math.pow(s1fc.length / avgL.volume, 1 / 3);
+        const invAbc = avgL.reciprocalLattice.abc;
+        const fracTol = invAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
+
+        // loop over all translations
+        for(const s1i of s1TInds) {
+            const t = subtractVectors(s1fc[s1i], s2fc[s2TInd]);
+            const tS2fc = s2fc.map((coord: number[]) => addVectors(coord, t));
+
+            if(this._cmpFstruct(s1fc, tS2fc, fracTol, mask)) {
+                const invLllAbc = avgL.getLllReducedLattice().reciprocalLattice.abc;
+                const lllFracTol = invLllAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
+                const {dist, tAdj, mapping} = this._cartDists(s1fc, tS2fc, avgL, mask, normalization, lllFracTol);
+
+                const value = useRms
+                    ? norm(dist) / Math.sqrt(dist.length)
+                    : Math.max(...dist);
+
+                if(bestMatch === null || value < bestMatch[0]) {
+                    const totalT = addVectors(t, tAdj);
+                    const adjustedT = totalT.map((v: number) => v - Math.round(v));
+                    bestMatch = [value, dist, scM, adjustedT, mapping];
+
+                    if((breakOnMatch || value < 1e-5) && value < this.stol) {
+                        return this.formatMatchResult(bestMatch);
+                    }
+                }
+            }
+        }
+    }
+
+        if(bestMatch && bestMatch[0] < this.stol) {
+            return this.formatMatchResult(bestMatch);
+        }
+
+        return null;
+    }
+
+    // Helper method to format the result
+    private formatMatchResult(match: [number, number[], number[][], number[], Mapping]): MatchResult {
+        return {
+            rms: match[0],
+            maxDist: match[0],
+            mask: match[2],
+            cost: match[0],
+            mapping: match[4]
+        };
+    }
+}
