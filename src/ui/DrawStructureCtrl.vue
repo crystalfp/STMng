@@ -73,11 +73,13 @@ const renderer = new DrawStructureRenderer(id, drawQuality.value,
 receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRenderInfo) => {
 
     renderInfo = updatedRenderInfo;
-    renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
+    renderer.adjustMaterials(drawQuality.value, drawRoughness.value,
+                             drawMetalness.value);
     renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
                            showBondsStrengths.value, atomColoring.value,
                            monochromeColor.value, bondsRadiusMultiplier.value);
-    renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
+    renderer.drawLabels(renderInfo, showLabels.value, drawKind.value,
+                        labelKind.value, bondsRadiusMultiplier.value);
 
     // Save basis to orient camera along cell sides
     for(let i=0; i < 9; ++i) controlStore.basis[i] = renderInfo.cell.basis[i];
@@ -91,7 +93,8 @@ watch([labelKind, drawKind, shadedBonds, showBondsStrengths,
         renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
                                showBondsStrengths.value, atomColoring.value,
                                monochromeColor.value, bondsRadiusMultiplier.value);
-        renderer.drawLabels(renderInfo, showLabels.value, drawKind.value, labelKind.value);
+        renderer.drawLabels(renderInfo, showLabels.value, drawKind.value,
+                            labelKind.value, bondsRadiusMultiplier.value);
     }
     sendToNode(id, "save", {
         labelKind: labelKind.value,

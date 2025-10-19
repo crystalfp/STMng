@@ -290,6 +290,7 @@ export class DrawStructureRenderer {
 	 * @param shadedBonds - If the bonds color should be shaded or as two color bands
 	 * @param atomColoring - How the atoms should be colored
 	 * @param monochromeColor - Color to use for monochrome structure coloring
+	 * @param bondsRadiusMultiplier - Multiplier for the bonds radius
 	 */
 	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
 				  shadedBonds: boolean, showBondsStrength: boolean,
@@ -469,11 +470,12 @@ export class DrawStructureRenderer {
 	 * @param showLabels - Make labels visible
 	 * @param drawKind - Structure draw style
 	 * @param labelKind - Label to be rendered
+	 * @param bondsRadiusMultiplier - Multiplier for the bonds radius
 	 * @throws Error.
 	 * "Impossible draw kind value"
 	 */
 	drawLabels(renderInfo: StructureRenderInfo, showLabels: boolean,
-			   drawKind: string, labelKind: string): void {
+			   drawKind: string, labelKind: string, bondsRadiusMultiplier: number): void {
 
 		// Remove existing labels
 		disposeTextInGroup(this.labelsGroup);
@@ -499,7 +501,7 @@ export class DrawStructureRenderer {
 					offset = atom.rVdW * 1.3;
 					break;
 				case "licorice":
-					offset = BOND_RADIUS * 2.5;
+					offset = BOND_RADIUS * bondsRadiusMultiplier * 2.5;
 					break;
 				case "lines":
 					offset = 0.1;

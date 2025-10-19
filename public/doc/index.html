@@ -33,9 +33,9 @@
   <p>Some nodes and menu entries open a <span onclick="openDetails('#secondary'); return false;">secondary window</span> that can be positioned freely and resized with data and controls specific for its functionality.</p>
 </details>
 <details>
-  <summary>Available nodes</summary>
+  <summary>Available processing nodes</summary>
   <p>Nodes are the building blocks of the graph that controls the STMng behavior. Each node could have inputs and/or outputs and could generate graphical objects that are visualized in the viewer.</p>
-  <p>The application makes available the nodes listed below, but the ones made available to the user are collected in the loaded project. Instead all available nodes are present in the “default project”.</p>
+  <p>The application makes available the nodes listed below, but the ones made available to the user are collected in the loaded <a href="#project">project</a>. Instead, all available nodes are present in the “default project”.</p>
   <table>
     <tr><td class="m1"><a href="nodes/capture-view.html">Capture view</a></td>
         <td>Capture the viewer content as image, STL model or movie.</td></tr>
@@ -65,6 +65,8 @@
         <td>Interactively measure distances, angles and polyhedra volume.</td></tr>
     <tr><td><a href="nodes/orthoslice.html">Orthoslice</a></td>
         <td>Draw orthoslices and isolines of volumetric data.</td></tr>
+    <tr><td><a href="nodes/prototype-matcher.html">Prototype matcher</a></td>
+        <td>Match a structure against known “prototype” structures.</td></tr>
     <tr><td><a href="nodes/slice-structure.html">Slice the structure</a></td>
         <td>Slice the structure along various geometries.</td></tr>
     <tr><td><a href="nodes/structure-reader.html">Structure reader</a></td>
@@ -116,10 +118,10 @@
   <p>The <b>project</b> is the description of the nodes used, their interconnections
   and their parameters.</p>
   <p>The nodes provided by the project have their UI visible in the UI section of the screen.</p>
-  <p>The application comes with an hardcoded project, called <b>default project,</b>
+  <p>The application comes with an hardcoded project, called the <b>default project,</b>
   that contains all the nodes shipped. It cannot be changed, but can be edited and saved as
   a different project.</p>
-  <p>The current project or the default project are automatically loaded on application start.
+  <p>The current project or the default project are automatically loaded when the application starts.
   The project file could also be loaded from the command line.</p>
   <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
   containing a JSON record with the following keys:</p>
@@ -136,7 +138,7 @@
 }</code>
 
   <h2>Graph section</h2>
-  <p>This section is a JSON record with the unique identifier of the node as key and, for example, the following content:</p>
+  <p>This section is a JSON record with the unique identifier of the nodes as keys and, for example, the following content:</p>
   <code>{
   "graph": {
     "draw": {                     // The unique identifier of the node
@@ -150,7 +152,7 @@
     },
     // Other nodes
   },
-   . . .
+  . . .
 }</code>
   <h2>Project editor</h2>
   <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="secondary/project-editor.html">Project editor</a>. This editor allows the modification of the currently loaded project that, at the end, could be saved and becomes the current project. Also an entirely new project could be created and saved.</p>

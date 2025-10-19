@@ -86,6 +86,17 @@ receiveFromNode(id, "match", (params: CtrlParams) => {
     }
 });
 
+/**
+ * Reset parameters to default values
+ */
+const resetParams = (): void => {
+
+    lengthTolerance.value = 0.2;
+    siteTolerance.value = 0.3;
+    angleTolerance.value = 5;
+    match.value = "";
+};
+
 </script>
 
 
@@ -94,7 +105,7 @@ receiveFromNode(id, "match", (params: CtrlParams) => {
   <v-switch v-model="enableProto" label="Enable prototype matcher" class="mt-6 ml-3" />
   <debounced-slider v-slot="{value}" v-model="lengthTolerance" :disabled="!enableProto"
                       :min="0.05" :max="0.4" :step="0.05" class="ml-2 mb-3 mt-6">
-    <v-label :text="`Length tolerance (${value.toFixed(2)})`" class="no-select" />
+    <v-label :text="`Fractional length tolerance (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
   <debounced-slider v-slot="{value}" v-model="siteTolerance" :disabled="!enableProto"
                       :min="0.05" :max="0.6" :step="0.05" class="ml-2 mb-3 mt-2">
@@ -104,10 +115,10 @@ receiveFromNode(id, "match", (params: CtrlParams) => {
                       :min="0.5" :max="10" :step="0.5" class="ml-2 mb-3 mt-2">
     <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
   </debounced-slider>
+  <v-btn block class="mt-5 mb-4" @click="resetParams">Reset parameters</v-btn>
   <v-label v-if="enableProto" class="result-label mt-4 ml-2 mb-6">
-    {{ match || "No match" }}
+    {{ match || "No match found" }}
   </v-label>
   <node-alert node="prototypeMatcher" />
-
 </v-container>
 </template>
