@@ -7,7 +7,7 @@
  * @since 2025-10-18
  */
 import {computed, ref, watch} from "vue";
-import {resetNodeAlert, showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
+import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
@@ -55,8 +55,7 @@ watch([enableProto], () => {
         })
         .catch((error: Error) => {
             const message = `Error from "${label}": ${error.message}`;
-            showNodeAlert(message, "prototypeMatcher");
-            showSystemAlert(message);
+            showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
         });
 });
 
@@ -75,8 +74,7 @@ watch([lengthTolerance, siteTolerance, angleTolerance], () => {
         })
         .catch((error: Error) => {
             const message = `Error from "${label}": ${error.message}`;
-            showNodeAlert(message, "prototypeMatcher");
-            showSystemAlert(message);
+            showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
         });
 });
 
@@ -84,8 +82,7 @@ watch([lengthTolerance, siteTolerance, angleTolerance], () => {
 receiveFromNode(id, "match", (params: CtrlParams) => {
     if(params.error) {
         const message = `Error from "${label}": ${params.error as string}`;
-        showNodeAlert(message, "prototypeMatcher");
-        showSystemAlert(message);
+        showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
         match.value = "";
     }
     else {

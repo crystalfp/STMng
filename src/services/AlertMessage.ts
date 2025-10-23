@@ -39,20 +39,27 @@ export const showSystemAlert = (message: string, level: AlertLevel = "error"): v
  * @param node - Node originating the alert
  * @param options - Optional parameters
 		- level: Kind of alert (default "error")
+		- alsoSystem: If also a system alert should be shown
  */
 export const showNodeAlert = (message: string,
 							  node: string,
 							  options: {
 									level?: AlertLevel;
+									alsoSystem?: boolean;
 							  } = {}): void => {
 
-	const {level="error"} = options;
+	const {level="error", alsoSystem=false} = options;
 
 	const messageStore = useMessageStore();
 
 	messageStore.node = node;
 	messageStore.level = level;
 	messageStore.text = message;
+
+	if(alsoSystem) {
+		messageStore.system.message = message;
+		messageStore.system.level = level;
+	}
 
 	if(level === "error") {
 		log.error(message);

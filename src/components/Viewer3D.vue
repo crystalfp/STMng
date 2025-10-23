@@ -430,8 +430,7 @@ onMounted(() => {
                     return capturer.saveFrames(filename);
                 })
                 .catch((error: Error) => {
-                    showNodeAlert(error.message, "captureMovie");
-                    showSystemAlert(error.message);
+                    showNodeAlert(error.message, "captureMovie", {alsoSystem: true});
                 });
         }
         else if(movieCaptureRunning) {

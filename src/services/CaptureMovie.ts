@@ -9,7 +9,7 @@
 import {Output, BufferTarget, CanvasSource, QUALITY_HIGH,
 		Mp4OutputFormat, MkvOutputFormat, WebMOutputFormat} from "mediabunny";
 import {askNode} from "@/services/RoutesClient";
-import {showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
+import {showNodeAlert} from "@/services/AlertMessage";
 
 /**
  * Capture the viewer into a movie file
@@ -100,13 +100,11 @@ export class CaptureMovie {
                 if(sts.error) throw Error(sts.error as string);
                 if(sts.payload) {
 					const message = `Saved movie file ${sts.payload as string}`;
-                    showNodeAlert(message, "captureMovie", {level: "success"});
-					showSystemAlert(message, "success");
+                    showNodeAlert(message, "captureMovie", {level: "success", alsoSystem: true});
                 }
             })
             .catch((error: Error) => {
-                showNodeAlert(error.message, "captureMovie");
-				showSystemAlert(error.message, "error");
+                showNodeAlert(error.message, "captureMovie", {alsoSystem: true});
             });
     }
 
