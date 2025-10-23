@@ -25,7 +25,7 @@ const LineType = {
     atoms:   5,
 	exit:    6
 } as const;
-
+type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
 
 export class ReaderPOSCAR implements ReaderImplementation {
 
@@ -42,7 +42,7 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
-		let lineType: number = LineType.comment;
+		let lineType: Step = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
 		const atomsZ: number[] = [];

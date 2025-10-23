@@ -418,3 +418,15 @@ export const addVectors = (v1: number[], v2: number[]): number[] => {
 export const norm = (vector: number[]): number => {
     return Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
 };
+
+/**
+ * Return a value inside [0..1] interval.
+ * Math round and Python round behave differently when value is exactly 0.5
+ *
+ * @param value - Value to be clamped inside [0..1]
+ * @returns Clamped value
+ */
+export const pbc = (value: number): number => {
+    if(value > 0.5-1e-5 && value < 0.5+1e-5) return value;
+    return value - Math.round(value);
+};

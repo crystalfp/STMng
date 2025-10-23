@@ -6,10 +6,10 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-09-24
  */
-import {getNiggliReducedLattice} from "./PymatgenLattice";
-import type {Lattice, Site, SNL} from "./types";
 import {inv, multiply, transpose} from "mathjs";
-import {calculateVolume, cellAngle} from "./Utility";
+import {getNiggliReducedLattice, matrixToLattice} from "./PymatgenLattice";
+import {pbc} from "./Utility";
+import type {Lattice, Site, SNL} from "./types";
 
 /**
  * Get a reduced structure
@@ -48,10 +48,6 @@ interface SiteElement {
     cart: number[];
 }
 
-const pbc = (value: number): number => {
-    if(value > 0.5-1e-5 && value < 0.5+1e-5) return value;
-    return value - Math.round(value);
-};
 
 /**
  * Get the fractional coords in fc1 that have coordinates
@@ -255,7 +251,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
 
                 const fdist = gfCoords[i].map((value, idx) => {
                     let diff = value - gfCoords[j][idx];
-                    diff = diff - Math.round(diff);
+                    diff = pbc(diff);
                     return Math.abs(diff);
                 });
 
@@ -284,7 +280,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 for(const minVec of minVecs) {
                     const dist = invM[row].map((value, idx) => {
                         let diff = value - minVec[idx];
-                        diff = diff - Math.round(diff);
+                        diff = pbc(diff);
                         return Math.abs(diff);
                     });
 
@@ -334,7 +330,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                     for(let j = 0; j < allFrac.length; j++) {
                         const fdist = allFrac[i].map((value, idx) => {
                             const diff = value - allFrac[j][idx];
-                            return Math.abs(diff - Math.round(diff));
+                            return Math.abs(pbc(diff));
                         });
                         closeInPrim[i][j] = fdist.every((d, idx) => d < ftol[idx]);
                     }
@@ -393,7 +389,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                             const ind = inds[innerIdx];
                             // eslint-disable-next-line no-loop-func
                             const offset = fracCoordsNew[ind].map((value, idx) => value - coords[idx]);
-                            const adjustedOffset = offset.map((value) => value - Math.round(value));
+                            const adjustedOffset = offset.map((value) => pbc(value));
                             coords = coords.map((coord, idx) =>
                                 coord + adjustedOffset[idx] / (innerIdx + 1)
                             );
@@ -411,18 +407,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
 
                 const invLattMat = inv(lattMat);
                 const lattMatrixNew = multiply(invLattMat, structure.lattice.matrix);
-
-                const lattNew: Lattice = {
-                    matrix: lattMatrixNew,
-                    a: Math.hypot(lattMatrixNew[0][0], lattMatrixNew[0][1], lattMatrixNew[0][2]),
-                    b: Math.hypot(lattMatrixNew[1][0], lattMatrixNew[1][1], lattMatrixNew[1][2]),
-                    c: Math.hypot(lattMatrixNew[2][0], lattMatrixNew[2][1], lattMatrixNew[2][2]),
-                    alpha: cellAngle(lattMatrixNew[1], lattMatrixNew[2]),
-                    beta:  cellAngle(lattMatrixNew[0], lattMatrixNew[2]),
-                    gamma: cellAngle(lattMatrixNew[0], lattMatrixNew[1]),
-                    volume: calculateVolume(lattMatrixNew),
-                };
-
+                const lattNew = matrixToLattice(lattMatrixNew);
                 const struct: SNL = {
                     sites: coordsNew.map((coord, idx): Site => ({
                         abc: coord,
@@ -501,4 +486,22 @@ export const getComposition = (structure: SNL): Map<string, number> => {
         }
     }
     return composition;
+};
+
+export const getFractionalCoordinates = (structure: SNL): number[][] => {
+
+    const coords: number[][] = [];
+    for(const site of structure.sites) {
+        coords.push(site.abc);
+    }
+    return coords;
+};
+
+export const getCartesianCoordinates = (structure: SNL): number[][] => {
+
+    const coords: number[][] = [];
+    for(const site of structure.sites) {
+        coords.push(site.xyz);
+    }
+    return coords;
 };

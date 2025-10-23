@@ -18,6 +18,7 @@ const LineType = {
     separator: 1,
     position:  2,
 } as const;
+type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
 
 /**
  * Read the auxiliary file XDATCAR
@@ -35,7 +36,7 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 	const {crystal, atoms} = mainStructure;
 	const natoms = atoms.length;
 	if(natoms === 0) throw Error("Empty main structure");
-	let lineType: number = LineType.header;
+	let lineType: Step = LineType.header;
 	let headerLines = 5;
 	let index = 0;
 	const structures: Structure[] = [];

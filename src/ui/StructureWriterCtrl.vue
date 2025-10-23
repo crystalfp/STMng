@@ -33,7 +33,7 @@ controlStore.hasWriter = true;
 const {writerAccumulate} = storeToRefs(controlStore);
 
 /** Formats that could be saved */
-const fileFormats = ["CHGCAR", "CIF", "PDB", "POSCAR", "Shel-X", "XYZ"];
+const fileFormats = ["CHGCAR", "CIF", "PDB", "POSCAR", "Shel-X", "XYZ"] as const;
 const fileFormatsNoUC = ["PDB", "XYZ"];
 
 const format         = ref("");

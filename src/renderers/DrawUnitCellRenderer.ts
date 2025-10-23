@@ -75,7 +75,6 @@ export class DrawUnitCellRenderer {
 	 */
 	private static setMaterial(color: string, dashed: boolean): Material {
 
-		// eslint-disable-next-line sonarjs/no-selector-parameter
 		return dashed ? new LineDashedMaterial({
 						color,
 						scale: 5,

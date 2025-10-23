@@ -2,6 +2,7 @@ Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
   ☐ Check not even dimensions for the capture movies.
+  ✔ Define enum for addType in ComputeBonds @done(2025-10-23 06:15)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -29,6 +30,7 @@ Performance:
 Global analysis:
   ☐ Monitor and Profile (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 7, 20 and 14)
   ☐ Memory leak detection (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 10)
+  ☐ <https://dev.to/lingodotdev/beyond-the-basics-21-typescript-features-you-might-not-know-about-1dbn>
 
 ToDo eventually:
   ☐ Commits for a new release version should follow <https://www.conventionalcommits.org/en/v1.0.0/>

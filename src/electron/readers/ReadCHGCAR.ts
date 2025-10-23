@@ -28,6 +28,7 @@ const LineType = {
     volumeValues: 8,
 	exit:         9,
 } as const;
+type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
 
 export class ReaderCHGCAR implements ReaderImplementation {
 
@@ -44,7 +45,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
-		let lineType: number = LineType.comment;
+		let lineType: Step = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];
 		const atomsZ: number[] = [];

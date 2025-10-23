@@ -6,8 +6,8 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-18
  */
-import {ref, watch} from "vue";
-import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
+import {computed, ref, watch} from "vue";
+import {resetNodeAlert, showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
@@ -53,8 +53,11 @@ watch([enableProto], () => {
             if(params.error) throw Error(params.error as string);
             match.value = params.match as string ?? "";
         })
-        .catch((error: Error) => showNodeAlert(`Error from "${label}": ${error.message}`,
-                                                "prototypeMatcher"));
+        .catch((error: Error) => {
+            const message = `Error from "${label}": ${error.message}`;
+            showNodeAlert(message, "prototypeMatcher");
+            showSystemAlert(message);
+        });
 });
 
 /** Changed computing tolerances */
@@ -70,20 +73,30 @@ watch([lengthTolerance, siteTolerance, angleTolerance], () => {
             if(params.error) throw Error(params.error as string);
             match.value = params.match as string ?? "";
         })
-        .catch((error: Error) => showNodeAlert(`Error from "${label}": ${error.message}`,
-                                                "prototypeMatcher"));
+        .catch((error: Error) => {
+            const message = `Error from "${label}": ${error.message}`;
+            showNodeAlert(message, "prototypeMatcher");
+            showSystemAlert(message);
+        });
 });
 
 /** Receive result of the matching */
 receiveFromNode(id, "match", (params: CtrlParams) => {
     if(params.error) {
-        showNodeAlert(`Error from "${label}": ${params.error as string}`,
-                      "prototypeMatcher");
+        const message = `Error from "${label}": ${params.error as string}`;
+        showNodeAlert(message, "prototypeMatcher");
+        showSystemAlert(message);
         match.value = "";
     }
     else {
         match.value = params.match as string ?? "";
     }
+});
+
+/** Split the list of matches or signal no results */
+const matchHTML = computed(() => {
+    if(match.value === "") return "No match found";
+    return match.value.replaceAll(/\|+/g, ",<br>");
 });
 
 /**
@@ -115,10 +128,18 @@ const resetParams = (): void => {
                       :min="0.5" :max="10" :step="0.5" class="ml-2 mb-3 mt-2">
     <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
   </debounced-slider>
-  <v-btn block class="mt-5 mb-4" @click="resetParams">Reset parameters</v-btn>
-  <v-label v-if="enableProto" class="result-label mt-4 ml-2 mb-6">
-    {{ match || "No match found" }}
-  </v-label>
+  <v-btn block class="mt-5 mb-4" :disabled="!enableProto" @click="resetParams">Reset parameters</v-btn>
+  <v-label v-if="enableProto" class="result-label mt-4 ml-2 mb-6 show-match" v-html="matchHTML" />
   <node-alert node="prototypeMatcher" />
 </v-container>
 </template>
+
+
+<style scoped>
+.show-match {
+  overflow-wrap: break-word;
+  white-space: break-spaces;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+</style>

@@ -24,6 +24,7 @@ const LineType = {
     box3:   5,
     atom:   6,
 } as const;
+type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
 
 /** Types of unit cells */
 const BoxType = {
@@ -48,7 +49,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let currentStructure: Structure;
 
 		let numberAtoms = 0;
-		let lineType: number = LineType.item;
+		let lineType: Step = LineType.item;
 		let atomIdx = 0;
 		const correspond: number[] = [];
 		let atomZ = 0;

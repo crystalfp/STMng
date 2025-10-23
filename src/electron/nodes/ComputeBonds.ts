@@ -65,7 +65,7 @@ const displacementCoefficients = [
 	[1,  0, -1],
 	[1,  1, -1],
 	[1, -1, -1],
-];
+] as const;
 
 /** Possible atoms Z values that form a H bond */
 const atomZForH = new Set([7, 8, 9, 16]);
@@ -80,6 +80,16 @@ const BondType = {
     invalid:   99
 } as const;
 
+/** Add type values 1: atom in unit cell; 2: atom outside unit cell */
+const AddType = {
+	__proto__: undefined,
+	removed: -1,
+	inside:   1,
+	outside:  2,
+	added:   22
+} as const;
+type AddKind = NonNullable<(typeof AddType)[keyof typeof AddType]>;
+
 export class ComputeBonds extends NodeCore {
 
 	private inputStructure: Structure | undefined;
@@ -91,7 +101,7 @@ export class ComputeBonds extends NodeCore {
 	private bondScale           = 1.1;
 	private perPairScale		= false;
 	private perPairData: PairData[] = [];
-	private addType: number[]   = []; // 1: atom in unit cell; 2: atom outside unit cell
+	private addType: AddKind[]  = [];
 	private inputNumAtoms		= 0;
 	private enlargementKind		= "neighbors";
 
@@ -225,7 +235,7 @@ export class ComputeBonds extends NodeCore {
 		}
 
 		// The first atoms are the ones inside the unit cell
-		this.addType = Array<number>(natoms).fill(1);
+		this.addType = Array<AddKind>(natoms).fill(AddType.inside);
 
 		// Add adjacent atoms (don't use for...of)
 		for(let i=0; i < natoms; ++i) {
@@ -253,9 +263,9 @@ export class ComputeBonds extends NodeCore {
 		const tol = 1e-5;
 
 		for(let i=0; i < fullCount-1; ++i) {
-			if(this.addType[i] < 0) continue;
+			if(this.addType[i] === AddType.removed) continue;
 			for(let j=i+1; j < fullCount; ++j) {
-				if(this.addType[j] < 0) continue;
+				if(this.addType[j] === AddType.removed) continue;
 
 				const fdx = outAtoms[i].position[0] - outAtoms[j].position[0];
 				if(fdx < tol && fdx > -tol) {
@@ -263,7 +273,7 @@ export class ComputeBonds extends NodeCore {
 					if(fdy < tol && fdy > -tol) {
 						const fdz = outAtoms[i].position[2] - outAtoms[j].position[2];
 						if(fdz < tol && fdz > -tol) {
-							this.addType[j] = -1;
+							this.addType[j] = AddType.removed;
 						}
 					}
 				}
@@ -272,7 +282,7 @@ export class ComputeBonds extends NodeCore {
 
 		// Remove coincident atoms
 		for(let i=fullCount-1; i >= 0; --i) {
-			if(this.addType[i] < 0) {
+			if(this.addType[i] === AddType.removed) {
 				this.addType.splice(i, 1);
 				outAtoms.splice(i, 1);
 			}
@@ -307,19 +317,19 @@ export class ComputeBonds extends NodeCore {
 		// Mark the atoms that have bonds
 		const natoms = atoms.length;
 		for(let i=this.inputNumAtoms; i < natoms; ++i) {
-			if(bondedAtoms.has(i)) this.addType[i] = 1;
+			if(bondedAtoms.has(i)) this.addType[i] = AddType.inside;
 		}
 
 		// Create map of atoms indices after cleaning atoms list
 		const mapPositions = Array<number>(natoms).fill(0);
 		let idx = 0;
 		for(let i=0; i < natoms; ++i) {
-			if(this.addType[i] === 1) mapPositions[i] = idx++;
+			if(this.addType[i] === AddType.inside) mapPositions[i] = idx++;
 		}
 
 		// Remove not bonded outside atoms
 		for(let i=natoms-1; i >=0; --i) {
-			if(this.addType[i] === 2) atoms.splice(i, 1);
+			if(this.addType[i] === AddType.outside) atoms.splice(i, 1);
 		}
 
 		// Remap bonds
@@ -342,14 +352,14 @@ export class ComputeBonds extends NodeCore {
 			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
 			if(from === startIdx) {
-				if(this.addType[to] === 2) {
-					this.addType[to] = 22;
+				if(this.addType[to] === AddType.outside) {
+					this.addType[to] = AddType.added;
 					this.markConnected(bonds, to);
 				}
 			}
-			else if(to === startIdx && this.addType[from] === 2) {
+			else if(to === startIdx && this.addType[from] === AddType.outside) {
 				this.markConnected(bonds, from);
-				this.addType[from] = 22;
+				this.addType[from] = AddType.added;
 			}
 		}
 	}
@@ -366,12 +376,12 @@ export class ComputeBonds extends NodeCore {
 
 			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
-			if(this.addType[from] === 1 && this.addType[to] === 2) {
-				this.addType[to] = 22;
+			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
+				this.addType[to] = AddType.added;
 				this.markConnected(structure.bonds, to);
 			}
-			else if(this.addType[to] === 1 && this.addType[from] === 2) {
-				this.addType[from] = 22;
+			else if(this.addType[to] === AddType.inside && this.addType[from] === AddType.outside) {
+				this.addType[from] = AddType.added;
 				this.markConnected(structure.bonds, from);
 			}
 		}
@@ -393,12 +403,12 @@ export class ComputeBonds extends NodeCore {
 
 			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
-			if(this.addType[from] === 1 && this.addType[to] === 2) {
-				this.addType[to] = 22;
+			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
+				this.addType[to] = AddType.added;
 				mark.set(to, []);
 			}
-			else if(this.addType[to] === 1 && this.addType[from] === 2) {
-				this.addType[from] = 22;
+			else if(this.addType[to] === AddType.inside && this.addType[from] === AddType.outside) {
+				this.addType[from] = AddType.added;
 				mark.set(from, []);
 			}
 		}
@@ -408,10 +418,10 @@ export class ComputeBonds extends NodeCore {
 
 			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
-			if(this.addType[from] === 22) {
+			if(this.addType[from] === AddType.added) {
 				mark.get(from)?.push(to);
 			}
-			else if(this.addType[to] === 22) {
+			else if(this.addType[to] === AddType.added) {
 				mark.get(to)?.push(from);
 			}
 		}
@@ -421,8 +431,8 @@ export class ComputeBonds extends NodeCore {
 			const connected = mark.get(idx)!;
 			if(connected.length >= 3) {
 				for(const to of connected) {
-					if(this.addType[to] === 2) {
-						this.addType[to] = 22;
+					if(this.addType[to] === AddType.outside) {
+						this.addType[to] = AddType.added;
 					}
 				}
 			}
@@ -432,7 +442,7 @@ export class ComputeBonds extends NodeCore {
 	}
 
 	/**
-	 * Remove unneeded outside atoms and bonds not marked to be retained (addType === 22)
+	 * Remove unneeded outside atoms and bonds not marked to be retained (addType === added)
 	 *
 	 * @param structure - The augmented structure with the 26 cell replicas
 	 */
@@ -442,7 +452,7 @@ export class ComputeBonds extends NodeCore {
 		const updatedBonds: Bond[] = [];
 		for(const bond of structure.bonds) {
 			const {from, to, type} = bond;
-			if(this.addType[from] !== 2 && this.addType[to] !== 2) {
+			if(this.addType[from] !== AddType.outside && this.addType[to] !== AddType.outside) {
 				updatedBonds.push({from, to, type});
 			}
 		}
@@ -453,7 +463,7 @@ export class ComputeBonds extends NodeCore {
 		const mapIdx = new Map<number, number>();
 		const len = this.addType.length;
 		for(let i=0, j=0; i < len; ++i) {
-			if(this.addType[i] === 1 || this.addType[i] === 22) {
+			if(this.addType[i] === AddType.inside || this.addType[i] === AddType.added) {
 				mapIdx.set(i, j);
 				++j;
 			}
@@ -462,7 +472,7 @@ export class ComputeBonds extends NodeCore {
 		// Remove unmarked atoms
 		const updatedAtoms: Atom[] = [];
 		for(let i=0; i < len; ++i) {
-			if(this.addType[i] !== 2) {
+			if(this.addType[i] !== AddType.outside) {
 				const {atomZ, label, chain, position} = structure.atoms[i];
 				updatedAtoms.push({atomZ, label, chain, position});
 			}
@@ -620,8 +630,8 @@ export class ComputeBonds extends NodeCore {
 
 				// Don't compute bonds between external atoms
 				if(this.enlargementKind === "neighbors" &&
-				   this.addType[i] === 2 &&
-				   this.addType[j] === 2) continue;
+				   this.addType[i] === AddType.outside &&
+				   this.addType[j] === AddType.outside) continue;
 
 				// Never bond hydrogens to each other...
 				// if(atomZi === 1 && atomZj === 1) continue;

@@ -33,7 +33,6 @@ export default defineConfig([
         "src/electron/fingerprint/rollup.config.mjs",
         "src/electron/fingerprint/KDtree.js",
         "proto-test",
-        "src/electron/proto/StructureMatcher.ts"
     ]}, {
     files: [
         "src/**/*.ts",
@@ -378,6 +377,7 @@ export default defineConfig([
         "sonarjs/no-labels": "off",
         "sonarjs/todo-tag": "off",
         "sonarjs/pseudo-random": "off",
+        "sonarjs/no-selector-parameter": "off",
 
         // > ******************* other plugins ***********************
         // "promise/no-return-wrap": "warn",

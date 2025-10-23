@@ -79,8 +79,8 @@ export class PrototypeMatcher extends NodeCore {
 			this.aflowPrototypesLoaded = true;
 		}
 		if(this.enabled && data?.atoms.length) {
-			this.matchPrototype();
-			sendToClient(this.id, "match", {match: this.match});
+			const sts = this.matchPrototype();
+			sendToClient(this.id, "match", sts ? {error: sts, match: ""} : {match: this.match});
 		}
 		else this.match = "";
 	}
@@ -109,22 +109,32 @@ export class PrototypeMatcher extends NodeCore {
 
 	/**
 	 * Do the actual match with the prototypes
+	 *
+	 * @returns Empty string on success, otherwise error message
 	 */
-	private matchPrototype(): void {
+	private matchPrototype(): string {
 
-		if(!this.structure || this.aflowPrototypeLibrary.length === 0) return;
+		if(!this.structure || this.aflowPrototypeLibrary.length === 0) return "";
 
-		const prototypes = findMatchingPrototypes(
-			this.structure,
-			this.aflowPrototypeLibrary,
-			this.lengthTolerance,
-			this.siteTolerance,
-			this.angleTolerance
-		);
+		try {
+			const prototypes = findMatchingPrototypes(
+				this.structure,
+				this.aflowPrototypeLibrary,
+				this.lengthTolerance,
+				this.siteTolerance,
+				this.angleTolerance
+			);
 
-		this.match = prototypes.length === 0 ?
+			// Return the multiple matches separated by a "|"
+			this.match = prototypes.length === 0 ?
 							"" :
-							prototypes.map((entry) => entry.tags.mineral).join(", ");
+							prototypes.map((entry) => entry.tags.mineral).join("|");
+		}
+		catch(error: unknown) {
+			this.match = "";
+			return (error as Error).message;
+		}
+		return "";
 	}
 
 	// > Channel handlers
@@ -166,9 +176,14 @@ export class PrototypeMatcher extends NodeCore {
 			this.aflowPrototypesLoaded = true;
 		}
 		if(this.enabled && this.structure?.atoms.length) {
-			this.matchPrototype();
+			const sts = this.matchPrototype();
+			if(sts) {
+				this.match = "";
+				return {error: sts, match: ""};
+			}
+			return {match: this.match};
 		}
-		else this.match = "";
+		this.match = "";
 
 		return {match: this.match};
 	}
@@ -199,9 +214,14 @@ export class PrototypeMatcher extends NodeCore {
 			this.aflowPrototypesLoaded = true;
 		}
 		if(this.structure?.atoms.length) {
-			this.matchPrototype();
+			const sts = this.matchPrototype();
+			if(sts) {
+				this.match = "";
+				return {error: sts, match: ""};
+			}
+			return {match: this.match};
 		}
-		else this.match = "";
+		this.match = "";
 
 		return {match: this.match};
 	}

@@ -10,18 +10,19 @@
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 
 import {LinearAssignment} from "./LinearAssignment.ts";
+import {isCoordSubsetPbc, latticePointsInSupercell, pbcShortestVectors} from "./PymatgenCoords.ts";
+import {findAllMappings, getLLLmatrices, matrixToLattice, paramsToLattice, reciprocalLatticeLengths} from "./PymatgenLattice.ts";
 import {getComposition, getElements, getReducedStructure, scaleLattice} from "./PymatgenStructure.ts";
-import {addVectors, norm, subtractVectors} from "./Utility.ts";
+import {addVectors, determinant, getFractionalCoords, norm, pbc, subtractVectors} from "./Utility.ts";
 import type {Lattice, SNL} from "./types";
-
-type Mapping = Record<string, unknown>;
+import {inv, multiply} from "mathjs";
 
 interface MatchResult {
     rms: number;
     maxDist: number;
     mask: number[][];
     cost: number;
-    mapping: Mapping;
+    mapping: number[];
 }
 
 interface SupercellResult {
@@ -77,7 +78,7 @@ export class StructureMatcher {
 
 	public ltol: number;
 	public stol: number;
-	public angle_tol: number;
+	public angleTol: number;
 
     /**
         Args:
@@ -85,7 +86,7 @@ export class StructureMatcher {
             stol (float): Site tolerance. Defined as the fraction of the
                 average free length per atom := ( V / Nsites ) ** (1/3)
                 Default is 0.3.
-            angle_tol (float): Angle tolerance in degrees. Default is 5 degrees.
+            angleTol (float): Angle tolerance in degrees. Default is 5 degrees.
             primitive_cell (bool): If true: input structures will be reduced to
                 primitive cells prior to matching. Default to True.
             scale (bool): Input structures are scaled to equivalent volume if
@@ -135,7 +136,7 @@ export class StructureMatcher {
 	) {
 		this.ltol = ltol;
         this.stol = stol;
-        this.angle_tol = angleTol;
+        this.angleTol = angleTol;
         // this._comparator = comparator or SpeciesComparator()
         // this._primitive_cell = primitive_cell
         // this._scale = scale
@@ -319,17 +320,14 @@ export class StructureMatcher {
 
     /**
      * Get mask for matching struct2 to struct1. If struct1 has sites
-        a b c, and fu = 2, assumes supercells of struct2 will be ordered
-        aabbcc (rather than abcabc).
-
-        Returns:
-            mask, struct1 translation indices, struct2 translation index
-
-     * @param struct1
-     * @param struct2
-     * @param fu
-     * @param s1Supercell
-     * @returns
+     * a b c, and fu = 2, assumes supercells of struct2 will be ordered
+     * aabbcc (rather than abcabc).
+     *
+     * @param struct1 - First structure
+     * @param struct2 - Second structure
+     * @param fu - Size supercell
+     * @param s1Supercell - Is supercell
+     * @returns mask, struct1 translation indices, struct2 translation index
      */
     private getMask(
         struct1: SNL,
@@ -453,11 +451,128 @@ export class StructureMatcher {
     }
 
     /**
+     * Yields lattices for s with lengths and angles close to the lattice of target_s. If
+     * supercellSize is specified, the returned lattice will have that number of primitive
+     * cells in it.
+     *
+     * @param targetLattice - Target lattice
+     * @param s - Input structure
+     * @param supercellSize - Number of primitive cells in returned lattice
+     */
+    private* getLattices(
+        targetLattice: Lattice,
+        s: SNL,
+        supercellSize = 1
+    ): Generator<[Lattice, number[][]], void, unknown> {
+
+        const lattices = findAllMappings(s.lattice.matrix,
+            targetLattice.matrix,
+            this.ltol,
+            this.angleTol,
+            true  // skipRotationMatrix
+        );
+
+        // eslint-disable-next-line sonarjs/no-unused-vars
+        for(const [latt, _, scaleM] of lattices) {
+            const det = determinant(scaleM);
+            if(this.isClose(Math.abs(det), supercellSize, 0.5, 0)) {
+                yield [matrixToLattice(latt), scaleM];
+            }
+        }
+    }
+
+    private isClose(
+        a: number,
+        b: number,
+        absTolerance = 1e-9,
+        relativeTolerance = 1e-9
+    ): boolean {
+        // Equivalent to Python's math.isclose
+        return Math.abs(a - b) <= Math.max(absTolerance, relativeTolerance * Math.max(Math.abs(a), Math.abs(b)));
+    }
+
+    private avLat(l1: Lattice, l2: Lattice): Lattice {
+        const a = (l1.a + l2.a)/2;
+        const b = (l1.b + l2.b)/2;
+        const c = (l1.c + l2.c)/2;
+        const alpha = (l1.alpha + l2.alpha)/2;
+        const beta = (l1.beta + l2.beta)/2;
+        const gamma = (l1.gamma + l2.gamma)/2;
+        return paramsToLattice(a, b, c, alpha, beta, gamma);
+    }
+
+    private* scGenerator(
+        s1: SNL,
+        s2: SNL,
+        fu: number
+    ): Generator<SupercellResult> {
+
+        const s2Fc = s2.sites.map((site) => site.abc);
+
+        if(fu === 1) {
+            const cc = s1.sites.map((site) => site.xyz);
+
+            for(const [latt, scM] of this.getLattices(s2.lattice, s1, fu)) {
+
+                let fc = getFractionalCoords(cc, latt.matrix);
+
+                // fc -= np.floor(fc)
+                fc = fc.map((coord) =>
+                    coord.map((value) => value - Math.floor(value))
+                );
+
+                yield {
+                    s1Coords: fc,
+                    s2Coords: s2Fc,
+                    avgLattice: this.avLat(latt, s2.lattice),
+                    supercellMatrix: scM
+                };
+            }
+        }
+        else {
+            const fcInit = s1.sites.map((site) => site.abc);
+
+            for(const [latt, scM] of this.getLattices(s2.lattice, s1, fu)) {
+                // fc = np.dot(fc_init, np.linalg.inv(sc_m))
+                const scMinv = inv(scM as number[][]);
+                let fc = multiply(fcInit, scMinv);
+
+                const lp = latticePointsInSupercell(scM);
+
+                // fc = (fc[:, None, :] + lp[None, :, :]).reshape((-1, 3))
+                const expandedFc: number[][] = [];
+                for(const ff of fc) {
+                    for(const ll of lp) {
+                        expandedFc.push([
+                            ff[0] + ll[0],
+                            ff[1] + ll[1],
+                            ff[2] + ll[2]
+                        ]);
+                    }
+                }
+                fc = expandedFc;
+
+                // fc -= np.floor(fc)
+                fc = fc.map((coord) =>
+                    coord.map((value) => value - Math.floor(value))
+                );
+
+                yield {
+                    s1Coords: fc,
+                    s2Coords: s2Fc,
+                    avgLattice: this.avLat(latt, s2.lattice),
+                    supercellMatrix: scM
+                };
+            }
+        }
+    }
+
+    /**
      * Compute all supercells of one structure close to the lattice of the other
      * If s1_supercell is true, it makes the supercells of struct1, otherwise
      * it makes them of struct2.
      *
-     * @yields s1_coords, s2_coords, average_lattice, supercell_matrix
+     * Yields s1_coords, s2_coords, average_lattice, supercell_matrix
      */
     private* getSupercells(
         struct1: SNL,
@@ -466,96 +581,100 @@ export class StructureMatcher {
         s1Supercell: boolean
     ): Generator<SupercellResult> {
 
-        // FIXME
-        // void struct1;
-        // void struct2;
-        // void fu;
-        // void s1Supercell;
-
-        // yield {
-        //     s1Coords: [],
-        //     s2Coords: [],
-        //     avgLattice: {} as Lattice,
-        //     supercellMatrix: []
-        // };
-
-        const scGenerator = function* (
-            this: StructureComparator,
-            s1: SNL,
-            s2: SNL
-        ): Generator<SupercellResult> {
-      const s2_fc = s2.frac_coords.map((coord) => [...coord]);
-
-      if (fu === 1) {
-        const cc = s1.cart_coords.map(coord => [...coord]);
-
-        for (const [latt, sc_m] of this._get_lattices(s2.lattice, s1, fu)) {
-          let fc = latt.get_fractional_coords(cc);
-
-          // fc -= np.floor(fc)
-          fc = fc.map(coord =>
-            coord.map(val => val - Math.floor(val))
-          );
-
-          yield {
-            s1Coords: fc,
-            s2Coords: s2_fc,
-            avgLattice: avLat(latt, s2.lattice),
-            supercellMatrix: sc_m
-          };
-        }
-      } else {
-        const fc_init = s1.frac_coords.map(coord => [...coord]);
-
-        for(const [latt, sc_m] of this._get_lattices(s2.lattice, s1, fu)) {
-          // fc = np.dot(fc_init, np.linalg.inv(sc_m))
-          const sc_m_inv = matrixInverse(sc_m);
-          let fc = matrixMultiply(fc_init, sc_m_inv);
-
-          const lp = latticePointsInSupercell(sc_m);
-
-          // fc = (fc[:, None, :] + lp[None, :, :]).reshape((-1, 3))
-          const expanded_fc: number[][] = [];
-          for (let i = 0; i < fc.length; i++) {
-            for (let j = 0; j < lp.length; j++) {
-              expanded_fc.push([
-                fc[i][0] + lp[j][0],
-                fc[i][1] + lp[j][1],
-                fc[i][2] + lp[j][2]
-              ]);
-            }
-          }
-          fc = expanded_fc;
-
-          // fc -= np.floor(fc)
-          fc = fc.map((coord) =>
-            coord.map((value) => value - Math.floor(value))
-          );
-
-          yield {
-            s1Coords: fc,
-            s2Coords: s2_fc,
-            avgLattice: avLat(latt, s2.lattice),
-            supercellMatrix: sc_m
-          };
-        }
-      }
-    }.bind(this);
-
         if(s1Supercell) {
-            yield* scGenerator(struct1, struct2);
+            yield* this.scGenerator(struct1, struct2, fu);
         }
         else {
-            for(const result of scGenerator(struct2, struct1)) {
+            for(const result of this.scGenerator(struct2, struct1, fu)) {
                 // Reorder generator output so s1 is still first
                 yield {
-                    s1Coords: result.s2_coords,
-                    s2Coords: result.s1_coords,
-                    avgLattice: result.avg_lattice,
-                    supercellMatrix: result.supercell_matrix
+                    s1Coords: result.s2Coords,
+                    s2Coords: result.s1Coords,
+                    avgLattice: result.avgLattice,
+                    supercellMatrix: result.supercellMatrix
                 };
             }
         }
+    }
+
+    /**
+     *  Find a matching in Cartesian space. Finds an additional
+     *  fractional translation vector to minimize RMS distance.
+     *
+     * @param s1 - Array of fractional coordinates.
+     * @param s2 - Array of fractional coordinates. len(s1) \>= len(s2)
+     * @param avgLattice - Lattice on which to calculate distances
+     * @param mask - 2D array of booleans. mask[i][j] = true indicates
+     *               that s2[i] cannot be matched to s1[j]
+     * @param normalization - Inverse normalization length
+     * @param lllFracTol - tolerance for Lenstra-Lenstra-Lovász lattice basis reduction algorithm
+     * @returns Tuple containing:
+     *          - Distances from s2 to s1, normalized by (V/atom) ^ 1/3
+     *          - Fractional translation vector to apply to s2
+     *          - Mapping from s1 to s2, i.e. s1[mapping[i]] =\> s2[i]
+     */
+    private cartDists(
+        s1: number[][],
+        s2: number[][],
+        avgLattice: Lattice,
+        mask: number[][],
+        normalization: number,
+        lllFracTol?: number[]
+    ): {dist: number[]; tAdj: number[]; mapping: number[]} {
+
+        if(s2.length > s1.length) {
+            throw new Error(`s1.length=${s1.length} must be larger than s2.length=${s2.length}`);
+        }
+        if(mask.length !== s1.length || mask[0].length !== s2.length) {
+            throw new Error("mask has incorrect shape");
+        }
+
+        // vectors are from s2 to s1
+        const {vecs, d2} = pbcShortestVectors(
+            avgLattice,
+            s2,
+            s1,
+            mask,
+            lllFracTol
+        );
+
+        const lin = new LinearAssignment(d2);
+        const sol = lin.solution;
+
+        const shortVecs = sol.map((idx, i) => vecs[i][idx]);
+
+        // eslint-disable-next-line unicorn/no-array-reduce
+        const translation = shortVecs.reduce(
+            (accumulate, vec) => accumulate.map((v, i) => v + vec[i]),
+            Array<number>(shortVecs[0].length).fill(0)
+        ).map((v) => v / shortVecs.length);
+
+        const fTranslation = getFractionalCoords([translation], avgLattice.matrix);
+
+        const d2New = shortVecs.map((vec) =>
+            vec.reduce((sum, value, i) => sum + (value - translation[i]) ** 2, 0)
+        );
+
+        return {
+            dist: d2New.map((d) => Math.sqrt(d) * normalization),
+            tAdj: fTranslation[0],
+            mapping: sol
+        };
+    }
+
+    /**
+     * Get true if a matching exists between s2 and s2
+        under frac_tol. s2 should be a subset of s1.
+     */
+    private cmpFstruct(s1: number[][], s2: number[][], fracTol: number[], mask: number[][]): boolean {
+
+        if(s2.length > s1.length) {
+            throw Error(`${s1.length} must be larger than ${s2.length}`);
+        }
+        if(mask[0].length !== s1.length || mask.length !== s2.length) {
+            throw Error(`mask has incorrect shape (mask: ${mask.length}x${mask[0].length}, s1: ${s1.length}x3, s2: ${s2.length}x3)`);
+        }
+        return isCoordSubsetPbc(s2, s1, fracTol, mask);
     }
 
     /**
@@ -597,41 +716,42 @@ export class StructureMatcher {
             return null;
         }
 
-        let bestMatch: [number, number[], number[][], number[], Mapping] | null = null;
+        let bestMatch: [number, number[], number[][], number[], number[]] | null = null;
 
-    // loop over all lattices
-    for(const {s1Coords: s1fc, s2Coords: s2fc, avgLattice: avgL, supercellMatrix: scM} of this.getSupercells(struct1, struct2, fu, s1Supercell)) {
-        // compute fractional tolerance
-        const normalization = Math.pow(s1fc.length / avgL.volume, 1 / 3);
-        const invAbc = avgL.reciprocalLattice.abc;
-        const fracTol = invAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
+        // loop over all lattices
+        for(const {s1Coords: s1fc, s2Coords: s2fc, avgLattice: avgL, supercellMatrix: scM} of this.getSupercells(struct1, struct2, fu, s1Supercell)) {
+            // compute fractional tolerance
+            const normalization = Math.pow(s1fc.length / avgL.volume, 1 / 3);
+            const invAbc = reciprocalLatticeLengths(avgL.matrix);
+            const fracTol = invAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
 
-        // loop over all translations
-        for(const s1i of s1TInds) {
-            const t = subtractVectors(s1fc[s1i], s2fc[s2TInd]);
-            const tS2fc = s2fc.map((coord: number[]) => addVectors(coord, t));
+            // loop over all translations
+            for(const s1i of s1TInds) {
+                const t = subtractVectors(s1fc[s1i], s2fc[s2TInd]);
+                const tS2fc = s2fc.map((coord: number[]) => addVectors(coord, t));
 
-            if(this._cmpFstruct(s1fc, tS2fc, fracTol, mask)) {
-                const invLllAbc = avgL.getLllReducedLattice().reciprocalLattice.abc;
-                const lllFracTol = invLllAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
-                const {dist, tAdj, mapping} = this._cartDists(s1fc, tS2fc, avgL, mask, normalization, lllFracTol);
+                if(this.cmpFstruct(s1fc, tS2fc, fracTol, mask)) {
+                    const reducedLatticeMatrix = getLLLmatrices(avgL).matrix;
+                    const invLllAbc = reciprocalLatticeLengths(reducedLatticeMatrix);
+                    const lllFracTol = invLllAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
+                    const {dist, tAdj, mapping} = this.cartDists(s1fc, tS2fc, avgL, mask, normalization, lllFracTol);
 
-                const value = useRms
-                    ? norm(dist) / Math.sqrt(dist.length)
-                    : Math.max(...dist);
+                    const value = useRms
+                        ? norm(dist) / Math.sqrt(dist.length)
+                        : Math.max(...dist);
 
-                if(bestMatch === null || value < bestMatch[0]) {
-                    const totalT = addVectors(t, tAdj);
-                    const adjustedT = totalT.map((v: number) => v - Math.round(v));
-                    bestMatch = [value, dist, scM, adjustedT, mapping];
+                    if(bestMatch === null || value < bestMatch[0]) {
+                        const totalT = addVectors(t, tAdj);
+                        const adjustedT = totalT.map((v) => pbc(v));
+                        bestMatch = [value, dist, scM, adjustedT, mapping];
 
-                    if((breakOnMatch || value < 1e-5) && value < this.stol) {
-                        return this.formatMatchResult(bestMatch);
+                        if((breakOnMatch || value < 1e-5) && value < this.stol) {
+                            return this.formatMatchResult(bestMatch);
+                        }
                     }
                 }
             }
         }
-    }
 
         if(bestMatch && bestMatch[0] < this.stol) {
             return this.formatMatchResult(bestMatch);
@@ -641,7 +761,7 @@ export class StructureMatcher {
     }
 
     // Helper method to format the result
-    private formatMatchResult(match: [number, number[], number[][], number[], Mapping]): MatchResult {
+    private formatMatchResult(match: [number, number[], number[][], number[], number[]]): MatchResult {
         return {
             rms: match[0],
             maxDist: match[0],

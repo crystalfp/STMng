@@ -25,6 +25,7 @@ const LineType = {
     atoms:    6,
 	exit:     7,
 } as const;
+type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
 
 export class ReaderGAUSSIAN implements ReaderImplementation {
 
@@ -40,7 +41,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
 
-		let lineType: number = LineType.comment1;
+		let lineType: Step = LineType.comment1;
 		let orbitalsPresent = false;
 		let natoms = 0;
 		let idxBasis = 0;

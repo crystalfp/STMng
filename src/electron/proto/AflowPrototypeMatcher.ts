@@ -8,14 +8,13 @@
  */
 // import {createReadStream} from "node:fs";
 // import {createGunzip} from "node:zlib";
+import {matrixToLattice} from "./PymatgenLattice";
 import {getPrimitiveStructure, getReducedStructure} from "./PymatgenStructure";
-import {cellAngle, calculateVolume} from "./Utility";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {getAtomicSymbol} from "../modules/AtomData";
-import type {Structure} from "../../types";
-import type {Prototype, /* LibraryEntry, */ SNL, Lattice, Site, PrototypeEntry} from "./types";
-
 import {StructureMatcher} from "./StructureMatcher";
+import type {Structure} from "../../types";
+import type {Prototype, /* LibraryEntry, */ SNL, Site, PrototypeEntry} from "./types";
 
 /**
  *  This class will match structures to their crystal prototypes, and will
@@ -71,6 +70,7 @@ export class AflowPrototypeMatcher {
 	 * @param initialStol - Site tolerance
 	 * @param initialAngleTol - Angle tolerance
 	 */
+		/*
 	oldConstructor(initialLtol = 0.2,
         		   initialStol = 0.3,
         		   initialAngleTol = 5): void {
@@ -78,7 +78,7 @@ export class AflowPrototypeMatcher {
 		void initialLtol;
 		void initialStol;
 		void initialAngleTol;
-		/*
+
 		this.initialLtol = initialLtol;
 		this.initialStol = initialStol;
 		this.initialAngleTol = initialAngleTol;
@@ -105,8 +105,8 @@ export class AflowPrototypeMatcher {
 				// this.aflowPrototypeLibrary.push({snl: primitiveStructure, dct});
 			}
 		});
-		*/
 	}
+		*/
 
 	private structureToSNL(structure: Structure): SNL | undefined {
 
@@ -121,16 +121,7 @@ export class AflowPrototypeMatcher {
 			[basis[6], basis[7], basis[8]]
 		];
 
-		const lattice: Lattice = {
-			matrix,
-			a: Math.hypot(matrix[0][0], matrix[0][1], matrix[0][2]),
-			b: Math.hypot(matrix[1][0], matrix[1][1], matrix[1][2]),
-			c: Math.hypot(matrix[2][0], matrix[2][1], matrix[2][2]),
-			alpha: cellAngle(matrix[1], matrix[2]),
-			beta:  cellAngle(matrix[0], matrix[2]),
-			gamma: cellAngle(matrix[0], matrix[1]),
-			volume: calculateVolume(matrix),
-		};
+		const lattice = matrixToLattice(matrix);
 
 		const fr = cartesianToFractionalCoordinates(structure);
 
@@ -196,7 +187,7 @@ export class AflowPrototypeMatcher {
         while(prototypes.length > 1) {
             sm.ltol *= 0.8;
             sm.stol *= 0.8;
-            sm.angle_tol *= 0.8;
+            sm.angleTol *= 0.8;
             prototypes = this.matchPrototype(sm, primitiveStructure);
             if(sm.ltol < 0.01) break;
 		}
@@ -224,10 +215,5 @@ export const findMatchingPrototypes = (
 
 	const afpm = new AflowPrototypeMatcher(preprocessedPrototypes,
 										   initialLtol, initialStol, initialAngleTol);
-	const prototypes = afpm.getPrototypes(structure);
-
-	console.log("matchPrototype", preprocessedPrototypes.length,
-							initialLtol, initialStol, initialAngleTol);
-
-	return prototypes;
+	return afpm.getPrototypes(structure);
 };

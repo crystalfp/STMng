@@ -7,6 +7,7 @@
  * @since 2025-09-24
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
+import {inv} from "mathjs";
 import {extractBasis} from "../modules/Helpers";
 import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         copyMatrix, reciprocaCrystallographyclLatticeLengths,
@@ -25,6 +26,7 @@ import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         solveLinearSystem,
         determinant,
         calculateVolume} from "./Utility.ts";
+import type {Lattice} from "./types.ts";
 
 /**
  * Perform a Lenstra-Lenstra-Lovasz lattice basis reduction to obtain a
@@ -534,7 +536,7 @@ function getPointsInSphere(
 
             None is returned if no matches are found.
 */
-function* findAllMappings(
+export function* findAllMappings(
     lattice: number[][],
     otherLattice: number[][],
     ltol = 1e-5,
@@ -889,4 +891,95 @@ export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number
     }
 
     throw new Error("Can't find niggli");
+};
+
+/**
+ * Create a Lattice starting from its matrix
+ *
+ * @param matrix - Lattice matrix
+ * @returns A full Pymatgen Lattice
+ */
+export const matrixToLattice = (matrix: number[][]): Lattice => {
+	return {
+			matrix,
+			a: Math.hypot(matrix[0][0], matrix[0][1], matrix[0][2]),
+			b: Math.hypot(matrix[1][0], matrix[1][1], matrix[1][2]),
+			c: Math.hypot(matrix[2][0], matrix[2][1], matrix[2][2]),
+			alpha: cellAngle(matrix[1], matrix[2]),
+			beta:  cellAngle(matrix[0], matrix[2]),
+			gamma: cellAngle(matrix[0], matrix[1]),
+			volume: calculateVolume(matrix),
+    };
+};
+
+/**
+ * Create a Lattice starting from the unit cell parameters
+ *
+ * @param a - Basis vector a
+ * @param b - Basis vector b
+ * @param c - Basis vector c
+ * @param alpha - Unit cell angle alpha
+ * @param beta - Unit cell angle beta
+ * @param gamma - Unit cell angle gamma
+ * @returns The corresponding Pymatgen Lattice
+ */
+export const paramsToLattice = (a: number, b: number, c: number,
+                                alpha: number, beta: number, gamma: number): Lattice => {
+
+    const ll = extractBasis(a, b, c, alpha, beta, gamma);
+
+    const matrix = [
+        [ll[0], ll[1], ll[2]],
+        [ll[3], ll[4], ll[5]],
+        [ll[6], ll[7], ll[8]]
+    ];
+
+    return {
+        matrix,
+        a,
+        b,
+        c,
+        alpha,
+        beta,
+        gamma,
+        volume: calculateVolume(matrix)
+    };
+};
+
+/**
+ * Compute the reciprocal cell vectors lengths
+ *
+ * @param matrix - The Pymatgen Lattice matrix
+ * @returns Lengths of the reciprocal cell vectors
+ */
+export const reciprocalLatticeLengths = (matrix: number[][]): number[] => {
+
+	const invMat = inv(matrix);
+
+    const abc = [0, 0, 0];
+    for(let row=0; row < 3; ++row) {
+        const aa = invMat[0][row];
+        const bb = invMat[1][row];
+        const cc = invMat[2][row];
+
+        abc[row] = Math.hypot(aa, bb, cc) * 2 * Math.PI;
+    }
+
+    return abc;
+};
+
+/**
+ * Compute matrices from LLL reduction
+ *
+ * @param lattice - Lattice for which the LLL matrices should be computed
+ * @returns The LLL lattice matrix and
+ *          the mapping between the original lattice and the LLL reduced lattice
+ */
+export const getLLLmatrices = (lattice: Lattice): {matrix: number[][]; inverseMapping: number[][]} => {
+
+    const matrices = computeLLL(lattice.matrix);
+    return {
+        matrix: matrices[0],
+        inverseMapping: inv(matrices[1])
+    };
 };
