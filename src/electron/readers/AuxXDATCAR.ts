@@ -13,12 +13,11 @@ import type {Structure} from "@/types";
 
 /** Line read type */
 const LineType = {
-	__proto__: undefined,
     header:    0,
     separator: 1,
     position:  2,
 } as const;
-type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
+type Step = (typeof LineType)[keyof typeof LineType];
 
 /**
  * Read the auxiliary file XDATCAR

@@ -74,7 +74,6 @@ const MAX_ATOMS_FOR_BONDS = 1_000;
 
 /** Bond type values */
 const BondType = {
-	__proto__: undefined,
     normal: 	0,
     hydrogen:   1,
     invalid:   99
@@ -82,13 +81,12 @@ const BondType = {
 
 /** Add type values 1: atom in unit cell; 2: atom outside unit cell */
 const AddType = {
-	__proto__: undefined,
 	removed: -1,
 	inside:   1,
 	outside:  2,
 	added:   22
 } as const;
-type AddKind = NonNullable<(typeof AddType)[keyof typeof AddType]>;
+type AddKind = (typeof AddType)[keyof typeof AddType];
 
 export class ComputeBonds extends NodeCore {
 

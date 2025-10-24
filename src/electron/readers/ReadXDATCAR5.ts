@@ -18,7 +18,6 @@ import type {Structure, Atom, PositionType,
 
 /** Line read type */
 const LineType = {
-	__proto__: undefined,
     comment:   0,
     scale:     1,
     basis:     2,
@@ -28,7 +27,7 @@ const LineType = {
 	separator: 6,
 	exit:      7
 } as const;
-type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
+type Step = (typeof LineType)[keyof typeof LineType];
 
 
 export class ReaderXDATCAR5 implements ReaderImplementation {

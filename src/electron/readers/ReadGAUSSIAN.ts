@@ -15,7 +15,6 @@ import type {Structure, Atom,
 
 /** Line read type */
 const LineType = {
-	__proto__: undefined,
     comment1: 0,
     comment2: 1,
 	origin:   2,
@@ -25,7 +24,7 @@ const LineType = {
     atoms:    6,
 	exit:     7,
 } as const;
-type Step = NonNullable<(typeof LineType)[keyof typeof LineType]>;
+type Step = (typeof LineType)[keyof typeof LineType];
 
 export class ReaderGAUSSIAN implements ReaderImplementation {
 
