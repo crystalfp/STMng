@@ -81,7 +81,7 @@ process.on("unhandledRejection", (event: PromiseRejectionEvent): void => {
 
 // Initialize the channels between main process and client
 setupChannelPreferences();
-setupChannelVersions();
+setupChannelVersions(version);
 setupChannelFileSelector();
 setupChannelProject();
 setupChannelLogFile();
