@@ -23,8 +23,7 @@
     "src/electron/fingerprint/rollup.config.mjs",
     "src/electron/fingerprint/KDtree.js",
     "save/**",
-    "proto/PymatgenLattice - Copy.ts",
-    "proto/originalCalculateLLL.ts"
+    "proto-test/**"
   ],
   "rules": {
     "for-direction": "error",

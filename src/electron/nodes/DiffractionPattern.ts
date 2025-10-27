@@ -294,8 +294,7 @@ export class DiffractionPattern extends NodeCore {
 			scale = maxIntensity > 0 ? 100/maxIntensity : 1;
 		}
 
-		const out: ChartCoordinate[] = [];
-		out.push({x: min, y: 0});
+		const out: ChartCoordinate[] = [{x: min, y: 0}];
 		for(let i=0; i < len; ++i) {
 			const mean = xy.twoTheta[i];
 			const peak = xy.intensity[i]*scale;

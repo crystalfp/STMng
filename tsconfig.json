@@ -43,8 +43,7 @@
     "troika-three-text.d.ts",
     "src/**/*.ts",
     "src/**/*.vue",
-    "package.json",
-    "src/electron/proto/types.ts"
+    "package.json"
   ],
   "exclude": [
     "src/cpp/spglib*/**/*.ts"

@@ -487,21 +487,3 @@ export const getComposition = (structure: SNL): Map<string, number> => {
     }
     return composition;
 };
-
-export const getFractionalCoordinates = (structure: SNL): number[][] => {
-
-    const coords: number[][] = [];
-    for(const site of structure.sites) {
-        coords.push(site.abc);
-    }
-    return coords;
-};
-
-export const getCartesianCoordinates = (structure: SNL): number[][] => {
-
-    const coords: number[][] = [];
-    for(const site of structure.sites) {
-        coords.push(site.xyz);
-    }
-    return coords;
-};

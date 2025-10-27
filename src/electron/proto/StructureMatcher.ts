@@ -1,5 +1,5 @@
 /**
- * Porting of StructureMatcher class from
+ * Porting of the StructureMatcher class from
  * pymatgen/analysis/structure_matcher.py
  *
  * @packageDocumentation
@@ -9,14 +9,19 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 
-import {LinearAssignment} from "./LinearAssignment.ts";
-import {isCoordSubsetPbc, latticePointsInSupercell, pbcShortestVectors} from "./PymatgenCoords.ts";
-import {findAllMappings, getLLLmatrices, matrixToLattice, paramsToLattice, reciprocalLatticeLengths} from "./PymatgenLattice.ts";
-import {getComposition, getElements, getReducedStructure, scaleLattice} from "./PymatgenStructure.ts";
-import {addVectors, determinant, getFractionalCoords, norm, pbc, subtractVectors} from "./Utility.ts";
-import type {Lattice, SNL} from "./types";
 import {inv, multiply} from "mathjs";
+import {LinearAssignment} from "./LinearAssignment.ts";
+import {isCoordSubsetPbc, latticePointsInSupercell,
+        pbcShortestVectors} from "./PymatgenCoords.ts";
+import {findAllMappings, getLLLmatrices, matrixToLattice, paramsToLattice,
+        reciprocalLatticeLengths} from "./PymatgenLattice.ts";
+import {getComposition, getElements, getReducedStructure,
+        scaleLattice} from "./PymatgenStructure.ts";
+import {addVectors, determinant, getFractionalCoords, norm, pbc,
+        subtractVectors} from "./Utility.ts";
+import type {Lattice, SNL} from "./types";
 
+/** Result of structure matching */
 interface MatchResult {
     rms: number;
     maxDist: number;
@@ -121,37 +126,32 @@ export class StructureMatcher {
                 except for certain ions, e.g. Li-ion intercalation frameworks.
                 This is more useful than allow_subset because it allows better
                 control over what species are ignored in the matching.
-    */
+     * @param ltol - Fractional length tolerance
+     * @param stol - Site tolerance. Defined as the fraction of the
+                average free length per atom := ( V / Nsites ) ** (1/3)
+     * @param angleTol - Angle tolerance in degrees
+     */
 	constructor(
 		ltol = 0.2,
         stol = 0.3,
         angleTol = 5,
-        // primitiveCell = true,
-        // scale = true,
-        // attemptSupercell = false,
-        // allowSubset = false,
-        // comparator: AbstractComparator | None = None,
-        // supercellSize: "num_sites" | "num_atoms" | "volume" = "num_sites",
-        // ignoredSpecies = [],
 	) {
 		this.ltol = ltol;
         this.stol = stol;
         this.angleTol = angleTol;
-        // this._comparator = comparator or SpeciesComparator()
-        // this._primitive_cell = primitive_cell
-        // this._scale = scale
-        // this._supercell = attempt_supercell
-        // this._supercell_size = supercell_size
-        // this._subset = allow_subset
-        // this._ignored_species = ignored_species
 	}
 
     /**
      * Rescales, finds the reduced structures (primitive and niggli),
         and finds fu, the supercell size to make struct1 comparable to s2.
-        If skip_structure_reduction is True, skip to get reduced structures
+     *
+     * @param struct1 - First structure to prepare
+     * @param struct2 - Second structure to prepare
+     * @param skipStructureReduction - If it is True, skip to get reduced structures
         (by primitive transformation and niggli reduction).
         This option is useful for fitting a set of structures several times.
+     * @returns Structure made comparable, the supercell size fu to make struct1 comparable to s2
+        and if structure1 has a supercell
      */
     private preprocess(struct1: SNL, struct2: SNL, skipStructureReduction = false):
         {struct1: SNL; struct2: SNL; fu: number; s1Supercell: boolean} {
@@ -200,20 +200,43 @@ export class StructureMatcher {
         return matches;
 	}
 
+    /**
+     *  Defines a hash to group structures. This allows structures to be
+        grouped efficiently for comparison. The hash must be invariant under
+        supercell creation. (e.g. composition is not a good hash, but
+        fractional_composition might be). Reduced formula is not a good formula,
+        due to weird behavior with fractional occupancy.
+
+        Composition is used here instead of structure because for anonymous
+        matches it is much quicker to apply a substitution to a composition
+        object than a structure object.
+     *
+     * @param composition - Composition of the structure
+     * @returns The structure has as a string
+     */
     private getHash(composition: Map<string, number>): string {
 
         let natoms = 0;
         for(const count of composition.values()) {
             natoms += count;
         }
-        let hash = "";
+
+        const parts: string[] = [];
         for(const [k, v] of composition) {
             const count = (v/natoms).toFixed(8);
-            hash += `${k}${count}`;
+            parts.push(`${k}${count}`);
         }
-        return hash;
+
+        return parts.toSorted((a, b) => a.localeCompare(b)).join("");
     }
 
+    /**
+     * Replace species
+     *
+     * @param mappedStruct - Structure on which the in place swapping should happens
+     * @param spMapping - Species to swap. Species can be elements too. e.g.
+                (Element("Li"): Element("Na")) performs a Li for Na substitution.
+     */
     private replaceSpecies(mappedStruct: SNL, spMapping: Map<string, string>): void {
 
         for(const site of mappedStruct.sites) {
@@ -293,16 +316,19 @@ export class StructureMatcher {
 
             if(match) {
                 matches.push([spMapping, match]);
-                if(singleMatch) {
-                    break;
-                }
+
+                if(singleMatch) break;
             }
         }
-
         return matches;
     }
 
-    // Helper method to generate permutations
+    /**
+     * Helper method to generate permutations
+     *
+     * @param list - List of elements to be permutate
+     * @returns The various permutations
+     */
     private* permutations<T>(list: T[]): Generator<T[]> {
 
         if(list.length <= 1) {
@@ -340,59 +366,38 @@ export class StructureMatcher {
         const s2SpeciesAndOccu = getComposition(struct2);
 
         // Initialize 3D mask array
-        const mask: boolean[][][] = Array(s2SpeciesAndOccu.size)
+        const mask: boolean[][][] = Array(struct2.sites.length)
             .fill(null)
             .map(() =>
-            Array(s1SpeciesAndOccu.size)
+            Array(struct1.sites.length)
                 .fill(null)
                 .map(() => Array<boolean>(fu).fill(false))
             );
 
         // Group struct2 species
         const inner: [[string, number], [number, number]][] = [];
-        let currentSp2 = null;
-        let groupStart = 0;
-
-        for(let i = 0; i < s2SpeciesAndOccu.size; i++) {
-            const sp2 = [...s2SpeciesAndOccu][i];
-
-            if(currentSp2 === null || !this.areSpeciesEqual(currentSp2, sp2)) {
-                if(currentSp2 !== null) {
-                    inner.push([currentSp2, [groupStart, i - 1]]);
-                }
-                currentSp2 = sp2;
-                groupStart = i;
-            }
-        }
-        if(currentSp2 !== null) {
-            inner.push([currentSp2, [groupStart, s2SpeciesAndOccu.size - 1]]);
+        let start = 0;
+        for(const [k1, v1] of s2SpeciesAndOccu) {
+            inner.push([[k1, v1], [start, start + v1]]);
+            start += v1;
         }
 
         // Group struct1 species and fill mask
-        currentSp2 = null;
-        let group2Start = 0;
+        start = 0;
+        for(const [k2, v2] of s1SpeciesAndOccu) {
+            const group2: [[string, number], [number, number]] = [[k2, v2], [start, start + v2]];
+            start += v2;
 
-        for(let i = 0; i <= s1SpeciesAndOccu.size; i++) {
-            const sp1 = i < s1SpeciesAndOccu.size ? [...s1SpeciesAndOccu][i] : null;
+            for(const [sp2, group1] of inner) {
 
-            if(currentSp2 === null || sp1 === null || !this.areSpeciesEqual(currentSp2, sp1)) {
-                if(currentSp2 !== null) {
-                    const group2: [number, number] = [group2Start, i - 1];
+                const value = sp2[0] !== k2;
 
-                    for(const [sp2, group1] of inner) {
-                        const value = currentSp2[0] !== sp2[0];
-                        for(let j = group1[0]; j <= group1[1]; j++) {
-                            for(let k = group2[0]; k <= group2[1]; k++) {
-                                for(let l = 0; l < fu; l++) {
-                                    mask[j][k][l] = value;
-                                }
-                            }
+                for(let j = group1[0]; j < group1[1]; ++j) {
+                    for(let k = group2[1][0]; k < group2[1][1]; ++k) {
+                        for(let l = 0; l < fu; ++l) {
+                            mask[j][k][l] = value;
                         }
                     }
-                }
-                if(sp1 !== null) {
-                    currentSp2 = sp1;
-                    group2Start = i;
                 }
             }
         }
@@ -441,13 +446,7 @@ export class StructureMatcher {
             }
             return [intMask, filteredInds, idx];
         }
-
         return [intMask, inds, idx];
-    }
-
-    // Helper function to compare species
-    private areSpeciesEqual(sp1: [string, number], sp2: [string, number]): boolean {
-        return sp1[0] === sp2[0] && sp1[1] === sp2[1];
     }
 
     /**
@@ -481,6 +480,15 @@ export class StructureMatcher {
         }
     }
 
+    /**
+     * Check if two numbers are close each other
+     *
+     * @param a - First number
+     * @param b - Second number
+     * @param absTolerance - Required absolute tolerance
+     * @param relativeTolerance - Relative tolerance
+     * @returns If they are close
+     */
     private isClose(
         a: number,
         b: number,
@@ -491,6 +499,13 @@ export class StructureMatcher {
         return Math.abs(a - b) <= Math.max(absTolerance, relativeTolerance * Math.max(Math.abs(a), Math.abs(b)));
     }
 
+    /**
+     * Find the average lattice between the two provided
+     *
+     * @param l1 - First lattice
+     * @param l2 - Second lattice
+     * @returns Average lattice
+     */
     private avLat(l1: Lattice, l2: Lattice): Lattice {
         const a = (l1.a + l2.a)/2;
         const b = (l1.b + l2.b)/2;
@@ -501,6 +516,14 @@ export class StructureMatcher {
         return paramsToLattice(a, b, c, alpha, beta, gamma);
     }
 
+    /**
+     * Supercell generator
+     *
+     * @param s1 - Test structure
+     * @param s2 - Structure under test
+     * @param fu - Repetitions in the supercell
+     * @returns The supercell
+     */
     private* scGenerator(
         s1: SNL,
         s2: SNL,
@@ -569,10 +592,13 @@ export class StructureMatcher {
 
     /**
      * Compute all supercells of one structure close to the lattice of the other
-     * If s1_supercell is true, it makes the supercells of struct1, otherwise
-     * it makes them of struct2.
      *
-     * Yields s1_coords, s2_coords, average_lattice, supercell_matrix
+     * @param struct1 - Test structure
+     * @param struct2 - Structure under test
+     * @param fu - Repetitions in the supercell
+     * @param s1Supercell - If true, it makes the supercells of struct1, otherwise
+     * it makes them of struct2.
+     * @returns Yields s1_coords, s2_coords, average_lattice, supercell_matrix
      */
     private* getSupercells(
         struct1: SNL,
@@ -760,7 +786,12 @@ export class StructureMatcher {
         return null;
     }
 
-    // Helper method to format the result
+    /**
+     * Helper method to format the result
+     *
+     * @param match - Match values
+     * @returns - Formatted match values
+     */
     private formatMatchResult(match: [number, number[], number[][], number[], number[]]): MatchResult {
         return {
             rms: match[0],

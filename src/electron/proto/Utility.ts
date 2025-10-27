@@ -6,6 +6,8 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-09-24
  */
+import {inv, multiply} from "mathjs";
+
 /**
  * Create zero matrix
  *
@@ -187,33 +189,10 @@ export const swapColumns = (matrix: number[][], col1: number, col2: number): voi
 export const leastSquares = (a: number[][], b: number[][]): number[][] => {
 
 	const aT = transpose(a);
-    const aTa = matrixMultiply(aT, a);
-    const aTb = matrixMultiply(aT, b);
-
-    // This is a simplified inverse calculation for small matrices
-    // In production, you'd want to use a proper linear algebra library
-    const aTaInv = matrixInverse(aTa);
-    return matrixMultiply(aTaInv, aTb);
-};
-
-const matrixInverse = (matrix: number[][]): number[][] => {
-    // Simplified 2x2 matrix inverse implementation
-    // For larger matrices or production code, use a proper linear algebra library
-    const n = matrix.length;
-    if(n === 2) {
-        const det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-        if(Math.abs(det) < 1e-10) {
-            throw new Error("Matrix is singular");
-        }
-        return [
-            [matrix[1][1] / det, -matrix[0][1] / det],
-            [-matrix[1][0] / det, matrix[0][0] / det]
-        ];
-    }
-
-    // For larger matrices, you'd need Gaussian elimination or LU decomposition
-    // This is a placeholder - use a proper math library in production
-    throw new Error("Matrix inversion not implemented for matrices larger than 2x2");
+    const aTa = multiply(aT, a);
+    const aTb = multiply(aT, b);
+    const aTaInv = inv(aTa);
+    return multiply(aTaInv, aTb);
 };
 
 /**
@@ -236,7 +215,7 @@ export const determinant = (matrix: number[][]): number => {
  * @param lattice - Basis matrix
  * @returns Inverted basis matrix
  */
-export const invertLattice = (lattice: number[][]): number[][] => {
+const invertLattice = (lattice: number[][]): number[][] => {
 
 	// Compute the determinant of the basis matrix
 	const det = determinant(lattice);
@@ -259,7 +238,12 @@ export const invertLattice = (lattice: number[][]): number[][] => {
 	];
 };
 
-// Note: it is the crystallographyc reciprocal lattice
+/**
+ * Compute the crystallographyc reciprocal lattice
+ *
+ * @param lattice - Lattice matrix
+ * @returns - Crystallographyc reciprocal lattice
+ */
 export const reciprocaCrystallographyclLatticeLengths = (lattice: number[][]): number[] => {
 
     const m = invertLattice(lattice);
@@ -271,7 +255,13 @@ export const reciprocaCrystallographyclLatticeLengths = (lattice: number[][]): n
     ];
 };
 
-// Helper method to solve linear system Ax = b
+/**
+ * Helper method to solve 3x3 linear system Ax = b
+ *
+ * @param A - Coefficient matrix
+ * @param b - Constants matrix
+ * @returns Solution of Ax = b
+ */
 export const solveLinearSystem = (A: number[][], b: number[][]): number[][] | undefined => {
 
     // Simple 3x3 matrix inverse and multiplication
@@ -280,31 +270,26 @@ export const solveLinearSystem = (A: number[][], b: number[][]): number[][] | un
 
     // Calculate inverse matrix
     const invA: number[][] = [
-      [
-        (A[1][1] * A[2][2] - A[1][2] * A[2][1]) / det,
-        (A[0][2] * A[2][1] - A[0][1] * A[2][2]) / det,
-        (A[0][1] * A[1][2] - A[0][2] * A[1][1]) / det
-      ],
-      [
-        (A[1][2] * A[2][0] - A[1][0] * A[2][2]) / det,
-        (A[0][0] * A[2][2] - A[0][2] * A[2][0]) / det,
-        (A[0][2] * A[1][0] - A[0][0] * A[1][2]) / det
-      ],
-      [
-        (A[1][0] * A[2][1] - A[1][1] * A[2][0]) / det,
-        (A[0][1] * A[2][0] - A[0][0] * A[2][1]) / det,
-        (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / det
-      ]
+        [
+            (A[1][1] * A[2][2] - A[1][2] * A[2][1]) / det,
+            (A[0][2] * A[2][1] - A[0][1] * A[2][2]) / det,
+            (A[0][1] * A[1][2] - A[0][2] * A[1][1]) / det
+        ],
+        [
+            (A[1][2] * A[2][0] - A[1][0] * A[2][2]) / det,
+            (A[0][0] * A[2][2] - A[0][2] * A[2][0]) / det,
+            (A[0][2] * A[1][0] - A[0][0] * A[1][2]) / det
+        ],
+        [
+            (A[1][0] * A[2][1] - A[1][1] * A[2][0]) / det,
+            (A[0][1] * A[2][0] - A[0][0] * A[2][1]) / det,
+            (A[0][0] * A[1][1] - A[0][1] * A[1][0]) / det
+        ]
     ];
 
     // Multiply invA * b
-    return matrixMultiply(invA, b);
+    return multiply(invA, b);
 };
-
-// const crossProduct = (a: number[], b: number[]): number[] => {
-
-//     return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
-// };
 
 /**
  * Compute cell volume
@@ -334,6 +319,10 @@ export const cellAngle = (v1: number[], v2: number[]): number => {
 
 /**
  * Convert fractional coordinates to cartesian coordinates
+ *
+ * @param fracPoints - Fractional coordinates
+ * @param lattice - Basis matrix
+ * @returns - Cartesian coordinates
  */
 export const getCartesianCoords = (fracPoints: number[][], lattice: number[][]): number[][] => {
 
@@ -350,6 +339,13 @@ export const getCartesianCoords = (fracPoints: number[][], lattice: number[][]):
     return out;
 };
 
+/**
+ * Convert cartesian coordinates to fractional coordinates
+ *
+ * @param cartesianPoints - Cartesian coordinates
+ * @param lattice - Basis matrix
+ * @returns Fractional coordinates
+ */
 export const getFractionalCoords = (cartesianPoints: number[][], lattice: number[][]): number[][] => {
 
     const fractionalCoords: number[][] = [];
@@ -358,15 +354,23 @@ export const getFractionalCoords = (cartesianPoints: number[][], lattice: number
 
     for(const point of cartesianPoints) {
 
-        fractionalCoords.push([point[0]*inverse[0][0] + point[1]*inverse[1][0] + point[2]*inverse[2][0],
-							   point[0]*inverse[0][1] + point[1]*inverse[1][1] + point[2]*inverse[2][1],
-							   point[0]*inverse[0][2] + point[1]*inverse[1][2] + point[2]*inverse[2][2]]);
+        fractionalCoords.push([
+            point[0]*inverse[0][0] + point[1]*inverse[1][0] + point[2]*inverse[2][0],
+			point[0]*inverse[0][1] + point[1]*inverse[1][1] + point[2]*inverse[2][1],
+			point[0]*inverse[0][2] + point[1]*inverse[1][2] + point[2]*inverse[2][2]
+        ]);
 	}
 
 	return fractionalCoords;
 };
 
-
+/**
+ * Generate range of values
+ *
+ * @param start - Start value
+ * @param end - End value (excluded)
+ * @returns - Array of integers from start to end
+ */
 export const range = (start: number, end: number): number[] => {
 
     const result: number[] = [];

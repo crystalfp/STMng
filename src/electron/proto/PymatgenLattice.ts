@@ -39,8 +39,8 @@ import type {Lattice} from "./types.ts";
  * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-export const computeLLL = (basis: number[][],
-                           delta = 0.75): [number[][], number[][]] => {
+const computeLLL = (basis: number[][],
+                    delta = 0.75): [number[][], number[][]] => {
 
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
@@ -262,7 +262,7 @@ interface NeighborResult {
  * @param returnFcoords - whether to return fractional coords when pbc is set
  * @returns Array of arrays of neighbor results
  */
-export function getPointsInSpheres(
+function getPointsInSpheres(
   allCoords: number[][],
   centerCoords: number[][],
   r: number,

@@ -14,7 +14,13 @@ import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helper
 import {getAtomicSymbol} from "../modules/AtomData";
 import {StructureMatcher} from "./StructureMatcher";
 import type {Structure} from "../../types";
-import type {Prototype, /* LibraryEntry, */ SNL, Site, PrototypeEntry} from "./types";
+import type {Prototype, SNL, Site, PrototypeEntry} from "./types";
+
+// interface LibraryEntry {
+// 	snl: SNL;
+// 	about: Record<string, unknown>;
+// 	tags: Record<string, string>;
+// }
 
 /**
  *  This class will match structures to their crystal prototypes, and will
@@ -30,7 +36,7 @@ import type {Prototype, /* LibraryEntry, */ SNL, Site, PrototypeEntry} from "./t
     Computational Materials Science, 136, S1-S828.
     https://doi.org/10.1016/j.commatsci.2017.01.017
  */
-export class AflowPrototypeMatcher {
+class AflowPrototypeMatcher {
 
 	private readonly initialLtol: number;
 	private readonly initialStol: number;
@@ -106,8 +112,14 @@ export class AflowPrototypeMatcher {
 			}
 		});
 	}
-		*/
+	*/
 
+	/**
+	 * Convert structure to the format required by the code
+	 *
+	 * @param structure - STMng structure to be converted
+	 * @returns The structure in SNL format or undefined if it has no unit cell
+	 */
 	private structureToSNL(structure: Structure): SNL | undefined {
 
 		const {crystal, atoms} = structure;
@@ -138,6 +150,13 @@ export class AflowPrototypeMatcher {
         };
 	}
 
+	/**
+	 * Match input structure to the list of prototypes
+	 *
+	 * @param sm - The structure matcher class instance
+	 * @param reducedStructure - The reduced structure from the input one
+	 * @returns List of found prototypes
+	 */
 	private matchPrototype(sm: StructureMatcher, reducedStructure: SNL): Prototype[] {
 
         const tags: Prototype[] = [];
@@ -148,7 +167,7 @@ export class AflowPrototypeMatcher {
 
 			// Since both structures are already reduced, we can skip the structure reduction step
             const match = sm.fitAnonymous(snl, reducedStructure, true);
-            if(match) tags.push({snl: entry.tags.mineral, tags: entry.tags});
+            if(match?.length) tags.push({snl: entry.tags.mineral, tags: entry.tags});
 		}
         return tags;
 	}

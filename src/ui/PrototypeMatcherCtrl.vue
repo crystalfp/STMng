@@ -19,6 +19,8 @@ const lengthTolerance = ref(0.2);
 const siteTolerance = ref(0.3);
 const angleTolerance = ref(5);
 const match = ref("");
+const formula = ref("");
+const hasInput = ref(false);
 
 // > Properties
 const {id, label} = defineProps<{
@@ -40,6 +42,8 @@ askNode(id, "init")
 		siteTolerance.value = params.siteTolerance as number ?? 0.3;
 		angleTolerance.value = params.angleTolerance as number ?? 5;
 		match.value = params.match as string ?? "";
+        formula.value = params.formula as string ?? "";
+        hasInput.value = params.hasInput as boolean ?? false;
     })
     .catch((error: Error) =>
             showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
@@ -52,6 +56,8 @@ watch([enableProto], () => {
         .then((params) => {
             if(params.error) throw Error(params.error as string);
             match.value = params.match as string ?? "";
+            formula.value = params.formula as string ?? "";
+            hasInput.value = params.hasInput as boolean ?? false;
         })
         .catch((error: Error) => {
             const message = `Error from "${label}": ${error.message}`;
@@ -71,6 +77,8 @@ watch([lengthTolerance, siteTolerance, angleTolerance], () => {
         .then((params) => {
             if(params.error) throw Error(params.error as string);
             match.value = params.match as string ?? "";
+            formula.value = params.formula as string ?? "";
+            hasInput.value = params.hasInput as boolean ?? false;
         })
         .catch((error: Error) => {
             const message = `Error from "${label}": ${error.message}`;
@@ -84,16 +92,19 @@ receiveFromNode(id, "match", (params: CtrlParams) => {
         const message = `Error from "${label}": ${params.error as string}`;
         showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
         match.value = "";
+        formula.value = "";
     }
     else {
         match.value = params.match as string ?? "";
+        formula.value = params.formula as string ?? "";
     }
+    hasInput.value = params.hasInput as boolean ?? false;
 });
 
 /** Split the list of matches or signal no results */
 const matchHTML = computed(() => {
     if(match.value === "") return "No match found";
-    return match.value.replaceAll(/\|+/g, ",<br>");
+    return match.value.replaceAll(/\|+/g, "<br>");
 });
 
 /**
@@ -125,18 +136,29 @@ const resetParams = (): void => {
                       :min="0.5" :max="10" :step="0.5" class="ml-2 mb-3 mt-2">
     <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
   </debounced-slider>
-  <v-btn block class="mt-5 mb-4" :disabled="!enableProto" @click="resetParams">Reset parameters</v-btn>
-  <v-label v-if="enableProto" class="result-label mt-4 ml-2 mb-6 show-match" v-html="matchHTML" />
+  <v-btn block class="mt-5 mb-4" :disabled="!enableProto"
+         @click="resetParams">Reset parameters</v-btn>
+  <v-label v-if="enableProto && formula !== '' && hasInput"
+           class=" mt-2 ml-2 mb-3 pb-1 bigger"
+           v-html="`Prototypes for ${formula}`" />
+  <v-label v-if="enableProto && hasInput"
+           class="result-label ml-2 mb-6 bigger"
+           v-html="matchHTML" />
   <node-alert node="prototypeMatcher" />
 </v-container>
 </template>
 
 
 <style scoped>
-.show-match {
+.bigger {
   overflow-wrap: break-word;
   white-space: break-spaces;
   font-size: 1.1rem;
   line-height: 1.4;
+}
+
+:deep(sub) {
+  position: relative;
+  bottom: -0.5rem;
 }
 </style>

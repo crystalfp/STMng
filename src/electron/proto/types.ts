@@ -38,13 +38,6 @@ export interface SNL {
 	sites: Site[];
 }
 
-export interface LibraryEntry {
-	snl: SNL;
-	about: Record<string, unknown>;
-	tags: Record<string, string>;
-}
-
-
 export interface PrototypeEntry {
 	structure: {
 		"@module": string;

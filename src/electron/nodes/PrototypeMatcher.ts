@@ -6,14 +6,15 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-18
  */
+import {readFileSync} from "node:fs";
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import {sendToClient} from "../modules/ToClient";
 import {publicDirPath} from "../modules/GetPublicPath";
-import {readFileSync} from "node:fs";
-import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
-import type {PrototypeEntry} from "../proto/types";
 import {findMatchingPrototypes} from "../proto/AflowPrototypeMatcher";
+import {getAtomicSymbol} from "../modules/AtomData";
+import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
+import type {PrototypeEntry, Prototype} from "../proto/types";
 
 export class PrototypeMatcher extends NodeCore {
 
@@ -23,6 +24,8 @@ export class PrototypeMatcher extends NodeCore {
 	private siteTolerance = 0.3;	// Site tolerance
 	private angleTolerance = 5;		// Angle tolerance
 	private match = "";
+	private formula = "";
+	private hasInput = false;
 	private aflowPrototypesLoaded = false;
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
 
@@ -66,28 +69,48 @@ export class PrototypeMatcher extends NodeCore {
 
 		this.structure = data;
 
+		this.hasInput = data && data.atoms.length > 0;
+		this.formula = this.hasInput ? this.getChemicalFormula(this.structure) : "";
+
 		if(!this.aflowPrototypesLoaded) {
 			const sts = this.initializeMatcher();
 			if(sts) {
 				sendToClient(this.id, "match", {
 					error: sts,
-					match: ""
+					match: "",
+					formula: this.formula,
+					hasInput: this.hasInput
 				});
 				this.aflowPrototypeLibrary.length = 0;
 				return;
 			}
 			this.aflowPrototypesLoaded = true;
 		}
-		if(this.enabled && data?.atoms.length) {
+		if(this.enabled && this.hasInput) {
 			const sts = this.matchPrototype();
-			sendToClient(this.id, "match", sts ? {error: sts, match: ""} : {match: this.match});
+			const params: CtrlParams = sts ?
+											{
+												error: sts,
+												match: "",
+												formula: this.formula,
+												hasInput: this.hasInput
+											} : {
+												match: this.match,
+												formula: this.formula,
+												hasInput: this.hasInput
+											};
+			sendToClient(this.id, "match", params);
 		}
-		else this.match = "";
+		else {
+			this.match = "";
+		}
 	}
 
 	// > Computation
 	/**
 	 * Initialize the prototype matcher
+	 *
+	 * @remarks The data file is obtained running the Python library and capturing the `self._aflow_prototype_library` list from the AflowPrototypeMatcher class constructor
 	 *
 	 * @returns On error an error messages, otherwise the empty string
 	 */
@@ -108,12 +131,29 @@ export class PrototypeMatcher extends NodeCore {
 	}
 
 	/**
+	 * Retrieve the correct tag to be shown
+	 *
+	 * @remarks The prototype data is composed by, for example:
+	 * 'pearson': 'cF8',
+	 * 'aflow': 'AB_cF8_216_c_a',
+	 * 'strukturbericht': 'B3',
+	 * 'mineral': 'Zincblende, Sphalerite'
+	 *
+	 * @param entry - One resulting prototype
+	 * @returns The tag to be shown
+	 */
+	private getTag(entry: Prototype): string {
+		return entry.tags.mineral || `Aflow UID: ${entry.tags.aflow ?? "???"}`;
+	}
+
+	/**
 	 * Do the actual match with the prototypes
 	 *
 	 * @returns Empty string on success, otherwise error message
 	 */
 	private matchPrototype(): string {
 
+		this.match = "";
 		if(!this.structure || this.aflowPrototypeLibrary.length === 0) return "";
 
 		try {
@@ -128,13 +168,39 @@ export class PrototypeMatcher extends NodeCore {
 			// Return the multiple matches separated by a "|"
 			this.match = prototypes.length === 0 ?
 							"" :
-							prototypes.map((entry) => entry.tags.mineral).join("|");
+							prototypes.map((entry) => this.getTag(entry)).join("|");
 		}
 		catch(error: unknown) {
-			this.match = "";
 			return (error as Error).message;
 		}
 		return "";
+	}
+
+	/**
+	 * Get the input structure empirical formula
+	 *
+	 * @param structure - Input structure
+	 * @returns HTML string with the structure empirical formula
+	 */
+	private getChemicalFormula(structure: Structure): string {
+
+		const species = new Map<number, number>();
+		for(const atom of structure.atoms) {
+			if(species.has(atom.atomZ)) {
+				species.set(atom.atomZ, species.get(atom.atomZ)! + 1);
+			}
+			else {
+				species.set(atom.atomZ, 1);
+			}
+		}
+		let formula = "";
+		for(const [k, v] of species) {
+
+			const sub = v === 1 ? "" : `<sub>${v}</sub>`;
+			const atomType = getAtomicSymbol(k);
+			formula += `${atomType}${sub}`;
+		}
+		return formula;
 	}
 
 	// > Channel handlers
@@ -150,7 +216,9 @@ export class PrototypeMatcher extends NodeCore {
 			lengthTolerance: this.lengthTolerance,
 			siteTolerance: this.siteTolerance,
 			angleTolerance: this.angleTolerance,
-			match: this.match
+			match: this.match,
+			formula: this.formula,
+			hasInput: this.hasInput
 		};
 	}
 
@@ -170,7 +238,9 @@ export class PrototypeMatcher extends NodeCore {
 				this.aflowPrototypeLibrary.length = 0;
 				return {
 					error: sts,
-					match: ""
+					match: "",
+					formula: this.formula,
+					hasInput: this.hasInput
 				};
 			}
 			this.aflowPrototypesLoaded = true;
@@ -179,13 +249,13 @@ export class PrototypeMatcher extends NodeCore {
 			const sts = this.matchPrototype();
 			if(sts) {
 				this.match = "";
-				return {error: sts, match: ""};
+				return {error: sts, match: "", formula: "", hasInput: this.hasInput};
 			}
-			return {match: this.match};
+			return {match: this.match, formula: this.formula, hasInput: this.hasInput};
 		}
 		this.match = "";
 
-		return {match: this.match};
+		return {match: this.match, formula: this.formula, hasInput: this.hasInput};
 	}
 
 	/**
@@ -208,7 +278,9 @@ export class PrototypeMatcher extends NodeCore {
 				this.aflowPrototypeLibrary.length = 0;
 				return {
 					error: sts,
-					match: ""
+					match: "",
+					formula: this.formula,
+					hasInput: this.hasInput
 				};
 			}
 			this.aflowPrototypesLoaded = true;
@@ -217,12 +289,12 @@ export class PrototypeMatcher extends NodeCore {
 			const sts = this.matchPrototype();
 			if(sts) {
 				this.match = "";
-				return {error: sts, match: ""};
+				return {error: sts, match: "", formula: "", hasInput: this.hasInput};
 			}
-			return {match: this.match};
+			return {match: this.match, formula: this.formula, hasInput: this.hasInput};
 		}
 		this.match = "";
 
-		return {match: this.match};
+		return {match: this.match, formula: this.formula, hasInput: this.hasInput};
 	}
 }
