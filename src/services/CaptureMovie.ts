@@ -36,7 +36,7 @@ export class CaptureMovie {
         this.FRAME_MSEC = Math.round(1000/fps);
         this.FRAME_SEC  = this.FRAME_MSEC/1000;
 
-        // Frame dimensions
+        // Frame dimensions are odd?
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
         const oddDimensions = width % 2 === 1 || height % 2 === 1;

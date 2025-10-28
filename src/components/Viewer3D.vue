@@ -19,7 +19,7 @@ import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
 import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
-import {showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
+import {resetNodeAlert, showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
 import {CaptureMovie} from "@/services/CaptureMovie";
 import type {CtrlParams} from "@/types";
 import type {BillboardBatchedText} from "@/services/SpriteText";
@@ -339,6 +339,8 @@ onMounted(() => {
         if(controlStore.snapshot) {
 
             controlStore.snapshot = false;
+            resetNodeAlert();
+
             let mimeTypeFormat = configStore.camera.snapshotFormat;
             const channel = mimeTypeFormat === "pdf" ? "snapshotPDF" : "snapshot";
             if(mimeTypeFormat === "pdf") mimeTypeFormat = "jpeg";
@@ -393,6 +395,7 @@ onMounted(() => {
         if(controlStore.stl) {
 
             controlStore.stl = false;
+            resetNodeAlert();
 
             const result = sm.createSTL(configStore.camera.stlFormat);
             askNode("SYSTEM", "stl", {
@@ -417,11 +420,15 @@ onMounted(() => {
     watchEffect(() => {
         if(controlStore.movie) {
 
+            resetNodeAlert();
             askNode("SYSTEM", "movie-start")
                 .then((params: CtrlParams) => {
 
                     const filename = params.filename as string;
-                    if(!filename) return;
+                    if(!filename) {
+                        controlStore.movie = false;
+                        return;
+                    }
                     const extension = params.extension as string;
 
                     movieCaptureRunning = true;
@@ -431,6 +438,7 @@ onMounted(() => {
                 })
                 .catch((error: Error) => {
                     showNodeAlert(error.message, "captureMovie", {alsoSystem: true});
+                    controlStore.movie = false;
                 });
         }
         else if(movieCaptureRunning) {
