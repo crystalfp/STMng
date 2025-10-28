@@ -22,7 +22,6 @@
     "noEmit": true,
     "jsx": "preserve",
     "removeComments": true,
-    "allowJs": true,
 
     /* Linting */
     "strict": true,

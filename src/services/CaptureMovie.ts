@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-09-16
  */
-import {Output, BufferTarget, CanvasSource, QUALITY_HIGH,
+import {Output, BufferTarget, CanvasSource, QUALITY_HIGH, type VideoCodec,
 		Mp4OutputFormat, MkvOutputFormat, WebMOutputFormat} from "mediabunny";
 import {askNode} from "@/services/RoutesClient";
 import {showNodeAlert} from "@/services/AlertMessage";
@@ -22,8 +22,6 @@ export class CaptureMovie {
     private timestamp = 0;
     private readonly FRAME_MSEC: number;
     private readonly FRAME_SEC: number;
-    // private readonly width: number;
-    // private readonly height: number;
 
     /**
      * Initialize the movie capturer
@@ -39,14 +37,13 @@ export class CaptureMovie {
         this.FRAME_SEC  = this.FRAME_MSEC/1000;
 
         // Frame dimensions
-        // const width = canvas.clientWidth;
-        // const height = canvas.clientHeight;
-		// this.width  = (width % 2 === 0) ? width : width-1;
-        // this.height = (height % 2 === 0) ? height : height-1;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const oddDimensions = width % 2 === 1 || height % 2 === 1;
 
         // Initialize the formatter and frame capturer
         let formatter;
-        let codec: "avc" | "hevc" | "vp9" | "av1" | "vp8" = "avc";
+        let codec: VideoCodec = "avc";
 		switch(extension) {
 			case ".webm":
 				formatter = new WebMOutputFormat({appendOnly: true});
@@ -54,9 +51,11 @@ export class CaptureMovie {
 				break;
 			case ".mp4":
 				formatter = new Mp4OutputFormat({fastStart: "in-memory"});
+                if(oddDimensions) codec = "vp9";
 				break;
 			case ".mkv":
 				formatter = new MkvOutputFormat();
+                if(oddDimensions) codec = "vp9";
 				break;
 			default:
 				throw Error(`Movie with extension "${extension}" is not supported`);

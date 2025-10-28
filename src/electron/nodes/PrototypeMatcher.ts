@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-18
  */
-import {readFileSync} from "node:fs";
+import {existsSync, readFileSync} from "node:fs";
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import {sendToClient} from "../modules/ToClient";
@@ -28,6 +28,8 @@ export class PrototypeMatcher extends NodeCore {
 	private hasInput = false;
 	private aflowPrototypesLoaded = false;
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
+	private readonly aflowAdjunctMap = new Map<string, string>();
+	private hasAdjunctMap = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",       type: "invoke", callback: this.channelInit.bind(this)},
@@ -117,10 +119,20 @@ export class PrototypeMatcher extends NodeCore {
 	private initializeMatcher(): string {
 
 		const filePath = publicDirPath("aflow_prepared_prototypes.json");
+		const adjunctPath = publicDirPath("mineral_overrides.json");
 		try {
 			const aflowPrototypeLibraryRaw = readFileSync(filePath, "utf8");
 			this.aflowPrototypeLibrary = JSON.parse(aflowPrototypeLibraryRaw) as PrototypeEntry[];
 			if(this.aflowPrototypeLibrary.length === 0) throw Error("No prototypes loaded");
+
+			if(existsSync(adjunctPath)) {
+				const adjunctRaw = readFileSync(adjunctPath, "utf8");
+				if(adjunctRaw) {
+					const adjunct = JSON.parse(adjunctRaw) as Record<string, string>;
+					for(const entry in adjunct) this.aflowAdjunctMap.set(entry, adjunct[entry]);
+					this.hasAdjunctMap = true;
+				}
+			}
 		}
 		catch(error: unknown) {
 			const message = `Error initializing PrototypeMatcher: ${(error as Error).message}`;
@@ -143,7 +155,13 @@ export class PrototypeMatcher extends NodeCore {
 	 * @returns The tag to be shown
 	 */
 	private getTag(entry: Prototype): string {
-		return entry.tags.mineral || `Aflow UID: ${entry.tags.aflow ?? "???"}`;
+
+		if(this.hasAdjunctMap) {
+			const mineral =  this.aflowAdjunctMap.get(entry.tags.aflow);
+			if(mineral) return mineral;
+		}
+		if(entry.tags.mineral) return entry.tags.mineral;
+		return `Aflow UID: ${entry.tags.aflow ?? "???"}`;
 	}
 
 	/**
