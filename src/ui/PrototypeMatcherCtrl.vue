@@ -140,7 +140,7 @@ const resetParams = (): void => {
          @click="resetParams">Reset parameters</v-btn>
   <v-label v-if="enableProto && formula !== '' && hasInput"
            class=" mt-2 ml-2 mb-3 pb-1 bigger"
-           v-html="`Prototypes for ${formula}`" />
+           v-html="`Prototypes for ${formula}`" /><br>
   <v-label v-if="enableProto && hasInput"
            class="result-label ml-2 mb-6 bigger"
            v-html="matchHTML" />
