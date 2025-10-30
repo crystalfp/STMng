@@ -23,7 +23,8 @@
 <div class="description">
 <p>This module matches crystal structures against known crystallographic “prototype” structures. The code has been ported from the one in the <a href="https://pymatgen.org/">Pymatgen</a> Python library.</p>
 
-<p>The prototype found is shown by its “mineral” tag field content that, on the Aflow’s <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a>, is identified as “Notes” field. These values are updated by inputs provided by Prof. Artem Oganov.</p>
+<p>The prototype found is shown by its “mineral” tag field that, in the Aflow’s <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a>, is identified as the “Notes” field. These values have been updated by inputs provided by Prof. Artem Oganov. If you find that any string could be made clearer or more precise, do not hesitate to contact the author.</p>
+
 </div>
 
 
@@ -62,10 +63,9 @@
 <tr>
 	<td class="c1">Matched structure</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">List of the “mineral” tags from the matched prototypes or, if this field is empty, the “Aflow UID” string. If no match is found “No match found” is show. Note that the field could be overridden by an internal map from the “Aflow UID” to another “mineral” value.</td>
+	<td class="c3">List of the “mineral” tags from the matched prototypes and the corresponding “Aflow UID” string. If no match is found “No match found” is shown. Note that the tag field could be overridden by an internal map from the “Aflow UID” to a different one.</td>
 </tr>
 </table>
-<p>The matched structure text comes from the Aflow data. If you find that any string could be made clearer and more precise, do not hesitate to contact the author.</p>
 
 <h2>Credits</h2>
 <p>This module uses data from the <b>AFLOW LIBRARY OF CRYSTALLOGRAPHIC PROTOTYPES</b> described in:
@@ -77,9 +77,8 @@
 <p>The code has been ported from the <a href="https://pymatgen.org/">Pymatgen</a> library’s
     <a href="https://pymatgen.org/pymatgen.analysis.prototypes.html">AflowPrototypeMatcher</a> class.</p>
 
-<p>The Aflow library makes the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> available, that can be search also by the retrieved UID string.</p>
+<p>The <a href="https://aflow.org/">Aflow</a> library has made the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> available which can be searched by the retrieved UID string.</p>
 
-<p>The </p>
 <p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
 
 </body>

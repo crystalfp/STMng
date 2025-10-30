@@ -1,12 +1,9 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
-  ☐ Check not even dimensions for the capture movies.
-  ✔ Define enum for addType in ComputeBonds @done(2025-10-23 06:15)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
-  ☐ Find prototype structure
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
@@ -68,6 +65,9 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Find prototype structure @done(2025-10-30 09:55) @project(Latest requests (backlog))
+  ✔ Check not even dimensions for the capture movies. @done(2025-10-30 09:54) @project(Bugs)
+  ✔ Define enum for addType in ComputeBonds @done(2025-10-23 06:15) @project(Bugs)
   ✔ Unify viewer3D setup between Compare and Landscape @done(2025-10-09 15:47) @project(To do)
   ✔ Add type for atom selector kind @done(2025-10-09 15:47) @project(To do)
   ✔ Change ref() to reactive() when the argument is an object (performance) @done(2025-10-03 07:03) @project(To do)

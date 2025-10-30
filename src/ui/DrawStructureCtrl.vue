@@ -62,6 +62,7 @@ askNode(id, "init")
         showBondsStrengths.value = params.showBondsStrengths as boolean ?? false;
         atomColoring.value = params.atomColoring as ColoringType ?? "type";
         monochromeColor.value = params.monochromeColor as string ?? "#888888";
+        bondsRadiusMultiplier.value = params.bondsRadiusMultiplier as number ?? 1;
     })
     .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
 

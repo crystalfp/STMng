@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-18
  */
-import {computed, ref, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
@@ -18,9 +18,11 @@ const enableProto = ref(false);
 const lengthTolerance = ref(0.2);
 const siteTolerance = ref(0.3);
 const angleTolerance = ref(5);
-const match = ref("");
 const formula = ref("");
 const hasInput = ref(false);
+
+type Prototype = [string, string];
+const prototypes = reactive<Prototype[]>([]);
 
 // > Properties
 const {id, label} = defineProps<{
@@ -32,6 +34,22 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
+/**
+ * Helper function to decode the list of prototypes
+ *
+ * @param list - JSON encoded list of prototypes
+ */
+const fillPrototypes = (list: string | undefined): void => {
+
+    prototypes.length = 0;
+    if(!list) {
+        prototypes.push(["No match found", ""]);
+        return;
+    }
+    const prototypesAll = JSON.parse(list) as Prototype[];
+    for(const entry of prototypesAll) prototypes.push(entry);
+};
+
 // > Initialize ui
 resetNodeAlert();
 
@@ -41,7 +59,7 @@ askNode(id, "init")
 		lengthTolerance.value = params.lengthTolerance as number ?? 0.2;
 		siteTolerance.value = params.siteTolerance as number ?? 0.3;
 		angleTolerance.value = params.angleTolerance as number ?? 5;
-		match.value = params.match as string ?? "";
+		fillPrototypes(params.match as string);
         formula.value = params.formula as string ?? "";
         hasInput.value = params.hasInput as boolean ?? false;
     })
@@ -55,13 +73,14 @@ watch([enableProto], () => {
     askNode(id, "enable", {enabled: enableProto.value})
         .then((params) => {
             if(params.error) throw Error(params.error as string);
-            match.value = params.match as string ?? "";
+		    fillPrototypes(params.match as string);
             formula.value = params.formula as string ?? "";
             hasInput.value = params.hasInput as boolean ?? false;
         })
         .catch((error: Error) => {
             const message = `Error from "${label}": ${error.message}`;
             showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
+            prototypes.length = 0;
         });
 });
 
@@ -76,13 +95,14 @@ watch([lengthTolerance, siteTolerance, angleTolerance], () => {
         })
         .then((params) => {
             if(params.error) throw Error(params.error as string);
-            match.value = params.match as string ?? "";
+		    fillPrototypes(params.match as string);
             formula.value = params.formula as string ?? "";
             hasInput.value = params.hasInput as boolean ?? false;
         })
         .catch((error: Error) => {
             const message = `Error from "${label}": ${error.message}`;
             showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
+            prototypes.length = 0;
         });
 });
 
@@ -91,20 +111,14 @@ receiveFromNode(id, "match", (params: CtrlParams) => {
     if(params.error) {
         const message = `Error from "${label}": ${params.error as string}`;
         showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
-        match.value = "";
+        prototypes.length = 0;
         formula.value = "";
     }
     else {
-        match.value = params.match as string ?? "";
+		fillPrototypes(params.match as string);
         formula.value = params.formula as string ?? "";
     }
     hasInput.value = params.hasInput as boolean ?? false;
-});
-
-/** Split the list of matches or signal no results */
-const matchHTML = computed(() => {
-    if(match.value === "") return "No match found";
-    return match.value.replaceAll(/\|+/g, "<br>");
 });
 
 /**
@@ -115,7 +129,7 @@ const resetParams = (): void => {
     lengthTolerance.value = 0.2;
     siteTolerance.value = 0.3;
     angleTolerance.value = 5;
-    match.value = "";
+    prototypes.length = 0;
 };
 
 </script>
@@ -138,12 +152,13 @@ const resetParams = (): void => {
   </debounced-slider>
   <v-btn block class="mt-5 mb-4" :disabled="!enableProto"
          @click="resetParams">Reset parameters</v-btn>
-  <v-label v-if="enableProto && formula !== '' && hasInput"
-           class=" mt-2 ml-2 mb-3 pb-1 bigger"
-           v-html="`Prototypes for ${formula}`" /><br>
-  <v-label v-if="enableProto && hasInput"
-           class="result-label ml-2 mb-6 bigger"
-           v-html="matchHTML" />
+  <v-container v-if="enableProto && hasInput" class="mt-2 ml-2 mb-6 pa-0">
+  <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger" v-html="`Prototypes for ${formula}`" />
+    <v-container v-for="entry of prototypes" :key="entry[1]" class="mb-4 pa-0">
+      <v-label class="result-label pb-1 bigger" v-html="entry[0]" /><br>
+      <v-label class="bigger">{{ `(Aflow: ${entry[1]})` }}</v-label>
+    </v-container>
+  </v-container>
   <node-alert node="prototypeMatcher" />
 </v-container>
 </template>

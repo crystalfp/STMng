@@ -143,7 +143,7 @@ export class PrototypeMatcher extends NodeCore {
 	}
 
 	/**
-	 * Retrieve the correct tag to be shown
+	 * Format prototypes for the client
 	 *
 	 * @remarks The prototype data is composed by, for example:
 	 * 'pearson': 'cF8',
@@ -151,17 +151,26 @@ export class PrototypeMatcher extends NodeCore {
 	 * 'strukturbericht': 'B3',
 	 * 'mineral': 'Zincblende, Sphalerite'
 	 *
-	 * @param entry - One resulting prototype
-	 * @returns The tag to be shown
+	 * @param prototypes - The list of prototypes found
+	 * @returns JSON encoded prototypes as [mineral, aflow][]
 	 */
-	private getTag(entry: Prototype): string {
+	private formatPrototypes(prototypes: Prototype[]): string {
 
-		if(this.hasAdjunctMap) {
-			const mineral =  this.aflowAdjunctMap.get(entry.tags.aflow);
-			if(mineral) return mineral;
+		if(prototypes.length === 0) return "[]";
+
+		const out: [string, string][]= [];
+		for(const entry of prototypes) {
+
+			let mineral;
+			if(this.hasAdjunctMap) {
+				mineral = this.aflowAdjunctMap.get(entry.tags.aflow);
+			}
+			if(mineral) out.push([mineral, entry.tags.aflow]);
+			else if(entry.tags.mineral) out.push([entry.tags.mineral, entry.tags.aflow]);
+			else out.push(["—", entry.tags.aflow]);
 		}
-		if(entry.tags.mineral) return entry.tags.mineral;
-		return `Aflow UID: ${entry.tags.aflow ?? "???"}`;
+
+		return JSON.stringify(out);
 	}
 
 	/**
@@ -183,10 +192,8 @@ export class PrototypeMatcher extends NodeCore {
 				this.angleTolerance
 			);
 
-			// Return the multiple matches separated by a "|"
-			this.match = prototypes.length === 0 ?
-							"" :
-							prototypes.map((entry) => this.getTag(entry)).join("|");
+			// Return the matches and the aflow UID
+			this.match = this.formatPrototypes(prototypes);
 		}
 		catch(error: unknown) {
 			return (error as Error).message;
