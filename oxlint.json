@@ -14,7 +14,8 @@
       "promise",
       "node",
       "unicorn",
-      "oxc"
+      "oxc",
+      "regex"
   ],
   "ignorePatterns": [
     "src/vite-env.d.ts",
