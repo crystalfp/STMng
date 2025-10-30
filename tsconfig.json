@@ -32,19 +32,18 @@
     "noImplicitOverride": true,
     "allowUnreachableCode": false,
 
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
   },
   "include": [
-    "vite.config.mts",
-    "troika-three-text.d.ts",
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "package.json"
+    "./vite.config.mts",
+    "./troika-three-text.d.ts",
+    "./src/**/*.ts",
+    "./src/**/*.vue",
+    "./package.json"
   ],
   "exclude": [
-    "src/cpp/spglib*/**/*.ts"
+    "./src/cpp/spglib*/**/*.ts"
   ]
 }
