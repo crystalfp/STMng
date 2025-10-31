@@ -83,7 +83,10 @@ askNode(id, "init")
         speed.value         = params.speed as number ?? 1;
         energyPerAtom.value = params.energyPerAtom as boolean ?? false;
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`, "structureReader"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                      "structureReader");
+    });
 
 // Reset accumulate for fingerprint when changing to a single step structure
 watch([countSteps], (after: [number], before: [number]) => {
@@ -467,7 +470,7 @@ const label1 = ref("");
 const label2 = ref("");
 
 // Add loaded file to the window title
-watch(label1, () => setReadPathInTitle(label1.value));
+watch(label1, () => {setReadPathInTitle(label1.value);});
 
 /** Data for formats that have an auxiliary file */
 const auxSetup = computed(() => {

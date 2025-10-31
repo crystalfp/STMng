@@ -63,9 +63,10 @@ askNode(id, "init")
         formula.value = params.formula as string ?? "";
         hasInput.value = params.hasInput as boolean ?? false;
     })
-    .catch((error: Error) =>
-            showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
-            "prototypeMatcher"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
+                      "prototypeMatcher");
+    });
 
 /** Changed module enable status */
 watch([enableProto], () => {

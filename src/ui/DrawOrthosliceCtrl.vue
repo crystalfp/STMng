@@ -77,7 +77,9 @@ askNode(id, "init")
             showIsolines.value = false;
         }
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // > Initialize graphical rendering
 const renderer = new DrawOrthosliceRenderer(id);

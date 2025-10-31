@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "Preserve",
+    "types": ["node"],
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "noErrorTruncation": true,
@@ -37,13 +38,13 @@
     },
   },
   "include": [
-    "./vite.config.mts",
-    "./troika-three-text.d.ts",
-    "./src/**/*.ts",
-    "./src/**/*.vue",
-    "./package.json"
+    "vite.config.mts",
+    "troika-three-text.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "package.json"
   ],
   "exclude": [
-    "./src/cpp/spglib*/**/*.ts"
+    "src/cpp/spglib*/**/*.ts"
   ]
 }

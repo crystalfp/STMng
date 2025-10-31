@@ -265,6 +265,10 @@ onNodesChange((changes) => {
                     panelRequest += 2;
                 }
                 break;
+            case "dimensions":
+            case "remove":
+            case "add":
+                break;
         }
     }
     if(panelRequest > 0) showPanel.value = panelRequest !== 2;

@@ -434,7 +434,7 @@ onMounted(() => {
                     movieCaptureRunning = true;
 
                     capturer = new CaptureMovie(renderer.domElement, extension);
-                    return capturer.saveFrames(filename);
+                    void capturer.saveFrames(filename);
                 })
                 .catch((error: Error) => {
                     showNodeAlert(error.message, "captureMovie", {alsoSystem: true});

@@ -85,7 +85,9 @@ watch(controlStore.atomsSelected, () => {
 
             renderer.measureBonds(params, bondDataTable, pointSize);
         })
-        .catch((error: Error) => showSystemAlert(`Error from computing bonds lengths: ${error.message}`));
+        .catch((error: Error) => {
+            showSystemAlert(`Error from computing bonds lengths: ${error.message}`);
+        });
         return;
     }
 
@@ -106,8 +108,9 @@ watch(controlStore.atomsSelected, () => {
 
     	  renderer.measureAtoms(details, pointSize);
     })
-    .catch((error: Error) => showSystemAlert(`Error from computing measures: ${error.message}`));
-
+    .catch((error: Error) => {
+        showSystemAlert(`Error from computing measures: ${error.message}`);
+    });
 }, {deep: true});
 
 // Remove selection on structure change and prepare structure summary data
@@ -195,7 +198,7 @@ watch(polyhedronNewIdx, () => {
 });
 
 // Watch measurement change. Every measurement should start with nothing selected
-watch(measurementType, () => controlStore.deselectAll());
+watch(measurementType, () => {controlStore.deselectAll();});
 
 /**
  * Format one coordinate (cartesian or fractional) of the selected atom.

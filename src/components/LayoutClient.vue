@@ -72,7 +72,7 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
 
     switch(menuEntry) {
         case "show-versions":
-            loadedPanel.value = defineAsyncComponent(() => import("./About.vue"));
+            loadedPanel.value = defineAsyncComponent(async () => import("./About.vue"));
             break;
         case "extend-viewer":
             normalScreen.value = payload === "no";

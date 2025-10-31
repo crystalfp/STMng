@@ -37,7 +37,9 @@ askNode(id, "init")
 
         configStore.restoreState(params.rawStatus as string);
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // Send state on request from main process
 sendViewer3DState(id, "state", () => configStore.statusToSave);

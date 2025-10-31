@@ -53,7 +53,9 @@ askNode(id, "init")
 		positionCloudsColor.value = params.positionCloudsColor as string ?? "#BBBBBE";
 		positionCloudsSize.value  = params.positionCloudsSize as number ?? 100;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // > Initialize graphical rendering
 const renderer = new TrajectoriesRenderer(id,
@@ -83,7 +85,7 @@ const {trajectoriesRecording} = storeToRefs(controlStore);
 watch(trajectoriesRecording, () => {
 
     sendToNode(id, "run", {
-        createTrajectories: controlStore.trajectoriesRecording!
+        createTrajectories: controlStore.trajectoriesRecording
     });
 });
 
@@ -114,7 +116,7 @@ watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
 
     if(after[2] !== before[2]) renderer.changeColor(after[2]);
     if(after[1] !== before[1]) renderer.changeSize(after[1]);
-    renderer.changeCloudsVisibility(after[0]!);
+    renderer.changeCloudsVisibility(after[0]);
 
     sendToNode(id, "cloud", {
         showPositionClouds: showPositionClouds.value,

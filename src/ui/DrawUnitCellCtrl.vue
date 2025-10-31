@@ -82,7 +82,9 @@ askNode(id, "init")
         percentC.value = params.percentC as number ?? 0;
         shrink.value = params.shrink as boolean ?? false;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // > Initialize graphical rendering
 const renderer = new DrawUnitCellRenderer(id);

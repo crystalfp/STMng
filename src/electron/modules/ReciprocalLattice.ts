@@ -263,7 +263,7 @@ export class ReciprocalLattice {
                 const coord = nnCoords[i]!;
                 const index = nnIndices[i]!;
                 const image = nnImages[i]!;
-                const dist  = distances[i]!;
+                const dist  = distances[i];
 
                 // Filtering out all sites that are beyond the cutoff
                 // Here there is no filtering of overlapping sites

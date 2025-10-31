@@ -130,7 +130,7 @@ export class Fingerprinting {
 			promises.push(result);
 		}
 
-		const results = await Promise.allSettled(promises).catch((error) => {
+		const results = await Promise.allSettled(promises).catch((error: unknown) => {
 			log.error("Error from the worker pool.", error);
 			return [];
 		});

@@ -66,7 +66,9 @@ const openSelector = (): void => {
             }
         })
         .finally(() => {inProgress.value = false;})
-        .catch((error: Error) => showSystemAlert(`Error from file select: ${error.message}`));
+        .catch((error: Error) => {
+            showSystemAlert(`Error from file select: ${error.message}`);
+        });
 };
 
 // > Drag and drop support

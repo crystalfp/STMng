@@ -677,6 +677,9 @@ export interface FingerprintsChartData {
     energy?: [id: number, energy: number][];
 }
 
+/** Type of scatterplot */
+export type PlotKind = "group" | "energy" | "silhouette" | "fidelity";
+
 /**
  * Type of chart to display in the fingerprints chart window
  *

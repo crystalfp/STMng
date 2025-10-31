@@ -35,7 +35,7 @@ interface DOMContentLoadedEvent {
 const onContentLoaded = (loadEvent: Event): void => {
 
     // Specific operations for each kind of window opened
-    const {href} = (loadEvent as unknown as DOMContentLoadedEvent).target!.location;
+    const {href} = (loadEvent as unknown as DOMContentLoadedEvent).target.location;
     if(href.endsWith("#/")) {
 
         // Setup the customized titlebar in the main window only

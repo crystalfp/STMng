@@ -64,7 +64,9 @@ askNode(id, "init")
         monochromeColor.value = params.monochromeColor as string ?? "#888888";
         bondsRadiusMultiplier.value = params.bondsRadiusMultiplier as number ?? 1;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // > Initialize graphical rendering
 const renderer = new DrawStructureRenderer(id, drawQuality.value,

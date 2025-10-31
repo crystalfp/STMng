@@ -96,7 +96,9 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
 
     // Functions to manage a request to close a secondary window
     ipcMain.on("WINDOW:CLOSE",
-               (_event, routerPath: string): void => closeSecondaryWindow(routerPath));
+               (_event, routerPath: string): void => {
+                    closeSecondaryWindow(routerPath);
+                });
 
     // Functions to manage a request to close the application
     ipcMain.on("WINDOW:EXIT-CONFIRMED", (): void => {
@@ -170,7 +172,9 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
 
     secondaryWin.once("ready-to-show", () => {
         if(params.data) {
-            setTimeout(() => secondaryWin.webContents.send("SYSTEM:DATA", params.data), 600);
+            setTimeout(() => {
+                secondaryWin.webContents.send("SYSTEM:DATA", params.data);
+            }, 600);
         }
         secondaryWin.show();
 

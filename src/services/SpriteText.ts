@@ -171,13 +171,13 @@ export const preloadFonts = (): void => {
 			font: localRobotoRegular,
 			characters: "ABCDEFGHIKLMNOPRSTUVWXYZabcdefghiklmnorstuxyz"
 		},
-		() => log.debug("Done preloading regular font")
+		() => {log.debug("Done preloading regular font");}
 	);
 	preloadFont({
 			font: localRobotoBold,
 			characters: "0123456789."
 		},
-		() => log.debug("Done preloading bold font")
+		() => {log.debug("Done preloading bold font");}
 	);
 };
 

@@ -557,7 +557,7 @@ export class StructureMatcher {
 
             for(const [latt, scM] of this.getLattices(s2.lattice, s1, fu)) {
                 // fc = np.dot(fc_init, np.linalg.inv(sc_m))
-                const scMinv = inv(scM as number[][]);
+                const scMinv = inv(scM);
                 let fc = multiply(fcInit, scMinv);
 
                 const lp = latticePointsInSupercell(scM);

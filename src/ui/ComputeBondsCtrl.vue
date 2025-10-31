@@ -72,7 +72,9 @@ askNode(id, "init")
             showScale.push(item.scale);
         }
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 const scales = computed((old?: number[]) => {
 

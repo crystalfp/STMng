@@ -106,7 +106,9 @@ askNode(id, "init")
         showSphereRadius.value = sphereRadius.value;
         showThickness.value = thickness.value;
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI init for ${label}: ${error.message}`, "slicer");
+    });
 
 // > Initialize graphical rendering
 const renderer = new SliceStructureRenderer(id);
@@ -130,7 +132,9 @@ watch([enableSlicer, mode, selectorKind, atomsSelector,
                              sphereRadius.value,
                              showSlicer.value);
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI sphere for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI sphere for ${label}: ${error.message}`, "slicer");
+    });
 });
 
 /** Selected plane slice */
@@ -153,7 +157,9 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
     .then((response: CtrlParams) => {
         renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI plane for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI plane for ${label}: ${error.message}`, "slicer");
+    });
 });
 
 /** Slice along a slab */
@@ -178,7 +184,9 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
         renderer.drawIntersectedPlane(response.intersections1 as number[], showSlicer.value);
         renderer.drawIntersectedPlane(response.intersections2 as number[], showSlicer.value, true);
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI slab for ${label}: ${error.message}`, "slicer"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI slab for ${label}: ${error.message}`, "slicer");
+    });
 });
 
 /** Slice along a Miller plane */
@@ -199,8 +207,10 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
     .then((response: CtrlParams) => {
         renderer.drawIntersectedPlane(response.intersections as number[], showSlicer.value);
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI Miller plane for ${label}: ${error.message}`,
-        "slicer"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI Miller plane for ${label}: ${error.message}`,
+                      "slicer");
+    });
 });
 
 /** Change parameters for direct atoms slicer */

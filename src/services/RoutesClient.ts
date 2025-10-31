@@ -44,7 +44,7 @@ export const isLoaded = (): boolean => window.electron?.ipcRenderer !== undefine
  */
 export const handleFullscreen = (callback: (isFullscreen: boolean) => void): void => {
 
-    window.electron.ipcRenderer.on("WINDOW:FULLSCREEN", (_event, isFullscreen: boolean) => callback(isFullscreen));
+    window.electron.ipcRenderer.on("WINDOW:FULLSCREEN", (_event, isFullscreen: boolean) => {callback(isFullscreen);});
 };
 
 /**
@@ -55,11 +55,12 @@ export const handleFullscreen = (callback: (isFullscreen: boolean) => void): voi
 export const receiveBroadcast = (callback: (eventType: string, params: (boolean | string)[]) => void): void => {
 
 	window.electron.ipcRenderer.on("SYSTEM:BROADCAST",
-								   (_event, {eventType, eventData}) =>
+								   (_event, {eventType, eventData}) => {
 								   		callback(
 											eventType as string,
 											eventData as (boolean | string)[]
-								   		)
+								   		);
+									}
 	);
 };
 
@@ -70,8 +71,10 @@ export const receiveBroadcast = (callback: (eventType: string, params: (boolean 
  */
 export const receiveMenuSelection = (callback: (menuEntry: string, payload: string) => void): void => {
 
-	window.electron.ipcRenderer.on("SYSTEM:MENU", (_event, entryName: string, payload: string) =>
-														callback(entryName, payload));
+	window.electron.ipcRenderer.on("SYSTEM:MENU",
+								   (_event, entryName: string, payload: string) => {
+										callback(entryName, payload);
+									});
 };
 
 /**
@@ -85,8 +88,9 @@ export const receiveNotifications = (callback: (type: AlertLevel,
 
 	// Notifications from main process
 	window.electron.ipcRenderer.on("SYSTEM:notification",
-		(_event, type: string, text: string, from: string) =>
-							callback(type as AlertLevel, text, from));
+							(_event, type: string, text: string, from: string) => {
+								callback(type as AlertLevel, text, from);
+							});
 
 	// Notifications from main window
 	watchEffect(() => {
@@ -126,7 +130,7 @@ export const sendCurrentNode = (callback: () => string): void => {
  */
 export const handleExitConfirmation = (callback: () => void): void => {
 
-    window.electron.ipcRenderer.on("WINDOW:CONFIRM-EXIT", () => callback());
+    window.electron.ipcRenderer.on("WINDOW:CONFIRM-EXIT", () => {callback();});
 };
 
 // > Project
@@ -138,7 +142,9 @@ export const handleExitConfirmation = (callback: () => void): void => {
 export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo) => void): void => {
 
     window.electron.ipcRenderer.on("SYSTEM:project-send",
-					(_event, clientProjectInfo: ClientProjectInfo) => callback(clientProjectInfo));
+					(_event, clientProjectInfo: ClientProjectInfo) => {
+						callback(clientProjectInfo);
+					});
 };
 
 /**
@@ -208,7 +214,7 @@ export interface Versions {
  *
  * @returns The list of versions of iie, node, electron, chrome
  */
-export const getVersions = (): Promise<Versions> => window.electron.ipcRenderer.invoke("SYSTEM:VERSIONS") as Promise<Versions>;
+export const getVersions = async (): Promise<Versions> => window.electron.ipcRenderer.invoke("SYSTEM:VERSIONS") as Promise<Versions>;
 
 /**
  * Synchronously return a preference
@@ -232,7 +238,9 @@ export const getPreferenceSync = <T>(key: string, defaultValue: T): T => {
  * @param params - Parameters to send to the main process node
  * @returns Parameters from the main process node
  */
-export const askNode = (id: string, channel: string, params?: CtrlParams): Promise<CtrlParams> => {
+export const askNode = async (id: string,
+							  channel: string,
+							  params?: CtrlParams): Promise<CtrlParams> => {
 
 	const channelName = id + ":" + channel;
 	return params?
@@ -263,7 +271,9 @@ export const sendToNode = (id: string, channel: string, params: CtrlParams={}): 
 export const receiveFromNode = (id: string, channel: string, callback: (params: CtrlParams) => void): void => {
 
 	const channelName = id + ":" + channel;
-    window.electron.ipcRenderer.on(channelName, (_event, params: CtrlParams) => callback(params));
+    window.electron.ipcRenderer.on(channelName, (_event, params: CtrlParams) => {
+		callback(params);
+	});
 };
 
 /**
@@ -279,7 +289,9 @@ export const receiveFromNodeForRendering = (id: string,
 
 	const channelName = id + ":" + channel;
     window.electron.ipcRenderer.on(channelName,
-								   (_event, renderInfo: StructureRenderInfo) => callback(renderInfo));
+								   (_event, renderInfo: StructureRenderInfo) => {
+										callback(renderInfo);
+									});
 };
 
 /**
@@ -296,7 +308,9 @@ export const receivePolyhedraFromNode = (id: string,
 
 	const channelName = id + ":" + channel;
     window.electron.ipcRenderer.on(channelName,
-				(_event, vertices: number[][], centerAtomsColor: string[]) => callback(vertices, centerAtomsColor));
+				(_event, vertices: number[][], centerAtomsColor: string[]) => {
+					callback(vertices, centerAtomsColor);
+				});
 };
 
 /**
@@ -325,9 +339,11 @@ export const receiveIsoOrthoFromNode = (id: string,
 				 values: number[],
 				 isolineVertices: number[][],
 				 isolineValues: number[],
-				 params: CtrlParams) => callback(vertices, indices,
-								 				 values, isolineVertices,
-												 isolineValues, params));
+				 params: CtrlParams) => {
+					callback(vertices, indices,
+							 values, isolineVertices,
+							 isolineValues, params);
+				});
 };
 
 /**
@@ -354,7 +370,9 @@ export const receiveIsosurfacesFromNode = (id: string,
 				 vertices: number[][],
 				 normals: number[][],
 				 isoValues: number[],
-				 params: CtrlParams) => callback(indices, vertices, normals, isoValues, params));
+				 params: CtrlParams) => {
+					callback(indices, vertices, normals, isoValues, params);
+				});
 };
 
 /**
@@ -388,7 +406,7 @@ export const receiveVerticesFromNode = (id: string,
 
 	const channelName = id + ":" + channel;
     window.electron.ipcRenderer.on(channelName,
-								   (_event, vertices: number[]) => callback(vertices));
+								   (_event, vertices: number[]) => {callback(vertices);});
 };
 
 /**
@@ -407,7 +425,7 @@ export const receiveTracesFromNode = (id: string,
     window.electron.ipcRenderer.on(channelName,
 								   (_event,
 								    segments: number[][],
-								    colors: string[]) => callback(segments, colors));
+								    colors: string[]) => {callback(segments, colors);});
 };
 
 // > Communication to windows
@@ -429,13 +447,15 @@ export const closeWindow = (routerPath: string): void => {
  */
 export const receiveInWindow = (callback: (data: string) => void): void => {
 
-    window.electron.ipcRenderer.on("SYSTEM:DATA", (_event, payload: string) => callback(payload));
+    window.electron.ipcRenderer.on("SYSTEM:DATA", (_event, payload: string) => {
+		callback(payload);
+	});
 };
 
 // > Log file
 /**
  * Ask to clear the application log file
  */
-export const clearLog = (): void => window.electron.ipcRenderer.send("LOGFILE:CLEAR");
+export const clearLog = (): void => {window.electron.ipcRenderer.send("LOGFILE:CLEAR");};
 
  /* eslint-enable unicorn/prefer-global-this */

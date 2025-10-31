@@ -221,7 +221,7 @@ export class StructureReader extends NodeCore {
 		// Read the file and catch format errors
 		const structures = await this.reader.readStructure(filename, readerOptions)
 			.catch((error: Error) => {
-				message = `Format "${requestedFormat}" error: ${(error as Error).message}`;
+				message = `Format "${requestedFormat}" error: ${error.message}`;
 				return message;
 			});
 		if(typeof structures === "string") {

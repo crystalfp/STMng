@@ -57,8 +57,10 @@ askNode(id, "init").then((params) => {
     }
     hasNoUnitCell.value = params.hasNoUnitCell as boolean ?? true;
 })
-.catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
-                                       "structureWriter"));
+.catch((error: Error) => {
+    showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                  "structureWriter");
+});
 
 /** Define the label for the capture button */
 const captureButtonLabel = computed(() => {
@@ -97,8 +99,10 @@ const startStopCapture = (): void => {
                                   "structureWriter", {level: "success"});
                 }
             })
-            .catch((error: Error) => showNodeAlert(`Error writing structure: ${error.message}`,
-                                                   "structureWriter"));
+            .catch((error: Error) => {
+                showNodeAlert(`Error writing structure: ${error.message}`,
+                              "structureWriter");
+            });
     }
     else {
         controlStore.writerAccumulate = true;
@@ -113,8 +117,10 @@ const startStopCapture = (): void => {
                               "structureWriter", {level: "success"});
             })
             .finally(() => {controlStore.writerAccumulate = false;})
-            .catch((error: Error) => showNodeAlert(`Error writing: ${error.message}`,
-                                                   "structureWriter"));
+            .catch((error: Error) => {
+                showNodeAlert(`Error writing: ${error.message}`,
+                              "structureWriter");
+            });
     }
 };
 

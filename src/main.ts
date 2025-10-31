@@ -174,4 +174,6 @@ router.isReady()
 	.then(() => {
 		app.mount("#app");
   	})
-  	.catch((error: Error) => log.error(`Cannot mount application. Error: ${error.message}`));
+  	.catch((error: Error) => {
+		log.error(`Cannot mount application. Error: ${error.message}`);
+	});

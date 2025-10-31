@@ -174,8 +174,10 @@ askNode(id, "init")
         pointsRemoved.value = -1;
         intrinsicDimension.value = 0;
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
-                                              "fingerprints"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                      "fingerprints");
+    });
 
 /** Receive the parameters of structure loaded */
 receiveFromNode(id, "load", (params) => {
@@ -224,8 +226,10 @@ watch([fingerprintsAccumulate], () => {
             areNanoclusters.value = params.areNanoclusters as boolean ?? false;
         }, 50);
     })
-    .catch((error: Error) => showNodeAlert(`Error from toggle capture for ${label}: ${error.message}`,
-                                              "fingerprints"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from toggle capture for ${label}: ${error.message}`,
+                      "fingerprints");
+    });
 });
 
 /** Count of the structures selected */
@@ -250,8 +254,10 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
         energyThresholdEffective.value = params.energyThresholdEffective as number ?? 0;
         cutoffDistance.value = params.cutoffDistance as number ?? 0;
     })
-    .catch((error: Error) => showNodeAlert(`Error from energy settings for ${label}: ${error.message}`,
-                                              "fingerprints"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from energy settings for ${label}: ${error.message}`,
+                      "fingerprints");
+    });
 });
 
 /** On changing manual cutoff distance */
@@ -270,8 +276,10 @@ watch([forceCutoff, manualCutoffDistance], () => {
         countGroups.value = 0;
         intrinsicDimension.value = 0;
     })
-    .catch((error: Error) => showNodeAlert(`Error from cutoff setting for ${label}: ${error.message}`,
-                                              "fingerprints"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from cutoff setting for ${label}: ${error.message}`,
+                      "fingerprints");
+    });
 
 });
 
@@ -330,8 +338,10 @@ const computeFingerprints = (): void => {
         maxLocalDimension.value = params.maxLocalDimension as number ?? 0;
         theoreticalDimension.value = params.theoreticalDimension as number ?? 0;
     })
-    .catch((error: Error) => showNodeAlert(`Error from fingerprint computation: ${error.message}`,
-                                              "fingerprints"))
+    .catch((error: Error) => {
+        showNodeAlert(`Error from fingerprint computation: ${error.message}`,
+                      "fingerprints");
+    })
     .finally(() => {fingerprintingBusy.value = false;});
 };
 
@@ -354,8 +364,10 @@ watch([distanceMethod, fixTriangleInequality], () => {
         endMessage.value = params.endMessage as string ?? "";
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
-    .catch((error: Error) => showNodeAlert(`Error from distance computation: ${error.message}`,
-                                              "fingerprints"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from distance computation: ${error.message}`,
+                      "fingerprints");
+    });
 });
 
 /** On changing remove duplicates parameters */
@@ -368,8 +380,10 @@ watch([removeDuplicates, duplicatesThreshold], () => {
     .then((params: CtrlParams) => {
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
     })
-    .catch((error: Error) => showNodeAlert(`Error from duplicates removal: ${error.message}`,
-                                              "fingerprints"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from duplicates removal: ${error.message}`,
+                      "fingerprints");
+    });
 });
 
 /** On changing grouping parameters */
@@ -400,8 +414,10 @@ const ClassifyStructures = (): void => {
     .then((params: CtrlParams) => {
         countGroups.value = params.countGroups as number ?? 0;
     })
-    .catch((error: Error) => showNodeAlert(`Error from grouping structures: ${error.message}`,
-                                           "fingerprints"))
+    .catch((error: Error) => {
+        showNodeAlert(`Error from grouping structures: ${error.message}`,
+                      "fingerprints");
+    })
     .finally(() => {groupingBusy.value = false;});
 };
 
@@ -428,8 +444,10 @@ const exportResults = (): void => {
 const showScatterplot = (): void => {
 
     askNode(id, "scatter")
-        .catch((error: Error) => showNodeAlert(`Error opening scatterplot: ${error.message}`,
-                                               "fingerprints"))
+        .catch((error: Error) => {
+            showNodeAlert(`Error opening scatterplot: ${error.message}`,
+                          "fingerprints");
+        })
         .finally(() => {
             working.value = false;
         });

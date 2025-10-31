@@ -25,7 +25,7 @@ export const selectAtomsByKind = (structure: Structure,
 								  atomsSelector: string): number[] => {
 
 	// Prepare selectors
-	let selectorsList;
+	let selectorsList: string[] = [];
 	let selectors;
 	if(kind !== "all") {
 		atomsSelector = atomsSelector.trim();
@@ -59,7 +59,7 @@ export const selectAtomsByKind = (structure: Structure,
 			break;
 
 		case "index":
-			for(const selector of selectorsList!) {
+			for(const selector of selectorsList) {
 				const index = Number.parseInt(selector, 10);
 				if(Number.isNaN(index)) continue;
 				selectedAtomsIdx.push(index);

@@ -25,7 +25,7 @@ import {embeddedDimensionEstimator} from "../fingerprint/DimensionEstimation";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 EnergyLandscapeData, PositionType,
 			 FingerprintsChartData, FingerprintsChartKind,
-			 ScatterplotData} from "@/types";
+			 ScatterplotData, PlotKind} from "@/types";
 
 import {WriterPOSCAR} from "../writers/WritePOSCAR";
 
@@ -36,7 +36,7 @@ import {WriterPOSCAR} from "../writers/WritePOSCAR";
 interface CreateUpdateScatterplotOptions {
 
 	/** Kind of plot for which the data should be provided */
-	plotType?: string;
+	plotType?: PlotKind;
 
 	/** True if the group are not provided */
 	noGroups?: boolean;
@@ -91,7 +91,7 @@ export class ComputeFingerprints extends NodeCore {
 	private removeDuplicates = true;
 	private duplicatesThreshold = 0.015;
 
-	private plotType = "group";
+	private plotType: PlotKind = "group";
 
 	private chartType: FingerprintsChartKind = "fp";
 	private lambda = 0;
@@ -400,8 +400,9 @@ export class ComputeFingerprints extends NodeCore {
 					for(const s of silhouette) values.push(s);
 				}
 				break;
-			default:
-				throw Error("Invalid plot type");
+			case "fidelity":
+			case undefined:
+				throw Error(`Invalid "${options.plotType}" plot type`);
 		}
 
 		// Id of the enabled structures
@@ -1170,7 +1171,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {
 
-			this.plotType = params.plotType as string ?? "group";
+			this.plotType = params.plotType as PlotKind ?? "group";
 
 			this.createUpdateScatterplot("update", {plotType: this.plotType});
 		});
@@ -1224,7 +1225,7 @@ export class ComputeFingerprints extends NodeCore {
 
 			const out: CtrlParams = {
 				basis: structure.basis as number[],
-				positions: structure.atomsPosition as number[],
+				positions: structure.atomsPosition,
 				radii: [],
 				bonds: []
 			};
@@ -1270,6 +1271,11 @@ export class ComputeFingerprints extends NodeCore {
 					case "eh":
 					case "dh":
 						this.lambda = params.binCount as number ?? 50;
+						break;
+					case "en":
+					case "ed":
+					case "op":
+						this.lambda = 0;
 						break;
 				}
 

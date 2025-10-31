@@ -188,14 +188,14 @@ export const pbcShortestVectors = (lattice: Lattice,
 		for(let j = 0; j < J; j++) {
 			let withinFrac = false;
 
-			if(!hasMask || mask![i][j] === 0) {
+			if(!hasMask || mask[i][j] === 0) {
 				withinFrac = true;
 
 				// Check fractional tolerance if specified
 				if(hasFtol) {
 					for(let l = 0; l < 3; l++) {
 						const fdist = coords2[j][l] - coords1[i][l];
-						if(Math.abs(fdist - Math.round(fdist)) > lllFracTol![l]) {
+						if(Math.abs(fdist - Math.round(fdist)) > lllFracTol[l]) {
 							withinFrac = false;
 							break;
 						}

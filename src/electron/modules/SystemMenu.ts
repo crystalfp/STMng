@@ -30,7 +30,7 @@ import type {CtrlParams} from "@/types";
  * @param file - Node name or window path for which the documentation should be shown.
  * @returns Promise from openExternal or error from open file
  */
-const openDocumentation = (kind: "top" | "node" | "secondary", file?: string): Promise<void> => {
+const openDocumentation = async (kind: "top" | "node" | "secondary", file?: string): Promise<void> => {
 
     const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
     let url;
@@ -48,8 +48,7 @@ const openDocumentation = (kind: "top" | "node" | "secondary", file?: string): P
                     `app.asar.unpacked/dist/doc/secondary/${file}.html`) :
                 path.join(mainSourceDirectory, "..", "public", "doc", "secondary", `${file}.html`);
             break;
-        // case "top":
-        default:
+        case "top":
             file = "index";
             url = app.isPackaged ?
                 path.resolve(process.resourcesPath,
@@ -60,7 +59,7 @@ const openDocumentation = (kind: "top" | "node" | "secondary", file?: string): P
     if(existsSync(url)) {
         return shell.openExternal(`file:///${url}`);
     }
-    return Promise.reject(new Error(`Help file "${file}.html" not found`));
+    throw Error(`Help file "${file}.html" not found`);
 };
 
 let systemMenu: Menu;
@@ -157,7 +156,7 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     label: "Reload",
                     accelerator: "CommandOrControl+R",
                     click() {
-                        setTimeout(() => openMenuEntry("clear-scene"), 600);
+                        setTimeout(() => {openMenuEntry("clear-scene");}, 600);
                         mainWindow.reload();
                     }
                 },
@@ -224,7 +223,7 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                         getCurrentNode().then((currentNode) => {
                             if(!currentNode) currentNode = "../index";
                             currentNodeInError = currentNode;
-                            return openDocumentation("node", currentNode);
+                            void openDocumentation("node", currentNode);
                         })
                         .catch((error: Error) => {
                             sendAlertToClient(`Error getting help for "${currentNodeInError}": ${error.message}`);

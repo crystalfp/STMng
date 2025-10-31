@@ -36,7 +36,9 @@ askNode(id, "init")
 		interpolateVolume.value = params.interpolateVolume as boolean ?? false;
 		pointsToAdd.value = params.pointsToAdd as number ?? 1;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 receiveFromNode(id, "countDatasets", (params: CtrlParams) => {
     countDatasets.value = params.countDatasets as number ?? 0;

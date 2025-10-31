@@ -160,9 +160,10 @@ export class SliceStructure extends NodeCore {
 			return;
 		}
 		switch(this.mode) {
-			case "plane":  return this.preparePlaneSlicerGeometry();
-			case "miller": return this.prepareMillerSlicerGeometry();
-			case "slab":   return this.prepareSlabSlicerGeometry();
+			case "plane":  {this.preparePlaneSlicerGeometry(); return;}
+			case "miller": {this.prepareMillerSlicerGeometry(); return;}
+			case "slab":   {this.prepareSlabSlicerGeometry(); return;}
+			case "direct": return;
 		}
 	}
 
@@ -373,6 +374,7 @@ export class SliceStructure extends NodeCore {
 			case "plane":  return this.slicePlane();
 			case "miller": return this.slicePlane();
 			case "slab":   return this.sliceSlab();
+			case "direct": break;
 		}
 		return this.structure;
 	}

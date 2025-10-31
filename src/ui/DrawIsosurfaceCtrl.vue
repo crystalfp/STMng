@@ -62,7 +62,9 @@ askNode(id, "init")
         limits.value[1] = params.limitHigh as number ?? 10;
         limitColormap.value = params.limitColormap as boolean ?? false;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // > Initialize graphical rendering
 const renderer = new DrawIsosurfaceRenderer(id);

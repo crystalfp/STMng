@@ -74,8 +74,10 @@ askNode(id, "init")
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
     })
-    .catch((error: Error) => showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
-                                           "symmetries"));
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                      "symmetries");
+    });
 
 watch([applyInputSymmetries,
        enableFindSymmetries,

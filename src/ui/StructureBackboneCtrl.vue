@@ -67,7 +67,9 @@ askNode(id, "init")
         threshold.value = params.threshold as number ?? 0.9;
         showThreshold.value = threshold.value;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 receiveFromNode(id, "chains", (params: CtrlParams) => {
 

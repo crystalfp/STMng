@@ -102,7 +102,7 @@ export abstract class NodeCore {
 					ipcMain.handle(channelName, async (_event, params: CtrlParams) => channel.callback(params));
 					break;
 				case "send":
-					ipcMain.on(channelName, (_event, params: CtrlParams) => channel.callback(params));
+					ipcMain.on(channelName, (_event, params: CtrlParams) => {channel.callback(params);});
 					break;
 			}
 		}

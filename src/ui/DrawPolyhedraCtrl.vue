@@ -47,7 +47,9 @@ askNode(id, "init")
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
     })
-    .catch((error: Error) => showSystemAlert(`Error from UI init for ${label}: ${error.message}`));
+    .catch((error: Error) => {
+        showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
+    });
 
 // > Initialize graphical rendering
 const renderer = new DrawPolyhedraRenderer(id);

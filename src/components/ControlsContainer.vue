@@ -39,7 +39,12 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 		const info = clientProjectInfo[id];
 		uiList.push(info);
 		const {ui, label} = info;
-		panelList.push({id, label, ctrl: markRaw(defineAsyncComponent(() => import(`../ui/${ui}.vue`)))});
+		panelList.push({
+        id,
+        label,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        ctrl: markRaw(defineAsyncComponent(async () => import(`../ui/${ui}.vue`)))
+    });
 	}
 	selectedTabId.value = uiList[0].id;
 });
