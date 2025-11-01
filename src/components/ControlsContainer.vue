@@ -23,7 +23,7 @@ const selectedTabId = ref("");
 const uiList = reactive<ClientProjectInfoItem[]>([]);
 const panelList = reactive<{id: string; label: string; ctrl: unknown}[]>([]);
 
-/** When the project is loaded request the project data */
+// Request the project data when the project is loaded
 sendToNode("SYSTEM", "project");
 
 receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
@@ -40,16 +40,16 @@ receiveProjectUI((clientProjectInfo: ClientProjectInfo) => {
 		uiList.push(info);
 		const {ui, label} = info;
 		panelList.push({
-        id,
-        label,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        ctrl: markRaw(defineAsyncComponent(async () => import(`../ui/${ui}.vue`)))
-    });
+            id,
+            label,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            ctrl: markRaw(defineAsyncComponent(async () => import(`../ui/${ui}.vue`)))
+        });
 	}
 	selectedTabId.value = uiList[0].id;
 });
 
-/* Return to the main process the type of the current node open in the UI */
+// Return to the main process the type of the current node open in the UI
 sendCurrentNode(() => {
 
 	for(const item of uiList) {

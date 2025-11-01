@@ -1,7 +1,6 @@
 {
   "$schema": "file:///C:/Users/mvalle/AppData/Roaming/npm/node_modules/oxlint/configuration_schema.json",
   "categories": {
-    "correctness": "off"
   },
   "env": {
     "es2025": true
@@ -328,7 +327,10 @@
     "typescript/return-await": "error",
     "typescript/switch-exhaustiveness-check": "error",
     "typescript/unbound-method": "error",
-    "typescript/use-unknown-in-catch-callback-variable": "off"
+    "typescript/use-unknown-in-catch-callback-variable": "off",
+    "vue/valid-define-emits":"warn",
+    "vue/valid-define-props": "warn"
+
   },
   "globals": {
     "document": "readonly",
