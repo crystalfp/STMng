@@ -3,7 +3,7 @@
   "description": "See The Molecule new generation (STMng) is a chemical and crystallographic structure visualization and analysis tool that inherits some functionalities of STM4",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.45.3",
+  "version": "1.46.0",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
