@@ -211,8 +211,8 @@ function getAngles(v1: number[][], v2: number[][], l1: number[], l2: number[]): 
       const row: number[] = [];
       for(let j = 0; j < v2.length; j++) {
         // Calculate dot product
-        const dotProduct = v1[i][0] * v2[j][0] + v1[i][1] * v2[j][1] + v1[i][2] * v2[j][2];
-        let x = dotProduct / (l1[i] * l2[j]);
+        const dp = v1[i][0] * v2[j][0] + v1[i][1] * v2[j][1] + v1[i][2] * v2[j][2];
+        let x = dp / (l1[i] * l2[j]);
 
         // Clamp to [-1, 1] to avoid numerical issues
         x = Math.max(-1, Math.min(1, x));
@@ -446,10 +446,10 @@ function getPointsInSpheres(
 
         const nns: NeighborResult[] = [];
 
-        let index = 0;
+        let index2 = 0;
         for(const coord of nnCoords) {
 
-            const dist = distances[index];
+            const dist = distances[index2];
             if(dist < r + numericalTol) {
                 let finalCoord = coord;
                 if(returnFcoords && lattice) {
@@ -460,11 +460,11 @@ function getPointsInSpheres(
                 nns.push({
                     coord: finalCoord,
                     distance: dist,
-                    index: nnIndices[index],
-                    image: nnImages[index]
+                    index: nnIndices[index2],
+                    image: nnImages[index2]
                 });
             }
-            ++index;
+            ++index2;
         }
 
     neighbors.push(nns);

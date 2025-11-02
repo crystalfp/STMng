@@ -66,7 +66,6 @@ export default defineConfig([
             parser: tsParser,
             ecmaFeatures: {impliedStrict: true},
             projectService: {
-                // allowDefaultProject: ["src/electron/proto/*.ts"],
                 defaultProject: "tsconfig.json",
             },
             warnOnUnsupportedTypeScriptVersion: false,
@@ -153,10 +152,10 @@ export default defineConfig([
 
         "no-loop-func": "warn",
         "no-unused-expressions": "warn",
-        // "no-shadow": "off",
-        // "@typescript-eslint/no-shadow": [
-        //     "error", {hoist: "all", builtinGlobals: true, allow: ["event", "self", "window"]}
-        // ],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": [
+            "error", {hoist: "functions-and-types"}
+        ],
         // "no-implicit-coercion": "error",
         // "no-undef": "error",
         // "no-extend-native": "error",
@@ -300,6 +299,7 @@ export default defineConfig([
         "@typescript-eslint/switch-exhaustiveness-check": "error",
         "@typescript-eslint/unbound-method": "error",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+        "@typescript-eslint/unified-signatures": "off",
 
         // > ******************* stylistic ***********************
         "@stylistic/lines-between-class-members": "warn",

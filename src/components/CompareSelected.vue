@@ -174,9 +174,9 @@ const drawBonds = (atomsPosition: number[], bonds: number[], side: Side): void =
         const dx = atomsPosition[3*to+0] - atomsPosition[3*from+0];
         const dy = atomsPosition[3*to+1] - atomsPosition[3*from+1];
         const dz = atomsPosition[3*to+2] - atomsPosition[3*from+2];
-        const len = Math.hypot(dx, dy, dz);
+        const bondLen = Math.hypot(dx, dy, dz);
 
-        const geometry = new CylinderGeometry(0.1, 0.1, len, 10, 1, true);
+        const geometry = new CylinderGeometry(0.1, 0.1, bondLen, 10, 1, true);
 
         const meshMaterial = new MeshStandardMaterial({
             color: colors[side],
@@ -188,7 +188,7 @@ const drawBonds = (atomsPosition: number[], bonds: number[], side: Side): void =
         const cylinder = new Mesh(geometry, meshMaterial);
 
 		// Rotate it along the bond direction
-		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/len, dy/len, dz/len));
+		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(dx/bondLen, dy/bondLen, dz/bondLen));
 
 		// Move it to the midpoint between atoms
         const midx = (atomsPosition[3*to+0] + atomsPosition[3*from+0])/2;

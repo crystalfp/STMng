@@ -19,7 +19,7 @@ import {displacementCoefficients, type AddKind,
  * Data for the per atom pair multiplier of the sum of covalent radii
  * @notExported
  */
-export interface PairData {
+interface PairData {
 	/** The atom symbol pair */
     label:  string;
 	/** First atom type */

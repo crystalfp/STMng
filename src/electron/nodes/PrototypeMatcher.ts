@@ -341,7 +341,8 @@ export class PrototypeMatcher extends NodeCore {
 	 */
 	private async channelProto(params: CtrlParams): Promise<CtrlParams> {
 
-		const aflow = params.aflow as string ?? "";
+		const aflow = params.aflow as string;
+		if(!aflow) return {result: "Empty aflow ID"};
 
 		if(this.aflowSrcPrototypeLibrary.length === 0) {
 			await this.readCompressedPrototypes();
@@ -351,13 +352,19 @@ export class PrototypeMatcher extends NodeCore {
 			if(proto.tags.aflow === aflow) {
 
 				const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+				const dataForClient = JSON.stringify({
+					aflow,
+					mineral,
+					matrix: proto.snl.lattice.matrix,
+					atoms: this.extractAtoms(proto.snl)
+				});
 
 				createOrUpdateSecondaryWindow({
 					routerPath: "/prototype",
 					width: 1400,
 					height: 900,
 					title: "Prototype structure",
-					data: this.formatForDisplay(aflow, mineral, proto.snl)
+					data: dataForClient
 				});
 
 				return {result: "Success!"};
@@ -388,27 +395,6 @@ export class PrototypeMatcher extends NodeCore {
 				this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
 				resolve();
 			});
-		});
-	}
-
-	/**
-	 * Format the aflow library entry for display
-	 *
-	 * @param aflow - The corresponding aflow UID
-	 * @param mineral - The prototype name
-	 * @param structure - The prototype structure from the library
-	 * @returns - Data for rendering the prototype in the client
-	 */
-	private formatForDisplay(aflow: string, mineral: string, structure: SNL): string {
-
-		// Compute atoms
-		const atoms = this.extractAtoms(structure);
-
-		return JSON.stringify({
-			aflow,
-			mineral,
-			matrix: structure.lattice.matrix,
-			atoms
 		});
 	}
 

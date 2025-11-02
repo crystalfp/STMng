@@ -11,7 +11,7 @@ import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, OrthographicCamera, Vector3, Vector2,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-        Box3, Sphere, MathUtils, Clock} from "three";
+        Box3, Sphere, MathUtils, Clock, Mesh} from "three";
 
 /** Simple 3D viewer */
 export class SimpleViewer {
@@ -218,5 +218,57 @@ export class SimpleViewer {
 		void this.controls.zoomTo(1, true);
 
 		this.camera.updateProjectionMatrix();
+	}
+
+	/**
+	 * Empty a group with the given name
+	 *
+	 * @param groupName - Name of the group to be cleared
+	 * @param removeGroup - If true remove also the group itself from the scene
+	 */
+	clearGroup(groupName: string, removeGroup=false): void {
+
+		const group = this.scene.getObjectByName(groupName);
+		if(!group) return;
+
+		// Meshes to be delete from the group
+		const meshes: Mesh[] = [];
+
+		// Remove meshes' parts
+		group.traverse((object) => {
+
+			if(object.type === "Group") return;
+
+			const mesh = object as Mesh;
+			if(mesh.geometry) mesh.geometry.dispose();
+			if(mesh.material) {
+				if(Array.isArray(mesh.material)) {
+					for(const material of mesh.material) material.dispose();
+				}
+				else {
+					mesh.material.dispose();
+				}
+			}
+			meshes.push(mesh);
+		});
+
+		// Clear the group
+		for(const mesh of meshes) {group.remove(mesh);}
+        group.clear();
+
+		// Remove the group itself
+		if(removeGroup) this.scene.remove(group);
+		this.isSceneModified = true;
+	}
+
+	/**
+	 * Rotate the camera around the scene
+	 *
+	 * @param azimuth - Azimuth angle to be set
+	 */
+	rotateCamera(azimuth: number): void {
+
+		if(!this.controls) return;
+		this.controls.azimuthAngle = azimuth;
 	}
 }

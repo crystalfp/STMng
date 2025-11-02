@@ -328,11 +328,11 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 for(let i = 0; i < allFrac.length; i++) {
                     closeInPrim[i] = [];
                     for(let j = 0; j < allFrac.length; j++) {
-                        const fdist = allFrac[i].map((value, idx) => {
-                            const diff = value - allFrac[j][idx];
+                        const fdist = allFrac[i].map((value, ii) => {
+                            const diff = value - allFrac[j][ii];
                             return Math.abs(pbc(diff));
                         });
-                        closeInPrim[i][j] = fdist.every((d, idx) => d < ftol[idx]);
+                        closeInPrim[i][j] = fdist.every((d, ii) => d < ftol[ii]);
                     }
                 }
 
@@ -354,8 +354,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 for(const group of groups) {
 
                     const groupIndices = group
-                                            .map((value, idx) => (value ? idx : -1))
-                                            .filter((idx) => idx >= 0);
+                                            .map((value, ii) => (value ? ii : -1))
+                                            .filter((ii) => ii >= 0);
 
                     for(const idx1 of groupIndices) {
                         for(const idx2 of groupIndices) {
@@ -379,8 +379,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                     if(!added[grpIdx]) {
                         const group = groups[grpIdx];
                         const inds = group
-                                        .map((value, idx) => (value ? idx : -1))
-                                        .filter((idx) => idx >= 0);
+                                        .map((value, ii) => (value ? ii : -1))
+                                        .filter((ii) => ii >= 0);
 
                         for(const ind of inds) added[ind] = true;
 
@@ -388,10 +388,10 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                         for(let innerIdx = 1; innerIdx < inds.length; innerIdx++) {
                             const ind = inds[innerIdx];
                             // eslint-disable-next-line no-loop-func
-                            const offset = fracCoordsNew[ind].map((value, idx) => value - coords[idx]);
+                            const offset = fracCoordsNew[ind].map((value, ii) => value - coords[ii]);
                             const adjustedOffset = offset.map((value) => pbc(value));
-                            coords = coords.map((coord, idx) =>
-                                coord + adjustedOffset[idx] / (innerIdx + 1)
+                            coords = coords.map((coord, ii) =>
+                                coord + adjustedOffset[ii] / (innerIdx + 1)
                             );
                         }
 
@@ -409,12 +409,12 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 const lattMatrixNew = multiply(invLattMat, structure.lattice.matrix);
                 const lattNew = matrixToLattice(lattMatrixNew);
                 const struct: SNL = {
-                    sites: coordsNew.map((coord, idx): Site => ({
+                    sites: coordsNew.map((coord, ii): Site => ({
                         abc: coord,
                         xyz: multiply(invLattMat, coord),
-                        label: labelsNew[idx],
+                        label: labelsNew[ii],
                         species: [
-                            {element: spNew[idx], occu: 1}
+                            {element: spNew[ii], occu: 1}
                         ]
                     })),
                     lattice: lattNew

@@ -277,7 +277,7 @@ onNodesChange((changes) => {
 /** Graph nodes */
 const nodes = computed<Node<NodeData>[]>(() => {
 
-    const nodes: Node<NodeData>[] = [];
+    const resultNodes: Node<NodeData>[] = [];
     for(const graphNode of graphFlow) {
 
         let type = "default";
@@ -300,9 +300,9 @@ const nodes = computed<Node<NodeData>[]>(() => {
             width: 100
         };
         if(type === "none") out.class = "vue-flow__node-default";
-        nodes.push(out);
+        resultNodes.push(out);
     }
-    return nodes;
+    return resultNodes;
 });
 
 const crossingLinesFilter = theme.value === "dark" ?
@@ -318,7 +318,7 @@ const crossingLinesFilter = theme.value === "dark" ?
 /** Graph edges */
 const edges = computed<Edge[]>(() => {
 
-    const edges: Edge[] = [];
+    const resultEdges: Edge[] = [];
     for(const graphNode of graphFlow) {
 
         if(graphNode.in) {
@@ -330,10 +330,10 @@ const edges = computed<Edge[]>(() => {
                 type: ConnectionLineType.SmoothStep,
                 style: {strokeWidth: 2, filter: crossingLinesFilter}
             };
-            edges.push(out);
+            resultEdges.push(out);
         }
     }
-    return edges;
+    return resultEdges;
 });
 
 /** Type of the onEdgeUpdate parameters */

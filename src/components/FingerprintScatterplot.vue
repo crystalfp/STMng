@@ -432,15 +432,15 @@ const pointClicked = (event: MouseEvent): void => {
     if(scatterplotType.value === "fidelity") return;
 
     // Convert click coordinates into point coordinates
-    let x = (event.clientX - scatterplotX)/(scatterplotWidth.value-20);
-    let y = (scatterplotHeight.value-(event.clientY+20))/(scatterplotHeight.value-40);
-    if(x < 0) x = 0;
-    else if(x > 1) x = 1;
-    if(y < 0) y = 0;
-    else if(y > 1) y = 1;
+    let xx = (event.clientX - scatterplotX)/(scatterplotWidth.value-20);
+    let yy = (scatterplotHeight.value-(event.clientY+20))/(scatterplotHeight.value-40);
+    if(xx < 0) xx = 0;
+    else if(xx > 1) xx = 1;
+    if(yy < 0) yy = 0;
+    else if(yy > 1) yy = 1;
 
     // Find the nearest point index
-    const nearestNeighbor = tree.nearest({px: x, py: y});
+    const nearestNeighbor = tree.nearest({px: xx, py: yy});
 
     let r2 = (2*pointRadius.value)/(scatterplotWidth.value - 20);
     r2 *= r2;

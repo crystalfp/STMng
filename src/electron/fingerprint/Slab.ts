@@ -529,13 +529,13 @@ export class Slab {
 
                             const c3 = 3*c;
 
-                            const di = dd[replicaC];
-                            const dj = dd[replicaC+1];
-                            const dk = dd[replicaC+2];
+                            const ddi = dd[replicaC];
+                            const ddj = dd[replicaC+1];
+                            const ddk = dd[replicaC+2];
 
-                            const xc = atomsPosition[c3]   + di*basis[0] + dj*basis[3] + dk*basis[6];
-                            const yc = atomsPosition[c3+1] + di*basis[1] + dj*basis[4] + dk*basis[7];
-                            const zc = atomsPosition[c3+2] + di*basis[2] + dj*basis[5] + dk*basis[8];
+                            const xc = atomsPosition[c3]   + ddi*basis[0] + ddj*basis[3] + ddk*basis[6];
+                            const yc = atomsPosition[c3+1] + ddi*basis[1] + ddj*basis[4] + ddk*basis[7];
+                            const zc = atomsPosition[c3+2] + ddi*basis[2] + ddj*basis[5] + ddk*basis[8];
 
                             const vAC = [xc - xa, yc - ya, zc - za];
                             const magnitudeAC = Math.hypot(vAC[0], vAC[1], vAC[2]);

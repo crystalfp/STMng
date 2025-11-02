@@ -261,11 +261,11 @@ export const broadcastMessage = (eventType: string, ...params: (boolean | string
 /**
  * Show developer tools on a secondary window
  *
- * @param path - Path to the window on which the developer tools should be opened
+ * @param windowPath - Path to the window on which the developer tools should be opened
  */
-export const showDevToolsOnSecondaryWindow = (path: string): void => {
+export const showDevToolsOnSecondaryWindow = (windowPath: string): void => {
 
-    const win = openedWindows.get(path);
+    const win = openedWindows.get(windowPath);
     if(win) {
 
         win.webContents.closeDevTools();
