@@ -6,15 +6,23 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-18
  */
-import {existsSync, readFileSync} from "node:fs";
+import {existsSync, readFileSync, createReadStream} from "node:fs";
 import log from "electron-log";
+import {createGunzip} from "node:zlib";
 import {NodeCore} from "../modules/NodeCore";
 import {sendToClient} from "../modules/ToClient";
 import {publicDirPath} from "../modules/GetPublicPath";
 import {findMatchingPrototypes} from "../proto/AflowPrototypeMatcher";
-import {getAtomicSymbol} from "../modules/AtomData";
-import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
-import type {PrototypeEntry, Prototype} from "../proto/types";
+import {getAtomData, getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
+import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
+import type {ChannelDefinition, CtrlParams, Structure,
+			 PrototypeAtomsData} from "@/types";
+import type {PrototypeEntry, Prototype, SNL} from "../proto/types";
+
+interface LibraryEntry {
+	snl: SNL;
+	tags: Record<string, string>;
+}
 
 export class PrototypeMatcher extends NodeCore {
 
@@ -30,11 +38,13 @@ export class PrototypeMatcher extends NodeCore {
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
 	private readonly aflowAdjunctMap = new Map<string, string>();
 	private hasAdjunctMap = false;
+	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",       type: "invoke", callback: this.channelInit.bind(this)},
-		{name: "enable",	 type: "invoke", callback: this.channelEnable.bind(this)},
-		{name: "tolerances", type: "invoke", callback: this.channelTolerances.bind(this)},
+		{name: "init",       type: "invoke",      callback: this.channelInit.bind(this)},
+		{name: "enable",	 type: "invoke",      callback: this.channelEnable.bind(this)},
+		{name: "tolerances", type: "invoke", 	  callback: this.channelTolerances.bind(this)},
+		{name: "proto", 	 type: "invokeAsync", callback: this.channelProto.bind(this)},
 	];
 
 	/**
@@ -321,5 +331,113 @@ export class PrototypeMatcher extends NodeCore {
 		this.match = "";
 
 		return {match: this.match, formula: this.formula, hasInput: this.hasInput};
+	}
+
+	/**
+	 * Channel handler for changing computational parameters
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelProto(params: CtrlParams): Promise<CtrlParams> {
+
+		const aflow = params.aflow as string ?? "";
+
+		if(this.aflowSrcPrototypeLibrary.length === 0) {
+			await this.readCompressedPrototypes();
+		}
+
+		for(const proto of this.aflowSrcPrototypeLibrary) {
+			if(proto.tags.aflow === aflow) {
+
+				const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+
+				createOrUpdateSecondaryWindow({
+					routerPath: "/prototype",
+					width: 1400,
+					height: 900,
+					title: "Prototype structure",
+					data: this.formatForDisplay(aflow, mineral, proto.snl)
+				});
+
+				return {result: "Success!"};
+			}
+		}
+
+		return {error: `Prototype "${aflow}" not found`};
+	}
+
+	/**
+	 * Read the original list of prototypes as provided by Pymatgen
+	 */
+	private async readCompressedPrototypes(): Promise<void> {
+
+		// Read compressed AFLOW prototypes
+		const gunzip = createGunzip();
+		const prototypesPath = publicDirPath("aflow_prototypes.json.gz");
+		const source = createReadStream(prototypesPath);
+		const stream = source.pipe(gunzip);
+
+		let rawResult = "";
+		stream.on("data", (chunk: Buffer) => {
+			rawResult += chunk.toString("utf8");
+		});
+		return new Promise<void>((resolve) => {
+			stream.on("end", () => {
+				// Preprocess AFLOW prototypes
+				this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
+				resolve();
+			});
+		});
+	}
+
+	/**
+	 * Format the aflow library entry for display
+	 *
+	 * @param aflow - The corresponding aflow UID
+	 * @param mineral - The prototype name
+	 * @param structure - The prototype structure from the library
+	 * @returns - Data for rendering the prototype in the client
+	 */
+	private formatForDisplay(aflow: string, mineral: string, structure: SNL): string {
+
+		// Compute atoms
+		const atoms = this.extractAtoms(structure);
+
+		return JSON.stringify({
+			aflow,
+			mineral,
+			matrix: structure.lattice.matrix,
+			atoms
+		});
+	}
+
+	/**
+	 * Reformat atom data for rendering
+	 *
+	 * @param structure - Prototype structure from the aflow library
+	 * @returns Atoms data for rendering
+	 */
+	private extractAtoms(structure: SNL): PrototypeAtomsData {
+
+		const out: PrototypeAtomsData = {
+			positions: [],
+			labels: [],
+			radius: [],
+			color: [],
+		};
+
+		for(const site of structure.sites) {
+
+			out.positions.push(...site.xyz);
+			out.labels.push(site.label);
+
+			const atomZ = getAtomicNumber(site.species[0].element);
+			const ad = getAtomData(atomZ);
+			out.radius.push(ad.rCov);
+			out.color.push(ad.color);
+		}
+
+		return out;
 	}
 }

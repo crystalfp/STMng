@@ -13,22 +13,7 @@ import {Group, Vector3, type Material, ConeGeometry,
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
 import type {PositionType} from "@/types";
-
-// Triangles. Top and bottom facies are not needed
-const indices = [
-
-    4, 5, 1,
-    4, 1, 0,
-
-    3, 2, 6,
-    3, 6, 7,
-
-    4, 0, 3,
-    4, 3, 7,
-
-    1, 5, 6,
-    1, 6, 2,
-];
+import {indices} from "../services/SharedConstants";
 
 /**
  * Renderer for unit cell graphical output

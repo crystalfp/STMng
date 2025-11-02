@@ -7,6 +7,7 @@
  * @since 2024-07-07
  */
 import type {Context} from "chartjs-plugin-datalabels";
+import type {AddKind} from "../services/SharedConstants";
 
 // > Type of a collection of atomic structures
 // >> Base types
@@ -709,3 +710,42 @@ export type SlicingModes = "plane" | "miller" | "sphere" | "slab" | "direct";
  * Atoms selector modes for AtomsChooser widget
  */
 export type AtomSelectorModes = "symbol" | "label" | "index" | "all";
+
+/**
+ * Prototype atoms data
+ */
+export interface PrototypeAtomsData {
+
+    /** Atoms positions as [x, y, z, x, y, z, ...] */
+    positions: number[];
+
+    /** Labels for the atoms */
+    labels: string[];
+
+    /** Atoms covalent radii */
+    radius: number[];
+
+    /** Atoms colors as "#RRGGBB" hex string */
+    color: string[];
+
+    /** Atom type for outside atoms use */
+    addType?: AddKind[];
+}
+
+/**
+ * Prototype structure data for display
+ */
+export interface PrototypeStructureData {
+
+    /** Prototype aflow UID */
+    aflow: string;
+
+    /** Prototype name */
+    mineral: string;
+
+    /** Lattice matrix */
+    matrix: number[][];
+
+    /** Prototype atoms */
+    atoms: PrototypeAtomsData;
+}

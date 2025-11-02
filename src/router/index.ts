@@ -60,5 +60,9 @@ export const router = createRouter({
             path: "/displacements",
             component: (): Component => import("@/components/ShowDisplacements.vue")
         },
+        {
+            path: "/prototype",
+            component: (): Component => import("@/components/ShowPrototype.vue")
+        },
     ],
 });

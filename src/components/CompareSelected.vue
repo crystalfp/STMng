@@ -18,6 +18,7 @@ import {theme} from "@/services/ReceiveTheme";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import type {BasisType, CtrlParams} from "@/types";
+import {indices} from "../services/SharedConstants";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
@@ -72,20 +73,6 @@ const sv = new SimpleViewer(".side-n", false, (scene: Scene) => {
 const colors = [
     "blue",
     "green"
-];
-const indices = [
-
-    4, 5, 1,
-    4, 1, 0,
-
-    3, 2, 6,
-    3, 6, 7,
-
-    4, 0, 3,
-    4, 3, 7,
-
-    1, 5, 6,
-    1, 6, 2,
 ];
 
 /**
@@ -153,12 +140,12 @@ const drawAtoms = (atomsPosition: number[], radii: number[], side: Side): void =
         roughness: 0.5,
         metalness: 0.6,
         side: FrontSide,
-      });
+    });
 
     const natoms = radii.length;
     for(let i=0; i < natoms; ++i) {
 
-      const geometry = new IcosahedronGeometry(radii[i], 3);
+        const geometry = new IcosahedronGeometry(radii[i], 3);
 
         const sphere = new Mesh(geometry, material);
         sphere.position.set(atomsPosition[3*i], atomsPosition[3*i+1], atomsPosition[3*i+2]);
@@ -221,30 +208,6 @@ let nb = new Vector3(0, 1, 0);
 let nc = new Vector3(0, 0, 1);
 
 /**
- * Center the camera and the controls
- *
- * @param center - Coordinates of the center of the structure
- */
-const centerCamera = (center: [number, number, number]): void => {
-
-    const camera = sv.getCamera();
-    if(!camera) return;
-    const controls = sv.getControls();
-    if(!controls) return;
-
-    camera.lookAt(new Vector3(...center));
-    controls.setOrbitPoint(...center);
-    const maxSide = Math.max(center[0], center[1], center[2]);
-    void controls
-            .normalizeRotations()
-            .setLookAt(center[0], center[1], center[2] + 2*maxSide,
-                       center[0], center[1], center[2], false);
-    void controls.zoomTo(1, true);
-
-    camera.updateProjectionMatrix();
-};
-
-/**
  * Load the requested structure
  *
  * @param side - Side of the list (0: left, 1: right)
@@ -267,7 +230,7 @@ const loadStructure = (side: Side, step: number): void => {
                 nb = new Vector3(bb[3], bb[4], bb[5]).normalize();
                 nc = new Vector3(bb[6], bb[7], bb[8]).normalize();
 
-                centerCamera(center);
+                sv.centerCamera(center);
             }
             sv.setSceneModified();
         })

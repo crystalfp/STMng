@@ -6,8 +6,6 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-09-24
  */
-// import {createReadStream} from "node:fs";
-// import {createGunzip} from "node:zlib";
 import {matrixToLattice} from "./PymatgenLattice";
 import {getPrimitiveStructure, getReducedStructure} from "./PymatgenStructure";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
@@ -15,12 +13,6 @@ import {getAtomicSymbol} from "../modules/AtomData";
 import {StructureMatcher} from "./StructureMatcher";
 import type {Structure} from "../../types";
 import type {Prototype, SNL, Site, PrototypeEntry} from "./types";
-
-// interface LibraryEntry {
-// 	snl: SNL;
-// 	about: Record<string, unknown>;
-// 	tags: Record<string, string>;
-// }
 
 /**
  *  This class will match structures to their crystal prototypes, and will
@@ -42,7 +34,6 @@ class AflowPrototypeMatcher {
 	private readonly initialStol: number;
 	private readonly initialAngleTol: number;
 	private readonly aflowPrototypeLibrary:  PrototypeEntry[] = [];
-	// private readonly aflowPrototypeLibrary: {snl: SNL; dct: LibraryEntry}[] = [];
 
 	/**
 	 * Initialize the prototype matcher.
@@ -65,54 +56,6 @@ class AflowPrototypeMatcher {
 		this.initialAngleTol = initialAngleTol;
 		this.aflowPrototypeLibrary = preprocessedPrototypes;
 	}
-
-	/**
-	 * Initialize the prototype matcher.
-	 *
-	 * Tolerances as defined in StructureMatcher. Tolerances will be
-     * gradually decreased until only a single match is found (if possible).
-	 *
-	 * @param initialLtol - Fractional length tolerance
-	 * @param initialStol - Site tolerance
-	 * @param initialAngleTol - Angle tolerance
-	 */
-		/*
-	oldConstructor(initialLtol = 0.2,
-        		   initialStol = 0.3,
-        		   initialAngleTol = 5): void {
-
-		void initialLtol;
-		void initialStol;
-		void initialAngleTol;
-
-		this.initialLtol = initialLtol;
-		this.initialStol = initialStol;
-		this.initialAngleTol = initialAngleTol;
-		// This should be adapted to access the data file under public
-		const prototypesPath = "D:/Projects/STMng/proto-test/aflow_prototypes.json.gz";
-
-		// Read compressed AFLOW prototypes
-		const gunzip = createGunzip();
-		const source = createReadStream(prototypesPath);
-		const stream = source.pipe(gunzip);
-
-		let rawResult = "";
-		stream.on("data", (chunk: Buffer) => {
-    		rawResult += chunk.toString("utf8");
-		});
-		stream.on("end", () => {
-
-			// Preprocess AFLOW prototypes
-			const aflowPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
-
-			for(const dct of aflowPrototypeLibrary) {
-				const reducedStructure = getReducedStructure(dct.snl);
-				const primitiveStructure = getPrimitiveStructure(reducedStructure);
-				// this.aflowPrototypeLibrary.push({snl: primitiveStructure, dct});
-			}
-		});
-	}
-	*/
 
 	/**
 	 * Convert structure to the format required by the code

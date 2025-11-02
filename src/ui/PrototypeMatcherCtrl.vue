@@ -133,6 +133,25 @@ const resetParams = (): void => {
     prototypes.length = 0;
 };
 
+/**
+ * Display in a secondary window the corresponding prototype structure
+ *
+ * @param aflow - The aflow UID of the selected prototype
+ */
+const selectPrototype = (aflow: string): void => {
+
+    if(!aflow) return;
+
+    // Retrieve prototype
+    askNode(id, "proto", {aflow})
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            showNodeAlert(error.message, "prototypeMatcher");
+        });
+};
+
 </script>
 
 
@@ -153,11 +172,13 @@ const resetParams = (): void => {
   </debounced-slider>
   <v-btn block class="mt-5 mb-4" :disabled="!enableProto"
          @click="resetParams">Reset parameters</v-btn>
-  <v-container v-if="enableProto && hasInput" class="mt-2 ml-2 mb-6 pa-0">
-  <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger" v-html="`Prototypes for ${formula}`" />
-    <v-container v-for="entry of prototypes" :key="entry[1]" class="mb-4 pa-0">
-      <v-label class="result-label pb-1 bigger" v-html="entry[0]" /><br>
-      <v-label class="bigger">{{ `(Aflow: ${entry[1]})` }}</v-label>
+  <v-container v-if="enableProto && hasInput" class="mt-2 ml-2 mb-6 pa-0 pr-2">
+    <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger" v-html="`Prototypes for ${formula}`" />
+    <v-container v-for="entry of prototypes" :key="entry[1]"
+                 class="mb-4 pa-1 border-thin rounded-lg cursor-pointer"
+                 @click="selectPrototype(entry[1])">
+      <v-label class="result-label pb-1 bigger cursor-pointer" v-html="entry[0]" /><br>
+      <v-label class="bigger cursor-pointer">{{ `(Aflow: ${entry[1]})` }}</v-label>
     </v-container>
   </v-container>
   <node-alert node="prototypeMatcher" />

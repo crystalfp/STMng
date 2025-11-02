@@ -12,12 +12,14 @@ import {sendToClient} from "../modules/ToClient";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell, isHydrogenBond, isNormalBond, vectorAngle} from "../modules/Helpers";
 import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
+import {displacementCoefficients, type AddKind,
+		AddType, BondType} from "../../services/SharedConstants";
 
 /**
  * Data for the per atom pair multiplier of the sum of covalent radii
  * @notExported
  */
-interface PairData {
+export interface PairData {
 	/** The atom symbol pair */
     label:  string;
 	/** First atom type */
@@ -28,65 +30,11 @@ interface PairData {
     scale:  number;
 }
 
-/** Multiplicative coefficients for basis to get atoms adjacent to the unit cell */
-const displacementCoefficients = [
-
-	[1,  0, 0], // Z = 0
-	[1,  1, 0],
-	[1, -1, 0],
-
-	[-1,  0, 0],
-	[-1,  1, 0],
-	[-1, -1, 0],
-
-	[0,  1, 0], // [0, 0, 0] is obviously missing
-	[0, -1, 0],
-
-	[0,  0, 1], // Z = 1
-	[0,  1, 1],
-	[0, -1, 1],
-
-	[-1,  0, 1],
-	[-1,  1, 1],
-	[-1, -1, 1],
-
-	[1,  0, 1],
-	[1,  1, 1],
-	[1, -1, 1],
-
-	[0,  0, -1], // Z = -1
-	[0,  1, -1],
-	[0, -1, -1],
-
-	[-1,  0, -1],
-	[-1,  1, -1],
-	[-1, -1, -1],
-
-	[1,  0, -1],
-	[1,  1, -1],
-	[1, -1, -1],
-] as const;
-
 /** Possible atoms Z values that form a H bond */
 const atomZForH = new Set([7, 8, 9, 16]);
 
 const MAX_ATOMS_FOR_BONDS = 1_000;
 
-/** Bond type values */
-const BondType = {
-    normal: 	0,
-    hydrogen:   1,
-    invalid:   99
-} as const;
-
-/** Add type values 1: atom in unit cell; 2: atom outside unit cell */
-const AddType = {
-	removed: -1,
-	inside:   1,
-	outside:  2,
-	added:   22
-} as const;
-type AddKind = (typeof AddType)[keyof typeof AddType];
 
 export class ComputeBonds extends NodeCore {
 
@@ -218,19 +166,7 @@ export class ComputeBonds extends NodeCore {
 		const {basis} = crystal;
 
 		// Add the input atoms
-		const outAtoms: Atom[] = [];
-		for(const atom of atoms) {
-			outAtoms.push({
-				atomZ: atom.atomZ,
-				label: atom.label,
-				chain: atom.chain,
-				position: [
-					atom.position[0],
-					atom.position[1],
-					atom.position[2],
-				]
-			});
-		}
+		const outAtoms = structuredClone(atoms);
 
 		// The first atoms are the ones inside the unit cell
 		this.addType = Array<AddKind>(natoms).fill(AddType.inside);
@@ -252,7 +188,7 @@ export class ComputeBonds extends NodeCore {
 						atom.position[2]+c[0]*basis[2]+c[1]*basis[5]+c[2]*basis[8],
 					]
 				});
-				this.addType.push(2);
+				this.addType.push(AddType.outside);
 			}
 		}
 

@@ -198,4 +198,25 @@ export class SimpleViewer {
     setSceneModified(): void {
         this.isSceneModified = true;
     }
+
+	/**
+	 * Center camera and controls
+	 *
+	 * @param center - Coordinates of the center of the structure
+	 */
+	centerCamera(center: [number, number, number]): void {
+
+		if(!this.camera || !this.controls) return;
+
+		this.camera.lookAt(new Vector3(...center));
+		this.controls.setOrbitPoint(...center);
+		const maxSide = Math.max(center[0], center[1], center[2]);
+		void this.controls
+				.normalizeRotations()
+				.setLookAt(center[0], center[1], center[2] + 2*maxSide,
+						   center[0], center[1], center[2], false);
+		void this.controls.zoomTo(1, true);
+
+		this.camera.updateProjectionMatrix();
+	}
 }
