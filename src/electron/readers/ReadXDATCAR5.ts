@@ -16,7 +16,10 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
-/** Line read type */
+/**
+ * Line read type
+ * @notExported
+ */
 const LineType = {
     comment:   0,
     scale:     1,
@@ -27,8 +30,12 @@ const LineType = {
 	separator: 6,
 	exit:      7
 } as const;
-type Step = (typeof LineType)[keyof typeof LineType];
 
+/**
+ * Line read type
+ * @notExported
+ */
+type Step = (typeof LineType)[keyof typeof LineType];
 
 export class ReaderXDATCAR5 implements ReaderImplementation {
 

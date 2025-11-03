@@ -13,7 +13,10 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, BasisType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
-/** Line read type */
+/**
+ * Line read type
+ * @notExported
+ */
 const LineType = {
     item:   0,
     step:   1,
@@ -23,14 +26,27 @@ const LineType = {
     box3:   5,
     atom:   6,
 } as const;
+
+/**
+ * Line read type
+ * @notExported
+ */
 type Step = (typeof LineType)[keyof typeof LineType];
 
-/** Types of unit cells */
+/**
+ * Types of unit cells
+ * @notExported
+ */
 const BoxType = {
     unknown: 0,
     restrictedTriclinic:   1,
     rectangular:   2,
 } as const;
+
+/**
+ * Type of unit cell kind variables
+ * @notExported
+ */
 type Box = (typeof BoxType)[keyof typeof BoxType];
 
 export class ReaderLAMMPStrj implements ReaderImplementation {

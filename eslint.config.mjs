@@ -46,7 +46,6 @@ export default defineConfig([
             document: "readonly",
             window: "readonly",
             NodeJS: "readonly",
-            expect: "readonly",
             test: "readonly",
             afterAll: "readonly",
             beforeAll: "readonly",
@@ -126,8 +125,8 @@ export default defineConfig([
         // > ******************* language rules ***********************
         "no-unassigned-vars": "warn",
 
-        // "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
-        // "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
+        "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
+        "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
         "@typescript-eslint/restrict-template-expressions": ["warn", {allowNumber: true}],
@@ -135,8 +134,8 @@ export default defineConfig([
         // "max-len": ["off", 130],
         "no-dupe-class-members": "error",
         // "no-buffer-constructor": "error",
-        // "no-redeclare": ["off", {builtinGlobals: true}],
-        // "@typescript-eslint/no-redeclare": ["error", {builtinGlobals: true}],
+        "no-redeclare": ["off", {builtinGlobals: true}],
+        "@typescript-eslint/no-redeclare": ["error", {builtinGlobals: true}],
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error", {
             "args": "all",

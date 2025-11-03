@@ -11,7 +11,10 @@ import {cartesianToFractionalCoordinates, hasUnitCell} from "./Helpers";
 import {getAtomicSymbol} from "./AtomData";
 import {EmptyStructure} from "./EmptyStructure";
 
-/** Selected atoms positions */
+/**
+ * Selected atoms positions
+ * @notExported
+ */
 interface Positions {
 	/** Selected atoms coordinates */
 	positions: PositionType[];
@@ -19,7 +22,10 @@ interface Positions {
 	idx: number[];
 }
 
-/** Distance computation result */
+/**
+ * Distance computation result
+ * @notExported
+ */
 interface Distance {
 	/** Distance between the atoms */
 	distance: number;
@@ -27,7 +33,10 @@ interface Distance {
 	offset: PositionType;
 }
 
-/** Values for the greedy algorithm to find correspondences */
+/**
+ * Values for the greedy algorithm to find correspondences
+ * @notExported
+ */
 interface Cost {
 	/** Index of the previous step atom (same specie) */
 	initial: number;
@@ -39,7 +48,10 @@ interface Cost {
 	offset: PositionType;
 }
 
-/** Accumulated values to compute averages */
+/**
+ * Accumulated values to compute averages
+ * @notExported
+ */
 interface Averages {
 	/** Accumulated positions */
 	meanPosition: PositionType;
@@ -71,7 +83,10 @@ export interface AveragesResult {
 	isFractional: boolean;
 }
 
-/** Result of the reordering */
+/**
+ * Result of the reordering
+ * @notExported
+ */
 interface AverageResultsAndStructure {
 	/** Average values (mean position and MSD) */
 	averages: AveragesResult[];

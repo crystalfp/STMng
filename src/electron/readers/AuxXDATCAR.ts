@@ -11,12 +11,20 @@ import {createInterface} from "node:readline/promises";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure} from "@/types";
 
-/** Line read type */
+/**
+ * Line read type
+ * @notExported
+ */
 const LineType = {
     header:    0,
     separator: 1,
     position:  2,
 } as const;
+
+/**
+ * Line read type
+ * @notExported
+ */
 type Step = (typeof LineType)[keyof typeof LineType];
 
 /**

@@ -42,12 +42,15 @@ export const getReducedStructure = (snl: SNL): SNL => {
 	return snl;
 };
 
+/**
+ * Result of site search
+ * @notExported
+ */
 interface SiteElement {
     element: string;
     frac: number[];
     cart: number[];
 }
-
 
 /**
  * Get the fractional coords in fc1 that have coordinates

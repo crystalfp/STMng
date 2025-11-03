@@ -176,6 +176,7 @@ export const findMatchingPrototypes = (
 		initialAngleTol = 5): Prototype[] => {
 
 	const afpm = new AflowPrototypeMatcher(preprocessedPrototypes,
-										   initialLtol, initialStol, initialAngleTol);
+										   initialLtol, initialStol,
+										   initialAngleTol);
 	return afpm.getPrototypes(structure);
 };

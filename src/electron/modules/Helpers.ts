@@ -206,7 +206,10 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
 	return fractionalCoords;
 };
 
-/** Output from reducing to fractional coordinates */
+/**
+ * Output from reducing to fractional coordinates
+ * @notExported
+ */
 interface ReducedToFractional {
 
 	/** Atoms without duplicates */

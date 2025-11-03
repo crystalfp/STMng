@@ -19,8 +19,14 @@ import type {ChannelDefinition, CtrlParams, Structure,
 			 PrototypeAtomsData} from "@/types";
 import type {PrototypeEntry, Prototype, SNL} from "../proto/types";
 
+/**
+ * Entries inside the Pymatgen prototypes library file
+ * @notExported
+ */
 interface LibraryEntry {
+	/** Prototype structure */
 	snl: SNL;
+	/** Corresponding tags */
 	tags: Record<string, string>;
 }
 

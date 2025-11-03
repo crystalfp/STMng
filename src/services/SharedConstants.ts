@@ -7,7 +7,10 @@
  * @since 2025-11-02
  */
 
-/** Multiplicative coefficients for basis to get atoms adjacent to the unit cell */
+/**
+ * Multiplicative coefficients for basis
+ * to get atoms adjacent to the unit cell
+ */
 export const displacementCoefficients = [
 
 	[1,  0, 0], // Z = 0
@@ -46,24 +49,34 @@ export const displacementCoefficients = [
 	[1, -1, -1],
 ] as const;
 
-/** Bond type values */
+/** Bond type */
 export const BondType = {
+	/** Normal bond */
     normal: 	0,
+	/** Hydrogen bond */
     hydrogen:   1,
+	/** Bond to be removed (used only inside ComputeBonds) */
     invalid:   99
 } as const;
 
-/** Add type values 1: atom in unit cell; 2: atom outside unit cell */
+/** Add type values 1: ; 2:  */
 export const AddType = {
+	/** Atom not added (used only inside ComputeBonds) */
 	removed: -1,
+	/** Atom in unit cell */
 	inside:   1,
+	/** Atom outside unit cell */
 	outside:  2,
+	/** Atom added to the neighbors of the unit cell ones */
 	added:   22
 } as const;
+
+/** Type of the variables containing AddType values */
 export type AddKind = (typeof AddType)[keyof typeof AddType];
 
-
-// Triangles. Top and bottom facies are not needed
+/**
+ * Triangles indices for a box. Top and bottom facies are not needed
+ */
 export const indices = [
 
     4, 5, 1,
@@ -77,4 +90,4 @@ export const indices = [
 
     1, 5, 6,
     1, 6, 2,
-];
+] as const;

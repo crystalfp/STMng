@@ -242,6 +242,10 @@ function isClose(array1: number[][], array2: number[][], atol: number): boolean[
     return result;
 }
 
+/**
+ * Results of neighbor search
+ * @notExported
+ */
 interface NeighborResult {
     coord: number[];
     distance: number;

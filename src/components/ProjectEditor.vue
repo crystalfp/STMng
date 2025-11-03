@@ -17,7 +17,10 @@ import SpecialNode from "./SpecialNode.vue";
 import type {ProjectInfo, GraphicType} from "@/types/NodeInfo";
 import type {ProjectGraph} from "@/types";
 
-/** The graph description for the Vue Flow graph editor */
+/**
+ * The graph description for the Vue Flow graph editor
+ * @notExported
+ */
 interface GraphFlowItem {
 
 	/** ID of the node */
@@ -45,7 +48,10 @@ interface GraphFlowItem {
     position: {x: number; y: number};
 }
 
-/** VueFlow graph node additional data (the "data" object inside Node) */
+/**
+ * VueFlow graph node additional data (the "data" object inside Node)
+ * @notExported
+ */
 interface NodeData {
 
     /** The label that appears on the node selector */
@@ -68,7 +74,10 @@ const graphFlow = reactive<GraphFlowItem[]>([]);
 const X_INCREMENT = 150;
 const Y_INCREMENT = 70;
 
-/** Available node */
+/**
+ * Available node
+ * @notExported
+ */
 interface AvailableNode {
 
     /** ID of the node */
@@ -197,7 +206,10 @@ const showPanel = ref(false);
 // VueFlow related routines
 const {onNodesChange, updateNode, findNode, screenToFlowCoordinate} = useVueFlow();
 
-/** Node information for the panel inside the graph chart */
+/**
+ * Node information for the panel inside the graph chart
+ * @notExported
+ */
 interface OneNodeInfo {
 
     /** Unique identifier */
@@ -336,7 +348,10 @@ const edges = computed<Edge[]>(() => {
     return resultEdges;
 });
 
-/** Type of the onEdgeUpdate parameters */
+/**
+ * Type of the onEdgeUpdate parameters
+ * @notExported
+ */
 interface EdgeUpdateParams {
     /** Edge before update */
     edge: GraphEdge;

@@ -21,7 +21,10 @@ import {addVectors, determinant, getFractionalCoords, norm, pbc,
         subtractVectors} from "./Utility.ts";
 import type {Lattice, SNL} from "./types";
 
-/** Result of structure matching */
+/**
+ * Result of structure matching
+ * @notExported
+ */
 interface MatchResult {
     rms: number;
     maxDist: number;
@@ -30,6 +33,10 @@ interface MatchResult {
     mapping: number[];
 }
 
+/**
+ * Supercell search result
+ * @notExported
+ */
 interface SupercellResult {
   s1Coords: number[][];
   s2Coords: number[][];

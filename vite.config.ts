@@ -16,7 +16,8 @@ export default defineConfig({
         preserveSymlinks: true
     },
     optimizeDeps: {
-        exclude: ["doc", "release", "save", "other", "bugs", "test-data"],
+        exclude: ["doc", "release", "save", "other", "bugs",
+                  "test-data", "proto-test"],
         holdUntilCrawlEnd: false
     },
     define: {

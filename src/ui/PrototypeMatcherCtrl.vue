@@ -21,6 +21,10 @@ const angleTolerance = ref(5);
 const formula = ref("");
 const hasInput = ref(false);
 
+/**
+ * Identifiers for the matched prototypes
+ * @notExported
+ */
 type Prototype = [string, string];
 const prototypes = reactive<Prototype[]>([]);
 

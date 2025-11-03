@@ -11,7 +11,10 @@ import type {FingerprintsAccumulator} from "./Accumulator";
 
 const TOL = 1e-10;
 
-/** Result of the estimator */
+/**
+ * Result of the estimator
+ * @notExported
+ */
 interface EstimatorResult {
     /** Minimum local dimension computed value */
     min: number;
@@ -88,7 +91,10 @@ export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator)
     return {min: minLD, max: maxLD, avg: estimatedDimension, theory: 3*atomCount+3};
 };
 
-/** Estimator result */
+/**
+ * Estimator result
+ * @notExported
+ */
 interface DimensionEstimate {
     /** Name of the method */
     method: string;

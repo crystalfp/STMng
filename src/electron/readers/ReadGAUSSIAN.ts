@@ -13,7 +13,10 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
-/** Line read type */
+/**
+ * Line read type
+ * @notExported
+ */
 const LineType = {
     comment1: 0,
     comment2: 1,
@@ -24,6 +27,11 @@ const LineType = {
     atoms:    6,
 	exit:     7,
 } as const;
+
+/**
+ * Line read type
+ * @notExported
+ */
 type Step = (typeof LineType)[keyof typeof LineType];
 
 export class ReaderGAUSSIAN implements ReaderImplementation {
