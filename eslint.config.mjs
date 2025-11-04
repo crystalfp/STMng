@@ -298,7 +298,6 @@ export default defineConfig([
         "@typescript-eslint/switch-exhaustiveness-check": "error",
         "@typescript-eslint/unbound-method": "error",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
-        "@typescript-eslint/unified-signatures": "off",
 
         // > ******************* stylistic ***********************
         "@stylistic/lines-between-class-members": "warn",
