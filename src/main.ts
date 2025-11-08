@@ -55,6 +55,8 @@ import {VTextarea} from "vuetify/components/VTextarea";
 // import {VTooltip} from "vuetify/components/VTooltip";
 // import {Tooltip} from "vuetify/directives/tooltip";
 import {VSnackbarQueue} from "vuetify/components/VSnackbarQueue";
+import {VAutocomplete} from "vuetify/components/VAutocomplete";
+
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -90,7 +92,8 @@ const app = createApp(App)
 			VNumberInput,
 			VTextarea,
 			// VTooltip,
-			VSnackbarQueue
+			VSnackbarQueue,
+			VAutocomplete
 		},
 		// directives: {
 		// 	Tooltip,

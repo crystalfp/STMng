@@ -9,7 +9,7 @@
 import {reactive, ref, watch} from "vue";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode} from "@/services/RoutesClient";
-import type {CtrlParams} from "@/types";
+import type {CtrlParams, DBType} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
@@ -20,6 +20,8 @@ const siteTolerance = ref(0.3);
 const angleTolerance = ref(5);
 const formula = ref("");
 const hasInput = ref(false);
+const db = reactive<DBType[]>([]);
+const query = ref("");
 
 /**
  * Identifiers for the matched prototypes
@@ -66,6 +68,9 @@ askNode(id, "init")
 		fillPrototypes(params.match as string);
         formula.value = params.formula as string ?? "";
         hasInput.value = params.hasInput as boolean ?? false;
+        const dbRaw = JSON.parse(params.db as string ?? "[]") as DBType[];
+        db.length = 0;
+        for(const entry of dbRaw) db.push(entry);
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
@@ -113,6 +118,7 @@ watch([lengthTolerance, siteTolerance, angleTolerance], () => {
 
 /** Receive result of the matching */
 receiveFromNode(id, "match", (params: CtrlParams) => {
+
     if(params.error) {
         const message = `Error from "${label}": ${params.error as string}`;
         showNodeAlert(message, "prototypeMatcher", {alsoSystem: true});
@@ -156,6 +162,18 @@ const selectPrototype = (aflow: string): void => {
         });
 };
 
+/**
+ * Visualize the queried prototype
+ *
+ * @param aflow - Selected aflow UID to display
+ */
+const startQuery = (aflow: string): void => {
+
+    if(!aflow) return;
+    if(aflow.startsWith("#")) aflow = aflow.slice(1);
+    selectPrototype(aflow);
+};
+
 </script>
 
 
@@ -185,6 +203,12 @@ const selectPrototype = (aflow: string): void => {
       <v-label class="bigger cursor-pointer">{{ `(Aflow: ${entry[1]})` }}</v-label>
     </v-container>
   </v-container>
+  <v-label class="separator-title">Query prototypes db</v-label>
+  <v-autocomplete v-model="query" label="Query"
+                  :items="db" item-title="title" item-value="aflow"
+                  :auto-select-first="true" :hide-details="true"
+                  :clearable="true" no-data-text=""
+                  @update:modelValue="startQuery"/>
   <node-alert node="prototypeMatcher" />
 </v-container>
 </template>

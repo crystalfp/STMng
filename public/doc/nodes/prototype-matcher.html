@@ -25,6 +25,7 @@
 
 <p>The prototype found is shown by its “mineral” tag field that, in the Aflow’s <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a>, is identified as the “Notes” field. These values have been updated by inputs provided by Prof. Artem Oganov. If you find that any string could be made clearer or more precise, do not hesitate to contact the author.</p>
 
+<p>The module could also query the full list of prototypes to display them independently from the matcher.</p>
 </div>
 
 
@@ -65,6 +66,11 @@
 	<td class="c2">clickable text</td>
 	<td class="c3">List of the “mineral” tags from the matched prototypes and the corresponding “Aflow UID” string. If no match is found “No match found” is shown. Note that the tag field could be overridden by an internal map from the “Aflow UID” to a different one. Clicking on the entries opens the <a href="../secondary/prototype.html">secondary window</a> that shows the corresponding prototype structure.</td>
 </tr>
+<tr>
+	<td class="c1">Query prototypes db</td>
+	<td class="c2">text with autocomplete</td>
+	<td class="c3">Query the full list of prototypes to display them independently from the matcher in the <a href="../secondary/prototype.html">secondary window</a> that shows the corresponding structure. The query show a list of possible minerals/aflow UID and each character entered shorten the list.</td>
+</tr>
 </table>
 
 <h2>Credits</h2>
@@ -77,7 +83,7 @@
 <p>The code has been ported from the <a href="https://pymatgen.org/">Pymatgen</a> library’s
     <a href="https://pymatgen.org/pymatgen.analysis.prototypes.html">AflowPrototypeMatcher</a> class.</p>
 
-<p>The <a href="https://aflow.org/">Aflow</a> library has made the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> available which can be searched by the retrieved UID string.</p>
+<p>The <a href="https://aflow.org/">Aflow</a> library has made available the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> which can be searched by the retrieved UID string.</p>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
 

@@ -15,7 +15,7 @@ import {publicDirPath} from "../modules/GetPublicPath";
 import {findMatchingPrototypes} from "../proto/AflowPrototypeMatcher";
 import {getAtomData, getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
-import type {ChannelDefinition, CtrlParams, Structure,
+import type {ChannelDefinition, CtrlParams, Structure, DBType,
 			 PrototypeAtomsData} from "@/types";
 import type {PrototypeEntry, Prototype, SNL} from "../proto/types";
 
@@ -47,7 +47,7 @@ export class PrototypeMatcher extends NodeCore {
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",       type: "invoke",      callback: this.channelInit.bind(this)},
+		{name: "init",       type: "invokeAsync", callback: this.channelInit.bind(this)},
 		{name: "enable",	 type: "invoke",      callback: this.channelEnable.bind(this)},
 		{name: "tolerances", type: "invoke", 	  callback: this.channelTolerances.bind(this)},
 		{name: "proto", 	 type: "invokeAsync", callback: this.channelProto.bind(this)},
@@ -244,14 +244,49 @@ export class PrototypeMatcher extends NodeCore {
 		return formula;
 	}
 
+	/**
+	 * Prepare the list for querying the prototype database
+	 *
+	 * @returns JSON encoded list of prototypes names and aflow UID
+	 */
+	async getDBforSearch(): Promise<string> {
+
+		if(this.aflowSrcPrototypeLibrary.length === 0) {
+			await this.readCompressedPrototypes();
+		}
+
+		const db = new Map<string, string>();
+		for(const proto of this.aflowSrcPrototypeLibrary) {
+
+			const mineral = this.aflowAdjunctMap.get(proto.tags.aflow) ?? proto.tags.mineral;
+			if(mineral) {
+
+				db.set(mineral, proto.tags.aflow);
+				db.set(proto.tags.aflow, "#"+proto.tags.aflow); // Marked to avoid duplicates
+			}
+			else {
+
+				db.set(proto.tags.aflow, proto.tags.aflow);
+			}
+		}
+
+		const out: DBType[] = [];
+		for(const [k, v] of db) {
+			out.push({title: k, aflow: v});
+		}
+
+		return JSON.stringify(out.toSorted((a, b) => a.title.localeCompare(b.title)));
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
 	 *
 	 * @returns Parameters to initialize the user interface
 	 */
-	private channelInit(): CtrlParams {
+	private async channelInit(): Promise<CtrlParams> {
 
+		const db = await this.getDBforSearch();
 		return {
 			enabled: this.enabled,
 			lengthTolerance: this.lengthTolerance,
@@ -259,7 +294,8 @@ export class PrototypeMatcher extends NodeCore {
 			angleTolerance: this.angleTolerance,
 			match: this.match,
 			formula: this.formula,
-			hasInput: this.hasInput
+			hasInput: this.hasInput,
+			db
 		};
 	}
 

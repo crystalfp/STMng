@@ -749,3 +749,12 @@ export interface PrototypeStructureData {
     /** Prototype atoms */
     atoms: PrototypeAtomsData;
 }
+
+/** Prototype database entry for autocomplete a query */
+
+export interface DBType {
+    /** Title that appears in the widget (and the one searched over) */
+    title: string;
+    /** aflow corresponding value to access the database */
+    aflow: string;
+}
