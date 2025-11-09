@@ -17,6 +17,7 @@ To do:
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
   ☐ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering
+  ☐ Use ref() instead of reactive() if you have to replace the entire array
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

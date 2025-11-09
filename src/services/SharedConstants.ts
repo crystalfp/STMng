@@ -90,4 +90,4 @@ export const indices = [
 
     1, 5, 6,
     1, 6, 2,
-] as const;
+];

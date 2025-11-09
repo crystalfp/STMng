@@ -8,7 +8,7 @@
  * @since 2024-07-05
  */
 import {createWebHashHistory, createRouter} from "vue-router";
-import type {Component} from "vue";
+import {h, type Component} from "vue";
 
 import LayoutClient from "@/components/LayoutClient.vue";
 
@@ -64,5 +64,11 @@ export const router = createRouter({
             path: "/prototype",
             component: (): Component => import("@/components/ShowPrototype.vue")
         },
+        {
+            // Catch errors in paths
+            path: "/:catchAll(.*)*",
+            name: "NotFound",
+            component: h("p", {style: "color: red"}, "Page not found")
+        }
     ],
 });

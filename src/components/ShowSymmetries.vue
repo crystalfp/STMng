@@ -55,8 +55,7 @@ handleSpecialKeys("/symmetries");
     </v-col>
     <v-col class="right-col">
       <v-label v-if="pointGroup!==''" class="text-h5 justify-center mt-n2 w-100">Point group</v-label>
-      <v-label v-if="pointGroup!==''" :text="pointGroup" class="justify-center w-100 my-2 result-color"
-                style="font-family: monospace;" />
+      <v-label v-if="pointGroup!==''" :text="pointGroup" class="justify-center w-100 my-2 show-pg" />
       <v-label class="text-h5 justify-center mt-n2 w-100">Output symmetry</v-label>
       <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
@@ -107,9 +106,10 @@ handleSpecialKeys("/symmetries");
   flex: 1;
 }
 
-.result-color {
+.show-pg {
   color: light-dark(#7ca911, #baf434) !important;
   opacity: 1 !important;
+  font-family: monospace;
 }
 
 </style>

@@ -25,15 +25,15 @@
   <summary>STMng screen</summary>
   <img src="screen.png" width="899" height="483" alt="Main parts of the STMng application screen">
   <p>The main STMng screen is divided in two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
-  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hide the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel.</p>
+  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hides the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel. Same functionality is available from the View&nbsp;&gt;&nbsp;Extend&nbsp;viewer menu.</p>
   <p>On the title bar of the window is visible the currently loaded
-    <span onclick="openDetails('#project'); return false;">project</span>: the project file name or the “default project” mark. If a file is loaded in the <a href="nodes/structure-reader.html">Structure reader</a>, the filename is also shown.</p>
-  <p>The Node controls panel contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are located the parameter’s controls specific for the selected node. At the bottom there are the controls to <b>Manage camera position</b> that <b>resets the camera position</b> in the viewer and <b>orients the camera</b> along various axis.</p>
-  <p>These controls show by default the “Reset camera” button that resets the camera position to show the loaded structure. On its left side the <img src="x-button.png" width="37" height="37"> button show the next set of buttons that align the camera with the XYZ axis. Here the <img src="sign-button.png" width="37" height="37"> button reverse the chosen axis. If the structure in the viewer has an unit cell defined, on the left side the <img src="a-button.png" width="37" height="37"> button show the next set of buttons that align the camera with the ABC cell axis. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="37" height="37"> button returns to the first controls.</p>
+    <span onclick="openDetails('#project'); return false;">project</span> by its project file name or the “default project” mark. If a file is loaded in the <a href="nodes/structure-reader.html">Structure reader</a>, the filename is also shown.</p>
+  <p>The <b>Node controls panel</b> contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are located the parameter’s controls specific for the selected node. At the bottom there are the controls to <b>Manage camera position</b> that <b>resets the camera position</b> in the viewer and <b>orients the camera</b> along various axis.</p>
+  <p>These controls show by default the “Reset camera” button that resets the camera position to show the loaded structure. On its left side the <img src="x-button.png" width="37" height="37"> button shows the next set of buttons that align the camera with the XYZ axis. Here the <img src="sign-button.png" width="37" height="37"> button reverses the chosen axis. If the structure in the viewer has an unit cell defined, on the left side the <img src="a-button.png" width="37" height="37"> button shows the next set of buttons that align the camera with the ABC cell axis. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="37" height="37"> button returns to the first controls.</p>
   <p>Some nodes and menu entries open a <span onclick="openDetails('#secondary'); return false;">secondary window</span> that can be positioned freely and resized with data and controls specific for its functionality.</p>
 </details>
 <details>
-  <summary>Available processing nodes</summary>
+  <summary>Available processing nodes documentation</summary>
   <p>Nodes are the building blocks of the graph that controls the STMng behavior. Each node could have inputs and/or outputs and could generate graphical objects that are visualized in the viewer.</p>
   <p>The application makes available the nodes listed below, but the ones made available to the user are collected in the loaded <a href="#project">project</a>. Instead, all available nodes are present in the “default project”.</p>
   <table>
@@ -203,7 +203,7 @@
     <tr>
       <td class="c1">Save project as…</td>
       <td class="c2">Control+Shift+S</td>
-      <td class="c3">Save the project to a selected file. This file will be loaded automatically next time</td>
+      <td class="c3">Save the project to a selected file. This file will be loaded automatically on next execution</td>
     </tr>
     <tr>
       <td class="c1">Project editor</td>
@@ -368,7 +368,7 @@
     </tr>
   </tbody>
   </table>
-  <p>Dolly movement have a visible effect only with Perspective camera. Instead with Orthographic camera objects too near or too far from the camera are cut from view.</p>
+  <p>Dolly movement have a visible effect only with Perspective camera. Instead with Orthographic camera objects too near or too far from the camera are cut from view. If this happens, a dolly movement helps to restore scene integrity.</p>
 </details>
 <details>
   <summary>Command line options</summary>

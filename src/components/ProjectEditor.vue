@@ -8,7 +8,8 @@
  */
 import {computed, ref, reactive, onMounted} from "vue";
 import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLineType, Position,
-        Panel, MarkerType, type GraphEdge, type Connection, type VueFlowError} from "@vue-flow/core";
+        Panel, MarkerType, type GraphEdge, type Connection,
+        type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
 import {closeWindow, receiveInWindow, askNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -101,6 +102,8 @@ interface AvailableNode {
     /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
     type: string;
 }
+
+const deleteLabel = ref("Delete node");
 
 /** List of available nodes */
 const availableNodes = reactive<AvailableNode[]>([]);
@@ -203,6 +206,9 @@ const projectModified = ref(false);
 /** Show the info panel */
 const showPanel = ref(false);
 
+/** List of selected node ids */
+const selectedIds = new Set<string>();
+
 // VueFlow related routines
 const {onNodesChange, updateNode, findNode, screenToFlowCoordinate} = useVueFlow();
 
@@ -228,7 +234,6 @@ let x: number | undefined;
 let y: number | undefined;
 onNodesChange((changes) => {
 
-    let panelRequest = 0;
     for(const change of changes) {
 
         switch(change.type) {
@@ -254,11 +259,22 @@ onNodesChange((changes) => {
             case "select":
                 if(change.selected) {
 
-                    const node = findNode<NodeData>(change.id);
-                    nodeInfo.length = 0;
+                    updateNode(change.id, {class: "vue-flow__node-default mark"});
+                    selectedIds.add(change.id);
+                }
+                else {
+                    updateNode(change.id, {class: "vue-flow__node-default"});
+                    selectedIds.delete(change.id);
+                }
+
+                // Update the panel node information if only a single node selected
+                nodeInfo.length = 0;
+                if(selectedIds.size === 1) {
+                    const id = [...selectedIds][0];
+                    const node = findNode<NodeData>(id);
                     if(node) {
                         nodeInfo.push(
-                            {id: "id", label: "Node id:",    value: change.id},
+                            {id: "id", label: "Node id:",    value: id},
                             {id: "lb", label: "Label:",      value: node.data.label},
                             {id: "ty", label: "Node type:",  value: node.data.type},
                         );
@@ -269,13 +285,11 @@ onNodesChange((changes) => {
                             {id: "gr", label: "Graphics:",   value: node.data.graphic}
                         );
                     }
-                    updateNode(change.id, {class: "vue-flow__node-default mark"});
-                    panelRequest += 1;
+                    else nodeInfo.push({id: "id", label: "Node id:", value: id});
+                    deleteLabel.value = "Delete node";
                 }
-                else {
-                    updateNode(change.id, {class: "vue-flow__node-default"});
-                    panelRequest += 2;
-                }
+                else deleteLabel.value = "Delete nodes";
+
                 break;
             case "dimensions":
             case "remove":
@@ -283,7 +297,7 @@ onNodesChange((changes) => {
                 break;
         }
     }
-    if(panelRequest > 0) showPanel.value = panelRequest !== 2;
+    showPanel.value = selectedIds.size > 0;
 });
 
 /** Graph nodes */
@@ -491,25 +505,22 @@ const saveProjectGraph = (saveAs: boolean): void => {
 // For node deletion
 const showConfirm = ref(false);
 const selectedLabel = ref("");
-let selectedId = "";
 
 /**
- * Delete the selected node
- *
- * @param node - Selected node data
+ * Delete the selected node or nodes
  */
-const deleteNode = (node: OneNodeInfo[]): void => {
+const deleteNode = (): void => {
 
-    selectedId = "";
-    for(const info of node) {
-        if(info.id === "id") {
-            selectedId = info.value;
-        }
-        else if(info.id === "lb") {
-            selectedLabel.value = info.value;
-        }
+    if(selectedIds.size === 1) {
+        const id = [...selectedIds][0];
+        const node = findNode<NodeData>(id);
+        selectedLabel.value = `"${node?.data.label ?? "No label"}" node`;
+        showConfirm.value = true;
     }
-    if(selectedId) showConfirm.value = true;
+    else if(selectedIds.size > 1) {
+        selectedLabel.value = "selected nodes";
+        showConfirm.value = true;
+    }
 };
 
 /**
@@ -521,21 +532,20 @@ const confirmDeletion = (): void => {
     showConfirm.value = false;
 
     let found = false;
-    for(let idx = 0; idx < graphFlow.length; ++idx) {
+    const last = graphFlow.length-1;
+    for(let idx = last; idx >= 0; --idx) {
 
-        if(graphFlow[idx].id === selectedId) {
+        if(selectedIds.has(graphFlow[idx].id)) {
             graphFlow.splice(idx, 1);
             projectModified.value = true;
             showPanel.value = false;
             found = true;
-            break;
         }
     }
     if(found) {
         for(const node of graphFlow) {
-            if(node.in === selectedId) {
+            if(selectedIds.has(node.in)) {
                 node.in = "";
-                break;
             }
         }
     }
@@ -745,6 +755,7 @@ const confirmNewProject = (): void => {
 
 <template>
 <v-app :theme>
+<Suspense>
   <div class="program-editor-container">
     <div class="tr"><v-label class="column-title">Available nodes</v-label></div>
     <div class="cr">
@@ -774,16 +785,16 @@ const confirmNewProject = (): void => {
               <td v-else><v-label>{{ ni.value }}</v-label></td>
             </tr>
           </table>
-          <v-btn block @click="deleteNode(nodeInfo)">Delete node</v-btn>
+          <v-btn block @click="deleteNode">{{ deleteLabel }}</v-btn>
         </Panel>
         <!-- bind your custom node type to a component by using slots,
-             slot names are always `node-<type>` auto-connect -->
+            slot names are always `node-<type>` auto-connect -->
         <template #node-none="specialNodeProps">
           <SpecialNode v-bind="specialNodeProps" />
         </template>
 
         <!-- bind your custom edge type to a component by using slots,
-             slot names are always `edge-<type>`
+            slot names are always `edge-<type>`
         <template #edge-special="specialEdgeProps">
           <SpecialEdge v-bind="specialEdgeProps" />
         </template> -->
@@ -792,14 +803,14 @@ const confirmNewProject = (): void => {
     <div class="bb button-strip pr-7">
       <v-btn @click="confirmNewProject">New project</v-btn>
       <v-btn :disabled="!projectModified || currentProjectPath===''"
-             @click="saveProjectGraph(false)">Save</v-btn>
+            @click="saveProjectGraph(false)">Save</v-btn>
       <v-btn :disabled="!projectModified" @click="saveProjectGraph(true)">Save as…</v-btn>
       <v-btn v-focus @click="tryToExit">Close</v-btn>
     </div>
   </div>
-
+</Suspense>
 <v-dialog v-model="showConfirm">
-  <v-card title="Confirm deletion" :text='`Do you want to remove the "${selectedLabel}" node?`'
+  <v-card title="Confirm deletion" :text='`Do you want to remove the ${selectedLabel}?`'
           class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>

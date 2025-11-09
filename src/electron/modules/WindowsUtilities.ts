@@ -174,7 +174,7 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         if(params.data) {
             setTimeout(() => {
                 secondaryWin.webContents.send("SYSTEM:DATA", params.data);
-            }, 600);
+            }, 60);
         }
         secondaryWin.show();
 

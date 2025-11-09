@@ -135,6 +135,7 @@ const makeImage = (): void => {
 
 <template>
 <v-app :theme>
+  <Suspense>
   <div class="chart-portal">
     <div class="chart-container">
       <Scatter
@@ -154,6 +155,7 @@ const makeImage = (): void => {
       </v-btn>
     </v-container>
   </div>
+  </Suspense>
 </v-app>
 </template>
 

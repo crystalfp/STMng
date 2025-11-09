@@ -43,7 +43,7 @@ const confirmDeletion = (): void => {
 
 <template>
 <v-app :theme>
-  <v-row class="log-box pa-0">
+  <v-row class="log-box">
     <v-container class="log-text-container">
       <v-textarea :model-value="text" readonly auto-grow hide-details
                   variant="underlined" flat width="100%" class="pl-2" />
@@ -73,6 +73,7 @@ const confirmDeletion = (): void => {
   height: 100vh;
   width: 100vw;
   margin: 0;
+  padding: 0;
 }
 
 .log-text-container {
