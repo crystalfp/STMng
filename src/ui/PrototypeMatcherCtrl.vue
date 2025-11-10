@@ -196,7 +196,7 @@ const startQuery = (aflow: string): void => {
          @click="resetParams">Reset parameters</v-btn>
   <v-container v-if="enableProto && hasInput" class="mt-2 ml-2 mb-6 pa-0 pr-2">
     <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger" v-html="`Prototypes for ${formula}`" />
-    <v-container v-for="entry of prototypes" :key="entry[1]"
+    <v-container v-for="entry of prototypes" :key="entry[1]" v-ripple
                  class="mb-4 pa-1 border-thin rounded-lg cursor-pointer"
                  @click="selectPrototype(entry[1])">
       <v-label class="result-label pb-1 bigger cursor-pointer" v-html="entry[0]" /><br>

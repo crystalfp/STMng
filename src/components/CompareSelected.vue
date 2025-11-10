@@ -451,12 +451,12 @@ watch([aroundA, aroundB, aroundC],
       <div class="sub-tl"></div>
       <div class="sub-tr"></div>
       <div class="sub-cl">
-        <div v-for="line of lines" :key="line.step"
+        <div v-for="line of lines" :key="line.step" v-ripple
              class="entry" :class="{selected: line.selected0, disabled: line.disabled0}"
              @click="select(0, line.step)">{{ line.step }}</div>
       </div>
       <div class="sub-cr">
-        <div v-for="line of lines" :key="line.step"
+        <div v-for="line of lines" :key="line.step" v-ripple
              class="entry" :class="{selected: line.selected1, disabled: line.disabled1}"
              @click="select(1, line.step)">{{ line.step }}</div>
       </div>

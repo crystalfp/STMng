@@ -237,6 +237,7 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
 
 <template>
 <v-app :theme>
+<Suspense>
   <div class="prototype-portal">
     <div class="prototype-viewer" />
     <v-container class="prototype-buttons">
@@ -244,6 +245,7 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
       <v-btn v-focus @click="closeWindow('/prototype')">Close</v-btn>
     </v-container>
   </div>
+</Suspense>
 </v-app>
 </template>
 

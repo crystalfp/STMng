@@ -54,6 +54,7 @@ import {VNumberInput} from "vuetify/components/VNumberInput";
 import {VTextarea} from "vuetify/components/VTextarea";
 // import {VTooltip} from "vuetify/components/VTooltip";
 // import {Tooltip} from "vuetify/directives/tooltip";
+import {Ripple} from "vuetify/directives/ripple";
 import {VSnackbarQueue} from "vuetify/components/VSnackbarQueue";
 import {VAutocomplete} from "vuetify/components/VAutocomplete";
 
@@ -95,9 +96,10 @@ const app = createApp(App)
 			VSnackbarQueue,
 			VAutocomplete
 		},
-		// directives: {
-		// 	Tooltip,
-		// },
+		directives: {
+			// Tooltip,
+			Ripple
+		},
 		theme: {
     		defaultTheme: "dark",
   		},

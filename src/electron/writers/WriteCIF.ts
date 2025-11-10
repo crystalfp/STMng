@@ -9,6 +9,7 @@
 
 import {openSync, writeSync, closeSync} from "node:fs";
 import {reducingToFractionalCoordinates, basisToLengthAngles, format} from "../modules/Helpers";
+import {getCellVolume} from "../fingerprint/Helpers";
 import type {Structure, WriterImplementation, CtrlParams} from "@/types";
 
 export class WriterCIF implements WriterImplementation {
@@ -38,13 +39,15 @@ export class WriterCIF implements WriterImplementation {
 				if(basis.some((value: number) => value !== 0)) {
 
 					const cell = basisToLengthAngles(basis);
+					const volume = getCellVolume(basis);
 
-        			writeSync(fd, `_cell_length_a ${cell[0].toFixed(6)}\n`);
-        			writeSync(fd, `_cell_length_b ${cell[1].toFixed(6)}\n`);
-        			writeSync(fd, `_cell_length_c ${cell[2].toFixed(6)}\n`);
+        			writeSync(fd, `_cell_length_a    ${cell[0].toFixed(6)}\n`);
+        			writeSync(fd, `_cell_length_b    ${cell[1].toFixed(6)}\n`);
+        			writeSync(fd, `_cell_length_c    ${cell[2].toFixed(6)}\n`);
         			writeSync(fd, `_cell_angle_alpha ${cell[3].toFixed(6)}\n`);
         			writeSync(fd, `_cell_angle_beta  ${cell[4].toFixed(6)}\n`);
         			writeSync(fd, `_cell_angle_gamma ${cell[5].toFixed(6)}\n`);
+        			writeSync(fd, `_cell_volume      ${volume.toFixed(6)}\n`);
 				}
 
 				// The space group if any
@@ -70,11 +73,12 @@ export class WriterCIF implements WriterImplementation {
 
 				// The atom coordinates
 				writeSync(fd, "\nloop_\n" +
-								 "_atom_site_type_symbol\n" +
-								 "_atom_site_label\n" +
-								 "_atom_site_fract_x\n" +
-								 "_atom_site_fract_y\n" +
-								 "_atom_site_fract_z\n");
+							  "_atom_site_type_symbol\n" +
+							  "_atom_site_label\n" +
+							  "_atom_site_occupancy\n" +
+							  "_atom_site_fract_x\n" +
+							  "_atom_site_fract_y\n" +
+							  "_atom_site_fract_z\n");
 
 				// Compute fractional coordinates removing duplicates
 				const reduced = reducingToFractionalCoordinates(structure);
@@ -82,7 +86,7 @@ export class WriterCIF implements WriterImplementation {
 				for(const atom of reduced.atoms) {
 
 					const fc = atom.frac;
-					writeSync(fd, `${atom.symbol.padEnd(4)} ${atom.label.padEnd(7)} ` +
+					writeSync(fd, `${atom.symbol.padEnd(4)} ${atom.label.padEnd(7)} 1.0 ` +
 								  `${format(fc[0])} ${format(fc[1])} ${format(fc[2])}\n`);
 				}
 

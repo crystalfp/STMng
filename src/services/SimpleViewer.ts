@@ -106,10 +106,12 @@ export class SimpleViewer {
 			this.camera.position.set(1.7, 2.1, 1.9);
 		}
 		else {
-			const hh = 7.8;
+			const hh = 10;
+			// const hh = 7.8;
 			const hw = hh * this.canvasWidth/this.canvasHeight;
 			this.camera = new OrthographicCamera(-hw, hw, hh, -hh, 0.1, 500);
-			this.camera.position.set(7.7, 8.5, 7.6);
+			this.camera.position.set(11.6, 12.8, 11.4);
+			// this.camera.position.set(7.7, 8.5, 7.6);
 			this.camera.zoom = 1;
 		}
 		this.camera.lookAt(this.scene.position);
