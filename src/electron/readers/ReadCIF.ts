@@ -82,6 +82,21 @@ class Table {
 	}
 
 	/**
+	 * Extract a table column.
+	 * The key is normalized converting "." to "_"
+	 *
+	 * @param header - Column to be extracted
+	 * @returns The column as array of strings. If the column does not exist return empty array.
+	 */
+	getColumns(header: string): string[][] {
+		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
+		if(idx === -1) return [];
+		const result = [];
+		for(const row of this.rows) result.push(row);
+		return result;
+	}
+
+	/**
 	 * Split a line honoring the field quoting
 	 *
 	 * @param line - Line to be split
@@ -197,26 +212,24 @@ export class ReaderCIF implements ReaderImplementation {
 
 			// Extract key and value inline
 			const ws = lineLC.split(/\s+/);
-			const key = ws[0];
-			const value = ws[1] ?? "";
 
-			switch(key) {
+			switch(ws[0]) {
 				case "_symmetry.space_group_name_h-m":
 				case "_symmetry_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
-						ws.slice(1).join(" ").replace(/^["']([^"']+)["']/, "$1");
+						ws.slice(1).join(" ").replace(/^["']([^"']+)["']/, "$1").trim();
 					break;
 				case "_cell_length_a":
 				case "_cell.length_a":
-					basisSides[0] = Number.parseFloat(value);
+					basisSides[0] = Number.parseFloat(ws[1] ?? "0");
 					break;
 				case "_cell_length_b":
 				case "_cell.length_b":
-					basisSides[1] = Number.parseFloat(value);
+					basisSides[1] = Number.parseFloat(ws[1] ?? "0");
 					break;
 				case "_cell_length_c":
 				case "_cell.length_c":
-					basisSides[2] = Number.parseFloat(value);
+					basisSides[2] = Number.parseFloat(ws[1] ?? "0");
 					if(basisSides[0] !== 0 && basisSides[1] !== 0 && basisSides[2] !== 0 &&
 					   basisAngles[0] !== 0 && basisAngles[1] !== 0 && basisAngles[2] !== 0) {
 						this.structures[this.step].crystal.basis =
@@ -226,15 +239,15 @@ export class ReaderCIF implements ReaderImplementation {
 					break;
 				case "_cell_angle_alpha":
 				case "_cell.angle_alpha":
-					basisAngles[0] = Number.parseFloat(value);
+					basisAngles[0] = Number.parseFloat(ws[1] ?? "0");
 					break;
 				case "_cell_angle_beta":
 				case "_cell.angle_beta":
-					basisAngles[1] = Number.parseFloat(value);
+					basisAngles[1] = Number.parseFloat(ws[1] ?? "0");
 					break;
 				case "_cell_angle_gamma":
 				case "_cell.angle_gamma":
-					basisAngles[2] = Number.parseFloat(value);
+					basisAngles[2] = Number.parseFloat(ws[1] ?? "0");
 					if(basisSides[0] !== 0 && basisSides[1] !== 0 && basisSides[2] !== 0 &&
 					   basisAngles[0] !== 0 && basisAngles[1] !== 0 && basisAngles[2] !== 0) {
 						this.structures[this.step].crystal.basis =
@@ -295,7 +308,7 @@ export class ReaderCIF implements ReaderImplementation {
 		else if(this.tbl.hasColumn("_symmetry_equiv_pos_as_xyz")) {
 
 			this.structures[this.step].crystal.spaceGroup =
-				this.tbl.getColumn("_symmetry_equiv_pos_as_xyz").join("\n");
+				this.getEquivalent(this.tbl.getColumns("_symmetry_equiv_pos_as_xyz"));
 		}
 		else if(this.tbl.hasColumn("_atom_site_cartn_x")) {
 
@@ -325,7 +338,46 @@ export class ReaderCIF implements ReaderImplementation {
 		else if(this.tbl.hasColumn("_space_group_symop_operation_xyz")) {
 
 			this.structures[this.step].crystal.spaceGroup =
-				this.tbl.getColumn("_space_group_symop_operation_xyz").join("\n");
+				this.getEquivalent(this.tbl.getColumns("_space_group_symop_operation_xyz"));
 		}
+	}
+
+	/**
+	 * Workaround to format the equivalent positions list.
+	 * Sometimes is coded as
+	 *
+```
+	   loop_
+		_symmetry_equiv_pos_as_xyz
+		1 x,y,z
+		2 -x,y,-z
+```
+	 * Instead of
+```
+		loop_
+			_symmetry_equiv_pos_site_id
+			_symmetry_equiv_pos_as_xyz
+			1  'x, y, z'
+			2  '-x, -y, -z'
+```
+	 *
+	 * @param symop - List of lines in the equivalent positions
+	 * @returns The string to be put in the spaceGroup field
+	 */
+	private getEquivalent(symop: string[][]): string {
+
+		if(symop.length === 0) return "";
+
+		let out = "";
+		let next = false;
+		for(const line of symop) {
+
+			if(next) out += "\n";
+			else next = true;
+
+			out += line.length > 1 ? line[1] : line[0];
+		}
+
+		return out;
 	}
 }

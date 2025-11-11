@@ -1,6 +1,7 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
+  ☐ Incomplete polyhedra bonds
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -8,6 +9,9 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
+  ☐ Enabling numerical output of XRD calculation
+  ☐ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz
+  ☐ It would be good to have a possibility to set the first and last steps to be visualized.
 
 To do:
   ☐ Check error return from main process to client
@@ -18,6 +22,7 @@ To do:
   ☐ Dynamic load ViewportGizmo
   ☐ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering
   ☐ Use ref() instead of reactive() if you have to replace the entire array
+  ☐ Add tooltip with description to the "available nodes" in Program editor
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
