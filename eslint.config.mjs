@@ -444,7 +444,7 @@ export default defineConfig([
         "vue/attributes-order": "warn",
         "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
         "import/default": "off",
-        "tsdoc/syntax": "warn",
+        // "tsdoc/syntax": "warn",
         "promise/always-return": "off",
         "promise/catch-or-return": ["warn", {allowFinally: true}],
         "security/detect-non-literal-fs-filename": "off",

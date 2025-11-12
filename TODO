@@ -2,6 +2,11 @@ Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
   ☐ Incomplete polyhedra bonds
+  ☐ Bad saving of generalized convex hull
+  ☐ Compute better camera placement to consider the full scene (now it is too near)
+  ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
+  ☐ Verify fill unit cell in proto visualizer
+  ✔ Error in CIF reader if label contains a "'" @done(2025-11-12 13:47)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -12,6 +17,11 @@ Latest requests (backlog):
   ☐ Enabling numerical output of XRD calculation
   ☐ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz
   ☐ It would be good to have a possibility to set the first and last steps to be visualized.
+  ☐ Visualization of crystal shapes (based on bond strengths).
+  ☐ Analysis of variable composition data sets.
+  ☐ Prototype visualization from library is rather primitive and doesn't allow me to tailor visualization style. Can this be enabled?
+  ☐ Deep shading in viewer
+  ☐ Compare selected remove debouncing to the sliders
 
 To do:
   ☐ Check error return from main process to client

@@ -262,7 +262,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
           <v-number-input v-model="forcedCameraLookAtZ" label="z"
                           :step="0.1" :precision="1" class="ml-2 mr-0" />
         </v-row>
-        <v-row class="d-flex justify-center gc-2 pl-4 pb-1">
+        <v-row class="d-flex justify-center gc-2 pl-3 pb-1">
           <v-btn density="comfortable" @click="loadPosition">Load current</v-btn>
           <v-btn density="comfortable" @click="forcePosition">Force position</v-btn>
         </v-row>
@@ -360,7 +360,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
                     min="2" max="40" step="2" thumb-label />
         </align-labels>
         <v-switch v-model="configStore.helpers.showGizmo"
-                  label="Show orientation axis" class="mt-n6" />
+                  label="Show orientation helper" class="mt-n6" />
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>

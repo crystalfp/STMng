@@ -12,6 +12,7 @@ import {extractBasis, fractionalToCartesianCoordinates, hasNoUnitCell} from "../
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, ReaderImplementation} from "@/types";
+import {ParseQuotedLine} from "../modules/ParseQuotedLine";
 
 /** Collect lines from "loop_" constructs */
 class Table {
@@ -19,6 +20,8 @@ class Table {
 	private readonly headers: string[] = [];
 	private readonly rows: string[][] = [];
 	private incompleteLine: string | undefined = undefined;
+	private readonly splitter = new ParseQuotedLine();
+
 
 	/**
 	 * Begin capturing a table
@@ -50,7 +53,7 @@ class Table {
 			line = `${this.incompleteLine} ${line}`;
 			this.incompleteLine = undefined;
 		}
-		const fields = Table.split(line);
+		const fields = this.splitter.split(line);
 		if(fields.length < this.headers.length) this.incompleteLine = line;
 		else this.rows.push(fields);
 	}
@@ -93,27 +96,6 @@ class Table {
 		if(idx === -1) return [];
 		const result = [];
 		for(const row of this.rows) result.push(row);
-		return result;
-	}
-
-	/**
-	 * Split a line honoring the field quoting
-	 *
-	 * @param line - Line to be split
-	 * @returns The tokens from the given string
-	 */
-	private static split(line: string): string[] {
-
-		let result: string[] = [];
-		line = line.replaceAll(/["']/g, "|").replaceAll(String.raw`\|`, "'");
-		const special = line.split("|");
-
-		let odd = true;
-		for(const w1 of special) {
-
-			if(w1 !== "") result = odd ? [...result, ...w1.trim().split(/\s+/)] : [...result, w1];
-			odd = !odd;
-		}
 		return result;
 	}
 
