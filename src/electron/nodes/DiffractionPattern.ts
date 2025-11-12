@@ -6,6 +6,8 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-11-04
  */
+import {ipcMain, dialog} from "electron";
+import {closeSync, openSync, writeSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
@@ -28,6 +30,9 @@ export class DiffractionPattern extends NodeCore {
 	private readonly xrd = new XRDCalculator();
 	private xy: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
 	private readonly chartTitle = "X-Ray diffraction pattern";
+	private channelSavePointsOpened = false;
+	private lineCoordinates: ChartCoordinate[] = [];
+
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
@@ -58,8 +63,11 @@ export class DiffractionPattern extends NodeCore {
 
 			// Compute spectra
 			try {
-				this.xy = this.xrd.getDiffractionPattern(this.structure, this.wavelengthCode, this.scaled,
-														this.thetaLow, this.thetaHigh);
+				this.xy = this.xrd.getDiffractionPattern(this.structure,
+														 this.wavelengthCode,
+														 this.scaled,
+														 this.thetaLow,
+														 this.thetaHigh);
 			}
 			catch(error: unknown) {
 				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
@@ -134,7 +142,7 @@ export class DiffractionPattern extends NodeCore {
 		}
 
 		// Chart of the line spectra
-		const lineCoordinates = this.width > 0 ?
+		this.lineCoordinates = this.width > 0 ?
 									this.smoothPeaks(this.xy.twoTheta, y,
 													 this.thetaLow, this.thetaHigh, this.width) :
 									this.hardPeaks(this.xy, this.thetaLow, this.thetaHigh);
@@ -156,7 +164,7 @@ export class DiffractionPattern extends NodeCore {
 				},
 				{
 					label: "(2θ, Intensity)",
-					data: lineCoordinates,
+					data: this.lineCoordinates,
 					borderColor: "#00ff00",
 					backgroundColor: "#00ff00",
 					showLine: true,
@@ -411,6 +419,34 @@ export class DiffractionPattern extends NodeCore {
 				title: this.chartTitle,
 				data: dataToSend
 			});
+
+			if(!this.channelSavePointsOpened) {
+				this.channelSavePointsOpened = true;
+
+				ipcMain.on("SYSTEM:save-xrd", () => {
+
+					const file = dialog.showSaveDialogSync({
+						title: "Save X-Ray diffraction points",
+						filters: [
+							{name: "Point data", extensions: ["dat"]},
+						]
+					});
+					if(file) {
+						try {
+							let out = "";
+							for(const point of this.lineCoordinates) {
+								out += `${point.x.toFixed(4)} ${point.y.toExponential(8)}\n`;
+							}
+							const fd = openSync(file, "w");
+							writeSync(fd, out);
+							closeSync(fd);
+						}
+						catch(error: unknown) {
+							sendAlertToClient(`Error in save-xrd: ${(error as Error).message}`);
+						}
+					}
+				});
+			}
 		}
 	}
 }

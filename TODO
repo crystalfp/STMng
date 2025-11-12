@@ -14,13 +14,13 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
-  ☐ Enabling numerical output of XRD calculation
+  ✔ Enabling numerical output of XRD calculation @done(2025-11-12 16:09)
   ☐ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz
   ☐ It would be good to have a possibility to set the first and last steps to be visualized.
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
   ☐ Prototype visualization from library is rather primitive and doesn't allow me to tailor visualization style. Can this be enabled?
-  ☐ Deep shading in viewer
+  ☐ Deep-cueing in viewer, like it can be done in VESTA
   ☐ Compare selected remove debouncing to the sliders
 
 To do:

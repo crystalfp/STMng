@@ -13,7 +13,7 @@ import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {Context} from "chartjs-plugin-datalabels";
 import log from "electron-log";
-import {askNode, closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import type {ChartParams, ChartData, ChartOptions} from "@/types";
@@ -130,6 +130,14 @@ const makeImage = (): void => {
     }
 };
 
+/**
+ * Save the chart point to a file
+ */
+const savePoints = (): void => {
+
+    sendToNode("SYSTEM", "save-xrd");
+};
+
 </script>
 
 
@@ -145,14 +153,10 @@ const makeImage = (): void => {
       />
     </div>
     <v-container class="button-strip">
-      <v-btn @click="makeImage">
-        Save image
-      </v-btn>
-      <v-switch v-model="transparent" label="Transparent background"
-                class="ml-4 mr-3"/>
-      <v-btn v-focus @click="closeWindow('/chart')">
-        Close
-      </v-btn>
+      <v-btn @click="savePoints">Save points</v-btn>
+      <v-btn @click="makeImage">Save image</v-btn>
+      <v-switch v-model="transparent" label="Transparent" class="ml-4 mr-3"/>
+      <v-btn v-focus @click="closeWindow('/chart')">Close</v-btn>
     </v-container>
   </div>
   </Suspense>
