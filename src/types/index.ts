@@ -704,7 +704,7 @@ export type ColoringType = "type" | "mono" | "bonds";
 /**
  * Slicing modes for the Slicer module
  */
-export type SlicingModes = "plane" | "miller" | "sphere" | "slab" | "direct";
+export type SlicingModes = "plane" | "miller" | "sphere" | "slab" | "direct" | "bonded";
 
 /**
  * Atoms selector modes for AtomsChooser widget

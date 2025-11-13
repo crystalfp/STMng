@@ -38,6 +38,7 @@ const modeList = reactive<{label: string; value: SlicingModes}[]>([
     {label: "Sphere",   value: "sphere"},
     {label: "Slab",     value: "slab"},
     {label: "Direct",   value: "direct"},
+    {label: "Bonded",   value: "bonded"},
 ]);
 
 /** Sphere cut */
@@ -217,14 +218,25 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
 watch([enableSlicer, mode, selectorKind,
        atomsSelector, sliceInside], () => {
 
-    if(!enableSlicer.value || mode.value !== "direct") return;
+    if(!enableSlicer.value) return;
 
-    sendToNode(id, "direct", {
-        sliceInside: sliceInside.value,
-        atomsSelector: atomsSelector.value,
-        selectorKind: selectorKind.value,
-        enableSlicer: enableSlicer.value
-    });
+    if(mode.value === "direct") {
+        sendToNode(id, "direct", {
+            sliceInside: sliceInside.value,
+            atomsSelector: atomsSelector.value,
+            selectorKind: selectorKind.value,
+            enableSlicer: enableSlicer.value
+        });
+    }
+    else if(mode.value === "bonded") {
+        sendToNode(id, "bonded", {
+            sliceInside: sliceInside.value,
+            atomsSelector: atomsSelector.value,
+            selectorKind: selectorKind.value,
+            enableSlicer: enableSlicer.value
+        });
+    }
+    else return;
     showSlicer.value = false;
 });
 
@@ -299,7 +311,7 @@ watchEffect(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-4 ml-3" />
-  <v-switch v-model="showSlicer" :disabled="mode==='direct'"
+  <v-switch v-model="showSlicer" :disabled="mode==='direct' || mode==='bonded'"
             label="Show slicer geometry" class="ml-3" />
   <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />
   <v-select v-model="mode"
@@ -357,7 +369,7 @@ watchEffect(() => {
                           :label="`Radius (${showSphereRadius.toFixed(1)})`"
                           :min="0.1" :max="50" :step="0.1" />
   </v-container>
-  <v-container v-else-if="mode==='direct'" class="pa-0 pt-2">
+  <v-container v-else-if="mode==='direct' || mode==='bonded'" class="pa-0 pt-2">
     <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
                       class="ml-2 mb-6" :hide="['all']"
                       title="Select atoms by" placeholder="Atom selector" />

@@ -21,7 +21,7 @@
 <h1 class="subh1">Remove part of the structure</h1>
 
 <div class="description">
-<p>Remove part of a structure using a sphere, a plane or a pair of planes. Also specific atoms could be directly selected for removal by symbol, label or index. The removed part could be inside or outside the selected geometry or list of atoms.</p>
+<p>Remove part of a structure using a sphere, a plane or a pair of planes. Also specific atoms or specific atoms plus directly bonded atoms could be directly selected for removal by symbol, label or index. The removed part could be inside or outside the selected geometry or list of atoms.</p>
 <p>No geometry appears to show the slice when directly select atoms for removal.</p>
 <p>The spheres that delimit the cut are centered on the selected atoms.</p>
 <p>The plane that delimits the cut is selected by giving its intersect with the basis vectors and/or the basis vector(s) that should be parallel to the plane. The intersections could also be given with Miller indices <i>(hkl)</i>.</p>
@@ -61,6 +61,8 @@
   <dd>The slab is determined by two parallel planes at a given distance.</dd>
   <dt>Direct</dt>
   <dd>The atoms to cut are selected directly by symbol, label or index.</dd>
+  <dt>Bonded</dt>
+  <dd>Atoms are selected directly by symbol, label or index and them plus their direct bonded atoms are cut.</dd>
   </dl></td>
 </tr>
 <tr>
@@ -76,7 +78,7 @@
   <dd>An atom selector selects the center atom of the spheres. A slider sets the common radius.</dd>
   <dt>Slab</dt>
   <dd>The two planes delimiting the slab are equidistant from a plane defined as in the “Plane” mode. The slab planes are distant half the set thickness from the defined plane.</dd>
-  <dt>Direct</dt>
+  <dt>Direct and Bonded</dt>
   <dd>An atom selector to select the atoms.</dd>
   </dl></td>
 </tr>

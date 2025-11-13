@@ -500,6 +500,17 @@ const auxSetup = computed(() => {
     }
 });
 
+/**
+ * Called when cleaning the atoms types field
+ * In the future should restore the original atom types from file
+ * if present
+ */
+const clearAtomTypes = (): void => {
+    // TBD
+    // console.log("CLEAR");
+    getAtomsTypes();
+};
+
 </script>
 
 
@@ -516,7 +527,7 @@ const auxSetup = computed(() => {
                 hide-details="auto"
                 clearable spellcheck="false"
                 @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
-                @click:clear="getAtomsTypes"/>
+                @click:clear="clearAtomTypes"/>
 
   <v-switch v-model="appendFile"
             label="Append" class="ml-4 mt-4"

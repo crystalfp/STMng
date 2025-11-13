@@ -65,6 +65,7 @@ export class SliceStructure extends NodeCore {
 		{name: "slab",		type: "invoke",	callback: this.channelSlab.bind(this)},
 		{name: "direct",	type: "send",	callback: this.channelDirect.bind(this)},
 		{name: "set",		type: "send", 	callback: this.channelSet.bind(this)},
+		{name: "bonded",	type: "send",	callback: this.channelBonded.bind(this)},
 	];
 
 	/**
@@ -152,6 +153,8 @@ export class SliceStructure extends NodeCore {
 	 */
 	private prepareSlicerGeometry(): void {
 
+		if(this.mode === "direct" || this.mode === "bonded") return;
+
 		if(this.mode === "sphere") {
 			this.prepareSphereSlicerGeometry();
 			return;
@@ -163,7 +166,6 @@ export class SliceStructure extends NodeCore {
 			case "plane":  {this.preparePlaneSlicerGeometry(); return;}
 			case "miller": {this.prepareMillerSlicerGeometry(); return;}
 			case "slab":   {this.prepareSlabSlicerGeometry(); return;}
-			case "direct": return;
 		}
 	}
 
@@ -362,8 +364,11 @@ export class SliceStructure extends NodeCore {
 
 		if(!this.structure) return new EmptyStructure();
 
-		if(this.mode === "sphere") {
-			return this.sliceSphere();
+		// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+		switch(this.mode) {
+			case "sphere": return this.sliceSphere();
+			case "bonded": return this.sliceBonded();
+			case "direct": return this.sliceDirect();
 		}
 
 		if(hasNoUnitCell(this.structure.crystal.basis)) {
@@ -374,9 +379,7 @@ export class SliceStructure extends NodeCore {
 			case "plane":  return this.slicePlane();
 			case "miller": return this.slicePlane();
 			case "slab":   return this.sliceSlab();
-			case "direct": break;
 		}
-		return this.structure;
 	}
 
 	/**
@@ -638,6 +641,30 @@ export class SliceStructure extends NodeCore {
 		return this.selectAtoms(inside);
 	}
 
+	/**
+	 * Slice the structure to the given atoms and atoms bonded to them
+	 *
+	 * @returns The sliced structure
+	 */
+	private sliceBonded(): Structure {
+
+		const selectedAtoms = selectAtomsByKind(this.structure!,
+												this.selectorKind,
+												this.atomsSelector);
+
+		const inside = Array<boolean>(this.structure!.atoms.length).fill(false);
+		for(const idx of selectedAtoms) {
+
+			inside[idx] = true;
+			for(const bond of this.structure!.bonds) {
+				if(bond.from === idx) inside[bond.to] = true;
+				else if(bond.to === idx) inside[bond.from] = true;
+			}
+		}
+
+		return this.selectAtoms(inside);
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -757,6 +784,21 @@ export class SliceStructure extends NodeCore {
 		this.enableSlicer = params.enableSlicer as boolean ?? false;
 
 		this.toNextNode(this.enableSlicer ? this.sliceDirect() : this.structure!);
+	}
+
+	/**
+	 * Channel handler for the change of bonded atom selection parameters
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelBonded(params: CtrlParams): void {
+
+		this.selectorKind = params.selectorKind as SelectorType ?? "symbol";
+		this.atomsSelector = params.atomsSelector as string ?? "";
+        this.sliceInside = params.sliceInside as boolean ?? false;
+		this.enableSlicer = params.enableSlicer as boolean ?? false;
+
+		this.toNextNode(this.enableSlicer ? this.sliceBonded() : this.structure!);
 	}
 
 	/**
