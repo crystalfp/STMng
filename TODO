@@ -58,6 +58,7 @@ ToDo eventually:
   ☐ If possible remove circular dependencies between modules
   ☐ For the charts <https://unovis.dev/>
   ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
+  ☐ Add version to project files
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)

@@ -20,7 +20,6 @@
   "ignoreDependencies": [
     "vue-docgen-cli",
     "@mdi/svg",
-    "eslint-formatter-codeframe",
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
