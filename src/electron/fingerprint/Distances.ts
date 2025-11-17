@@ -8,7 +8,8 @@
  */
 import {measuringMethods} from "./DistanceMethods";
 import type {FingerprintsAccumulator} from "./Accumulator";
-import {MDS} from "../modules/NativeFunctions";
+import {MDS} from "./MDS";
+// import {MDS} from "../modules/NativeFunctions";
 
 /**
  * Matrix of distances between fingerprints

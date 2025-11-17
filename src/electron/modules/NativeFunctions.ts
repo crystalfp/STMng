@@ -61,7 +61,7 @@ interface MDS2D3DOutput {
  * Result of MDS that project points in 2D and 3D
  * @notExported
  */
-interface MDSOutput {
+export interface MDSOutput {
 	/** Points projected in 2D: [[x0, y0], [x1, y1], ...] */
 	points2D: number[][];
 	/** Points projected in 3D: [[x0, y0, z0], [x1, y1, z1], ...] */

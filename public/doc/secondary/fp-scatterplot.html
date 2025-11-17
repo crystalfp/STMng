@@ -21,7 +21,7 @@
 <dl style="margin-left: 20px;">
   <dt>Group</dt><dd>One point for each structure colored by group.</dd>
   <dt>Energy</dt><dd>One point for each structure colored by per atom energy.</dd>
-  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the colorscale goes from white for distances that have a perfect mapping, to black for badly mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 20,000.</dd>
+  <dt>Fidelity</dt><dd>One point for each distance with X value the distance and Y value the projected distance. More the points live near the diagonal, more the projection preserves the original distance. Note that the color scale goes from white for distances that have a perfect mapping, to black for badly mapped distances. Note also that, for performance reasons, the number of points is reduced to less than 20,000.</dd>
   <dt>Quality</dt><dd>Grouping quality using the
       <a href="https://en.wikipedia.org/wiki/Silhouette_(clustering)">silhouette coefficients</a>. These coefficients goes from 1, that show perfect association of the point to the group, to -1, that show that the point is in the wrong group. There are two special cases: 1) the point is alone in a group and 2) the point is on the border between two groups.</dd>
   <dt>From min</dt><dd>One point for each structure colored by its distance from the point with minimum per atom energy.</dd>
@@ -102,7 +102,7 @@
 <tr>
   <td class="c1">Export selected</td>
   <td class="c2">button</td>
-  <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy per structure file. The entries are sorted on increasing energy values. If no energy has been loaded, the energy file is not created and the structures are unsorted. The function is available when at least one point is selected in the scatterplot.</td>
+  <td class="c3">Export the structures whose points have been selected to a POSCAR file and a corresponding energy per structure or per atom file. The entries are sorted on increasing energy per atom values. If no energy has been loaded, the energy file is not created and the structures are unsorted. The function is available when at least one point is selected in the scatterplot.</td>
 </tr>
 <tr>
 	<td class="c1">Save energy per atom</td>

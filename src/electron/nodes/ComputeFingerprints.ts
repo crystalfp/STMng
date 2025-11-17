@@ -54,8 +54,11 @@ interface SorterItem {
 	/** Index of the structure in the structures array */
 	idx: number;
 
-	/** Corresponding energy */
+	/** Corresponding energy by atom */
 	energy: number;
+
+	/** Energy to be written to the output file (could be by atom or by structure) */
+	outEnergy: number;
 }
 
 export class ComputeFingerprints extends NodeCore {
@@ -1161,9 +1164,9 @@ export class ComputeFingerprints extends NodeCore {
 				structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 				if(hasEnergies) {
 
-					let energy = structure.energy!;
-					if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
-					sorter.push({idx: k++, energy});
+					const energy = structure.energy!;
+					const outEnergy = saveEnergyPerAtom ? energy : energy * structure.atomsZ.length;
+					sorter.push({idx: k++, energy, outEnergy});
 				}
 			}
 			return this.exportStructuresAndEnergy(filename, writer, structures, sorter);
@@ -1352,9 +1355,9 @@ export class ComputeFingerprints extends NodeCore {
 			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 			if(haveEnergies) {
 
-				let energy = structure.energy!;
-				if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
-				sorter.push({idx: k++, energy});
+				const energy = structure.energy!;
+				const outEnergy = saveEnergyPerAtom ? energy : energy * structure.atomsZ.length;
+				sorter.push({idx: k++, energy, outEnergy});
 			}
 		}
 	}
@@ -1401,9 +1404,9 @@ export class ComputeFingerprints extends NodeCore {
 			const step = minEnergyStep[k];
 			const structure = this.accumulator.getStructureByStep(step);
 			if(!structure) continue;
-			let energy = minEnergy[k];
-			if(!saveEnergyPerAtom) energy *= structure.atomsZ.length;
-			sorter.push({idx: k, energy});
+			const energy = minEnergy[k];
+			const outEnergy = saveEnergyPerAtom ? energy : energy * structure.atomsZ.length;
+			sorter.push({idx: k, energy, outEnergy});
 			structures.push(ComputeFingerprints.convertAccumulatedStructure(structure));
 		}
 	}
@@ -1433,7 +1436,7 @@ export class ComputeFingerprints extends NodeCore {
 
 			for(const entry of sorter) {
 				sortedStructures.push(structures[entry.idx]);
-				energies += `${entry.energy.toFixed(4)}\n`;
+				energies += `${entry.outEnergy.toFixed(4)}\n`;
 			}
 		}
 		const sts = writer.writeStructure(filename,
