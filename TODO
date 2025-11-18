@@ -2,11 +2,9 @@ Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
   ☐ Incomplete polyhedra bonds
-  ☐ Bad saving of generalized convex hull
   ☐ Compute better camera placement to consider the full scene (now it is too near)
   ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
   ☐ Verify fill unit cell in proto visualizer
-  ✔ Error in CIF reader if label contains a "'" @done(2025-11-12 13:47)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -14,7 +12,6 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
-  ✔ Enabling numerical output of XRD calculation @done(2025-11-12 16:09)
   ☐ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz
   ☐ It would be good to have a possibility to set the first and last steps to be visualized.
   ☐ Visualization of crystal shapes (based on bond strengths).
@@ -82,6 +79,9 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Bad saving of generalized convex hull @done(2025-11-18 05:45) @project(Bugs)
+  ✔ Error in CIF reader if label contains a "'" @done(2025-11-12 13:47) @project(Bugs)
+  ✔ Enabling numerical output of XRD calculation @done(2025-11-12 16:09) @project(Latest requests (backlog))
   ✔ Find prototype structure @done(2025-10-30 09:55) @project(Latest requests (backlog))
   ✔ Check not even dimensions for the capture movies. @done(2025-10-30 09:54) @project(Bugs)
   ✔ Define enum for addType in ComputeBonds @done(2025-10-23 06:15) @project(Bugs)

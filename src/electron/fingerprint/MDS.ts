@@ -29,6 +29,7 @@ export const MDS = (distancesVector: number[],
 		if(pointsEnabled[i]) mapIndex[i] = enabledIndex++;
 		else --enabledSide;
 	}
+	if(enabledSide === 0) return {points2D: [], points3D: []};
 
 	// 2. Create the matrix of distances squared between enabled points
 	const D2 = Array<number[]>(enabledSide);
@@ -64,7 +65,7 @@ export const MDS = (distancesVector: number[],
 
 	// 4. Compute double centering matrix
 	const doubleCenteringMatrix = Array<number[]>(enabledSide);
-	for(let row=0; row < pointsCount; ++row) {
+	for(let row=0; row < enabledSide; ++row) {
 		doubleCenteringMatrix[row] = Array<number>(enabledSide).fill(0);
 	}
 
