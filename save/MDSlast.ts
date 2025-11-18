@@ -78,7 +78,9 @@ export const MDS = (distancesVector: number[],
 	// 5. Compute eigenvalues and eigenvectors
 	const result = eigs(doubleCenteringMatrix);
 	const last = result.eigenvectors.length-1;
-
+console.log("tLAST0", result.eigenvectors[last-0].value); // TBD
+console.log("tLAST1", result.eigenvectors[last-1].value); // TBD
+console.log("tLAST2", result.eigenvectors[last-2].value); // TBD
 	// 6. Compute the final coordinates 2D and 3D
 	const points2D = Array<number[]>(pointsCount);
 	const points3D = Array<number[]>(pointsCount);
@@ -92,13 +94,11 @@ export const MDS = (distancesVector: number[],
 			const eigenvalue = result.eigenvectors[last-j].value as number;
 			const eigenvector = result.eigenvectors[last-j].vector as number[];
 			points2D[i][j] = eigenvector[ei] * Math.sqrt(Math.abs(eigenvalue));
+			points3D[i][j] = points2D[i][j];
 		}
-		for(let j = 0; j < 3; j++) {
-
-			const eigenvalue = result.eigenvectors[last-j].value as number;
-			const eigenvector = result.eigenvectors[last-j].vector as number[];
-			points3D[i][j] = eigenvector[ei] * Math.sqrt(Math.abs(eigenvalue));
-		}
+		const eigenvalue3 = result.eigenvectors[last-2].value as number;
+		const eigenvector3 = result.eigenvectors[last-2].vector as number[];
+		points3D[i][3] = eigenvector3[ei] * Math.sqrt(Math.abs(eigenvalue3));
 	}
 
 	// 7. Normalize coordinates in 0..1 interval

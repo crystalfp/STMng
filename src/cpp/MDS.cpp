@@ -77,13 +77,13 @@ void doMDS(
 	std::vector<double_t> max2D(2, -DBL_MAX);
 	std::vector<double_t> min3D(3,  DBL_MAX);
 	std::vector<double_t> max3D(3, -DBL_MAX);
-	size_t last = enabledSide-1;
+
     for(size_t i = 0; i < enabledSide; ++i) {
 
 		// Unroll the loop on dimensions
 		size_t i2 = i*2;
 		size_t i3 = i*3;
-		size_t idx = last;
+		size_t idx = 0;
 		double eigenvalue = eigenvalues(idx);
 		double value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
 		if(value < min2D[0]) min2D[0] = value;
@@ -93,7 +93,7 @@ void doMDS(
 		points2D[i2] = value;
 		points3D[i3] = value;
 
-		idx = last-1;
+		idx = 1;
 		eigenvalue = eigenvalues(idx);
 		value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
 		if(value < min2D[1]) min2D[1] = value;
@@ -103,7 +103,7 @@ void doMDS(
 		points2D[i2+1] = value;
 		points3D[i3+1] = value;
 
-		idx = last-2;
+		idx = 2;
 		eigenvalue = eigenvalues(idx);
 		value = eigenvectors(i, idx) * sqrt(fabs(eigenvalue));
 		if(value < min3D[2]) min3D[2] = value;
