@@ -9,7 +9,7 @@
 import {inv, multiply, transpose} from "mathjs";
 import {getNiggliReducedLattice, matrixToLattice} from "./PymatgenLattice";
 import {pbc} from "./Utility";
-import type {Lattice, Site, SNL} from "./types";
+import type {Site, SNL} from "./types";
 
 /**
  * Get a reduced structure
@@ -93,6 +93,13 @@ const pbcCoordIntersection = (
     return fc1.filter((_, i) => anyMatch[i]);
 };
 
+/**
+ * Compute the greatest common divisor
+ *
+ * @param a - First number
+ * @param b - Second number
+ * @returns Their greatest common divisor
+ */
 const gcd = (a: number, b: number): number => {
     while(b !== 0) {
         const temp = b;
@@ -106,6 +113,12 @@ const gcd = (a: number, b: number): number => {
 const gcdArray = (numbers: number[]): number => numbers.reduce((accumulator, current) =>
     gcd(accumulator, current));
 
+/**
+ * Return the factors of a given number
+ *
+ * @param n - Number to be factorized
+ * @returns Factors one by one without their multiplicity
+ */
 function* factors(n: number): Generator<number> {
     for(let idx = 1; idx <= n; idx++) {
         if(n % idx === 0) {
@@ -161,22 +174,21 @@ const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): number[
  * Find a smaller unit cell than the input. Sometimes it doesn't
         find the smallest possible one, so this method is recursively called
         until it is unable to find a smaller cell.
-
+ *
  * @remarks If the tolerance is greater than 1/2 of the minimum inter-site
         distance in the primitive cell, the algorithm will reject this lattice.
-
-        Args:
-            tolerance (float): Tolerance for each coordinate of a
+ *
+ * @param structure - The structure to be transformed
+ * @param tolerance - Tolerance for each coordinate of a
                 particular site in Angstroms. For example, [0.1, 0, 0.1] in cartesian
                 coordinates will be considered to be on the same coordinates
                 as [0, 0, 0] for a tolerance of 0.25. Defaults to 0.25.
-            use_site_props (bool): Whether to account for site properties in
-                differentiating sites.
-            constrain_latt (list/dict): List of lattice parameters we want to
+ * @param useSiteProps - Whether to account for site properties in
+                differentiating sites
+ * @param constrainLatt - List of lattice parameters we want to
                 preserve, e.g. ["alpha", "c"] or dict with the lattice
                 parameter names as keys and values we want the parameters to
                 be e.g. ("alpha": 90, "c": 2.5).
-
  * @returns The most primitive structure found
  */
 export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
@@ -451,42 +463,4 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
     }
 
 	return structure;
-};
-
-export const scaleLattice = (lattice: Lattice, scale: number): void => {
-
-    for(let row=0; row < 3; ++row) {
-        for(let col=0; col < 3; ++col) lattice.matrix[row][col] *= scale;
-    }
-    lattice.a *= scale;
-    lattice.b *= scale;
-    lattice.c *= scale;
-    lattice.volume *= scale ** 3;
-};
-
-export const getElements = (structure: SNL): string[] => {
-
-    const elements = new Set<string>();
-    for(const site of structure.sites)  {
-        for(const species of site.species) {
-            elements.add(species.element);
-        }
-    }
-    return [...elements];
-};
-
-export const getComposition = (structure: SNL): Map<string, number> => {
-
-    const composition = new Map<string, number>();
-    for(const site of structure.sites) {
-        for(const species of site.species) {
-            if(composition.has(species.element)) {
-                composition.set(species.element, composition.get(species.element)! + species.occu);
-            }
-            else {
-                composition.set(species.element, species.occu);
-            }
-        }
-    }
-    return composition;
 };

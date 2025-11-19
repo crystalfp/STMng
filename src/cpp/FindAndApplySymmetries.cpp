@@ -473,6 +473,92 @@ static void applyTransformations(SpglibDataset* dataset,
 	}
 }
 
+// Convert symmetry rotations and translations into
+// _symmetry_equiv_pos_as_xyz strings
+struct fraction_t {
+
+	float value;
+	string str;
+};
+// Fraction values in increasing order
+vector<fraction_t> fractions = {
+	{1.0f/8.0f, "1/8"},
+	{1.0f/6.0f, "1/6"},
+	{1.0f/4.0f, "1/4"},
+	{1.0f/3.0f, "1/3"},
+	{3.0f/8.0f, "3/8"},
+	{1.0f/2.0f, "1/2"},
+	{5.0f/8.0f, "5/8"},
+	{2.0f/3.0f, "2/3"},
+	{3.0f/4.0f, "3/4"},
+	{5.0f/6.0f, "5/6"},
+	{7.0f/8.0f, "7/8"}
+};
+
+static void oneConst(float t, int next, string& res)
+{
+	float tol = 1e-5f;
+
+	if(t > -tol && t < tol) return;
+	else if(t > 0.) {
+		if(next) res.append("+");
+	}
+	else if(t < 0.) {
+		res.append("-");
+		t = -t;
+	}
+
+	for(auto x : fractions) {
+		if(t > x.value-tol && t < x.value+tol) {
+			res.append(x.str);
+			return;
+		}
+	}
+	res.append(to_string(t));
+}
+
+static int oneRot(float m, string var, int next, string& res)
+{
+	if(next) {
+		if(m == 1.) {res.append("+"); res.append(var); return 1;}
+		else if(m == -1.) {res.append("-"); res.append(var); return 1;}
+		else if(m != 0.) {oneConst(m, 1, res); res.append(var); return 1;}
+	}
+	else {
+		if(m == 1.) {res.append(var); return 1;}
+		else if(m == -1.) {res.append("-"); res.append(var); return 1;}
+		else if(m != 0.) {oneConst(m, 0, res); res.append(var); return 1;}
+	}
+	return next;
+}
+
+static string formatTransformations(SpglibDataset* dataset)
+{
+	std::string res = "";
+	int next;
+	int nops = dataset->n_operations;
+	for(int i = 0; i < nops; i++)
+	{
+		next = oneRot(dataset->rotations[i][0][0], "x", 0, res);
+		next = oneRot(dataset->rotations[i][0][1], "y", next, res);
+		next = oneRot(dataset->rotations[i][0][2], "z", next, res);
+		oneConst(dataset->translations[i][0], next, res);
+		res.append(",");
+		next = oneRot(dataset->rotations[i][1][0], "x", 0, res);
+		next = oneRot(dataset->rotations[i][1][1], "y", next, res);
+		next = oneRot(dataset->rotations[i][1][2], "z", next, res);
+		oneConst(dataset->translations[i][1], next, res);
+		res.append(",");
+		next = oneRot(dataset->rotations[i][2][0], "x", 0, res);
+		next = oneRot(dataset->rotations[i][2][1], "y", next, res);
+		next = oneRot(dataset->rotations[i][2][2], "z", next, res);
+		oneConst(dataset->translations[i][2], next, res);
+		res.append("\n");
+	}
+
+	return res;
+}
+
 #ifdef DEBUG
 void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const int num_atom, string title)
 {
@@ -652,9 +738,12 @@ string doFindAndApplySymmetries(
 			applyTransformations(dataset, num_primitive_atom, positions,
 								 types, outTypes, outPositions);
 
+			// Compute the space group as symbol or as symmetry equivalent positions
+			spaceGroup = formatTransformations(dataset);
+			// spaceGroup = dataset->international_symbol;
+
 			// Copy back the values
 			// Transpose the lattice to cancel the input transposition
-			spaceGroup = dataset->international_symbol;
 			atomsZ = outTypes;
 			fractionalCoordinates = outPositions;
 			for(int i=0; i < 3; ++i)

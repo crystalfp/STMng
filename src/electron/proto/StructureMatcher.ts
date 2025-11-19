@@ -15,8 +15,7 @@ import {isCoordSubsetPbc, latticePointsInSupercell,
         pbcShortestVectors} from "./PymatgenCoords.ts";
 import {findAllMappings, getLLLmatrices, matrixToLattice, paramsToLattice,
         reciprocalLatticeLengths} from "./PymatgenLattice.ts";
-import {getComposition, getElements, getReducedStructure,
-        scaleLattice} from "./PymatgenStructure.ts";
+import {getReducedStructure} from "./PymatgenStructure.ts";
 import {addVectors, determinant, getFractionalCoords, norm, pbc,
         subtractVectors} from "./Utility.ts";
 import type {Lattice, SNL} from "./types";
@@ -43,6 +42,62 @@ interface SupercellResult {
   avgLattice: Lattice;
   supercellMatrix: number[][];
 }
+
+/**
+ * Scale a lattice
+ *
+ * @param lattice - Lattice to be scaled
+ * @param scale - Scale value
+ */
+const scaleLattice = (lattice: Lattice, scale: number): void => {
+
+    for(let row=0; row < 3; ++row) {
+        for(let col=0; col < 3; ++col) lattice.matrix[row][col] *= scale;
+    }
+    lattice.a *= scale;
+    lattice.b *= scale;
+    lattice.c *= scale;
+    lattice.volume *= scale ** 3;
+};
+
+/**
+ * Extract unique species from the given structure
+ *
+ * @param structure - Structure to be analyzed
+ * @returns - List of distinct species in the structure
+ */
+const getElements = (structure: SNL): string[] => {
+
+    const elements = new Set<string>();
+    for(const site of structure.sites)  {
+        for(const species of site.species) {
+            elements.add(species.element);
+        }
+    }
+    return [...elements];
+};
+
+/**
+ * Retrieve species and corresponding count from the given structure
+ *
+ * @param structure - Structure to be analyzed
+ * @returns Map from specie to its count
+ */
+const getComposition = (structure: SNL): Map<string, number> => {
+
+    const composition = new Map<string, number>();
+    for(const site of structure.sites) {
+        for(const species of site.species) {
+            if(composition.has(species.element)) {
+                composition.set(species.element, composition.get(species.element)! + species.occu);
+            }
+            else {
+                composition.set(species.element, species.occu);
+            }
+        }
+    }
+    return composition;
+};
 
 /**
  * Match structures by similarity.

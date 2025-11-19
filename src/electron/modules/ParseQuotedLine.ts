@@ -8,7 +8,7 @@
  */
 
 /**
- * Line read type
+ * Step kind
  * @notExported
  */
 const Step = {
@@ -20,35 +20,47 @@ const Step = {
 } as const;
 
 /**
- * Line read type
+ * Step field type
  * @notExported
  */
 type StepType = (typeof Step)[keyof typeof Step];
 
 /**
- * Line read type
+ * Kind of character read
  * @notExported
  */
 const Char = {
-    normal: 	0,
-    blank:   	1,
-    quote:   	2,
+    normal:	0,
+    blank:  1,
+    quote:  2,
 } as const;
 /**
- * Line read type
+ * Character kind field type
  * @notExported
  */
 type CharType = (typeof Char)[keyof typeof Char];
 
+/**
+ * Transition table
+ * @notExported
+ */
 interface Transition {
+	/** Next step */
 	next: StepType;
+	/** Action for these step */
 	action?: (ch: string) => void;
 }
 
-
+/**
+ * Action for the finish step
+ * @notExported
+ */
 type EndAction = (step: StepType) => void;
 
-
+/**
+ * Parse a line into fields separated by blanks.
+ * The field could be quoted and contain blanks
+ */
 export class ParseQuotedLine {
 
 	private readonly transitions = new Map<StepType, Map<CharType, Transition>>();
@@ -56,27 +68,46 @@ export class ParseQuotedLine {
 	private partial = "";
 	private out: string[] = [];
 
+	/**
+	 * Add character to field
+	 *
+	 * @param ch - Character to add to the partial read field
+	 */
 	private save(ch: string): void {
 
 		this.partial += ch;
 	}
 
+	/**
+	 * Start a new field
+	 *
+	 * @param ch - Character to start the partial read field
+	 */
 	private start(ch: string): void {
 
 		this.partial = ch;
 	}
 
+	/**
+	 * Empty a field
+	 */
 	private startEmpty(): void {
 
 		this.partial = "";
 	}
 
+	/**
+	 * End a field and add to the read fields list
+	 */
 	private end(): void {
 
 		this.out.push(this.partial);
 		this.partial = "";
 	}
 
+	/**
+	 * Initialize the state machine
+	 */
 	constructor() {
 
 		const nextStart = new Map<CharType, Transition>([
@@ -124,10 +155,10 @@ export class ParseQuotedLine {
 	}
 
 	/**
-	 * Split line into fields (that could be quoted)
+	 * Split line into fields (that could be quoted) separated by blanks
 	 *
 	 * @param line - Line to be parsed
-	 * @returns The strings separated by blanks
+	 * @returns The strings list
 	 */
 	split(line: string): string[] {
 

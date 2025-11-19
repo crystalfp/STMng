@@ -182,6 +182,7 @@ export const swapColumns = (matrix: number[][], col1: number, col2: number): voi
  *
  * Simple implementation using normal equations: (A^T * A)^-1 * A^T * b
  * For a more robust implementation, consider using SVD or QR decomposition
+ *
  * @param a - First matrix
  * @param b - Second matrix
  * @returns Result
@@ -401,6 +402,12 @@ export const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): 
   	});
 };
 
+/**
+ * Cartesian product between a list of matrices
+ *
+ * @param arrays - matrices to be multiplied
+ * @returns Resulting matrix
+ */
 export const cartesianProduct = (...arrays: number[][]): number[][] => {
     // eslint-disable-next-line unicorn/no-array-reduce
     return arrays.reduce<number[][]>((accumulator, current) =>
@@ -409,16 +416,34 @@ export const cartesianProduct = (...arrays: number[][]): number[][] => {
     );
 };
 
-
-// Helper methods for vector operations
+/**
+ * Subtract vectors
+ *
+ * @param v1 - First vector
+ * @param v2 - Second vector
+ * @returns Difference of the two vectors
+ */
 export const subtractVectors = (v1: number[], v2: number[]): number[] => {
     return v1.map((value, i) => value - v2[i]);
 };
 
+/**
+ * Sum vectors
+ *
+ * @param v1 - First addendum
+ * @param v2 - Second addendum
+ * @returns Sum of the two vectors
+ */
 export const addVectors = (v1: number[], v2: number[]): number[] => {
     return v1.map((value, i) => value + v2[i]);
 };
 
+/**
+ * Compute the norm of a vector
+ *
+ * @param vector - Vector to be analyzed
+ * @returns Norm of the vector
+ */
 export const norm = (vector: number[]): number => {
     return Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
 };
