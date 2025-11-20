@@ -281,9 +281,8 @@ export class ComputeBonds extends NodeCore {
 	 */
 	private markConnected(bonds: Bond[], startIdx: number): void {
 
-		for(const bond of bonds) {
+		for(const {from, to, type} of bonds) {
 
-			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
 			if(from === startIdx) {
 				if(this.addType[to] === AddType.outside) {
@@ -306,9 +305,8 @@ export class ComputeBonds extends NodeCore {
 	private leaveConnectedAtoms(structure: Structure): void {
 
 		// The starting points are the outside atoms connected to one inside atom
-		for(const bond of structure.bonds) {
+		for(const {from, to, type} of structure.bonds) {
 
-			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
 			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
 				this.addType[to] = AddType.added;
@@ -333,9 +331,8 @@ export class ComputeBonds extends NodeCore {
 		const mark = new Map<number, number[]>();
 
 		// The starting points are the outside atoms connected to one inside atom
-		for(const bond of structure.bonds) {
+		for(const {from, to, type} of structure.bonds) {
 
-			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
 			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
 				this.addType[to] = AddType.added;
@@ -348,9 +345,8 @@ export class ComputeBonds extends NodeCore {
 		}
 
 		// Get atoms connected to these outside atoms
-		for(const bond of structure.bonds) {
+		for(const {from, to, type} of structure.bonds) {
 
-			const {from, to, type} = bond;
 			if(type !== BondType.normal) continue;
 			if(this.addType[from] === AddType.added) {
 				mark.get(from)?.push(to);
@@ -384,8 +380,8 @@ export class ComputeBonds extends NodeCore {
 
 		// Remove unneeded bonds
 		const updatedBonds: Bond[] = [];
-		for(const bond of structure.bonds) {
-			const {from, to, type} = bond;
+		for(const {from, to, type} of structure.bonds) {
+
 			if(this.addType[from] !== AddType.outside && this.addType[to] !== AddType.outside) {
 				updatedBonds.push({from, to, type});
 			}
@@ -523,10 +519,7 @@ export class ComputeBonds extends NodeCore {
 		const {atoms} = structure;
 
 		const radii: number[] = [];
-		for(const atom of atoms) {
-			const {atomZ} = atom;
-			radii.push(getAtomData(atomZ).rCov);
-		}
+		for(const {atomZ} of atoms) radii.push(getAtomData(atomZ).rCov);
 
 		// No bonds possible
 		const atomsCount = atoms.length;

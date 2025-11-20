@@ -591,9 +591,8 @@ export class ComputeFingerprints extends NodeCore {
 
 					// Collect energies
 					chartData.energy = [];
-					for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
-
-						const {energy, step} = structure;
+					for(const {energy, step}
+						of this.accumulator.iterateSelectedEnabledStructures()) {
 
 						chartData.energy.push([step, energy ?? 0]);
 					}

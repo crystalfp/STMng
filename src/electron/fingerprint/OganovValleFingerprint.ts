@@ -136,9 +136,8 @@ export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void =>
     let nloaded = 0;
 
 	// Compute the centroid of the fingerprints
-	for(const structure of accumulator.iterateSelectedStructures()) {
-
-		const {fingerprint, countSections, sectionLength} = structure;
+	for(const {fingerprint, countSections, sectionLength}
+		of accumulator.iterateSelectedStructures()) {
 
 		const dimension = countSections*sectionLength;
         if(nloaded > 0) {
@@ -157,9 +156,7 @@ export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void =>
 	}
 
 	// Remove centroid from each fingerprint
-	for(const structure of accumulator.iterateSelectedStructures()) {
-
-		const {fingerprint} = structure;
+	for(const {fingerprint} of accumulator.iterateSelectedStructures()) {
 
 		for(let i=0; i < centroid.length; ++i) {
 			fingerprint[i] -= centroid[i];

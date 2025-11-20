@@ -151,8 +151,7 @@ export class FingerprintsAccumulator {
 			weights: []
 		};
 
-		for(const atom of atoms) {
-			const {atomZ, position} = atom;
+		for(const {atomZ, position} of atoms) {
 
 			const n = entry.species.get(atomZ) ?? 0;
 			entry.species.set(atomZ, n+1);

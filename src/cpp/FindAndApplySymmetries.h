@@ -14,5 +14,6 @@ extern std::string doFindAndApplySymmetries(
 	bool createPrimitiveCell,						// Create primitive cell instead of conventional cell
 	double symprecStandardize,						// Tolerance for the standardize cell step
 	double symprecDataset,							// Tolerance for find symmetries
-	bool& unitCellModified							// True if the cell has been modified (out)
+	bool& unitCellModified,							// True if the cell has been modified (out)
+	std::string& intlSymbol							// Computed international symmetry symbol
 );													// Returns error message or empty string

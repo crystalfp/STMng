@@ -27,6 +27,8 @@ interface ComputeSymmetriesOutput {
 	basis: BasisType;
 	/** Computed symmetry */
 	spaceGroup: string;
+	/** International symmetry symbol */
+	intlSymbol: string;
 	/** Atoms' atomic numbers */
 	atomsZ: number[];
 	/** Atoms' computed labels */
@@ -110,6 +112,8 @@ export class ComputeSymmetries extends NodeCore {
 	private fillTolerance = -5;
 	private standardizeOnly = false;
 	private computedSpaceGroup = "";
+	private intlSymbol = "";
+	private showIntlSymbol = false;
 	private createPrimitiveCell = false;
 	private computePointGroup = false;
 	private pointGroup = "";
@@ -122,6 +126,7 @@ export class ComputeSymmetries extends NodeCore {
 		{name: "compute", 		 type: "send",   callback: this.channelCompute.bind(this)},
 		{name: "window",  		 type: "send",   callback: this.channelWindow.bind(this)},
 		{name: "do-point-group", type: "send",   callback: this.channelDoPointGroup.bind(this)},
+		{name: "intl", 			 type: "send",   callback: this.channelIntl.bind(this)},
 	];
 
 	/**
@@ -186,6 +191,7 @@ export class ComputeSymmetries extends NodeCore {
 			computePointGroup: this.computePointGroup,
 			positionTolerance: this.positionTolerance,
 			eigenvalueTolerance: this.eigenvalueTolerance,
+			showIntlSymbol: this.showIntlSymbol,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -203,6 +209,7 @@ export class ComputeSymmetries extends NodeCore {
         this.computePointGroup = params.computePointGroup as boolean ?? false;
         this.positionTolerance = params.positionTolerance as number ?? 0.3;
         this.eigenvalueTolerance = params.eigenvalueTolerance as number ?? 0.01;
+		this.showIntlSymbol = params.showIntlSymbol as boolean ?? false;
 	}
 
 	// > Compute new structure after finding and applying symmetries
@@ -295,6 +302,7 @@ export class ComputeSymmetries extends NodeCore {
 		const out: ComputeSymmetriesOutput = {
 			basis: [...computed.basis] as BasisType,
 			spaceGroup: computed.spaceGroup,
+			intlSymbol: computed.intlSymbol,
 			atomsZ: atomsZOut,
 			labels,
 			chains,
@@ -306,7 +314,8 @@ export class ComputeSymmetries extends NodeCore {
 		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
 		if(out.noCellChanges && this.inputStructure) this.structure.volume = volume;
 
-		this.computedSpaceGroup = this.structure.crystal.spaceGroup;
+		this.computedSpaceGroup = computed.spaceGroup;
+		this.intlSymbol = computed.intlSymbol;
 
 		if(computed.status !== "") {
 			sendAlertToClient(computed.status, {node: "symmetries"});
@@ -325,9 +334,10 @@ export class ComputeSymmetries extends NodeCore {
 
 		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
 		outSymmetry ??= inSymmetry;
+		const intlSymbol = this.intlSymbol;
 
 		// Update the UI
-		sendToClient(this.id, "show", {inSymmetry, outSymmetry, pointGroup});
+		sendToClient(this.id, "show", {inSymmetry, outSymmetry, pointGroup, intlSymbol});
 
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {
@@ -335,7 +345,9 @@ export class ComputeSymmetries extends NodeCore {
 			const dataToSend = JSON.stringify({
 				inSymmetry,
 				outSymmetry,
-				pointGroup
+				pointGroup,
+				intlSymbol,
+				showIntlSymbol: this.showIntlSymbol,
 			});
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
@@ -399,6 +411,7 @@ export class ComputeSymmetries extends NodeCore {
 
 			basis,
 			spaceGroup,
+			intlSymbol: "",
 			atomsZ,
 			labels,
 			chains,
@@ -666,6 +679,8 @@ export class ComputeSymmetries extends NodeCore {
 			positionTolerance: this.positionTolerance,
 			eigenvalueTolerance: this.eigenvalueTolerance,
 			pointGroup: this.pointGroup,
+			intlSymbol: this.intlSymbol,
+			showIntlSymbol: this.showIntlSymbol,
 		};
 	}
 
@@ -707,6 +722,25 @@ export class ComputeSymmetries extends NodeCore {
 	}
 
 	/**
+	 * Channel handler for show international symbol parameters change
+	 *
+	 * @param params - Show international symbol parameter
+	 */
+	private channelIntl(params: CtrlParams): void {
+		this.showIntlSymbol = params.showIntlSymbol as boolean ?? false;
+
+		// Update the dialog if it is open
+		if(isSecondaryWindowOpen("/symmetries")) {
+
+			const dataToSend = JSON.stringify({
+				showIntlSymbol: this.showIntlSymbol,
+			});
+			sendToSecondaryWindow("/symmetries", dataToSend);
+		}
+
+	}
+
+	/**
 	 * Channel handler for point group parameters change
 	 *
 	 * @param params - Point group analyzer parameters
@@ -734,7 +768,9 @@ export class ComputeSymmetries extends NodeCore {
 		const dataToSend = JSON.stringify({
 			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
 			outSymmetry: this.computedSpaceGroup,
-			pointGroup: this.pointGroup
+			pointGroup: this.pointGroup,
+			intlSymbol: this.intlSymbol,
+			showIntlSymbol: this.showIntlSymbol,
 		});
 
 		createOrUpdateSecondaryWindow({

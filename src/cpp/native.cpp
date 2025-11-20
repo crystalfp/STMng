@@ -77,7 +77,7 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	}
 
 	// Argument 10: symprecDataset
-	if(!info[9].IsNumber()) {
+	if(!info[10].IsNumber()) {
     	Napi::TypeError::New(env, "Eleventh argument should be a number").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
@@ -143,6 +143,7 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	double symprecDataset = static_cast<double>(info[10].As<Napi::Number>());
 
 	bool unitCellModified;
+	std::string intlSymbol;
 
 	std::string out = doFindAndApplySymmetries(
 		basis,
@@ -156,12 +157,14 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 		createPrimitiveCell,
 		symprecStandardize,
 		symprecDataset,
-		unitCellModified
+		unitCellModified,
+		intlSymbol
 	);
 
 	// Return the data
 	Napi::Object obj = Napi::Object::New(env);
 	obj.Set("spaceGroup", spaceGroup);
+	obj.Set("intlSymbol", intlSymbol);
 
 	Napi::Float64Array basisOut = Napi::Float64Array::New(env, 9);
 	for(size_t i=0; i < 9; ++i) basisOut[i] = basis[i];

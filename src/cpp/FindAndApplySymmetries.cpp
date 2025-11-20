@@ -480,18 +480,19 @@ struct fraction_t {
 	float value;
 	string str;
 };
-// Fraction values in increasing order
+// Fraction values in increasing usage frequency
 vector<fraction_t> fractions = {
-	{1.0f/8.0f, "1/8"},
-	{1.0f/6.0f, "1/6"},
-	{1.0f/4.0f, "1/4"},
-	{1.0f/3.0f, "1/3"},
-	{3.0f/8.0f, "3/8"},
 	{1.0f/2.0f, "1/2"},
-	{5.0f/8.0f, "5/8"},
+	{1.0f/3.0f, "1/3"},
 	{2.0f/3.0f, "2/3"},
+	{1.0f/4.0f, "1/4"},
 	{3.0f/4.0f, "3/4"},
+	{1.0f/6.0f, "1/6"},
 	{5.0f/6.0f, "5/6"},
+	// These below seems never appear
+	{1.0f/8.0f, "1/8"},
+	{3.0f/8.0f, "3/8"},
+	{5.0f/8.0f, "5/8"},
 	{7.0f/8.0f, "7/8"}
 };
 
@@ -553,7 +554,7 @@ static string formatTransformations(SpglibDataset* dataset)
 		next = oneRot(dataset->rotations[i][2][1], "y", next, res);
 		next = oneRot(dataset->rotations[i][2][2], "z", next, res);
 		oneConst(dataset->translations[i][2], next, res);
-		res.append("\n");
+		if(i < nops-1) res.append("\n");
 	}
 
 	return res;
@@ -606,11 +607,13 @@ string doFindAndApplySymmetries(
 	bool createPrimitiveCell,
 	double symprecStandardize,
 	double symprecDataset,
-	bool& unitCellModified)
+	bool& unitCellModified,
+	string& intlSymbol)
 {
 	// Status to be returned
 	string status("");
 	unitCellModified = false;
+	intlSymbol = "";
 
 	// Apply input symmetries
 	if(applyInputSymmetries)
@@ -740,7 +743,7 @@ string doFindAndApplySymmetries(
 
 			// Compute the space group as symbol or as symmetry equivalent positions
 			spaceGroup = formatTransformations(dataset);
-			// spaceGroup = dataset->international_symbol;
+			intlSymbol = dataset->international_symbol;
 
 			// Copy back the values
 			// Transpose the lattice to cancel the input transposition

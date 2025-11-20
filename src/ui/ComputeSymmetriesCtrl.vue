@@ -37,6 +37,8 @@ const showSymmetriesDialog = ref(false);
 const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
+const intlSymbol = ref("");
+const showIntlSymbol = ref(false);
 const fillTolerance = ref(-5);
 const createPrimitiveCell = ref(false);
 
@@ -73,6 +75,8 @@ askNode(id, "init")
         pointGroup.value = params.pointGroup as string ?? "";
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
+        intlSymbol.value = params.intlSymbol as string ?? "";
+        showIntlSymbol.value = params.showIntlSymbol as boolean ?? false;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -115,12 +119,17 @@ watch([
     });
 });
 
+watch(showIntlSymbol, () => {
+    sendToNode(id, "intl", {showIntlSymbol: showIntlSymbol.value});
+});
+
 receiveFromNode(id, "show", (params: CtrlParams) => {
 
     if(params.inSymmetry !== undefined) inputSpaceGroup.value = params.inSymmetry as string;
     if(params.outSymmetry !== undefined) computedSpaceGroup.value = params.outSymmetry as string;
     if(params.enableFindSymmetries !== undefined) enableFindSymmetries.value = params.enableFindSymmetries as boolean;
     if(params.pointGroup !== undefined) pointGroup.value = params.pointGroup as string;
+    if(params.intlSymbol !== undefined) intlSymbol.value = params.intlSymbol as string;
 });
 
 receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
@@ -152,6 +161,7 @@ receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
     <v-container v-if="standardizeCell" class="pa-0 mt-n2">
       <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2" />
       <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-3 mt-n2" />
+      <v-switch v-model="showIntlSymbol" label="Show international symbol" class="ml-3 mt-n2" />
       <debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mt-4">
         <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
@@ -163,22 +173,22 @@ receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
     </debounced-slider>
   </v-container>
 
-  <v-row v-if="!disableInputSymmetries" class="pl-2 mt-2 align-center">
-    <v-col cols="5">
+  <v-container v-if="!disableInputSymmetries" class="pl-6 mt-2">
+    <v-row>
       <v-label text="Input symmetry:" class="result-label no-select" />
-    </v-col>
-    <v-col cols="7">
+    </v-row>
+    <v-row>
       <v-label :text="inputSpaceGroup" class="show-symmetry" />
-    </v-col>
-  </v-row>
-  <v-row v-if="enableFindSymmetries" class="pl-2 mt-2 align-center">
-    <v-col cols="5">
+    </v-row>
+  </v-container>
+  <v-container v-if="enableFindSymmetries" class="pl-6 mt-2">
+    <v-row>
       <v-label text="Final symmetry:" class="result-label no-select" />
-    </v-col>
-    <v-col cols="7">
-      <v-label :text="computedSpaceGroup" class="show-symmetry" />
-    </v-col>
-  </v-row>
+    </v-row>
+    <v-row>
+      <v-label :text="showIntlSymbol ? intlSymbol : computedSpaceGroup" class="show-symmetry" />
+    </v-row>
+  </v-container>
 
   <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4 mb-n2" />
   <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"

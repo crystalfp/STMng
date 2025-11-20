@@ -191,9 +191,8 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
 
 	// For each atom compute the fractional coordinates
 	const fractionalCoords: number[] = [];
-	for(const atom of atoms) {
+	for(const {position} of atoms) {
 
-		const {position} = atom;
 		const cx = position[0] - origin[0];
 		const cy = position[1] - origin[1];
 		const cz = position[2] - origin[2];
@@ -268,9 +267,7 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 
 	// For each atom compute the initial fractional coordinates
 	let index = 0;
-	for(const atom of atoms) {
-
-		const {position, atomZ, label, chain} = atom;
+	for(const {position, atomZ, label, chain} of atoms) {
 
 		const cx = position[0] - origin[0];
 		const cy = position[1] - origin[1];

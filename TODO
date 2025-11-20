@@ -12,7 +12,7 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
-  ☐ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz
+  ✔ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz @done(2025-11-20 10:02)
   ☐ It would be good to have a possibility to set the first and last steps to be visualized.
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.

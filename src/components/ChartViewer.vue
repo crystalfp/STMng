@@ -43,8 +43,7 @@ const transparent = ref(false);
 /** Receive the chart data from the main window */
 receiveInWindow((dataFromMain) => {
 
-    const decodedData = JSON.parse(dataFromMain) as ChartParams;
-    const {data, options, type} = decodedData;
+    const {data, options, type} = JSON.parse(dataFromMain) as ChartParams;
 
     chartType.value = type;
     chartData.value = data;

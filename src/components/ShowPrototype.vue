@@ -25,9 +25,6 @@ const metalness = 0.6;
 
 const prototypeName = ref("");
 
-/** The received data */
-let prototypeStructureData: PrototypeStructureData | undefined;
-
 /** Initialize the 3D viewer */
 const labelsGroup = new Group();
 const atomsGroup = new Group();
@@ -49,9 +46,7 @@ const sv = new SimpleViewer(".prototype-viewer", false, (scene) => {
 /** Receive the prototype data from the main window */
 receiveInWindow((dataFromMain) => {
 
-    prototypeStructureData = JSON.parse(dataFromMain) as PrototypeStructureData;
-
-    const {atoms, matrix, mineral, aflow} = prototypeStructureData;
+    const {atoms, matrix, mineral, aflow} = JSON.parse(dataFromMain) as PrototypeStructureData;
 
     const uc = computeLatticeVertices(matrix);
     const center = addUnitCell(uc);

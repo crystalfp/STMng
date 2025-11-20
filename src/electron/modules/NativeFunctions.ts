@@ -17,6 +17,8 @@ const addon = rq("../build/Release/native") as NativeModule;
 interface FindAndApplySymmetriesOutput {
 	/** Computed space group */
 	spaceGroup: string;
+	/** International symmetry symbol */
+	intlSymbol: string;
 	/** Computed basis */
 	basis: Float64Array;
 	/** The atom types */
@@ -73,11 +75,17 @@ interface MDSOutput {
  * @notExported
  */
 interface NativeModule {
-	findAndApplySymmetries: (basis: Float64Array, spaceGroup: string, atomsZ: Int32Array,
-							 fractionalCoordinates: Float64Array, applyInputSymmetries: boolean,
-							 enableFindSymmetries: boolean, standardizeCell: boolean,
-							 standardizeOnly: boolean, createPrimitiveCell: boolean,
-							 symprecStandardize: number, symprecDataset: number) => FindAndApplySymmetriesOutput;
+	findAndApplySymmetries: (basis: Float64Array,
+							 spaceGroup: string,
+							 atomsZ: Int32Array,
+							 fractionalCoordinates: Float64Array,
+							 applyInputSymmetries: boolean,
+							 enableFindSymmetries: boolean,
+							 standardizeCell: boolean,
+							 standardizeOnly: boolean,
+							 createPrimitiveCell: boolean,
+							 symprecStandardize: number,
+							 symprecDataset: number) => FindAndApplySymmetriesOutput;
 
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
 
@@ -98,7 +106,7 @@ interface NativeModule {
  * @param createPrimitiveCell - Create a primitive cell instead of a conventional one
  * @param symprecStandardize - Tolerance for cell standardization
  * @param symprecDataset - Tolerance for finding symmetries
- * @returns The new cell and atoms positions
+ * @returns The new cell, atoms positions and symmetry symbols
  */
 export const findAndApplySymmetries = (basis: Float64Array,
 									   spaceGroup: string,

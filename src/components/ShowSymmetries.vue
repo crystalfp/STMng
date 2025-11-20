@@ -15,6 +15,8 @@ import {theme} from "@/services/ReceiveTheme";
 const inSymmetry = ref("");
 const outSymmetry = ref("");
 const pointGroup = ref("");
+const intlSymbol = ref("");
+const showIntlSymbol = ref(false);
 
 /**
  * Data for the show symmetry window
@@ -22,20 +24,28 @@ const pointGroup = ref("");
  */
 interface SymmetriesData {
     /** Input symmetry group */
-    inSymmetry: string;
+    inSymmetry?: string;
     /** Computed output symmetry group */
-    outSymmetry: string;
+    outSymmetry?: string;
     /** Computed point group */
-    pointGroup: string;
+    pointGroup?: string;
+    /** International symmetry symbol */
+    intlSymbol?: string;
+    /** Show the international symmetry symbol */
+    showIntlSymbol: boolean;
 }
 
 receiveInWindow((data) => {
 
     void nextTick().then(() => {
         const decodedData = JSON.parse(data) as SymmetriesData;
-        inSymmetry.value  = decodedData.inSymmetry;
-        outSymmetry.value = decodedData.outSymmetry;
-        pointGroup.value  = decodedData.pointGroup;
+        if(decodedData.inSymmetry !== undefined) {
+            inSymmetry.value  = decodedData.inSymmetry;
+            outSymmetry.value = decodedData.outSymmetry!;
+            pointGroup.value  = decodedData.pointGroup!;
+            intlSymbol.value  = decodedData.intlSymbol!;
+        }
+        showIntlSymbol.value  = decodedData.showIntlSymbol;
     });
 });
 
@@ -57,7 +67,7 @@ handleSpecialKeys("/symmetries");
       <v-label v-if="pointGroup!==''" class="text-h5 justify-center mt-n2 w-100">Point group</v-label>
       <v-label v-if="pointGroup!==''" :text="pointGroup" class="justify-center w-100 my-2 show-pg" />
       <v-label class="text-h5 justify-center mt-n2 w-100">Output symmetry</v-label>
-      <v-label :text="outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
+      <v-label :text="showIntlSymbol && intlSymbol!=='' ? intlSymbol : outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
   </v-row>
   <v-container class="button-strip">
