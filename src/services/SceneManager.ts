@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 import {Group, type Material, Mesh, Scene, type Object3D,
-		type InstancedMesh, MeshBasicMaterial,
+		type InstancedMesh, MeshBasicMaterial, Fog,
 		DirectionalLight, AmbientLight, Color, Matrix4,
 		CylinderGeometry, SphereGeometry} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
@@ -51,6 +51,7 @@ class SceneManager {
 			this.sceneModified = true;
 		});
 		this.sceneModified = true;
+
 		return SceneManager.scene;
 	}
 
@@ -263,6 +264,28 @@ class SceneManager {
 		const controlStore = useControlStore();
 		controlStore.sceneCenter = boundingBox.center;
 		controlStore.sceneSides  = boundingBox.side;
+	}
+
+	/**
+	 * Set depth cueing in the scene (that is, fog)
+	 *
+	 * @param enable - Enable depth cueing
+	 * @param near - Start distance
+	 * @param far - End distance for the fog
+	 */
+	setDepthCueing(enable: boolean, near?: number, far?: number): void {
+
+		if(enable) {
+			const configStore = useConfigStore();
+			const bck = new Color(configStore.scene.background);
+			SceneManager.scene.fog = new Fog(bck, near ?? 1, far ?? 100);
+		}
+		else {
+			// eslint-disable-next-line unicorn/no-null
+			SceneManager.scene.fog = null;
+		}
+
+		this.sceneModified = true;
 	}
 
 	/**

@@ -11,7 +11,7 @@ import type {AddKind} from "../services/SharedConstants";
 
 // > Type of a collection of atomic structures
 // >> Base types
-/** An [x, y, z] position */
+/** A [x, y, z] position */
 export type PositionType = [x: number, y: number, z: number];
 
 /** The unit cell basis vectors [a, b, c] where e.g, a = [ax, ay, az] */
@@ -164,6 +164,12 @@ export interface Viewer3DState {
     scene: {
         /** Scene background color formatted as #RRGGBB */
         background: string;
+        /** Enable/disable depth cueing */
+        depthCueing: boolean;
+        /** Start depth of the depth cueing fog */
+        depthNear: number;
+        /** End depth of the depth cueing fog */
+        depthFar: number;
     };
     /** Status related to the lighting */
     lights: {

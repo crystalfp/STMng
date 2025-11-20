@@ -28,6 +28,9 @@ export const useConfigStore = defineStore("ConfigStore", {
 		},
 		scene: {
 			background: "#90CEEC",
+            depthCueing: false,
+            depthNear: 10,
+            depthFar: 50
 		},
 		lights: {
 			ambientColor: "#FFFFFF",
@@ -112,6 +115,9 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.autoReset = state.camera.autoReset ?? true;
 
             this.scene.background = state.scene.background;
+            this.scene.depthCueing = state.scene.depthCueing;
+            this.scene.depthNear = state.scene.depthNear;
+            this.scene.depthFar = state.scene.depthFar;
 
             this.lights.ambientColor = state.lights.ambientColor;
             this.lights.ambientIntensity = state.lights.ambientIntensity;
@@ -163,6 +169,9 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.autoReset = true;
 
     		this.scene.background = "#90CEEC";
+            this.scene.depthCueing = false;
+            this.scene.depthNear = 10;
+            this.scene.depthFar = 50;
 
             this.lights.ambientColor = "#FFFFFF";
 			this.lights.ambientIntensity = 0.5;

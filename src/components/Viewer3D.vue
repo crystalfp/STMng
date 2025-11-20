@@ -333,6 +333,22 @@ onMounted(() => {
         }
     });
 
+    // Depth cueing
+    watchEffect(() => {
+
+        if(configStore.scene.depthNear > configStore.scene.depthFar) {
+            const near = configStore.scene.depthNear;
+            configStore.scene.depthNear = configStore.scene.depthFar;
+            configStore.scene.depthFar = near;
+        }
+
+        sm.setDepthCueing(
+            configStore.scene.depthCueing,
+            configStore.scene.depthNear,
+            configStore.scene.depthFar,
+        );
+    });
+
     // Take snapshot
     watchEffect(() => {
 

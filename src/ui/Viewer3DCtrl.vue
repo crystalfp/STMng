@@ -239,6 +239,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
         </v-btn-toggle>
       </v-expansion-panel-text>
     </v-expansion-panel>
+
     <v-expansion-panel>
       <v-expansion-panel-title>
         Camera positioning
@@ -268,14 +269,17 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
         </v-row>
       </v-expansion-panel-text>
     </v-expansion-panel>
+
     <v-expansion-panel>
       <v-expansion-panel-title>
         Camera position auto reset
       </v-expansion-panel-title>
       <v-expansion-panel-text>
-        <v-switch v-model="configStore.camera.autoReset" label="Enable position auto reset" />
+        <v-switch v-model="configStore.camera.autoReset" label="Enable position auto reset"
+                  class="ml-2 mt-1"/>
       </v-expansion-panel-text>
     </v-expansion-panel>
+
     <v-expansion-panel>
       <v-expansion-panel-title>
         Scene
@@ -286,6 +290,24 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
                         :modes="['rgb', 'hsl', 'hex']" elevation="0" />
       </v-expansion-panel-text>
     </v-expansion-panel>
+
+    <v-expansion-panel>
+      <v-expansion-panel-title>
+        Depth cueing
+      </v-expansion-panel-title>
+      <v-expansion-panel-text>
+        <v-switch v-model="configStore.scene.depthCueing" label="Enable depth cueing" class="ml-2 mt-1" />
+        <v-row class="pl-1 mt-4">
+          <v-number-input v-model="configStore.scene.depthNear" label="Near"
+                          :disabled="!configStore.scene.depthCueing"
+                          :step="1" :precision="0" class="ml-2 mr-0" />
+          <v-number-input v-model="configStore.scene.depthFar" label="Far"
+                          :disabled="!configStore.scene.depthCueing"
+                          :step="1" :precision="0" class="ml-2 mr-0" />
+        </v-row>
+      </v-expansion-panel-text>
+    </v-expansion-panel>
+
     <v-expansion-panel>
       <v-expansion-panel-title>
         Ambient light
@@ -298,6 +320,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
                   min="0" max="3" step="0.1" thumb-label />
       </v-expansion-panel-text>
     </v-expansion-panel>
+
     <v-expansion-panel>
       <v-expansion-panel-title>
         Directional lights
@@ -338,6 +361,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
         </align-labels>
       </v-expansion-panel-text>
     </v-expansion-panel>
+
     <v-expansion-panel>
       <v-expansion-panel-title>
         Helper objects
