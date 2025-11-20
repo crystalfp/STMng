@@ -468,15 +468,15 @@ watch([aroundA, aroundB, aroundC],
       <slider-with-steppers v-model="aroundA" v-model:raw="showAroundA"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
                       label-width="7.4rem" :label="`Around: a (${showAroundA}°)`"
-                      :min="-180" :max="180" :step="1" />
+                      :min="-180" :max="180" :step="1" :timeout="0" />
       <slider-with-steppers v-model="aroundB" v-model:raw="showAroundB"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
                       label-width="4rem" :label="`b (${showAroundB}°)`"
-                      :min="-180" :max="180" :step="1" />
+                      :min="-180" :max="180" :step="1" :timeout="0" />
       <slider-with-steppers v-model="aroundC" v-model:raw="showAroundC"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
                       label-width="4rem" :label="`c (${showAroundC}°)`"
-                      :min="-180" :max="180" :step="1" />
+                      :min="-180" :max="180" :step="1" :timeout="0" />
       <v-btn v-focus :disabled="selectedStep0 === -1 || selectedStep1 === -1"
              @click="resetRotations">Reset</v-btn>
       <v-btn v-focus @click="closeWindow('/compare')">Close</v-btn>

@@ -64,6 +64,7 @@ const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 20
 const readHydrogen  = ref(false);   // Read also hydrogen atoms for the PDB reader
 const energyPerAtom = ref(false);   // Energy file has energy per atom and not per structure
 const appendFile    = ref(false);   // The file will be appended to the list of steps
+const stepRange     = ref([1, 1]);  // Range of steps
 
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
@@ -127,13 +128,13 @@ watch([running], async () => {
             // Steps backward
             nextStep -= stepIncrement.value;
 
-            if(nextStep === 1) {
+            if(nextStep === stepRange.value[0]) {
 
-                if(loopSteps.value) nextStep = countSteps.value;
+                if(loopSteps.value) nextStep = stepRange.value[1];
                 else isRunning = false;
             }
-            else if(nextStep < 1) {
-                if(loopSteps.value) nextStep = countSteps.value;
+            else if(nextStep < stepRange.value[0]) {
+                if(loopSteps.value) nextStep = stepRange.value[1];
                 else {
                     nextStep += stepIncrement.value;
                     isRunning = false;
@@ -145,14 +146,14 @@ watch([running], async () => {
             // Steps forward
             nextStep += stepIncrement.value;
 
-            if(nextStep === countSteps.value) {
+            if(nextStep === stepRange.value[1]) {
 
-                if(loopSteps.value) nextStep = 1;
+                if(loopSteps.value) nextStep = stepRange.value[0];
                 else isRunning = false;
             }
-            else if(nextStep > countSteps.value) {
+            else if(nextStep > stepRange.value[1]) {
 
-                if(loopSteps.value) nextStep = 1;
+                if(loopSteps.value) nextStep = stepRange.value[0];
                 else {
                     nextStep -= stepIncrement.value;
                     isRunning = false;
@@ -197,7 +198,7 @@ watch([loopSteps, stepIncrement, stepBackward, speed], () => {
 const deltaStep = (delta: number): void => {
 
     const changedStep = step.value + delta;
-    if(changedStep < 1 || changedStep > countSteps.value) return;
+    if(changedStep < stepRange.value[0] || changedStep > stepRange.value[1]) return;
     step.value = changedStep;
 };
 
@@ -216,7 +217,7 @@ const setFormat = (): void => {
 
     sendToNode(id, "formats", {format: format.value});
 
-    countSteps.value = 1;
+    countSteps.value = stepRange.value[0];
     step.value = 1;
 
     // Clean the labels of the file selectors
@@ -314,6 +315,7 @@ const selectedFile = (filename: string): void => {
             inProgress.value = false;
             setTimeout(() => {controlStore.reset = true;}, 20);
             appendFile.value = false;
+            stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
             inProgress.value = false;
@@ -345,6 +347,7 @@ const droppedFile = (content: string): void => {
             inProgress.value = false;
             setTimeout(() => {controlStore.reset = true;}, 20);
             appendFile.value = false;
+            stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
             inProgress.value = false;
@@ -366,6 +369,7 @@ const droppedAuxFile = (content: string): void => {
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
+            stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
             showNodeAlert(`Error loading dropped auxiliary file: ${error.message}`, "structureReader");
@@ -387,6 +391,7 @@ const selectedAuxFile = (filename: string): void => {
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
+            stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
             showNodeAlert(`Error loading auxiliary file: ${error.message}`, "structureReader");
@@ -502,13 +507,27 @@ const auxSetup = computed(() => {
 
 /**
  * Called when cleaning the atoms types field
- * In the future should restore the original atom types from file
- * if present
+ * In the future should restore the original atom types from file if present
  */
 const clearAtomTypes = (): void => {
     // TBD
-    // console.log("CLEAR");
     getAtomsTypes();
+};
+
+/** Limit the step inside the step range */
+watch(stepRange, () => {
+
+    if(step.value < stepRange.value[0]) step.value = stepRange.value[0];
+    else if(step.value > stepRange.value[1]) step.value = stepRange.value[1];
+},
+{deep: true});
+
+/**
+ * Reset the step range to the full count of steps
+ */
+const resetRange = (): void => {
+    stepRange.value[0] = 1;
+    stepRange.value[1] = countSteps.value;
 };
 
 </script>
@@ -563,9 +582,17 @@ const clearAtomTypes = (): void => {
       <v-number-input v-model="stepIncrement" label="Step increment" :min="1"
                       :precision="0" class="ml-3 mr-8" />
     </v-row>
-    <v-label class="no-select pb-4 mt-4">{{ `Step ${step}/${countSteps}` }}</v-label>
+    <v-row class="ml-0 d-flex ga-1 align-center">
+      <v-label class="no-select pb-4 mt-4 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>
+      <v-label v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
+               class="no-select pb-4 mt-4 mr-2">
+               {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
+      <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
+             class="mr-12" density="compact" slim @click="resetRange">Reset</v-btn>
+    </v-row>
     <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
               :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
+    <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
     <v-row class="mr-4">
       <v-spacer />
       <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"

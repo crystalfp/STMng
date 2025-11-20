@@ -18,11 +18,11 @@
 
 <body>
 <h1 class="title">Reader</h1>
-<h1 class="subh1">Structure Reader</h1>
+<h1 class="subh1">Structure reader</h1>
 
 <div class="description">
 <p>Read structural chemical data. To specify a trajectory the file could contain a
-single structure (single frame) or a sequence of structures (multiframe from file)</p>
+single structure (single frame) or a sequence of structures (multiframe from file).</p>
 
 <p>If the format needs an auxiliary file, the module shows its file selector.</p>
 
@@ -43,8 +43,9 @@ single structure (single frame) or a sequence of structures (multiframe from fil
 	<td class="c1">Atoms types</td>
 	<td class="c2">input (space separated list)</td>
 	<td class="c3">Enter the symbols of the atoms present in the file. This field appears only for
-	POSCAR, POSCAR + XDATCAR, POSCAR + ENERGY, CHGCAR, LAMMPS and LAMMPStrj formats. The field content is accepted
-	only with ENTER or moving the focus away from the field. The atoms types could be changed after file loading.</td>
+	POSCAR, POSCAR + XDATCAR, POSCAR + ENERGY, CHGCAR, LAMMPS and LAMMPStrj formats.
+	The field content is accepted only with ENTER or moving the focus away from the field.
+	The atoms types could be changed after file loading.</td>
 </tr>
 <tr>
 	<td class="c1">Append</td>
@@ -120,6 +121,11 @@ single structure (single frame) or a sequence of structures (multiframe from fil
 	<td class="c1">Step</td>
 	<td class="c2">slider</td>
 	<td class="c3">Move between the steps and show the actual step and the total number of steps. If speed is set to “Fast” this slider is not visible.</td>
+</tr>
+<tr>
+	<td class="c1">Step range</td>
+	<td class="c2">range slider</td>
+	<td class="c3">Set the first and last steps to be visualized. When first step value is more than one or the final slot-scope="" value is less than the number of steps from the file, a Range label became visible with the first and last steps and a button to reset the values to cover the full range of steps from file. Note that the slider is not labelled.</td>
 </tr>
 <tr>
 	<td class="c1">Control buttons</td>

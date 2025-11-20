@@ -12,13 +12,10 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
-  ✔ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz @done(2025-11-20 10:02)
-  ☐ It would be good to have a possibility to set the first and last steps to be visualized.
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
   ☐ Prototype visualization from library is rather primitive and doesn't allow me to tailor visualization style. Can this be enabled?
   ☐ Deep-cueing in viewer, like it can be done in VESTA
-  ☐ Compare selected remove debouncing to the sliders
 
 To do:
   ☐ Check error return from main process to client
@@ -79,6 +76,9 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Compare selected remove debouncing to the sliders @done(2025-11-20 18:17) @project(Latest requests (backlog))
+  ✔ WriterCIF: add routine that converts from space group to space_group_symop_operation_xyz @done(2025-11-20 10:02) @project(Latest requests (backlog))
+  ✔ It would be good to have a possibility to set the first and last steps to be visualized. @done(2025-11-20 17:45) @project(Latest requests (backlog))
   ✔ Bad saving of generalized convex hull @done(2025-11-18 05:45) @project(Bugs)
   ✔ Error in CIF reader if label contains a "'" @done(2025-11-12 13:47) @project(Bugs)
   ✔ Enabling numerical output of XRD calculation @done(2025-11-12 16:09) @project(Latest requests (backlog))
