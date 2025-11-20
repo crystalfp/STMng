@@ -322,44 +322,52 @@ export class ComputeBonds extends NodeCore {
 	}
 
 	/**
-	 * Leave atoms that could create a polyhedra with one outside atom
+	 * Leave outside atoms that could create a polyhedra with inside atoms
 	 *
 	 * @param structure - The augmented structure with the 26 cell replicas
 	 */
 	private leavePolyhedraAtoms(structure: Structure): void {
 
 		const mark = new Map<number, number[]>();
+		const hasOutsideBonded = new Map<number, boolean>();
 
-		// The starting points are the outside atoms connected to one inside atom
+		// The starting points are the inside atoms
 		for(const {from, to, type} of structure.bonds) {
 
+			// Skip not normal bonds and bonds outside the cell
 			if(type !== BondType.normal) continue;
-			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
-				this.addType[to] = AddType.added;
-				mark.set(to, []);
+			if(this.addType[from] === AddType.outside &&
+			   this.addType[to] === AddType.outside) continue;
+
+			// List the atoms connected to the inside atoms
+			if(this.addType[from] === AddType.inside) {
+				if(mark.has(from)) {
+					mark.get(from)!.push(to);
+					if(this.addType[to] === AddType.outside) hasOutsideBonded.set(from, true);
+				}
+				else {
+					mark.set(from, [to]);
+					hasOutsideBonded.set(from, this.addType[to] === AddType.outside);
+				}
 			}
-			else if(this.addType[to] === AddType.inside && this.addType[from] === AddType.outside) {
-				this.addType[from] = AddType.added;
-				mark.set(from, []);
+			if(this.addType[to] === AddType.inside) {
+				if(mark.has(to)) {
+					mark.get(to)!.push(from);
+					if(this.addType[from] === AddType.outside) hasOutsideBonded.set(to, true);
+				}
+				else {
+					mark.set(to, [from]);
+					hasOutsideBonded.set(from, this.addType[from] === AddType.outside);
+				}
 			}
 		}
 
-		// Get atoms connected to these outside atoms
-		for(const {from, to, type} of structure.bonds) {
+		// Verify potential polyhedra
+		for(const [idx, connected] of mark.entries()) {
 
-			if(type !== BondType.normal) continue;
-			if(this.addType[from] === AddType.added) {
-				mark.get(from)?.push(to);
-			}
-			else if(this.addType[to] === AddType.added) {
-				mark.get(to)?.push(from);
-			}
-		}
+			const hasOutsideAtom = hasOutsideBonded.get(idx) ?? false;
+			if(connected.length >= 3 && hasOutsideAtom) {
 
-		// Mark outside atoms that could form a polyhedra
-		for(const idx of mark.keys()) {
-			const connected = mark.get(idx)!;
-			if(connected.length >= 3) {
 				for(const to of connected) {
 					if(this.addType[to] === AddType.outside) {
 						this.addType[to] = AddType.added;
