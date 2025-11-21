@@ -19,8 +19,8 @@ interface GlobalControls {
 	reset: boolean;
 	/** Scene center */
 	sceneCenter: PositionType;
-	/** Scene sides lengths */
-	sceneSides: PositionType;
+	/** Scene bounding sphere radius */
+	sceneRadius: number;
 
 	/** Forced camera view direction */
 	viewDirection: string;
@@ -82,7 +82,7 @@ export const useControlStore = defineStore("ControlStore", {
     state: () => ({
 		reset: false,
 		sceneCenter: [0, 0, 0],
-		sceneSides: [1, 1, 1],
+		sceneRadius: 1,
 
 		viewDirection: "",
 		basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],

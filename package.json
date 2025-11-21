@@ -85,7 +85,7 @@
     "node-addon-api": "^8.5.0",
     "oxlint-tsgolint": "^0.8.0",
     "postcss-html": "^1.8.0",
-    "stylelint": "^16.25.0",
+    "stylelint": "^16.26.0",
     "stylelint-config-recommended-scss": "^16.0.2",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^39.0.1",

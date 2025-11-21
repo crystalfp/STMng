@@ -14,7 +14,7 @@ import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
-import type {BoundingBox} from "./BoundingBox";
+import type {BoundingSphere} from "./BoundingSphere";
 
 /**
  * Routines related to the 3D scene
@@ -255,15 +255,15 @@ class SceneManager {
 	}
 
 	/**
-	 * Save the scene bounding box to be used by camera positioning
+	 * Save the scene bounding sphere to be used by camera positioning
 	 *
-	 * @param boundingBox - The scene bounding box
+	 * @param boundingBox - The scene bounding sphere
 	 */
-	setBoundingBox(boundingBox: BoundingBox): void {
+	setBoundingSphere(boundingSphere: BoundingSphere): void {
 
 		const controlStore = useControlStore();
-		controlStore.sceneCenter = boundingBox.center;
-		controlStore.sceneSides  = boundingBox.side;
+		controlStore.sceneCenter = boundingSphere.center;
+		controlStore.sceneRadius = boundingSphere.radius;
 	}
 
 	/**

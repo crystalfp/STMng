@@ -304,6 +304,7 @@ class DimensionEstimator {
     /**
      * Comprehensive dimension estimation using multiple methods
      */
+    /*
     estimateAll(): DimensionEstimate[] {
 
         const results: DimensionEstimate[] = [];
@@ -338,7 +339,7 @@ class DimensionEstimator {
 
         return results;
     }
-
+*/
     /**
      * Compute distance
      *

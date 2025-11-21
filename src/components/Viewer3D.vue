@@ -17,7 +17,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {sm} from "@/services/SceneManager";
 import {askNode} from "@/services/RoutesClient";
-import {fitPerspectiveCameraToObject, fitOrthographicCameraToObject} from "@/services/FitCamera";
+import {fitCamera} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {resetNodeAlert, showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
 import {CaptureMovie} from "@/services/CaptureMovie";
@@ -225,12 +225,12 @@ onMounted(() => {
 
             if(configStore.camera.type === "perspective") {
 
-                fitPerspectiveCameraToObject(cameraPerspective, controls);
+                fitCamera(cameraPerspective, controls);
                 copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
                 cameraOrthographic.updateProjectionMatrix();
             }
             else {
-                fitOrthographicCameraToObject(cameraOrthographic, controls);
+                fitCamera(cameraOrthographic, controls);
             }
             sm.modified();
         }
