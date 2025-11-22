@@ -48,7 +48,6 @@ export class ComputeBonds extends NodeCore {
 	private perPairScale		= false;
 	private perPairData: PairData[] = [];
 	private addType: AddKind[]  = [];
-	private inputNumAtoms		= 0;
 	private enlargementKind		= "neighbors";
 
 	private readonly channels: ChannelDefinition[] = [
@@ -161,7 +160,6 @@ export class ComputeBonds extends NodeCore {
 	private addOutsideAtoms(): Structure {
 
 		const natoms = this.inputStructure!.atoms.length;
-		this.inputNumAtoms = natoms;
 		const {crystal, atoms, volume, extra} = this.inputStructure!;
 		const {basis} = crystal;
 
@@ -237,40 +235,21 @@ export class ComputeBonds extends NodeCore {
 	 *
 	 * @param structure - The extended structure to be cleaned
 	 */
-	private clearOutsideAtoms(structure: Structure): void {
+	private leaveNeighborAtoms(structure: Structure): void {
 
-		const {bonds, atoms} = structure;
+		for(const {from, to, type} of structure.bonds) {
 
-		// Get the list of atoms that have bonds
-		const bondedAtoms = new Set<number>();
-		for(const bond of bonds) {
-			bondedAtoms.add(bond.from);
-			bondedAtoms.add(bond.to);
+			if(type !== BondType.normal) continue;
+
+			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
+				this.addType[to] = AddType.added;
+			}
+			else if(this.addType[to] === AddType.inside && this.addType[from] === AddType.outside) {
+				this.addType[from] = AddType.added;
+			}
 		}
 
-		// Mark the atoms that have bonds
-		const natoms = atoms.length;
-		for(let i=this.inputNumAtoms; i < natoms; ++i) {
-			if(bondedAtoms.has(i)) this.addType[i] = AddType.inside;
-		}
-
-		// Create map of atoms indices after cleaning atoms list
-		const mapPositions = Array<number>(natoms).fill(0);
-		let idx = 0;
-		for(let i=0; i < natoms; ++i) {
-			if(this.addType[i] === AddType.inside) mapPositions[i] = idx++;
-		}
-
-		// Remove not bonded outside atoms
-		for(let i=natoms-1; i >=0; --i) {
-			if(this.addType[i] === AddType.outside) atoms.splice(i, 1);
-		}
-
-		// Remap bonds
-		for(const bond of bonds) {
-			bond.from = mapPositions[bond.from];
-			bond.to = mapPositions[bond.to];
-		}
+		this.removeUnmarkedAtoms(structure);
 	}
 
 	/**
@@ -357,7 +336,7 @@ export class ComputeBonds extends NodeCore {
 				}
 				else {
 					mark.set(to, [from]);
-					hasOutsideBonded.set(from, this.addType[from] === AddType.outside);
+					hasOutsideBonded.set(to, this.addType[from] === AddType.outside);
 				}
 			}
 		}
@@ -366,7 +345,43 @@ export class ComputeBonds extends NodeCore {
 		for(const [idx, connected] of mark.entries()) {
 
 			const hasOutsideAtom = hasOutsideBonded.get(idx) ?? false;
-			if(connected.length >= 3 && hasOutsideAtom) {
+			if(hasOutsideAtom && connected.length >= 3) {
+
+				for(const to of connected) {
+					if(this.addType[to] === AddType.outside) {
+						this.addType[to] = AddType.added;
+					}
+				}
+			}
+		}
+
+		mark.clear();
+		for(const {from, to, type} of structure.bonds) {
+
+			// Skip not normal bonds and bonds outside the cell
+			if(type !== BondType.normal) continue;
+			if(this.addType[from] === AddType.added) {
+				if(mark.has(from)) {
+					mark.get(from)!.push(to);
+				}
+				else {
+					mark.set(from, [to]);
+				}
+			}
+			else if(this.addType[to] === AddType.added) {
+				if(mark.has(to)) {
+					mark.get(to)!.push(from);
+				}
+				else {
+					mark.set(to, [from]);
+				}
+			}
+		}
+
+		// Verify potential polyhedra
+		for(const connected of mark.values()) {
+
+			if(connected.length >= 3) {
 
 				for(const to of connected) {
 					if(this.addType[to] === AddType.outside) {
@@ -390,7 +405,9 @@ export class ComputeBonds extends NodeCore {
 		const updatedBonds: Bond[] = [];
 		for(const {from, to, type} of structure.bonds) {
 
-			if(this.addType[from] !== AddType.outside && this.addType[to] !== AddType.outside) {
+			const tf = this.addType[from];
+			const tt = this.addType[to];
+			if(tf !== AddType.outside && tt !== AddType.outside) {
 				updatedBonds.push({from, to, type});
 			}
 		}
@@ -464,7 +481,7 @@ export class ComputeBonds extends NodeCore {
 
 				switch(this.enlargementKind) {
 					case "neighbors":
-						this.clearOutsideAtoms(enlargedStructure);
+						this.leaveNeighborAtoms(enlargedStructure);
 						break;
 					case "polyhedra":
 						this.leavePolyhedraAtoms(enlargedStructure);
