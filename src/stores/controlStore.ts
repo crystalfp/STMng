@@ -21,6 +21,8 @@ interface GlobalControls {
 	sceneCenter: PositionType;
 	/** Scene bounding sphere radius */
 	sceneRadius: number;
+	/** The unit cell is visible and should be considered in bounding sphere computation */
+	sceneUnitCell: boolean;
 
 	/** Forced camera view direction */
 	viewDirection: string;
@@ -83,6 +85,7 @@ export const useControlStore = defineStore("ControlStore", {
 		reset: false,
 		sceneCenter: [0, 0, 0],
 		sceneRadius: 1,
+		sceneUnitCell: true,
 
 		viewDirection: "",
 		basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],

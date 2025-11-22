@@ -2,7 +2,7 @@ Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
   ☐ Incomplete polyhedra bonds
-  ☐ Compute better camera placement to consider the full scene (now it is too near)
+  ✔ Compute better camera placement to consider the full scene (now it is too near) @done(2025-11-21 18:29)
   ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
   ☐ Verify fill unit cell in proto visualizer
 
@@ -15,7 +15,7 @@ Latest requests (backlog):
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
   ☐ Prototype visualization from library is rather primitive and doesn't allow me to tailor visualization style. Can this be enabled?
-  ☐ Deep-cueing in viewer, like it can be done in VESTA
+  ✔ Deep-cueing in viewer, like it can be done in VESTA @done(2025-11-21 18:30)
 
 To do:
   ☐ Check error return from main process to client
@@ -52,14 +52,14 @@ ToDo eventually:
   ☐ If possible remove circular dependencies between modules
   ☐ For the charts <https://unovis.dev/>
   ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
-  ☐ Add version to project files
+  ✘ Add version to project files @cancelled(2025-11-21 18:31)
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
   ☐ Add multi-file reader (with number sequence or file containing the list of files)
   ☐ Rendering spheres using sprites (as in VMD)
   ☐ Move to WebGPURenderer
-  ☐ Simplify error messages for user, leaving full message in log
+  ✔ Simplify error messages for user, leaving full message in log @done(2025-11-21 18:31)
   ☐ Explore WASM <https://dev.to/omriluz1/exploring-the-intersection-of-javascript-and-webassembly-simd-5fd1>
   ☐ Experiment with alphaHash for transparency <https://github.com/mrdoob/three.js/blob/master/examples/webgl_materials_alphahash.html>
   ☐ Volume rendering <https://github.com/Donitzo/three.js-volume-renderer>

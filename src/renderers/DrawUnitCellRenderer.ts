@@ -105,6 +105,7 @@ export class DrawUnitCellRenderer {
         line.visible = visible;
         sm.add(line);
 		sm.modified();
+		sm.setUnitCellVisible(visible);
 
 		if(isSupercell) this.lineSC = line;
 		else this.lineUC = line;
@@ -257,5 +258,6 @@ export class DrawUnitCellRenderer {
 		if(this.lineSC) this.lineSC.visible = showSupercell;
 		this.drawBasisVectors(showBasisVectors);
 		sm.modified();
+		sm.setUnitCellVisible(showUnitCell);
 	}
 }

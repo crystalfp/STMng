@@ -14,7 +14,8 @@ import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
-import type {BoundingSphere} from "./BoundingSphere";
+import {getBoundingSphere, type BoundingSphere} from "./BoundingSphere";
+import type {StructureRenderInfo} from "@/types";
 
 /**
  * Routines related to the 3D scene
@@ -26,6 +27,7 @@ class SceneManager {
 	private static readonly scene = new Scene();
 	private exporter: STLExporter | undefined;
 	private sceneModified = true;
+	private boundingSphere: BoundingSphere | undefined;
 	private readonly preserve = new Set(["AmbientLight", "DirectionalLight",
 										 "Scene", "Group"]);
 
@@ -257,13 +259,43 @@ class SceneManager {
 	/**
 	 * Save the scene bounding sphere to be used by camera positioning
 	 *
-	 * @param boundingBox - The scene bounding sphere
+	 * @param renderedStructure - Group containing the rendered structure
+	 * @param renderInfo - Structure and other data for which the bounding sphere should be computed
 	 */
-	setBoundingSphere(boundingSphere: BoundingSphere): void {
+	setBoundingSphere(renderedStructure: Group, renderInfo: StructureRenderInfo): void {
+
+		this.boundingSphere = getBoundingSphere(renderedStructure, renderInfo);
 
 		const controlStore = useControlStore();
-		controlStore.sceneCenter = boundingSphere.center;
-		controlStore.sceneRadius = boundingSphere.radius;
+		if(controlStore.sceneUnitCell) {
+			controlStore.sceneCenter = this.boundingSphere.centerUC;
+			controlStore.sceneRadius = this.boundingSphere.radiusUC;
+		}
+		else {
+			controlStore.sceneCenter = this.boundingSphere.center;
+			controlStore.sceneRadius = this.boundingSphere.radius;
+		}
+	}
+
+	/**
+	 * Save the unit cell visibility to use it in bounding sphere computation
+	 *
+	 * @param visible - Unit cell visibility
+	 */
+	setUnitCellVisible(visible: boolean): void {
+
+		const controlStore = useControlStore();
+		controlStore.sceneUnitCell = visible;
+		if(!this.boundingSphere) return;
+
+		if(controlStore.sceneUnitCell) {
+			controlStore.sceneCenter = this.boundingSphere.centerUC;
+			controlStore.sceneRadius = this.boundingSphere.radiusUC;
+		}
+		else {
+			controlStore.sceneCenter = this.boundingSphere.center;
+			controlStore.sceneRadius = this.boundingSphere.radius;
+		}
 	}
 
 	/**

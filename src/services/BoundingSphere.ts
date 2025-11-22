@@ -15,6 +15,10 @@ export interface BoundingSphere {
 	center: PositionType;
 	/** Radius of the bounding sphere */
 	radius: number;
+	/** Center of the bounding sphere (when unit cell visible) */
+	centerUC: PositionType;
+	/** Radius of the bounding sphere (when unit cell visible) */
+	radiusUC: number;
 }
 
 /**
@@ -22,7 +26,7 @@ export interface BoundingSphere {
  *
  * @param renderedStructure - Group containing the rendered structure
  * @param renderInfo - Structure and other data for which the bounding sphere should be computed
- * @returns Center and radius of the bounding sphere
+ * @returns Center and radius of the bounding sphere (with and without unit cell)
  */
 export const getBoundingSphere = (renderedStructure: Group, renderInfo: StructureRenderInfo): BoundingSphere => {
 
@@ -31,6 +35,12 @@ export const getBoundingSphere = (renderedStructure: Group, renderInfo: Structur
 
 	// Get bounding box from the rendered structure
 	const boundingBox = new Box3().setFromObject(renderedStructure);
+
+	// Bounding sphere without unit cell
+	const boundingSphere = boundingBox.getBoundingSphere(new Sphere());
+	const sphereCenter = boundingSphere.center;
+	const center: PositionType = [sphereCenter.x, sphereCenter.y, sphereCenter.z];
+	const radius = boundingSphere.radius;
 
 	// If has unit cell expand the bounding box to contain it
 	if(basis.some((value) => value !== 0)) {
@@ -53,11 +63,12 @@ export const getBoundingSphere = (renderedStructure: Group, renderInfo: Structur
 			boundingBox.expandByPoint(pt);
 		}
 	}
+	else return {center, radius, centerUC: center, radiusUC: radius};
 
-	const boundingSphere = boundingBox.getBoundingSphere(new Sphere());
-	const sphereCenter = boundingSphere.center;
-	const center: PositionType = [sphereCenter.x, sphereCenter.y, sphereCenter.z];
-	const radius = boundingSphere.radius;
+	const boundingSphereUC = boundingBox.getBoundingSphere(new Sphere());
+	const sphereCenterUC = boundingSphereUC.center;
+	const centerUC: PositionType = [sphereCenterUC.x, sphereCenterUC.y, sphereCenterUC.z];
+	const radiusUC = boundingSphereUC.radius;
 
-	return {center, radius};
+	return {center, radius, centerUC, radiusUC};
 };

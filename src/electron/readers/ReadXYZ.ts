@@ -34,6 +34,7 @@ export class ReaderXYZ implements ReaderImplementation {
 
 			if(numberAtoms === 0) {
 				numberAtoms = Number.parseInt(lineRaw, 10);
+				if(Number.isNaN(numberAtoms) || numberAtoms <= 0) break;
 				commentLine = true;
 				++step;
 				structures.push(new EmptyStructure());

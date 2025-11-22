@@ -10,7 +10,6 @@ import {Group, type Mesh, type MeshStandardMaterial, IcosahedronGeometry, Cylind
 		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
 		Float32BufferAttribute, LineSegments, FrontSide} from "three";
 import {sm} from "@/services/SceneManager";
-import {getBoundingSphere} from "@/services/BoundingSphere";
 import {spriteText, disposeTextInGroup, BillboardBatchedText} from "@/services/SpriteText";
 import {SpheresCache} from "@/services/SpheresCache";
 import {CylinderCache} from "@/services/CylinderCache";
@@ -460,7 +459,7 @@ export class DrawStructureRenderer {
 
 		// Find the camera rotation center and position based
 		// on the structure bounding sphere
-		sm.setBoundingSphere(getBoundingSphere(this.out, renderInfo));
+		sm.setBoundingSphere(this.out, renderInfo);
 	}
 
 	/**
