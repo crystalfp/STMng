@@ -39,7 +39,7 @@ const emit = defineEmits<{
     /** The filename that has been selected */
     selected: [filename: string];
     /** The dropped file content */
-    dropped: [content: string];
+    dropped: [content: string, filename: string];
 }>();
 
 /** Label to be show (the file selected) */
@@ -102,7 +102,7 @@ const onDrop = (event: DragEvent): void => {
     dt.files[0].text()
         .then((content: string) => {
             label.value = filename;
-            emit("dropped", content);
+            emit("dropped", content, filename);
         })
         .finally(() => {inProgress.value = false;})
         .catch((error: Error) => {

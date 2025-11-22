@@ -76,7 +76,7 @@ process.on("uncaughtException", (event): void => {
 });
 
 process.on("unhandledRejection", (event: PromiseRejectionEvent): void => {
-    log.error("%cUnhandled rejection:", "color: red", event.reason);
+    if(event.reason) log.error("%cUnhandled rejection:", "color: red", event.reason);
 });
 
 // Initialize the channels between main process and client

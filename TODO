@@ -4,7 +4,7 @@ Bugs:
   ☐ Incomplete polyhedra bonds
   ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
   ☐ Verify fill unit cell in proto visualizer
-  ☐ If drop PDB then change read hydrogens gives silent file not found
+  ✔ If drop PDB then change read hydrogens gives silent file not found @done(2025-11-22 05:26)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?

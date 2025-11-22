@@ -329,7 +329,7 @@ const selectedFile = (filename: string): void => {
  *
  * @param content - Dropped file content
  */
-const droppedFile = (content: string): void => {
+const droppedFile = (content: string, filename: string): void => {
 
     step.value = 1;
     inProgress.value = true;
@@ -340,6 +340,7 @@ const droppedFile = (content: string): void => {
             fileContent: content,
             atomsTypes: atomsTypes.value,
             useBohr: useBohr.value,
+            filename
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
@@ -617,6 +618,6 @@ const resetRange = (): void => {
     </titled-slot>
 
   </v-container>
-  <node-alert node="structureReader" />
+  <node-alert node="structureReader" class="mt-4"/>
 </v-container>
 </template>

@@ -402,7 +402,9 @@ export class StructureReader extends NodeCore {
 	 */
 	private async channelReadDropped(params: CtrlParams): Promise<CtrlParams> {
 
-		const name = tmpNameSync({prefix: "stm-ng-"});
+		const filename = params.filename as string;
+		const name = filename ? tmpNameSync({prefix: "stm-ng-", name: filename}) :
+								tmpNameSync({prefix: "stm-ng-"});
 		writeFileSync(name, params.fileContent as string, "utf8");
 
 		const response = await this.channelRead({
@@ -597,8 +599,18 @@ export class StructureReader extends NodeCore {
 
 		if(this.format !== "PDB") return;
 
-		// Read the file
-		this.structures = await this.reader!.readStructure(this.fileToRead, {readHydrogen: this.readHydrogen});
+		// Read the file again
+		const structures = await this.reader!.readStructure(this.fileToRead, {readHydrogen: this.readHydrogen})
+			.catch((error: Error) => {
+				const message = `Format "PDB" error: ${error.message}`;
+				return message;
+			});
+		if(typeof structures === "string") {
+
+			sendAlertToClient(structures, {node: "structureReader", userMessage: "Dropped PDB file disappeared. Drop it again"});
+			return;
+		}
+		this.structures = structures;
 
 		// Set structure id
 		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
