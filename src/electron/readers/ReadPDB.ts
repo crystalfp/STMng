@@ -156,10 +156,11 @@ export class ReaderPDB implements ReaderImplementation {
 					// "ATOM", "HETATM"
 					let atomSymbol = fixedWidthStringSpaceTrimmed(line, 76, 2);
 					let atomZ = getAtomicNumber(atomSymbol);
+					const label = fixedWidthStringSpaceTrimmed(line, 12, 4).split(" ")[0];
 
 					// If there is no valid symbol, try to guess it from the atom label
 					if(atomZ === 0) {
-						atomSymbol = fixedWidthStringSpaceTrimmed(line, 12, 2);
+						atomSymbol = label.replaceAll(/\d+/g, "");
 						if(["CA", "CD", "CE", "CF"].includes(atomSymbol)) atomSymbol = "C";
 						else if(["HE", "HF", "HG"].includes(atomSymbol)) atomSymbol = "H";
 						atomZ = getAtomicNumber(atomSymbol);
@@ -173,7 +174,6 @@ export class ReaderPDB implements ReaderImplementation {
 					if(readHydrogen || atomZ !== 1) {
 
 						const sn = fixedWidthInt(line, 6, 5);
-						const label = fixedWidthStringSpaceTrimmed(line, 12, 4).split(" ")[0];
 						const x = fixedWidthFloat(line, 30, 8);
 						const y = fixedWidthFloat(line, 38, 8);
 						const z = fixedWidthFloat(line, 46, 8);
