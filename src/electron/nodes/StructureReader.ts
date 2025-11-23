@@ -403,7 +403,7 @@ export class StructureReader extends NodeCore {
 	private async channelReadDropped(params: CtrlParams): Promise<CtrlParams> {
 
 		const filename = params.filename as string;
-		const name = filename ? tmpNameSync({prefix: "stm-ng-", name: filename}) :
+		const name = filename ? tmpNameSync({name: filename}) :
 								tmpNameSync({prefix: "stm-ng-"});
 		writeFileSync(name, params.fileContent as string, "utf8");
 

@@ -337,7 +337,8 @@ watchEffect(() => {
                           :disabled="parallelC" label-width="5rem"
                           :label="`c (${showPercentC.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
-    <slider-with-steppers v-if="mode==='slab'" v-model="thickness" v-model:raw="showThickness"
+    <slider-with-steppers v-if="mode==='slab'" v-model="thickness"
+                          v-model:raw="showThickness"
                           class="mt-6" label-width="8rem"
                           :label="`Thickness (${showThickness.toFixed(1)})`"
                           :min="0.1" :max="10" :step="0.1" />

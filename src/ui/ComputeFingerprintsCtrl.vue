@@ -253,6 +253,11 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
         countAccumulated.value = params.countAccumulated as number ?? 0;
         energyThresholdEffective.value = params.energyThresholdEffective as number ?? 0;
         cutoffDistance.value = params.cutoffDistance as number ?? 0;
+        resultDimensionality.value = 0;
+        intrinsicDimension.value = 0;
+        countDistances.value = 0;
+        countGroups.value = 0;
+        pointsRemoved.value = -1;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from energy settings for ${label}: ${error.message}`,
@@ -275,6 +280,7 @@ watch([forceCutoff, manualCutoffDistance], () => {
         countDistances.value = 0;
         countGroups.value = 0;
         intrinsicDimension.value = 0;
+        pointsRemoved.value = -1;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from cutoff setting for ${label}: ${error.message}`,
@@ -300,6 +306,7 @@ watch([fingerprintingMethod, binSize, peakWidth], () => {
     countDistances.value = 0;
     countGroups.value = 0;
     intrinsicDimension.value = 0;
+    pointsRemoved.value = -1;
 
     sendToNode(id, "fp-params", {
         fingerprintingMethod: fingerprintingMethod.value,
@@ -317,6 +324,7 @@ const computeFingerprints = (): void => {
     countDistances.value = 0;
     countGroups.value = 0;
     intrinsicDimension.value = 0;
+    pointsRemoved.value = -1;
 
     askNode(id, "fp", {
         fingerprintingMethod: fingerprintingMethod.value,
@@ -350,6 +358,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
 
     countDistances.value = 0;
     countGroups.value = 0;
+    pointsRemoved.value = -1;
 
     if(resultDimensionality.value === 0 || countAccumulated.value < 2) return;
 

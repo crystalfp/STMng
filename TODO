@@ -1,7 +1,7 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
-  ☐ Incomplete polyhedra bonds
+  ✔ Incomplete polyhedra bonds @done(2025-11-23 16:13)
   ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
   ☐ Verify fill unit cell in proto visualizer
   ✔ If drop PDB then change read hydrogens gives silent file not found @done(2025-11-22 05:26)

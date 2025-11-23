@@ -8,8 +8,8 @@
  */
 import type {FingerprintsAccumulator, StructureReduced} from "./Accumulator";
 import type {Distances} from "./Distances";
-// import {HierarchicalSingleLinkageGrouping} from "./GroupingMethods";
-import {HierarchicalCompleteLinkageGrouping} from "./GroupingMethods";
+import {HierarchicalSingleLinkageGrouping} from "./GroupingMethods";
+// import {HierarchicalCompleteLinkageGrouping} from "./GroupingMethods";
 
 /**
  * Puts enabled true to the lowest energy structure per group
@@ -18,7 +18,7 @@ import {HierarchicalCompleteLinkageGrouping} from "./GroupingMethods";
  * @param accumulator - The accumulated structures
  * @param distances - The pair distance object
  * @param threshold - The distance threshold (absolute)
- * @returns The number of points removed
+ * @returns The number of points removed or -1 if no point removed
  */
 export const removeDuplicatePoints = (enabled: boolean,
                                       accumulator: FingerprintsAccumulator,
@@ -41,8 +41,8 @@ export const removeDuplicatePoints = (enabled: boolean,
     const hasEnergies = accumulator.accumulatedHaveEnergies();
 
     // Do the grouping
-    // const grouper = new HierarchicalSingleLinkageGrouping();
-    const grouper = new HierarchicalCompleteLinkageGrouping();
+    const grouper = new HierarchicalSingleLinkageGrouping();
+    // const grouper = new HierarchicalCompleteLinkageGrouping();
     const groups = grouper.doGrouping(countStructures, distanceMatrix, threshold);
     const countGroups = groups.length;
     if(countGroups === 0) {
@@ -66,12 +66,11 @@ export const removeDuplicatePoints = (enabled: boolean,
         // The indices of the structures in the group
         const indices = [...groups[gi]];
 
-        // If group size is one, enable the only member
+        // If group size is one, nothing to remove, enable the only member
         if(indices.length === 1) {
 
             const idx = indices[0];
             structures[idx].enabled = true;
-            ++countEnabled;
         }
         // Else if there are energies find the lowest energy point per group
         else if(hasEnergies) {
@@ -87,7 +86,6 @@ export const removeDuplicatePoints = (enabled: boolean,
                 }
             }
             structures[minEnergyIdx].enabled = true;
-            ++countEnabled;
         }
         // Else finds the most central point using
         // the sum of distances (geometric median)
@@ -109,8 +107,8 @@ export const removeDuplicatePoints = (enabled: boolean,
                 }
             }
             structures[medianDistanceIdx].enabled = true;
-            ++countEnabled;
         }
+        ++countEnabled;
     }
 
     return countStructures-countEnabled;

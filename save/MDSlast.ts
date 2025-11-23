@@ -7,7 +7,13 @@
 * @since 2025-11-17
 */
 import {eigs} from "mathjs";
-import type {MDSOutput} from "../modules/NativeFunctions";
+
+interface MDSOutput {
+	/** Points projected in 2D: [[x0, y0], [x1, y1], ...] */
+	points2D: number[][];
+	/** Points projected in 3D: [[x0, y0, z0], [x1, y1, z1], ...] */
+	points3D: number[][];
+}
 
 /**
 * Compute Multidimensional Scaling (MDS)

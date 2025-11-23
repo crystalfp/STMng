@@ -186,8 +186,7 @@ receiveInWindow((dataFromMain) => {
 
         chartData.value = buildChartData("Energy", lineCoordinates, false, 4);
 
-        chartOptions.value = buildChartOptions("Structure step",
-                                               "Energy");
+        chartOptions.value = buildChartOptions("Structure step", "Energy per atom");
     }
     else if(energyDistance) {
 
@@ -207,7 +206,7 @@ receiveInWindow((dataFromMain) => {
 
         chartData.value = buildChartData("Energy histogram", lineCoordinates, true, 0);
 
-        chartOptions.value = buildChartOptions("Energy", "Count");
+        chartOptions.value = buildChartOptions("Energy per atom", "Count");
     }
     else if(distanceHistogram) {
 
@@ -233,7 +232,7 @@ receiveInWindow((dataFromMain) => {
         chartData.value = buildChartData("distance", lineCoordinates, false, 4);
 
         chartOptions.value = buildChartOptions("Structure step",
-                                               "Distance from given fingerprint");
+                                               "Fingerprint distance from selected step");
     }
 });
 
