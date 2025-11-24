@@ -18,17 +18,7 @@ import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import type {ChannelDefinition, CtrlParams, Structure, DBType,
 			 PrototypeAtomsData} from "@/types";
 import type {PrototypeEntry, Prototype, SNL} from "../proto/types";
-
-/**
- * Entries inside the Pymatgen prototypes library file
- * @notExported
- */
-interface LibraryEntry {
-	/** Prototype structure */
-	snl: SNL;
-	/** Corresponding tags */
-	tags: Record<string, string>;
-}
+import type {LibraryEntry} from "../proto/PrototypeDb";
 
 export class PrototypeMatcher extends NodeCore {
 
