@@ -62,6 +62,7 @@ Nice to have/Future:
   ☐ Volume rendering <https://github.com/Donitzo/three.js-volume-renderer>
   ☐ Use ideas from [ndarray](https://github.com/scijs/ndarray) for multidimensional arrays
   ☐ Rendering in a worker thread <https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas> or <https://threejs.org/examples/webgl_worker_offscreencanvas.html>
+  ☐ <https://vuefinder.ozdemir.be/> Alternative file selector
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>

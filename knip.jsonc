@@ -35,5 +35,7 @@
   // "includeEntryExports": true,
   "ignore": ["**/KDtree.d.ts"],
   "oxlint": true,
-  "rollup": true
+  "rollup": true,
+  "include": ["classMembers"],
+   "tags": ["-knipIgnore"]
 }

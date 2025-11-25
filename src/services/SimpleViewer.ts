@@ -158,24 +158,6 @@ export class SimpleViewer {
 	}
 
 	/**
-	 * Get the camera
-	 *
-	 * @returns The camera
-	 */
-	getCamera(): PerspectiveCamera | OrthographicCamera | undefined {
-		return this.camera;
-	}
-
-	/**
-	 * Get the controls
-	 *
-	 * @returns The controls
-	 */
-	getControls(): CameraControls | undefined {
-		return this.controls;
-	}
-
-	/**
      * Ask if the scene needs rendering because has been changed,
      * then reset the modified flag
      *

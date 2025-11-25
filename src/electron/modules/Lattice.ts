@@ -73,8 +73,8 @@ export class Lattice {
 
 	/**
 	 * Return the lengths of the basis vectors
-	 */
 	get lengths(): number[] {return this.lengthsAngles.slice(0, 3);}
+	 */
 
 	/**
 	 * Return the basis matrix how it is considered in the python library

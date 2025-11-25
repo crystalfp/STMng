@@ -42,7 +42,7 @@ export class SymmOp {
 	 * Print SymmOp
 	 *
 	 * @returns Human readable content of the affine matrix
-	 */
+	 *
 	toString(): string {
 
 		let result = "Rot:\n";
@@ -53,6 +53,7 @@ export class SymmOp {
 		result += `${this.matrix[0][3].toPrecision(6).padStart(10)} ${this.matrix[1][3].toPrecision(6).padStart(10)} ${this.matrix[2][3].toPrecision(6).padStart(10)}\n`;
 		return result;
 	}
+	 */
 
     /**
      * Apply the operation on a point.

@@ -192,6 +192,7 @@ export class TrajectoriesRenderer {
 	 * Set traces visibility
 	 *
 	 * @param visible - Trace visibility
+	 * @knipIgnore
 	 */
 	setVisibility(visible: boolean): void {
 
