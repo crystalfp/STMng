@@ -23,6 +23,8 @@ interface PrototypeStructure {
 	mineral: string;
 	/** Prototype structure */
 	structure: Structure;
+	/** Error message if any */
+	error?: string;
 }
 
 /**
@@ -36,12 +38,15 @@ interface PrototypeDisplay {
 	matrix: number[][];
 	/** Prototype formatted for display */
 	atoms: PrototypeAtomsData;
+	/** Error message if any */
+	error?: string;
 }
 
 /**
  * Entries inside the Pymatgen prototypes library file
+ * @notExported
  */
-export interface LibraryEntry {
+interface LibraryEntry {
 	/** Prototype structure */
 	snl: SNL;
 	/** Corresponding tags */
@@ -78,6 +83,7 @@ class PrototypeDb {
 		}
 		catch(error: unknown) {
 			this.errorMessage = `Error initializing PrototypeDb: ${(error as Error).message}`;
+			this.aflowPrototypeLibrary = [];
 		}
 	}
 
@@ -86,7 +92,7 @@ class PrototypeDb {
 	 *
 	 * @returns The error message or empty string on success
 	 */
-	getError(): string {
+	getDBError(): string {
 		return this.errorMessage;
 	}
 
@@ -169,6 +175,14 @@ class PrototypeDb {
 			await this.readCompressedPrototypes();
 		}
 
+		if(this.errorMessage) {
+			return {
+				mineral: "",
+				structure: new EmptyStructure(),
+				error: this.errorMessage
+			};
+		}
+
 		for(const proto of this.aflowSrcPrototypeLibrary) {
 
 			if(proto.tags.aflow === aflow) {
@@ -229,6 +243,20 @@ class PrototypeDb {
 
 		if(this.aflowSrcPrototypeLibrary.length === 0) {
 			await this.readCompressedPrototypes();
+		}
+
+		if(this.errorMessage) {
+			return {
+				mineral: "",
+				matrix: [],
+				atoms: {
+					positions: [],
+					labels: [],
+					radius: [],
+					color: []
+				},
+				error: this.errorMessage
+			};
 		}
 
 		for(const proto of this.aflowSrcPrototypeLibrary) {
@@ -301,7 +329,7 @@ class PrototypeDb {
  *
  * @returns The error message or empty string on success
  */
-export const getError = (): string => PrototypeDb.getInstance().getError();
+export const getDBError = (): string => PrototypeDb.getInstance().getDBError();
 
 /**
  * Returns the list of preprocessed prototype entries

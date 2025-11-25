@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
   "entry": [
     "src/main.ts",
     "src/electron/main.ts",
@@ -32,6 +32,8 @@
     "@rollup/plugin-typescript",
     "oxlint-tsgolint"
   ],
-  "includeEntryExports": true,
-  "ignore": ["**/KDtree.d.ts"]
+  // "includeEntryExports": true,
+  "ignore": ["**/KDtree.d.ts"],
+  "oxlint": true,
+  "rollup": true
 }

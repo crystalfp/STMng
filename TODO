@@ -1,10 +1,8 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
-  ✔ Incomplete polyhedra bonds @done(2025-11-23 16:13)
   ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
   ☐ Verify fill unit cell in proto visualizer
-  ✔ If drop PDB then change read hydrogens gives silent file not found @done(2025-11-22 05:26)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -52,6 +50,7 @@ ToDo eventually:
   ☐ If possible remove circular dependencies between modules
   ☐ For the charts <https://unovis.dev/>
   ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
+  ☐ Labels rotation to face always camera <https://codepen.io/boytchev/pen/WbwEJWL>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -62,6 +61,7 @@ Nice to have/Future:
   ☐ Experiment with alphaHash for transparency <https://github.com/mrdoob/three.js/blob/master/examples/webgl_materials_alphahash.html>
   ☐ Volume rendering <https://github.com/Donitzo/three.js-volume-renderer>
   ☐ Use ideas from [ndarray](https://github.com/scijs/ndarray) for multidimensional arrays
+  ☐ Rendering in a worker thread <https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas> or <https://threejs.org/examples/webgl_worker_offscreencanvas.html>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
@@ -74,6 +74,8 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Incomplete polyhedra bonds @done(2025-11-23 16:13) @project(Bugs)
+  ✔ If drop PDB then change read hydrogens gives silent file not found @done(2025-11-22 05:26) @project(Bugs)
   ✘ Add version to project files @cancelled(2025-11-21 18:31) @project(ToDo eventually)
   ✔ Simplify error messages for user, leaving full message in log @done(2025-11-21 18:31) @project(Nice to have/Future)
   ✔ Compute better camera placement to consider the full scene (now it is too near) @done(2025-11-21 18:29) @project(Bugs)

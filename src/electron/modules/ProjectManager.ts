@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-06
  */
-import {readFileSync, existsSync, writeFileSync} from "node:fs";
+import {readFileSync, writeFileSync, statSync} from "node:fs";
 import {writeFile} from "node:fs/promises";
 import {ipcMain, dialog} from "electron";
 import path from "node:path";
@@ -360,18 +360,19 @@ class ProjectManager {
 
 		let loadedDefaultProject = false;
 
-		if(existsSync(filename)) {
-
-			setProjectPath(filename);
-			sendProjectPath(filename);
-		}
-		else {
-			sendAlertToClient(`Project file "${filename}" does not exist. Loading default project`);
+		const fstat = statSync(filename);
+		if(!fstat?.isFile() || fstat.size === 0) {
+			sendAlertToClient(`Project file "${filename}" does not exist or is invalid. Loading default project`);
 
 			removeProjectPath();
 			filename = this.getDefaultProject();
 			sendProjectPath();
 			loadedDefaultProject = true;
+		}
+		else {
+
+			setProjectPath(filename);
+			sendProjectPath(filename);
 		}
 		this.loadProject(filename, loadedDefaultProject);
 		return loadedDefaultProject;
@@ -395,18 +396,24 @@ class ProjectManager {
 		}
 		else {
 			filename = getProjectPath();
-			if(!filename) {
-				filename = this.getDefaultProject();
-				sendProjectPath();
-				loadedDefaultProject = true;
+			if(filename) {
+				const fstat = statSync(filename);
+				if(fstat?.isFile() && fstat.size > 0) {
+					sendProjectPath(filename);
+				}
+				else {
+					sendAlertToClient(`Project file "${filename}" does not exist or is invalid. Loading default project`);
+					removeProjectPath();
+					filename = this.getDefaultProject();
+					sendProjectPath();
+					loadedDefaultProject = true;
+				}
 			}
-			if(existsSync(filename)) sendProjectPath(filename);
 			else {
-				sendAlertToClient(`Project file "${filename}" does not exist. Loading default project`);
-				removeProjectPath();
 				filename = this.getDefaultProject();
 				sendProjectPath();
 				loadedDefaultProject = true;
+				sendProjectPath(filename);
 			}
 		}
 		this.loadProject(filename, loadedDefaultProject);

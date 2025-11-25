@@ -6,19 +6,15 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-18
  */
-import {existsSync, readFileSync, createReadStream} from "node:fs";
 import log from "electron-log";
-import {createGunzip} from "node:zlib";
 import {NodeCore} from "../modules/NodeCore";
 import {sendToClient} from "../modules/ToClient";
-import {publicDirPath} from "../modules/GetPublicPath";
 import {findMatchingPrototypes} from "../proto/AflowPrototypeMatcher";
-import {getAtomData, getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
+import {getAtomicSymbol} from "../modules/AtomData";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
-import type {ChannelDefinition, CtrlParams, Structure, DBType,
-			 PrototypeAtomsData} from "@/types";
-import type {PrototypeEntry, Prototype, SNL} from "../proto/types";
-import type {LibraryEntry} from "../proto/PrototypeDb";
+import {getDBError, getDBforSearch, getPreprocessedPrototypes, getPrototypeForDisplay} from "../proto/PrototypeDb";
+import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
+import type {PrototypeEntry, Prototype} from "../proto/types";
 
 export class PrototypeMatcher extends NodeCore {
 
@@ -34,7 +30,6 @@ export class PrototypeMatcher extends NodeCore {
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
 	private readonly aflowAdjunctMap = new Map<string, string>();
 	private hasAdjunctMap = false;
-	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",       type: "invokeAsync", callback: this.channelInit.bind(this)},
@@ -81,19 +76,24 @@ export class PrototypeMatcher extends NodeCore {
 		this.formula = this.hasInput ? this.getChemicalFormula(this.structure) : "";
 
 		if(!this.aflowPrototypesLoaded) {
-			const sts = this.initializeMatcher();
-			if(sts) {
+
+			this.aflowPrototypeLibrary = getPreprocessedPrototypes();
+			if(this.aflowPrototypeLibrary.length === 0) {
+
+				const error = getDBError() || "No prototypes loaded";
+
+				log.error(error);
 				sendToClient(this.id, "match", {
-					error: sts,
+					error,
 					match: "",
 					formula: this.formula,
 					hasInput: this.hasInput
 				});
-				this.aflowPrototypeLibrary.length = 0;
 				return;
 			}
 			this.aflowPrototypesLoaded = true;
 		}
+
 		if(this.enabled && this.hasInput) {
 			const sts = this.matchPrototype();
 			const params: CtrlParams = sts ?
@@ -115,39 +115,6 @@ export class PrototypeMatcher extends NodeCore {
 	}
 
 	// > Computation
-	/**
-	 * Initialize the prototype matcher
-	 *
-	 * @remarks The data file is obtained running the Python library and capturing the `self._aflow_prototype_library` list from the AflowPrototypeMatcher class constructor
-	 *
-	 * @returns On error an error messages, otherwise the empty string
-	 */
-	private initializeMatcher(): string {
-
-		const filePath = publicDirPath("aflow_prepared_prototypes.json");
-		const adjunctPath = publicDirPath("mineral_overrides.json");
-		try {
-			const aflowPrototypeLibraryRaw = readFileSync(filePath, "utf8");
-			this.aflowPrototypeLibrary = JSON.parse(aflowPrototypeLibraryRaw) as PrototypeEntry[];
-			if(this.aflowPrototypeLibrary.length === 0) throw Error("No prototypes loaded");
-
-			if(existsSync(adjunctPath)) {
-				const adjunctRaw = readFileSync(adjunctPath, "utf8");
-				if(adjunctRaw) {
-					const adjunct = JSON.parse(adjunctRaw) as Record<string, string>;
-					for(const entry in adjunct) this.aflowAdjunctMap.set(entry, adjunct[entry]);
-					this.hasAdjunctMap = true;
-				}
-			}
-		}
-		catch(error: unknown) {
-			const message = `Error initializing PrototypeMatcher: ${(error as Error).message}`;
-			log.error(message);
-			return message;
-		}
-		return "";
-	}
-
 	/**
 	 * Format prototypes for the client
 	 *
@@ -234,40 +201,6 @@ export class PrototypeMatcher extends NodeCore {
 		return formula;
 	}
 
-	/**
-	 * Prepare the list for querying the prototype database
-	 *
-	 * @returns JSON encoded list of prototypes names and aflow UID
-	 */
-	async getDBforSearch(): Promise<string> {
-
-		if(this.aflowSrcPrototypeLibrary.length === 0) {
-			await this.readCompressedPrototypes();
-		}
-
-		const db = new Map<string, string>();
-		for(const proto of this.aflowSrcPrototypeLibrary) {
-
-			const mineral = this.aflowAdjunctMap.get(proto.tags.aflow) ?? proto.tags.mineral;
-			if(mineral) {
-
-				db.set(mineral, proto.tags.aflow);
-				db.set(proto.tags.aflow, "#"+proto.tags.aflow); // Marked to avoid duplicates
-			}
-			else {
-
-				db.set(proto.tags.aflow, proto.tags.aflow);
-			}
-		}
-
-		const out: DBType[] = [];
-		for(const [k, v] of db) {
-			out.push({title: k, aflow: v});
-		}
-
-		return JSON.stringify(out.toSorted((a, b) => a.title.localeCompare(b.title)));
-	}
-
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -276,7 +209,7 @@ export class PrototypeMatcher extends NodeCore {
 	 */
 	private async channelInit(): Promise<CtrlParams> {
 
-		const db = await this.getDBforSearch();
+		const db = await getDBforSearch();
 		return {
 			enabled: this.enabled,
 			lengthTolerance: this.lengthTolerance,
@@ -300,11 +233,15 @@ export class PrototypeMatcher extends NodeCore {
 		this.enabled = params.enabled as boolean ?? false;
 
 		if(!this.aflowPrototypesLoaded) {
-			const sts = this.initializeMatcher();
-			if(sts) {
-				this.aflowPrototypeLibrary.length = 0;
+
+			this.aflowPrototypeLibrary = getPreprocessedPrototypes();
+			if(this.aflowPrototypeLibrary.length === 0) {
+
+				const error = getDBError() || "No prototypes loaded";
+				log.error(error);
+
 				return {
-					error: sts,
+					error,
 					match: "",
 					formula: this.formula,
 					hasInput: this.hasInput
@@ -312,6 +249,7 @@ export class PrototypeMatcher extends NodeCore {
 			}
 			this.aflowPrototypesLoaded = true;
 		}
+
 		if(this.enabled && this.structure?.atoms.length) {
 			const sts = this.matchPrototype();
 			if(sts) {
@@ -340,11 +278,15 @@ export class PrototypeMatcher extends NodeCore {
 		this.angleTolerance = params.angleTolerance as number ?? 5;
 
 		if(!this.aflowPrototypesLoaded) {
-			const sts = this.initializeMatcher();
-			if(sts) {
-				this.aflowPrototypeLibrary.length = 0;
+
+			this.aflowPrototypeLibrary = getPreprocessedPrototypes();
+			if(this.aflowPrototypeLibrary.length === 0) {
+
+				const error = getDBError() || "No prototypes loaded";
+				log.error(error);
+
 				return {
-					error: sts,
+					error,
 					match: "",
 					formula: this.formula,
 					hasInput: this.hasInput
@@ -376,19 +318,18 @@ export class PrototypeMatcher extends NodeCore {
 		const aflow = params.aflow as string;
 		if(!aflow) return {result: "Empty aflow ID"};
 
-		if(this.aflowSrcPrototypeLibrary.length === 0) {
-			await this.readCompressedPrototypes();
+		const proto = await getPrototypeForDisplay(aflow);
+		if(proto?.error) {
+			log.error(proto.error);
+			return {error: proto.error};
 		}
 
-		for(const proto of this.aflowSrcPrototypeLibrary) {
-			if(proto.tags.aflow === aflow) {
-
-				const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+		if(proto) {
 				const dataForClient = JSON.stringify({
 					aflow,
-					mineral,
-					matrix: proto.snl.lattice.matrix,
-					atoms: this.extractAtoms(proto.snl)
+					mineral: proto.mineral,
+					matrix: proto.matrix,
+					atoms: proto.atoms
 				});
 
 				createOrUpdateSecondaryWindow({
@@ -400,62 +341,8 @@ export class PrototypeMatcher extends NodeCore {
 				});
 
 				return {result: "Success!"};
-			}
 		}
 
 		return {error: `Prototype "${aflow}" not found`};
-	}
-
-	/**
-	 * Read the original list of prototypes as provided by Pymatgen
-	 */
-	private async readCompressedPrototypes(): Promise<void> {
-
-		// Read compressed AFLOW prototypes
-		const gunzip = createGunzip();
-		const prototypesPath = publicDirPath("aflow_prototypes.json.gz");
-		const source = createReadStream(prototypesPath);
-		const stream = source.pipe(gunzip);
-
-		let rawResult = "";
-		stream.on("data", (chunk: Buffer) => {
-			rawResult += chunk.toString("utf8");
-		});
-		return new Promise<void>((resolve) => {
-			stream.on("end", () => {
-				// Preprocess AFLOW prototypes
-				this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
-				resolve();
-			});
-		});
-	}
-
-	/**
-	 * Reformat atom data for rendering
-	 *
-	 * @param structure - Prototype structure from the aflow library
-	 * @returns Atoms data for rendering
-	 */
-	private extractAtoms(structure: SNL): PrototypeAtomsData {
-
-		const out: PrototypeAtomsData = {
-			positions: [],
-			labels: [],
-			radius: [],
-			color: [],
-		};
-
-		for(const site of structure.sites) {
-
-			out.positions.push(...site.xyz);
-			out.labels.push(site.label);
-
-			const atomZ = getAtomicNumber(site.species[0].element);
-			const ad = getAtomData(atomZ);
-			out.radius.push(ad.rCov);
-			out.color.push(ad.color);
-		}
-
-		return out;
 	}
 }
