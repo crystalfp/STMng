@@ -308,7 +308,7 @@ export class PrototypeMatcher extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for changing computational parameters
+	 * Channel handler for display selected prototype
 	 *
 	 * @param params - Params from the client
 	 * @returns Params with the operation status

@@ -21,13 +21,14 @@
 <h1 class="subh1">Structure reader</h1>
 
 <div class="description">
-<p>Read structural chemical data. To specify a trajectory the file could contain a
-single structure (single frame) or a sequence of structures (multiframe from file).</p>
+<a>Read structural chemical data. The file could contain a
+single structure or a sequence of structures to specify a trajectory or a set of <a href="https://uspex-team.org/">USPEX</a> results.</p>
 
 <p>If the format needs an auxiliary file, the module shows its file selector.</p>
 
 <p>The files could be also drag from elsewhere and dropped on the file selectors.</p>
 
+<p>There is also the special format “Prototypes” that queries and load one prototype from the Aflow prototype database.</p>
 <p>If set in the <a href="./viewer-3d.html">Viewer 3D</a> controls, the camera position could be reset at each frame loaded.</p>
 </div>
 
@@ -37,14 +38,14 @@ single structure (single frame) or a sequence of structures (multiframe from fil
 	<td class="c1">File format</td>
 	<td class="c2">list</td>
 	<td class="c3">Select the format of the file to be read.
-		The list of <a href="../general/formats.html">available formats</a>.</td>
+		The list of <a href="../general/formats.html">available formats</a>. The special format “Prototypes” opens the prototypes search and load panel (see below) instead of the following controls.</td>
 </tr>
 <tr>
 	<td class="c1">Atoms types</td>
 	<td class="c2">input (space separated list)</td>
 	<td class="c3">Enter the symbols of the atoms present in the file. This field appears only for
 	POSCAR, POSCAR + XDATCAR, POSCAR + ENERGY, CHGCAR, LAMMPS and LAMMPStrj formats.
-	The field content is accepted only with ENTER or moving the focus away from the field.
+	The field content is accepted only with the ENTER key or moving the focus away from the field.
 	The atoms types could be changed after file loading.</td>
 </tr>
 <tr>
@@ -65,17 +66,17 @@ single structure (single frame) or a sequence of structures (multiframe from fil
 <tr>
 	<td class="c1">Select or drop &lt;auxiliary format&gt; file</td>
 	<td class="c2">file selector</td>
-	<td class="c3">Select or drop here the auxiliary file associated to the input file, to be read. Show the auxiliary file format name. This field appears only if it is needed.</td>
+	<td class="c3">Select or drop here the auxiliary file associated to the input file, to be read. Show the auxiliary file format name. This field appears only if needed.</td>
 </tr>
 <tr>
 	<td class="c1">Use Bohr units</td>
 	<td class="c2">toggle</td>
-	<td class="c3">For Gaussian cube format selects the measurement unit to be used: Bohr or Å.</td>
+	<td class="c3">For the Gaussian cube format selects the measurement unit to be used: Bohr or Å.</td>
 </tr>
 <tr>
 	<td class="c1">Read hydrogens</td>
 	<td class="c2">toggle</td>
-	<td class="c3">For PDB format selects if hydrogen atoms should be loaded and visualized.</td>
+	<td class="c3">For the PDB format selects if hydrogen atoms should be loaded and visualized.</td>
 </tr>
 </table>
 <div class="description">
@@ -125,7 +126,7 @@ single structure (single frame) or a sequence of structures (multiframe from fil
 <tr>
 	<td class="c1">Step range</td>
 	<td class="c2">range slider</td>
-	<td class="c3">Set the first and last steps to be visualized. When first step value is more than one or the final slot-scope="" value is less than the number of steps from the file, a Range label became visible with the first and last steps and a button to reset the values to cover the full range of steps from file. Note that the slider is not labelled.</td>
+	<td class="c3">Set the first and last steps to be visualized. When the first step value is more than one or the final value is less than the number of steps from the file, a Range label became visible with the first and last steps and a button to reset the values to cover the full range of steps from file. Note that this slider is not labelled.</td>
 </tr>
 <tr>
 	<td class="c1">Control buttons</td>
@@ -147,6 +148,25 @@ single structure (single frame) or a sequence of structures (multiframe from fil
   </td>
 </tr>
 </table>
+<div class="description">
+<p>The following fields appear if the selected format is “Prototypes”:</p>
+</div>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Query prototypes db</td>
+	<td class="c2">text with autocomplete</td>
+	<td class="c3">Query the full list of prototypes to load. The query show a list of possible minerals/aflow UID and each character entered shorten the list.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+
+<p>The <a href="https://aflow.org/">Aflow</a> project has made available the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> which can be searched and loaded by part of the Aflow UID string or mineral name.</p>
+<p>The prototypes database is described in:
+    Mehl, M. J., Hicks, D., Toher, C., Levy, O., Hanson, R. M., Hart, G., & Curtarolo, S. (2017).
+    <i>The AFLOW library of crystallographic prototypes: part 1.</i>
+    Computational Materials Science, 136, S1-S828. DOI:
+    <a href="https://doi.org/10.1016/j.commatsci.2017.01.017">10.1016/j.commatsci.2017.01.017</a></p>
 
 <p><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
 

@@ -60,6 +60,7 @@ class PrototypeDb {
 	private readonly aflowAdjunctMap = new Map<string, string>();
 	private errorMessage = "";
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
+	private searchDb = "";
 
 	/**
 	 * Build the class by loading the prototype data
@@ -112,6 +113,8 @@ class PrototypeDb {
 	 */
 	async getDBforSearch(): Promise<string> {
 
+		if(this.searchDb) return this.searchDb;
+
 		if(this.aflowSrcPrototypeLibrary.length === 0) {
 			await this.readCompressedPrototypes();
 		}
@@ -133,10 +136,12 @@ class PrototypeDb {
 
 		const out: DBType[] = [];
 		for(const [k, v] of db) {
-			out.push({title: k, aflow: v});
+			const title = k.replaceAll(/<\/?sub>/g, "");
+			out.push({title, aflow: v});
 		}
 
-		return JSON.stringify(out.toSorted((a, b) => a.title.localeCompare(b.title)));
+		this.searchDb = JSON.stringify(out.toSorted((a, b) => a.title.localeCompare(b.title)));
+		return this.searchDb;
 	}
 
 	/**

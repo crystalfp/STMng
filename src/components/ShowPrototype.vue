@@ -62,7 +62,7 @@ receiveInWindow((dataFromMain) => {
 
     sv.setSceneModified();
 
-    prototypeName.value = `${mineral} (aflow: ${aflow})`;
+    prototypeName.value = `${mineral}&ensp;(aflow: ${aflow})`;
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -236,7 +236,7 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
   <div class="prototype-portal">
     <div class="prototype-viewer" />
     <v-container class="prototype-buttons">
-      <v-label>{{ prototypeName }}</v-label>
+      <v-label v-html="prototypeName"/>
       <v-btn v-focus @click="closeWindow('/prototype')">Close</v-btn>
     </v-container>
   </div>
@@ -268,5 +268,10 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
   gap: 10px;
   justify-content: space-between;
   align-items: baseline
+}
+
+:deep(sub) {
+  position: relative;
+  bottom: -0.5rem;
 }
 </style>

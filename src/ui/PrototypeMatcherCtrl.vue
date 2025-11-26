@@ -195,19 +195,20 @@ const startQuery = (aflow: string): void => {
   <v-btn block class="mt-5 mb-4" :disabled="!enableProto"
          @click="resetParams">Reset parameters</v-btn>
   <v-container v-if="enableProto && hasInput" class="mt-2 ml-2 mb-6 pa-0 pr-2">
-    <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger" v-html="`Prototypes for ${formula}`" />
+    <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger-result"
+             v-html="`Prototypes for ${formula}`" />
     <v-container v-for="entry of prototypes" :key="entry[1]" v-ripple
                  class="mb-4 pa-1 border-thin rounded-lg cursor-pointer"
                  @click="selectPrototype(entry[1])">
-      <v-label class="result-label pb-1 bigger cursor-pointer" v-html="entry[0]" /><br>
-      <v-label class="bigger cursor-pointer">{{ `(Aflow: ${entry[1]})` }}</v-label>
+      <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry[0]" /><br>
+      <v-label class="bigger-result cursor-pointer">{{ `(Aflow: ${entry[1]})` }}</v-label>
     </v-container>
   </v-container>
   <v-label class="separator-title">Query prototypes db</v-label>
   <v-autocomplete v-model="query" label="Query"
                   :items="db" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
-                  :clearable="true" no-data-text=""
+                  :clearable="true" no-data-text="" spellcheck="false"
                   @update:modelValue="startQuery"/>
   <node-alert node="prototypeMatcher" />
 </v-container>
@@ -215,13 +216,6 @@ const startQuery = (aflow: string): void => {
 
 
 <style scoped>
-.bigger {
-  overflow-wrap: break-word;
-  white-space: break-spaces;
-  font-size: 1.1rem;
-  line-height: 1.4;
-}
-
 :deep(sub) {
   position: relative;
   bottom: -0.5rem;

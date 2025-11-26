@@ -7,14 +7,14 @@
  * @since 2024-07-16
  */
 
-import {ref, watch, computed} from "vue";
+import {ref, reactive, watch, computed} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight} from "@mdi/js";
 import {askNode, sendToNode, setReadPathInTitle} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
-import type {FileFilter} from "@/types";
+import type {DBType, FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
 import SelectFile from "@/widgets/SelectFile.vue";
@@ -43,6 +43,7 @@ const fileFormats = [
     "POSCAR",
     "POSCAR + ENERGY",
     "POSCAR + XDATCAR",
+    "Prototypes",
     "Quantum ESPRESSO",
     "Shel-X",
     "XDATCAR5",
@@ -50,21 +51,25 @@ const fileFormats = [
 ];
 
 // > UI parameters
-const countSteps    = ref(1);       // Total steps read
-const step          = ref(1);       // Current step
-const running       = ref(false);   // The steps are playing
-const atomsTypes    = ref("");      // Atom types in the structure read
-const loopSteps     = ref(false);   // If the sequence should loop
-const stepBackward  = ref(false);   // Run in backward steps
-const format        = ref("");      // File format to be read
-const inProgress    = ref(false);   // True during file load
-const useBohr       = ref(true);    // Use Bohr units
-const stepIncrement = ref(1);       // How many step skip every tick
-const speed         = ref(1);       // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
-const readHydrogen  = ref(false);   // Read also hydrogen atoms for the PDB reader
-const energyPerAtom = ref(false);   // Energy file has energy per atom and not per structure
-const appendFile    = ref(false);   // The file will be appended to the list of steps
-const stepRange     = ref([1, 1]);  // Range of steps
+const countSteps     = ref(1);      // Total steps read
+const step           = ref(1);      // Current step
+const running        = ref(false);  // The steps are playing
+const atomsTypes     = ref("");     // Atom types in the structure read
+const loopSteps      = ref(false);  // If the sequence should loop
+const stepBackward   = ref(false);  // Run in backward steps
+const format         = ref("");     // File format to be read
+const inProgress     = ref(false);  // True during file load
+const useBohr        = ref(true);   // Use Bohr units
+const stepIncrement  = ref(1);      // How many step skip every tick
+const speed          = ref<0 | 1 | 2>(1); // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
+const readHydrogen   = ref(false);  // Read also hydrogen atoms for the PDB reader
+const energyPerAtom  = ref(false);  // Energy file has energy per atom and not per structure
+const appendFile     = ref(false);  // The file will be appended to the list of steps
+const stepRange      = ref([1, 1]); // Range of steps
+const showPrototypes = ref(false);  // If the read comes from the prototypes database
+const db             = reactive<DBType[]>([]); // The prototypes db content for query
+const query          = ref("");     // The selected prototype UID
+const mineral        = ref("");     // The selected prototype mineral tag
 
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
@@ -81,8 +86,11 @@ askNode(id, "init")
         useBohr.value       = params.useBohr as boolean ?? true;
         readHydrogen.value  = params.readHydrogen as boolean ?? false;
         stepIncrement.value = params.stepIncrement as number ?? 1;
-        speed.value         = params.speed as number ?? 1;
+        speed.value         = params.speed as 0 | 1 | 2 ?? 1;
         energyPerAtom.value = params.energyPerAtom as boolean ?? false;
+        const dbRaw = JSON.parse(params.db as string ?? "[]") as DBType[];
+        db.length = 0;
+        for(const entry of dbRaw) db.push(entry);
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -107,7 +115,7 @@ watch([step], (
         })
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
-            if(configStore.camera.autoReset) setTimeout(() => {controlStore.reset = true;}, 20);
+            if(configStore.camera.autoReset) resetCamera();
         })
         .catch((error: Error) => {
             showNodeAlert(`Error from stepping: ${error.message}`, "structureReader");
@@ -169,7 +177,7 @@ watch([running], async () => {
             const response = await askNode(id, "step", {step: nextStep});
             if("error" in response) throw Error(response.error as string);
             step.value = response.step as number;
-            if(configStore.camera.autoReset) setTimeout(() => {controlStore.reset = true;}, 20);
+            if(configStore.camera.autoReset) resetCamera();
             if(!running.value) break;
         }
         catch(error: unknown) {
@@ -214,6 +222,12 @@ const togglePlay = (): void => {
  * Set the file format to load
  */
 const setFormat = (): void => {
+
+    if(format.value === "Prototypes") {
+        showPrototypes.value = true;
+        return;
+    }
+    showPrototypes.value = false;
 
     sendToNode(id, "formats", {format: format.value});
 
@@ -290,6 +304,13 @@ const setAppendFile = (): void => {
     sendToNode(id, "append", {appendFile: appendFile.value});
 };
 
+/**
+ * Reset camera position after changing structure
+ */
+const resetCamera = (): void => {
+    setTimeout(() => {controlStore.reset = true;}, 20);
+};
+
 // > Load structure file
 /**
  * Start loading a structure file
@@ -313,7 +334,7 @@ const selectedFile = (filename: string): void => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
-            setTimeout(() => {controlStore.reset = true;}, 20);
+            resetCamera();
             appendFile.value = false;
             stepRange.value[1] = countSteps.value;
         })
@@ -346,7 +367,7 @@ const droppedFile = (content: string, filename: string): void => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
-            setTimeout(() => {controlStore.reset = true;}, 20);
+            resetCamera();
             appendFile.value = false;
             stepRange.value[1] = countSteps.value;
         })
@@ -531,6 +552,28 @@ const resetRange = (): void => {
     stepRange.value[1] = countSteps.value;
 };
 
+/**
+ * Load the queried prototype
+ *
+ * @param aflow - Selected aflow UID to display
+ */
+const startQuery = (aflow: string): void => {
+
+    if(!aflow) aflow = "";
+    else if(aflow.startsWith("#")) aflow = aflow.slice(1);
+
+    // Retrieve prototype
+    askNode(id, "proto", {aflow})
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+            mineral.value = result.mineral as string ?? "";
+            resetCamera();
+        })
+        .catch((error: Error) => {
+            showNodeAlert(error.message, "structureReader");
+        });
+};
+
 </script>
 
 
@@ -541,83 +584,101 @@ const resetRange = (): void => {
             :items="fileFormats" class="my-4"
             @update:model-value="setFormat" />
 
-  <v-text-field v-if="needsAtomTypes(format)" v-model.trim="atomsTypes"
-                label="Atoms types"
-                placeholder="Space separated list" class="mb-6"
-                hide-details="auto"
-                clearable spellcheck="false"
-                @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
-                @click:clear="clearAtomTypes"/>
+  <v-container v-if="showPrototypes" class="pa-0">
+    <v-autocomplete v-model="query" label="Prototype query"
+                  :items="db" item-title="title" item-value="aflow"
+                  :auto-select-first="true" :hide-details="true"
+                  :clearable="true" no-data-text="" spellcheck="false"
+                  @update:modelValue="startQuery"/>
+    <v-label v-if="query" class="result-label bigger-result pb-1 mt-4 ml-4" v-html="mineral" />
+  </v-container>
+  <v-container v-else class="pa-0">
 
-  <v-switch v-model="appendFile"
-            label="Append" class="ml-4 mt-4"
-            @update:model-value="setAppendFile" />
+    <v-text-field v-if="needsAtomTypes(format)" v-model.trim="atomsTypes"
+                  label="Atoms types"
+                  placeholder="Space separated list" class="mb-6"
+                  hide-details="auto"
+                  clearable spellcheck="false"
+                  @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
+                  @click:clear="clearAtomTypes"/>
+    <v-switch v-model="appendFile"
+              label="Append" class="ml-4 mt-4"
+              @update:model-value="setAppendFile" />
 
-  <select-file v-model="label1" :disabled="format === ''"
-               label="Select or drop input file"
-               title="Select input file"
-               :filter="filterFromFormat(format)"
-               @selected="selectedFile"
-               @dropped="droppedFile" />
+    <select-file v-model="label1" :disabled="format === ''"
+                label="Select or drop input file"
+                title="Select input file"
+                :filter="filterFromFormat(format)"
+                @selected="selectedFile"
+                @dropped="droppedFile" />
 
-  <v-switch v-if="format === 'POSCAR + ENERGY'" v-model="energyPerAtom"
-            label="File has energy per atom" class="ml-4 mt-2"
-            @update:model-value="setEnergyPerAtom" />
+    <v-switch v-if="format === 'POSCAR + ENERGY'" v-model="energyPerAtom"
+              label="File has energy per atom" class="ml-4 mt-2"
+              @update:model-value="setEnergyPerAtom" />
 
-  <select-file v-if="auxSetup.hasAux" v-model="label2"
-               :filter="auxSetup.filter"
-               :label="auxSetup.label"
-               :title="auxSetup.title"
-               @selected="selectedAuxFile"
-               @dropped="droppedAuxFile" />
+    <select-file v-if="auxSetup.hasAux" v-model="label2"
+                :filter="auxSetup.filter"
+                :label="auxSetup.label"
+                :title="auxSetup.title"
+                @selected="selectedAuxFile"
+                @dropped="droppedAuxFile" />
 
-  <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
-            label="Use Bohr units" class="ml-4 mt-4" @update:model-value="setUseBohr" />
-  <v-switch v-else-if="format === 'PDB'" v-model="readHydrogen"
-            label="Read hydrogens" class="ml-4 mt-4" @update:model-value="setReadHydrogen" />
-  <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
-    <enable-capture />
-    <v-row class="pl-3 mt-0">
-      <v-switch v-model="loopSteps" label="Loop" class="mr-5 mb-6" />
-      <v-switch v-model="stepBackward" label="Reverse" class="mb-6" />
-      <v-number-input v-model="stepIncrement" label="Step increment" :min="1"
-                      :precision="0" class="ml-3 mr-8" />
-    </v-row>
-    <v-row class="ml-0 d-flex ga-1 align-center">
-      <v-label class="no-select pb-4 mt-4 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>
-      <v-label v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
-               class="no-select pb-4 mt-4 mr-2">
-               {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
-      <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
-             class="mr-12" density="compact" slim @click="resetRange">Reset</v-btn>
-    </v-row>
-    <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
-              :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
-    <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
-    <v-row class="mr-4">
-      <v-spacer />
-      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
-              @click="step = 1" />
-      <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft" class="mr-1"
-              @click="deltaStep(-1)" />
-      <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" class="mr-1"
-              @click="togglePlay" />
-      <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight" class="mr-1"
-              @click="deltaStep(1)" />
-      <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
-              @click="step = countSteps; running = false" />
-      <v-spacer />
-    </v-row>
+    <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
+              label="Use Bohr units" class="ml-4 mt-4" @update:model-value="setUseBohr" />
+    <v-switch v-else-if="format === 'PDB'" v-model="readHydrogen"
+              label="Read hydrogens" class="ml-4 mt-4" @update:model-value="setReadHydrogen" />
+    <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
+      <enable-capture />
+      <v-row class="pl-3 mt-0">
+        <v-switch v-model="loopSteps" label="Loop" class="mr-5 mb-6" />
+        <v-switch v-model="stepBackward" label="Reverse" class="mb-6" />
+        <v-number-input v-model="stepIncrement" label="Step increment" :min="1"
+                        :precision="0" class="ml-3 mr-8" />
+      </v-row>
+      <v-row class="ml-0 d-flex ga-1 align-center">
+        <v-label class="no-select pb-4 mt-4 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>
+        <v-label v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
+                class="no-select pb-4 mt-4 mr-2">
+                {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
+        <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
+              class="mr-12" density="compact" slim @click="resetRange">Reset</v-btn>
+      </v-row>
+      <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
+                :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
+      <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
+      <v-row class="mr-4">
+        <v-spacer />
+        <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
+                @click="step = 1" />
+        <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft" class="mr-1"
+                @click="deltaStep(-1)" />
+        <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" class="mr-1"
+                @click="togglePlay" />
+        <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight" class="mr-1"
+                @click="deltaStep(1)" />
+        <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
+                @click="step = countSteps; running = false" />
+        <v-spacer />
+      </v-row>
 
-    <titled-slot title="Speed:" inline class="mt-10 mb-6 ml-0">
-      <v-btn-toggle v-model="speed" mandatory>
-        <v-btn>Fast</v-btn>
-        <v-btn>Medium</v-btn>
-        <v-btn>Slow</v-btn>
-      </v-btn-toggle>
-    </titled-slot>
+      <titled-slot title="Speed:" inline class="mt-10 mb-6 ml-0">
+        <v-btn-toggle v-model="speed" mandatory>
+          <v-btn>Fast</v-btn>
+          <v-btn>Medium</v-btn>
+          <v-btn>Slow</v-btn>
+        </v-btn-toggle>
+      </titled-slot>
+    </v-container>
 
   </v-container>
   <node-alert node="structureReader" class="mt-4"/>
 </v-container>
 </template>
+
+
+<style scoped>
+:deep(sub) {
+  position: relative;
+  bottom: -0.5rem;
+}
+</style>

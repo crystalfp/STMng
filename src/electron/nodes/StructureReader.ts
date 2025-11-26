@@ -15,6 +15,7 @@ import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
+import {getDBforSearch, getPrototypeStructure} from "../proto/PrototypeDb";
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 										   "LAMMPStrj", "POSCAR + XDATCAR", "XDATCAR5",
@@ -44,7 +45,7 @@ export class StructureReader extends NodeCore {
 	private structures: Structure[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",			type: "invoke",      callback: this.channelInit.bind(this)},
+		{name: "init",			type: "invokeAsync", callback: this.channelInit.bind(this)},
 		{name: "read",			type: "invokeAsync", callback: this.channelRead.bind(this)},
 		{name: "types",			type: "send",        callback: this.channelTypes.bind(this)},
 		{name: "formats",		type: "send",        callback: this.channelFormats.bind(this)},
@@ -57,6 +58,7 @@ export class StructureReader extends NodeCore {
 		{name: "append",		type: "send",      	 callback: this.channelAppend.bind(this)},
 		{name: "read-dropped",	type: "invokeAsync", callback: this.channelReadDropped.bind(this)},
 		{name: "aux-dropped",	type: "invokeAsync", callback: this.channelAuxDropped.bind(this)},
+		{name: "proto", 	 	type: "invokeAsync", callback: this.channelProto.bind(this)},
 	];
 
 	/**
@@ -104,8 +106,9 @@ export class StructureReader extends NodeCore {
 	 *
 	 * @returns Parameters to initialize the user interface
 	 */
-	private channelInit(): CtrlParams {
+	private async channelInit(): Promise<CtrlParams> {
 
+		const db = await getDBforSearch();
 		return {
 			loopSteps: this.loopSteps,
 			stepBackward: this.stepBackward,
@@ -115,7 +118,8 @@ export class StructureReader extends NodeCore {
 			readHydrogen: this.readHydrogen,
 			energyPerAtom: this.energyPerAtom,
 			stepIncrement: this.stepIncrement,
-			speed: this.speed
+			speed: this.speed,
+			db
 		};
 	}
 
@@ -617,5 +621,41 @@ export class StructureReader extends NodeCore {
 
 		// Send the updated structure down the pipeline
 		this.toNextNode(this.structures[this.step-1]);
+	}
+
+	/**
+	 * Channel handler for reading selected prototype
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelProto(params: CtrlParams): Promise<CtrlParams> {
+
+		const aflow = params.aflow as string;
+		if(!aflow) {
+			this.toNextNode(new EmptyStructure());
+			return {result: "Empty aflow ID"};
+		}
+
+		const proto = await getPrototypeStructure(aflow);
+		if(proto?.error) {
+			log.error(proto.error);
+			return {error: proto.error};
+		}
+
+		if(proto) {
+
+			this.structures = [proto.structure];
+
+			// Set structure id
+			this.structures[0].extra.step = 1;
+
+			// Send the updated structure down the pipeline
+			this.toNextNode(this.structures[0]);
+
+			return {mineral: proto.mineral};
+		}
+
+		return {error: `Prototype "${aflow}" not found`};
 	}
 }
