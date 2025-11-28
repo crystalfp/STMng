@@ -11,74 +11,55 @@
 void doMDS(
 	std::vector<double_t> distances,	// Distances vector
 	int count,							// Side of the distance matrix
-	std::vector<uint8_t> enable,		// Mark enabled points
 	std::vector<double_t>& points2D,	// Projected points in 2D
 	std::vector<double_t>& points3D		// Projected points in 3D
 )
 {
-	// 1. Count the number of enabled points and map indices to the enabled ones
-	size_t enabledSide = count;
-	size_t enabledIndex = 0;
-	std::vector<size_t> mapIndex(count);
-	for(size_t i = 0; i < count; i++) {
-		if(enable[i] == 0) --enabledSide;
-		else mapIndex[i] = enabledIndex++;
-	}
-
-	// 2. Create the matrix of distances squared
-	Eigen::MatrixXf D2(enabledSide, enabledSide);
+	// 1. Create the matrix of distances squared
+	Eigen::MatrixXf D2(count, count);
 
 	for(size_t row=0; row < count-1; ++row) {
 
-		if(enable[row] == 0) continue;
-
-		size_t erow = mapIndex[row];
-
 		for(size_t col=row+1; col < count; ++col) {
-
-			if(enable[col] == 0) continue;
 
 			// Formula for upper triangular matrix
 			// The 2nd member should stay as-is otherwise it truncates
 			size_t idx = count*row-(row*(row+1))/2+col-row-1;
 
-			// Map indices to the ones with disabled points removed
-			size_t ecol = mapIndex[col];
-
 			float v = distances[idx];
-			D2(erow, ecol) = D2(ecol, erow) = v*v;
+			D2(row, col) = D2(col, row) = v*v;
 		}
-		D2(erow, erow) = 0.F;
+		D2(row, row) = 0.F;
 	}
 
-	// 3. Compute row and total averages
-	float scale = 1.0F/enabledSide;
+	// 2. Compute row and total averages
+	float scale = 1.0F/count;
 	Eigen::VectorXf rowMeans = D2.rowwise().sum() * scale;
 	float totalMean = rowMeans.sum() * scale;
 
-    // 4. Compute double centering matrix
-	Eigen::MatrixXf doubleCenteringMatrix(enabledSide, enabledSide);
-    for(size_t i = 0; i < enabledSide; i++) {
-        for(size_t j = 0; j < enabledSide; j++) {
+    // 3. Compute double centering matrix
+	Eigen::MatrixXf doubleCenteringMatrix(count, count);
+    for(size_t i = 0; i < count; i++) {
+        for(size_t j = 0; j < count; j++) {
             doubleCenteringMatrix(i, j) = -0.5F * (D2(i, j) - rowMeans(i) - rowMeans(j) + totalMean);
         }
     }
 
-	// 5. Do the eigendecomposition
+	// 4. Do the eigendecomposition
 	Eigen::EigenSolver<Eigen::MatrixXf> es(doubleCenteringMatrix);
 
 	Eigen::VectorXf eigenvalues = es.eigenvalues().real();
 	Eigen::MatrixXf eigenvectors = es.eigenvectors().real();
 
-    // 6. Compute the final coordinates and range for normalization
-	points2D.resize(enabledSide*2);
-	points3D.resize(enabledSide*3);
+    // 5. Compute the final coordinates and range for normalization
+	points2D.resize(count*2);
+	points3D.resize(count*3);
 	std::vector<double_t> min2D(2,  DBL_MAX);
 	std::vector<double_t> max2D(2, -DBL_MAX);
 	std::vector<double_t> min3D(3,  DBL_MAX);
 	std::vector<double_t> max3D(3, -DBL_MAX);
 
-    for(size_t i = 0; i < enabledSide; ++i) {
+    for(size_t i = 0; i < count; ++i) {
 
 		// Unroll the loop on dimensions
 		size_t i2 = i*2;
@@ -111,7 +92,7 @@ void doMDS(
 		points3D[i3+2] = value;
     }
 
-	// 7. Normalize coordinates values
+	// 6. Normalize coordinates values
 	// Unroll loops on dimensions
 	std::vector<double_t> den2D(2);
 	den2D[0] = max2D[0] - min2D[0];
@@ -122,7 +103,7 @@ void doMDS(
 	den3D[1] = max3D[1] - min3D[1];
 	den3D[2] = max3D[2] - min3D[2];
 
-    for(size_t i = 0; i < enabledSide; ++i) {
+    for(size_t i = 0; i < count; ++i) {
 
 		size_t i2 = i*2;
 		points2D[i2]   = (points2D[i2]   - min2D[0]) / den2D[0];

@@ -231,8 +231,8 @@ Napi::Value MDS(const Napi::CallbackInfo& info) {
 	Napi::Env env = info.Env();
 
 	// Check arguments
-	if(info.Length() != 3) {
-    	Napi::TypeError::New(env, "Expecting exactly three arguments").ThrowAsJavaScriptException();
+	if(info.Length() != 2) {
+    	Napi::TypeError::New(env, "Expecting exactly two arguments").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -245,12 +245,6 @@ Napi::Value MDS(const Napi::CallbackInfo& info) {
 	// Argument 1: pointsCount
 	if(!info[1].IsNumber()) {
     	Napi::TypeError::New(env, "Second argument should be a number").ThrowAsJavaScriptException();
-		return info.Env().Undefined();
-	}
-
-	// Argument 2: enabled
-	if(!info[2].IsTypedArray()) {
-    	Napi::TypeError::New(env, "Third argument should be a typed array").ThrowAsJavaScriptException();
 		return info.Env().Undefined();
 	}
 
@@ -267,21 +261,10 @@ Napi::Value MDS(const Napi::CallbackInfo& info) {
 	// Argument 1: integer
 	int pointsCount = static_cast<int>(info[1].As<Napi::Number>());
 
-	// Argument 2: array of boolean
-    typedArray = info[2].As<Napi::TypedArray>();
-    if(typedArray.TypedArrayType() != napi_uint8_array) {
-        Napi::Error::New(env, "Argument 2: expected a Uint8Array").ThrowAsJavaScriptException();
-        return info.Env().Undefined();
-    }
-
-    Napi::Uint8Array enableArray = typedArray.As<Napi::Uint8Array>();
-    size_t enableLength = enableArray.ElementLength();
-	std::vector<uint8_t> enable(enableArray.Data(), enableArray.Data() + enableLength);
-
 	// Execute the native function
 	std::vector<double_t> points2D;
 	std::vector<double_t> points3D;
-	doMDS(distances, pointsCount, enable, points2D, points3D);
+	doMDS(distances, pointsCount, points2D, points3D);
 
 	size_t nPointsPerDimension = points2D.size();
 

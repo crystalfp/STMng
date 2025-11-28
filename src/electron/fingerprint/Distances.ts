@@ -241,7 +241,6 @@ export class Distances {
     private projectedPoints: number[][] = [];
     private projectedPoints3D: number[][] = [];
     private cachedProjectedPoints = false;
-    private enabledPrevious: boolean[] = [];
 
     /**
      * Return the list of methods names
@@ -410,38 +409,27 @@ export class Distances {
 
     /**
      * Check if projected points are cached and valid, otherwise compute them
-     *
-     * @param enabled - Enabled status for the selected points
      */
-    private checkAndFillCache(enabled: boolean[]): void {
+    private checkAndFillCache(): void {
 
         // No distances, no projected points
         const countPoints = this.distances.matrixSize();
         if(countPoints === 0) {
             this.projectedPoints = [];
             this.projectedPoints3D = [];
-            this.enabledPrevious = [];
             this.cachedProjectedPoints = false;
             return;
         }
 
         // Check if enabled status changed
-        let enabledChanged = true;
-        if(this.cachedProjectedPoints) {
-
-            enabledChanged = this.enabledPrevious.length !== enabled.length ||
-                             this.enabledPrevious.some((value, i) => value !== enabled[i]);
-
-            if(!enabledChanged) return;
-        }
+        if(this.cachedProjectedPoints) return;
 
         // Recompute projections if not cached or enabled changed
         const distanceVector = this.distances.toVector();
-        const result = MDS(distanceVector, countPoints, enabled);
+        const result = MDS(distanceVector, countPoints);
         this.projectedPoints = result.points2D;
         this.projectedPoints3D = result.points3D;
         this.cachedProjectedPoints = true;
-        if(enabledChanged) this.enabledPrevious = [...enabled];
     }
 
     /**
@@ -449,9 +437,9 @@ export class Distances {
      *
      * @returns Points in 2D [0..1]x[0..1] that best preserve distances
      */
-    getProjectedPoints(enabled: boolean[]): number[][] {
+    getProjectedPoints(): number[][] {
 
-        this.checkAndFillCache(enabled);
+        this.checkAndFillCache();
 
         return this.projectedPoints;
     }
@@ -461,9 +449,9 @@ export class Distances {
      *
      * @returns Points in 3D [0..1]x[0..1]x[0..1] that best preserve distances
      */
-    getProjectedPoints3D(enabled: boolean[]): number[][] {
+    getProjectedPoints3D(): number[][] {
 
-        this.checkAndFillCache(enabled);
+        this.checkAndFillCache();
 
         return this.projectedPoints3D;
     }

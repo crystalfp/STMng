@@ -447,7 +447,7 @@ export class ComputeFingerprints extends NodeCore {
 		const enabled = this.accumulator.getEnabledStructures();
 
 		// Take the points projected to 2D
-		const points = this.dist.getProjectedPoints(enabled);
+		const points = this.dist.getProjectedPoints();
 
 		// Check if energy present
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
@@ -491,7 +491,7 @@ export class ComputeFingerprints extends NodeCore {
 
 		// Collect energies per structure
 		const energies: number[] = [];
-		for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
+		for(const structure of this.accumulator.iterateSelectedStructures()) {
 			energies.push(structure.energy!);
 		}
 
@@ -507,11 +507,8 @@ export class ComputeFingerprints extends NodeCore {
 			energies[i] = (energies[i] - minEnergy)*den;
 		}
 
-		// Filter by enabled status on structures
-		const enabled = this.accumulator.getEnabledStructures();
-
 		// Take the distance matrix and project it in 2D
-		const points = this.dist.getProjectedPoints(enabled);
+		const points = this.dist.getProjectedPoints();
 
 		// Filter points as enabled during grouping
 		const filteredPoints: number[][] = [];
@@ -811,7 +808,7 @@ export class ComputeFingerprints extends NodeCore {
 			energies.push(energy);
 			enabled.push(structure.enabled);
 		}
-		const points3D = this.dist.getProjectedPoints3D(enabled);
+		const points3D = this.dist.getProjectedPoints3D();
 		return generalizedConvexHull4D(points3D, enabled, energies);
 	}
 

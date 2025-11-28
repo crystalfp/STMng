@@ -14,7 +14,7 @@
     "dev": "vite",
     "prebuild": "node-gyp rebuild && electron-builder install-app-deps && sh ./rollup.sh",
     "build": "vue-tsc && vite build && electron-builder",
-    "build:fix": "vue-tsc && %APPDATA%/npm/node-gyp rebuild && electron-builder install-app-deps && sh ./rollup.sh && vite build && electron-builder",
+    "build:fix": "vue-tsc && %APPDATA%/npm/node-gyp rebuild && sh ./rollup.sh && vite build && electron-builder",
     "build:fix2": "vue-tsc && electron-builder install-app-deps && sh ./rollup.sh && vite build && electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
