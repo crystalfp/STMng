@@ -502,8 +502,9 @@ export class ComputeFingerprints extends NodeCore {
 			if(energy < minEnergy) minEnergy = energy;
 			if(energy > maxEnergy) maxEnergy = energy;
 		}
+		const den = 1 / (maxEnergy - minEnergy);
 		for(let i=0; i < energies.length; ++i) {
-			energies[i] = (energies[i] - minEnergy) / (maxEnergy - minEnergy);
+			energies[i] = (energies[i] - minEnergy)*den;
 		}
 
 		// Filter by enabled status on structures

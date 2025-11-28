@@ -25,7 +25,6 @@
     "typedoc-plugin-vue",
     "typedoc-plugin-missing-exports",
     "postcss-scss",
-    "vite-plugin-dts",
     "@rollup/plugin-commonjs",
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-terser",
@@ -37,5 +36,5 @@
   "oxlint": true,
   "rollup": true,
   "include": ["classMembers"],
-   "tags": ["-knipIgnore"]
+  "tags": ["-knipIgnore"]
 }
