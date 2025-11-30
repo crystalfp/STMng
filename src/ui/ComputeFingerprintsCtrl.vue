@@ -15,7 +15,7 @@ import type {CtrlParams} from "@/types";
 import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
 import NodeAlert from "@/widgets/NodeAlert.vue";
-import DebouncedButton from "@/widgets/DebouncedButton.vue";
+import ThrottledButton from "@/widgets/ThrottledButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -624,15 +624,15 @@ const showEnergyLandscape = (): void => {
 
   <v-label class="separator-title">Show results</v-label>
 
-  <debounced-button block class="mb-2" :disabled="countDistances === 0"
+  <throttled-button block class="mb-2" :disabled="countDistances === 0"
                     label="Export results" @click="exportResults" />
   <v-label v-if="working" class="result-label mb-3 mt-1 cursor-wait">
            Show scatterplot is working&hellip;</v-label>
-  <debounced-button v-else block class="mb-2" label="Show scatterplot"
+  <throttled-button v-else block class="mb-2" label="Show scatterplot"
                     :disabled="countDistances === 0" @click="working=true;showScatterplot()" />
-  <debounced-button block class="mb-2" :disabled="!resultDimensionality"
+  <throttled-button block class="mb-2" :disabled="!resultDimensionality"
                     label="Show charts" @click="showCharts" />
-  <debounced-button block class="mb-6" :disabled="countDistances === 0 || !haveEnergies"
+  <throttled-button block class="mb-6" :disabled="countDistances === 0 || !haveEnergies"
                     label="Show energy landscape" @click="showEnergyLandscape" />
 </v-container>
 </template>

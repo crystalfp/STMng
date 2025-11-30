@@ -13,7 +13,7 @@ import type {CtrlParams} from "@/types";
 
 import DebouncedRangeSlider from "@/widgets/DebouncedRangeSlider.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
-import DebouncedButton from "@/widgets/DebouncedButton.vue";
+import ThrottledButton from "@/widgets/ThrottledButton.vue";
 
 const wavelengthCodes = reactive<string[]>([]);
 const wavelengthCode = ref("");
@@ -120,7 +120,7 @@ const openChartWindow = (): void => {
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
-  <debounced-button block label="Open chart"
+  <throttled-button block label="Open chart"
                     :disabled="!enableComputation" @click="openChartWindow" />
 </v-container>
 </template>
