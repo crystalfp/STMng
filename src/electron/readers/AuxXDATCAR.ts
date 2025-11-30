@@ -113,8 +113,6 @@ export const readAuxXDATCAR = async (filename: string, mainStructure: Structure)
 				if(index === natoms) lineType = LineType.separator;
 				break;
 			}
-
-			default: break;
 		}
 	}
 

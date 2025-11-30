@@ -98,6 +98,11 @@ export const latticePointsInSupercell = (supercellMatrix: number[][]): number[][
 	return tVecs;
 };
 
+/**
+ * Generate image vectors (-1, 0, 1 for each periodic dimension)
+ *
+ * @returns Image vectors list
+ */
 const generateImageVectors = (): number[][] => {
 
 	return [
@@ -133,21 +138,18 @@ const generateImageVectors = (): number[][] => {
 
 /**
  * Get the shortest vectors between two lists of coordinates taking into
-    account periodic boundary conditions and the lattice.
-
-    Args:
-        lattice: lattice to use
-        frac_coords1: First set of fractional coordinates. e.g. [0.5, 0.6, 0.7]
+ * account periodic boundary conditions and the lattice.
+ *
+ * @param lattice - Lattice to use
+ * @param fcoords1 - First set of fractional coordinates. e.g. [0.5, 0.6, 0.7]
             or [[1.1, 1.2, 4.3], [0.5, 0.6, 0.7]]. It can be a single
             coord or any array of coords.
-        frac_coords2: Second set of fractional coordinates.
-        mask (boolean array): Mask of matches that are not allowed.
+ * @param fcoords2 - Second set of fractional coordinates.
+ * @param mask - Mask of matches that are not allowed.
             i.e. if mask[1,2] is True, then subset[1] cannot be matched
             to superset[2]
-        return_d2 (bool): whether to also return the squared distances
-
-    Returns:
-        np.ndarray: of displacement vectors from frac_coords1 to frac_coords2
+ * @param lllFracTol - Tolerance
+ * @returns Displacement vectors from frac_coords1 to frac_coords2
             first index is frac_coords1 index, second is frac_coords2 index
  */
 export const pbcShortestVectors = (lattice: Lattice,
@@ -250,7 +252,7 @@ export const pbcShortestVectors = (lattice: Lattice,
  *
  * @param subset - List of fractional coords
  * @param superset - List of fractional coords
- * @param fracTol - Tolerance (?)
+ * @param fracTol - Tolerances (?)
  * @param mask - Mask of matches that are not allowed.
             i.e. if mask[1,2] is True, then subset[1] cannot be matched
             to superset[2]

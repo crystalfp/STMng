@@ -193,12 +193,9 @@ export class StructureMatcher {
                 average free length per atom := ( V / Nsites ) ** (1/3)
      * @param angleTol - Angle tolerance in degrees
      */
-	constructor(
-		ltol = 0.2,
-        stol = 0.3,
-        angleTol = 5,
-	) {
-		this.ltol = ltol;
+	constructor(ltol = 0.2, stol = 0.3, angleTol = 5) {
+
+        this.ltol = ltol;
         this.stol = stol;
         this.angleTol = angleTol;
 	}
@@ -240,19 +237,17 @@ export class StructureMatcher {
     }
 
 	/**
-        Performs an anonymous fitting, which allows distinct species in one structure to map
-        to another. e.g. to compare if the Li2O and Na2O structures are similar.
-
-        Args:
-            struct1 (Structure): 1st structure
-            struct2 (Structure): 2nd structure
-            niggli (bool): If true, perform Niggli reduction for struct1 and struct2
-            skip_structure_reduction (bool): Defaults to False
-                If True, skip to get a primitive structure and perform Niggli reduction for struct1 and struct2
-
-        Returns:
-            bool: True if a species mapping can map struct1 to struct2
-	*/
+     * Performs an anonymous fitting, which allows distinct species in one
+     * structure to map to another. e.g. to compare if the Li2O and Na2O
+     * structures are similar.
+     *
+     * @param struct1 - 1st structure
+     * @param struct2 - 2nd structure
+     * @param skipStructureReduction - Defaults to False
+                If True, skip to get a primitive structure and perform Niggli
+                reduction for struct1 and struct2
+     * @returns True if a species mapping can map struct1 to struct2
+	 */
 	fitAnonymous(struct1: SNL, struct2: SNL, skipStructureReduction = false): [Map<string, string>, MatchResult][] | null {
 
         const {struct1: s1, struct2: s2, fu, s1Supercell} = this.preprocess(struct1, struct2, skipStructureReduction);
@@ -658,8 +653,8 @@ export class StructureMatcher {
      * @param struct1 - Test structure
      * @param struct2 - Structure under test
      * @param fu - Repetitions in the supercell
-     * @param s1Supercell - If true, it makes the supercells of struct1, otherwise
-     * it makes them of struct2.
+     * @param s1Supercell - If true, it makes the supercells of struct1,
+     * otherwise it makes them of struct2.
      * @returns Yields s1_coords, s2_coords, average_lattice, supercell_matrix
      */
     private* getSupercells(
@@ -753,6 +748,14 @@ export class StructureMatcher {
     /**
      * Get true if a matching exists between s2 and s2
         under frac_tol. s2 should be a subset of s1.
+     *
+     * @param s1 - First structure
+     * @param s2 - Second structure
+     * @param fracTol - Tolerance
+     * @param mask - Mask of matches that are not allowed.
+            i.e. if mask[1,2] is True, then subset[1] cannot be matched
+            to superset[2]
+     * @returns True if a matching exists between s2 and s2
      */
     private cmpFstruct(s1: number[][], s2: number[][], fracTol: number[], mask: number[][]): boolean {
 

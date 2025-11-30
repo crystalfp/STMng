@@ -276,8 +276,6 @@ export class DrawStructureRenderer {
 				return atom.color;
 			case "bonds":
 				return COLOR_SCALE[Math.min(atom.bondCount, MAX_NUM_BONDS)];
-			default:
-				return "#000000";
 		}
 	}
 

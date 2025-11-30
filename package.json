@@ -53,7 +53,7 @@
     "vue-router": "^4.6.3",
     "vuetify": "^3.11.1",
     "workerpool": "^10.0.1",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -68,7 +68,7 @@
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
     "@vitejs/plugin-vue": "^6.0.2",
-    "dependency-cruiser": "^17.3.1",
+    "dependency-cruiser": "^17.3.2",
     "electron": "^39.2.4",
     "electron-builder": "^26.0.13",
     "eslint": "^9.39.1",

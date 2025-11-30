@@ -39,7 +39,7 @@ const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
 const intlSymbol = ref("");
-const showIntlSymbol = ref(false);
+const showIntlSymbol = ref(true);
 const fillTolerance = ref(-5);
 const createPrimitiveCell = ref(false);
 
@@ -77,7 +77,7 @@ askNode(id, "init")
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
         intlSymbol.value = params.intlSymbol as string ?? "";
-        showIntlSymbol.value = params.showIntlSymbol as boolean ?? false;
+        showIntlSymbol.value = params.showIntlSymbol as boolean ?? true;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,

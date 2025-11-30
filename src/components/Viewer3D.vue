@@ -113,8 +113,9 @@ onMounted(() => {
     cnv.value.append(renderer.domElement);
 
     // Add mouse controls to move the camera
-    const subsetOfTHREE = {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
-                           Raycaster, Clock, Vector4, Quaternion, Matrix4, Spherical, Box3,
+    const subsetOfTHREE = {PerspectiveCamera, OrthographicCamera, Vector3,
+                           Vector2, WebGLRenderer, Raycaster, Clock, Vector4,
+                           Quaternion, Matrix4, Spherical, Box3,
                            Sphere, MathUtils};
     CameraControls.install({THREE: subsetOfTHREE});
     const controls = new CameraControls(camera, renderer.domElement);

@@ -113,7 +113,7 @@ export class ComputeSymmetries extends NodeCore {
 	private standardizeOnly = false;
 	private computedSpaceGroup = "";
 	private intlSymbol = "";
-	private showIntlSymbol = false;
+	private showIntlSymbol = true;
 	private createPrimitiveCell = false;
 	private computePointGroup = false;
 	private pointGroup = "";
@@ -209,7 +209,7 @@ export class ComputeSymmetries extends NodeCore {
         this.computePointGroup = params.computePointGroup as boolean ?? false;
         this.positionTolerance = params.positionTolerance as number ?? 0.3;
         this.eigenvalueTolerance = params.eigenvalueTolerance as number ?? 0.01;
-		this.showIntlSymbol = params.showIntlSymbol as boolean ?? false;
+		this.showIntlSymbol = params.showIntlSymbol as boolean ?? true;
 	}
 
 	// > Compute new structure after finding and applying symmetries
@@ -727,7 +727,7 @@ export class ComputeSymmetries extends NodeCore {
 	 * @param params - Show international symbol parameter
 	 */
 	private channelIntl(params: CtrlParams): void {
-		this.showIntlSymbol = params.showIntlSymbol as boolean ?? false;
+		this.showIntlSymbol = params.showIntlSymbol as boolean ?? true;
 
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {

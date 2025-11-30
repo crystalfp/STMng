@@ -66,7 +66,7 @@ export class SimpleViewer {
 				}
 				else {
 					const camera = this.camera as OrthographicCamera;
-					const hh = 7.8;
+					const hh = 10;
 					const hw = hh * this.canvasWidth/this.canvasHeight;
 					camera.left   = -hw;
 					camera.right  =  hw;
@@ -107,7 +107,6 @@ export class SimpleViewer {
 		}
 		else {
 			const hh = 10;
-			// const hh = 7.8;
 			const hw = hh * this.canvasWidth/this.canvasHeight;
 			this.camera = new OrthographicCamera(-hw, hw, hh, -hh, 0.1, 500);
 			this.camera.position.set(11.6, 12.8, 11.4);
@@ -122,9 +121,9 @@ export class SimpleViewer {
 		container.append(this.renderer.domElement);
 
 		// Add mouse controls to move the camera
-		const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2, WebGLRenderer,
-							Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-							Box3, Sphere, MathUtils};
+		const subsetOfTHREE = {OrthographicCamera, Vector3, Vector2,
+							   WebGLRenderer, Raycaster, Vector4, Quaternion,
+							   Matrix4, Spherical, Box3, Sphere, MathUtils};
 		CameraControls.install({THREE: subsetOfTHREE});
 		this.controls = new CameraControls(this.camera, this.renderer.domElement);
 

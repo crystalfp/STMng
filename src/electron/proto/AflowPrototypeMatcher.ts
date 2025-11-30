@@ -110,7 +110,7 @@ class AflowPrototypeMatcher {
 
 			// Since both structures are already reduced, we can skip the structure reduction step
             const match = sm.fitAnonymous(snl, reducedStructure, true);
-            if(match?.length) tags.push({snl: entry.tags.mineral, tags: entry.tags});
+            if(match?.length) tags.push({tags: entry.tags});
 		}
         return tags;
 	}
