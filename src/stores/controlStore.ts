@@ -8,6 +8,7 @@
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "@/types";
+import type {BoundingSphere} from "@/services/BoundingSphere";
 
 /**
  * Store content: controls accessed by more than one node
@@ -191,6 +192,22 @@ export const useControlStore = defineStore("ControlStore", {
 		addSelectionMapping(map: number[][]): void {
 
 			this.selectedAtomMap = map;
+		},
+		/**
+		 * Set scene center and radius depending on the unit cell visibility
+		 *
+		 * @param boundingSphere - Scene bounding sphere
+		 */
+		setSceneCenterAndRadius(boundingSphere: BoundingSphere): void {
+
+			if(this.sceneUnitCell) {
+				this.sceneCenter = boundingSphere.centerUC;
+				this.sceneRadius = boundingSphere.radiusUC;
+			}
+			else {
+				this.sceneCenter = boundingSphere.center;
+				this.sceneRadius = boundingSphere.radius;
+			}
 		}
     }
 });

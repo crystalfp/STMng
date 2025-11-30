@@ -267,14 +267,7 @@ class SceneManager {
 		this.boundingSphere = getBoundingSphere(renderedStructure, renderInfo);
 
 		const controlStore = useControlStore();
-		if(controlStore.sceneUnitCell) {
-			controlStore.sceneCenter = this.boundingSphere.centerUC;
-			controlStore.sceneRadius = this.boundingSphere.radiusUC;
-		}
-		else {
-			controlStore.sceneCenter = this.boundingSphere.center;
-			controlStore.sceneRadius = this.boundingSphere.radius;
-		}
+		controlStore.setSceneCenterAndRadius(this.boundingSphere);
 	}
 
 	/**
@@ -287,15 +280,7 @@ class SceneManager {
 		const controlStore = useControlStore();
 		controlStore.sceneUnitCell = visible;
 		if(!this.boundingSphere) return;
-
-		if(controlStore.sceneUnitCell) {
-			controlStore.sceneCenter = this.boundingSphere.centerUC;
-			controlStore.sceneRadius = this.boundingSphere.radiusUC;
-		}
-		else {
-			controlStore.sceneCenter = this.boundingSphere.center;
-			controlStore.sceneRadius = this.boundingSphere.radius;
-		}
+		controlStore.setSceneCenterAndRadius(this.boundingSphere);
 	}
 
 	/**
