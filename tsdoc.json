@@ -29,6 +29,10 @@
         {
             "tagName": "@notExported",
             "syntaxKind": "modifier"
+        },
+        {
+            "tagName": "@knipIgnore",
+            "syntaxKind": "modifier"
         }
     ],
     "supportForTags": {
@@ -49,6 +53,7 @@
         "@todo": true,
         "@link": true,
         "@notExported": true,
-        "@throws": true
+        "@throws": true,
+        "@knipIgnore": true
     }
 }

@@ -263,7 +263,7 @@ const needsAtomTypes = (fileFormat: string): boolean => formatsThatNeedsAtomType
 const getAtomsTypes = (): void => {
 
     resetNodeAlert();
-
+    if(atomsTypes.value === null || atomsTypes.value === "") return;
     sendToNode(id, "types", {atomsTypes: atomsTypes.value});
 };
 
@@ -528,12 +528,18 @@ const auxSetup = computed(() => {
 });
 
 /**
- * Called when cleaning the atoms types field
- * In the future should restore the original atom types from file if present
+ * Restore the original atom types from file if present
+ * when cleaning the atom types field
  */
 const clearAtomTypes = (): void => {
-    // TBD
-    getAtomsTypes();
+
+    resetNodeAlert();
+
+    // Ignore uninformative response. Error is already handled in main
+    askNode(id, "species")
+        .catch((error: Error) => {
+            showNodeAlert(`Error reloading file: ${error.message}`, "structureReader");
+        });
 };
 
 /** Limit the step inside the step range */

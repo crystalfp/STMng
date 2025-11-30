@@ -80,8 +80,9 @@ const dropActive = ref("placeholder");
 const controlStore = useControlStore();
 watchEffect(() => {
 
-    dropActive.value = props.kind === "load" && !props.disabled && controlStore.draggingFile?
-                            "drop" : "placeholder";
+    dropActive.value = props.kind === "load" &&
+                       !props.disabled &&
+                       controlStore.draggingFile ? "drop" : "placeholder";
 });
 
 /**

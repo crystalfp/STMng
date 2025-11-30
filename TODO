@@ -1,7 +1,6 @@
 Bugs:
   ☐ Check enable capture of steps for writer from reader
   ☐ Trajectory is slow
-  ☐ Poscar w. atoms, change atom type, delete -> returns to H He Li...
   ☐ Verify fill unit cell in proto visualizer
 
 Latest requests (backlog):
@@ -12,7 +11,6 @@ Latest requests (backlog):
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
-  ☐ Prototype visualization from library is rather primitive and doesn't allow me to tailor visualization style. Can this be enabled?
 
 To do:
   ☐ Check error return from main process to client
@@ -75,6 +73,8 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Poscar w. atoms, change atom type, delete -> returns to H He Li... @done(2025-11-29 09:42) @project(Bugs)
+  ✔ Prototype visualization from library is rather primitive and doesn't allow me to tailor visualization style. Can this be enabled? @done(2025-11-29 06:14) @project(Latest requests (backlog))
   ✔ Incomplete polyhedra bonds @done(2025-11-23 16:13) @project(Bugs)
   ✔ If drop PDB then change read hydrogens gives silent file not found @done(2025-11-22 05:26) @project(Bugs)
   ✘ Add version to project files @cancelled(2025-11-21 18:31) @project(ToDo eventually)

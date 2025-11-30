@@ -38,6 +38,7 @@ export class StructureReader extends NodeCore {
 	private appendFile = false;
 	private fileToRead = "";
 	private reader: ReaderImplementation | undefined;
+	private readerOptions: ReaderOptions = {};
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -59,6 +60,7 @@ export class StructureReader extends NodeCore {
 		{name: "read-dropped",	type: "invokeAsync", callback: this.channelReadDropped.bind(this)},
 		{name: "aux-dropped",	type: "invokeAsync", callback: this.channelAuxDropped.bind(this)},
 		{name: "proto", 	 	type: "invokeAsync", callback: this.channelProto.bind(this)},
+		{name: "species", 	 	type: "invokeAsync", callback: this.channelSpecies.bind(this)},
 	];
 
 	/**
@@ -211,19 +213,18 @@ export class StructureReader extends NodeCore {
 		this.useBohr = params.useBohr as boolean ?? true;
 		this.atomsTypes = params.atomsTypes as string ?? "";
 
-		let readerOptions: ReaderOptions;
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
 
 			const atomsTypesTrimmed = this.atomsTypes.trim();
 			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/\s+/);
-			readerOptions = {atomsTypes: atoms};
+			this.readerOptions = {atomsTypes: atoms};
 		}
 		else {
-			readerOptions = {useBohr: this.useBohr, readHydrogen: this.readHydrogen};
+			this.readerOptions = {useBohr: this.useBohr, readHydrogen: this.readHydrogen};
 		}
 
 		// Read the file and catch format errors
-		const structures = await this.reader.readStructure(filename, readerOptions)
+		const structures = await this.reader.readStructure(filename, this.readerOptions)
 			.catch((error: Error) => {
 				message = `Format "${requestedFormat}" error: ${error.message}`;
 				return message;
@@ -657,5 +658,36 @@ export class StructureReader extends NodeCore {
 		}
 
 		return {error: `Prototype "${aflow}" not found`};
+	}
+
+	/**
+	 * Channel handler to reread the file
+	 *
+	 * @returns Params with the operation status
+	 */
+	private async channelSpecies(): Promise<CtrlParams> {
+
+		// Read the file again
+		const structures = await this.reader!.readStructure(this.fileToRead, this.readerOptions)
+			.catch((error: Error) => {
+				return `Format "${this.format}" error: ${error.message}`;
+			});
+		if(typeof structures === "string") {
+
+			sendAlertToClient(structures, {
+				node: "structureReader",
+				userMessage: "Dropped file disappeared. Drop it again"
+			});
+			return {error: structures};
+		}
+		this.structures = structures;
+
+		// Set structure id
+		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
+
+		// Send the updated structure down the pipeline
+		this.toNextNode(this.structures[this.step-1]);
+
+		return {result: "OK"};
 	}
 }
