@@ -14,6 +14,7 @@ import type {CtrlParams} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
+import DebouncedButton from "@/widgets/DebouncedButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -216,7 +217,8 @@ receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
     </v-row>
   </v-container>
 
-  <v-btn block class="mb-4" @click="sendToNode(id, 'window')">Show symmetries dialog</v-btn>
+  <debounced-button block class="mb-4" label="Show symmetries dialog"
+                    @click="sendToNode(id, 'window')" />
 
   <node-alert node="symmetries" />
 </v-container>

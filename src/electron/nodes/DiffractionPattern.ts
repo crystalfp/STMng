@@ -13,6 +13,7 @@ import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalcul
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
+import {hasUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ChartData, ChartOptions, ChartCoordinate} from "@/types";
 
@@ -54,7 +55,7 @@ export class DiffractionPattern extends NodeCore {
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
-		const hasData = Boolean(data);
+		const hasData = Boolean(data) && hasUnitCell(data.crystal.basis);
 
 		// There is the structure so the XRD could be computed
 		sendToClient(this.id, "enable", {enableComputation: hasData});

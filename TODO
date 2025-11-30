@@ -1,5 +1,5 @@
 Bugs:
-  ☐ Check enable capture of steps for writer from reader
+  ✔ Check enable capture of steps for writer from reader @done(2025-11-30 10:17)
   ☐ Trajectory is slow
   ☐ Verify fill unit cell in proto visualizer
 

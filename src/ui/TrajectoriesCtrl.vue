@@ -19,6 +19,8 @@ import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import type {AtomSelectorModes} from "@/types";
 
+import DebouncedButton from "@/widgets/DebouncedButton.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -159,8 +161,8 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
     </debounced-slider>
     <color-selector v-model="positionCloudsColor" label="Cloud color" block class="mb-2"/>
   </v-container>
-  <v-btn block class="ml-0 mb-5"
-         @click="sendToNode(id, 'means')">Show averages</v-btn>
+  <debounced-button block class="ml-0 mb-5"
+                    label="Show averages" @click="sendToNode(id, 'means')" />
   <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" class="ml-0"
          @click="toggleRecording">{{ startStop }}</v-btn>
 </v-container>

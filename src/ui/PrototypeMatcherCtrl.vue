@@ -143,6 +143,9 @@ const resetParams = (): void => {
     prototypes.length = 0;
 };
 
+/** Prototype selector is in the dead-time period */
+let waiting = false;
+
 /**
  * Display in a secondary window the corresponding prototype structure
  *
@@ -150,7 +153,9 @@ const resetParams = (): void => {
  */
 const selectPrototype = (aflow: string): void => {
 
-    if(!aflow) return;
+    if(!aflow || waiting) return;
+    setTimeout(() => {waiting = false;}, 500);
+    waiting = true;
 
     // Retrieve prototype
     askNode(id, "proto", {aflow})
