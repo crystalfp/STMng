@@ -22,7 +22,8 @@ To do:
   ☐ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Add tooltip with description to the "available nodes" in Program editor
-  ☐ Atom data should receive always atom type in lowercase
+  ✔ Atom data should receive always atom type in lowercase @done(2025-12-01 06:50)
+  ☐ Don't use flags as function parameters
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

@@ -373,6 +373,10 @@ watch([distanceMethod, fixTriangleInequality], () => {
         countDistances.value = params.countDistances as number ?? 0;
         endMessage.value = params.endMessage as string ?? "";
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
+        intrinsicDimension.value = params.intrinsicDimension as number ?? 0;
+        minLocalDimension.value = params.minLocalDimension as number ?? 0;
+        maxLocalDimension.value = params.maxLocalDimension as number ?? 0;
+        theoreticalDimension.value = params.theoreticalDimension as number ?? 0;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from distance computation: ${error.message}`,
@@ -389,6 +393,10 @@ watch([removeDuplicates, duplicatesThreshold], () => {
     })
     .then((params: CtrlParams) => {
         pointsRemoved.value = params.pointsRemoved as number ?? -1;
+        intrinsicDimension.value = params.intrinsicDimension as number ?? 0;
+        minLocalDimension.value = params.minLocalDimension as number ?? 0;
+        maxLocalDimension.value = params.maxLocalDimension as number ?? 0;
+        theoreticalDimension.value = params.theoreticalDimension as number ?? 0;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from duplicates removal: ${error.message}`,

@@ -1061,13 +1061,20 @@ export class ComputeFingerprints extends NodeCore {
 													this.dist,
 													this.duplicatesThreshold);
 
+		// Compute the intrinsic dimension of the fingerprints space
+		const estimatorResult = embeddedDimensionEstimator(this.accumulator);
+
 		// Update the scatterplot if it is open
 		this.updateVisualizations({noGroups: true, plotType: this.plotType});
 
 		return {
 			countDistances: result.countDistances,
 			endMessage: result.endMessage,
-			pointsRemoved
+			pointsRemoved,
+			intrinsicDimension: estimatorResult.avg,
+			minLocalDimension: estimatorResult.min,
+			maxLocalDimension: estimatorResult.max,
+			theoreticalDimension: estimatorResult.theory
 		};
 	}
 
@@ -1085,11 +1092,18 @@ export class ComputeFingerprints extends NodeCore {
 													this.dist,
 													this.duplicatesThreshold);
 
+		// Compute the intrinsic dimension of the fingerprints space
+		const estimatorResult = embeddedDimensionEstimator(this.accumulator);
+
 		// Update the scatterplot if it is open
 		this.updateVisualizations({plotType: this.plotType});
 
 		return {
-			pointsRemoved
+			pointsRemoved,
+			intrinsicDimension: estimatorResult.avg,
+			minLocalDimension: estimatorResult.min,
+			maxLocalDimension: estimatorResult.max,
+			theoreticalDimension: estimatorResult.theory
 		};
 	}
 

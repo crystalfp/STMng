@@ -260,7 +260,8 @@ export class StructureReader extends NodeCore {
 	 */
 	private channelTypes(params: CtrlParams): void {
 
-		const updatedAtomsTypes = (params.atomsTypes as string ?? "").trim();
+		const updatedAtomsTypes = (params.atomsTypes as string ?? "")
+									.trim().toLowerCase();
 		this.changeAtomsType(updatedAtomsTypes);
 		this.atomsTypes = updatedAtomsTypes;
 	}
