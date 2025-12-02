@@ -8,10 +8,8 @@
  */
 import workerpool from "workerpool";
 import os from "node:os";
-import {app} from "electron";
-import path from "node:path";
-import {fileURLToPath} from "node:url";
 import log from "electron-log";
+import {publicDirPath} from "../modules/GetPublicPath";
 import {perSiteFinishStep} from "./OganovValleFingerprint";
 import type {FingerprintingParameters} from "@/types";
 import type {FingerprintsAccumulator} from "./Accumulator";
@@ -81,11 +79,7 @@ export class Fingerprinting {
 		}
 
 		// Find the fingerprint worker
-		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-		const worker = app.isPackaged ?
-							path.resolve(process.resourcesPath,
-													 "app.asar.unpacked/dist/Worker.js") :
-							path.join(mainSourceDirectory, "..", "public", "Worker.js");
+		const worker = publicDirPath("Worker.js", true);
 
 		// Compute the parallelism
 		let availableParallelism = os.availableParallelism();

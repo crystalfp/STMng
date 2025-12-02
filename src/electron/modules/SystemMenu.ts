@@ -8,15 +8,14 @@
  */
 import {Menu, shell, app, nativeTheme, dialog, ipcMain,
         type MenuItemConstructorOptions, type BrowserWindow} from "electron";
-import path from "node:path";
 import {existsSync} from "node:fs";
-import {fileURLToPath} from "node:url";
 import {broadcastMessage, showDevToolsOnSecondaryWindow} from "./WindowsUtilities";
 import {refreshSystemMenu, openMenuEntry, sendAlertToClient,
         getCurrentNode} from "./ToClient";
 import {setMainTheme, isExtended, setExtended} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import {pm} from "./ProjectManager";
+import {publicDirPath} from "./GetPublicPath";
 import {showLogFile} from "./AccessLog";
 import type {CtrlParams} from "@/types";
 
@@ -28,36 +27,25 @@ import type {CtrlParams} from "@/types";
  *      - "node": Help for node of the given type
  *      - "secondary": Help for a secondary window
  * @param file - Node name or window path for which the documentation should be shown.
- * @returns Promise from openExternal or error from open file
  */
-const openDocumentation = async (kind: "top" | "node" | "secondary", file?: string): Promise<void> => {
+const openDocumentation = async (kind: "top" | "node" | "secondary", file="index"): Promise<void> => {
 
-    const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
     let url;
-
     switch(kind) {
         case "node":
-            url = app.isPackaged ?
-                path.resolve(process.resourcesPath,
-                    `app.asar.unpacked/dist/doc/nodes/${file}.html`) :
-                path.join(mainSourceDirectory, "..", "public", "doc", "nodes", `${file}.html`);
+            url = publicDirPath(`doc/nodes/${file}.html`, true);
             break;
         case "secondary":
-            url = app.isPackaged ?
-                path.resolve(process.resourcesPath,
-                    `app.asar.unpacked/dist/doc/secondary/${file}.html`) :
-                path.join(mainSourceDirectory, "..", "public", "doc", "secondary", `${file}.html`);
+            url = publicDirPath(`doc/secondary/${file}.html`, true);
             break;
         case "top":
-            file = "index";
-            url = app.isPackaged ?
-                path.resolve(process.resourcesPath,
-                    "app.asar.unpacked/dist/doc/index.html") :
-                path.join(mainSourceDirectory, "..", "public", "doc", "index.html");
+            url = publicDirPath("doc/index.html", true);
             break;
     }
     if(existsSync(url)) {
-        return shell.openExternal(`file:///${url}`);
+        const sts = await shell.openPath(url);
+        if(sts) throw Error(`Error from help file "${file}.html": ${sts}`);
+        return;
     }
     throw Error(`Help file "${file}.html" not found`);
 };

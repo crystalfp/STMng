@@ -14,11 +14,17 @@ import {app} from "electron";
  * Add the correct path to the public directory for development and production
  *
  * @param filename - Filename inside the public directory
+ * @param unpacked - True if the packaged file is under the `app.asar.unpacked` directory
  * @returns The complete path to the given file
  */
-export const publicDirPath = (filename: string): string => {
+export const publicDirPath = (filename: string, unpacked=false): string => {
 
-	const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
-	const publicDir = path.join(mainSourceDirectory, "..", app.isPackaged ? "dist" : "public");
-	return path.join(publicDir, filename);
+	if(!app.isPackaged) {
+		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+		return path.join(mainSourceDirectory, "..", "public", filename);
+	}
+	else if(unpacked) {
+		return path.join(path.resolve(process.resourcesPath, "app.asar.unpacked/dist"), filename);
+	}
+	return path.join(path.resolve(process.resourcesPath, "app.asar/dist"), filename);
 };
