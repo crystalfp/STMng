@@ -655,7 +655,11 @@ export class StructureReader extends NodeCore {
 			// Send the updated structure down the pipeline
 			this.toNextNode(this.structures[0]);
 
-			return {mineral: proto.mineral};
+			return {
+				pearson: proto.pearson,
+				strukturbericht: proto.strukturbericht,
+				mineral: proto.mineral
+			};
 		}
 
 		return {error: `Prototype "${aflow}" not found`};

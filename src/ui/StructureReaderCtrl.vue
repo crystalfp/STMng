@@ -51,25 +51,29 @@ const fileFormats = [
 ];
 
 // > UI parameters
-const countSteps     = ref(1);      // Total steps read
-const step           = ref(1);      // Current step
-const running        = ref(false);  // The steps are playing
-const atomsTypes     = ref("");     // Atom types in the structure read
-const loopSteps      = ref(false);  // If the sequence should loop
-const stepBackward   = ref(false);  // Run in backward steps
-const format         = ref("");     // File format to be read
-const inProgress     = ref(false);  // True during file load
-const useBohr        = ref(true);   // Use Bohr units
-const stepIncrement  = ref(1);      // How many step skip every tick
-const speed          = ref<0 | 1 | 2>(1); // Animation speed: 0: no delay; 1: delay 200ms; 2: delay 400ms
-const readHydrogen   = ref(false);  // Read also hydrogen atoms for the PDB reader
-const energyPerAtom  = ref(false);  // Energy file has energy per atom and not per structure
-const appendFile     = ref(false);  // The file will be appended to the list of steps
-const stepRange      = ref([1, 1]); // Range of steps
-const showPrototypes = ref(false);  // If the read comes from the prototypes database
-const db             = reactive<DBType[]>([]); // The prototypes db content for query
-const query          = ref("");     // The selected prototype UID
-const mineral        = ref("");     // The selected prototype mineral tag
+const countSteps      = ref(1);      // Total steps read
+const step            = ref(1);      // Current step
+const running         = ref(false);  // The steps are playing
+const atomsTypes      = ref("");     // Atom types in the structure read
+const loopSteps       = ref(false);  // If the sequence should loop
+const stepBackward    = ref(false);  // Run in backward steps
+const format          = ref("");     // File format to be read
+const inProgress      = ref(false);  // True during file load
+const useBohr         = ref(true);   // Use Bohr units
+const stepIncrement   = ref(1);      // How many step skip every tick
+const speed           = ref<0 | 1 | 2>(1); // Animation speed:
+                                           // 0: no delay; 1: delay 200ms; 2: delay 400ms
+const readHydrogen    = ref(false);  // Read also hydrogen atoms for the PDB reader
+const energyPerAtom   = ref(false);  // Energy file has energy per atom and not per structure
+const appendFile      = ref(false);  // The file will be appended to the list of steps
+const stepRange       = ref([1, 1]); // Range of steps
+const showPrototypes  = ref(false);  // If the read comes from the prototypes database
+const db              = reactive<DBType[]>([]); // The prototypes db content for query
+const query           = ref("");     // The selected prototype UID
+const mineral         = ref("");     // The selected prototype mineral tag
+const pearson         = ref("");     // The selected prototype pearson tag
+const strukturbericht = ref("");     // The selected prototype strukturbericht tag
+const aflowTag        = ref("");     // The selected prototype aflow tag
 
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
@@ -573,6 +577,9 @@ const startQuery = (aflow: string): void => {
         .then((result) => {
             if(result.error) throw Error(result.error as string);
             mineral.value = result.mineral as string ?? "";
+            aflowTag.value = aflow;
+            strukturbericht.value = result.strukturbericht as string ?? "";
+            pearson.value = result.pearson as string ?? "";
             resetCamera();
         })
         .catch((error: Error) => {
@@ -594,9 +601,16 @@ const startQuery = (aflow: string): void => {
     <v-autocomplete v-model="query" label="Prototype query"
                   :items="db" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
-                  :clearable="true" no-data-text="" spellcheck="false"
+                  :clearable="true" no-data-text="No prototype found" spellcheck="false"
                   @update:modelValue="startQuery"/>
-    <v-label v-if="query" class="result-label bigger-result pb-1 mt-4 ml-4" v-html="mineral" />
+    <v-label v-if="query" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
+    <table v-if="query" class="ml-4 text-body-2">
+      <tbody>
+        <tr><td class="c1">aflow:</td><td>{{ aflowTag }}</td></tr>
+        <tr><td class="c1">strukturbericht:</td><td v-html="strukturbericht.replace(/([^_]+)_([^_]+)$/, '$1<sub>$2</sub>')"/></tr>
+        <tr><td class="c1">pearson:</td><td>{{ pearson }}</td></tr>
+      </tbody>
+    </table>
   </v-container>
   <v-container v-else class="pa-0">
 
@@ -686,5 +700,20 @@ const startQuery = (aflow: string): void => {
 :deep(sub) {
   position: relative;
   bottom: -0.5rem;
+}
+
+td :deep(sub) {
+  position: relative;
+  bottom: -0.2rem;
+  font-size: 90%;
+}
+
+.c1 {
+  width: 7rem;
+  user-select: none;
+}
+
+td {
+  padding-bottom: 2px;
 }
 </style>

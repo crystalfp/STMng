@@ -743,11 +743,17 @@ export interface PrototypeAtomsData {
  */
 export interface PrototypeStructureData {
 
-    /** Prototype aflow UID */
+    /** Prototype AFLOW identifier (UID) */
     aflow: string;
 
     /** Prototype name */
     mineral: string;
+
+    /** Pearson symbol */
+	pearson: string;
+
+    /** A detailed crystal structure classification by analogy to another known structure */
+	strukturbericht: string;
 
     /** Lattice matrix */
     matrix: number[][];

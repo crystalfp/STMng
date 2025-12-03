@@ -46,7 +46,8 @@ const sv = new SimpleViewer(".prototype-viewer", false, (scene) => {
 /** Receive the prototype data from the main window */
 receiveInWindow((dataFromMain) => {
 
-    const {atoms, matrix, mineral, aflow} = JSON.parse(dataFromMain) as PrototypeStructureData;
+    const {atoms, matrix, mineral,
+           aflow, pearson, strukturbericht} = JSON.parse(dataFromMain) as PrototypeStructureData;
 
     const uc = computeLatticeVertices(matrix);
     const center = addUnitCell(uc);
@@ -62,7 +63,8 @@ receiveInWindow((dataFromMain) => {
 
     sv.setSceneModified();
 
-    prototypeName.value = `${mineral}&ensp;(aflow: ${aflow})`;
+    prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
+                          `strukturbericht: ${strukturbericht},&ensp;pearson: ${pearson})`;
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */

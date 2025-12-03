@@ -327,6 +327,8 @@ export class PrototypeMatcher extends NodeCore {
 		if(proto) {
 				const dataForClient = JSON.stringify({
 					aflow,
+					pearson: proto.pearson,
+					strukturbericht: proto.strukturbericht,
 					mineral: proto.mineral,
 					matrix: proto.matrix,
 					atoms: proto.atoms

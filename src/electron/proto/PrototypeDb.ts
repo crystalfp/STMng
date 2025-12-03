@@ -19,7 +19,14 @@ import type {DBType, PositionType, PrototypeAtomsData, Structure} from "@/types"
  * @notExported
  */
 interface PrototypeStructure {
-	/** Found mineral tag */
+
+	/** Pearson symbol */
+	pearson: string;
+	/** AFLOW identifier (UID) */
+	aflow: string;
+	/** A detailed crystal structure classification by analogy to another known structure */
+	strukturbericht: string;
+	/** Prototype mineral/component name */
 	mineral: string;
 	/** Prototype structure */
 	structure: Structure;
@@ -32,7 +39,14 @@ interface PrototypeStructure {
  * @notExported
  */
 interface PrototypeDisplay {
-	/** Found mineral tag */
+
+	/** Pearson symbol */
+	pearson: string;
+	/** AFLOW identifier (UID) */
+	aflow: string;
+	/** A detailed crystal structure classification by analogy to another known structure */
+	strukturbericht: string;
+	/** Prototype mineral/component name */
 	mineral: string;
 	/** Prototype lattice matrix */
 	matrix: number[][];
@@ -60,6 +74,7 @@ class PrototypeDb {
 	private readonly aflowAdjunctMap = new Map<string, string>();
 	private errorMessage = "";
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
+	private readonly aflowSrcMap = new Map<string, number>();
 	private searchDb = "";
 
 	/**
@@ -117,6 +132,9 @@ class PrototypeDb {
 
 		if(this.aflowSrcPrototypeLibrary.length === 0) {
 			await this.readCompressedPrototypes();
+			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
+				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
+			}
 		}
 
 		const db = new Map<string, string>();
@@ -178,29 +196,36 @@ class PrototypeDb {
 
 		if(this.aflowSrcPrototypeLibrary.length === 0) {
 			await this.readCompressedPrototypes();
+			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
+				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
+			}
 		}
 
 		if(this.errorMessage) {
 			return {
+				pearson: "",
+				aflow: "",
+				strukturbericht: "",
 				mineral: "",
 				structure: new EmptyStructure(),
 				error: this.errorMessage
 			};
 		}
 
-		for(const proto of this.aflowSrcPrototypeLibrary) {
+		const idx = this.aflowSrcMap.get(aflow);
+		if(idx === undefined) return undefined;
 
-			if(proto.tags.aflow === aflow) {
+		const proto = this.aflowSrcPrototypeLibrary[idx];
+		if(!proto) return undefined;
 
-				const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
-				return {
-					mineral,
-					structure: this.snlToStructure(proto.snl)
-				};
-			}
-		}
-
-		return undefined;
+		const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+		return {
+			pearson: proto.tags.pearson,
+			aflow,
+			strukturbericht: proto.tags.strukturbericht,
+			mineral,
+			structure: this.snlToStructure(proto.snl)
+		};
 	}
 
 	/**
@@ -248,10 +273,16 @@ class PrototypeDb {
 
 		if(this.aflowSrcPrototypeLibrary.length === 0) {
 			await this.readCompressedPrototypes();
+			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
+				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
+			}
 		}
 
 		if(this.errorMessage) {
 			return {
+				pearson: "",
+				aflow: "",
+				strukturbericht: "",
 				mineral: "",
 				matrix: [],
 				atoms: {
@@ -264,20 +295,21 @@ class PrototypeDb {
 			};
 		}
 
-		for(const proto of this.aflowSrcPrototypeLibrary) {
+		const idx = this.aflowSrcMap.get(aflow);
+		if(idx === undefined) return undefined;
 
-			if(proto.tags.aflow === aflow) {
+		const proto = this.aflowSrcPrototypeLibrary[idx];
+		if(!proto) return undefined;
 
-				const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
-				return {
-					mineral,
-					matrix: proto.snl.lattice.matrix,
-					atoms: this.extractAtoms(proto.snl)
-				};
-			}
-		}
-
-		return undefined;
+		const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+		return {
+			pearson: proto.tags.pearson,
+			aflow,
+			strukturbericht: proto.tags.strukturbericht,
+			mineral,
+			matrix: proto.snl.lattice.matrix,
+			atoms: this.extractAtoms(proto.snl)
+		};
 	}
 
 	/**
