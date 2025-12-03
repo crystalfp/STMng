@@ -16,9 +16,14 @@ files:
   - "!**/node_modules/**/tsconfig.tsbuildinfo"
   - "!**/node_modules/**/{test,__tests__,tests,powered-test,example,examples}"
   - "!**/spglib-2.5.0/**/*.*"
-asarUnpack:
-  - dist/doc/**/*.*
-  - dist/Worker.js
+  - "!dist/doc/**/*.*"
+  - "!dist/Worker.js"
+extraFiles:
+  - filter: "**/*.*"
+    from: dist/doc/
+    to: resources/doc/
+  - from: dist/Worker.js
+    to: resources/
 electronLanguages:
   - en-US
 linux:
