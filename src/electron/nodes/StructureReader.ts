@@ -13,9 +13,10 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import {getDBforSearch, getPrototypeStructure} from "../proto/PrototypeDb";
+import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
-import {getDBforSearch, getPrototypeStructure} from "../proto/PrototypeDb";
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 										   "LAMMPStrj", "POSCAR + XDATCAR", "XDATCAR5",
@@ -559,9 +560,6 @@ export class StructureReader extends NodeCore {
 		const {crystal, atoms, volume, extra} = this.structures[0];
 		if(!crystal) return;
 		const {basis, origin, spaceGroup} = crystal;
-
-		// Value from https://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0
-		const BOHR_TO_ANGSTROM = 0.529177210544;
 
 		if(this.useBohr) {
 			for(let i=0; i < 9; ++i) basis[i]  *= BOHR_TO_ANGSTROM;

@@ -91,3 +91,9 @@ export const indices = [
     1, 5, 6,
     1, 6, 2,
 ];
+
+/**
+ * Convert bohr units into angstrom.
+ * Value from https://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0
+ */
+export const BOHR_TO_ANGSTROM = 0.529177210544;

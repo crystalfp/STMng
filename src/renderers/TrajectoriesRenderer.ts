@@ -12,6 +12,9 @@ import {Group, PointsMaterial, BufferGeometry, TextureLoader, type Texture, Poin
 import {sm} from "@/services/SceneManager";
 import spriteImage from "@/assets/volumetric-sprite.png";
 
+/** Sprite initial scale */
+const SCALE = 0.5;
+
 /**
  * Set colorspace on the loaded texture
  *
@@ -78,7 +81,7 @@ export class TrajectoriesRenderer {
 		const sprite = textureLoader.load(spriteImage, setColorSpace);
 
 		this.volumeMaterial = new PointsMaterial({
-			size: positionCloudsSize,
+			size: positionCloudsSize*SCALE,
 			alphaMap: sprite,
 			depthTest: false,
 			transparent: true,
@@ -137,7 +140,7 @@ export class TrajectoriesRenderer {
 
 		if(this.volumeMaterial) {
 
-			this.volumeMaterial.size = size;
+			this.volumeMaterial.size = size*SCALE;
 			sm.modified();
 		}
 	}

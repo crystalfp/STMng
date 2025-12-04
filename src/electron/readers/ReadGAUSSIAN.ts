@@ -10,6 +10,7 @@ import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
@@ -55,7 +56,6 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const voxelsPerSide = [0, 0, 0];
 		let useBohr = false;
 		const sidesPerVoxel = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-		const BOHR_TO_ANGSTROM = 0.529177;
 		let voxels: number[] = [];
 		let nvoxels = 0;
 		let idxVoxels = 0;

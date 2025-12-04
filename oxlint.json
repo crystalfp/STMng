@@ -1,6 +1,10 @@
 {
   "$schema": "file:///C:/Users/mvalle/AppData/Roaming/npm/node_modules/oxlint/configuration_schema.json",
   "categories": {
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn",
+    "pedantic": "warn"
   },
   "env": {
     "es2025": true
@@ -75,6 +79,7 @@
     "no-unsafe-optional-chaining": "error",
     "no-unused-labels": "error",
     "no-unused-private-class-members": "error",
+    "eslint/no-await-in-loop": "off",
     "no-unused-vars": [
       "error",
       {
@@ -96,23 +101,20 @@
     "valid-typeof": "error",
     "promise/no-return-wrap": "error",
     "promise/param-names": "error",
-    "promise/catch-or-return": [
-      "warn",
-      {
-        "allowFinally": true
-      }
-    ],
+    "promise/catch-or-return": ["warn", {"allowFinally": true}],
     "promise/no-nesting": "warn",
     "promise/no-promise-in-callback": "warn",
     "promise/no-callback-in-promise": "warn",
     "promise/avoid-new": "off",
     "promise/no-new-statics": "error",
     "promise/valid-params": "warn",
+    "promise/always-return": ["error", {"ignoreLastCallback": true}],
     "import/namespace": "error",
     "import/default": "off",
     "import/no-named-as-default": "warn",
     "import/no-named-as-default-member": "warn",
     "import/no-duplicates": "warn",
+    "import/no-unassigned-import": "off",
     "no-negated-condition": "warn",
     "no-nested-ternary": "off",
     "unicorn/catch-error-name": "error",
@@ -125,12 +127,7 @@
     "unicorn/error-message": "error",
     "unicorn/escape-case": "error",
     "unicorn/explicit-length-check": "error",
-    "unicorn/filename-case": [
-      "off",
-      {
-        "case": "camelCase"
-      }
-    ],
+    "unicorn/filename-case": ["off", {"case": "camelCase"}],
     "unicorn/new-for-builtins": "off",
     "unicorn/no-abusive-eslint-disable": "error",
     "unicorn/no-accessor-recursion": "error",
@@ -232,6 +229,7 @@
     "unicorn/switch-case-braces": "off",
     "unicorn/text-encoding-identifier-case": "error",
     "unicorn/throw-new-error": "off",
+    "oxc/approx-constant": "off",
     "@typescript-eslint/ban-ts-comment": [
       "error",
       {
@@ -329,8 +327,17 @@
     "typescript/unbound-method": "error",
     "typescript/use-unknown-in-catch-callback-variable": "off",
     "vue/valid-define-emits":"warn",
-    "vue/valid-define-props": "warn"
+    "vue/valid-define-props": "warn",
 
+    "eslint/max-lines-per-function ": "off",
+    "eslint/max-depth": "off",
+    "import/max-dependencies": "off",
+    "eslint/max-lines": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "eslint/max-lines-per-function": "off",
+    "eslint/sort-vars": "off",
+    "eslint/max-classes-per-file": "off",
+    "unicorn/prefer-top-level-await": "off"
   },
   "globals": {
     "document": "readonly",

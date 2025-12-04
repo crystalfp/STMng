@@ -8,11 +8,12 @@
  */
 import type {ReaderImplementation, Structure, Atom} from "@/types";
 import {readFile} from "node:fs/promises";
+import log from "electron-log";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {convertSpaceGroupNumber} from "../modules/NativeFunctions";
-import log from "electron-log";
 import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
+import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 
 
 export class ReaderQUANTUM implements ReaderImplementation {
@@ -153,7 +154,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 		// Unify cell parameters
 		if(hasCelldm) {
 
-			a = celldm[1]*0.529177249;
+			a = celldm[1]*BOHR_TO_ANGSTROM;
 			b = celldm[2]*a;
 			c = celldm[3]*a;
 			cosAB = celldm[6];
@@ -167,7 +168,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 		switch(ibrav) {
 			case 0:
 				if(basisKind === "bohr") {
-					for(let i=0; i < 9; ++i) basis[i] *= 0.529177210544;
+					for(let i=0; i < 9; ++i) basis[i] *= BOHR_TO_ANGSTROM;
 				}
 				else if(basisKind === "alat" || basisKind === "") {
 					for(let i=0; i < 9; ++i) basis[i] *= alat;
@@ -231,8 +232,8 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				const ty = Math.sqrt((1-cosBC)/6);
 				const tz = Math.sqrt((1+2*cosBC)/3);
 				const aPrime = alat*0.577350269189626;
-				const u = tz - 2.82842712474619*ty;
-				const v = tz + 1.4142135623731*ty;
+				const u = tz - 2*Math.SQRT2*ty;
+				const v = tz + Math.SQRT2*ty;
 				basis[0] = aPrime*u;
 				basis[1] = aPrime*v;
 				basis[2] = aPrime*v;
@@ -373,9 +374,9 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				break;
 			case "bohr":
 				for(let i=0; i < natoms; ++i) {
-					positions[i][0] *= 0.529177210544;
-					positions[i][1] *= 0.529177210544;
-					positions[i][2] *= 0.529177210544;
+					positions[i][0] *= BOHR_TO_ANGSTROM;
+					positions[i][1] *= BOHR_TO_ANGSTROM;
+					positions[i][2] *= BOHR_TO_ANGSTROM;
 				}
 				break;
 			case "crystal_sg":

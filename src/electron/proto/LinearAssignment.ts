@@ -82,11 +82,11 @@ export class LinearAssignment {
         this.cred = Array(this.n).fill(0).map(() => Array<number>(this.n).fill(0));
 
         // If column reduction doesn't find a solution, augment with shortest paths
-        if(this._columnReduction()) {
-            this._augmentingRowReduction();
-            this._updateCred();
+        if(this.columnReduction()) {
+            this.augmentingRowReduction();
+            this.updateCred();
             while(this._x.includes(-1)) {
-                this._augment();
+                this.augment();
             }
         }
 
@@ -112,7 +112,8 @@ export class LinearAssignment {
     * Column reduction and reduction transfer steps from LAPJV algorithm
     * @returns true if augmentation is needed, false if problem is already solved
     */
-    private _columnReduction(): boolean {
+    private columnReduction(): boolean {
+
         // Find minimum in each column
         const colMins = Array<number>(this.n).fill(Infinity);
         const colMinRows = Array<number>(this.n).fill(-1);
@@ -183,7 +184,7 @@ export class LinearAssignment {
     /**
     * Augmenting row reduction step from LAPJV algorithm
     */
-    private _augmentingRowReduction(): void {
+    private augmentingRowReduction(): void {
         const unassigned: number[] = [];
         for(let i = 0; i < this.n; i++) {
             if(this._x[i] === -1) {
@@ -242,7 +243,7 @@ export class LinearAssignment {
     /**
     * Updates the reduced costs with the values from the dual solution
     */
-    private _updateCred(): void {
+    private updateCred(): void {
         const ui: number[] = [];
         for(let i = 0; i < this.n; i++) {
             ui.push(this.c[i][this._x[i]] - this._v[this._x[i]]);
@@ -258,9 +259,9 @@ export class LinearAssignment {
     /**
     * Finds a minimum cost path and adds it to the matching
     */
-    private _augment(): void {
+    private augment(): void {
         // Build a minimum cost tree
-        const {pred, ready, istar, j, mu} = this._buildTree();
+        const {pred, ready, istar, j, mu} = this.buildTree();
 
         // Update prices
         for(let idx = 0; idx < this.n; idx++) {
@@ -281,13 +282,13 @@ export class LinearAssignment {
                 break;
             }
         }
-        this._updateCred();
+        this.updateCred();
     }
 
     /**
     * Builds the tree finding an augmenting path
     */
-    private _buildTree(): {pred: number[]; ready: boolean[]; istar: number; j: number; mu: number} {
+    private buildTree(): {pred: number[]; ready: boolean[]; istar: number; j: number; mu: number} {
         // Find unassigned i*
         let istar = 0;
         for(let i = 1; i < this.n; i++) {

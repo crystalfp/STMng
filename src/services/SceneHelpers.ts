@@ -34,7 +34,7 @@ export const setupSceneHelpers = (): void => {
 	watchEffect(() => {
 
 		// Manage axis helper
-		let axis = sm.getObjectByName("AxisHelper") as Group;
+		let axis = sm.getObjectByName("AxisHelper") as Group | undefined;
 		if(configStore.helpers.showAxis) {
 
 			if(axis) {
@@ -57,7 +57,7 @@ export const setupSceneHelpers = (): void => {
 		else if(axis) axis.visible = false;
 
 		// Manage XZ helper plane
-		let gridXZ = sm.getObjectByName("GridHelperXZ") as GridHelper;
+		let gridXZ = sm.getObjectByName("GridHelperXZ") as GridHelper | undefined;
 		if(configStore.helpers.showGridXZ) {
 			if(gridXZ) {
 				gridXZ.visible = true;
@@ -80,7 +80,7 @@ export const setupSceneHelpers = (): void => {
 		else if(gridXZ) gridXZ.visible = false;
 
 		// Manage XY helper plane
-		let gridXY = sm.getObjectByName("GridHelperXY") as GridHelper;
+		let gridXY = sm.getObjectByName("GridHelperXY") as GridHelper | undefined;
 		if(configStore.helpers.showGridXY) {
 			if(gridXY) {
 				gridXY.visible = true;
@@ -103,7 +103,7 @@ export const setupSceneHelpers = (): void => {
 		else if(gridXY) gridXY.visible = false;
 
 		// Manage YZ helper plane
-		let gridYZ = sm.getObjectByName("GridHelperYZ") as GridHelper;
+		let gridYZ = sm.getObjectByName("GridHelperYZ") as GridHelper | undefined;
 		if(configStore.helpers.showGridYZ) {
 			if(gridYZ) {
 				gridYZ.visible = true;
