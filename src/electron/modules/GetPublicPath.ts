@@ -12,7 +12,7 @@ import {app} from "electron";
 
 /**
  * Add the correct path to the public directory for development and production
- * @remark The files should be copied into `resources/` directory in a extraFiles section in
+ * @remarks The files should be copied into `resources/` directory in a extraFiles section in
  * electron-builder.yaml file
  *
  * @param filename - Filename inside the public directory

@@ -117,6 +117,20 @@ class PrototypeDb {
 	}
 
 	/**
+	 * Initialize the aflowSrcPrototypeLibrary
+	 */
+	async initSrcPrototypeLibrary(): Promise<void> {
+
+		if(this.aflowSrcPrototypeLibrary.length === 0) {
+
+			await this.readCompressedPrototypes();
+			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
+				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
+			}
+		}
+	}
+
+	/**
 	 * Returns error message if any
 	 *
 	 * @returns The error message or empty string on success
@@ -141,16 +155,19 @@ class PrototypeDb {
 	 * @param tags - Tags from the Pymatgen file
 	 * @returns Tags with the correction from the mineral overrides
 	 */
-	correct(aflow: string, tags: PrototypeTags): PrototypeTags {
+	private correct(aflow: string, tags: PrototypeTags): PrototypeTags {
 
 		const correction = this.aflowAdjunctMap.get(aflow);
-
-		if(correction) return {
-			pearson: correction.p ?? tags.pearson,
-			aflow,
-			strukturbericht: correction.s ?? tags.strukturbericht,
-			mineral: correction.m ?? tags.mineral
-		};
+		if(correction) {
+			let mineral = correction.m ?? tags.mineral;
+			if(!mineral) mineral = "—";
+			return {
+				pearson: correction.p ?? tags.pearson,
+				aflow,
+				strukturbericht: correction.s ?? tags.strukturbericht,
+				mineral
+			};
+		}
 		return tags;
 	}
 
@@ -163,12 +180,7 @@ class PrototypeDb {
 
 		if(this.searchDb) return this.searchDb;
 
-		if(this.aflowSrcPrototypeLibrary.length === 0) {
-			await this.readCompressedPrototypes();
-			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
-				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
-			}
-		}
+		await this.initSrcPrototypeLibrary();
 
 		const db = new Map<string, string>();
 		for(const proto of this.aflowSrcPrototypeLibrary) {
@@ -228,12 +240,7 @@ class PrototypeDb {
 	 */
 	async getPrototypeStructure(aflow: string): Promise<PrototypeStructure | undefined> {
 
-		if(this.aflowSrcPrototypeLibrary.length === 0) {
-			await this.readCompressedPrototypes();
-			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
-				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
-			}
-		}
+		await this.initSrcPrototypeLibrary();
 
 		if(this.errorMessage) {
 			return {
@@ -306,12 +313,7 @@ class PrototypeDb {
 	 */
 	async getPrototypeForDisplay(aflow: string): Promise<PrototypeDisplay | undefined> {
 
-		if(this.aflowSrcPrototypeLibrary.length === 0) {
-			await this.readCompressedPrototypes();
-			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
-				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
-			}
-		}
+		await this.initSrcPrototypeLibrary();
 
 		if(this.errorMessage) {
 			return {
@@ -346,6 +348,26 @@ class PrototypeDb {
 			matrix: proto.snl.lattice.matrix,
 			atoms: this.extractAtoms(proto.snl)
 		};
+	}
+
+	/**
+	 * Get prototype tags for a given UID
+	 * @remarks The aflowSrcPrototypeLibrary is already initialized
+	 *
+	 * @param aflow - Aflow UID
+	 * @returns Prototype tags (undefined if not found)
+	 */
+	getPrototypeTags(aflow: string): (PrototypeTags & {error?: string}) | undefined {
+
+		// await this.initSrcPrototypeLibrary();
+
+		const idx = this.aflowSrcMap.get(aflow);
+		if(idx === undefined) return undefined;
+
+		const proto = this.aflowSrcPrototypeLibrary[idx];
+		if(!proto) return undefined;
+
+		return this.correct(aflow, proto.tags);
 	}
 
 	/**
@@ -437,3 +459,12 @@ export const getPrototypeStructure = async (aflow: string): Promise<PrototypeStr
  */
 export const getPrototypeForDisplay = async (aflow: string): Promise<PrototypeDisplay | undefined> =>
 						PrototypeDb.getInstance().getPrototypeForDisplay(aflow);
+
+/**
+ * Get prototype tags for a given UID
+ *
+ * @param aflow - Aflow UID
+ * @returns Prototype tags (undefined if not found)
+ */
+export const getPrototypeTags = (aflow: string): PrototypeTags | undefined =>
+						PrototypeDb.getInstance().getPrototypeTags(aflow);

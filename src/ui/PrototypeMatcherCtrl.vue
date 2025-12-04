@@ -203,7 +203,7 @@ const startQuery = (aflow: string): void => {
     <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger-result"
              v-html="`Prototypes for ${formula}`" />
     <v-container v-for="entry of prototypes" :key="entry[1]" v-ripple
-                 class="mb-4 pa-1 border-thin rounded-lg cursor-pointer"
+                 class="mb-4 py-1 pl-2 border-thin rounded-lg cursor-pointer"
                  @click="selectPrototype(entry[1])">
       <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry[0]" /><br>
       <v-label class="bigger-result cursor-pointer">{{ `(Aflow: ${entry[1]})` }}</v-label>

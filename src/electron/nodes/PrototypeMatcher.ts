@@ -12,7 +12,8 @@ import {sendToClient} from "../modules/ToClient";
 import {findMatchingPrototypes} from "../proto/AflowPrototypeMatcher";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
-import {getDBError, getDBforSearch, getPreprocessedPrototypes, getPrototypeForDisplay} from "../proto/PrototypeDb";
+import {getDBError, getDBforSearch, getPreprocessedPrototypes,
+		getPrototypeTags, getPrototypeForDisplay} from "../proto/PrototypeDb";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 import type {PrototypeEntry, Prototype} from "../proto/types";
 
@@ -28,8 +29,6 @@ export class PrototypeMatcher extends NodeCore {
 	private hasInput = false;
 	private aflowPrototypesLoaded = false;
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
-	private readonly aflowAdjunctMap = new Map<string, string>();
-	private hasAdjunctMap = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",       type: "invokeAsync", callback: this.channelInit.bind(this)},
@@ -134,13 +133,9 @@ export class PrototypeMatcher extends NodeCore {
 		const out: [string, string][]= [];
 		for(const entry of prototypes) {
 
-			let mineral;
-			if(this.hasAdjunctMap) {
-				mineral = this.aflowAdjunctMap.get(entry.tags.aflow);
-			}
-			if(mineral) out.push([mineral, entry.tags.aflow]);
-			else if(entry.tags.mineral) out.push([entry.tags.mineral, entry.tags.aflow]);
-			else out.push(["—", entry.tags.aflow]);
+			const tags = getPrototypeTags(entry.tags.aflow);
+			if(tags) out.push([tags.mineral, entry.tags.aflow]);
+			else     out.push(["—", entry.tags.aflow]);
 		}
 
 		return JSON.stringify(out);
