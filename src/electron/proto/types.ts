@@ -8,9 +8,8 @@
  */
 /**
  * Prototype tags
- * @notExported
  */
-interface PrototypeTags {
+export interface PrototypeTags {
 	/** Pearson symbol */
 	pearson: string;
 	/** AFLOW identifier (UID) */

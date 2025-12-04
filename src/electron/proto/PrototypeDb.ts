@@ -11,7 +11,7 @@ import {createGunzip} from "node:zlib";
 import {publicDirPath} from "../modules/GetPublicPath";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {getAtomicNumber, getAtomData} from "../modules/AtomData";
-import type {PrototypeEntry, SNL} from "./types";
+import type {PrototypeEntry, SNL, PrototypeTags} from "./types";
 import type {DBType, PositionType, PrototypeAtomsData, Structure} from "@/types";
 
 /**
@@ -64,14 +64,27 @@ interface LibraryEntry {
 	/** Prototype structure */
 	snl: SNL;
 	/** Corresponding tags */
-	tags: Record<string, string>;
+	tags: PrototypeTags;
+}
+
+/**
+ * Correction to the Prototype library
+ * @notExported
+ */
+interface AdjunctMap {
+	/** Correction to the mineral field */
+	m?: string;
+	/** Correction to the strukturbericht field */
+	s?: string;
+	/** Correction to the pearson field */
+	p?: string;
 }
 
 class PrototypeDb {
 
     private static instance: PrototypeDb;
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
-	private readonly aflowAdjunctMap = new Map<string, string>();
+	private readonly aflowAdjunctMap = new Map<string, AdjunctMap>();
 	private errorMessage = "";
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 	private readonly aflowSrcMap = new Map<string, number>();
@@ -92,7 +105,7 @@ class PrototypeDb {
 			if(existsSync(adjunctPath)) {
 				const adjunctRaw = readFileSync(adjunctPath, "utf8");
 				if(adjunctRaw) {
-					const adjunct = JSON.parse(adjunctRaw) as Record<string, string>;
+					const adjunct = JSON.parse(adjunctRaw) as Record<string, AdjunctMap>;
 					for(const entry in adjunct) this.aflowAdjunctMap.set(entry, adjunct[entry]);
 				}
 			}
@@ -122,6 +135,26 @@ class PrototypeDb {
 	}
 
 	/**
+	 * Correct the tags entry if needed
+	 *
+	 * @param aflow - aflow UID of the entry
+	 * @param tags - Tags from the Pymatgen file
+	 * @returns Tags with the correction from the mineral overrides
+	 */
+	correct(aflow: string, tags: PrototypeTags): PrototypeTags {
+
+		const correction = this.aflowAdjunctMap.get(aflow);
+
+		if(correction) return {
+			pearson: correction.p ?? tags.pearson,
+			aflow,
+			strukturbericht: correction.s ?? tags.strukturbericht,
+			mineral: correction.m ?? tags.mineral
+		};
+		return tags;
+	}
+
+	/**
 	 * Prepare the list for querying the prototype database
 	 *
 	 * @returns JSON encoded list of prototypes names and aflow UID
@@ -140,10 +173,11 @@ class PrototypeDb {
 		const db = new Map<string, string>();
 		for(const proto of this.aflowSrcPrototypeLibrary) {
 
-			const mineral = this.aflowAdjunctMap.get(proto.tags.aflow) ?? proto.tags.mineral;
-			if(mineral) {
+			const tags = this.correct(proto.tags.aflow, proto.tags);
 
-				db.set(mineral, proto.tags.aflow);
+			if(tags.mineral) {
+
+				db.set(tags.mineral, proto.tags.aflow);
 				db.set(proto.tags.aflow, "#"+proto.tags.aflow); // Marked to avoid duplicates
 			}
 			else {
@@ -218,12 +252,13 @@ class PrototypeDb {
 		const proto = this.aflowSrcPrototypeLibrary[idx];
 		if(!proto) return undefined;
 
-		const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+		const tags = this.correct(aflow, proto.tags);
+
 		return {
-			pearson: proto.tags.pearson,
+			pearson: tags.pearson,
 			aflow,
-			strukturbericht: proto.tags.strukturbericht,
-			mineral,
+			strukturbericht: tags.strukturbericht,
+			mineral: tags.mineral,
 			structure: this.snlToStructure(proto.snl)
 		};
 	}
@@ -301,12 +336,13 @@ class PrototypeDb {
 		const proto = this.aflowSrcPrototypeLibrary[idx];
 		if(!proto) return undefined;
 
-		const mineral = this.aflowAdjunctMap.get(aflow) ?? proto.tags.mineral;
+		const tags = this.correct(aflow, proto.tags);
+
 		return {
-			pearson: proto.tags.pearson,
+			pearson: tags.pearson,
 			aflow,
-			strukturbericht: proto.tags.strukturbericht,
-			mineral,
+			strukturbericht: tags.strukturbericht,
+			mineral: tags.mineral,
 			matrix: proto.snl.lattice.matrix,
 			atoms: this.extractAtoms(proto.snl)
 		};
