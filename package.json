@@ -39,7 +39,7 @@
     "custom-electron-titlebar": "^4.2.8",
     "electron-log": "^5.4.3",
     "mathjs": "^15.1.0",
-    "mediabunny": "^1.25.3",
+    "mediabunny": "^1.25.6",
     "pinia": "^3.0.4",
     "three": "^0.181.2",
     "three-viewport-gizmo": "^2.2.0",

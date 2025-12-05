@@ -64,14 +64,15 @@ export class Trajectories extends NodeCore {
 			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
 
 			const len = this.indices.length;
+
 			// Safety check
 			if(atoms.length < len) return;
 
 			if(this.nextSteps) {
 				// After the first step increase the points size
 				// if the number of atoms traced increases
-				if(len > this.traces.length) {
-					const previousLength = this.traces.length;
+				const previousLength = this.traces.length;
+				if(len > previousLength) {
 					this.traces.length = len;
 					for(let i=previousLength; i < len; ++i) this.traces[i] = [];
 				}

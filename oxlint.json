@@ -329,6 +329,7 @@
     "vue/valid-define-emits":"warn",
     "vue/valid-define-props": "warn",
 
+    // To pass pedantic
     "eslint/max-lines-per-function ": "off",
     "eslint/max-depth": "off",
     "import/max-dependencies": "off",
