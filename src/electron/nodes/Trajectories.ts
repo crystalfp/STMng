@@ -9,11 +9,11 @@
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
-import {sendTracesToClient} from "../modules/ToClient";
+import {sendTracesToClient, sendSegmentsToClient} from "../modules/ToClient";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
+import type {Structure, CtrlParams, ChannelDefinition, PositionType} from "@/types";
 
 export class Trajectories extends NodeCore {
 
@@ -25,13 +25,14 @@ export class Trajectories extends NodeCore {
 	private maxDisplacement = 1;
 	private showPositionClouds = false;
 	private readonly traces: number[][] = [];
-	private readonly tracesColor: string[] = [];
 	private nextSteps = false;
-	private positionCloudsColor = "#BBBBBE";
 	private positionCloudsSize = 100;
 	private indices: number[] = [];
 	private disentangler = new ReorderAtomsInSteps();
 
+	private readonly segments: PositionType[][] = [];
+	private readonly segmentsColor: string[] = [];
+	private readonly segmentsSkip: boolean[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
@@ -69,40 +70,97 @@ export class Trajectories extends NodeCore {
 			if(atoms.length < len) return;
 
 			if(this.nextSteps) {
+
+				// Complete the pair of points that characterize each segment
+				for(let i=0; i < len; ++i) {
+
+					const idx = this.indices[i];
+					const {position} = atoms[idx];
+					if(this.segments[i].length === 1) {
+						this.segments[i].push([position[0], position[1], position[2]]);
+					}
+					else {
+						const p2 = this.segments[i][1];
+						this.segments[i][0] = [p2[0], p2[1], p2[2]];
+						this.segments[i][1] = [position[0], position[1], position[2]];
+					}
+					this.segmentsSkip[i] = false;
+
+					this.traces[i].push(position[0], position[1], position[2]);
+				}
+
 				// After the first step increase the points size
 				// if the number of atoms traced increases
-				const previousLength = this.traces.length;
+				const previousLength = this.segments.length;
 				if(len > previousLength) {
 					this.traces.length = len;
-					for(let i=previousLength; i < len; ++i) this.traces[i] = [];
+					this.segments.length = len;
+					this.segmentsColor.length = len;
+					this.segmentsSkip.length = len;
+					for(let i=previousLength; i < len; ++i) {
+						const idx = this.indices[i];
+						const {atomZ, position} = atoms[idx];
+						this.segments[i] = [[position[0], position[1], position[2]]];
+						this.segmentsColor[i] = getAtomData(atomZ).color;
+						this.segmentsSkip[i] = true;
+						this.traces[i] = [position[0], position[1], position[2]];
+					}
 				}
 			}
 			else {
 
 				this.nextSteps = true;
 
-				// First step, initialize set of coordinates
+				// First step, initialize the set of coordinates
 				this.traces.length = len;
-				for(let i=0; i < len; ++i) this.traces[i] = [];
-			}
+				this.segments.length = len;
+				this.segmentsColor.length = len;
+				this.segmentsSkip.length = len;
+				for(let i=0; i < len; ++i) {
 
-			// Record coordinates
-			let trajectoryIndex = 0;
-			for(const idx of this.indices) {
-
-				const {position} = atoms[idx];
-
-				this.traces[trajectoryIndex].push(position[0], position[1], position[2]);
-				++trajectoryIndex;
+					const idx = this.indices[i];
+					const {atomZ, position} = atoms[idx];
+					this.segments[i] = [[position[0], position[1], position[2]]];
+					this.segmentsColor[i] = getAtomData(atomZ).color;
+					this.segmentsSkip[i] = true;
+					this.traces[i] = [position[0], position[1], position[2]];
+				}
 			}
 
 			// Create lines
 			if(this.createTrajectories) {
-				Trajectories.setTraceColor(this.structure, this.indices, this.tracesColor);
-				this.sendLines(this.indices.length);
+				this.markJumps(this.maxDisplacement);
+				sendSegmentsToClient(this.id,
+								     this.segments,
+								     this.segmentsColor,
+								     this.segmentsSkip);
 			}
 
 			this.sendMeanDisplacement(this.indices);
+		}
+	}
+
+	/**
+	 * Mark too big segments
+	 *
+	 * @param maxLength - Max length of a jump before marking it as to be skipped
+	 */
+	private markJumps(maxLength: number): void {
+
+		const len =	this.segments.length;
+		for(let i=0; i < len; ++i) {
+
+			if(this.segments[i].length < 2) continue;
+
+			const [p0, p1] = this.segments[i];
+
+			// Compute segment length
+			const dx = p1[0] - p0[0];
+			const dy = p1[1] - p0[1];
+			const dz = p1[2] - p0[2];
+			const length = Math.hypot(dx, dy, dz);
+
+			this.segmentsSkip[i] = length > maxLength;
 		}
 	}
 
@@ -114,7 +172,6 @@ export class Trajectories extends NodeCore {
 			atomsSelector: this.atomsSelector,
 			maxDisplacement: this.maxDisplacement,
 			showPositionClouds: this.showPositionClouds,
-			positionCloudsColor: this.positionCloudsColor,
 			positionCloudsSize: this.positionCloudsSize,
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
@@ -126,7 +183,6 @@ export class Trajectories extends NodeCore {
 		this.atomsSelector       = params.atomsSelector as string ?? "";
 		this.maxDisplacement     = params.maxDisplacement as number ?? 1;
 		this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
-		this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
 		this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
 	}
 
@@ -143,10 +199,10 @@ export class Trajectories extends NodeCore {
 			Trajectories.splitSegments(this.traces[i], this.maxDisplacement, splitTrace);
 			for(const trace of splitTrace) {
 				segments.push(trace);
-				colors.push(this.tracesColor[i]);
+				colors.push(this.segmentsColor[i]);
 			}
 		}
-		sendTracesToClient(this.id, "traces", segments, colors);
+		sendTracesToClient(this.id, segments, colors);
 	}
 
 	/**
@@ -192,27 +248,6 @@ export class Trajectories extends NodeCore {
 	}
 
 	/**
-	 * Extract the trace colors as the atom type color
-	 *
-	 * @param structure - The structure
-	 * @param indices - Indices of the selected atoms
-	 * @param traceColor - The resulting colors
-	 */
-	private static setTraceColor(structure: Structure,
-						  		 indices: number[],
-						  		 traceColor: string[]): void {
-
-		const len = indices.length;
-		traceColor.length = len;
-		const {atoms} = structure;
-		let i = 0;
-		for(const idx of indices) {
-			const {atomZ} = atoms[idx];
-			traceColor[i++] = getAtomData(atomZ).color;
-		}
-	}
-
-	/**
 	 * Compute and send updated mean positions and displacements to client
 	 *
 	 * @param indices - Indices of selected atoms
@@ -245,7 +280,6 @@ export class Trajectories extends NodeCore {
 			atomsSelector: this.atomsSelector,
 			maxDisplacement: this.maxDisplacement,
 			showPositionClouds: this.showPositionClouds,
-			positionCloudsColor: this.positionCloudsColor,
 			positionCloudsSize: this.positionCloudsSize
 		};
 	}
@@ -256,7 +290,9 @@ export class Trajectories extends NodeCore {
 	private channelReset(): void {
 
 		this.traces.length = 0;
-		this.tracesColor.length = 0;
+		this.segments.length = 0;
+		this.segmentsColor.length = 0;
+		this.segmentsSkip.length = 0;
 		this.nextSteps = false;
 		this.sendMeanDisplacement([]);
 		this.disentangler.init();
@@ -318,7 +354,6 @@ export class Trajectories extends NodeCore {
 
 	    this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
         this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
-        this.positionCloudsColor = params.positionCloudsColor as string ?? "#BBBBBE";
 	}
 
 	/**

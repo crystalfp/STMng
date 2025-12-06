@@ -10,16 +10,16 @@
 import {computed, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
-import {askNode, receiveTracesFromNode, sendToNode} from "@/services/RoutesClient";
+import {askNode, receiveSegmentsFromNode, receiveTracesFromNode,
+        sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
+import type {AtomSelectorModes, PositionType} from "@/types";
 
-import ColorSelector from "@/widgets/ColorSelector.vue";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
-import type {AtomSelectorModes} from "@/types";
-
 import ThrottledButton from "@/widgets/ThrottledButton.vue";
+
 
 // > Properties
 const {id, label} = defineProps<{
@@ -42,7 +42,6 @@ const atomsSelector = ref("");
 const maxDisplacement = ref(1);
 const showPositionClouds = ref(false);
 const positionCloudsSize = ref(100);
-const positionCloudsColor = ref("#BBBBBE");
 
 // > Initialize the ui
 askNode(id, "init")
@@ -52,7 +51,6 @@ askNode(id, "init")
         atomsSelector.value       = params.atomsSelector as string ?? "";
         maxDisplacement.value     = params.maxDisplacement as number ?? 1;
         showPositionClouds.value  = params.showPositionClouds as boolean ?? false;
-		positionCloudsColor.value = params.positionCloudsColor as string ?? "#BBBBBE";
 		positionCloudsSize.value  = params.positionCloudsSize as number ?? 100;
     })
     .catch((error: Error) => {
@@ -62,8 +60,8 @@ askNode(id, "init")
 // > Initialize graphical rendering
 const renderer = new TrajectoriesRenderer(id,
                                           showTrajectories.value,
-                                          positionCloudsSize.value,
-                                          positionCloudsColor.value);
+                                          showPositionClouds.value,
+                                          positionCloudsSize.value);
 
 /**
  * Clear the accumulated structures
@@ -112,58 +110,62 @@ watch([maxDisplacement], () => {
 });
 
 /** Capture position clouds related variables */
-watch([showPositionClouds, positionCloudsSize, positionCloudsColor],
-      (after:  [boolean, number, string],
-       before: [boolean, number, string]) => {
+watch([showPositionClouds, positionCloudsSize],
+      (after:  [boolean, number], before: [boolean, number]) => {
 
-    if(after[2] !== before[2]) renderer.changeColor(after[2]);
     if(after[1] !== before[1]) renderer.changeSize(after[1]);
     renderer.changeCloudsVisibility(after[0]);
 
     sendToNode(id, "cloud", {
         showPositionClouds: showPositionClouds.value,
-        positionCloudsSize: positionCloudsSize.value,
-        positionCloudsColor: positionCloudsColor.value
+        positionCloudsSize: positionCloudsSize.value
     });
 });
 
 /** Receive a set of traces */
-receiveTracesFromNode(id, "traces", (segments: number[][], colors: string[]): void => {
+receiveTracesFromNode(id, (segments: number[][], colors: string[]): void => {
+
     renderer.receiveTraces(segments, colors, showPositionClouds.value);
+});
+
+/** Receive last segment of a trace */
+receiveSegmentsFromNode(id, (segments: PositionType[][], colors: string[], skip: boolean[]): void => {
+
+    renderer.receiveSegments(segments, colors, skip, showPositionClouds.value);
 });
 
 /** Simplify label */
 const startStop = computed(() => (controlStore.trajectoriesRecording ?
                                             "Stop trajectories" :
                                             "Start trajectories"));
+const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red" : "primary"));
 
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-4 mb-4 ml-2"
-            @update:modelValue="renderer.setVisibility(showTrajectories!)" />
-  <v-btn block class="mb-6 ml-0" @click="resetTraces">Clear trajectories</v-btn>
   <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"
-                    :disabled="trajectoriesRecording" class="ml-0"
+                    :disabled="trajectoriesRecording" class="ml-0 mt-6"
                     title="Select traced atoms by" placeholder="Traced atoms selector" />
-  <debounced-slider v-slot="{value}" v-model="maxDisplacement"
+  <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-6 ml-2"
+            @update:modelValue="renderer.changeTracesVisibility(showTrajectories!)" />
+  <debounced-slider v-if="showTrajectories" v-slot="{value}" v-model="maxDisplacement"
                       :disabled="trajectoriesRecording"
-                      :step="0.01" :min="0.01" :max="3" class="ml-1 mb-4 mt-8">
+                      :step="0.01" :min="0.01" :max="3" class="ml-1 mb-4 mt-4">
     <v-label :text="`Max displacement (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
   <v-switch v-model="showPositionClouds" label="Show position clouds" class="ml-2 mb-4" />
   <v-container v-if="showPositionClouds" class="pa-0 mb-2">
     <debounced-slider v-slot="{value}" v-model="positionCloudsSize"
-                        :step="1" :min="10" :max="200" class="ml-1 mb-4">
-      <v-label :text="`Point sprite size (${value})`" class="no-select" />
+                      :step="1" :min="10" :max="200" class="ml-1 mb-4">
+      <v-label :text="`Point cloud size (${value}%)`" class="no-select" />
     </debounced-slider>
-    <color-selector v-model="positionCloudsColor" label="Cloud color" block class="mb-2"/>
   </v-container>
   <throttled-button block class="ml-0 mb-5"
                     label="Show averages" @click="sendToNode(id, 'means')" />
-  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" class="ml-0"
-         @click="toggleRecording">{{ startStop }}</v-btn>
+  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" class="ml-0 mb-5"
+         :color="startStopColor" @click="toggleRecording">{{ startStop }}</v-btn>
+  <v-btn block class="mb-6 ml-0" @click="resetTraces">Clear trajectories</v-btn>
 </v-container>
 </template>

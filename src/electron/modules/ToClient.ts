@@ -9,7 +9,7 @@
 import {ipcMain, type WebContents} from "electron";
 import log from "electron-log";
 import path from "node:path";
-import type {CtrlParams, StructureRenderInfo} from "@/types";
+import type {CtrlParams, PositionType, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
 import type {AlertLevel} from "@/stores/messageStore";
 
@@ -73,17 +73,31 @@ export const sendVerticesToClient = (id: string, channel: string, vertices: numb
  * Push traces data to client
  *
  * @param id - ID of the node sending the parameters
- * @param channel - Specify the channel inside the id related group
  * @param segments - List of segments coordinates
  * @param colors - Colors of each segment
  */
 export const sendTracesToClient = (id: string,
-								   channel: string,
 								   segments: number[][],
 								   colors: string[]): void => {
 
-	const channelName = id + ":" + channel;
+	const channelName = id + ":traces";
 	mainWinWebContents!.send(channelName, segments, colors);
+};
+/**
+ * Push segments of a trace to client
+ *
+ * @param id - ID of the node sending the parameters
+ * @param segments - List of segments (begin, end) coordinates
+ * @param colors - Colors of each segment
+ * @param skip - If corresponding segment should be skipped and not rendered
+ */
+export const sendSegmentsToClient = (id: string,
+								     segments: PositionType[][],
+								     colors: string[],
+									 skip: boolean[]): void => {
+
+	const channelName = id + ":segments";
+	mainWinWebContents!.send(channelName, segments, colors, skip);
 };
 
 /**

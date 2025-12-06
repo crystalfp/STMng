@@ -11,7 +11,7 @@ import {watchEffect} from "vue";
 import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
 import {useControlStore} from "@/stores/controlStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
-import type {CtrlParams, StructureRenderInfo} from "@/types";
+import type {CtrlParams, PositionType, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
 
 /** Global definitions of the interfaces exported by preload.js */
@@ -417,15 +417,33 @@ export const receiveVerticesFromNode = (id: string,
  * @param callback - Callback function called when a message is received
  */
 export const receiveTracesFromNode = (id: string,
-									  channel: string,
 									  callback: (segments: number[][],
 									  			 colors: string[]) => void): void => {
 
-	const channelName = id + ":" + channel;
+	const channelName = id + ":traces";
     window.electron.ipcRenderer.on(channelName,
 								   (_event,
 								    segments: number[][],
 								    colors: string[]) => {callback(segments, colors);});
+};
+
+/**
+ * Receive last segment coordinates of a traces and colors as push message
+ *
+ * @param id - ID of the node sending the parameters
+ * @param callback - Callback function called when a message is received
+ */
+export const receiveSegmentsFromNode = (id: string,
+									    callback: (segments: PositionType[][],
+								    			   colors: string[],
+												   skip: boolean[]) => void): void => {
+
+	const channelName = id + ":segments";
+    window.electron.ipcRenderer.on(channelName,
+								   (_event,
+								    segments: PositionType[][],
+								    colors: string[],
+								    skip: boolean[]) => {callback(segments, colors, skip);});
 };
 
 // > Communication to windows

@@ -8,7 +8,7 @@
  */
 import {app, ipcMain} from "electron";
 import path from "node:path";
-import {readFileSync, copyFileSync, writeFileSync} from "node:fs";
+import {readFileSync, copyFileSync, writeFileSync, existsSync} from "node:fs";
 import {createOrUpdateSecondaryWindow} from "./WindowsUtilities";
 import {sendAlertToClient} from "./ToClient";
 
@@ -20,13 +20,13 @@ export const showLogFile = (): void => {
 	const directory = app.getPath("userData");
 	const logPath = path.join(directory, "logs", "main.log");
 	try {
-		const log = readFileSync(logPath, "utf8");
+		const logContent = existsSync(logPath) ? readFileSync(logPath, "utf8") : "";
 		createOrUpdateSecondaryWindow({
 			routerPath: "/log",
 			width: 1400,
 			height: 900,
 			title: "Application log file",
-			data: log
+			data: logContent
 		});
 	}
 	catch(error: unknown) {

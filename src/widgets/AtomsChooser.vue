@@ -59,6 +59,15 @@ const notHidden = (name: string): boolean => {
     return !hide?.includes(name);
 };
 
+/**
+ * Clear selector when selecting all atoms
+ */
+const clearSelector = (): void => {
+
+    atomsSelectorInternal.value = "";
+    atomsSelector.value = "";
+};
+
 </script>
 
 
@@ -68,7 +77,7 @@ const notHidden = (name: string): boolean => {
     <v-btn v-if="notHidden('symbol')" value="symbol">Symbol</v-btn>
     <v-btn v-if="notHidden('label')" value="label">Label</v-btn>
     <v-btn v-if="notHidden('index')" value="index">Index</v-btn>
-    <v-btn v-if="notHidden('all')" value="all">All</v-btn>
+    <v-btn v-if="notHidden('all')" value="all" @click="clearSelector">All</v-btn>
   </v-btn-toggle>
   <template #extra>
     <v-text-field v-model.trim="atomsSelectorInternal" :label="placeholder"

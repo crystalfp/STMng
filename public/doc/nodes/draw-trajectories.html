@@ -21,27 +21,16 @@
 <h1 class="subh1">Draw trajectories of atoms</h1>
 
 <div class="description">
-<p>Draw selected atoms trajectories as lines or cloud avoiding large jumps.</p>
+<p>Draw selected atoms trajectories as lines or cloud avoiding large jumps. Line and clouds are colored by the atom color they trace.</p>
 <p>When the Mean displacement visualizer window is visible, the module outputs the mean structure and mean unit cell (if present) as another structure to be visualized alongside the original structure. <b>Note</b> that this arrangement is not present in the <a href="../index.html#project">default project</a> for performance reasons, but is possible to setup it simply using the <a href="../secondary/project-editor.html">project editor</a>.</p>
 </div>
 
 <h2>Controls</h2>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Show trajectories</td>
-	<td class="c2">toggle</td>
-	<td class="c3">Made trajectories visible.</td>
-</tr>
-<tr>
-	<td class="c1">Clear trajectories</td>
-	<td class="c2">button</td>
-	<td class="c3">Clear the accumulated atoms positions.</td>
-</tr>
-<tr>
-</tr>
 	<td class="c1">Select traced atoms by</td>
 	<td class="c2">radio buttons</td>
-	<td class="c3">Select the traced atoms by one of the following items.
+	<td class="c3">Select the traced atoms by one of the following methods:
   <dl>
   <dt>Symbol</dt>
   <dd>The atom type symbol.</dd>
@@ -60,9 +49,14 @@
 	<td class="c3">Space separated list of atoms selectors.</td>
 </tr>
 <tr>
+	<td class="c1">Show trajectories</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Made trajectories visible.</td>
+</tr>
+<tr>
 	<td class="c1">Max displacement</td>
 	<td class="c2">slider</td>
-	<td class="c3">Maximum displacement between two atoms positions to consider them a single trace.</td>
+	<td class="c3">Maximum displacement between two atoms positions to consider them a single trace. Visible only when “Show trajectories” is selected.</td>
 </tr>
 <tr>
 	<td class="c1">Show position clouds</td>
@@ -72,12 +66,7 @@
 <tr>
 	<td class="c1">Point sprite size</td>
 	<td class="c2">slider</td>
-	<td class="c3">Size of the sprite texture that will be accumulated on each point.</td>
-</tr>
-<tr>
-	<td class="c1">Cloud color</td>
-	<td class="c2">color selector</td>
-	<td class="c3">Color of the position cloud.</td>
+	<td class="c3">Size of the sprite texture that will be accumulated on each point as percent of the normal size.</td>
 </tr>
 <tr>
 	<td class="c1">Show averages</td>
@@ -85,9 +74,14 @@
 	<td class="c3">Open the <a href="../secondary/displacements.html">Mean displacement visualizer</a> window that lists the mean position and mean displacement of the selected atoms.</td>
 </tr>
 <tr>
-	<td class="c1">Start trajectories</td>
+	<td class="c1">Start/stop trajectories</td>
 	<td class="c2">button</td>
-	<td class="c3">Start accumulating trajectories.</td>
+	<td class="c3">Start or stop accumulating trajectories.</td>
+</tr>
+<tr>
+	<td class="c1">Clear trajectories</td>
+	<td class="c2">button</td>
+	<td class="c3">Clear the accumulated trajectories.</td>
 </tr>
 </table>
 

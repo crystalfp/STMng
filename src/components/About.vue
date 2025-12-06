@@ -46,7 +46,7 @@ getVersions()
       <div class="ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a
             chemistry and crystallographic visualization tool that implements some of the original STM4 functionalities.</div>
       <div class="mb-4 ml-2 mt-3 text-body-1">Author: Mario Valle
-           (<a href="mailto:mvalle@ikmail.com">mvalle@ikmail.com</a>).</div>
+           &lt;<a href="mailto:mvalle@ikmail.com">mvalle@ikmail.com</a>&gt;</div>
       <table class="text-body-2 ml-2">
         <tbody>
           <tr><td class="w-50">STMng:</td><td>{{ versions.app }}</td></tr>

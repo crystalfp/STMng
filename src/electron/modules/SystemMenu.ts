@@ -228,7 +228,6 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                 {type: "separator"},
                 {
                     label: "About",
-                    accelerator: "CommandOrControl+A",
                     click() {
                         openMenuEntry("show-versions");
                     }
