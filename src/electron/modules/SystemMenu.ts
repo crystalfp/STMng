@@ -28,7 +28,11 @@ import type {CtrlParams} from "@/types";
  *      - "secondary": Help for a secondary window
  * @param file - Node name or window path for which the documentation should be shown.
  */
-const openDocumentation = async (kind: "top" | "node" | "secondary", file="index"): Promise<void> => {
+const openDocumentation = async (kind: "top" | "node" | "secondary", file?: string): Promise<void> => {
+
+    if(!file && kind !== "top") {
+        throw Error(`Invalid help file request for "${kind}"`);
+    }
 
     let url;
     switch(kind) {
@@ -44,10 +48,10 @@ const openDocumentation = async (kind: "top" | "node" | "secondary", file="index
     }
     if(existsSync(url)) {
         const sts = await shell.openPath(url);
-        if(sts) throw Error(`Error from help file "${file}.html": ${sts}`);
+        if(sts) throw Error(`Error from help file "${file}.html" for "${kind}": ${sts}`);
         return;
     }
-    throw Error(`Help file "${file}.html" not found`);
+    throw Error(`Help file "${file}.html" for "${kind}" not found`);
 };
 
 let systemMenu: Menu;
@@ -207,14 +211,11 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     label: "Current node documentation",
                     accelerator: "CommandOrControl+F1",
                     click() {
-                        let currentNodeInError: string;
                         getCurrentNode().then((currentNode) => {
-                            if(!currentNode) currentNode = "../index";
-                            currentNodeInError = currentNode;
                             void openDocumentation("node", currentNode);
                         })
                         .catch((error: Error) => {
-                            sendAlertToClient(`Error getting help for "${currentNodeInError}": ${error.message}`);
+                            sendAlertToClient(`Error getting help: ${error.message}`);
                         });
                     }
                 },
