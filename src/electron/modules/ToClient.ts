@@ -70,20 +70,6 @@ export const sendVerticesToClient = (id: string, channel: string, vertices: numb
 };
 
 /**
- * Push traces data to client
- *
- * @param id - ID of the node sending the parameters
- * @param segments - List of segments coordinates
- * @param colors - Colors of each segment
- */
-export const sendTracesToClient = (id: string,
-								   segments: number[][],
-								   colors: string[]): void => {
-
-	const channelName = id + ":traces";
-	mainWinWebContents!.send(channelName, segments, colors);
-};
-/**
  * Push segments of a trace to client
  *
  * @param id - ID of the node sending the parameters

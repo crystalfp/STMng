@@ -10,8 +10,7 @@
 import {computed, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
-import {askNode, receiveSegmentsFromNode, receiveTracesFromNode,
-        sendToNode} from "@/services/RoutesClient";
+import {askNode, receiveSegmentsFromNode, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {TrajectoriesRenderer} from "@/renderers/TrajectoriesRenderer";
 import type {AtomSelectorModes, PositionType} from "@/types";
@@ -64,21 +63,22 @@ const renderer = new TrajectoriesRenderer(id,
                                           positionCloudsSize.value);
 
 /**
- * Clear the accumulated structures
- */
-const resetTraces = (): void => {
-
-    renderer.resetTraces();
-
-    sendToNode(id, "reset");
-};
-
-/**
  * Toggle capturing trajectories
  */
 const toggleRecording = (): void => {
 
     controlStore.trajectoriesRecording = !controlStore.trajectoriesRecording;
+};
+
+/**
+ * Clear the accumulated structures
+ */
+const resetTraces = (): void => {
+
+    renderer.resetTraces();
+    toggleRecording();
+
+    sendToNode(id, "reset");
 };
 
 const {trajectoriesRecording} = storeToRefs(controlStore);
@@ -117,15 +117,9 @@ watch([showPositionClouds, positionCloudsSize],
     renderer.changeCloudsVisibility(after[0]);
 
     sendToNode(id, "cloud", {
-        showPositionClouds: showPositionClouds.value,
-        positionCloudsSize: positionCloudsSize.value
+        showPositionClouds: after[0],
+        positionCloudsSize: after[1]
     });
-});
-
-/** Receive a set of traces */
-receiveTracesFromNode(id, (segments: number[][], colors: string[]): void => {
-
-    renderer.receiveTraces(segments, colors, showPositionClouds.value);
 });
 
 /** Receive last segment of a trace */
@@ -158,7 +152,7 @@ const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red
   <v-switch v-model="showPositionClouds" label="Show position clouds" class="ml-2 mb-4" />
   <v-container v-if="showPositionClouds" class="pa-0 mb-2">
     <debounced-slider v-slot="{value}" v-model="positionCloudsSize"
-                      :step="1" :min="10" :max="200" class="ml-1 mb-4">
+                      :step="1" :min="30" :max="300" class="ml-1 mb-4">
       <v-label :text="`Point cloud size (${value}%)`" class="no-select" />
     </debounced-slider>
   </v-container>

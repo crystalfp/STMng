@@ -9,7 +9,7 @@
 import {NodeCore} from "../modules/NodeCore";
 import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
-import {sendTracesToClient, sendSegmentsToClient} from "../modules/ToClient";
+import {sendSegmentsToClient} from "../modules/ToClient";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
@@ -24,7 +24,6 @@ export class Trajectories extends NodeCore {
 	private atomsSelector = "";
 	private maxDisplacement = 1;
 	private showPositionClouds = false;
-	private readonly traces: number[][] = [];
 	private nextSteps = false;
 	private positionCloudsSize = 100;
 	private indices: number[] = [];
@@ -85,15 +84,13 @@ export class Trajectories extends NodeCore {
 						this.segments[i][1] = [position[0], position[1], position[2]];
 					}
 					this.segmentsSkip[i] = false;
-
-					this.traces[i].push(position[0], position[1], position[2]);
 				}
 
 				// After the first step increase the points size
 				// if the number of atoms traced increases
 				const previousLength = this.segments.length;
 				if(len > previousLength) {
-					this.traces.length = len;
+
 					this.segments.length = len;
 					this.segmentsColor.length = len;
 					this.segmentsSkip.length = len;
@@ -103,7 +100,6 @@ export class Trajectories extends NodeCore {
 						this.segments[i] = [[position[0], position[1], position[2]]];
 						this.segmentsColor[i] = getAtomData(atomZ).color;
 						this.segmentsSkip[i] = true;
-						this.traces[i] = [position[0], position[1], position[2]];
 					}
 				}
 			}
@@ -112,7 +108,6 @@ export class Trajectories extends NodeCore {
 				this.nextSteps = true;
 
 				// First step, initialize the set of coordinates
-				this.traces.length = len;
 				this.segments.length = len;
 				this.segmentsColor.length = len;
 				this.segmentsSkip.length = len;
@@ -123,7 +118,6 @@ export class Trajectories extends NodeCore {
 					this.segments[i] = [[position[0], position[1], position[2]]];
 					this.segmentsColor[i] = getAtomData(atomZ).color;
 					this.segmentsSkip[i] = true;
-					this.traces[i] = [position[0], position[1], position[2]];
 				}
 			}
 
@@ -186,67 +180,6 @@ export class Trajectories extends NodeCore {
 		this.positionCloudsSize  = params.positionCloudsSize as number ?? 100;
 	}
 
-	// > Trace lines methods
-	/**
-	 * Draw trajectory lines (split in segments to avoid big jumps)
-	 */
-	private sendLines(atomsCount: number): void {
-
-		const segments: number[][] = [];
-		const colors: string[] = [];
-		for(let i=0; i < atomsCount; ++i) {
-			const splitTrace: number[][] = [];
-			Trajectories.splitSegments(this.traces[i], this.maxDisplacement, splitTrace);
-			for(const trace of splitTrace) {
-				segments.push(trace);
-				colors.push(this.segmentsColor[i]);
-			}
-		}
-		sendTracesToClient(this.id, segments, colors);
-	}
-
-	/**
-	 * Split a trajectory in segments with steps' lengths less than a maximum
-	 *
-	 * @param points - Points along a path
-	 * @param maxLength - Max length of each segment
-	 * @returns An array of segments points
-	 */
-	private static splitSegments(points: number[], maxLength: number, segments: number[][]): void {
-
-		// Sanity check
-		const npoints = points.length/3;
-		if(npoints < 2) return;
-
-		let segmentStartIndex = 0;
-		for(let i=1; i < npoints; ++i) {
-
-			// Compute segment length
-			const j = i*3;
-			const k = (i-1)*3;
-			const dx = points[j]   - points[k];
-			const dy = points[j+1] - points[k+1];
-			const dz = points[j+2] - points[k+2];
-			const length = Math.hypot(dx, dy, dz);
-
-			if(length > maxLength) {
-
-				// Finish previous segment
-				if((j-segmentStartIndex) > 1) {
-					segments.push(points.slice(segmentStartIndex, j));
-				}
-
-				// Start new segment
-				segmentStartIndex = j;
-			}
-		}
-
-		// Output last segment
-		if((npoints*3 - segmentStartIndex) > 1) {
-			segments.push(points.slice(segmentStartIndex));
-		}
-	}
-
 	/**
 	 * Compute and send updated mean positions and displacements to client
 	 *
@@ -289,7 +222,6 @@ export class Trajectories extends NodeCore {
 	 */
 	private channelReset(): void {
 
-		this.traces.length = 0;
 		this.segments.length = 0;
 		this.segmentsColor.length = 0;
 		this.segmentsSkip.length = 0;
@@ -340,9 +272,6 @@ export class Trajectories extends NodeCore {
 	private channelGap(params: CtrlParams): void {
 
         this.maxDisplacement = params.maxDisplacement as number ?? 1;
-
-		// Create lines
-		this.sendLines(this.traces.length);
 	}
 
 	/**

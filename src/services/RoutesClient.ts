@@ -410,24 +410,6 @@ export const receiveVerticesFromNode = (id: string,
 };
 
 /**
- * Receive traces coordinates and colors as push message
- *
- * @param id - ID of the node sending the parameters
- * @param channel - Specify the channel inside the id related group
- * @param callback - Callback function called when a message is received
- */
-export const receiveTracesFromNode = (id: string,
-									  callback: (segments: number[][],
-									  			 colors: string[]) => void): void => {
-
-	const channelName = id + ":traces";
-    window.electron.ipcRenderer.on(channelName,
-								   (_event,
-								    segments: number[][],
-								    colors: string[]) => {callback(segments, colors);});
-};
-
-/**
  * Receive last segment coordinates of a traces and colors as push message
  *
  * @param id - ID of the node sending the parameters

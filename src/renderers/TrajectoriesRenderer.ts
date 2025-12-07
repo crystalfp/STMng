@@ -6,9 +6,9 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-12-01
  */
-import {Group, PointsMaterial, BufferGeometry, TextureLoader, type Texture, Points,
-		SRGBColorSpace, Float32BufferAttribute, Vector3,
-		LineBasicMaterial, Line, LineSegments} from "three";
+import {Group, PointsMaterial, BufferGeometry, TextureLoader, type Texture,
+		Points, SRGBColorSpace, Float32BufferAttribute,
+		LineBasicMaterial, LineSegments} from "three";
 import {sm} from "@/services/SceneManager";
 import spriteImage from "@/assets/volumetric-sprite.png";
 import type {PositionType} from "@/types";
@@ -25,7 +25,9 @@ export class TrajectoriesRenderer {
 	private readonly groupTracesName;
 	private readonly groupClouds = new Group();
 	private readonly groupCloudsName;
-	private readonly cloudsMaterial: PointsMaterial;
+	private readonly cloudsMaterial: PointsMaterial[] = [];
+	private variant = 0;
+	private size = 100*DEFAULT_SIZE;
 
 	/**
 	 * Trajectory renders constructor
@@ -53,18 +55,33 @@ export class TrajectoriesRenderer {
 		sm.clearAndAddGroup(this.groupClouds);
 
 		// Initialize the position clouds rendering
+		// Loaded two different textures to give a minimum of non-uniformity
+		// to the clouds
 		const textureLoader = new TextureLoader();
-		const sprite = textureLoader.load(spriteImage,
+		const sprite0 = textureLoader.load(spriteImage,
 										  (texture: Texture): void => {
 											texture.colorSpace = SRGBColorSpace;
 										  });
-		this.cloudsMaterial = new PointsMaterial({
+		const sprite1 = textureLoader.load(spriteImage,
+										  (texture: Texture): void => {
+											texture.colorSpace = SRGBColorSpace;
+											texture.flipY = false;
+										  });
+		this.cloudsMaterial[0] = new PointsMaterial({
 			size: positionCloudsSize*DEFAULT_SIZE,
-			alphaMap: sprite,
+			alphaMap: sprite0,
 			depthTest: false,
 			transparent: true,
 			color: "#000" // Will be overridden
 		});
+		this.cloudsMaterial[1] = new PointsMaterial({
+			size: positionCloudsSize*DEFAULT_SIZE,
+			alphaMap: sprite1,
+			depthTest: false,
+			transparent: true,
+			color: "#000" // Will be overridden
+		});
+		this.size = positionCloudsSize*DEFAULT_SIZE;
 	}
 
 	/**
@@ -86,9 +103,10 @@ export class TrajectoriesRenderer {
 		for(const obj of this.groupClouds.children) {
 			if(obj instanceof Points) {
 				(obj.material as PointsMaterial).size = size*DEFAULT_SIZE;
-				sm.modified();
 			}
 		}
+		sm.modified();
+		this.size = size*DEFAULT_SIZE;
 	}
 
 	/**
@@ -115,38 +133,6 @@ export class TrajectoriesRenderer {
 	}
 
 	/**
-	 * Receive a set of traces
-	 *
-	 * @param segments - List of coordinates arrays for each trace segment
-	 * @param colors - Color of each segment
-	 * @param cloudVisibility - Visibility of the position cloud
-	 */
-	receiveTraces(segments: number[][], colors: string[], cloudVisibility: boolean): void {
-
-		sm.clearGroup(this.groupTracesName);
-		sm.clearGroup(this.groupCloudsName);
-
-		let idx = 0;
-		for(const segment of segments) {
-
-			const points: Vector3[] = [];
-			const len = segment.length;
-			for(let i=0; i < len; i+=3) {
-				points.push(new Vector3(segment[i], segment[i+1], segment[i+2]));
-			}
-
-			const geometry = new BufferGeometry().setFromPoints(points);
-			const material = new LineBasicMaterial({color: colors[idx]});
-			const line = new Line(geometry, material);
-			this.groupTraces.add(line);
-			++idx;
-		}
-
-		// Set clouds visibility and populate it if visible
-		this.changeCloudsVisibility(cloudVisibility);
-	}
-
-	/**
 	 * Receive the last segment of the traces
 	 *
 	 * @param segments - The segments to add to the trace
@@ -159,13 +145,14 @@ export class TrajectoriesRenderer {
 					skip: boolean[],
 					cloudVisibility: boolean): void {
 
-		// Group segments of the same color
-		let idx = 0;
-		const entries = [];
-		for(const color of colors) {
+		// Sanity check
+		if(colors.length === 0) return;
 
-			entries.push({idx, color, skip: skip[idx]});
-			++idx;
+		// Group segments of the same color
+		const entries = [];
+		for(let idx=0; idx < colors.length; ++idx) {
+
+			entries.push({idx, color: colors[idx], skip: skip[idx]});
 		}
 		const groups = Object.groupBy(entries, ({color}) => color);
 
@@ -198,11 +185,14 @@ export class TrajectoriesRenderer {
 			const volumeGeometry = new BufferGeometry();
 			volumeGeometry.setAttribute("position",
 										new Float32BufferAttribute(cloudPoints, 3));
-			const volumeMaterial = this.cloudsMaterial.clone();
+			const volumeMaterial = this.cloudsMaterial[this.variant].clone();
+			this.variant = (this.variant + 1) % 2;
 			volumeMaterial.color.set(group);
+			volumeMaterial.size = this.size;
 			const particles = new Points(volumeGeometry, volumeMaterial);
 			this.groupClouds.add(particles);
 		}
+		sm.modified();
 
 		// Set clouds visibility
 		this.groupClouds.visible = cloudVisibility;
