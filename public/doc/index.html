@@ -15,27 +15,27 @@
 </head>
 <body>
 <header>
-<img src="title.png" width="900" height="506" alt="See The Molecule new generation (STMng) documentation">
+<img src="title.png" width="900" height="506" alt="See The Molecule new generation (STMng) documentation" style="margin-bottom: 1rem">
 <p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old <a href="http://mariovalle.name/STM4/index.html">STM4</a> visualization tool.</p>
-<p>STMng primary use is to analyze the results of the <a href="https://uspex-team.org/">USPEX</a> computational material discovery system.</p>
-<p>Unlike its predecessor, STMng is built on top of <span onclick="openDetails('#tech'); return false;">open source framework and libraries</span>.</p>
-<button onclick="toggleDetails()" class="toggle-button">Toggle cards visibility</button>
+<p>The main motivation to build STMng is to have a tool to analyze the results of the <a href="https://uspex-team.org/">USPEX</a> computational material discovery system.</p>
+<p>Unlike its predecessor, STMng is built on top of <span onclick="openDetails('#tech'); return false;">open-source framework and libraries</span>.</p>
+<button onclick="toggleDetails()" class="toggle-button">Expand&hairsp;/&hairsp;Collapse cards</button>
 </header>
 <details>
   <summary>STMng screen</summary>
   <img src="screen.png" width="899" height="483" alt="Main parts of the STMng application screen">
-  <p>The main STMng screen is divided in two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
-  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hides the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel. Same functionality is available from the View&nbsp;&gt;&nbsp;Extend&nbsp;viewer menu.</p>
+  <p>The main STMng screen is divided into two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
+  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hides the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel. Same functionality is available from the View&nbsp;→&nbsp;Extend&nbsp;viewer menu.</p>
   <p>On the title bar of the window is visible the currently loaded
     <span onclick="openDetails('#project'); return false;">project</span> by its project file name or the “default project” mark. If a file is loaded in the <a href="nodes/structure-reader.html">Structure reader</a>, the filename is also shown.</p>
-  <p>The <b>Node controls panel</b> contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are located the parameter’s controls specific for the selected node. At the bottom there are the controls to <b>Manage camera position</b> that <b>resets the camera position</b> in the viewer and <b>orients the camera</b> along various axis.</p>
-  <p>These controls show by default the “Reset camera” button that resets the camera position to show the loaded structure. On its left side the <img src="x-button.png" width="37" height="37"> button shows the next set of buttons that align the camera with the XYZ axis. Here the <img src="sign-button.png" width="37" height="37"> button reverses the chosen axis. If the structure in the viewer has an unit cell defined, on the left side the <img src="a-button.png" width="37" height="37"> button shows the next set of buttons that align the camera with the ABC cell axis. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="37" height="37"> button returns to the first controls.</p>
+  <p>The <b>Node controls panel</b> contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are found the parameter’s controls specific for the selected node.</p>
+  <p>At the bottom there are controls to <b>reset the camera position</b> in the viewer and to <b>orient the camera</b> along various axis. These controls show by default the “Reset camera” button that resets the camera position to show the loaded structure. On its left side the <img src="x-button.png" width="37" height="37" alt="X"> button shows the next set of buttons that align the camera with the XYZ axis. Here the <img src="sign-button.png" width="37" height="37" alt="plus minus"> button reverses the viewing direction along the chosen axis. If the structure in the viewer has an unit cell defined, on the left side the <img src="a-button.png" width="37" height="37" alt="A"> button shows the next set of buttons that align the camera with the ABC cell basis vectors. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="37" height="37" alt="H"> button returns to the “Reset camera” button.</p>
   <p>Some nodes and menu entries open a <span onclick="openDetails('#secondary'); return false;">secondary window</span>, that can be resized and positioned freely outside the main window boundaries, with data and controls specific for its functionality.</p>
 </details>
 <details>
   <summary>Available processing nodes documentation</summary>
-  <p>Nodes are the building blocks of the graph that controls the STMng behavior. Each node could have inputs and/or outputs and could generate graphical objects that are visualized in the viewer.</p>
-  <p>The application makes available the nodes listed below, but the ones made available to the user are collected in the loaded <a href="#project">project</a>. Instead, all available nodes are present in the “default project”.</p>
+  <p>Nodes are the building blocks of the graph that controls the STMng behavior and provide its functionalities. Each node could have inputs and/or outputs and could generate graphical objects that are visualized in the viewer.</p>
+  <p>The application makes available the nodes listed below, but the ones made available to the user are collected in the loaded <span onclick="openDetails('#project'); return false;">project</span>. Instead, all available nodes are present in the “default project”.</p>
   <table>
     <tr><td class="m1"><a href="nodes/capture-view.html">Capture view</a></td>
         <td>Capture the viewer content as image, STL model or movie.</td></tr>
@@ -80,8 +80,8 @@
 <details id="secondary">
   <summary>Secondary windows documentation</summary>
   <table>
-    <tr><td class="m1"><a href="secondary/chart.html">X-Ray diffraction chart</a></td>
-        <td>The window show the diffraction spectra</td></tr>
+    <tr><td class="m1"><a href="secondary/log.html">Application log visualizer</a></td>
+        <td>Show the application messages log.</td></tr>
     <tr><td class="m1"><a href="secondary/compare.html">Compare structures</a></td>
         <td>Visually compare pair of structures.</td></tr>
     <tr><td class="m1"><a href="secondary/fp-charts.html">Fingerprints charts</a></td>
@@ -90,16 +90,16 @@
         <td>Show the energy surface interpolating the computed fingerprints.</td></tr>
     <tr><td class="m1"><a href="secondary/fp-scatterplot.html">Fingerprints scatterplot</a></td>
         <td>Show the fingerprints as points in a 2D space.</td></tr>
-    <tr><td class="m1"><a href="secondary/log.html">Application log visualizer</a></td>
-        <td>Show the application messages log.</td></tr>
     <tr><td class="m1"><a href="secondary/project-editor.html">Project editor</a></td>
         <td>The editor for the loaded project file.</td></tr>
+    <tr><td class="m1"><a href="secondary/prototype.html">Show prototype structure</a></td>
+        <td>Show the structure of a prototype from the <a href="https://aflow.org/prototype-encyclopedia/">Aflow prototypes library</a>.</td></tr>
     <tr><td class="m1"><a href="secondary/symmetries.html">Show structure symmetries</a></td>
         <td>Show structure symmetries in input and output from the <a href="nodes/compute-symmetries.html">Symmetry</a> node.</td></tr>
     <tr><td class="m1"><a href="secondary/displacements.html">Show trajectory displacements</a></td>
-        <td>Show atom’s trajectory mean positions and displacements.</td></tr>
-    <tr><td class="m1"><a href="secondary/prototype.html">Show prototype structure</a></td>
-        <td>Show the structure of a prototype from the <a href="https://aflow.org/prototype-encyclopedia/">Aflow prototypes library</a>.</td></tr>
+        <td>Show atom’s trajectory average positions and displacements.</td></tr>
+    <tr><td class="m1"><a href="secondary/chart.html">X-Ray diffraction chart</a></td>
+        <td>The window shows the diffraction spectra.</td></tr>
   </table>
 </details>
 <details>
@@ -120,10 +120,10 @@
   <p>The <b>project</b> is the description of the nodes used, their interconnections
   and their parameters.</p>
   <p>The nodes provided by the project have their UI visible in the UI section of the screen.</p>
-  <p>The application comes with an hardcoded project, called the <b>default project,</b>
-  that contains all the nodes shipped. It cannot be changed, but can be edited and saved as
+  <p>The application comes with a hardcoded project, called the <b>default project,</b>
+  composed by all the nodes shipped. It cannot be changed but can be edited and saved as
   a different project.</p>
-  <p>The current project or the default project are automatically loaded when the application starts.
+  <p>The current project or the default project is automatically loaded when the application starts.
   The project file could also be loaded from the command line.</p>
   <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
   containing a JSON record with the following keys:</p>
@@ -157,7 +157,7 @@
   . . .
 }</code>
   <h2>Project editor</h2>
-  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="secondary/project-editor.html">Project editor</a>. This editor allows the modification of the currently loaded project that, at the end, could be saved and becomes the current project. Also an entirely new project could be created and saved.</p>
+  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="secondary/project-editor.html">Project editor</a>. This editor allows the modification of the currently loaded project that, at the end, could be saved and becomes the current project. Also, an entirely new project could be created and saved.</p>
 </details>
 <details>
   <summary>Main menu and application shortcuts</summary>
@@ -188,12 +188,12 @@
     <tr>
       <td class="c1">Load project from…</td>
       <td class="c2">Control+O</td>
-      <td class="c3">Select and load a <span onclick="openDetails('#project'); return false;">project</span> file</td>
+      <td class="c3">Select and load a <span onclick="openDetails('#project'); return false;">project file</span></td>
     </tr>
     <tr>
       <td class="c1">Load default project</td>
       <td class="c2">Control+D</td>
-      <td class="c3">Load the default project</td>
+      <td class="c3">Load the <span onclick="openDetails('#project'); return false;">default project</span></td>
     </tr>
     <tr>
       <td class="c1">Save project</td>
@@ -213,7 +213,7 @@
     <tr>
       <td class="c1">Quit application</td>
       <td class="c2">Control+Q</td>
-      <td class="c3">Quit the application asking confirmation</td>
+      <td class="c3">Quit the application after asking confirmation</td>
     </tr>
   </tbody>
   </table>
@@ -239,7 +239,7 @@
     <tr>
       <td class="c1">Extend viewer</td>
       <td class="c2">Control+E</td>
-      <td class="c3">Toggle the viewer extension, that is, hide the control panel on the left. The same effect is obtained clicking on the separator between the two panels (the <b>Gutter</b>)</td>
+      <td class="c3">Toggle the viewer extension, that is, hide the control panel on the left. The same effect is achieved clicking on the separator between the two panels (the <b>Gutter</b>)</td>
     </tr>
   </tbody>
   </table>
@@ -265,12 +265,12 @@
     <tr>
       <td class="c1">STMng documentation</td>
       <td class="c2">F1</td>
-      <td class="c3">Open the STMng help (this file) in a browser</td>
+      <td class="c3">Open the STMng help (this file) in the default system browser</td>
     </tr>
     <tr>
       <td class="c1">Current node documentation</td>
       <td class="c2">Control+F1</td>
-      <td class="c3">Show help for the current active node in a browser</td>
+      <td class="c3">Show help for the current active node in the default system browser</td>
     </tr>
     <tr>
       <td class="c1">Show application log</td>
@@ -280,7 +280,7 @@
     <tr>
       <td class="c1">About</td>
       <td class="c2"></td>
-      <td class="c3">Open the About dialog with the version ofls the main libraries used in the application</td>
+      <td class="c3">Open the “About” dialog with the version of the main libraries used in the application</td>
     </tr>
   </tbody>
   </table>
@@ -294,7 +294,7 @@
   <h2>Secondary windows</h2>
   <p>On all <span onclick="openDetails('#secondary'); return false;">secondary windows</span> the following keys are active:</p>
   <dl>
-    <dt>ESC</dt><dd>Closes the window.</dd>
+    <dt>ESC</dt><dd>Close the window.</dd>
     <dt>F1</dt><dd>Opens the help file for the current window.</dd>
     <dt>F12</dt><dd>During development or calling STMng with the “<tt>-e</tt>” command line option, opens the development tools for the current window.</dd>
   </dl>
@@ -302,7 +302,7 @@
 <details>
   <summary>Interaction with the viewers</summary>
   <p>Interacting with the viewer means moving the camera around the visualized object.</p>
-  <p>This interaction is done through mouse movements and using the keyboard arrows. Note that the same mouse actions are applicable to the Energy Landscape and Compare Structures viewers, but not the keyboard arrows shortcuts.</p>
+  <p>This interaction is done through mouse movements and using keyboard arrows. Note that the same mouse actions are applicable to <a href="secondary/fp-landscape.html">Energy Landscape</a>, <a href="secondary/compare.html">Compare Structures</a> and <a href="secondary/prototype.html">Show prototype structure</a> viewers, but not the keyboard arrows shortcuts.</p>
   <h2>Terminology</h2>
   <table class="menu">
   <tbody>
@@ -368,7 +368,7 @@
     </tr>
   </tbody>
   </table>
-  <p>Dolly movement have a visible effect only with Perspective camera. Instead with Orthographic camera objects too near or too far from the camera are cut from view. If this happens, a dolly movement helps to restore scene integrity.</p>
+  <p>Dolly movements have a visible effect only with the Perspective camera. Instead with the Orthographic camera objects too near or too far from the camera are cut from view. If this happens, a dolly movement helps to restore objects’ integrity.</p>
 </details>
 <details>
   <summary>Command line options</summary>
@@ -390,8 +390,8 @@ Options:
   -x, --extra &lt;switches&gt;  extra command line switches
   -h, --help              display help for command
 </code>
-<p>The “<tt>-x</tt>” command line switch pass the subsequent switches to the internal processes. If more than one, they are
-comma separated and if they pass a value, switch and value are separated by a “<tt>=</tt>” sign.</p>
+<p>The “<tt>-x</tt>” command line switch passes the following arguments to the internal processes.
+When there is more than one, items are separated by commas; if a value is provided, it appears after the switch and is joined with an “<tt>=</tt>” sign.</p>
 <p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>
 <p>Developer tools can be enabled in production also with the “<tt>STM_NG_ENABLE</tt>” environment variable set to any value.</p>
 </details>
@@ -421,9 +421,9 @@ comma separated and if they pass a value, switch and value are separated by a �
 
 <p>Under the following terms:</p>
 <ul style="list-style-type: none;">
-<li><strong>Attribution</strong> &mdash; You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
+<li><strong>Attribution</strong> &mdash; You must give proper credit, provide a link to the license, and show if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
 
-<li><strong>Non Commercial</strong> &mdash; You may not use the material for commercial purposes.</li>
+<li><strong>Non-Commercial</strong> &mdash; You may not use the material for commercial purposes.</li>
 
 <li><strong>Share Alike</strong> &mdash; If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.</li>
 </ul>
