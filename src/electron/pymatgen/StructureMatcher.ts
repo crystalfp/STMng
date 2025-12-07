@@ -10,15 +10,15 @@
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 
 import {inv, multiply} from "mathjs";
-import {LinearAssignment} from "./LinearAssignment.ts";
+import {LinearAssignment} from "./LinearAssignment";
 import {isCoordSubsetPbc, latticePointsInSupercell,
-        pbcShortestVectors} from "./Coords.ts";
+        pbcShortestVectors} from "./Coords";
 import {findAllMappings, getLLLmatrices, matrixToLattice, paramsToLattice,
-        reciprocalLatticeLengths} from "./Lattice.ts";
-import {getReducedStructure} from "./Structure.ts";
+        reciprocalLatticeLengths} from "./Lattice";
+import {getReducedStructure} from "./Structure";
 import {addVectors, determinant, getFractionalCoords, norm, pbc,
-        subtractVectors} from "./Utility.ts";
-import type {Lattice, SNL} from "./types.ts";
+        subtractVectors} from "./Utility";
+import type {Lattice, SNL} from "./types";
 
 /**
  * Result of structure matching

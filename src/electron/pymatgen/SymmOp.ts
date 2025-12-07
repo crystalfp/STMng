@@ -7,7 +7,7 @@
  * @since 2025-05-26
  */
 import {inv, multiply} from "mathjs";
-import {normalize, type Matrix} from "./LinearAlgebra";
+import {normalize} from "../modules/Helpers";
 
 /**
  * SymmOp represents a symmetry operation in Cartesian space using a 4x4 affine matrix.
@@ -18,7 +18,7 @@ import {normalize, type Matrix} from "./LinearAlgebra";
 export class SymmOp {
 
 	/** The affine matrix */
-    public readonly matrix: Matrix;
+    public readonly matrix: number[][];
 
     /**
 	 * Initialize the SymmOp from a 4x4 affine transformation matrix.
@@ -31,7 +31,7 @@ export class SymmOp {
                        and the first 3 elements of the last column are the translation.
                        The last row is typically [0, 0, 0, 1].
      */
-    constructor(matrix: Matrix) {
+    constructor(matrix: number[][]) {
         if(matrix.length !== 4 || matrix.some((row) => row.length !== 4)) {
             throw new Error("SymmOp matrix must be 4x4.");
         }
@@ -86,7 +86,7 @@ export class SymmOp {
 	 */
 	static inversion(origin = [0, 0, 0]): SymmOp {
 
-		const mat: Matrix = [
+		const mat: number[][] = [
 			[-1, 0,  0,  0],
 			[0, -1,  0,  0],
 			[0,  0, -1,  0],
@@ -143,7 +143,7 @@ export class SymmOp {
 	static fromRotationAndTranslation(rotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
 									  translation = [0, 0, 0]): SymmOp {
 
-		const affineMatrix: Matrix = [
+		const affineMatrix: number[][] = [
 			[rotation[0][0], rotation[0][1], rotation[0][2], translation[0]],
 			[rotation[1][0], rotation[1][1], rotation[1][2], translation[1]],
 			[rotation[2][0], rotation[2][1], rotation[2][2], translation[2]],
@@ -161,8 +161,7 @@ export class SymmOp {
 	 */
 	static reflection(normal: number[], origin = [0, 0, 0]): SymmOp {
 
-		normal = normalize(normal);
-		const [u, v, w] = normal;
+		const [u, v, w] = normalize(normal);
 
 		const xx = 1 - 2 * u**2;
         const yy = 1 - 2 * v**2;
@@ -177,7 +176,7 @@ export class SymmOp {
 				[1, 0, 0, -origin[0]],
 				[0, 1, 0, -origin[1]],
 				[0, 0, 1, -origin[2]],
-				[0, 0, 0, 1]
+				[0, 0, 0,          1]
 			];
 			const m1 = multiply(mirrorMatrix, translation);
 			const translationInverse = inv(translation);

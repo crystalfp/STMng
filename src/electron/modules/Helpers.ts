@@ -426,3 +426,14 @@ export const isNormalBond = (bond: Bond): boolean => bond.type === 0;
  * @returns True if it is a hydrogen bond
  */
 export const isHydrogenBond = (bond: Bond): boolean => bond.type === 1;
+
+/**
+ * Normalize a 3D vector
+ *
+ * @param v - Vector to be normalized
+ * @returns Normalized vector
+ */
+export const normalize = (v: number[]): number[] => {
+	const length = Math.hypot(v[0], v[1], v[2]);
+	return [v[0] / length, v[1] / length, v[2] / length];
+};

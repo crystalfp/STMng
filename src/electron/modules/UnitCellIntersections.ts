@@ -8,7 +8,7 @@
  */
 import {cross, dot} from "mathjs";
 import {computeCellVertices} from "../modules/ComputeCellVertices";
-import {normalize} from "./LinearAlgebra";
+import {normalize} from "./Helpers";
 import type {BasisType, PositionType} from "@/types";
 
 /**

@@ -10,8 +10,7 @@
 import {eigs, dot, cross} from "mathjs";
 import type {Structure} from "@/types";
 import {getAtomData} from "./AtomData";
-import type {Matrix} from "./LinearAlgebra";
-import {SymmOp} from "./SymmOp";
+import {SymmOp} from "../pymatgen/SymmOp";
 import log from "electron-log";
 
 /**
@@ -37,7 +36,7 @@ export class PointGroupAnalyzer {
 
 	private tolerance = 0.3;
 	private eigenTolerance = 0.01;
-	private readonly centeredStructure: Matrix = [];
+	private readonly centeredStructure: number[][] = [];
 	private structure: Structure | undefined;
 	private natoms = 0;
 	private static readonly inversionOp = SymmOp.inversion();
@@ -666,7 +665,7 @@ export class PointGroupAnalyzer {
 	 * @returns originSite is an atom at the center of mass (undefined if there are no origin atoms),
 	 * 			clusteredSites: object with avg distance as key, list of atoms indices
 	 */
-	private clusterSites(centeredStructure: Matrix, tol: number): {originSite: number | undefined; clusteredSites: Record<number, number[]>} {
+	private clusterSites(centeredStructure: number[][], tol: number): {originSite: number | undefined; clusteredSites: Record<number, number[]>} {
 
 		const dists: number[] = [];
 		for(let i=0; i < this.natoms; ++i) {

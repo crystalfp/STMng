@@ -8,7 +8,7 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 import {inv} from "mathjs";
-import {extractBasis} from "../modules/Helpers.ts";
+import {extractBasis} from "../modules/Helpers";
 import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         copyMatrix, reciprocaCrystallographyclLatticeLengths,
         transpose, dotProduct, getColumn, matrixVectorMultiply,
@@ -25,8 +25,8 @@ import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         cellAngle,
         solveLinearSystem,
         determinant,
-        calculateVolume} from "./Utility.ts";
-import type {Lattice} from "./types.ts";
+        calculateVolume} from "./Utility";
+import type {Lattice} from "./types";
 
 /**
  * Perform a Lenstra-Lenstra-Lovasz lattice basis reduction to obtain a
