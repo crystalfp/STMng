@@ -12,13 +12,13 @@
 import {inv, multiply} from "mathjs";
 import {LinearAssignment} from "./LinearAssignment.ts";
 import {isCoordSubsetPbc, latticePointsInSupercell,
-        pbcShortestVectors} from "./PymatgenCoords.ts";
+        pbcShortestVectors} from "./Coords.ts";
 import {findAllMappings, getLLLmatrices, matrixToLattice, paramsToLattice,
-        reciprocalLatticeLengths} from "./PymatgenLattice.ts";
-import {getReducedStructure} from "./PymatgenStructure.ts";
+        reciprocalLatticeLengths} from "./Lattice.ts";
+import {getReducedStructure} from "./Structure.ts";
 import {addVectors, determinant, getFractionalCoords, norm, pbc,
         subtractVectors} from "./Utility.ts";
-import type {Lattice, SNL} from "./types";
+import type {Lattice, SNL} from "./types.ts";
 
 /**
  * Result of structure matching

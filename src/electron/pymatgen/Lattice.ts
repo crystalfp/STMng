@@ -8,7 +8,7 @@
  */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 import {inv} from "mathjs";
-import {extractBasis} from "../modules/Helpers";
+import {extractBasis} from "../modules/Helpers.ts";
 import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         copyMatrix, reciprocaCrystallographyclLatticeLengths,
         transpose, dotProduct, getColumn, matrixVectorMultiply,

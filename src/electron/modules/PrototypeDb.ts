@@ -8,10 +8,10 @@
  */
 import {readFileSync, existsSync, createReadStream} from "node:fs";
 import {createGunzip} from "node:zlib";
-import {publicDirPath} from "../modules/GetPublicPath";
-import {EmptyStructure} from "../modules/EmptyStructure";
-import {getAtomicNumber, getAtomData} from "../modules/AtomData";
-import type {PrototypeEntry, SNL, PrototypeTags} from "./types";
+import {publicDirPath} from "./GetPublicPath";
+import {EmptyStructure} from "./EmptyStructure";
+import {getAtomicNumber, getAtomData} from "./AtomData";
+import type {PrototypeEntry, SNL, PrototypeTags} from "../pymatgen/types";
 import type {DBType, PositionType, PrototypeAtomsData, Structure} from "@/types";
 
 /**

@@ -13,7 +13,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {getDBforSearch, getPrototypeStructure} from "../proto/PrototypeDb";
+import {getDBforSearch, getPrototypeStructure} from "../modules/PrototypeDb";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";

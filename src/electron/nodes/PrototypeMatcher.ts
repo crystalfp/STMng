@@ -9,13 +9,13 @@
 import log from "electron-log";
 import {NodeCore} from "../modules/NodeCore";
 import {sendToClient} from "../modules/ToClient";
-import {findMatchingPrototypes} from "../proto/AflowPrototypeMatcher";
+import {findMatchingPrototypes} from "../modules/FindMatchingPrototypes";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {getDBError, getDBforSearch, getPreprocessedPrototypes,
-		getPrototypeTags, getPrototypeForDisplay} from "../proto/PrototypeDb";
+		getPrototypeTags, getPrototypeForDisplay} from "../modules/PrototypeDb";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
-import type {PrototypeEntry, Prototype} from "../proto/types";
+import type {PrototypeEntry, Prototype} from "../pymatgen/types";
 
 export class PrototypeMatcher extends NodeCore {
 

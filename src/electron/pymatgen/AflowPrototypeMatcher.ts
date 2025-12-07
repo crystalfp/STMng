@@ -6,13 +6,9 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-09-24
  */
-import {matrixToLattice} from "./PymatgenLattice";
-import {getPrimitiveStructure, getReducedStructure} from "./PymatgenStructure";
-import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
-import {getAtomicSymbol} from "../modules/AtomData";
+import {getPrimitiveStructure, getReducedStructure} from "./Structure";
 import {StructureMatcher} from "./StructureMatcher";
-import type {Structure} from "../../types";
-import type {Prototype, SNL, Site, PrototypeEntry} from "./types";
+import type {Prototype, SNL, PrototypeEntry} from "./types";
 
 /**
  *  This class will match structures to their crystal prototypes, and will
@@ -28,7 +24,7 @@ import type {Prototype, SNL, Site, PrototypeEntry} from "./types";
     Computational Materials Science, 136, S1-S828.
     https://doi.org/10.1016/j.commatsci.2017.01.017
  */
-class AflowPrototypeMatcher {
+export class AflowPrototypeMatcher {
 
 	private readonly initialLtol: number;
 	private readonly initialStol: number;
@@ -55,42 +51,6 @@ class AflowPrototypeMatcher {
 		this.initialStol = initialStol;
 		this.initialAngleTol = initialAngleTol;
 		this.aflowPrototypeLibrary = preprocessedPrototypes;
-	}
-
-	/**
-	 * Convert structure to the format required by the code
-	 *
-	 * @param structure - STMng structure to be converted
-	 * @returns The structure in SNL format or undefined if it has no unit cell
-	 */
-	private structureToSNL(structure: Structure): SNL | undefined {
-
-		const {crystal, atoms} = structure;
-		const {basis}= crystal;
-
-		if(hasNoUnitCell(basis)) return;
-
-		const matrix = [
-			[basis[0], basis[1], basis[2]],
-			[basis[3], basis[4], basis[5]],
-			[basis[6], basis[7], basis[8]]
-		];
-
-		const lattice = matrixToLattice(matrix);
-
-		const fr = cartesianToFractionalCoordinates(structure);
-
-		return {
-            sites: atoms.map((atom, idx): Site => ({
-				abc: [fr[3*idx], fr[3*idx+1], fr[3*idx+2]],
-				xyz: atom.position,
-				label: atom.label,
-				species: [
-					{element: getAtomicSymbol(atom.atomZ), occu: 1}
-				]
-            })),
-            lattice
-        };
 	}
 
 	/**
@@ -124,17 +84,13 @@ class AflowPrototypeMatcher {
 	 *	S. (2017). The AFLOW library of crystallographic prototypes: part 1. Computational
 	 *	Materials Science, 136, S1-S828. https://doi.org/10.1016/j.commatsci.2017.01.017
 	 *
-	 * @param structure - structure to match
+	 * @param snl - The structure in SNL format
 	 * @returns A list of dicts with keys "snl" for the matched prototype and
 	 *              "tags", a dict of tags ("mineral", "strukturbericht" and "aflow") of that
 	 *              prototype. This should be a list containing just a single entry, but it is
 	 *              possible a material can match multiple prototypes.
 	 */
-	getPrototypes(structure: Structure): Prototype[] {
-
-		// Convert STMng Structure to Pymatgen SNL
-		const snl = this.structureToSNL(structure);
-		if(!snl) return [];
+	getPrototypes(snl: SNL): Prototype[] {
 
 		const reducedStructure = getReducedStructure(snl);
 		const primitiveStructure = getPrimitiveStructure(reducedStructure);
@@ -157,26 +113,3 @@ class AflowPrototypeMatcher {
 		return prototypes;
 	}
 }
-
-/**
- * Find the matching prototype to a given structure
- *
- * @param structure - The structure to match
- * @param preprocessedPrototypes - The list of prototypes preprocessed from the Aflow list
- * @param initialLtol - Fractional length tolerance
- * @param initialStol - Site tolerance
- * @param initialAngleTol - Angle tolerance
- * @returns List of matched prototypes
- */
-export const findMatchingPrototypes = (
-		structure: Structure,
-		preprocessedPrototypes: PrototypeEntry[],
-		initialLtol = 0.2,
-		initialStol = 0.3,
-		initialAngleTol = 5): Prototype[] => {
-
-	const afpm = new AflowPrototypeMatcher(preprocessedPrototypes,
-										   initialLtol, initialStol,
-										   initialAngleTol);
-	return afpm.getPrototypes(structure);
-};

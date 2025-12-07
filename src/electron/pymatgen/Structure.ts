@@ -7,7 +7,7 @@
  * @since 2025-09-24
  */
 import {inv, multiply, transpose} from "mathjs";
-import {getNiggliReducedLattice, matrixToLattice} from "./PymatgenLattice";
+import {getNiggliReducedLattice, matrixToLattice} from "./Lattice";
 import {pbc} from "./Utility";
 import type {Site, SNL} from "./types";
 

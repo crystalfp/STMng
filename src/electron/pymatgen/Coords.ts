@@ -9,7 +9,7 @@
 import {inv, multiply} from "mathjs";
 import {determinant, pbc} from "./Utility";
 import type {Lattice} from "./types";
-import {getLLLmatrices} from "./PymatgenLattice";
+import {getLLLmatrices} from "./Lattice";
 
 /**
  * Get the list of points on the original lattice contained in the
