@@ -190,21 +190,38 @@ export class ComputeBonds extends NodeCore {
 			}
 		}
 
-		// Mark coincident atoms
+		// Remove external atoms coincident with internal ones
 		const fullCount = outAtoms.length;
-		const tol = 1e-5;
+		const TOL = 1e-3;
+		for(let i=0; i < natoms; ++i) {
+			for(let j=natoms; j < fullCount; ++j) {
+				if(this.addType[j] === AddType.removed) continue;
 
-		for(let i=0; i < fullCount-1; ++i) {
+				const dx = outAtoms[i].position[0] - outAtoms[j].position[0];
+				if(dx < TOL && dx > -TOL) {
+					const dy = outAtoms[i].position[1] - outAtoms[j].position[1];
+					if(dy < TOL && dy > -TOL) {
+						const dz = outAtoms[i].position[2] - outAtoms[j].position[2];
+						if(dz < TOL && dz > -TOL) {
+							this.addType[j] = AddType.removed;
+						}
+					}
+				}
+			}
+		}
+
+		// Mark coincident external atoms
+		for(let i=natoms; i < fullCount-1; ++i) {
 			if(this.addType[i] === AddType.removed) continue;
 			for(let j=i+1; j < fullCount; ++j) {
 				if(this.addType[j] === AddType.removed) continue;
 
-				const fdx = outAtoms[i].position[0] - outAtoms[j].position[0];
-				if(fdx < tol && fdx > -tol) {
-					const fdy = outAtoms[i].position[1] - outAtoms[j].position[1];
-					if(fdy < tol && fdy > -tol) {
-						const fdz = outAtoms[i].position[2] - outAtoms[j].position[2];
-						if(fdz < tol && fdz > -tol) {
+				const dx = outAtoms[i].position[0] - outAtoms[j].position[0];
+				if(dx < TOL && dx > -TOL) {
+					const dy = outAtoms[i].position[1] - outAtoms[j].position[1];
+					if(dy < TOL && dy > -TOL) {
+						const dz = outAtoms[i].position[2] - outAtoms[j].position[2];
+						if(dz < TOL && dz > -TOL) {
 							this.addType[j] = AddType.removed;
 						}
 					}
@@ -241,10 +258,10 @@ export class ComputeBonds extends NodeCore {
 
 			if(type !== BondType.normal) continue;
 
-			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
+			if(this.addType[from] !== AddType.outside && this.addType[to] === AddType.outside) {
 				this.addType[to] = AddType.added;
 			}
-			else if(this.addType[to] === AddType.inside && this.addType[from] === AddType.outside) {
+			else if(this.addType[to] !== AddType.outside && this.addType[from] === AddType.outside) {
 				this.addType[from] = AddType.added;
 			}
 		}
@@ -308,69 +325,25 @@ export class ComputeBonds extends NodeCore {
 	private leavePolyhedraAtoms(structure: Structure): void {
 
 		const mark = new Map<number, number[]>();
-		const hasOutsideBonded = new Map<number, boolean>();
 
-		// The starting points are the inside atoms
+		// List atoms that bond to internal atoms
 		for(const {from, to, type} of structure.bonds) {
 
-			// Skip not normal bonds and bonds outside the cell
+			// Skip not normal bonds
 			if(type !== BondType.normal) continue;
-			if(this.addType[from] === AddType.outside &&
-			   this.addType[to] === AddType.outside) continue;
 
-			// List the atoms connected to the inside atoms
+			// List the atoms connected to inside atoms
 			if(this.addType[from] === AddType.inside) {
 				if(mark.has(from)) {
 					mark.get(from)!.push(to);
-					if(this.addType[to] === AddType.outside) hasOutsideBonded.set(from, true);
 				}
 				else {
 					mark.set(from, [to]);
-					hasOutsideBonded.set(from, this.addType[to] === AddType.outside);
 				}
 			}
 			if(this.addType[to] === AddType.inside) {
 				if(mark.has(to)) {
 					mark.get(to)!.push(from);
-					if(this.addType[from] === AddType.outside) hasOutsideBonded.set(to, true);
-				}
-				else {
-					mark.set(to, [from]);
-					hasOutsideBonded.set(to, this.addType[from] === AddType.outside);
-				}
-			}
-		}
-
-		// Verify potential polyhedra
-		for(const [idx, connected] of mark.entries()) {
-
-			const hasOutsideAtom = hasOutsideBonded.get(idx) ?? false;
-			if(hasOutsideAtom && connected.length >= 3) {
-
-				for(const to of connected) {
-					if(this.addType[to] === AddType.outside) {
-						this.addType[to] = AddType.added;
-					}
-				}
-			}
-		}
-
-		mark.clear();
-		for(const {from, to, type} of structure.bonds) {
-
-			// Skip not normal bonds and bonds outside the cell
-			if(type !== BondType.normal) continue;
-			if(this.addType[from] === AddType.added) {
-				if(mark.has(from)) {
-					mark.get(from)!.push(to);
-				}
-				else {
-					mark.set(from, [to]);
-				}
-			}
-			else if(this.addType[to] === AddType.added) {
-				if(mark.has(to)) {
-					mark.get(to)!.push(from);
 				}
 				else {
 					mark.set(to, [from]);
@@ -378,15 +351,19 @@ export class ComputeBonds extends NodeCore {
 			}
 		}
 
-		// Verify potential polyhedra
+		// Retain the ones that form incomplete polyhedra (> 3 internal)
 		for(const connected of mark.values()) {
 
-			if(connected.length >= 3) {
+			// Should potentially create a polyhedra
+			if(connected.length < 4) continue;
 
-				for(const to of connected) {
-					if(this.addType[to] === AddType.outside) {
-						this.addType[to] = AddType.added;
-					}
+			// Should have external atoms that complete the polyhedra
+			if(connected.every((entry) => this.addType[entry] === AddType.inside)) continue;
+
+			// Add missing external atoms
+			for(const to of connected) {
+				if(this.addType[to] === AddType.outside) {
+					this.addType[to] = AddType.added;
 				}
 			}
 		}
@@ -418,7 +395,8 @@ export class ComputeBonds extends NodeCore {
 		const mapIdx = new Map<number, number>();
 		const len = this.addType.length;
 		for(let i=0, j=0; i < len; ++i) {
-			if(this.addType[i] === AddType.inside || this.addType[i] === AddType.added) {
+
+			if(this.addType[i] !== AddType.outside) {
 				mapIdx.set(i, j);
 				++j;
 			}
@@ -428,8 +406,7 @@ export class ComputeBonds extends NodeCore {
 		const updatedAtoms: Atom[] = [];
 		for(let i=0; i < len; ++i) {
 			if(this.addType[i] !== AddType.outside) {
-				const {atomZ, label, chain, position} = structure.atoms[i];
-				updatedAtoms.push({atomZ, label, chain, position});
+				updatedAtoms.push(structuredClone(structure.atoms[i]));
 			}
 		}
 		structure.atoms.length = 0;

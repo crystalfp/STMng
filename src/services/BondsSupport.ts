@@ -44,21 +44,38 @@ export const addOutsideAtoms = (matrix: number[][], atoms: PrototypeAtomsData): 
 		}
 	}
 
-	// Mark coincident atoms
-	const fullCount = outAtoms.labels.length;
-	const tol = 1e-5;
+	// Remove external atoms coincident with internal ones
+	const fullCount = outAtoms.radius.length;
+	const TOL = 1e-3;
+	for(let i=0; i < natoms; ++i) {
+		for(let j=natoms; j < fullCount; ++j) {
+			if(outAtoms.addType[j] === AddType.removed) continue;
 
-	for(let i=0; i < fullCount-1; ++i) {
+			const dx = outAtoms.positions[3*i] - outAtoms.positions[3*j];
+			if(dx < TOL && dx > -TOL) {
+				const dy = outAtoms.positions[3*i+1] - outAtoms.positions[3*j+1];
+				if(dy < TOL && dy > -TOL) {
+					const dz = outAtoms.positions[3*i+2] - outAtoms.positions[3*j+2];
+					if(dz < TOL && dz > -TOL) {
+						outAtoms.addType[j] = AddType.removed;
+					}
+				}
+			}
+		}
+	}
+
+	// Mark coincident external atoms
+	for(let i=natoms; i < fullCount-1; ++i) {
 		if(outAtoms.addType[i] === AddType.removed) continue;
 		for(let j=i+1; j < fullCount; ++j) {
 			if(outAtoms.addType[j] === AddType.removed) continue;
 
-			const fdx = outAtoms.positions[3*i] - outAtoms.positions[3*j];
-			if(fdx < tol && fdx > -tol) {
-				const fdy = outAtoms.positions[3*i+1] - outAtoms.positions[3*j+1];
-				if(fdy < tol && fdy > -tol) {
-					const fdz = outAtoms.positions[3*i+2] - outAtoms.positions[3*j+2];
-					if(fdz < tol && fdz > -tol) {
+			const dx = outAtoms.positions[3*i] - outAtoms.positions[3*j];
+			if(dx < TOL && dx > -TOL) {
+				const dy = outAtoms.positions[3*i+1] - outAtoms.positions[3*j+1];
+				if(dy < TOL && dy > -TOL) {
+					const dz = outAtoms.positions[3*i+2] - outAtoms.positions[3*j+2];
+					if(dz < TOL && dz > -TOL) {
 						outAtoms.addType[j] = AddType.removed;
 					}
 				}

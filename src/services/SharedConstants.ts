@@ -13,16 +13,17 @@
  */
 export const displacementCoefficients = [
 
-	[1,  0, 0], // Z = 0
-	[1,  1, 0],
-	[1, -1, 0],
+	// Z = 0 [0, 0, 0] is obviously missing
+	[0,  1, 0],
+	[0, -1, 0],
 
 	[-1,  0, 0],
 	[-1,  1, 0],
 	[-1, -1, 0],
 
-	[0,  1, 0], // [0, 0, 0] is obviously missing
-	[0, -1, 0],
+	[1,  0, 0],
+	[1,  1, 0],
+	[1, -1, 0],
 
 	[0,  0, 1], // Z = 1
 	[0,  1, 1],
@@ -59,7 +60,7 @@ export const BondType = {
     invalid:   99
 } as const;
 
-/** Add type values 1: ; 2:  */
+/** Atoms add type */
 export const AddType = {
 	/** Atom not added (used only inside ComputeBonds) */
 	removed: -1,
