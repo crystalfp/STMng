@@ -150,7 +150,6 @@ export class ComputeBonds extends NodeCore {
 		}
 	}
 
-
 	// >  Add atoms from the 26 cells around the given cell
 	/**
 	 * Add atoms from the 26 cells around the given cell

@@ -141,7 +141,7 @@ export class DrawUnitCellRenderer {
 			material
 		);
 
-		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), new Vector3(...versor));
+		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), versor);
 		cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
 
 		// Arrow tips
@@ -154,13 +154,16 @@ export class DrawUnitCellRenderer {
 		cone.position.addVectors(basis, origin);
 		cone.position.addScaledVector(versor, -coneLen/2);
 
+		// Correlate label size to axis length for legibility
+		const labelSize = 0.4 + 0.6*(basisLen-0.5)/19.5;
+
 		// Label
 		const labelPosition: PositionType = [
 			basis.x+origin.x+versor.x*0.1,
 			basis.y+origin.y+versor.y*0.1,
 			basis.z+origin.z+versor.z*0.1
 		];
-		const sprite = spriteText(axisLabel, color, size*5, labelPosition);
+		const sprite = spriteText(axisLabel, color, labelSize, labelPosition);
 
 		group.add(cylinder, cone, sprite);
 		sm.modified();

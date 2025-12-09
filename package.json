@@ -4,7 +4,7 @@
   "productName": "STMng",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.47.6",
+  "version": "1.47.7",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
