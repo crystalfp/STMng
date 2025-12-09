@@ -69,7 +69,7 @@ export const AddType = {
 	/** Atom outside unit cell */
 	outside:  2,
 	/** Atom added to the neighbors of the unit cell ones */
-	added:   22
+	added:   22,
 } as const;
 
 /** Type of the variables containing AddType values */

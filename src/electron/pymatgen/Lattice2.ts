@@ -16,7 +16,8 @@ export class Lattice {
 
 	private readonly lengthsAngles: LengthsAnglesType;
 	private readonly inverseBasis: BasisType;
-	private readonly structure: Structure;
+	public readonly origin: number[];
+	private readonly basis: BasisType;
 
 	/**
 	 * Convert a structure into a lattice
@@ -25,9 +26,25 @@ export class Lattice {
 	 */
 	constructor(structure: Structure) {
 
-		this.structure = structure;
 		const {crystal} = structure;
-		const {basis} = crystal;
+		const {basis, origin} = crystal;
+
+		this.origin = [
+			origin[0],
+			origin[1],
+			origin[2]
+		];
+		this.basis = [
+			basis[0],
+			basis[1],
+			basis[2],
+			basis[3],
+			basis[4],
+			basis[5],
+			basis[6],
+			basis[7],
+			basis[8]
+		];
 
 		// Change basis into sides lengths and angles
 		this.lengthsAngles = basisToLengthAngles(basis);
@@ -67,16 +84,6 @@ export class Lattice {
 	}
 
 	/**
-	 * Return the cell origin
-     */
-	get origin(): number[] {return this.structure.crystal.origin;}
-
-	/**
-	 * Return the lengths of the basis vectors
-	get lengths(): number[] {return this.lengthsAngles.slice(0, 3);}
-	 */
-
-	/**
 	 * Return the basis matrix how it is considered in the python library
 	 */
 	get matrix(): number[] {
@@ -99,11 +106,9 @@ export class Lattice {
 	 */
 	toFractionalCoordinates(position: number[]): PositionType {
 
-		const {origin} = this.structure.crystal;
-
-		const cx = position[0] - origin[0];
-		const cy = position[1] - origin[1];
-		const cz = position[2] - origin[2];
+		const cx = position[0] - this.origin[0];
+		const cy = position[1] - this.origin[1];
+		const cz = position[2] - this.origin[2];
 
 		return [
 			cx*this.inverseBasis[0] + cy*this.inverseBasis[3] + cz*this.inverseBasis[6],
@@ -118,17 +123,16 @@ export class Lattice {
 	 * @param fractional - Fractional coordinates
 	 * @returns Cartesian coordinates
 	 */
-	toCartesianCoodinates(fractional: number[]): PositionType {
+	toCartesianCoordinates(fractional: number[]): PositionType {
 
-		const {basis} = this.structure.crystal;
 		const fx = fractional[0];
 		const fy = fractional[1];
 		const fz = fractional[2];
 
 		return [
-			fx*basis[0] + fy*basis[3] + fz*basis[6],
-			fx*basis[1] + fy*basis[4] + fz*basis[7],
-			fx*basis[2] + fy*basis[5] + fz*basis[8],
+			fx*this.basis[0] + fy*this.basis[3] + fz*this.basis[6],
+			fx*this.basis[1] + fy*this.basis[4] + fz*this.basis[7],
+			fx*this.basis[2] + fy*this.basis[5] + fz*this.basis[8],
 		];
 	}
 
@@ -139,14 +143,11 @@ export class Lattice {
 	 */
 	reciprocalLatticeLengths(): number[] {
 
-		const {crystal} = this.structure;
-		const {basis: b} = crystal;
-
 		const abc = [0, 0, 0];
 		for(let row=0; row < 3; ++row) {
-			const aa = b[row*3]   * 2 * Math.PI;
-			const bb = b[row*3+1] * 2 * Math.PI;
-			const cc = b[row*3+2] * 2 * Math.PI;
+			const aa = this.basis[row*3]   * 2 * Math.PI;
+			const bb = this.basis[row*3+1] * 2 * Math.PI;
+			const cc = this.basis[row*3+2] * 2 * Math.PI;
 
 			abc[row] = Math.hypot(aa, bb, cc);
 		}

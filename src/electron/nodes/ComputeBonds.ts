@@ -368,6 +368,18 @@ export class ComputeBonds extends NodeCore {
 			}
 		}
 
+		// Add another level of connection
+		for(const {from, to, type} of structure.bonds) {
+			if(type !== BondType.normal) continue;
+
+			if(this.addType[from] === AddType.added && this.addType[to] === AddType.outside) {
+				this.addType[to] = AddType.added;
+			}
+			if(this.addType[to] === AddType.added && this.addType[from] === AddType.outside) {
+				this.addType[from] = AddType.added;
+			}
+		}
+
 		this.removeUnmarkedAtoms(structure);
 	}
 

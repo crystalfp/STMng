@@ -1,5 +1,4 @@
 Bugs:
-  ✔ Trajectory is slow @done(2025-12-06 17:38)
   ☐ Verify fill unit cell in proto visualizer
 
 Latest requests (backlog):
@@ -22,7 +21,6 @@ To do:
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters
-  ☐ Add metadata to created movies with `setMetadataTags()`
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -73,6 +71,8 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Trajectory is slow @done(2025-12-06 17:38) @project(Bugs)
+  ✔ Add metadata to created movies with `setMetadataTags()` @done(2025-12-09 14:53) @project(To do)
   ✔ Check enable capture of steps for writer from reader @done(2025-11-30 10:17) @project(Bugs)
   ✔ Atom data should receive always atom type in lowercase @done(2025-12-01 06:50) @project(To do)
   ✔ Poscar w. atoms, change atom type, delete -> returns to H He Li... @done(2025-11-29 09:42) @project(Bugs)

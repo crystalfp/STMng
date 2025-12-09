@@ -165,7 +165,7 @@ export class ReciprocalLattice {
         imageOffsets[1] -= allFracCoords[1];
         imageOffsets[2] -= allFracCoords[2];
 
-        const coordsInCell = this.lattice.toCartesianCoodinates(allFracCoords);
+        const coordsInCell = this.lattice.toCartesianCoordinates(allFracCoords);
 
         // Filter out those beyond max range
         const validCoords: number[][] = [];
