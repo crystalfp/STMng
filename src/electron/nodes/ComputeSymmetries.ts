@@ -13,7 +13,7 @@ import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {PointGroupAnalyzer} from "../modules/PointGroupAnalyzer";
+import {PointGroupAnalyzer} from "../pymatgen/PointGroupAnalyzer";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 BasisType, PositionType, Extra} from "@/types";
 

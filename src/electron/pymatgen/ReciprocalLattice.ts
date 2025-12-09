@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-26
  */
-import type {Lattice} from "./Lattice";
+import type {Lattice} from "./Lattice2";
 
 /** A point of the reciprocal lattice */
 export interface ReciprocalPoint {

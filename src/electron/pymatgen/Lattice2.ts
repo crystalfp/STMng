@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-10-26
  */
-import {basisToLengthAngles, invertBasis} from "./Helpers";
+import {basisToLengthAngles, invertBasis} from "../modules/Helpers";
 import type {BasisType, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 /**

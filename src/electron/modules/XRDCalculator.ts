@@ -7,9 +7,9 @@
  * @since 2024-10-26
  */
 
-import {Lattice} from "./Lattice";
-import {ReciprocalLattice, type ReciprocalPoint} from "./ReciprocalLattice";
-import {ATOMIC_SCATTERING_PARAMS} from "./AtomicScatteringParams";
+import {Lattice} from "../pymatgen/Lattice2";
+import {ReciprocalLattice, type ReciprocalPoint} from "../pymatgen/ReciprocalLattice";
+import {ATOMIC_SCATTERING_PARAMS} from "../pymatgen/AtomicScatteringParams";
 import {getAtomicSymbol} from "./AtomData";
 import type {Structure, PositionType} from "@/types";
 

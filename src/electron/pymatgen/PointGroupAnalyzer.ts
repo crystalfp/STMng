@@ -9,8 +9,8 @@
  */
 import {eigs, dot, cross} from "mathjs";
 import type {Structure} from "@/types";
-import {getAtomData} from "./AtomData";
-import {SymmOp} from "../pymatgen/SymmOp";
+import {getAtomData} from "../modules/AtomData";
+import {SymmOp} from "./SymmOp";
 import log from "electron-log";
 
 /**
