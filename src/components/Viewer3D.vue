@@ -253,30 +253,30 @@ onMounted(() => {
         switch(axis) {
         case "x":
             configStore.camera.position[0] = sign === "+" ?
-                                                    configStore.camera.lookAt[0] + distance :
-                                                    configStore.camera.lookAt[0] - distance;
+                                                    configStore.camera.lookAt[0] - distance :
+                                                    configStore.camera.lookAt[0] + distance;
             configStore.camera.position[1] = configStore.camera.lookAt[1];
             configStore.camera.position[2] = configStore.camera.lookAt[2];
             break;
         case "y":
             configStore.camera.position[0] = configStore.camera.lookAt[0];
             configStore.camera.position[1] = sign === "+" ?
-                                                    configStore.camera.lookAt[1] + distance :
-                                                    configStore.camera.lookAt[1] - distance;
+                                                    configStore.camera.lookAt[1] - distance :
+                                                    configStore.camera.lookAt[1] + distance;
             configStore.camera.position[2] = configStore.camera.lookAt[2];
             break;
         case "z":
             configStore.camera.position[0] = configStore.camera.lookAt[0];
             configStore.camera.position[1] = configStore.camera.lookAt[1];
             configStore.camera.position[2] = sign === "+" ?
-                                                    configStore.camera.lookAt[2] + distance :
-                                                    configStore.camera.lookAt[2] - distance;
+                                                    configStore.camera.lookAt[2] - distance :
+                                                    configStore.camera.lookAt[2] + distance;
             break;
         case "a": {
             const len = Math.hypot(controlStore.basis[0],
                                    controlStore.basis[1],
                                    controlStore.basis[2]);
-            const m = (sign === "+" ? distance : -distance)/len;
+            const m = (sign === "+" ? -distance : distance)/len;
             configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[0]*m;
             configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[1]*m;
             configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[2]*m;
@@ -286,7 +286,7 @@ onMounted(() => {
             const len = Math.hypot(controlStore.basis[3],
                                    controlStore.basis[4],
                                    controlStore.basis[5]);
-            const m = (sign === "+" ? distance : -distance)/len;
+            const m = (sign === "+" ? -distance : distance)/len;
             configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[3]*m;
             configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[4]*m;
             configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[5]*m;
@@ -296,7 +296,7 @@ onMounted(() => {
             const len = Math.hypot(controlStore.basis[6],
                                    controlStore.basis[7],
                                    controlStore.basis[8]);
-            const m = (sign === "+" ? distance : -distance)/len;
+            const m = (sign === "+" ? -distance : distance)/len;
             configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[6]*m;
             configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[7]*m;
             configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[8]*m;
