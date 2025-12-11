@@ -99,7 +99,7 @@ export const addOutsideAtoms = (matrix: number[][], atoms: PrototypeAtomsData): 
 
 const minBondingDistance  = 0.64;
 const maxBondingDistance  = 4.50;
-const enlargementKind     = "neighbors";
+// const enlargementKind     = "neighbors";
 const bondingScale        = 1.1;
 
 /**
@@ -109,7 +109,7 @@ const bondingScale        = 1.1;
  */
 export const computeBonds = (structure: PrototypeAtomsData): Bond[] => {
 
-	const {radius, positions, addType} = structure;
+	const {radius, positions} = structure;
 
 	// No bonds possible
 	const atomsCount = radius.length;
@@ -134,9 +134,9 @@ export const computeBonds = (structure: PrototypeAtomsData): Bond[] => {
 			const rCj = radius[j];
 
 			// Don't compute bonds between external atoms
-			if(enlargementKind === "neighbors" &&
-			   addType![i] === AddType.outside &&
-			   addType![j] === AddType.outside) continue;
+			// if(enlargementKind === "neighbors" &&
+			//    addType![i] === AddType.outside &&
+			//    addType![j] === AddType.outside) continue;
 
 			// Compute distance between atoms
 			const dx = positions[3*i+0] - positions[3*j+0];

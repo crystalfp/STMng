@@ -607,7 +607,7 @@ const startQuery = (aflow: string): void => {
     <table v-if="query" class="ml-4 text-body-2">
       <tbody>
         <tr><td class="c1">aflow:</td><td>{{ aflowTag }}</td></tr>
-        <tr><td class="c1">strukturbericht:</td><td v-html="strukturbericht.replace(/([^_]+)_([^_]+)$/, '$1<sub>$2</sub>')"/></tr>
+        <tr><td class="c1">strukturbericht:</td><td v-html="strukturbericht.replace(/_([^_]+)$/, '<sub>$1</sub>')"/></tr>
         <tr><td class="c1">pearson:</td><td>{{ pearson }}</td></tr>
       </tbody>
     </table>

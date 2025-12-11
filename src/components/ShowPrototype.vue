@@ -7,6 +7,7 @@
  * @since 2025-11-01
  */
 import {ref} from "vue";
+import {inv} from "mathjs";
 import {BufferGeometry, BufferAttribute, IcosahedronGeometry, Vector3,
 		CylinderGeometry, MeshStandardMaterial, FrontSide, Group, Color,
 		Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
@@ -14,16 +15,27 @@ import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {SimpleViewer} from "@/services/SimpleViewer";
-import {addOutsideAtoms, clearOutsideAtoms, computeBonds} from "@/services/BondsSupport";
-import type {PositionType, PrototypeAtomsData, PrototypeStructureData, Bond} from "@/types";
-import {indices} from "@/services/SharedConstants";
+import {/* addOutsideAtoms, clearOutsideAtoms, */ computeBonds} from "@/services/BondsSupport";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
+import {indices} from "@/services/SharedConstants";
+import type {PositionType, PrototypeAtomsData, PrototypeStructureData, Bond} from "@/types";
 
 const roughness = 0.5;
 const metalness = 0.6;
 
 const prototypeName = ref("");
+
+// Kind of directions for filling the unit cell
+const X_MIN = 0x010;
+const Y_MIN = 0x020;
+const Z_MIN = 0x040;
+const X_MAX = 0x100;
+const Y_MAX = 0x200;
+const Z_MAX = 0x400;
+const X_ANY = 0x001;
+const Y_ANY = 0x002;
+const Z_ANY = 0x004;
 
 /** Initialize the 3D viewer */
 const labelsGroup = new Group();
@@ -63,8 +75,9 @@ receiveInWindow((dataFromMain) => {
 
     sv.setSceneModified();
 
+    const sb = strukturbericht.replace(/_([^_]+)$/, "<sub>$1</sub>");
     prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
-                          `strukturbericht: ${strukturbericht},&ensp;pearson: ${pearson})`;
+                          `strukturbericht: ${sb},&ensp;pearson: ${pearson})`;
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -120,6 +133,198 @@ const addUnitCell = (vertices: number[]): [number, number, number] => {
 };
 
 /**
+ * Fill the unit cell with the replica on the sides
+ *
+ * @param atoms - Prototype atom data
+ * @param matrix - Lattice matrix
+ */
+const fillCell = (atoms: PrototypeAtomsData, matrix: number[][]): PrototypeAtomsData => {
+
+    const natoms = atoms.radius.length;
+
+    const MARGIN = 1e-5;
+
+    const inverse = inv(matrix);
+
+	const direction = Array<number>(natoms).fill(0);
+    const idx: number[] = Array<number>(natoms);
+    const fc: number[] = Array<number>(natoms*3);
+    for(let i=0; i < natoms; ++i) {
+
+        const i3 = 3*i;
+		const cx = atoms.positions[i3];
+		const cy = atoms.positions[i3+1];
+		const cz = atoms.positions[i3+2];
+
+		const xf = cx*inverse[0][0] + cy*inverse[1][0] + cz*inverse[2][0];
+		const yf = cx*inverse[0][1] + cy*inverse[1][1] + cz*inverse[2][1];
+		const zf = cx*inverse[0][2] + cy*inverse[1][2] + cz*inverse[2][2];
+
+        fc[i3]   = xf;
+        fc[i3+1] = yf;
+        fc[i3+2] = zf;
+
+        // Mark atoms exactly on the border
+        if(xf < MARGIN && xf > -MARGIN)			direction[i]  = X_MIN|X_ANY;
+        else if(xf > 1-MARGIN && xf < 1+MARGIN)	direction[i]  = X_MAX|X_ANY;
+        if(yf < MARGIN && yf > -MARGIN)			direction[i] |= Y_MIN|Y_ANY;
+        else if(yf > 1-MARGIN && yf < 1+MARGIN)	direction[i] |= Y_MAX|Y_ANY;
+        if(zf < MARGIN && zf > -MARGIN)			direction[i] |= Z_MIN|Z_ANY;
+        else if(zf > 1-MARGIN && zf < 1+MARGIN)	direction[i] |= Z_MAX|Z_ANY;
+
+        idx[i] = i;
+    }
+
+    if(direction.every((value) => value === 0)) return structuredClone(atoms);
+
+    // Replicate the original atoms
+    for(let i=0; i < natoms; ++i) {
+
+        const dir = direction[i];
+        const k = 3*i;
+
+        if(dir === 0) continue;
+
+        switch(dir & (X_ANY|Y_ANY|Z_ANY)) {
+
+        case X_ANY:
+            fc.push(dir & X_MIN ? 1 : 0, fc[k+1], fc[k+2]);
+            idx.push(i);
+            break;
+
+        case Y_ANY:
+            fc.push(fc[k], dir & Y_MIN ? 1 : 0, fc[k+2]);
+            idx.push(i);
+            break;
+
+        case Z_ANY:
+            fc.push(fc[k], fc[k+1], dir & Z_MIN ? 1 : 0);
+            idx.push(i);
+            break;
+
+        case X_ANY|Y_ANY:
+            if((dir & (X_MIN|Y_MIN)) !== (X_MIN|Y_MIN)) {
+                fc.push(0, 0, fc[k+2]);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Y_MIN)) !== (X_MAX|Y_MIN)) {
+                fc.push(1, 0, fc[k+2]);
+                idx.push(i);
+            }
+            if((dir & (X_MIN|Y_MAX)) !== (X_MIN|Y_MAX)) {
+                fc.push(0, 1, fc[k+2]);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Y_MAX)) !== (X_MAX|Y_MAX)) {
+                fc.push(1, 1, fc[k+2]);
+                idx.push(i);
+            }
+            break;
+
+        case X_ANY|Z_ANY:
+            if((dir & (X_MIN|Z_MIN)) !== (X_MIN|Z_MIN)) {
+                fc.push(0, fc[k+1], 0);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Z_MIN)) !== (X_MAX|Z_MIN)) {
+                fc.push(1, fc[k+1], 0);
+                idx.push(i);
+            }
+            if((dir & (X_MIN|Z_MAX)) !== (X_MIN|Z_MAX)) {
+                fc.push(0, fc[k+1], 1);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Z_MAX)) !== (X_MAX|Z_MAX)) {
+                fc.push(1, fc[k+1], 1);
+                idx.push(i);
+            }
+            break;
+
+        case Y_ANY|Z_ANY:
+            if((dir & (Y_MIN|Z_MIN)) !== (Y_MIN|Z_MIN)) {
+                fc.push(fc[k], 0, 0);
+                idx.push(i);
+            }
+            if((dir & (Y_MAX|Z_MIN)) !== (Y_MAX|Z_MIN)) {
+                fc.push(fc[k], 1, 0);
+                idx.push(i);
+            }
+            if((dir & (Y_MIN|Z_MAX)) !== (Y_MIN|Z_MAX)) {
+                fc.push(fc[k], 0, 1);
+                idx.push(i);
+            }
+            if((dir & (Y_MAX|Z_MAX)) !== (Y_MAX|Z_MAX)) {
+                fc.push(fc[k], 1, 1);
+                idx.push(i);
+            }
+            break;
+
+        case X_ANY|Y_ANY|Z_ANY:
+            if((dir & (X_MIN|Y_MIN|Z_MIN)) !== (X_MIN|Y_MIN|Z_MIN)) {
+                fc.push(0, 0, 0);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Y_MIN|Z_MIN)) !== (X_MAX|Y_MIN|Z_MIN)) {
+                fc.push(1, 0, 0);
+                idx.push(i);
+            }
+            if((dir & (X_MIN|Y_MAX|Z_MIN)) !== (X_MIN|Y_MAX|Z_MIN)) {
+                fc.push(0, 1, 0);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Y_MAX|Z_MIN)) !== (X_MAX|Y_MAX|Z_MIN)) {
+                fc.push(1, 1, 0);
+                idx.push(i);
+            }
+            if((dir & (X_MIN|Y_MIN|Z_MAX)) !== (X_MIN|Y_MIN|Z_MAX)) {
+                fc.push(0, 0, 1);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Y_MIN|Z_MAX)) !== (X_MAX|Y_MIN|Z_MAX)) {
+                fc.push(1, 0, 1);
+                idx.push(i);
+            }
+            if((dir & (X_MIN|Y_MAX|Z_MAX)) !== (X_MIN|Y_MAX|Z_MAX)) {
+                fc.push(0, 1, 1);
+                idx.push(i);
+            }
+            if((dir & (X_MAX|Y_MAX|Z_MAX)) !== (X_MAX|Y_MAX|Z_MAX)) {
+                fc.push(1, 1, 1);
+                idx.push(i);
+            }
+            break;
+        }
+    }
+    // Finish building the structure
+    const nOutAtoms = fc.length / 3;
+    const outAtoms: PrototypeAtomsData = {
+        positions: [],
+        labels: [],
+        radius: [],
+        color: []
+    };
+    for(let i=0; i < nOutAtoms; ++i) {
+
+        const k = i*3;
+        // const k = idx[i]*3;
+		const fx = fc[k];
+		const fy = fc[k+1];
+		const fz = fc[k+2];
+
+		outAtoms.positions.push(
+			fx*matrix[0][0] + fy*matrix[1][0] + fz*matrix[2][0],
+			fx*matrix[0][1] + fy*matrix[1][1] + fz*matrix[2][1],
+			fx*matrix[0][2] + fy*matrix[1][2] + fz*matrix[2][2]
+        );
+        outAtoms.labels.push(atoms.labels[idx[i]]);
+        outAtoms.radius.push(atoms.radius[idx[i]]);
+        outAtoms.color.push(atoms.color[idx[i]]);
+    }
+
+    return outAtoms;
+};
+
+/**
  * Add atoms to the scene and compute bonds
  *
  * @param atoms - Prototype atom data
@@ -130,9 +335,12 @@ const addAtoms = (atoms: PrototypeAtomsData, matrix: number[][]): {bonds: Bond[]
 
     sv.clearGroup("Atoms");
 
-    const fullAtoms = addOutsideAtoms(matrix, atoms);
+    // const fullAtoms = addOutsideAtoms(matrix, atoms);
+    // const bonds = computeBonds(fullAtoms);
+    // clearOutsideAtoms(fullAtoms, bonds, atoms.radius.length);
+
+    const fullAtoms = fillCell(atoms, matrix);
     const bonds = computeBonds(fullAtoms);
-    clearOutsideAtoms(fullAtoms, bonds, atoms.radius.length);
 
     const natoms = fullAtoms.radius.length;
     for(let i = 0; i < natoms; ++i) {

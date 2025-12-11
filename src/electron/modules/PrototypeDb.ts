@@ -155,7 +155,7 @@ class PrototypeDb {
 	 * @param tags - Tags from the Pymatgen file
 	 * @returns Tags with the correction from the mineral overrides
 	 */
-	private correct(aflow: string, tags: PrototypeTags): PrototypeTags {
+	private correctTags(aflow: string, tags: PrototypeTags): PrototypeTags {
 
 		const correction = this.aflowAdjunctMap.get(aflow);
 		if(correction) {
@@ -185,7 +185,7 @@ class PrototypeDb {
 		const db = new Map<string, string>();
 		for(const proto of this.aflowSrcPrototypeLibrary) {
 
-			const tags = this.correct(proto.tags.aflow, proto.tags);
+			const tags = this.correctTags(proto.tags.aflow, proto.tags);
 
 			if(tags.mineral) {
 
@@ -259,7 +259,7 @@ class PrototypeDb {
 		const proto = this.aflowSrcPrototypeLibrary[idx];
 		if(!proto) return undefined;
 
-		const tags = this.correct(aflow, proto.tags);
+		const tags = this.correctTags(aflow, proto.tags);
 
 		return {
 			pearson: tags.pearson,
@@ -338,7 +338,7 @@ class PrototypeDb {
 		const proto = this.aflowSrcPrototypeLibrary[idx];
 		if(!proto) return undefined;
 
-		const tags = this.correct(aflow, proto.tags);
+		const tags = this.correctTags(aflow, proto.tags);
 
 		return {
 			pearson: tags.pearson,
@@ -367,7 +367,7 @@ class PrototypeDb {
 		const proto = this.aflowSrcPrototypeLibrary[idx];
 		if(!proto) return undefined;
 
-		return this.correct(aflow, proto.tags);
+		return this.correctTags(aflow, proto.tags);
 	}
 
 	/**

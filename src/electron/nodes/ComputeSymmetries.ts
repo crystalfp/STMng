@@ -435,7 +435,6 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private fillCell(out: ComputeSymmetriesOutput): Structure {
 
-		const idx: number[] = [];
 		const MARGIN = 10**this.fillTolerance;
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels, chains, extra} = out;
@@ -452,6 +451,7 @@ export class ComputeSymmetries extends NodeCore {
 		};
 
 		let natoms = atomsZ.length;
+		const idx = Array<number>(natoms);
 		const direction = Array<number>(natoms).fill(0);
 		for(let i=0; i < natoms; ++i) {
 
@@ -468,7 +468,7 @@ export class ComputeSymmetries extends NodeCore {
 			if(zf < MARGIN && zf > -MARGIN)			direction[i] |= Z_MIN|Z_ANY;
 			else if(zf > 1-MARGIN && zf < 1+MARGIN)	direction[i] |= Z_MAX|Z_ANY;
 
-			idx.push(i);
+			idx[i] = i;
 		}
 
 		// No atoms to add. Do nothing
@@ -499,108 +499,108 @@ export class ComputeSymmetries extends NodeCore {
 
 			case X_ANY:
 				fc.push(dir & X_MIN ? 1 : 0, fc[k+1], fc[k+2]);
-				idx.push(idx[i]);
+				idx.push(i);
 				break;
 
 			case Y_ANY:
 				fc.push(fc[k], dir & Y_MIN ? 1 : 0, fc[k+2]);
-				idx.push(idx[i]);
+				idx.push(i);
 				break;
 
 			case Z_ANY:
 				fc.push(fc[k], fc[k+1], dir & Z_MIN ? 1 : 0);
-				idx.push(idx[i]);
+				idx.push(i);
 				break;
 
 			case X_ANY|Y_ANY:
 				if((dir & (X_MIN|Y_MIN)) !== (X_MIN|Y_MIN)) {
 					fc.push(0, 0, fc[k+2]);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Y_MIN)) !== (X_MAX|Y_MIN)) {
 					fc.push(1, 0, fc[k+2]);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MIN|Y_MAX)) !== (X_MIN|Y_MAX)) {
 					fc.push(0, 1, fc[k+2]);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Y_MAX)) !== (X_MAX|Y_MAX)) {
 					fc.push(1, 1, fc[k+2]);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				break;
 
 			case X_ANY|Z_ANY:
 				if((dir & (X_MIN|Z_MIN)) !== (X_MIN|Z_MIN)) {
 					fc.push(0, fc[k+1], 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Z_MIN)) !== (X_MAX|Z_MIN)) {
 					fc.push(1, fc[k+1], 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MIN|Z_MAX)) !== (X_MIN|Z_MAX)) {
 					fc.push(0, fc[k+1], 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Z_MAX)) !== (X_MAX|Z_MAX)) {
 					fc.push(1, fc[k+1], 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				break;
 
 			case Y_ANY|Z_ANY:
 				if((dir & (Y_MIN|Z_MIN)) !== (Y_MIN|Z_MIN)) {
 					fc.push(fc[k], 0, 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (Y_MAX|Z_MIN)) !== (Y_MAX|Z_MIN)) {
 					fc.push(fc[k], 1, 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (Y_MIN|Z_MAX)) !== (Y_MIN|Z_MAX)) {
 					fc.push(fc[k], 0, 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (Y_MAX|Z_MAX)) !== (Y_MAX|Z_MAX)) {
 					fc.push(fc[k], 1, 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				break;
 
 			case X_ANY|Y_ANY|Z_ANY:
 				if((dir & (X_MIN|Y_MIN|Z_MIN)) !== (X_MIN|Y_MIN|Z_MIN)) {
 					fc.push(0, 0, 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Y_MIN|Z_MIN)) !== (X_MAX|Y_MIN|Z_MIN)) {
 					fc.push(1, 0, 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MIN|Y_MAX|Z_MIN)) !== (X_MIN|Y_MAX|Z_MIN)) {
 					fc.push(0, 1, 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Y_MAX|Z_MIN)) !== (X_MAX|Y_MAX|Z_MIN)) {
 					fc.push(1, 1, 0);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MIN|Y_MIN|Z_MAX)) !== (X_MIN|Y_MIN|Z_MAX)) {
 					fc.push(0, 0, 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Y_MIN|Z_MAX)) !== (X_MAX|Y_MIN|Z_MAX)) {
 					fc.push(1, 0, 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MIN|Y_MAX|Z_MAX)) !== (X_MIN|Y_MAX|Z_MAX)) {
 					fc.push(0, 1, 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				if((dir & (X_MAX|Y_MAX|Z_MAX)) !== (X_MAX|Y_MAX|Z_MAX)) {
 					fc.push(1, 1, 1);
-					idx.push(idx[i]);
+					idx.push(i);
 				}
 				break;
 			}
