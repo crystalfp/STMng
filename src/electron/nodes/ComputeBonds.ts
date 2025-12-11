@@ -13,7 +13,9 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import {hasNoUnitCell, isHydrogenBond, isNormalBond, vectorAngle} from "../modules/Helpers";
 import type {Structure, Bond, Atom, CtrlParams, ChannelDefinition} from "@/types";
 import {displacementCoefficients, type AddKind,
-		AddType, BondType} from "../../services/SharedConstants";
+		AddType, BondType,
+		type EnlargeCellKind,
+		EnlargeCell} from "../../services/SharedConstants";
 
 /**
  * Data for the per atom pair multiplier of the sum of covalent radii
@@ -48,7 +50,7 @@ export class ComputeBonds extends NodeCore {
 	private perPairScale		= false;
 	private perPairData: PairData[] = [];
 	private addType: AddKind[]  = [];
-	private enlargementKind		= "neighbors";
+	private enlargementKind: EnlargeCellKind = EnlargeCell.neighbors;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
@@ -320,7 +322,7 @@ export class ComputeBonds extends NodeCore {
 	 * Leave outside atoms that could create a polyhedra with inside atoms
 	 *
 	 * @param structure - The augmented structure with the 26 cell replicas
-	 */
+	 *
 	private leavePolyhedraAtoms(structure: Structure): void {
 
 		const mark = new Map<number, number[]>();
@@ -376,6 +378,68 @@ export class ComputeBonds extends NodeCore {
 			}
 			if(this.addType[to] === AddType.added && this.addType[from] === AddType.outside) {
 				this.addType[from] = AddType.added;
+			}
+		}
+
+		this.removeUnmarkedAtoms(structure);
+	}
+*/
+	/**
+	 * Leave outside atoms that could create a polyhedra with inside atoms
+	 *
+	 * @param structure - The augmented structure with the 26 cell replicas
+	 */
+	private leavePolyhedraAtoms(structure: Structure): void {
+
+		const mark = new Map<number, number[]>();
+
+		// List atoms that bond to internal atoms
+		for(const {from, to, type} of structure.bonds) {
+
+			// Skip not normal bonds
+			if(type !== BondType.normal) continue;
+
+			// List the atoms connected to inside atoms
+			if(this.addType[from] === AddType.inside) {
+				if(mark.has(from)) {
+					mark.get(from)!.push(to);
+				}
+				else {
+					mark.set(from, [to]);
+				}
+			}
+			if(this.addType[to] === AddType.inside) {
+				if(mark.has(to)) {
+					mark.get(to)!.push(from);
+				}
+				else {
+					mark.set(to, [from]);
+				}
+			}
+		}
+
+		// Retain the ones that form incomplete polyhedra (> 3 internal)
+		for(const connected of mark.values()) {
+
+			// Should potentially create a polyhedra
+			const countTotal = connected.length;
+			if(countTotal < 4) continue;
+
+			// Count internal and external atoms
+			let countExternal = 0;
+			for(const idx of connected) {
+				if(this.addType[idx] === AddType.outside) ++countExternal;
+			}
+			const countInternal = countTotal - countExternal;
+
+			// Heuristic to decide external atoms to add
+			if(countInternal < 4 || countExternal === 0 || countExternal > 2) continue;
+
+			// Add missing external atoms
+			for(const idx of connected) {
+				if(this.addType[idx] === AddType.outside) {
+					this.addType[idx] = AddType.added;
+				}
 			}
 		}
 
@@ -444,11 +508,11 @@ export class ComputeBonds extends NodeCore {
 		else if(this.enableComputeBonds) {
 
 			// If no enlargement or no unit cell, do nothing
-			if(this.enlargementKind === "none" ||
+			if(this.enlargementKind === EnlargeCell.none ||
 			   hasNoUnitCell(this.inputStructure.crystal.basis)) {
 
 				// Disable the requested enlargement
-				this.enlargementKind = "none";
+				this.enlargementKind = EnlargeCell.none;
 
 				// Extract input parts to be copied to output
 				const {crystal, atoms, volume, extra} = this.inputStructure;
@@ -468,17 +532,15 @@ export class ComputeBonds extends NodeCore {
 				enlargedStructure.bonds = this.computeBonds(enlargedStructure);
 
 				switch(this.enlargementKind) {
-					case "neighbors":
+					case EnlargeCell.neighbors:
 						this.leaveNeighborAtoms(enlargedStructure);
 						break;
-					case "polyhedra":
+					case EnlargeCell.polyhedra:
 						this.leavePolyhedraAtoms(enlargedStructure);
 						break;
-					case "connected":
+					case EnlargeCell.connected:
 						this.leaveConnectedAtoms(enlargedStructure);
 						break;
-					default:
-						throw Error("Unknown enlargement type");
 				}
 
 				this.toNextNode(enlargedStructure);
@@ -569,7 +631,7 @@ export class ComputeBonds extends NodeCore {
 				const positionJ = atoms[j].position;
 
 				// Don't compute bonds between external atoms
-				if(this.enlargementKind === "neighbors" &&
+				if(this.enlargementKind === EnlargeCell.neighbors &&
 				   this.addType[i] === AddType.outside &&
 				   this.addType[j] === AddType.outside) continue;
 
@@ -736,7 +798,7 @@ export class ComputeBonds extends NodeCore {
 		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
 		this.bondScale    		 = params.bondScale as number ?? 1.1;
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "neighbors";
+		this.enlargementKind     = params.enlargementKind as EnlargeCellKind ?? EnlargeCell.neighbors;
 		this.perPairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 	}
 
@@ -775,7 +837,7 @@ export class ComputeBonds extends NodeCore {
 		this.maxHValenceAngle    = params.maxHValenceAngle as number ?? 30;
 		this.bondScale    		 = params.bondScale as number ?? 1.1;
 		this.perPairScale		 = params.perPairScale as boolean ?? false;
-		this.enlargementKind     = params.enlargementKind as string ?? "neighbors";
+		this.enlargementKind     = params.enlargementKind as EnlargeCellKind ?? EnlargeCell.neighbors;
 		this.perPairData         = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
 
 		this.addBonds();

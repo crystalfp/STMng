@@ -7,14 +7,15 @@
  * @since 2025-11-02
  */
 import type {Bond, PrototypeAtomsData} from "@/types";
-import {displacementCoefficients, type AddKind,
-		AddType, BondType} from "./SharedConstants";
+import {BondType} from "./SharedConstants";
+// import {displacementCoefficients, type AddKind,
+// 		AddType, BondType} from "./SharedConstants";
 
 /**
  * Add atoms from the 26 cells around the given cell
  *
  * @returns Structure with added adjacent atoms
- */
+ *
 export const addOutsideAtoms = (matrix: number[][], atoms: PrototypeAtomsData): PrototypeAtomsData => {
 
 	const natoms = atoms.labels.length;
@@ -96,6 +97,7 @@ export const addOutsideAtoms = (matrix: number[][], atoms: PrototypeAtomsData): 
 
 	return outAtoms;
 };
+*/
 
 const minBondingDistance  = 0.64;
 const maxBondingDistance  = 4.50;
@@ -168,7 +170,7 @@ export const computeBonds = (structure: PrototypeAtomsData): Bond[] => {
  *  Remove added atoms that are not bonded to inside atoms
  *
  * @param structure - The extended structure to be cleaned
- */
+ *
 export const clearOutsideAtoms = (structure: PrototypeAtomsData, bonds: Bond[], inside: number): void => {
 
 	// Get the list of atoms that have bonds
@@ -209,3 +211,4 @@ export const clearOutsideAtoms = (structure: PrototypeAtomsData, bonds: Bond[], 
 		bond.to = mapPositions[bond.to];
 	}
 };
+*/
