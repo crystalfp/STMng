@@ -59,11 +59,11 @@ export class DrawOrthoslice extends NodeCore {
 		this.structure = data;
 		const countDatasets = this.structure.volume?.length ?? 0;
 
+        this.dataset = 0;
+        this.plane = 0;
 		if(countDatasets === 0) {
 
-			this.dataset = 0;
 			this.axis = 0;
-			this.plane = 0;
 			this.countDatasets = 0;
 			this.maxPlane = 0;
 			this.valueRange = [-10, 10];
@@ -88,11 +88,10 @@ export class DrawOrthoslice extends NodeCore {
                                 });
 		}
 		else {
-			this.dataset = 0;
-			this.plane = 0;
 			this.countDatasets = countDatasets;
 
-			// The number of planes is one more the sides. The last plane is equal to the first one
+			// The number of planes is one more the sides.
+            // The last plane is equal to the first one
 			this.maxPlane = this.structure.volume[0].sides[this.axis];
 
 			this.valueRange = getValueLimits(this.structure, this.dataset);

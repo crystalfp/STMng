@@ -84,25 +84,18 @@ const makeImage = (): void => {
 
         const {canvas} = chartElement.value.chart;
 
-        if(transparent.value) {
-            const ctx = canvas.getContext("2d");
-            if(ctx) {
-                ctx.save();
-                ctx.globalCompositeOperation = "destination-over";
+        const ctx = canvas.getContext("2d");
+        if(ctx) {
+            ctx.save();
+            ctx.globalCompositeOperation = "destination-over";
+            if(transparent.value) {
                 ctx.fillStyle = "transparent";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.restore();
             }
-        }
-        else {
-            const ctx = canvas.getContext("2d");
-            if(ctx) {
-                ctx.save();
-                ctx.globalCompositeOperation = "destination-over";
+            else {
                 ctx.fillStyle = theme.value === "dark" ? "#121212" : "#FFFFFF";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.restore();
             }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
         }
 
         const dataURI = canvas.toDataURL("image/png");
@@ -110,13 +103,13 @@ const makeImage = (): void => {
             .then((response) => {
 
                 if(!transparent.value) {
-                    const ctx = canvas.getContext("2d");
-                    if(ctx) {
-                        ctx.save();
-                        ctx.globalCompositeOperation = "destination-over";
-                        ctx.fillStyle = "transparent";
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.restore();
+                    const ctx2 = canvas.getContext("2d");
+                    if(ctx2) {
+                        ctx2.save();
+                        ctx2.globalCompositeOperation = "destination-over";
+                        ctx2.fillStyle = "transparent";
+                        ctx2.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx2.restore();
                     }
                 }
 

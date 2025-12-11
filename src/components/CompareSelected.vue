@@ -326,16 +326,12 @@ const select = (side: Side, step: number): void => {
             unloadStructure(1);
             enableAllExcept(0);
         }
-        else if(selectedStep1.value === -1) {
-            lines[idx].selected1 = true;
-            selectedStep1.value = step;
-            loadStructure(1, step);
-            enableAllExcept(0, idx);
-        }
         else {
-            const idx1 = findIdx(selectedStep1.value);
-            lines[idx1].selected1 = false;
-            unloadStructure(1);
+            if(selectedStep1.value !== -1) {
+                const idx1 = findIdx(selectedStep1.value);
+                lines[idx1].selected1 = false;
+                unloadStructure(1);
+            }
             lines[idx].selected1 = true;
             selectedStep1.value = step;
             loadStructure(1, step);
@@ -350,16 +346,12 @@ const select = (side: Side, step: number): void => {
             unloadStructure(0);
             enableAllExcept(1);
         }
-        else if(selectedStep0.value === -1) {
-            lines[idx].selected0 = true;
-            selectedStep0.value = step;
-            loadStructure(0, step);
-            enableAllExcept(1, idx);
-        }
         else {
-            const idx0 = findIdx(selectedStep0.value);
-            lines[idx0].selected0 = false;
-            unloadStructure(0);
+            if(selectedStep0.value !== -1) {
+                const idx0 = findIdx(selectedStep0.value);
+                lines[idx0].selected0 = false;
+                unloadStructure(0);
+            }
             lines[idx].selected0 = true;
             selectedStep0.value = step;
             loadStructure(0, step);
