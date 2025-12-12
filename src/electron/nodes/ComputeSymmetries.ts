@@ -11,7 +11,8 @@ import {findAndApplySymmetries} from "../modules/NativeFunctions";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
-import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
+import {cartesianToFractionalCoordinates, hasNoUnitCell,
+		basisToLengthAngles} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {PointGroupAnalyzer} from "../pymatgen/PointGroupAnalyzer";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
@@ -143,7 +144,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		if(!data?.atoms.length) {
 			this.toNextNode(new EmptyStructure());
-			sendToClient(this.id, "input-symmetries", {noInputSymmetries: true});
+			sendToClient(this.id, "input-symmetries", {noInputSymmetries: true, sides: [0, 0, 0]});
 			return;
 		}
 
@@ -160,6 +161,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		if(this.outputStructure) {
 			removeDuplicates(this.outputStructure);
+			this.sendCellParameters();
 			this.toNextNode(this.outputStructure);
 		}
 		else {
@@ -210,6 +212,21 @@ export class ComputeSymmetries extends NodeCore {
         this.positionTolerance = params.positionTolerance as number ?? 0.3;
         this.eigenvalueTolerance = params.eigenvalueTolerance as number ?? 0.01;
 		this.showIntlSymbol = params.showIntlSymbol as boolean ?? true;
+	}
+
+	/**
+	 * Send cell parameters to the UI
+	 */
+	private sendCellParameters(): void {
+
+		const matrix = this.outputStructure?.crystal.basis;
+		if(!matrix) return;
+		const la = basisToLengthAngles(matrix);
+
+		sendToClient(this.id, "cell-parameters", {
+			sides: [la[0], la[1], la[2]],
+			angles: [la[3], la[4], la[5]]
+		});
 	}
 
 	// > Compute new structure after finding and applying symmetries
@@ -705,6 +722,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		if(this.outputStructure) {
 			removeDuplicates(this.outputStructure);
+			this.sendCellParameters();
 			this.toNextNode(this.outputStructure);
 		}
 		else {

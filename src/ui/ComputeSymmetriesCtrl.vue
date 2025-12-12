@@ -15,6 +15,7 @@ import type {CtrlParams} from "@/types";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import ThrottledButton from "@/widgets/ThrottledButton.vue";
+import CellParameters from "@/widgets/CellParameters.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -47,6 +48,9 @@ const computePointGroup = ref(false);
 const pointGroup = ref("");
 const positionTolerance = ref(0.3);
 const eigenvalueTolerance = ref(0.01);
+
+const sides = ref([0, 0, 0]);
+const angles = ref([0, 0, 0]);
 
 /**
  * Convert in human readable format the exponent of 10
@@ -135,9 +139,9 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
 
 receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
 
-    if(params.noInputSymmetries === undefined) return;
+    // if(params.noInputSymmetries === undefined) return;
 
-    const noInputSymmetries = params.noInputSymmetries as boolean;
+    const noInputSymmetries = params.noInputSymmetries as boolean ?? true;
     if(noInputSymmetries) {
         disableInputSymmetries.value = true;
         applyInputSymmetries.value = false;
@@ -146,6 +150,24 @@ receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
         disableInputSymmetries.value = false;
         applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
     }
+
+    if(params.sides !== undefined) sides.value[0] = 0;
+});
+
+receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
+
+    const ss = params.sides as number[];
+    const aa = params.angles as number[];
+    if(!ss || ss[0] === 0 || !aa) {
+        sides.value[0] = 0;
+        return;
+    }
+    sides.value[0] = ss[0];
+    sides.value[1] = ss[1];
+    sides.value[2] = ss[2];
+    angles.value[0] = aa[0];
+    angles.value[1] = aa[1];
+    angles.value[2] = aa[2];
 });
 
 </script>
@@ -190,6 +212,8 @@ receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
       <v-label :text="showIntlSymbol ? intlSymbol : computedSpaceGroup" class="show-symmetry" />
     </v-row>
   </v-container>
+
+  <cell-parameters :sides :angles class="ml-3 pr-1 mt-n2"/>
 
   <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4 mb-n2" />
   <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"

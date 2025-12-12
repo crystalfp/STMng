@@ -16,6 +16,7 @@ import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {MeasuresRenderer} from "@/renderers/MeasuresRenderer";
 import type {SelectedAtom, BondData, CtrlParams} from "@/types";
+import CellParameters from "@/widgets/CellParameters.vue";
 
 // > Properties
 const {id} = defineProps<{
@@ -232,29 +233,9 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
       </tr>
       <tr><td>Bonds count:</td><td class="right">{{ bondsLabel }}</td></tr>
     </v-table>
-    <v-container v-if="uc[0] > 0" class="pa-0">
-      <v-label class="mt-4 mb-1 no-select">Unit cell</v-label>
-      <v-table class="pl-2 pr-4 py-1">
-        <tr>
-          <td>Sides:</td>
-          <td class="w-4 right">{{ uc[0].toFixed(3) }}</td>
-          <td class="w-4 right">{{ uc[1].toFixed(3) }}</td>
-          <td class="w-4 right">{{ uc[2].toFixed(3) }}</td>
-        </tr>
-        <tr>
-          <td>Angles:</td>
-          <td class="w-4 right">{{ uc[3].toFixed(3) }}</td>
-          <td class="w-4 right">{{ uc[4].toFixed(3) }}</td>
-          <td class="w-4 right">{{ uc[5].toFixed(3) }}</td>
-        </tr>
-        <tr>
-          <td>Origin:</td>
-          <td class="w-4 right">{{ uc[6].toFixed(3) }}</td>
-          <td class="w-4 right">{{ uc[7].toFixed(3) }}</td>
-          <td class="w-4 right">{{ uc[8].toFixed(3) }}</td>
-        </tr>
-      </v-table>
-    </v-container>
+    <cell-parameters :sides="[uc[0],uc[1],uc[2]]"
+                     :angles="[uc[3],uc[4],uc[5]]"
+                     :origin="[uc[6],uc[7],uc[8]]"/>
   </v-container>
   <v-label class="mt-4 separator-title">Measurement type</v-label>
   <v-btn-toggle v-model="measurementType" mandatory class="ml-2 mb-6">
@@ -348,10 +329,6 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 
 .w-3 {
   width: 3rem
-}
-
-.w-4 {
-  width: 4rem
 }
 
 .w-9 {

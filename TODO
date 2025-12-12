@@ -9,6 +9,7 @@ Latest requests (backlog):
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
+  ✔ It will be useful to display cell parameters when we symmetrize the structure @done(2025-12-12 17:52)
 
 To do:
   ☐ Check error return from main process to client
