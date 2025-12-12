@@ -29,7 +29,8 @@
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-terser",
     "@rollup/plugin-typescript",
-    "oxlint-tsgolint"
+    "oxlint-tsgolint",
+    "@oxlint/migrate"
   ],
   // "includeEntryExports": true,
   "ignore": ["**/KDtree.d.ts"],

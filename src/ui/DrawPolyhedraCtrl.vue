@@ -16,6 +16,7 @@ import ColorSelector from "@/widgets/ColorSelector.vue";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import type {AtomSelectorModes} from "@/types";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -35,6 +36,9 @@ const atomsSelector = ref("");
 const colorByCenterAtom = ref(false);
 const opacityByCenterAtom = ref(0.5);
 const showOpacity = ref(0.5);
+const constrainVertices = ref("free");
+const countVertices = ref(3);
+const showCountVertices = ref(3);
 
 // > Initialize ui
 askNode(id, "init")
@@ -46,6 +50,8 @@ askNode(id, "init")
 		showPolyhedra.value = params.showPolyhedra as boolean ?? true;
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
+        constrainVertices.value = params.constrainVertices as string ?? "free";
+        countVertices.value = params.countVertices as number ?? 3;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
@@ -87,6 +93,14 @@ watch([labelKind, atomsSelector], () => {
     });
 });
 
+watch([constrainVertices, countVertices], () => {
+
+    sendToNode(id, "constrain", {
+        constrainVertices: constrainVertices.value,
+        countVertices: countVertices.value,
+    });
+});
+
 /** Received vertex coordinates and colors */
 receivePolyhedraFromNode(id, "vertices",
                          (vertices: number[][], centerAtomsColor: string[]) => {
@@ -109,10 +123,22 @@ receivePolyhedraFromNode(id, "vertices",
                  class="ml-2 mb-2"
                  title="Select central atoms by" placeholder="Central atoms selector" />
   <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
-                          v-model:raw="showOpacity" label-width="7rem"
+                          v-model:raw="showOpacity" label-width="6rem"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
                           :min="0" :max="1" :step="0.1" />
   <color-selector v-else v-model="surfaceColor" label="Surface color"
-                  :transparency="true" block class="ml-n1 mt-n1"/>
+                  :transparency="true" block class="ml-n1 mt-n2"/>
+
+  <titled-slot title="Constrain vertex count" class="mt-4 mb-1 ml-2">
+    <v-btn-toggle v-model="constrainVertices" mandatory>
+      <v-btn value="free">Free</v-btn>
+      <v-btn value="exact">Exact</v-btn>
+      <v-btn value="min">At least</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
+  <slider-with-steppers v-if="constrainVertices !== 'free'" v-model="countVertices"
+                          v-model:raw="showCountVertices" label-width="6rem"
+                          :label="`Vertices (${showCountVertices.toFixed(0)})`"
+                          :min="3" :max="20" :step="1" />
 </v-container>
 </template>

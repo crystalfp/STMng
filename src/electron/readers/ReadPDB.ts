@@ -87,12 +87,6 @@ export class ReaderPDB implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let currentStructure = -1;
-		// let hasScale1 = false;
-		// let hasScale2 = false;
-		// let hasScaleAll = false;
-		// let hasCryst1 = false;
-		// const origin = [0, 0, 0];
-		// const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		const snMap = new Map<number, number>();
 		let atomIdx = 0;
 		const readHydrogen = options?.readHydrogen ?? false;
@@ -114,7 +108,6 @@ export class ReaderPDB implements ReaderImplementation {
 			// Start a new structure
 			if(tryStartStep) {
 				tryStartStep = false;
-				// hasCryst1 = false;
 				const structure: Structure = {
 
 					crystal: {
@@ -148,7 +141,6 @@ export class ReaderPDB implements ReaderImplementation {
 					const {basis} = structures[currentStructure].crystal;
 					for(let i=0; i < 9; ++i) basis[i] = matrix[i];
 					structures[currentStructure].crystal.spaceGroup = line.slice(55, 65).trim();
-					// hasCryst1 = true;
 					break;
 				}
 
@@ -187,10 +179,6 @@ export class ReaderPDB implements ReaderImplementation {
 							position: [x, y, z]
 						};
 						atoms.push(atom);
-
-						// const residueName = fixedWidthStringSpaceTrimmed(line, 17, 3);
-						// if(!residues!.chains.includes(chainName)) residues!.chains.push(chainName);
-						// residues!.atoms.push({residue: residueName, chain: chainName});
 
 						snMap.set(sn, atomIdx);
 						++atomIdx;
@@ -275,84 +263,8 @@ export class ReaderPDB implements ReaderImplementation {
 					}
 					break;
 				}
-
-			 /*	case 4: {
-					// "SCALEx"
-					let seq = line.slice(5, 6);
-					const a = fixedWidthFloat(line, 10,  10);
-					const b = fixedWidthFloat(line, 20,  10);
-					const c = fixedWidthFloat(line, 30,  10);
-					const d = fixedWidthFloat(line, 45,  10);
-
-					// Try to cope with incorrectly numbered SCALEn entries (eg. 3 times SCALE1)
-					switch(seq)	{
-						case "1":
-							if(hasScale1) {
-								if(hasScale2) {
-									seq = "3";
-								}
-								else {
-									seq = "2";
-									hasScale2 = true;
-								}
-							}
-							else {
-								hasScale1 = true;
-							}
-							break;
-						case "2":
-							if(hasScale2) {
-								seq = "3";
-							}
-							else {
-								hasScale2 = true;
-							}
-							break;
-					}
-
-					// Now fill the matrix and the origin values
-					switch(seq) {
-						case "1":
-							origin[0] = d;
-							basis[0] = a;
-							basis[1] = b;
-							basis[2] = c;
-							break;
-						case "2":
-							origin[1] = d;
-							basis[3] = a;
-							basis[4] = b;
-							basis[5] = c;
-							break;
-						case "3": {
-							origin[2] = d;
-							basis[6] = a;
-							basis[7] = b;
-							basis[8] = c;
-
-							const r = invertBasis(basis);
-							void origin;
-							// structures[currentStructure].crystal.origin = [
-							// 	-(r[0]*origin[0]+r[1]*origin[1]+r[2]*origin[2]),
-							// 	-(r[3]*origin[0]+r[4]*origin[1]+r[5]*origin[2]),
-							// 	-(r[6]*origin[0]+r[7]*origin[1]+r[8]*origin[2])
-							// ];
-							// console.log("BASIS", r);
-							// console.log("ORIGIN", structures[currentStructure].crystal.origin);
-							if(!hasCryst1) {
-								const bb = structures[currentStructure].crystal.basis;
-								for(let i=0; i < 9; ++i) bb[i] = r[i];
-							}
-							break;
-						}
-					}
-				} */
 			}
 		}
-
-// const frag = new Set<string>();
-// for(const ra of structures[0].residues?.atoms ?? []) frag.add(ra.residue);
-// console.log(frag);
 
 		return structures;
 	}

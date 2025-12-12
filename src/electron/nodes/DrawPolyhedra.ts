@@ -22,11 +22,14 @@ export class DrawPolyhedra extends NodeCore {
 	private colorByCenterAtom = true;
 	private opacityByCenterAtom = 0.5;
 	private readonly centerAtomsColor: string[] = [];
+	private constrainVertices = "free";
+	private countVertices = 3;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "look",		type: "send", 	callback: this.channelLook.bind(this)},
 		{name: "select",	type: "send", 	callback: this.channelSelect.bind(this)},
+		{name: "constrain",	type: "send", 	callback: this.channelConstrain.bind(this)},
 	];
 
 	/**
@@ -66,6 +69,8 @@ export class DrawPolyhedra extends NodeCore {
 			showPolyhedra: this.showPolyhedra,
 			colorByCenterAtom: this.colorByCenterAtom,
 			opacityByCenterAtom: this.opacityByCenterAtom,
+			constrainVertices: this.constrainVertices,
+        	countVertices: this.countVertices
 		};
         return `"${this.id}": ${JSON.stringify(statusToSave)}`;
 	}
@@ -78,6 +83,27 @@ export class DrawPolyhedra extends NodeCore {
 		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
 		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
 		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
+        this.constrainVertices = params.constrainVertices as string ?? "free";
+        this.countVertices = params.countVertices as number ?? 3;
+	}
+
+	/**
+	 * Constrain on the number of vertices
+	 *
+	 * @param count - Count of connected atoms
+	 * @returns True if the count satisfies the constrain
+	 */
+	private countConstrain(count: number): boolean {
+
+		switch(this.constrainVertices) {
+			case "free":
+				return count >= 3;
+			case "exact":
+				return count === this.countVertices;
+			case "min":
+				return count >= this.countVertices;
+		}
+		return false;
 	}
 
 	/**
@@ -114,7 +140,7 @@ export class DrawPolyhedra extends NodeCore {
 			}
 
 			// Add triangles and polyhedra
-			if(connected.length >= 3) {
+			if(this.countConstrain(connected.length)) {
 
 				islands.push(connected);
 
@@ -179,6 +205,23 @@ export class DrawPolyhedra extends NodeCore {
 
 		this.labelKind = params.labelKind as SelectorType ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
+
+		// Extract the polyhedrons vertices and send to client
+		if(!this.structure) return;
+		const islands = this.createVerticeLists();
+
+		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
+	}
+
+	/**
+	 * Channel handler for the change of center atoms
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelConstrain(params: CtrlParams): void {
+
+        this.constrainVertices = params.constrainVertices as string ?? "free";
+        this.countVertices = params.countVertices as number ?? 3;
 
 		// Extract the polyhedrons vertices and send to client
 		if(!this.structure) return;

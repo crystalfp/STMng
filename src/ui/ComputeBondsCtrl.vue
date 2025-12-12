@@ -10,7 +10,6 @@
 import {computed, ref, reactive, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
-import {EnlargeCell, type EnlargeCellKind} from "@/services/SharedConstants";
 import type {CtrlParams} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
@@ -51,7 +50,7 @@ const enableComputeBonds  = ref(true);
 const perPairScale        = ref(false);
 const perPairData         = reactive<PairData[]>([]);
 const showScale           = reactive<number[]>([]);
-const enlargementKind     = ref<EnlargeCellKind>("neighbors");
+const enlargementKind     = ref("neighbors");
 
 // Initialize the control
 askNode(id, "init")
@@ -64,7 +63,7 @@ askNode(id, "init")
         enableComputeBonds.value  = params.enableComputeBonds as boolean ?? true;
         bondScale.value      	    = params.bondScale as number ?? 1.1;
         perPairScale.value        = params.perPairScale as boolean ?? false;
-        enlargementKind.value     = params.enlargementKind as EnlargeCellKind ?? EnlargeCell.neighbors;
+        enlargementKind.value     = params.enlargementKind as string ?? "neighbors";
 
         perPairData.length = 0;
         const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
@@ -169,7 +168,7 @@ const resetSliders = (): void => {
         showScale[i] = 1.1;
         ++i;
     }
-    enlargementKind.value = EnlargeCell.neighbors;
+    enlargementKind.value = "neighbors";
 };
 
 </script>
@@ -217,10 +216,10 @@ const resetSliders = (): void => {
 
   <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-4 ml-2">
     <v-btn-toggle v-model="enlargementKind" mandatory>
-      <v-btn value="EnlargeCell.none">None</v-btn>
-      <v-btn value="EnlargeCell.neighbors">Neighbors</v-btn>
-      <v-btn value="EnlargeCell.connected">Full</v-btn>
-      <v-btn value="EnlargeCell.polyhedra">Poly</v-btn>
+      <v-btn value="none">None</v-btn>
+      <v-btn value="neighbors">Neighbors</v-btn>
+      <v-btn value="connected">Full</v-btn>
+      <v-btn value="polyhedra">Poly</v-btn>
     </v-btn-toggle>
   </titled-slot>
 

@@ -98,18 +98,3 @@ export const indices = [
  * Value from https://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0
  */
 export const BOHR_TO_ANGSTROM = 0.529177210544;
-
-/** Method to add atoms outside the unit cell */
-export const EnlargeCell = {
-	/** Atoms not added */
-	none: 		"none",
-	/** Atoms connected to atoms inside the unit cell */
-	neighbors:	"neighbors",
-	/** Atoms outside unit cell that form a polyhedra with internal ones */
-	polyhedra:	"polyhedra",
-	/** Atoms recursively connected to the unit cell ones */
-	connected:	"connected",
-} as const;
-
-/** Type of the variables containing EnlargeCell values */
-export type EnlargeCellKind = (typeof EnlargeCell)[keyof typeof EnlargeCell];

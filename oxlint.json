@@ -18,6 +18,10 @@
     "oxc",
     "regex"
   ],
+  // "jsPlugins": [
+  //   // "@stylistic/eslint-plugin"
+  //       "eslint-plugin-sonarjs",
+  // ],
   "ignorePatterns": [
     "src/vite-env.d.ts",
     "src/assets",
@@ -31,7 +35,9 @@
     ".dependency-cruiser.js"
   ],
   "rules": {
+    "constructor-super": "error",
     "for-direction": "error",
+    "getter-return": "error",
     "no-async-promise-executor": "error",
     "no-case-declarations": "error",
     "no-class-assign": "error",
@@ -60,6 +66,7 @@
     "no-invalid-regexp": "off",
     "no-irregular-whitespace": "error",
     "no-loss-of-precision": "error",
+    "no-misleading-character-class": "error",
     "no-new-native-nonconstructor": "error",
     "no-nonoctal-decimal-escape": "error",
     "no-obj-calls": "error",
@@ -76,7 +83,9 @@
     "no-shadow-restricted-names": "error",
     "no-sparse-arrays": "error",
     "no-this-before-super": "error",
+    "no-undef": "error",
     "no-unexpected-multiline": "error",
+    "no-unreachable": "error",
     "no-unsafe-finally": "error",
     "no-unsafe-negation": "error",
     "no-unsafe-optional-chaining": "error",
@@ -116,9 +125,12 @@
     "promise/no-callback-in-promise": "warn",
     "promise/avoid-new": "off",
     "promise/no-new-statics": "error",
+    "promise/no-return-in-finally": "warn",
     "promise/valid-params": "warn",
+    "import/named": "off",
     "import/namespace": "error",
     "import/default": "off",
+    "import/export": "error",
     "import/no-named-as-default": "warn",
     "import/no-named-as-default-member": "warn",
     "import/no-duplicates": "warn",
@@ -385,7 +397,11 @@
     "eslint/max-lines-per-function": "off",
     "eslint/sort-vars": "off",
     "eslint/max-classes-per-file": "off",
-    "oxc/approx-constant": "off"
+    "oxc/approx-constant": "off",
+
+    "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
+    "vue/attributes-order": "warn",
+    "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
   },
   "globals": {
     "document": "readonly",
