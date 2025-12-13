@@ -30,7 +30,7 @@ interface PairData {
     scale:  number;
 }
 
-/** Possible atoms Z values that form a H bond */
+/** Possible atoms Z values that form a H bond (N, O, F, S) */
 const atomZForH = new Set([7, 8, 9, 16]);
 
 const MAX_ATOMS_FOR_BONDS = 1_000;
@@ -39,16 +39,18 @@ const MAX_ATOMS_FOR_BONDS = 1_000;
 export class ComputeBonds extends NodeCore {
 
 	private inputStructure: Structure | undefined;
-	private minBondingDistance  = 0.64;
-	private maxBondingDistance  = 4.50;
-	private maxHBondingDistance = 3.00;
-	private maxHValenceAngle    = 30;
-	private enableComputeBonds  = true;
-	private bondScale           = 1.1;
-	private perPairScale		= false;
+	private minBondingDistance      = 0.64;
+	private maxBondingDistance      = 4.50;
+	private maxHBondingDistance     = 3.00;
+	private maxHValenceAngle        = 30;
+	private enableComputeBonds      = true;
+	private bondScale               = 1.1;
+	private perPairScale		    = false;
 	private perPairData: PairData[] = [];
-	private addType: AddKind[]  = [];
-	private enlargementKind = "neighbors";
+	private addType: AddKind[]      = [];
+	private enlargementKind         = "neighbors";
+	private readonly bondsList      = new Map<number, number[]>();
+
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
@@ -248,204 +250,60 @@ export class ComputeBonds extends NodeCore {
 	// > Clear outside atoms
 	/**
 	 *  Remove added atoms that are not bonded to inside atoms
-	 *
-	 * @param structure - The extended structure to be cleaned
 	 */
-	private leaveNeighborAtoms(structure: Structure): void {
+	private leaveNeighborAtoms(): void {
 
-		for(const {from, to, type} of structure.bonds) {
-
-			if(type !== BondType.normal) continue;
-
-			if(this.addType[from] !== AddType.outside && this.addType[to] === AddType.outside) {
-				this.addType[to] = AddType.added;
-			}
-			else if(this.addType[to] !== AddType.outside && this.addType[from] === AddType.outside) {
-				this.addType[from] = AddType.added;
-			}
-		}
-
-		this.removeUnmarkedAtoms(structure);
+		this.markConnectedTo(AddType.inside, AddType.outside, AddType.added);
 	}
 
 	/**
-	 * Recursively find the connected atoms
-	 *
-	 * @param bonds - The bonds part of the augmented structure
-	 * @param startIdx - Starting index for the serie
+	 * Find connected atoms outside the unit cell
 	 */
-	private markConnected(bonds: Bond[], startIdx: number): void {
+	private leaveConnectedAtoms(): void {
 
-		for(const {from, to, type} of bonds) {
-
-			if(type !== BondType.normal) continue;
-			if(from === startIdx) {
-				if(this.addType[to] === AddType.outside) {
-					this.addType[to] = AddType.added;
-					this.markConnected(bonds, to);
-				}
-			}
-			else if(to === startIdx && this.addType[from] === AddType.outside) {
-				this.markConnected(bonds, from);
-				this.addType[from] = AddType.added;
-			}
+		let changed = this.markConnectedTo(AddType.inside, AddType.outside, AddType.added);
+		while(changed > 0) {
+			changed = this.markConnectedTo(AddType.added, AddType.outside, AddType.added);
 		}
-	}
-
-	/**
-	 * Start finding connected atoms outside the unit cell
-	 *
-	 * @param structure - The augmented structure with the 26 cell replicas
-	 */
-	private leaveConnectedAtoms(structure: Structure): void {
-
-		// The starting points are the outside atoms connected to one inside atom
-		for(const {from, to, type} of structure.bonds) {
-
-			if(type !== BondType.normal) continue;
-			if(this.addType[from] === AddType.inside && this.addType[to] === AddType.outside) {
-				this.addType[to] = AddType.added;
-				this.markConnected(structure.bonds, to);
-			}
-			else if(this.addType[to] === AddType.inside && this.addType[from] === AddType.outside) {
-				this.addType[from] = AddType.added;
-				this.markConnected(structure.bonds, from);
-			}
-		}
-
-		this.removeUnmarkedAtoms(structure);
 	}
 
 	/**
 	 * Leave outside atoms that could create a polyhedra with inside atoms
-	 *
-	 * @param structure - The augmented structure with the 26 cell replicas
-	 *
-	private leavePolyhedraAtoms(structure: Structure): void {
-
-		const mark = new Map<number, number[]>();
-
-		// List atoms that bond to internal atoms
-		for(const {from, to, type} of structure.bonds) {
-
-			// Skip not normal bonds
-			if(type !== BondType.normal) continue;
-
-			// List the atoms connected to inside atoms
-			if(this.addType[from] === AddType.inside) {
-				if(mark.has(from)) {
-					mark.get(from)!.push(to);
-				}
-				else {
-					mark.set(from, [to]);
-				}
-			}
-			if(this.addType[to] === AddType.inside) {
-				if(mark.has(to)) {
-					mark.get(to)!.push(from);
-				}
-				else {
-					mark.set(to, [from]);
-				}
-			}
-		}
-
-		// Retain the ones that form incomplete polyhedra (> 3 internal)
-		for(const connected of mark.values()) {
-
-			// Should potentially create a polyhedra
-			if(connected.length < 4) continue;
-
-			// Should have external atoms that complete the polyhedra
-			if(connected.every((entry) => this.addType[entry] === AddType.inside)) continue;
-
-			// Add missing external atoms
-			for(const to of connected) {
-				if(this.addType[to] === AddType.outside) {
-					this.addType[to] = AddType.added;
-				}
-			}
-		}
-
-		// Add another level of connection
-		for(const {from, to, type} of structure.bonds) {
-			if(type !== BondType.normal) continue;
-
-			if(this.addType[from] === AddType.added && this.addType[to] === AddType.outside) {
-				this.addType[to] = AddType.added;
-			}
-			if(this.addType[to] === AddType.added && this.addType[from] === AddType.outside) {
-				this.addType[from] = AddType.added;
-			}
-		}
-
-		this.removeUnmarkedAtoms(structure);
-	}
-*/
-	/**
-	 * Leave outside atoms that could create a polyhedra with inside atoms
-	 *
-	 * @param structure - The augmented structure with the 26 cell replicas
 	 */
-	private leavePolyhedraAtoms(structure: Structure): void {
+	private leavePolyhedraAtoms(): void {
 
-		const mark = new Map<number, number[]>();
+		// Add atoms that bond to internal atoms
+		this.markConnectedTo(AddType.inside, AddType.outside, AddType.added);
 
-		// List atoms that bond to internal atoms
-		for(const {from, to, type} of structure.bonds) {
+		// Add atoms that bond to the newly added ones
+		this.markConnectedTo(AddType.added, AddType.outside, AddType.added2);
 
-			// Skip not normal bonds
-			if(type !== BondType.normal) continue;
+		// For each atoms 2nd level of connection
+		// console.log("----");
+		for(const [center, connected] of this.bondsList.entries()) {
 
-			// List the atoms connected to inside atoms
-			if(this.addType[from] === AddType.inside) {
-				if(mark.has(from)) {
-					mark.get(from)!.push(to);
-				}
-				else {
-					mark.set(from, [to]);
-				}
-			}
-			if(this.addType[to] === AddType.inside) {
-				if(mark.has(to)) {
-					mark.get(to)!.push(from);
-				}
-				else {
-					mark.set(to, [from]);
-				}
-			}
-		}
+			if(this.addType[center] !== AddType.added2) continue;
 
-		// Retain the ones that form incomplete polyhedra (> 3 internal)
-		for(const connected of mark.values()) {
-
-			// Should potentially create a polyhedra
-			const countTotal = connected.length;
-			if(countTotal < 4) continue;
-
-			// Count internal and external atoms
-			let countExternal = 0;
+			let a1 = 0;
+			let a2 = 0;
+			// let i1 = 0;
 			for(const idx of connected) {
-				if(this.addType[idx] === AddType.outside) ++countExternal;
-			}
-			const countInternal = countTotal - countExternal;
 
-			// Heuristic to decide external atoms to add
-			if(countInternal < 4 || countExternal === 0 || countExternal > 2) continue;
-
-			// Add missing external atoms
-			for(const idx of connected) {
-				if(this.addType[idx] === AddType.outside) {
-					this.addType[idx] = AddType.added;
-				}
+				const ty = this.addType[idx];
+				if(ty === AddType.added) ++a1;
+				else if(ty === AddType.added2) ++a2;
+				// else if(ty === AddType.inside) ++i1;
 			}
+
+			// console.log(center, "A".repeat(a1) + "B".repeat(a2) + "I".repeat(i1) + "O".repeat(connected.length-a1-a2-i1));
+
+			if(a2 === 2 && a1 === 1) this.addType[center] = AddType.outside;
 		}
-
-		this.removeUnmarkedAtoms(structure);
 	}
 
 	/**
-	 * Remove unneeded outside atoms and bonds not marked to be retained (addType === added)
+	 * Remove unneeded outside atoms and bonds not marked to be retained
+	 * Retained have addType equal added or added2
 	 *
 	 * @param structure - The augmented structure with the 26 cell replicas
 	 */
@@ -492,6 +350,60 @@ export class ComputeBonds extends NodeCore {
 		}
 	}
 
+	/**
+	 * Transform the bonds into list of connected atoms to each atom
+	 *
+	 * @param bonds - Structure bonds
+	 */
+	private makeBondsList(bonds: Bond[]): void {
+
+		this.bondsList.clear();
+
+		for(const {from, to, type} of bonds) {
+
+			// Skip not normal bonds
+			if(type !== BondType.normal) continue;
+
+			if(this.bondsList.has(from)) {
+				this.bondsList.get(from)!.push(to);
+			}
+			else {
+				this.bondsList.set(from, [to]);
+			}
+			if(this.bondsList.has(to)) {
+				this.bondsList.get(to)!.push(from);
+			}
+			else {
+				this.bondsList.set(to, [from]);
+			}
+		}
+	}
+
+	/**
+	 * Change type of selected atoms types
+	 *
+	 * @param fromType - Type of the atom from which the bonds start
+	 * @param toType - The type of the connected atom for which the type should be modified
+	 * @param setType - New type of the selected atom
+	 * @returns The number of atoms whose type has been changed
+	 */
+	private markConnectedTo(fromType: AddKind, toType: AddKind, setType: AddKind): number {
+
+		let changed = 0;
+		for(const [from, toList] of this.bondsList) {
+
+			if(this.addType[from] !== fromType) continue;
+
+			for(const to of toList) {
+				if(this.addType[to] === toType) {
+					this.addType[to] = setType;
+					++changed;
+				}
+			}
+		}
+		return changed;
+	}
+
 	// > Add bonds to output structure
 	/**
 	 * Add bonds to output structure
@@ -526,20 +438,26 @@ export class ComputeBonds extends NodeCore {
 			}
 			else {
 
+				// Add the 26 replicas around the unit cell
 				const enlargedStructure = this.addOutsideAtoms();
 				enlargedStructure.bonds = this.computeBonds(enlargedStructure);
+				this.makeBondsList(enlargedStructure.bonds);
 
+				// Mark atoms to be retained
 				switch(this.enlargementKind) {
 					case "neighbors":
-						this.leaveNeighborAtoms(enlargedStructure);
+						this.leaveNeighborAtoms();
 						break;
 					case "polyhedra":
-						this.leavePolyhedraAtoms(enlargedStructure);
+						this.leavePolyhedraAtoms();
 						break;
 					case "connected":
-						this.leaveConnectedAtoms(enlargedStructure);
+						this.leaveConnectedAtoms();
 						break;
 				}
+
+				// Remove unmarked atoms
+				this.removeUnmarkedAtoms(enlargedStructure);
 
 				this.toNextNode(enlargedStructure);
 			}
@@ -733,9 +651,6 @@ export class ComputeBonds extends NodeCore {
 				bonds[i].type = BondType.invalid;
 			}
 		}
-
-		// Remove bonds between atoms that have too many bonds
-		// this.removeOverBonding(bonds, atoms, addType);
 
 		// Clean up bonds list removing invalid bonds
 		const outBonds: Bond[] = [];

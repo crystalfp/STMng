@@ -70,6 +70,8 @@ export const AddType = {
 	outside:  2,
 	/** Atom added to the neighbors of the unit cell ones */
 	added:   22,
+	/** Atom added to the neighbors of already added ones */
+	added2:  33,
 } as const;
 
 /** Type of the variables containing AddType values */
