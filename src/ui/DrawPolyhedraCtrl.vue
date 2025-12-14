@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, watch} from "vue";
+import {ref, reactive, watch} from "vue";
 import {askNode, sendToNode, receivePolyhedraFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawPolyhedraRenderer} from "@/renderers/DrawPolyhedraRenderer";
@@ -36,9 +36,9 @@ const atomsSelector = ref("");
 const colorByCenterAtom = ref(false);
 const opacityByCenterAtom = ref(0.5);
 const showOpacity = ref(0.5);
-const constrainVertices = ref("free");
-const countVertices = ref(3);
-const showCountVertices = ref(3);
+
+const constrains = reactive({type: "any", count: 4, showCount: 4});
+
 
 // > Initialize ui
 askNode(id, "init")
@@ -50,8 +50,11 @@ askNode(id, "init")
 		showPolyhedra.value = params.showPolyhedra as boolean ?? true;
 		colorByCenterAtom.value = params.colorByCenterAtom as boolean ?? true;
 		opacityByCenterAtom.value = params.opacityByCenterAtom as number ?? 0.5;
-        constrainVertices.value = params.constrainVertices as string ?? "free";
-        countVertices.value = params.countVertices as number ?? 3;
+
+        constrains.type = params.constrainVertices as string ?? "any";
+        const count = params.countVertices as number ?? 4;
+        constrains.count = count;
+        constrains.showCount = count;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
@@ -93,11 +96,11 @@ watch([labelKind, atomsSelector], () => {
     });
 });
 
-watch([constrainVertices, countVertices], () => {
+watch([constrains], () => {
 
     sendToNode(id, "constrain", {
-        constrainVertices: constrainVertices.value,
-        countVertices: countVertices.value,
+        constrainVertices: constrains.type,
+        countVertices: constrains.count,
     });
 });
 
@@ -130,15 +133,15 @@ receivePolyhedraFromNode(id, "vertices",
                   :transparency="true" block class="ml-n1 mt-n2"/>
 
   <titled-slot title="Constrain vertex count" class="mt-4 mb-1 ml-2">
-    <v-btn-toggle v-model="constrainVertices" mandatory>
-      <v-btn value="free">Free</v-btn>
+    <v-btn-toggle v-model="constrains.type" mandatory>
+      <v-btn value="any">Any</v-btn>
       <v-btn value="exact">Exact</v-btn>
       <v-btn value="min">At least</v-btn>
     </v-btn-toggle>
   </titled-slot>
-  <slider-with-steppers v-if="constrainVertices !== 'free'" v-model="countVertices"
-                          v-model:raw="showCountVertices" label-width="6rem"
-                          :label="`Vertices (${showCountVertices.toFixed(0)})`"
+  <slider-with-steppers v-if="constrains.type !== 'any'" v-model="constrains.count"
+                          v-model:raw="constrains.showCount" label-width="6rem"
+                          :label="`Vertices (${constrains.showCount.toFixed(0)})`"
                           :min="3" :max="20" :step="1" />
 </v-container>
 </template>

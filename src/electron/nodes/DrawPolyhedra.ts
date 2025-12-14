@@ -22,7 +22,7 @@ export class DrawPolyhedra extends NodeCore {
 	private colorByCenterAtom = true;
 	private opacityByCenterAtom = 0.5;
 	private readonly centerAtomsColor: string[] = [];
-	private constrainVertices = "free";
+	private constrainVertices = "any";
 	private countVertices = 3;
 
 	private readonly channels: ChannelDefinition[] = [
@@ -83,7 +83,7 @@ export class DrawPolyhedra extends NodeCore {
 		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
 		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
 		this.opacityByCenterAtom = params.opacityByCenterAtom as number ?? 0.5;
-        this.constrainVertices = params.constrainVertices as string ?? "free";
+        this.constrainVertices = params.constrainVertices as string ?? "any";
         this.countVertices = params.countVertices as number ?? 3;
 	}
 
@@ -96,7 +96,7 @@ export class DrawPolyhedra extends NodeCore {
 	private countConstrain(count: number): boolean {
 
 		switch(this.constrainVertices) {
-			case "free":
+			case "any":
 				return count >= 3;
 			case "exact":
 				return count === this.countVertices;
@@ -214,13 +214,13 @@ export class DrawPolyhedra extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for the change of center atoms
+	 * Channel handler for the change of constrains on the number of atoms
 	 *
 	 * @param params - Parameters from the client
 	 */
 	private channelConstrain(params: CtrlParams): void {
 
-        this.constrainVertices = params.constrainVertices as string ?? "free";
+        this.constrainVertices = params.constrainVertices as string ?? "any";
         this.countVertices = params.countVertices as number ?? 3;
 
 		// Extract the polyhedrons vertices and send to client

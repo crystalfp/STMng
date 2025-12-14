@@ -266,6 +266,40 @@ export class ComputeBonds extends NodeCore {
 			changed = this.markConnectedTo(AddType.added, AddType.outside, AddType.added);
 		}
 	}
+/*
+	private dump(): void {
+
+		console.log("----");
+		for(const [center, connected] of this.bondsList.entries()) {
+
+			let a1 = 0;
+			let a2 = 0;
+			let i1 = 0;
+			for(const idx of connected) {
+
+				switch(this.addType[idx]) {
+				case AddType.added:
+					++a1;
+					break;
+				case AddType.added2:
+					++a2;
+					break;
+				case AddType.inside:
+					++i1;
+					break;
+				case AddType.outside:
+					break;
+				case AddType.removed:
+					break;
+				}
+			}
+			if(a1+a2+i1 !== 3) continue;
+
+			const three = a1+a2+i1 >= 3 ? "*" : "";
+			console.log(center, "A".repeat(a1) + "B".repeat(a2) + "I".repeat(i1) + "O".repeat(connected.length-a1-a2-i1), three);
+		}
+	}
+*/
 
 	/**
 	 * Leave outside atoms that could create a polyhedra with inside atoms
@@ -278,26 +312,50 @@ export class ComputeBonds extends NodeCore {
 		// Add atoms that bond to the newly added ones
 		this.markConnectedTo(AddType.added, AddType.outside, AddType.added2);
 
+		// this.dump();
+
 		// For each atoms 2nd level of connection
-		// console.log("----");
 		for(const [center, connected] of this.bondsList.entries()) {
 
-			if(this.addType[center] !== AddType.added2) continue;
+			if(this.addType[center] !== AddType.added &&
+			   this.addType[center] !== AddType.added2) continue;
 
+			// let i1 = 0;
 			let a1 = 0;
 			let a2 = 0;
-			// let i1 = 0;
 			for(const idx of connected) {
 
-				const ty = this.addType[idx];
-				if(ty === AddType.added) ++a1;
-				else if(ty === AddType.added2) ++a2;
-				// else if(ty === AddType.inside) ++i1;
+				switch(this.addType[idx]) {
+				case AddType.added:
+					++a1;
+					break;
+				case AddType.added2:
+					++a2;
+					break;
+				case AddType.inside:
+					// ++i1;
+					break;
+				case AddType.outside:
+					break;
+				case AddType.removed:
+					break;
+				}
 			}
 
-			// console.log(center, "A".repeat(a1) + "B".repeat(a2) + "I".repeat(i1) + "O".repeat(connected.length-a1-a2-i1));
+			if((a2 === 2 && a1 === 1) ||
+			   (a2 === 1 && a1 === 2)) this.addType[center] = AddType.outside;
+			// if((a2 === 2 && a1 === 1) ||
+			//    (a2 === 1 && a1 === 2) ||
+			//    (i1 === 1 && a2 === 2 && this.addType[center] === AddType.added)) this.addType[center] = AddType.outside;
 
-			if(a2 === 2 && a1 === 1) this.addType[center] = AddType.outside;
+			// else if(i1 === 1 && a2 === 2 && this.addType[center] === AddType.added) {
+			// 	this.addType[center] = AddType.outside;
+			// 	for(const idx of connected) {
+			// 		if(this.addType[idx] === AddType.added2) {
+			// 			this.addType[center] = AddType.outside;
+			// 		}
+			// 	}
+			// }
 		}
 	}
 

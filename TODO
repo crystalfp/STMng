@@ -1,5 +1,4 @@
 Bugs:
-  ☐ Verify fill unit cell in proto visualizer
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -9,7 +8,6 @@ Latest requests (backlog):
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
-  ✔ It will be useful to display cell parameters when we symmetrize the structure @done(2025-12-12 17:52)
 
 To do:
   ☐ Check error return from main process to client
@@ -72,6 +70,8 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Verify fill unit cell in proto visualizer @done(2025-12-14 15:54) @project(Bugs)
+  ✔ It will be useful to display cell parameters when we symmetrize the structure @done(2025-12-12 17:52) @project(Latest requests (backlog))
   ✔ Trajectory is slow @done(2025-12-06 17:38) @project(Bugs)
   ✔ Add metadata to created movies with `setMetadataTags()` @done(2025-12-09 14:53) @project(To do)
   ✔ Check enable capture of steps for writer from reader @done(2025-11-30 10:17) @project(Bugs)
