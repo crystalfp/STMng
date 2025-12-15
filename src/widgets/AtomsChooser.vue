@@ -45,8 +45,66 @@ watchEffect(() => {
     atomsSelectorInternal.value = atomsSelector.value;
 });
 
+const errorStatus = ref(false);
+const errorMessage = ref("");
+const atomSymbols = new Set(["d", "h", "he", "li", "be", "b", "c", "n", "o", "f", "ne", "na", "mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", "mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", "rb", "sr", "y", "zr", "nb", "mo", "tc", "ru", "rh", "pd", "ag", "cd", "in", "sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "pm", "sm", "eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", "re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi", "po", "at", "rn", "fr", "ra", "ac", "th", "pa", "u", "np", "pu", "am", "cm", "bk", "cf", "es", "fm", "md", "no", "lr", "rf", "db", "sg", "bh", "hs", "mt", "ds", "rg"]);
+
+/**
+ * Validate atomic symbols
+ *
+ * @param selector - The selector string from the text area
+ * @returns True if each entry is a valid symbol
+ */
+const validSymbols = (selector: string): boolean => {
+
+    const entries = selector.split(/ +/);
+    for(const entry of entries) if(!atomSymbols.has(entry.toLowerCase())) return false;
+    return true;
+};
+
+/**
+ * Validate indices
+ *
+ * @param selector - The selector string from the text area
+ * @returns True if each entry is a valid number
+ */
+const validIndex =  (selector: string): boolean => {
+
+    const entries = selector.split(/ +/);
+    for(const entry of entries) if(!/^\d+$/.test(entry)) return false;
+    return true;
+};
+
+/**
+ * Get the selector entered, validate it and return to the parent
+ */
 const getSelector = (): void => {
-    atomsSelector.value = atomsSelectorInternal.value ?? "";
+
+    errorStatus.value = false;
+    errorMessage.value = "";
+
+    if(labelKind.value === "all") {
+        atomsSelector.value = "";
+        return;
+    }
+    const selector = atomsSelectorInternal.value;
+
+    if(!selector) {
+        atomsSelector.value = "";
+        return;
+    }
+    if(labelKind.value === "symbol" && !validSymbols(selector)) {
+        errorStatus.value = true;
+        errorMessage.value = "Invalid atom symbol";
+        return;
+    }
+    if(labelKind.value === "index" && !validIndex(selector)) {
+        errorStatus.value = true;
+        errorMessage.value = "Non numeric index";
+        return;
+    }
+
+    atomsSelector.value = selector;
 };
 
 /**
@@ -60,14 +118,16 @@ const notHidden = (name: string): boolean => {
 };
 
 /**
- * Clear selector when selecting all atoms
+ * Clear selector when selecting all atoms or clearing the field
  */
 const clearSelector = (): void => {
 
     atomsSelectorInternal.value = "";
     atomsSelector.value = "";
+    errorStatus.value = false;
+    errorMessage.value = "";
 };
-
+// hide-details="auto"
 </script>
 
 
@@ -83,9 +143,10 @@ const clearSelector = (): void => {
     <v-text-field v-model.trim="atomsSelectorInternal" :label="placeholder"
                   :disabled="labelKind === 'all' || disabled" class="mt-n2"
                   placeholder="Space separated list"
-                  hide-details="auto" clearable spellcheck="false"
+                  :error="errorStatus" :error-messages="errorMessage"
+                  clearable spellcheck="false"
                   @blur="getSelector" @keyup.enter="getSelector"
-                  @click:clear="getSelector" />
+                  @click:clear="clearSelector" />
   </template>
 </titled-slot>
 </template>

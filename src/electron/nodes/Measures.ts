@@ -282,8 +282,9 @@ export class Measures extends NodeCore {
 											position[1]-other[1],
 											position[2]-other[2]);
 
+				const atomData = getAtomData(otherZ);
 				bondData.push({idx: bond.to, atomPosition: other,
-							  radius: getAtomData(otherZ).rCov, distance});
+							  radius: atomData.rCov, distance, symbol: atomData.symbol});
 			}
 			else if(bond.to === idx) {
 
@@ -292,8 +293,9 @@ export class Measures extends NodeCore {
 											position[1]-other[1],
 											position[2]-other[2]);
 
+				const atomData = getAtomData(otherZ);
 				bondData.push({idx: bond.from, atomPosition: other,
-							  radius: getAtomData(otherZ).rCov, distance});
+							  radius: atomData.rCov, distance, symbol: atomData.symbol});
 			}
 		}
 

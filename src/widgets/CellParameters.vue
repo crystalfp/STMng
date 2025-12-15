@@ -28,7 +28,8 @@ const showOrigin = props.origin !== undefined;
 <template>
 <v-container v-if="sides[0] > 0" class="pa-0">
   <v-label class="mt-4 mb-1 no-select result-label">Unit cell</v-label>
-  <v-table class="pl-2 pr-4 py-1">
+  <table class="pl-0 pr-4 py-1 text-body-2 w-100">
+    <tbody>
     <tr>
       <td>Sides:</td>
       <td class="w-4 right">{{ sides[0].toFixed(3) }}</td>
@@ -47,7 +48,8 @@ const showOrigin = props.origin !== undefined;
       <td class="w-4 right">{{ origin![1].toFixed(3) }}</td>
       <td class="w-4 right">{{ origin![2].toFixed(3) }}</td>
     </tr>
-  </v-table>
+    </tbody>
+  </table>
 </v-container>
 </template>
 

@@ -123,7 +123,7 @@ receivePolyhedraFromNode(id, "vertices",
   <v-switch v-model="showPolyhedra" label="Show polyhedra & triangles" class="mt-4 ml-4" />
   <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-6 ml-4" />
   <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"
-                 class="ml-2 mb-2"
+                 class="ml-2 mb-n2"
                  title="Select central atoms by" placeholder="Central atoms selector" />
   <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
                           v-model:raw="showOpacity" label-width="6rem"

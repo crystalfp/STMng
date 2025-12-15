@@ -400,6 +400,9 @@ export interface BondData {
 
     /** Bond length */
 	distance: number;
+
+    /** Bonded atom symbol */
+    symbol: string;
 }
 
 /** Accept string for the file selector */

@@ -224,7 +224,8 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
 <v-container class="container">
   <v-container v-if="natoms > 0" class="mt-n1 pa-0 ml-2">
     <v-label class="simple-title mb-2">Structure summary</v-label>
-    <v-table class="pl-2 pr-4 py-1">
+    <table class="pl-0 pr-4 py-1 text-body-2 w-100">
+      <tbody>
       <tr><td>Step:</td><td class="right">{{ step }}</td></tr>
       <tr><td>Atoms count:</td><td class="right">{{ natoms }}</td></tr>
       <tr v-for="atom in counts" :key="atom.symbol">
@@ -232,7 +233,8 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
         <td class="right">{{ atom.count }}</td>
       </tr>
       <tr><td>Bonds count:</td><td class="right">{{ bondsLabel }}</td></tr>
-    </v-table>
+     </tbody>
+     </table>
     <cell-parameters :sides="[uc[0],uc[1],uc[2]]"
                      :angles="[uc[3],uc[4],uc[5]]"
                      :origin="[uc[6],uc[7],uc[8]]"/>
@@ -249,7 +251,8 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
               class="ml-4" :disabled="uc[0] === 0"/>
     <v-label v-if="details.length > 0"
              class="simple-title mb-2">Selected atoms</v-label>
-    <v-table v-if="details.length > 0" density="default" class="pa-1 pr-5">
+    <table v-if="details.length > 0" class="pa-1 pr-3 w-100 text-body-2">
+      <tbody>
       <tr v-for="line of details" :key="line.index">
         <td :style="`color:${line.color};width:3rem`">{{ line.label }}</td>
         <td class="w-1">{{ line.symbol }}</td>
@@ -259,9 +262,11 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
         <td class="w-2 right">{{ `${showCoords(line, 2)}` }}</td>
         <td class="w-0-5 right">]</td>
       </tr>
-    </v-table>
+      </tbody>
+    </table>
     <v-label v-if="distanceAB > 0" class="simple-title mb-2 mt-2">Measures</v-label>
-    <v-table v-if="distanceAB > 0" density="default" class="pa-1 pr-5">
+    <table v-if="distanceAB > 0" class="pa-1 pr-3 w-100 text-body-2">
+      <tbody>
       <tr>
       <td class="w-9">Distance <span class="red">A</span>–<span class="green">B</span>:</td>
       <td class="right">{{ distanceAB.toFixed(5) }}</td></tr>
@@ -274,23 +279,24 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
       <tr v-if="angleABC >= 0">
       <td>Angle <span class="red">A</span>–<span class="green">B</span>–<span class="blue">C</span>:</td>
       <td class="right">{{ angleABC.toFixed(5) }}</td></tr>
-    </v-table>
+    </tbody></table>
   </v-container>
 
   <v-container v-if="measurementType === 'polyhedra' && volume > 0" class="pa-0">
     <v-label class="simple-title mb-3">Measure</v-label>
-    <v-table density="default" class="pa-1 pr-5">
-      <tr><td class="w-9">Polyhedral volume:</td><td class="right">{{ volume.toFixed(5) }}</td></tr>
-    </v-table>
+    <table class="pa-1 pr-3 w-100 text-body-2"><tbody>
+      <tr><td class="w-9">Polyhedra volume:</td><td class="right">{{ volume.toFixed(5) }}</td></tr>
+    </tbody></table>
   </v-container>
 
   <v-container v-if="measurementType === 'bonds' && bondData.length > 0" class="pa-0">
     <v-label class="simple-title mb-3">Bond length to atom index</v-label>
-    <v-table density="default" class="pa-1 pr-5">
+    <table class="pa-1 pr-3 w-100 text-body-2"><tbody>
       <tr v-for="entry of bondData" :key="entry.idx">
-        <td class="w-9">{{ entry.idx }}</td>
+        <td class="w-3">{{ entry.idx.toString().padStart(4, "\u2002") }}</td>
+        <td class="w-9">{{ entry.symbol }}</td>
         <td class="right">{{ entry.distance.toFixed(5) }}</td></tr>
-    </v-table>
+    </tbody></table>
   </v-container>
 
   <v-btn class="mt-4 mb-4" block @click="controlStore.deselectAll()">Deselect</v-btn>
