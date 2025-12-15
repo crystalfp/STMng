@@ -42,6 +42,7 @@ const showBondsStrengths = ref(false);
 const atomColoring = ref<ColoringType>("type");
 const monochromeColor = ref("#888888");
 const bondsRadiusMultiplier = ref(1);
+const spheresRadiusMultiplier = ref(1);
 
 // > Access the stores
 const controlStore = useControlStore();
@@ -63,6 +64,7 @@ askNode(id, "init")
         atomColoring.value = params.atomColoring as ColoringType ?? "type";
         monochromeColor.value = params.monochromeColor as string ?? "#888888";
         bondsRadiusMultiplier.value = params.bondsRadiusMultiplier as number ?? 1;
+        spheresRadiusMultiplier.value = params.spheresRadiusMultiplier as number ?? 1;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
@@ -80,24 +82,28 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
                              drawMetalness.value);
     renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
                            showBondsStrengths.value, atomColoring.value,
-                           monochromeColor.value, bondsRadiusMultiplier.value);
+                           monochromeColor.value, bondsRadiusMultiplier.value,
+                           spheresRadiusMultiplier.value);
     renderer.drawLabels(renderInfo, showLabels.value, drawKind.value,
-                        labelKind.value, bondsRadiusMultiplier.value);
+                        labelKind.value, bondsRadiusMultiplier.value,
+                        spheresRadiusMultiplier.value);
 
     // Save basis to orient camera along cell sides
     for(let i=0; i < 9; ++i) controlStore.basis[i] = renderInfo.cell.basis[i];
 });
 
 // Change draw parameters
-watch([labelKind, drawKind, shadedBonds, showBondsStrengths,
+watch([labelKind, drawKind, shadedBonds, showBondsStrengths, spheresRadiusMultiplier,
        bondsRadiusMultiplier, atomColoring, monochromeColor], () => {
 
     if(renderInfo) {
         renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
                                showBondsStrengths.value, atomColoring.value,
-                               monochromeColor.value, bondsRadiusMultiplier.value);
+                               monochromeColor.value, bondsRadiusMultiplier.value,
+                               spheresRadiusMultiplier.value);
         renderer.drawLabels(renderInfo, showLabels.value, drawKind.value,
-                            labelKind.value, bondsRadiusMultiplier.value);
+                            labelKind.value, bondsRadiusMultiplier.value,
+                            spheresRadiusMultiplier.value);
     }
     sendToNode(id, "save", {
         labelKind: labelKind.value,
@@ -106,7 +112,8 @@ watch([labelKind, drawKind, shadedBonds, showBondsStrengths,
         showBondsStrengths: showBondsStrengths.value,
         atomColoring: atomColoring.value,
         monochromeColor: monochromeColor.value,
-        bondsRadiusMultiplier: bondsRadiusMultiplier.value
+        bondsRadiusMultiplier: bondsRadiusMultiplier.value,
+        spheresRadiusMultiplier: spheresRadiusMultiplier.value
     });
 });
 
@@ -168,6 +175,10 @@ const disableBondsStrengths = computed(() =>
     drawKind.value !== "ball-and-stick" || !showBonds.value
 );
 
+const disableSphereMultiplier = computed(() =>
+    drawKind.value !== "ball-and-stick"
+);
+
 </script>
 
 
@@ -185,10 +196,14 @@ const disableBondsStrengths = computed(() =>
   <v-switch v-model="shadedBonds" :disabled="disableShadedBonds"
             label="Smooth color bonds" class="mt-n4 ml-4" />
   <v-switch v-model="showBondsStrengths" :disabled="disableBondsStrengths"
-            label="Show bonds strengths" class="mt-n1 mb-5 ml-4" />
+            label="Show bonds strengths" class="mt-n1 mb-3 ml-4" />
   <debounced-slider v-slot="{value}" v-model="bondsRadiusMultiplier" :disabled="disableShadedBonds"
-                      :min="0.1" :max="2" :step="0.1" class="ml-2 mt-n2 mb-6">
+                      :min="0.1" :max="2" :step="0.1" class="ml-2">
     <v-label :text="`Bonds radius multiplier (${value.toFixed(1)})`" class="no-select" />
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="spheresRadiusMultiplier" :disabled="disableSphereMultiplier"
+                      :min="0.1" :max="2" :step="0.1" class="ml-2 mt-2 mb-6">
+    <v-label :text="`Sphere radius multiplier (${value.toFixed(1)})`" class="no-select" />
   </debounced-slider>
 
   <titled-slot title="Atom label" class="mb-2 ml-2">
@@ -216,7 +231,7 @@ const disableBondsStrengths = computed(() =>
       <v-btn value="atoms">Atoms</v-btn>
       <v-btn value="bonds">Bonds</v-btn>
       <v-btn value="labels">Labels</v-btn>
-      <v-btn value="display">{{ showAll ? "Show" : "Hide" }}</v-btn>
+      <v-btn value="display" active>{{ showAll ? "Show" : "Hide" }}</v-btn>
     </v-btn-toggle>
   </titled-slot>
 

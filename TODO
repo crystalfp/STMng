@@ -16,7 +16,7 @@ To do:
   ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
-  ☐ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering
+  ✔ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering @done(2025-12-15 16:18)
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters

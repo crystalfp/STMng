@@ -27,6 +27,7 @@ export class DrawStructure extends NodeCore {
 	private atomColoring = "type";
 	private monochromeColor = "#888888";
 	private bondsRadiusMultiplier = 1;
+	private spheresRadiusMultiplier = 1;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
@@ -108,7 +109,8 @@ export class DrawStructure extends NodeCore {
 			showBondsStrengths: this.showBondsStrengths,
 			atomColoring: this.atomColoring,
 			monochromeColor: this.monochromeColor,
-			bondsRadiusMultiplier: this.bondsRadiusMultiplier
+			bondsRadiusMultiplier: this.bondsRadiusMultiplier,
+			spheresRadiusMultiplier: this.spheresRadiusMultiplier
 		};
 	}
 
@@ -133,6 +135,7 @@ export class DrawStructure extends NodeCore {
         this.atomColoring = params.atomColoring as string ?? "type";
         this.monochromeColor = params.monochromeColor as string ?? "#888888";
 		this.bondsRadiusMultiplier = params.bondsRadiusMultiplier as number ?? 1;
+		this.spheresRadiusMultiplier = params.spheresRadiusMultiplier as number ?? 1;
 	}
 
 	// > Channel handlers
@@ -166,5 +169,6 @@ export class DrawStructure extends NodeCore {
 		if(params.atomColoring !== undefined)  this.atomColoring = params.atomColoring as string;
 		if(params.monochromeColor !== undefined) this.monochromeColor = params.monochromeColor as string;
 		if(params.bondsRadiusMultiplier !== undefined) this.bondsRadiusMultiplier = params.bondsRadiusMultiplier as number;
+		if(params.spheresRadiusMultiplier !== undefined) this.spheresRadiusMultiplier = params.spheresRadiusMultiplier as number;
 	}
 }

@@ -288,11 +288,13 @@ export class DrawStructureRenderer {
 	 * @param atomColoring - How the atoms should be colored
 	 * @param monochromeColor - Color to use for monochrome structure coloring
 	 * @param bondsRadiusMultiplier - Multiplier for the bonds radius
+	 * @param spheresRadiusMultiplier - Multiplier for the sphere radius
 	 */
 	drawStructure(renderInfo: StructureRenderInfo, drawKind: string,
 				  shadedBonds: boolean, showBondsStrength: boolean,
 				  atomColoring: ColoringType, monochromeColor: string,
-				  bondsRadiusMultiplier: number): void {
+				  bondsRadiusMultiplier: number,
+				  spheresRadiusMultiplier: number): void {
 
 		// Clear previous structure
 		sm.clearGroup(this.outName);
@@ -319,7 +321,7 @@ export class DrawStructureRenderer {
 				let radius;
 				switch(drawKind) {
 					case "ball-and-stick":
-						radius = rCov*R_COV_SCALE;
+						radius = rCov*R_COV_SCALE*spheresRadiusMultiplier;
 						break;
 					case "van-der-waals":
 						radius = rVdW;
@@ -368,8 +370,8 @@ export class DrawStructureRenderer {
 												  colorFrom, colorTo, strength);
 					}
 					else {
-						const radiusStart  = atomFrom.rCov*R_COV_SCALE;
-						const radiusEnd    = atomTo.rCov*R_COV_SCALE;
+						const radiusStart = atomFrom.rCov*R_COV_SCALE*spheresRadiusMultiplier;
+						const radiusEnd   = atomTo.rCov*R_COV_SCALE*spheresRadiusMultiplier;
 						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
 						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						const {start, end} = this.adjustLimitsCylinder(atomFrom.position,
@@ -468,11 +470,13 @@ export class DrawStructureRenderer {
 	 * @param drawKind - Structure draw style
 	 * @param labelKind - Label to be rendered
 	 * @param bondsRadiusMultiplier - Multiplier for the bonds radius
+	 * @param spheresRadiusMultiplier - Multiplier for the sphere radius
 	 * @throws Error.
 	 * "Impossible draw kind value"
 	 */
 	drawLabels(renderInfo: StructureRenderInfo, showLabels: boolean,
-			   drawKind: string, labelKind: string, bondsRadiusMultiplier: number): void {
+			   drawKind: string, labelKind: string, bondsRadiusMultiplier: number,
+			   spheresRadiusMultiplier: number): void {
 
 		// Remove existing labels
 		disposeTextInGroup(this.labelsGroup);
@@ -492,7 +496,7 @@ export class DrawStructureRenderer {
 			let offset = 0;
 			switch(drawKind) {
 				case "ball-and-stick":
-					offset = atom.rCov * R_COV_SCALE * 1.3;
+					offset = atom.rCov * R_COV_SCALE * spheresRadiusMultiplier * 1.3;
 					break;
 				case "van-der-waals":
 					offset = atom.rVdW * 1.3;
