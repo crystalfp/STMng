@@ -8,7 +8,6 @@ Latest requests (backlog):
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
-  ✔ Show space group number in addition to space group name @done(2025-12-16 16:30)
 
 To do:
   ☐ Check error return from main process to client
@@ -70,6 +69,7 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Show space group number in addition to space group name @done(2025-12-16 16:30) @project(Latest requests (backlog))
   ✔ Check how to make secondary window always on top. @done(2025-12-16 12:18) @project(Latest requests (backlog))
   ✔ Do not open a window with full-screen size by default @done(2025-12-16 12:03) @project(Latest requests (backlog))
   ✔ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering @done(2025-12-15 16:18) @project(To do)

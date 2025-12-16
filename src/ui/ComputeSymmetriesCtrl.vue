@@ -16,6 +16,7 @@ import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import ThrottledButton from "@/widgets/ThrottledButton.vue";
 import CellParameters from "@/widgets/CellParameters.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -42,10 +43,9 @@ const computedSpaceGroup = ref("");
 const intlSymbol = ref("");
 const sgNumberIn = ref(0);
 const sgNumberOut = ref(0);
-const showIntlSymbol = ref(true);
 const fillTolerance = ref(-5);
 const createPrimitiveCell = ref(false);
-
+const displayMode = ref("international");
 const computePointGroup = ref(false);
 const pointGroup = ref("");
 const positionTolerance = ref(0.3);
@@ -83,7 +83,7 @@ askNode(id, "init")
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
         intlSymbol.value = params.intlSymbol as string ?? "";
-        showIntlSymbol.value = params.showIntlSymbol as boolean ?? true;
+        displayMode.value = params.displayMode as string ?? "international";
         sgNumberIn.value = params.sgNumberIn as number ?? 0;
         sgNumberOut.value = params.sgNumberOut as number ?? 0;
     })
@@ -128,8 +128,8 @@ watch([
     });
 });
 
-watch(showIntlSymbol, () => {
-    sendToNode(id, "intl", {showIntlSymbol: showIntlSymbol.value});
+watch(displayMode, () => {
+    sendToNode(id, "display", {displayMode: displayMode.value});
 });
 
 receiveFromNode(id, "show", (params: CtrlParams) => {
@@ -176,10 +176,15 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
     angles.value[2] = aa[2];
 });
 
-const inputTitle = computed(() => (sgNumberIn.value === 0 ?
-    "Input symmetry:" : `Input symmetry: (ITA num. ${sgNumberIn.value})`));
-const finalTitle = computed(() => (sgNumberOut.value === 0 ?
-    "Final symmetry:" : `Final symmetry: (ITA num. ${sgNumberOut.value})`));
+const inputValue = computed(() => {
+    if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
+    return inputSpaceGroup.value;
+});
+const finalValue = computed(() => {
+    if(displayMode.value === "table" && sgNumberOut.value !== 0) return sgNumberOut.value.toString();
+    if(displayMode.value === "symmop") return computedSpaceGroup.value;
+    return intlSymbol.value;
+});
 
 </script>
 
@@ -195,7 +200,6 @@ const finalTitle = computed(() => (sgNumberOut.value === 0 ?
     <v-container v-if="standardizeCell" class="pa-0 mt-n2">
       <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2" />
       <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-3 mt-n2" />
-      <v-switch v-model="showIntlSymbol" label="Show international symbol" class="ml-3 mt-n2" />
       <debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
                         :min="-3" :max="0" :step="0.02" class="ml-2 mt-4">
         <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
@@ -207,20 +211,28 @@ const finalTitle = computed(() => (sgNumberOut.value === 0 ?
     </debounced-slider>
   </v-container>
 
+  <titled-slot title="Symmetry display mode" class="mt-2 mb-2 ml-2">
+    <v-btn-toggle v-model="displayMode" mandatory>
+      <v-btn value="international">Intl.</v-btn>
+      <v-btn value="symmop">SymmOp</v-btn>
+      <v-btn value="table">Table</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
+
   <v-container v-if="!disableInputSymmetries" class="pl-6 mt-2">
     <v-row>
-      <v-label :text="inputTitle" class="result-label no-select" />
+      <v-label text="Input symmetry:" class="result-label no-select" />
     </v-row>
     <v-row>
-      <v-label :text="inputSpaceGroup" class="show-symmetry" />
+      <v-label :text="inputValue" class="show-symmetry" />
     </v-row>
   </v-container>
   <v-container v-if="enableFindSymmetries" class="pl-6 mt-2">
     <v-row>
-      <v-label :text="finalTitle" class="result-label no-select" />
+      <v-label text="Final symmetry:" class="result-label no-select" />
     </v-row>
     <v-row>
-      <v-label :text="showIntlSymbol ? intlSymbol : computedSpaceGroup" class="show-symmetry" />
+      <v-label :text="finalValue" class="show-symmetry" />
     </v-row>
   </v-container>
 

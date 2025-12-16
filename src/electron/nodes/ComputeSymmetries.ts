@@ -120,7 +120,7 @@ export class ComputeSymmetries extends NodeCore {
 	private sgNumberIn = 0;
 	private sgNumberOut = 0;
 	private intlSymbol = "";
-	private showIntlSymbol = true;
+	private displayMode = "international";
 	private createPrimitiveCell = false;
 	private computePointGroup = false;
 	private pointGroup = "";
@@ -133,7 +133,7 @@ export class ComputeSymmetries extends NodeCore {
 		{name: "compute", 		 type: "send",   callback: this.channelCompute.bind(this)},
 		{name: "window",  		 type: "send",   callback: this.channelWindow.bind(this)},
 		{name: "do-point-group", type: "send",   callback: this.channelDoPointGroup.bind(this)},
-		{name: "intl", 			 type: "send",   callback: this.channelIntl.bind(this)},
+		{name: "display", 		 type: "send",   callback: this.channelDisplay.bind(this)},
 	];
 
 	/**
@@ -199,7 +199,7 @@ export class ComputeSymmetries extends NodeCore {
 			computePointGroup: this.computePointGroup,
 			positionTolerance: this.positionTolerance,
 			eigenvalueTolerance: this.eigenvalueTolerance,
-			showIntlSymbol: this.showIntlSymbol,
+			displayMode: this.displayMode,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -217,7 +217,7 @@ export class ComputeSymmetries extends NodeCore {
         this.computePointGroup = params.computePointGroup as boolean ?? false;
         this.positionTolerance = params.positionTolerance as number ?? 0.3;
         this.eigenvalueTolerance = params.eigenvalueTolerance as number ?? 0.01;
-		this.showIntlSymbol = params.showIntlSymbol as boolean ?? true;
+		this.displayMode = params.displayMode as string ?? "international";
 	}
 
 	/**
@@ -378,7 +378,7 @@ export class ComputeSymmetries extends NodeCore {
 				intlSymbol,
 				sgNumberIn,
 				sgNumberOut,
-				showIntlSymbol: this.showIntlSymbol,
+				displayMode: this.displayMode,
 			});
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
@@ -713,7 +713,7 @@ export class ComputeSymmetries extends NodeCore {
 			eigenvalueTolerance: this.eigenvalueTolerance,
 			pointGroup: this.pointGroup,
 			intlSymbol: this.intlSymbol,
-			showIntlSymbol: this.showIntlSymbol,
+			displayMode: this.displayMode,
 			sgNumberIn: this.sgNumberIn,
 			sgNumberOut: this.sgNumberOut
 		};
@@ -762,14 +762,15 @@ export class ComputeSymmetries extends NodeCore {
 	 *
 	 * @param params - Show international symbol parameter
 	 */
-	private channelIntl(params: CtrlParams): void {
-		this.showIntlSymbol = params.showIntlSymbol as boolean ?? true;
+	private channelDisplay(params: CtrlParams): void {
+
+		this.displayMode = params.displayMode as string ?? "international";
 
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {
 
 			const dataToSend = JSON.stringify({
-				showIntlSymbol: this.showIntlSymbol,
+				displayMode: this.displayMode,
 			});
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
@@ -806,7 +807,9 @@ export class ComputeSymmetries extends NodeCore {
 			outSymmetry: this.computedSpaceGroup,
 			pointGroup: this.pointGroup,
 			intlSymbol: this.intlSymbol,
-			showIntlSymbol: this.showIntlSymbol,
+			displayMode: this.displayMode,
+			sgNumberIn: this.sgNumberIn,
+			sgNumberOut: this.sgNumberOut
 		});
 
 		createOrUpdateSecondaryWindow({

@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {ref, nextTick} from "vue";
+import {ref, nextTick, computed} from "vue";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
@@ -16,7 +16,9 @@ const inSymmetry = ref("");
 const outSymmetry = ref("");
 const pointGroup = ref("");
 const intlSymbol = ref("");
-const showIntlSymbol = ref(false);
+const displayMode = ref("international");
+const sgNumberIn = ref(0);
+const sgNumberOut = ref(0);
 
 /**
  * Data for the show symmetry window
@@ -31,8 +33,13 @@ interface SymmetriesData {
     pointGroup?: string;
     /** International symmetry symbol */
     intlSymbol?: string;
-    /** Show the international symmetry symbol */
-    showIntlSymbol: boolean;
+    /** Symmetry display mode */
+		displayMode: string;
+    /** Input space group number */
+    sgNumberIn?: number;
+    /** Computed space group number */
+    sgNumberOut?: number;
+
 }
 
 receiveInWindow((data) => {
@@ -44,14 +51,25 @@ receiveInWindow((data) => {
             outSymmetry.value = decodedData.outSymmetry!;
             pointGroup.value  = decodedData.pointGroup!;
             intlSymbol.value  = decodedData.intlSymbol!;
+            sgNumberIn.value  = decodedData.sgNumberIn!;
+            sgNumberOut.value = decodedData.sgNumberOut!;
         }
-        showIntlSymbol.value  = decodedData.showIntlSymbol;
+        displayMode.value  = decodedData.displayMode;
     });
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys("/symmetries");
 
+const inputValue = computed(() => {
+    if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
+    return inSymmetry.value;
+});
+const finalValue = computed(() => {
+    if(displayMode.value === "table" && sgNumberOut.value !== 0) return sgNumberOut.value.toString();
+    if(displayMode.value === "symmop") return outSymmetry.value;
+    return intlSymbol.value;
+});
 </script>
 
 
@@ -61,13 +79,13 @@ handleSpecialKeys("/symmetries");
   <v-row class="symmetry-container">
     <v-col class="left-col">
       <v-label class="text-h5 justify-center mt-n2 w-100">Input symmetry</v-label>
-      <v-label :text="inSymmetry" class="mt-4 justify-center show-symmetry w-100" />
+      <v-label :text="inputValue" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
     <v-col class="right-col">
       <v-label v-if="pointGroup!==''" class="text-h5 justify-center mt-n2 w-100">Point group</v-label>
       <v-label v-if="pointGroup!==''" :text="pointGroup" class="justify-center w-100 my-2 show-pg" />
       <v-label class="text-h5 justify-center mt-n2 w-100">Output symmetry</v-label>
-      <v-label :text="showIntlSymbol && intlSymbol!=='' ? intlSymbol : outSymmetry" class="mt-4 justify-center show-symmetry w-100" />
+      <v-label :text="finalValue" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
   </v-row>
   <v-container class="button-strip">
