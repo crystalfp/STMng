@@ -23,7 +23,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             stlFormat: "binary",
             forcePosition: [5, 3, 5],
             forceLookAt: [0, 0, 0],
-            autoReset: true,
+            autoReset: false,
 
 		},
 		scene: {
@@ -112,7 +112,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.forceLookAt[0] = state.camera.forceLookAt?.[0] ?? 0;
             this.camera.forceLookAt[1] = state.camera.forceLookAt?.[1] ?? 0;
             this.camera.forceLookAt[2] = state.camera.forceLookAt?.[2] ?? 0;
-            this.camera.autoReset = state.camera.autoReset ?? true;
+            this.camera.autoReset = state.camera.autoReset ?? false;
 
             this.scene.background = state.scene.background;
             this.scene.depthCueing = state.scene.depthCueing;
@@ -166,7 +166,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             this.camera.forceLookAt[0] = 0;
             this.camera.forceLookAt[1] = 0;
             this.camera.forceLookAt[2] = 0;
-            this.camera.autoReset = true;
+            this.camera.autoReset = false;
 
     		this.scene.background = "#90CEEC";
             this.scene.depthCueing = false;

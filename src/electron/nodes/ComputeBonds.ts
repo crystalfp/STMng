@@ -317,8 +317,9 @@ export class ComputeBonds extends NodeCore {
 		// For each atoms 2nd level of connection
 		for(const [center, connected] of this.bondsList.entries()) {
 
-			if(this.addType[center] !== AddType.added &&
-			   this.addType[center] !== AddType.added2) continue;
+			if(this.addType[center] !== AddType.added2) continue;
+			// if(this.addType[center] !== AddType.added &&
+			//    this.addType[center] !== AddType.added2) continue;
 
 			// let i1 = 0;
 			let a1 = 0;
@@ -342,6 +343,7 @@ export class ComputeBonds extends NodeCore {
 				}
 			}
 
+			// if(a2 === 2 && a1 === 1) this.addType[center] = AddType.outside;
 			if((a2 === 2 && a1 === 1) ||
 			   (a2 === 1 && a1 === 2)) this.addType[center] = AddType.outside;
 			// if((a2 === 2 && a1 === 1) ||
@@ -529,7 +531,7 @@ export class ComputeBonds extends NodeCore {
 	// > Possible H bond
 	/**
 	 * Check if an H bond could form.
-	 * The H bonds form when X___H...Y and X, Y are N, O, F (and also S)
+	 * The H bonds form when X–H⋅⋅⋅Y and X, Y are N, O, F (and also S)
 	 *
 	 * @param atomZ - Atomic number of the X or Y atoms
 	 * @returns True if an H bond could form
@@ -538,7 +540,7 @@ export class ComputeBonds extends NodeCore {
 
 	// > Compute the valence angle
 	/**
-	* Compute the valence angle. In X___H...Y the valence angle is HXY
+	* Compute the valence angle. In X–H⋅⋅⋅Y the valence angle is HXY
 	*
 	* @param atomH - Hydrogen atom
 	* @param atomX - Atom at one side
@@ -645,7 +647,7 @@ export class ComputeBonds extends NodeCore {
 			}
 		}
 
-		// One H bond forms when X___H...Y where X, Y are N, O or F.
+		// One H bond forms when X–H⋅⋅⋅Y where X, Y are N, O or F.
 		// Here we check the angle HXY. It should be less than maxHValenceAngle (usually 30 deg.)
 		const countBonds = bonds.length;
 		for(let i=0; i < countBonds; ++i) {

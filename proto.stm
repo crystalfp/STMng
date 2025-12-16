@@ -46,7 +46,7 @@
         0,
         0
       ],
-      "autoReset": true
+      "autoReset": false
     },
     "scene": {
       "background": "#90CEEC"
