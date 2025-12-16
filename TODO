@@ -11,7 +11,7 @@ Latest requests (backlog):
   ✔ "Camera position auto reset" from Viewer tab should be switched off by default @done(2025-12-16 07:44)
   ☐ Show space group number in addition to space group name
   ☐ Check how to make secondary window always on top.
-  ☐ When writing a structure, keep the order of atom types as it was in initial POSCAR
+  ✔ When writing a structure, keep the order of atom types as it was in initial POSCAR @done(2025-12-16 08:59)
   ☐ Do not open a window with full-screen size by default
 
 To do:

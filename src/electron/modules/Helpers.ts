@@ -257,6 +257,8 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 		atomZ: []
 	};
 
+	const save: ReducedToFractional["atoms"] = [];
+
 	// Get the structure
 	const {crystal, atoms} = structure;
 	const {basis, origin} = crystal;
@@ -264,6 +266,10 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 	// Compute inverse matrix or leave it if not present
 	const noUnitCell = hasNoUnitCell(basis);
 	const inverse = noUnitCell ? basis : invertBasis(basis);
+
+	// To conserve the same order of species as the input
+	const indices = new Map<number, number[]>();
+	const zs = new Map<number, string>();
 
 	// For each atom compute the initial fractional coordinates
 	let index = 0;
@@ -273,14 +279,25 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 		const cy = position[1] - origin[1];
 		const cz = position[2] - origin[2];
 
-		out.atoms.push({
+		const symbol = getAtomicSymbol(atomZ);
+		zs.set(atomZ, symbol);
+
+		if(indices.has(atomZ)) {
+			indices.get(atomZ)!.push(index);
+		}
+		else {
+			indices.set(atomZ, [index]);
+		}
+
+		save.push({
 			index,
 			cart: position,
-			frac: noUnitCell ? [0, 0, 0] :
+			frac: noUnitCell ?
+					[0, 0, 0] :
 					[cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
 				     cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
 				     cx*inverse[2] + cy*inverse[5] + cz*inverse[8]],
-			symbol: getAtomicSymbol(atomZ),
+			symbol,
 			atomZ,
 			label,
 			chain
@@ -288,22 +305,14 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 		++index;
 	}
 
-	// Sort the atoms on symbol
-	out.atoms.sort((a, b) => a.symbol.localeCompare(b.symbol));
+	for(const [atomZ, idxList] of indices) {
 
-	// Count the input atoms per specie
-	let previous = "";
-	let idx = -1;
-	for(const atom of out.atoms) {
-		if(atom.symbol === previous) {
-			++out.atomCount[idx];
-		}
-		else {
-			out.atomSymbols.push(atom.symbol);
-			out.atomZ.push(atom.atomZ);
-			out.atomCount.push(1);
-			++idx;
-			previous = atom.symbol;
+		out.atomSymbols.push(zs.get(atomZ)!);
+		out.atomZ.push(atomZ);
+		out.atomCount.push(idxList.length);
+
+		for(const idx of idxList) {
+			out.atoms.push(save[idx]);
 		}
 	}
 
@@ -314,7 +323,7 @@ export const reducingToFractionalCoordinates = (structure: Structure): ReducedTo
 	let start = 0;
 	const TOL = 1e-4;
 	const countNew = [...out.atomCount];
-	idx = 0;
+	let idx = 0;
 	for(const count of out.atomCount) {
 		if(count > 1) {
 			const duplicated = Array<boolean>(count).fill(false);
@@ -379,12 +388,17 @@ export const format = (value: number): string => value.toFixed(6).padStart(10, "
 export const hasNoUnitCell = (basis: BasisType): boolean => basis.every((value) => value === 0);
 
 /**
- * Check if there is a basis matrix
+ * Check if it is a valid basis matrix
  *
  * @param basis - The basis matrix to test
- * @returns True if the basis has vectors defined
+ * @returns True if the basis has non-zero vectors defined
  */
-export const hasUnitCell = (basis: BasisType): boolean => basis.some((value) => value !== 0);
+export const hasUnitCell = (basis: BasisType): boolean => {
+	if(basis[0] === 0 && basis[1] === 0 && basis[2] === 0) return false;
+	if(basis[3] === 0 && basis[4] === 0 && basis[5] === 0) return false;
+	if(basis[6] === 0 && basis[7] === 0 && basis[8] === 0) return false;
+	return true;
+};
 
 /**
  * Get the volume value range
