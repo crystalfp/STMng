@@ -113,3 +113,53 @@ export const setExtended = (viewerIsExtended: boolean): void => {
 
 	store.set("ViewerExtended", viewerIsExtended ? "yes" : "no");
 };
+
+/**
+ * Set maximize status
+ *
+ * @param isMaximized - True if the main window has been maximized
+ */
+export const setMaximized = (isMaximized: boolean): void => {
+
+	store.set("MainWindowMaximized", isMaximized ? "yes" : "no");
+};
+
+/**
+ * Get main window maximize status
+ *
+ * @returns True if the window is maximized
+ */
+export const isMaximized = (): boolean =>  {
+
+	if(store.has("MainWindowMaximized")) {
+		const status = store.get("MainWindowMaximized");
+		return status === "yes";
+	}
+
+	store.set("MainWindowMaximized", "yes");
+	return true;
+};
+
+/**
+ * Save windows dimensions
+ *
+ * @param dims - Window dimensions as returned by getSize()
+ */
+export const setWindowSize = (dims: number[]): void => {
+
+	store.set("MainWindowMaximized", "no");
+	store.set("MainWindowWidth", dims[0]);
+	store.set("MainWindowHeight", dims[1]);
+};
+
+/**
+ * Get the window dimensions
+ *
+ * @returns Window dimensions to be used by setSize()
+ */
+export const getWindowSize = (): number[] => {
+	const dims = [0, 0];
+	dims[0] = store.get("MainWindowWidth", 1280) as number;
+	dims[1] = store.get("MainWindowHeight", 720) as number;
+	return dims;
+};

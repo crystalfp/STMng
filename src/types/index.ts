@@ -346,6 +346,9 @@ export interface WindowsParams {
 
     /** If the window is already open checked elsewhere */
     alreadyOpen?: boolean;
+
+    /** If the window should be always on top */
+    alwaysOnTop?: boolean;
 }
 
 /** Interface exposed by all format writers */

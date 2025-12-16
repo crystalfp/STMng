@@ -300,7 +300,8 @@ export class Trajectories extends NodeCore {
 			width: 670,
 			height: 400,
 			title: "Show mean positions and displacements",
-			data: dataToSend
+			data: dataToSend,
+			alwaysOnTop: true
 		});
 
 		this.toNextNode(averageResults.structure);

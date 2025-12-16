@@ -15,6 +15,7 @@ import {setupMenu} from "./SystemMenu";
 import {toClientSetup, sendAlertToClient} from "./ToClient";
 import favicon from "../../assets/favicon.png";
 import type {WindowsParams} from "@/types";
+import {isMaximized, setMaximized, setWindowSize, getWindowSize} from "./Preferences";
 
 /** List of opened windows, main and secondary ones */
 const openedWindows = new Map<string, BrowserWindow>();
@@ -67,10 +68,10 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
     // Attach fullscreen (f11 and not 'maximized') && focus listeners
     attachTitlebarToWindow(mainWin);
 
-    // Open main window full screen
+    // Open main window as was the last run
     mainWin.once("ready-to-show", () => {
 
-        mainWin.maximize();
+        setInitialSizes(mainWin);
     });
 
     if(VITE_DEV_SERVER_URL) {
@@ -178,6 +179,8 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         }
         secondaryWin.show();
 
+        if(params.alwaysOnTop) secondaryWin.setAlwaysOnTop(true);
+
         // Manage the list of opened windows
         openedWindows.set(params.routerPath, secondaryWin);
         secondaryWin.on("close", () => {
@@ -271,4 +274,28 @@ export const showDevToolsOnSecondaryWindow = (windowPath: string): void => {
         win.webContents.closeDevTools();
         win.webContents.openDevTools();
     }
+};
+
+/**
+ * The the main window initial size and save its changes
+ *
+ * @param win - Main window
+ */
+const setInitialSizes = (win: BrowserWindow): void => {
+
+    if(isMaximized()) win.maximize();
+    else {
+        win.show();
+        const dims = getWindowSize();
+        win.setSize(dims[0], dims[1]);
+    }
+
+    win.addListener("maximize", () => setMaximized(true));
+    win.addListener("unmaximize", () => setMaximized(false));
+
+    win.addListener("resize", () => {
+        const dims = win.getSize();
+        setWindowSize(dims);
+    });
+
 };

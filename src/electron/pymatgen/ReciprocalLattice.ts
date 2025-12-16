@@ -106,8 +106,8 @@ export class ReciprocalLattice {
 		allCoords,
 		centerCoords,
 		radius,
-		numericalTol = 1e-8,
-		returnFcoords = false}: {
+		numericalTol,
+		returnFcoords}: {
             allCoords: number[];
 		    centerCoords: number[];
 		    radius: number;

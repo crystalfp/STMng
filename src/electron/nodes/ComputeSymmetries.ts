@@ -796,7 +796,8 @@ export class ComputeSymmetries extends NodeCore {
 			width: 700,
 			height: 400,
 			title: "Show symmetries",
-			data: dataToSend
+			data: dataToSend,
+			alwaysOnTop: true
 		});
 	}
 }

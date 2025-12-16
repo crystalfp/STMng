@@ -8,11 +8,7 @@ Latest requests (backlog):
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Analysis of variable composition data sets.
-  ✔ "Camera position auto reset" from Viewer tab should be switched off by default @done(2025-12-16 07:44)
   ☐ Show space group number in addition to space group name
-  ☐ Check how to make secondary window always on top.
-  ✔ When writing a structure, keep the order of atom types as it was in initial POSCAR @done(2025-12-16 08:59)
-  ☐ Do not open a window with full-screen size by default
 
 To do:
   ☐ Check error return from main process to client
@@ -21,7 +17,6 @@ To do:
   ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
-  ✔ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering @done(2025-12-15 16:18)
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters
@@ -75,6 +70,11 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Check how to make secondary window always on top. @done(2025-12-16 12:18) @project(Latest requests (backlog))
+  ✔ Do not open a window with full-screen size by default @done(2025-12-16 12:03) @project(Latest requests (backlog))
+  ✔ Add slider for atom radii multiplier (now fixed at 0.5) for CPK rendering @done(2025-12-15 16:18) @project(To do)
+  ✔ "Camera position auto reset" from Viewer tab should be switched off by default @done(2025-12-16 07:44) @project(Latest requests (backlog))
+  ✔ When writing a structure, keep the order of atom types as it was in initial POSCAR @done(2025-12-16 08:59) @project(Latest requests (backlog))
   ✔ Verify fill unit cell in proto visualizer @done(2025-12-14 15:54) @project(Bugs)
   ✔ It will be useful to display cell parameters when we symmetrize the structure @done(2025-12-12 17:52) @project(Latest requests (backlog))
   ✔ Trajectory is slow @done(2025-12-06 17:38) @project(Bugs)

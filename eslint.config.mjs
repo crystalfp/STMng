@@ -287,6 +287,7 @@ export default defineConfig([
         "@typescript-eslint/unbound-method": "error",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
         "no-dupe-keys": "error",
+        "@typescript-eslint/no-useless-default-assignment": "off",
 
         // > ******************* stylistic ***********************
         "@stylistic/lines-between-class-members": "warn",
