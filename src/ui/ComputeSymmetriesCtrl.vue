@@ -7,7 +7,7 @@
  * @since 2024-08-20
  */
 
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
@@ -40,6 +40,8 @@ const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
 const intlSymbol = ref("");
+const sgNumberIn = ref(0);
+const sgNumberOut = ref(0);
 const showIntlSymbol = ref(true);
 const fillTolerance = ref(-5);
 const createPrimitiveCell = ref(false);
@@ -82,6 +84,8 @@ askNode(id, "init")
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
         intlSymbol.value = params.intlSymbol as string ?? "";
         showIntlSymbol.value = params.showIntlSymbol as boolean ?? true;
+        sgNumberIn.value = params.sgNumberIn as number ?? 0;
+        sgNumberOut.value = params.sgNumberOut as number ?? 0;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -135,6 +139,8 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     if(params.enableFindSymmetries !== undefined) enableFindSymmetries.value = params.enableFindSymmetries as boolean;
     if(params.pointGroup !== undefined) pointGroup.value = params.pointGroup as string;
     if(params.intlSymbol !== undefined) intlSymbol.value = params.intlSymbol as string;
+    if(params.sgNumberIn !== undefined) sgNumberIn.value = params.sgNumberIn as number;
+    if(params.sgNumberOut !== undefined) sgNumberOut.value = params.sgNumberOut as number;
 });
 
 receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
@@ -170,6 +176,11 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
     angles.value[2] = aa[2];
 });
 
+const inputTitle = computed(() => (sgNumberIn.value === 0 ?
+    "Input symmetry:" : `Input symmetry: (ITA num. ${sgNumberIn.value})`));
+const finalTitle = computed(() => (sgNumberOut.value === 0 ?
+    "Final symmetry:" : `Final symmetry: (ITA num. ${sgNumberOut.value})`));
+
 </script>
 
 
@@ -198,7 +209,7 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
 
   <v-container v-if="!disableInputSymmetries" class="pl-6 mt-2">
     <v-row>
-      <v-label text="Input symmetry:" class="result-label no-select" />
+      <v-label :text="inputTitle" class="result-label no-select" />
     </v-row>
     <v-row>
       <v-label :text="inputSpaceGroup" class="show-symmetry" />
@@ -206,7 +217,7 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
   </v-container>
   <v-container v-if="enableFindSymmetries" class="pl-6 mt-2">
     <v-row>
-      <v-label text="Final symmetry:" class="result-label no-select" />
+      <v-label :text="finalTitle" class="result-label no-select" />
     </v-row>
     <v-row>
       <v-label :text="showIntlSymbol ? intlSymbol : computedSpaceGroup" class="show-symmetry" />

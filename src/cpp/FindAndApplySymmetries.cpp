@@ -151,12 +151,15 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 
 // Apply symmetries from the input space group
 static void applySymmetriesInput(string& spaceGroup,
+								 bool applySymmetries,
 								 vector<double_t>& fractionalCoordinates,
 								 vector<int32_t>& atomsZ,
+								 int& sgNumber,
 								 string& error)
 {
-	// Initialize the error message to no message
+	// Initialize the error message to no message and no space group number
 	error = "";
+	sgNumber = 0;
 
 	// Now compute the list of Seitz matrices
 	T_SgInfo SgInfo;
@@ -388,9 +391,12 @@ static void applySymmetriesInput(string& spaceGroup,
 			return;
 		}
 	}
+	sgNumber = SgInfo.TabSgName->SgNumber;
 
 	// Apply symmetries
-	ApplyComputedSymmetries(fractionalCoordinates, atomsZ, SgInfo);
+	if(applySymmetries) {
+		ApplyComputedSymmetries(fractionalCoordinates, atomsZ, SgInfo);
+	}
 
 	// Release everything
 	free(SgInfo.ListSeitzMx);
@@ -608,17 +614,21 @@ string doFindAndApplySymmetries(
 	double symprecStandardize,
 	double symprecDataset,
 	bool& unitCellModified,
-	string& intlSymbol)
+	string& intlSymbol,
+	int& sgNumberIn,
+	int& sgNumberOut)
 {
 	// Status to be returned
 	string status("");
 	unitCellModified = false;
 	intlSymbol = "";
+	sgNumberIn = 0;
+	sgNumberOut = 0;
 
 	// Apply input symmetries
-	if(applyInputSymmetries)
+	if(spaceGroup != "")
 	{
-		applySymmetriesInput(spaceGroup, fractionalCoordinates, atomsZ, status);
+		applySymmetriesInput(spaceGroup, applyInputSymmetries, fractionalCoordinates, atomsZ, sgNumberIn, status);
 	}
 
 #ifdef DEBUG
@@ -742,8 +752,9 @@ string doFindAndApplySymmetries(
 								 types, outTypes, outPositions);
 
 			// Compute the space group as symbol or as symmetry equivalent positions
-			spaceGroup = formatTransformations(dataset);
-			intlSymbol = dataset->international_symbol;
+			spaceGroup  = formatTransformations(dataset);
+			intlSymbol  = dataset->international_symbol;
+			sgNumberOut = dataset->spacegroup_number;
 
 			// Copy back the values
 			// Transpose the lattice to cancel the input transposition

@@ -144,6 +144,8 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 
 	bool unitCellModified;
 	std::string intlSymbol;
+	int sgNumberIn;
+	int sgNumberOut;
 
 	std::string out = doFindAndApplySymmetries(
 		basis,
@@ -158,13 +160,17 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 		symprecStandardize,
 		symprecDataset,
 		unitCellModified,
-		intlSymbol
+		intlSymbol,
+		sgNumberIn,
+		sgNumberOut
 	);
 
 	// Return the data
 	Napi::Object obj = Napi::Object::New(env);
-	obj.Set("spaceGroup", spaceGroup);
-	obj.Set("intlSymbol", intlSymbol);
+	obj.Set("spaceGroup",  spaceGroup);
+	obj.Set("intlSymbol",  intlSymbol);
+	obj.Set("sgNumberIn",  sgNumberIn);
+	obj.Set("sgNumberOut", sgNumberOut);
 
 	Napi::Float64Array basisOut = Napi::Float64Array::New(env, 9);
 	for(size_t i=0; i < 9; ++i) basisOut[i] = basis[i];

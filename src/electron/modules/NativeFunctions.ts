@@ -19,6 +19,10 @@ interface FindAndApplySymmetriesOutput {
 	spaceGroup: string;
 	/** International symmetry symbol */
 	intlSymbol: string;
+	/** Input space group number */
+	sgNumberIn: number;
+	/** Computed space group number */
+	sgNumberOut: number;
 	/** Computed basis */
 	basis: Float64Array;
 	/** The atom types */

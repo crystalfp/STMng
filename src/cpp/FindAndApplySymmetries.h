@@ -15,5 +15,8 @@ extern std::string doFindAndApplySymmetries(
 	double symprecStandardize,						// Tolerance for the standardize cell step
 	double symprecDataset,							// Tolerance for find symmetries
 	bool& unitCellModified,							// True if the cell has been modified (out)
-	std::string& intlSymbol							// Computed international symmetry symbol
+	std::string& intlSymbol,						// Computed international symmetry symbol
+	int& sgNumberIn,								// The input space group type number
+	int& sgNumberOut								// The final space group type number
+													// defined in International Tables for Crystallography
 );													// Returns error message or empty string
