@@ -9,7 +9,8 @@
 
 import {ref, reactive, watch, computed} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
-        mdiChevronLeft, mdiChevronRight} from "@mdi/js";
+        mdiChevronLeft, mdiChevronRight,
+        mdiArrowExpandHorizontal} from "@mdi/js";
 import {askNode, sendToNode, setReadPathInTitle} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
@@ -235,8 +236,8 @@ const setFormat = (): void => {
 
     sendToNode(id, "formats", {format: format.value});
 
-    countSteps.value = stepRange.value[0];
-    step.value = 1;
+    // countSteps.value = stepRange.value[0];
+    // step.value = 1;
 
     // Clean the labels of the file selectors
     label1.value = "";
@@ -278,8 +279,9 @@ const setUseBohr = (): void => {
 
     sendToNode(id, "bohr", {useBohr: useBohr.value});
 };
+
 /**
- * On change of the measurement unit
+ * On change of the read hydrogen
  */
 const setReadHydrogen = (): void => {
 
@@ -340,6 +342,7 @@ const selectedFile = (filename: string): void => {
             inProgress.value = false;
             resetCamera();
             appendFile.value = false;
+            stepRange.value[0] = 1;
             stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
@@ -373,6 +376,7 @@ const droppedFile = (content: string, filename: string): void => {
             inProgress.value = false;
             resetCamera();
             appendFile.value = false;
+            stepRange.value[0] = 1;
             stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
@@ -395,6 +399,7 @@ const droppedAuxFile = (content: string): void => {
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
+            stepRange.value[0] = 1;
             stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
@@ -417,6 +422,7 @@ const selectedAuxFile = (filename: string): void => {
         .then((params) => {
             if("error" in params) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
+            stepRange.value[0] = 1;
             stepRange.value[1] = countSteps.value;
         })
         .catch((error: Error) => {
@@ -658,26 +664,26 @@ const startQuery = (aflow: string): void => {
       <v-row class="ml-0 d-flex ga-1 align-center">
         <v-label class="no-select pb-4 mt-4 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>
         <v-label v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
-                class="no-select pb-4 mt-4 mr-2">
+                class="no-select pb-4 mt-4">
                 {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
-        <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
-              class="mr-12" density="compact" slim @click="resetRange">Reset</v-btn>
+        <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps" variant="plain"
+              class="mr-10" :icon="mdiArrowExpandHorizontal" @click="resetRange" />
       </v-row>
       <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
                 :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
       <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
       <v-row class="mr-4">
         <v-spacer />
-        <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronDoubleLeft" class="mr-1"
-                @click="step = 1" />
-        <v-btn variant="tonal" :disabled="step === 1" :icon="mdiChevronLeft" class="mr-1"
+        <v-btn variant="tonal" :disabled="step <= stepRange[0]" :icon="mdiChevronDoubleLeft" class="mr-1"
+                @click="step = stepRange[0]" />
+        <v-btn variant="tonal" :disabled="step <= stepRange[0]" :icon="mdiChevronLeft" class="mr-1"
                 @click="deltaStep(-1)" />
         <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" class="mr-1"
                 @click="togglePlay" />
-        <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronRight" class="mr-1"
+        <v-btn variant="tonal" :disabled="step >= stepRange[1]" :icon="mdiChevronRight" class="mr-1"
                 @click="deltaStep(1)" />
-        <v-btn variant="tonal" :disabled="step === countSteps" :icon="mdiChevronDoubleRight"
-                @click="step = countSteps; running = false" />
+        <v-btn variant="tonal" :disabled="step >= stepRange[1]" :icon="mdiChevronDoubleRight"
+                @click="step = stepRange[1]; running = false" />
         <v-spacer />
       </v-row>
 

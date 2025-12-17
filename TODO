@@ -1,4 +1,5 @@
 Bugs:
+  ☐ Does not load spglib on Linux
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?

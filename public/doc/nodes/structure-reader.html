@@ -37,8 +37,7 @@ single structure or a sequence of structures to specify a trajectory or a set of
 <tr>
 	<td class="c1">File format</td>
 	<td class="c2">list</td>
-	<td class="c3">Select the format of the file to be read.
-		The list of <a href="../general/formats.html">available formats</a>. The special format “Prototypes” opens the prototypes search and load panel (see below) instead of the following controls.</td>
+	<td class="c3">Select the format of the file to be read from the list of <a href="../general/formats.html">available formats</a>. The special format “Prototypes” opens the prototypes search and load panel (see below) instead of the following controls.</td>
 </tr>
 <tr>
 	<td class="c1">Atoms types</td>
@@ -79,7 +78,7 @@ single structure or a sequence of structures to specify a trajectory or a set of
 	<td class="c3">For the PDB format selects if hydrogen atoms should be loaded and visualized.</td>
 </tr>
 </table>
-<div class="description">
+<div class="description" style="margin-top: 1rem;">
 <p>The following fields appear if the format contains multiple steps:</p>
 </div>
 <table cellpadding="2" cellspacing="2">
@@ -126,7 +125,7 @@ single structure or a sequence of structures to specify a trajectory or a set of
 <tr>
 	<td class="c1">Step range</td>
 	<td class="c2">range slider</td>
-	<td class="c3">Set the first and last steps to be visualized. When the first step value is more than one or the final value is less than the number of steps from the file, a Range label became visible with the first and last steps and a button to reset the values to cover the full range of steps from file. Note that this slider is not labelled.</td>
+	<td class="c3">Set the first and last steps to be visualized. When the first step value is more than one or the final value is less than the number of steps from the file, a Range label became visible with the first and last steps and the <img src="../range.png" width="37" height="37" alt="Reset"> button to reset its values to cover the full range of steps from file. Note that this slider is not labelled.</td>
 </tr>
 <tr>
 	<td class="c1">Control buttons</td>
@@ -153,9 +152,14 @@ single structure or a sequence of structures to specify a trajectory or a set of
 </div>
 <table cellpadding="2" cellspacing="2">
 <tr>
-	<td class="c1">Query prototypes db</td>
+	<td class="c1">Prototype query</td>
 	<td class="c2">text with autocomplete</td>
-	<td class="c3">Query the full list of prototypes to load. The query show a list of possible minerals/aflow UID and each character entered shorten the list.</td>
+	<td class="c3">Query the full list of prototypes. The query show a list of possible minerals/aflow UID and each character entered shorten the list.</td>
+</tr>
+<tr>
+	<td class="c1">Query result</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">When a prototype has been selected, here appears its name (called “mineral” in aflow database), the aflow UID, its strukturbericht and the Pearson values.</td>
 </tr>
 </table>
 
