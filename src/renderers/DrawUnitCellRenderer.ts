@@ -6,14 +6,13 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-11-29
  */
-import {Group, Vector3, type Material, ConeGeometry,
-		LineDashedMaterial, BufferGeometry, BufferAttribute,
-		CylinderGeometry, MeshStandardMaterial, DoubleSide,
-		Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
+import {Group, Vector3, type Material, ConeGeometry, LineDashedMaterial,
+		CylinderGeometry, MeshStandardMaterial, DoubleSide, Mesh,
+		LineSegments, LineBasicMaterial} from "three";
+import {computeCellEdges} from "@/services/ComputeCellEdges";
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
 import type {PositionType} from "@/types";
-import {indices} from "../services/SharedConstants";
 
 /**
  * Renderer for unit cell graphical output
@@ -94,11 +93,7 @@ export class DrawUnitCellRenderer {
 		// If no unit cell return
 		if(vertices.length === 0) return;
 
-		const geometry = new BufferGeometry();
-		geometry.setIndex(indices);
-		geometry.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
-		const edges = new EdgesGeometry(geometry);
-
+		const edges = computeCellEdges(vertices);
 		const line = new LineSegments(edges, DrawUnitCellRenderer.setMaterial(color, dashed));
 		if(dashed) line.computeLineDistances();
 		line.name = name;

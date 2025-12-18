@@ -8,17 +8,16 @@
  */
 import {ref, reactive, watch} from "vue";
 import log from "electron-log";
-import {Scene, Group, LineBasicMaterial, BufferGeometry,
-        Vector3, Quaternion, MathUtils,
-        BufferAttribute, EdgesGeometry, LineSegments,
-        IcosahedronGeometry, MeshStandardMaterial, Mesh,
+import {Scene, Group, LineBasicMaterial, Vector3, Quaternion, MathUtils,
+        LineSegments, IcosahedronGeometry, MeshStandardMaterial, Mesh,
         CylinderGeometry, FrontSide} from "three";
 import {SimpleViewer} from "@/services/SimpleViewer";
 import {theme} from "@/services/ReceiveTheme";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {computeCellVertices} from "@/electron/modules/ComputeCellVertices";
+import {computeCellEdges} from "@/services/ComputeCellEdges";
 import type {BasisType, CtrlParams} from "@/types";
-import {indices} from "../services/SharedConstants";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
@@ -76,23 +75,6 @@ const colors = [
 ];
 
 /**
- * Compute unit cell vertices coordinates
- *
- * @param basis - Basis vectors
- * @returns - List of vertices coordinates (bottom then top)
- */
- const computeCellVertices = (basis: BasisType): number[] => [
-	0,                          0,                          0,
-	basis[0],                   basis[1],                   basis[2],
-	basis[0]+basis[3],          basis[1]+basis[4],          basis[2]+basis[5],
-	basis[3],                   basis[4],                   basis[5],
-	basis[6],                   basis[7],                   basis[8],
-	basis[0]+basis[6],          basis[1]+basis[7],          basis[2]+basis[8],
-	basis[0]+basis[3]+basis[6], basis[1]+basis[4]+basis[7], basis[2]+basis[5]+basis[8],
-	basis[3]+basis[6],          basis[4]+basis[7],          basis[5]+basis[8],
-];
-
-/**
  * Draw the unit cell
  *
  * @param basis - The basis for the unit cell
@@ -102,13 +84,8 @@ const colors = [
 const drawUnitCell = (basis: BasisType, side: Side): [number, number, number] => {
 
     const material = new LineBasicMaterial({color: colors[side]});
-
-    const geometry = new BufferGeometry();
-    geometry.setIndex(indices);
-    const vertices = computeCellVertices(basis);
-    geometry.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
-    const edges = new EdgesGeometry(geometry);
-
+    const vertices = computeCellVertices([0, 0, 0], basis);
+    const edges = computeCellEdges(vertices);
     const line = new LineSegments(edges, material);
 
     if(side) groupRight.add(line);

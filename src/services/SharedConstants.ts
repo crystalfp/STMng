@@ -25,7 +25,8 @@ export const displacementCoefficients = [
 	[1,  1, 0],
 	[1, -1, 0],
 
-	[0,  0, 1], // Z = 1
+	// Z = 1
+	[0,  0, 1],
 	[0,  1, 1],
 	[0, -1, 1],
 
@@ -37,7 +38,8 @@ export const displacementCoefficients = [
 	[1,  1, 1],
 	[1, -1, 1],
 
-	[0,  0, -1], // Z = -1
+	// Z = -1
+	[0,  0, -1],
 	[0,  1, -1],
 	[0, -1, -1],
 
@@ -76,24 +78,6 @@ export const AddType = {
 
 /** Type of the variables containing AddType values */
 export type AddKind = (typeof AddType)[keyof typeof AddType];
-
-/**
- * Triangles indices for a box. Top and bottom facies are not needed
- */
-export const indices = [
-
-    4, 5, 1,
-    4, 1, 0,
-
-    3, 2, 6,
-    3, 6, 7,
-
-    4, 0, 3,
-    4, 3, 7,
-
-    1, 5, 6,
-    1, 6, 2,
-];
 
 /**
  * Convert bohr units into angstrom.

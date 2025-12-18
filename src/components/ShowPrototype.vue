@@ -8,9 +8,9 @@
  */
 import {ref} from "vue";
 import {inv} from "mathjs";
-import {BufferGeometry, BufferAttribute, IcosahedronGeometry, Vector3,
+import {IcosahedronGeometry, Vector3,
 		CylinderGeometry, MeshStandardMaterial, FrontSide, Group, Color,
-		Mesh, EdgesGeometry, LineSegments, LineBasicMaterial} from "three";
+		Mesh, LineSegments, LineBasicMaterial} from "three";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
@@ -18,7 +18,7 @@ import {SimpleViewer} from "@/services/SimpleViewer";
 import {/* addOutsideAtoms, clearOutsideAtoms, */ computeBonds} from "@/services/BondsSupport";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
-import {indices} from "@/services/SharedConstants";
+import {computeCellEdges} from "@/services/ComputeCellEdges";
 import type {PositionType, PrototypeAtomsData, PrototypeStructureData, Bond} from "@/types";
 
 const roughness = 0.5;
@@ -112,11 +112,7 @@ const addUnitCell = (vertices: number[]): [number, number, number] => {
 
     sv.clearGroup("UnitCell");
 
-    const geometry = new BufferGeometry();
-    geometry.setIndex(indices);
-    geometry.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
-    const edges = new EdgesGeometry(geometry);
-
+    const edges = computeCellEdges(vertices);
     const line = new LineSegments(edges, new LineBasicMaterial({color: "#0000FF"}));
     cellGroup.add(line);
 
