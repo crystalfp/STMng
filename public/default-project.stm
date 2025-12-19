@@ -8,7 +8,7 @@
     "matcher":   {"label": "Prototype matcher",  "type": "prototype-matcher",    "in": "reader"},
     "slice":     {"label": "Slicer",             "type": "slice-structure",      "in": "bonds"},
     "backbone":  {"label": "Structure backbone", "type": "structure-backbone",   "in": "symmetry"},
-    "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "symmetry"},
+    "cfp":       {"label": "Fingerprints",       "type": "compute-fingerprints", "in": "reader"},
     "polyhedra": {"label": "Polyhedra",          "type": "draw-polyhedra",       "in": "bonds"},
     "smooth":    {"label": "Interpolate volume", "type": "interpolate-volume",   "in": "unit"},
     "ortho":     {"label": "Orthoslice",         "type": "orthoslice",           "in": "smooth"},

@@ -37,6 +37,7 @@ export class StructureReader extends NodeCore {
 	private readHydrogen = false;
 	private energyPerAtom = false;
 	private appendFile = false;
+	private appendFrom = 0;
 	private fileToRead = "";
 	private reader: ReaderImplementation | undefined;
 	private readerOptions: ReaderOptions = {};
@@ -235,8 +236,15 @@ export class StructureReader extends NodeCore {
 		}
 
 		// Append if so requested
-		this.structures = this.appendFile ? [...this.structures, ...structures] : structures;
-		this.appendFile = false;
+		if(this.appendFile) {
+			this.appendFrom = this.structures.length;
+			this.structures = [...this.structures, ...structures];
+			this.appendFile = false;
+		}
+		else {
+			this.structures = structures;
+			this.appendFrom = 0;
+		}
 
 		// Set structure id
 		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
@@ -337,12 +345,17 @@ export class StructureReader extends NodeCore {
 			switch(mainFormat) {
 				case "POSCAR + XDATCAR": {
 						const {readAuxXDATCAR} = await import("../readers/AuxXDATCAR");
-						this.structures = await readAuxXDATCAR(filename, this.structures[0]);
+						this.structures = await readAuxXDATCAR(filename,
+															   this.structures,
+															   this.appendFile);
 					}
 					break;
 				case "POSCAR + ENERGY": {
 						const {readAuxENERGY} = await import("../readers/AuxENERGY");
-						this.structures = readAuxENERGY(filename, this.structures, this.energyPerAtom);
+						this.structures = readAuxENERGY(filename,
+														this.structures,
+														this.appendFrom,
+														this.energyPerAtom);
 					}
 					break;
 				default:

@@ -31,23 +31,36 @@ type Step = (typeof LineType)[keyof typeof LineType];
  * Read the auxiliary file XDATCAR
  *
  * @param filename - Filename to be read as XDATCAR
- * @param mainStructure - The already read main structure
+ * @param mainStructures - The already read main structure
+ * @param append - If these steps should be appended to the main structure
  * @returns Main structures trajectory
  * @throws Error.
  * "Missing main structure" or "Empty main structure" or "ENOENT: no such file or directory"
  */
-export const readAuxXDATCAR = async (filename: string, mainStructure: Structure): Promise<Structure[]> => {
+export const readAuxXDATCAR = async (filename: string,
+									 mainStructures: Structure[],
+									 append: boolean): Promise<Structure[]> => {
 
 	// Sanity check
-	if(!mainStructure?.atoms) throw Error("Missing main structure");
-	const {crystal, atoms} = mainStructure;
+	const mainLength = mainStructures?.length ?? 0;
+	if(mainLength === 0) throw Error("Missing main structures");
+
+	const {crystal, atoms} = mainStructures[mainLength-1];
 	const natoms = atoms.length;
 	if(natoms === 0) throw Error("Empty main structure");
+
 	let lineType: Step = LineType.header;
 	let headerLines = 5;
 	let index = 0;
-	const structures: Structure[] = [];
 	let structure: Structure;
+
+	// Remove the model structure
+	let structures: Structure[];
+	if(append) {
+		structures = structuredClone(mainStructures);
+		structures.pop();
+	}
+	else structures = [];
 
 	const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
 	for await (const line of stream) {

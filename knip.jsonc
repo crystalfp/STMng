@@ -30,7 +30,8 @@
     "@rollup/plugin-terser",
     "@rollup/plugin-typescript",
     "oxlint-tsgolint",
-    "@oxlint/migrate"
+    "@oxlint/migrate",
+    "@typescript/native-preview"
   ],
   // "includeEntryExports": true,
   "ignore": ["**/KDtree.d.ts"],
