@@ -90,7 +90,7 @@ export class CaptureMovie {
         while(this.run) {
 
             const pr1 = this.source.add(this.timestamp, this.FRAME_SEC);
-            const pr2 = new Promise((resolve) => setTimeout(resolve, this.FRAME_MSEC));
+            const pr2 = new Promise((resolve) => {setTimeout(resolve, this.FRAME_MSEC);});
             await Promise.all([pr1, pr2]);
             this.timestamp += this.FRAME_SEC;
         }

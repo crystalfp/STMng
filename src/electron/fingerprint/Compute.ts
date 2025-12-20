@@ -84,6 +84,7 @@ export class Fingerprinting {
 		// Compute the parallelism
 		let availableParallelism = os.availableParallelism();
 		if(availableParallelism > 1) {
+			/* oxlint-disable-next-line @stylistic/space-before-function-paren */
 			availableParallelism = (processParallelism ?
 											2*availableParallelism :
 											availableParallelism)-1;

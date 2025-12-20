@@ -163,9 +163,15 @@ export class SliceStructure extends NodeCore {
 			return;
 		}
 		switch(this.mode) {
-			case "plane":  {this.preparePlaneSlicerGeometry(); return;}
-			case "miller": {this.prepareMillerSlicerGeometry(); return;}
-			case "slab":   {this.prepareSlabSlicerGeometry(); return;}
+			case "plane":
+				this.preparePlaneSlicerGeometry();
+				break;
+			case "miller":
+				this.prepareMillerSlicerGeometry();
+				break;
+			case "slab":
+				this.prepareSlabSlicerGeometry();
+				break;
 		}
 	}
 

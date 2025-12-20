@@ -15,13 +15,12 @@
     "promise",
     "node",
     "unicorn",
-    "oxc",
-    "regex"
+    "oxc"
   ],
-  // "jsPlugins": [
-    // "@stylistic/eslint-plugin"
-  //       "eslint-plugin-sonarjs",
-  // ],
+  "jsPlugins": [
+    "eslint-plugin-sonarjs",
+    "@stylistic/eslint-plugin"
+  ],
   "ignorePatterns": [
     "src/vite-env.d.ts",
     "src/assets",
@@ -402,21 +401,21 @@
     "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
     "vue/attributes-order": "warn",
     "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
-/*
-        "@stylistic/lines-between-class-members": "warn",
-        "@stylistic/quotes": ["warn", "double", {"avoidEscape": true}],
-        "@stylistic/space-before-function-paren": [
-            "error", {"anonymous": "never", "named": "never", "asyncArrow": "always", "catch": "never"}
-        ],
-        "@stylistic/comma-spacing": ["error", {"before": false, "after": true}],
-        "@stylistic/keyword-spacing": ["warn", {"before": true, "after": true, "overrides": {
-            "if": {"after": false},
-            "switch": {"after": false},
-            "catch": {"after": false},
-            "while": {"after": false},
-            "for": {"after": false},
-        }}],
-        "@stylistic/object-curly-spacing": ["warn", "never"],
+
+    "@stylistic/lines-between-class-members": ["warn", "always", {"exceptAfterSingleLine": true}],
+    "@stylistic/quotes": ["warn", "double", {"avoidEscape": true}],
+    "@stylistic/space-before-function-paren": [
+        "error", {"anonymous": "never", "named": "never", "asyncArrow": "always", "catch": "never"}
+    ],
+    "@stylistic/comma-spacing": ["error", {"before": false, "after": true}],
+/*     "@stylistic/keyword-spacing": ["warn", {"before": true, "after": true, "overrides": {
+        "if": {"after": false},
+        "switch": {"after": false},
+        "catch": {"after": false},
+        "while": {"after": false},
+        "for": {"after": false},
+    }}],
+       "@stylistic/object-curly-spacing": ["warn", "never"],
         "@stylistic/brace-style": ["warn", "stroustrup", {"allowSingleLine": true}],
         "@stylistic/no-multi-spaces": "off",
         "@stylistic/multiline-ternary": "off",
@@ -445,8 +444,29 @@
         "@stylistic/eol-last": ["error", "always"],
         "@stylistic/new-parens": "error",
         "@stylistic/quote-props": ["warn", "consistent-as-needed"],
+*/
+        "sonarjs/no-commented-code": "warn",
+        "eslint/no-inline-comments": "off",
+        "sonarjs/cognitive-complexity": ["off", 40],
+        "sonarjs/void-use": "off",
+        "sonarjs/different-types-comparison": "off",
+        "sonarjs/no-unenclosed-multiline-block": "off",
+        "sonarjs/fixme-tag": "off",
+        "sonarjs/no-labels": "off",
+        "sonarjs/todo-tag": "off",
+        "sonarjs/pseudo-random": "off",
+        "sonarjs/no-selector-parameter": "off",
 
-        "sonarjs/no-commented-code": "warn",*/
+        // "sonarjs/no-duplicate-string": ["off", 6],
+        // "sonarjs/elseif-without-else": "off",
+        // "sonarjs/no-nested-switch": "off",
+        // "sonarjs/sonar-no-fallthrough": "off",
+        "sonarjs/no-gratuitous-expressions": "warn",
+        "sonarjs/no-empty-collection": "warn",
+        "sonarjs/no-unused-collection": "warn",
+        "sonarjs/no-use-of-empty-return-value": "warn",
+        "sonarjs/no-extra-arguments": "warn",
+        "sonarjs/no-redundant-jump": "warn",
   },
   "globals": {
     "document": "readonly",

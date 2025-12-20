@@ -175,8 +175,8 @@ watch([running], async () => {
         }
 
         // Delay between steps: 0: no delay; 1: delay 200ms; 2: delay 400ms
-        if(speed.value === 1) await new Promise((resolve) => setTimeout(resolve, 200));
-        else if(speed.value === 2) await new Promise((resolve) => setTimeout(resolve, 400));
+        if(speed.value === 1) await new Promise((resolve) => {setTimeout(resolve, 200);});
+        else if(speed.value === 2) await new Promise((resolve) => {setTimeout(resolve, 400);});
 
         try {
             const response = await askNode(id, "step", {step: nextStep});

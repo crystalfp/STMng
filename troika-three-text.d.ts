@@ -17,9 +17,6 @@ declare module "troika-three-text" {
     	public fontStyle: "normal" | "italic";
 		public textAlign: "left" | "right" | "center" | "justify";
 		public color: string | number | Color;
-		public anchorX: "left" | "center" | "right";
-		public anchorY: "top" | "top-baseline" | "top-cap" | "top-ex" |
-						"middle" | "bottom-baseline" | "bottom";
     	public maxWidth: number;
     	public lineHeight: number;
     	public letterSpacing: number;
@@ -45,6 +42,9 @@ declare module "troika-three-text" {
     	public sdfGlyphSize: number;
     	public textIndent: number;
     	public unicodeFontsUrl: string;
+		public anchorX: "left" | "center" | "right";
+		public anchorY: "top" | "top-baseline" | "top-cap" | "top-ex" |
+						"middle" | "bottom-baseline" | "bottom";
 	}
 
 	export class BatchedText extends Text {
