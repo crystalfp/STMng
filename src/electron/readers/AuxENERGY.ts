@@ -28,7 +28,7 @@ export const readAuxENERGY = (filename: string,
 	// Sanity check
 	const mainLength = mainStructures?.length ?? 0;
 	if(mainLength === 0) throw Error("Missing main structures");
-	if(mainLength > appendFrom) {
+	if(appendFrom >= mainLength) {
 		throw Error(`Invalid append position ${appendFrom} on length ${mainLength}`);
 	}
 
