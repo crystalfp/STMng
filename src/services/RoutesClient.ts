@@ -9,10 +9,11 @@
  /* eslint-disable unicorn/prefer-global-this */
 import {watchEffect} from "vue";
 import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
-import {useControlStore} from "@/stores/controlStore";
+// import {useControlStore} from "@/stores/controlStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {CtrlParams, PositionType, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
+import {setBaseTitle, setProjectInTitle} from "@/services/SetTitle";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -154,46 +155,35 @@ export const receiveProjectUI = (callback: (clientProjectInfo: ClientProjectInfo
  */
 export const setProjectPathInTitle = (baseTitle: string): void => {
 
+	setBaseTitle(baseTitle);
+
 	// Set the title the first time
 	const project = window.electron.ipcRenderer
 							.sendSync("PREFERENCES:GET-SYNC", "LastProjectLoaded") as string;
 
-	let titleAndProject = "";
+	// let titleAndProject = "";
 	if(project) {
 		let idx = project.lastIndexOf("\\");
 		if(idx < 0) idx = project.lastIndexOf("/");
-    	titleAndProject = baseTitle + "\u2003—\u2003" + project.slice(idx+1);
+		setProjectInTitle(project.slice(idx+1));
 	}
-    else titleAndProject = baseTitle + "\u2003—\u2003default project";
-	window.api.setTitle(titleAndProject);
-
-	const controlStore = useControlStore();
-	controlStore.currentTitleAndProject = titleAndProject;
+    else {
+		setProjectInTitle("default project");
+	}
 
 	// Receive title updates
 	window.electron.ipcRenderer.on("PROJECT:PATH", (_event, projectPath: string) => {
 
-		titleAndProject = baseTitle + "\u2003—\u2003" + (projectPath || "default project");
-		window.api.setTitle(titleAndProject);
-		controlStore.currentTitleAndProject = titleAndProject;
+		setProjectInTitle(projectPath);
 	});
 };
 
 /**
- * Set the loaded file into the title
+ * Set the title string
  *
- * @param filename - The currently loaded filename or an empty string if none
+ * @param title - The title to be set
  */
-export const setReadPathInTitle = (filename: string): void => {
-
-	const controlStore = useControlStore();
-	const titleAndProject = controlStore.currentTitleAndProject;
-	if(!titleAndProject) return;
-	if(filename) {
-		window.api.setTitle(titleAndProject + "\u2003—\u2003" + filename);
-	}
-	else window.api.setTitle(titleAndProject);
-};
+export const setTitle = (title: string): void => window.api.setTitle(title);
 
 // > Preferences
 

@@ -72,9 +72,6 @@ interface GlobalControls {
 	/** Selected polyhedra color */
 	polyhedronNewColor: number;
 
-	/** Current title and project */
-	currentTitleAndProject: string;
-
 	/** Dragging file from outside */
 	draggingFile: boolean;
 }
@@ -113,8 +110,6 @@ export const useControlStore = defineStore("ControlStore", {
 		polyhedronNewIdx: undefined,
 		polyhedronCurrentColor: 0,
 		polyhedronNewColor: 0,
-
-		currentTitleAndProject: "",
 
 		draggingFile: false
 

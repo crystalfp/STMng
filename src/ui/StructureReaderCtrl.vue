@@ -11,7 +11,8 @@ import {ref, reactive, watch, computed} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight,
         mdiArrowExpandHorizontal} from "@mdi/js";
-import {askNode, sendToNode, setReadPathInTitle} from "@/services/RoutesClient";
+import {askNode, sendToNode} from "@/services/RoutesClient";
+import {setFileInTitle} from "@/services/SetTitle";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
@@ -507,7 +508,7 @@ const label1 = ref("");
 const label2 = ref("");
 
 // Add loaded file to the window title
-watch(label1, () => {setReadPathInTitle(label1.value);});
+watch(label1, () => {setFileInTitle(label1.value);});
 
 /** Data for formats that have an auxiliary file */
 const auxSetup = computed(() => {

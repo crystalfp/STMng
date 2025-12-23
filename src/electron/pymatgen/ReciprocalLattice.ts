@@ -172,7 +172,7 @@ export class ReciprocalLattice {
         const validImages: number[][] = [];
         const validIndices: number[] = [];
 
-        const {matrix} = this.lattice;
+        const matrix = this.lattice.getMatrix();
 
         for(let i=allRanges[0][0]; i <= allRanges[0].at(-1)!; ++i) {
             for(let j=allRanges[1][0]; j <= allRanges[1].at(-1)!; ++j) {

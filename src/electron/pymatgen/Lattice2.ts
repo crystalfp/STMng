@@ -85,8 +85,10 @@ export class Lattice {
 
 	/**
 	 * Return the basis matrix how it is considered in the python library
+	 *
+	 * @returns The inverted basis matrix
 	 */
-	get matrix(): number[] {
+	getMatrix(): number[] {
 
 		const out = Array<number>(9).fill(0);
 		for(let row=0; row < 3; ++row) {
