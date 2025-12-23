@@ -393,6 +393,10 @@ static void applySymmetriesInput(string& spaceGroup,
 	}
 	sgNumber = SgInfo.TabSgName->SgNumber;
 
+	// TEST
+	// This is the intl. symbol. Remove all "_"
+	// cout << "LABELS: " << SgInfo.TabSgName->SgLabels << "\n";
+
 	// Apply symmetries
 	if(applySymmetries) {
 		ApplyComputedSymmetries(fractionalCoordinates, atomsZ, SgInfo);
@@ -727,6 +731,23 @@ string doFindAndApplySymmetries(
 			}
 
 			unitCellModified = true;
+
+			// Compute symmetry parameters for display
+			SpglibDataset* dataset = spg_get_dataset(lattice, positions, types,
+												 	 num_primitive_atom, symprecDataset);
+			if(dataset == NULL)
+			{
+				SpglibError code = spg_get_error_code();
+				status += "Failed to get spglib dataset: ";
+				status += spg_get_error_message(code);
+				status += "\n";
+			}
+			else
+			{
+				spaceGroup  = formatTransformations(dataset);
+				intlSymbol  = dataset->international_symbol;
+				sgNumberOut = dataset->spacegroup_number;
+			}
 
 			free(types);
 			delete [] positions;
