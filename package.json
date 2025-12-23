@@ -56,7 +56,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@mdi/svg": "^7.4.47",
-    "@oxlint/migrate": "^1.34.0",
+    "@oxlint/migrate": "^1.35.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -64,11 +64,11 @@
     "@stylistic/eslint-plugin": "^5.6.1",
     "@types/three": "^0.182.0",
     "@types/tmp": "^0.2.6",
-    "@typescript/native-preview": "^7.0.0-dev.20251220.1",
-    "@typescript-eslint/eslint-plugin": "^8.50.0",
-    "@typescript-eslint/parser": "^8.50.0",
+    "@typescript/native-preview": "^7.0.0-dev.20251223.1",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
     "@vitejs/plugin-vue": "^6.0.3",
-    "dependency-cruiser": "^17.3.4",
+    "dependency-cruiser": "^17.3.5",
     "electron": "^39.2.7",
     "electron-builder": "^26.3.3",
     "eslint": "^9.39.2",
@@ -104,6 +104,6 @@
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.2.0"
+    "vue-tsc": "^3.2.1"
   }
 }
