@@ -169,6 +169,7 @@ export class StructureReader extends NodeCore {
 					break;
 				case "POSCAR":
 				case "POSCAR + XDATCAR":
+				case "POSCAR + CP2K":
 				case "POSCAR + ENERGY": {
 						const {ReaderPOSCAR} = await import("../readers/ReadPOSCAR");
 						this.reader = new ReaderPOSCAR();
@@ -356,6 +357,13 @@ export class StructureReader extends NodeCore {
 														this.structures,
 														this.appendFrom,
 														this.energyPerAtom);
+					}
+					break;
+				case "POSCAR + CP2K": {
+						const {readAuxCP2K} = await import("../readers/AuxCP2K");
+						this.structures = await readAuxCP2K(filename,
+															this.structures,
+															this.appendFrom);
 					}
 					break;
 				default:

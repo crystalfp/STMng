@@ -91,17 +91,23 @@ export const methodEnergiesHistogram = (energies: number[],
 
 	// Fill bins with energy count or zero if range too small or zero
 	const bins = Array<number>(binCount).fill(0);
-	const binWidth = (maxEnergy-minEnergy)/binCount;
-	if(binWidth > 1e-10) {
-		idx = 0;
-		for(const energy of energies) {
-			if(enabled[idx]) {
-				let bin = Math.floor((energy-minEnergy)/binWidth);
-				if(bin === binCount) --bin;
-				++bins[bin];
-			}
-			++idx;
+	let binWidth = (maxEnergy-minEnergy)/binCount;
+
+	if(binWidth < 1e-7) {
+		const MARGIN = 0.01;
+		minEnergy *= 1-MARGIN;
+		maxEnergy *= 1+MARGIN;
+		binWidth = (maxEnergy-minEnergy)/binCount;
+	}
+
+	idx = 0;
+	for(const energy of energies) {
+		if(enabled[idx]) {
+			let bin = Math.floor((energy-minEnergy)/binWidth);
+			if(bin === binCount) --bin;
+			++bins[bin];
 		}
+		++idx;
 	}
 
 	// Fill the histogram

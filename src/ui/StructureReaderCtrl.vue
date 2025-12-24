@@ -43,6 +43,7 @@ const fileFormats = [
     "LAMMPStrj",
     "PDB",
     "POSCAR",
+    "POSCAR + CP2K",
     "POSCAR + ENERGY",
     "POSCAR + XDATCAR",
     "Prototypes",
@@ -237,9 +238,6 @@ const setFormat = (): void => {
 
     sendToNode(id, "formats", {format: format.value});
 
-    // countSteps.value = stepRange.value[0];
-    // step.value = 1;
-
     // Clean the labels of the file selectors
     label1.value = "";
     label2.value = "";
@@ -251,6 +249,7 @@ const formatsThatNeedsAtomTypes = new Set(["POSCAR",
                                            "LAMMPS",
                                            "LAMMPStrj",
                                            "POSCAR + XDATCAR",
+                                           "POSCAR + CP2K",
                                            "POSCAR + ENERGY",
                                            "XDATCAR5"]);
 
@@ -472,6 +471,7 @@ const filterFromFormat = (fileFormat: string): string => {
             break;
 		case "POSCAR":
 		case "POSCAR + XDATCAR":
+		case "POSCAR + CP2K":
         case "POSCAR + ENERGY":
 			filter = [{name:       "POSCAR",
                        extensions: ["poscar", "poscars", "contcar", "vasp"]}];
@@ -515,6 +515,7 @@ const auxSetup = computed(() => {
 
     switch(format.value) {
         case "POSCAR + ENERGY":
+        case "POSCAR + CP2K":
             return {
                 hasAux: true,
                 title: "Select ENERGY file",
