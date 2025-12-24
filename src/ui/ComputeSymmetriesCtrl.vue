@@ -10,6 +10,7 @@
 import {computed, ref, watch} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
+import {setStandardizedInTitle} from "@/services/SetTitle";
 import type {CtrlParams} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
@@ -78,6 +79,8 @@ askNode(id, "init")
         standardizeOnly.value = params.standardizeOnly as boolean ?? false;
         createPrimitiveCell.value = params.createPrimitiveCell as boolean ?? false;
 
+        setStandardizedInTitle(enableFindSymmetries.value && standardizeCell.value);
+
         computePointGroup.value = params.computePointGroup as boolean ?? false;
         pointGroup.value = params.pointGroup as string ?? "";
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
@@ -113,6 +116,8 @@ watch([applyInputSymmetries,
         standardizeOnly: standardizeOnly.value,
         createPrimitiveCell: createPrimitiveCell.value
     });
+
+    setStandardizedInTitle(enableFindSymmetries.value && standardizeCell.value);
 });
 
 watch([

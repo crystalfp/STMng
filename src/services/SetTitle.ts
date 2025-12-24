@@ -15,7 +15,9 @@ const titleParts = {
 	/** The loaded project */
 	project: "",
 	/** The loaded structure file */
-	file: ""
+	file: "",
+	/** If the unit cell has been standardized */
+	standardized: false
 };
 
 /**
@@ -26,7 +28,10 @@ const titleParts = {
 const combineParts = (): string => {
 	let out = titleParts.base;
 	if(titleParts.project) out += "\u2003—\u2003" + titleParts.project;
-	if(titleParts.file) out += "\u2003—\u2003" + titleParts.file;
+	if(titleParts.file) {
+		out += "\u2003—\u2003" + titleParts.file;
+		if(titleParts.standardized) out += " (standardized)";
+	}
 	return out;
 };
 
@@ -60,5 +65,16 @@ export const setProjectInTitle = (project: string): void => {
 export const setFileInTitle = (filename: string): void => {
 
 	titleParts.file = filename;
+	setTitle(combineParts());
+};
+
+/**
+ * Mark file as having the cell standardized
+ *
+ * @param standardized - If the unit cell has been standardized
+ */
+export const setStandardizedInTitle = (standardized: boolean): void => {
+
+	titleParts.standardized = standardized;
 	setTitle(combineParts());
 };

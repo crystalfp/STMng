@@ -27,7 +27,7 @@ const showOrigin = props.origin !== undefined;
 
 <template>
 <v-container v-if="sides[0] > 0" class="pa-0">
-  <v-label class="mt-4 mb-1 no-select result-label">Unit cell</v-label>
+  <v-label class="mt-4 mb-n1 no-select result-label">Unit cell</v-label>
   <table class="pl-0 pr-4 py-1 text-body-2 w-100">
     <tbody>
     <tr>

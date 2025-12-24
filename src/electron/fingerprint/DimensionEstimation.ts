@@ -77,16 +77,24 @@ export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator)
     //         console.log(`  Confidence: ${(result.confidence * 100).toFixed(1)}%`);
     //     }
     // }
+
+    atomCount /= sourceFingerprints.length;
     const {estimatedDimension, details} = estimator.mleDimension();
+    const {localDimensions} = details as {localDimensions: number[]};
+
+    if(localDimensions.length === 0) return {
+        min: estimatedDimension,
+        max: estimatedDimension,
+        avg: estimatedDimension,
+        theory: 3*atomCount+3
+    };
 
     let minLD = Number.POSITIVE_INFINITY;
     let maxLD = Number.NEGATIVE_INFINITY;
-    for(const ld of (details as {localDimensions: number[]}).localDimensions) {
+    for(const ld of localDimensions) {
         if(ld > maxLD) maxLD = ld;
         if(ld < minLD) minLD = ld;
     }
-
-    atomCount /= sourceFingerprints.length;
 
     return {min: minLD, max: maxLD, avg: estimatedDimension, theory: 3*atomCount+3};
 };
