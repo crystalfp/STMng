@@ -35,8 +35,8 @@ const {id, label} = defineProps<{
 
 /** Formats that could be loaded */
 const fileFormats = [
-    "CHGCAR",
     "CEL",
+    "CHGCAR",
     "CIF",
     "Gaussian Cube",
     "LAMMPS",
@@ -59,11 +59,11 @@ const step            = ref(1);      // Current step
 const running         = ref(false);  // The steps are playing
 const atomsTypes      = ref("");     // Atom types in the structure read
 const loopSteps       = ref(false);  // If the sequence should loop
-const stepBackward    = ref(false);  // Run in backward steps
+const stepBackward    = ref(false);  // Run steps backward
 const format          = ref("");     // File format to be read
 const inProgress      = ref(false);  // True during file load
 const useBohr         = ref(true);   // Use Bohr units
-const stepIncrement   = ref(1);      // How many step skip every tick
+const stepIncrement   = ref(1);      // How many steps skip every tick
 const speed           = ref<0 | 1 | 2>(1); // Animation speed:
                                            // 0: no delay; 1: delay 200ms; 2: delay 400ms
 const readHydrogen    = ref(false);  // Read also hydrogen atoms for the PDB reader
