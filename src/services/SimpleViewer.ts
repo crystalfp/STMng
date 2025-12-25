@@ -103,7 +103,8 @@ export class SimpleViewer {
 
 		if(this.isPerspective) {
 			this.camera = new PerspectiveCamera(30, this.canvasWidth/this.canvasHeight);
-			this.camera.position.set(1.7, 2.1, 1.9);
+			// this.camera.position.set(1.7, 2.1, 1.9);
+			this.camera.position.set(20, 20, 20);
 		}
 		else {
 			const hh = 10;
@@ -186,8 +187,9 @@ export class SimpleViewer {
 	 * Center camera and controls
 	 *
 	 * @param center - Coordinates of the center of the structure
+	 * @param zoom - Camera zoom value
 	 */
-	centerCamera(center: [number, number, number]): void {
+	centerCamera(center: [number, number, number], zoom=1): void {
 
 		if(!this.camera || !this.controls) return;
 
@@ -198,7 +200,7 @@ export class SimpleViewer {
 				.normalizeRotations()
 				.setLookAt(center[0], center[1], center[2] + 2*maxSide,
 						   center[0], center[1], center[2], false);
-		void this.controls.zoomTo(1, true);
+		void this.controls.zoomTo(zoom, false);
 
 		this.camera.updateProjectionMatrix();
 	}

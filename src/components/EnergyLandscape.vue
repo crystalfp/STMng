@@ -156,6 +156,9 @@ const renderSurface = (): void => {
         vertexColors: true
     });
 
+    // Move the camera to have the surface at the center of the viewer
+    sv.centerCamera([0, 0.5, 0], 0.3);
+
     // Create surface
     const surface = new Mesh(geometry, material);
     surface.rotation.x = -Math.PI/2;
