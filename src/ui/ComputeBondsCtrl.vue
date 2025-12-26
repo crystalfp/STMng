@@ -10,6 +10,7 @@
 import {computed, ref, reactive, watch} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
+import {resetCamera} from "@/services/ResetCamera";
 import type {CtrlParams} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
@@ -134,6 +135,8 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
         enlargementKind:     enlargementKind.value
     });
 }, {deep: true});
+
+watch(enlargementKind, () => resetCamera());
 
 receiveFromNode(id, "params", (params: CtrlParams) => {
 

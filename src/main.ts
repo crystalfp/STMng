@@ -168,7 +168,7 @@ app.config.errorHandler = (error: unknown, instance: unknown, info: string) => {
 };
 
 addEventListener("unhandledrejection", (event: PromiseRejectionEvent): void => {
-	log.error("%cUnhandled rejection:", "color: red", event.reason);
+	if(event.reason) log.error("%cUnhandled rejection:", "color: red", event.reason);
 });
 
 // Preload fonts for labels

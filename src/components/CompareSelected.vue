@@ -17,6 +17,7 @@ import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
 import {computeCellVertices} from "@/electron/modules/ComputeCellVertices";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import type {BasisType, CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
@@ -57,6 +58,9 @@ const selectedStep1 = ref(-1);
 /** Graphical variables */
 let groupRight: Group;
 let groupLeft: Group;
+
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys("/compare");
 
 /**
  * Initialize the viewer

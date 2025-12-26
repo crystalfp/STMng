@@ -216,7 +216,8 @@ const finalValue = computed(() => {
     </debounced-slider>
   </v-container>
 
-  <titled-slot title="Symmetry display mode" class="mt-2 mb-2 ml-2">
+  <titled-slot v-if="!disableInputSymmetries || (enableFindSymmetries && finalValue)"
+               title="Symmetry display mode" class="mt-2 mb-2 ml-2">
     <v-btn-toggle v-model="displayMode" mandatory>
       <v-btn value="international">Intl.</v-btn>
       <v-btn value="symmop">SymmOp</v-btn>
@@ -232,7 +233,7 @@ const finalValue = computed(() => {
       <v-label :text="inputValue" class="show-symmetry" />
     </v-row>
   </v-container>
-  <v-container v-if="enableFindSymmetries" class="pl-6 mt-2">
+  <v-container v-if="enableFindSymmetries && finalValue" class="pl-6 mt-2">
     <v-row>
       <v-label text="Final symmetry:" class="result-label no-select" />
     </v-row>

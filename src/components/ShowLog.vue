@@ -49,7 +49,7 @@ const confirmDeletion = (): void => {
                   variant="underlined" flat width="100%" class="pl-2" />
     </v-container>
     <v-container class="button-strip">
-      <v-btn @click="showConfirm=true">Empty Log</v-btn>
+      <v-btn @click="showConfirm=true">Wipe log</v-btn>
       <v-btn v-focus @click="closeWindow('/log')">Close</v-btn>
     </v-container>
   </v-row>

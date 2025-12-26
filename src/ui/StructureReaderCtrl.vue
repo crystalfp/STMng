@@ -16,6 +16,7 @@ import {setFileInTitle} from "@/services/SetTitle";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
+import {resetCamera} from "@/services/ResetCamera";
 import type {DBType, FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
@@ -308,13 +309,6 @@ const setAppendFile = (): void => {
         label2.value = "";
     }
     sendToNode(id, "append", {appendFile: appendFile.value});
-};
-
-/**
- * Reset camera position after changing structure
- */
-const resetCamera = (): void => {
-    setTimeout(() => {controlStore.reset = true;}, 20);
 };
 
 // > Load structure file
