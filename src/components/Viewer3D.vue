@@ -212,6 +212,8 @@ onMounted(() => {
 
             camera = cameraOrthographic;
         }
+        fitCamera(camera, controls);
+
         camera.updateProjectionMatrix();
         controls.camera = camera;
         sm.modified();

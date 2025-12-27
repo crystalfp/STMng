@@ -143,8 +143,12 @@ const getComposition = (structure: SNL): Map<string, number> => {
 */
 export class StructureMatcher {
 
+    /** Fractional length tolerance */
 	public ltol: number;
+    /** Site tolerance. Defined as the fraction of the
+        average free length per atom := ( V / Nsites ) ** (1/3) */
 	public stol: number;
+    /** Angle tolerance in degrees */
 	public angleTol: number;
 
     /**

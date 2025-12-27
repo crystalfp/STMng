@@ -11,6 +11,14 @@ import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import type {Structure} from "@/types";
 
+/**
+ * Read the CP2K generated energy file
+ *
+ * @param filename - Filename to be read as CP2K auxiliary file
+ * @param mainStructures - The already read main structure
+ * @param appendFrom - If these steps should be appended to the main structure
+ * @returns Main structures trajectory
+ */
 export const readAuxCP2K = async (filename: string,
 							  	  mainStructures: Structure[],
 							  	  appendFrom: number): Promise<Structure[]> => {

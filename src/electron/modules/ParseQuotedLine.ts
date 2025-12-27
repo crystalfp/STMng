@@ -34,6 +34,7 @@ const Char = {
     blank:  1,
     quote:  2,
 } as const;
+
 /**
  * Character kind field type
  * @notExported

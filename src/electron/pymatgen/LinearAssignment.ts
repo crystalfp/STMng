@@ -15,6 +15,10 @@
 */
 /* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
 
+/**
+ * This class finds the solution to the Linear Assignment Problem.
+ * It finds a minimum cost matching between two sets, given a cost matrix.
+ */
 export class LinearAssignment {
 
     private origC: number[][];

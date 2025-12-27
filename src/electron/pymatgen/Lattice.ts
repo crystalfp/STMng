@@ -973,13 +973,24 @@ export const reciprocalLatticeLengths = (matrix: number[][]): number[] => {
 };
 
 /**
+ * Return from get LLL matrices
+ * @notExported
+ */
+interface LLLmatrices {
+    /** The LLL matrices */
+    matrix: number[][];
+    /** Mapping between the original lattice and the LLL reduced lattice */
+    inverseMapping: number[][];
+}
+
+/**
  * Compute matrices from LLL reduction
  *
  * @param lattice - Lattice for which the LLL matrices should be computed
- * @returns The LLL lattice matrix and
- *          the mapping between the original lattice and the LLL reduced lattice
+ * @returns The LLL lattice matrix and the mapping between the original
+ *          lattice and the LLL reduced lattice
  */
-export const getLLLmatrices = (lattice: Lattice): {matrix: number[][]; inverseMapping: number[][]} => {
+export const getLLLmatrices = (lattice: Lattice): LLLmatrices => {
 
     const matrices = computeLLL(lattice.matrix);
     return {
