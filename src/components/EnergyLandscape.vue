@@ -172,7 +172,6 @@ const renderSurface = (): void => {
 
 <template>
 <v-app :theme>
-  <Suspense>
   <div class="landscape-portal">
     <div class="landscape-viewer" />
     <v-container class="landscape-buttons">
@@ -192,7 +191,6 @@ const renderSurface = (): void => {
       <v-btn v-focus class="mt-2 ee" @click="closeWindow('/fp-landscape')">Close</v-btn>
     </v-container>
   </div>
-  </Suspense>
 </v-app>
 </template>
 

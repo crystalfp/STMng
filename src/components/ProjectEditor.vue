@@ -755,7 +755,6 @@ const confirmNewProject = (): void => {
 
 <template>
 <v-app :theme>
-<Suspense>
   <div class="program-editor-container">
     <div class="tr"><v-label class="column-title">Available nodes</v-label></div>
     <div class="cr">
@@ -808,8 +807,8 @@ const confirmNewProject = (): void => {
       <v-btn v-focus @click="tryToExit">Close</v-btn>
     </div>
   </div>
-</Suspense>
-<v-dialog v-model="showConfirm">
+
+  <v-dialog v-model="showConfirm">
   <v-card title="Confirm deletion" :text='`Do you want to remove the ${selectedLabel}?`'
           class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>

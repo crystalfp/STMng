@@ -135,7 +135,6 @@ const savePoints = (): void => {
 
 <template>
 <v-app :theme>
-  <Suspense>
   <div class="chart-portal">
     <div class="chart-container">
       <Scatter
@@ -151,7 +150,6 @@ const savePoints = (): void => {
       <v-btn v-focus @click="closeWindow('/chart')">Close</v-btn>
     </v-container>
   </div>
-  </Suspense>
 </v-app>
 </template>
 

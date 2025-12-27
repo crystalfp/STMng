@@ -258,7 +258,6 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
 
 <template>
 <v-app :theme>
-<Suspense>
   <div class="fp-chart-portal">
     <div class="fp-chart-viewer">
       <Scatter :options="chartOptions" :data="chartData" />
@@ -288,7 +287,6 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
       </div>
     </v-container>
   </div>
-</Suspense>
 </v-app>
 </template>
 

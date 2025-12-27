@@ -417,7 +417,6 @@ watch([aroundA, aroundB, aroundC],
 
 <template>
 <v-app :theme>
-<Suspense>
   <div class="compare-grid">
     <div class="side-w px-2">
       <v-label class="sub-tt separator-title first-title">Compare selected</v-label>
@@ -455,7 +454,6 @@ watch([aroundA, aroundB, aroundC],
       <v-btn v-focus @click="closeWindow('/compare')">Close</v-btn>
     </div>
   </div>
-</Suspense>
 </v-app>
 </template>
 

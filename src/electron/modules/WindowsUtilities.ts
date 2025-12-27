@@ -172,11 +172,7 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         });
 
     secondaryWin.once("ready-to-show", () => {
-        if(params.data) {
-            setTimeout(() => {
-                secondaryWin.webContents.send("SYSTEM:DATA", params.data);
-            }, 60);
-        }
+
         secondaryWin.show();
 
         if(params.alwaysOnTop) secondaryWin.setAlwaysOnTop(true);
@@ -186,6 +182,14 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
         secondaryWin.on("close", () => {
             openedWindows.delete(params.routerPath);
         });
+    });
+
+    secondaryWin.once("show", () => {
+        if(params.data) {
+            setTimeout(() => {
+                secondaryWin.webContents.send("SYSTEM:DATA", params.data);
+            }, 60);
+        }
     });
 };
 
