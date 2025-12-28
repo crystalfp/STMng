@@ -25,11 +25,18 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
+// Base size for fat lines
+const BASE = 0.05;
+// Small radius increment for unit cell to cover the supercell lines
+const INCREMENT = 0.005;
+
 // Unit cell
 const showUnitCell = ref(true);
 const lineColor = ref("#0000FF");
 const dashedLine = ref(false);
 const showBasisVectors = ref(false);
+const lineWidth = ref(0);
+const showLineWidth = ref(0);
 
 // Supercell
 const repetitionsA = ref(1);
@@ -52,6 +59,11 @@ const shrink   = ref(false);
 const showPercentA = ref(0);
 const showPercentB = ref(0);
 const showPercentC = ref(0);
+
+// Saved vertices
+const verticesUC = Array<number>(24);
+const verticesSC = Array<number>(24);
+const verticesBV: number[] = [];
 
 /**
  * Check if a supercell has been requested
@@ -76,6 +88,7 @@ askNode(id, "init")
         showSupercell.value = params.showSupercell as boolean ?? hasSupercell();
         supercellColor.value = params.supercellColor as string ?? "#16A004";
         dashedSupercell.value = params.dashedSupercell as boolean ?? false;
+        lineWidth.value = params.lineWidth as number ?? 0;
 
         percentA.value = params.percentA as number ?? 0;
         percentB.value = params.percentB as number ?? 0;
@@ -92,19 +105,38 @@ const renderer = new DrawUnitCellRenderer(id);
 // Render the unit cell
 receiveVerticesFromNode(id, "cell", (vertices: number[]) => {
 
-    renderer.drawCell(vertices, lineColor.value, dashedLine.value, showUnitCell.value, false);
+    if(lineWidth.value === 0) {
+        renderer.drawCell(vertices, lineColor.value, dashedLine.value,
+                          showUnitCell.value, false);
+    }
+    else {
+        renderer.drawFatCell(vertices, lineColor.value, showUnitCell.value,
+                             lineWidth.value*BASE+INCREMENT, false);
+    }
+    for(let i=0; i < 24; ++i) verticesUC[i] = vertices[i];
 });
 
 // Render the supercell
 receiveVerticesFromNode(id, "supercell", (vertices: number[]) => {
 
-    renderer.drawCell(vertices, supercellColor.value, dashedSupercell.value, showSupercell.value, true);
+    if(lineWidth.value === 0) {
+        renderer.drawCell(vertices, supercellColor.value, dashedSupercell.value,
+                          showSupercell.value, true);
+    }
+    else {
+        renderer.drawFatCell(vertices, supercellColor.value, showSupercell.value,
+                             lineWidth.value*BASE, true);
+    }
+    for(let i=0; i < 24; ++i) verticesSC[i] = vertices[i];
 });
 
 // Render the basis vectors
 receiveVerticesFromNode(id, "vectors", (vertices: number[]) => {
 
-	renderer.drawBasisVectors(showBasisVectors.value, vertices);
+    const width = lineWidth.value ? lineWidth.value*BASE+2*INCREMENT : 0;
+	renderer.drawBasisVectors(showBasisVectors.value, width, vertices);
+    verticesBV.length = 12;
+    for(let i=0; i < 12; ++i) verticesBV[i] = vertices[i];
 });
 
 /**
@@ -166,6 +198,25 @@ watch([percentA, percentB, percentC, shrink], () => {
     });
 });
 
+watch(lineWidth, (after) => {
+    if(after > 0) {
+        renderer.drawFatCell(verticesUC, lineColor.value, showUnitCell.value,
+                             after*BASE+INCREMENT, false);
+        renderer.drawFatCell(verticesSC, supercellColor.value, showSupercell.value,
+                             after*BASE, true);
+
+    	renderer.drawBasisVectors(showBasisVectors.value,
+                                  after*BASE+2*INCREMENT, verticesBV);
+    }
+    else {
+        renderer.drawCell(verticesUC, lineColor.value, dashedLine.value,
+                          showUnitCell.value, false);
+        renderer.drawCell(verticesSC, supercellColor.value, dashedSupercell.value,
+                          showSupercell.value, true);
+    	renderer.drawBasisVectors(showBasisVectors.value, 0, verticesBV);
+    }
+});
+
 /**
  * Reset shift sliders to default values
  */
@@ -188,8 +239,11 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
 <template>
 <v-container class="container">
   <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-4 ml-4" />
-  <v-switch v-model="dashedLine" label="Dashed lines" class="ml-4" />
-  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4 mb-4" />
+  <v-switch v-model="dashedLine" :disabled="lineWidth > 0" label="Dashed lines" class="ml-4" />
+  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4" />
+  <slider-with-steppers v-model="lineWidth" v-model:raw="showLineWidth"
+                          :label="`Line width (${showLineWidth})`" label-width="6.3rem"
+                          :min="0" :max="3" :step="1" class="mb-2"/>
   <color-selector v-model="lineColor" label="Line color" block />
   <v-label class="separator-title">Cell repetitions</v-label>
   <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
@@ -206,7 +260,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
   </v-btn>
   <v-switch v-model="showSupercell" :disabled="!hasSupercell()"
             label="Show supercell" class="ml-4" />
-  <v-switch v-model="dashedSupercell" :disabled="!hasSupercell()"
+  <v-switch v-model="dashedSupercell" :disabled="!hasSupercell() || lineWidth > 0"
             label="Dashed lines supercell" class="ml-4 mb-4" />
   <color-selector v-model="supercellColor" label="Line color" block />
   <v-label class="separator-title">Shift origin</v-label>

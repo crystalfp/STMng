@@ -2,6 +2,7 @@ Bugs:
   ☐ Does not load spglib on Linux
   ☐ Bounding sphere does not consider supercell
   ☐ Transform to international symbol also input symmops
+  ✔ If devtools embedded in main, viewer3d aspect ratio is wrong @done(2025-12-28 17:53)
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -208,7 +209,7 @@ Archive:
   ✔ Consider using v-show for elements that are frequently toggled instead of v-if @done(2025-02-04 09:16) @project(To do)
   ✔ Dynamic load for Lut and other not used from beginning @done(2025-01-31 15:27) @project(To do)
   ✔ For atomic Oganov-Valle fingerprint we can compute and visualize local degree of order @done(2025-01-28 17:22) @project(Functionalities)
-  ✘ Add ResizeObserver also for Viewer3D @cancelled(2025-01-25 06:00) @project(To do)
+  ✔ Add ResizeObserver also for Viewer3D @project(To do) @done(2025-12-28 17:54)
   ✔ Investigate ConvexHull in 4D (MDS in 3D + energy). Use `@derschmale/tympanum` @done(2025-01-24 07:19) @project(To do)
   ✔ Remove similar structures from convex hull @done(2025-01-24 20:37) @project(To do)
   ✘ Check THREE.Layer for visibility @cancelled(2025-01-23 08:00) @project(ToDo eventually)

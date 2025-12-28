@@ -7,7 +7,7 @@
  * @since 2024-07-05
  */
 
-import {onMounted, watch, watchEffect, nextTick, useTemplateRef} from "vue";
+import {onMounted, watchEffect, useTemplateRef} from "vue";
 import {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
         Raycaster, type Object3D, type Mesh, type MeshLambertMaterial, Clock,
         Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere, MathUtils} from "three";
@@ -27,13 +27,6 @@ import type {BillboardBatchedText} from "@/services/SpriteText";
 // > Access the stores
 const configStore  = useConfigStore();
 const controlStore = useControlStore();
-
-// > Properties
-const props = defineProps<{
-
-    /** True if the viewer fills the whole window */
-    expanded: boolean;
-}>();
 
 /**
  * Copy the position of the perspective camera to the orthographic camera
@@ -307,13 +300,15 @@ onMounted(() => {
         default:
             return;
         }
-        void controls.normalizeRotations().setLookAt(configStore.camera.position[0],
-                                configStore.camera.position[1],
-                                configStore.camera.position[2],
-                                configStore.camera.lookAt[0],
-                                configStore.camera.lookAt[1],
-                                configStore.camera.lookAt[2],
-                                true);
+        void controls.normalizeRotations().setLookAt(
+                configStore.camera.position[0],
+                configStore.camera.position[1],
+                configStore.camera.position[2],
+                configStore.camera.lookAt[0],
+                configStore.camera.lookAt[1],
+                configStore.camera.lookAt[2],
+                true
+            );
         sm.modified();
         controlStore.viewDirection = "";
     });
@@ -325,13 +320,15 @@ onMounted(() => {
 
             controlStore.force = false;
 
-	        void controls.normalizeRotations().setLookAt(configStore.camera.position[0],
-                                    configStore.camera.position[1],
-                                    configStore.camera.position[2],
-							        configStore.camera.lookAt[0],
-                                    configStore.camera.lookAt[1],
-                                    configStore.camera.lookAt[2],
-                                    true);
+	        void controls.normalizeRotations().setLookAt(
+                configStore.camera.position[0],
+                configStore.camera.position[1],
+                configStore.camera.position[2],
+                configStore.camera.lookAt[0],
+                configStore.camera.lookAt[1],
+                configStore.camera.lookAt[2],
+                true
+            );
             sm.modified();
         }
     });
@@ -489,11 +486,14 @@ onMounted(() => {
     const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
 
     // Change the camera parameters when the window changes or ask for an expanded view
-    const resizeScene = (): void => {
+    const resizeObserver = new ResizeObserver((entries) => {
 
-        void nextTick().then(() => {
+        for(const entry of entries) {
 
-            const aspect = cnv.value!.clientWidth / cnv.value!.clientHeight;
+            const w = entry.borderBoxSize[0].inlineSize;
+            const h = entry.borderBoxSize[0].blockSize;
+
+            const aspect = w / h;
 
             if(configStore.camera.type === "perspective") {
                 cameraPerspective.aspect = aspect;
@@ -503,15 +503,14 @@ onMounted(() => {
             }
             camera.updateProjectionMatrix();
 
-            renderer.setSize(cnv.value!.clientWidth, cnv.value!.clientHeight);
+            renderer.setSize(w, h);
 
             viewportGizmo.update();
-        });
-    };
 
-    globalThis.addEventListener("resize", resizeScene);
-
-    watch(props, resizeScene);
+            sm.modified();
+        }
+    });
+    resizeObserver.observe(cnv.value);
 
     // Set the events listeners
     viewportGizmo.addEventListener("start", () => (controls.enabled = false));

@@ -20,7 +20,7 @@ import {useControlStore} from "@/stores/controlStore";
 
 import type {AlertLevel} from "@/stores/messageStore";
 
-import Viewer3D from "./Viewer3D.vue";
+import Viewer3D from "./Viewer3D.vue"; // In the template is not changed to "viewer3-d"
 import ControlsContainer from "./ControlsContainer.vue";
 
 // > Access the store
@@ -42,8 +42,9 @@ globalThis.addEventListener("DOMContentLoaded", () => {
             clearInterval(timer);
             handleFullscreen((isFullScreen: boolean) => {
                 const root = document.documentElement;
-                root.style.setProperty("--container-height", isFullScreen ? "calc(100vh - 90px)" :
-                                                                            "calc(100vh - 121px)");
+                root.style.setProperty("--container-height",
+                                       isFullScreen ? "calc(100vh - 90px)" :
+                                                      "calc(100vh - 121px)");
             });
             setProjectPathInTitle("See the Molecole new generation");
             receiveRefreshMenu();
@@ -137,7 +138,7 @@ const confirmedExit = (): void => {
     <controls-container />
   </div>
   <div class="layout-gutter" @click="toggleNormalScreen" />
-  <viewer3-d :expanded="!normalScreen" />
+  <Viewer3D />
   <v-snackbar-queue v-model="notificationQueue" multi-line timeout="6000"
                     timer="info" max-width="250" close-on-content-click />
 </div>

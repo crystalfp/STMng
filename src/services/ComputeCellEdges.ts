@@ -7,22 +7,8 @@
  * @since 2025-12-18
  */
 import {BufferGeometry, Float32BufferAttribute} from "three";
+import {order3} from "./SharedConstants";
 
-// Vertex indices multiplied by 3
-const order3 = [
-	0, 3,
-	3, 6,
-	6, 9,
-	9, 0,
-	12, 15,
-	15, 18,
-	18, 21,
-	21, 12,
-	0, 12,
-	3, 15,
-	6, 18,
-	9, 21
-];
 /**
  * Cell edges geometry
  * @remarks Vertices order is: (below) 0-1-2-3 (above) 4-5-6-7

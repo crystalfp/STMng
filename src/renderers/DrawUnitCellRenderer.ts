@@ -8,10 +8,12 @@
  */
 import {Group, Vector3, type Material, ConeGeometry, LineDashedMaterial,
 		CylinderGeometry, MeshStandardMaterial, DoubleSide, Mesh,
-		LineSegments, LineBasicMaterial} from "three";
+		LineSegments, LineBasicMaterial, FrontSide,
+		SphereGeometry} from "three";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
 import {sm} from "@/services/SceneManager";
 import {spriteText} from "@/services/SpriteText";
+import {order3} from "@/services/SharedConstants";
 import type {PositionType} from "@/types";
 
 /**
@@ -25,8 +27,11 @@ export class DrawUnitCellRenderer {
 	private readonly nameUC;
 	private readonly nameSC;
 	private readonly nameBV;
-	private readonly vertices: number[] = [];
-	private alreadyRenderedBV = false;
+
+	private readonly nameFUC;
+	private readonly nameFSC;
+	private readonly outFatUC = new Group();
+	private readonly outFatSC = new Group();
 
 	/**
 	 * Build the renderer
@@ -39,6 +44,8 @@ export class DrawUnitCellRenderer {
 		this.nameUC = "DrawUnitCell-" + id;
 		this.nameSC = "DrawSupercell-" + id;
 		this.nameBV = "DrawBasisVectors-" + id;
+		this.nameFUC = "DrawFatUnitCell-" + id;
+		this.nameFSC = "DrawFatSupercell-" + id;
 
 		// Prepare the group for the base vectors and add it to the scene
 		this.outBV.name = this.nameBV;
@@ -48,6 +55,14 @@ export class DrawUnitCellRenderer {
 		// Clear previous cell
 		sm.deleteMesh(this.nameUC);
 		sm.deleteMesh(this.nameSC);
+
+		// Fat lines
+		this.outFatUC.name = this.nameFUC;
+		this.outFatSC.name = this.nameFSC;
+		sm.clearAndAddGroup(this.outFatUC);
+		sm.clearGroup(this.nameFUC);
+		sm.clearAndAddGroup(this.outFatSC);
+		sm.clearGroup(this.nameFSC);
 	}
 
 	/**
@@ -73,7 +88,7 @@ export class DrawUnitCellRenderer {
 	/**
 	 * Display the cell mesh (Unit Cell or Supercell)
 	 *
-	 * @param vertices - vertices of the cell
+	 * @param vertices - Vertices of the cell
 	 * @param color - Color of the cell lines
 	 * @param dashed - If the lines should be dashed
 	 * @param visible - If the lines should be visible when created
@@ -89,6 +104,8 @@ export class DrawUnitCellRenderer {
 
 		// Clear previous cell
 		sm.deleteMesh(name);
+		sm.clearGroup(this.nameFSC);
+		sm.clearGroup(this.nameFUC);
 
 		// If no unit cell return
 		if(vertices.length === 0) return;
@@ -107,10 +124,82 @@ export class DrawUnitCellRenderer {
 	}
 
 	/**
+	 * Display the cell mesh as fat lines (Unit Cell or Supercell)
+	 *
+	 * @param vertices - Vertices of the cell
+	 * @param color - Color of the cell lines
+	 * @param dashed - If the lines should be dashed
+	 * @param visible - If the lines should be visible when created
+	 * @param isSupercell - If the created cell is the supercell
+	 */
+	drawFatCell(vertices: number[],
+			 	color: string,
+			 	visible: boolean,
+				radius: number,
+			 	isSupercell: boolean): void {
+
+		const name = isSupercell ? this.nameFSC : this.nameFUC;
+
+		// Clear previous cell
+		sm.clearGroup(name);
+		sm.deleteMesh(this.nameUC);
+		sm.deleteMesh(this.nameSC);
+
+		// If no unit cell return
+		if(vertices.length === 0) return;
+
+		const material = new MeshStandardMaterial({
+			color,
+			roughness: 0.5,
+			metalness: 0.6,
+			side: FrontSide,
+		});
+
+		const out = isSupercell ? this.outFatSC : this.outFatUC;
+
+		// Add spheres on the corners
+		for(let i=0; i < 24; i+=3) {
+
+			const geometry = new SphereGeometry(radius);
+			const sphere = new Mesh(geometry, material);
+			sphere.position.set(vertices[i], vertices[i+1], vertices[i+2]);
+
+			out.add(sphere);
+		}
+
+		// Add cylinders on the edges
+		for(let i=0; i < 24; i+=2) {
+
+			const i3 = order3[i];
+			const j3 = order3[i+1];
+
+			const dx = vertices[i3]   - vertices[j3];
+			const dy = vertices[i3+1] - vertices[j3+1];
+			const dz = vertices[i3+2] - vertices[j3+2];
+
+			const len = Math.hypot(dx, dy, dz);
+
+        	const geometry = new CylinderGeometry(radius, radius, len, 10, 1, true);
+        	const cylinder = new Mesh(geometry, material);
+			cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0),
+												   new Vector3(dx/len, dy/len, dz/len));
+
+			const midX = (vertices[i3]   + vertices[j3])/2;
+			const midY = (vertices[i3+1] + vertices[j3+1])/2;
+			const midZ = (vertices[i3+2] + vertices[j3+2])/2;
+			cylinder.position.set(midX, midY, midZ);
+			out.add(cylinder);
+		}
+
+		out.visible = visible;
+	}
+
+	/**
 	* Create an arrow in the direction of the basis vector
 	*
 	* @param basis - Basis vector to be show
 	* @param origin - Unit cell origin
+	* @param size - Base size of the arrows
 	* @param color - Color of the arrow and the label
 	* @param axisLabel - Label on the vector
 	* @param group - The arrow is added to this group
@@ -168,58 +257,40 @@ export class DrawUnitCellRenderer {
 	 * Draw the unit cell vectors
 	 *
 	 * @param visible - If the vectors are visible when created
+	 * @param width - Line width. If zero the borders are rendered as lines
 	 * @param vertices - Basis vectors and cell origin
 	 * vertices[0-8] are the basis; vertices[9-11] the origin
 	 */
-	drawBasisVectors(visible: boolean, vertices?: number[]): void {
+	drawBasisVectors(visible: boolean, width: number, vertices: number[]): void {
 
-		// When receiving new vertices
-		if(vertices) {
+		// Clear basis vectors
+		sm.clearGroup(this.nameBV);
 
-			// Save vertices
-			for(let i=0; i < 12; ++i) {
-				this.vertices[i] = vertices[i];
-			}
-
-			// Clear basis vectors
-			sm.clearGroup(this.nameBV);
-			this.alreadyRenderedBV = false;
-
-			// Nothing to show
-			if(!visible) return;
-		}
-		else if(this.vertices.length === 0) {
-			// No vertices, nothing to do
-			return;
-		}
-		else if(this.alreadyRenderedBV) {
-			this.outBV.visible = visible;
-			sm.modified();
-			return;
-		}
+		// No vertices or not visible, nothing to do
+		if(vertices.length === 0 || !visible) return;
 
 		// Basis vectors visible, create them
-		const originZero = new Vector3(this.vertices[9], this.vertices[10], this.vertices[11]);
+		const originZero = new Vector3(vertices[9], vertices[10], vertices[11]);
 
-		const basisA = new Vector3(this.vertices[0], this.vertices[1], this.vertices[2]);
-		const basisB = new Vector3(this.vertices[3], this.vertices[4], this.vertices[5]);
-		const basisC = new Vector3(this.vertices[6], this.vertices[7], this.vertices[8]);
+		const basisA = new Vector3(vertices[0], vertices[1], vertices[2]);
+		const basisB = new Vector3(vertices[3], vertices[4], vertices[5]);
+		const basisC = new Vector3(vertices[6], vertices[7], vertices[8]);
 
 		// Find the size of the arrows related to the longest axis
-		const la = basisA.length();
-		const lb = basisB.length();
-		const lc = basisC.length();
-		const ltot = Math.max(la, lb, lc);
-		const size = Math.max(0.05, ltot/300);
+		if(width === 0) {
+			const la = basisA.length();
+			const lb = basisB.length();
+			const lc = basisC.length();
+			const ltot = Math.max(la, lb, lc);
+			width = Math.max(0.05, ltot/300);
+		}
 
-		DrawUnitCellRenderer.basisVectorArrow(basisA, originZero, size, "#FF0000", "a", this.outBV);
-		DrawUnitCellRenderer.basisVectorArrow(basisB, originZero, size, "#79FF00", "b", this.outBV);
-		DrawUnitCellRenderer.basisVectorArrow(basisC, originZero, size, "#0000FF", "c", this.outBV);
+		DrawUnitCellRenderer.basisVectorArrow(basisA, originZero, width, "#FF0000", "a", this.outBV);
+		DrawUnitCellRenderer.basisVectorArrow(basisB, originZero, width, "#79FF00", "b", this.outBV);
+		DrawUnitCellRenderer.basisVectorArrow(basisC, originZero, width, "#0000FF", "c", this.outBV);
 
 		this.outBV.visible = visible;
 		sm.modified();
-
-		this.alreadyRenderedBV = true;
 	}
 
 	/**
@@ -240,6 +311,34 @@ export class DrawUnitCellRenderer {
 			this.lineUC.material = DrawUnitCellRenderer.setMaterial(colorUC, dashedUC);
 			if(dashedUC) this.lineUC.computeLineDistances();
 		}
+		if(this.outFatUC) {
+
+			const material = new MeshStandardMaterial({
+				color: colorUC,
+				roughness: 0.5,
+				metalness: 0.6,
+				side: FrontSide,
+			});
+
+			this.outFatUC.traverse((object) => {
+				if(object.type !== "Mesh") return;
+				(object as Mesh).material = material;
+			});
+		}
+		if(this.outFatSC) {
+
+			const material = new MeshStandardMaterial({
+				color: colorSC,
+				roughness: 0.5,
+				metalness: 0.6,
+				side: FrontSide,
+			});
+
+			this.outFatSC.traverse((object) => {
+				if(object.type !== "Mesh") return;
+				(object as Mesh).material = material;
+			});
+		}
 		sm.modified();
 	}
 
@@ -254,7 +353,9 @@ export class DrawUnitCellRenderer {
 
 		if(this.lineUC) this.lineUC.visible = showUnitCell;
 		if(this.lineSC) this.lineSC.visible = showSupercell;
-		this.drawBasisVectors(showBasisVectors);
+		if(this.outFatUC) this.outFatUC.visible = showUnitCell;
+		if(this.outFatSC) this.outFatSC.visible = showSupercell;
+		if(this.outBV) this.outBV.visible = showBasisVectors;
 		sm.modified();
 		sm.setUnitCellVisible(showUnitCell);
 	}

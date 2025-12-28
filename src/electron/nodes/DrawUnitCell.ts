@@ -32,6 +32,7 @@ export class DrawUnitCell extends NodeCore {
 	private showSupercell = false;
 	private supercellColor = "#02A502";
 	private dashedSupercell = false;
+	private lineWidth = 0;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
@@ -283,6 +284,7 @@ export class DrawUnitCell extends NodeCore {
         	showSupercell: this.showSupercell,
         	supercellColor: this.supercellColor,
         	dashedSupercell: this.dashedSupercell,
+			lineWidth: this.lineWidth,
 			percentA: this.percentA,
 			percentB: this.percentB,
 			percentC: this.percentC,
@@ -312,6 +314,7 @@ export class DrawUnitCell extends NodeCore {
         this.percentB = params.percentB as number ?? 0;
         this.percentC = params.percentC as number ?? 0;
         this.shrink = params.shrink as boolean ?? false;
+		this.lineWidth = params.lineWidth as number ?? 0;
 	}
 
 	/**

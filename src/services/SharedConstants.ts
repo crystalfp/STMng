@@ -84,3 +84,22 @@ export type AddKind = (typeof AddType)[keyof typeof AddType];
  * Value from https://physics.nist.gov/cgi-bin/cuu/Value?bohrrada0
  */
 export const BOHR_TO_ANGSTROM = 0.529177210544;
+
+/**
+ * Pairs of unit cell vertices indices multiplied by 3
+ * Vertices order is: (below) 0-1-2-3 (above) 4-5-6-7
+ */
+export const order3 = [
+	0, 3,
+	3, 6,
+	6, 9,
+	9, 0,
+	12, 15,
+	15, 18,
+	18, 21,
+	21, 12,
+	0, 12,
+	3, 15,
+	6, 18,
+	9, 21
+];
