@@ -59,6 +59,101 @@ export class Measures extends NodeCore {
 	}
 
 	/**
+	 * Count atoms inside the unit cell
+	 *
+	 * @param structure - The current structure to count
+	 * @returns Atoms count by species
+	 */
+	private countInsideUnitCell(structure: Structure): Record<string, number> {
+
+		const {atoms, crystal} = structure;
+		const {basis} = crystal;
+		const natoms = atoms.length;
+		if(natoms === 0 || hasNoUnitCell(basis)) return {};
+		const include = Array<boolean>(natoms).fill(true);
+		const border = Array<boolean>(natoms).fill(false);
+		const TOL = 1e-5;
+		const TOL2 = TOL*TOL;
+
+		const fc = cartesianToFractionalCoordinates(structure);
+
+		// Remove atoms outside the unit cell
+		for(let i=0, j=0; i < natoms; ++i, j+=3) {
+
+			const fx = fc[j];
+			if(fx < 0 || fx > 1) {
+				include[i] = false;
+				continue;
+			}
+			if(fx < TOL || fx > (1-TOL)) border[i] = true;
+			const fy = fc[j+1];
+			if(fy < 0 || fy > 1) {
+				include[i] = false;
+				continue;
+			}
+			if(fy < TOL || fy > (1-TOL)) border[i] = true;
+			const fz = fc[j+2];
+			if(fz < 0 || fz > 1) {
+				include[i] = false;
+				continue;
+			}
+			if(fz < TOL || fz > (1-TOL)) border[i] = true;
+		}
+
+		// Remove duplicated atoms on the borders
+		for(let i=0, j=0; i < natoms-1; ++i, j+=3) {
+
+			if(!border[i]) continue;
+			let ax = fc[j];
+			if(ax > 1-TOL) ax = 0;
+			let ay = fc[j+1];
+			if(ay > 1-TOL) ay = 0;
+			let az = fc[j+2];
+			if(az > 1-TOL) az = 0;
+			const atomZa = atoms[i].atomZ;
+
+			for(let k=i+1, h=j+3; k < natoms; ++k, h+=3) {
+
+				if(!border[k]) continue;
+
+				const atomZb = atoms[k].atomZ;
+				if(atomZa !== atomZb) continue;
+
+				let bx = fc[h];
+				if(bx > 1-TOL) bx = 0;
+				let by = fc[h+1];
+				if(by > 1-TOL) by = 0;
+				let bz = fc[h+2];
+				if(bz > 1-TOL) bz = 0;
+
+				const dx = ax-bx;
+				const dy = ay-by;
+				const dz = az-bz;
+				const d = dx*dx+dy*dy+dz*dz;
+				if(d < TOL2) {
+					border[k] = false;
+					include[k] = false;
+				}
+			}
+		}
+
+		const counts = new Map<number, number>();
+		for(let i=0; i < natoms; ++i) {
+			if(!include[i]) continue;
+			const z = atoms[i].atomZ;
+			const n = counts.get(z);
+			counts.set(z, n ? n+1 : 1);
+		}
+
+		const out: Record<string, number> = {};
+		for(const entry of counts) {
+			out[getAtomicSymbol(entry[0])] = entry[1];
+		}
+
+		return out;
+	}
+
+	/**
 	 * Create structure summary
 	 *
 	 * @param structure - The current structure to summarize
@@ -77,18 +172,26 @@ export class Measures extends NodeCore {
 			counts[getAtomicSymbol(entry[0])] = entry[1];
 		}
 
+		const inside = this.countInsideUnitCell(structure);
+
+		const counts2: Record<string, [number, number]> = {};
+		for(const full in counts) {
+			counts2[full] = [counts[full], inside[full]];
+		}
+
 		let nhbonds = 0;
 		for(const bond of structure.bonds) {
 			if(isHydrogenBond(bond)) ++nhbonds;
 		}
 
 		const lengthsAngles = basisToLengthAngles(structure.crystal.basis);
+
 		return {
 			step: structure.extra.step,
 			natoms: structure.atoms.length,
 			nbonds: structure.bonds.length,
 			nhbonds,
-			counts: JSON.stringify(counts),
+			counts: JSON.stringify(counts2),
 			lengthsAngles,
 			origin: structure.crystal.origin,
 		};

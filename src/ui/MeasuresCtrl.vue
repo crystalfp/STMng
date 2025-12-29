@@ -48,10 +48,11 @@ const useFractional = ref(false);
 
 /** Structure summary */
 const natoms = ref(0);
+const natomsUC = ref(0);
 const nbonds = ref(0);
 const nhbonds = ref(0);
 const step = ref(1);
-const counts = reactive<{symbol: string; count: number}[]>([]);
+const counts = reactive<{symbol: string; count: number; countUC: number}[]>([]);
 const uc = reactive<number[]>([]);
 
 /** Renderer */
@@ -128,10 +129,16 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
     step.value = params.step as number ?? 1;
 
     // Counts by atom type
-    const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, number>;
+    const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, [number, number]>;
     counts.length = 0;
+    natomsUC.value = 0;
     for(const entry in countsRaw) {
-        counts.push({symbol: entry, count: countsRaw[entry]});
+        counts.push({
+            symbol: entry,
+            count: countsRaw[entry][0],
+            countUC: countsRaw[entry][1]
+        });
+        natomsUC.value += countsRaw[entry][1];
     }
     counts.sort((a, b) => a.symbol.localeCompare(b.symbol));
 
@@ -226,13 +233,24 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     <v-label class="simple-title mb-2">Structure summary</v-label>
     <table class="pl-0 pr-4 py-1 text-body-2 w-100">
       <tbody>
-      <tr><td>Step:</td><td class="right">{{ step }}</td></tr>
-      <tr><td>Atoms count:</td><td class="right">{{ natoms }}</td></tr>
+      <tr>
+        <td>Step:</td>
+        <td class="right">{{ step }}</td>
+      </tr>
+      <tr>
+        <td>Atoms count (inside unit cell):</td>
+        <td class="right">{{ natoms }}</td>
+        <td class="w-3 right">{{ `(${natomsUC})` }}</td>
+      </tr>
       <tr v-for="atom in counts" :key="atom.symbol">
         <td style="padding-left: 1rem;">{{ atom.symbol }}</td>
         <td class="right">{{ atom.count }}</td>
+        <td class="w-3 right">{{ `(${atom.countUC})` }}</td>
       </tr>
-      <tr><td>Bonds count:</td><td class="right">{{ bondsLabel }}</td></tr>
+      <tr>
+        <td>Bonds count:</td>
+        <td class="right">{{ bondsLabel }}</td>
+      </tr>
      </tbody>
      </table>
     <cell-parameters :sides="[uc[0],uc[1],uc[2]]"
