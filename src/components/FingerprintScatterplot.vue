@@ -491,14 +491,8 @@ onMounted(() => {
     resizeObserver = new ResizeObserver((entries) => {
 
         for(const entry of entries) {
-            if(entry.borderBoxSize) {
-                scatterplotWidth.value = entry.borderBoxSize[0].inlineSize;
-                scatterplotHeight.value = entry.borderBoxSize[0].blockSize;
-            }
-            else {
-                scatterplotWidth.value = entry.contentRect.width;
-                scatterplotHeight.value = entry.contentRect.height;
-            }
+            scatterplotWidth.value = entry.borderBoxSize[0].inlineSize;
+            scatterplotHeight.value = entry.borderBoxSize[0].blockSize;
         }
         setTimeout(drawPoints, 100);
     });

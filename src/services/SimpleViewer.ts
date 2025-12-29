@@ -50,14 +50,8 @@ export class SimpleViewer {
 			this.resizeObserver = new ResizeObserver((entries) => {
 
 				for(const entry of entries) {
-					if(entry.borderBoxSize) {
-						this.canvasWidth = entry.borderBoxSize[0].inlineSize;
-						this.canvasHeight = entry.borderBoxSize[0].blockSize;
-					}
-					else {
-						this.canvasWidth = entry.contentRect.width;
-						this.canvasHeight = entry.contentRect.height;
-					}
+					this.canvasWidth = entry.borderBoxSize[0].inlineSize;
+					this.canvasHeight = entry.borderBoxSize[0].blockSize;
 				}
 
 				if(this.isPerspective) {

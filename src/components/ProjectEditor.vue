@@ -111,6 +111,7 @@ const availableNodes = reactive<AvailableNode[]>([]);
 /** Path to the current loaded project file or empty for default project */
 const currentProjectPath = ref("");
 
+
 /**
  * Format graph data for the editor
  *
@@ -431,8 +432,19 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
     return dx;
 };
 
-// To show error messages
+/** To show error messages */
 const notificationQueue = ref<string[]>([]);
+
+/**
+ * Report an error on video and on the log file
+ *
+ * @param message - Error message
+ */
+const reportError = (message: string): void => {
+
+    notificationQueue.value.push(message);
+    log.error(message);
+};
 
 /**
  * Save the modified project
@@ -446,9 +458,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
         for(const availableNode of availableNodes) {
             if(node.type === availableNode.type) {
                 if(node.in === "" && availableNode.hasInput) {
-                    const notification = `Node "${node.label}" input is unconnected`;
-                    notificationQueue.value.push(notification);
-                    log.error(notification);
+                    reportError(`Node "${node.label}" input is unconnected`);
                     hasErrors = true;
                 }
                 if(availableNode.hasOutput && !availableNode.hasOptionalOutput) {
@@ -460,9 +470,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
                         }
                     }
                     if(!isConnected) {
-                        const notification = `Node "${node.label}" output is unconnected`;
-                        notificationQueue.value.push(notification);
-                        log.error(notification);
+                        reportError(`Node "${node.label}" output is unconnected`);
                         hasErrors = true;
                     }
                 }
@@ -498,7 +506,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
         }
     })
     .catch((error: Error) => {
-        log.error("Error from project save. Error:", error.message);
+        reportError(`Error from project save. Error: ${error.message}`);
     });
 };
 
@@ -661,9 +669,7 @@ const updateLabel = (label: string): void => {
  */
 const handleError = (error: VueFlowError): void => {
 
-    const notification = `Error from VueFlow: ${error.message}`;
-    notificationQueue.value.push(notification);
-    log.error(notification);
+    reportError(`Error from VueFlow: ${error.message}`);
 };
 
 /**
