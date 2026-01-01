@@ -155,8 +155,8 @@ const selectDeselect = (select: boolean): void => {
                           label-width="8rem" class="mb-6"
                           :label="`Tube radius (${showRadius.toFixed(1)})`"
                           :min="0" :max="2" :step="0.1" />
-  <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
-                    :disabled="!enableBackbone" class="ml-1 mb-2"
+  <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"
+                    :disabled="!enableBackbone" channel="check" class="ml-1 mb-2"
                     title="Select backbone atoms by" placeholder="Atoms selectors" />
   <v-label v-if="chains.length > 0" class="ml-1 no-select">Select backbone segment:</v-label>
   <v-switch v-for="chain of chains" :key="chain" v-model="showChains[chain]"

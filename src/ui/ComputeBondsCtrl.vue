@@ -85,7 +85,7 @@ const scales = computed((old?: number[]) => {
     }
 
     // To avoid changes if nothing changed
-    if(old && old.length === out.length) {
+    if(old?.length === out.length) {
         for(let i=0; i < old.length; ++i) {
             if(old[i] !== out[i]) return out;
         }

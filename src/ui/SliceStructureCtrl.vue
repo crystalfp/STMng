@@ -362,7 +362,8 @@ watchEffect(() => {
                           :min="-10" :max="10" :step="0.1" class="mt-3 mb-4"/>
   </v-container>
   <v-container v-else-if="mode==='sphere'" class="pa-0">
-    <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
+    <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"
+                      channel="check"
                       class="ml-2 mb-n2 mt-2" :hide="['all']"
                       title="Select center atom by" placeholder="Central atom selector" />
     <slider-with-steppers v-model="sphereRadius"
@@ -371,9 +372,9 @@ watchEffect(() => {
                           :min="0.1" :max="50" :step="0.1" />
   </v-container>
   <v-container v-else-if="mode==='direct' || mode==='bonded'" class="pa-0 pt-2">
-    <atoms-chooser v-model:kind="selectorKind" v-model:selector="atomsSelector"
-                      class="ml-2 mb-n4" :hide="['all']"
-                      title="Select atoms by" placeholder="Atom selector" />
+    <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"
+                   channel="check" class="ml-2 mb-n4" :hide="['all']"
+                   title="Select atoms by" placeholder="Atom selector" />
   </v-container>
   <v-btn block class="mt-6" @click="resetParameters">Reset parameters</v-btn>
 

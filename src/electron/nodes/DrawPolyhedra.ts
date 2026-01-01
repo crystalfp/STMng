@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendPolyhedraToClient} from "../modules/ToClient";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
@@ -28,7 +28,7 @@ export class DrawPolyhedra extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "look",		type: "send", 	callback: this.channelLook.bind(this)},
-		{name: "select",	type: "send", 	callback: this.channelSelect.bind(this)},
+		{name: "select",	type: "invoke", callback: this.channelSelect.bind(this)},
 		{name: "constrain",	type: "send", 	callback: this.channelConstrain.bind(this)},
 	];
 
@@ -201,16 +201,21 @@ export class DrawPolyhedra extends NodeCore {
 	 *
 	 * @param params - Parameters from the client
 	 */
-	private channelSelect(params: CtrlParams): void {
+	private channelSelect(params: CtrlParams): CtrlParams {
 
 		this.labelKind = params.labelKind as SelectorType ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
 
+		// Check the selection string
+		if(!this.structure) return {status: "none"};
+		const status = checkAtomsSelector(this.structure, this.labelKind, this.atomsSelector);
+		if(status) return {error: status};
+
 		// Extract the polyhedrons vertices and send to client
-		if(!this.structure) return;
 		const islands = this.createVerticeLists();
 
 		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
+		return {status: "ok"};
 	}
 
 	/**

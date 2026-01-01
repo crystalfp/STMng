@@ -7,7 +7,7 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendSegmentsToClient} from "../modules/ToClient";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
@@ -37,7 +37,7 @@ export class Trajectories extends NodeCore {
 		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 		{name: "run",		type: "send",   callback: this.channelRun.bind(this)},
-		{name: "select",	type: "send",   callback: this.channelSelect.bind(this)},
+		{name: "select",	type: "invoke", callback: this.channelSelect.bind(this)},
 		{name: "gap",		type: "send",   callback: this.channelGap.bind(this)},
 		{name: "clouds",	type: "send",   callback: this.channelClouds.bind(this)},
 		{name: "means",  	type: "send",   callback: this.channelMeans.bind(this)},
@@ -256,12 +256,19 @@ export class Trajectories extends NodeCore {
 	 *
 	 * @param params - Parameters from the client
 	 */
-	private channelSelect(params: CtrlParams): void {
+	private channelSelect(params: CtrlParams): CtrlParams {
 
         this.labelKind     = params.labelKind as SelectorType ?? "symbol";
         this.atomsSelector = params.atomsSelector as string ?? "";
 
+		// Check the selection string
+		if(!this.structure) return {status: "none"};
+		const status = checkAtomsSelector(this.structure, this.labelKind, this.atomsSelector);
+		if(status) return {error: status};
+
 		this.channelReset();
+
+		return {status: "ok"};
 	}
 
 	/**

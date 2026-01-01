@@ -183,8 +183,6 @@ const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): number[
                 particular site in Angstroms. For example, [0.1, 0, 0.1] in cartesian
                 coordinates will be considered to be on the same coordinates
                 as [0, 0, 0] for a tolerance of 0.25. Defaults to 0.25.
- * @param useSiteProps - Whether to account for site properties in
-                differentiating sites
  * @param constrainLatt - List of lattice parameters we want to
                 preserve, e.g. ["alpha", "c"] or dict with the lattice
                 parameter names as keys and values we want the parameters to
@@ -192,7 +190,6 @@ const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): number[
  * @returns The most primitive structure found
  */
 export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
-    useSiteProps = false,
     constrainLatt: string[] | Record<string, number> | null = []
 ): SNL => {
 
@@ -439,7 +436,6 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 const primitive = getPrimitiveStructure(
                     struct,
                     tolerance,
-                    useSiteProps,
                     constrainLatt
                 );
 

@@ -95,10 +95,6 @@ watch([labelKind, atomsSelector], () => {
     controlStore.trajectoriesHasSelector = atomsSelector.value.trim() !== "" ||
                                            labelKind.value === "all";
 
-    sendToNode(id, "select", {
-        labelKind: labelKind.value,
-        atomsSelector: atomsSelector.value,
-    });
 });
 
 /** Max displacement to take part of a single trace */
@@ -139,9 +135,10 @@ const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red
 
 <template>
 <v-container class="container">
-  <atoms-chooser v-model:kind="labelKind" v-model:selector="atomsSelector"
-                    :disabled="trajectoriesRecording" class="ml-0 mt-6 mb-n6"
-                    title="Select traced atoms by" placeholder="Traced atoms selector" />
+  <atoms-chooser :id v-model:kind="labelKind" v-model:selector="atomsSelector"
+                 channel="select"
+                 :disabled="trajectoriesRecording" class="ml-0 mt-6 mb-n6"
+                 title="Select traced atoms by" placeholder="Traced atoms selector" />
   <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-6 ml-2"
             @update:modelValue="renderer.changeTracesVisibility(showTrajectories!)" />
   <debounced-slider v-if="showTrajectories" v-slot="{value}" v-model="maxDisplacement"

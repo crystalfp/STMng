@@ -8,7 +8,7 @@
  */
 import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
-import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {sendToClient} from "../modules/ToClient";
 import type {BasisType, ChannelDefinition, CtrlParams, PositionType, Structure} from "@/types";
 
@@ -26,6 +26,7 @@ export class StructureBackbone extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",    type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "compute", type: "send",   callback: this.channelCompute.bind(this)},
+		{name: "check",   type: "invoke", callback: this.channelCheck.bind(this)},
 	];
 
 	/**
@@ -230,5 +231,21 @@ export class StructureBackbone extends NodeCore {
 		this.threshold = params.threshold as number ?? 0.9;
 
 		this.computeBackbone();
+	}
+
+	/**
+	 * Channel handler for atoms selector check
+	 *
+	 * @returns Check results
+	 */
+	private channelCheck(params: CtrlParams): CtrlParams {
+
+		const labelKind = params.labelKind as SelectorType ?? "symbol";
+		const atomsSelector = params.atomsSelector as string;
+
+		if(!this.inputStructure || !atomsSelector) return {status: "none"};
+		const status = checkAtomsSelector(this.inputStructure, labelKind, atomsSelector);
+		if(status) return {error: status};
+		return {status: "ok"};
 	}
 }

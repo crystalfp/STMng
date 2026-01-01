@@ -8,7 +8,7 @@
  */
 import {hasNoUnitCell} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
-import {selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {findIntersections} from "../modules/UnitCellIntersections";
 import type {Structure, ChannelDefinition, CtrlParams,
@@ -66,6 +66,7 @@ export class SliceStructure extends NodeCore {
 		{name: "direct",	type: "send",	callback: this.channelDirect.bind(this)},
 		{name: "set",		type: "send", 	callback: this.channelSet.bind(this)},
 		{name: "bonded",	type: "send",	callback: this.channelBonded.bind(this)},
+		{name: "check",		type: "invoke",	callback: this.channelCheck.bind(this)},
 	];
 
 	/**
@@ -822,5 +823,21 @@ export class SliceStructure extends NodeCore {
 			if(this.enableSlicer || this.showSlicer) this.prepareSlicerGeometry();
 			this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);
 		}
+	}
+
+	/**
+	 * Channel handler for the change of atoms selector params
+	 *
+	 * @param params - Parameters from the client
+	 */
+	private channelCheck(params: CtrlParams): CtrlParams {
+
+		const labelKind = params.labelKind as SelectorType ?? "symbol";
+		const atomsSelector = params.atomsSelector as string;
+
+		if(!this.structure || !atomsSelector) return {status: "none"};
+		const status = checkAtomsSelector(this.structure, labelKind, atomsSelector);
+		if(status) return {error: status};
+		return {status: "ok"};
 	}
 }

@@ -9,9 +9,10 @@
 import {ref, watchEffect} from "vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import type {AtomSelectorModes} from "@/types";
+import {askNode} from "@/services/RoutesClient";
 
 // > Properties
-const {disabled = false, hide = []} = defineProps<{
+const {disabled = false, hide = [], id, channel} = defineProps<{
 
     /** Title for the widget */
     title: string;
@@ -24,6 +25,12 @@ const {disabled = false, hide = []} = defineProps<{
 
     /** Hide some of the buttons */
     hide?: string[];
+
+    /** ID to build the channel */
+    id?: string;
+
+    /** Channel for passing the results and have back the verification message */
+    channel?: string;
 }>();
 
 /** Returning kind of atom selection */
@@ -47,33 +54,6 @@ watchEffect(() => {
 
 const errorStatus = ref(false);
 const errorMessage = ref("");
-const atomSymbols = new Set(["d", "h", "he", "li", "be", "b", "c", "n", "o", "f", "ne", "na", "mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", "mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", "rb", "sr", "y", "zr", "nb", "mo", "tc", "ru", "rh", "pd", "ag", "cd", "in", "sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "pm", "sm", "eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", "re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi", "po", "at", "rn", "fr", "ra", "ac", "th", "pa", "u", "np", "pu", "am", "cm", "bk", "cf", "es", "fm", "md", "no", "lr", "rf", "db", "sg", "bh", "hs", "mt", "ds", "rg"]);
-
-/**
- * Validate atomic symbols
- *
- * @param selector - The selector string from the text area
- * @returns True if each entry is a valid symbol
- */
-const validSymbols = (selector: string): boolean => {
-
-    const entries = selector.split(/ +/);
-    for(const entry of entries) if(!atomSymbols.has(entry.toLowerCase())) return false;
-    return true;
-};
-
-/**
- * Validate indices
- *
- * @param selector - The selector string from the text area
- * @returns True if each entry is a valid number
- */
-const validIndex =  (selector: string): boolean => {
-
-    const entries = selector.split(/ +/);
-    for(const entry of entries) if(!/^\d+$/.test(entry)) return false;
-    return true;
-};
 
 /**
  * Get the selector entered, validate it and return to the parent
@@ -83,7 +63,7 @@ const getSelector = (): void => {
     errorStatus.value = false;
     errorMessage.value = "";
 
-    if(labelKind.value === "all") {
+    if(!labelKind.value || labelKind.value === "all") {
         atomsSelector.value = "";
         return;
     }
@@ -93,18 +73,24 @@ const getSelector = (): void => {
         atomsSelector.value = "";
         return;
     }
-    if(labelKind.value === "symbol" && !validSymbols(selector)) {
-        errorStatus.value = true;
-        errorMessage.value = "Invalid atom symbol";
-        return;
-    }
-    if(labelKind.value === "index" && !validIndex(selector)) {
-        errorStatus.value = true;
-        errorMessage.value = "Non numeric index";
-        return;
-    }
-
     atomsSelector.value = selector;
+
+    if(id && channel) {
+        askNode(id, channel, {
+            atomsSelector: selector,
+            labelKind: labelKind.value,
+        })
+        .then((params) => {
+            if(params.error) {
+                errorStatus.value = true;
+                errorMessage.value = params.error as string;
+            }
+        })
+        .catch((error: Error) => {
+            errorStatus.value = true;
+            errorMessage.value = error.message;
+        });
+    }
 };
 
 /**
@@ -127,7 +113,7 @@ const clearSelector = (): void => {
     errorStatus.value = false;
     errorMessage.value = "";
 };
-// hide-details="auto"
+
 </script>
 
 
