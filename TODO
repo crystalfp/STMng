@@ -62,6 +62,7 @@ Nice to have/Future:
   ☐ Rendering in a worker thread <https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas> or <https://threejs.org/examples/webgl_worker_offscreencanvas.html>
   ☐ <https://vuefinder.ozdemir.be/> Alternative file selector
   ☐ Remove debug statements with `@rollup/plugin-strip`
+  ☐ Add a `metadata` section to project files.
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>

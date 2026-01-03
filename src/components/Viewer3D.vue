@@ -16,7 +16,7 @@ import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {sm} from "@/services/SceneManager";
-import {askNode} from "@/services/RoutesClient";
+import {askNode, getAntialiasing} from "@/services/RoutesClient";
 import {fitCamera} from "@/services/FitCamera";
 import {setupSceneHelpers} from "@/services/SceneHelpers";
 import {resetNodeAlert, showNodeAlert, showSystemAlert} from "@/services/AlertMessage";
@@ -94,9 +94,11 @@ onMounted(() => {
 
     let camera = configStore.camera.type === "perspective" ? cameraPerspective : cameraOrthographic;
 
+    const antialias = getAntialiasing();
+
     // Add renderer
     const renderer = new WebGLRenderer({
-        antialias: true,
+        antialias,
         preserveDrawingBuffer: true,
         powerPreference: "high-performance",
         alpha: true

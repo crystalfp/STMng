@@ -9,7 +9,6 @@
  /* eslint-disable unicorn/prefer-global-this */
 import {watchEffect} from "vue";
 import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
-// import {useControlStore} from "@/stores/controlStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {CtrlParams, PositionType, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
@@ -416,6 +415,17 @@ export const receiveSegmentsFromNode = (id: string,
 								    segments: PositionType[][],
 								    colors: string[],
 								    skip: boolean[]) => {callback(segments, colors, skip);});
+};
+
+/**
+ * Get status of antialiasing
+ *
+ * @returns If antialiasing is enabled
+ */
+export const getAntialiasing = (): boolean => {
+	const antialiasing = window.electron.ipcRenderer
+							.sendSync("PREFERENCES:GET-SYNC", "Antialiasing") as string;
+	return antialiasing === "yes";
 };
 
 // > Communication to windows

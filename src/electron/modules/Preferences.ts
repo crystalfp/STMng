@@ -161,3 +161,13 @@ export const getWindowSize = (): number[] => [
 	store.get("MainWindowWidth", 1280) as number,
 	store.get("MainWindowHeight", 720) as number
 ];
+
+/**
+ * Set antialiasing
+ *
+ * @param set - If true enable antialiasing in the viewer3D
+ */
+export const setAntialiasing = (set: boolean): void => {
+
+	store.set("Antialiasing", set ? "yes" : "no");
+};

@@ -13,7 +13,7 @@ import {Command, Option} from "commander";
 import {version, description} from "../../package.json" with {type: "json"};
 
 import {setupTitlebar} from "custom-electron-titlebar/main";
-import {setupChannelPreferences, setMainTheme} from "./modules/Preferences";
+import {setupChannelPreferences, setMainTheme, setAntialiasing} from "./modules/Preferences";
 import {createMainWindow} from "./modules/WindowsUtilities";
 import {disableSaveProjectEntry, setupChannelMenu} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
@@ -29,6 +29,7 @@ program
     .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
+	.option("-n, --no-antialiasing", "disable antialiasing (for performance)")
 	.option("-e, --enable", "enable developer tools in production build")
 	.option("-x, --extra <switches>", "extra command line switches")
     .argument("[project-file]", "project file to be loaded");
@@ -51,6 +52,8 @@ interface ProgramOptions {
     enable?: boolean;
     /** Extra command line switches */
     extra?: string;
+    /** Enable antialiasing (the command line switch disables it) */
+    antialiasing: boolean;
 }
 const options = program.opts<ProgramOptions>();
 
@@ -60,6 +63,9 @@ const verbose = options.verbose ?? process.env.STM_NG_VERBOSE !== undefined;
 // Tools can be enabled in production also with the "STM_NG_ENABLE" environment variable set to any value
 const enable = options.enable ?? process.env.STM_NG_ENABLE !== undefined;
 const isDevelopment = import.meta.env.DEV || enable;
+
+// Enable or disable antialiasing
+setAntialiasing(options.antialiasing);
 
 // > Setup the main process
 // Initialize the logger
