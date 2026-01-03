@@ -157,9 +157,7 @@ export const setWindowSize = (dims: number[]): void => {
  *
  * @returns Window dimensions to be used by setSize()
  */
-export const getWindowSize = (): number[] => {
-	const dims = [0, 0];
-	dims[0] = store.get("MainWindowWidth", 1280) as number;
-	dims[1] = store.get("MainWindowHeight", 720) as number;
-	return dims;
-};
+export const getWindowSize = (): number[] => [
+	store.get("MainWindowWidth", 1280) as number,
+	store.get("MainWindowHeight", 720) as number
+];
