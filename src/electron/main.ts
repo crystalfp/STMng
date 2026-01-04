@@ -1,6 +1,7 @@
 /**
  * Entry point for the main process.
- * It parses the command line parameters and initializes all the channels between main processes and client windows.
+ * It parses the command line parameters and initializes all the channels
+ * between main processes and client windows.
  *
  * @packageDocumentation
  *
@@ -11,7 +12,6 @@ import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
 import {Command, Option} from "commander";
 import {version, description} from "../../package.json" with {type: "json"};
-
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme, setAntialiasing} from "./modules/Preferences";
 import {createMainWindow} from "./modules/WindowsUtilities";
@@ -20,6 +20,8 @@ import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFileSelector} from "./modules/SelectFile";
 import {pm, setupChannelProject} from "./modules/ProjectManager";
 import {setupChannelLogFile} from "./modules/AccessLog";
+import {setupChannelSpecialSwitches} from "./modules/SpecialSwitches";
+import type {CtrlParams} from "@/types";
 
 // > Command line parsing
 const program = new Command("STMng");
@@ -32,6 +34,8 @@ program
 	.option("-n, --no-antialiasing", "disable antialiasing (for performance)")
 	.option("-e, --enable", "enable developer tools in production build")
 	.option("-x, --extra <switches>", "extra command line switches")
+	.option("-r, --read <file>", "input file to be read")
+	.option("-a, --aux <file>", "auxiliary file to be read")
     .argument("[project-file]", "project file to be loaded");
 
 if(import.meta.env.DEV) program.option("--no-sandbox", "forced during development");
@@ -54,6 +58,10 @@ interface ProgramOptions {
     extra?: string;
     /** Enable antialiasing (the command line switch disables it) */
     antialiasing: boolean;
+    /** Input file to be read */
+    read?: string;
+    /** Auxiliary file to be read */
+    aux?: string;
 }
 const options = program.opts<ProgramOptions>();
 
@@ -66,6 +74,15 @@ const isDevelopment = import.meta.env.DEV || enable;
 
 // Enable or disable antialiasing
 setAntialiasing(options.antialiasing);
+
+// If present save paths of input files
+const specialSwitches: CtrlParams = {
+    inputFile: options.read ?? "",
+    auxFile: options.aux ?? ""
+};
+if(specialSwitches.auxFile && !specialSwitches.inputFile) {
+    specialSwitches.auxFile = "";
+}
 
 // > Setup the main process
 // Initialize the logger
@@ -92,6 +109,7 @@ setupChannelFileSelector();
 setupChannelProject();
 setupChannelLogFile();
 setupChannelMenu(isDevelopment);
+setupChannelSpecialSwitches(specialSwitches);
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

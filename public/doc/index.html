@@ -376,8 +376,9 @@
   <code>
 Usage: STMng [options] [project-file]
 
-See The Molecule new generation is a chemical and crystallographic structure
-visualizer that inherits some functionalities of STM4
+See The Molecule new generation (STMng) is a chemical and crystallographic
+structure visualization and analysis tool that inherits some functionalities
+of STM4
 
 Arguments:
   project-file            project file to be loaded
@@ -390,12 +391,21 @@ Options:
   -n, --no-antialiasing   disable antialiasing (for performance)
   -e, --enable            enable developer tools in production build
   -x, --extra &lt;switches&gt;  extra command line switches
+  -r, --read &lt;file&gt;       input file to be read
+  -a, --aux &lt;file&gt;        auxiliary file to be read
   -h, --help              display help for command
+
 </code>
 <p>The “<tt>-x</tt>” command line switch passes the following arguments to the internal processes.
-When there is more than one, items are separated by commas; if a value is provided, it appears after the switch and is joined with an “<tt>=</tt>” sign.</p>
+When there is more than one, items are separated by commas; if a value is provided, it appears after the switch and is joined to it with a “<tt>=</tt>” sign.</p>
 <p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>
 <p>Developer tools can be enabled in production also with the “<tt>STM_NG_ENABLE</tt>” environment variable set to any value.</p>
+<p>The “<tt>-n</tt>” switch disable the antialiasing in the 2D viewer to gain some performance.</p>
+<p style="margin-bottom:0.1rem">The “<tt>-r</tt>” and the “<tt>-a</tt>” switches accept paths to files that will be loaded in batch if the project has already defined the file format. Typical usage is:</p>
+<code>
+$ STMng --read file.poscar --aux file.energy compute-fingerprints.stm
+
+</code>
 </details>
 <details id="tech">
   <summary>Technology</summary>

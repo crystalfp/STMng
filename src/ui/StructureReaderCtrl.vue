@@ -82,6 +82,50 @@ const aflowTag        = ref("");     // The selected prototype aflow tag
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
 
+/**
+ * Batch read structure file
+ */
+const batchRead = async (): Promise<void> => {
+
+    // Get the special switches
+    const params = await askNode("SYSTEM", "SWITCHES");
+    if(!params.inputFile) return;
+
+    // If there is an input file
+    countSteps.value = 1;
+    step.value = 1;
+    inProgress.value = true;
+    resetNodeAlert();
+
+    const readParams = await askNode(id, "read", {
+        format: format.value,
+        fileToRead: params.inputFile,
+        atomsTypes: atomsTypes.value,
+        useBohr: useBohr.value,
+    });
+
+    if("error" in readParams) throw Error(readParams.error as string);
+    countSteps.value = readParams.countSteps as number ?? 1;
+    inProgress.value = false;
+    resetCamera();
+    appendFile.value = false;
+    stepRange.value[0] = 1;
+    stepRange.value[1] = countSteps.value;
+    setFileInTitle(params.inputFile as string);
+
+    // If there is an auxiliary file
+    if(!params.auxFile) return;
+
+    const auxParams = await askNode(id, "aux", {
+        format: format.value,
+        auxFileToRead: params.auxFile,
+    });
+    if("error" in auxParams) throw Error(auxParams.error as string);
+    countSteps.value = auxParams.countSteps as number ?? 1;
+    stepRange.value[0] = 1;
+    stepRange.value[1] = countSteps.value;
+};
+
 // Initialize the control
 resetNodeAlert();
 askNode(id, "init")
@@ -99,6 +143,12 @@ askNode(id, "init")
         const dbRaw = JSON.parse(params.db as string ?? "[]") as DBType[];
         db.length = 0;
         for(const entry of dbRaw) db.push(entry);
+
+        // eslint-disable-next-line promise/no-nesting
+        batchRead().catch((error: Error) => {
+            showNodeAlert(`Error from batch read for ${label}: ${error.message}`,
+                          "structureReader");
+        });
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
