@@ -175,7 +175,7 @@ const confirmedExit = (): void => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 530px;
+  width: 545px;
   padding: 0;
   margin: 0;
 }

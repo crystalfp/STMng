@@ -94,6 +94,24 @@ onMounted(() => {
 
     let camera = configStore.camera.type === "perspective" ? cameraPerspective : cameraOrthographic;
 
+    // Handle viewer resizing
+    const setOnResize = (width: number, height: number): void => {
+
+        const aspect = width / height;
+
+        if(configStore.camera.type === "perspective") {
+            cameraPerspective.aspect = aspect;
+        }
+        else {
+            setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
+        }
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(width, height);
+
+        sm.modified();
+    };
+
     const antialias = getAntialiasing();
 
     // Add renderer
@@ -106,6 +124,8 @@ onMounted(() => {
     renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
+
+    setOnResize(cnv.value.clientWidth, cnv.value.clientHeight);
 
     // Add mouse controls to move the camera
     const subsetOfTHREE = {PerspectiveCamera, OrthographicCamera, Vector3,
@@ -495,21 +515,8 @@ onMounted(() => {
             const w = entry.borderBoxSize[0].inlineSize;
             const h = entry.borderBoxSize[0].blockSize;
 
-            const aspect = w / h;
-
-            if(configStore.camera.type === "perspective") {
-                cameraPerspective.aspect = aspect;
-            }
-            else {
-                setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
-            }
-            camera.updateProjectionMatrix();
-
-            renderer.setSize(w, h);
-
+            setOnResize(w, h);
             viewportGizmo.update();
-
-            sm.modified();
         }
     });
     resizeObserver.observe(cnv.value);

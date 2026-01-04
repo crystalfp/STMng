@@ -111,7 +111,11 @@ const batchRead = async (): Promise<void> => {
     appendFile.value = false;
     stepRange.value[0] = 1;
     stepRange.value[1] = countSteps.value;
-    setFileInTitle(params.inputFile as string);
+
+    // Set filename in title
+    const file = (params.inputFile as string).replaceAll("\\", "/");
+    const pos = file.lastIndexOf("/");
+    setFileInTitle(file.slice(pos+1));
 
     // If there is an auxiliary file
     if(!params.auxFile) return;

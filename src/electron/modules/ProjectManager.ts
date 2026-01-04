@@ -360,7 +360,7 @@ class ProjectManager {
 
 		let loadedDefaultProject = false;
 
-		const fstat = statSync(filename);
+		const fstat = statSync(filename, {throwIfNoEntry: false});
 		if(!fstat?.isFile() || fstat.size === 0) {
 			sendAlertToClient(`Project file "${filename}" does not exist or is invalid. Loading default project`);
 
@@ -397,7 +397,7 @@ class ProjectManager {
 		else {
 			filename = getProjectPath();
 			if(filename) {
-				const fstat = statSync(filename);
+				const fstat = statSync(filename, {throwIfNoEntry: false});
 				if(fstat?.isFile() && fstat.size > 0) {
 					sendProjectPath(filename);
 				}

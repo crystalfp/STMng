@@ -7,6 +7,7 @@
  * @since 2024-07-05
  */
 import {ipcMain, nativeTheme, type IpcMainEvent} from "electron";
+import path from "node:path";
 import {Store} from "./UserStore";
 
 /**
@@ -85,7 +86,7 @@ export const removeProjectPath = (): void => {
  */
 export const setProjectPath = (filename: string): void => {
 
-	store.set("LastProjectLoaded", filename);
+	store.set("LastProjectLoaded", path.resolve(filename));
 };
 
 /**

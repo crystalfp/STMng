@@ -242,7 +242,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
   <v-switch v-model="dashedLine" :disabled="lineWidth > 0" label="Dashed lines" class="ml-4" />
   <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4" />
   <slider-with-steppers v-model="lineWidth" v-model:raw="showLineWidth"
-                          :label="`Line width (${showLineWidth})`" label-width="6.3rem"
+                          :label="`Line width (${showLineWidth})`" label-width="7rem"
                           :min="0" :max="3" :step="1" class="mb-2"/>
   <color-selector v-model="lineColor" label="Line color" block />
   <v-label class="separator-title">Cell repetitions</v-label>

@@ -120,7 +120,7 @@ receivePolyhedraFromNode(id, "vertices",
                  title="Select central atoms by"
                  placeholder="Central atoms selector"/>
   <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
-                          v-model:raw="showOpacity" label-width="6rem"
+                          v-model:raw="showOpacity" label-width="7rem" class="pb-2"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
                           :min="0" :max="1" :step="0.1" />
   <color-selector v-else v-model="surfaceColor" label="Surface color"
