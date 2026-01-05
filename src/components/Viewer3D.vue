@@ -94,24 +94,6 @@ onMounted(() => {
 
     let camera = configStore.camera.type === "perspective" ? cameraPerspective : cameraOrthographic;
 
-    // Handle viewer resizing
-    const setOnResize = (width: number, height: number): void => {
-
-        const aspect = width / height;
-
-        if(configStore.camera.type === "perspective") {
-            cameraPerspective.aspect = aspect;
-        }
-        else {
-            setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
-        }
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(width, height);
-
-        sm.modified();
-    };
-
     const antialias = getAntialiasing();
 
     // Add renderer
@@ -121,11 +103,10 @@ onMounted(() => {
         powerPreference: "high-performance",
         alpha: true
     });
-    renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
+    // renderer.setSize(cnv.value.clientWidth, cnv.value.clientHeight);
+    // Size will be set at the end of mounting
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     cnv.value.append(renderer.domElement);
-
-    setOnResize(cnv.value.clientWidth, cnv.value.clientHeight);
 
     // Add mouse controls to move the camera
     const subsetOfTHREE = {PerspectiveCamera, OrthographicCamera, Vector3,
@@ -250,6 +231,14 @@ onMounted(() => {
             else {
                 fitCamera(cameraOrthographic, controls);
             }
+
+            // Fix the viewer aspect ratio
+            const rect = cnv.value!.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+
+            setOnResize(w, h);
+
             sm.modified();
         }
     });
@@ -507,6 +496,26 @@ onMounted(() => {
     };
     const viewportGizmo = new ViewportGizmo(camera, renderer, gizmoOptions);
 
+    // Handle viewer resizing
+    const setOnResize = (width: number, height: number): void => {
+
+        const aspect = width / height;
+
+        if(configStore.camera.type === "perspective") {
+            cameraPerspective.aspect = aspect;
+        }
+        else {
+            setOrthographicAspect(cameraPerspective, cameraOrthographic, aspect);
+        }
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(width, height);
+
+        viewportGizmo.update();
+
+        sm.modified();
+    };
+
     // Change the camera parameters when the window changes or ask for an expanded view
     const resizeObserver = new ResizeObserver((entries) => {
 
@@ -516,7 +525,6 @@ onMounted(() => {
             const h = entry.borderBoxSize[0].blockSize;
 
             setOnResize(w, h);
-            viewportGizmo.update();
         }
     });
     resizeObserver.observe(cnv.value);

@@ -2,7 +2,7 @@
 "$schema": https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json
 appId: com.electron.{productName}
 productName: STMng
-copyright: Copyright © 2025 ${author}
+copyright: Copyright © 2026 ${author}
 asar: true
 directories:
   output: release/${version}
@@ -15,7 +15,7 @@ files:
   - "!**/node_modules/**/*.flow"
   - "!**/node_modules/**/tsconfig.tsbuildinfo"
   - "!**/node_modules/**/{test,__tests__,tests,powered-test,example,examples}"
-  - "!**/spglib-2.5.0/**/*.*"
+  - "!**/spglib-2.7.0/**/*.*"
   - "!dist/doc/**/*.*"
   - "!dist/Worker.js"
 extraFiles:
@@ -32,7 +32,7 @@ linux:
   target:
   - AppImage
   extraFiles:
-    - from: build/Release/libsymspg.so.2.5.0
+    - from: build/Release/libsymspg.so.2.7.0
       to: ./libsymspg.so.2
 mac:
   artifactName: "${productName}_${version}.${ext}"
