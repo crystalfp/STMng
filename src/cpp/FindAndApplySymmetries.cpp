@@ -424,6 +424,8 @@ static void applyTransformations(SpglibDataset* dataset,
 								 vector<double_t>& outFc)
 {
 	bool different = true;
+	outTypes.clear();
+	outFc.clear();
 
 	int nops = dataset->n_operations;
 	for(size_t j=0; j < natoms; ++j)
@@ -751,6 +753,9 @@ string doFindAndApplySymmetries(
 
 			free(types);
 			delete [] positions;
+
+			// Release the dataset
+			spg_free_dataset(dataset);
 
 			return status;
 		}

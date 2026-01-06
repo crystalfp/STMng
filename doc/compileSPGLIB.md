@@ -26,9 +26,10 @@ There are warnings from test code that can be ignored
 The library will be under `./build-linux/Release`
 
 # Final
-At the end should correct:
+At the end should correct the files:
 ```
 .gitignore
 binding.gyp
 electron-builder.yaml
 ```
+and remove the previous version under `src/cpp`

@@ -4,7 +4,7 @@
   "productName": "STMng",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.50.2",
+  "version": "1.50.3",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -56,7 +56,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@mdi/svg": "^7.4.47",
-    "@oxlint/migrate": "^1.36.0",
+    "@oxlint/migrate": "^1.37.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -64,9 +64,9 @@
     "@stylistic/eslint-plugin": "^5.6.1",
     "@types/three": "^0.182.0",
     "@types/tmp": "^0.2.6",
-    "@typescript/native-preview": "^7.0.0-dev.20260104.1",
-    "@typescript-eslint/eslint-plugin": "^8.51.0",
-    "@typescript-eslint/parser": "^8.51.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260105.1",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
     "@vitejs/plugin-vue": "^6.0.3",
     "dependency-cruiser": "^17.3.6",
     "electron": "^39.2.7",
@@ -104,6 +104,6 @@
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^3.2.1"
+    "vue-tsc": "^3.2.2"
   }
 }
