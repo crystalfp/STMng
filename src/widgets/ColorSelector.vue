@@ -7,18 +7,16 @@
  * @since 2024-07-05
  */
 import {ref} from "vue";
+import {mdiPalette} from "@mdi/js";
 
 // > Properties
-const {transparency = false, label, block = false} = defineProps<{
+const {transparency = false, label} = defineProps<{
 
     /** If true, select also transparency */
     transparency?: boolean;
 
     /** Label on the button */
     label: string;
-
-    /** To stretch the button across the container */
-    block?: boolean;
 }>();
 
 const colorPickerShow = ref(false);
@@ -30,9 +28,13 @@ const color = defineModel<string>();
 <template>
   <v-row>
     <v-col cols="12" class="pb-0">
-      <v-btn class="w-50" :class="{'w-100': block}"
-             :color variant="flat"
+      <v-btn class="w-100"
+             variant="outlined"
+             :prepend-icon="mdiPalette"
              @click="colorPickerShow = !colorPickerShow">
+        <template v-slot:prepend>
+          <v-icon size="x-large" :color></v-icon>
+        </template>
         {{ label }}
       </v-btn>
     </v-col>

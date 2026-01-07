@@ -28,6 +28,7 @@ export class DrawStructure extends NodeCore {
 	private monochromeColor = "#888888";
 	private bondsRadiusMultiplier = 1;
 	private spheresRadiusMultiplier = 1;
+	private legend = false;
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init", type: "invoke", callback: this.channelInit.bind(this)},
@@ -110,7 +111,8 @@ export class DrawStructure extends NodeCore {
 			atomColoring: this.atomColoring,
 			monochromeColor: this.monochromeColor,
 			bondsRadiusMultiplier: this.bondsRadiusMultiplier,
-			spheresRadiusMultiplier: this.spheresRadiusMultiplier
+			spheresRadiusMultiplier: this.spheresRadiusMultiplier,
+			legend: this.legend
 		};
 	}
 
@@ -136,6 +138,7 @@ export class DrawStructure extends NodeCore {
         this.monochromeColor = params.monochromeColor as string ?? "#888888";
 		this.bondsRadiusMultiplier = params.bondsRadiusMultiplier as number ?? 1;
 		this.spheresRadiusMultiplier = params.spheresRadiusMultiplier as number ?? 1;
+		this.legend = params.legend as boolean ?? false;
 	}
 
 	// > Channel handlers
@@ -170,5 +173,6 @@ export class DrawStructure extends NodeCore {
 		if(params.monochromeColor !== undefined) this.monochromeColor = params.monochromeColor as string;
 		if(params.bondsRadiusMultiplier !== undefined) this.bondsRadiusMultiplier = params.bondsRadiusMultiplier as number;
 		if(params.spheresRadiusMultiplier !== undefined) this.spheresRadiusMultiplier = params.spheresRadiusMultiplier as number;
+		if(params.legend !== undefined) this.legend = params.legend as boolean;
 	}
 }

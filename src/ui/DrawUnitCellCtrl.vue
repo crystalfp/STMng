@@ -244,7 +244,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
   <slider-with-steppers v-model="lineWidth" v-model:raw="showLineWidth"
                           :label="`Line width (${showLineWidth})`" label-width="7rem"
                           :min="0" :max="3" :step="1" class="mb-2"/>
-  <color-selector v-model="lineColor" label="Line color" block />
+  <color-selector v-model="lineColor" label="Line color" />
   <v-label class="separator-title">Cell repetitions</v-label>
   <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
                           :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
@@ -262,7 +262,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
             label="Show supercell" class="ml-4" />
   <v-switch v-model="dashedSupercell" :disabled="!hasSupercell() || lineWidth > 0"
             label="Dashed lines supercell" class="ml-4 mb-4" />
-  <color-selector v-model="supercellColor" label="Line color" block />
+  <color-selector v-model="supercellColor" label="Line color" />
   <v-label class="separator-title">Shift origin</v-label>
   <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="7.2rem"

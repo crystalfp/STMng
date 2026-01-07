@@ -65,6 +65,8 @@ askNode(id, "init")
         monochromeColor.value = params.monochromeColor as string ?? "#888888";
         bondsRadiusMultiplier.value = params.bondsRadiusMultiplier as number ?? 1;
         spheresRadiusMultiplier.value = params.spheresRadiusMultiplier as number ?? 1;
+
+        controlStore.legend = params.legend as boolean ?? false;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
@@ -72,7 +74,75 @@ askNode(id, "init")
 
 // > Initialize graphical rendering
 const renderer = new DrawStructureRenderer(id, drawQuality.value,
-				                           drawRoughness.value, drawMetalness.value);
+				                                   drawRoughness.value,
+                                           drawMetalness.value);
+
+/**
+ * Convert rg color into linear color space
+ *
+ * @param color - Color to be converted
+ */
+const rgb2linear = (color: string): string => {
+
+    const r = Number.parseInt(color.slice(1, 3), 16)/255;
+    const g = Number.parseInt(color.slice(3, 5), 16)/255;
+    const b = Number.parseInt(color.slice(5, 7), 16)/255;
+
+    const rl = (r < 0.04045) ? r * 0.0773993808 : Math.pow(r * 0.9478672986 + 0.0521327014, 2.4);
+    const gl = (g < 0.04045) ? g * 0.0773993808 : Math.pow(g * 0.9478672986 + 0.0521327014, 2.4);
+    const bl = (b < 0.04045) ? b * 0.0773993808 : Math.pow(b * 0.9478672986 + 0.0521327014, 2.4);
+
+    const rs = Math.round(rl*255).toString(16).padStart(2, "0");
+    const gs = Math.round(gl*255).toString(16).padStart(2, "0");
+    const bs = Math.round(bl*255).toString(16).padStart(2, "0");
+
+    return `#${rs}${gs}${bs}`;
+};
+
+/**
+ * Prepare the legend for the count number of bonds
+ *
+ * @param info - Structure date for the renderer
+ */
+const prepareLegend = (info: StructureRenderInfo): void => {
+
+    const {bonds, atoms} = info;
+    const counts = new Map<number, number>();
+    for(const bond of bonds) {
+        let n = counts.get(bond.from);
+        counts.set(bond.from, n ? n+1 : 1);
+        n = counts.get(bond.to);
+        counts.set(bond.to, n ? n+1 : 1);
+    }
+    let minBonds = Number.POSITIVE_INFINITY;
+    let maxBonds = 0;
+    for(const count of counts.values()) {
+        if(count > maxBonds) maxBonds = count;
+        if(count < minBonds) minBonds = count;
+    }
+    const natoms = atoms.length;
+    for(let i=0; i < natoms; ++i) {
+        if(!counts.has(i)) {
+            minBonds = 0;
+            break;
+        }
+    }
+
+    const colors = renderer.getNumBondsColors();
+    let plus = false;
+    if(maxBonds > colors.length) {
+        maxBonds = colors.length;
+        plus = true;
+    }
+
+    controlStore.legendDiscrete.length = 0;
+    for(let i=minBonds; i <= maxBonds; ++i) {
+        controlStore.legendDiscrete.push({
+            color: rgb2linear(colors[i]),
+            label: plus && i === maxBonds ? `${i}+` : i.toString()
+        });
+    }
+};
 
 // Receive new structure from main process
 receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRenderInfo) => {
@@ -90,6 +160,9 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 
     // Save basis to orient camera along cell sides
     for(let i=0; i < 9; ++i) controlStore.basis[i] = renderInfo.cell.basis[i];
+
+    // Prepare data for the legend
+    prepareLegend(renderInfo);
 });
 
 // Change draw parameters
@@ -113,7 +186,8 @@ watch([labelKind, drawKind, shadedBonds, showBondsStrengths, spheresRadiusMultip
         atomColoring: atomColoring.value,
         monochromeColor: monochromeColor.value,
         bondsRadiusMultiplier: bondsRadiusMultiplier.value,
-        spheresRadiusMultiplier: spheresRadiusMultiplier.value
+        spheresRadiusMultiplier: spheresRadiusMultiplier.value,
+        legend: controlStore.legend
     });
 });
 
@@ -179,6 +253,12 @@ const disableSphereMultiplier = computed(() =>
     drawKind.value !== "ball-and-stick"
 );
 
+// Show legend only when required
+const showLegend = ref(false);
+watch([showLegend, atomColoring], (after: [boolean, string]) => {
+    controlStore.legend = after[0] && after[1] === "bonds";
+});
+
 </script>
 
 
@@ -214,7 +294,7 @@ const disableSphereMultiplier = computed(() =>
     </v-btn-toggle>
   </titled-slot>
 
-  <titled-slot title="Atom color" class="mb-2 ml-2">
+  <titled-slot title="Atom color" class="ml-2">
     <v-btn-toggle v-model="atomColoring" :disabled="!showAtoms || drawKind === 'lines'" mandatory>
       <v-btn value="type">Type</v-btn>
       <v-btn value="mono">Mono</v-btn>
@@ -222,9 +302,11 @@ const disableSphereMultiplier = computed(() =>
     </v-btn-toggle>
     <template #extra>
       <color-selector v-if="atomColoring==='mono'" v-model="monochromeColor"
-                      label="Atom mono color" block class="mb-2" />
+                      label="Atom mono color" class="mb-2" />
     </template>
   </titled-slot>
+  <v-switch v-if="atomColoring==='bonds'" v-model="showLegend"
+            class="ml-4 mb-8 mt-n6" label="Show legend" />
 
   <titled-slot title="Visibility" class="mb-2 ml-2 mt-n4">
     <v-btn-toggle v-model="showCombined" multiple>

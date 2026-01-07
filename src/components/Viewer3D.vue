@@ -24,6 +24,8 @@ import {CaptureMovie} from "@/services/CaptureMovie";
 import type {CtrlParams} from "@/types";
 import type {BillboardBatchedText} from "@/services/SpriteText";
 
+import ViewerLegend from "@/widgets/ViewerLegend.vue";
+
 // > Access the stores
 const configStore  = useConfigStore();
 const controlStore = useControlStore();
@@ -576,11 +578,13 @@ onMounted(() => {
 
 <template>
 <div ref="cnv" class="canvas" />
+<viewer-legend v-if="controlStore.legend" :bottom="40" :right="10"
+               title="Num. bonds"
+               :values-discrete="controlStore.legendDiscrete"/>
 </template>
 
 
 <style scoped>
-
 .canvas {
   width: 100%;
   height: 100%;

@@ -124,7 +124,7 @@ receivePolyhedraFromNode(id, "vertices",
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
                           :min="0" :max="1" :step="0.1" />
   <color-selector v-else v-model="surfaceColor" label="Surface color"
-                  :transparency="true" block class="ml-n1 mt-n2"/>
+                  :transparency="true" class="ml-n1 mt-n2"/>
 
   <titled-slot title="Constrain vertex count" class="mt-4 mb-1 ml-2">
     <v-btn-toggle v-model="constrains.type" mandatory>

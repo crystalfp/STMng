@@ -74,6 +74,11 @@ interface GlobalControls {
 
 	/** Dragging file from outside */
 	draggingFile: boolean;
+
+	/** Legend visible */
+	legend: boolean;
+	/** Values to have a discrete values legend */
+	legendDiscrete: {color: string; label: string}[];
 }
 
 /** Access the control store that contains global control variables not saved as status */
@@ -111,7 +116,10 @@ export const useControlStore = defineStore("ControlStore", {
 		polyhedronCurrentColor: 0,
 		polyhedronNewColor: 0,
 
-		draggingFile: false
+		draggingFile: false,
+
+		legend: false,
+		legendDiscrete: []
 
 	} as GlobalControls),
 

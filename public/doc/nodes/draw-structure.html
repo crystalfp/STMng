@@ -13,12 +13,12 @@
   <link rel="stylesheet" href="../style.css" type="text/css">
   <link rel="icon" href="../favicon.ico" type="image/x-icon" />
 
-  <title>STMng — Structure</title>
+  <title>STMng — Draw structure</title>
 </head>
 
 <body>
-<h1 class="title">Structure</h1>
-<h1 class="subh1">Draw structure</h1>
+<h1 class="title">Draw structure</h1>
+<h1 class="subh1">Display the loaded structure</h1>
 
 <div class="description">
 <p>Render a structure to the screen.</p>
@@ -79,11 +79,14 @@
   <dt>Mono</dt>
   <dd>Monochrome coloring. When selected, a color selector becomes visible below.</dd>
   <dt>Bonds</dt>
-  <dd>Atoms are colored by their number of bonds. The color scale goes from
-    <span style="background-color: #0054ad;padding: 0 10px;color:white">dark tones</span> (zero bonds) to <span style="background-color: #ffff00;padding: 0 10px">light ones</span> (six or more bonds).</dd>
+  <dd>Atoms are colored by their number of bonds. The color scale tries to use colors as different as possible.</dd>
   </ul>
-  <p></p>
   </td>
+</tr>
+<tr>
+	<td class="c1">Show legend</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Display a legend for the coloring of bonds count. This control appears only when coloring atoms by bonds.</td>
 </tr>
 <tr>
 	<td class="c1">Visibility</td>
