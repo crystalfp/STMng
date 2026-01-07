@@ -16,8 +16,8 @@ export default defineConfig({
         preserveSymlinks: true
     },
     optimizeDeps: {
-        exclude: ["doc", "release", "save", "other", "bugs",
-                  "test-data", "proto-test"],
+        exclude: [".git", ".vscode", "doc", "release", "save", "other", "bugs",
+                  "test-data", "proto-test", "work"],
         holdUntilCrawlEnd: false
     },
     define: {

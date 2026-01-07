@@ -31,7 +31,8 @@
     "proto-test/**",
     "docgen.config.js",
     "eslint.config.mjs",
-    ".dependency-cruiser.js"
+    ".dependency-cruiser.js",
+    "work/**"
   ],
   "rules": {
     "constructor-super": "error",

@@ -18,6 +18,7 @@ import type {CtrlParams, ScatterplotData} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+import ViewerLegend from "@/widgets/ViewerLegend.vue";
 
 /**
  * One point that goes to the scatterplot
@@ -714,9 +715,6 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
     return [];
 });
 
-// Create the color scale for the legend
-const lut2 = new Lut(colormapName.value, COLORMAP_LENGTH);
-const colorScale = lut2.createCanvas().toDataURL();
 
 const legendContinue = computed(() => {
 
@@ -862,6 +860,16 @@ const mousemove = (event: MouseEvent): void => {
     }
 };
 
+const vc = computed(() => {
+    return {
+        min: legendContinue.value.min,
+        max: legendContinue.value.max,
+        footer: legendContinue.value.footer,
+        colormap: colormapName.value
+    };
+});
+
+
 // > Start template
 </script>
 
@@ -923,23 +931,14 @@ const mousemove = (event: MouseEvent): void => {
       <canvas :width="scatterplotWidth-20" :height="scatterplotHeight-40"
               :style="{border: `2px solid ${fgColor}`}"
               @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove" />
-      <div v-if="showLegendDiscrete" class="legend">
-        <div v-for="n of legendDiscrete" :key="n.key">
-          <span style="width: 150px" :style="{backgroundColor: n.color, color: n.color}">⬚</span> {{ n.label }}</div>
-      </div>
-      <div v-if="showLegendContinue" class="legend narrow">
-        <p>{{ legendContinue.header }}</p>
-        <table class="tg"><tbody>
-        <tr>
-          <td class="td-bottom" rowspan="2"><img :src="colorScale" height="150" width="30"></td>
-          <td class="td-top pt-1">{{ legendContinue.max }}</td>
-        </tr>
-        <tr>
-          <td class="td-bottom pb-3">{{ legendContinue.min }}</td>
-        </tr>
-        </tbody></table>
-        <p>{{ legendContinue.footer }}</p>
-      </div>
+
+      <viewer-legend v-if="showLegendDiscrete"
+                     :width="220" :height="220" :bottom="145" :right="25"
+                     :values-discrete="legendDiscrete"/>
+      <viewer-legend v-else-if="showLegendContinue"
+                     :width="150" :height="285" :bottom="145" :right="25"
+                     :title="legendContinue.header"
+                     :values-continue="vc"/>
     </div>
 
     <div class="side-s scatterplot-buttons">

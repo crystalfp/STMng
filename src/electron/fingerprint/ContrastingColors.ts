@@ -135,9 +135,11 @@ const deltaE = (labA: LAB, labB: LAB): number => {
  * Tim Holy (2024). Generate maximally perceptually-distinct colors (https://www.mathworks.com/matlabcentral/fileexchange/29702-generate-maximally-perceptually-distinct-colors), MATLAB Central File Exchange. Retrieved December 29, 2024.
  *
  * @param countColors - Number of colors to generate
- * @param backgroundColor - Background color as RGB triple with values between 0 and 1, to make sure that
- * your colors are also distinguishable from the background
- * @returns - Array of RGB colors as countColors-by-3-tuple matrix. The color values are between 0 and 1
+ * @param backgroundColor - Background color as RGB triple with values
+ * between 0 and 1, to make sure that your colors are also distinguishable
+ * from the background
+ * @returns - Array of RGB colors as countColors-by-3-tuple matrix.
+ * The color values are between 0 and 1
  */
 export const contrastingColors = (countColors: number, backgroundColor: RGB): RGB[] => {
 
