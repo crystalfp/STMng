@@ -78,25 +78,32 @@ const renderer = new DrawStructureRenderer(id, drawQuality.value,
                                            drawMetalness.value);
 
 /**
- * Convert rg color into linear color space
+ * Convert a color into linear color space
+ * The code comes from ThreeJS `convertSRGBToLinear()` routine
  *
- * @param color - Color to be converted
+ * @param color - The two hex digits color value
+ * @returns The two hex digits converted color value
+ */
+const c2linear = (color: string): string => {
+
+    const c = Number.parseInt(color, 16)/255;
+    const cl = (c < 0.04045) ? c * 0.0773993808 : Math.pow(c * 0.9478672986 + 0.0521327014, 2.4);
+    return Math.round(cl*255).toString(16).padStart(2, "0");
+};
+
+/**
+ * Convert rgb color into linear color space
+ *
+ * @param color - Color string to be converted
+ * @returns The converted color value as hex string
  */
 const rgb2linear = (color: string): string => {
 
-    const r = Number.parseInt(color.slice(1, 3), 16)/255;
-    const g = Number.parseInt(color.slice(3, 5), 16)/255;
-    const b = Number.parseInt(color.slice(5, 7), 16)/255;
+    const r = c2linear(color.slice(1, 3));
+    const g = c2linear(color.slice(3, 5));
+    const b = c2linear(color.slice(5, 7));
 
-    const rl = (r < 0.04045) ? r * 0.0773993808 : Math.pow(r * 0.9478672986 + 0.0521327014, 2.4);
-    const gl = (g < 0.04045) ? g * 0.0773993808 : Math.pow(g * 0.9478672986 + 0.0521327014, 2.4);
-    const bl = (b < 0.04045) ? b * 0.0773993808 : Math.pow(b * 0.9478672986 + 0.0521327014, 2.4);
-
-    const rs = Math.round(rl*255).toString(16).padStart(2, "0");
-    const gs = Math.round(gl*255).toString(16).padStart(2, "0");
-    const bs = Math.round(bl*255).toString(16).padStart(2, "0");
-
-    return `#${rs}${gs}${bs}`;
+    return `#${r}${g}${b}`;
 };
 
 /**

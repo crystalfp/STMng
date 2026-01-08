@@ -24,25 +24,15 @@ const CYLINDER_SUBDIVISIONS = [0, 3, 5, 10, 16];
 const R_COV_SCALE = 0.5;
 
 /** Color scale for the number of bonds */
-// const COLOR_SCALE = [
-// 	"#0054ad",
-// 	"#007cbb",
-// 	"#00a1bd",
-// 	"#00c5b0",
-// 	"#00e889",
-// 	"#98fa53",
-// 	"#ffff00"
-// ];
 const COLOR_SCALE = [
-	"#e41a1c",
-	"#377eb8",
-	"#4daf4a",
-	"#984ea3",
-	"#ff7f00",
-	"#ffff33",
-	"#a65628"
+	"#000000",
+	"#e51a00",
+	"#8bc200",
+	"#e961e9",
+	"#846161",
+	"#ffff35",
+	"#ffb98d"
 ];
-
 const MAX_NUM_BONDS = COLOR_SCALE.length-1;
 
 /**

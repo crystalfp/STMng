@@ -7,8 +7,11 @@
  * @since 2025-01-14
  */
 import {ref, watch, computed} from "vue";
-import {PlaneGeometry, MeshStandardMaterial,
-        Float32BufferAttribute, Mesh, DoubleSide} from "three";
+import {PlaneGeometry, MeshStandardMaterial, Material,
+        Float32BufferAttribute, Mesh, DoubleSide,
+        BufferGeometry,
+        PointsMaterial,
+        Points} from "three";
 import {SimpleViewer} from "@/services/SimpleViewer";
 import {Lut} from "three/addons/math/Lut.js";
 import {theme} from "@/services/ReceiveTheme";
@@ -46,6 +49,10 @@ const surfaceName = "Landscape";
 const colormapName = ref("blackbody");
 const lut = new Lut("blackbody", 256);
 
+/** Show fingerprints as points */
+const showPoints = ref(false);
+const pointsName = "Landscape-points";
+
 /** Initialize the 3D viewer */
 const sv = new SimpleViewer(".landscape-viewer", true);
 
@@ -64,6 +71,7 @@ receiveInWindow((dataFromMain) => {
                             energies,
                             power.value);
 
+    renderPoints();
     renderSurface();
 });
 
@@ -82,20 +90,31 @@ watch([gridSide, power], () => {
                             energies,
                             power.value);
 
+    // renderPoints();
     renderSurface();
 });
 
 watch(energyScale, () => {
 
+    renderPoints();
     renderSurface();
 });
 
 watch(colormapName, () => {
 
     lut.setColorMap(colormapName.value, 256);
+    renderPoints();
     renderSurface();
 });
 
+watch(showPoints, () => {
+
+    renderPoints();
+});
+
+/**
+ * Create the surface
+ */
 const renderSurface = (): void => {
 
     // The grid side
@@ -167,6 +186,50 @@ const renderSurface = (): void => {
     sv.setSceneModified();
 };
 
+const pointColor = new Map([
+    ["blackbody",  0x00FF00],
+    ["grayscale",  0xFFFF00],
+    ["rainbow",    0xFFFF00],
+    ["cooltowarm", 0x0000FF]
+]);
+
+/**
+ * Create the points
+ */
+const renderPoints = (): void => {
+
+    const scene = sv.getScene();
+    const object = scene.getObjectByName(pointsName) as Mesh;
+    if(object) {
+        scene.remove(object);
+        if(object.geometry) object.geometry.dispose();
+        (object.material as Material).dispose();
+        sv.setSceneModified();
+    }
+
+    if(!showPoints.value || !energyLandscapeData) return;
+
+    const POINT_SIZE = 0.01;
+    const {points: points2D, energies} = energyLandscapeData;
+
+    const points3D: number[] = [];
+    for(let i=0; i < energies.length; ++i) {
+        points3D.push(points2D[i][0]-0.5-POINT_SIZE,
+                      0.5-points2D[i][1]-POINT_SIZE,
+                      energies[i]*energyScale.value);
+    }
+
+    const color = pointColor.get(colormapName.value) ?? 0xFF0000;
+    const geometry = new BufferGeometry();
+	geometry.setAttribute("position", new Float32BufferAttribute(points3D, 3));
+    const material = new PointsMaterial({size: POINT_SIZE, color});
+    const points = new Points(geometry, material);
+    points.rotation.x = -Math.PI/2;
+    points.name = pointsName;
+    scene.add(points);
+    sv.setSceneModified();
+};
+
 </script>
 
 
@@ -189,6 +252,7 @@ const renderSurface = (): void => {
                               :min="1" :max="6" :step="0.1" />
       <select-colormap v-model="colormapName" class="dd" />
       <v-btn v-focus class="mt-2 ee" @click="closeWindow('/fp-landscape')">Close</v-btn>
+      <v-switch v-model="showPoints" class="ml-4 ff" label="Show points" />
     </v-container>
   </div>
 </v-app>
@@ -218,7 +282,7 @@ const renderSurface = (): void => {
   grid-auto-flow: row;
   grid-template:
     "aa aa bb cc cc" 1fr
-    "dd .  .  .  ee" 1fr / 0.5fr 0.5fr 1fr 0.7fr 0.3fr;
+    "dd .  ff .  ee" 1fr / 0.5fr 0.5fr 1fr 0.7fr 0.3fr;
   max-width: 3000px !important;
   padding: 20px !important;
 }
@@ -232,5 +296,7 @@ const renderSurface = (): void => {
 .dd { grid-area: dd; }
 
 .ee { grid-area: ee; }
+
+.ff { grid-area: ff; }
 
 </style>

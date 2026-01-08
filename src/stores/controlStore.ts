@@ -78,7 +78,12 @@ interface GlobalControls {
 	/** Legend visible */
 	legend: boolean;
 	/** Values to have a discrete values legend */
-	legendDiscrete: {color: string; label: string}[];
+	legendDiscrete: {
+		/** Color of the discrete point */
+		color: string;
+		/** Label for the point */
+		label: string;
+	}[];
 }
 
 /** Access the control store that contains global control variables not saved as status */

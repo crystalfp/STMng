@@ -128,8 +128,8 @@ export class DrawUnitCellRenderer {
 	 *
 	 * @param vertices - Vertices of the cell
 	 * @param color - Color of the cell lines
-	 * @param dashed - If the lines should be dashed
 	 * @param visible - If the lines should be visible when created
+	 * @param radius - Radius of the fat line
 	 * @param isSupercell - If the created cell is the supercell
 	 */
 	drawFatCell(vertices: number[],
