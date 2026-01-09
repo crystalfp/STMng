@@ -179,11 +179,11 @@ watch([colormapName, colorIsolines], () => {
 
   <dataset-selector v-model="dataset" :count-datasets />
 
-  <titled-slot title="Axis" class="mt-2 mb-2 ml-2">
+  <titled-slot title="Axis" class="mb-2 ml-2">
     <v-btn-toggle v-model="axis" mandatory>
-      <v-btn :value="0">X</v-btn>
-      <v-btn :value="1">Y</v-btn>
-      <v-btn :value="2">Z</v-btn>
+      <v-btn :value="0">A</v-btn>
+      <v-btn :value="1">B</v-btn>
+      <v-btn :value="2">C</v-btn>
     </v-btn-toggle>
   </titled-slot>
 

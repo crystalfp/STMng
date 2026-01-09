@@ -120,7 +120,11 @@ dt {
   font-size: 160%;
   padding: 0.1rem 0.5rem;
   background-color: #FF6400;
-  color: white
+  color: white;
+}
+
+.back-btn {
+  margin-top: 1.5rem;
 }
 
 .menu {

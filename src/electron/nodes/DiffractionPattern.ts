@@ -418,7 +418,8 @@ export class DiffractionPattern extends NodeCore {
 				width: 1067,
 				height: 800,
 				title: this.chartTitle,
-				data: dataToSend
+				data: dataToSend,
+				alwaysOnTop: true
 			});
 
 			if(!this.channelSavePointsOpened) {

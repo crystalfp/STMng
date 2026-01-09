@@ -233,7 +233,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-btn-toggle v-model="configStore.camera.type" mandatory
-                      class="mt-n2 mb-n2 w-100 justify-center">
+                      class="mb-n2 w-100 justify-center">
           <v-btn slim value="perspective">Perspective</v-btn>
           <v-btn slim value="orthographic">Orthographic</v-btn>
         </v-btn-toggle>

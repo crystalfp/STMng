@@ -12,6 +12,7 @@
   <title>STMng documentation</title>
   <link rel="stylesheet" href="style.css" />
 	<link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="scripts.js"></script>
 </head>
 <body>
 <header>
@@ -443,24 +444,10 @@ $ STMng --read file.poscar --aux file.energy compute-fingerprints.stm
 <p>This is a human-readable summary of (and not a substitute for) the <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">license</a>. More information can be found at: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" itemprop="license">creativecommons.org/licenses/by-nc-sa/4.0/</a></p>
 </details>
 <script>
-  let areOpen = false;
-  const toggleDetails = () => {
-    if(areOpen) {
-      document.body.querySelectorAll('details')
-        .forEach((e) => {e.removeAttribute('open')})
-        areOpen = false
-    }
-    else {
-      document.body.querySelectorAll('details')
-        .forEach((e) => {e.setAttribute('open',true);})
-      areOpen = true
-    }
-  }
-  const openDetails = (anchor) => {
-    const element = document.querySelector(anchor);
-    element.setAttribute('open',true);
-    element.scrollIntoView();
-  }
+document.addEventListener('DOMContentLoaded', () => {
+    parts = window.location.href.split("#");
+    if(parts.length === 2) openDetails("#"+parts[1]);
+  }, {once: true});
 </script>
 </body>
 </html>

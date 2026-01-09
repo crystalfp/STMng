@@ -2,6 +2,9 @@ Bugs:
   ☐ Does not load spglib on Linux
   ☐ Bounding sphere does not consider supercell
   ☐ Transform to international symbol also input symmops
+  ☐ Changing theme does not changes points color in scatterplot
+  ☐ In X-ray doc add reference to the pymatgen routine
+  ☐ Polyhedra, ignore H bonds
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
