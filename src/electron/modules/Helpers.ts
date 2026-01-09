@@ -7,6 +7,7 @@
  * @since 2024-07-05
  */
 import {getAtomicSymbol} from "./AtomData";
+import {BondType} from "../../services/SharedConstants";
 import type {BasisType, Bond, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 /** Convert degrees to radiants and viceversa */
@@ -431,7 +432,7 @@ export const getValueLimits = (structure: Structure, dataset: number): [number, 
  * @param bond - Bond to check
  * @returns True if it is a normal bond
  */
-export const isNormalBond = (bond: Bond): boolean => bond.type === 0;
+export const isNormalBond = (bond: Bond): boolean => bond.type === BondType.normal;
 
 /**
  * Check bond type hydrogen
@@ -439,7 +440,7 @@ export const isNormalBond = (bond: Bond): boolean => bond.type === 0;
  * @param bond - Bond to check
  * @returns True if it is a hydrogen bond
  */
-export const isHydrogenBond = (bond: Bond): boolean => bond.type === 1;
+export const isHydrogenBond = (bond: Bond): boolean => bond.type === BondType.hydrogen;
 
 /**
  * Normalize a 3D vector

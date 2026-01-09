@@ -7,9 +7,11 @@
  * @since 2024-07-09
  */
 import {NodeCore} from "../modules/NodeCore";
-import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind,
+		type SelectorType} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendPolyhedraToClient} from "../modules/ToClient";
+import {BondType} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
 export class DrawPolyhedra extends NodeCore {
@@ -130,12 +132,14 @@ export class DrawPolyhedra extends NodeCore {
 
 		for(const idx of centerIdx) {
 			const connected = [];
-			for(const bond of bonds) {
-				if(bond.from === idx) {
-					connected.push(bond.to);
+			for(const {from, to, type} of bonds) {
+
+				if(type !== BondType.normal) continue;
+				if(from === idx) {
+					connected.push(to);
 				}
-				else if(bond.to === idx) {
-					connected.push(bond.from);
+				else if(to === idx) {
+					connected.push(from);
 				}
 			}
 
