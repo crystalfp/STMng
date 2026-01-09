@@ -32,7 +32,8 @@
     "docgen.config.js",
     "eslint.config.mjs",
     ".dependency-cruiser.js",
-    "work/**"
+    "work/**",
+    "public/doc/scripts.js"
   ],
   "rules": {
     "constructor-super": "error",

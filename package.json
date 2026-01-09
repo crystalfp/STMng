@@ -86,7 +86,7 @@
     "eslint-plugin-unicorn": "^62.0.0",
     "eslint-plugin-vue": "^10.6.2",
     "node-addon-api": "^8.5.0",
-    "oxlint-tsgolint": "^0.10.1",
+    "oxlint-tsgolint": "^0.11.0",
     "postcss-html": "^1.8.0",
     "stylelint": "^16.26.1",
     "stylelint-config-recommended-scss": "^16.0.2",

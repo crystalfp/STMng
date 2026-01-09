@@ -15,7 +15,8 @@
     "oxlint",
     "vue-mess-detector",
     "dot",
-    "node-gyp"
+    "node-gyp",
+    "migrate"
   ],
   "ignoreDependencies": [
     "vue-docgen-cli",
