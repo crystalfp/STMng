@@ -153,10 +153,11 @@ const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red
       <v-label :text="`Point cloud size (${value}%)`" class="no-select" />
     </debounced-slider>
   </v-container>
-  <throttled-button block class="ml-0 mb-5"
+  <throttled-button block class="mb-5"
                     label="Show averages" @click="sendToNode(id, 'means')" />
-  <v-btn block :disabled="atomsSelector.trim() === '' && labelKind !== 'all'" class="ml-0 mb-5"
+  <v-btn block class="mb-5"
+         :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
          :color="startStopColor" @click="toggleRecording">{{ startStop }}</v-btn>
-  <v-btn block class="mb-6 ml-0" @click="resetTraces">Clear trajectories</v-btn>
+  <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
 </v-container>
 </template>

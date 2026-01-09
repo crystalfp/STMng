@@ -43,6 +43,7 @@ const atomColoring = ref<ColoringType>("type");
 const monochromeColor = ref("#888888");
 const bondsRadiusMultiplier = ref(1);
 const spheresRadiusMultiplier = ref(1);
+const showVisuals = ref(false);
 
 // > Access the stores
 const controlStore = useControlStore();
@@ -283,15 +284,7 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
   <v-switch v-model="shadedBonds" :disabled="disableShadedBonds"
             label="Smooth color bonds" class="mt-n4 ml-4" />
   <v-switch v-model="showBondsStrengths" :disabled="disableBondsStrengths"
-            label="Show bonds strengths" class="mt-n1 mb-3 ml-4" />
-  <debounced-slider v-slot="{value}" v-model="bondsRadiusMultiplier" :disabled="disableShadedBonds"
-                      :min="0.1" :max="2" :step="0.1" class="ml-2">
-    <v-label :text="`Bonds radius multiplier (${value.toFixed(1)})`" class="no-select" />
-  </debounced-slider>
-  <debounced-slider v-slot="{value}" v-model="spheresRadiusMultiplier" :disabled="disableSphereMultiplier"
-                      :min="0.1" :max="2" :step="0.1" class="ml-2 mt-2 mb-6">
-    <v-label :text="`Sphere radius multiplier (${value.toFixed(1)})`" class="no-select" />
-  </debounced-slider>
+            label="Show bonds strengths" class="mt-n1 mb-6 ml-4" />
 
   <titled-slot title="Atom label" class="mb-2 ml-2">
     <v-btn-toggle v-model="labelKind" :disabled="!showLabels" mandatory>
@@ -301,7 +294,7 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
     </v-btn-toggle>
   </titled-slot>
 
-  <titled-slot title="Atom color" class="ml-2">
+  <titled-slot title="Atom color" class="mb-2 ml-2">
     <v-btn-toggle v-model="atomColoring" :disabled="!showAtoms || drawKind === 'lines'" mandatory>
       <v-btn value="type">Type</v-btn>
       <v-btn value="mono">Mono</v-btn>
@@ -323,23 +316,37 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
       <v-btn value="display" active>{{ showAll ? "Show" : "Hide" }}</v-btn>
     </v-btn-toggle>
   </titled-slot>
+  <v-btn block class="mt-4" text="Visual parameters" @click="showVisuals = !showVisuals"/>
+  <div v-if="showVisuals">
 
-  <titled-slot title="Quality" class="ml-2">
-    <v-btn-toggle v-model="drawQuality" mandatory>
-      <v-btn :value="1">Low</v-btn>
-      <v-btn :value="2">Medium</v-btn>
-      <v-btn :value="3">Good</v-btn>
-      <v-btn :value="4">Best</v-btn>
-    </v-btn-toggle>
-  </titled-slot>
+    <titled-slot title="Quality" class="ml-2 mt-4 mb-2">
+      <v-btn-toggle v-model="drawQuality" mandatory>
+        <v-btn :value="1">Low</v-btn>
+        <v-btn :value="2">Medium</v-btn>
+        <v-btn :value="3">Good</v-btn>
+        <v-btn :value="4">Best</v-btn>
+      </v-btn-toggle>
+    </titled-slot>
 
-  <debounced-slider v-slot="{value}" v-model="drawRoughness"
-                      :min="0" :max="1" :step="0.1" class="ml-2 mt-6">
-    <v-label :text="`Roughness (${value.toFixed(2)})`" class="no-select" />
-  </debounced-slider>
-  <debounced-slider v-slot="{value}" v-model="drawMetalness"
+    <debounced-slider v-slot="{value}" v-model="bondsRadiusMultiplier"
+                      :disabled="disableShadedBonds"
+                      :min="0.1" :max="2" :step="0.1" class="ml-2">
+      <v-label :text="`Bonds radius multiplier (${value.toFixed(1)})`" class="no-select" />
+    </debounced-slider>
+    <debounced-slider v-slot="{value}" v-model="spheresRadiusMultiplier"
+                      :disabled="disableSphereMultiplier"
+                      :min="0.1" :max="2" :step="0.1" class="ml-2 mt-2 mb-4">
+      <v-label :text="`Sphere radius multiplier (${value.toFixed(1)})`" class="no-select" />
+    </debounced-slider>
+
+    <debounced-slider v-slot="{value}" v-model="drawRoughness"
+                      :min="0" :max="1" :step="0.1" class="ml-2">
+      <v-label :text="`Roughness (${value.toFixed(2)})`" class="no-select" />
+    </debounced-slider>
+    <debounced-slider v-slot="{value}" v-model="drawMetalness"
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-4">
-    <v-label :text="`Metalness (${value.toFixed(2)})`" class="no-select" />
-  </debounced-slider>
+      <v-label :text="`Metalness (${value.toFixed(2)})`" class="no-select" />
+    </debounced-slider>
+  </div>
 </v-container>
 </template>

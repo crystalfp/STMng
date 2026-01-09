@@ -31,7 +31,7 @@ const {id, label} = defineProps<{
 
 // > Get and set ui parameters from the switchboard
 const applyInputSymmetries = ref(true);
-const disableInputSymmetries = ref(false);
+const disableInputSymmetries = ref(true);
 const enableFindSymmetries = ref(true);
 const standardizeCell = ref(true);
 const symprecStandardize = ref(-1);

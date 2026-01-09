@@ -198,22 +198,23 @@ watch([percentA, percentB, percentC, shrink], () => {
     });
 });
 
-watch(lineWidth, (after) => {
-    if(after > 0) {
-        renderer.drawFatCell(verticesUC, lineColor.value, showUnitCell.value,
-                             after*BASE+INCREMENT, false);
-        renderer.drawFatCell(verticesSC, supercellColor.value, showSupercell.value,
-                             after*BASE, true);
+watch([lineWidth, showBasisVectors], ([afterLw, afterSbv]) => {
 
-    	renderer.drawBasisVectors(showBasisVectors.value,
-                                  after*BASE+2*INCREMENT, verticesBV);
+    if(afterLw > 0) {
+        renderer.drawFatCell(verticesUC, lineColor.value, showUnitCell.value,
+                             afterLw*BASE+INCREMENT, false);
+        renderer.drawFatCell(verticesSC, supercellColor.value, showSupercell.value,
+                             afterLw*BASE, true);
+
+    	renderer.drawBasisVectors(afterSbv,
+                                  afterLw*BASE+2*INCREMENT, verticesBV);
     }
     else {
         renderer.drawCell(verticesUC, lineColor.value, dashedLine.value,
                           showUnitCell.value, false);
         renderer.drawCell(verticesSC, supercellColor.value, dashedSupercell.value,
                           showSupercell.value, true);
-    	renderer.drawBasisVectors(showBasisVectors.value, 0, verticesBV);
+    	renderer.drawBasisVectors(afterSbv, 0, verticesBV);
     }
 });
 

@@ -6,8 +6,8 @@
   <meta name="description" content="Documentation entry point for the STMng application">
   <meta name="keywords" content="STMng">
   <meta name="date" content="2025-04-15"/>
-  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
-  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>STMng documentation</title>
   <link rel="stylesheet" href="style.css" />
@@ -25,18 +25,19 @@
   <summary>STMng screen</summary>
   <img src="screen.png" width="899" height="483" alt="Main parts of the STMng application screen" style="margin-bottom: 1rem;">
   <p>The main STMng screen is divided into two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
-  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hides the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel. The same functionality is available from the View&nbsp;→&nbsp;Extend&nbsp;viewer menu. Note that, if the window is not maximized, the gutter restore functionality is overridden by the resize window handle and it is not available.</p>
+  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hides the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel. The same functionality is available from the View&nbsp;→&nbsp;Extend&nbsp;viewer main menu entry. Note that, if the window is not maximized, the gutter restore functionality is overridden by the resize window handle and therefore it is not available.</p>
   <p>On the title bar of the window is visible the currently loaded
-    <span onclick="openDetails('#project'); return false;">project</span> by its project file name or the “default project” mark. If a file is loaded in the <a href="nodes/structure-reader.html">Structure reader</a>, the filename is also shown. If the loaded unit cell has been standardized on the right of the filename the mark “<tt>(standardized)</tt>” appears.</p>
-  <p>The <b>Node controls panel</b> contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are the parameter’s controls specific for the selected node.</p>
-  <p>At the bottom there are controls to <b>reset the camera position</b> in the viewer and to <b>orient the camera</b> along various axis. These controls show by default the “Reset camera” button that resets the camera position to show the loaded structure. On its left side the <img src="x-button.png" width="37" height="37" alt="X"> button shows the next set of buttons that align the camera with the XYZ axis. Here on the right the toggle button show with the <img src="plus-button.png" width="37" height="37" alt="plus"> or <img src="minus-button.png" width="37" height="37" alt="minus"> sign the viewing direction along the chosen axis. If the structure in the viewer has an unit cell defined, on the left side the <img src="a-button.png" width="37" height="37" alt="A"> button shows the next set of buttons that align the camera with the ABC cell basis vectors with the same toggle button for the viewing direction. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="37" height="37" alt="H"> button returns to the “Reset camera” button.</p>
+    <span onclick="openDetails('#project'); return false;">project</span> by its project file name or the “default project” mark. If a file is loaded in the <a href="nodes/structure-reader.html">Structure reader</a> node, the filename is also shown. If the loaded unit cell has been standardized in the <a href="nodes/compute-symmetries.html">Compute symmetries</a> node, on the right of the filename the mark “<tt>(standardized)</tt>” is added.</p>
+  <p>The <b>Node controls panel</b> contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are the parameter’s controls of the selected node.</p>
+  <p>At the bottom there are controls to <b>reset the camera position</b> in the viewer and to <b>orient the camera</b> along various axis. By default the “Reset camera” button is visible that resets the camera position to center the loaded structure. On its left side the <img src="x-button.png" width="37" height="37" alt="X"> button shows the next set of buttons that align the camera with the XYZ axis. Here on the right the toggle button that shows the <img src="plus-button.png" width="37" height="37" alt="plus"> or <img src="minus-button.png" width="37" height="37" alt="minus"> signs, sets the viewing direction along the chosen axis. If the structure in the viewer has a unit cell defined, on the left side the <img src="a-button.png" width="37" height="37" alt="A"> button opens the next set of buttons that align the camera with the ABC cell basis vectors with the same toggle button for the viewing direction. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="37" height="37" alt="H"> button returns to the “Reset camera” button.</p>
   <p>Some nodes and menu entries open a <span onclick="openDetails('#secondary'); return false;">secondary window</span>, that can be resized and positioned freely outside the main window boundaries, with data and controls specific for its functionality.</p>
   <p>The main window size and its maximization status are saved as user preferences and applied again on the next run.</p>
 </details>
 <details>
   <summary>Available processing nodes documentation</summary>
   <p>Nodes are the building blocks of the graph that controls the STMng behavior and provide its functionalities. Each node could have inputs and/or outputs and could generate graphical objects that are visualized in the viewer.</p>
-  <p>The application makes available the nodes listed below, but the ones made available to the user are collected in the loaded <span onclick="openDetails('#project'); return false;">project</span>. Instead, all available nodes are present in the “default project”.</p>
+  <p>The connections between nodes are described in the loaded <span onclick="openDetails('#project'); return false;">project</span>.</p>
+  <p>STMng makes available all the nodes listed below in the so called “default project”, but the ones made available to the user could be varied creating or editing a project in the <a href="secondary/project-editor.html">Project editor</a>.</p>
   <table>
     <tr><td class="m1"><a href="nodes/capture-view.html">Capture view</a></td>
         <td>Capture the viewer content as image, STL model or movie.</td></tr>
@@ -396,12 +397,11 @@ Options:
   -h, --help              display help for command
 
 </code>
-<p>The “<tt>-x</tt>” command line switch passes the following arguments to the internal processes.
-When there is more than one, items are separated by commas; if a value is provided, it appears after the switch and is joined to it with a “<tt>=</tt>” sign.</p>
+<p>The “<tt>-x</tt>” command line switch passes the arguments that follow it to the internal processes. To pass a command line switch (e.g., <tt>--enable-unsafe-swiftshader</tt> used to solve on Linux a problem with the graphic driver) remove the initial double dash. When there is more than one argument, separate them by commas; if a value is provided, it appears after the argument and is joined to it with a “<tt>=</tt>” sign.</p>
 <p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>
 <p>Developer tools can be enabled in production also with the “<tt>STM_NG_ENABLE</tt>” environment variable set to any value.</p>
-<p>The “<tt>-n</tt>” switch disable the antialiasing in the 2D viewer to gain some performance.</p>
-<p style="margin-bottom:0.1rem">The “<tt>-r</tt>” and the “<tt>-a</tt>” switches accept paths to files that will be loaded in batch if the project has already defined the file format. Typical usage is:</p>
+<p>The “<tt>-n</tt>” switch disable the antialiasing in the 2D viewer to gain some performance at the expense of graphic quality.</p>
+<p style="margin-bottom:0.1rem">The “<tt>-r</tt>” and the “<tt>-a</tt>” switches accept path to a file containing the structure (<tt>-r</tt>) and optionally an auxiliary file (<tt>-a</tt>) respectively that will be loaded in batch if the project has already defined the file format. Typical usage is:</p>
 <code>
 $ STMng --read file.poscar --aux file.energy compute-fingerprints.stm
 

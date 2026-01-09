@@ -7,8 +7,8 @@
   <meta name="description" content="Documentation for the STMng draw-structure node">
   <meta name="keywords" content="STMng">
   <meta name="date" content="2024-09-25"/>
-  <meta name="copyright" content="Copyright 2023-2025 by Mario Valle">
-  <meta name="dcterms.rightsHolder" content="Copyright 2023-2025 by Mario Valle"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <link rel="stylesheet" href="../style.css" type="text/css">
   <link rel="icon" href="../favicon.ico" type="image/x-icon" />
@@ -52,11 +52,6 @@
 	<td class="c3">In CPK mode modify the bonds diameter to reflect their strength as computed from the goodBonds values as used by <a href="https://www.sciencedirect.com/science/article/abs/pii/S0010465506002931">USPEX</a>.</td>
 </tr>
 <tr>
-	<td class="c1">Bonds radius multiplier</td>
-	<td class="c2">slider</td>
-	<td class="c3">Multiplier for the standard bonds radius.</td>
-</tr>
-<tr>
 	<td class="c1">Atom label</td>
 	<td class="c2">radio buttons</td>
 	<td class="c3">What represents the label on each atom.
@@ -73,14 +68,14 @@
 	<td class="c1">Atom color</td>
 	<td class="c2">radio buttons</td>
 	<td class="c3">Selects color for atoms and bonds.
-  <ul>
+  <dl>
   <dt>Type</dt>
   <dd>The atoms are colored by the atom specie as defined in <a href="../general/atom-data.html">OpenBabel data</a>.</dd>
   <dt>Mono</dt>
   <dd>Monochrome coloring. When selected, a color selector becomes visible below.</dd>
   <dt>Bonds</dt>
   <dd>Atoms are colored by their number of bonds. The color scale tries to use colors as different as possible.</dd>
-  </ul>
+  </dl>
   </td>
 </tr>
 <tr>
@@ -101,6 +96,15 @@
   </td>
 </tr>
 <tr>
+	<td class="c1">Visual parameters</td>
+	<td class="c2">button</td>
+	<td class="c3">Toggles the visibility of the next section containing parameters related to the visual appearance of the structure.</td>
+</tr>
+</table>
+
+<h3>Visual parameters</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
 	<td class="c1">Quality</td>
 	<td class="c2">radio buttons</td>
 	<td class="c3">Select the quality of the rendering by varying the subdivisions of spheres and cylinders.
@@ -110,6 +114,16 @@
   <li>Good</li>
   <li>Best</li>
   </ul></td>
+</tr>
+<tr>
+	<td class="c1">Bonds radius multiplier</td>
+	<td class="c2">slider</td>
+	<td class="c3">Multiplier for the standard bonds radius. It is enabled only for CPK and licorice modes.</td>
+</tr>
+<tr>
+	<td class="c1">Sphere radius multiplier</td>
+	<td class="c2">slider</td>
+	<td class="c3">Multiplier for the standard spheres radius. It is enabled only for CPK mode.</td>
 </tr>
 <tr>
 	<td class="c1">Roughness</td>
