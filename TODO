@@ -5,6 +5,7 @@ Bugs:
   ☐ Changing theme does not changes points color in scatterplot
   ☐ In X-ray doc add reference to the pymatgen routine
   ☐ Polyhedra, ignore H bonds
+  ☐ Still problems with incomplete polyhedra
 
 Latest requests (backlog):
   ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
@@ -19,12 +20,13 @@ To do:
   ☐ Check error return from main process to client
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
-  ☐ When out of labs use `v-color-input` instead of `ColorSelector.vue`
+  ✘ When out of labs use `v-color-input` instead of `ColorSelector.vue` @cancelled(2026-01-09 14:58)
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters
+  ☐ Add count elements of groups in scatterplot
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
