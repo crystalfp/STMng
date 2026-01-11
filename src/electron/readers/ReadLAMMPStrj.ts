@@ -210,7 +210,8 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 			}
 		}
 		else {
-			for(let idx=1; idx <= correspond.length; ++idx) {
+			const len = correspond.length;
+			for(let idx=1; idx <= len; ++idx) {
 				if(correspond[idx]) correspond[idx] = idx;
 			}
 		}

@@ -143,8 +143,9 @@ export class StructureBackbone extends NodeCore {
 
 		// Convert each point into fractional coordinates
 		const inverse = invertBasis(basis);
-		const fractionalCoords = Array<number>(coordinates.length);
-		for(let i=0; i < coordinates.length; i+=3) {
+		const coordinatesLength = coordinates.length;
+		const fractionalCoords = Array<number>(coordinatesLength);
+		for(let i=0; i < coordinatesLength; i+=3) {
 
 			const cx = coordinates[i]   - origin[0];
 			const cy = coordinates[i+1] - origin[1];
@@ -156,7 +157,8 @@ export class StructureBackbone extends NodeCore {
 		}
 
 		// Follow each chain moving each next node near the previous one
-		for(let i=0; i < chainStart.length-1; ++i) {
+		const chainStartLength = chainStart.length;
+		for(let i=0; i < chainStartLength-1; ++i) {
 
 			// Skip empty chains
 			if(chainStart[i] === chainStart[i+1]) continue;
@@ -178,7 +180,8 @@ export class StructureBackbone extends NodeCore {
 		}
 
 		// Convert back into cartesian coordinates
-		for(let i=0; i < fractionalCoords.length; i+=3) {
+		const fractionalCoordsLength = fractionalCoords.length;
+		for(let i=0; i < fractionalCoordsLength; i+=3) {
 
 			const fx = fractionalCoords[i];
 			const fy = fractionalCoords[i+1];

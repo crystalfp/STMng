@@ -82,7 +82,8 @@ export class WriterPDB implements WriterImplementation {
                 // Remove duplicates
 				const reduced = reducingToFractionalCoordinates(structure);
 
-                for(let i=0; i < reduced.atoms.length; ++i) {
+                const len = reduced.atoms.length;
+                for(let i=0; i < len; ++i) {
 
                     const {symbol, label, chain, cart} = reduced.atoms[i];
                     const labelShort = label.length > 4 ? label.slice(-4) : label.padStart(4, " ");
@@ -101,14 +102,14 @@ export class WriterPDB implements WriterImplementation {
 
                 // Map atoms positions for bonds
                 const mapAtoms = new Map<number, number>();
-                for(let i=0; i < reduced.atoms.length; ++i) {
+                for(let i=0; i < len; ++i) {
                     mapAtoms.set(reduced.atoms[i].index, i);
                 }
 
-                const ib  = Array.from({length: reduced.atoms.length}, () => []) as number[][];
-                const ihb = Array.from({length: reduced.atoms.length}, () => []) as number[][];
-                for(let i=0; i < reduced.atoms.length-1; ++i) {
-                    for(let j=i+1; j < reduced.atoms.length; ++j) {
+                const ib  = Array.from({length: len}, () => []) as number[][];
+                const ihb = Array.from({length: len}, () => []) as number[][];
+                for(let i=0; i < len-1; ++i) {
+                    for(let j=i+1; j < len; ++j) {
 
                         for(const bond of bonds) {
                             const from = mapAtoms.get(bond.from);
@@ -127,7 +128,7 @@ export class WriterPDB implements WriterImplementation {
                     }
                 }
 
-                for(let i=0; i < reduced.atoms.length; ++i) {
+                for(let i=0; i < len; ++i) {
 
                     const nb = ib[i].length;
                     const nhb = ihb[i].length;

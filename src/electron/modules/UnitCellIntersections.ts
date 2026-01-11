@@ -131,7 +131,7 @@ export const findIntersections = (basis: BasisType, origin: PositionType,
 
 	// For each edge compute intersection with the plane
 	const intersections: number[][] = [];
-	for(let i=0; i < edges.length; i += 2) {
+	for(let i=0; i < 24; i += 2) {
 
 		const edge1 = edges[i]*3;
 		const edge2 = edges[i+1]*3;

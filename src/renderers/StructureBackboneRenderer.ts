@@ -36,18 +36,23 @@ export class StructureBackboneRenderer {
 	 * Draw a tube through the given points
 	 *
 	 * @param coordinates - Coordinates of the selected atoms
-	 * @param chainStart - Start index of each chain. There is an entry more so indices chains are (i, i+1)
+	 * @param chainStart - Start index of each chain. There is an entry more
+	 * 					   so indices chains are (i, i+1)
 	 * @param tubeRadius - Radius of the tube representing the chain
 	 * @param visible - If the tube should be visible
 	 */
-	drawChains(coordinates: number[], chainStart: number[], tubeRadius: number, visible: boolean): void {
+	drawChains(coordinates: number[],
+			   chainStart: number[],
+			   tubeRadius: number,
+			   visible: boolean): void {
 
 		// Remove existing tubes
 		sm.clearGroup(this.name);
 
 		if(!coordinates?.length || !visible) return;
 
-		for(let i=0; i < chainStart.length-1; ++i) {
+		const len = chainStart.length;
+		for(let i=0; i < len-1; ++i) {
 
 			if(chainStart[i] === chainStart[i+1]) continue;
 

@@ -146,11 +146,12 @@ export class TrajectoriesRenderer {
 					cloudVisibility: boolean): void {
 
 		// Sanity check
-		if(colors.length === 0) return;
+		const len = colors.length;
+		if(len === 0) return;
 
 		// Group segments of the same color
 		const entries = [];
-		for(let idx=0; idx < colors.length; ++idx) {
+		for(let idx=0; idx < len; ++idx) {
 
 			entries.push({idx, color: colors[idx], skip: skip[idx]});
 		}

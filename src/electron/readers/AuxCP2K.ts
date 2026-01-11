@@ -41,7 +41,8 @@ export const readAuxCP2K = async (filename: string,
 		if(lineNumber === 1) {
 
 			const fields = line.toLowerCase().trim().split(/\s+/);
-			for(let i=0; i < fields.length; ++i) {
+			const n = fields.length;
+			for(let i=0; i < n; ++i) {
 				if(fields[i].startsWith("enthalp")) {
 					column = i;
 					break;

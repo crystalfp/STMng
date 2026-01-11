@@ -205,22 +205,27 @@ function norm(vector: number[]): number {
 
 // Helper method to calculate angles between vectors
 function getAngles(v1: number[][], v2: number[][], l1: number[], l2: number[]): number[][] {
+
     const result: number[][] = [];
+    const v1Length = v1.length;
+    const v2Length = v2.length;
 
-    for(let i = 0; i < v1.length; i++) {
-      const row: number[] = [];
-      for(let j = 0; j < v2.length; j++) {
-        // Calculate dot product
-        const dp = v1[i][0] * v2[j][0] + v1[i][1] * v2[j][1] + v1[i][2] * v2[j][2];
-        let x = dp / (l1[i] * l2[j]);
+    for(let i = 0; i < v1Length; i++) {
 
-        // Clamp to [-1, 1] to avoid numerical issues
-        x = Math.max(-1, Math.min(1, x));
+        const row: number[] = [];
+        for(let j = 0; j < v2Length; j++) {
 
-        const angle = (Math.acos(x) * 180.0) / Math.PI;
-        row.push(angle);
-      }
-      result.push(row);
+            // Calculate dot product
+            const dp = v1[i][0] * v2[j][0] + v1[i][1] * v2[j][1] + v1[i][2] * v2[j][2];
+            let x = dp / (l1[i] * l2[j]);
+
+            // Clamp to [-1, 1] to avoid numerical issues
+            x = Math.max(-1, Math.min(1, x));
+
+            const angle = (Math.acos(x) * 180.0) / Math.PI;
+            row.push(angle);
+        }
+        result.push(row);
     }
 
     return result;
@@ -228,11 +233,14 @@ function getAngles(v1: number[][], v2: number[][], l1: number[], l2: number[]): 
 
 // Helper method to check if arrays are close within tolerance
 function isClose(array1: number[][], array2: number[][], atol: number): boolean[][] {
-    const result: boolean[][] = [];
 
-    for(let i = 0; i < array1.length; i++) {
+    const result: boolean[][] = [];
+    const array1Length = array1.length;
+
+    for(let i = 0; i < array1Length; i++) {
         const row: boolean[] = [];
-        for(let j = 0; j < array1[i].length; j++) {
+        const lineLength = array1[i].length;
+        for(let j = 0; j < lineLength; j++) {
             const diff = Math.abs(array1[i][j] - array2[i][j]);
             row.push(diff <= atol);
         }
@@ -611,11 +619,15 @@ export function* findAllMappings(
     const gammaB = isClose(gammaAngles, gammaTarget, atol);
 
     // Find valid combinations
-    for(let idx = 0; idx < gammaB.length; ++idx) {
-        for(let j = 0; j < gammaB[idx].length; ++j) {
+    const gammaBlength = gammaB.length;
+    for(let idx = 0; idx < gammaBlength; ++idx) {
+
+        const gammaBrowLength = gammaB[idx].length;
+        for(let j = 0; j < gammaBrowLength; ++j) {
             if(!gammaB[idx][j]) continue;
 
-            for(let k = 0; k < alphaB[j].length; k++) {
+            const alphaBrowLength = alphaB[j].length;
+            for(let k = 0; k < alphaBrowLength; k++) {
 
                 if(!alphaB[j][k] || !betaB[idx][k]) continue;
 

@@ -248,7 +248,10 @@ export class StructureReader extends NodeCore {
 		}
 
 		// Set structure id
-		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
+		const structuresLength = this.structures.length;
+		for(let idx=0; idx < structuresLength; ++idx) {
+			this.structures[idx].extra.step = idx+1;
+		}
 
 		// Clean and check the structure list
 		StructureReader.removeEmptyStructures(this.structures);
@@ -487,7 +490,8 @@ export class StructureReader extends NodeCore {
 
 		if(renamedAtomTypes === "") {
 
-			for(let i=0; i < currentAtomsZ.size; ++i) {
+			const natoms = currentAtomsZ.size;
+			for(let i=0; i < natoms; ++i) {
 				typesAfter.push(getAtomicSymbol(i+1));
 			}
 		}
@@ -638,7 +642,10 @@ export class StructureReader extends NodeCore {
 		this.structures = structures;
 
 		// Set structure id
-		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
+		const len = this.structures.length;
+		for(let idx=0; idx < len; ++idx) {
+			this.structures[idx].extra.step = idx+1;
+		}
 
 		// Send the updated structure down the pipeline
 		this.toNextNode(this.structures[this.step-1]);
@@ -707,7 +714,10 @@ export class StructureReader extends NodeCore {
 		this.structures = structures;
 
 		// Set structure id
-		for(let idx=0; idx < this.structures.length; ++idx) this.structures[idx].extra.step = idx+1;
+		const len = this.structures.length;
+		for(let idx=0; idx < len; ++idx) {
+			this.structures[idx].extra.step = idx+1;
+		}
 
 		// Send the updated structure down the pipeline
 		this.toNextNode(this.structures[this.step-1]);

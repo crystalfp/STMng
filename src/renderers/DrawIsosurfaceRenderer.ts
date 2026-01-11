@@ -60,10 +60,11 @@ export class DrawIsosurfaceRenderer {
 		sm.clearGroup(this.name);
 
 		// Nothing to show
-		if(indices.length === 0) return;
+		const len = indices.length;
+		if(len === 0) return;
 
 		// Add single or nested isosurfaces
-		for(let i=0; i < indices.length; ++i) {
+		for(let i=0; i < len; ++i) {
 
 			// Create and add the surface to the scene
 			const geometry = new BufferGeometry();

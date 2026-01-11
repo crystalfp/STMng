@@ -261,10 +261,11 @@ export const pbcShortestVectors = (lattice: Lattice,
 export const isCoordSubsetPbc = (subset: number[][], superset: number[][], fracTol: number[], mask: number[][]): boolean => {
 
 	let ok = false;
-
-	for(let i=0; i < subset.length; ++i) {
+	const subsetLength = subset.length;
+	const supersetLength = superset.length;
+	for(let i=0; i < subsetLength; ++i) {
         ok = false;
-        for(let j=0; j < superset.length; ++j) {
+        for(let j=0; j < supersetLength; ++j) {
             if(mask[i][j]) continue;
             ok = true;
             for(let k=0; k < 3; ++k) {

@@ -8,10 +8,10 @@
  * @since 2025-05-13
  */
 import {eigs, dot, cross} from "mathjs";
-import type {Structure} from "@/types";
+import log from "electron-log";
 import {getAtomData} from "../modules/AtomData";
 import {SymmOp} from "./SymmOp";
-import log from "electron-log";
+import type {Structure} from "@/types";
 
 /**
  * A class to analyze the point group of a molecule.
@@ -83,7 +83,8 @@ export class PointGroupAnalyzer {
 		// Compute the inertia tensor
 		const inertiaTensor = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
 		let totalInertia = 0;
-		for(let i=0; i < this.centeredStructure.length; ++i) {
+		const len = this.centeredStructure.length;
+		for(let i=0; i < len; ++i) {
 
 			const atomZ = this.structure.atoms[i].atomZ;
 			const wt = getAtomData(atomZ).mass;
@@ -278,9 +279,10 @@ export class PointGroupAnalyzer {
  	private checkPerpendicularR2Axis(axis: number[]): boolean {
 
 		const minSet = this.getSmallestSetNotOnAxis(axis);
+		const len = minSet.length;
 
-		for(let i = 0; i < minSet.length; i++) {
-			for(let j = i + 1; j < minSet.length; j++) {
+		for(let i = 0; i < len-1; i++) {
+			for(let j = i + 1; j < len; j++) {
 
 				const s1 = minSet[i];
 				const s2 = minSet[j];
@@ -456,7 +458,8 @@ export class PointGroupAnalyzer {
 
 		let minLen = Number.POSITIVE_INFINITY;
 		let minIdx = -1;
-		for(let i=0; i < validSets.length; ++i) {
+		const len = validSets.length;
+		for(let i=0; i < len; ++i) {
 			if(validSets[i].length < minLen) {
 				minLen = validSets[i].length;
 				minIdx = i;
@@ -484,8 +487,9 @@ export class PointGroupAnalyzer {
 			return "h";
 		}
 
-		for(let is1=0; is1 < this.natoms-1; ++is1) {
-			for(let is2=is1+1; is2 < this.natoms; ++is2) {
+		const n = this.natoms;
+		for(let is1=0; is1 < n-1; ++is1) {
+			for(let is2=is1+1; is2 < n; ++is2) {
 
 				if(this.structure!.atoms[is1].atomZ !== this.structure!.atoms[is2].atomZ) continue;
 				const c1 = this.centeredStructure[is1];
@@ -556,7 +560,8 @@ export class PointGroupAnalyzer {
 	 */
 	private isValidOp(symmOp: SymmOp): boolean {
 
-		for(let i=0; i < this.natoms; ++i) {
+		const n = this.natoms;
+		for(let i=0; i < n; ++i) {
 
 			const atom = this.structure!.atoms[i];
 
@@ -564,7 +569,7 @@ export class PointGroupAnalyzer {
 
 			// This is the expansion of find_in_coord_list
 			const ind = [];
-			for(let j=0; j < this.natoms; ++j) {
+			for(let j=0; j < n; ++j) {
 				const dx = this.centeredStructure[j][0] - coord[0];
 				if(dx < this.tolerance && dx > -this.tolerance) {
 					const dy = this.centeredStructure[j][1] - coord[1];
@@ -608,9 +613,10 @@ export class PointGroupAnalyzer {
 			}
 		}
 
-		for(let ic1=0; ic1 < testSet.length-2; ++ic1) {
-			for(let ic2=ic1+1; ic2 < testSet.length-1; ++ic2) {
-				for(let ic3=ic2+1; ic3 < testSet.length; ++ic3) {
+		const n = testSet.length;
+		for(let ic1=0; ic1 < n-2; ++ic1) {
+			for(let ic2=ic1+1; ic2 < n-1; ++ic2) {
+				for(let ic3=ic2+1; ic3 < n; ++ic3) {
 
 					const c = [
 						this.centeredStructure[testSet[ic1]],
@@ -668,7 +674,8 @@ export class PointGroupAnalyzer {
 	private clusterSites(centeredStructure: number[][], tol: number): {originSite: number | undefined; clusteredSites: Record<number, number[]>} {
 
 		const dists: number[] = [];
-		for(let i=0; i < this.natoms; ++i) {
+		const n = this.natoms;
+		for(let i=0; i < n; ++i) {
 			dists.push(Math.hypot(centeredStructure[i][0],
 								  centeredStructure[i][1],
 								  centeredStructure[i][2]));
@@ -679,7 +686,7 @@ export class PointGroupAnalyzer {
 		for(let i=0; i < nclusters; ++i) {
 			clusteredDists.push([]);
 		}
-		for(let i=0; i < this.natoms; ++i) {
+		for(let i=0; i < n; ++i) {
 			clusteredDists[cluster[i]].push(dists[i]);
 		}
 		const averageDistances: number[] = [];
@@ -697,7 +704,7 @@ export class PointGroupAnalyzer {
 		}
 
 		let originSite;
-		for(let i=0; i < this.natoms; ++i) {
+		for(let i=0; i < n; ++i) {
 			if(averageDistances[cluster[i]] < tol) {
 				originSite = i;
 			}
@@ -721,7 +728,8 @@ export class PointGroupAnalyzer {
 
 		// Initialize root (to point to all)
         const root: number[][] = [];
-        for(let i=0; i < values.length; ++i) root.push([i]);
+		const valuesLength = values.length;
+        for(let i=0; i < valuesLength; ++i) root.push([i]);
 
 		// Iterate till the distance becomes greater than the given threshold
         while(root.length > 1) {
@@ -751,12 +759,13 @@ export class PointGroupAnalyzer {
             root.splice(minj!, 1);
 		}
 
-		const result = Array<number>(values.length).fill(0);
-		for(let i=0; i < root.length; ++i) {
+		const result = Array<number>(valuesLength).fill(0);
+		const rootLength = root.length;
+		for(let i=0; i < rootLength; ++i) {
 			for(const idx of root[i]) result[idx] = i;
 		}
 
-		return {cluster: result, nclusters: root.length};
+		return {cluster: result, nclusters: rootLength};
 	}
 
 	/**

@@ -196,7 +196,10 @@ export const methodOrder = (accumulator: FingerprintsAccumulator,
 
 			// Compute the degree of order
 			let op = 0;
-			for(let j=0; j < sectionsInfo.length; ++j) op += fingerprint[j]*fingerprint[j];
+			const len = sectionsInfo.length;
+			for(let j=0; j < len; ++j) {
+				op += fingerprint[j]*fingerprint[j];
+			}
 			order.push([step, binWidth*op/R0]);
 		}
 	}
@@ -247,7 +250,8 @@ export const methodDistances = (distanceMatrix: DistanceMatrix,
 								row: number): [step: number, order: number][]  => {
 
 	const distances: [step: number, order: number][] = [];
-	for(let col=0; col < distanceMatrix.matrixSize(); ++col) {
+	const size = distanceMatrix.matrixSize();
+	for(let col=0; col < size; ++col) {
 		if(enabled[col]) {
 			distances.push([steps[col], distanceMatrix.get(row, col)]);
 		}

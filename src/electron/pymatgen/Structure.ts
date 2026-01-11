@@ -156,13 +156,16 @@ const getHnf = function* (formUnits: number): Generator<[number, number[][][]]> 
     }
 };
 
-
 const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): number[][] => {
+
+    const size = matrix[0].length;
+
     return vectors.map((vec) => {
         const result: number[] = [];
-        for(let j = 0; j < matrix[0].length; j++) {
+        const len = vec.length;
+        for(let j = 0; j < size; j++) {
             result[j] = 0;
-            for(let k = 0; k < vec.length; k++) {
+            for(let k = 0; k < len; k++) {
                 result[j] += vec[k] * matrix[k][j];
             }
         }
@@ -255,11 +258,12 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
     for(const gfCoords of groupedFracCoords) {
 
         const nonNbrs: boolean[][] = [];
+        const len = gfCoords.length;
 
-        for(let i = 0; i < gfCoords.length; i++) {
+        for(let i = 0; i < len; i++) {
 
             nonNbrs[i] = [];
-            for(let j = 0; j < gfCoords.length; j++) {
+            for(let j = 0; j < len; j++) {
 
                 const fdist = gfCoords[i].map((value, idx) => {
                     let diff = value - gfCoords[j][idx];
@@ -282,7 +286,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
         // Find sets of lattice vectors present in min_vecs
         const validIndices: number[] = [];
 
-        for(let i = 0; i < invMs.length; i++) {
+        const len = invMs.length;
+        for(let i = 0; i < len; i++) {
 
             const invM = invMs[i];
             let allClose = true;
@@ -327,7 +332,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
             const spNew: string[] = [];
             const labelsNew: string[] = [];
 
-            for(let groupIdx = 0; groupIdx < groupedSites.length && valid; groupIdx++) {
+            const groupedSitesLength = groupedSites.length;
+            for(let groupIdx = 0; groupIdx < groupedSitesLength && valid; groupIdx++) {
 
                 const gsites = groupedSites[groupIdx];
                 const gfCoords = groupedFracCoords[groupIdx];
@@ -337,9 +343,10 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
 
                 // Calculate grouping of equivalent sites
                 const closeInPrim: boolean[][] = [];
-                for(let i = 0; i < allFrac.length; i++) {
+                const allFracLength = allFrac.length;
+                for(let i = 0; i < allFracLength; i++) {
                     closeInPrim[i] = [];
-                    for(let j = 0; j < allFrac.length; j++) {
+                    for(let j = 0; j < allFracLength; j++) {
                         const fdist = allFrac[i].map((value, ii) => {
                             const diff = value - allFrac[j][ii];
                             return Math.abs(pbc(diff));
@@ -387,7 +394,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 const added = Array<boolean>(gsites.length).fill(false);
                 const fracCoordsNew = allFrac.map((coord) => coord.map((value) => value % 1));
 
-                for(let grpIdx = 0; grpIdx < groups.length; grpIdx++) {
+                const groupsLength = groups.length;
+                for(let grpIdx = 0; grpIdx < groupsLength; grpIdx++) {
                     if(!added[grpIdx]) {
                         const group = groups[grpIdx];
                         const inds = group
@@ -397,7 +405,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                         for(const ind of inds) added[ind] = true;
 
                         let coords = [...fracCoordsNew[inds[0]]];
-                        for(let innerIdx = 1; innerIdx < inds.length; innerIdx++) {
+                        const indsLength = inds.length;
+                        for(let innerIdx = 1; innerIdx < indsLength; innerIdx++) {
                             const ind = inds[innerIdx];
                             // eslint-disable-next-line no-loop-func
                             const offset = fracCoordsNew[ind].map((value, ii) => value - coords[ii]);

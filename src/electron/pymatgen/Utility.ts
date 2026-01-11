@@ -149,15 +149,20 @@ export const matrixVectorMultiply = (matrix: number[][], vector: number[]): numb
  * @returns Matrix result
  */
 export const matrixMultiply = (a: number[][], b: number[][]): number[][] => {
-    const result = createZeroMatrix(a.length, b[0].length);
 
-    for(let i = 0; i < a.length; i++) {
-        for(let j = 0; j < b[0].length; j++) {
-            for(let k = 0; k < a[0].length; k++) {
+    const aLength = a.length;
+    const a0Length = a[0].length;
+    const b0Length = b[0].length;
+    const result = createZeroMatrix(aLength, b0Length);
+
+    for(let i = 0; i < aLength; i++) {
+        for(let j = 0; j < b0Length; j++) {
+            for(let k = 0; k < a0Length; k++) {
                 result[i][j] += a[i][k] * b[k][j];
             }
         }
     }
+
     return result;
 };
 
@@ -169,8 +174,9 @@ export const matrixMultiply = (a: number[][], b: number[][]): number[][] => {
  * @param col2 - Second column
  */
 export const swapColumns = (matrix: number[][], col1: number, col2: number): void => {
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for(let i = 0; i < matrix.length; i++) {
+
+    const len = matrix.length;
+    for(let i = 0; i < len; i++) {
         const temp = matrix[i][col1];
         matrix[i][col1] = matrix[i][col2];
         matrix[i][col2] = temp;
@@ -390,11 +396,15 @@ export const range = (start: number, end: number): number[] => {
  */
 export const vectorsMatrixMultiply = (vectors: number[][], matrix: number[][]): number[][] => {
 
+    const matrix0Length = matrix[0].length;
+
 	return vectors.map((vector) => {
+
 		const result: number[] = [];
-		for(let j = 0; j < matrix[0].length; j++) {
+        const vectorLength = vector.length;
+		for(let j = 0; j < matrix0Length; j++) {
 			result[j] = 0;
-			for(let k = 0; k < vector.length; k++) {
+			for(let k = 0; k < vectorLength; k++) {
 				result[j] += vector[k] * matrix[k][j];
 			}
 		}

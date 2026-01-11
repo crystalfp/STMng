@@ -368,7 +368,8 @@ const addLabels = (atoms: PrototypeAtomsData): void => {
     // Remove existing labels
     disposeTextInGroup(labelsGroup);
 
-    for(let i=0; i < atoms.radius.length; ++i) {
+    const len = atoms.radius.length;
+    for(let i=0; i < len; ++i) {
 
         const offset = atoms.radius[i] * 0.65;
 	    const labelPosition: PositionType = [

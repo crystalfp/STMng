@@ -233,9 +233,10 @@ export class DrawOrthoslice extends NodeCore {
 
         // Create the isolines values
         if(this.useColorClasses) {
-            const delta = (this.limitHigh - this.limitLow) / this.colorClasses;
+            const nClasses = this.colorClasses;
+            const delta = (this.limitHigh - this.limitLow) / nClasses;
             this.isolineValues = [this.limitLow];
-            for(let i=1; i < this.colorClasses; ++i) this.isolineValues.push(this.limitLow + i*delta);
+            for(let i=1; i < nClasses; ++i) this.isolineValues.push(this.limitLow + i*delta);
             this.isolineValues.push(this.limitHigh);
         }
         else this.isolineValues = [this.isoValue];

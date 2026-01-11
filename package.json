@@ -65,7 +65,7 @@
     "@stylistic/eslint-plugin": "^5.7.0",
     "@types/three": "^0.182.0",
     "@types/tmp": "^0.2.6",
-    "@typescript/native-preview": "^7.0.0-dev.20260109.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260111.1",
     "@typescript-eslint/eslint-plugin": "^8.52.0",
     "@typescript-eslint/parser": "^8.52.0",
     "@vitejs/plugin-vue": "^6.0.3",

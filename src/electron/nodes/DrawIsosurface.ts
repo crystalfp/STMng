@@ -133,9 +133,10 @@ export class DrawIsosurface extends NodeCore {
 
         if(this.nestedIsosurfaces) {
 
-            const delta = (this.limitHigh - this.limitLow) / (this.countIsosurfaces-1);
+            const nIso = this.countIsosurfaces;
+            const delta = (this.limitHigh - this.limitLow) / (nIso-1);
             let isoValue = this.limitLow;
-            for(let i=0; i < this.countIsosurfaces; ++i) {
+            for(let i=0; i < nIso; ++i) {
 
                 iso.computeIsosurface(isoValue);
 

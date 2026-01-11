@@ -98,7 +98,8 @@ export class InterpolateVolume extends NodeCore {
 		};
 
 		// Interpolate the requested dataset
-		for(let idx=0; idx < volume.length; ++idx) {
+		const len = volume.length;
+		for(let idx=0; idx < len; ++idx) {
 			out.volume.push(idx === this.dataset ? this.interpolate(volume[this.dataset]) : volume[idx]);
 		}
 

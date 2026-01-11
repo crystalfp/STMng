@@ -142,7 +142,8 @@ export class ReorderAtomsInSteps {
 
 			for(const specie of this.currentStep) {
 
-				for(let i=0; i < specie[1].positions.length; ++i) {
+				const len = specie[1].positions.length;
+				for(let i=0; i < len; ++i) {
 
 					const pp = specie[1].positions[i];
 					const idx = specie[1].idx[i];
@@ -184,8 +185,9 @@ export class ReorderAtomsInSteps {
 				const pairedCurrent = Array<number>(nc).fill(-1);
 				let n = Math.min(np, nc);
 				const paired = new Map<number, number>();
+				const len = cost.length;
 
-				for(let i=0; i < cost.length; ++i) {
+				for(let i=0; i < len; ++i) {
 					const previous = cost[i].initial;
 					const current = cost[i].final;
 					if(pairedPrevious[previous] === -1 && pairedCurrent[current] === -1) {
@@ -401,12 +403,14 @@ export class ReorderAtomsInSteps {
 	private computeCostArray(points1: PositionType[], points2: PositionType[]): Cost[] {
 
 		const costArray: Cost[] = [];
+		const points1Length = points1.length;
+		const points2Length = points2.length;
 
-		for(let ia = 0; ia < points1.length; ++ia) {
+		for(let ia = 0; ia < points1Length; ++ia) {
 
 			const p1 = points1[ia];
 
-			for(let ib = 0; ib < points2.length; ++ib) {
+			for(let ib = 0; ib < points2Length; ++ib) {
 
 				const p2 = points2[ib];
 				const distance = this.computeDistance(p1, p2);

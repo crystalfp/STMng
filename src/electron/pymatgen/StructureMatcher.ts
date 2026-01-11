@@ -332,8 +332,9 @@ export class StructureMatcher {
         // Check that species lists are comparable
         const sp1 = getElements(struct1);
         const sp2 = getElements(struct2);
+        const sp1Length = sp1.length;
 
-        if(sp1.length !== sp2.length) return null;
+        if(sp1Length !== sp2.length) return null;
 
         const ratio = s1Supercell ? fu : 1 / fu;
         const swapped = struct1.sites.length * ratio < struct2.sites.length;
@@ -346,7 +347,7 @@ export class StructureMatcher {
 
             // Create species mapping
             const spMapping = new Map<string, string>();
-            for(let i = 0; i < sp1.length; i++) {
+            for(let i = 0; i < sp1Length; i++) {
                 spMapping.set(sp1[i], perm[i]);
             }
 
@@ -392,12 +393,13 @@ export class StructureMatcher {
      */
     private* permutations<T>(list: T[]): Generator<T[]> {
 
-        if(list.length <= 1) {
+        const len = list.length;
+        if(len <= 1) {
             yield list;
             return;
         }
 
-        for(let i = 0; i < list.length; i++) {
+        for(let i = 0; i < len; i++) {
             const rest = [...list.slice(0, i), ...list.slice(i + 1)];
             for(const perm of this.permutations(rest)) {
                 yield [list[i], ...perm];
@@ -475,8 +477,10 @@ export class StructureMatcher {
                     .fill(null)
                     .map(() => Array<boolean>(s1SpeciesAndOccu.size).fill(false));
 
-            for(let i = 0; i < mask.length; i++) {
-                for(let j = 0; j < mask[i].length; j++) {
+            const ml = mask.length;
+            for(let i = 0; i < ml; i++) {
+                const mil = mask[i].length;
+                for(let j = 0; j < mil; j++) {
                     for(let k = 0; k < fu; k++) {
                         rolled[i * fu + k][j] = mask[i][j][k];
                     }
@@ -493,7 +497,8 @@ export class StructureMatcher {
         const idx = sums.indexOf(Math.max(...sums));
 
         const inds: number[] = [];
-        for(let i = 0; i < intMask[idx].length; i++) {
+        const n = intMask[idx].length;
+        for(let i = 0; i < n; i++) {
             if(intMask[idx][i] === 0) {
                 inds.push(i);
             }
@@ -502,7 +507,8 @@ export class StructureMatcher {
         if(s1Supercell) {
             // Remove symmetrically equivalent s1 indices
             const filteredInds: number[] = [];
-            for(let i = 0; i < inds.length; i += fu) {
+            const len = inds.length;
+            for(let i = 0; i < len; i += fu) {
                 filteredInds.push(inds[i]);
             }
             return [intMask, filteredInds, idx];

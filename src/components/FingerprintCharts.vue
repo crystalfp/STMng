@@ -171,7 +171,8 @@ receiveInWindow((dataFromMain) => {
         const lineCoordinates: {x: number; y: number}[] = [];
         let previousY = fingerprint[0][1];
         lineCoordinates.push({x: 0, y: fingerprint[0][1]});
-        for(let i=1; i < fingerprint.length; ++i) {
+        const len = fingerprint.length;
+        for(let i=1; i < len; ++i) {
             lineCoordinates.push({x: fingerprint[i][0], y: previousY},
                                  {x: fingerprint[i][0], y: fingerprint[i][1]});
             previousY = fingerprint[i][1];

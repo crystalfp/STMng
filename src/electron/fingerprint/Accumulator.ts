@@ -344,9 +344,10 @@ export class FingerprintsAccumulator {
 	 */
 	* iterateSelectedStructurePairs(): Generator<[StructureReduced, StructureReduced]> {
 
-		for(let i=0; i < this.accumulator.length-1; ++i) {
+		const len = this.accumulator.length;
+		for(let i=0; i < len-1; ++i) {
 			if(!this.accumulator[i].selected) continue;
-			for(let j=i+1; j < this.accumulator.length; ++j) {
+			for(let j=i+1; j < len; ++j) {
 				if(!this.accumulator[j].selected) continue;
 
 				yield [this.accumulator[i], this.accumulator[j]];

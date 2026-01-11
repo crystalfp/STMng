@@ -503,7 +503,8 @@ export class ComputeFingerprints extends NodeCore {
 			if(energy > maxEnergy) maxEnergy = energy;
 		}
 		const den = 1 / (maxEnergy - minEnergy);
-		for(let i=0; i < energies.length; ++i) {
+		const ne = energies.length;
+		for(let i=0; i < ne; ++i) {
 			energies[i] = (energies[i] - minEnergy)*den;
 		}
 

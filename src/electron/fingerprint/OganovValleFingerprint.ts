@@ -151,14 +151,15 @@ export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void =>
         }
 	}
 
-	for(let i=0; i < centroid.length; ++i) {
+	const len = centroid.length;
+	for(let i=0; i < len; ++i) {
 		centroid[i] /= nloaded;
 	}
 
 	// Remove centroid from each fingerprint
 	for(const {fingerprint} of accumulator.iterateSelectedStructures()) {
 
-		for(let i=0; i < centroid.length; ++i) {
+		for(let i=0; i < len; ++i) {
 			fingerprint[i] -= centroid[i];
 		}
 	}

@@ -82,8 +82,9 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     let shouldReset = false;
     const tcSorted = thoseChains.toSorted((a, b) => a.localeCompare(b));
     const cSorted = chains.toSorted((a, b) => a.localeCompare(b));
-    if(tcSorted.length === cSorted.length) {
-        for(let i = 0; i < tcSorted.length; i++) {
+    const tcSortedLength = tcSorted.length;
+    if(tcSortedLength === cSorted.length) {
+        for(let i = 0; i < tcSortedLength; i++) {
             if(tcSorted[i] !== cSorted[i]) {
                 shouldReset = true;
                 break;

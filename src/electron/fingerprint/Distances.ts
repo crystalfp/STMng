@@ -127,10 +127,11 @@ export class DistanceMatrix {
     toVector(): number[] {
 
         const out: number[] = [];
+        const len = this.side;
 
-        for(let row=0; row < this.side-1; ++row) {
+        for(let row=0; row < len-1; ++row) {
 
-            for(let col=1; col < this.side-row; ++col) {
+            for(let col=1; col < len-row; ++col) {
                 out.push(this.distanceMatrix[row][col]);
             }
         }

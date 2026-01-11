@@ -141,9 +141,10 @@ const renderSurface = (): void => {
     // Create geometry
     const geometry = new PlaneGeometry(1, 1, side-1, side-1);
     const pos = geometry.getAttribute("position");
+    const posCount = pos.count;
 
     // Fill coordinates values
-    for(let i=0; i < pos.count; i++) {
+    for(let i=0; i < posCount; i++) {
 
         const z = (grid[i]-minValue)/(maxValue-minValue);
         pos.setZ(i, z*energyScale.value);
@@ -153,8 +154,8 @@ const renderSurface = (): void => {
     lut.setMax(maxValue);
     lut.setMin(minValue);
 
-    const colors = Array<number>(pos.count*3).fill(0);
-    for(let i=0; i < pos.count; i++) {
+    const colors = Array<number>(posCount*3).fill(0);
+    for(let i=0; i < posCount; i++) {
 
         const z = grid[i];
         const color = lut.getColor(z);
@@ -211,9 +212,10 @@ const renderPoints = (): void => {
 
     const POINT_SIZE = 0.01;
     const {points: points2D, energies} = energyLandscapeData;
+    const energiesLength = energies.length;
 
     const points3D: number[] = [];
-    for(let i=0; i < energies.length; ++i) {
+    for(let i=0; i < energiesLength; ++i) {
         points3D.push(points2D[i][0]-0.5-POINT_SIZE,
                       0.5-points2D[i][1]-POINT_SIZE,
                       energies[i]*energyScale.value);

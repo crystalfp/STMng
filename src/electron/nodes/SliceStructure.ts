@@ -397,9 +397,11 @@ export class SliceStructure extends NodeCore {
 	 */
 	private selectAtoms(select: boolean[]): Structure {
 
+		const len = select.length;
+
 		// Reverse the side of the slice
 		if(this.sliceInside) {
-			for(let idx=0; idx < select.length; ++idx) {
+			for(let idx=0; idx < len; ++idx) {
 				select[idx] = !select[idx];
 			}
 		}
@@ -421,7 +423,7 @@ export class SliceStructure extends NodeCore {
 		};
 
 		let mappedIdx = 0;
-		for(let idx=0; idx < select.length; ++idx) {
+		for(let idx=0; idx < len; ++idx) {
 			if(select[idx]) {
 				outStructure.atoms.push(atoms[idx]);
 				mapAtomIdx.set(idx, mappedIdx++);
@@ -452,8 +454,8 @@ export class SliceStructure extends NodeCore {
 
 		const natoms = this.structure.atoms.length;
 		const inside = Array<boolean>(natoms).fill(false);
-
-		for(let k=0; k < this.sphereRenderingParams.length; k+=3) {
+		const paramsLength = this.sphereRenderingParams.length;
+		for(let k=0; k < paramsLength; k+=3) {
 
 			for(let i=0; i < natoms; ++i) {
 

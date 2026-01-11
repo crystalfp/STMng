@@ -177,7 +177,8 @@ const pointsByEnergy = (): Glyph[] => {
     // Extract the energy range
     minEnergy = values[0];
     maxEnergy = minEnergy;
-    for(let i=1; i < values.length; ++i) {
+    const len = values.length;
+    for(let i=1; i < len; ++i) {
         if(values[i] < minEnergy) minEnergy = values[i];
         if(values[i] > maxEnergy) maxEnergy = values[i];
     }
@@ -227,7 +228,8 @@ const pointsByEfficiency = (): Glyph[] => {
     // Extract the distance from the diagonal
     let minDelta = fidelity[0][1] - fidelity[0][0];
     maxDelta = minDelta;
-    for(let i=1; i < fidelity.length; ++i) {
+    const len = fidelity.length;
+    for(let i=1; i < len; ++i) {
         const delta = fidelity[i][1] - fidelity[i][0];
         if(delta < minDelta) minDelta = delta;
         if(delta > maxDelta) maxDelta = delta;

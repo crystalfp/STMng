@@ -26,8 +26,9 @@ const shepardInterpolation = (x: number,
 
 	let numerator = 0;
 	let denominator = 0;
+	const len = points.length;
 
-	for(let i = 0; i < points.length; i++) {
+	for(let i = 0; i < len; i++) {
 
 		const [px, py] = points[i];
 		const distance = Math.hypot(x-px, y-py);

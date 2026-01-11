@@ -174,7 +174,8 @@ export class XRDCalculator {
 
             // Computation of atomic scattering factors.
             const fs: number[] = [];
-            for(let i=0; i < zs.length; ++i) {
+            const len = zs.length;
+            for(let i=0; i < len; ++i) {
 
                 let sum = 0;
                 for(const c of coeffs[i]) sum += c[0]*Math.exp(-c[1]*halfDistSquared);
@@ -307,7 +308,8 @@ export class XRDCalculator {
 
             // Find the maximum
             item.val.sort((a, b) => {
-                for(let i=0; i < a.length; ++i) {
+                const len = a.length;
+                for(let i=0; i < len; ++i) {
 
                     if(a[i] !== b[i]) return b[i]-a[i];
                 }

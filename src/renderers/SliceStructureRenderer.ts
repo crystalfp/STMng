@@ -48,9 +48,10 @@ export class SliceStructureRenderer {
 	drawSpheres(centers: number[], radius: number, visible: boolean): void {
 
 		sm.clearGroup(this.name);
-		if(!centers || centers.length < 3) return;
+		const len = centers?.length ?? 0;
+		if(len < 3) return;
 
-		for(let i=0; i < centers.length; i += 3) {
+		for(let i=0; i < len; i += 3) {
 			const sphere = new Mesh(new SphereGeometry(radius, 32, 32), this.material);
 			sphere.position.set(centers[i], centers[i+1], centers[i+2]);
 			this.group.add(sphere);

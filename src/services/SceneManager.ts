@@ -397,7 +397,8 @@ class SceneManager {
 			atoms.traverse((object) => {
 				if(object.type === "Mesh") {
 					const im = object as InstancedMesh;
-					for(let idx = 0; idx < im.count; idx++) {
+					const count = im.count;
+					for(let idx = 0; idx < count; idx++) {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
 						const geometry = new SphereGeometry(1, 18, 18);
@@ -414,9 +415,10 @@ class SceneManager {
 			bonds.traverse((object) => {
 				if(object.type === "Mesh") {
 					const im = object as InstancedMesh;
+					const count = im.count;
 					const ImGeometry = im.geometry as CylinderGeometry;
 					const radius = ImGeometry.parameters.radiusTop;
-					for(let idx = 0; idx < im.count; idx++) {
+					for(let idx = 0; idx < count; idx++) {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
 						const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, false);

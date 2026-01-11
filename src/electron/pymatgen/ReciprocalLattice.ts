@@ -258,7 +258,8 @@ export class ReciprocalLattice {
             const distances = nnCoords.map((pt) => Math.hypot(pt![0] - ii[0], pt![1] - ii[1], pt![2] - ii[2]));
 
             const nns: {coord: number[]; dist: number; index: number; image: number[]}[] = [];
-            for(let i=0; i < nnCoords.length; ++i) {
+            const nnLen = nnCoords.length;
+            for(let i=0; i < nnLen; ++i) {
 
                 const coord = nnCoords[i]!;
                 const index = nnIndices[i]!;

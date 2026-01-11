@@ -186,8 +186,9 @@ export const contrastingColors = (countColors: number, backgroundColor: RGB): RG
         // Find the entry farthest from all previously-chosen colors
         let max = mindist2[0];
         let maxIndex = 0;
+        const len = mindist2.length;
 
-        for(let j = 1; j < mindist2.length; j++) {
+        for(let j = 1; j < len; j++) {
             if(mindist2[j] > max) {
                 maxIndex = j;
                 max = mindist2[j];

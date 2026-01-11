@@ -48,15 +48,16 @@ export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator)
         fingerprints.push([]);
         atomCount += structure.atomsZ.length;
     }
-    if(sourceFingerprints.length === 0) return {min: 0, max: 0, avg: 0, theory: 0};
+    const len = sourceFingerprints.length;
+    if(len === 0) return {min: 0, max: 0, avg: 0, theory: 0};
 
     // Remove coordinates equal for all fingerprints
     for(let idx = 0; idx < dimension; ++idx) {
         const value = sourceFingerprints[0][idx];
-        for(let i=1; i < sourceFingerprints.length; ++i) {
+        for(let i=1; i < len; ++i) {
             const delta = Math.abs(sourceFingerprints[i][idx] - value);
             if(delta > TOL) {
-                for(let j=0; j < sourceFingerprints.length; ++j) {
+                for(let j=0; j < len; ++j) {
                     fingerprints[j].push(sourceFingerprints[j][idx]);
                 }
                 break;
@@ -196,11 +197,12 @@ class DimensionEstimator {
     nearestNeighborDimension(k = 5): DimensionEstimate {
 
         const distances: number[] = [];
+        const n = this.numPoints;
 
-        for(let i = 0; i < this.numPoints; ++i) {
+        for(let i = 0; i < n; ++i) {
             const neighborDistances: number[] = [];
 
-            for(let j = 0; j < this.numPoints; ++j) {
+            for(let j = 0; j < n; ++j) {
                 if(i !== j) {
                     neighborDistances.push(this.euclideanDistance(i, j));
                 }
@@ -215,7 +217,7 @@ class DimensionEstimator {
         const variance = distances.reduce((sum, d) => sum + Math.pow(d - meanDistance, 2), 0) / distances.length;
 
         // Rough estimate based on expected behavior in d-dimensional space
-        const dimension = Math.log(this.numPoints) / Math.log(2 / meanDistance);
+        const dimension = Math.log(n) / Math.log(2 / meanDistance);
 
         return {
             method: "Nearest Neighbor",
@@ -243,8 +245,9 @@ class DimensionEstimator {
         const totalVariance = eigenvalues.reduce((sum, value) => sum + Math.max(0, value), 0);
         let cumulativeVariance = 0;
         let dimension = 0;
+        const size = eigenvalues.length;
 
-        for(let i = 0; i < eigenvalues.length; ++i) {
+        for(let i = 0; i < size; ++i) {
             cumulativeVariance += Math.max(0, eigenvalues[i]);
             dimension = i + 1;
             if(cumulativeVariance / totalVariance >= varianceThreshold) {
@@ -359,11 +362,12 @@ class DimensionEstimator {
 
         const coords1 = this.matrix[idx1];
         const coords2 = this.matrix[idx2];
+        const n = coords1.length;
         let sum = 0;
 
-        for(let i = 0; i < coords1.length; ++i) {
+        for(let i = 0; i < n; ++i) {
             const delta = coords1[i] - coords2[i];
-            sum += delta*delta;
+            sum += delta * delta;
         }
 
         return Math.sqrt(sum);
@@ -415,16 +419,18 @@ class DimensionEstimator {
      */
     private centerMatrix(matrix: number[][]): number[][] {
 
-        const means = Array<number>(matrix[0].length).fill(0);
+        const n = matrix[0].length;
+        const means = Array<number>(n).fill(0);
 
         // Calculate means
         for(const row of matrix) {
-            for(let j = 0; j < row.length; ++j) {
+            const len = row.length;
+            for(let j = 0; j < len; ++j) {
                 means[j] += row[j];
             }
         }
 
-        for(let j = 0; j < means.length; ++j) {
+        for(let j = 0; j < n; ++j) {
             means[j] /= matrix.length;
         }
 

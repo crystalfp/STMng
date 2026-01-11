@@ -84,9 +84,12 @@ export class IsosurfaceCore {
 		this.vertexIndex = 0;
 
 		// For each voxel
-		for(let k = 0; k < this.dims[2]; ++k) {
-			for(let j = 0; j < this.dims[1]; ++j) {
-				for(let i = 0; i < this.dims[0]; ++i) {
+		const d2 = this.dims[2];
+		const d1 = this.dims[1];
+		const d0 = this.dims[0];
+		for(let k = 0; k < d2; ++k) {
+			for(let j = 0; j < d1; ++j) {
+				for(let i = 0; i < d0; ++i) {
 
 					this.produceTriangles(i, j, k, isoValue);
 				}

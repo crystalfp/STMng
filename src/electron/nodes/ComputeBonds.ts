@@ -404,7 +404,8 @@ export class ComputeBonds extends NodeCore {
 		for(const atom of updatedAtoms) structure.atoms.push(atom);
 
 		// Remap indices of atoms in the bonds
-		for(let i=structure.bonds.length-1; i >= 0; --i) {
+		const nbonds = structure.bonds.length;
+		for(let i=nbonds-1; i >= 0; --i) {
 			structure.bonds[i].from = mapIdx.get(structure.bonds[i].from)!;
 			structure.bonds[i].to = mapIdx.get(structure.bonds[i].to)!;
 		}
