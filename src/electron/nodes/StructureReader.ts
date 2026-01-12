@@ -200,6 +200,11 @@ export class StructureReader extends NodeCore {
 						this.reader = new ReaderPDB();
 					}
 					break;
+				case "DL_POLY HISTORY": {
+						const {ReaderDLPOLY} = await import("../readers/ReadDLPOLY");
+						this.reader = new ReaderDLPOLY();
+					}
+					break;
 				case "Quantum ESPRESSO": {
 						const {ReaderQUANTUM} = await import("../readers/ReadQUANTUM");
 						this.reader = new ReaderQUANTUM();

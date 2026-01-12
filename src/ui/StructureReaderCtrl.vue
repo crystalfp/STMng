@@ -39,6 +39,7 @@ const fileFormats = [
     "CEL",
     "CHGCAR",
     "CIF",
+    "DL_POLY HISTORY",
     "Gaussian Cube",
     "LAMMPS",
     "LAMMPStrj",
@@ -500,6 +501,10 @@ const filterFromFormat = (fileFormat: string): string => {
 		case "CIF":
 			filter = [{name:       "CIF",
                        extensions: ["cif"]}];
+            break;
+		case "DL_POLY HISTORY":
+			filter = [{name:       "DL_POLY HISTORY",
+                       extensions: ["history"]}];
             break;
     	case "Gaussian Cube":
 			filter = [{name:       "Gaussian Cube",

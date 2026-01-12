@@ -66,7 +66,8 @@ const atomData = [
 {symbol:"Fe", rCov:1.25, rVdW:2.05, maxBonds:6,  color:"#807AC7", bondStrength:0.25, mass:55.845},
 {symbol:"Co", rCov:1.26, rVdW:2,    maxBonds:6,  color:"#707AC7", bondStrength:0.25, mass:58.9332},
 {symbol:"Ni", rCov:1.21, rVdW:2,    maxBonds:6,  color:"#5C7AC2", bondStrength:0.15, mass:58.6934},
-{symbol:"Cu", rCov:1.38, rVdW:2,    maxBonds:6,  color:"#FF7A61", bondStrength:0.1,  mass:63.546},
+{symbol:"Cu", rCov:1.38, rVdW:2,    maxBonds:6,  color:"#B39172", bondStrength:0.1,  mass:63.546},
+// {symbol:"Cu", rCov:1.38, rVdW:2,    maxBonds:6,  color:"#FF7A61", bondStrength:0.1,  mass:63.546},
 {symbol:"Zn", rCov:1.31, rVdW:2.1,  maxBonds:6,  color:"#7D80B0", bondStrength:0.1,  mass:65.38},
 {symbol:"Ga", rCov:1.26, rVdW:2.1,  maxBonds:3,  color:"#C28F8F", bondStrength:0.25, mass:69.723},
 {symbol:"Ge", rCov:1.22, rVdW:2.1,  maxBonds:4,  color:"#668F8F", bondStrength:0.5,  mass:72.64},
@@ -219,6 +220,27 @@ class AtomData {
 		};
 	}
 
+	/**
+	 * Return the atomic number given the atomic mass
+	 *
+	 * @param mass - Atomic mass
+	 * @returns Corresponding Z value
+	 */
+	atomicNumberByMass(mass: number): number {
+
+		let tentativeZ = 1;
+		let delta = Number.POSITIVE_INFINITY;
+		for(let z=1; z < this.data.length; ++z) {
+			const d = Math.abs(this.data[z].mass - mass);
+			if(d === 0) return z;
+			if(d < delta) {
+				tentativeZ = z;
+				delta = d;
+			}
+		}
+		return tentativeZ;
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance
@@ -262,3 +284,11 @@ export const getAtomicSymbol = (atomZ: number): string => AtomData.getInstance()
  * @returns Structure containing the atom data
  */
 export const getAtomData = (atomZ: number): AtomInfo => AtomData.getInstance().atomicData(atomZ);
+
+/**
+ * Return the atomic number given the atomic mass
+ *
+ * @param mass - Atomic mass
+ * @returns Corresponding Z value
+ */
+export const getAtomicNumberByMass = (mass: number): number => AtomData.getInstance().atomicNumberByMass(mass);
