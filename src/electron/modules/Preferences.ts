@@ -14,7 +14,7 @@ import {Store} from "./UserStore";
  * The accepted preference types
  * @notExported
  */
-type PreferenceEntry = string | number | string[];
+type PreferenceEntry = string | number;
 
 /**
  * The type of the store
@@ -96,13 +96,7 @@ export const setProjectPath = (filename: string): void => {
  */
 export const isExtended = (): boolean => {
 
-	if(store.has("ViewerExtended")) {
-		const status = store.get("ViewerExtended", "no");
-		return status === "yes";
-	}
-
-	store.set("ViewerExtended", "no");
-	return false;
+	return store.getBoolean("ViewerExtended", false);
 };
 
 /**
@@ -112,7 +106,7 @@ export const isExtended = (): boolean => {
  */
 export const setExtended = (viewerIsExtended: boolean): void => {
 
-	store.set("ViewerExtended", viewerIsExtended ? "yes" : "no");
+	store.setBoolean("ViewerExtended", viewerIsExtended);
 };
 
 /**
@@ -122,7 +116,7 @@ export const setExtended = (viewerIsExtended: boolean): void => {
  */
 export const setMaximized = (isMaximized: boolean): void => {
 
-	store.set("MainWindowMaximized", isMaximized ? "yes" : "no");
+	store.setBoolean("MainWindowMaximized", isMaximized);
 };
 
 /**
@@ -132,13 +126,7 @@ export const setMaximized = (isMaximized: boolean): void => {
  */
 export const isMaximized = (): boolean =>  {
 
-	if(store.has("MainWindowMaximized")) {
-		const status = store.get("MainWindowMaximized");
-		return status === "yes";
-	}
-
-	store.set("MainWindowMaximized", "yes");
-	return true;
+	return store.getBoolean("MainWindowMaximized", true);
 };
 
 /**

@@ -60,12 +60,11 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 		}
 
 		if(existsSync(this.filePath)) {
-			this.data = YAML.parse(readFileSync(this.filePath, "utf8")) as T;
+			this.data = Store.load(this.filePath) as T;
 		}
 		else if(options?.defaultContent) {
 			this.data = structuredClone(options.defaultContent) as T;
-			writeFileSync(this.filePath,
-						  YAML.stringify(this.data, {lineWidth: 256}), "utf8");
+			Store.save(this.filePath, this.data);
 		}
 		else this.data = {} as T;
 	}
@@ -89,8 +88,40 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 */
 	set<K extends keyof T>(key: K, value: T[K]): void {
 		this.data[key] = value;
-		writeFileSync(this.filePath,
-					  YAML.stringify(this.data, {lineWidth: 256}), "utf8");
+		Store.save(this.filePath, this.data);
+	}
+
+	/**
+	 * Set store boolean value for the given key
+	 * The boolean value is saved as "yes" or "no" string
+	 *
+	 * @param key - Key to set
+	 * @param value - Boolean value to be set on the key
+	 */
+	setBoolean(key: string, value: boolean): void {
+
+		const s = value ? "yes" : "no";
+		this.set(key, s as T[keyof T]);
+	}
+
+	/**
+	 * Retrieve boolean value for the given key
+	 *
+	 * @param key - Key of the value to retrieve
+	 * @param defaultValue - default value for the retrieved key
+	 * @returns The retrieved value
+	 */
+	getBoolean(key: string, defaultValue: boolean): boolean {
+
+		if(this.has(key)) {
+			const status = this.get(key) as string;
+			return status === "yes";
+		}
+
+		const s = defaultValue ? "yes" : "no";
+		this.set(key, s as T[keyof T]);
+
+		return defaultValue;
 	}
 
 	/**
@@ -113,7 +144,22 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	delete<K extends keyof T>(key: K): void {
 		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
 		delete this.data[key];
-		writeFileSync(this.filePath,
-					  YAML.stringify(this.data, {lineWidth: 256}), "utf8");
+		Store.save(this.filePath, this.data);
+	}
+
+	/**
+	 * Deserialize the saved store content
+	 *
+	 * @param file - File to be read
+	 * @returns The parsed file content
+	 */
+	private static load(file: string): unknown {
+
+		return YAML.parse(readFileSync(file, "utf8"));
+	}
+
+	private static save(file: string, data: unknown): void {
+
+		writeFileSync(file, YAML.stringify(data, {lineWidth: 256}), "utf8");
 	}
 }
