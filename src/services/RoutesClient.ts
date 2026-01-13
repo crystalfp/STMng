@@ -160,7 +160,6 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 	const project = window.electron.ipcRenderer
 							.sendSync("PREFERENCES:GET-SYNC", "LastProjectLoaded") as string;
 
-	// let titleAndProject = "";
 	if(project) {
 		let idx = project.lastIndexOf("\\");
 		if(idx < 0) idx = project.lastIndexOf("/");
@@ -212,10 +211,10 @@ export const getVersions = async (): Promise<Versions> => window.electron.ipcRen
  * @param defaultValue - Default value for the preference if not in the store
  * @returns The preference value or the default
  */
-export const getPreferenceSync = <T>(key: string, defaultValue: T): T => {
+export const getPreferenceSync = (key: string, defaultValue: string): string => {
 
-    const value = window.electron.ipcRenderer.sendSync("PREFERENCES:GET-SYNC", key) as T;
-	return value ?? defaultValue;
+    const value = window.electron.ipcRenderer.sendSync("PREFERENCES:GET-SYNC", key) as string;
+	return value || defaultValue;
 };
 
 // > Communication from main process

@@ -17,12 +17,12 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: [".git", ".vscode", "doc", "release", "save", "other", "bugs",
-                  "test-data", "proto-test", "work"],
+                  "test-data", "proto-test", "work", "tests"],
         holdUntilCrawlEnd: false
     },
-    define: {
-        __VUE_PROD_DEVTOOLS__: "false",
-    },
+    // define: {
+    //     __VUE_PROD_DEVTOOLS__: "false",
+    // },
     plugins: [
         // dts({
         //     tsconfigPath: './tsconfig.json',

@@ -33,7 +33,8 @@
     "eslint.config.mjs",
     ".dependency-cruiser.js",
     "work/**",
-    "public/doc/scripts.js"
+    "public/doc/scripts.js",
+    "tests/**"
   ],
   "rules": {
     "constructor-super": "error",

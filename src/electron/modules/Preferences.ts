@@ -10,38 +10,18 @@ import {ipcMain, nativeTheme, type IpcMainEvent} from "electron";
 import path from "node:path";
 import {Store} from "./UserStore";
 
-/**
- * The accepted preference types
- * @notExported
- */
-type PreferenceEntry = string | number;
-
-/**
- * The type of the store
- * @notExported
- */
-type PreferencesStore = Record<string, PreferenceEntry>;
-
 /** Create the store */
-const store = new Store<PreferencesStore>({name: "preferences"});
+const store = new Store("preferences");
 
 /**
- * Setup channel to read/write preferences
+ * Setup channel to read the preferences
  */
 export const setupChannelPreferences = (): void => {
 
-	ipcMain.handle("PREFERENCES:GET", (_event, key: string) => store.get(key));
-
 	ipcMain.on("PREFERENCES:GET-SYNC", (event: IpcMainEvent, key: string) => {
 
-		event.returnValue = store.get(key);
+		event.returnValue = store.getString(key);
     });
-
-    ipcMain.on("PREFERENCES:SET", (_event, payload: {key: string; value: PreferenceEntry}) => {
-
-		const {key, value} = payload;
-		store.set(key, value);
-	});
 };
 
 // > Set main theme and save it to preferences
@@ -54,10 +34,10 @@ export const setupChannelPreferences = (): void => {
 export const setMainTheme = (theme: "dark" | "light", force = false): void => {
 
 	if(force || !store.has("Theme")) {
-		store.set("Theme", theme);
+		store.setString("Theme", theme);
 	}
 	else {
-		theme = store.get("Theme", "dark") as "dark" | "light";
+		theme = store.getString("Theme", "dark") as "dark" | "light";
 	}
 	nativeTheme.themeSource = theme;
 };
@@ -67,7 +47,7 @@ export const setMainTheme = (theme: "dark" | "light", force = false): void => {
  *
  * @returns Path to the last project loaded or empty string if no path stored
  */
-export const getProjectPath = (): string => store.get("LastProjectLoaded", "") as string;
+export const getProjectPath = (): string => store.getString("LastProjectLoaded");
 
 /**
  * Delete the last project loaded from preferences
@@ -86,7 +66,7 @@ export const removeProjectPath = (): void => {
  */
 export const setProjectPath = (filename: string): void => {
 
-	store.set("LastProjectLoaded", path.resolve(filename));
+	store.setString("LastProjectLoaded", path.resolve(filename));
 };
 
 /**
@@ -136,9 +116,9 @@ export const isMaximized = (): boolean =>  {
  */
 export const setWindowSize = (dims: number[]): void => {
 
-	store.set("MainWindowMaximized", "no");
-	store.set("MainWindowWidth", dims[0]);
-	store.set("MainWindowHeight", dims[1]);
+	store.setBoolean("MainWindowMaximized", false);
+	store.setInteger("MainWindowWidth", dims[0]);
+	store.setInteger("MainWindowHeight", dims[1]);
 };
 
 /**
@@ -147,16 +127,16 @@ export const setWindowSize = (dims: number[]): void => {
  * @returns Window dimensions to be used by setSize()
  */
 export const getWindowSize = (): number[] => [
-	store.get("MainWindowWidth", 1280) as number,
-	store.get("MainWindowHeight", 720) as number
+	store.getInteger("MainWindowWidth", 1280),
+	store.getInteger("MainWindowHeight", 720)
 ];
 
 /**
  * Set antialiasing
  *
- * @param set - If true enable antialiasing in the viewer3D
+ * @param setAA - If true enable antialiasing in the viewer3D
  */
-export const setAntialiasing = (set: boolean): void => {
+export const setAntialiasing = (setAA: boolean): void => {
 
-	store.set("Antialiasing", set ? "yes" : "no");
+	store.setBoolean("Antialiasing", setAA);
 };

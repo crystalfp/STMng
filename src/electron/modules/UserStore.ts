@@ -1,5 +1,5 @@
 /**
- * General storage for preferences
+ * General storage for preferences.
  *
  * @packageDocumentation
  *
@@ -9,119 +9,161 @@
 import {app} from "electron";
 import path from "node:path";
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "node:fs";
-import YAML from "yaml";
 
 /**
- * Store parameters
- * @notExported
+ * Per user storage
  */
-interface StoreOptions {
-	/** Path to the store backing file.
-	    If present should have an extension of .yaml
-		else the backing store will be under userData */
-	path?: string;
+export class Store {
 
-	/** Name of the store. If absent defaults to "config" */
-	name?: string;
-
-	/** Default initial content of the store */
-	defaultContent?: unknown;
-}
-
-/**
- * Per user storage.
- * @remarks The storage type should be a Type, not an Interface.
- *
- * @typeParam T - The type of the store
- */
-export class Store<T extends Record<string, string | string[] | number | boolean | Record<string, string>>> {
-
-	private data: T;
+	private data = new Map<string, string>();
 	private readonly filePath: string;
 
 	/**
 	 * Create the store and associate the requested file
 	 *
-	 * @param options - Options to build the store
+	 * @param name - Name of the store
 	 */
-	constructor(options?: StoreOptions) {
+	constructor(name: string) {
 
-		if(options?.path) {
-			this.filePath = options.path;
+		const directory = app.getPath("userData");
+		const userDataDir = path.join(directory, "UserData");
+		if(!existsSync(userDataDir)) {
+			mkdirSync(userDataDir, {recursive: true});
 		}
-		else {
-			const filename = `${options?.name ?? "config"}.yaml`;
-			const directory = app.getPath("userData");
-			const userDataDir = path.join(directory, "UserData");
- 			if(!existsSync(userDataDir)) {
-    			mkdirSync(userDataDir, {recursive: true});
-			}
-			this.filePath = path.join(userDataDir, filename);
-		}
+		const filename = `${name}.yaml`;
+		this.filePath = path.join(userDataDir, filename);
 
-		if(existsSync(this.filePath)) {
-			this.data = Store.load(this.filePath) as T;
-		}
-		else if(options?.defaultContent) {
-			this.data = structuredClone(options.defaultContent) as T;
-			Store.save(this.filePath, this.data);
-		}
-		else this.data = {} as T;
+		if(existsSync(this.filePath)) this.load();
 	}
 
 	/**
-	 * Retrieve content for the given key
+	 * Deserialize the saved store content
+	 */
+	private load(): void {
+
+		const content = readFileSync(this.filePath, "utf8");
+
+		const lines = content.replaceAll("\r\n", "\n").split("\n");
+
+		this.data.clear();
+		for(const line of lines) {
+
+			const fields = line.split(/: +/);
+			if(fields.length < 2) continue;
+			this.data.set(fields[0], fields[1]);
+		}
+	}
+
+	/**
+	 * Serialize the store content and save it
+	 */
+	private save(): void {
+
+		let out = "";
+		for(const [key, value] of this.data.entries()) {
+			out += `${key}: ${value}\n`;
+		}
+		writeFileSync(this.filePath, out, "utf8");
+	}
+
+	/**
+	 * Retrieve string content for the given key
 	 *
 	 * @param key - Key of the value to retrieve
-	 * @param defaultValue - default value for the retrieved value
+	 * @param defaultValue - Default value for the retrieved value
 	 * @returns The retrieved value
 	 */
-	get<K extends keyof T>(key: K, defaultValue?: T[K]): T[K] {
-		return this.data[key] ?? defaultValue;
+	getString(key: string, defaultValue?: string): string {
+
+		if(this.data.has(key)) {
+			return this.data.get(key)!;
+		}
+		if(defaultValue !== undefined) {
+			this.data.set(key, defaultValue);
+			this.save();
+			return defaultValue;
+		}
+		return "";
 	}
 
 	/**
-	 * Set store value for the given key
+	 * Set string content for the given key
 	 *
 	 * @param key - Key to set
 	 * @param value - Value to be set on the key
 	 */
-	set<K extends keyof T>(key: K, value: T[K]): void {
-		this.data[key] = value;
-		Store.save(this.filePath, this.data);
+	setString(key: string, value: string): void {
+
+		this.data.set(key, value);
+		this.save();
 	}
 
 	/**
-	 * Set store boolean value for the given key
-	 * The boolean value is saved as "yes" or "no" string
+	 * Retrieve integer content for the given key
+	 *
+	 * @param key - Key of the value to retrieve
+	 * @param defaultValue - Default value for the retrieved value
+	 * @returns The retrieved value
+	 */
+	getInteger(key: string, defaultValue?: number): number {
+
+		if(this.data.has(key)) {
+			return Number.parseInt(this.data.get(key)!, 10);
+		}
+
+		if(defaultValue !== undefined) {
+			this.data.set(key, defaultValue.toFixed(0));
+			this.save();
+			return defaultValue;
+		}
+		return 0;
+	}
+
+	/**
+	 * Set integer content for the given key
 	 *
 	 * @param key - Key to set
-	 * @param value - Boolean value to be set on the key
+	 * @param value - Value to be set on the key
 	 */
-	setBoolean(key: string, value: boolean): void {
+	setInteger(key: string, value: number): void {
 
-		const s = value ? "yes" : "no";
-		this.set(key, s as T[keyof T]);
+		this.data.set(key, value.toFixed(0));
+		this.save();
 	}
 
 	/**
 	 * Retrieve boolean value for the given key
 	 *
 	 * @param key - Key of the value to retrieve
-	 * @param defaultValue - default value for the retrieved key
+	 * @param defaultValue - Default value for the retrieved key
 	 * @returns The retrieved value
 	 */
-	getBoolean(key: string, defaultValue: boolean): boolean {
+	getBoolean(key: string, defaultValue?: boolean): boolean {
 
-		if(this.has(key)) {
-			const status = this.get(key) as string;
+		if(this.data.has(key)) {
+			const status = this.data.get(key);
 			return status === "yes";
 		}
+		if(defaultValue !== undefined) {
 
-		const s = defaultValue ? "yes" : "no";
-		this.set(key, s as T[keyof T]);
+			this.data.set(key, defaultValue ? "yes" : "no");
+			this.save();
+			return defaultValue;
+		}
+		return false;
+	}
 
-		return defaultValue;
+	/**
+	 * Set boolean value for the given key
+	 * The boolean value is saved as "yes" or "no" strings
+	 *
+	 * @param key - Key to set
+	 * @param value - Boolean value to be set on the key
+	 */
+	setBoolean(key: string, value: boolean): void {
+
+		this.data.set(key, value ? "yes" : "no");
+		this.save();
 	}
 
 	/**
@@ -130,36 +172,18 @@ export class Store<T extends Record<string, string | string[] | number | boolean
 	 * @param key - The key to check
 	 * @returns True if the key exists in the store
 	 */
-	 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-	has<K extends keyof T>(key: K): boolean {
-		return this.data[key] !== undefined;
+	has(key: string): boolean {
+		return this.data.has(key);
 	}
 
 	/**
 	 * Delete a key from the store
 	 *
-	 * @param key - Key to be deleted
+	 * @param key - Key to delete
 	 */
-	 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-	delete<K extends keyof T>(key: K): void {
-		// eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-		delete this.data[key];
-		Store.save(this.filePath, this.data);
-	}
+	delete(key: string): void {
 
-	/**
-	 * Deserialize the saved store content
-	 *
-	 * @param file - File to be read
-	 * @returns The parsed file content
-	 */
-	private static load(file: string): unknown {
-
-		return YAML.parse(readFileSync(file, "utf8"));
-	}
-
-	private static save(file: string, data: unknown): void {
-
-		writeFileSync(file, YAML.stringify(data, {lineWidth: 256}), "utf8");
+		this.data.delete(key);
+		this.save();
 	}
 }
