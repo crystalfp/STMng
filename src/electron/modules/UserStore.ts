@@ -94,41 +94,61 @@ export class Store {
 	 */
 	setString(key: string, value: string): void {
 
+		if(this.data.get(key) === value) return;
+
 		this.data.set(key, value);
 		this.save();
 	}
 
 	/**
-	 * Retrieve integer content for the given key
+	 * Set integer content for a set of keys
 	 *
-	 * @param key - Key of the value to retrieve
-	 * @param defaultValue - Default value for the retrieved value
-	 * @returns The retrieved value
+	 * @param keys - Keys of the values to retrieve
+	 * @param defaultValue - Default values for the retrieved keys
+	 * @returns The retrieved values
 	 */
-	getInteger(key: string, defaultValue?: number): number {
+	getIntegers(keys: string[], defaultValues?: number[]): number[] {
 
-		if(this.data.has(key)) {
-			return Number.parseInt(this.data.get(key)!, 10);
+		let needsSave = false;
+		const results: number[] = [];
+		for(let i = 0; i < keys.length; i++) {
+			if(this.data.has(keys[i])) {
+				results.push(Number.parseInt(this.data.get(keys[i])!, 10));
+			}
+			else if(defaultValues === undefined) {
+				results.push(0);
+			}
+			else {
+				this.data.set(keys[i], defaultValues[i].toFixed(0));
+				results.push(defaultValues[i]);
+				needsSave = true;
+			}
 		}
-
-		if(defaultValue !== undefined) {
-			this.data.set(key, defaultValue.toFixed(0));
-			this.save();
-			return defaultValue;
-		}
-		return 0;
+		if(needsSave) this.save();
+		return results;
 	}
 
 	/**
-	 * Set integer content for the given key
+	 * Set integer content for a set of keys
 	 *
-	 * @param key - Key to set
-	 * @param value - Value to be set on the key
+	 * @param keys - Keys to set
+	 * @param values - Values to be set on the keys
 	 */
-	setInteger(key: string, value: number): void {
+	setIntegers(keys: string[], values: number[]): void {
 
-		this.data.set(key, value.toFixed(0));
-		this.save();
+		let needsSave = false;
+		const stringValues: string[] = [];
+		for(let i = 0; i < keys.length; i++) {
+			const s = values[i].toFixed(0);
+			stringValues.push(s);
+			if(this.data.get(keys[i]) !== s) needsSave = true;
+		}
+		if(needsSave) {
+			for(let i = 0; i < keys.length; i++) {
+				this.data.set(keys[i], stringValues[i]);
+			}
+			this.save();
+		}
 	}
 
 	/**
@@ -162,7 +182,10 @@ export class Store {
 	 */
 	setBoolean(key: string, value: boolean): void {
 
-		this.data.set(key, value ? "yes" : "no");
+		const updatedValue = value ? "yes" : "no";
+		if(this.data.get(key) === updatedValue) return;
+
+		this.data.set(key, updatedValue);
 		this.save();
 	}
 

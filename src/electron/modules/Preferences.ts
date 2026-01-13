@@ -117,8 +117,7 @@ export const isMaximized = (): boolean =>  {
 export const setWindowSize = (dims: number[]): void => {
 
 	store.setBoolean("MainWindowMaximized", false);
-	store.setInteger("MainWindowWidth", dims[0]);
-	store.setInteger("MainWindowHeight", dims[1]);
+	store.setIntegers(["MainWindowWidth", "MainWindowHeight"], dims);
 };
 
 /**
@@ -126,10 +125,9 @@ export const setWindowSize = (dims: number[]): void => {
  *
  * @returns Window dimensions to be used by setSize()
  */
-export const getWindowSize = (): number[] => [
-	store.getInteger("MainWindowWidth", 1280),
-	store.getInteger("MainWindowHeight", 720)
-];
+export const getWindowSize = (): number[] =>
+	store.getIntegers(["MainWindowWidth", "MainWindowHeight"],
+					  [1280, 720]);
 
 /**
  * Set antialiasing

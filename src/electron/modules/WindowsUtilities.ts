@@ -294,12 +294,11 @@ const setInitialSizes = (win: BrowserWindow): void => {
         win.setSize(dims[0], dims[1]);
     }
 
-    win.addListener("maximize", () => setMaximized(true));
-    win.addListener("unmaximize", () => setMaximized(false));
-
     win.addListener("resize", () => {
         const dims = win.getSize();
         setWindowSize(dims);
     });
 
+    win.addListener("maximize", () => setMaximized(true));
+    win.addListener("unmaximize", () => setMaximized(false));
 };
