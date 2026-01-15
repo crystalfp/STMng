@@ -490,7 +490,7 @@ const showEnergyLandscape = (): void => {
 
 <template>
 <v-container class="container">
-  <v-label class="separator-title first-title mt-1">Accumulated structures</v-label>
+  <v-label class="separator-title first-title">Accumulated structures</v-label>
 
   <div class="load-grid mr-2">
     <div class="grid-tr">
