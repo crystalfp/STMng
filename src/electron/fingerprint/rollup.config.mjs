@@ -28,6 +28,7 @@ export default {
 				"Worker.ts",
 				"../modules/AtomData.ts",
 				"../modules/Helpers.ts",
+				"../../services/SharedConstants.ts"
 			],
 			tsconfig: false,
 			outputToFilesystem: true,

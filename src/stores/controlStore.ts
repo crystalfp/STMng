@@ -48,6 +48,8 @@ interface GlobalControls {
 	trajectoriesHasSelector: boolean;
 	/** Capture for writer of multistep structures */
 	writerAccumulate: boolean;
+	/** Capture for variable composition analysis */
+	variableCompositionAccumulate: boolean;
 
 	/** Set if capture node is present to add its control in StructureReader */
 	hasCapture: boolean;
@@ -57,6 +59,8 @@ interface GlobalControls {
 	hasFingerprints: boolean;
 	/** Set if the writer node is present to add its control in StructureReader */
 	hasWriter: boolean;
+	/** Set if the variable composition module is present to add its control in StructureReader */
+	hasVariableComposition: boolean;
 
 	/** Atoms selection */
 	atomsSelected: number[];
@@ -108,11 +112,13 @@ export const useControlStore = defineStore("ControlStore", {
 		trajectoriesRecording: false,
 		trajectoriesHasSelector: false,
 		writerAccumulate: false,
+		variableCompositionAccumulate: false,
 
 		hasCapture: false,
 		hasFingerprints: false,
 		hasTrajectory: false,
 		hasWriter: false,
+		hasVariableComposition: false,
 
 		atomsSelected: [],
 		selectedAtomMap: [],

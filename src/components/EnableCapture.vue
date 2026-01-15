@@ -16,7 +16,8 @@ const controlStore = useControlStore();
 const showSection = computed<boolean>(() => controlStore.hasCapture ||
                                             controlStore.hasTrajectory ||
                                             controlStore.hasFingerprints ||
-                                            controlStore.hasWriter
+                                            controlStore.hasWriter ||
+                                            controlStore.hasVariableComposition
 );
 
 </script>
@@ -38,6 +39,9 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
   <v-switch v-if="controlStore.hasWriter"
             v-model="controlStore.writerAccumulate"
             label="Collect for structure writer" />
+  <v-switch v-if="controlStore.hasVariableComposition"
+            v-model="controlStore.variableCompositionAccumulate"
+            label="Collect for variable composition" />
   <v-divider thickness="2" class="mr-n1 ml-n2 mt-2"/>
 </v-container>
 </template>

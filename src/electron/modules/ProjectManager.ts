@@ -39,6 +39,7 @@ import {DiffractionPattern} from "../nodes/DiffractionPattern";
 import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
 import {PrototypeMatcher} from "../nodes/PrototypeMatcher";
+import {VariableComposition} from "../nodes/VariableComposition";
 
 /**
  * Manage everything related to the loaded project
@@ -113,6 +114,9 @@ class ProjectManager {
 		{type: "prototype-matcher",     in: true,  out: false, opt: false, graphic: "none",
 										handler: PrototypeMatcher,
 									   	idPrefix: "matcher", ui: "PrototypeMatcherCtrl"},
+		{type: "variable-composition",  in: true,  out: false, opt: false, graphic: "none",
+										handler: VariableComposition,
+									   	idPrefix: "variable", ui: "VariableCompositionCtrl"},
 	];
 
 	/**
