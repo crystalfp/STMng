@@ -7,6 +7,7 @@
  * @since 2026-01-13
  */
 import {gcd} from "mathjs";
+import {dialog} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {getAtomicSymbol} from "../modules/AtomData";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
@@ -34,12 +35,38 @@ export class VariableComposition extends NodeCore {
 	private readonly composition: number[][] = [];
 	private enableAnalysis = false;
 	private structure: Structure | undefined;
+	private state = {
+		forceCutoff: false,
+		manualCutoffDistance: 10,
+		fingerprintingMethod: 0,
+		binSize: 0.05,
+		peakWidth: 0.02,
+		distanceMethod: 0,
+		fixTriangleInequality: false,
+		removeDuplicates: true,
+		duplicatesThreshold: 0.015
+	};
+
+	// TBD These should came from the methods
+	private readonly fingerprintMethodsNames = [
+		"Oganov-Valle fingerprint",
+		"Oganov-Valle per-site fingerprint",
+		"Dot-matrix fingerprint"
+	];
+
+	private readonly distanceMethodsNames = [
+    	"Cosine distance",
+    	"Euclidean distance",
+    	"Minkowski distance of order ⅓",
+	];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
 		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 		{name: "group",		type: "invoke",	callback: this.channelGroup.bind(this)},
 		{name: "capture",	type: "invoke",	callback: this.channelCapture.bind(this)},
+		{name: "save",		type: "invoke",	callback: this.channelSave.bind(this)},
+		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
 	];
 
 	/**
@@ -78,16 +105,26 @@ export class VariableComposition extends NodeCore {
 
 	// > Load/save status
 	saveStatus(): string {
-        const statusToSave = {
-			// TBD
-		};
-        return `"${this.id}": ${JSON.stringify(statusToSave)}`;
+
+		return `"${this.id}": ${JSON.stringify(this.state)}`;
+	}
+
+	private initializeState(params: CtrlParams): void {
+
+   		this.state.forceCutoff = params.forceCutoff as boolean ?? false;
+    	this.state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
+    	this.state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
+    	this.state.binSize = params.binSize as number ?? 0.05;
+    	this.state.peakWidth = params.peakWidth as number ?? 0.02;
+    	this.state.distanceMethod = params.distanceMethod as number ?? 0;
+    	this.state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+    	this.state.removeDuplicates = params.removeDuplicates as boolean ?? true;
+    	this.state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
 	}
 
 	loadStatus(params: CtrlParams): void {
 
-		// TBD
-		void params;
+		this.initializeState(params);
 	}
 
 	// > Compute
@@ -125,6 +162,7 @@ export class VariableComposition extends NodeCore {
 	private verify(step: number[], parts: number[], nspecies: number,
 				   ncomponents: number, components: number[]): boolean {
 
+		for(const part of parts) if(!Number.isInteger(part)) return false;
 		for(let i=0; i < nspecies; ++i) {
 			let count = 0;
 			for(let j=0; j < ncomponents; ++j) {
@@ -232,9 +270,18 @@ export class VariableComposition extends NodeCore {
 	 */
 	private channelInit(): CtrlParams {
 
+		// Prepare list of species
+		const speciesSymbols: string[] = [];
+		for(const atomZ of this.speciesRaw) {
+			speciesSymbols.push(getAtomicSymbol(atomZ));
+		}
+
 		return {
-			species: this.species,
+			species: speciesSymbols,
 			countAccumulated: this.composition.length,
+			fingerprintMethods: this.fingerprintMethodsNames,
+			distanceMethods: this.distanceMethodsNames,
+			...this.state
 		};
 	}
 
@@ -301,5 +348,29 @@ export class VariableComposition extends NodeCore {
 			countAccumulated: this.compositionRaw.length,
 			species: speciesSymbols
 		};
+	}
+
+	/**
+	 * Channel handler for saving results into files in a directory
+	 *
+	 * @returns Count saved or -1 if not selected
+	 */
+	private channelSave(): CtrlParams {
+
+		const dir = dialog.showOpenDialogSync({
+			title: "Output directory",
+			properties: ["openDirectory"],
+		});
+		if(!dir) return {saved: -1};
+
+		return {saved: 0}; // TBD
+	}
+
+	/**
+	 * Channel handler for saving the UI status
+	 */
+	private channelState(params: CtrlParams): void {
+
+		this.initializeState(params);
 	}
 }

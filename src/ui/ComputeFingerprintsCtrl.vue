@@ -529,7 +529,7 @@ const showEnergyLandscape = (): void => {
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
     <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"
                     :min="0.1" :step="0.1" :precision="2"
-                    :disabled="!forceCutoff" class="mx-2" />
+                    :disabled="!forceCutoff" class="ml-4 mr-2" />
   </v-row>
 
   <v-label class="mt-1 mb-4 result-label">{{ cutoffLabel }}</v-label>
