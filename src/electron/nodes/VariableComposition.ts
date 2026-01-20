@@ -6,12 +6,16 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-13
  */
+import path from "node:path";
+import {openSync, closeSync, writeSync} from "node:fs";
 import {gcd} from "mathjs";
 import {dialog} from "electron";
 import {NodeCore} from "../modules/NodeCore";
-import {getAtomicSymbol} from "../modules/AtomData";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
-import type {ChannelDefinition, CtrlParams, Structure, Atom} from "@/types";
+import {VariableCompositionAccumulator, type VariableComponent} from "../variable/Accumulator";
+import {invertBasis} from "../modules/Helpers";
+import {getAtomicSymbol} from "../modules/AtomData";
+import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 /**
  * Grouping results
@@ -29,10 +33,7 @@ interface Recipe {
 
 export class VariableComposition extends NodeCore {
 
-	private readonly speciesRaw = new Set<number>();
-	private readonly compositionRaw: Map<number, number>[] = [];
-	private species: number[] = [];
-	private readonly composition: number[][] = [];
+	private readonly accumulator = new VariableCompositionAccumulator();
 	private enableAnalysis = false;
 	private structure: Structure | undefined;
 	private state = {
@@ -67,6 +68,8 @@ export class VariableComposition extends NodeCore {
 		{name: "capture",	type: "invoke",	callback: this.channelCapture.bind(this)},
 		{name: "save",		type: "invoke",	callback: this.channelSave.bind(this)},
 		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
+		{name: "start",		type: "invoke",	callback: this.channelStart.bind(this)},
+		{name: "analyze",	type: "invoke",	callback: this.channelAnalyze.bind(this)},
 	];
 
 	/**
@@ -88,17 +91,11 @@ export class VariableComposition extends NodeCore {
 
 		if(this.enableAnalysis) {
 
-			this.accumulate(data.atoms);
-
-			// Prepare list of species
-			const speciesSymbols: string[] = [];
-			for(const atomZ of this.speciesRaw) {
-				speciesSymbols.push(getAtomicSymbol(atomZ));
-			}
+			this.accumulator.add(data);
 
 			sendToClient(this.id, "load", {
-				countAccumulated: this.compositionRaw.length,
-				species: speciesSymbols
+				countAccumulated: this.accumulator.size(),
+				species: this.accumulator.symbols(),
 			});
 		}
 	}
@@ -129,27 +126,6 @@ export class VariableComposition extends NodeCore {
 
 	// > Compute
 	/**
-	 * Accumulate the data from a structure
-	 *
-	 * @param atoms - Structure atoms
-	 */
-	private accumulate(atoms: Atom[]): void {
-
-		const counts = new Map<number, number>();
-		for(const atom of atoms) {
-			const {atomZ} = atom;
-
-			const n = counts.get(atomZ);
-			counts.set(atomZ, n ? n + 1 : 1);
-		}
-
-		this.compositionRaw.push(counts);
-		for(const atomZ of counts.keys()) {
-			this.speciesRaw.add(atomZ);
-		}
-	}
-
-	/**
 	 * Verify step validity
 	 *
 	 * @param step - Composition of the step to check
@@ -178,15 +154,15 @@ export class VariableComposition extends NodeCore {
 	 * Fit composition into each loaded structure
 	 *
 	 * @param ncomponents - Number of components
-	 * @param components - The components arranges as [component1, component2,...]
+	 * @param components - The components arranged as [component1, component2,...]
 	 * 		where each component is: specie1, specie2, specie3,...
 	 * @returns List of possible groups by percentage of each component
 	 */
 	private fitComposition(ncomponents: number, components: number[]): Recipe[] {
 
-		const nspecies = this.species.length;
+		const nspecies = components.length / ncomponents;
 
-		// Find species unique for one component
+		// Find species unique for only one component
 		const specials = Array<number>(ncomponents).fill(-1);
 		const multiples = Array<number>(ncomponents).fill(0);
 		for(let i=0; i < nspecies; ++i) {
@@ -217,8 +193,14 @@ export class VariableComposition extends NodeCore {
 
 		const summary = new Map<string, {n: number[]; count: number}>();
 		const parts = Array<number>(ncomponents).fill(0);
+		const species = this.accumulator.species();
 		let stepNumber = 1;
-		for(const step of this.composition) {
+		for(const entry of this.accumulator.iterateStructures()) {
+
+			const step = [];
+			for(const z of species) {
+				step.push(entry.species.get(z) ?? 0);
+			}
 
 			for(let i=0; i < ncomponents; ++i) {
 				parts[i] = step[specials[i]]/multiples[i];
@@ -237,6 +219,9 @@ export class VariableComposition extends NodeCore {
 					parts[i] /= div;
 				}
 			}
+			entry.parts = [...parts];
+			entry.key = parts.join("-");
+
 			const key = parts.join("\u2009:\u2009");
 			if(summary.has(key)) {
 				summary.get(key)!.count++;
@@ -262,6 +247,47 @@ export class VariableComposition extends NodeCore {
 		return recipes;
 	}
 
+	private entryToPoscar(entry: VariableComponent): string {
+
+		let out = "Variable composition by STMng. " +
+				  `Composition key: ${entry.key}. Step: ${entry.step}\n1.0\n`;
+
+		out += `${entry.basis[0].toFixed(10).padStart(15)} ` +
+			   `${entry.basis[1].toFixed(10).padStart(15)} ` +
+			   `${entry.basis[2].toFixed(10).padStart(15)}\n`;
+		out += `${entry.basis[3].toFixed(10).padStart(15)} ` +
+			   `${entry.basis[4].toFixed(10).padStart(15)} ` +
+			   `${entry.basis[5].toFixed(10).padStart(15)}\n`;
+		out += `${entry.basis[6].toFixed(10).padStart(15)} ` +
+			   `${entry.basis[7].toFixed(10).padStart(15)} ` +
+			   `${entry.basis[8].toFixed(10).padStart(15)}\n`;
+
+		out += [...entry.species.keys()].map((z) => getAtomicSymbol(z)).join(" ") + "\n";
+		out += [...entry.species.values()].map((value) => value.toFixed(0)).join(" ") + "\nDirect\n";
+
+		// Compute inverse matrix
+		const inverse = invertBasis(entry.basis);
+
+		// For each atom compute the fractional coordinates
+		const len = entry.atomsPosition.length;
+		for(let i=0; i < len; i+=3) {
+
+			const cx = entry.atomsPosition[i];
+			const cy = entry.atomsPosition[i+1];
+			const cz = entry.atomsPosition[i+2];
+
+			const fx = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
+			const fy = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
+			const fz = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
+
+			out += `${fx.toFixed(10).padStart(15)} ` +
+				   `${fy.toFixed(10).padStart(15)} ` +
+				   `${fz.toFixed(10).padStart(15)}\n`;
+		}
+
+		return out;
+	}
+
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -270,15 +296,9 @@ export class VariableComposition extends NodeCore {
 	 */
 	private channelInit(): CtrlParams {
 
-		// Prepare list of species
-		const speciesSymbols: string[] = [];
-		for(const atomZ of this.speciesRaw) {
-			speciesSymbols.push(getAtomicSymbol(atomZ));
-		}
-
 		return {
-			species: speciesSymbols,
-			countAccumulated: this.composition.length,
+			species: this.accumulator.symbols(),
+			countAccumulated: this.accumulator.size(),
 			fingerprintMethods: this.fingerprintMethodsNames,
 			distanceMethods: this.distanceMethodsNames,
 			...this.state
@@ -290,8 +310,7 @@ export class VariableComposition extends NodeCore {
 	 */
 	private channelReset(): void {
 
-		this.speciesRaw.clear();
-		this.compositionRaw.length = 0;
+		this.accumulator.clear();
 	}
 
 	/**
@@ -303,21 +322,6 @@ export class VariableComposition extends NodeCore {
 
 		const ncomponents = params.componentsCount as number ?? 2;
 		const components = params.components as number[] ?? [];
-
-		// Normalize data
-		const nspecies = this.speciesRaw.size;
-		this.species = [...this.speciesRaw];
-		this.composition.length = 0;
-		for(const step of this.compositionRaw) {
-
-			const entry = Array<number>(nspecies).fill(0);
-
-			for(let i=0; i < nspecies; ++i) {
-				const atomZ = this.species[i];
-				entry[i] = step.get(atomZ) ?? 0;
-			}
-			this.composition.push(entry);
-		}
 
 		const recipes = this.fitComposition(ncomponents, components);
 
@@ -336,17 +340,12 @@ export class VariableComposition extends NodeCore {
 
 		this.enableAnalysis = params.enableAnalysis as boolean ?? false;
 		if(this.enableAnalysis && this.structure) {
-			this.accumulate(this.structure.atoms);
+			this.accumulator.add(this.structure);
 		}
 
-		// Prepare list of species
-		const speciesSymbols: string[] = [];
-		for(const atomZ of this.speciesRaw) {
-			speciesSymbols.push(getAtomicSymbol(atomZ));
-		}
 		return {
-			countAccumulated: this.compositionRaw.length,
-			species: speciesSymbols
+			countAccumulated: this.accumulator.size(),
+			species: this.accumulator.symbols(),
 		};
 	}
 
@@ -355,7 +354,15 @@ export class VariableComposition extends NodeCore {
 	 *
 	 * @returns Count saved or -1 if not selected
 	 */
-	private channelSave(): CtrlParams {
+	private channelSave(params: CtrlParams): CtrlParams {
+
+		const selectedRaw = params.selected as string[] ?? [];
+		if(selectedRaw.length === 0) return {saved: -1};
+
+		const selected = new Set<string>();
+		for(const s of selectedRaw) {
+			selected.add(s.replace("\u2009:\u2009", "-"));
+		}
 
 		const dir = dialog.showOpenDialogSync({
 			title: "Output directory",
@@ -363,7 +370,43 @@ export class VariableComposition extends NodeCore {
 		});
 		if(!dir) return {saved: -1};
 
-		return {saved: 0}; // TBD
+		let saved = 0;
+		for(const entry of this.accumulator.iterateKeys()) {
+
+			// If this key has been processed
+			if(!selected.has(entry[0])) continue;
+
+			// Check that at least one entry is enabled
+			let valid = false;
+			for(const idx of entry[1]) {
+				if(this.accumulator.getEntry(idx)?.enabled) valid = true;
+			}
+			if(!valid) continue;
+
+			const name = `composition-${entry[0]}`;
+			const dataFile = path.join(dir[0], `${name}.poscar`);
+			const energyFile = path.join(dir[0], `${name}.energy`);
+
+			const fd = openSync(dataFile, "w");
+			const fde = this.accumulator.hasEnergies() ? openSync(energyFile, "w") : undefined;
+
+			for(const idx of entry[1]) {
+
+				const structure = this.accumulator.getEntry(idx)!;
+				if(!structure?.enabled) continue;
+
+				writeSync(fd, this.entryToPoscar(structure));
+				if(fde !== undefined) writeSync(fde, `${structure.energy?.toFixed(6) ?? "?"}\n`);
+			}
+			closeSync(fd);
+			if(fde !== undefined) closeSync(fde);
+			++saved;
+		}
+
+		sendAlertToClient(`Saved ${saved} file${saved === 1 ? "" : "s"} for variable composition`,
+						  {level: "success"});
+
+		return {saved};
 	}
 
 	/**
@@ -372,5 +415,33 @@ export class VariableComposition extends NodeCore {
 	private channelState(params: CtrlParams): void {
 
 		this.initializeState(params);
+	}
+
+	/**
+	 * Channel handler to start analyzing the compositions
+	 *
+	 * @returns Empty status
+	 */
+	private channelStart(): CtrlParams {
+		this.accumulator.initializeKeyMap();
+		return {};
+	}
+
+	/**
+	 * Channel handler for analyzing the results for a single composition
+	 *
+	 * @returns Analysis result status
+	 */
+	private channelAnalyze(params: CtrlParams): CtrlParams {
+
+		const key = params.key as string;
+		if(!key) return {error: "Empty key", key};
+		const indices = this.accumulator.getIndicesForKey(params.key as string);
+		if(!indices?.length) return {error: "Key not found", key};
+		if(indices.length === 1) return {status: "OK!", key};
+
+		console.log("ANALYZING", params.key as string, "with length", indices.length); // TBD
+
+		return {status: "OK!", key};
 	}
 }

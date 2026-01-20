@@ -225,15 +225,34 @@ const headers = [
 ];
 
 /** Selected table entries */
-const selected = ref([]);
+const selected = ref<string[]>([]);
 
 /**
  * Do the variable composition analysis on the selected entries
  */
 const analyzeSelected = (): void => {
 
-    console.log("SELECTED:", selected.value); // TBD
-    analysisDone.value = true;
+    askNode(id, "start")
+        .then(async () => {
+
+            const promises = [];
+            for(const composition of selected.value) {
+                promises.push(askNode(id, "analyze", {key: composition.replace("\u2009:\u2009", "-")}));
+            }
+            return Promise.all(promises);
+        })
+        .then((allParams) => {
+
+            for(const params of allParams) {
+                if(params.error) throw Error(`For key: "${params.key as string}": ${params.error as string}`);
+            }
+            analysisDone.value = true;
+        })
+        .catch((error: Error) => {
+            analysisDone.value = false;
+            showNodeAlert(`Error analyzing variable composition results: ${error.message}`,
+                          "variableComposition");
+        });
 };
 
 /**
@@ -241,7 +260,7 @@ const analyzeSelected = (): void => {
  */
 const saveAnalyzed = (): void => {
 
-    askNode(id, "save")
+    askNode(id, "save", {selected: toRaw(selected.value)})
         .then((params) => {
             if(params.error) throw Error(params.error as string);
             savedFiles.value = params.saved as number ?? -1;
@@ -250,7 +269,6 @@ const saveAnalyzed = (): void => {
             savedFiles.value = -1;
             showNodeAlert(`Error saving variable composition results: ${error.message}`,
                           "variableComposition");
-
         });
 };
 

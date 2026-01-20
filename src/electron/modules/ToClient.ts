@@ -200,7 +200,12 @@ export const sendAlertToClient = (message: string,
 
 	const {userMessage=message, level="error", node=""} = options;
 	mainWinWebContents!.send("SYSTEM:notification", level, userMessage, node);
-	log.error(message);
+	switch(level) {
+		case "error": log.error(message); break;
+		case "warning": log.warn(message); break;
+		case "success": log.info(message); break;
+		case "info": log.info(message); break;
+	}
 };
 
 /**

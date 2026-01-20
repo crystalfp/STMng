@@ -95,7 +95,7 @@ const notificationQueue = ref<{text: string; color: string}[]>([]);
 receiveNotifications((type: AlertLevel, text: string, from: string) => {
 
     notificationQueue.value.push({text, color: type === "error" ? "red-darken-4" : type});
-    if(from !== "") showNodeAlert(text, from);
+    if(from !== "") showNodeAlert(text, from, {level: type});
 });
 
 /**
