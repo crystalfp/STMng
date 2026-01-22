@@ -234,7 +234,7 @@ onMounted(() => {
                 fitCamera(cameraOrthographic, controls);
             }
 
-            // Fix the viewer aspect ratio
+            // Set the viewer aspect ratio
             const rect = cnv.value!.getBoundingClientRect();
             const w = rect.width;
             const h = rect.height;

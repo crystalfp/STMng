@@ -10,12 +10,12 @@ import type {CtrlParams} from "@/types";
 import {ipcMain} from "electron";
 
 /**
- * Setup channel to send special switches to client
+ * Setup channel to send special command line switches to client
  */
 export const setupChannelSpecialSwitches = (params: CtrlParams): void => {
 
     ipcMain.handle("SYSTEM:SWITCHES", (): CtrlParams => {
 
-		return params; // TBD
+		return params;
 	});
 };

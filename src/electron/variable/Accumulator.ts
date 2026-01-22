@@ -156,6 +156,9 @@ export class VariableCompositionAccumulator {
 		}
 	}
 
+	/**
+	 * Initialize the mapping between key and index to accumulator entries
+	 */
 	initializeKeyMap(): void {
 		this.keyMap.clear();
 		const count = this.accumulator.length;
@@ -179,8 +182,6 @@ export class VariableCompositionAccumulator {
 	 * @returns An iterator on the composition keys
 	 */
 	* iterateKeys(): Generator<[string, number[]]> {
-
-		this.initializeKeyMap();
 
 		for(const entry of this.keyMap) {
 			yield entry;

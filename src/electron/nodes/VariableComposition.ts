@@ -12,9 +12,12 @@ import {gcd} from "mathjs";
 import {dialog} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
-import {VariableCompositionAccumulator, type VariableComponent} from "../variable/Accumulator";
 import {invertBasis} from "../modules/Helpers";
 import {getAtomicSymbol} from "../modules/AtomData";
+import {VariableCompositionAccumulator,
+		type VariableComponent} from "../variable/Accumulator";
+import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
+		type ComputeValidParameters} from "../variable/ComputeValid";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 /**
@@ -47,19 +50,6 @@ export class VariableComposition extends NodeCore {
 		removeDuplicates: true,
 		duplicatesThreshold: 0.015
 	};
-
-	// TBD These should came from the methods
-	private readonly fingerprintMethodsNames = [
-		"Oganov-Valle fingerprint",
-		"Oganov-Valle per-site fingerprint",
-		"Dot-matrix fingerprint"
-	];
-
-	private readonly distanceMethodsNames = [
-    	"Cosine distance",
-    	"Euclidean distance",
-    	"Minkowski distance of order ⅓",
-	];
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
@@ -299,8 +289,8 @@ export class VariableComposition extends NodeCore {
 		return {
 			species: this.accumulator.symbols(),
 			countAccumulated: this.accumulator.size(),
-			fingerprintMethods: this.fingerprintMethodsNames,
-			distanceMethods: this.distanceMethodsNames,
+			fingerprintMethods: fingerprintMethodsNames(),
+			distanceMethods: distanceMethodsNames(),
 			...this.state
 		};
 	}
@@ -370,6 +360,8 @@ export class VariableComposition extends NodeCore {
 		});
 		if(!dir) return {saved: -1};
 
+		this.accumulator.initializeKeyMap();
+
 		let saved = 0;
 		for(const entry of this.accumulator.iterateKeys()) {
 
@@ -436,12 +428,34 @@ export class VariableComposition extends NodeCore {
 
 		const key = params.key as string;
 		if(!key) return {error: "Empty key", key};
-		const indices = this.accumulator.getIndicesForKey(params.key as string);
+
+		const indices = this.accumulator.getIndicesForKey(key);
 		if(!indices?.length) return {error: "Key not found", key};
-		if(indices.length === 1) return {status: "OK!", key};
+		if(indices.length === 1) return {status: "OK!", total: 1, valid: 1, key};
 
-		console.log("ANALYZING", params.key as string, "with length", indices.length); // TBD
+		if(!params.removeDuplicates) {
 
-		return {status: "OK!", key};
+			// Enable all entries
+			for(const idx of indices) {
+				const entry = this.accumulator.getEntry(idx);
+				if(entry === undefined) continue;
+				entry.enabled = true;
+			}
+
+			return {status: "OK!", total: indices.length, valid: indices.length, key};
+		}
+
+		const options: ComputeValidParameters = {
+			fingerprintingMethod: params.fingerprintingMethod as number ?? 0,
+			forceCutoff: params.forceCutoff as boolean ?? false,
+			manualCutoffDistance: params.manualCutoffDistance as number ?? 10,
+			distanceMethod: params.distanceMethod as number ?? 0,
+			binSize: params.binSize as number ?? 0.05,
+			peakWidth: params.peakWidth as number ?? 0.02,
+			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
+			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015
+		};
+		const valid = computeValid(this.accumulator, indices, options);
+		return {status: "OK!", total: indices.length, valid, key};
 	}
 }

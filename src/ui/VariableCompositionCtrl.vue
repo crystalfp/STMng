@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-13
  */
-import {ref, toRaw, watch, reactive} from "vue";
+import {ref, toRaw, watch, reactive, computed} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
@@ -235,9 +235,13 @@ const analyzeSelected = (): void => {
     askNode(id, "start")
         .then(async () => {
 
+            const stateRaw = toRaw(state);
             const promises = [];
             for(const composition of selected.value) {
-                promises.push(askNode(id, "analyze", {key: composition.replace("\u2009:\u2009", "-")}));
+                promises.push(askNode(id, "analyze", {
+                    key: composition.replace("\u2009:\u2009", "-"),
+                    ...stateRaw
+                }));
             }
             return Promise.all(promises);
         })
@@ -272,11 +276,15 @@ const saveAnalyzed = (): void => {
         });
 };
 
+const disableSave = computed(() => {
+    return (!analysisDone.value && state.removeDuplicates) || selected.value.length === 0;
+});
+
 </script>
 
 
 <template>
-<v-container class="container">
+<v-container class="container pb-8">
   <v-label class="separator-title first-title">Accumulated structures</v-label>
 
   <v-row class="mx-0">
@@ -307,7 +315,7 @@ const saveAnalyzed = (): void => {
     </table>
 
     <v-btn class="w-100 mb-2" :disabled="countAccumulated === 0"
-           @click="computeGroups">Compute compositions</v-btn>
+           @click="savedFiles=-1; computeGroups">Compute compositions</v-btn>
   </div>
 
   <node-alert node="variableComposition" />
@@ -359,15 +367,15 @@ const saveAnalyzed = (): void => {
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
 
-  <v-btn block :disabled="selected.length === 0"
-         @click="analysisRunning=true; analyzeSelected()">
+  <v-btn block :disabled="selected.length === 0 || !state.removeDuplicates"
+         @click="analysisRunning=true; savedFiles=-1; analyzeSelected()">
     Analyze selected
   </v-btn>
- <v-btn block class="mt-4" :disabled="!analysisDone || selected.length === 0"
-        @click="saveAnalyzed">
+  <v-btn block class="mt-4" :disabled="disableSave" @click="saveAnalyzed">
     Save analyzed
- </v-btn>
- <v-label v-if="savedFiles >= 0"
-    class="result-label pt-4 ml-2 mb-6">{{ `Files saved: ${savedFiles}` }}</v-label>
+  </v-btn>
+  <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-2">
+    {{ `Files saved: ${savedFiles}` }}
+  </v-label>
 </v-container>
 </template>
