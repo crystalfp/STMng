@@ -85,7 +85,8 @@ const state = reactive({
     distanceMethod: 0,
     fixTriangleInequality: false,
     removeDuplicates: true,
-    duplicatesThreshold: 0.015
+    duplicatesThreshold: 0.015,
+    processParallelism: false
 });
 
 /** Pass state changes to the main process for saving in the project file */
@@ -127,14 +128,15 @@ askNode(id, "init")
         }
 
         state.forceCutoff = params.forceCutoff as boolean ?? false;
-    	state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
-    	state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
-    	state.binSize = params.binSize as number ?? 0.05;
-    	state.peakWidth = params.peakWidth as number ?? 0.02;
-    	state.distanceMethod = params.distanceMethod as number ?? 0;
-    	state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
-    	state.removeDuplicates = params.removeDuplicates as boolean ?? true;
-    	state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+        state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
+        state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
+        state.binSize = params.binSize as number ?? 0.05;
+        state.peakWidth = params.peakWidth as number ?? 0.02;
+        state.distanceMethod = params.distanceMethod as number ?? 0;
+        state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
+        state.removeDuplicates = params.removeDuplicates as boolean ?? true;
+        state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+        state.processParallelism = params.processParallelism as boolean ?? false;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -349,6 +351,7 @@ const disableSave = computed(() => {
     <v-number-input v-model="state.binSize" :precision="2"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
+  <v-switch v-model="state.processParallelism" label="Multi process parallelism" class="ml-2 mb-2"/>
 
   <v-select v-model="state.distanceMethod"
     label="Distance method"

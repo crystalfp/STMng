@@ -1,12 +1,19 @@
 /**
- * <<DESCRIPTION>>
+ * Mark duplicated structures for removal.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-21
  */
+import log from "electron-log";
+import os from "node:os";
+import workerpool from "workerpool";
+import {publicDirPath} from "../modules/GetPublicPath";
 import {VariableCompositionAccumulator} from "./Accumulator";
+import {isRejected, isFulfilled} from "../fingerprint/AllSettledHelpers";
+import {variablePerSiteFinishStep} from "../fingerprint/OganovValleFingerprint";
+import type {WorkerResults} from "../fingerprint/Worker";
 
 /**
  * Compute valid entries parameters
@@ -20,6 +27,7 @@ export interface ComputeValidParameters {
 	peakWidth: number;
 	fixTriangleInequality: boolean;
 	duplicatesThreshold: number;
+	processParallelism: boolean;
 }
 
 /**
@@ -58,20 +66,128 @@ export const distanceMethodsNames = (): string[] => {
  * @param params - Parameters for the computation
  * @returns Number of structures considered valid
  */
-export const computeValid = (accumulator: VariableCompositionAccumulator,
-							 indices: number[],
-							 params: ComputeValidParameters): number => {
+export const computeValid = async (accumulator: VariableCompositionAccumulator,
+							 	   indices: number[],
+								   params: ComputeValidParameters): Promise<number> => {
+
+	// Get and verify parameters
+	const {processParallelism, fingerprintingMethod} = params;
+	const countStructures = indices.length;
+
+	// Find the fingerprint worker
+	const worker = publicDirPath("Worker.js", true);
+
+	// Compute the parallelism
+	let availableParallelism = os.availableParallelism();
+	if(availableParallelism > 1) {
+		/* oxlint-disable-next-line @stylistic/space-before-function-paren */
+		availableParallelism = (processParallelism ?
+									2*availableParallelism :
+									availableParallelism)-1;
+	}
+	if(countStructures < availableParallelism) availableParallelism = countStructures;
+
+	// Prepare the worker pool
+	const pool = workerpool.pool(worker, {
+		minWorkers: "max",
+		maxWorkers: availableParallelism,
+		workerType: processParallelism ? "process" : "thread"
+	});
+	const promises: workerpool.Promise<WorkerResults>[] = [];
 
 	// Compute fingerprints
 	for(const idx of indices) {
+
 		const entry = accumulator.getEntry(idx);
 		if(entry === undefined) continue;
 		entry.enabled = true;
 
-		// Compute fingerprint
-		// TBD
-		void params;
+		// Extract data to send to the worker to compute fingerprint
+		const lenP = entry.atomsPosition.length;
+		const positions = new Float64Array(lenP);
+		for(let i=0; i < lenP; ++i) positions[i] = entry.atomsPosition[i];
+
+		const lenZ = entry.atomsZ.length;
+		const atomsZ = new Int32Array(lenZ);
+		for(let i=0; i < lenZ; ++i) atomsZ[i] = entry.atomsZ[i];
+
+		const basis = new Float64Array(9);
+		for(let i=0; i < 9; ++i) basis[i] = entry.basis[i];
+
+		const result = pool.exec("fingerprinting", [
+			params,
+			basis,
+			lenZ,
+			positions,
+			atomsZ,
+		], {transfer: [basis.buffer, positions.buffer, atomsZ.buffer]}) as workerpool.Promise<WorkerResults>;
+
+		promises.push(result);
 	}
+
+	const results = await Promise.allSettled(promises).catch((error: unknown) => {
+		log.error("Error from the worker pool.", error);
+		return [];
+	});
+
+	// Release the pool
+	pool.terminate();
+
+	const len = results.length;
+	if(len === 0) {
+		log.error("Error starting the fingerprinting worker pool");
+		return 0;
+	}
+
+	let fingerprintSize = 0;
+	for(let j=0; j < len; ++j) {
+
+		const idx = indices[j];
+		const entry = accumulator.getEntry(idx)!;
+		const oneResult = results[j];
+
+		if(isRejected(oneResult)) {
+			const reason = oneResult.reason as string;
+			log.error(`Error on step ${entry.step}\n${reason}`);
+			return 0;
+		}
+
+		if(isFulfilled(oneResult)) {
+			const {countSections, sectionLength, fp, w} = oneResult.value;
+
+			if(countSections === 0 || sectionLength === 0) {
+				log.error(`No fingerprint computed for step ${entry.step}`);
+				return 0;
+			}
+			const fingerprintArray = fp.message as Float64Array;
+			const weightsArray = w.message as Float64Array;
+
+			// Get fingerprint size
+			if(fingerprintSize === 0) fingerprintSize = countSections*sectionLength;
+			if(fingerprintSize !== countSections*sectionLength) {
+				log.error(`Fingerprinting dimension has changed for step ${entry.step}`);
+				return 0;
+			}
+
+			// Access the structure
+			const {fingerprint, weights} = entry;
+
+			// Save the resulting fingerprint dimension
+			entry.countSections = countSections;
+			entry.sectionLength = sectionLength;
+
+			// Save the fingerprint
+			fingerprint.length = fingerprintSize;
+			for(let i=0; i < fingerprintSize; ++i) fingerprint[i] = fingerprintArray[i];
+
+			// Save the weights
+			weights.length = countSections;
+			for(let i=0; i < countSections; ++i) weights[i] = weightsArray[i];
+		}
+	}
+
+	// For methods that need a last global step
+	if(fingerprintingMethod === 1) variablePerSiteFinishStep(accumulator, indices);
 
 	// Compute distance matrix
 

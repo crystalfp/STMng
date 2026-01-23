@@ -32,6 +32,15 @@ export interface VariableComponent {
 	parts: number[];
 	/** Composition key (quantities separated by "-") */
 	key: string;
+
+	/** Computed fingerprint for the structure */
+	fingerprint: number[];
+	/** Number of sections in the fingerprint */
+	countSections: number;
+	/** Length of each section */
+	sectionLength: number;
+	/** Computed weights */
+	weights: number[];
 }
 
 /**
@@ -78,7 +87,12 @@ export class VariableCompositionAccumulator {
 			atomsZ: [],
 			species: new Map<number, number>(),
 			parts: [],
-			key: ""
+			key: "",
+
+			fingerprint: [],
+			countSections: 0,
+			sectionLength: 0,
+			weights: []
 		};
 
 		// Fill atoms
@@ -193,6 +207,7 @@ export class VariableCompositionAccumulator {
 	 *
 	 * @param key - Key to extract
 	 * @returns Array of indices of structures with the given key
+	 * 			or undefined if key not found
 	 */
 	getIndicesForKey(key: string): number[] | undefined {
 		return this.keyMap.get(key);
@@ -203,6 +218,7 @@ export class VariableCompositionAccumulator {
 	 *
 	 * @param idx - Requested structure index
 	 * @returns The corresponding accumulated structure
+	 * 			or undefined if out of range
 	 */
 	getEntry(idx: number): VariableComponent | undefined {
 		if(idx < 0 || idx >= this.accumulator.length) return undefined;

@@ -11,6 +11,7 @@ import os from "node:os";
 import log from "electron-log";
 import {publicDirPath} from "../modules/GetPublicPath";
 import {perSiteFinishStep} from "./OganovValleFingerprint";
+import {isRejected, isFulfilled} from "./AllSettledHelpers";
 import type {FingerprintingParameters} from "@/types";
 import type {FingerprintsAccumulator} from "./Accumulator";
 import type {WorkerResults} from "./Worker";
@@ -19,7 +20,7 @@ import type {WorkerResults} from "./Worker";
  * Computation result for the user interface
  * @notExported
  */
-interface FingerprintingComputeResult {
+export interface FingerprintingComputeResult {
 
 	/** Computed fingerprint length */
 	dimension: number;
@@ -30,24 +31,6 @@ interface FingerprintingComputeResult {
 	/** Simplified error for users */
 	userError?: string;
 }
-
-/**
- * Type guard for rejected promise
- *
- * @param input - Value to check
- * @returns True if input is a rejected promise
- */
-const isRejected = (input: PromiseSettledResult<unknown>): input is PromiseRejectedResult =>
-  input.status === "rejected";
-
-/**
- * Type guard for fulfilled promise
- *
- * @param input - Value to check
- * @returns True if input is a fulfilled promise
- */
-const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> =>
-  input.status === "fulfilled";
 
 /**
  * Routines related to computing fingerprinting for a set of structures

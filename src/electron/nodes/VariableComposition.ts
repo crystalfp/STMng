@@ -48,18 +48,19 @@ export class VariableComposition extends NodeCore {
 		distanceMethod: 0,
 		fixTriangleInequality: false,
 		removeDuplicates: true,
-		duplicatesThreshold: 0.015
+		duplicatesThreshold: 0.015,
+		processParallelism: false,
 	};
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
-		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
-		{name: "group",		type: "invoke",	callback: this.channelGroup.bind(this)},
-		{name: "capture",	type: "invoke",	callback: this.channelCapture.bind(this)},
-		{name: "save",		type: "invoke",	callback: this.channelSave.bind(this)},
-		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
-		{name: "start",		type: "invoke",	callback: this.channelStart.bind(this)},
-		{name: "analyze",	type: "invoke",	callback: this.channelAnalyze.bind(this)},
+		{name: "init",		type: "invoke",		 callback: this.channelInit.bind(this)},
+		{name: "reset",     type: "send",   	 callback: this.channelReset.bind(this)},
+		{name: "group",		type: "invoke",		 callback: this.channelGroup.bind(this)},
+		{name: "capture",	type: "invoke",		 callback: this.channelCapture.bind(this)},
+		{name: "save",		type: "invoke",		 callback: this.channelSave.bind(this)},
+		{name: "state",		type: "send",		 callback: this.channelState.bind(this)},
+		{name: "start",		type: "invoke",		 callback: this.channelStart.bind(this)},
+		{name: "analyze",	type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
 	];
 
 	/**
@@ -424,15 +425,21 @@ export class VariableComposition extends NodeCore {
 	 *
 	 * @returns Analysis result status
 	 */
-	private channelAnalyze(params: CtrlParams): CtrlParams {
+	private async channelAnalyze(params: CtrlParams): Promise<CtrlParams> {
 
 		const key = params.key as string;
 		if(!key) return {error: "Empty key", key};
 
 		const indices = this.accumulator.getIndicesForKey(key);
 		if(!indices?.length) return {error: "Key not found", key};
-		if(indices.length === 1) return {status: "OK!", total: 1, valid: 1, key};
+		if(indices.length === 1) {
+			const entry = this.accumulator.getEntry(indices[0]);
+			if(entry === undefined) return {error: "Key not found", key};
+			entry.enabled = true;
+			return {status: "OK!", total: 1, valid: 1, key};
+		}
 
+		// Do nothing except grouping structures
 		if(!params.removeDuplicates) {
 
 			// Enable all entries
@@ -445,6 +452,7 @@ export class VariableComposition extends NodeCore {
 			return {status: "OK!", total: indices.length, valid: indices.length, key};
 		}
 
+		// Get and validate parameters
 		const options: ComputeValidParameters = {
 			fingerprintingMethod: params.fingerprintingMethod as number ?? 0,
 			forceCutoff: params.forceCutoff as boolean ?? false,
@@ -453,9 +461,27 @@ export class VariableComposition extends NodeCore {
 			binSize: params.binSize as number ?? 0.05,
 			peakWidth: params.peakWidth as number ?? 0.02,
 			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
-			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015
+			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015,
+			processParallelism: params.processParallelism as boolean ?? false,
 		};
-		const valid = computeValid(this.accumulator, indices, options);
+
+		if(options.fingerprintingMethod < 0 || options.fingerprintingMethod > 2) {
+			return {error: "Invalid fingerprinting method", key};
+		}
+		if(options.forceCutoff && options.manualCutoffDistance <= 0) {
+			return {error: "Invalid manual cutoff distance", key};
+		}
+		if(options.binSize <= 0 || options.peakWidth < 0) {
+			return {error: "Invalid fingerprinting parameters", key};
+		}
+		if(options.distanceMethod < 0 || options.distanceMethod > 2) {
+			return {error: "Invalid distance method", key};
+		}
+		if(options.duplicatesThreshold <= 0) {
+			return {error: "Invalid duplicates threshold", key};
+		}
+
+		const valid = await computeValid(this.accumulator, indices, options);
 		return {status: "OK!", total: indices.length, valid, key};
 	}
 }
