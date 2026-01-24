@@ -454,7 +454,7 @@ export class VariableComposition extends NodeCore {
 
 		// Get and validate parameters
 		const options: ComputeValidParameters = {
-			fingerprintingMethod: params.fingerprintingMethod as number ?? 0,
+			method: params.fingerprintingMethod as number ?? 0,
 			forceCutoff: params.forceCutoff as boolean ?? false,
 			manualCutoffDistance: params.manualCutoffDistance as number ?? 10,
 			distanceMethod: params.distanceMethod as number ?? 0,
@@ -465,7 +465,7 @@ export class VariableComposition extends NodeCore {
 			processParallelism: params.processParallelism as boolean ?? false,
 		};
 
-		if(options.fingerprintingMethod < 0 || options.fingerprintingMethod > 2) {
+		if(options.method < 0 || options.method > 2) {
 			return {error: "Invalid fingerprinting method", key};
 		}
 		if(options.forceCutoff && options.manualCutoffDistance <= 0) {
@@ -481,7 +481,9 @@ export class VariableComposition extends NodeCore {
 			return {error: "Invalid duplicates threshold", key};
 		}
 
-		const valid = await computeValid(this.accumulator, indices, options);
-		return {status: "OK!", total: indices.length, valid, key};
+		const status = await computeValid(this.accumulator, indices, options);
+		if(status.error) return {error: status.error, key};
+		if(status.count === 0) return {error: "No valid structures found", key};
+		return {status: "OK!", total: indices.length, valid: status.count, key};
 	}
 }

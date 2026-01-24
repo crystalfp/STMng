@@ -32,6 +32,8 @@ interface Recipe {
 	key: string;
     /** Number of structures with the given composition */
 	count: number;
+    /** Result after analysis */
+    valid?: string;
 }
 
 /**
@@ -212,7 +214,10 @@ const computeGroups = (): void => {
 
         const recipes = JSON.parse(params.recipes as string ?? "[]") as Recipe[];
         results.value.length = 0;
-        for(const recipe of recipes) results.value.push(recipe);
+        for(const recipe of recipes) {
+            recipe.valid = "";
+            results.value.push(recipe);
+        }
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from variable composition: ${error.message}`,
@@ -220,10 +225,14 @@ const computeGroups = (): void => {
     });
 };
 
+type Align = "center" | "start" | "end";
+const alignEnd = "end" as Align;
+
 /** Headers for the results table */
 const headers = [
-  {key: "key",   title: "Composition", sortable: false},
-  {key: "count", title: "Count"}
+    {key: "key",   title: "Composition", sortable: false},
+    {key: "count", title: "Count",       align: alignEnd},
+    {key: "valid", title: "Result",      align: alignEnd}
 ];
 
 /** Selected table entries */
@@ -317,7 +326,7 @@ const disableSave = computed(() => {
     </table>
 
     <v-btn class="w-100 mb-2" :disabled="countAccumulated === 0"
-           @click="savedFiles=-1; computeGroups">Compute compositions</v-btn>
+           @click="savedFiles=-1; computeGroups()">Compute compositions</v-btn>
   </div>
 
   <node-alert node="variableComposition" />
@@ -325,7 +334,7 @@ const disableSave = computed(() => {
   <v-label class="separator-title">Compositions</v-label>
 
   <v-data-table v-if="results.length > 0" v-model="selected" :items="results"
-                class="ml-2" density="compact" select-strategy="all" items-per-page="-1"
+                class="ml-2 pr-2" density="compact" select-strategy="all" items-per-page="-1"
                 fixed-header hover height="300px" show-select item-value="key"
                 hide-default-footer :headers hide-no-data />
 

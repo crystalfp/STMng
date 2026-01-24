@@ -77,12 +77,12 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 					break;
 
 				case LineType.scale: {
-					if(line.trim() === "") {
+					if(line === "") {
 						lineType = LineType.exit;
 						break;
 					}
-					const fields = line.trim().split(/\s+/);
-					if(fields.length === 0 || fields.length > 1) {
+					const fields = line.split(/\s+/);
+					if(fields.length !== 1) {
 						lineType = LineType.exit;
 						break;
 					}
@@ -102,7 +102,7 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 
 				case LineType.basis: {
 
-					const fields = line.trim().split(/\s+/);
+					const fields = line.split(/\s+/);
 					const {basis} = structures[currentStep].crystal;
 					basis[base]   = Number.parseFloat(fields[0]);
 					basis[base+1] = Number.parseFloat(fields[1]);
@@ -133,7 +133,7 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 				}
 
 				case LineType.counts: {
-					const fields = line.trim().split(/\s+/);
+					const fields = line.split(/\s+/);
 					if(/\d+/.test(fields[0])) {
 						// Line with atoms count. Put them in an array
 						atomsCount.length = 0;
@@ -185,7 +185,7 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 				}
 
 				case LineType.direct: {
-					const kind = line.trim().toLowerCase();
+					const kind = line.toLowerCase();
 					if(kind.startsWith("dir")) {
 						lineType = LineType.atoms;
 						currentIdx = 0;
@@ -203,7 +203,7 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 				}
 
 				case LineType.atoms: {
-					const fields = line.trim().split(/\s+/);
+					const fields = line.split(/\s+/);
 					const position = cartesian ? [
 											Number.parseFloat(fields[0]) * scaleFactor,
 											Number.parseFloat(fields[1]) * scaleFactor,
@@ -261,7 +261,7 @@ export class ReaderXDATCAR5 implements ReaderImplementation {
 					atomIdx = 0;
 
 					// Discriminate between fixed and variable cell sub-formats
-					const kind = line.trim().toLowerCase();
+					const kind = line.toLowerCase();
 					lineType = kind.startsWith("direct configuration=") ?
 											LineType.atoms : LineType.scale;
 				}

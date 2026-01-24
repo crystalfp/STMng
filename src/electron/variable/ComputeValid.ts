@@ -19,7 +19,7 @@ import type {WorkerResults} from "../fingerprint/Worker";
  * Compute valid entries parameters
  */
 export interface ComputeValidParameters {
-	fingerprintingMethod: number;
+	method: number;
 	forceCutoff: boolean;
 	manualCutoffDistance: number;
 	distanceMethod: number;
@@ -58,20 +58,26 @@ export const distanceMethodsNames = (): string[] => {
 	];
 };
 
+interface ComputeValidResult {
+
+	count: number;
+	error?: string;
+}
+
 /**
  * Mark duplicated structures
  *
  * @param accumulator - Accumulated structures
  * @param indices - List of indices to be analyzed
  * @param params - Parameters for the computation
- * @returns Number of structures considered valid
+ * @returns Number of structures considered valid and eventually an error message
  */
 export const computeValid = async (accumulator: VariableCompositionAccumulator,
 							 	   indices: number[],
-								   params: ComputeValidParameters): Promise<number> => {
+								   params: ComputeValidParameters): Promise<ComputeValidResult> => {
 
 	// Get and verify parameters
-	const {processParallelism, fingerprintingMethod} = params;
+	const {processParallelism, method, manualCutoffDistance, binSize, peakWidth} = params;
 	const countStructures = indices.length;
 
 	// Find the fingerprint worker
@@ -114,8 +120,17 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 		const basis = new Float64Array(9);
 		for(let i=0; i < 9; ++i) basis[i] = entry.basis[i];
 
+		const fpParams = {
+			method,
+			areNanoclusters: false,
+			cutoffDistance: manualCutoffDistance,
+			binSize,
+			peakWidth,
+    		processParallelism
+		};
+
 		const result = pool.exec("fingerprinting", [
-			params,
+			fpParams,
 			basis,
 			lenZ,
 			positions,
@@ -135,8 +150,9 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 
 	const len = results.length;
 	if(len === 0) {
-		log.error("Error starting the fingerprinting worker pool");
-		return 0;
+		const message = "Error starting the fingerprinting worker pool";
+		log.error(message);
+		return {count: 0, error: message};
 	}
 
 	let fingerprintSize = 0;
@@ -148,16 +164,18 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 
 		if(isRejected(oneResult)) {
 			const reason = oneResult.reason as string;
-			log.error(`Error on step ${entry.step}\n${reason}`);
-			return 0;
+			const message = `Error on step ${entry.step}\n${reason}`;
+			log.error(message);
+			return {count: 0, error: message};
 		}
 
 		if(isFulfilled(oneResult)) {
 			const {countSections, sectionLength, fp, w} = oneResult.value;
 
 			if(countSections === 0 || sectionLength === 0) {
-				log.error(`No fingerprint computed for step ${entry.step}`);
-				return 0;
+				const message = `No fingerprint computed for step ${entry.step}`;
+				log.error(message);
+				return {count: 0, error: message};
 			}
 			const fingerprintArray = fp.message as Float64Array;
 			const weightsArray = w.message as Float64Array;
@@ -165,8 +183,10 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 			// Get fingerprint size
 			if(fingerprintSize === 0) fingerprintSize = countSections*sectionLength;
 			if(fingerprintSize !== countSections*sectionLength) {
-				log.error(`Fingerprinting dimension has changed for step ${entry.step}`);
-				return 0;
+				const message = `Fingerprinting dimension has changed for step ${entry.step} ` +
+						  		`(${fingerprintSize} -> ${countSections*sectionLength})`;
+				log.error(message);
+				return {count: 0, error: message};
 			}
 
 			// Access the structure
@@ -187,11 +207,11 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 	}
 
 	// For methods that need a last global step
-	if(fingerprintingMethod === 1) variablePerSiteFinishStep(accumulator, indices);
+	if(method === 1) variablePerSiteFinishStep(accumulator, indices);
 
 	// Compute distance matrix
 
 	// Remove duplicates
 
-	return indices.length; // TBD For now does nothing
+	return {count: indices.length}; // TBD For now this does nothing
 };
