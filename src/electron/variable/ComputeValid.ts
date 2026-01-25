@@ -13,7 +13,10 @@ import {publicDirPath} from "../modules/GetPublicPath";
 import {VariableCompositionAccumulator} from "./Accumulator";
 import {isRejected, isFulfilled} from "../fingerprint/AllSettledHelpers";
 import {variablePerSiteFinishStep} from "../fingerprint/OganovValleFingerprint";
+import {computeDistances} from "./ComputeDistances";
+import {measuringMethods} from "../fingerprint/DistanceMethods";
 import type {WorkerResults} from "../fingerprint/Worker";
+import {removeDuplicatePoints} from "./RemoveDuplicates";
 
 /**
  * Compute valid entries parameters
@@ -51,11 +54,9 @@ export const fingerprintMethodsNames = (): string[] => {
  */
 export const distanceMethodsNames = (): string[] => {
 
-	return [
-		"Cosine distance",
-		"Euclidean distance",
-		"Minkowski distance of order ⅓",
-	];
+	const out: string[] = [];
+	for(const method of measuringMethods) out.push(method.label);
+	return out;
 };
 
 interface ComputeValidResult {
@@ -77,7 +78,9 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 								   params: ComputeValidParameters): Promise<ComputeValidResult> => {
 
 	// Get and verify parameters
-	const {processParallelism, method, manualCutoffDistance, binSize, peakWidth} = params;
+	const {processParallelism, method, manualCutoffDistance,
+		   duplicatesThreshold, peakWidth, distanceMethod,
+		   fixTriangleInequality, binSize} = params;
 	const countStructures = indices.length;
 
 	// Find the fingerprint worker
@@ -210,8 +213,12 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 	if(method === 1) variablePerSiteFinishStep(accumulator, indices);
 
 	// Compute distance matrix
+	const distances = computeDistances(accumulator, indices,
+									   distanceMethod, fixTriangleInequality);
 
 	// Remove duplicates
+	const removed = removeDuplicatePoints(accumulator, indices, distances,
+										  duplicatesThreshold);
 
-	return {count: indices.length}; // TBD For now this does nothing
+	return {count: countStructures-removed};
 };

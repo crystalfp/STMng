@@ -241,33 +241,42 @@ const selected = ref<string[]>([]);
 /**
  * Do the variable composition analysis on the selected entries
  */
-const analyzeSelected = (): void => {
+const analyzeSelected = async (): Promise<void> => {
 
-    askNode(id, "start")
-        .then(async () => {
+    await askNode(id, "start");
 
-            const stateRaw = toRaw(state);
-            const promises = [];
-            for(const composition of selected.value) {
-                promises.push(askNode(id, "analyze", {
-                    key: composition.replace("\u2009:\u2009", "-"),
-                    ...stateRaw
-                }));
+    const stateRaw = toRaw(state);
+    const promises = [];
+    for(const composition of selected.value) {
+        const promise = askNode(id, "analyze", {
+            key: composition.replaceAll("\u2009:\u2009", "-"),
+            ...stateRaw
+        });
+        promise.then((result) => {
+            if(result.error) {
+                throw Error(`For key: "${result.key as string}": ${result.error as string}`);
             }
-            return Promise.all(promises);
-        })
-        .then((allParams) => {
 
-            for(const params of allParams) {
-                if(params.error) throw Error(`For key: "${params.key as string}": ${params.error as string}`);
+            const key = (result.key as string).replaceAll("-", "\u2009:\u2009");
+            for(const r of results.value) {
+                if(r.key === key) {
+                    r.valid = (result.valid as number).toFixed(0);
+                    break;
+                }
             }
-            analysisDone.value = true;
         })
         .catch((error: Error) => {
             analysisDone.value = false;
             showNodeAlert(`Error analyzing variable composition results: ${error.message}`,
-                          "variableComposition");
+                            "variableComposition");
         });
+
+        promises.push(promise);
+    }
+
+    await Promise.all(promises);
+
+    analysisDone.value = true;
 };
 
 /**
@@ -326,7 +335,7 @@ const disableSave = computed(() => {
     </table>
 
     <v-btn class="w-100 mb-2" :disabled="countAccumulated === 0"
-           @click="savedFiles=-1; computeGroups()">Compute compositions</v-btn>
+           @click="savedFiles=-1; analysisDone=false; computeGroups()">Compute compositions</v-btn>
   </div>
 
   <node-alert node="variableComposition" />

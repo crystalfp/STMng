@@ -233,4 +233,18 @@ export class VariableCompositionAccumulator {
 	hasEnergies(): boolean {
 		return this.allHaveEnergies ?? false;
 	}
+
+	/**
+	 * Set enable status on given elements
+	 *
+	 * @param indices - Elements whose enable status has to be set
+	 * @param enable - Value to set
+	 */
+	setEnableStatus(indices: number[], enable: boolean): void {
+
+		for(const idx of indices) {
+			const entry = this.accumulator[idx];
+			entry.enabled = enable;
+		}
+	}
 }

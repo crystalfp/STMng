@@ -159,7 +159,7 @@ export class DistanceMatrix {
     }
 }
 
-class Delta {
+export class Delta {
 
     private readonly delta: number[];
     private readonly nMinus1;
@@ -341,6 +341,7 @@ export class Distances {
     /**
      * Fix triangular inequality violations
      *
+     * @param maxIterations - Maximum number of corrective iterations
      * @returns 0 if everything is OK;
      *          1 if had to fix triangular inequalities;
      *         -1 if maxIterations exceeded

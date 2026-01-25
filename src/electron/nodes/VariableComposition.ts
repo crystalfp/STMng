@@ -352,7 +352,7 @@ export class VariableComposition extends NodeCore {
 
 		const selected = new Set<string>();
 		for(const s of selectedRaw) {
-			selected.add(s.replace("\u2009:\u2009", "-"));
+			selected.add(s.replaceAll("\u2009:\u2009", "-"));
 		}
 
 		const dir = dialog.showOpenDialogSync({
