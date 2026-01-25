@@ -104,7 +104,7 @@ export class Store {
 	 * Set integer content for a set of keys
 	 *
 	 * @param keys - Keys of the values to retrieve
-	 * @param defaultValue - Default values for the retrieved keys
+	 * @param defaultValues - Default values for the retrieved keys
 	 * @returns The retrieved values
 	 */
 	getIntegers(keys: string[], defaultValues?: number[]): number[] {

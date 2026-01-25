@@ -11,6 +11,9 @@ import {Delta} from "../fingerprint/Distances";
 import type {VariableCompositionAccumulator} from "./Accumulator";
 import type {StructureReduced} from "../fingerprint/Accumulator";
 
+/**
+ * Distance matrix encapsulation
+ */
 export class DistanceMatrix {
 
 	private readonly size: number;

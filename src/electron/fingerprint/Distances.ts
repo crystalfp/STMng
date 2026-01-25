@@ -159,6 +159,9 @@ export class DistanceMatrix {
     }
 }
 
+/**
+ * Manage delta values for triangle inequality test
+ */
 export class Delta {
 
     private readonly delta: number[];

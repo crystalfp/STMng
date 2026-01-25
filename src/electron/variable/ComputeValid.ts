@@ -15,21 +15,30 @@ import {isRejected, isFulfilled} from "../fingerprint/AllSettledHelpers";
 import {variablePerSiteFinishStep} from "../fingerprint/OganovValleFingerprint";
 import {computeDistances} from "./ComputeDistances";
 import {measuringMethods} from "../fingerprint/DistanceMethods";
-import type {WorkerResults} from "../fingerprint/Worker";
 import {removeDuplicatePoints} from "./RemoveDuplicates";
+import type {WorkerResults} from "../fingerprint/Worker";
 
 /**
- * Compute valid entries parameters
+ * Parameters for compute valid entries
  */
 export interface ComputeValidParameters {
+	/** Fingerprinting method */
 	method: number;
+	/** Forced manual cutoff */
 	forceCutoff: boolean;
+	/** Manual cutoff distance */
 	manualCutoffDistance: number;
+	/** Distance method */
 	distanceMethod: number;
+	/** Bin size for fingerprint discretization */
 	binSize: number;
+	/** Peak width for fingerprint discretization */
 	peakWidth: number;
+	/** If the triangle inequality should be checked and fixed for all distances */
 	fixTriangleInequality: boolean;
+	/** Threshold to remove duplicates */
 	duplicatesThreshold: number;
+	/** If process and not thread parallelism should be used */
 	processParallelism: boolean;
 }
 
@@ -59,9 +68,15 @@ export const distanceMethodsNames = (): string[] => {
 	return out;
 };
 
+/**
+ * Return status from computeValid
+ * @notExported
+ */
 interface ComputeValidResult {
 
+	/** Count of valid structures for the component */
 	count: number;
+	/** Error message, if any */
 	error?: string;
 }
 
