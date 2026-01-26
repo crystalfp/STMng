@@ -18,7 +18,7 @@ import type {DistanceMatrix as DistanceMatrixFp} from "../fingerprint/Distances"
  * @param indices - Indices of the elements to be analyzed
  * @param distances - The pair distances matrix
  * @param threshold - The distance threshold (absolute)
- * @returns The number of points removed
+ * @returns The number of points remaining
  */
 export const removeDuplicatePoints = (accumulator: VariableCompositionAccumulator,
 									  indices: number[],
@@ -36,7 +36,7 @@ export const removeDuplicatePoints = (accumulator: VariableCompositionAccumulato
     const countGroups = groups.length;
     if(countGroups === 0) {
         accumulator.setEnableStatus(indices, true);
-        return 0;
+        return countStructures;
     }
 
     // Start with nothing enabled
@@ -81,23 +81,21 @@ export const removeDuplicatePoints = (accumulator: VariableCompositionAccumulato
             let medianDistanceIdx = 0;
             for(const i of groupIndices) {
 
-                const ii = indices[i];
                 let totalDistance = 0;
                 for(const j of groupIndices) {
 
                     if(i === j) continue;
-                    const jj = indices[j];
-                    totalDistance += distances.get(ii, jj);
+                    totalDistance += distances.get(i, j);
                 }
                 if(totalDistance < medianDistance) {
                     medianDistance = totalDistance;
-                    medianDistanceIdx = ii;
+                    medianDistanceIdx = i;
                 }
             }
-            accumulator.getEntry(medianDistanceIdx)!.enabled = true;
+            accumulator.getEntry(indices[medianDistanceIdx])!.enabled = true;
         }
         ++countEnabled;
     }
 
-    return countStructures-countEnabled;
+    return countEnabled;
 };

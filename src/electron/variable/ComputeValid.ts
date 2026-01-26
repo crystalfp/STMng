@@ -92,7 +92,7 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 							 	   indices: number[],
 								   params: ComputeValidParameters): Promise<ComputeValidResult> => {
 
-	// Get and verify parameters
+	// Get parameters
 	const {processParallelism, method, manualCutoffDistance,
 		   duplicatesThreshold, peakWidth, distanceMethod,
 		   fixTriangleInequality, binSize} = params;
@@ -232,8 +232,8 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 									   distanceMethod, fixTriangleInequality);
 
 	// Remove duplicates
-	const removed = removeDuplicatePoints(accumulator, indices, distances,
-										  duplicatesThreshold);
+	const remaining = removeDuplicatePoints(accumulator, indices, distances,
+										    duplicatesThreshold);
 
-	return {count: countStructures-removed};
+	return {count: remaining};
 };
