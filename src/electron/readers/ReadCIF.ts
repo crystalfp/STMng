@@ -198,6 +198,8 @@ export class ReaderCIF implements ReaderImplementation {
 			switch(ws[0]) {
 				case "_symmetry.space_group_name_h-m":
 				case "_symmetry_space_group_name_h-m":
+				case "_space_group_name_h-m_alt":
+				case "_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
 						ws.slice(1).join(" ").replace(/^["']([^"']+)["']/, "$1").trim();
 					break;

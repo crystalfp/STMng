@@ -27,11 +27,12 @@ import type {CtrlParams} from "@/types";
  *      - "node": Help for node of the given type
  *      - "secondary": Help for a secondary window
  * @param file - Node name or window path for which the documentation should be shown.
+ * @returns Error message or empty string on success
  */
-const openDocumentation = async (kind: "top" | "node" | "secondary", file?: string): Promise<void> => {
+const openDocumentation = async (kind: "top" | "node" | "secondary", file?: string): Promise<string> => {
 
     if(!file && kind !== "top") {
-        throw Error(`Invalid help file request for "${kind}"`);
+        return `Invalid help file request for "${kind}"`;
     }
 
     let url;
@@ -48,10 +49,10 @@ const openDocumentation = async (kind: "top" | "node" | "secondary", file?: stri
     }
     if(existsSync(url)) {
         const sts = await shell.openPath(url);
-        if(sts) throw Error(`Error from help file "${file}.html" for "${kind}": ${sts}`);
-        return;
+        if(sts) return `Error from help file "${file}.html" for ${kind}: ${sts}`;
+        return "";
     }
-    throw Error(`Help file "${file}.html" for "${kind}" not found`);
+    return `Help file "${file}.html" for ${kind} not found`;
 };
 
 let systemMenu: Menu;
@@ -211,8 +212,11 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     label: "Current node documentation",
                     accelerator: "CommandOrControl+F1",
                     click() {
-                        getCurrentNode().then((currentNode) => {
-                            void openDocumentation("node", currentNode);
+                        getCurrentNode().then(async (currentNode) => {
+                            return openDocumentation("node", currentNode);
+                        })
+                        .then((message) => {
+                            if(message) sendAlertToClient(message);
                         })
                         .catch((error: Error) => {
                             sendAlertToClient(`Error getting help: ${error.message}`);

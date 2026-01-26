@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng variable-composition node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2025-01-26"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Variable composition</title>
+</head>
+
+<body>
+<h1 class="title">Variable composition</h1>
+<h1 class="subh1">Split compositions and remove duplicates structures</h1>
+
+<div class="description">
+<p>The module splits input structures by their composition. Then, for each composition, computes the structure fingerprints and their distances to remove duplicates. At the end saves the reduced compositions in different files.</p>
+</div>
+
+<h2>Controls</h2>
+<p>The controls are grouped in logical steps that normally should be completed top to bottom.</p>
+
+<h3>Accumulated structures</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Count</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of accumulated structures. The start and stop of the accumulation are done from the <a href="./structure-reader.html">Structure Reader</a> page.</td>
+</tr>
+<tr>
+	<td class="c1">Reset</td>
+	<td class="c2">button</td>
+	<td class="c3">Clear the accumulated structures.</td>
+</tr>
+<tr>
+	<td class="c1">Number of components</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">Number of component in the input structures. The count values could range from 2 to 4.</td>
+</tr>
+<tr>
+	<td class="c1">End-member composition (by column)</td>
+	<td class="c2">editable table</td>
+	<td class="c3">Each column is a component in the input structures. There is an atomic specie per line ordered alphabetically and the numeric values is the multiplicity of this specie in the given component. For example for MgO + SiO<sub>2</sub> the two columns should be 1, 1, 0 and 0, 2, 1.</td>
+</tr>
+<tr>
+	<td class="c1">Compute compositions</td>
+	<td class="c2">button</td>
+	<td class="c3">Compute the proportion of the given components for each structure accumulated. If for some structure the components are not valid, an error message appears. Note that for some compositions, where there is ambiguity, it signals to be unable to procede.</td>
+</tr>
+</table>
+
+<h3>Compositions</h3>
+<p>The data table has the following columns:</p>
+<table>
+  <tr><td class="c1">Select</tdclass><td>Select for the analysis and output the given composition. The toggle in the header selects all compositions.</td></tr>
+  <tr><td class="c1">Composition</td><td>The proportion of the various components.</td></tr>
+  <tr><td class="c1">Count</td><td>The number of structures with the given composition. The column is sortable by clicking on the column header.</td></tr>
+  <tr><td class="c1">Remain</td><td>After computing distances and removing duplicates, this column is populated with the resulting number of structures. The column is sortable by clicking on the column header.</td></tr>
+</table>
+
+<h3>Compute distances</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Force cutoff at:</td>
+	<td class="c2">toggle + numeric field</td>
+	<td class="c3">When set, forces the cutoff distance for the computation of fingerprint to the value entered.</td>
+</tr>
+<tr>
+  <td class="c1">Fingerprinting method</td>
+  <td class="c2">list</td>
+  <td class="c3">Select the method for computing the fingerprints:
+    <dl>
+      <dt>Oganov-Valle fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances.</dd>
+      <dt>Oganov-Valle per site fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint” but the centroid of all fingerprints is removed from each fingerprint.</dd>
+      <dt>Dot-matrix fingerprint</dt><dd>This method takes three atoms, one (A) in the unit cell and two (B &amp; C) in the extended unit cell (cells added around the unit cell to cover the cutoff distance). Then fill a square matrix in which row and column indices are computed from the AB and AC distances. The accumulated value is:<br><img src="dot-matrix.png" width="440" height="96" alt="Dot-matrix increment formula"><br>The matrix is then transformed to a vector appending the diagonals of the upper triangle starting from the longest one. <b>Note:</b> this method is quite slow.</dd>
+    </dl>
+  </td>
+</tr>
+<tr>
+  <td class="c1">Peak width</td>
+  <td class="c2">numeric field</td>
+  <td class="c3">The distance values are smoothed with a gaussian of this full width at half maximum (FWHM) value and then binned.</td>
+</tr>
+<tr>
+	<td class="c1">Bin size</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">To convert smoothed distance peaks into a vector of values, that is, the fingerprint, the smoothed interatomic distances are binned to this size.</td>
+</tr>
+<tr>
+	<td class="c1">Distance method</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the measuring method to obtain the distance between fingerprints:
+		<dl>
+      <dt>Cosine distance</dt><dd>Cosine distance between fingerprints interpreted as multidimensional vectors. The distances are scaled between 0 and 1. This measure violates the triangle inequality.</dd>
+      <dt>Euclidean distance</dt><dd>Euclidean distance between fingerprints interpreted as points in a multidimensional space.</dd>
+      <dt>Minkowski distance of order ⅓</dt><dd>The <a href="https://en.wikipedia.org/wiki/Minkowski_distance">Minkowski distance</a> with order p = ⅓. With this order value, the measure violates the triangle inequality but spread points better in the multidimensional space facilitating grouping.</dd>
+    </dl></td>
+</tr>
+<tr>
+	<td class="c1">Fix triangle inequality</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Iteratively adjust distances to satisfy the triangle inequality for every triples of distances.</td>
+</tr>
+</table>
+
+<h3>Remove duplicates</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Remove</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Enable removal of duplicated structures, that is, structures distant less than the distance threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Distance threshold</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">The maximum distance between two fingerprints to consider the highest energy one for removal.</td>
+</tr>
+<tr>
+	<td class="c1">Analyze selected</td>
+	<td class="c2">button</td>
+	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures.</td>
+</tr>
+<tr>
+	<td class="c1">Save analyzed</td>
+	<td class="c2">button</td>
+	<td class="c3">At the end of the computation show the output directory selector.</td>
+</tr>
+<tr>
+	<td class="c1">Output directory</td>
+	<td class="c2">directory selector</td>
+	<td class="c3">Select the directory where the output files will be saved. The files are called <tt>composition-&lt;<i>proportions</i>&gt;.poscar</tt>. If they have an associated energy, the file <tt>composition-&lt;<i>proportions</i>&gt;.energy</tt> is created. There is a file (or a pair of files) for each selected composition.</td>
+</tr>
+<tr>
+	<td class="c1">Files saved</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the save step, show the number of files created.</td>
+</tr>
+</table>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index &crarr;</a></p>
+
+</body>
+</html>

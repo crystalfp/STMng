@@ -88,7 +88,6 @@ const state = reactive({
     fixTriangleInequality: false,
     removeDuplicates: true,
     duplicatesThreshold: 0.015,
-    processParallelism: false
 });
 
 /** Pass state changes to the main process for saving in the project file */
@@ -138,7 +137,6 @@ askNode(id, "init")
         state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
         state.removeDuplicates = params.removeDuplicates as boolean ?? true;
         state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
-        state.processParallelism = params.processParallelism as boolean ?? false;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -230,9 +228,9 @@ const alignEnd = "end" as Align;
 
 /** Headers for the results table */
 const headers = [
-    {key: "key",   title: "Composition", sortable: false},
-    {key: "count", title: "Count",       align: alignEnd},
-    {key: "valid", title: "Result",      align: alignEnd}
+    {key: "key",   title: "Composition", sortable: false, maxWidth: 10},
+    {key: "count", title: "Count",       align: alignEnd, maxWidth: 5},
+    {key: "valid", title: "Remain",      align: alignEnd, maxWidth: 5}
 ];
 
 /** Selected table entries */
@@ -321,7 +319,7 @@ const disableSave = computed(() => {
                   class="ml-2 mr-3 mt-4" />
 
   <div v-show="countAccumulated > 0">
-    <v-label class="ml-2 mb-2">End-member compositions</v-label>
+    <v-label class="ml-2 mb-2">End-member compositions (by column)</v-label>
     <table class="ml-2">
       <tbody>
         <tr v-for="(value, idx) of species" :key="value">
@@ -347,9 +345,9 @@ const disableSave = computed(() => {
                 fixed-header hover height="300px" show-select item-value="key"
                 hide-default-footer :headers hide-no-data />
 
-  <v-label class="separator-title">Analysis</v-label>
+  <v-label class="separator-title">Compute distances</v-label>
 
-  <v-row class="ma-0">
+  <v-row class="ma-0 mb-n2">
     <v-switch v-model="state.forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
     <v-number-input v-model="state.manualCutoffDistance" label="Cutoff distance"
                     :min="0.1" :step="0.1" :precision="2"
@@ -369,21 +367,22 @@ const disableSave = computed(() => {
     <v-number-input v-model="state.binSize" :precision="2"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
-  <v-switch v-model="state.processParallelism" label="Multi process parallelism" class="ml-2 mb-2"/>
 
   <v-select v-model="state.distanceMethod"
     label="Distance method"
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    class="mx-2 mb-4" />
+    class="mx-2 mb-4 mt-1" />
 
   <v-switch v-model="state.fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n1" />
 
-  <v-row class="ml-0 mr-2 pt-5 pb-2">
+  <v-label class="separator-title">Remove duplicates</v-label>
+
+  <v-row class="ml-0 mr-2 pt-3">
     <v-switch v-model="state.removeDuplicates"
-            label="Remove dupl." class="ml-2 mr-6 mb-5" />
+            label="Remove" class="ml-2 mr-6 mb-5" />
     <v-number-input v-model="state.duplicatesThreshold" :disabled="!state.removeDuplicates"
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>

@@ -49,7 +49,6 @@ export class VariableComposition extends NodeCore {
 		fixTriangleInequality: false,
 		removeDuplicates: true,
 		duplicatesThreshold: 0.015,
-		processParallelism: false,
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -462,7 +461,6 @@ export class VariableComposition extends NodeCore {
 			peakWidth: params.peakWidth as number ?? 0.02,
 			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
 			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015,
-			processParallelism: params.processParallelism as boolean ?? false,
 		};
 
 		if(options.method < 0 || options.method > 2) {

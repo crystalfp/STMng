@@ -4,7 +4,6 @@ Bugs:
   ☐ Transform to international symbol also input symmops
   ☐ Changing theme does not changes points color in scatterplot
   ☐ In X-ray doc add reference to the pymatgen routine
-  ☐ Polyhedra, ignore H bonds
   ☐ Still problems with incomplete polyhedra
 
 Latest requests (backlog):
@@ -14,13 +13,11 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
-  ☐ Analysis of variable composition data sets.
 
 To do:
   ☐ Check error return from main process to client
   ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
-  ✘ When out of labs use `v-color-input` instead of `ColorSelector.vue` @cancelled(2026-01-09 14:58)
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
@@ -79,6 +76,9 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Polyhedra, ignore H bonds @done(2026-01-26 14:41) @project(Bugs)
+  ✔ Analysis of variable composition data sets. @done(2026-01-26 14:41) @project(Latest requests (backlog))
+  ✘ When out of labs use `v-color-input` instead of `ColorSelector.vue` @cancelled(2026-01-09 14:58) @project(To do)
   ✔ If devtools embedded in main, viewer3d aspect ratio is wrong @done(2025-12-28 17:53) @project(Bugs)
   ✘ Try remove all `convertSRGBToLinear` @cancelled(2026-01-08 06:53) @project(To do)
   ✔ Show space group number in addition to space group name @done(2025-12-16 16:30) @project(Latest requests (backlog))

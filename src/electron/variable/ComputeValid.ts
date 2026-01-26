@@ -38,8 +38,6 @@ export interface ComputeValidParameters {
 	fixTriangleInequality: boolean;
 	/** Threshold to remove duplicates */
 	duplicatesThreshold: number;
-	/** If process and not thread parallelism should be used */
-	processParallelism: boolean;
 }
 
 /**
@@ -93,7 +91,7 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 								   params: ComputeValidParameters): Promise<ComputeValidResult> => {
 
 	// Get parameters
-	const {processParallelism, method, manualCutoffDistance,
+	const {method, manualCutoffDistance,
 		   duplicatesThreshold, peakWidth, distanceMethod,
 		   fixTriangleInequality, binSize} = params;
 	const countStructures = indices.length;
@@ -104,10 +102,7 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 	// Compute the parallelism
 	let availableParallelism = os.availableParallelism();
 	if(availableParallelism > 1) {
-		/* oxlint-disable-next-line @stylistic/space-before-function-paren */
-		availableParallelism = (processParallelism ?
-									2*availableParallelism :
-									availableParallelism)-1;
+		availableParallelism = 2*availableParallelism-1;
 	}
 	if(countStructures < availableParallelism) availableParallelism = countStructures;
 
@@ -115,7 +110,7 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 	const pool = workerpool.pool(worker, {
 		minWorkers: "max",
 		maxWorkers: availableParallelism,
-		workerType: processParallelism ? "process" : "thread"
+		workerType: "process"
 	});
 	const promises: workerpool.Promise<WorkerResults>[] = [];
 
@@ -143,8 +138,7 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 			areNanoclusters: false,
 			cutoffDistance: manualCutoffDistance,
 			binSize,
-			peakWidth,
-    		processParallelism
+			peakWidth
 		};
 
 		const result = pool.exec("fingerprinting", [
