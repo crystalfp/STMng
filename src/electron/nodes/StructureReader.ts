@@ -8,6 +8,7 @@
  */
 import log from "electron-log";
 import {tmpNameSync} from "tmp";
+import {globSync} from "tinyglobby";
 import {unlinkSync, writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
@@ -17,6 +18,7 @@ import {getDBforSearch, getPrototypeStructure} from "../modules/PrototypeDb";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
+import {publicDirPath} from "../modules/GetPublicPath";
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 										   "LAMMPStrj", "POSCAR + XDATCAR", "XDATCAR5",
@@ -41,6 +43,7 @@ export class StructureReader extends NodeCore {
 	private fileToRead = "";
 	private reader: ReaderImplementation | undefined;
 	private readerOptions: ReaderOptions = {};
+	private cachedCollection = "";
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -63,6 +66,7 @@ export class StructureReader extends NodeCore {
 		{name: "aux-dropped",	type: "invokeAsync", callback: this.channelAuxDropped.bind(this)},
 		{name: "proto", 	 	type: "invokeAsync", callback: this.channelProto.bind(this)},
 		{name: "species", 	 	type: "invokeAsync", callback: this.channelSpecies.bind(this)},
+		{name: "collection", 	type: "invokeAsync", callback: this.channelCollection.bind(this)},
 	];
 
 	/**
@@ -728,5 +732,71 @@ export class StructureReader extends NodeCore {
 		this.toNextNode(this.structures[this.step-1]);
 
 		return {result: "OK"};
+	}
+
+	/**
+	 * Channel handler for reading selected collection item
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private async channelCollection(params: CtrlParams): Promise<CtrlParams> {
+
+		const root = publicDirPath("StructureCollection").replaceAll("\\", "/");
+
+		if(!params) {
+
+			if(!this.cachedCollection) {
+
+				const files = globSync(`${root}/*.cif`, {onlyFiles: true, cwd: root});
+
+				let next = false;
+				this.cachedCollection = "[";
+				for(const file of files) {
+					if(next) this.cachedCollection += ",";
+					else next = true;
+					const title = file.replace(".cif", "");
+					this.cachedCollection += `{"title":"${title}","filename":"${file}"}`;
+				}
+				this.cachedCollection += "]";
+			}
+
+			return {list: this.cachedCollection};
+		}
+
+		// Load a single file from the collection
+		const filename = params.filename as string;
+		if(!filename) {
+			this.toNextNode(new EmptyStructure());
+			return {result: "Empty filename"};
+		}
+
+		const {ReaderCIF} = await import("../readers/ReadCIF");
+		const reader = new ReaderCIF();
+
+		// Read the file and catch format errors
+		const fullPath = `${root}/${filename}`;
+		const structures = await reader.readStructure(fullPath)
+			.catch((error: Error) => {
+				return `Format "CIF" error: ${error.message}`;
+			});
+		if(typeof structures === "string") {
+			log.error(structures);
+			return {error: structures};
+		}
+		this.structures = structures;
+		this.structures[0].extra.step = 1;
+
+		// Clean and check the structure list
+		StructureReader.removeEmptyStructures(this.structures);
+		if(StructureReader.checkStructures(this.structures)) {
+			this.toNextNode(this.structures[0]);
+			this.countSteps = this.structures.length;
+			return {countSteps: this.countSteps};
+		}
+
+		const message = 'Invalid "CIF" file content';
+		log.error(message);
+		return {error: message};
 	}
 }

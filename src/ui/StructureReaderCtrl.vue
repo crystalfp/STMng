@@ -55,7 +55,19 @@ const fileFormats = [
     {type:  "divider"},
     {type:  "subheader",        title: "Special sources"},
     {title: "Prototypes",       value: "Prototypes"},
+    {title: "Collection",       value: "Collection"},
 ];
+
+/**
+ * Collection entry for autocomplete a query
+ * @notExported
+ */
+interface CollectionType {
+    /** Title that appears in the widget (and the one searched over) */
+    title: string;
+    /** Corresponding filename to load */
+    filename: string;
+}
 
 // > UI parameters
 const countSteps      = ref(1);      // Total steps read
@@ -75,12 +87,15 @@ const energyPerAtom   = ref(false);  // Energy file has energy per atom and not 
 const appendFile      = ref(false);  // The file will be appended to the list of steps
 const stepRange       = ref([1, 1]); // Range of steps
 const showPrototypes  = ref(false);  // If the read comes from the prototypes database
+const showCollection  = ref(false);  // If the read comes from the structure collection
 const db              = reactive<DBType[]>([]); // The prototypes db content for query
 const query           = ref("");     // The selected prototype UID
 const mineral         = ref("");     // The selected prototype mineral tag
 const pearson         = ref("");     // The selected prototype pearson tag
 const strukturbericht = ref("");     // The selected prototype strukturbericht tag
 const aflowTag        = ref("");     // The selected prototype aflow tag
+const collection      = ref<CollectionType[]>([]); // The structure collection
+const collectionQuery = ref("");     // The selected collection entry filename
 
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
@@ -292,7 +307,21 @@ const setFormat = (): void => {
         showPrototypes.value = true;
         return;
     }
+    if(format.value === "Collection") {
+        askNode(id, "collection")
+            .then((result) => {
+
+                collection.value = JSON.parse(result.list as string ?? "[]") as CollectionType[];
+                showCollection.value = true;
+            })
+            .catch((error: Error) => {
+                showNodeAlert(`Error loading collection: ${error.message}`,
+                              "structureReader");
+            });
+        return;
+    }
     showPrototypes.value = false;
+    showCollection.value = false;
 
     sendToNode(id, "formats", {format: format.value});
 
@@ -650,6 +679,23 @@ const startQuery = (aflow: string): void => {
         });
 };
 
+/**
+ * Load the queried collection item
+ *
+ * @param filename - Filename to load
+ */
+const startCollectionQuery = (filename: string): void => {
+
+    if(!filename) filename = "";
+    askNode(id, "collection", {filename})
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            showNodeAlert(error.message, "structureReader");
+        });
+};
+
 </script>
 
 
@@ -674,6 +720,13 @@ const startQuery = (aflow: string): void => {
         <tr><td class="c1">pearson:</td><td>{{ pearson }}</td></tr>
       </tbody>
     </table>
+  </v-container>
+  <v-container v-else-if="showCollection" class="pa-0">
+    <v-autocomplete v-model="collectionQuery" label="Collection query"
+                  :items="collection" item-title="title" item-value="filename"
+                  :auto-select-first="true" :hide-details="true"
+                  :clearable="true" no-data-text="No entry found" spellcheck="false"
+                  @update:modelValue="startCollectionQuery"/>
   </v-container>
   <v-container v-else class="pa-0">
 
