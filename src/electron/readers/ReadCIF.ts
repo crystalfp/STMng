@@ -201,7 +201,12 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_space_group_name_h-m_alt":
 				case "_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
-						ws.slice(1).join(" ").replace(/^["']([^"']+)["']/, "$1").trim();
+						lineNC
+							.split(/\s+/)
+							.slice(1)
+							.join(" ")
+							.replace(/^["']([^"']+)["']/, "$1")
+							.trim();
 					break;
 				case "_cell_length_a":
 				case "_cell.length_a":

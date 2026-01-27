@@ -49,6 +49,7 @@ export class VariableComposition extends NodeCore {
 		fixTriangleInequality: false,
 		removeDuplicates: true,
 		duplicatesThreshold: 0.015,
+		consolidateOutput: false
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -107,6 +108,7 @@ export class VariableComposition extends NodeCore {
     	this.state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
     	this.state.removeDuplicates = params.removeDuplicates as boolean ?? true;
     	this.state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+		this.state.consolidateOutput = params.consolidateOutput as boolean ?? false;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -340,6 +342,133 @@ export class VariableComposition extends NodeCore {
 	}
 
 	/**
+	 * Save compositions one per file in the given directory
+	 *
+	 * @param selected - All selected compositions codes (separated by "-")
+	 * @param dir - Directory where to save the compositions
+	 * @returns Number of files saved
+	 */
+	private saveByComposition(selected: Set<string>, dir: string): number {
+
+		let saved = 0;
+		const hasEnergies = this.accumulator.hasEnergies();
+
+		for(const entry of this.accumulator.iterateKeys()) {
+
+			// If this key has been processed
+			if(!selected.has(entry[0])) continue;
+
+			// Check that at least one entry is enabled
+			let valid = false;
+			for(const idx of entry[1]) {
+				if(this.accumulator.getEntry(idx)?.enabled) {
+					valid = true;
+					break;
+				}
+			}
+			if(!valid) continue;
+
+			// Order entries by increasing energies
+			if(hasEnergies) {
+
+				const toOrder = [];
+				for(const idx of entry[1]) {
+					const structure = this.accumulator.getEntry(idx);
+					toOrder.push([structure!.energy!, idx]);
+				}
+				toOrder.sort((a, b) => a[0] - b[0]);
+				entry[1] = toOrder.map((value) => value[1]);
+			}
+
+			const name = `composition-${entry[0]}`;
+			const dataFile = path.join(dir, `${name}.poscar`);
+			const energyFile = path.join(dir, `${name}.energy`);
+
+			const fd = openSync(dataFile, "w");
+			const fde = hasEnergies ? openSync(energyFile, "w") : undefined;
+
+			for(const idx of entry[1]) {
+
+				const structure = this.accumulator.getEntry(idx)!;
+				if(!structure?.enabled) continue;
+
+				writeSync(fd, this.entryToPoscar(structure));
+				if(fde !== undefined) writeSync(fde, `${structure.energy?.toFixed(6) ?? "?"}\n`);
+			}
+			closeSync(fd);
+			if(fde !== undefined) closeSync(fde);
+			++saved;
+		}
+
+		return saved;
+	}
+
+	/**
+	 * Save all compositions in one file in the given directory
+	 *
+	 * @param selected - All selected compositions codes (separated by "-")
+	 * @param dir - Directory where to save the compositions
+	 * @returns Number of files saved, that is one
+	 */
+	private saveAllCompositions(selected: Set<string>, dir: string): number {
+
+		const hasEnergies = this.accumulator.hasEnergies();
+		const all: [number, number][] = [];
+
+		for(const entry of this.accumulator.iterateKeys()) {
+
+			// If this key has been processed
+			if(!selected.has(entry[0])) continue;
+
+			// Check that at least one entry is enabled
+			let valid = false;
+			for(const idx of entry[1]) {
+				if(this.accumulator.getEntry(idx)?.enabled) {
+					valid = true;
+					break;
+				}
+			}
+			if(!valid) continue;
+
+			// Order entries by increasing energies
+			if(hasEnergies) {
+
+				for(const idx of entry[1]) {
+					const structure = this.accumulator.getEntry(idx);
+					all.push([structure!.energy!, idx]);
+				}
+			}
+			else {
+				for(const idx of entry[1]) {
+					all.push([0, idx]);
+				}
+			}
+		}
+
+		if(hasEnergies) all.sort((a, b) => a[0] - b[0]);
+
+		const name = "composition-all";
+		const dataFile = path.join(dir, `${name}.poscar`);
+		const energyFile = path.join(dir, `${name}.energy`);
+
+		const fd = openSync(dataFile, "w");
+		const fde = hasEnergies ? openSync(energyFile, "w") : undefined;
+
+		for(const one of all) {
+
+			const structure = this.accumulator.getEntry(one[1])!;
+			if(!structure?.enabled) continue;
+
+			writeSync(fd, this.entryToPoscar(structure));
+			if(fde !== undefined) writeSync(fde, `${one[0].toFixed(6)}\n`);
+		}
+		closeSync(fd);
+		if(fde !== undefined) closeSync(fde);
+
+		return 1;
+	}
+
+	/**
 	 * Channel handler for saving results into files in a directory
 	 *
 	 * @returns Count saved or -1 if not selected
@@ -362,38 +491,9 @@ export class VariableComposition extends NodeCore {
 
 		this.accumulator.initializeKeyMap();
 
-		let saved = 0;
-		for(const entry of this.accumulator.iterateKeys()) {
-
-			// If this key has been processed
-			if(!selected.has(entry[0])) continue;
-
-			// Check that at least one entry is enabled
-			let valid = false;
-			for(const idx of entry[1]) {
-				if(this.accumulator.getEntry(idx)?.enabled) valid = true;
-			}
-			if(!valid) continue;
-
-			const name = `composition-${entry[0]}`;
-			const dataFile = path.join(dir[0], `${name}.poscar`);
-			const energyFile = path.join(dir[0], `${name}.energy`);
-
-			const fd = openSync(dataFile, "w");
-			const fde = this.accumulator.hasEnergies() ? openSync(energyFile, "w") : undefined;
-
-			for(const idx of entry[1]) {
-
-				const structure = this.accumulator.getEntry(idx)!;
-				if(!structure?.enabled) continue;
-
-				writeSync(fd, this.entryToPoscar(structure));
-				if(fde !== undefined) writeSync(fde, `${structure.energy?.toFixed(6) ?? "?"}\n`);
-			}
-			closeSync(fd);
-			if(fde !== undefined) closeSync(fde);
-			++saved;
-		}
+		const saved = this.state.consolidateOutput ?
+								this.saveAllCompositions(selected, dir[0]) :
+								this.saveByComposition(selected, dir[0]);
 
 		sendAlertToClient(`Saved ${saved} file${saved === 1 ? "" : "s"} for variable composition`,
 						  {level: "success"});

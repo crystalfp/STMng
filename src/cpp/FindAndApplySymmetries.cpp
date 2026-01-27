@@ -310,7 +310,7 @@ static void applySymmetriesInput(string& spaceGroup,
 #ifdef DEBUG
 			char msg[32];
 			sprintf(msg, "Parsed %d XYZ symbol%s\n", n, (n > 1) ? "s" : "");
-			std::cout << msg;
+			cout << msg;
 #endif
 			if(lattice_indicator != 0)
 			{
@@ -391,7 +391,8 @@ static void applySymmetriesInput(string& spaceGroup,
 			return;
 		}
 	}
-	sgNumber = SgInfo.TabSgName->SgNumber;
+
+	sgNumber = SgInfo.TabSgName ? SgInfo.TabSgName->SgNumber : 0;
 
 	// TEST
 	// This is the intl. symbol. Remove all "_"
@@ -407,11 +408,11 @@ static void applySymmetriesInput(string& spaceGroup,
 	free(SgInfo.ListRotMxInfo);
 
 #ifdef DEBUG
-	std::cout << "\nSpace group: " << spaceGroup << "\n";
+	cout << "\nSpace group: " << spaceGroup << "\n";
 
-	std::cout << "Input len: " << fractionalCoordinates.size() << "\n";
-	// for(auto v : fractionalCoordinates) std::cout << " " << v;
-	// std::cout << "\n";
+	cout << "Input len: " << fractionalCoordinates.size() << "\n";
+	// for(auto v : fractionalCoordinates) cout << " " << v;
+	// cout << "\n";
 #endif
 }
 

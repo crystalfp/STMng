@@ -21,11 +21,10 @@
 <h1 class="subh1">Split compositions and remove duplicates structures</h1>
 
 <div class="description">
-<p>The module splits input structures by their composition. Then, for each composition, computes the structure fingerprints and their distances to remove duplicates. At the end saves the reduced compositions in different files.</p>
+<p>The module splits input structures by their composition. Then, for each composition, computes the structure fingerprints and their distances to remove duplicates. At the end saves the reduced compositions in different files or consolidate them in a single one.</p>
 </div>
 
 <h2>Controls</h2>
-<p>The controls are grouped in logical steps that normally should be completed top to bottom.</p>
 
 <h3>Accumulated structures</h3>
 <table cellpadding="2" cellspacing="2">
@@ -52,14 +51,14 @@
 <tr>
 	<td class="c1">Compute compositions</td>
 	<td class="c2">button</td>
-	<td class="c3">Compute the proportion of the given components for each structure accumulated. If for some structure the components are not valid, an error message appears. Note that for some compositions, where there is ambiguity, it signals to be unable to procede.</td>
+	<td class="c3">Compute the proportion of the given components for each structure accumulated. If for some structure the components are not valid, an error message appears. Note that for some compositions, where there is ambiguity, it reports that it cannot proceed.</td>
 </tr>
 </table>
 
 <h3>Compositions</h3>
 <p>The data table has the following columns:</p>
 <table>
-  <tr><td class="c1">Select</tdclass><td>Select for the analysis and output the given composition. The toggle in the header selects all compositions.</td></tr>
+  <tr><td class="c1">Select</td><td>Select for the analysis and output the given composition. The toggle in the header selects all compositions.</td></tr>
   <tr><td class="c1">Composition</td><td>The proportion of the various components.</td></tr>
   <tr><td class="c1">Count</td><td>The number of structures with the given composition. The column is sortable by clicking on the column header.</td></tr>
   <tr><td class="c1">Remain</td><td>After computing distances and removing duplicates, this column is populated with the resulting number of structures. The column is sortable by clicking on the column header.</td></tr>
@@ -128,6 +127,11 @@
 	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures.</td>
 </tr>
 <tr>
+	<td class="c1">Consolidate output</td>
+	<td class="c2">toggle</td>
+	<td class="c3">When set saves all resulting structures into a single file ordered by energy.</td>
+</tr>
+<tr>
 	<td class="c1">Save analyzed</td>
 	<td class="c2">button</td>
 	<td class="c3">At the end of the computation show the output directory selector.</td>
@@ -135,7 +139,7 @@
 <tr>
 	<td class="c1">Output directory</td>
 	<td class="c2">directory selector</td>
-	<td class="c3">Select the directory where the output files will be saved. The files are called <tt>composition-&lt;<i>proportions</i>&gt;.poscar</tt>. If they have an associated energy, the file <tt>composition-&lt;<i>proportions</i>&gt;.energy</tt> is created. There is a file (or a pair of files) for each selected composition.</td>
+	<td class="c3">Select the directory where the output files will be saved. The files are called <tt>composition&#8209;&lt;<i>proportions</i>&gt;.poscar</tt>. If they have an associated energy, the file <tt>composition&#8209;&lt;<i>proportions</i>&gt;.energy</tt> is created. There is a file (or a pair of files) for each selected composition. If the `“Consolidate output” toggle is set, the <tt><i>proportions</i></tt> part of the filenames is changed into the “all” string.</td>
 </tr>
 <tr>
 	<td class="c1">Files saved</td>

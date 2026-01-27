@@ -88,6 +88,7 @@ const state = reactive({
     fixTriangleInequality: false,
     removeDuplicates: true,
     duplicatesThreshold: 0.015,
+    consolidateOutput: false
 });
 
 /** Pass state changes to the main process for saving in the project file */
@@ -137,6 +138,7 @@ askNode(id, "init")
         state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
         state.removeDuplicates = params.removeDuplicates as boolean ?? true;
         state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+        state.consolidateOutput = params.consolidateOutput as boolean ?? false;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -382,7 +384,7 @@ const disableSave = computed(() => {
 
   <v-row class="ml-0 mr-2 pt-3">
     <v-switch v-model="state.removeDuplicates"
-            label="Remove" class="ml-2 mr-6 mb-5" />
+              label="Remove" class="ml-2 mr-6 mb-5" />
     <v-number-input v-model="state.duplicatesThreshold" :disabled="!state.removeDuplicates"
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
@@ -391,7 +393,9 @@ const disableSave = computed(() => {
          @click="analysisRunning=true; savedFiles=-1; analyzeSelected()">
     Analyze selected
   </v-btn>
-  <v-btn block class="mt-4" :disabled="disableSave" @click="saveAnalyzed">
+  <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
+            label="Consolidate output" class="ml-2 mt-2"/>
+  <v-btn block class="mt-2" :disabled="disableSave" @click="saveAnalyzed">
     Save analyzed
   </v-btn>
   <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-2">

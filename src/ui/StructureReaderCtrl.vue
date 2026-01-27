@@ -36,23 +36,25 @@ const {id, label} = defineProps<{
 
 /** Formats that could be loaded */
 const fileFormats = [
-    "CEL",
-    "CHGCAR",
-    "CIF",
-    "DL_POLY HISTORY",
-    "Gaussian Cube",
-    "LAMMPS",
-    "LAMMPStrj",
-    "PDB",
-    "POSCAR",
-    "POSCAR + CP2K",
-    "POSCAR + ENERGY",
-    "POSCAR + XDATCAR",
-    "Prototypes",
-    "Quantum ESPRESSO",
-    "Shel-X",
-    "XDATCAR5",
-    "XYZ"
+    {title: "CEL",              value: "CEL"},
+    {title: "CHGCAR",           value: "CHGCAR"},
+    {title: "CIF",              value: "CIF"},
+    {title: "DL_POLY HISTORY",  value: "DL_POLY HISTORY"},
+    {title: "Gaussian Cube",    value: "Gaussian Cube"},
+    {title: "LAMMPS",           value: "LAMMPS"},
+    {title: "LAMMPStrj",        value: "LAMMPStrj"},
+    {title: "PDB",              value: "PDB"},
+    {title: "POSCAR",           value: "POSCAR"},
+    {title: "POSCAR + CP2K",    value: "POSCAR + CP2K"},
+    {title: "POSCAR + ENERGY",  value: "POSCAR + ENERGY"},
+    {title: "POSCAR + XDATCAR", value: "POSCAR + XDATCAR"},
+    {title: "Quantum ESPRESSO", value: "Quantum ESPRESSO"},
+    {title: "Shel-X",           value: "Shel-X"},
+    {title: "XDATCAR5",         value: "XDATCAR5"},
+    {title: "XYZ",              value: "XYZ"},
+    {type:  "divider"},
+    {type:  "subheader",        title: "Special sources"},
+    {title: "Prototypes",       value: "Prototypes"},
 ];
 
 // > UI parameters

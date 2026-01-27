@@ -3,59 +3,59 @@
     "reader": {
       "label": "Structure reader (reader)",
       "type": "structure-reader",
-      "x": -150,
-      "y": -150
+      "x": 240,
+      "y": 120
     },
-    "unit": {
-      "label": "Draw unit cell (unit)",
-      "type": "draw-unit-cell",
-      "x": 0,
-      "y": -120,
-      "in": "reader"
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d",
+      "x": 360,
+      "y": 300
     },
     "symmetry": {
       "label": "Compute symmetries (symmetry)",
       "type": "compute-symmetries",
-      "x": 150,
-      "y": -120,
-      "in": "unit"
+      "x": 510,
+      "y": 210,
+      "in": "reader"
     },
-    "bonds": {
-      "label": "Compute bonds (bonds)",
-      "type": "compute-bonds",
-      "x": 300,
-      "y": -90,
+    "unit": {
+      "label": "Draw unit cell (unit)",
+      "type": "draw-unit-cell",
+      "x": 540,
+      "y": 90,
       "in": "symmetry"
     },
     "draw": {
       "label": "Draw structure (draw)",
       "type": "draw-structure",
-      "x": 480,
-      "y": 60,
+      "x": 720,
+      "y": 210,
       "in": "bonds"
     },
-    "viewer": {
-      "label": "Viewer",
-      "type": "viewer-3d",
-      "x": 540,
-      "y": 150
+    "bonds": {
+      "label": "Compute bonds (bonds)",
+      "type": "compute-bonds",
+      "x": 750,
+      "y": 120,
+      "in": "unit"
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        -36.436100421834425,
-        12.875788745387723,
-        27.503495014161665
+        6.245396987690165,
+        -5.576455102047382,
+        6.573161584625744
       ],
       "lookAt": [
-        1.40319285231085,
-        1.40319285231085,
-        11.2255428184868
+        3.805268857750993,
+        3.182911552463758,
+        4.133033454686573
       ],
       "snapshotFormat": "png",
-      "snapshotTransparent": true,
+      "snapshotTransparent": false,
       "stlFormat": "binary",
       "forcePosition": [
         5,
@@ -66,10 +66,14 @@
         0,
         0,
         0
-      ]
+      ],
+      "autoReset": false
     },
     "scene": {
-      "background": "#90CEEC"
+      "background": "#90CEEC",
+      "depthCueing": false,
+      "depthNear": 10,
+      "depthFar": 50
     },
     "lights": {
       "ambientColor": "#FFFFFF",
@@ -97,20 +101,20 @@
       ]
     },
     "helpers": {
-      "showAxis": true,
+      "showAxis": false,
       "showGridXZ": false,
       "showGridXY": false,
       "showGridYZ": false,
       "gridSize": 10,
       "axisLength": 1,
-      "showGizmo": true
+      "showGizmo": false
     }
   },
   "ui": {
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "Quantum ESPRESSO",
+      "format": "CIF",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,
@@ -118,46 +122,37 @@
       "stepIncrement": 1,
       "speed": 1
     },
+    "symmetry": {
+      "applyInputSymmetries": true,
+      "enableFindSymmetries": true,
+      "standardizeCell": true,
+      "symprecStandardize": -1,
+      "symprecDataset": -1,
+      "fillUnitCell": true,
+      "fillTolerance": -5,
+      "standardizeOnly": false,
+      "createPrimitiveCell": false,
+      "computePointGroup": false,
+      "positionTolerance": 0.3,
+      "eigenvalueTolerance": 0.01,
+      "displayMode": "international"
+    },
     "unit": {
       "showUnitCell": true,
       "dashedLine": false,
       "lineColor": "#0000FF",
-      "showBasisVectors": true,
+      "showBasisVectors": false,
       "repetitionsA": 1,
       "repetitionsB": 1,
       "repetitionsC": 1,
       "showSupercell": false,
       "supercellColor": "#02A502",
       "dashedSupercell": false,
+      "lineWidth": 0,
       "percentA": 0,
       "percentB": 0,
       "percentC": 0,
       "shrink": false
-    },
-    "symmetry": {
-      "applyInputSymmetries": false,
-      "enableFindSymmetries": false,
-      "standardizeCell": false,
-      "symprecStandardize": -1,
-      "symprecDataset": -1,
-      "fillUnitCell": true,
-      "fillTolerance": -4.02,
-      "standardizeOnly": false,
-      "createPrimitiveCell": false,
-      "computePointGroup": false,
-      "positionTolerance": 0.3,
-      "eigenvalueTolerance": 0.01
-    },
-    "bonds": {
-      "minBondingDistance": 0.64,
-      "maxBondingDistance": 4.5,
-      "maxHBondingDistance": 3,
-      "maxHValenceAngle": 30,
-      "enableComputeBonds": true,
-      "bondScale": 1.1,
-      "perPairScale": false,
-      "perPairData": "[]",
-      "enlargementKind": "neighbors"
     },
     "draw": {
       "drawKind": "ball-and-stick",
@@ -169,7 +164,23 @@
       "showAtoms": true,
       "showLabels": true,
       "shadedBonds": false,
-      "showBondsStrengths": false
+      "showBondsStrengths": false,
+      "atomColoring": "type",
+      "monochromeColor": "#888888",
+      "bondsRadiusMultiplier": 1,
+      "spheresRadiusMultiplier": 1,
+      "legend": false
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "perPairData": "[]",
+      "enlargementKind": "neighbors"
     }
   }
 }
