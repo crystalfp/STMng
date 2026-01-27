@@ -109,17 +109,20 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 					for(int k=0; k < typesOut.size(); ++k)
 					{
 						double dx = fcOut[3*k+0]-Bfr[0];
-						if(dx > DUPLICATED_TOL || dx < -DUPLICATED_TOL) {
+						if(!((dx < DUPLICATED_TOL     && dx > -DUPLICATED_TOL) ||
+							 (dx < (1+DUPLICATED_TOL) && dx > (1-DUPLICATED_TOL)))) {
 							different = true;
 							continue;
 						}
 						double dy = fcOut[3*k+1]-Bfr[1];
-						if(dy > DUPLICATED_TOL || dy < -DUPLICATED_TOL) {
+						if(!((dy < DUPLICATED_TOL     && dy > -DUPLICATED_TOL) ||
+							 (dy < (1+DUPLICATED_TOL) && dy > (1-DUPLICATED_TOL)))) {
 							different = true;
 							continue;
 						}
 						double dz = fcOut[3*k+2]-Bfr[2];
-						if(dz > DUPLICATED_TOL || dz < -DUPLICATED_TOL) {
+						if(!((dz < DUPLICATED_TOL     && dz > -DUPLICATED_TOL) ||
+							 (dz < (1+DUPLICATED_TOL) && dz > (1-DUPLICATED_TOL)))) {
 							different = true;
 							continue;
 						}

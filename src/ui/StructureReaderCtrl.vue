@@ -303,6 +303,8 @@ const togglePlay = (): void => {
  */
 const setFormat = (): void => {
 
+    sendToNode(id, "formats", {format: format.value});
+
     if(format.value === "Prototypes") {
         showPrototypes.value = true;
         return;
@@ -322,8 +324,6 @@ const setFormat = (): void => {
     }
     showPrototypes.value = false;
     showCollection.value = false;
-
-    sendToNode(id, "formats", {format: format.value});
 
     // Clean the labels of the file selectors
     label1.value = "";

@@ -3,56 +3,56 @@
     "reader": {
       "label": "Structure reader (reader)",
       "type": "structure-reader",
-      "x": 240,
-      "y": 120
-    },
-    "viewer": {
-      "label": "Viewer",
-      "type": "viewer-3d",
-      "x": 360,
-      "y": 300
+      "x": 180,
+      "y": 180
     },
     "symmetry": {
       "label": "Compute symmetries (symmetry)",
       "type": "compute-symmetries",
-      "x": 510,
-      "y": 210,
+      "x": 330,
+      "y": 180,
       "in": "reader"
+    },
+    "bonds": {
+      "label": "Compute bonds (bonds)",
+      "type": "compute-bonds",
+      "x": 360,
+      "y": 360,
+      "in": "unit"
     },
     "unit": {
       "label": "Draw unit cell (unit)",
       "type": "draw-unit-cell",
-      "x": 540,
-      "y": 90,
+      "x": 480,
+      "y": 180,
       "in": "symmetry"
     },
     "draw": {
       "label": "Draw structure (draw)",
       "type": "draw-structure",
-      "x": 720,
-      "y": 210,
+      "x": 630,
+      "y": 300,
       "in": "bonds"
     },
-    "bonds": {
-      "label": "Compute bonds (bonds)",
-      "type": "compute-bonds",
-      "x": 750,
-      "y": 120,
-      "in": "unit"
+    "viewer": {
+      "label": "Viewer",
+      "type": "viewer-3d",
+      "x": 630,
+      "y": 420
     }
   },
   "viewer": {
     "camera": {
       "type": "orthographic",
       "position": [
-        6.245396987690165,
-        -5.576455102047382,
-        6.573161584625744
+        14.266738845025131,
+        -1.5498865189962276,
+        1.7082503607102981
       ],
       "lookAt": [
-        3.805268857750993,
-        3.182911552463758,
-        4.133033454686573
+        5.168398343026638,
+        2.351801097393036,
+        4.445533215999603
       ],
       "snapshotFormat": "png",
       "snapshotTransparent": false,
@@ -114,7 +114,7 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "CIF",
+      "format": "Collection",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,
@@ -136,6 +136,17 @@
       "positionTolerance": 0.3,
       "eigenvalueTolerance": 0.01,
       "displayMode": "international"
+    },
+    "bonds": {
+      "minBondingDistance": 0.64,
+      "maxBondingDistance": 4.5,
+      "maxHBondingDistance": 3,
+      "maxHValenceAngle": 30,
+      "enableComputeBonds": true,
+      "bondScale": 1.1,
+      "perPairScale": false,
+      "perPairData": "[]",
+      "enlargementKind": "neighbors"
     },
     "unit": {
       "showUnitCell": true,
@@ -159,7 +170,7 @@
       "drawQuality": 4,
       "drawRoughness": 0.5,
       "drawMetalness": 0.6,
-      "labelKind": "symbol",
+      "labelKind": "index",
       "showBonds": true,
       "showAtoms": true,
       "showLabels": true,
@@ -170,17 +181,6 @@
       "bondsRadiusMultiplier": 1,
       "spheresRadiusMultiplier": 1,
       "legend": false
-    },
-    "bonds": {
-      "minBondingDistance": 0.64,
-      "maxBondingDistance": 4.5,
-      "maxHBondingDistance": 3,
-      "maxHValenceAngle": 30,
-      "enableComputeBonds": true,
-      "bondScale": 1.1,
-      "perPairScale": false,
-      "perPairData": "[]",
-      "enlargementKind": "neighbors"
     }
   }
 }

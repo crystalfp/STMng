@@ -293,6 +293,8 @@ export class ReaderCIF implements ReaderImplementation {
 				};
 				this.structures[this.step].atoms.push(atom);
 			}
+
+			this.pruneByOccupancy();
 		}
 		else if(this.tbl.hasColumn("_symmetry_equiv_pos_as_xyz")) {
 
@@ -323,6 +325,8 @@ export class ReaderCIF implements ReaderImplementation {
 				};
 				this.structures[this.step].atoms.push(atom);
 			}
+
+			this.pruneByOccupancy();
 		}
 		else if(this.tbl.hasColumn("_space_group_symop_operation_xyz")) {
 
@@ -368,5 +372,57 @@ export class ReaderCIF implements ReaderImplementation {
 		}
 
 		return out;
+	}
+
+	/**
+	 * Remove coincident atoms based on their occupancy
+	 */
+	private pruneByOccupancy(): void {
+
+		// To prune need occupancy values
+		const siteOccupancy = this.tbl.getColumn("_atom_site_occupancy");
+		const len = siteOccupancy.length;
+		if(len === 0) return;
+
+		// And not all sites with full occupancy
+		const occupancy = Array<number>(len).fill(1);
+		let fullOccupancy = true;
+		for(let i=0; i < len; ++i) {
+			occupancy[i] = Number.parseFloat(siteOccupancy[i]);
+			if(occupancy[i] < 1) fullOccupancy = false;
+		}
+		if(fullOccupancy) return;
+
+		// And coincident atoms
+		const TOL = 1e-6;
+		const natoms = siteOccupancy.length;
+		const atoms = this.structures[this.step].atoms;
+		const atomsToRemove = [];
+
+		for(let i=0; i < natoms-1; ++i) {
+			const ix = atoms[i].position[0];
+			const iy = atoms[i].position[1];
+			const iz = atoms[i].position[2];
+
+			for(let j=i+1; j < natoms; ++j) {
+				const jx = atoms[j].position[0];
+				const jy = atoms[j].position[1];
+				const jz = atoms[j].position[2];
+
+				if(Math.abs(ix-jx) < TOL &&
+				   Math.abs(iy-jy) < TOL &&
+				   Math.abs(iz-jz) < TOL) {
+					atomsToRemove.push(occupancy[i] > occupancy[j] ? j : i);
+				}
+			}
+		}
+
+		// Remove found atoms starting with the highest index
+		if(atomsToRemove.length > 0) {
+			atomsToRemove.sort((a, b) => b-a);
+			for(const idx of atomsToRemove) {
+				atoms.splice(idx, 1);
+			}
+		}
 	}
 }
