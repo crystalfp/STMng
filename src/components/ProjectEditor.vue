@@ -271,7 +271,8 @@ onNodesChange((changes) => {
                 // Update the panel node information if only a single node selected
                 nodeInfo.length = 0;
                 if(selectedIds.size === 1) {
-                    const id = [...selectedIds][0];
+
+                    const [id] = selectedIds; // Was: const id = [...selectedIds][0];
                     const node = findNode<NodeData>(id);
                     if(node) {
                         nodeInfo.push(
@@ -520,7 +521,7 @@ const selectedLabel = ref("");
 const deleteNode = (): void => {
 
     if(selectedIds.size === 1) {
-        const id = [...selectedIds][0];
+        const [id] = selectedIds;
         const node = findNode<NodeData>(id);
         selectedLabel.value = `"${node?.data.label ?? "No label"}" node`;
         showConfirm.value = true;

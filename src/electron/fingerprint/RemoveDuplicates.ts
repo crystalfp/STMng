@@ -61,15 +61,12 @@ export const removeDuplicatePoints = (enabled: boolean,
     let countEnabled = 0;
 
     // For each group
-    for(let gi=0; gi < countGroups; ++gi) {
-
-        // The indices of the structures in the group
-        const indices = [...groups[gi]];
+    for(const group of groups) {
 
         // If group size is one, nothing to remove, enable the only member
-        if(indices.length === 1) {
+        if(group.size === 1) {
 
-            const idx = indices[0];
+            const [idx] = group;
             structures[idx].enabled = true;
         }
         // Else if there are energies find the lowest energy point per group
@@ -78,10 +75,11 @@ export const removeDuplicatePoints = (enabled: boolean,
             // Find minimum energy
             let minEnergy = Number.POSITIVE_INFINITY;
             let minEnergyIdx = 0;
-            for(const i of indices) {
+            for(const i of group) {
 
-                if(structures[i].energy! < minEnergy) {
-                    minEnergy = structures[i].energy!;
+                const energy = structures[i].energy!;
+                if(energy < minEnergy) {
+                    minEnergy = energy;
                     minEnergyIdx = i;
                 }
             }
@@ -93,10 +91,10 @@ export const removeDuplicatePoints = (enabled: boolean,
 
             let medianDistance = Number.POSITIVE_INFINITY;
             let medianDistanceIdx = 0;
-            for(const i of indices) {
+            for(const i of group) {
 
                 let totalDistance = 0;
-                for(const j of indices) {
+                for(const j of group) {
 
                     if(i === j) continue;
                     totalDistance += distanceMatrix.get(i, j);

@@ -44,15 +44,13 @@ export const removeDuplicatePoints = (accumulator: VariableCompositionAccumulato
     let countEnabled = 0;
 
     // For each group
-    for(let gi=0; gi < countGroups; ++gi) {
-
-        // The indices of the structures in the group
-        const groupIndices = [...groups[gi]];
+    for(const group of groups) {
 
         // If group size is one, nothing to remove, enable the only member
-        if(groupIndices.length === 1) {
+        if(group.size === 1) {
 
-            const idx = indices[groupIndices[0]];
+            const [i] = group;
+            const idx = indices[i];
             accumulator.getEntry(idx)!.enabled = true;
         }
         // Else if there are energies find the lowest energy point per group
@@ -61,7 +59,7 @@ export const removeDuplicatePoints = (accumulator: VariableCompositionAccumulato
             // Find minimum energy
             let minEnergy = Number.POSITIVE_INFINITY;
             let minEnergyIdx = 0;
-            for(const i of groupIndices) {
+            for(const i of group) {
 
                 const idx = indices[i];
                 const energy = accumulator.getEntry(idx)!.energy;
@@ -79,10 +77,10 @@ export const removeDuplicatePoints = (accumulator: VariableCompositionAccumulato
 
             let medianDistance = Number.POSITIVE_INFINITY;
             let medianDistanceIdx = 0;
-            for(const i of groupIndices) {
+            for(const i of group) {
 
                 let totalDistance = 0;
-                for(const j of groupIndices) {
+                for(const j of group) {
 
                     if(i === j) continue;
                     totalDistance += distances.get(i, j);

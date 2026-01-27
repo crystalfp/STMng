@@ -748,7 +748,9 @@ export class StructureReader extends NodeCore {
 
 			if(!this.cachedCollection) {
 
-				const files = globSync(`${root}/*.cif`, {onlyFiles: true, cwd: root});
+				const files = globSync(`${root}/*.cif`, {
+					onlyFiles: true, cwd: root, expandDirectories: false
+				});
 
 				let next = false;
 				this.cachedCollection = "[";

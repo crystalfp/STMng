@@ -254,8 +254,9 @@ export class VariableComposition extends NodeCore {
 			   `${entry.basis[7].toFixed(10).padStart(15)} ` +
 			   `${entry.basis[8].toFixed(10).padStart(15)}\n`;
 
-		out += [...entry.species.keys()].map((z) => getAtomicSymbol(z)).join(" ") + "\n";
-		out += [...entry.species.values()].map((value) => value.toFixed(0)).join(" ") + "\nDirect\n";
+		out += entry.species.keys().map((z) => getAtomicSymbol(z)).toArray().join(" ") + "\n";
+		out += entry.species.values().map((value) => value.toFixed(0)).toArray().join(" ");
+		out += "\nDirect\n";
 
 		// Compute inverse matrix
 		const inverse = invertBasis(entry.basis);
