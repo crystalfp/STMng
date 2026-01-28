@@ -45,14 +45,14 @@
     "camera": {
       "type": "orthographic",
       "position": [
-        14.266738845025131,
-        -1.5498865189962276,
-        1.7082503607102981
+        5.878860639577443,
+        6.461139270152005,
+        9.398884198863996
       ],
       "lookAt": [
-        5.168398343026638,
-        2.351801097393036,
-        4.445533215999603
+        4.8675,
+        5.014,
+        1.5318499964237213
       ],
       "snapshotFormat": "png",
       "snapshotTransparent": false,
@@ -114,7 +114,7 @@
     "reader": {
       "loopSteps": false,
       "stepBackward": false,
-      "format": "Collection",
+      "format": "CIF",
       "atomsTypes": "",
       "useBohr": true,
       "readHydrogen": false,
@@ -123,12 +123,12 @@
       "speed": 1
     },
     "symmetry": {
-      "applyInputSymmetries": true,
-      "enableFindSymmetries": true,
+      "applyInputSymmetries": false,
+      "enableFindSymmetries": false,
       "standardizeCell": true,
       "symprecStandardize": -1,
       "symprecDataset": -1,
-      "fillUnitCell": true,
+      "fillUnitCell": false,
       "fillTolerance": -5,
       "standardizeOnly": false,
       "createPrimitiveCell": false,
@@ -146,7 +146,7 @@
       "bondScale": 1.1,
       "perPairScale": false,
       "perPairData": "[]",
-      "enlargementKind": "neighbors"
+      "enlargementKind": "none"
     },
     "unit": {
       "showUnitCell": true,

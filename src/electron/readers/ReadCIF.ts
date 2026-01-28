@@ -397,7 +397,7 @@ export class ReaderCIF implements ReaderImplementation {
 		const TOL = 1e-6;
 		const natoms = siteOccupancy.length;
 		const atoms = this.structures[this.step].atoms;
-		const atomsToRemove = [];
+		const atomsToRemove = new Set<number>();
 
 		for(let i=0; i < natoms-1; ++i) {
 			const ix = atoms[i].position[0];
@@ -412,15 +412,15 @@ export class ReaderCIF implements ReaderImplementation {
 				if(Math.abs(ix-jx) < TOL &&
 				   Math.abs(iy-jy) < TOL &&
 				   Math.abs(iz-jz) < TOL) {
-					atomsToRemove.push(occupancy[i] > occupancy[j] ? j : i);
+					atomsToRemove.add(occupancy[i] > occupancy[j] ? j : i);
 				}
 			}
 		}
 
 		// Remove found atoms starting with the highest index
-		if(atomsToRemove.length > 0) {
-			atomsToRemove.sort((a, b) => b-a);
-			for(const idx of atomsToRemove) {
+		if(atomsToRemove.size > 0) {
+			const remove = [...atomsToRemove].toSorted((a, b) => b-a);
+			for(const idx of remove) {
 				atoms.splice(idx, 1);
 			}
 		}
