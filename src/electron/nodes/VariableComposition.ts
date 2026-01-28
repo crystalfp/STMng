@@ -61,6 +61,7 @@ export class VariableComposition extends NodeCore {
 		peakWidth: 0.02,
 		fixTriangleInequality: false,
 		duplicatesThreshold: 0.015,
+		removeDuplicates: true,
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -544,6 +545,7 @@ export class VariableComposition extends NodeCore {
 			peakWidth: params.peakWidth as number ?? 0.02,
 			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
 			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015,
+			removeDuplicates: params.removeDuplicates as boolean ?? true,
 		};
 
 		if(this.options.method < 0 || this.options.method > 2) {
@@ -566,7 +568,7 @@ export class VariableComposition extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for analyzing the results for a single composition
+	 * Channel handler for analyzing the results of a single composition
 	 *
 	 * @returns Analysis result status
 	 */
@@ -585,7 +587,7 @@ export class VariableComposition extends NodeCore {
 		}
 
 		// Do nothing except grouping structures
-		if(!params.removeDuplicates) {
+		if(!this.options.removeDuplicates) {
 
 			// Enable all entries
 			this.accumulator.setEnableStatus(indices, true);

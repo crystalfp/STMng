@@ -36,7 +36,6 @@ const {id, label} = defineProps<{
 
 /** Formats that could be loaded */
 const fileFormats = [
-    {title: "CEL",              value: "CEL"},
     {title: "CHGCAR",           value: "CHGCAR"},
     {title: "CIF",              value: "CIF"},
     {title: "DL_POLY HISTORY",  value: "DL_POLY HISTORY"},
@@ -524,10 +523,6 @@ const filterFromFormat = (fileFormat: string): string => {
 		case "CHGCAR":
 			filter = [{name:       "CHGCAR",
                        extensions: ["chgcar"]}];
-            break;
-		case "CEL":
-			filter = [{name:       "CEL",
-                       extensions: ["cel"]}];
             break;
 		case "CIF":
 			filter = [{name:       "CIF",

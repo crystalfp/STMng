@@ -65,6 +65,9 @@ const countComponents = ref(2);
 const count = ref<number[]>([0]);
 const results = ref<Recipe[]>([]);
 
+/** Selected table entries */
+const selected = ref<string[]>([]);
+
 // > Compute
 const fingerprintMethodsNames = reactive<FPmethodName[]>([]);
 const distanceMethods = reactive<DistanceMethodsNames[]>([]);
@@ -210,13 +213,16 @@ const computeGroups = (): void => {
     askNode(id, "group", {
         componentsCount: countComponents.value,
         components: toRaw(count.value)
-    }).then((params) => {
+    })
+    .then((params) => {
 
         const recipes = JSON.parse(params.recipes as string ?? "[]") as Recipe[];
         results.value.length = 0;
+        selected.value.length = 0;
         for(const recipe of recipes) {
             recipe.valid = "";
             results.value.push(recipe);
+            selected.value.push(recipe.key);
         }
     })
     .catch((error: Error) => {
@@ -235,9 +241,6 @@ const headers = [
     {key: "valid", title: "Remain",      align: alignEnd, maxWidth: 5}
 ];
 
-/** Selected table entries */
-const selected = ref<string[]>([]);
-
 /**
  * Do the variable composition analysis on the selected entries
  */
@@ -246,41 +249,47 @@ const analyzeSelected = async (): Promise<void> => {
     // Initialize and validate the analysis parameters
     const sts = await askNode(id, "start", toRaw(state));
     if(sts.error) {
+        analysisRunning.value = false;
         analysisDone.value = false;
-        showNodeAlert(`Error analyzing variable composition results: ${sts.error as string}`,
+        showNodeAlert(`Error starting variable composition results analysis: ${sts.error as string}`,
                         "variableComposition");
         return;
     }
 
-    const promises = [];
-    for(const composition of selected.value) {
-        const promise = askNode(id, "analyze", {
-            key: composition.replaceAll("\u2009:\u2009", "-")
-        });
-        promise.then((result) => {
-            if(result.error) {
-                throw Error(`For key: "${result.key as string}": ${result.error as string}`);
-            }
+    // Sort selected entries by increasing composition size
+    const compositions = results.value
+                                .filter((entry) => selected.value.includes(entry.key))
+                                .toSorted((a, b) => a.count - b.count)
+                                .map((entry) => entry.key);
 
-            const key = (result.key as string).replaceAll("-", "\u2009:\u2009");
-            for(const r of results.value) {
-                if(r.key === key) {
-                    r.valid = (result.valid as number).toFixed(0);
-                    break;
-                }
-            }
-        })
-        .catch((error: Error) => {
+    for(const composition of compositions) {
+
+        const key = composition.replaceAll("\u2009:\u2009", "-");
+        const result = await askNode(id, "analyze", {key})
+                                    .catch((error: Error) => ({
+                                        error: error.message,
+                                        key,
+                                        valid: 0
+                                    }));
+
+        if(result.error) {
+            analysisRunning.value = false;
             analysisDone.value = false;
-            showNodeAlert(`Error analyzing variable composition results: ${error.message}`,
-                            "variableComposition");
-        });
+            showNodeAlert("Error analyzing variable composition results " +
+                          `for key: "${result.key as string}": ${result.error as string}`,
+                          "variableComposition");
+            return;
+        }
 
-        promises.push(promise);
+        for(const r of results.value) {
+            if(r.key === composition) {
+                r.valid = (result.valid as number).toFixed(0);
+                break;
+            }
+        }
     }
 
-    await Promise.all(promises);
-
+    analysisRunning.value = false;
     analysisDone.value = true;
 };
 
@@ -394,7 +403,9 @@ const disableSave = computed(() => {
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
 
-  <v-btn block :disabled="selected.length === 0 || !state.removeDuplicates"
+  <v-label v-if="analysisRunning" class="mb-2 result-label cursor-wait">
+           Analysis running&hellip;</v-label>
+  <v-btn v-else block :disabled="selected.length === 0 || !state.removeDuplicates"
          @click="analysisRunning=true; savedFiles=-1; analyzeSelected()">
     Analyze selected
   </v-btn>
