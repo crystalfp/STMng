@@ -52,6 +52,17 @@ export class VariableComposition extends NodeCore {
 		consolidateOutput: false
 	};
 
+	private options: ComputeValidParameters = {
+		method: 0,
+		forceCutoff: false,
+		manualCutoffDistance: 10,
+		distanceMethod: 0,
+		binSize: 0.05,
+		peakWidth: 0.02,
+		fixTriangleInequality: false,
+		duplicatesThreshold: 0.015,
+	};
+
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",		 callback: this.channelInit.bind(this)},
 		{name: "reset",     type: "send",   	 callback: this.channelReset.bind(this)},
@@ -244,15 +255,14 @@ export class VariableComposition extends NodeCore {
 		let out = "Variable composition by STMng. " +
 				  `Composition key: ${entry.key}. Step: ${entry.step}\n1.0\n`;
 
-		out += `${entry.basis[0].toFixed(10).padStart(15)} ` +
-			   `${entry.basis[1].toFixed(10).padStart(15)} ` +
-			   `${entry.basis[2].toFixed(10).padStart(15)}\n`;
-		out += `${entry.basis[3].toFixed(10).padStart(15)} ` +
-			   `${entry.basis[4].toFixed(10).padStart(15)} ` +
-			   `${entry.basis[5].toFixed(10).padStart(15)}\n`;
-		out += `${entry.basis[6].toFixed(10).padStart(15)} ` +
-			   `${entry.basis[7].toFixed(10).padStart(15)} ` +
-			   `${entry.basis[8].toFixed(10).padStart(15)}\n`;
+		const basisString = Array<string>(9);
+		for(let i=0; i < 9; ++i) {
+			basisString[i] = entry.basis[i].toFixed(10).padStart(15);
+		}
+
+		out += `${basisString[0]} ${basisString[1]} ${basisString[2]}\n`;
+		out += `${basisString[3]} ${basisString[4]} ${basisString[5]}\n`;
+		out += `${basisString[6]} ${basisString[7]} ${basisString[8]}\n`;
 
 		out += entry.species.keys().map((z) => getAtomicSymbol(z)).toArray().join(" ") + "\n";
 		out += entry.species.values().map((value) => value.toFixed(0)).toArray().join(" ");
@@ -345,7 +355,7 @@ export class VariableComposition extends NodeCore {
 	/**
 	 * Save compositions one per file in the given directory
 	 *
-	 * @param selected - All selected compositions codes (separated by "-")
+	 * @param selected - All selected compositions codes (with "-" separator)
 	 * @param dir - Directory where to save the compositions
 	 * @returns Number of files saved
 	 */
@@ -377,8 +387,9 @@ export class VariableComposition extends NodeCore {
 					const structure = this.accumulator.getEntry(idx);
 					toOrder.push([structure!.energy!, idx]);
 				}
-				toOrder.sort((a, b) => a[0] - b[0]);
-				entry[1] = toOrder.map((value) => value[1]);
+				entry[1] = toOrder
+								.toSorted((a, b) => a[0] - b[0])
+								.map((value) => value[1]);
 			}
 
 			const name = `composition-${entry[0]}`;
@@ -409,7 +420,7 @@ export class VariableComposition extends NodeCore {
 	 *
 	 * @param selected - All selected compositions codes (separated by "-")
 	 * @param dir - Directory where to save the compositions
-	 * @returns Number of files saved, that is one
+	 * @returns Number of files saved, that is, one
 	 */
 	private saveAllCompositions(selected: Set<string>, dir: string): number {
 
@@ -446,7 +457,12 @@ export class VariableComposition extends NodeCore {
 			}
 		}
 
-		if(hasEnergies) all.sort((a, b) => a[0] - b[0]);
+		if(hasEnergies) all.sort((a, b) => {
+			const d = a[0] - b[0];
+			if(d !== 0) return d;
+			return a[1] - b[1];
+		});
+		else all.sort((a, b) => a[1]-b[1]);
 
 		const name = "composition-all";
 		const dataFile = path.join(dir, `${name}.poscar`);
@@ -496,7 +512,7 @@ export class VariableComposition extends NodeCore {
 								this.saveAllCompositions(selected, dir[0]) :
 								this.saveByComposition(selected, dir[0]);
 
-		sendAlertToClient(`Saved ${saved} file${saved === 1 ? "" : "s"} for variable composition`,
+		sendAlertToClient(`Saved ${saved} variable composition file${saved === 1 ? "" : "s"}`,
 						  {level: "success"});
 
 		return {saved};
@@ -513,10 +529,39 @@ export class VariableComposition extends NodeCore {
 	/**
 	 * Channel handler to start analyzing the compositions
 	 *
-	 * @returns Empty status
+	 * @returns Error message or empty on success
 	 */
-	private channelStart(): CtrlParams {
+	private channelStart(params: CtrlParams): CtrlParams {
+
 		this.accumulator.initializeKeyMap();
+
+		this.options = {
+			method: params.fingerprintingMethod as number ?? 0,
+			forceCutoff: params.forceCutoff as boolean ?? false,
+			manualCutoffDistance: params.manualCutoffDistance as number ?? 10,
+			distanceMethod: params.distanceMethod as number ?? 0,
+			binSize: params.binSize as number ?? 0.05,
+			peakWidth: params.peakWidth as number ?? 0.02,
+			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
+			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015,
+		};
+
+		if(this.options.method < 0 || this.options.method > 2) {
+			return {error: "Invalid fingerprinting method"};
+		}
+		if(this.options.forceCutoff && this.options.manualCutoffDistance <= 0) {
+			return {error: "Invalid manual cutoff distance"};
+		}
+		if(this.options.binSize <= 0 || this.options.peakWidth < 0) {
+			return {error: "Invalid fingerprinting parameters"};
+		}
+		if(this.options.distanceMethod < 0 || this.options.distanceMethod > 2) {
+			return {error: "Invalid distance method"};
+		}
+		if(this.options.duplicatesThreshold <= 0) {
+			return {error: "Invalid duplicates threshold"};
+		}
+
 		return {};
 	}
 
@@ -543,44 +588,12 @@ export class VariableComposition extends NodeCore {
 		if(!params.removeDuplicates) {
 
 			// Enable all entries
-			for(const idx of indices) {
-				const entry = this.accumulator.getEntry(idx);
-				if(entry === undefined) continue;
-				entry.enabled = true;
-			}
+			this.accumulator.setEnableStatus(indices, true);
 
 			return {status: "OK!", total: indices.length, valid: indices.length, key};
 		}
 
-		// Get and validate parameters
-		const options: ComputeValidParameters = {
-			method: params.fingerprintingMethod as number ?? 0,
-			forceCutoff: params.forceCutoff as boolean ?? false,
-			manualCutoffDistance: params.manualCutoffDistance as number ?? 10,
-			distanceMethod: params.distanceMethod as number ?? 0,
-			binSize: params.binSize as number ?? 0.05,
-			peakWidth: params.peakWidth as number ?? 0.02,
-			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
-			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015,
-		};
-
-		if(options.method < 0 || options.method > 2) {
-			return {error: "Invalid fingerprinting method", key};
-		}
-		if(options.forceCutoff && options.manualCutoffDistance <= 0) {
-			return {error: "Invalid manual cutoff distance", key};
-		}
-		if(options.binSize <= 0 || options.peakWidth < 0) {
-			return {error: "Invalid fingerprinting parameters", key};
-		}
-		if(options.distanceMethod < 0 || options.distanceMethod > 2) {
-			return {error: "Invalid distance method", key};
-		}
-		if(options.duplicatesThreshold <= 0) {
-			return {error: "Invalid duplicates threshold", key};
-		}
-
-		const status = await computeValid(this.accumulator, indices, options);
+		const status = await computeValid(this.accumulator, indices, this.options);
 		if(status.error) return {error: status.error, key};
 		if(status.count === 0) return {error: "No valid structures found", key};
 		return {status: "OK!", total: indices.length, valid: status.count, key};

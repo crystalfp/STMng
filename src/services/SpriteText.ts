@@ -194,9 +194,7 @@ export class BillboardBatchedText extends BatchedText {
 	 */
   	override update(camera: Camera): void {
 
-		const texts = [...this._members.keys()];
-
-		for(const text of texts) {
+		for(const text of this._members.keys()) {
 
       		camera.getWorldQuaternion(text.quaternion);
     	}

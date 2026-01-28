@@ -243,14 +243,19 @@ const selected = ref<string[]>([]);
  */
 const analyzeSelected = async (): Promise<void> => {
 
-    await askNode(id, "start");
+    // Initialize and validate the analysis parameters
+    const sts = await askNode(id, "start", toRaw(state));
+    if(sts.error) {
+        analysisDone.value = false;
+        showNodeAlert(`Error analyzing variable composition results: ${sts.error as string}`,
+                        "variableComposition");
+        return;
+    }
 
-    const stateRaw = toRaw(state);
     const promises = [];
     for(const composition of selected.value) {
         const promise = askNode(id, "analyze", {
-            key: composition.replaceAll("\u2009:\u2009", "-"),
-            ...stateRaw
+            key: composition.replaceAll("\u2009:\u2009", "-")
         });
         promise.then((result) => {
             if(result.error) {
