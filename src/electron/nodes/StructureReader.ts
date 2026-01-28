@@ -184,11 +184,6 @@ export class StructureReader extends NodeCore {
 						this.reader = new ReaderCIF();
 					}
 					break;
-				case "CEL": {
-						const {ReaderCEL} = await import("../readers/ReadCEL");
-						this.reader = new ReaderCEL();
-					}
-					break;
 				case "CHGCAR": {
 						const {ReaderCHGCAR} = await import("../readers/ReadCHGCAR");
 						this.reader = new ReaderCHGCAR();

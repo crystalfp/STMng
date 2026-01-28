@@ -38,6 +38,8 @@ export interface ComputeValidParameters {
 	fixTriangleInequality: boolean;
 	/** Threshold to remove duplicates */
 	duplicatesThreshold: number;
+	/** Remove duplicates */
+	removeDuplicates: boolean;
 }
 
 /**

@@ -58,7 +58,7 @@
 <h3>Compositions</h3>
 <p>The data table has the following columns:</p>
 <table>
-  <tr><td class="c1">Select</td><td>Select for the analysis and output the given composition. The toggle in the header selects all compositions.</td></tr>
+  <tr><td class="c1">Select</td><td>Select for the analysis and output the given composition. All compositions are selected by default. The toggle in the header selects or deselects all compositions.</td></tr>
   <tr><td class="c1">Composition</td><td>The proportion of the various components.</td></tr>
   <tr><td class="c1">Count</td><td>The number of structures with the given composition. The column is sortable by clicking on the column header.</td></tr>
   <tr><td class="c1">Remain</td><td>After computing distances and removing duplicates, this column is populated with the resulting number of structures. The column is sortable by clicking on the column header.</td></tr>
@@ -74,13 +74,7 @@
 <tr>
   <td class="c1">Fingerprinting method</td>
   <td class="c2">list</td>
-  <td class="c3">Select the method for computing the fingerprints:
-    <dl>
-      <dt>Oganov-Valle fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances.</dd>
-      <dt>Oganov-Valle per site fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint” but the centroid of all fingerprints is removed from each fingerprint.</dd>
-      <dt>Dot-matrix fingerprint</dt><dd>This method takes three atoms, one (A) in the unit cell and two (B &amp; C) in the extended unit cell (cells added around the unit cell to cover the cutoff distance). Then fill a square matrix in which row and column indices are computed from the AB and AC distances. The accumulated value is:<br><img src="dot-matrix.png" width="440" height="96" alt="Dot-matrix increment formula"><br>The matrix is then transformed to a vector appending the diagonals of the upper triangle starting from the longest one. <b>Note:</b> this method is quite slow.</dd>
-    </dl>
-  </td>
+  <td class="c3">Select the method for computing the fingerprints needed to compute distances and remove duplicated structures. The methods are listed in the <a href="./compute-fingerprints.html">Compute fingerprints</a> node documentation.</td>
 </tr>
 <tr>
   <td class="c1">Peak width</td>
@@ -95,12 +89,7 @@
 <tr>
 	<td class="c1">Distance method</td>
 	<td class="c2">list</td>
-	<td class="c3">Select the measuring method to obtain the distance between fingerprints:
-		<dl>
-      <dt>Cosine distance</dt><dd>Cosine distance between fingerprints interpreted as multidimensional vectors. The distances are scaled between 0 and 1. This measure violates the triangle inequality.</dd>
-      <dt>Euclidean distance</dt><dd>Euclidean distance between fingerprints interpreted as points in a multidimensional space.</dd>
-      <dt>Minkowski distance of order ⅓</dt><dd>The <a href="https://en.wikipedia.org/wiki/Minkowski_distance">Minkowski distance</a> with order p = ⅓. With this order value, the measure violates the triangle inequality but spread points better in the multidimensional space facilitating grouping.</dd>
-    </dl></td>
+	<td class="c3">Select the measuring method to obtain the distance between fingerprints. The methods are listed in the <a href="./compute-fingerprints.html">Compute fingerprints</a> node documentation.</td>
 </tr>
 <tr>
 	<td class="c1">Fix triangle inequality</td>
@@ -124,7 +113,7 @@
 <tr>
 	<td class="c1">Analyze selected</td>
 	<td class="c2">button</td>
-	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures.</td>
+	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures. The compositions are computed in increasing count of structures. The computations are not parallelized but done one by one.</td>
 </tr>
 <tr>
 	<td class="c1">Consolidate output</td>
@@ -139,7 +128,12 @@
 <tr>
 	<td class="c1">Output directory</td>
 	<td class="c2">directory selector</td>
-	<td class="c3">Select the directory where the output files will be saved. The files are called <tt>composition&#8209;&lt;<i>proportions</i>&gt;.poscar</tt>. If they have an associated energy, the file <tt>composition&#8209;&lt;<i>proportions</i>&gt;.energy</tt> is created. There is a file (or a pair of files) for each selected composition. If the `“Consolidate output” toggle is set, the <tt><i>proportions</i></tt> part of the filenames is changed into the “all” string.</td>
+	<td class="c3">Select the directory where the output files will be saved. There is a file (or a pair of files) for each selected composition. The files are called
+		<tt>composition&#8209;&lt;<i>proportions</i>&gt;.poscar</tt>.
+		If they have an associated per atom energy, the file
+		<tt>composition&#8209;&lt;<i>proportions</i>&gt;.energy</tt> is created with them.
+		If the “Consolidate output” toggle is set, the <tt><i>proportions</i></tt> part of the filenames
+		is changed to the “all” string.</td>
 </tr>
 <tr>
 	<td class="c1">Files saved</td>

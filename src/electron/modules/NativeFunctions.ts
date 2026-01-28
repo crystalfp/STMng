@@ -136,7 +136,8 @@ export const findAndApplySymmetries = (basis: Float64Array,
 								 symprecDataset);
 
 /**
- * Convert space group number and variation from a CEL format file into the corresponding code
+ * Convert space group number and variation from a Quantum Espresso
+ * format file into the corresponding code
  *
  * @param spaceGroupNumber - Space group number
  * @param variation - Space group variation
