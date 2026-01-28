@@ -1,0 +1,60 @@
+data_Rossmanite
+_chemical_name_mineral Rossmanite
+_publ_section_comment
+;
+Rossmanite:  Selway et al.,  Am Min 83 (1998) 896-900
+Rossmanite, _(LiAl2)Al6(Si6O18)(BO3)3(OH)4, a new alkali-deficient tourmaline:
+Description and crystal structure
+;
+_cell_length_a 15.77
+_cell_length_b 15.77
+_cell_length_c 7.085
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 1525.93
+_symmetry_space_group_name_H-M 'R 3 m H'
+_symmetry_Int_Tables_number 160
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+2/3, y+1/3, z+1/3'
+3 'x+1/3, y+2/3, z+2/3'
+4 '-y, x-y, z'
+5 '-y+2/3, x-y+1/3, z+1/3'
+6 '-y+1/3, x-y+2/3, z+2/3'
+7 '-x+y, -x, z'
+8 '-x+y+2/3, -x+1/3, z+1/3'
+9 '-x+y+1/3, -x+2/3, z+2/3'
+10 '-y, -x, z'
+11 '-y+2/3, -x+1/3, z+1/3'
+12 '-y+1/3, -x+2/3, z+2/3'
+13 '-x+y, y, z'
+14 '-x+y+2/3, y+1/3, z+1/3'
+15 '-x+y+1/3, y+2/3, z+2/3'
+16 'x, x-y, z'
+17 'x+2/3, x-y+1/3, z+1/3'
+18 'x+1/3, x-y+2/3, z+2/3'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Na43 Na 0.000000 0.000000 0.840800 1
+Al1 Al 0.060840 0.939160 0.437300 1
+Al2 Al 0.259420 0.296370 0.465600 1
+Si1 Si 0.189650 0.191630 0.072100 1
+B1 B 0.890780 0.109220 0.619800 1
+O1 O 0.000000 0.000000 0.301500 1
+O2 O 0.939520 0.060480 0.580900 1
+O3 O 0.129980 0.870020 0.564700 1
+O4 O 0.905160 0.094840 0.998300 1
+O5 O 0.093860 0.906140 0.977100 1
+O6 O 0.183460 0.193630 0.298800 1
+O7 O 0.286300 0.286940 0.996600 1
+O8 O 0.270350 0.209650 0.635900 1

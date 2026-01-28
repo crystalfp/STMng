@@ -1,0 +1,43 @@
+data_Clinoferrosilite
+_chemical_name_mineral Clinoferrosilite
+_publ_section_comment
+;
+Clinoferrosilite: Sueno et al., Am Min 69 (1984) 264-269
+The crystal structure of high clinoferrosilicate
+T = 1050 C
+;
+_cell_length_a 9.928
+_cell_length_b 9.179
+_cell_length_c 5.338
+_cell_angle_alpha 90
+_cell_angle_beta 110.2
+_cell_angle_gamma 90
+_cell_volume 456.527
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Fe1 Fe 0.000000 0.901400 0.250000 1
+Fe2 Fe 0.000000 0.262500 0.250000 1
+Si1 Si 0.296200 0.085200 0.270800 1
+O1 O 0.124100 0.090300 0.158700 1
+O2 O 0.374700 0.239800 0.361600 1
+O3 O 0.358900 0.013400 0.044500 1

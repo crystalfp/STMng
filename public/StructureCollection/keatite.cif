@@ -1,0 +1,41 @@
+data_Keatite
+_chemical_name_mineral Keatite
+_publ_section_comment
+;
+Keatite: Shropshire et al., Z Krist 112 (1959) 409-413
+The crystal structure of keatite, a new form of silica
+;
+_cell_length_a 7.456
+_cell_length_b 7.456
+_cell_length_c 8.604
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 478.313
+_symmetry_space_group_name_H-M 'P 43 21 2'
+_symmetry_Int_Tables_number 96
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-y+1/2, x+1/2, z+3/4'
+3 '-x, -y, z+1/2'
+4 'y+1/2, -x+1/2, z+1/4'
+5 'x+1/2, -y+1/2, -z+1/4'
+6 '-y, -x, -z+1/2'
+7 '-x+1/2, y+1/2, -z+3/4'
+8 'y, x, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.326000 0.120000 0.248000 1
+Si2 Si 0.410000 0.410000 0.000000 1
+O1 O 0.445000 0.132000 0.400000 1
+O2 O 0.117000 0.123000 0.296000 1
+O3 O 0.344000 0.297000 0.143000 1

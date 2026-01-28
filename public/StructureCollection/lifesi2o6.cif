@@ -1,0 +1,36 @@
+data_LiFeSi2O6
+_cell_length_a 9.6223
+_cell_length_b 8.6638
+_cell_length_c 5.2655
+_cell_angle_alpha 90
+_cell_angle_beta 109.95
+_cell_angle_gamma 90
+_cell_volume 412.62
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Li1 Li 0.250400 0.009000 0.236700 1
+Fe1 Fe 0.250220 0.647880 0.235280 1
+Si1 Si 0.047790 0.338990 0.277600 1
+Si2 Si 0.548620 0.838740 0.252700 1
+O1 O 0.867300 0.332700 0.163600 1
+O2 O 0.367400 0.834700 0.135100 1
+O3 O 0.116000 0.508600 0.312300 1
+O4 O 0.621500 0.003200 0.353700 1
+O5 O 0.108500 0.266700 0.582100 1
+O6 O 0.605000 0.723200 0.512000 1

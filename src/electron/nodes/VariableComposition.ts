@@ -167,31 +167,34 @@ export class VariableComposition extends NodeCore {
 		const nspecies = components.length / ncomponents;
 
 		// Find species unique for only one component
-		const specials = Array<number>(ncomponents).fill(-1);
-		const multiples = Array<number>(ncomponents).fill(0);
+		const specialAtoms = Array<number>(ncomponents).fill(-1);
+		const multiplicity = Array<number>(ncomponents).fill(1);
 		for(let i=0; i < nspecies; ++i) {
 
-			let unique = -1;
+			let whereIsUnique = -1;
 			let multiple = 1;
 			for(let j=0; j < ncomponents; ++j) {
 				const mm = components[nspecies*j+i];
 				if(mm !== 0) {
 					multiple = mm;
-					if(unique === -1) unique = j;
-					else {unique = -1; break;}
+					if(whereIsUnique === -1) whereIsUnique = j;
+					else {whereIsUnique = -1; break;}
 				}
 			}
 
-			if(unique === -1) continue;
+			if(whereIsUnique === -1) continue;
 
 			// Which is the specie unique for each component and its multiplicity
-			specials[unique] = i;
-			multiples[unique] = multiple;
+			specialAtoms[whereIsUnique] = i;
+			multiplicity[whereIsUnique] = multiple;
 		}
-		if(specials.includes(-1)) {
+
+		// Count components without a special atom. If only one could procede
+		let minusOnes = 0;
+		for(const entry of specialAtoms) if(entry === -1) ++minusOnes;
+		if(minusOnes > 1) {
 
 			sendAlertToClient("Cannot find simple solution", {node: "variableComposition"});
-
 			return [];
 		}
 
@@ -206,8 +209,38 @@ export class VariableComposition extends NodeCore {
 				step.push(entry.species.get(z) ?? 0);
 			}
 
-			for(let i=0; i < ncomponents; ++i) {
-				parts[i] = step[specials[i]]/multiples[i];
+			// If one component without special atom
+			if(minusOnes) {
+
+				// Compute parts for the components with one special atom
+				let missing = 0;
+				for(let i=0; i < ncomponents; ++i) {
+					if(specialAtoms[i] === -1) {
+						missing = i;
+						continue;
+					}
+					parts[i] = step[specialAtoms[i]]/multiplicity[i];
+				}
+
+				// Subtract the known components
+				const remain = [...step];
+				for(let i=0; i < ncomponents; ++i) {
+					if(specialAtoms[i] === -1) continue;
+					for(let j=0; j < nspecies; ++j) {
+						remain[j] -= parts[i]*components[i*nspecies+j];
+					}
+				}
+
+				// Extract the remaining component
+				for(let j=0; j < nspecies; ++j) {
+					const n = components[missing*nspecies+j];
+					if(n !== 0) parts[missing] = remain[j]/n;
+				}
+			}
+			else {
+				for(let i=0; i < ncomponents; ++i) {
+					parts[i] = step[specialAtoms[i]]/multiplicity[i];
+				}
 			}
 
 			if(!this.verify(step, parts, nspecies, ncomponents, components)) {
@@ -251,6 +284,12 @@ export class VariableComposition extends NodeCore {
 		return recipes;
 	}
 
+	/**
+	 * Format entry as POSCAR file
+	 *
+	 * @param entry - One composition to convert to POSCAR
+	 * @returns Content of the POSCAR file
+	 */
 	private entryToPoscar(entry: VariableComponent): string {
 
 		let out = "Variable composition by STMng. " +

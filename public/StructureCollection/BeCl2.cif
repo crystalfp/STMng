@@ -1,0 +1,74 @@
+data_31696-ICSD
+#©2008 by Fachinformationszentrum Karlsruhe, and the U.S. Secretary of 
+#Commerce on behalf of the United States.  All rights reserved.
+_database_code_ICSD                31696
+_audit_creation_date               1986/10/09
+_chemical_name_systematic          'Beryllium Chloride'
+_chemical_formula_structural       'Be Cl2'
+_chemical_formula_sum              'Be1 Cl2'
+_publ_section_title
+;
+Electron Deficient Compounds. VI.The Structure of Beryllium Chloride
+;
+loop_
+_citation_id
+_citation_journal_abbrev
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Journal of Chemical Physics' 1952 20 132 134 JCPSA6
+_publ_author_name                  'Rundle, R.E.;Lewis, P.H.'
+_cell_length_a                     9.86
+_cell_length_b                     5.36
+_cell_length_c                     5.26
+_cell_angle_alpha                  90.
+_cell_angle_beta                   90.
+_cell_angle_gamma                  90.
+_cell_volume                       277.99
+_cell_formula_units_Z              4
+_symmetry_space_group_name_H-M     'I b a m'
+_symmetry_Int_Tables_number        72
+_refine_ls_R_factor_all            0.19
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+  1	'-x, y, z+1/2'
+  2	'x, -y, z+1/2'
+  3	'x, y, -z'
+  4	'-x, -y, -z'
+  5	'x, -y, -z+1/2'
+  6	'-x, y, -z+1/2'
+  7	'-x, -y, z'
+  8	'x, y, z'
+  9	'-x+1/2, y+1/2, z'
+ 10	'x+1/2, -y+1/2, z'
+ 11	'x+1/2, y+1/2, -z+1/2'
+ 12	'-x+1/2, -y+1/2, -z+1/2'
+ 13	'x+1/2, -y+1/2, -z'
+ 14	'-x+1/2, y+1/2, -z'
+ 15	'-x+1/2, -y+1/2, z+1/2'
+ 16	'x+1/2, y+1/2, z+1/2'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Be2+	2
+Cl1-	-1
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+_atom_site_B_iso_or_equiv
+Cl1 Cl1- 8 j 0.109(1) 0.203(2) 0 1. 0 7.5 
+Be1 Be2+ 4 a 0 0 0.25(2) 1. 0 7.5 
+
+#End of data_31696-ICSD
+
+

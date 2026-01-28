@@ -1,0 +1,49 @@
+data_Gobbinsite
+_cell_length_a 10.108
+_cell_length_b 9.766
+_cell_length_c 10.171
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1004.03
+_symmetry_space_group_name_H-M 'P m n 21'
+_symmetry_Int_Tables_number 31
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 '-x, y, z'
+4 'x+1/2, -y, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.156000 0.432000 0.809000 1
+Si2 Si 0.154000 0.110000 0.758000 1
+Si3 Si 0.345000 0.073000 0.000000 1
+Si4 Si 0.348000 0.389000 0.048000 1
+Na1 Na 0.247000 0.228000 0.284000 1
+K1 K 0.500000 0.929000 0.615000 1
+K2 K 0.000000 0.395000 0.146000 1
+Ca1 Ca 0.341000 0.271000 0.559000 1
+O1 O 0.186000 0.275000 0.759000 1
+O2 O 0.000000 0.441000 0.838000 1
+O3 O 0.200000 0.538000 0.691000 1
+O4 O 0.254000 0.459000 0.939000 1
+O5 O 0.000000 0.074000 0.803000 1
+O6 O 0.198000 0.048000 0.606000 1
+O7 O 0.254000 0.046000 0.862000 1
+O8 O 0.312000 0.226000 0.059000 1
+O9 O 0.500000 0.073000 0.974000 1
+O10 O 0.500000 0.414000 0.009000 1
+O11 O 0.500000 0.243000 0.321000 1
+O12 O 0.000000 0.395000 0.146000 1
+O13 O 0.000000 0.314000 0.306000 1
+O14 O 0.341000 0.271000 0.559000 1
+O15 O 0.500000 0.338000 0.600000 1

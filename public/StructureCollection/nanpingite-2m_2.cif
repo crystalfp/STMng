@@ -1,0 +1,50 @@
+data_nanpingite-2M_2
+_chemical_name_mineral nanpingite-2M_2
+_publ_section_comment
+;
+nanpingite-2M_2:  Ni and Hughes,   Am Min 81 (1996) 105-110
+The crystal structure of nanpingite-2M_2, the Cs end-member of muscovite
+;
+_cell_length_a 9.076
+_cell_length_b 5.226
+_cell_length_c 21.41
+_cell_angle_alpha 90
+_cell_angle_beta 99.48
+_cell_angle_gamma 90
+_cell_volume 1001.63
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Cs1 Cs 0.000000 0.096100 0.250000 1
+Mg1 Mg 0.750000 0.250000 0.000000 1
+Al2 Al 0.083700 0.250300 0.000000 0.25
+Mg2 Mg 0.083700 0.250300 0.000000 0.25
+Fe2 Fe 0.083700 0.250300 0.000000 0.25
+Li2 Li 0.083700 0.250300 0.000000 0.25
+Si1 Si 0.119700 0.588400 0.127200 1
+Si2 Si 0.290100 0.100900 0.127100 1
+O1 O 0.076300 0.561000 0.050500 1
+O2 O 0.267200 0.132000 0.050400 1
+O3 O 0.205300 0.332000 0.158100 1
+O4 O 0.467000 0.121000 0.159100 1
+O5 O 0.231900 0.825000 0.148900 1
+O6 O 0.954500 0.062000 0.046800 1

@@ -1,0 +1,48 @@
+data_biotite_type_2M(1)
+_chemical_name_mineral 'biotite type 2M(1)'
+_publ_section_comment
+;
+biotite type 2M(1): Ohta, Takeda, Takeuchi: Am Min 67 (1982) 298-310
+Mica polytypism: similarities in the crystal structures of coexisting 1M and
+2M(1) oxybiotite           2M(1)
+;
+_cell_length_a 5.3175
+_cell_length_b 9.212
+_cell_length_c 19.976
+_cell_angle_alpha 90
+_cell_angle_beta 95.09
+_cell_angle_gamma 90
+_cell_volume 974.662
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.462400 0.249020 0.138500 1
+Si2 Si 0.964500 0.416300 0.138570 1
+Mg1 Mg 0.750000 0.250000 0.000000 1
+Mg2 Mg 0.232100 0.077500 0.999990 1
+K1 K 0.000000 0.083200 0.250000 1
+O11 O 0.742100 0.313900 0.166400 1
+O21 O 0.241600 0.351200 0.167700 1
+O22 O 0.435200 0.082200 0.167500 1
+O31 O 0.430900 0.247700 0.054730 1
+O32 O 0.939200 0.417200 0.054660 1
+O4 O 0.933300 0.082700 0.049940 1

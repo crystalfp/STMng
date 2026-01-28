@@ -1,0 +1,58 @@
+data_danalite
+_chemical_name_mineral danalite
+_publ_section_comment
+;
+danalite: Hassan and Grundy: Am Min 70 (1985) 186-192
+The crystal structures of helvite group minerals, (Mn,Fe,Zn)8(Be6Si6O24)S2
+sample #3
+;
+_cell_length_a 8.2317
+_cell_length_b 8.2317
+_cell_length_c 8.2317
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 557.787
+_symmetry_space_group_name_H-M 'P -4 3 n'
+_symmetry_Int_Tables_number 218
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'y+1/2, -x+1/2, -z+1/2'
+3 '-x, -y, z'
+4 '-y+1/2, x+1/2, -z+1/2'
+5 'x, -y, -z'
+6 'y+1/2, x+1/2, z+1/2'
+7 '-x, y, -z'
+8 '-y+1/2, -x+1/2, z+1/2'
+9 'z, x, y'
+10 '-z+1/2, y+1/2, -x+1/2'
+11 'z, -x, -y'
+12 '-z+1/2, -y+1/2, x+1/2'
+13 '-z, x, -y'
+14 'z+1/2, y+1/2, x+1/2'
+15 '-z, -x, y'
+16 'z+1/2, -y+1/2, -x+1/2'
+17 'x+1/2, -z+1/2, -y+1/2'
+18 'y, z, x'
+19 '-x+1/2, -z+1/2, y+1/2'
+20 '-y, z, -x'
+21 'x+1/2, z+1/2, y+1/2'
+22 'y, -z, -x'
+23 '-x+1/2, z+1/2, -y+1/2'
+24 '-y, -z, x'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.250000 0.500000 0.000000 1
+Be1 Be 0.250000 0.000000 0.500000 1
+Fe1 Fe 0.169300 0.169300 0.169300 1
+O1 O 0.139500 0.140100 0.412600 1
+S1 S 0.000000 0.000000 0.000000 1

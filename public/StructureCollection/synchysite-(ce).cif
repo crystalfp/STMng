@@ -1,0 +1,54 @@
+data_synchysite-(Ce)
+_chemical_name_mineral synchysite-(Ce)
+_publ_section_comment
+;
+synchysite-(Ce): Wang et al., Can Min 32 (1994) 865-871
+The atomic arrangement of synchysite-(Ce), CeCaF(Co3)2
+;
+_cell_length_a 12.329
+_cell_length_b 7.11
+_cell_length_c 18.741
+_cell_angle_alpha 90
+_cell_angle_beta 102.68
+_cell_angle_gamma 90
+_cell_volume 1602.75
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ce1 Ce 0.500000 0.252900 0.250000 1
+Ce2 Ce 0.668800 0.253100 0.749900 1
+Ca1 Ca 0.250000 0.250000 0.500000 1
+Ca2 Ca 0.912800 0.249900 0.500200 1
+C1 C 0.973000 0.099000 0.116000 1
+C2 C 0.397000 0.100000 0.386000 1
+C3 C 0.289000 0.043000 0.119000 1
+O1 O 0.435000 0.303000 0.879400 1
+O2 O 0.922000 0.071000 0.049000 1
+O3 O 0.948000 0.055000 0.174200 1
+O4 O 0.489000 0.186000 0.380200 1
+O5 O 0.607000 0.076000 0.047000 1
+O6 O 0.670000 0.052000 0.172300 1
+O7 O 0.311000 0.135000 0.178600 1
+O8 O 0.705000 0.134000 0.878300 1
+O9 O 0.269000 0.111000 0.053400 1
+F1 F 0.500000 0.087000 0.750000 1
+F2 F 0.840200 0.087000 0.773300 1

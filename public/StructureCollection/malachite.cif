@@ -1,0 +1,43 @@
+data_Malachite
+_chemical_name_mineral Malachite
+_publ_section_comment
+;
+Malachite
+Zigan F., Joswig W., Schuster H.D., Mason S.A. (1977);
+* Z. Kristallogr., 145, 412-426;
+;
+_cell_length_a 9.502
+_cell_length_b 11.974
+_cell_length_c 3.24
+_cell_angle_alpha 90
+_cell_angle_beta 98.75
+_cell_angle_gamma 90
+_cell_volume 364.347
+_symmetry_space_group_name_H-M 'P 1 21/a 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, y+1/2, -z'
+3 '-x, -y, -z'
+4 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Cu1 Cu 0.498100 0.287900 0.892500 1
+Cu2 Cu 0.232400 0.393300 0.388000 1
+C1 C 0.266200 0.140700 0.472700 1
+H1 H 0.016700 0.404800 0.844400 1
+H2 H 0.410500 0.491800 0.829600 1
+O1 O 0.131500 0.136500 0.341700 1
+O2 O 0.333300 0.235400 0.450000 1
+O3 O 0.334100 0.056200 0.630800 1
+O4 O 0.094000 0.351500 0.919100 1
+O5 O 0.377200 0.416200 0.859800 1

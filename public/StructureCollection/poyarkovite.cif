@@ -1,0 +1,52 @@
+data_Poyarkovite
+_chemical_name_mineral Poyarkovite
+_publ_section_comment
+;
+Poyarkovite: Vasil'ev et al., Can Min 37 (1999) 119-126
+New data on the mercury oxide-chloride mineral poyarkovite: The second
+find, and crystal-structure determination
+;
+_cell_length_a 19.009
+_cell_length_b 9.018
+_cell_length_c 16.848
+_cell_angle_alpha 90
+_cell_angle_beta 110.8
+_cell_angle_gamma 90
+_cell_volume 2699.91
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Hg1 Hg 0.663700 0.130100 0.865700 1
+Hg2 Hg 0.663500 0.852400 0.843900 1
+Hg3 Hg 0.834900 0.119900 0.972200 1
+Hg4 Hg 0.827500 0.125400 0.819800 1
+Hg5 Hg 0.903800 0.462000 0.964000 1
+Hg6 Hg 0.766700 0.516200 0.891300 1
+Hg7 Hg 0.015200 0.138100 0.011600 1
+Hg8 Hg 0.932000 0.014400 0.202100 1
+Hg9 Hg 0.011100 0.374000 0.179200 1
+Cl1 Cl 0.850100 0.812700 0.018500 1
+Cl2 Cl 0.969300 0.306600 0.847200 1
+Cl3 Cl 0.667300 0.286300 0.713300 1
+O1 O 0.009800 0.362500 0.055000 1
+O2 O 0.666400 0.333300 0.906400 1
+O3 O 0.667700 0.606000 0.810500 1

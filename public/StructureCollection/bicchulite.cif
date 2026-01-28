@@ -1,0 +1,81 @@
+data_bicchulite
+_chemical_name_mineral bicchulite
+_publ_section_comment
+;
+bicchulite: Sahl: Z Krist 152 (1980) 13-21
+Refinement of the crystal structure of bicchulite, Ca2[Al2SiO6](OH)2
+synthetic
+;
+_cell_length_a 8.825
+_cell_length_b 8.825
+_cell_length_c 8.825
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 687.297
+_symmetry_space_group_name_H-M 'I -4 3 m'
+_symmetry_Int_Tables_number 217
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 'y, -x, -z'
+4 'y+1/2, -x+1/2, -z+1/2'
+5 '-x, -y, z'
+6 '-x+1/2, -y+1/2, z+1/2'
+7 '-y, x, -z'
+8 '-y+1/2, x+1/2, -z+1/2'
+9 'x, -y, -z'
+10 'x+1/2, -y+1/2, -z+1/2'
+11 'y, x, z'
+12 'y+1/2, x+1/2, z+1/2'
+13 '-x, y, -z'
+14 '-x+1/2, y+1/2, -z+1/2'
+15 '-y, -x, z'
+16 '-y+1/2, -x+1/2, z+1/2'
+17 'z, x, y'
+18 'z+1/2, x+1/2, y+1/2'
+19 '-z, y, -x'
+20 '-z+1/2, y+1/2, -x+1/2'
+21 'z, -x, -y'
+22 'z+1/2, -x+1/2, -y+1/2'
+23 '-z, -y, x'
+24 '-z+1/2, -y+1/2, x+1/2'
+25 '-z, x, -y'
+26 '-z+1/2, x+1/2, -y+1/2'
+27 'z, y, x'
+28 'z+1/2, y+1/2, x+1/2'
+29 '-z, -x, y'
+30 '-z+1/2, -x+1/2, y+1/2'
+31 'z, -y, -x'
+32 'z+1/2, -y+1/2, -x+1/2'
+33 'x, -z, -y'
+34 'x+1/2, -z+1/2, -y+1/2'
+35 'y, z, x'
+36 'y+1/2, z+1/2, x+1/2'
+37 '-x, -z, y'
+38 '-x+1/2, -z+1/2, y+1/2'
+39 '-y, z, -x'
+40 '-y+1/2, z+1/2, -x+1/2'
+41 'x, z, y'
+42 'x+1/2, z+1/2, y+1/2'
+43 'y, -z, -x'
+44 'y+1/2, -z+1/2, -x+1/2'
+45 '-x, z, -y'
+46 '-x+1/2, z+1/2, -y+1/2'
+47 '-y, -z, x'
+48 '-y+1/2, -z+1/2, x+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.250000 0.500000 0.000000 1
+Ca1 Ca 0.143400 0.143400 0.143400 1
+O1 O 0.140700 0.140700 0.422000 1
+O2 O 0.384500 0.384500 0.384500 1

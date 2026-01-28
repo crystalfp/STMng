@@ -1,0 +1,60 @@
+data_Milarite
+_chemical_name_mineral Milarite
+_publ_section_comment
+;
+Milarite: Cerny et al., Can Min 18 (1980) 41-57
+Crystal chemistry of milarite
+from Vezna(a)
+;
+_cell_length_a 10.428
+_cell_length_b 10.428
+_cell_length_c 13.675
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 1287.83
+_symmetry_space_group_name_H-M 'P 6/m c c'
+_symmetry_Int_Tables_number 192
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z'
+3 '-y, x-y, z'
+4 '-x, -y, z'
+5 '-x+y, -x, z'
+6 'y, -x+y, z'
+7 '-y, -x, -z+1/2'
+8 '-x, -x+y, -z+1/2'
+9 '-x+y, y, -z+1/2'
+10 'y, x, -z+1/2'
+11 'x, x-y, -z+1/2'
+12 'x-y, -y, -z+1/2'
+13 '-x, -y, -z'
+14 '-x+y, -x, -z'
+15 'y, -x+y, -z'
+16 'x, y, -z'
+17 'x-y, x, -z'
+18 '-y, x-y, -z'
+19 'y, x, z+1/2'
+20 'x, x-y, z+1/2'
+21 'x-y, -y, z+1/2'
+22 '-y, -x, z+1/2'
+23 '-x, -x+y, z+1/2'
+24 '-x+y, y, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.079200 0.334900 0.114100 1
+Be1 Be 0.000000 0.500000 0.250000 1
+Ca1 Ca 0.333330 0.666670 0.264600 1
+K1 K 0.000000 0.000000 0.250000 1
+O1 O 0.090800 0.381000 0.000000 1
+O2 O 0.192800 0.275200 0.134700 1
+O3 O 0.113100 0.473000 0.180700 1

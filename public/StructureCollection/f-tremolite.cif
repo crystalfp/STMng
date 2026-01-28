@@ -1,0 +1,49 @@
+data_F-TREMOLITE
+_chemical_name_mineral F-TREMOLITE
+_publ_section_comment
+;
+F-TREMOLITE: Cameron, Gibbs: Am Min 58 (1973) 879-888
+The crystal structure and bonding of fluor-tremolite: a comparison
+;
+_cell_length_a 9.787
+_cell_length_b 18.004
+_cell_length_c 5.263
+_cell_angle_alpha 90
+_cell_angle_beta 104.44
+_cell_angle_gamma 90
+_cell_volume 898.072
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.282900 0.083400 0.296000 1
+Si2 Si 0.290000 0.170700 0.804100 1
+Mg1 Mg 0.000000 0.088500 0.500000 1
+Mg2 Mg 0.000000 0.176000 0.000000 1
+Mg3 Mg 0.000000 0.000000 0.000000 1
+Ca4 Ca 0.000000 0.277100 0.500000 1
+O1 O 0.112600 0.084700 0.217900 1
+O2 O 0.118700 0.170200 0.723900 1
+F1 F 0.102000 0.000000 0.712400 1
+O4 O 0.364400 0.248400 0.790700 1
+O5 O 0.347100 0.135100 0.100100 1
+O6 O 0.344400 0.119700 0.585700 1
+O7 O 0.340800 0.000000 0.292200 1

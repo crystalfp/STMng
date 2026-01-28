@@ -1,0 +1,67 @@
+data_scolecite
+_chemical_name_mineral scolecite
+_publ_section_comment
+;
+scolecite: Joswig, Bartl and Fuess: Z Krist 166 (1984) 219-223
+Structure refinement of scolecite by neutron diffraction
+Berufjord, Iceland               space group = Fd
+;
+_cell_length_a 18.508
+_cell_length_b 18.981
+_cell_length_c 6.527
+_cell_angle_alpha 90
+_cell_angle_beta 90.64
+_cell_angle_gamma 90
+_cell_volume 2292.79
+_symmetry_space_group_name_H-M Fd
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x+1/2, y+1/2, z'
+2 'x+1/2, y, z+1/2'
+3 'x, y+1/2, z+1/2'
+4 'x, y, z'
+5 'x+3/4, -y+3/4, z+1/4'
+6 'x+3/4, -y+1/4, z+3/4'
+7 'x+1/4, -y+3/4, z+3/4'
+8 'x+1/4, -y+1/4, z+1/4'
+9 'x+1, y+1/2, z+1/2'
+10 'x+1, y, z+1'
+11 'x+1/2, y+1/2, z+1'
+12 'x+5/4, -y+3/4, z+3/4'
+13 'x+5/4, -y+1/4, z+5/4'
+14 'x+3/4, -y+3/4, z+5/4'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.004380 0.000000 1
+Si2 Si 0.149640 0.206810 0.619700 1
+Si20 Si 0.834420 0.792350 0.625000 1
+Al1 Al 0.032790 0.091680 0.610700 1
+Al10 Al 0.950150 0.912780 0.615400 1
+Ca1 Ca 0.223780 0.018240 0.614100 1
+H61 H 0.026080 0.155950 0.994100 1
+H62 H 0.061910 0.229540 0.983300 1
+H601 H 0.907400 0.783570 0.254800 1
+H602 H 0.978690 0.824030 0.236800 1
+H71 H 0.112350 0.316140 0.335300 1
+H72 H 0.049380 0.368530 0.377900 1
+O1 O 0.015860 0.074400 0.868200 1
+O10 O 0.982940 0.938110 0.855700 1
+O2 O 0.070710 0.174540 0.574900 1
+O20 O 0.912620 0.829030 0.639500 1
+O3 O 0.092070 0.026180 0.523700 1
+O30 O 0.892460 0.979470 0.530300 1
+O4 O 0.204450 0.146280 0.708500 1
+O40 O 0.769590 0.843510 0.686900 1
+O5 O 0.182740 0.233510 0.402400 1
+O50 O 0.821590 0.764850 0.388600 1
+O6 O 0.029590 0.201080 0.061600 1
+O60 O 0.945840 0.794780 0.163300 1
+O7 O 0.062890 0.320570 0.357700 1

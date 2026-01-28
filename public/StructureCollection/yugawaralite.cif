@@ -1,0 +1,55 @@
+data_yugawaralite
+_chemical_name_mineral yugawaralite
+_publ_section_comment
+;
+yugawaralite: Kvick et al., Z Krist 174 (1986) 265-281
+Neutron diffraction study of the zeolite yugawaralite at 13K
+;
+_cell_length_a 6.7
+_cell_length_b 13.972
+_cell_length_c 10.039
+_cell_angle_alpha 90
+_cell_angle_beta 111.07
+_cell_angle_gamma 90
+_cell_volume 876.943
+_symmetry_space_group_name_H-M 'P 1 c 1'
+_symmetry_Int_Tables_number 7
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x, -y, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Al1 Al 0.000000 0.007100 0.000000 1
+Al2 Al 0.396140 0.355980 0.653610 1
+Si1 Si 0.341210 0.147980 0.980830 1
+Si2 Si 0.710510 0.036500 0.191240 1
+Si3 Si 0.409110 0.124500 0.694310 1
+Si4 Si 0.027360 0.475980 0.437480 1
+Si5 Si 0.360390 0.373270 0.960460 1
+Si6 Si 0.742110 0.497570 0.620970 1
+Ca1 Ca 0.051340 0.216540 0.423640 1
+O1 O 0.106890 0.106380 0.948440 1
+O2 O 0.855910 0.048340 0.098170 1
+O3 O 0.191530 0.076420 0.590560 1
+O4 O 0.503650 0.107780 0.134250 1
+O5 O 0.434890 0.117360 0.860040 1
+O6 O 0.619150 0.073170 0.679710 1
+O7 O 0.844510 0.064160 0.355740 1
+O8 O 0.339040 0.262520 0.996060 1
+O9 O 0.399130 0.232770 0.639390 1
+O10 O 0.163800 0.426640 0.988340 1
+O11 O 0.830320 0.482930 0.493030 1
+O12 O 0.171540 0.382360 0.499040 1
+O13 O 0.579110 0.411540 0.083450 1
+O14 O 0.360530 0.393200 0.805830 1
+O15 O 0.629980 0.400260 0.640000 1
+O16 O 0.936340 0.470140 0.264780 1

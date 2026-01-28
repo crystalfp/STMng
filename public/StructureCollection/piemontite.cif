@@ -1,0 +1,50 @@
+data_PIEMONTITE
+_chemical_name_mineral PIEMONTITE
+_publ_section_comment
+;
+PIEMONTITE:  Dollase. Am Min 54 (1969) 710-717
+Crystal structure and cation ordering of piemontite
+;
+_cell_length_a 8.878
+_cell_length_b 5.692
+_cell_length_c 10.201
+_cell_angle_alpha 90
+_cell_angle_beta 115.4
+_cell_angle_gamma 90
+_cell_volume 465.663
+_symmetry_space_group_name_H-M 'P 1 21/m 1'
+_symmetry_Int_Tables_number 11
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.341000 0.750000 0.044800 1
+Si2 Si 0.684600 0.250000 0.274500 1
+Si3 Si 0.185500 0.750000 0.319700 1
+Ca1 Ca 0.757400 0.750000 0.153300 1
+Ca2 Ca 0.597900 0.750000 0.425000 1
+Fe1 Fe 0.000000 0.000000 0.000000 1
+Fe2 Fe 0.000000 0.000000 0.500000 1
+Fe3 Fe 0.295700 0.250000 0.221600 1
+O1 O 0.233000 0.991200 0.035600 1
+O2 O 0.305800 0.979500 0.355000 1
+O3 O 0.796300 0.016300 0.337800 1
+O4 O 0.058800 0.250000 0.131800 1
+O5 O 0.042400 0.750000 0.147300 1
+O6 O 0.068600 0.750000 0.409100 1
+O7 O 0.514500 0.750000 0.180500 1
+O8 O 0.527600 0.250000 0.314000 1
+O9 O 0.620800 0.250000 0.098600 1
+O10 O 0.086800 0.250000 0.433000 1

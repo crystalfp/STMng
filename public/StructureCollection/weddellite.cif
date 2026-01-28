@@ -1,0 +1,53 @@
+data_Weddellite
+_audit_creation_method 'Converted from XTL/AMC by xtl_amc_to_cif_v10'
+_chemical_name_mineral Weddellite
+_publ_section_comment
+;
+Weddellite: Tazzoli V, Domeneghetti M C
+American Mineralogist 65 (1980) 327-334
+The crystal structures of whewellite and weddellite: re-examination and comparison
+;
+_cell_length_a 12.371
+_cell_length_b 12.371
+_cell_length_c 7.357
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1125.93
+_symmetry_space_group_name_H-M 'I 4/m'
+_symmetry_Int_Tables_number 87
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 '-y, x, z'
+4 '-y+1/2, x+1/2, z+1/2'
+5 '-x, -y, z'
+6 '-x+1/2, -y+1/2, z+1/2'
+7 'y, -x, z'
+8 'y+1/2, -x+1/2, z+1/2'
+9 '-x, -y, -z'
+10 '-x+1/2, -y+1/2, -z+1/2'
+11 'y, -x, -z'
+12 'y+1/2, -x+1/2, -z+1/2'
+13 'x, y, -z'
+14 'x+1/2, y+1/2, -z+1/2'
+15 '-y, x, -z'
+16 '-y+1/2, x+1/2, -z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+C1 C 0.446400 0.241500 0.105300 1
+Ca1 Ca 0.199300 0.301100 0.000000 1
+O1 O 0.356400 0.245800 0.182900 1
+O2 O 0.235500 0.463400 0.179900 1
+W1 O 0.149000 0.114500 0.000000 1
+W2 O 0.019200 0.384100 0.000000 1
+W3 O 0.000000 0.000000 0.683000 1

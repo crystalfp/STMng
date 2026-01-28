@@ -1,0 +1,70 @@
+data_kaliborite
+_chemical_name_mineral kaliborite
+_publ_section_comment
+;
+kaliborite:  Burns and Hawthorne:  Can Min 32 (1994) 885-894
+Kaliborite: An example of a crystallographically symmetrical
+hydrogen bond
+;
+_cell_length_a 18.572
+_cell_length_b 8.466
+_cell_length_c 14.689
+_cell_angle_alpha 90
+_cell_angle_beta 100.02
+_cell_angle_gamma 90
+_cell_volume 2274.33
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+K1 K 0.000000 0.118700 0.250000 1
+Mg1 Mg 0.137840 0.423400 0.167210 1
+B1 B 0.500500 0.147300 0.107700 1
+B2 B 0.069100 0.837800 0.025500 1
+B3 B 0.110900 0.795500 0.196400 1
+B4 B 0.262800 0.202500 0.254600 1
+B5 B 0.304700 0.459100 0.192800 1
+B6 B 0.239900 0.497400 0.023600 1
+H1 H 0.000000 0.257000 0.750000 1
+H2 H 0.408000 0.235000 0.130000 1
+H3 H 0.383000 0.546000 0.067000 1
+H4 H 0.003000 0.422000 0.068000 1
+H5 H 0.207000 0.939000 0.076000 1
+H6 H 0.146000 0.439000 0.980000 1
+H7 H 0.120000 0.101000 0.123000 1
+H8 H 0.077000 0.196000 0.057000 1
+H9 H 0.404000 0.964000 0.172000 1
+H10 H 0.341000 0.851000 0.173000 1
+O1 O 0.013400 0.731000 0.024100 1
+O2 O 0.036100 0.734000 0.188900 1
+O3 O 0.117100 0.872200 0.105400 1
+O4 O 0.376430 0.399400 0.226800 1
+O5 O 0.165800 0.661200 0.208600 1
+O6 O 0.294600 0.609600 0.238000 1
+O7 O 0.246600 0.346100 0.210400 1
+O8 O 0.299100 0.486300 0.091400 1
+O9 O 0.421400 0.135200 0.107300 1
+O10 O 0.427800 0.592000 0.056800 1
+O11 O 0.032100 0.488800 0.112600 1
+O12 O 0.255700 0.958000 0.064700 1
+O13 O 0.171000 0.463600 0.041100 1
+O14 O 0.098800 0.204800 0.120400 1
+O15 O 0.389200 0.875700 0.204600 1

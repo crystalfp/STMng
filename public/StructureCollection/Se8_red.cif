@@ -1,0 +1,84 @@
+data_2718-ICSD
+#©2008 by Fachinformationszentrum Karlsruhe, and the U.S. Secretary of 
+#Commerce on behalf of the United States.  All rights reserved.
+_database_code_ICSD                2718
+_audit_creation_date               1980/01/01
+_audit_update_record               1985/04/16
+_chemical_name_systematic          'Octaselenium - Alpha'
+_chemical_formula_structural       Se8
+_chemical_formula_sum              Se8
+_publ_section_title
+;
+Refinement of the crystal structure of alpha-monoclinic Se
+;
+loop_
+_citation_id
+_citation_journal_abbrev
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Acta Crystallographica B (24,1968-38,1982)' 1972 28 313 317 ACBCAR
+_publ_author_name                  'Cherin, P.;Unger, P.'
+_cell_length_a                     9.054(3)
+_cell_length_b                     9.083(5)
+_cell_length_c                     11.601(6)
+_cell_angle_alpha                  90.
+_cell_angle_beta                   90.81(5)
+_cell_angle_gamma                  90.
+_cell_volume                       953.94
+_cell_formula_units_Z              4
+_symmetry_space_group_name_H-M     'P 1 21/n 1'
+_symmetry_Int_Tables_number        14
+_refine_ls_R_factor_all            0.072
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+  1	'-x+1/2, y+1/2, -z+1/2'
+  2	'-x, -y, -z'
+  3	'x+1/2, -y+1/2, z+1/2'
+  4	'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Se0+	0
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+Se1 Se0+ 4 e 0.3209(3) 0.4840(4) 0.2362(3) 1. 0 
+Se2 Se0+ 4 e 0.4254(3) 0.6625(4) 0.3569(3) 1. 0 
+Se3 Se0+ 4 e 0.3178(3) 0.6376(4) 0.5378(3) 1. 0 
+Se4 Se0+ 4 e 0.1343(3) 0.8186(4) 0.5529(3) 1. 0 
+Se5 Se0+ 4 e -.0862(3) 0.6904(4) 0.5203(3) 1. 0 
+Se6 Se0+ 4 e -.1565(3) 0.7322(4) 0.3294(3) 1. 0 
+Se7 Se0+ 4 e -.0814(3) 0.5217(4) 0.2290(3) 1. 0 
+Se8 Se0+ 4 e 0.1301(3) 0.5990(4) 0.1337(3) 1. 0 
+
+loop_
+_atom_site_aniso_label
+_atom_site_aniso_type_symbol
+_atom_site_aniso_U_11
+_atom_site_aniso_U_22
+_atom_site_aniso_U_33
+_atom_site_aniso_U_12
+_atom_site_aniso_U_13
+_atom_site_aniso_U_23
+Se1 Se0+ 0.0495(16) 0.0468(18) 0.0584(18) 0.0111(13) -.0077(13) -.0019(15)
+Se2 Se0+ 0.0387(14) 0.0508(19) 0.070(2) -.0101(13) -.0056(13) -.0041(16)
+Se3 Se0+ 0.0436(14) 0.0497(18) 0.0508(18) 0.0022(13) -.0177(13) 0.0030(16)
+Se4 Se0+ 0.0448(14) 0.0455(17) 0.0588(19) -.0032(13) -.0105(13) -.0016(18)
+Se5 Se0+ 0.0400(14) 0.0567(19) 0.0453(16) -.0035(13) -.0001(12) 0.0030(18)
+Se6 Se0+ 0.0341(14) 0.0527(19) 0.0576(18) 0.0104(13) -.0100(11) 0.0034(18)
+Se7 Se0+ 0.0481(16) 0.0402(16) 0.0487(16) -.0088(12) -.0089(12) 0.0029(17)
+Se8 Se0+ 0.0486(16) 0.0463(17) 0.0456(16) 0.0026(13) -.0060(13) 0.0001(17)
+#End of data_2718-ICSD
+
+

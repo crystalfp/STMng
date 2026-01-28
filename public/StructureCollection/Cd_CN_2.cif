@@ -1,0 +1,89 @@
+data_66938-ICSD
+#©2008 by Fachinformationszentrum Karlsruhe, and the U.S. Secretary of 
+#Commerce on behalf of the United States.  All rights reserved.
+_database_code_ICSD                66938
+_audit_creation_date               1997/11/10
+_audit_update_record               1999/01/19
+_chemical_name_systematic          'Cadmium Zyanide'
+_chemical_formula_structural       'Cd (C N)2'
+_chemical_formula_sum              'C2 Cd1 N2'
+_publ_section_title
+;
+Design and construction of a class of scaffolding-like materials 
+comprising infinite polymeric frameworks of 3Dlinked molecular rods. 
+A reappraisal of the Zn (C N)2 & Cd (C N)2 structures & the synthesis 
+& structure of the diamond-related framew
+;
+loop_
+_citation_id
+_citation_journal_abbrev
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Journal of the American Chemical Society' 1990 112 1546 1554 JACSAT
+_publ_author_name                  'Hoskins, B.F.;Robson, R.'
+_cell_length_a                     6.301(1)
+_cell_length_b                     6.301(1)
+_cell_length_c                     6.301(1)
+_cell_angle_alpha                  90.
+_cell_angle_beta                   90.
+_cell_angle_gamma                  90.
+_cell_volume                       250.17
+_cell_formula_units_Z              2
+_symmetry_space_group_name_H-M     'P -4 3 m'
+_symmetry_Int_Tables_number        215
+_refine_ls_R_factor_all            0.028
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+  1	'-z, -y, x'
+  2	'-y, -x, z'
+  3	'-x, -z, y'
+  4	'-z, -x, y'
+  5	'-y, -z, x'
+  6	'-x, -y, z'
+  7	'-z, y, -x'
+  8	'-y, x, -z'
+  9	'-x, z, -y'
+ 10	'-z, x, -y'
+ 11	'-y, z, -x'
+ 12	'-x, y, -z'
+ 13	'z, -y, -x'
+ 14	'y, -x, -z'
+ 15	'x, -z, -y'
+ 16	'z, -x, -y'
+ 17	'y, -z, -x'
+ 18	'x, -y, -z'
+ 19	'z, y, x'
+ 20	'y, x, z'
+ 21	'x, z, y'
+ 22	'z, x, y'
+ 23	'y, z, x'
+ 24	'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+C2+	2
+Cd2+	2
+N3-	-3
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+_atom_site_U_iso_or_equiv
+Cd1 Cd2+ 1 a 0 0 0 1. 0 0.1489(4) 
+Cd2 Cd2+ 1 b 0.5 0.5 0.5 1. 0 0.1402(4) 
+C1 C2+ 4 e 0.1923(5) 0.1923(5) 0.1923(5) 1. 0 0.1384(5) 
+N1 N3- 4 e 0.2988(4) 0.2988(4) 0.2988(4) 1. 0 0.1321(5) 
+
+#End of data_66938-ICSD
+
+

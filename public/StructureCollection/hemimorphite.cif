@@ -1,0 +1,42 @@
+data_hemimorphite
+_chemical_name_mineral hemimorphite
+_publ_section_comment
+;
+hemimorphite: Hill et al.,  Z Krist 146 (1977) 241-259
+A neutron-diffraction study of hemimorphite
+;
+_cell_length_a 8.367
+_cell_length_b 10.73
+_cell_length_c 5.115
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 459.214
+_symmetry_space_group_name_H-M 'I m m 2'
+_symmetry_Int_Tables_number 44
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 '-x, -y, z'
+4 '-x+1/2, -y+1/2, z+1/2'
+5 '-x, y, z'
+6 '-x+1/2, y+1/2, z+1/2'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.146500 0.507600 1
+Zn1 Zn 0.204700 0.161300 0.000000 1
+O1 O 0.160200 0.205500 0.636200 1
+O2 O 0.000000 0.166900 0.193800 1
+O3 O 0.305000 0.000000 0.041000 1
+O4 O 0.000000 0.000000 0.591200 1

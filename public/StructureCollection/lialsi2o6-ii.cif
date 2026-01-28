@@ -1,0 +1,36 @@
+data_LiAlSi2O6-II
+_cell_length_a 7.541
+_cell_length_b 7.541
+_cell_length_c 9.156
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 520.671
+_symmetry_space_group_name_H-M 'P 43 21 2'
+_symmetry_Int_Tables_number 96
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-y+1/2, x+1/2, z+3/4'
+3 '-x, -y, z+1/2'
+4 'y+1/2, -x+1/2, z+1/4'
+5 'x+1/2, -y+1/2, -z+1/4'
+6 '-y, -x, -z+1/2'
+7 '-x+1/2, y+1/2, -z+3/4'
+8 'y, x, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.332300 0.122100 0.238400 1
+Si2 Si 0.417800 0.417800 0.000000 1
+Li1 Li 0.070500 0.195300 0.501100 1
+O1 O 0.443200 0.120700 0.393100 1
+O2 O 0.124500 0.115900 0.299400 1
+O3 O 0.363700 0.304600 0.145900 1

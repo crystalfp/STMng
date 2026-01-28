@@ -1,0 +1,50 @@
+data_BaCuSi2O6
+_chemical_name_mineral BaCuSi2O6
+_publ_section_comment
+;
+BaCuSi2O6: Finger et al.,  Am Min 74 (1989) 952-955
+BaCuSi2O6: A new cyclosilicate with four-membered tetrahedral rings
+;
+_cell_length_a 7.042
+_cell_length_b 7.042
+_cell_length_c 11.133
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 552.083
+_symmetry_space_group_name_H-M 'I -4 m 2'
+_symmetry_Int_Tables_number 119
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 'y, -x, -z'
+4 'y+1/2, -x+1/2, -z+1/2'
+5 '-x, -y, z'
+6 '-x+1/2, -y+1/2, z+1/2'
+7 '-y, x, -z'
+8 '-y+1/2, x+1/2, -z+1/2'
+9 '-x, y, z'
+10 '-x+1/2, y+1/2, z+1/2'
+11 '-y, -x, -z'
+12 '-y+1/2, -x+1/2, -z+1/2'
+13 'x, -y, z'
+14 'x+1/2, -y+1/2, z+1/2'
+15 'y, x, -z'
+16 'y+1/2, x+1/2, -z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.275900 0.275900 0.000000 1
+Ba1 Ba 0.500000 0.000000 0.250000 1
+Ba2 Ba 0.000000 0.500000 0.250000 1
+Cu1 Cu 0.000000 0.000000 0.122500 1
+O1 O 0.218500 0.164500 0.119000 1
+O2 O 0.742900 0.000000 0.530000 1

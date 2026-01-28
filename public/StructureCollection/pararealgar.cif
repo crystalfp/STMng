@@ -1,0 +1,40 @@
+data_pararealgar
+_chemical_name_mineral pararealgar
+_publ_section_comment
+;
+pararealgar: Bonazzi et al., Am Min 80 (1994) 400-403
+The crystal structure of pararealgar, As4S4
+;
+_cell_length_a 9.909
+_cell_length_b 9.655
+_cell_length_c 8.502
+_cell_angle_alpha 90
+_cell_angle_beta 97.29
+_cell_angle_gamma 90
+_cell_volume 806.823
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+As1 As 0.318700 0.635500 0.043200 1
+As2 As 0.081900 0.542700 0.325200 1
+As3 As 0.369800 0.360700 0.343100 1
+As4 As 0.145500 0.343900 0.164300 1
+S1 S 0.164500 0.718700 0.192300 1
+S2 S 0.253700 0.478200 0.509900 1
+S3 S 0.470300 0.527600 0.219200 1
+S4 S 0.196400 0.448300 0.950800 1

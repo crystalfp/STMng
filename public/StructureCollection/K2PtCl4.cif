@@ -1,0 +1,88 @@
+data_37014-ICSD
+#©2008 by Fachinformationszentrum Karlsruhe, and the U.S. Secretary of 
+#Commerce on behalf of the United States.  All rights reserved.
+_database_code_ICSD                37014
+_audit_creation_date               1983/12/31
+_chemical_name_systematic          'Potassium Tetrachloroplatinate(II)'
+_chemical_formula_structural       'K2 (Pt Cl4)'
+_chemical_formula_sum              'Cl4 K2 Pt1'
+_publ_section_title
+;
+Electron-Density Distribution in Crystals of Potassium Tetrachloro- 
+platinate(II) and Influence of X-ray Diffuse Scattering
+;
+loop_
+_citation_id
+_citation_journal_abbrev
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Acta Crystallographica B (39,1983-)' 1983 39 49 53 ASBSDK
+_publ_author_name                  'Ohba, S.;Sato, S.;Saito, Y.'
+_cell_length_a                     7.024(1)
+_cell_length_b                     7.024(1)
+_cell_length_c                     4.147(1)
+_cell_angle_alpha                  90.
+_cell_angle_beta                   90.
+_cell_angle_gamma                  90.
+_cell_volume                       204.6
+_cell_formula_units_Z              1
+_symmetry_space_group_name_H-M     'P 4/m m m'
+_symmetry_Int_Tables_number        123
+_refine_ls_R_factor_all            0.008
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+  1	'y, x, -z'
+  2	'-y, -x, -z'
+  3	'-y, x, -z'
+  4	'y, -x, -z'
+  5	'-x, y, -z'
+  6	'x, -y, -z'
+  7	'x, y, -z'
+  8	'-x, -y, -z'
+  9	'-y, -x, z'
+ 10	'y, x, z'
+ 11	'y, -x, z'
+ 12	'-y, x, z'
+ 13	'x, -y, z'
+ 14	'-x, y, z'
+ 15	'-x, -y, z'
+ 16	'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Cl1-	-1
+K1+	1
+Pt2+	2
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+Pt1 Pt2+ 1 a 0 0 0 1. 0 
+Cl1 Cl1- 4 j 0.2323(1) 0.2323(1) 0 1. 0 
+K1 K1+ 2 e 0 0.5 0.5 1. 0 
+
+loop_
+_atom_site_aniso_label
+_atom_site_aniso_type_symbol
+_atom_site_aniso_U_11
+_atom_site_aniso_U_22
+_atom_site_aniso_U_33
+_atom_site_aniso_U_12
+_atom_site_aniso_U_13
+_atom_site_aniso_U_23
+Pt1 Pt2+ 0.0204(1) 0.0204(1) 0.0234(1) 0 0 0
+Cl1 Cl1- 0.0259(1) 0.0259(1) 0.0421(2) -.0030(1) 0 0
+K1 K1+ 0.0474(4) 0.0326(3) 0.0284(2) 0 0 0
+#End of data_37014-ICSD
+
+

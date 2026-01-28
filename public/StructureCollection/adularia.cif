@@ -1,0 +1,44 @@
+data_adularia
+_chemical_name_mineral adularia
+_publ_section_comment
+;
+adularia: Phillips and Ribbe: Am Min 58 (1973) 263-270
+The Structure of Monoclinic Potassium-Rich Feldspars
+;
+_cell_length_a 8.545
+_cell_length_b 12.967
+_cell_length_c 7.201
+_cell_angle_alpha 90
+_cell_angle_beta 116
+_cell_angle_gamma 90
+_cell_volume 717.141
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.009300 0.184200 0.224300 1
+Si2 Si 0.707800 0.117600 0.344500 1
+K1 K 0.283400 0.000000 0.137200 1
+O1 O 0.000000 0.144700 0.000000 1
+O2 O 0.633900 0.000000 0.284800 1
+O3 O 0.826200 0.144900 0.228000 1
+O4 O 0.033900 0.311700 0.258500 1
+O5 O 0.182100 0.125700 0.407000 1

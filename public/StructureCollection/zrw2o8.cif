@@ -1,0 +1,48 @@
+data_ZrW2O8
+_chemical_name_mineral ZrW2O8
+_publ_section_comment
+;
+ZrW2O8: Mary et al., Science 272 (1996) 90-92
+Negative thermal expansion from 0.3 to 1050 Kelvin in ZrW2O8
+T = 293 K
+;
+_cell_length_a 9.15993
+_cell_length_b 9.15993
+_cell_length_c 9.15993
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 768.558
+_symmetry_space_group_name_H-M 'P 21 3'
+_symmetry_Int_Tables_number 198
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x, y+1/2, -z+1/2'
+5 'z, x, y'
+6 'z+1/2, -x+1/2, -y'
+7 '-z, x+1/2, -y+1/2'
+8 '-z+1/2, -x, y+1/2'
+9 'y, z, x'
+10 '-y, z+1/2, -x+1/2'
+11 '-y+1/2, -z, x+1/2'
+12 'y+1/2, -z+1/2, -x'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Zr1 Zr 0.000300 0.000300 0.000300 1
+W1 W 0.341200 0.341200 0.341200 1
+W2 W 0.600800 0.600800 0.600800 1
+O1 O 0.207100 0.437800 0.447000 1
+O2 O 0.787600 0.569400 0.556500 1
+O3 O 0.491600 0.491600 0.491600 1
+O4 O 0.233600 0.233600 0.233600 1

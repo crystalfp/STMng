@@ -1,0 +1,50 @@
+data_Bechererite
+_chemical_name_mineral Bechererite
+_publ_section_comment
+;
+Bechererite: Hoffmann et al., Am Min 82 (1997) 1014-1018
+The acentric structure (P3) of bechererite, Zn7Cu(OH)13[SiO(OH)3SO4]
+;
+_cell_length_a 8.319
+_cell_length_b 8.319
+_cell_length_c 7.377
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 442.133
+_symmetry_space_group_name_H-M 'P 3'
+_symmetry_Int_Tables_number 143
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-y, x-y, z'
+3 '-x+y, -x, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Zn1 Zn 0.132600 0.413600 0.999700 1
+Zn11 Zn 0.862800 0.573400 0.000700 1
+Zn2 Zn 0.000000 0.000000 0.246900 1
+Zn21 Zn 0.000000 0.000000 0.757100 1
+S1 S 0.333333 0.666667 0.590200 1
+Si1 Si 0.666667 0.333333 0.392600 1
+H4 H 0.877000 0.248000 0.212000 1
+H41 H 0.050000 0.748000 0.729000 1
+H5 H 0.347000 0.500000 0.245000 1
+H51 H 0.630000 0.587000 0.764000 1
+O1 O 0.333333 0.666667 0.790000 1
+O11 O 0.666667 0.333333 0.163000 1
+O2 O 0.171000 0.675600 0.523000 1
+O21 O 0.853600 0.334000 0.478000 1
+O4 O 0.943500 0.186700 0.168000 1
+O41 O 0.052300 0.804500 0.839000 1
+O5 O 0.375200 0.482600 0.126000 1
+O51 O 0.628800 0.528400 0.873000 1
+O3 O 0.051000 0.060000 0.501000 1

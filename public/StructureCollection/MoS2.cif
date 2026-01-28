@@ -1,0 +1,82 @@
+data_24000-ICSD
+#©2008 by Fachinformationszentrum Karlsruhe, and the U.S. Secretary of 
+#Commerce on behalf of the United States.  All rights reserved.
+_database_code_ICSD                24000
+_audit_creation_date               1980/01/01
+_audit_update_record               2006/04/01
+_chemical_name_systematic          'Molybdenum Disulfide'
+_chemical_formula_structural       'Mo S2'
+_chemical_formula_sum              'Mo1 S2'
+_chemical_name_mineral             Molybdenite
+_publ_section_title
+;
+The crystal structure of molybdenite
+;
+loop_
+_citation_id
+_citation_journal_abbrev
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Journal of the American Chemical Society' 1923 45 1466 1471 JACSAT
+_publ_author_name                  'Dickinson, R.G.;Pauling, L.'
+_cell_length_a                     3.15(2)
+_cell_length_b                     3.15(2)
+_cell_length_c                     12.30(7)
+_cell_angle_alpha                  90.
+_cell_angle_beta                   90.
+_cell_angle_gamma                  120.
+_cell_volume                       105.7
+_cell_formula_units_Z              2
+_symmetry_space_group_name_H-M     'P 63/m m c'
+_symmetry_Int_Tables_number        194
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+  1	'x, x-y, -z+1/2'
+  2	'-x+y, y, -z+1/2'
+  3	'-y, -x, -z+1/2'
+  4	'-x+y, -x, -z+1/2'
+  5	'-y, x-y, -z+1/2'
+  6	'x, y, -z+1/2'
+  7	'-x, -x+y, z+1/2'
+  8	'x-y, -y, z+1/2'
+  9	'y, x, z+1/2'
+ 10	'x-y, x, z+1/2'
+ 11	'y, -x+y, z+1/2'
+ 12	'-x, -y, z+1/2'
+ 13	'-x, -x+y, -z'
+ 14	'x-y, -y, -z'
+ 15	'y, x, -z'
+ 16	'x-y, x, -z'
+ 17	'y, -x+y, -z'
+ 18	'-x, -y, -z'
+ 19	'x, x-y, z'
+ 20	'-x+y, y, z'
+ 21	'-y, -x, z'
+ 22	'-x+y, -x, z'
+ 23	'-y, x-y, z'
+ 24	'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+Mo4+	4
+S2-	-2
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+Mo1 Mo4+ 2 c 0.3333 0.6667 0.25 1. 0 
+S1 S2- 4 f 0.3333 0.6667 0.621(4) 1. 0 
+
+#End of data_24000-ICSD
+
+

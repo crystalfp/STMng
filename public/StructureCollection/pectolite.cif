@@ -1,0 +1,46 @@
+data_PECTOLITE
+_chemical_name_mineral PECTOLITE
+_publ_section_comment
+;
+PECTOLITE: Takeuchi and Kudoh: Z Krist 146 (1977) 281-292
+Hydrogen bonding and cation ordering in Magnet Cove pectolite
+;
+_cell_length_a 7.98
+_cell_length_b 7.023
+_cell_length_c 7.018
+_cell_angle_alpha 90.54
+_cell_angle_beta 95.14
+_cell_angle_gamma 102.55
+_cell_volume 382.203
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.218530 0.401970 0.337460 1
+Si2 Si 0.214720 0.954700 0.344480 1
+Si3 Si 0.450650 0.736000 0.144440 1
+Ca1 Ca 0.854560 0.593620 0.145120 1
+Ca2 Ca 0.847130 0.083960 0.140250 1
+Na1 Na 0.552820 0.259100 0.343900 1
+H1 H 0.178000 0.645000 0.527000 1
+O1 O 0.653400 0.788300 0.126700 1
+O2 O 0.330000 0.705300 0.945500 1
+O3 O 0.186400 0.496900 0.539600 1
+O4 O 0.176600 0.846500 0.541700 1
+O5 O 0.063200 0.386300 0.173100 1
+O6 O 0.060200 0.896600 0.177200 1
+O7 O 0.399700 0.534800 0.271400 1
+O8 O 0.395100 0.909100 0.275400 1
+O9 O 0.264000 0.191600 0.385600 1

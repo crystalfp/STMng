@@ -1,0 +1,52 @@
+data_kilchoanite
+_chemical_name_mineral kilchoanite
+_publ_section_comment
+;
+kilchoanite: Kimata: Min Mag 53 (1989) 625-631
+The crystal structure of manganoan kilchoanite, Ca2.33Mn.67Si2O7: a site
+preference rule for the substitution of Mn for Ca
+;
+_cell_length_a 11.356
+_cell_length_b 5.007
+_cell_length_c 21.817
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1240.5
+_symmetry_space_group_name_H-M 'I 2 c m'
+_symmetry_Int_Tables_number 46
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 'x, y, -z+1/2'
+4 'x+1/2, y+1/2, -z+1'
+5 'x, -y, -z'
+6 'x+1/2, -y+1/2, -z+1/2'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.119400 0.422200 0.250000 1
+Si2 Si 0.438600 0.938400 0.102560 1
+Si3 Si 0.272800 0.000000 0.000000 1
+Ca1 Ca 0.017300 0.000000 0.000000 1
+Ca2 Ca 0.309500 0.994300 0.250000 1
+Ca1_02 Ca 0.033780 0.002800 0.170000 1
+Ca2_02 Ca 0.244320 0.495300 0.105800 1
+O1 O 0.186400 0.291000 0.190800 1
+O2 O 0.989300 0.283600 0.250000 1
+O3 O 0.120300 0.745000 0.250000 1
+O4 O 0.374300 0.795300 0.160100 1
+O5 O 0.066400 0.701100 0.095600 1
+O6 O 0.363800 0.812700 0.042000 1
+O7 O 0.435400 0.259100 0.098700 1
+O8 O 0.192300 0.187800 0.040500 1

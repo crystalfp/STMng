@@ -1,0 +1,35 @@
+data_Fe3O4_-_marokite
+_cell_length_a 2.7992
+_cell_length_b 9.4097
+_cell_length_c 9.4832
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 249.784
+_symmetry_space_group_name_H-M 'P b c m'
+_symmetry_Int_Tables_number 57
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z+1/2'
+3 'x, -y+1/2, -z'
+4 '-x, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x, y, -z+1/2'
+7 '-x, y+1/2, z'
+8 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Fe2 Fe 0.723000 0.378300 0.250000 1
+Fe3 Fe 0.246000 0.112500 0.088000 1
+O1 O 0.508000 0.250000 0.000000 1
+O2 O 0.169000 0.215000 0.250000 1
+O3 O 0.207000 0.500400 0.091800 1

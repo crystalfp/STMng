@@ -1,0 +1,43 @@
+data_spiroffite
+_chemical_name_mineral spiroffite
+_publ_section_comment
+;
+spiroffite: Cooper and Hawthorne,  Can Min 34 (1996) 821-826
+The crystal structure of spiroffite
+;
+_cell_length_a 12.87
+_cell_length_b 5.3813
+_cell_length_c 11.888
+_cell_angle_alpha 90
+_cell_angle_beta 98.22
+_cell_angle_gamma 90
+_cell_volume 814.873
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Te1 Te 0.500000 0.360910 0.250000 1
+Te2 Te 0.137760 0.185890 0.057800 1
+Mn1 Mn 0.228830 0.198700 0.350500 1
+O1 O 0.075400 0.076100 0.353200 1
+O2 O 0.384600 0.385300 0.358300 1
+O3 O 0.261300 0.015800 0.028900 1
+O4 O 0.196100 0.361200 0.187200 1

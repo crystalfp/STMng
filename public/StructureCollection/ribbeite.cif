@@ -1,0 +1,50 @@
+data_RIBBEITE
+_chemical_name_mineral RIBBEITE
+_publ_section_comment
+;
+RIBBEITE: Freed et al., Am Min 78 (1993) 190-194
+Ribbeite, a second example of edge-sharing silicate tetrahedra in the
+leucophoenicite group
+;
+_cell_length_a 10.732
+_cell_length_b 15.672
+_cell_length_c 4.811
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 809.171
+_symmetry_space_group_name_H-M 'P n m a'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z+1/2'
+4 '-x, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z+1/2'
+8 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mn1 Mn 0.868500 0.145010 0.493340 1
+Mn2 Mn 0.591240 0.250000 0.514490 1
+Mn3 Mn 0.644020 0.061270 0.995920 1
+Si1 Si 0.777900 0.250000 0.071200 1
+Si2 Si 0.461300 0.044800 0.583500 1
+H1 H 0.555000 0.126000 0.569000 1
+H2 H 0.345000 0.034000 0.600000 1
+O1 O 0.461600 0.043200 0.267200 1
+O2 O 0.777800 0.250000 0.738100 1
+O3 O 0.917900 0.250000 0.212500 1
+O4 O 0.710100 0.168100 0.212300 1
+O5 O 0.528600 0.137300 0.731100 1
+O6 O 0.310900 0.043900 0.734400 1

@@ -1,0 +1,53 @@
+data_Ca-majorite
+_chemical_name_mineral Ca-majorite
+_publ_section_comment Ca-majorite
+_cell_length_a 11.5816
+_cell_length_b 11.5816
+_cell_length_c 11.5288
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1546.4
+_symmetry_space_group_name_H-M 'I 41/a 1'
+_symmetry_Int_Tables_number 88
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 '-y, x+1/2, z+1/4'
+4 '-y+1/2, x+1, z+3/4'
+5 '-x+1/2, -y+1/2, z+1/2'
+6 '-x+1, -y+1, z+1'
+7 'y+1/2, -x, z+3/4'
+8 'y+1, -x+1/2, z+5/4'
+9 '-x, -y+1/2, -z+1/4'
+10 '-x+1/2, -y+1, -z+3/4'
+11 'y, -x, -z'
+12 'y+1/2, -x+1/2, -z+1/2'
+13 'x+1/2, y, -z+3/4'
+14 'x+1, y+1/2, -z+5/4'
+15 '-y+1/2, x+1/2, -z+1/2'
+16 '-y+1, x+1, -z+1'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+D1 D 0.626480 0.263670 0.382590 1
+D1_02 D 0.500000 0.500000 0.750784 0.02
+Si1 Si 0.500000 0.500000 0.500000 1
+Si2 Si 0.500000 0.500000 0.000000 1
+Si3 Si 0.625893 0.257154 0.882532 1
+Mg1 Mg 0.500000 0.250000 0.625000 1
+Si1_02 Si 0.500000 0.250000 0.125000 1
+O1 O 0.525070 0.302399 0.791568 1
+O2 O 0.541959 0.203797 0.988545 1
+O3 O 0.721208 0.359957 0.918433 1
+O4 O 0.717217 0.166054 0.827580 1
+O5 O 0.447033 0.408531 0.594672 1
+O6 O 0.397551 0.464077 0.909168 1

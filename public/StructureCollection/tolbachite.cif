@@ -1,0 +1,39 @@
+data_TOLBACHITE
+_chemical_name_mineral TOLBACHITE
+_publ_section_comment
+;
+TOLBACHITE: Burns & Hawthorne: Am Min 78 (1993) 187-189
+Tolbachite, CuCl_2, the first example of Cu^{2+} octahedrally
+coordinated by Cl
+;
+_cell_length_a 6.9038
+_cell_length_b 3.2995
+_cell_length_c 6.824
+_cell_angle_alpha 90
+_cell_angle_beta 122.197
+_cell_angle_gamma 90
+_cell_volume 131.54
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Cu1 Cu 0.000000 0.000000 0.000000 1
+Cl1 Cl 0.504800 0.000000 0.229400 1

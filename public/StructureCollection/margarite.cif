@@ -1,0 +1,56 @@
+data_MARGARITE
+_chemical_name_mineral MARGARITE
+_publ_section_comment
+;
+MARGARITE: Joswig, Takeuchi, Fuess:  Z Krist 165 (1983) 295-303
+Neutron-diffraction study on the orientation of hydroxyl groups in margarite
+;
+_cell_length_a 5.108
+_cell_length_b 8.844
+_cell_length_c 19.156
+_cell_angle_alpha 90
+_cell_angle_beta 95.48
+_cell_angle_gamma 90
+_cell_volume 861.42
+_symmetry_space_group_name_H-M 'C 1 c 1'
+_symmetry_Int_Tables_number 9
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 'x, -y, z+1/2'
+4 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Al11 Al 0.463600 0.927900 0.142500 1
+Si12 Si 0.535000 0.074700 0.855300 1
+Si21 Si 0.454600 0.256500 0.144860 1
+Al22 Al 0.546800 0.743800 0.857900 1
+Ca1 Ca 0.000000 0.092900 0.250000 1
+Mg1 Mg 0.258000 0.242000 0.504000 1
+Mg2 Mg 0.748000 0.916900 0.999800 1
+Mg3 Mg 0.252200 0.085100 0.000300 1
+H11 H 0.366300 0.655000 0.062000 1
+H12 H 0.632500 0.345200 0.939600 1
+H21 H 0.439000 0.591000 0.098000 1
+H22 H 0.561000 0.399000 0.905000 1
+O11 O 0.961100 0.445500 0.052590 1
+O12 O 0.045100 0.561800 0.940590 1
+O21 O 0.395300 0.254500 0.060030 1
+O22 O 0.620000 0.749700 0.947720 1
+O31 O 0.363600 0.097800 0.177570 1
+O32 O 0.637600 0.918100 0.822740 1
+O41 O 0.267400 0.778600 0.168300 1
+O42 O 0.712200 0.215600 0.832310 1
+O51 O 0.288200 0.390600 0.178470 1
+O52 O 0.735200 0.603600 0.821420 1
+O61 O 0.454700 0.567000 0.051690 1
+O62 O 0.548900 0.436100 0.948910 1

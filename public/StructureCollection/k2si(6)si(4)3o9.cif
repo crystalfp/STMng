@@ -1,0 +1,45 @@
+data_K2Si(6)Si(4)3O9
+_chemical_name_mineral K2Si(6)Si(4)3O9
+_publ_section_comment
+;
+K2Si(6)Si(4)3O9: Swanson & Prewitt: Am Min 68 (1983) 581-585
+The crystal structure of K2Si(6)Si(4)3O9
+;
+_cell_length_a 6.6124
+_cell_length_b 6.6124
+_cell_length_c 9.5108
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 360.135
+_symmetry_space_group_name_H-M 'P 63/m'
+_symmetry_Int_Tables_number 176
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z+1/2'
+3 '-y, x-y, z'
+4 '-x, -y, z+1/2'
+5 '-x+y, -x, z'
+6 'y, -x+y, z+1/2'
+7 '-x, -y, -z'
+8 '-x+y, -x, -z+1/2'
+9 'y, -x+y, -z'
+10 'x, y, -z+1/2'
+11 'x-y, x, -z'
+12 '-y, x-y, -z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si4 Si 0.365320 0.233430 0.250000 1
+K1 K 0.333333 0.666667 0.057780 1
+Si6 Si 0.000000 0.000000 0.000000 1
+O1 O 0.491500 0.073390 0.250000 1
+O2 O 0.232030 0.209070 0.106110 1

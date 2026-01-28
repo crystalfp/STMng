@@ -1,0 +1,65 @@
+data_Autunite
+_chemical_name_mineral Autunite
+_publ_section_comment
+;
+Autunite
+Locock A J, Burns P C
+American Mineralogist 88 (2003) 240-244
+The crystal structure of synthetic autunite, Ca[(UO2)(PO4)]2(H2O)11
+;
+_cell_length_a 14.0135
+_cell_length_b 20.7121
+_cell_length_c 6.9959
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 2030.55
+_symmetry_space_group_name_H-M 'P n m a'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z+1/2'
+4 '-x, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z+1/2'
+8 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+U1 U 0.125000 0.541200 0.749800 0.012
+P1 P 0.124500 0.500300 0.247800 0.013
+Ca1 Ca 0.125100 0.750000 0.450100 0.86
+O1 O 0.123500 0.455100 0.748200 0.026
+O2 O 0.125000 0.627800 0.747200 0.021
+O3 O 0.125200 0.544000 0.073300 0.029
+O4 O 0.037300 0.456000 0.245100 0.028
+O5 O 0.211800 0.455700 0.255300 0.032
+O6 O 0.120600 0.545200 0.422600 0.023
+O7 O 0.759100 0.250000 0.285100 0.041
+O8 O 0.236800 0.664700 0.351000 0.072
+O9 O 0.012600 0.664500 0.343800 0.063
+O10 O 0.000200 0.250000 0.283300 0.055
+O11 O 0.126300 0.750000 0.075700 0.039
+O12 O 0.325700 0.661400 0.974500 0.062
+O13 O 0.075900 0.337900 0.024300 0.057
+H1 H 0.726000 0.283000 0.222000 0.05
+H2 H 0.197000 0.633000 0.412000 0.05
+H3 H 0.221000 0.654000 0.215000 0.05
+H4 H 0.033000 0.619100 0.335000 0.05
+H5 H 0.008000 0.665000 0.201000 0.05
+H6 H 0.037000 0.285100 0.233000 0.05
+H7 H 0.130000 0.705600 0.044000 0.05
+H8 H 0.272000 0.674000 0.058000 0.05
+H9 H 0.397200 0.655000 0.973000 0.05
+H10 H 0.068000 0.381900 0.075000 0.05
+H11 H 0.148300 0.336000 0.022000 0.05

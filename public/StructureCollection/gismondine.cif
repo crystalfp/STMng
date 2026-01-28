@@ -1,0 +1,45 @@
+data_Gismondine
+_chemical_name_mineral Gismondine
+_publ_section_comment
+;
+Gismondine: Artioli  et al.,   Zeolites 6 (1986)  361-366
+Neutron diffraction structure refinement of the zeolite gismondine at 15K
+;
+_cell_length_a 10.011
+_cell_length_b 10.614
+_cell_length_c 9.853
+_cell_angle_alpha 90
+_cell_angle_beta 93
+_cell_angle_gamma 90
+_cell_volume 1045.51
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.417010 0.113420 0.183650 1
+Si2 Si 0.906960 0.870290 0.162440 1
+Al1 Al 0.097830 0.114450 0.166050 1
+Al2 Al 0.588660 0.864920 0.147990 1
+Ca1 Ca 0.712430 0.071740 0.359770 1
+O1 O 0.085940 0.162680 0.996530 1
+O2 O 0.264100 0.080160 0.214900 1
+O3 O 0.438310 0.146840 0.026480 1
+O4 O 0.245800 0.403450 0.300580 1
+O5 O 0.999850 0.988180 0.209190 1
+O6 O 0.043130 0.246510 0.253170 1
+O7 O 0.470390 0.227640 0.280390 1
+O8 O 0.511430 0.992650 0.229220 1

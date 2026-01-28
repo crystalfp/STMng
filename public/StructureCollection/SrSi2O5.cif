@@ -1,0 +1,38 @@
+data_Grundy_Ito
+_cell_length_a 8.3282
+_cell_length_b 12.9801
+_cell_length_c 7.1358
+_cell_angle_alpha 90
+_cell_angle_beta 115.599
+_cell_angle_gamma 90
+_cell_volume 695.667
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.005400 0.177200 0.223700 1
+Si2 Si 0.690800 0.116600 0.341400 1
+Sr1 Sr 0.269600 0.000000 0.130600 1
+O1 O 0.000000 0.132900 0.000000 1
+O2 O 0.595100 0.000000 0.284300 1
+O3 O 0.820100 0.129800 0.221200 1
+O4 O 0.019300 0.305200 0.251800 1
+O5 O 0.190700 0.122700 0.402500 1

@@ -1,0 +1,54 @@
+data_BABINGTONITE
+_chemical_name_mineral BABINGTONITE
+_publ_section_comment
+;
+BABINGTONITE: Araki and Zoltai: Z Krist 135 (1972) 355-373
+Crystal structure of babingtonite
+;
+_cell_length_a 7.509
+_cell_length_b 11.697
+_cell_length_c 6.719
+_cell_angle_alpha 91.433
+_cell_angle_beta 93.886
+_cell_angle_gamma 104.255
+_cell_volume 570.132
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.287670 0.053510 0.341260 1
+Si2 Si 0.460110 0.313550 0.424740 1
+Si3 Si 0.806130 0.445060 0.209770 1
+Si4 Si 0.987730 0.713360 0.309990 1
+Si5 Si 0.327210 0.835920 0.106500 1
+Ca1 Ca 0.781950 0.941850 0.142460 1
+Ca2 Ca 0.237890 0.520340 0.304140 1
+Fe2 Fe 0.593630 0.644110 0.061370 1
+Fe3 Fe 0.046550 0.235320 0.184430 1
+O1 O 0.197670 0.987740 0.534090 1
+O2 O 0.130030 0.080470 0.184840 1
+O3 O 0.433020 0.171110 0.436070 1
+O4 O 0.316910 0.338410 0.246010 1
+O5 O 0.550450 0.620290 0.366220 1
+O6 O 0.677370 0.370870 0.372840 1
+O7 O 0.968500 0.384550 0.158580 1
+O8 O 0.678370 0.474530 0.027010 1
+O9 O 0.925550 0.568970 0.337170 1
+O10 O 0.872150 0.755330 0.125280 1
+O11 O 0.021100 0.221000 0.478370 1
+O12 O 0.203940 0.737000 0.249690 1
+O13 O 0.509580 0.799490 0.056260 1
+O14 O 0.805760 0.142010 0.081670 1
+O15 O 0.394470 0.967550 0.225620 1

@@ -1,0 +1,42 @@
+data_Chrysoberyl
+_chemical_name_mineral Chrysoberyl
+_publ_section_comment
+;
+Chrysoberyl: Farrell et al., Am Min 48 (1963) 804-810
+Refinement of the chrysoberyl structure
+;
+_cell_length_a 9.404
+_cell_length_b 5.476
+_cell_length_c 4.427
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 227.974
+_symmetry_space_group_name_H-M 'P n m a'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z+1/2'
+4 '-x, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z+1/2'
+8 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Be1 Be 0.092940 0.250000 0.433470 1
+Al1 Al 0.000000 0.000000 0.000000 1
+Al2 Al 0.273190 0.250000 0.994050 1
+O1 O 0.090510 0.250000 0.790160 1
+O2 O 0.433430 0.250000 0.240970 1
+O3 O 0.163180 0.017180 0.258500 1

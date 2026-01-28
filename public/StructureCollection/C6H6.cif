@@ -1,0 +1,1099 @@
+
+###########################################################################
+#
+#                 Cambridge Crystallographic Data Centre
+#                                CCDC 
+# 
+###########################################################################
+#
+#  This CIF contains data generated directly from one or more entries in
+#  the Cambridge Structural Database and will include bibliographic, 
+#  chemical, crystal, experimental, refinement, and atomic coordinate data,
+#  as available.
+#     
+#  Copyright  2013  The Cambridge Crystallographic Data Centre
+# 
+#  This CIF is provided on the understanding that it is used for bona fide 
+#  research purposes only.  It may contain copyright material of the CCDC
+#  or of third parties, and may not be copied or further disseminated in 
+#  any form, whether machine-readable or not, except for the purpose of 
+#  generating routine backup copies on your local computer system.
+# 
+#  For further information about the CCDC, data deposition and data 
+#  retrieval see <www.ccdc.cam.ac.uk>. Bona fide researchers may freely 
+#  download  Mercury and enCIFer from this site to visualise CIF-encoded 
+#  structures and to carry out CIF format checking respectively.
+#
+###########################################################################
+
+data_CSD_CIF_BENZEN
+_audit_creation_date 1971-12-31
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 14
+_journal_volume 279
+_journal_year 1964
+_journal_page_first 98
+_journal_name_full 'Proc.R.Soc.London,Ser.A '
+loop_
+_publ_author_name
+"G.E.Bacon"
+"N.A.Curry"
+"S.A.Wilson"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    491.680
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_diffrn_ambient_temperature 218.15
+_diffrn_radiation_probe 'neutron radiation'
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.059
+_refine_ls_wR_factor_gt 0.059
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,1/2+y,z
+3 x,1/2-y,1/2+z
+4 1/2-x,-y,1/2+z
+5 -x,-y,-z
+6 -1/2+x,-1/2-y,-z
+7 -x,-1/2+y,-1/2-z
+8 -1/2+x,y,-1/2-z
+_cell_length_a 7.44
+_cell_length_b 9.55
+_cell_length_c 6.92
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.20
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.05690 0.13870 -0.00540
+C2 C -0.13350 0.04600 0.12640
+C3 C 0.07740 0.09250 -0.12950
+H1 H -0.09760 0.24470 -0.01770
+H2 H -0.24090 0.07940 0.22180
+H3 H 0.13710 0.16310 -0.23120
+C3D C -0.07740 -0.09250 0.12950
+C2D C 0.13350 -0.04600 -0.12640
+C1D C 0.05690 -0.13870 0.00540
+H3D H -0.13710 -0.16310 0.23120
+H2D H 0.24090 -0.07940 -0.22180
+H1D H 0.09760 -0.24470 0.01770
+#END
+
+data_CSD_CIF_BENZEN01
+_audit_creation_date 1971-12-31
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN01
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 14
+_journal_volume 279
+_journal_year 1964
+_journal_page_first 98
+_journal_name_full 'Proc.R.Soc.London,Ser.A '
+loop_
+_publ_author_name
+"G.E.Bacon"
+"N.A.Curry"
+"S.A.Wilson"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    474.070
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_diffrn_ambient_temperature 138.15
+_diffrn_radiation_probe 'neutron radiation'
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.076
+_refine_ls_wR_factor_gt 0.076
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,1/2+y,z
+3 x,1/2-y,1/2+z
+4 1/2-x,-y,1/2+z
+5 -x,-y,-z
+6 -1/2+x,-1/2-y,-z
+7 -x,-1/2+y,-1/2-z
+8 -1/2+x,y,-1/2-z
+_cell_length_a 7.39
+_cell_length_b 9.42
+_cell_length_c 6.81
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.20
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.06070 0.13930 -0.00690
+C2 C -0.13770 0.04470 0.12600
+C3 C 0.07700 0.09580 -0.13250
+H1 H -0.10460 0.25020 -0.01230
+H2 H -0.24580 0.07810 0.22410
+H3 H 0.13710 0.16810 -0.23600
+C3D C -0.07700 -0.09580 0.13250
+C2D C 0.13770 -0.04470 -0.12600
+C1D C 0.06070 -0.13930 0.00690
+H3D H -0.13710 -0.16810 0.23600
+H2D H 0.24580 -0.07810 -0.22410
+H1D H 0.10460 -0.25020 0.01230
+#END
+
+data_CSD_CIF_BENZEN02
+_audit_creation_date 1971-12-31
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN02
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 14
+_journal_volume 247
+_journal_year 1958
+_journal_page_first 1
+_journal_name_full 'Proc.R.Soc.London,Ser.A '
+loop_
+_publ_author_name
+"E.G.Cox"
+"D.W.J.Cruickshank"
+"J.A.S.Smith"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    506.607
+_exptl_crystal_density_diffrn 1.022
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_diffrn_ambient_temperature 270.15
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.105
+_refine_ls_wR_factor_gt 0.105
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,1/2+y,z
+3 x,1/2-y,1/2+z
+4 1/2-x,-y,1/2+z
+5 -x,-y,-z
+6 -1/2+x,-1/2-y,-z
+7 -x,-1/2+y,-1/2-z
+8 -1/2+x,y,-1/2-z
+_cell_length_a 7.46
+_cell_length_b 9.66(6)
+_cell_length_c 7.03(4)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.05080 0.13702 -0.00563
+C2 C -0.12871 0.04756 0.12272
+C3 C 0.07836 0.08909 -0.12952
+C3D C -0.07836 -0.08909 0.12952
+C2D C 0.12871 -0.04756 -0.12272
+C1D C 0.05080 -0.13702 0.00563
+#END
+
+data_CSD_CIF_BENZEN03
+_audit_creation_date 1971-12-31
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN03
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 38
+_journal_volume 165
+_journal_year 1969
+_journal_page_first 1250
+_journal_name_full 'Science '
+loop_
+_publ_author_name
+"G.J.Piermarini"
+"A.D.Mighell"
+"C.E.Weir"
+"S.Block"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    206.117
+_exptl_crystal_density_diffrn 1.258
+_exptl_special_details
+;
+monoclinic polymorph III
+re-classified as polymorph III (not II) following the work of Thiery J Chem 
+Phys 89 (1988) 4255
+;
+_diffrn_ambient_temperature ?
+_diffrn_ambient_pressure ?
+_diffrn_special_details
+;
+The study was carried out at an unspecified high pressure
+The study was carried out at room temperature,in the range 283-303K
+;
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.076
+_refine_ls_wR_factor_gt 0.076
+loop_
+_citation_database_id_CSD
+_citation_special_details
+BENZEN04 "is a reinterpretation of this cif"
+_symmetry_cell_setting monoclinic
+_symmetry_space_group_name_H-M 'P 21/c'
+_symmetry_Int_Tables_number 14
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 -x,1/2+y,1/2-z
+3 -x,-y,-z
+4 x,-1/2-y,-1/2+z
+_cell_length_a 5.417(5)
+_cell_length_b 5.376(19)
+_cell_length_c 7.532(7)
+_cell_angle_alpha 90
+_cell_angle_beta 110.00(8)
+_cell_angle_gamma 90
+_cell_formula_units_Z 2
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.20
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.26140 -0.02341 -0.11498
+C2 C -0.08015 -0.20459 -0.11875
+C3 C -0.18125 0.18119 0.00377
+H1 H -0.44006 -0.03940 -0.19357
+H2 H -0.13480 -0.34492 -0.20007
+H3 H -0.30525 0.30552 0.00650
+C3B C 0.18125 -0.18119 -0.00377
+C1B C 0.26140 0.02341 0.11498
+C2B C 0.08015 0.20459 0.11875
+H2B H 0.13480 0.34492 0.20007
+H1B H 0.44006 0.03940 0.19357
+H3B H 0.30525 -0.30552 -0.00650
+#END
+
+data_CSD_CIF_BENZEN04
+_audit_creation_date 1971-12-31
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN04
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coeditor_code "IUCr A08224"
+_journal_coden_Cambridge 107
+_journal_volume 27
+_journal_year 1971
+_journal_page_first 1275
+_journal_name_full 'Acta Crystallogr.,Sect.B:Struct.Crystallogr.Cryst.Chem. '
+loop_
+_publ_author_name
+"R.Fourme"
+"D.Andre"
+"M.Renaud"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    206.117
+_exptl_special_details
+;
+monoclinic polymorph III
+Unit cell length c is 7.532, not 7.352 as published. Re-classified as 
+polymorph III (not II) following the work of Thiery J Chem Phys 89 (1988) 
+4255
+;
+_diffrn_ambient_temperature ?
+_diffrn_ambient_pressure ?
+_diffrn_special_details
+;
+The study was carried out at an unspecified high pressure
+The study was carried out at room temperature,in the range 283-303K
+;
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.069
+_refine_ls_wR_factor_gt 0.069
+loop_
+_citation_database_id_CSD
+_citation_special_details
+BENZEN03 "is reinterpreted by this entry"
+_symmetry_cell_setting monoclinic
+_symmetry_space_group_name_H-M 'P 21/c'
+_symmetry_Int_Tables_number 14
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 -x,1/2+y,1/2-z
+3 -x,-y,-z
+4 x,-1/2-y,-1/2+z
+_cell_length_a 5.417(5)
+_cell_length_b 5.376(19)
+_cell_length_c 7.532(7)
+_cell_angle_alpha 90
+_cell_angle_beta 110.00(8)
+_cell_angle_gamma 90
+_cell_formula_units_Z 2
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.20
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C 0.25560 0.03970 0.12130
+C2 C 0.06040 0.21240 0.11190
+C3 C 0.19510 -0.17260 0.00940
+H1 H 0.43210 0.06720 0.20510
+H2 H 0.10220 0.35900 0.18920
+H3 H 0.32990 -0.29180 0.01590
+C3B C -0.19510 0.17260 -0.00940
+C1B C -0.25560 -0.03970 -0.12130
+C2B C -0.06040 -0.21240 -0.11190
+H2B H -0.10220 -0.35900 -0.18920
+H1B H -0.43210 -0.06720 -0.20510
+H3B H -0.32990 0.29180 -0.01590
+#END
+
+data_CSD_CIF_BENZEN11
+_audit_creation_date 2006-03-08
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN11
+_database_code_depnum_ccdc_archive 'CCDC 298305'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coeditor_code "IUCr AV5045"
+_journal_coden_Cambridge 622
+_journal_volume 62
+_journal_year 2006
+_journal_page_first 94
+_journal_name_full 'Acta Crystallogr.,Sect.B:Struct.Sci. '
+loop_
+_publ_author_name
+"A.Budzianowski"
+"A.Katrusiak"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    448.366
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.157
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_diffrn_ambient_temperature 296
+_diffrn_ambient_pressure 700000.0
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.053
+_refine_ls_wR_factor_gt 0.053
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,-y,1/2+z
+3 -x,1/2+y,1/2-z
+4 1/2+x,1/2-y,-z
+5 -x,-y,-z
+6 -1/2+x,y,-1/2-z
+7 x,-1/2-y,-1/2+z
+8 -1/2-x,-1/2+y,z
+_cell_length_a 7.287(6)
+_cell_length_b 9.20(2)
+_cell_length_c 6.688(9)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.0537(8) 0.1425(9) 0.0097(12)
+H1 H -0.085(6) 0.246(7) 0.034(8)
+C2 C 0.0840(7) 0.0924(10) 0.1373(10)
+H2 H 0.140(6) 0.156(6) 0.219(8)
+C3 C -0.1343(7) 0.0521(9) -0.1235(12)
+H3 H -0.220(6) 0.080(6) -0.204(9)
+C1D C 0.0537(8) -0.1425(9) -0.0097(12)
+H1D H 0.085(6) -0.246(7) -0.034(8)
+C2D C -0.0840(7) -0.0924(10) -0.1373(10)
+H2D H -0.140(6) -0.156(6) -0.219(8)
+C3D C 0.1343(7) -0.0521(9) 0.1235(12)
+H3D H 0.220(6) -0.080(6) 0.204(9)
+#END
+
+data_CSD_CIF_BENZEN12
+_audit_creation_date 2006-03-08
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN12
+_database_code_depnum_ccdc_archive 'CCDC 298306'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coeditor_code "IUCr AV5045"
+_journal_coden_Cambridge 622
+_journal_volume 62
+_journal_year 2006
+_journal_page_first 94
+_journal_name_full 'Acta Crystallogr.,Sect.B:Struct.Sci. '
+loop_
+_publ_author_name
+"A.Budzianowski"
+"A.Katrusiak"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    430.657
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.205
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_diffrn_ambient_temperature 296
+_diffrn_ambient_pressure 1100000.0
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.1418
+_refine_ls_wR_factor_gt 0.1418
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,-y,1/2+z
+3 -x,1/2+y,1/2-z
+4 1/2+x,1/2-y,-z
+5 -x,-y,-z
+6 -1/2+x,y,-1/2-z
+7 x,-1/2-y,-1/2+z
+8 -1/2-x,-1/2+y,z
+_cell_length_a 7.221(4)
+_cell_length_b 9.05(2)
+_cell_length_c 6.590(5)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.0565(15) 0.145(3) 0.0049(19)
+H1 H -0.09200 0.24380 0.00670
+C2 C 0.0835(13) 0.096(2) 0.1399(15)
+H2 H 0.13690 0.15850 0.23480
+C3 C -0.1374(18) 0.053(3) -0.123(2)
+H3 H -0.23290 0.08800 -0.20490
+C1D C 0.0565(15) -0.145(3) -0.0049(19)
+H1D H 0.09200 -0.24380 -0.00670
+C2D C -0.0835(13) -0.096(2) -0.1399(15)
+H2D H -0.13690 -0.15850 -0.23480
+C3D C 0.1374(18) -0.053(3) 0.123(2)
+H3D H 0.23290 -0.08800 0.20490
+#END
+
+data_CSD_CIF_BENZEN13
+_audit_creation_date 2006-03-08
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN13
+_database_code_depnum_ccdc_archive 'CCDC 298307'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coeditor_code "IUCr AV5045"
+_journal_coden_Cambridge 622
+_journal_volume 62
+_journal_year 2006
+_journal_page_first 94
+_journal_name_full 'Acta Crystallogr.,Sect.B:Struct.Sci. '
+loop_
+_publ_author_name
+"A.Budzianowski"
+"A.Katrusiak"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    455.573
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.139
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_diffrn_ambient_temperature 296
+_diffrn_ambient_pressure 300000.0
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.1316
+_refine_ls_wR_factor_gt 0.1316
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,-y,1/2+z
+3 -x,1/2+y,1/2-z
+4 1/2+x,1/2-y,-z
+5 -x,-y,-z
+6 -1/2+x,y,-1/2-z
+7 x,-1/2-y,-1/2+z
+8 -1/2-x,-1/2+y,z
+_cell_length_a 7.243(3)
+_cell_length_b 9.310(17)
+_cell_length_c 6.756(3)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.052(4) 0.146(7) 0.019(5)
+H1 H -0.08310 0.24240 0.03220
+C2 C 0.087(4) 0.083(7) 0.135(6)
+H2 H 0.14560 0.13980 0.22950
+C3 C -0.141(5) 0.058(7) -0.115(6)
+H3 H -0.23770 0.09400 -0.19110
+C1D C 0.052(4) -0.146(7) -0.019(5)
+H1D H 0.08310 -0.24240 -0.03220
+C2D C -0.087(4) -0.083(7) -0.135(6)
+H2D H -0.14560 -0.13980 -0.22950
+C3D C 0.141(5) -0.058(7) 0.115(6)
+H3D H 0.23770 -0.09400 0.19110
+#END
+
+data_CSD_CIF_BENZEN15
+_audit_creation_date 2011-02-02
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN15
+_database_code_depnum_ccdc_archive 'CCDC 757059'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 1147
+_journal_volume 10
+_journal_year 2010
+_journal_page_first 3461
+_journal_name_full 'Cryst.Growth Des. '
+loop_
+_publ_author_name
+"A.Katrusiak"
+"M.Podsiadlo"
+"A.Budzianowski"
+_chemical_name_systematic
+;
+Benzene
+;
+_chemical_melting_point 279
+_cell_volume    484.753
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.07
+_exptl_special_details
+;
+orthorhombic polymorph I
+Benzene was found to freeze at ca. 0.05(5) GPa. The transition from phase I 
+to phase II occurred at ca. 550 K at 1 GPa, however the transition is 
+described as sluggish with a 2 GPa hysteresis at 295 K. No other phases were 
+found in the pressure range up to 5 GPa
+;
+_exptl_crystal_description 'cylinder'
+_diffrn_ambient_temperature 295
+_diffrn_ambient_pressure 150000.0
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.0852
+_refine_ls_wR_factor_gt 0.0852
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,-y,1/2+z
+3 -x,1/2+y,1/2-z
+4 1/2+x,1/2-y,-z
+5 -x,-y,-z
+6 -1/2+x,y,-1/2-z
+7 x,-1/2-y,-1/2+z
+8 -1/2-x,-1/2+y,z
+_cell_length_a 7.3801(15)
+_cell_length_b 9.5154(19)
+_cell_length_c 6.9029(14)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.0540(8) 0.1376(6) -0.0002(11)
+H1 H -0.08880 0.23160 -0.00090
+C2 C 0.0768(8) 0.0903(6) 0.1324(10)
+H2 H 0.12650 0.15200 0.22240
+C3 C -0.1300(8) 0.0454(6) -0.1282(10)
+H3 H -0.21920 0.07640 -0.21330
+C1D C 0.0540(8) -0.1376(6) 0.0002(11)
+H1D H 0.08880 -0.23160 0.00090
+C2D C -0.0768(8) -0.0903(6) -0.1324(10)
+H2D H -0.12650 -0.15200 -0.22240
+C3D C 0.1300(8) -0.0454(6) 0.1282(10)
+H3D H 0.21920 -0.07640 0.21330
+#END
+
+data_CSD_CIF_BENZEN16
+_audit_creation_date 2011-02-02
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN16
+_database_code_depnum_ccdc_archive 'CCDC 757060'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 1147
+_journal_volume 10
+_journal_year 2010
+_journal_page_first 3461
+_journal_name_full 'Cryst.Growth Des. '
+loop_
+_publ_author_name
+"A.Katrusiak"
+"M.Podsiadlo"
+"A.Budzianowski"
+_chemical_name_systematic
+;
+Benzene
+;
+_chemical_melting_point 279
+_cell_volume    217.114
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.195
+_exptl_special_details
+;
+monoclinic polymorph II
+Benzene was found to freeze at ca. 0.05(5) GPa. The transition from phase I 
+to phase II occurred at ca. 550 K at 1 GPa, however the transition is 
+described as sluggish with a 2 GPa hysteresis at 295 K. No other phases were 
+found in the pressure range up to 5 GPa
+;
+_exptl_crystal_description 'cylinder'
+_diffrn_ambient_temperature 295
+_diffrn_ambient_pressure 910000.0
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.0804
+_refine_ls_wR_factor_gt 0.0804
+_symmetry_cell_setting monoclinic
+_symmetry_space_group_name_H-M 'P 21/c'
+_symmetry_Int_Tables_number 14
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 -x,1/2+y,1/2-z
+3 -x,-y,-z
+4 x,-1/2-y,-1/2+z
+_cell_length_a 5.5146(11)
+_cell_length_b 5.4951(11)
+_cell_length_c 7.6536(15)
+_cell_angle_alpha 90
+_cell_angle_beta 110.59(3)
+_cell_angle_gamma 90
+_cell_formula_units_Z 2
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.2557(12) -0.025(3) -0.1131(9)
+H1 H -0.42890 -0.03960 -0.18860
+C2 C -0.0805(11) -0.199(3) -0.1203(8)
+H2 H -0.13410 -0.33090 -0.20070
+C3 C -0.1754(12) 0.175(3) 0.0071(8)
+H3 H -0.29520 0.29250 0.01050
+C1B C 0.2557(12) 0.025(3) 0.1131(9)
+H1B H 0.42890 0.03960 0.18860
+C2B C 0.0805(11) 0.199(3) 0.1203(8)
+H2B H 0.13410 0.33090 0.20070
+C3B C 0.1754(12) -0.175(3) -0.0071(8)
+H3B H 0.29520 -0.29250 -0.01050
+#END
+
+data_CSD_CIF_BENZEN17
+_audit_creation_date 2011-02-02
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN17
+_database_code_depnum_ccdc_archive 'CCDC 757061'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 1147
+_journal_volume 10
+_journal_year 2010
+_journal_page_first 3461
+_journal_name_full 'Cryst.Growth Des. '
+loop_
+_publ_author_name
+"A.Katrusiak"
+"M.Podsiadlo"
+"A.Budzianowski"
+_chemical_name_systematic
+;
+Benzene
+;
+_chemical_melting_point 279
+_cell_volume    215.800
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.202
+_exptl_special_details
+;
+monoclinic polymorph II
+Benzene was found to freeze at ca. 0.05(5) GPa. The transition from phase I 
+to phase II occurred at ca. 550 K at 1 GPa, however the transition is 
+described as sluggish with a 2 GPa hysteresis at 295 K. No other phases were 
+found in the pressure range up to 5 GPa
+;
+_exptl_crystal_description 'cylinder'
+_diffrn_ambient_temperature 295
+_diffrn_ambient_pressure 970000.0
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.0761
+_refine_ls_wR_factor_gt 0.0761
+_symmetry_cell_setting monoclinic
+_symmetry_space_group_name_H-M 'P 21/c'
+_symmetry_Int_Tables_number 14
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 -x,1/2+y,1/2-z
+3 -x,-y,-z
+4 x,-1/2-y,-1/2+z
+_cell_length_a 5.5220(11)
+_cell_length_b 5.4396(11)
+_cell_length_c 7.6726(15)
+_cell_angle_alpha 90
+_cell_angle_beta 110.55(3)
+_cell_angle_gamma 90
+_cell_formula_units_Z 2
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.2568(12) -0.018(3) -0.1130(8)
+H1 H -0.42950 -0.02910 -0.18960
+C2 C -0.0797(11) -0.200(3) -0.1205(8)
+H2 H -0.13330 -0.33400 -0.20010
+C3 C -0.1738(11) 0.175(3) 0.0073(8)
+H3 H -0.29300 0.29290 0.01250
+C1B C 0.2568(12) 0.018(3) 0.1130(8)
+H1B H 0.42950 0.02910 0.18960
+C2B C 0.0797(11) 0.200(3) 0.1205(8)
+H2B H 0.13330 0.33400 0.20010
+C3B C 0.1738(11) -0.175(3) -0.0073(8)
+H3B H 0.29300 -0.29290 -0.01250
+#END
+
+data_CSD_CIF_BENZEN18
+_audit_creation_date 2011-02-21
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD BENZEN18
+_database_code_depnum_ccdc_archive 'CCDC 725244'
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 1350
+_journal_volume 12
+_journal_year 2010
+_journal_page_first 3112
+_journal_name_full 'CrystEngComm '
+loop_
+_publ_author_name
+"S.K.Nayak"
+"R.Sathishkumar"
+"T.N.G.Row"
+_chemical_name_systematic
+;
+Benzene
+;
+_cell_volume    494.303
+_exptl_crystal_colour 'colorless'
+_exptl_crystal_density_diffrn 1.05
+_exptl_special_details
+;
+orthorhombic polymorph I
+
+;
+_exptl_crystal_description 'plate'
+_diffrn_ambient_temperature 150
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.0554
+_refine_ls_wR_factor_gt 0.0554
+_symmetry_cell_setting orthorhombic
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,-y,1/2+z
+3 1/2+x,1/2-y,-z
+4 -x,1/2+y,1/2-z
+5 -x,-y,-z
+6 -1/2+x,y,-1/2-z
+7 -1/2-x,-1/2+y,z
+8 x,-1/2-y,-1/2+z
+_cell_length_a 6.914(2)
+_cell_length_b 7.476(3)
+_cell_length_c 9.563(1)
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_formula_units_Z 4
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C 0.1297(2) 0.5762(2) 0.40803(18)
+H1 H 0.21720 0.62750 0.34600
+C2 C 0.1235(3) 0.6328(2) 0.54518(17)
+H2 H 0.20680 0.72250 0.57560
+C3 C 0.0057(2) 0.4432(2) 0.36289(17)
+H3 H 0.00950 0.40510 0.27040
+C1D C -0.1297(2) 0.4238(2) 0.59197(18)
+H1D H -0.21720 0.37250 0.65400
+C2D C -0.1235(3) 0.3672(2) 0.45482(17)
+H2D H -0.20680 0.27750 0.42440
+C3D C -0.0057(2) 0.5568(2) 0.63711(17)
+H3D H -0.00950 0.59490 0.72960
+#END
+
+data_CSD_CIF_SUFMIP
+_audit_creation_date 1993-08-06
+_audit_creation_method CSD-ConQuest-V1
+_database_code_CSD SUFMIP
+_chemical_formula_sum 'C6 H6'
+_chemical_formula_moiety
+;
+C6 H6
+;
+_journal_coden_Cambridge 4
+_journal_volume 115
+_journal_year 1993
+_journal_page_first 743
+_journal_name_full 'J.Am.Chem.Soc. '
+loop_
+_publ_author_name
+"R.Boese"
+"D.Blaser"
+"R.Gleiter"
+"K.-H.Pfeifer"
+"W.E.Billups"
+"M.M.Haley"
+_chemical_name_systematic
+;
+3,3'-Bicyclopropenyl
+;
+_chemical_melting_point 198
+_cell_volume    232.784
+_exptl_crystal_density_diffrn 1.114
+_diffrn_ambient_temperature 103
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt 0.044
+_refine_ls_wR_factor_gt 0.044
+_symmetry_cell_setting monoclinic
+_symmetry_space_group_name_H-M 'P 21/c'
+_symmetry_Int_Tables_number 14
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 -x,1/2+y,1/2-z
+3 -x,-y,-z
+4 x,-1/2-y,-1/2+z
+_cell_length_a 4.8901(9)
+_cell_length_b 9.4400(18)
+_cell_length_c 5.1604(10)
+_cell_angle_alpha 90
+_cell_angle_beta 102.26(1)
+_cell_angle_gamma 90
+_cell_formula_units_Z 2
+loop_
+_atom_type_symbol
+_atom_type_radius_bond
+C 0.68
+H 0.23
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C 0.4384(1) 0.9852(1) 0.8563(1)
+C2 C 0.3813(1) 0.8352(1) 0.7579(1)
+C3 C 0.1623(1) 0.9082(1) 0.7731(1)
+H1 H 0.4859(23) 1.0582(12) 0.7327(24)
+H2 H 0.4609(30) 0.7476(11) 0.7203(29)
+H3 H -0.0278(30) 0.9126(11) 0.7523(30)
+C1B C 0.5616(1) 1.0148(1) 1.1437(1)
+C2B C 0.6187(1) 1.1648(1) 1.2421(1)
+C3B C 0.8377(1) 1.0918(1) 1.2269(1)
+H1B H 0.5141(23) 0.9418(12) 1.2673(24)
+H2B H 0.5391(30) 1.2524(11) 1.2797(29)
+H3B H 1.0278(30) 1.0874(11) 1.2477(30)
+#END

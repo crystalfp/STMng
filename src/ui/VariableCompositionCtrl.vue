@@ -204,7 +204,7 @@ const computeGroups = (): void => {
             }
         }
         if(allZeroes) {
-            showNodeAlert(`Invalid content for component ${i+1}`,
+            showNodeAlert(`All zero content for component ${i+1}`,
                           "variableComposition");
             return;
         }
@@ -352,13 +352,13 @@ const disableSave = computed(() => {
            @click="savedFiles=-1; analysisDone=false; computeGroups()">Compute compositions</v-btn>
   </div>
 
-  <node-alert node="variableComposition" />
+  <node-alert node="variableComposition" class="mt-1"/>
 
   <v-label class="separator-title">Compositions</v-label>
 
   <v-data-table v-if="results.length > 0" v-model="selected" :items="results"
                 class="ml-2 pr-2" density="compact" select-strategy="all" items-per-page="-1"
-                fixed-header hover height="300px" show-select item-value="key"
+                fixed-header hover height="250px" show-select item-value="key"
                 hide-default-footer :headers hide-no-data />
 
   <v-label class="separator-title">Compute distances</v-label>

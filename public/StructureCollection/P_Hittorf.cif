@@ -1,0 +1,83 @@
+data_29273-ICSD
+#©2008 by Fachinformationszentrum Karlsruhe, and the U.S. Secretary of 
+#Commerce on behalf of the United States.  All rights reserved.
+_database_code_ICSD                29273
+_audit_creation_date               1980/01/01
+_audit_update_record               2005/10/01
+_chemical_name_systematic          Phosphorus
+_chemical_formula_structural       P
+_chemical_formula_sum              P1
+_publ_section_title
+;
+Ueber Struktur und Eigenschaften der Halbmetalle. XXII. Die 
+Kristallstruktur des Hittorfschen Phosphors
+;
+loop_
+_citation_id
+_citation_journal_abbrev
+_citation_year
+_citation_journal_volume
+_citation_page_first
+_citation_page_last
+_citation_journal_id_ASTM
+primary 'Acta Crystallographica B (24,1968-38,1982)' 1969 25 125 135 ACBCAR
+2 'Angewandte Chemie (German Edition)' 1966 78 1101 1102 ANCEAD
+_publ_author_name                  'Thurn, H.;Krebs, H.'
+_cell_length_a                     9.21
+_cell_length_b                     9.15
+_cell_length_c                     22.6
+_cell_angle_alpha                  90.
+_cell_angle_beta                   106.1
+_cell_angle_gamma                  90.
+_cell_volume                       1829.84
+_cell_formula_units_Z              84
+_symmetry_space_group_name_H-M     'P 1 2/c 1'
+_symmetry_Int_Tables_number        13
+_refine_ls_R_factor_all            0.058
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+  1	'x, -y, z+1/2'
+  2	'-x, -y, -z'
+  3	'-x, y, -z+1/2'
+  4	'x, y, z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+P0+	0
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+_atom_site_B_iso_or_equiv
+P1 P0+ 4 g 0.30089(20) 0.20127(23) 0.18147(3) 1. 0 1.36 
+P2 P0+ 4 g 0.17387(20) 0.03262(23) 0.11695(3) 1. 0 1.33 
+P3 P0+ 4 g -.07589(20) -.21901(23) 0.11634(3) 1. 0 1.33 
+P4 P0+ 4 g 0.05014(20) -.05231(23) 0.18035(3) 1. 0 1.26 
+P5 P0+ 4 g -.20537(20) -.32128(23) 0.17380(3) 1. 0 1.34 
+P6 P0+ 4 g -.31537(20) -.48468(23) 0.10402(3) 1. 0 1.16 
+P7 P0+ 4 g -.43399(20) -.55068(23) 0.17224(3) 1. 0 1.28 
+P8 P0+ 4 g -.57576(20) -.72259(23) 0.11672(3) 1. 0 1.35 
+P9 P0+ 4 g 0.0412(2) 0.39067(23) 0.07245(3) 1. 0 1.18 
+P10 P0+ 4 g -.00092(20) 0.15881(23) 0.04497(3) 1. 0 1.21 
+P11 P0+ 4 g -.21153(20) 0.13878(23) 0.07346(3) 1. 0 1.15 
+P12 P0+ 4 g -.2514(2) -.09081(23) 0.04464(3) 1. 0 1.25 
+P13 P0+ 4 g -.46426(20) -.12736(23) 0.06842(3) 1. 0 1.26 
+P14 P0+ 4 g -.49167(20) -.35276(23) 0.03304(3) 1. 0 1.15 
+P15 P0+ 4 g -.69485(20) -.36285(23) 0.06617(3) 1. 0 1.25 
+P16 P0+ 4 g -.74959(20) -.59445(23) 0.04420(3) 1. 0 1.21 
+P17 P0+ 4 g 0.1460(2) 0.38905(23) 0.17219(3) 1. 0 1.21 
+P18 P0+ 4 g -.13962(20) 0.10055(23) 0.17357(3) 1. 0 1.22 
+P19 P0+ 4 g -.40394(20) -.17616(23) 0.16940(3) 1. 0 1.41 
+P20 P0+ 4 g -.58144(20) -.35419(23) 0.16732(3) 1. 0 1.36 
+P21 P0+ 4 g -.05418(20) 0.32296(23) 0.20060(3) 1. 0 1.07 
+
+#End of data_29273-ICSD
+
+

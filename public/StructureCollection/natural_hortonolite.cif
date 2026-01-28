@@ -1,0 +1,43 @@
+data_natural_hortonolite
+_chemical_name_mineral 'natural hortonolite'
+_publ_section_comment
+;
+natural hortonolite: Smyth and Hazen,  Am Min 58 (1973) 588-593
+The crystal structures of forsterite and hortonolite at several temperatures up
+to 900 C   (Mg.75Fe1.1Mn.15)SiO4
+;
+_cell_length_a 4.798
+_cell_length_b 10.387
+_cell_length_c 6.055
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 301.762
+_symmetry_space_group_name_H-M 'P b n m'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x, y, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.428700 0.095700 0.250000 1
+Fe1 Fe 0.000000 0.000000 0.000000 0.639
+Fe2 Fe 0.986700 0.279200 0.250000 0.611
+O1 O 0.766100 0.091800 0.250000 1
+O2 O 0.212700 0.451400 0.250000 1
+O3 O 0.284400 0.163300 0.035700 1

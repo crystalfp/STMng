@@ -1,0 +1,66 @@
+data_hematite
+_chemical_name_mineral hematite
+_publ_section_comment
+;
+hematite: Blake et al., Am Min 51 (1966) 123-129
+Refinement of the hematite structure
+;
+_cell_length_a 5.038
+_cell_length_b 5.038
+_cell_length_c 13.772
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 302.722
+_symmetry_space_group_name_H-M 'R -3 c H'
+_symmetry_Int_Tables_number 167
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+2/3, y+1/3, z+1/3'
+3 'x+1/3, y+2/3, z+2/3'
+4 '-y, x-y, z'
+5 '-y+2/3, x-y+1/3, z+1/3'
+6 '-y+1/3, x-y+2/3, z+2/3'
+7 '-x+y, -x, z'
+8 '-x+y+2/3, -x+1/3, z+1/3'
+9 '-x+y+1/3, -x+2/3, z+2/3'
+10 'y, x, -z+1/2'
+11 'y+2/3, x+1/3, -z+5/6'
+12 'y+1/3, x+2/3, -z+7/6'
+13 'x-y, -y, -z+1/2'
+14 'x-y+2/3, -y+1/3, -z+5/6'
+15 'x-y+1/3, -y+2/3, -z+7/6'
+16 '-x, -x+y, -z+1/2'
+17 '-x+2/3, -x+y+1/3, -z+5/6'
+18 '-x+1/3, -x+y+2/3, -z+7/6'
+19 '-x, -y, -z'
+20 '-x+2/3, -y+1/3, -z+1/3'
+21 '-x+1/3, -y+2/3, -z+2/3'
+22 'y, -x+y, -z'
+23 'y+2/3, -x+y+1/3, -z+1/3'
+24 'y+1/3, -x+y+2/3, -z+2/3'
+25 'x-y, x, -z'
+26 'x-y+2/3, x+1/3, -z+1/3'
+27 'x-y+1/3, x+2/3, -z+2/3'
+28 '-y, -x, z+1/2'
+29 '-y+2/3, -x+1/3, z+5/6'
+30 '-y+1/3, -x+2/3, z+7/6'
+31 '-x+y, y, z+1/2'
+32 '-x+y+2/3, y+1/3, z+5/6'
+33 '-x+y+1/3, y+2/3, z+7/6'
+34 'x, x-y, z+1/2'
+35 'x+2/3, x-y+1/3, z+5/6'
+36 'x+1/3, x-y+2/3, z+7/6'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Fe1 Fe 0.000000 0.000000 0.355300 1
+O1 O 0.305900 0.000000 0.250000 1

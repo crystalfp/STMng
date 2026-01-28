@@ -1,0 +1,43 @@
+data_UREYITE
+_chemical_name_mineral UREYITE
+_publ_section_comment
+;
+UREYITE: Clark et al.,  Soc Amer Spec Pap 2 (1969) 31-50.
+Crystal-chemical characterization of clinopyroxene based on eight new
+structure refinements
+;
+_cell_length_a 9.55
+_cell_length_b 8.712
+_cell_length_c 5.273
+_cell_angle_alpha 90
+_cell_angle_beta 107.44
+_cell_angle_gamma 90
+_cell_volume 418.545
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.292100 0.091800 0.233300 1
+Cr1 Cr 0.000000 0.907600 0.250000 1
+Na2 Na 0.000000 0.300800 0.250000 1
+O1 O 0.114000 0.079100 0.137400 1
+O2 O 0.359900 0.258300 0.303700 1
+O3 O 0.353100 0.010500 0.006600 1

@@ -1,0 +1,40 @@
+data_olivenite
+_chemical_name_mineral olivenite
+_publ_section_comment
+;
+olivenite: Burns and Hawthorne,  Can Min 33 (1995) 885-888
+Rietveld refinement of the crystal structure of olivenite: A twinned monoclinic
+structure         space group = P2_1/n
+;
+_cell_length_a 8.5894
+_cell_length_b 8.2073
+_cell_length_c 5.9285
+_cell_angle_alpha 90.088
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 417.934
+_symmetry_space_group_name_H-M P2_1/n
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+3 'x+1/2, -y+1/2, -z+1/2'
+4 '-x+1/2, y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+As1 As 0.250300 0.262700 0.005200 1
+Cu1 Cu 0.880700 0.362400 0.997700 1
+Cu2 Cu 0.998400 0.999300 0.250100 1
+O1 O 0.106900 0.402200 0.055100 1
+O2 O 0.417100 0.366700 0.992400 1
+O3 O 0.899800 0.121300 0.002900 1
+O4 O 0.213500 0.149900 0.226900 1
+O5 O 0.257700 0.152800 0.771000 1

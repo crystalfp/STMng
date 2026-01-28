@@ -1,0 +1,53 @@
+data_Fluor-edenite
+_chemical_name_mineral Fluor-edenite
+_publ_section_comment
+;
+Fluor-edenite:  Boschmann et al.,  Can Min 32 (1994) 21-30
+A-site disorder in synthetic fluor-edenite, a crystal-structure study
+NaCa2Mg5Si7AlO22(OH)2  - amphibole
+;
+_cell_length_a 9.821
+_cell_length_b 17.934
+_cell_length_c 5.282
+_cell_angle_alpha 90
+_cell_angle_beta 105.08
+_cell_angle_gamma 90
+_cell_volume 898.281
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.281760 0.084790 0.302500 0.81
+Si2 Si 0.290570 0.172510 0.811300 1
+Mg1 Mg 0.000000 0.089020 0.500000 1
+Mg2 Mg 0.000000 0.175470 0.000000 0.82
+Al2 Al 0.000000 0.175470 0.000000 0.18
+Mg3 Mg 0.000000 0.000000 0.000000 1
+Ca4 Ca 0.000000 0.278540 0.500000 1
+Am1 Na 0.041500 0.500000 0.095300 1
+Na2 Na 0.000000 0.476500 0.000000 1
+O1 O 0.108400 0.086000 0.218200 1
+O2 O 0.119100 0.171400 0.731200 1
+F3 F 0.104400 0.000000 0.713300 1
+O4 O 0.365600 0.250400 0.788400 1
+O5 O 0.351100 0.139100 0.110800 1
+O6 O 0.346200 0.116400 0.607500 1
+O7 O 0.344800 0.000000 0.278400 1

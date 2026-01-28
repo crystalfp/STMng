@@ -1,0 +1,52 @@
+data_Bikitaite
+_chemical_name_mineral Bikitaite
+_publ_section_comment
+;
+Bikitaite: Bissert & Liebau,  N Jb Miner Mh (1986) 241-252
+The crystal structure of a triclinic bikitaite, Li[AlSi2O6].H2O with ordered
+Al/Si distribution space group: P1  Bikita, Rhodesia
+;
+_cell_length_a 8.606
+_cell_length_b 4.953
+_cell_length_c 7.599
+_cell_angle_alpha 89.89
+_cell_angle_beta 114.42
+_cell_angle_gamma 89.96
+_cell_volume 294.933
+_symmetry_space_group_name_H-M 'P 1'
+_symmetry_Int_Tables_number 1
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.108700 0.863600 0.102500 1
+Si2 Si 0.105200 0.799200 0.508100 1
+Si3 Si 0.621100 0.374000 0.068200 1
+Si4 Si 0.893600 0.298100 0.491200 1
+Si5 Si 0.381800 0.873400 0.942500 1
+Si6 Si 0.902200 0.363300 0.912100 1
+Li1 Li 0.312300 0.362900 0.156000 1
+Li2 Li 0.704700 0.865200 0.884200 1
+O1 O 0.265300 0.738800 0.064700 1
+O2 O 0.932600 0.705500 0.978300 1
+O3 O 0.160800 0.827300 0.331400 1
+O4 O 0.056600 0.486100 0.518400 1
+O5 O 0.262300 0.890200 0.698400 1
+O6 O 0.563300 0.675600 0.987600 1
+O7 O 0.732600 0.241700 0.963600 1
+O8 O 0.088000 0.181500 0.049800 1
+O9 O 0.841200 0.327400 0.668400 1
+O10 O 0.938600 0.986400 0.466900 1
+O11 O 0.733900 0.393100 0.300300 1
+O12 O 0.453900 0.195800 0.034600 1
+O1_02 O 0.411200 0.320800 0.444200 1
+O2_02 O 0.602900 0.820100 0.595200 1

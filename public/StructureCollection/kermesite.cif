@@ -1,0 +1,43 @@
+data_Kermesite
+_chemical_name_mineral Kermesite
+_publ_section_comment
+;
+Kermesite
+Bonazzi P, Menchetti S, Sabelli C
+Neues Jahrbuch fur Mineralogie Monatshefte 1987 (1987) 557-567
+Structure refinement of kermesite: symmetry, twinning and comparison with
+stibnite
+;
+_cell_length_a 8.147
+_cell_length_b 10.709
+_cell_length_c 5.785
+_cell_angle_alpha 102.8
+_cell_angle_beta 110.6
+_cell_angle_gamma 101
+_cell_volume 440.284
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Sb1 Sb 0.168000 0.631400 0.038100 1
+Sb2 Sb 0.660200 0.629800 0.014000 1
+Sb3 Sb 0.125300 0.854300 0.632300 1
+Sb4 Sb 0.651500 0.914600 0.678900 1
+S1 S 0.809800 0.702700 0.496200 1
+S2 S 0.291100 0.692500 0.516900 1
+S3 S 0.046700 0.909500 0.225500 1
+S4 S 0.521100 0.910600 0.229000 1
+O1 O 0.899600 0.566900 0.035200 1
+O2 O 0.413500 0.572400 0.077000 1

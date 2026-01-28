@@ -1,0 +1,50 @@
+data_Colemanite
+_chemical_name_mineral Colemanite
+_publ_section_comment
+;
+Colemanite: Burns and Hawthorne, Can Min 31 (1993) 297-304
+Hydrogen bonding in colemanite: An X-ray and structure energy study
+space group = P2_1/a
+;
+_cell_length_a 6.091
+_cell_length_b 11.247
+_cell_length_c 8.712
+_cell_angle_alpha 90
+_cell_angle_beta 110.12
+_cell_angle_gamma 90
+_cell_volume 560.398
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ca1 Ca 0.736640 0.211060 0.634800 1
+B1 B 0.313600 0.212600 0.334300 1
+B2 B 0.162200 0.170900 0.039700 1
+B3 B 0.496200 0.052300 0.220700 1
+H1 H 0.870000 0.085000 0.925000 1
+H2 H 0.669000 0.899000 0.334000 1
+H3 H 0.699000 0.025000 0.080000 1
+H4 H 0.010000 0.975000 0.701000 1
+H5 H 0.919000 0.987000 0.516000 1
+O1 O 0.315600 0.246750 0.981800 1
+O2 O 0.139000 0.231400 0.188600 1
+O3 O 0.927600 0.163900 0.920200 1
+O4 O 0.509800 0.148000 0.342200 1
+O5 O 0.271000 0.055580 0.087200 1
+O6 O 0.514400 0.934000 0.294500 1
+O7 O 0.697200 0.077000 0.166800 1
+W8 W 0.900800 0.018700 0.613700 1

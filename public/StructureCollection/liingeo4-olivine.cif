@@ -1,0 +1,42 @@
+data_LiInGeO4-olivine
+_chemical_name_mineral LiInGeO4-olivine
+_publ_section_comment
+;
+LiInGeO4-olivine: Toubol and Toledano, Acta Cryst C43 (1987) 2004-2006
+Structure du germanate d'indium et de lithium
+;
+_cell_length_a 10.754
+_cell_length_b 6.088
+_cell_length_c 5.007
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 327.81
+_symmetry_space_group_name_H-M 'P n m a'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z+1/2'
+4 '-x, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z+1/2'
+8 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ge1 Ge 0.087630 0.250000 0.441360 1
+Li1 Li 0.000000 0.000000 0.000000 1
+In2 In 0.271990 0.250000 0.992120 1
+O1 O 0.095300 0.250000 0.787800 1
+O2 O 0.440600 0.250000 0.207900 1
+O3 O 0.167300 0.031900 0.275200 1

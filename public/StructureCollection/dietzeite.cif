@@ -1,0 +1,49 @@
+data_dietzeite
+_chemical_name_mineral dietzeite
+_publ_section_comment
+;
+dietzeite: Burns and Hawthorne, Can Min 31 (1993) 313-319
+The crystal structure of dietzeite, Ca2H20(IO3)2(CrO4), a heteropolyhedral
+framework mineral
+;
+_cell_length_a 10.118
+_cell_length_b 7.238
+_cell_length_c 13.965
+_cell_angle_alpha 90
+_cell_angle_beta 106.62
+_cell_angle_gamma 90
+_cell_volume 979.988
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+I1 I 0.050050 0.203020 0.773760 1
+I2 I 0.256140 0.239210 0.574480 1
+Cr1 Cr 0.430760 0.797100 0.578500 1
+Ca1 Ca 0.699400 0.085200 0.703920 1
+Ca2 Ca 0.899400 0.256300 0.488500 1
+O1 O 0.126800 0.408200 0.841300 1
+O2 O 0.949600 0.305700 0.658100 1
+O3 O 0.274400 0.299900 0.703300 1
+O4 O 0.466400 0.990900 0.645600 1
+O5 O 0.352400 0.653300 0.635700 1
+O6 O 0.129000 0.059500 0.563900 1
+O7 O 0.681300 0.153800 0.530100 1
+O8 O 0.866800 0.591000 0.495200 1
+O9 O 0.906000 0.183100 0.825000 1
+O10 O 0.571800 0.707600 0.565600 1
+H2 H 0.610900 0.386600 0.683700 1

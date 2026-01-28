@@ -1,0 +1,55 @@
+data_RHODONITE
+_chemical_name_mineral RHODONITE
+_publ_section_comment
+;
+RHODONITE:  Peacor & Niizeki: Zeit Krist 119 (1963) 98-116
+The Redetermination and Refinement of the Crystal Structure of Rhodonite
+;
+_cell_length_a 7.682
+_cell_length_b 11.818
+_cell_length_c 6.707
+_cell_angle_alpha 92.355
+_cell_angle_beta 93.948
+_cell_angle_gamma 105.665
+_cell_volume 583.763
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.219100 0.124600 0.495600 1
+Si2 Si 0.268700 0.470100 0.637500 1
+Si3 Si 0.461000 0.739300 0.709200 1
+Si4 Si 0.744600 0.089100 0.753800 1
+Si5 Si 0.926300 0.346600 0.845000 1
+Mg1 Mg 0.881900 0.851700 0.969700 1
+Mg2 Mg 0.682700 0.554800 0.874800 1
+Mg3 Mg 0.491600 0.270000 0.810900 1
+Mg4 Mg 0.301800 0.976700 0.796700 1
+Mg5 Mg 0.045700 0.693800 0.638900 1
+O1 O 0.954400 0.677200 0.962800 1
+O2 O 0.601100 0.731200 0.895500 1
+O3 O 0.748500 0.389500 0.885800 1
+O4 O 0.398100 0.437500 0.807400 1
+O5 O 0.548500 0.097500 0.805300 1
+O6 O 0.197000 0.131800 0.737400 1
+O7 O 0.321800 0.814900 0.743800 1
+O8 O 0.933700 0.852400 0.659100 1
+O9 O 0.256000 0.996200 0.445900 1
+O10 O 0.745700 0.587100 0.584600 1
+O11 O 0.843000 0.041400 0.943300 1
+O12 O 0.581900 0.779000 0.515400 1
+O13 O 0.319100 0.614200 0.630000 1
+O14 O 0.054600 0.436000 0.700600 1
+O15 O 0.860700 0.222100 0.702400 1

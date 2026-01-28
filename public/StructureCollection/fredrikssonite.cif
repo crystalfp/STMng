@@ -1,0 +1,47 @@
+data_fredrikssonite
+_chemical_name_mineral fredrikssonite
+_publ_section_comment
+;
+fredrikssonite: Burns et al., Can Min 32 (1994) 397-403
+Jahn-Teller distorted MnO6 octahedra in fredrikssonite, the fourth polymorph
+of Mg2Mn(BO3)O2
+;
+_cell_length_a 9.198
+_cell_length_b 12.528
+_cell_length_c 2.965
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 341.664
+_symmetry_space_group_name_H-M 'P b a m'
+_symmetry_Int_Tables_number 55
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z'
+3 'x+1/2, -y+1/2, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x, y, -z'
+7 '-x+1/2, y+1/2, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mg1 Mg 0.000000 0.000000 0.000000 1
+Mg2 Mg 0.500000 0.000000 0.500000 1
+Mg3 Mg 0.004800 0.280000 0.000000 1
+Mn4 Mn 0.741150 0.384580 0.500000 1
+B1 B 0.278200 0.359800 0.500000 1
+O1 O 0.853600 0.044900 0.500000 1
+O2 O 0.380700 0.078600 0.000000 1
+O3 O 0.627700 0.142300 0.500000 1
+O4 O 0.113000 0.142200 0.000000 1
+O5 O 0.855900 0.234900 0.500000 1

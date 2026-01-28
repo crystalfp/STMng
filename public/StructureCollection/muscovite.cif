@@ -1,0 +1,47 @@
+data_muscovite
+_chemical_name_mineral muscovite
+_publ_section_comment
+;
+muscovite: Rothbauer: N Jahrb Min Mon (1971) 143-154
+Untersuchung eines 2M(1)-muscovits mit Neutronenstrahlen
+;
+_cell_length_a 5.1918
+_cell_length_b 9.0153
+_cell_length_c 20.0457
+_cell_angle_alpha 90
+_cell_angle_beta 95.735
+_cell_angle_gamma 90
+_cell_volume 933.555
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.464600 0.929100 0.135530 1
+Si2 Si 0.451600 0.258100 0.135590 1
+K1 K 0.000000 0.098000 0.250000 1
+Al1 Al 0.250200 0.083500 0.000080 1
+H1 H 0.372700 0.649900 0.059900 1
+O1 O 0.416700 0.092700 0.168290 1
+O2 O 0.250500 0.810700 0.157830 1
+O3 O 0.250200 0.370300 0.168690 1
+O4 O 0.461000 0.943200 0.053430 1
+O5 O 0.385900 0.251500 0.053480 1
+O6 O 0.456600 0.562700 0.050180 1

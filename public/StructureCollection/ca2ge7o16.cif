@@ -1,0 +1,41 @@
+data_Ca2Ge7O16
+_chemical_name_mineral Ca2Ge7O16
+_publ_section_comment 'Ca2Ge7O16: Nevsky et al., Doklady Akademii Nauk SSSR 245 (1979) 110-113'
+_cell_length_a 11.34
+_cell_length_b 11.34
+_cell_length_c 4.64
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 596.684
+_symmetry_space_group_name_H-M 'P b a 2'
+_symmetry_Int_Tables_number 32
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z'
+3 '-x+1/2, y+1/2, z'
+4 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ge1 Ge 0.000000 0.000000 0.000000 1
+Ge2 Ge 0.133500 0.133600 0.499600 1
+Ge3 Ge 0.066600 0.312200 0.989300 1
+Ge4 Ge 0.312300 0.066700 0.009500 1
+Ca1 Ca 0.335000 0.334800 0.497000 1
+O1 O 0.001200 0.116700 0.746700 1
+O2 O 0.028800 0.219700 0.269500 1
+O3 O 0.168600 0.265800 0.724600 1
+O4 O 0.265700 0.169700 0.264500 1
+O5 O 0.117100 0.000600 0.241100 1
+O6 O 0.219800 0.028200 0.718000 1
+O7 O 0.139800 0.431600 0.154800 1
+O8 O 0.432700 0.140300 0.830600 1

@@ -1,0 +1,66 @@
+data_Synthetic_hafnon_Speer_and_Cooper
+_chemical_name_mineral
+;
+Synthetic hafnon; Speer and Cooper
+;
+_publ_section_comment
+;
+Synthetic hafnon; Speer and Cooper: Am Min 67 (1982) 804-808
+Crystal structure of synthetic hafnon, HfSiO4, comparison with zircon...
+;
+_cell_length_a 6.5725
+_cell_length_b 6.5725
+_cell_length_c 5.9632
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 257.597
+_symmetry_space_group_name_H-M 'I 41/a m d 1'
+_symmetry_Int_Tables_number 141
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 '-y, x+1/2, z+1/4'
+4 '-y+1/2, x+1, z+3/4'
+5 '-x+1/2, -y+1/2, z+1/2'
+6 '-x+1, -y+1, z+1'
+7 'y+1/2, -x, z+3/4'
+8 'y+1, -x+1/2, z+5/4'
+9 'x, -y+1/2, -z+1/4'
+10 'x+1/2, -y+1, -z+3/4'
+11 '-y, -x, -z'
+12 '-y+1/2, -x+1/2, -z+1/2'
+13 '-x+1/2, y, -z+3/4'
+14 '-x+1, y+1/2, -z+5/4'
+15 'y+1/2, x+1/2, -z+1/2'
+16 'y+1, x+1, -z+1'
+17 '-x, -y+1/2, -z+1/4'
+18 '-x+1/2, -y+1, -z+3/4'
+19 'y, -x, -z'
+20 'y+1/2, -x+1/2, -z+1/2'
+21 'x+1/2, y, -z+3/4'
+22 'x+1, y+1/2, -z+5/4'
+23 '-y+1/2, x+1/2, -z+1/2'
+24 '-y+1, x+1, -z+1'
+25 '-x, y, z'
+26 '-x+1/2, y+1/2, z+1/2'
+27 'y, x+1/2, z+1/4'
+28 'y+1/2, x+1, z+3/4'
+29 'x+1/2, -y+1/2, z+1/2'
+30 'x+1, -y+1, z+1'
+31 '-y+1/2, -x, z+3/4'
+32 '-y+1, -x+1/2, z+5/4'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.500000 0.750000 1
+Hf1 Hf 0.000000 0.500000 0.250000 1
+O1 O 0.000000 0.815500 0.319800 1

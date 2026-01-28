@@ -1,0 +1,43 @@
+data_TALC
+_chemical_name_mineral TALC
+_publ_section_comment
+;
+TALC: Perdikatsis, Burzlaff: Z Krist 156 (1981) 177-186
+Strukturverfeinerung am talk Mg3[)OH)2Si4O10]
+space group = Cbar 1
+;
+_cell_length_a 5.29
+_cell_length_b 9.173
+_cell_length_c 9.46
+_cell_angle_alpha 90.46
+_cell_angle_beta 98.68
+_cell_angle_gamma 90.09
+_cell_volume 453.774
+_symmetry_space_group_name_H-M 'Cbar 1'
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x+1/2, y+1/2, z'
+2 'x, y, z'
+3 '-x+1/2, -y+1/2, -z'
+4 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.245270 0.502590 0.290930 1
+Si2 Si 0.245900 0.835870 0.291080 1
+Mg1 Mg 0.000000 0.000000 0.000000 1
+Mg2 Mg 0.500120 0.833320 0.999940 1
+H1 H 0.719000 0.669000 0.203000 1
+O1 O 0.199100 0.834400 0.117600 1
+O2 O 0.697000 0.667400 0.112600 1
+O3 O 0.198000 0.501200 0.117600 1
+O4 O 0.019900 0.928700 0.348100 1
+O5 O 0.520200 0.910900 0.349400 1
+O6 O 0.242900 0.669900 0.348400 1

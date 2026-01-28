@@ -1,0 +1,40 @@
+data_RbAlSiO4
+_chemical_name_mineral RbAlSiO4
+_publ_section_comment
+;
+RbAlSiO4: Klaska and Jarchow: Z Krist 142 (1975) 225-238
+Die Kristallstruktur und die Verzwillingung von RbAlSiO4
+synthetic
+;
+_cell_length_a 9.22
+_cell_length_b 5.33
+_cell_length_c 8.74
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 429.506
+_symmetry_space_group_name_H-M 'P c 21 n'
+_symmetry_Int_Tables_number 33
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, -z+1/2'
+3 '-x+1/2, y, z+1/2'
+4 '-x, y+1/2, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.084000 0.981600 0.193900 1
+Al1 Al 0.416600 0.983000 0.312800 1
+Rb1 Rb 0.203700 0.500300 0.500900 1
+O1 O 0.084800 0.982400 0.010000 1
+O2 O 0.968900 0.775300 0.256900 1
+O3 O 0.038100 0.256600 0.256800 1
+O4 O 0.243600 0.904300 0.253500 1

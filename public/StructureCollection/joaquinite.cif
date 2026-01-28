@@ -1,0 +1,57 @@
+data_JOAQUINITE
+_chemical_name_mineral JOAQUINITE
+_publ_section_comment
+;
+JOAQUINITE: Dowty: Am Min 60 (1975) 872-878
+Crystal Structure of Joaquinite
+;
+_cell_length_a 10.516
+_cell_length_b 9.686
+_cell_length_c 11.833
+_cell_angle_alpha 90
+_cell_angle_beta 109.67
+_cell_angle_gamma 90
+_cell_volume 1134.95
+_symmetry_space_group_name_H-M 'C 1 2 1'
+_symmetry_Int_Tables_number 5
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.377300 0.734300 0.242600 1
+Si2 Si 0.308500 0.267400 0.243200 1
+Si3 Si 0.120600 0.037500 0.291700 1
+Si4 Si 0.092900 0.436500 0.270900 1
+Ba1 Ba 0.236600 0.000000 0.005800 1
+Re1 Re 0.166700 0.746700 0.451800 1
+Ti1 Ti 0.049000 0.736900 0.127600 1
+Fe1 Fe 0.000000 0.369400 0.500000 1
+Na1 Na 0.000000 0.054000 0.500000 1
+O1 O 0.000000 0.867000 0.000000 1
+O2 O 0.000000 0.606000 0.000000 1
+O3 O 0.116000 0.881000 0.251000 1
+O4 O 0.188000 0.385000 0.191000 1
+O5 O 0.226000 0.115000 0.237000 1
+O6 O 0.233000 0.715000 0.133000 1
+O7 O 0.472000 0.605000 0.229000 1
+O8 O 0.086000 0.604000 0.268000 1
+O9 O 0.371000 0.737000 0.375000 1
+O10 O 0.412000 0.303000 0.372000 1
+O11 O 0.144000 0.368000 0.403000 1
+O12 O 0.173000 0.044000 0.443000 1
+O13 O 0.367000 0.254000 0.133000 1
+O14 O 0.439000 0.880000 0.203000 1
+O1_02 O 0.000000 0.576000 0.500000 1
+H20 H 0.000000 0.199000 0.000000 1

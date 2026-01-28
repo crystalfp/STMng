@@ -1,0 +1,69 @@
+data_gaultite
+_chemical_name_mineral gaultite
+_publ_section_comment
+;
+gaultite:  Ercit and Van Velthuizen, Can Min 32 (1994) 855-863
+Gaultite, a new zeolite-like mineral species from Mont Saint-Hilaire, Quebec,
+and its crystal structure
+;
+_cell_length_a 10.231
+_cell_length_b 39.91
+_cell_length_c 10.339
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 4221.61
+_symmetry_space_group_name_H-M 'F 2 d d'
+_symmetry_Int_Tables_number 43
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x, y+1/2, z+1/2'
+3 'x+1/2, y, z+1/2'
+4 'x+1/2, y+1/2, z'
+5 'x+1/4, y+1/4, -z+1/4'
+6 'x+1/4, y+3/4, -z+3/4'
+7 'x+3/4, y+1/4, -z+3/4'
+8 'x+3/4, y+3/4, -z+1/4'
+9 'x, -y, -z'
+10 'x, -y+1/2, -z+1/2'
+11 'x+1/2, -y, -z+1/2'
+12 'x+1/2, -y+1/2, -z'
+13 'x+1/4, -y+3/4, z+3/4'
+14 'x+1/4, -y+5/4, z+5/4'
+15 'x+3/4, -y+3/4, z+5/4'
+16 'x+3/4, -y+5/4, z+3/4'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Zn1 Zn 0.250000 0.054640 0.337740 1
+Si1 Si 0.281000 0.164210 0.090900 1
+Si2 Si 0.246100 0.090150 0.055400 1
+Si3 Si 0.535500 0.072000 0.043900 1
+Si4 Si 0.605800 0.000000 0.000000 1
+Na1 Na 0.044500 0.125190 0.300300 1
+Na2 Na 0.327500 0.239600 0.056100 1
+Na2_02 Na 0.362200 0.253400 0.087100 1
+H1 H 0.146000 0.180000 0.445000 1
+H2 H 0.070000 0.160000 0.511000 1
+H3 H 0.085000 0.269000 0.144000 1
+H4 H 0.180000 0.287000 0.204000 1
+O1 O 0.508200 0.031540 0.035500 1
+O2 O 0.399300 0.091100 0.011600 1
+O3 O 0.210500 0.127760 0.111300 1
+O4 O 0.577200 0.081490 0.191400 1
+O5 O 0.417400 0.165200 0.170800 1
+O6 O 0.146600 0.084240 0.448000 1
+O7 O 0.214100 0.062280 0.156800 1
+O8 O 0.191400 0.008680 0.374000 1
+O9 O 0.186100 0.193630 0.132800 1
+O1_02 O 0.134700 0.160200 0.462100 1
+O2_02 O 0.169300 0.276800 0.129600 1
+O3_02 O 0.483100 0.251700 0.221000 1

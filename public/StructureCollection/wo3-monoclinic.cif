@@ -1,0 +1,39 @@
+data_Monoclinic_WO3
+_chemical_name_mineral 'Monoclinic WO3'
+_publ_section_comment
+;
+Monoclinic WO3: Loopstra and Rietveld  Acta Cryst B25 (1969) 1420-1421
+Further refinement of the structure of WO3
+room temperature     space group = P2_1/n
+;
+_cell_length_a 7.306
+_cell_length_b 7.54
+_cell_length_c 7.692
+_cell_angle_alpha 90
+_cell_angle_beta 90.881
+_cell_angle_gamma 90
+_cell_volume 423.681
+_symmetry_space_group_name_H-M 'P 1'
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+3 '-x+1/2, y+1/2, -z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+W1 W 0.246500 0.026900 0.285900 1
+W2 W 0.253800 0.035300 0.780700 1
+O1 O 0.002500 0.035000 0.210600 1
+O2 O 0.997400 0.463600 0.216100 1
+O3 O 0.284000 0.260500 0.284800 1
+O4 O 0.209900 0.256800 0.731800 1
+O5 O 0.282700 0.038300 0.004600 1
+O6 O 0.285600 0.484000 0.994400 1

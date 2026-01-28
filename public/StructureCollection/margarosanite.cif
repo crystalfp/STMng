@@ -1,0 +1,45 @@
+data_MARGAROSANITE
+_chemical_name_mineral MARGAROSANITE
+_publ_section_comment
+;
+MARGAROSANITE: Freed and Peacor: Z Krist 128 (1969) 21328
+Determination and refinement of the crystal structure of margosanite
+;
+_cell_length_a 6.768
+_cell_length_b 9.575
+_cell_length_c 6.718
+_cell_angle_alpha 110.36
+_cell_angle_beta 102.98
+_cell_angle_gamma 83.02
+_cell_volume 397.275
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.095700 0.781700 0.159000 1
+Si2 Si 0.232800 0.514900 0.280300 1
+Si3 Si 0.438200 0.798200 0.514800 1
+Pb1 Pb 0.088600 0.158200 0.286500 1
+Ca1 Ca 0.270000 0.495100 0.762900 1
+Ca2 Ca 0.443000 0.167700 0.929700 1
+O1 O 0.227400 0.746900 0.977900 1
+O2 O 0.109200 0.124500 0.907100 1
+O3 O 0.229900 0.879000 0.395500 1
+O4 O 0.046900 0.626600 0.196700 1
+O5 O 0.373200 0.438000 0.105700 1
+O6 O 0.123800 0.407200 0.356100 1
+O7 O 0.356900 0.637300 0.507300 1
+O8 O 0.479500 0.097700 0.239200 1
+O9 O 0.388500 0.237900 0.624400 1

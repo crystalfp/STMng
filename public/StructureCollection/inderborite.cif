@@ -1,0 +1,64 @@
+data_inderborite
+_chemical_name_mineral inderborite
+_publ_section_comment
+;
+inderborite: Burns and Hawthorne  Can Min 32 (1994) 533-539
+Structure and hydrogen bonding in inderborite, a heteropolyhedral sheet
+structure
+;
+_cell_length_a 12.137
+_cell_length_b 7.433
+_cell_length_c 19.234
+_cell_angle_alpha 90
+_cell_angle_beta 90.29
+_cell_angle_gamma 90
+_cell_volume 1735.16
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mg1 Mg 0.000000 0.000000 0.000000 1
+Ca1 Ca 0.000000 0.216030 0.250000 1
+B1 B 0.099600 0.957900 0.149690 1
+B2 B 0.404900 0.351300 0.142160 1
+B3 B 0.055300 0.636700 0.165900 1
+H1 H 0.196000 0.980000 0.064000 1
+H2 H 0.213000 0.158000 0.184000 1
+H3 H 0.163800 0.444000 0.175000 1
+H4 H 0.307000 0.420000 0.222400 1
+H5 H 0.367000 0.250000 0.045000 1
+H6 H 0.411000 0.748000 0.082700 1
+H7 H 0.406000 0.849000 0.018000 1
+H8 H 0.283200 0.806000 0.172000 1
+H9 H 0.369000 0.955000 0.168000 1
+H10 H 0.119000 0.399000 0.056000 1
+H11 H 0.231000 0.485000 0.045000 1
+O1 O 0.984340 0.985300 0.163420 1
+O2 O 0.122200 0.008400 0.076190 1
+O3 O 0.161000 0.070400 0.199570 1
+O4 O 0.133000 0.767400 0.161030 1
+O5 O 0.945500 0.666700 0.158210 1
+O6 O 0.086200 0.459500 0.178320 1
+O7 O 0.298780 0.377600 0.175940 1
+O8 O 0.388100 0.363300 0.064690 1
+O9 O 0.442300 0.747100 0.037430 1
+O10 O 0.360400 0.827600 0.168320 1
+O11 O 0.164200 0.450700 0.021700 1

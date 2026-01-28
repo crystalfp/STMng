@@ -1,0 +1,44 @@
+data_MgTi2O5
+_chemical_name_mineral MgTi2O5,
+_cell_length_a 9.7102
+_cell_length_b 10.0163
+_cell_length_c 3.7354
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 363.306
+_symmetry_space_group_name_H-M 'B b m m'
+_symmetry_Int_Tables_number 63
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y, z+1/2'
+3 '-x, -y, z'
+4 '-x+1/2, -y, z+1/2'
+5 'x, -y+1/2, -z'
+6 'x+1/2, -y+1/2, -z+1/2'
+7 '-x, y+1/2, -z'
+8 '-x+1/2, y+1/2, -z+1/2'
+9 '-x, -y, -z'
+10 '-x+1/2, -y, -z+1/2'
+11 'x, y, -z'
+12 'x+1/2, y, -z+1/2'
+13 '-x, y+1/2, z'
+14 '-x+1/2, y+1/2, z+1/2'
+15 'x, -y+1/2, z'
+16 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mg1 Mg 0.805120 0.250000 0.000000 1
+Ti1 Ti 0.133437 0.433231 0.000000 1
+O1 O 0.219135 0.250000 0.000000 1
+O2 O 0.045756 0.886406 0.000000 1
+O3 O 0.313760 0.937683 0.000000 1

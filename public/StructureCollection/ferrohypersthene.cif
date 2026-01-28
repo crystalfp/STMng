@@ -1,0 +1,47 @@
+data_FERROHYPERSTHENE
+_chemical_name_mineral FERROHYPERSTHENE
+_publ_section_comment
+;
+FERROHYPERSTHENE: Smyth Am Min 58 (1973) 636-648
+An orthopyroxene structure up to 850 C
+T = 20C
+;
+_cell_length_a 18.337
+_cell_length_b 8.971
+_cell_length_c 5.232
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 860.67
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.271820 0.339670 0.051880 1
+Si2 Si 0.473910 0.335600 0.791820 1
+Mg1 Mg 0.375460 0.654590 0.876520 1
+Fe1 Fe 0.377790 0.483980 0.396430 1
+O1 O 0.183800 0.337600 0.044100 1
+O2 O 0.311300 0.499100 0.057000 1
+O3 O 0.302300 0.234700 0.821000 1
+O1_02 O 0.562300 0.336100 0.791000 1
+O2_02 O 0.434000 0.484200 0.696500 1
+O3_02 O 0.447500 0.203400 0.588000 1

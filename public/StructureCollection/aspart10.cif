@@ -1,0 +1,42 @@
+data_ASPART10
+_cell_length_a 11.144
+_cell_length_b 6.314
+_cell_length_c 11.248
+_cell_angle_alpha 90
+_cell_angle_beta 120.2
+_cell_angle_gamma 90
+_cell_volume 684.026
+_symmetry_space_group_name_H-M 'P 1 21/a 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, y+1/2, -z'
+3 '-x, -y, -z'
+4 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+C1 C 0.385400 0.684000 0.089700 1
+C2 C 0.418500 0.750000 0.234500 1
+C3 C 0.313500 0.666000 0.269000 1
+C4 C 0.355200 0.704000 0.417500 1
+H1 H 0.500000 0.680000 0.295000 1
+H2 H 0.300000 0.520000 0.255000 1
+H3 H 0.220000 0.720000 0.210000 1
+H4 H 0.350000 0.050000 0.190000 1
+H5 H 0.455000 0.030000 0.330000 1
+H6 H 0.490000 0.040000 0.230000 1
+O1 O 0.300500 0.551000 0.024300 1
+O2 O 0.459200 0.798000 0.050200 1
+O3 O 0.257000 0.648000 0.445300 1
+O4 O 0.468200 0.774000 0.502700 1
+N1 N 0.430000 0.984500 0.249100 1
+C1_02 C 0.142400 0.171800 0.246900 1

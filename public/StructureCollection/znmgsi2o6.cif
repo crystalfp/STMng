@@ -1,0 +1,42 @@
+data_ZnMgSi2O6
+_chemical_name_mineral ZnMgSi2O6
+_publ_section_comment 'ZnMgSi2O6: Morimoto et al, Acta Cryst B 31 (1975) 1041-1049'
+_cell_length_a 18.201
+_cell_length_b 8.916
+_cell_length_c 5.209
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 845.317
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Zn1 Zn 0.124500 0.349100 0.379800 1
+Zn2 Zn 0.375700 0.496400 0.376900 1
+Si1 Si 0.273100 0.339700 0.065200 1
+Si2 Si 0.473100 0.163800 0.290000 1
+O1 O 0.184700 0.338000 0.049000 1
+O2 O 0.310400 0.504000 0.067000 1
+O3 O 0.304000 0.267000 0.336000 1
+O4 O 0.563300 0.337000 0.792000 1
+O5 O 0.432900 0.482000 0.696000 1
+O6 O 0.448300 0.202000 0.594000 1

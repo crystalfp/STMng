@@ -1,0 +1,37 @@
+data_sanmartinite-cuproscheelite
+_chemical_name_mineral sanmartinite-cuproscheelite
+_publ_section_comment
+;
+sanmartinite-cuproscheelite: Redfern et al., Eur J Mineral 7 (1995) 1019-1028
+Rietveld study of the structural phase transition in the sanmartinite (ZnWO4)-
+cuproscheelite (CuWO4) solid solution      sample = (Cu.7Zn.3)WO4
+;
+_cell_length_a 4.699
+_cell_length_b 5.817
+_cell_length_c 4.887
+_cell_angle_alpha 91.33
+_cell_angle_beta 92.08
+_cell_angle_gamma 83.9
+_cell_volume 132.713
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+W1 W 0.015700 0.175800 0.253900 1
+Mg1 Mg 0.500200 0.669400 0.244400 1
+O1 O 0.250000 0.349000 0.418000 1
+O2 O 0.211000 0.878000 0.436000 1
+O3 O 0.737000 0.378000 0.094000 1
+O4 O 0.783000 0.908000 0.050000 1

@@ -1,0 +1,72 @@
+data_stellerite
+_chemical_name_mineral stellerite
+_publ_section_comment
+;
+stellerite: Miller and Taylor: Zeolites 5 (1985) 7-10
+Neutron single crystal diffraction study of an Australian Stellerite
+;
+_cell_length_a 13.551
+_cell_length_b 18.259
+_cell_length_c 17.796
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 4403.22
+_symmetry_space_group_name_H-M 'F m m m'
+_symmetry_Int_Tables_number 69
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x, y+1/2, z+1/2'
+3 'x+1/2, y, z+1/2'
+4 'x+1/2, y+1/2, z'
+5 '-x, -y, z'
+6 '-x, -y+1/2, z+1/2'
+7 '-x+1/2, -y, z+1/2'
+8 '-x+1/2, -y+1/2, z'
+9 'x, -y, -z'
+10 'x, -y+1/2, -z+1/2'
+11 'x+1/2, -y, -z+1/2'
+12 'x+1/2, -y+1/2, -z'
+13 '-x, y, -z'
+14 '-x, y+1/2, -z+1/2'
+15 '-x+1/2, y, -z+1/2'
+16 '-x+1/2, y+1/2, -z'
+17 '-x, -y, -z'
+18 '-x, -y+1/2, -z+1/2'
+19 '-x+1/2, -y, -z+1/2'
+20 '-x+1/2, -y+1/2, -z'
+21 'x, y, -z'
+22 'x, y+1/2, -z+1/2'
+23 'x+1/2, y, -z+1/2'
+24 'x+1/2, y+1/2, -z'
+25 '-x, y, z'
+26 '-x, y+1/2, z+1/2'
+27 '-x+1/2, y, z+1/2'
+28 '-x+1/2, y+1/2, z'
+29 'x, -y, z'
+30 'x, -y+1/2, z+1/2'
+31 'x+1/2, -y, z+1/2'
+32 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.384800 0.307400 0.376700 1
+Si3 Si 0.301300 0.410900 0.500000 1
+Si4 Si 0.388700 0.184500 0.500000 1
+Si5 Si 0.250000 0.250000 0.250000 1
+Ca1 Ca 0.500000 0.000000 0.290400 1
+O1 O 0.318300 0.303600 0.301200 1
+O3 O 0.371600 0.232700 0.426000 1
+O4 O 0.356300 0.380400 0.423600 1
+O7 O 0.500000 0.315600 0.348500 1
+O8 O 0.316500 0.114600 0.500000 1
+O9 O 0.305200 0.500000 0.500000 1
+O10 O 0.500000 0.152100 0.500000 1

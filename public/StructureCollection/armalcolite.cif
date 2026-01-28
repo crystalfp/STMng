@@ -1,0 +1,55 @@
+data_armalcolite
+_chemical_name_mineral armalcolite
+_publ_section_comment
+;
+armalcolite: Wechsler et al., Earth & Planetary Science Letters 29 (1976) 91-103
+Chemistry and structure of lunar and synthetic armalcolite
+sample 74243,2,2
+;
+_cell_length_a 9.735
+_cell_length_b 10.028
+_cell_length_c 3.7437
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 365.47
+_symmetry_space_group_name_H-M 'B b m m'
+_symmetry_Int_Tables_number 63
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y, z+1/2'
+3 '-x, -y, z'
+4 '-x+1/2, -y, z+1/2'
+5 'x, -y+1/2, -z'
+6 'x+1/2, -y+1/2, -z+1/2'
+7 '-x, y+1/2, -z'
+8 '-x+1/2, y+1/2, -z+1/2'
+9 '-x, -y, -z'
+10 '-x+1/2, -y, -z+1/2'
+11 'x, y, -z'
+12 'x+1/2, y, -z+1/2'
+13 '-x, y+1/2, z'
+14 '-x+1/2, y+1/2, z+1/2'
+15 'x, -y+1/2, z'
+16 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Fe1 Fe 0.806440 0.250000 0.000000 0.491
+Mg1 Mg 0.806440 0.250000 0.000000 0.297
+Ti1 Ti 0.806440 0.250000 0.000000 0.181
+Ti2 Ti 0.134360 0.434490 0.000000 0.652301
+Mg2 Mg 0.134360 0.434490 0.000000 0.299489
+Cr2 Cr 0.134360 0.434490 0.000000 0.0182615
+Al2 Al 0.134360 0.434490 0.000000 0.0299489
+O1 O 0.216300 0.250000 0.000000 1
+O2 O 0.045700 0.886000 0.000000 1
+O3 O 0.314100 0.938600 0.000000 1

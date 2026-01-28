@@ -1,0 +1,66 @@
+data_georgeericksenite
+_chemical_name_mineral georgeericksenite
+_publ_section_comment
+;
+georgeericksenite: Cooper et al.,  Am Min 83 (1997) 390-399
+Georgeericksenite, Na6CaMg(IO3)6(CrO4)2(H2O)12, a new mineral from Oficina
+Chacabuco, Chile: Description and crystal structure
+;
+_cell_length_a 23.645
+_cell_length_b 10.918
+_cell_length_c 15.768
+_cell_angle_alpha 90
+_cell_angle_beta 114.42
+_cell_angle_gamma 90
+_cell_volume 3706.45
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ca1 Ca 0.000000 0.122300 0.250000 1
+Mg1 Mg 0.500000 0.105600 0.250000 1
+Na1 Na 0.137900 0.178300 0.178000 1
+Na2 Na 0.122800 0.392200 0.330400 1
+Na3 Na 0.377700 0.129100 0.018900 1
+I1 I 0.126280 0.118700 0.492980 1
+I2 I 0.004400 0.374510 0.088270 1
+I3 I 0.367960 0.155860 0.295550 1
+Cr1 Cr 0.484300 0.346500 0.085200 1
+O1 O 0.327200 0.258900 0.431700 1
+O2 O 0.178900 0.061600 0.445600 1
+O3 O 0.078600 0.214300 0.395000 1
+O4 O 0.051100 0.289600 0.192800 1
+O5 O 0.033600 0.479900 0.362400 1
+O6 O 0.063000 0.470400 0.076700 1
+O7 O 0.327200 0.284600 0.224700 1
+O8 O 0.308100 0.042700 0.260100 1
+O9 O 0.407500 0.099100 0.227800 1
+O10 O 0.061400 0.181800 0.020600 1
+O11 O 0.477200 0.234400 0.145000 1
+O12 O 0.466800 0.475900 0.120400 1
+O13 O 0.444600 0.350300 0.403800 1
+O1_02 O 0.097500 0.028100 0.252200 1
+O2_02 O 0.194700 0.337000 0.143700 1
+O3_02 O 0.198200 0.244200 0.335900 1
+O5_02 O 0.186500 0.455600 0.485100 1
+O6_02 O 0.313000 0.280900 0.042000 1
+O4_02 O 0.189500 0.997000 0.167000 1
+O4_03 O 0.197900 0.063000 0.118000 1

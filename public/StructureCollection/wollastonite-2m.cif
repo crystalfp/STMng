@@ -1,0 +1,48 @@
+data_WOLLASTONITE-2M
+_chemical_name_mineral WOLLASTONITE-2M
+_publ_section_comment
+;
+WOLLASTONITE-2M: Hesse: Z Krist 168 (1984) 93-98
+Refinement of the crystal structure of wollastonite-2M (parawollastonite)
+space group = P2(1)/a
+;
+_cell_length_a 7.063
+_cell_length_b 7.322
+_cell_length_c 15.409
+_cell_angle_alpha 90
+_cell_angle_beta 95.3
+_cell_angle_gamma 90
+_cell_volume 793.474
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.231100 0.092000 0.407600 1
+Si2 Si 0.231000 0.658500 0.407500 1
+Si3 Si 0.443600 0.376000 0.301500 1
+Ca1 Ca 0.972600 0.375400 0.248300 1
+Ca2 Ca 0.738900 0.623600 0.400600 1
+Ca3 Ca 0.736000 0.117900 0.398600 1
+O1 O 0.670600 0.372200 0.299100 1
+O2 O 0.301000 0.373700 0.214100 1
+O3 O 0.035400 0.134600 0.349300 1
+O4 O 0.036100 0.612100 0.347900 1
+O5 O 0.236900 0.118700 0.509600 1
+O6 O 0.233200 0.613400 0.508800 1
+O7 O 0.406000 0.196900 0.364100 1
+O8 O 0.407500 0.555300 0.364000 1
+O9 O 0.275300 0.875300 0.390800 1

@@ -1,0 +1,65 @@
+data_Gmelinite
+_chemical_name_mineral Gmelinite
+_publ_section_comment
+;
+Gmelinite: Fischer, Neues Jahrbuch fuer Mineralogie. Mon 966 (1966) 1-13
+Untersuchung der Kristallstruktur von Gmelinit
+from Nova Scotia
+;
+_cell_length_a 13.75
+_cell_length_b 13.75
+_cell_length_c 10.05
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 1645.52
+_symmetry_space_group_name_H-M 'P 63/m m c'
+_symmetry_Int_Tables_number 194
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z+1/2'
+3 '-y, x-y, z'
+4 '-x, -y, z+1/2'
+5 '-x+y, -x, z'
+6 'y, -x+y, z+1/2'
+7 '-y, -x, -z+1/2'
+8 '-x, -x+y, -z'
+9 '-x+y, y, -z+1/2'
+10 'y, x, -z'
+11 'x, x-y, -z+1/2'
+12 'x-y, -y, -z'
+13 '-x, -y, -z'
+14 '-x+y, -x, -z+1/2'
+15 'y, -x+y, -z'
+16 'x, y, -z+1/2'
+17 'x-y, x, -z'
+18 '-y, x-y, -z+1/2'
+19 'y, x, z+1/2'
+20 'x, x-y, z'
+21 'x-y, -y, z+1/2'
+22 '-y, -x, z'
+23 '-x, -x+y, z+1/2'
+24 '-x+y, y, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ca1 Ca 0.333300 0.666700 0.073500 1
+Si1 Si 0.441000 0.106000 0.093000 1
+O1 O 0.798000 0.596000 0.063000 1
+O2 O 0.575000 0.150000 0.064000 1
+O3 O 0.411000 0.067000 0.250000 1
+O4 O 0.354000 0.000000 0.000000 1
+O5 O 0.200000 0.540000 0.250000 1
+O6 O 0.220000 0.440000 0.990000 1
+O7 O 0.430000 0.860000 0.970000 1
+O8 O 0.170000 0.340000 0.250000 1
+O9 O 0.080000 0.160000 0.890000 1
+O10 O 0.100000 0.200000 0.060000 1

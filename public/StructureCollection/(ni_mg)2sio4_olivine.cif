@@ -1,0 +1,43 @@
+data_(Ni_Mg)2SiO4_olivine
+_chemical_name_mineral '(Ni,Mg)2SiO4 olivine'
+_publ_section_comment
+;
+(Ni,Mg)2SiO4 olivine: Hirschmann: Am Min preprint    The effects of temperature
+and composition on cation ordering and crystal  structure of (Ni,Mg)2SiO4
+olivine from high temperature X-ray diffraction    NiMg4  T=22 C
+;
+_cell_length_a 4.7525
+_cell_length_b 10.2011
+_cell_length_c 5.9712
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 289.488
+_symmetry_space_group_name_H-M 'P b n m'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x, y, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.426000 0.093910 0.250000 1
+Mg1 Mg 0.000000 0.000000 0.000000 1
+Mg2 Mg 0.990400 0.276910 0.250000 1
+O1 O 0.766500 0.092100 0.250000 1
+O2 O 0.220200 0.446400 0.250000 1
+O3 O 0.277600 0.163100 0.032800 1

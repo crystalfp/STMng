@@ -1,0 +1,43 @@
+data_Na2SiSi2O7
+_chemical_name_mineral Na2SiSi2O7
+_publ_section_comment
+;
+Na2SiSi2O7: Fleet and Henderson:  Phys Chem Min 22 (1995) 383-386
+Soldium trisilicate: A new high-pressure silicate structure (Na2Si[Si2O7])
+;
+_cell_length_a 8.922
+_cell_length_b 4.849
+_cell_length_c 11.567
+_cell_angle_alpha 90
+_cell_angle_beta 102.64
+_cell_angle_gamma 90
+_cell_volume 488.292
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.457770 0.284520 0.115150 1
+Si2 Si 0.250000 0.250000 0.500000 1
+Na1 Na 0.147700 0.294780 0.183260 1
+O1 O 0.360800 0.563880 0.126810 1
+O2 O 0.365020 0.047260 0.035720 1
+O3 O 0.375970 0.367280 0.410000 1
+O4 O 0.000000 0.647400 0.250000 1

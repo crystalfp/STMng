@@ -1,0 +1,42 @@
+data_EUCLASE
+_audit_creation_method 'Converted from XTL/AMC by xtl_amc_to_cif_v10'
+_chemical_name_mineral EUCLASE
+_publ_section_comment
+;
+EUCLASE: Hazen et al.  Am Min 71 (1986) 997-984
+High pressure crystal chemistry of beryl (Be3Al2Si6O18) & euclase (BeAlSiO4OH)
+space group = P2(1)/a                    P = 0
+;
+_cell_length_a 4.6335
+_cell_length_b 14.322
+_cell_length_c 4.78
+_cell_angle_alpha 90
+_cell_angle_beta 100.31
+_cell_angle_gamma 90
+_cell_volume 312.084
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Be1 Be 0.457100 0.300600 0.174100 1
+Si1 Si 0.536390 0.100270 0.177520 1
+Al1 Al 0.957080 0.444700 0.248770 1
+O1 O 0.763000 0.032400 0.381800 1
+O2 O 0.652100 0.377000 0.380000 1
+O3 O 0.524800 0.199800 0.343100 1
+O4 O 0.211300 0.053100 0.100600 1
+O5 O 0.120600 0.332000 0.159600 1

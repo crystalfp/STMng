@@ -1,0 +1,52 @@
+data_Harmotome
+_chemical_name_mineral Harmotome
+_publ_section_comment
+;
+Harmotome: Stuckenschmidt et al.,    Eur J Min 2 (1990) 861-874
+Investigation of the structure of harmotome by X-ray (293, 100K) and neutron
+diffraction (15K)   X-ray   T=293K
+;
+_cell_length_a 9.8688
+_cell_length_b 14.1295
+_cell_length_c 8.7092
+_cell_angle_alpha 90
+_cell_angle_beta 124.74
+_cell_angle_gamma 90
+_cell_volume 997.946
+_symmetry_space_group_name_H-M 'P 1 21/m 1'
+_symmetry_Int_Tables_number 11
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.736300 0.023500 0.284800 1
+Si2 Si 0.421100 0.141000 0.014800 1
+Si3 Si 0.057800 0.008600 0.290100 1
+Si4 Si 0.118700 0.139100 0.034100 1
+Ba1 Ba 0.862000 0.250000 0.194600 1
+O1 O 0.100200 0.092800 0.192700 1
+O2 O 0.648500 0.574600 0.167400 1
+O3 O 0.612700 0.117200 0.178400 1
+O4 O 0.006000 0.908300 0.173800 1
+O5 O 0.905000 0.052600 0.296500 1
+O6 O 0.311100 0.369200 0.100100 1
+O7 O 0.778500 0.487900 0.496300 1
+O8 O 0.584500 0.750000 0.052400 1
+O9 O 0.064000 0.250000 0.023000 1
+O10 O 0.804100 0.750000 0.492400 1
+O20 O 0.115800 0.750000 0.464500 1
+O30 O 0.301000 0.862700 0.127100 1
+O40 O 0.512000 0.250000 0.486000 1
+O50 O 0.496000 0.562000 0.474000 1

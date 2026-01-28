@@ -1,0 +1,49 @@
+data_SHATTUCKITE
+_chemical_name_mineral SHATTUCKITE
+_publ_section_comment
+;
+SHATTUCKITE: Evans & Mrose: Am Min 62 (1977) 491-502
+The crystal chemistry of hydrous copper silicates, shattuckite and plancheite
+;
+_cell_length_a 9.885
+_cell_length_b 19.832
+_cell_length_c 5.3825
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1055.18
+_symmetry_space_group_name_H-M 'P c a b'
+_symmetry_Int_Tables_number 61
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y+1/2, z+1/2'
+3 'x+1/2, -y, -z+1/2'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x, y+1/2, -z+1/2'
+7 '-x+1/2, y, z+1/2'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.544850 0.135020 0.217300 1
+Si2 Si 0.397420 0.157060 0.726400 1
+Cu1 Cu 0.500000 0.000000 0.500000 1
+Cu2 Cu 0.330900 0.025470 0.039700 1
+Cu3 Cu 0.252050 0.281250 0.467650 1
+H1 H 0.710000 0.435000 0.630000 1
+O1 O 0.505400 0.055400 0.199600 1
+O2 O 0.342600 0.080500 0.743900 1
+O3 O 0.707600 0.151200 0.220300 1
+O4 O 0.491300 0.173500 0.970800 1
+O5 O 0.490700 0.167000 0.477700 1
+O6 O 0.283600 0.216300 0.719700 1
+O7 O 0.677900 0.024300 0.642600 1

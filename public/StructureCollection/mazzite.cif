@@ -1,0 +1,64 @@
+data_mazzite
+_chemical_name_mineral mazzite
+_publ_section_comment
+;
+mazzite: Rinaldi, Pluth and Smith: Acta Cryst B31 (1975) 1603-1608
+Crystal Structure of Mazzite Dehydrated at 600C
+Mont Semiol, France
+;
+_cell_length_a 18.007
+_cell_length_b 18.007
+_cell_length_c 7.608
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 2136.41
+_symmetry_space_group_name_H-M 'P 63/m m c'
+_symmetry_Int_Tables_number 194
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z+1/2'
+3 '-y, x-y, z'
+4 '-x, -y, z+1/2'
+5 '-x+y, -x, z'
+6 'y, -x+y, z+1/2'
+7 '-y, -x, -z+1/2'
+8 '-x, -x+y, -z'
+9 '-x+y, y, -z+1/2'
+10 'y, x, -z'
+11 'x, x-y, -z+1/2'
+12 'x-y, -y, -z'
+13 '-x, -y, -z'
+14 '-x+y, -x, -z+1/2'
+15 'y, -x+y, -z'
+16 'x, y, -z+1/2'
+17 'x-y, x, -z'
+18 '-y, x-y, -z+1/2'
+19 'y, x, z+1/2'
+20 'x, x-y, z'
+21 'x-y, -y, z+1/2'
+22 '-y, -x, z'
+23 '-x, -x+y, z+1/2'
+24 '-x+y, y, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.157200 0.490800 0.750000 1
+Si2 Si 0.093400 0.356500 0.047200 1
+Mg1 Mg 0.666667 0.333333 0.168100 1
+K1 K 0.922700 0.147300 0.250000 1
+Ca1 Ca 0.000000 0.500000 0.000000 1
+O1 O 0.262800 0.525600 0.750000 1
+O2 O 0.577500 0.155000 0.250000 1
+O3 O 0.098500 0.387500 0.250000 1
+O4 O 0.110400 0.437900 0.927000 1
+O5 O 0.164000 0.328000 0.005400 1
+O6 O 0.000000 0.276100 0.000000 1

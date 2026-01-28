@@ -1,0 +1,38 @@
+data_Kanoite
+_cell_length_a 9.7196
+_cell_length_b 8.9172
+_cell_length_c 5.2465
+_cell_angle_alpha 90
+_cell_angle_beta 108.74
+_cell_angle_gamma 90
+_cell_volume 430.616
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mg1 Mg 0.250650 0.653700 0.227900 0.9
+Mn1 Mn 0.250650 0.653700 0.227900 0.1
+Mn2 Mn 0.254870 0.020310 0.226900 0.744
+Mg2 Mg 0.254870 0.020310 0.226900 0.256
+Si1 Si 0.042200 0.340610 0.280600 0.63
+B1 B 0.549590 0.837740 0.235800 0.64
+O1 O 0.867100 0.337800 0.172500 0.77
+B1_02 B 0.374100 0.838200 0.131200 0.82
+O2 O 0.118800 0.500600 0.323700 0.91
+B2 B 0.628100 0.988100 0.371500 0.96
+O3 O 0.104200 0.267700 0.587500 0.89
+B3 B 0.604700 0.706600 0.475100 0.88

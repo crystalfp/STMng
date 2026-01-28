@@ -1,0 +1,47 @@
+data_Nepheline
+_chemical_name_mineral Nepheline
+_publ_section_comment
+;
+Nepheline: Rossi et al., Eur J Min 1 (1989) 59-70
+The crystal structure of a K-poor Ca-rich silicate with the nepheline
+framework
+;
+_cell_length_a 9.958
+_cell_length_b 9.958
+_cell_length_c 8.341
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 716.297
+_symmetry_space_group_name_H-M 'P 63'
+_symmetry_Int_Tables_number 173
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z+1/2'
+3 '-y, x-y, z'
+4 '-x, -y, z+1/2'
+5 '-x+y, -x, z'
+6 'y, -x+y, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.333333 0.666667 0.182900 1
+Si2 Si 0.333333 0.666667 0.791600 1
+Si3 Si 0.093500 0.332100 0.303400 1
+Si4 Si 0.093300 0.330100 0.675600 1
+Na1 Na 0.997800 0.443100 0.988200 1
+Na2 Na 0.000000 0.000000 0.500000 1
+O1 O 0.333333 0.666667 0.982900 1
+O2 O 0.024200 0.313400 0.480600 1
+O3 O 0.173700 0.522200 0.725500 1
+O4 O 0.163500 0.509000 0.242400 1
+O5 O 0.228200 0.285500 0.305500 1
+O6 O 0.223900 0.266800 0.679400 1

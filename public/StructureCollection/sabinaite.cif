@@ -1,0 +1,50 @@
+data_sabinaite
+_chemical_name_mineral sabinaite
+_publ_section_comment
+;
+sabinaite: McDonald   Can Min 34 (1996) 811-815
+The crystal structure of sabinaite, Na4Zr2TiO4(CO3)4
+;
+_cell_length_a 10.196
+_cell_length_b 6.616
+_cell_length_c 17.958
+_cell_angle_alpha 90
+_cell_angle_beta 94.14
+_cell_angle_gamma 90
+_cell_volume 1208.23
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Na1 Na 0.897100 0.559300 0.418400 1
+Na2 Na 0.872100 0.087400 0.433500 1
+Zr1 Zr 0.691600 0.312300 0.247800 1
+Ti1 Ti 0.000000 0.307900 0.250000 1
+C1 C 0.149900 0.351200 0.399600 1
+C2 C 0.594200 0.335300 0.383400 1
+O1 O 0.037400 0.307300 0.364300 1
+O2 O 0.719500 0.331600 0.372300 1
+O3 O 0.136000 0.503400 0.240000 1
+O4 O 0.863800 0.120700 0.263000 1
+O5 O 0.154700 0.430600 0.462400 1
+O6 O 0.519500 0.309100 0.321500 1
+O7 O 0.259300 0.315900 0.367300 1
+O8 O 0.548800 0.356800 0.445000 1

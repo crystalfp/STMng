@@ -1,0 +1,47 @@
+data_Enstatite
+_chemical_name_mineral Enstatite
+_publ_section_comment
+;
+Enstatite:P = 0, Hugh-Jones and Angel, Am Min 79 (1994) 405-410
+A compressional study of MgSiO3 orthoenstatite up to 8.5 GPa
+P = 0 GPa
+;
+_cell_length_a 18.233
+_cell_length_b 8.8191
+_cell_length_c 5.1802
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 832.969
+_symmetry_space_group_name_H-M 'P b c a'
+_symmetry_Int_Tables_number 61
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x+1/2, y, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mg1 Mg 0.376300 0.654100 0.866300 1
+Mg2 Mg 0.376900 0.487200 0.358900 1
+Si1 Si 0.271500 0.341800 0.050600 1
+Si2 Si 0.473600 0.337400 0.798100 1
+O1 O 0.183500 0.340700 0.034000 1
+O2 O 0.311400 0.502900 0.043000 1
+O3 O 0.302500 0.222400 0.832000 1
+O1_02 O 0.562200 0.341400 0.798000 1
+O2_02 O 0.432400 0.483600 0.690000 1
+O3_02 O 0.448300 0.195100 0.603000 1

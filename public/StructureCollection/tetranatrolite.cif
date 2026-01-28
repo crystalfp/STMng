@@ -1,0 +1,52 @@
+data_Tetranatrolite
+_chemical_name_mineral Tetranatrolite
+_publ_section_comment
+;
+Tetranatrolite: Mikheeva et al, Kristallografiya 31 (1986) 434-439
+Crystal structure of Tetranatrolite
+from Khibiny masssif
+;
+_cell_length_a 13.141
+_cell_length_b 13.141
+_cell_length_c 6.638
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1146.29
+_symmetry_space_group_name_H-M 'I -4 2 d'
+_symmetry_Int_Tables_number 122
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 'y, -x, -z'
+4 'y+1/2, -x+1/2, -z+1/2'
+5 '-x, -y, z'
+6 '-x+1/2, -y+1/2, z+1/2'
+7 '-y, x, -z'
+8 '-y+1/2, x+1/2, -z+1/2'
+9 'x, -y+1/2, -z+1/4'
+10 'x+1/2, -y+1, -z+3/4'
+11 'y, x+1/2, z+1/4'
+12 'y+1/2, x+1, z+3/4'
+13 '-x, y+1/2, -z+1/4'
+14 '-x+1/2, y+1, -z+3/4'
+15 '-y, -x+1/2, z+1/4'
+16 '-y+1/2, -x+1, z+3/4'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.000000 0.000000 1
+Si2 Si 0.054300 0.133600 0.621000 1
+Na1 Na 0.689700 0.250000 0.125000 1
+O1 O 0.396700 0.250000 0.125000 1
+O2 O 0.134500 0.059800 0.487000 1
+O3 O 0.047500 0.093100 0.862000 1
+O4 O 0.131000 0.250000 0.125000 1

@@ -1,0 +1,63 @@
+data_trinepheline
+_chemical_name_mineral trinepheline
+_publ_section_comment
+;
+trinepheline:  Kahlenberg and Bohm,  Am Min 83 (1998) 631-637
+Crystal structure of hexagonal trinepheline - A new synthetic NaAlSiO4
+modification
+;
+_cell_length_a 9.995
+_cell_length_b 9.995
+_cell_length_c 24.797
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 2145.34
+_symmetry_space_group_name_H-M 'P 61'
+_symmetry_Int_Tables_number 169
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z+1/6'
+3 '-y, x-y, z+1/3'
+4 '-x, -y, z+1/2'
+5 '-x+y, -x, z+2/3'
+6 'y, -x+y, z+5/6'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.202400 0.303600 0.127900 1
+Si2 Si 0.363700 0.702300 0.962600 1
+Si3 Si 0.912200 0.236400 0.965000 1
+Si4 Si 0.133400 0.778200 0.135800 1
+Al1 Al 0.326600 0.098000 0.086400 1
+Na12 Na 0.880700 0.245600 0.091700 1
+Na13 Na 0.811100 0.708000 0.095400 1
+Na14 Na 0.330800 0.645200 0.090600 1
+Na1 Na 0.020500 0.564800 0.035600 1
+Na2 Na 0.473500 0.442100 0.030300 1
+Na3 Na 0.518300 0.557400 0.186400 1
+Na4 Na 0.004300 0.014900 0.028000 1
+O1 O 0.313700 0.462900 0.096700 1
+O2 O 0.058400 0.336300 0.925900 1
+O3 O 0.028100 0.272900 0.136200 1
+O4 O 0.276500 0.313100 0.186900 1
+O5 O 0.058100 0.754100 0.195000 1
+O6 O 0.191800 0.158700 0.095500 1
+O7 O 0.681000 0.534800 0.126400 1
+O8 O 0.861700 0.054300 0.960600 1
+O9 O 0.960000 0.290400 0.027100 1
+O10 O 0.769600 0.258700 0.949300 1
+O11 O 0.179900 0.645400 0.126200 1
+O12 O 0.516700 0.248500 0.091800 1
+O13 O 0.288100 0.946700 0.130300 1
+O14 O 0.302400 0.677400 0.023900 1
+O15 O 0.004500 0.756200 0.092000 1
+O16 O 0.821200 0.376600 0.108600 1

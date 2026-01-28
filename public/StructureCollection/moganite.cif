@@ -1,0 +1,41 @@
+data_moganite
+_chemical_name_mineral moganite
+_publ_section_comment
+;
+moganite: Miehe & Graetsch: Eur J Min 4 (1992) 693-706
+Crystal structure of moganite: a new structure type for silica
+space group = I2/a   O2 adjusted by DLS
+;
+_cell_length_a 8.758
+_cell_length_b 4.876
+_cell_length_c 10.715
+_cell_angle_alpha 90
+_cell_angle_beta 90.08
+_cell_angle_gamma 90
+_cell_volume 457.573
+_symmetry_space_group_name_H-M 'I2/a   O2 adjusted by DLS'
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x+1/2, y+1/2, z+1/2'
+2 'x, y, z'
+3 '-x+1/2, -y+1/2, -z+1/2'
+4 '-x, -y, -z'
+5 'x+1, -y+1/2, z+1/2'
+6 'x+1/2, -y, z'
+7 '-x+1, y+1/2, -z+1/2'
+8 '-x+1/2, y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.250000 0.990800 0.000000 1
+Si2 Si 0.011500 0.253300 0.167800 1
+O1 O 0.968600 0.068000 0.286000 1
+O2 O 0.171100 0.177000 0.105000 1
+O3 O 0.865700 0.214800 0.073900 1

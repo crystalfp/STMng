@@ -1,0 +1,44 @@
+data_omphacite
+_chemical_name_mineral omphacite
+_publ_section_comment
+;
+omphacite: Smyth,  Am Min 79 (1994) preprint
+Crystal chemistry of hydrogen in mantle pyroxenes: II. Nine new crystal
+structure refinements of hydrous and anhydrous omphacites   sample SRV-6
+;
+_cell_length_a 9.5285
+_cell_length_b 8.6974
+_cell_length_c 5.2472
+_cell_angle_alpha 90
+_cell_angle_beta 106.969
+_cell_angle_gamma 90
+_cell_volume 415.92
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mg1 Mg 0.000000 0.905640 0.250000 1
+Mg2 Mg 0.000000 0.304530 0.250000 1
+Mg2_02 Mg 0.000000 0.296500 0.250000 1
+Si1 Si 0.288850 0.093050 0.227180 1
+O1 O 0.110890 0.078790 0.131220 1
+O2 O 0.360220 0.258570 0.302790 1
+O3 O 0.352180 0.012260 0.000000 1

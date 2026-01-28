@@ -1,0 +1,57 @@
+data_Wyartite
+_chemical_name_mineral Wyartite
+_publ_section_comment
+;
+Wyartite: Burns and Finch, Am Min 84 (1999) 1456-1460
+Wyartite: Crystallographic evidence for the first pentavalent-uranium
+mineral
+;
+_cell_length_a 11.2706
+_cell_length_b 7.1055
+_cell_length_c 20.807
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1666.29
+_symmetry_space_group_name_H-M 'P 21 21 21'
+_symmetry_Int_Tables_number 19
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x, y+1/2, -z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+U1 U 0.559500 0.289200 0.239480 1
+U2 U 0.940700 0.289700 0.235850 1
+U3 U 0.249000 0.291900 0.283430 1
+Ca1 Ca 0.926600 0.432200 0.046900 1
+C1 C 0.241000 0.240000 0.423000 1
+O1 O 0.511000 0.310000 0.154000 1
+O2 O 0.989000 0.314000 0.156000 1
+O3 O 0.110000 0.109000 0.251500 1
+O4 O 0.388000 0.105000 0.267000 1
+O5 O 0.610000 0.282000 0.320500 1
+O6 O 0.888000 0.240000 0.316000 1
+O7 O 0.100000 0.463000 0.278000 1
+O8 O 0.390000 0.474000 0.272000 1
+O9 O 0.187000 0.126000 0.380000 1
+O10 O 0.224000 0.211000 0.481700 1
+O11 O 0.286000 0.384000 0.396600 1
+O12 O 0.752000 0.285000 0.198000 1
+W13 W 0.748000 0.235000 0.052200 1
+W14 W 0.254000 0.363000 0.167000 1
+W15 W 0.459000 0.028000 0.066800 1
+W16 W 0.093000 0.629000 0.053000 1
+W17 W 0.045000 0.159000 0.016000 1
+W18 W 0.209000 0.036000 0.103000 1
+W19 W 0.921000 0.918000 0.942000 1

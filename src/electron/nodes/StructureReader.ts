@@ -752,7 +752,7 @@ export class StructureReader extends NodeCore {
 				for(const file of files) {
 					if(next) this.cachedCollection += ",";
 					else next = true;
-					const title = file.replace(".cif", "");
+					const title = file.replace(".cif", "").replaceAll("_", " ").replaceAll("-", " ");
 					this.cachedCollection += `{"title":"${title}","filename":"${file}"}`;
 				}
 				this.cachedCollection += "]";

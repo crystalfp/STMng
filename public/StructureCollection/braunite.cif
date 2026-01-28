@@ -1,0 +1,73 @@
+data_BRAUNITE
+_chemical_name_mineral BRAUNITE
+_publ_section_comment
+;
+BRAUNITE: de Villiers: Am Min 65 (1980) 756-765
+The crystal structure of braunite II and its relation to bixbyite and braunite
+;
+_cell_length_a 9.431
+_cell_length_b 9.431
+_cell_length_c 37.774
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 3359.76
+_symmetry_space_group_name_H-M 'I 41/a c d 1'
+_symmetry_Int_Tables_number 142
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z+1/2'
+3 '-y, x+1/2, z+1/4'
+4 '-y+1/2, x+1, z+3/4'
+5 '-x+1/2, -y+1/2, z+1/2'
+6 '-x+1, -y+1, z+1'
+7 'y+1/2, -x, z+3/4'
+8 'y+1, -x+1/2, z+5/4'
+9 'x+1/2, -y, -z+1/4'
+10 'x+1, -y+1/2, -z+3/4'
+11 '-y+1/2, -x+1/2, -z'
+12 '-y+1, -x+1, -z+1/2'
+13 '-x, y+1/2, -z+3/4'
+14 '-x+1/2, y+1, -z+5/4'
+15 'y, x, -z+1/2'
+16 'y+1/2, x+1/2, -z+1'
+17 '-x, -y+1/2, -z+1/4'
+18 '-x+1/2, -y+1, -z+3/4'
+19 'y, -x, -z'
+20 'y+1/2, -x+1/2, -z+1/2'
+21 'x+1/2, y, -z+3/4'
+22 'x+1, y+1/2, -z+5/4'
+23 '-y+1/2, x+1/2, -z+1/2'
+24 '-y+1, x+1, -z+1'
+25 '-x+1/2, y+1/2, z'
+26 '-x+1, y+1, z+1/2'
+27 'y+1/2, x, z+1/4'
+28 'y+1, x+1/2, z+3/4'
+29 'x, -y, z+1/2'
+30 'x+1/2, -y+1/2, z+1'
+31 '-y, -x+1/2, z+3/4'
+32 '-y+1/2, -x+1, z+5/4'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.000000 0.500000 1
+Mn1 Mn 0.000000 0.000000 0.115820 1
+Mn2 Mn 0.209700 0.750000 0.375000 1
+Mn3 Mn 0.240800 0.240800 0.250000 1
+Mn4 Mn 0.031200 0.750600 0.187900 1
+Mn5 Mn 0.990400 0.754400 0.312720 1
+Ca1 Ca 0.000000 0.000000 0.250000 1
+O1 O 0.119700 0.921500 0.150600 1
+O2 O 0.331400 0.151000 0.156100 1
+O3 O 0.398200 0.872700 0.166200 1
+O4 O 0.117800 0.157100 0.212900 1
+O5 O 0.170100 0.862100 0.215900 1
+O6 O 0.387400 0.086100 0.225400 1

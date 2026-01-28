@@ -1,0 +1,46 @@
+data_BERTRANDITE
+_chemical_name_mineral BERTRANDITE
+_publ_section_comment
+;
+BERTRANDITE: Hazen, Au: Phys Chem Min 13 (1986) 69-78
+High-pressure crystal chemistry of Phenakite (Be2SiO4) and Bertrandite
+(Be2SiO4)  P=0
+;
+_cell_length_a 8.7135
+_cell_length_b 15.268
+_cell_length_c 4.5683
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 607.756
+_symmetry_space_group_name_H-M 'C m c 21'
+_symmetry_Int_Tables_number 36
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, -y, z+1/2'
+4 '-x+1/2, -y+1/2, z+1/2'
+5 '-x, y, z'
+6 '-x+1/2, y+1/2, z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.325400 0.114400 0.652300 1
+Be1 Be 0.173500 0.052700 0.162800 1
+Be2 Be 0.326400 0.220300 0.151700 1
+O1 O 0.289700 0.124400 0.000000 1
+O2 O 0.210100 0.043100 0.507400 1
+O3 O 0.293400 0.209300 0.502400 1
+O4 O 0.000000 0.585200 0.595100 1
+O1_02 O 0.000000 0.755300 0.088600 1
+O2_02 O 0.000000 0.087200 0.099300 1

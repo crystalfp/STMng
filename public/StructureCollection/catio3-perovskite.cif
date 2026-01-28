@@ -1,0 +1,41 @@
+data_perovskite
+_chemical_name_mineral 'San Benito perovskite'
+_publ_section_comment
+;
+San Benito perovskite: Beran et al., Can Min 34 (1996) 803-809
+A single-crystal infrared spectroscopic and X-ray-diffraction study of untwinned
+San Benito perovskite containing OH groups
+;
+_cell_length_a 5.38
+_cell_length_b 5.44
+_cell_length_c 7.639
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 223.572
+_symmetry_space_group_name_H-M 'P b n m'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 'x, y, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ti1 Ti 0.000000 0.500000 0.000000 1
+Ca1 Ca 0.006480 0.035600 0.250000 1
+O1 O 0.571100 0.983900 0.250000 1
+O2 O 0.289700 0.288800 0.037300 1

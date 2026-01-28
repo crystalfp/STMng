@@ -1,0 +1,67 @@
+data_Betpakdalite
+_chemical_name_mineral Betpakdalite
+_publ_section_comment
+;
+Betpakdalite: Cooper and Hawthorne, Can Min 37 (1999) 61-66
+The crystal structure of betpakdalite, and a new chemical formula:
+{Mg(H2O)6}Ca2(H2O)13[Mo8As2Fe3O36(OH)](H2O)4
+;
+_cell_length_a 19.531
+_cell_length_b 11.061
+_cell_length_c 15.257
+_cell_angle_alpha 90
+_cell_angle_beta 131.57
+_cell_angle_gamma 90
+_cell_volume 2465.89
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mo1 Mo 0.214800 0.839300 0.193910 1
+Mo2 Mo 0.371060 0.000000 0.196920 1
+Mo3 Mo 0.375660 0.000000 0.424610 1
+As1 As 0.865490 0.000000 0.058840 1
+Fe1 Fe 0.750000 0.750000 0.000000 1
+Fe2 Fe 0.000000 0.000000 0.000000 1
+Mg1 Mg 0.500000 0.000000 0.000000 1
+Ca1 Ca 0.155900 0.823200 0.488000 1
+O1 O 0.212600 0.000000 0.092600 1
+O2 O 0.237500 0.000000 0.285200 1
+O3 O 0.342300 0.875100 0.102200 1
+O4 O 0.350500 0.886300 0.286900 1
+O5 O 0.218400 0.745400 0.101200 1
+O6 O 0.094700 0.872100 0.100700 1
+O7 O 0.151300 0.875700 0.894400 1
+O8 O 0.028500 0.000000 0.893400 1
+O9 O 0.370800 0.877100 0.488900 1
+O10 O 0.487300 0.000000 0.292600 1
+O11 O 0.234600 0.739200 0.294000 1
+O12 O 0.500000 0.014000 0.500000 1
+W1 O 0.465700 0.865300 0.058600 1
+W2 O 0.629400 0.000000 0.165000 1
+W3 O 0.792300 0.000000 0.221600 1
+W4 O 0.127700 0.949600 0.339000 1
+W5 O 0.894400 0.970000 0.464400 1
+W6 O 0.704900 0.958100 0.403900 1
+W7 O 0.766500 0.799900 0.502800 1
+W8 O 0.479800 0.693200 0.354400 1
+W9 O 0.056900 0.769300 0.259700 1
+W10 O 0.417000 0.800000 0.702000 1

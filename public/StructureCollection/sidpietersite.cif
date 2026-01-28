@@ -1,0 +1,46 @@
+data_Sidpietersite
+_chemical_name_mineral Sidpietersite
+_publ_section_comment
+;
+Sidpietersite
+Cooper M A, Hawthorne F C
+The Canadian Mineralogist 37 (1999) 1275-1282
+The structure of sidpietersite, Pb4(SO3S)O2(OH)2,
+a novel thiosulfate structure
+;
+_cell_length_a 7.455
+_cell_length_b 6.496
+_cell_length_c 11.207
+_cell_angle_alpha 114.33
+_cell_angle_beta 89.65
+_cell_angle_gamma 88.69
+_cell_volume 494.327
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Pb1 Pb 0.122100 0.748300 0.006300 1
+Pb2 Pb 0.619800 0.593200 0.311600 1
+Pb3 Pb 0.103000 0.626200 0.304800 1
+Pb4 Pb 0.627500 0.748700 0.027500 1
+S1 S 0.370400 0.125300 0.316000 1
+S2 S 0.150900 0.204000 0.427500 1
+O1 O 0.530000 0.185000 0.390000 1
+O2 O 0.352000 0.246000 0.229000 1
+O3 O 0.373000 0.873000 0.231000 1
+O4 O 0.128000 0.475000 0.085000 1
+O5 O 0.615000 0.450000 0.084000 1
+O1_02 O 0.874000 0.357000 0.245000 1
+O2_02 O 0.841000 0.796000 0.256000 1

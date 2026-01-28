@@ -1,0 +1,63 @@
+data_dodecasil_1H
+_chemical_name_mineral 'dodecasil 1H'
+_publ_section_comment
+;
+dodecasil 1H: Gerke, Gies: Zeit. Krist. 166, 11-22 (1984)
+Studies on clathrasils IV
+;
+_cell_length_a 13.783
+_cell_length_b 13.783
+_cell_length_c 11.19
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 1840.98
+_symmetry_space_group_name_H-M 'P 6/m m m'
+_symmetry_Int_Tables_number 191
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z'
+3 '-y, x-y, z'
+4 '-x, -y, z'
+5 '-x+y, -x, z'
+6 'y, -x+y, z'
+7 '-y, -x, -z'
+8 '-x, -x+y, -z'
+9 '-x+y, y, -z'
+10 'y, x, -z'
+11 'x, x-y, -z'
+12 'x-y, -y, -z'
+13 '-x, -y, -z'
+14 '-x+y, -x, -z'
+15 'y, -x+y, -z'
+16 'x, y, -z'
+17 'x-y, x, -z'
+18 '-y, x-y, -z'
+19 'y, x, z'
+20 'x, x-y, z'
+21 'x-y, -y, z'
+22 '-y, -x, z'
+23 '-x, -x+y, z'
+24 '-x+y, y, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.418600 0.209300 0.225200 1
+Si2 Si 0.386800 0.000000 0.362700 1
+Si3 Si 0.262800 0.131400 0.000000 1
+Si4 Si 0.333333 0.666667 0.138400 1
+O1 O 0.105200 0.393300 0.303100 1
+O2 O 0.542900 0.271450 0.816400 1
+O3 O 0.340500 0.170250 0.113900 1
+O4 O 0.360100 0.000000 0.500000 1
+O5 O 0.186500 0.000000 0.000000 1
+O6 O 0.500000 0.000000 0.345100 1
+O7 O 0.333333 0.666667 0.000000 1

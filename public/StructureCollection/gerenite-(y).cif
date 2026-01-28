@@ -1,0 +1,47 @@
+data_Gerenite-(Y)
+_chemical_name_mineral Gerenite-(Y)
+_publ_section_comment
+;
+Gerenite-(Y): Groat, Can Min 36 (1998) 801-808
+The crystal structure of gerenite-(Y), (Ca,Na)2(Y,REE)3Si6O18.2H2), a
+cyclosilicate mineral
+;
+_cell_length_a 9.257
+_cell_length_b 9.684
+_cell_length_c 5.52
+_cell_angle_alpha 97.36
+_cell_angle_beta 100.52
+_cell_angle_gamma 116.57
+_cell_volume 422.577
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.364700 0.250800 0.382500 1
+Si2 Si 0.119500 0.368000 0.102100 1
+Si3 Si 0.759500 0.125100 0.768800 1
+Y1 Y 0.500000 0.500000 0.000000 1
+Y2 Y 0.781400 0.364200 0.317100 1
+Ca1 Ca 0.621100 0.932900 0.173000 1
+O1 O 0.669900 0.155400 0.977500 1
+O2 O 0.598100 0.708800 0.318900 1
+O3 O 0.522100 0.343700 0.269600 1
+O4 O 0.961100 0.218300 0.889500 1
+O5 O 0.760000 0.514500 0.039400 1
+O6 O 0.708100 0.162500 0.504000 1
+O7 O 0.053600 0.444400 0.306200 1
+O8 O 0.293700 0.064400 0.276000 1
+O9 O 0.223800 0.293500 0.248000 1
+W1 W 0.908100 0.998400 0.267500 1

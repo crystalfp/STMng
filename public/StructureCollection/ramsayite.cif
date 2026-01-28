@@ -1,0 +1,44 @@
+data_ramsayite
+_chemical_name_mineral ramsayite
+_publ_section_comment
+;
+ramsayite: Sundberg et al., Am Min 72 (1987) 173-177
+Refinement of the crystal structure of ramsayite (lorenzenite)
+;
+_cell_length_a 8.7128
+_cell_length_b 5.2327
+_cell_length_c 14.487
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 660.484
+_symmetry_space_group_name_H-M 'P b c n'
+_symmetry_Int_Tables_number 60
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x+1/2, -y+1/2, z+1/2'
+3 'x+1/2, -y+1/2, -z'
+4 '-x, y, -z+1/2'
+5 '-x, -y, -z'
+6 'x+1/2, y+1/2, -z+1/2'
+7 '-x+1/2, y+1/2, z'
+8 'x, -y, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.342100 0.296100 0.526700 1
+Ti1 Ti 0.151300 0.132200 0.330900 1
+Na1 Na 0.064300 0.645000 0.153700 1
+O1 O 0.000000 0.006000 0.250000 1
+O2 O 0.181700 0.440700 0.275800 1
+O3 O 0.333600 0.296700 0.415200 1
+O4 O 0.008900 0.242800 0.428000 1
+O5 O 0.235700 0.059800 0.567000 1

@@ -1,0 +1,41 @@
+data_Thortveitite
+_chemical_name_mineral Thortveitite
+_publ_section_comment
+;
+Thortveitite: Cruickshank, etal.: Acta Cryst 15 (1962) 491-498
+A reinvestigation of the crystal structure of thortveitite Sc2Si2O7
+space group = Cm
+;
+_cell_length_a 6.542
+_cell_length_b 8.519
+_cell_length_c 4.669
+_cell_angle_alpha 90
+_cell_angle_beta 102.55
+_cell_angle_gamma 90
+_cell_volume 253.992
+_symmetry_space_group_name_H-M 'C 1 m 1'
+_symmetry_Int_Tables_number 8
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 'x, -y, z'
+4 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.230969 0.000000 0.900621 1
+Si2 Si 0.787374 0.000000 0.081816 1
+Sc1 Sc 0.000000 0.307665 0.500000 1
+O1 O 0.013757 0.000000 0.036410 1
+O2 O 0.377713 0.000000 0.210323 1
+O2_02 O 0.595689 0.000000 0.764404 1
+O3 O 0.241822 0.152248 0.710859 1
+O3_02 O 0.769184 0.161521 0.283787 1

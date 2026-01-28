@@ -1,0 +1,48 @@
+data_Ilvaite
+_chemical_name_mineral Ilvaite
+_publ_section_comment
+;
+Ilvaite: Finger and Hazen: Z Krist 179 (1987) 415-430
+Crystal structure of monoclinic ilvaite and the nature of the monoclinic-
+orthorhombic transition at high pressure      space group = P2(1)/a Elba ?????
+;
+_cell_length_a 5.864
+_cell_length_b 8.8204
+_cell_length_c 13.0387
+_cell_angle_alpha 90
+_cell_angle_beta 90.266
+_cell_angle_gamma 90
+_cell_volume 674.391
+_symmetry_space_group_name_H-M 'P 1 21/c 1'
+_symmetry_Int_Tables_number 14
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z+1/2'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.242960 0.368310 0.959550 1
+Si2 Si 0.251560 0.227240 0.679490 1
+Ca1 Ca 0.752670 0.370350 0.812960 1
+Fe11 Fe 0.007270 0.049830 0.890190 1
+Fe12 Fe 0.492720 0.051720 0.890040 1
+Fe2 Fe 0.248860 0.739960 0.940630 1
+O1 O 0.739350 0.029000 0.009860 1
+O21 O 0.016140 0.272060 0.937120 1
+O22 O 0.483150 0.272640 0.935470 1
+O3 O 0.255210 0.109510 0.777170 1
+O41 O 0.019100 0.328520 0.671370 1
+O42 O 0.482060 0.331300 0.670680 1
+O5 O 0.253080 0.100870 0.584810 1
+O6 O 0.752160 0.025080 0.601930 1
+O7 O 0.745100 0.109730 0.797670 1

@@ -1,0 +1,66 @@
+data_sinkankasite
+_chemical_name_mineral sinkankasite
+_publ_section_comment
+;
+sinkankasite:  Burns and Hawthorne, Am Min 80 (1995) 620-627
+The crystal structure of sinkankasite, a complex heteropolyhedral
+sheet mineral
+;
+_cell_length_a 9.59
+_cell_length_b 9.818
+_cell_length_c 6.86
+_cell_angle_alpha 108.04
+_cell_angle_beta 99.63
+_cell_angle_gamma 98.87
+_cell_volume 590.694
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Mn1 Mn 0.288700 0.952000 0.682100 1
+P1 P 0.297100 0.656600 0.260600 1
+P2 P 0.291400 0.256600 0.103800 1
+Al1 Al 0.500000 0.500000 0.500000 1
+Al2 Al 0.500000 0.500000 0.000000 1
+H1 H 0.106000 0.470000 0.073000 1
+H2 H 0.678000 0.547000 0.351000 1
+H3 H 0.063000 0.193000 0.055000 1
+H4 H 0.379000 0.737000 0.740000 1
+H5 H 0.290000 0.667000 0.710000 1
+H6 H 0.591000 0.071000 0.732000 1
+H7 H 0.580000 0.959000 0.834000 1
+H8 H 0.397000 0.160000 0.613000 1
+H9 H 0.288000 0.233000 0.676000 1
+H10 H 0.015000 0.785000 0.545000 1
+H11 H 0.000000 0.947000 0.675000 1
+H12 H 0.139000 0.858000 0.186000 1
+H13 H 0.081000 0.998000 0.259000 1
+H14 H 0.852000 0.527000 0.465000 1
+H15 H 0.933000 0.510000 0.319000 1
+O1 O 0.289900 0.815600 0.361400 1
+O2 O 0.390900 0.642600 0.100300 1
+O3 O 0.347600 0.587300 0.421900 1
+O4 O 0.385700 0.310100 0.325900 1
+O5 O 0.345800 0.347400 0.977000 1
+O6 O 0.278600 0.093800 0.993700 1
+O1_02 O 0.136300 0.574000 0.143800 1
+O2_02 O 0.578900 0.516500 0.276100 1
+O3_02 O 0.135100 0.282600 0.122500 1
+O1_03 O 0.296700 0.767700 0.788700 1
+O2_03 O 0.518600 0.004000 0.759600 1
+O3_03 O 0.293000 0.140500 0.579800 1
+O4_02 O 0.057300 0.888700 0.597200 1
+O5_02 O 0.083400 0.918600 0.136500 1
+O6_02 O 0.909300 0.593200 0.414600 1

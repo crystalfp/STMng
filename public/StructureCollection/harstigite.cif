@@ -1,0 +1,63 @@
+data_HARSTIGITE
+_chemical_name_mineral HARSTIGITE
+_publ_section_comment
+;
+HARSTIGITE: Hesse and Stumpel: Z Krist 177 (1986) 143-148
+Crystal structure of harstigite, MnCa6Be4[SiO4]2[Si2O7]2(OH)2
+;
+_cell_length_a 9.793
+_cell_length_b 13.636
+_cell_length_c 13.83
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1846.82
+_symmetry_space_group_name_H-M 'P n a m'
+_symmetry_Int_Tables_number 62
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, z+1/2'
+3 'x+1/2, -y+1/2, -z+1/2'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 'x, y, -z+1/2'
+7 '-x+1/2, y+1/2, z+1/2'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.228100 0.257900 0.250000 1
+Si2 Si 0.283100 0.515100 0.250000 1
+Si3 Si 0.214200 0.549800 0.549000 1
+Si4 Si 0.232500 0.748500 0.452100 1
+Mn1 Mn 0.999300 0.395000 0.250000 1
+Ca1 Ca 0.996200 0.608300 0.385900 1
+Ca2 Ca 0.508600 0.315700 0.387600 1
+Ca3 Ca 0.500400 0.589700 0.392600 1
+Be1 Be 0.238100 0.401700 0.415900 1
+Be2 Be 0.262400 0.539400 0.750000 1
+Be3 Be 0.265700 0.728400 0.250000 1
+H1 H 0.176000 0.883000 0.250000 1
+O1 O 0.157900 0.659000 0.514400 1
+O2 O 0.395200 0.741700 0.454900 1
+O3 O 0.170100 0.845900 0.503600 1
+O4 O 0.167500 0.740000 0.345800 1
+O5 O 0.137300 0.474600 0.476500 1
+O6 O 0.152900 0.530800 0.657700 1
+O7 O 0.377800 0.550400 0.547100 1
+O8 O 0.160200 0.316500 0.343400 1
+O9 O 0.342500 0.460600 0.346000 1
+O10 O 0.117200 0.523900 0.250000 1
+O11 O 0.159000 0.148500 0.250000 1
+O12 O 0.392600 0.247600 0.250000 1
+O13 O 0.350700 0.624500 0.250000 1
+O14 O 0.366600 0.449900 0.750000 1
+O15 O 0.111500 0.314600 0.750000 1

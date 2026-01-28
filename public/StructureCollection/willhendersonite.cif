@@ -1,0 +1,57 @@
+data_Willhendersonite
+_chemical_name_mineral Willhendersonite
+_publ_section_comment
+;
+Willhendersonite: Tillmanns et al, Neues Jahrbuch Min Mon 1984 (1984) 547-558
+Chabazite-type framework in the new zeolite willhendersonite KCaAl3Si3O12(H2O)5
+;
+_cell_length_a 9.206
+_cell_length_b 9.216
+_cell_length_c 9.5
+_cell_angle_alpha 92.3
+_cell_angle_beta 92.7
+_cell_angle_gamma 90.1
+_cell_volume 804.455
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Al1 Al 0.656500 0.907100 0.149200 1
+Si1 Si 0.312200 0.894800 0.106700 1
+Al2 Al 0.090200 0.847700 0.342500 1
+Si2 Si 0.108600 0.344400 0.854900 1
+Al3 Al 0.889000 0.312800 0.091000 1
+Si3 Si 0.850500 0.103400 0.339900 1
+Ca1 Ca 0.200600 0.201300 0.204200 1
+K1 K 0.477000 0.871000 0.468300 1
+K2 K 0.116200 0.512100 0.539200 1
+O1 O 0.746600 0.243900 0.984600 1
+O2 O 0.693600 0.055400 0.268100 1
+O3 O 0.973900 0.315100 0.739200 1
+O4 O 0.153200 0.512900 0.849500 1
+O5 O 0.474900 0.862400 0.166200 1
+O6 O 0.827600 0.187400 0.490800 1
+O7 O 0.250300 0.251800 0.817900 1
+O8 O 0.936000 0.208700 0.238100 1
+O9 O 0.787700 0.063600 0.759900 1
+O10 O 0.057500 0.304300 0.010600 1
+O11 O 0.305300 0.044100 0.021300 1
+O12 O 0.057700 0.040600 0.636300 1
+O13 O 0.531000 0.250000 0.569000 1
+O14 O 0.742000 0.472000 0.427000 1
+O15 O 0.507300 0.547300 0.145100 1
+O16 O 0.775900 0.791300 0.541000 1
+O17 O 0.539300 0.748200 0.760100 1
+O18 O 0.225900 0.460900 0.260800 1

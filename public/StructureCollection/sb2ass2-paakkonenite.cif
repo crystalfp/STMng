@@ -1,0 +1,42 @@
+data_Sb2AsS2-paakkonenite
+_chemical_name_mineral Sb2AsS2-paakkonenite
+_publ_section_comment
+;
+Sb2AsS2-paakkonenite: Bonazzi et al., Am Min 80 (1995) 1054-1058
+Crystal structure and twinning of Sb2AsS2, the synthetic analogue of
+paakkonenite
+;
+_cell_length_a 10.75
+_cell_length_b 3.959
+_cell_length_c 12.49
+_cell_angle_alpha 90
+_cell_angle_beta 115.25
+_cell_angle_gamma 90
+_cell_volume 480.777
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Sb1 Sb 0.954800 0.000000 0.175500 1
+Sb2 Sb 0.311900 0.500000 0.397900 1
+As1 As 0.894200 0.500000 0.015600 1
+S1 S 0.211400 0.000000 0.237600 1
+S2 S 0.093700 0.500000 0.408400 1

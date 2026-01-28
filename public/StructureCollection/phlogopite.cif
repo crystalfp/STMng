@@ -1,0 +1,45 @@
+data_phlogopite
+_chemical_name_mineral phlogopite
+_publ_section_comment
+;
+phlogopite:  Brigatti et al., Am Min preprint             sample Tas27-2Bb
+Crystal chemistry and petrological significance of Fe3+-rich phlogopites from
+the Tapira carbonatite complex (Brazil)   sample Tas27-2Bb
+;
+_cell_length_a 5.33
+_cell_length_b 9.2346
+_cell_length_c 10.301
+_cell_angle_alpha 90
+_cell_angle_beta 99.92
+_cell_angle_gamma 90
+_cell_volume 499.439
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.076060 0.166690 0.228280 1
+Mg1 Mg 0.000000 0.000000 0.500000 1
+Mg2 Mg 0.000000 0.332240 0.500000 1
+K1 K 0.000000 0.500000 0.000000 1
+O1 O 0.013400 0.000000 0.170400 1
+O2 O 0.328100 0.228400 0.170300 1
+O3 O 0.130000 0.166700 0.391000 1
+O4 O 0.132600 0.500000 0.397600 1

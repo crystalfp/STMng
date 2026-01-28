@@ -1,0 +1,56 @@
+data_fluor-pargasite
+_chemical_name_mineral fluor-pargasite
+_publ_section_comment
+;
+fluor-pargasite: Oberti et al., Can Min 33 (1995) 25-31
+Synthesis and crystal-structure refinement of synthetic fluor-pargasite
+sample FP1  [note: ideal = NaCa2(Mg4Al)(Si6Al2)O22(OH)2]
+;
+_cell_length_a 9.82
+_cell_length_b 17.896
+_cell_length_c 5.294
+_cell_angle_alpha 90
+_cell_angle_beta 105.3
+_cell_angle_gamma 90
+_cell_volume 897.386
+_symmetry_space_group_name_H-M 'C 1 2/m 1'
+_symmetry_Int_Tables_number 12
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z'
+4 '-x+1/2, y+1/2, -z'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z'
+8 'x+1/2, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.282100 0.085400 0.304300 0.525
+Al1 Al 0.282100 0.085400 0.304300 0.475
+Si2 Si 0.291300 0.173300 0.814700 0.978
+Al2 Al 0.291300 0.173300 0.814700 0.022
+Mg1 Mg 0.000000 0.089400 0.500000 1
+Mg2 Mg 0.000000 0.175400 0.000000 1
+Mg3 Mg 0.000000 0.000000 0.000000 1
+Mg4 Mg 0.000000 0.279400 0.500000 1
+Mg4_02 Mg 0.000000 0.253600 0.500000 1
+Na1 Na 0.000000 0.500000 0.000000 1
+Na2 Na 0.040100 0.500000 0.094400 1
+Na3 Na 0.000000 0.471300 0.000000 1
+O1 O 0.106900 0.087100 0.216700 1
+O2 O 0.118500 0.172200 0.735700 1
+O3 O 0.104400 0.000000 0.712300 1
+O4 O 0.367000 0.251700 0.789800 1
+O5 O 0.352700 0.140600 0.114600 1
+O6 O 0.346000 0.116700 0.611200 1
+O7 O 0.344600 0.000000 0.277100 1

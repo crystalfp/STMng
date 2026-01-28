@@ -1,0 +1,48 @@
+data_PARAGONITE-2M(1)
+_chemical_name_mineral PARAGONITE-2M(1)
+_publ_section_comment
+;
+PARAGONITE-2M(1): Lin and Bailey: Am Min 69 (1984) 122-127
+The crystal structure of paragonite-2M(1)
+;
+_cell_length_a 5.128
+_cell_length_b 8.898
+_cell_length_c 19.287
+_cell_angle_alpha 90
+_cell_angle_beta 94.35
+_cell_angle_gamma 90
+_cell_volume 877.51
+_symmetry_space_group_name_H-M 'C 1 2/c 1'
+_symmetry_Int_Tables_number 15
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x, y, -z+1/2'
+4 '-x+1/2, y+1/2, -z+1/2'
+5 '-x, -y, -z'
+6 '-x+1/2, -y+1/2, -z'
+7 'x, -y, z+1/2'
+8 'x+1/2, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.952800 0.428800 0.140900 1
+Si2 Si 0.440100 0.257800 0.140900 1
+Al1 Al 0.249900 0.083200 0.999980 1
+Na1 Na 0.000000 0.094100 0.250000 1
+H1 H 0.886600 0.145800 0.070600 1
+Mg1 Mg 0.250000 0.750000 0.000000 1
+O1 O 0.957400 0.443900 0.055400 1
+O2 O 0.379500 0.251600 0.055400 1
+O1_02 O 0.951800 0.062800 0.051200 1
+O3 O 0.373900 0.091400 0.174300 1
+O4 O 0.749100 0.296000 0.162800 1
+O5 O 0.247500 0.381800 0.174800 1

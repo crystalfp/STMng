@@ -1,0 +1,47 @@
+data_kyanite
+_chemical_name_mineral kyanite
+_publ_section_comment
+;
+kyanite: Burnham: Z Krist 118 (1963) 337-360
+Refinement of the crystal structure of kyanite
+refined
+;
+_cell_length_a 7.1192
+_cell_length_b 7.8473
+_cell_length_c 5.5724
+_cell_angle_alpha 89.977
+_cell_angle_beta 101.121
+_cell_angle_gamma 106.006
+_cell_volume 293.163
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.296500 0.065800 0.706800 1
+Si2 Si 0.291400 0.331300 0.188800 1
+Al1 Al 0.325800 0.704500 0.458300 1
+Al2 Al 0.297400 0.699400 0.950900 1
+Al3 Al 0.098800 0.385700 0.640500 1
+Al4 Al 0.112200 0.917200 0.165000 1
+O1 O 0.109000 0.146200 0.129500 1
+O2 O 0.121200 0.685000 0.180200 1
+O3 O 0.272300 0.452900 0.955400 1
+O4 O 0.283200 0.936700 0.935700 1
+O5 O 0.109700 0.152200 0.667200 1
+O6 O 0.120900 0.631800 0.639300 1
+O7 O 0.281800 0.444600 0.427900 1
+O8 O 0.292100 0.948000 0.468000 1
+O9 O 0.501000 0.274900 0.244200 1
+O10 O 0.499300 0.228900 0.754200 1

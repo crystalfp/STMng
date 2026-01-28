@@ -1,0 +1,83 @@
+data_melanophlogite
+_chemical_name_mineral melanophlogite
+_publ_section_comment
+;
+melanophlogite: Gies: Zeit. Krist. 164, 247-257 (1983)
+Studies on clathrasils III
+;
+_cell_length_a 13.436
+_cell_length_b 13.436
+_cell_length_c 13.436
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 2425.55
+_symmetry_space_group_name_H-M 'P m -3 n'
+_symmetry_Int_Tables_number 223
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-y+1/2, x+1/2, z+1/2'
+3 '-x, -y, z'
+4 'y+1/2, -x+1/2, z+1/2'
+5 'x, -y, -z'
+6 '-y+1/2, -x+1/2, -z+1/2'
+7 '-x, y, -z'
+8 'y+1/2, x+1/2, -z+1/2'
+9 'z, x, y'
+10 'z+1/2, -y+1/2, x+1/2'
+11 'z, -x, -y'
+12 'z+1/2, y+1/2, -x+1/2'
+13 '-z, x, -y'
+14 '-z+1/2, -y+1/2, -x+1/2'
+15 '-z, -x, y'
+16 '-z+1/2, y+1/2, x+1/2'
+17 '-x+1/2, z+1/2, y+1/2'
+18 'y, z, x'
+19 'x+1/2, z+1/2, -y+1/2'
+20 '-y, z, -x'
+21 '-x+1/2, -z+1/2, -y+1/2'
+22 'y, -z, -x'
+23 'x+1/2, -z+1/2, y+1/2'
+24 '-y, -z, x'
+25 '-x, -y, -z'
+26 'y+1/2, -x+1/2, -z+1/2'
+27 'x, y, -z'
+28 '-y+1/2, x+1/2, -z+1/2'
+29 '-x, y, z'
+30 'y+1/2, x+1/2, z+1/2'
+31 'x, -y, z'
+32 '-y+1/2, -x+1/2, z+1/2'
+33 '-z, -x, -y'
+34 '-z+1/2, y+1/2, -x+1/2'
+35 '-z, x, y'
+36 '-z+1/2, -y+1/2, x+1/2'
+37 'z, -x, y'
+38 'z+1/2, y+1/2, x+1/2'
+39 'z, x, -y'
+40 'z+1/2, -y+1/2, -x+1/2'
+41 'x+1/2, -z+1/2, -y+1/2'
+42 '-y, -z, -x'
+43 '-x+1/2, -z+1/2, y+1/2'
+44 'y, -z, x'
+45 'x+1/2, z+1/2, y+1/2'
+46 '-y, z, x'
+47 '-x+1/2, z+1/2, -y+1/2'
+48 'y, z, -x'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.309800 0.114200 1
+Si2 Si 0.182600 0.182600 0.182600 1
+Si3 Si 0.250000 0.000000 0.500000 1
+O1 O 0.096300 0.246500 0.136000 1
+O2 O 0.000000 0.405600 0.181300 1
+O3 O 0.342300 0.000000 0.000000 1
+O4 O 0.250000 0.250000 0.250000 1

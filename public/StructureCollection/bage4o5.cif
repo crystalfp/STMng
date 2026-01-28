@@ -1,0 +1,38 @@
+data_Barium
+_cell_length_a 11.61
+_cell_length_b 11.61
+_cell_length_c 4.74
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 553.316
+_symmetry_space_group_name_H-M 'P 3 2 1'
+_symmetry_Int_Tables_number 150
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-y, x-y, z'
+3 '-x+y, -x, z'
+4 'y, x, -z'
+5 'x-y, -y, -z'
+6 '-x, -x+y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Ba1 Ba 0.668950 0.000000 0.000000 1
+Ge1 Ge 0.000000 0.000000 0.000000 1
+Ge2 Ge 0.333333 0.666667 0.893300 1
+Ge3 Ge 0.000000 0.178810 0.500000 1
+Ge4 Ge 0.149660 0.487330 0.407500 1
+O1 O 0.000000 0.477110 0.500000 1
+O2 O 0.182390 0.594970 0.119900 1
+O3 O 0.086650 0.151530 0.769000 1
+O4 O 0.111560 0.323760 0.315000 1
+O5 O 0.262040 0.512180 0.667900 1

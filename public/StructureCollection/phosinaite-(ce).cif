@@ -1,0 +1,61 @@
+data_Phosinaite-(Ce)
+_chemical_name_mineral Phosinaite-(Ce)
+_publ_section_comment
+;
+Phosinaite-(Ce): McDonald et al., Can Min 34 (1996) preprint
+Phosinaite-(Ce) from Mont Saint-Hilaire, Quebec: New data and structure
+refinement
+;
+_cell_length_a 12.297
+_cell_length_b 14.66
+_cell_length_c 7.245
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1306.09
+_symmetry_space_group_name_H-M 'P 2 21 21'
+_symmetry_Int_Tables_number 18
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y+1/2, z+1/2'
+3 'x, -y, -z'
+4 '-x, y+1/2, -z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.332000 0.889100 0.309800 1
+Si2 Si 0.364600 0.911100 0.744900 1
+P1 P 0.973600 0.125500 0.229500 1
+P2 P 0.306400 0.618300 0.765800 1
+Na1 Na 0.182900 0.758800 0.544000 1
+Na2 Na 0.003000 0.349100 0.223700 1
+Na3 Na 0.171400 0.500000 0.500000 1
+Na4 Na 0.160400 0.500000 0.000000 1
+Na5 Na 0.877200 0.500000 0.000000 1
+Na6 Na 0.450400 0.500000 0.000000 1
+Na7 Na 0.330700 0.639800 0.263500 1
+Na8 Na 0.456100 0.500000 0.500000 1
+Ca1 Ca 0.497100 0.750000 0.521000 1
+Si1_02 Si 0.135950 0.000000 0.000000 1
+O1 O 0.649200 0.839000 0.089600 1
+O2 O 0.812400 0.148000 0.707600 1
+O3 O 0.687300 0.014400 0.751300 1
+O4 O 0.374100 0.797600 0.236000 1
+O5 O 0.144200 0.342400 0.720000 1
+O6 O 0.981200 0.980800 0.758500 1
+O7 O 0.372000 0.352200 0.063600 1
+O8 O 0.033500 0.147600 0.048700 1
+O9 O 0.196300 0.903900 0.261400 1
+O10 O 0.472800 0.857600 0.791200 1
+O11 O 0.396200 0.978900 0.251400 1
+O12 O 0.670400 0.615200 0.035900 1
+O13 O 0.261000 0.105800 0.133000 1
+O14 O 0.971200 0.336300 0.898700 1

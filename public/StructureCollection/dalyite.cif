@@ -1,0 +1,43 @@
+data_Dalyite
+_chemical_name_mineral Dalyite
+_publ_section_comment
+;
+Dalyite: Fleet: Z Krist 121 (1965) 349-368.
+The crystal structure of dalyite
+;
+_cell_length_a 7.371
+_cell_length_b 7.73
+_cell_length_c 6.912
+_cell_angle_alpha 106.23
+_cell_angle_beta 111.45
+_cell_angle_gamma 100
+_cell_volume 334.757
+_symmetry_space_group_name_H-M 'P -1'
+_symmetry_Int_Tables_number 2
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.497500 0.681700 0.685200 1
+Si2 Si 0.164400 0.622600 0.844600 1
+Si3 Si 0.185000 0.738900 0.309200 1
+K1 K 0.293200 0.188700 0.708300 1
+Zr1 Zr 0.000000 0.000000 0.000000 1
+O1 O 0.500000 0.500000 0.500000 1
+O2 O 0.012000 0.576800 0.302900 1
+O3 O 0.081400 0.804300 0.812700 1
+O4 O 0.102400 0.913100 0.267900 1
+O5 O 0.251100 0.644400 0.105800 1
+O6 O 0.281000 0.207500 0.125400 1
+O7 O 0.356500 0.601700 0.778700 1
+O8 O 0.390400 0.806900 0.549500 1

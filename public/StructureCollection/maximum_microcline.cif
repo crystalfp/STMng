@@ -1,0 +1,45 @@
+data_Maximum_microcline
+_chemical_name_mineral 'Maximum microcline'
+_publ_section_comment
+;
+Maximum microcline: Mike Phillips, personal communication
+unpublished
+space group = Cbar 1  T=163 K   well ordered
+;
+_cell_length_a 8.5556
+_cell_length_b 12.9651
+_cell_length_c 7.2187
+_cell_angle_alpha 90.625
+_cell_angle_beta 115.966
+_cell_angle_gamma 87.622
+_cell_volume 719.255
+_symmetry_space_group_name_H-M 'Cbar 1  T'
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x+1/2, y+1/2, z'
+2 'x, y, z'
+3 '-x+1/2, -y+1/2, -z'
+4 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Al1 Al 0.009830 0.187610 0.217160 1
+Si1 Si 0.009600 0.820330 0.232180 1
+Si2 Si 0.709800 0.120370 0.340140 1
+Si2_02 Si 0.704580 0.886010 0.350360 1
+K1 K 0.280890 0.992280 0.135920 1
+O1 O 0.999900 0.144170 0.983200 1
+O2 O 0.633400 0.005930 0.285600 1
+O1_02 O 0.820300 0.147090 0.220400 1
+O3 O 0.831200 0.858860 0.239600 1
+O1_03 O 0.033800 0.319850 0.251100 1
+O4 O 0.036900 0.696240 0.270700 1
+O1_04 O 0.191200 0.123010 0.405300 1
+O5 O 0.176200 0.874770 0.411300 1

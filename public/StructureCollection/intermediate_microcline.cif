@@ -1,0 +1,38 @@
+data_INTERMEDIATE_MICROCLINE
+_cell_length_a 8.552
+_cell_length_b 12.975
+_cell_length_c 7.205
+_cell_angle_alpha 90.09
+_cell_angle_beta 115.92
+_cell_angle_gamma 89.51
+_cell_volume 719.031
+_symmetry_space_group_name_H-M 'P 1'
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x+1/2, y+1/2, z'
+2 'x, y, z'
+3 '-x+1/2, -y+1/2, -z'
+4 '-x, -y, -z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Al1 Al 0.009600 0.185000 0.222900 1
+Si1 Si 0.009300 0.816500 0.226000 1
+Si2 Si 0.708600 0.118300 0.343400 1
+Si2_02 Si 0.707400 0.882900 0.345900 1
+K1 K 0.283800 0.998500 0.136600 1
+O1 O 0.999900 0.144200 0.995900 1
+O2 O 0.635200 0.001200 0.285100 1
+B1 B 0.825500 0.145300 0.226300 1
+B2 B 0.827300 0.855200 0.230100 1
+C1 C 0.034400 0.312900 0.257900 1
+C2 C 0.035300 0.690200 0.261600 1
+D1 D 0.184200 0.125100 0.406400 1
+D2 D 0.180900 0.874100 0.407700 1

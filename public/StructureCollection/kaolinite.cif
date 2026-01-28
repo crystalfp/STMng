@@ -1,0 +1,44 @@
+data_Kaolinite
+_chemical_name_mineral Kaolinite
+_publ_section_comment
+;
+Kaolinite: Bish and Von Dreele, Clays and Clay Minerals 37 (1989) 289-296
+Rietveld refinement of non-hydrogen atomic positions in kaolinite
+sample is from Keokuk, Iowa, USA
+;
+_cell_length_a 5.155
+_cell_length_b 8.945
+_cell_length_c 7.405
+_cell_angle_alpha 91.7
+_cell_angle_beta 104.9
+_cell_angle_gamma 89.8
+_cell_volume 329.826
+_symmetry_space_group_name_H-M 'C 1'
+_symmetry_Int_Tables_number 1
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.994200 0.339300 0.090900 1
+Si2 Si 0.506400 0.166500 0.091300 1
+Al1 Al 0.297100 0.495700 0.472100 1
+Al2 Al 0.792600 0.330000 0.469900 1
+O1 O 0.050100 0.353900 0.317000 1
+O2 O 0.121400 0.660400 0.317500 1
+O3 O 0.000000 0.500000 0.000000 1
+O4 O 0.208500 0.230500 0.024700 1
+O5 O 0.201200 0.765700 0.003200 1
+O6 O 0.051000 0.969800 0.322000 1
+O7 O 0.964900 0.166500 0.605100 1
+O8 O 0.034800 0.476900 0.608000 1
+O9 O 0.033400 0.857000 0.609400 1

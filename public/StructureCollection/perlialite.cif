@@ -1,0 +1,73 @@
+data_Perlialite
+_chemical_name_mineral Perlialite
+_publ_section_comment
+;
+Perlialite: Artioli and Kvick, European Journal of Mineralogy 2 (1990) 749-759
+Synchrotron X-ray Rietveld study of perlialite, the natural counterpart of
+synthetic zeolite-L
+;
+_cell_length_a 18.543
+_cell_length_b 18.543
+_cell_length_c 7.531
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 120
+_cell_volume 2242.56
+_symmetry_space_group_name_H-M 'P 6/m m m'
+_symmetry_Int_Tables_number 191
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x-y, x, z'
+3 '-y, x-y, z'
+4 '-x, -y, z'
+5 '-x+y, -x, z'
+6 'y, -x+y, z'
+7 '-y, -x, -z'
+8 '-x, -x+y, -z'
+9 '-x+y, y, -z'
+10 'y, x, -z'
+11 'x, x-y, -z'
+12 'x-y, -y, -z'
+13 '-x, -y, -z'
+14 '-x+y, -x, -z'
+15 'y, -x+y, -z'
+16 'x, y, -z'
+17 'x-y, x, -z'
+18 '-y, x-y, -z'
+19 'y, x, z'
+20 'x, x-y, z'
+21 'x-y, -y, z'
+22 '-y, -x, z'
+23 '-x, -x+y, z'
+24 '-x+y, y, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.092400 0.354600 0.500000 1
+Si2 Si 0.167200 0.497500 0.215000 1
+K1 K 0.333300 0.666700 0.000000 1
+K2 K 0.333300 0.666700 0.500000 1
+K3 K 0.333300 0.666700 0.427000 1
+K4 K 0.297000 0.000000 0.000000 1
+Tl1 Tl 0.315000 0.000000 0.000000 1
+K5 K 0.500000 0.000000 0.500000 1
+O1 O 0.000000 0.272000 0.500000 1
+O2 O 0.158000 0.316000 0.500000 1
+O3 O 0.260000 0.520000 0.288000 1
+O4 O 0.103800 0.412500 0.326000 1
+O5 O 0.409200 0.818400 0.213000 1
+O6 O 0.156000 0.483000 0.000000 1
+O7 O 0.110000 0.000000 0.000000 1
+O8 O 0.134000 0.000000 0.370000 1
+O9 O 0.280000 0.140000 0.000000 1
+O10 O 0.280000 0.140000 0.260000 1
+O11 O 0.000000 0.000000 0.172000 1
+O12 O 0.560000 0.280000 0.000000 1

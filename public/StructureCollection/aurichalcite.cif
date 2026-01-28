@@ -1,0 +1,50 @@
+data_Aurichalcite
+_chemical_name_mineral Aurichalcite
+_publ_section_comment
+;
+Aurichalcite - from Pima County, Arizonaa
+The structure of aurichalcite, (Cu, Zn)5 (O H)6 (C O3)2, determined from a microcrystal
+Acta Crystallographica B (39,1983-)      ASBSD 50 (1994) 673-676
+Harding M M, KariukiÿBÿM, CernikÿR, CresseyÿG
+;
+_cell_length_a 13.82
+_cell_length_b 6.419
+_cell_length_c 5.29
+_cell_angle_alpha 90
+_cell_angle_beta 101
+_cell_angle_gamma 90
+_cell_volume 460.657
+_symmetry_space_group_name_H-M 'P 1 21/m 1'
+_symmetry_Int_Tables_number 11
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 '-x, y+1/2, -z'
+3 '-x, -y, -z'
+4 'x, -y+1/2, z'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Cu1 Cu 0.237100 0.750000 0.928200 1
+Cu2 Cu 0.247800 0.497200 0.420600 1
+Zn1 Zn 0.124200 0.250000 0.865500 1
+Cu3 Cu 0.391300 0.250000 0.883900 1
+C1 C 0.444900 0.250000 0.365300 1
+C2 C 0.053600 0.750000 0.514100 1
+O1 O 0.311500 0.750000 0.299000 1
+O1_02 O 0.328200 0.982700 0.760700 1
+O1_03 O 0.180400 0.250000 0.544600 1
+O1_04 O 0.161700 0.000900 0.071100 1
+O1_05 O 0.351500 0.250000 0.298100 1
+O2 O 0.486300 0.250000 0.609100 1
+O3 O 0.500900 0.250000 0.196400 1
+O4 O 0.152100 0.750000 0.591600 1
+O5 O 0.018300 0.750000 0.273700 1
+O6 O 0.006000 0.750000 0.699000 1

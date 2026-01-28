@@ -1,0 +1,48 @@
+data_KHSiO3
+_cell_length_a 11.537
+_cell_length_b 9.694
+_cell_length_c 11.245
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 1257.64
+_symmetry_space_group_name_H-M 'C m c a'
+_symmetry_Int_Tables_number 64
+
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 'x, y, z'
+2 'x+1/2, y+1/2, z'
+3 '-x+1/2, -y, z+1/2'
+4 '-x+1, -y+1/2, z+1/2'
+5 'x, -y, -z'
+6 'x+1/2, -y+1/2, -z'
+7 '-x+1/2, y, -z+1/2'
+8 '-x+1, y+1/2, -z+1/2'
+9 '-x, -y, -z'
+10 '-x+1/2, -y+1/2, -z'
+11 'x+1/2, y, -z+1/2'
+12 'x+1, y+1/2, -z+1/2'
+13 '-x, y, z'
+14 '-x+1/2, y+1/2, z'
+15 'x+1/2, -y, z+1/2'
+16 'x+1, -y+1/2, z+1/2'
+
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+Si1 Si 0.000000 0.014500 0.315600 1
+Si2 Si 0.196800 0.000000 0.500000 1
+K1 K 0.000000 0.178500 0.041300 1
+K2 K 0.250000 0.238200 0.750000 1
+H1 H 0.000000 0.339000 0.315600 1
+H2 H 0.250000 0.250000 0.500000 1
+O1 O 0.112500 0.454400 0.111800 1
+O2 O 0.272700 0.132600 0.465800 1
+O3 O 0.000000 0.434300 0.311600 1
+O4 O 0.000000 0.175000 0.298000 1
