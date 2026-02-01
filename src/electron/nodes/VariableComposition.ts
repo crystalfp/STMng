@@ -18,6 +18,8 @@ import {VariableCompositionAccumulator,
 		type VariableComponent} from "../variable/Accumulator";
 import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../variable/ComputeValid";
+import {createOrUpdateSecondaryWindow2} from "../modules/WindowsUtilities";
+import {quickHull} from "@derschmale/tympanum";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 /**
@@ -33,12 +35,16 @@ interface Recipe {
 	count: number;
 }
 
+// Useful constants
+const C1 = 1/Math.sqrt(3);
+const C2 = (Math.sqrt(3)-1)/2;
 
 export class VariableComposition extends NodeCore {
 
 	private readonly accumulator = new VariableCompositionAccumulator();
 	private enableAnalysis = false;
 	private structure: Structure | undefined;
+
 	private state = {
 		forceCutoff: false,
 		manualCutoffDistance: 10,
@@ -65,14 +71,15 @@ export class VariableComposition extends NodeCore {
 	};
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke",		 callback: this.channelInit.bind(this)},
-		{name: "reset",     type: "send",   	 callback: this.channelReset.bind(this)},
-		{name: "group",		type: "invoke",		 callback: this.channelGroup.bind(this)},
-		{name: "capture",	type: "invoke",		 callback: this.channelCapture.bind(this)},
-		{name: "save",		type: "invoke",		 callback: this.channelSave.bind(this)},
-		{name: "state",		type: "send",		 callback: this.channelState.bind(this)},
-		{name: "start",		type: "invoke",		 callback: this.channelStart.bind(this)},
-		{name: "analyze",	type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
+		{name: "init",			type: "invoke",		 callback: this.channelInit.bind(this)},
+		{name: "reset",     	type: "send",   	 callback: this.channelReset.bind(this)},
+		{name: "group",			type: "invoke",		 callback: this.channelGroup.bind(this)},
+		{name: "capture",		type: "invoke",		 callback: this.channelCapture.bind(this)},
+		{name: "save",			type: "invoke",		 callback: this.channelSave.bind(this)},
+		{name: "state",			type: "send",		 callback: this.channelState.bind(this)},
+		{name: "start",			type: "invoke",		 callback: this.channelStart.bind(this)},
+		{name: "analyze",		type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
+		{name: "convex-hull",	type: "invoke",		 callback: this.channelConvexHull.bind(this)},
 	];
 
 	/**
@@ -99,6 +106,7 @@ export class VariableComposition extends NodeCore {
 			sendToClient(this.id, "load", {
 				countAccumulated: this.accumulator.size(),
 				species: this.accumulator.symbols(),
+				hasEnergies: this.accumulator.hasEnergies()
 			});
 		}
 	}
@@ -258,6 +266,7 @@ export class VariableComposition extends NodeCore {
 			}
 			entry.parts = [...parts];
 			entry.key = parts.join("-");
+			entry.position = this.computePositionFromParts(parts);
 
 			const key = parts.join("\u2009:\u2009");
 			if(summary.has(key)) {
@@ -282,6 +291,31 @@ export class VariableComposition extends NodeCore {
 		});
 
 		return recipes;
+	}
+
+	/**
+	 * Return chart coordinates
+	 * Depends on number of components:
+	 * 	2: proportion of the components as x value
+	 *  3: x and y values inside a triangular chart
+	 *  4: not implemented yet
+	 * @param parts - Composition of a given structure
+	 * @returns Array of (parts-1) coordinates
+	 */
+	private computePositionFromParts(parts: number[]): number[] {
+
+		switch(parts.length) {
+			case 2:
+				return [parts[1]/(parts[0]+parts[1])];
+			case 3: {
+				const a = parts[1]/(parts[0]+parts[1]);
+				const c = parts[2]/(parts[0]+parts[2]);
+				return [a, a*C1+c*C2];
+			}
+			default:
+				 // TBD
+				return Array<number>(parts.length-1).fill(0);
+		}
 	}
 
 	/**
@@ -419,6 +453,7 @@ export class VariableComposition extends NodeCore {
 			}
 			if(!valid) continue;
 
+			// TBD Order by distance from convex hull
 			// Order entries by increasing energies
 			if(hasEnergies) {
 
@@ -482,6 +517,7 @@ export class VariableComposition extends NodeCore {
 			}
 			if(!valid) continue;
 
+			// TBD Order by distance from convex hull
 			// Order entries by increasing energies
 			if(hasEnergies) {
 
@@ -638,5 +674,288 @@ export class VariableComposition extends NodeCore {
 		if(status.error) return {error: status.error, key};
 		if(status.count === 0) return {error: "No valid structures found", key};
 		return {status: "OK!", total: indices.length, valid: status.count, key};
+	}
+
+	/**
+	 * Distances of 2D points from the convex hull line
+	 *
+	 * @param x - Points X coordinates
+	 * @param y - Points Y coordinates
+	 * @param vertices - Vertices of the convex hull line
+	 * @returns Distances of the points from the line
+	 */
+	private distanceFromConvexHull(x: number[], y: number[], vertices: number[]): number[] {
+
+		const distances = Array<number>(x.length).fill(0);
+
+		for(let i=0; i < x.length; ++i) {
+
+			const xx = x[i];
+			for(let j=2; j < vertices.length; j+=2) {
+				if(vertices[j] >= xx) {
+					const m = (vertices[j+1]-vertices[j-1])/(vertices[j]-vertices[j-2]);
+					const yl = (xx-vertices[j-2])*m+vertices[j-1];
+					distances[i] = y[i]-yl;
+					break;
+				}
+			}
+		}
+
+		return distances;
+	}
+
+	/**
+	 * Prepare data for visualization of the 2 components convex hull
+	 *
+	 * @returns Params to be passed to the client for visualization
+	 */
+	private prepareDim2Data(): CtrlParams {
+
+		// Find extremes
+		let y0 = Number.POSITIVE_INFINITY;
+		let y1 = Number.POSITIVE_INFINITY;
+
+		const x: number[] = [];
+		const y: number[] = [];
+		const step: number[] = [];
+		const parts: string[] = [];
+		for(const structure of this.accumulator.iterateStructures()) {
+
+			if(!structure.enabled) continue;
+			const energy = structure.energy!;
+			x.push(structure.position[0]);
+			y.push(energy);
+			step.push(structure.step);
+			parts.push(structure.key);
+			if(structure.parts[0] === 1 &&
+			   structure.parts[1] === 0 &&
+			   energy < y0) {
+				y0 = energy;
+			}
+			else if(structure.parts[0] === 0 &&
+				    structure.parts[1] === 1 &&
+					energy < y1) {
+						y1 = energy;
+			}
+		}
+
+		// Find enthalpy of formation
+		let len = x.length;
+		for(let i=0; i < len; ++i) y[i] -= y0+x[i]*(y1-y0);
+
+		// Find convex hull (only the lower part)
+		const points: number[][] = [];
+		for(let i=0; i < len; ++i) points.push([x[i], y[i]]);
+		const hull = quickHull(points);
+		const toOrder: {x: number; y: number; idx: number}[] = [];
+		for(const facet of hull) {
+			if(facet.plane[1] < 0) {
+				const v1 = facet.verts[0];
+				const v2 = facet.verts[1];
+
+				toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},
+							 {x: points[v2][0], y: points[v2][1], idx: v2});
+			}
+		}
+
+		// Sort convex hull points by increasing x value
+		toOrder.sort((a, b) => {
+			if(a.x !== b.x) return a.x - b.x;
+			return a.y - b.y;
+		});
+
+		// Remove duplicated convex hull points
+    	len = toOrder.length;
+		const vertices: number[] = [toOrder[0].x, toOrder[0].y];
+		const idxVertices = [toOrder[0].idx];
+	    for(let i=0, j=1; j < len; ++j) {
+			if(Math.abs(toOrder[i].x-toOrder[j].x) > 1e-4 ||
+			   Math.abs(toOrder[i].y-toOrder[j].y) > 1e-4) {
+				vertices.push(toOrder[j].x, toOrder[j].y);
+				idxVertices.push(toOrder[j].idx);
+				i = j;
+			}
+		}
+
+		// Add distances from the convex hull
+		const distance = this.distanceFromConvexHull(x, y, vertices);
+
+		return {
+			dimension: 2,
+			x,
+			y,
+			step,
+			parts,
+			vertices,
+			idxVertices,
+			distance
+		};
+	}
+
+	/**
+	 * Prepare data for visualization of the 3 components convex hull
+	 *
+	 * @returns Params to be passed to the client for visualization
+	 */
+	private prepareDim3Data(): CtrlParams {
+
+		// Find extremes
+		let y0 = Number.POSITIVE_INFINITY;
+		let y1 = Number.POSITIVE_INFINITY;
+		let y2 = Number.POSITIVE_INFINITY;
+		let d0 = 0;
+		let d1 = 0;
+		let d2 = 0;
+
+		let idx = 0;
+		const x: number[] = [];
+		const y: number[] = [];
+		const z: number[] = [];
+		const d: number[] = [];
+		for(const structure of this.accumulator.iterateStructures()) {
+			++idx;
+			if(!structure.enabled) continue;
+			const energy = structure.energy!;
+			x.push(structure.position[0]);
+			y.push(structure.position[1]);
+			z.push(energy);
+			d.push(idx);
+			if(structure.parts[0] === 1 &&
+			   structure.parts[1] === 0 &&
+			   structure.parts[2] === 0 &&
+			   energy < y0) {
+				y0 = energy;
+				d0 = idx;
+			}
+			else if(structure.parts[0] === 0 &&
+				    structure.parts[1] === 1 &&
+				    structure.parts[2] === 0 &&
+					energy < y1) {
+						y1 = energy;
+						d1 = idx;
+			}
+			else if(structure.parts[0] === 0 &&
+				    structure.parts[1] === 0 &&
+				    structure.parts[2] === 1 &&
+					energy < y2) {
+						y2 = energy;
+						d2 = idx;
+			}
+		}
+
+		// TBD
+		return {
+			dimension: 3,
+			x, y, z, d,
+			y0,
+			d0,
+			y1,
+			d1,
+			y2,
+			d2
+		};
+	}
+
+	/**
+	 * Prepare data for visualization of the 4 components convex hull
+	 *
+	 * @returns Params to be passed to the client for visualization
+	 */
+	private prepareDim4Data(): CtrlParams {
+
+		// Find extremes
+		let y0 = Number.POSITIVE_INFINITY;
+		let y1 = Number.POSITIVE_INFINITY;
+		let y2 = Number.POSITIVE_INFINITY;
+		let d0 = 0;
+		let d1 = 0;
+		let d2 = 0;
+
+		let idx = 0;
+		const x: number[] = [];
+		const y: number[] = [];
+		const z: number[] = [];
+		const d: number[] = [];
+		for(const structure of this.accumulator.iterateStructures()) {
+			++idx;
+			if(!structure.enabled) continue;
+			const energy = structure.energy!;
+			x.push(structure.position[0]);
+			y.push(structure.position[1]);
+			z.push(energy);
+			d.push(idx);
+			if(structure.parts[0] === 1 &&
+			   structure.parts[1] === 0 &&
+			   structure.parts[2] === 0 &&
+			   energy < y0) {
+				y0 = energy;
+				d0 = idx;
+			}
+			else if(structure.parts[0] === 0 &&
+				    structure.parts[1] === 1 &&
+				    structure.parts[2] === 0 &&
+					energy < y1) {
+						y1 = energy;
+						d1 = idx;
+			}
+			else if(structure.parts[0] === 0 &&
+				    structure.parts[1] === 0 &&
+				    structure.parts[2] === 1 &&
+					energy < y2) {
+						y2 = energy;
+						d2 = idx;
+			}
+		}
+
+		// TBD
+		return {
+			dimension: 4,
+			x, y, z, d,
+			y0,
+			d0,
+			y1,
+			d1,
+			y2,
+			d2
+		};
+	}
+
+	/**
+	 * Channel handler to start analyzing the compositions
+	 *
+	 * @returns Error message or empty on success
+	 */
+	private channelConvexHull(params: CtrlParams): CtrlParams {
+
+		const showChart = params.showChart as boolean ?? false;
+		const dimension = params.dimension as number ?? 2;
+
+		let result: CtrlParams = {};
+		switch(dimension) {
+			case 2:
+				result = this.prepareDim2Data();
+				break;
+			case 3:
+				result = this.prepareDim3Data();
+				break;
+			case 4:
+				result = this.prepareDim4Data();
+				break;
+			default:
+				return {error: "Invalid dimension"};
+		}
+
+		// Open the chart if so requested
+		if(showChart) {
+
+			createOrUpdateSecondaryWindow2({
+				routerPath: "/components-hull",
+				width: 1600,
+				height: 900,
+				title: "Variable composition convex hull",
+				data: result
+			});
+		}
+		return {status: "OK!"};
 	}
 }

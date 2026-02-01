@@ -65,6 +65,10 @@ export const router = createRouter({
             component: (): Component => import("@/components/ShowPrototype.vue")
         },
         {
+            path: "/components-hull",
+            component: (): Component => import("@/components/ComponentsConvexHull.vue")
+        },
+        {
             // Catch errors in paths
             path: "/:catchAll(.*)*",
             name: "NotFound",

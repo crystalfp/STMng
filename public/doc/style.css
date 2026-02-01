@@ -90,6 +90,13 @@ tt {
   width: 17rem;
 }
 
+td.c0 {
+	width: 10rem;
+	vertical-align: top;
+	padding-left: 20px;
+	font-weight: bold;
+}
+
 td.c1 {
 	width: 20rem;
 	vertical-align: top;

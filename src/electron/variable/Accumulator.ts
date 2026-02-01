@@ -10,6 +10,9 @@ import {getAtomicSymbol} from "../modules/AtomData";
 import {hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, BasisType} from "@/types";
 
+/**
+ * Content of the entries of the accumulator
+ */
 export interface VariableComponent {
 
 	/** If the structure is to consider after reducing to one for group */
@@ -32,6 +35,8 @@ export interface VariableComponent {
 	parts: number[];
 	/** Composition key (quantities separated by "-") */
 	key: string;
+	/** Position in the convex hull space */
+	position: number[];
 
 	/** Computed fingerprint for the structure */
 	fingerprint: number[];
@@ -88,6 +93,7 @@ export class VariableCompositionAccumulator {
 			species: new Map<number, number>(),
 			parts: [],
 			key: "",
+			position: [],
 
 			fingerprint: [],
 			countSections: 0,

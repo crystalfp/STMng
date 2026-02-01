@@ -14,7 +14,7 @@ import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
 import {toClientSetup, sendAlertToClient} from "./ToClient";
 import favicon from "../../assets/favicon.png";
-import type {WindowsParams} from "@/types";
+import type {CtrlParams, WindowsParams, WindowsParams2} from "@/types";
 import {isMaximized, setMaximized, setWindowSize, getWindowSize} from "./Preferences";
 
 /** List of opened windows, main and secondary ones */
@@ -204,10 +204,45 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
     isOpen ??= openedWindows.has(params.routerPath);
 
     if(isOpen) {
-        sendToSecondaryWindow(params.routerPath, params.data);
+        if(params.data) {
+            sendToSecondaryWindow(params.routerPath, params.data);
+        }
     }
     else {
         createSecondaryWindow(params);
+    }
+};
+
+// Temporary store the initial data for the new secondary window created
+let paramsData: CtrlParams = {};
+
+/**
+ * Create a secondary window or update its data if already open
+ *
+ * @param params - Params for the created window
+ */
+export const createOrUpdateSecondaryWindow2 = (params: WindowsParams2): void => {
+
+    let isOpen = params.alreadyOpen;
+    isOpen ??= openedWindows.has(params.routerPath);
+    const channel = params.routerPath.slice(1);
+
+    if(isOpen) {
+        if(params.data) {
+
+            const win = openedWindows.get(params.routerPath);
+            if(win) win.webContents.send(`SYSTEM:DATA:${channel}`, params.data);
+        }
+    }
+    else {
+        if(params.data) {
+            paramsData = structuredClone(params.data);
+            ipcMain.handleOnce(`SYSTEM:INITIAL-DATA:${channel}`, (): CtrlParams => {
+                return paramsData;
+            });
+        }
+        delete params.data;
+        createSecondaryWindow(params as WindowsParams);
     }
 };
 

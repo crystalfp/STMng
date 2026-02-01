@@ -40,7 +40,7 @@
 </tr>
 <tr>
 	<td class="c1">Number of components</td>
-	<td class="c2">numeric field</td>
+	<td class="c2">radio buttons</td>
 	<td class="c3">Number of component in the input structures. The count values could range from 2 to 4.</td>
 </tr>
 <tr>
@@ -58,10 +58,10 @@
 <h3>Compositions</h3>
 <p>The data table has the following columns:</p>
 <table>
-  <tr><td class="c1">Select</td><td>Select for the analysis and output the given composition. All compositions are selected by default. The toggle in the header selects or deselects all compositions.</td></tr>
-  <tr><td class="c1">Composition</td><td>The proportion of the various components.</td></tr>
-  <tr><td class="c1">Count</td><td>The number of structures with the given composition. The column is sortable by clicking on the column header.</td></tr>
-  <tr><td class="c1">Remain</td><td>After computing distances and removing duplicates, this column is populated with the resulting number of structures. The column is sortable by clicking on the column header.</td></tr>
+  <tr><td class="c0">Select</td><td>Select for the analysis and output the given composition. All compositions are selected by default. The toggle in the header selects or deselects all compositions.</td></tr>
+  <tr><td class="c0">Composition</td><td>The proportion of the various components.</td></tr>
+  <tr><td class="c0">Count</td><td>The number of structures with the given composition. The column is sortable by clicking on the column header.</td></tr>
+  <tr><td class="c0">Remain</td><td>After computing distances and removing duplicates, this column is populated with the resulting number of structures. The column is sortable by clicking on the column header.</td></tr>
 </table>
 
 <h3>Compute distances</h3>
@@ -108,12 +108,17 @@
 <tr>
 	<td class="c1">Distance threshold</td>
 	<td class="c2">numeric field</td>
-	<td class="c3">The maximum distance between two fingerprints to consider the highest energy one for removal.</td>
+	<td class="c3">The maximum distance between two fingerprints to consider the highest energy one for removal. If the energies are missing, retains the most central point in the group of near fingerprints.</td>
 </tr>
 <tr>
-	<td class="c1">Analyze selected</td>
+	<td class="c1">Analyze selected for duplicates</td>
 	<td class="c2">button</td>
 	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures. The compositions are computed in increasing count of structures. The computations are not parallelized but done one by one.</td>
+</tr>
+<tr>
+	<td class="c1">Show charts</td>
+	<td class="c2">button</td>
+	<td class="c3">Open a window to <a href="../secondary/components-hull.html">show the convex hull</a> of the compositions.</td>
 </tr>
 <tr>
 	<td class="c1">Consolidate output</td>

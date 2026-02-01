@@ -12,6 +12,7 @@ import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {storeToRefs} from "pinia";
 import NodeAlert from "@/widgets/NodeAlert.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -64,6 +65,7 @@ const species = ref<string[]>([]);
 const countComponents = ref(2);
 const count = ref<number[]>([0]);
 const results = ref<Recipe[]>([]);
+const hasEnergies = ref(false);
 
 /** Selected table entries */
 const selected = ref<string[]>([]);
@@ -154,6 +156,7 @@ receiveFromNode(id, "load", (params) => {
     countAccumulated.value = params.countAccumulated as number ?? 0;
     species.value.length = 0;
     for(const s of params.species as string[] ?? []) species.value.push(s);
+    hasEnergies.value = params.hasEnergies as boolean ?? false;
 });
 
 /** Accumulation enabled in the reader */
@@ -314,6 +317,30 @@ const disableSave = computed(() => {
     return (!analysisDone.value && state.removeDuplicates) || selected.value.length === 0;
 });
 
+const disableCharts = computed(() => {
+    return !hasEnergies.value || countComponents.value > 3 ||
+            (!analysisDone.value && state.removeDuplicates) ||
+            selected.value.length === 0;
+});
+
+/**
+ * Open the convex hull secondary window
+ */
+const showCharts = (): void => {
+
+    askNode(id, "convex-hull", {
+        showChart: true,
+        dimension: countComponents.value
+    })
+    .then((result) => {
+        if(result.error) throw Error(result.error as string);
+    })
+    .catch((error: Error) => {
+        showNodeAlert(`Error from computing convex hull for ${label}: ${error.message}`,
+                      "variableComposition");
+    });
+};
+
 </script>
 
 
@@ -330,9 +357,13 @@ const disableSave = computed(() => {
     </v-col>
   </v-row>
 
-  <v-number-input v-model="countComponents" :disabled="countAccumulated === 0"
-                  label="Number of components" :step="1" :min="2" :max="4"
-                  class="ml-2 mr-3 mt-4" />
+  <titled-slot title="Number of components" class="ml-2 mt-4 mb-2">
+    <v-btn-toggle v-model="countComponents" mandatory :disabled="countAccumulated === 0">
+      <v-btn :value="2">2</v-btn>
+      <v-btn :value="3">3</v-btn>
+      <v-btn :value="4">4</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
 
   <div v-show="countAccumulated > 0">
     <v-label class="ml-2 mb-2">End-member compositions (by column)</v-label>
@@ -407,7 +438,10 @@ const disableSave = computed(() => {
            Analysis running&hellip;</v-label>
   <v-btn v-else block :disabled="selected.length === 0 || !state.removeDuplicates"
          @click="analysisRunning=true; savedFiles=-1; analyzeSelected()">
-    Analyze selected
+    Analyze selected for duplicates
+  </v-btn>
+  <v-btn block class="mt-2" :disabled="disableCharts" @click="showCharts">
+    Show charts
   </v-btn>
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
             label="Consolidate output" class="ml-2 mt-2"/>

@@ -427,6 +427,34 @@ export const getAntialiasing = (): boolean => {
 	return antialiasing === "yes";
 };
 
+/**
+ * Secondary window ask the main process node to receive the initial data
+ * and the subsequent updates
+ *
+ * @param routerPath - Route path of the requester window
+ * @param callback - Routine to be called when data is received.
+ * 					 On error the key "error" is added to the callback argument
+ */
+export const requestData = (routerPath: string,
+						    callback: (data: CtrlParams) => void): void => {
+
+	const channel = routerPath.replace("/", "");
+
+	const channelName = `SYSTEM:DATA:${channel}`;
+	window.electron.ipcRenderer.on(channelName, (_event, payload: CtrlParams) => {
+		callback(payload);
+	});
+
+	const initialChannelName = `SYSTEM:INITIAL-DATA:${channel}`;
+	window.electron.ipcRenderer.invoke(initialChannelName)
+		.then((params: CtrlParams) => {
+			setTimeout(() => callback(params), 0);
+		})
+		.catch((error: Error) => {
+			setTimeout(() => callback({error: error.message}), 0);
+		});
+};
+
 // > Communication to windows
 /**
  * Close a secondary window.

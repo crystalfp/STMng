@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Variable composition convex hull for the STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2025-11-02"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>STMng — Variable composition convex hull</title>
+
+</head><body>
+<h1>STMng — Variable composition convex hull window</h1>
+
+<p>Depending on the number of components, the window shows the distribution of enthalpy of formation for the structures versus their composition.</p>
+
+<h2>Two components</h2>
+
+<img src="./hull2d.png" width="1073" height="690" style="margin-bottom: 1rem">
+<p>The chart shows a point for each structure after removing duplicates. The composition ratio is: <b>component<sub>2</sub>/(component<sub>1</sub>+component<sub>2</sub>)</b></p>
+<p>The line is the lower part of the convex hull enclosing the points. The red squares are structures exactly on the convex hull line.</p>
+<p>Hovering a point shows a popup with the following information:</p>
+<table>
+  <tr><td class="c1">Step</td><td>Step of the structure in the loaded sequence</td></tr>
+  <tr><td class="c1">Composition</td><td>Proportion of the two components</td></tr>
+  <tr><td class="c1">Enthalpy of formation</td><td>Enthalpy of formation (eV/atom)</td></tr>
+  <tr><td class="c1">Distance from convex hull</td><td>Enthalpy difference with the convex hull line</td></tr>
+</table>
+
+<h2>Three components</h2>
+<p>⚠ Work in progress ⚠</p>
+<h2>Four components</h2>
+<p>⚠ Work in progress ⚠</p>
+
+<p class="back-btn"><a href="../nodes/variable-composition.html" title="Return to Variable composition documentation" class="back">Back to Variable composition &crarr;</a></p>
+
+</body>
+</html>
