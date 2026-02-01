@@ -8,7 +8,7 @@
  */
 
 import {pm} from "./ProjectManager";
-import {createSecondaryWindow, isSecondaryWindowOpen,
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "./WindowsUtilities";
 
 /**
@@ -20,12 +20,12 @@ export const createProjectEditor = (projectName: string): void => {
 
 	const title = projectName === "" ? "View default project" : `View "${projectName}" project`;
 
-	createSecondaryWindow({
+	createOrUpdateSecondaryWindow({
 		routerPath: "/project-editor",
 		width: 1800,
 		height: 800,
 		title,
-		data: pm.projectGraphForEditor()
+		data: {project: pm.projectGraphForEditor()}
 	});
 };
 
@@ -35,6 +35,6 @@ export const createProjectEditor = (projectName: string): void => {
 export const sendProjectToEditor = (): void => {
 
 	if(isSecondaryWindowOpen("/project-editor")) {
-		sendToSecondaryWindow("/project-editor", pm.projectGraphForEditor());
+		sendToSecondaryWindow("/project-editor", {project: pm.projectGraphForEditor()});
 	}
 };

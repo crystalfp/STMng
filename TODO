@@ -47,8 +47,6 @@ ToDo eventually:
   ☐ Convert skinny cells to more cubic ones
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
-  ☐ For the charts <https://unovis.dev/>
-  ☐ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30>
   ☐ Labels rotation to face always camera <https://codepen.io/boytchev/pen/WbwEJWL>
 
 Nice to have/Future:
@@ -74,8 +72,10 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
+  ☐ For the charts <https://unovis.dev/>
 
 Archive:
+  ✘ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30> @cancelled(2026-02-01 15:38) @project(ToDo eventually)
   ✔ Polyhedra, ignore H bonds @done(2026-01-26 14:41) @project(Bugs)
   ✔ Analysis of variable composition data sets. @done(2026-01-26 14:41) @project(Latest requests (backlog))
   ✘ When out of labs use `v-color-input` instead of `ColorSelector.vue` @cancelled(2026-01-09 14:58) @project(To do)

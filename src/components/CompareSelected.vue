@@ -14,7 +14,7 @@ import {Scene, Group, LineBasicMaterial, Vector3, Quaternion, MathUtils,
 import {SimpleViewer} from "@/services/SimpleViewer";
 import {theme} from "@/services/ReceiveTheme";
 import {showSystemAlert} from "@/services/AlertMessage";
-import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {askNode, closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {computeCellVertices} from "@/electron/modules/ComputeCellVertices";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -59,8 +59,10 @@ const selectedStep1 = ref(-1);
 let groupRight: Group;
 let groupLeft: Group;
 
+const windowPath = "/compare";
+
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/compare");
+handleSpecialKeys(windowPath);
 
 /**
  * Initialize the viewer
@@ -244,9 +246,9 @@ const updateSelection = (): void => {
 };
 
 // Load values from main
-receiveInWindow((dataFromMain) => {
+requestData(windowPath, (params: CtrlParams) => {
 
-    const steps = JSON.parse(dataFromMain) as number[];
+    const steps = params.steps as number[];
     const len = steps.length;
     lines.length = 0;
     if(len === 0) return;
@@ -451,7 +453,7 @@ watch([aroundA, aroundB, aroundC],
                       :min="-180" :max="180" :step="1" :timeout="0" />
       <v-btn v-focus :disabled="selectedStep0 === -1 || selectedStep1 === -1"
              @click="resetRotations">Reset</v-btn>
-      <v-btn v-focus @click="closeWindow('/compare')">Close</v-btn>
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </div>
   </div>
 </v-app>

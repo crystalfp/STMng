@@ -13,10 +13,10 @@ import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {Context} from "chartjs-plugin-datalabels";
 import log from "electron-log";
-import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {askNode, closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
-import type {ChartParams, ChartData, ChartOptions} from "@/types";
+import type {ChartParams, ChartData, ChartOptions, CtrlParams} from "@/types";
 
 ChartJS.register(
     CategoryScale,
@@ -39,11 +39,12 @@ const chartOptions = shallowRef<ChartOptions>(emptyChartOptions);
 const chartData = shallowRef<ChartData>(emptyChartData);
 const chartType = ref("");
 const transparent = ref(false);
+const windowPath = "/chart";
 
 /** Receive the chart data from the main window */
-receiveInWindow((dataFromMain) => {
+requestData(windowPath, (params: CtrlParams) => {
 
-    const {data, options, type} = JSON.parse(dataFromMain) as ChartParams;
+    const {data, options, type} = JSON.parse(params.chart as string ?? "{}") as ChartParams;
 
     chartType.value = type;
     chartData.value = data;
@@ -59,7 +60,7 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/chart");
+handleSpecialKeys(windowPath);
 
 /**
  * Reference to the chart
@@ -147,7 +148,7 @@ const savePoints = (): void => {
       <v-btn @click="savePoints">Save points</v-btn>
       <v-btn @click="makeImage">Save image</v-btn>
       <v-switch v-model="transparent" label="Transparent" class="ml-4 mr-3"/>
-      <v-btn v-focus @click="closeWindow('/chart')">Close</v-btn>
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
 </v-app>

@@ -11,12 +11,12 @@ import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLin
         Panel, MarkerType, type GraphEdge, type Connection,
         type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
-import {closeWindow, receiveInWindow, askNode} from "@/services/RoutesClient";
+import {closeWindow, requestData, askNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import SpecialNode from "./SpecialNode.vue";
 import type {ProjectInfo, GraphicType} from "@/types/NodeInfo";
-import type {ProjectGraph} from "@/types";
+import type {CtrlParams, ProjectGraph} from "@/types";
 
 /**
  * The graph description for the Vue Flow graph editor
@@ -186,12 +186,14 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
     availableNodes.sort((a: AvailableNode, b: AvailableNode) => a.label.localeCompare(b.label));
 };
 
+const windowPath = "/project-editor";
+
 /** Receive the data and build the graph data and available nodes list */
-receiveInWindow((data) => {
+requestData(windowPath, (params: CtrlParams) => {
 
-    if(!data) return;
+    if(!params.project) return;
 
-    const info = JSON.parse(data) as ProjectInfo;
+    const info = JSON.parse(params.project as string) as ProjectInfo;
 
     currentProjectPath.value = info.projectPath;
     prepareGraphFlow(info);
@@ -199,7 +201,7 @@ receiveInWindow((data) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/project-editor");
+handleSpecialKeys(windowPath);
 
 /** If the project has been modified */
 const projectModified = ref(false);
@@ -721,7 +723,7 @@ onMounted(() => {
 const exitWithoutSave = (): void => {
 
     window.removeEventListener("beforeunload", beforeClose);
-    closeWindow("/project-editor");
+    closeWindow(windowPath);
 };
 
 /**
@@ -732,7 +734,7 @@ const exitAndSave = (): void => {
     showConfirmExit.value = false;
     window.removeEventListener("beforeunload", beforeClose);
     saveProjectGraph(true);
-    closeWindow("/project-editor");
+    closeWindow(windowPath);
 };
 
 /**
@@ -745,7 +747,7 @@ const tryToExit = (): void => {
     }
     else {
         window.removeEventListener("beforeunload", beforeClose);
-        closeWindow("/project-editor");
+        closeWindow(windowPath);
     }
 };
 

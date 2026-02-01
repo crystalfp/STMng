@@ -13,13 +13,15 @@ import {IcosahedronGeometry, Vector3,
 		Mesh, LineSegments, LineBasicMaterial} from "three";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, requestData} from "@/services/RoutesClient";
 import {SimpleViewer} from "@/services/SimpleViewer";
 import {/* addOutsideAtoms, clearOutsideAtoms, */ computeBonds} from "@/services/BondsSupport";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
-import type {PositionType, PrototypeAtomsData, PrototypeStructureData, Bond} from "@/types";
+import type {PositionType, PrototypeAtomsData, Bond, CtrlParams} from "@/types";
+
+const windowPath = "/prototype";
 
 const roughness = 0.5;
 const metalness = 0.6;
@@ -56,10 +58,14 @@ const sv = new SimpleViewer(".prototype-viewer", false, (scene) => {
 });
 
 /** Receive the prototype data from the main window */
-receiveInWindow((dataFromMain) => {
+requestData(windowPath, (params: CtrlParams) => {
 
-    const {atoms, matrix, mineral,
-           aflow, pearson, strukturbericht} = JSON.parse(dataFromMain) as PrototypeStructureData;
+    const atoms = JSON.parse(params.atoms as string ?? "[]") as PrototypeAtomsData;
+    const matrix = params.matrix as number[] ?? [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const mineral = params.mineral as string ?? "";
+    const aflow = params.aflow as string ?? "";
+    const pearson = params.pearson as string ?? "";
+    const strukturbericht = params.strukturbericht as string ?? "";
 
     const uc = computeLatticeVertices(matrix);
     const center = addUnitCell(uc);
@@ -81,25 +87,25 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/prototype");
+handleSpecialKeys(windowPath);
 
 /**
  * Compute unit cell vertices coordinates
  * Ordered: (below) 0-1-2-3 (above) 4-5-6-7
  *
- * @param matrix - Pymatgen lattice matrix
+ * @param matrix - Pymatgen lattice matrix (flattened)
  * @returns - List of vertices coordinates (bottom then top)
  */
-const computeLatticeVertices = (matrix: number[][]): number[] => [
-	0,                           0,                           0,
-	matrix[0][0],                matrix[0][1],                matrix[0][2],
-	matrix[0][0]+matrix[1][0],   matrix[0][1]+matrix[1][1],   matrix[0][2]+matrix[1][2],
-	matrix[1][0],                matrix[1][1],                matrix[1][2],
-	matrix[2][0],                matrix[2][1],                matrix[2][2],
-	matrix[0][0]+matrix[2][0],   matrix[0][1]+matrix[2][1],   matrix[0][2]+matrix[2][2],
-	matrix[0][0]+matrix[1][0]+matrix[2][0], matrix[0][1]+matrix[1][1]+matrix[2][1],
-											matrix[0][2]+matrix[1][2]+matrix[2][2],
-	matrix[1][0]+matrix[2][0],   matrix[1][1]+matrix[2][1],   matrix[1][2]+matrix[2][2],
+const computeLatticeVertices = (matrix: number[]): number[] => [
+	0,                     0,                     0,
+	matrix[0],             matrix[1],             matrix[2],
+	matrix[0]+matrix[3],   matrix[1]+matrix[4],   matrix[2]+matrix[5],
+	matrix[3],             matrix[4],             matrix[5],
+	matrix[6],             matrix[7],             matrix[8],
+	matrix[0]+matrix[6],   matrix[1]+matrix[7],   matrix[2]+matrix[8],
+	matrix[0]+matrix[3]+matrix[6], matrix[1]+matrix[4]+matrix[7],
+                                   matrix[2]+matrix[5]+matrix[8],
+	matrix[3]+matrix[6],   matrix[4]+matrix[7],   matrix[5]+matrix[8]
 ];
 
 /**
@@ -327,7 +333,7 @@ const fillCell = (atoms: PrototypeAtomsData, matrix: number[][]): PrototypeAtoms
  * @param matrix - Lattice matrix
  * @returns List of computed bonds
  */
-const addAtoms = (atoms: PrototypeAtomsData, matrix: number[][]): {bonds: Bond[]; atoms: PrototypeAtomsData} => {
+const addAtoms = (atoms: PrototypeAtomsData, matrix: number[]): {bonds: Bond[]; atoms: PrototypeAtomsData} => {
 
     sv.clearGroup("Atoms");
 
@@ -335,7 +341,13 @@ const addAtoms = (atoms: PrototypeAtomsData, matrix: number[][]): {bonds: Bond[]
     // const bonds = computeBonds(fullAtoms);
     // clearOutsideAtoms(fullAtoms, bonds, atoms.radius.length);
 
-    const fullAtoms = fillCell(atoms, matrix);
+    // Rebuild matrix from flattened matrix
+    const m = [
+        [matrix[0], matrix[1], matrix[2]],
+        [matrix[3], matrix[4], matrix[5]],
+        [matrix[6], matrix[7], matrix[8]],
+    ];
+    const fullAtoms = fillCell(atoms, m);
     const bonds = computeBonds(fullAtoms);
 
     const natoms = fullAtoms.radius.length;
@@ -443,7 +455,7 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
     <div class="prototype-viewer" />
     <v-container class="prototype-buttons">
       <v-label v-html="prototypeName"/>
-      <v-btn v-focus @click="closeWindow('/prototype')">Close</v-btn>
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
 </v-app>

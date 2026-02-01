@@ -7,10 +7,12 @@
  * @since 2024-07-05
  */
 
-import {ref, nextTick, computed} from "vue";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {ref, /* nextTick, */ computed} from "vue";
+import {closeWindow, requestData} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
+import type {CtrlParams} from "@/types";
+import log from "electron-log";
 
 const inSymmetry = ref("");
 const outSymmetry = ref("");
@@ -20,46 +22,29 @@ const displayMode = ref("international");
 const sgNumberIn = ref(0);
 const sgNumberOut = ref(0);
 
-/**
- * Data for the show symmetry window
- * @notExported
- */
-interface SymmetriesData {
-    /** Input symmetry group */
-    inSymmetry?: string;
-    /** Computed output symmetry group */
-    outSymmetry?: string;
-    /** Computed point group */
-    pointGroup?: string;
-    /** International symmetry symbol */
-    intlSymbol?: string;
-    /** Symmetry display mode */
-		displayMode: string;
-    /** Input space group number */
-    sgNumberIn?: number;
-    /** Computed space group number */
-    sgNumberOut?: number;
+const windowPath = "/symmetries";
 
-}
+/** Request the initial data and handle subsequent updates */
+requestData(windowPath, (params: CtrlParams) => {
 
-receiveInWindow((data) => {
-
-    void nextTick().then(() => {
-        const decodedData = JSON.parse(data) as SymmetriesData;
-        if(decodedData.inSymmetry !== undefined) {
-            inSymmetry.value  = decodedData.inSymmetry;
-            outSymmetry.value = decodedData.outSymmetry!;
-            pointGroup.value  = decodedData.pointGroup!;
-            intlSymbol.value  = decodedData.intlSymbol!;
-            sgNumberIn.value  = decodedData.sgNumberIn!;
-            sgNumberOut.value = decodedData.sgNumberOut!;
-        }
-        displayMode.value  = decodedData.displayMode;
-    });
+    // Error handling
+    if(params?.error) {
+        log.error(`Error requesting data for "${windowPath}". Error: ${params.error as string}`);
+        return;
+    }
+    if(params.inSymmetry !== undefined) {
+        inSymmetry.value  = params.inSymmetry as string;
+        outSymmetry.value = params.outSymmetry as string ?? "";
+        pointGroup.value  = params.pointGroup as string ?? "";
+        intlSymbol.value  = params.intlSymbol as string ?? "";
+        sgNumberIn.value  = params.sgNumberIn as number ?? 0;
+        sgNumberOut.value = params.sgNumberOut as number ?? 0;
+    }
+    displayMode.value  = params.displayMode as string ?? "";
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/symmetries");
+handleSpecialKeys(windowPath);
 
 const inputValue = computed(() => {
     if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
@@ -89,7 +74,7 @@ const finalValue = computed(() => {
     </v-col>
   </v-row>
   <v-container class="button-strip">
-    <v-btn v-focus @click="closeWindow('/symmetries')">Close</v-btn>
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
 </v-container>
 </v-app>

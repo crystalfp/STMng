@@ -79,7 +79,7 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// Update window
-			sendToSecondaryWindow("/chart", dataToSend);
+			sendToSecondaryWindow("/chart", {chart: dataToSend});
 		}
 	}
 
@@ -347,7 +347,7 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// Update window
-			sendToSecondaryWindow("/chart", dataToSend);
+			sendToSecondaryWindow("/chart", {chart: dataToSend});
 		}
 	}
 
@@ -380,7 +380,7 @@ export class DiffractionPattern extends NodeCore {
 			const dataToSend = this.createDataForChart();
 
 			// Update window
-			sendToSecondaryWindow("/chart", dataToSend);
+			sendToSecondaryWindow("/chart", {chart: dataToSend});
 		}
 	}
 
@@ -418,7 +418,7 @@ export class DiffractionPattern extends NodeCore {
 				width: 1067,
 				height: 800,
 				title: this.chartTitle,
-				data: dataToSend,
+				data: {chart: dataToSend},
 				alwaysOnTop: true
 			});
 

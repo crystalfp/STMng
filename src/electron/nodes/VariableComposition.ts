@@ -18,7 +18,7 @@ import {VariableCompositionAccumulator,
 		type VariableComponent} from "../variable/Accumulator";
 import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../variable/ComputeValid";
-import {createOrUpdateSecondaryWindow2} from "../modules/WindowsUtilities";
+import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {quickHull} from "@derschmale/tympanum";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
@@ -948,7 +948,7 @@ export class VariableComposition extends NodeCore {
 		// Open the chart if so requested
 		if(showChart) {
 
-			createOrUpdateSecondaryWindow2({
+			createOrUpdateSecondaryWindow({
 				routerPath: "/components-hull",
 				width: 1600,
 				height: 900,

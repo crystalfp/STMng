@@ -10,7 +10,7 @@ import {computed, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {askNode, closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {askNode, closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
 import {KDTree} from "@/electron/fingerprint/KDtree.js";
@@ -530,10 +530,12 @@ watch(scatterplotType, () => {
     });
 });
 
-/** Receive the chart data from the main window */
-receiveInWindow((dataFromMain) => {
+const windowPath = "/fp-scatterplot";
 
-    scatterplotData.value = JSON.parse(dataFromMain) as ScatterplotData;
+/** Receive the chart data from the main window */
+requestData(windowPath, (params: CtrlParams) => {
+
+    scatterplotData.value = JSON.parse(params.scatterplot as string) as ScatterplotData;
 
     if(scatterplotData.value.selectedPoints !== undefined) {
         selectedPoints.clear();
@@ -544,7 +546,7 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/fp-scatterplot");
+handleSpecialKeys(windowPath);
 
 /**
  * Select all points
@@ -959,7 +961,7 @@ const vc = computed(() => {
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
-        <v-btn v-focus class="mr-2 mb-4" @click="closeWindow('/fp-scatterplot')">Close</v-btn>
+        <v-btn v-focus class="mr-2 mb-4" @click="closeWindow(windowPath)">Close</v-btn>
       </div>
     </div>
   </div>

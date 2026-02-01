@@ -26,7 +26,7 @@ export const showLogFile = (): void => {
 			width: 1400,
 			height: 900,
 			title: "Application log file",
-			data: logContent
+			data: {content: logContent}
 		});
 	}
 	catch(error: unknown) {

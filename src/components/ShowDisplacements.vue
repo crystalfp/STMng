@@ -8,19 +8,21 @@
  */
 import {theme} from "@/services/ReceiveTheme";
 import {ref, reactive, nextTick} from "vue";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, requestData} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import type {AveragesResult} from "@/electron/modules/ReorderAtomsInSteps";
+import type {CtrlParams} from "@/types";
 
 const means = reactive<AveragesResult[]>([]);
 
 const coordinates = ref("(cartesian)");
+const windowPath = "/displacements";
 
-receiveInWindow((data) => void nextTick().then(() => {
+requestData(windowPath, (params: CtrlParams) => void nextTick().then(() => {
 
     means.length = 0;
     coordinates.value = "(cartesian)";
-    const decodedData = JSON.parse(data) as AveragesResult[];
+    const decodedData = JSON.parse(params.means as string) as AveragesResult[];
     if(decodedData.length > 0) {
 
         for(const entry of decodedData) means.push(entry);
@@ -30,7 +32,7 @@ receiveInWindow((data) => void nextTick().then(() => {
 }));
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/displacements");
+handleSpecialKeys(windowPath);
 
 /** Number of digits before changing to exponential notation */
 const FORMAT_MAX_DIGITS = 4;
@@ -73,7 +75,7 @@ const format = (value: number): string => {
       </v-table>
     </v-container>
     <v-container class="button-strip justify-end">
-      <v-btn v-focus @click="closeWindow('/displacements')">Close</v-btn>
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </v-container>
 </v-app>

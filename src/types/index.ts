@@ -342,31 +342,6 @@ export interface WindowsParams {
     title: string;
 
     /** Data to be passed to the window when it is ready */
-    data?: string;
-
-    /** If the window is already open checked elsewhere */
-    alreadyOpen?: boolean;
-
-    /** If the window should be always on top */
-    alwaysOnTop?: boolean;
-}
-
-/** Parameters for the window creation */
-export interface WindowsParams2 {
-
-    /** The router path for the created window (should also be in src/router/index.ts) */
-    routerPath: string;
-
-    /** Width of the window */
-    width: number;
-
-    /** Height of the window */
-    height: number;
-
-    /** Title of the window */
-    title: string;
-
-    /** Data to be passed to the window when it is ready */
     data?: CtrlParams;
 
     /** If the window is already open checked elsewhere */
@@ -767,30 +742,6 @@ export interface PrototypeAtomsData {
 
     /** Atom type for outside atoms use */
     addType?: AddKind[];
-}
-
-/**
- * Prototype structure data for display
- */
-export interface PrototypeStructureData {
-
-    /** Prototype AFLOW identifier (UID) */
-    aflow: string;
-
-    /** Prototype name */
-    mineral: string;
-
-    /** Pearson symbol */
-	pearson: string;
-
-    /** A detailed crystal structure classification by analogy to another known structure */
-	strukturbericht: string;
-
-    /** Lattice matrix */
-    matrix: number[][];
-
-    /** Prototype atoms */
-    atoms: PrototypeAtomsData;
 }
 
 /** Prototype database entry for autocomplete a query */

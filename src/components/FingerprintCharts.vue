@@ -8,12 +8,12 @@
  */
 import {computed, ref, reactive, shallowRef, watch} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {closeWindow, receiveInWindow, sendToNode} from "@/services/RoutesClient";
+import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {Scatter} from "vue-chartjs";
 import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
         LinearScale, PointElement, LineElement} from "chart.js";
-import type {ChartData, ChartOptions, FingerprintsChartData, FingerprintsChartKind} from "@/types";
+import type {ChartData, ChartOptions, CtrlParams, FingerprintsChartData, FingerprintsChartKind} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
@@ -50,6 +50,8 @@ const chartOptions = shallowRef<ChartOptions>({
 const chartData = shallowRef<ChartData>({
     datasets: []
 });
+
+const windowPath = "/fp-charts";
 
 /**
  * Build data for the chart
@@ -144,10 +146,10 @@ const prepareHistogramCoordinates = (histogram: [x: number, y: number][]): {x: n
 };
 
 /** Receive the chart data from the main window */
-receiveInWindow((dataFromMain) => {
+requestData(windowPath, (params: CtrlParams) => {
 
     /** The received data */
-    const fingerprintChartData = JSON.parse(dataFromMain) as FingerprintsChartData;
+    const fingerprintChartData = JSON.parse(params.charts as string) as FingerprintsChartData;
     const {fingerprint, energy, energyDistance, energyHistogram, order, distances,
            distanceHistogram, haveEnergies: haveE, haveDistances: haveD} = fingerprintChartData;
 
@@ -238,7 +240,7 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/fp-charts");
+handleSpecialKeys(windowPath);
 
 /** Send user choices to the main process */
 watch([fpIndex, chartType, binCount], () => {
@@ -284,7 +286,7 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
           <v-btn value="op">Order param</v-btn>
           <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
         </v-btn-toggle>
-        <v-btn v-focus @click="closeWindow('/fp-charts')">Close</v-btn>
+        <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
       </div>
     </v-container>
   </div>

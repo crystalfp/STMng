@@ -470,7 +470,7 @@ export class ComputeFingerprints extends NodeCore {
 			width: 1600,
 			height: 900,
 			title: "Fingerprints scatterplot",
-			data: dataToSend,
+			data: {scatterplot: dataToSend},
 			alreadyOpen: scatterplotOpen
 		});
 	}
@@ -536,7 +536,7 @@ export class ComputeFingerprints extends NodeCore {
 			width: 1500,
 			height: 900,
 			title: "Fingerprints energy landscape",
-			data: dataToSend,
+			data: {landscape: dataToSend},
 			alreadyOpen: landscapeOpen
 		});
 	}
@@ -666,7 +666,7 @@ export class ComputeFingerprints extends NodeCore {
 			width: 1500,
 			height: 900,
 			title: "Fingerprints charts",
-			data: dataToSend,
+			data: {charts: dataToSend},
 			alreadyOpen: chartsOpen
 		});
 	}
@@ -703,7 +703,6 @@ export class ComputeFingerprints extends NodeCore {
 				++idx;
 			}
 		}
-		const dataToSend = JSON.stringify(steps);
 
 		// Create the scatterplot window. If it is open, update it
 		createOrUpdateSecondaryWindow({
@@ -711,7 +710,7 @@ export class ComputeFingerprints extends NodeCore {
 			width: 1600,
 			height: 900,
 			title: "Compare selected structures",
-			data: dataToSend,
+			data: {steps},
 			alreadyOpen: compareWindowOpen
 		});
 	}
@@ -1306,15 +1305,13 @@ export class ComputeFingerprints extends NodeCore {
 
 		const hasEnergy = this.accumulator.accumulatedHaveEnergies();
 
-		const dataToSend = JSON.stringify({hasEnergy});
-
 		// Create the export window. If it is open, update it
 		createOrUpdateSecondaryWindow({
 			routerPath: "/fp-export",
 			width: 370,
 			height: 500,
 			title: "Export fingerprint results",
-			data: dataToSend
+			data: {hasEnergy}
 		});
 
 		if(!this.channelExportOpened) {

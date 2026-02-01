@@ -16,9 +16,9 @@ import {SimpleViewer} from "@/services/SimpleViewer";
 import {Lut} from "three/addons/math/Lut.js";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {closeWindow, receiveInWindow} from "@/services/RoutesClient";
+import {closeWindow, requestData} from "@/services/RoutesClient";
 import {scatterToUniform} from "@/electron/fingerprint/ScatterToUniform";
-import type {EnergyLandscapeData} from "@/types";
+import type {CtrlParams, EnergyLandscapeData} from "@/types";
 
 import SelectColormap from "@/widgets/SelectColormap.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
@@ -53,13 +53,15 @@ const lut = new Lut("blackbody", 256);
 const showPoints = ref(false);
 const pointsName = "Landscape-points";
 
+const windowPath = "/fp-landscape";
+
 /** Initialize the 3D viewer */
 const sv = new SimpleViewer(".landscape-viewer", true);
 
 /** Receive the chart data from the main window */
-receiveInWindow((dataFromMain) => {
+requestData(windowPath, (params: CtrlParams) => {
 
-    energyLandscapeData = JSON.parse(dataFromMain) as EnergyLandscapeData;
+    energyLandscapeData = JSON.parse(params.landscape as string) as EnergyLandscapeData;
 
     const {points, energies} = energyLandscapeData;
 
@@ -76,7 +78,7 @@ receiveInWindow((dataFromMain) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/fp-landscape");
+handleSpecialKeys(windowPath);
 
 watch([gridSide, power], () => {
 
@@ -253,7 +255,7 @@ const renderPoints = (): void => {
                               :label="`Power (${showPower})`"
                               :min="1" :max="6" :step="0.1" />
       <select-colormap v-model="colormapName" class="dd" />
-      <v-btn v-focus class="mt-2 ee" @click="closeWindow('/fp-landscape')">Close</v-btn>
+      <v-btn v-focus class="mt-2 ee" @click="closeWindow(windowPath)">Close</v-btn>
       <v-switch v-model="showPoints" class="ml-4 ff" label="Show points" />
     </v-container>
   </div>

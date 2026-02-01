@@ -320,14 +320,14 @@ export class PrototypeMatcher extends NodeCore {
 		}
 
 		if(proto) {
-				const dataForClient = JSON.stringify({
+				const dataForClient: CtrlParams = {
 					aflow,
 					pearson: proto.pearson,
 					strukturbericht: proto.strukturbericht,
 					mineral: proto.mineral,
-					matrix: proto.matrix,
-					atoms: proto.atoms
-				});
+					matrix: proto.matrix.flat(),
+					atoms: JSON.stringify(proto.atoms)
+				};
 
 				createOrUpdateSecondaryWindow({
 					routerPath: "/prototype",

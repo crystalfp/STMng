@@ -466,19 +466,6 @@ export const closeWindow = (routerPath: string): void => {
 	window.electron.ipcRenderer.send("WINDOW:CLOSE", routerPath);
 };
 
-/**
- * Receive a message sent by sendToWindow() routine.
- *
- * @param callback - Routine to be called when a message to this window is received
- * @remarks Should use a callback and not a Promise because should be always active
- */
-export const receiveInWindow = (callback: (data: string) => void): void => {
-
-    window.electron.ipcRenderer.on("SYSTEM:DATA", (_event, payload: string) => {
-		callback(payload);
-	});
-};
-
 // > Log file
 /**
  * Ask to clear the application log file

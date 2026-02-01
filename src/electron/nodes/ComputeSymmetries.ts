@@ -371,7 +371,7 @@ export class ComputeSymmetries extends NodeCore {
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {
 
-			const dataToSend = JSON.stringify({
+			const dataToSend: CtrlParams = {
 				inSymmetry,
 				outSymmetry,
 				pointGroup,
@@ -379,7 +379,7 @@ export class ComputeSymmetries extends NodeCore {
 				sgNumberIn,
 				sgNumberOut,
 				displayMode: this.displayMode,
-			});
+			};
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
 	}
@@ -769,9 +769,9 @@ export class ComputeSymmetries extends NodeCore {
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {
 
-			const dataToSend = JSON.stringify({
+			const dataToSend: CtrlParams = {
 				displayMode: this.displayMode,
-			});
+			};
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}
 
@@ -802,7 +802,7 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private channelWindow(): void {
 
-		const dataToSend = JSON.stringify({
+		const dataToSend: CtrlParams = {
 			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
 			outSymmetry: this.computedSpaceGroup,
 			pointGroup: this.pointGroup,
@@ -810,7 +810,7 @@ export class ComputeSymmetries extends NodeCore {
 			displayMode: this.displayMode,
 			sgNumberIn: this.sgNumberIn,
 			sgNumberOut: this.sgNumberOut
-		});
+		};
 
 		createOrUpdateSecondaryWindow({
 			routerPath: "/symmetries",

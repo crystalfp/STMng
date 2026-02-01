@@ -9,7 +9,7 @@
 import {ref} from "vue";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {closeWindow, receiveInWindow, askNode} from "@/services/RoutesClient";
+import {closeWindow, requestData, askNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
@@ -20,15 +20,16 @@ const hasEnergies = ref(false);
 const saveEnergyPerAtom = ref(false);
 const errorMessage = ref("");
 const successMessage = ref("");
+const windowPath = "/fp-export";
 
 const filterPOSCAR = '[{"name":"POSCAR","extensions":["poscar"]},{"name":"All","extensions":["*"]}]';
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/fp-export");
+handleSpecialKeys(windowPath);
 
 /** Receive the chart data from the main window */
-receiveInWindow((dataFromMain) => {
-    hasEnergies.value = (JSON.parse(dataFromMain) as {hasEnergy: boolean}).hasEnergy;
+requestData(windowPath, (params: CtrlParams) => {
+    hasEnergies.value = params.hasEnergy as boolean ?? false;
 });
 
 /**
@@ -99,7 +100,7 @@ const toggleExport = (exportKind: "all" | "min"): void => {
       @click="successMessage=''"/>
   </v-container>
   <v-container class="d-flex flex-0-1 justify-end">
-    <v-btn v-focus @click="closeWindow('/fp-export')">Close</v-btn>
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
 </v-app>
 </template>

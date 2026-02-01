@@ -193,7 +193,7 @@ export class Trajectories extends NodeCore {
 		if(isSecondaryWindowOpen("/displacements")) {
 
 			const dataToSend = JSON.stringify(averageResults.averages);
-			sendToSecondaryWindow("/displacements", dataToSend);
+			sendToSecondaryWindow("/displacements", {means: dataToSend});
 		}
 
 		this.toNextNode(averageResults.structure);
@@ -245,7 +245,7 @@ export class Trajectories extends NodeCore {
 			const averageResults = this.disentangler.loadStep(this.structure, this.indices);
 
 			const dataToSend = JSON.stringify(averageResults.averages);
-			sendToSecondaryWindow("/displacements", dataToSend);
+			sendToSecondaryWindow("/displacements", {means: dataToSend});
 
 			this.toNextNode(averageResults.structure);
 		}
@@ -307,7 +307,7 @@ export class Trajectories extends NodeCore {
 			width: 670,
 			height: 400,
 			title: "Show mean positions and displacements",
-			data: dataToSend,
+			data: {means: dataToSend},
 			alwaysOnTop: true
 		});
 

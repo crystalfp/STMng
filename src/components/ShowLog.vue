@@ -8,15 +8,17 @@
  */
 import {ref} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {receiveInWindow, closeWindow, clearLog} from "@/services/RoutesClient";
+import {requestData, closeWindow, clearLog} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
+import type {CtrlParams} from "@/types";
 
 const text = ref("");
 const showConfirm = ref(false);
+const windowPath = "/log";
 
-receiveInWindow((data: string) => {
+requestData(windowPath, (params: CtrlParams) => {
 
-    text.value = data;
+    text.value = params.content as string ?? "";
 
     const element = document.querySelector<HTMLTextAreaElement>(".log-text-container");
 
@@ -26,7 +28,7 @@ receiveInWindow((data: string) => {
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
-handleSpecialKeys("/log");
+handleSpecialKeys(windowPath);
 
 /**
  * Ask confirmation for deleting the log content
@@ -50,7 +52,7 @@ const confirmDeletion = (): void => {
     </v-container>
     <v-container class="button-strip">
       <v-btn @click="showConfirm=true">Wipe log</v-btn>
-      <v-btn v-focus @click="closeWindow('/log')">Close</v-btn>
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </v-row>
 

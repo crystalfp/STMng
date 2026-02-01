@@ -14,7 +14,7 @@ import log from "electron-log";
 import {setupMenu} from "./SystemMenu";
 import {toClientSetup, sendAlertToClient} from "./ToClient";
 import favicon from "../../assets/favicon.png";
-import type {CtrlParams, WindowsParams, WindowsParams2} from "@/types";
+import type {CtrlParams, WindowsParams} from "@/types";
 import {isMaximized, setMaximized, setWindowSize, getWindowSize} from "./Preferences";
 
 /** List of opened windows, main and secondary ones */
@@ -134,7 +134,7 @@ export const createMainWindow = (width: number, height: number, isDevelopment: b
  *
  * @param params - Params for the created window
  */
-export const createSecondaryWindow = (params: WindowsParams): void => {
+const createSecondaryWindow = (params: WindowsParams): void => {
 
     // If already created do nothing
     if(openedWindows.has(params.routerPath)) return;
@@ -183,34 +183,6 @@ export const createSecondaryWindow = (params: WindowsParams): void => {
             openedWindows.delete(params.routerPath);
         });
     });
-
-    secondaryWin.once("show", () => {
-        if(params.data) {
-            setTimeout(() => {
-                secondaryWin.webContents.send("SYSTEM:DATA", params.data);
-            }, 60);
-        }
-    });
-};
-
-/**
- * Create a secondary window or update its data if already open
- *
- * @param params - Params for the created window
- */
-export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
-
-    let isOpen = params.alreadyOpen;
-    isOpen ??= openedWindows.has(params.routerPath);
-
-    if(isOpen) {
-        if(params.data) {
-            sendToSecondaryWindow(params.routerPath, params.data);
-        }
-    }
-    else {
-        createSecondaryWindow(params);
-    }
 };
 
 // Temporary store the initial data for the new secondary window created
@@ -221,7 +193,7 @@ let paramsData: CtrlParams = {};
  *
  * @param params - Params for the created window
  */
-export const createOrUpdateSecondaryWindow2 = (params: WindowsParams2): void => {
+export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
 
     let isOpen = params.alreadyOpen;
     isOpen ??= openedWindows.has(params.routerPath);
@@ -241,8 +213,8 @@ export const createOrUpdateSecondaryWindow2 = (params: WindowsParams2): void => 
                 return paramsData;
             });
         }
-        delete params.data;
-        createSecondaryWindow(params as WindowsParams);
+
+        createSecondaryWindow(params);
     }
 };
 
@@ -277,12 +249,13 @@ export const isSecondaryWindowOpen = (routerPath: string): boolean => openedWind
  * Send data to a secondary window
  *
  * @param routerPath - Router path of the secondary window
- * @param data - Data to be sent (normally JSON encoded data)
+ * @param data - Data to be sent
  */
-export const sendToSecondaryWindow = (routerPath: string, data: string): void => {
+export const sendToSecondaryWindow = (routerPath: string, data: CtrlParams): void => {
 
+    const channel = routerPath.slice(1);
     const win = openedWindows.get(routerPath);
-    if(win) win.webContents.send("SYSTEM:DATA", data);
+    if(win) win.webContents.send(`SYSTEM:DATA:${channel}`, data);
 };
 
 // > Broadcast message
