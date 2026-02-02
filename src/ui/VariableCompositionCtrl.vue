@@ -147,7 +147,7 @@ askNode(id, "init")
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
-                    "variableComposition");
+                      "variableComposition");
     });
 
 /** Receive the parameters of the structures loaded */
@@ -309,7 +309,7 @@ const saveAnalyzed = (): void => {
         .catch((error: Error) => {
             savedFiles.value = -1;
             showNodeAlert(`Error saving variable composition results: ${error.message}`,
-                          "variableComposition");
+                          "variableComposition2");
         });
 };
 
@@ -336,8 +336,8 @@ const showCharts = (): void => {
         if(result.error) throw Error(result.error as string);
     })
     .catch((error: Error) => {
-        showNodeAlert(`Error from computing convex hull for ${label}: ${error.message}`,
-                      "variableComposition");
+        showNodeAlert(`Convex hull computation error: ${error.message}`,
+                      "variableComposition2");
     });
 };
 
@@ -440,6 +440,8 @@ const showCharts = (): void => {
          @click="analysisRunning=true; savedFiles=-1; analyzeSelected()">
     Analyze selected for duplicates
   </v-btn>
+    <node-alert node="variableComposition2" class="mt-1"/>
+
   <v-btn block class="mt-2" :disabled="disableCharts" @click="showCharts">
     Show charts
   </v-btn>

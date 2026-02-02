@@ -35,8 +35,8 @@ export interface VariableComponent {
 	parts: number[];
 	/** Composition key (quantities separated by "-") */
 	key: string;
-	/** Position in the convex hull space */
-	position: number[];
+	/** Distance from the convex hull */
+	distance: number;
 
 	/** Computed fingerprint for the structure */
 	fingerprint: number[];
@@ -57,6 +57,7 @@ export class VariableCompositionAccumulator {
 	private allHaveEnergies: boolean | undefined = undefined;
 	private readonly allSpecies = new Set<number>();
 	private readonly keyMap = new Map<string, number[]>();
+	private numberOfComponents = 0;
 
 	/**
 	 * Load a structure
@@ -93,7 +94,7 @@ export class VariableCompositionAccumulator {
 			species: new Map<number, number>(),
 			parts: [],
 			key: "",
-			position: [],
+			distance: 0,
 
 			fingerprint: [],
 			countSections: 0,
@@ -127,6 +128,7 @@ export class VariableCompositionAccumulator {
 		this.allSpecies.clear();
 		this.allHaveEnergies = undefined;
 		this.keyMap.clear();
+		this.numberOfComponents = 0;
 	}
 
 	/**
@@ -251,6 +253,43 @@ export class VariableCompositionAccumulator {
 		for(const idx of indices) {
 			const entry = this.accumulator[idx];
 			entry.enabled = enable;
+		}
+	}
+
+	/**
+	 * Save the number of components
+	 *
+	 * @param n - Number of component (set to zero if distances not loaded)
+	 */
+	setNumberOfComponents(n: number): void {
+		this.numberOfComponents = n;
+	}
+
+	/**
+	 * Get the number of components
+	 *
+	 * @returns Number of components or zero if no distance loaded
+	 */
+	getNumberOfComponents(): number {
+		return this.numberOfComponents;
+	}
+
+	/**
+	 * Set structure distance from the convex hull
+	 *
+	 * @param distances - Distances from the convex hull as computed in prepareData
+	 */
+	setDistances(distances: number[] | undefined): void {
+
+		if(!distances) {
+			this.numberOfComponents = 0;
+			return;
+		}
+		let idx = 0;
+		for(const entry of this.accumulator) {
+			if(entry.enabled) {
+				entry.distance = distances[idx++];
+			}
 		}
 	}
 }

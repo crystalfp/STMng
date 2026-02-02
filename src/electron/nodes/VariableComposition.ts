@@ -8,7 +8,7 @@
  */
 import path from "node:path";
 import {openSync, closeSync, writeSync} from "node:fs";
-import {gcd} from "mathjs";
+import {gcd, dot} from "mathjs";
 import {dialog} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
@@ -19,7 +19,7 @@ import {VariableCompositionAccumulator,
 import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../variable/ComputeValid";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
-import {quickHull} from "@derschmale/tympanum";
+import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 /**
@@ -34,10 +34,6 @@ interface Recipe {
     /** Number of structures with the given composition */
 	count: number;
 }
-
-// Useful constants
-const C1 = 1/Math.sqrt(3);
-const C2 = (Math.sqrt(3)-1)/2;
 
 export class VariableComposition extends NodeCore {
 
@@ -266,7 +262,6 @@ export class VariableComposition extends NodeCore {
 			}
 			entry.parts = [...parts];
 			entry.key = parts.join("-");
-			entry.position = this.computePositionFromParts(parts);
 
 			const key = parts.join("\u2009:\u2009");
 			if(summary.has(key)) {
@@ -294,31 +289,6 @@ export class VariableComposition extends NodeCore {
 	}
 
 	/**
-	 * Return chart coordinates
-	 * Depends on number of components:
-	 * 	2: proportion of the components as x value
-	 *  3: x and y values inside a triangular chart
-	 *  4: not implemented yet
-	 * @param parts - Composition of a given structure
-	 * @returns Array of (parts-1) coordinates
-	 */
-	private computePositionFromParts(parts: number[]): number[] {
-
-		switch(parts.length) {
-			case 2:
-				return [parts[1]/(parts[0]+parts[1])];
-			case 3: {
-				const a = parts[1]/(parts[0]+parts[1]);
-				const c = parts[2]/(parts[0]+parts[2]);
-				return [a, a*C1+c*C2];
-			}
-			default:
-				 // TBD
-				return Array<number>(parts.length-1).fill(0);
-		}
-	}
-
-	/**
 	 * Format entry as POSCAR file
 	 *
 	 * @param entry - One composition to convert to POSCAR
@@ -327,7 +297,8 @@ export class VariableComposition extends NodeCore {
 	private entryToPoscar(entry: VariableComponent): string {
 
 		let out = "Variable composition by STMng. " +
-				  `Composition key: ${entry.key}. Step: ${entry.step}\n1.0\n`;
+				  `Composition key: ${entry.key}. Step: ${entry.step} ` +
+				  `Distance from convex hull: ${entry.distance.toFixed(4)}\n1.0\n`;
 
 		const basisString = Array<string>(9);
 		for(let i=0; i < 9; ++i) {
@@ -437,6 +408,11 @@ export class VariableComposition extends NodeCore {
 
 		let saved = 0;
 		const hasEnergies = this.accumulator.hasEnergies();
+		const dimension = this.accumulator.getNumberOfComponents();
+		const distances = hasEnergies && dimension > 0 ?
+							this.prepareData(dimension).distance as number[] :
+							undefined;
+		this.accumulator.setDistances(distances);
 
 		for(const entry of this.accumulator.iterateKeys()) {
 
@@ -453,14 +429,13 @@ export class VariableComposition extends NodeCore {
 			}
 			if(!valid) continue;
 
-			// TBD Order by distance from convex hull
-			// Order entries by increasing energies
-			if(hasEnergies) {
+			// Order entries by increasing distance from convex hull
+			if(distances) {
 
 				const toOrder = [];
 				for(const idx of entry[1]) {
 					const structure = this.accumulator.getEntry(idx);
-					toOrder.push([structure!.energy!, idx]);
+					toOrder.push([structure!.distance, idx]);
 				}
 				entry[1] = toOrder
 								.toSorted((a, b) => a[0] - b[0])
@@ -500,6 +475,13 @@ export class VariableComposition extends NodeCore {
 	private saveAllCompositions(selected: Set<string>, dir: string): number {
 
 		const hasEnergies = this.accumulator.hasEnergies();
+		const dimension = this.accumulator.getNumberOfComponents();
+
+		const distances = hasEnergies && dimension > 0 ?
+							this.prepareData(dimension).distance as number[] :
+							undefined;
+		this.accumulator.setDistances(distances);
+
 		const all: [number, number][] = [];
 
 		for(const entry of this.accumulator.iterateKeys()) {
@@ -517,13 +499,12 @@ export class VariableComposition extends NodeCore {
 			}
 			if(!valid) continue;
 
-			// TBD Order by distance from convex hull
-			// Order entries by increasing energies
-			if(hasEnergies) {
+			// Order entries by increasing distance from convex hull
+			if(distances) {
 
 				for(const idx of entry[1]) {
 					const structure = this.accumulator.getEntry(idx);
-					all.push([structure!.energy!, idx]);
+					all.push([structure!.distance, idx]);
 				}
 			}
 			else {
@@ -684,7 +665,7 @@ export class VariableComposition extends NodeCore {
 	 * @param vertices - Vertices of the convex hull line
 	 * @returns Distances of the points from the line
 	 */
-	private distanceFromConvexHull(x: number[], y: number[], vertices: number[]): number[] {
+	private distanceFromConvexHull2D(x: number[], y: number[], vertices: number[]): number[] {
 
 		const distances = Array<number>(x.length).fill(0);
 
@@ -699,6 +680,80 @@ export class VariableComposition extends NodeCore {
 					break;
 				}
 			}
+		}
+
+		return distances;
+	}
+
+	/**
+	 * Distance from the closest point inside the triangle
+	 * @remarks Code ported from <https://stackoverflow.com/questions/2924795/fastest-way-to-compute-point-to-triangle-distance-in-3d/74395029>
+	 *
+	 * @param p - Point to test
+	 * @param a - Vertex of the triangle
+	 * @param b - Vertex of the triangle
+	 * @param c - Vertex of the triangle
+	 * @returns Distance from the triangle or -1 if the point is not perpendicular to the triangle
+	 */
+	private closestPointTriangle(p: number[], a: number[], b: number[], c: number[]): number {
+
+		const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+		const ac = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+		const ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
+
+		const d1 = dot(ab, ap);
+		const d2 = dot(ac, ap);
+		if(d1 <= 0 && d2 <= 0) return -1; // #1
+
+		const bp = [p[0] - b[0], p[1] - b[1], p[2] - b[2]];
+		const d3 = dot(ab, bp);
+		const d4 = dot(ac, bp);
+		if(d3 >= 0 && d4 <= d3) return -1; // #2
+
+		const cp = [p[0] - c[0], p[1] - c[1], p[2] - c[2]];
+  		const d5 = dot(ab, cp);
+  		const d6 = dot(ac, cp);
+  		if(d6 >= 0 && d5 <= d6) return -1; // #3
+
+  		const vc = d1 * d4 - d3 * d2;
+		if(vc <= 0 && d1 >= 0 && d3 <= 0) return -1; // #4
+
+		const vb = d5 * d2 - d1 * d6;
+  		if(vb <= 0 && d2 >= 0 && d6 <= 0) return -1; // #5
+
+  		const va = d3 * d6 - d5 * d4;
+  		if(va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) return -1; // #6
+
+		const denom = 1 / (va + vb + vc);
+		const v = vb * denom;
+		const w = vc * denom;
+		const q = [
+			a[0] + v * ab[0] + w * ac[0],
+			a[1] + v * ab[1] + w * ac[1],
+			a[2] + v * ab[2] + w * ac[2]
+		];
+		// return a + v * ab + w * ac; //#0
+		return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+	}
+
+	private distanceFromConvexHull3D(points: number[][], hull: Facet[]): number[] {
+
+		const distances: number[] = [];
+		for(const point of points) {
+
+			let dist = Number.POSITIVE_INFINITY;
+			for(const facet of hull) {
+				if(facet.plane[2] < 0) {
+
+					const v1 = facet.verts[0];
+					const v2 = facet.verts[1];
+					const v3 = facet.verts[2];
+					// Test if closest triangle
+					const d = this.closestPointTriangle(point, points[v1], points[v2], points[v3]);
+					if(d !== -1 && d < dist) dist = d;
+				}
+			}
+			distances.push(dist);
 		}
 
 		return distances;
@@ -721,22 +776,29 @@ export class VariableComposition extends NodeCore {
 		const parts: string[] = [];
 		for(const structure of this.accumulator.iterateStructures()) {
 
-			if(!structure.enabled) continue;
-			const energy = structure.energy!;
-			x.push(structure.position[0]);
+			const {enabled, parts: structureParts, step: structureStep,
+				   energy: structureEnergy, key} = structure;
+
+			if(!enabled) continue;
+			const energy = structureEnergy ?? 0;
+			x.push(structureParts[1]/(structureParts[0]+structureParts[1]));
 			y.push(energy);
-			step.push(structure.step);
-			parts.push(structure.key);
-			if(structure.parts[0] === 1 &&
-			   structure.parts[1] === 0 &&
+			step.push(structureStep);
+			parts.push(key);
+			if(structureParts[0] === 1 &&
+			   structureParts[1] === 0 &&
 			   energy < y0) {
 				y0 = energy;
 			}
-			else if(structure.parts[0] === 0 &&
-				    structure.parts[1] === 1 &&
+			else if(structureParts[0] === 0 &&
+				    structureParts[1] === 1 &&
 					energy < y1) {
 						y1 = energy;
 			}
+		}
+
+		if(y0 === Number.POSITIVE_INFINITY || y1 === Number.POSITIVE_INFINITY) {
+			return {error: "Missing end-members"};
 		}
 
 		// Find enthalpy of formation
@@ -766,7 +828,7 @@ export class VariableComposition extends NodeCore {
 
 		// Remove duplicated convex hull points
     	len = toOrder.length;
-		const vertices: number[] = [toOrder[0].x, toOrder[0].y];
+		const vertices = [toOrder[0].x, toOrder[0].y];
 		const idxVertices = [toOrder[0].idx];
 	    for(let i=0, j=1; j < len; ++j) {
 			if(Math.abs(toOrder[i].x-toOrder[j].x) > 1e-4 ||
@@ -778,7 +840,8 @@ export class VariableComposition extends NodeCore {
 		}
 
 		// Add distances from the convex hull
-		const distance = this.distanceFromConvexHull(x, y, vertices);
+		const distance = this.distanceFromConvexHull2D(x, y, vertices);
+		this.accumulator.setNumberOfComponents(2);
 
 		return {
 			dimension: 2,
@@ -800,59 +863,99 @@ export class VariableComposition extends NodeCore {
 	private prepareDim3Data(): CtrlParams {
 
 		// Find extremes
-		let y0 = Number.POSITIVE_INFINITY;
-		let y1 = Number.POSITIVE_INFINITY;
-		let y2 = Number.POSITIVE_INFINITY;
-		let d0 = 0;
-		let d1 = 0;
-		let d2 = 0;
+		let z0 = Number.POSITIVE_INFINITY;
+		let z1 = Number.POSITIVE_INFINITY;
+		let z2 = Number.POSITIVE_INFINITY;
 
-		let idx = 0;
 		const x: number[] = [];
 		const y: number[] = [];
 		const z: number[] = [];
-		const d: number[] = [];
+		const step: number[] = [];
+		const parts: string[] = [];
+		const p: number[][] = [];
 		for(const structure of this.accumulator.iterateStructures()) {
-			++idx;
-			if(!structure.enabled) continue;
-			const energy = structure.energy!;
-			x.push(structure.position[0]);
-			y.push(structure.position[1]);
+
+			const {enabled, parts: structureParts, step: structureStep,
+				   energy: structureEnergy, key} = structure;
+
+			if(!enabled) continue;
+			const energy = structureEnergy ?? 0;
+			step.push(structureStep);
+			parts.push(key);
+			if(structureParts[0] === 1 &&
+			   structureParts[1] === 0 &&
+			   structureParts[2] === 0 &&
+			   energy < z0) {
+				z0 = energy;
+			}
+			else if(structureParts[0] === 0 &&
+				    structureParts[1] === 1 &&
+				    structureParts[2] === 0 &&
+					energy < z1) {
+						z1 = energy;
+			}
+			else if(structureParts[0] === 0 &&
+				    structureParts[1] === 0 &&
+				    structureParts[2] === 1 &&
+					energy < z2) {
+						z2 = energy;
+			}
+
+			// Compute the component proportions
+			const pt = structureParts[0]+structureParts[1]+structureParts[2];
+			const p0 = structureParts[0]/pt;
+			const p1 = structureParts[1]/pt;
+			const p2 = structureParts[2]/pt;
+			p.push([p0, p1, p2]);
+
+			x.push(0.5*p2+(1-p2)*p0);
+			y.push(p2*0.8660254038); // Math.sqrt(3)/2
 			z.push(energy);
-			d.push(idx);
-			if(structure.parts[0] === 1 &&
-			   structure.parts[1] === 0 &&
-			   structure.parts[2] === 0 &&
-			   energy < y0) {
-				y0 = energy;
-				d0 = idx;
-			}
-			else if(structure.parts[0] === 0 &&
-				    structure.parts[1] === 1 &&
-				    structure.parts[2] === 0 &&
-					energy < y1) {
-						y1 = energy;
-						d1 = idx;
-			}
-			else if(structure.parts[0] === 0 &&
-				    structure.parts[1] === 0 &&
-				    structure.parts[2] === 1 &&
-					energy < y2) {
-						y2 = energy;
-						d2 = idx;
+		}
+
+		if(z0 === Number.POSITIVE_INFINITY ||
+		   z1 === Number.POSITIVE_INFINITY ||
+		   z2 === Number.POSITIVE_INFINITY) {
+			return {error: "Missing end-members"};
+		}
+
+		// Find enthalpy of formation
+		const len = x.length;
+		for(let i=0; i < len; ++i) z[i] -= p[i][0]*z0+p[i][1]*z1+p[i][2]*z2;
+
+		// Find convex hull (only the lower part)
+		const points: number[][] = [];
+		for(let i=0; i < len; ++i) points.push([x[i], y[i], z[i]]);
+		const hull = quickHull(points);
+		const idxVertices = new Set<number>();
+		for(const facet of hull) {
+			if(facet.plane[2] < 0) {
+				const v1 = facet.verts[0];
+				const v2 = facet.verts[1];
+				const v3 = facet.verts[2];
+				idxVertices.add(v1);
+				idxVertices.add(v2);
+				idxVertices.add(v3);
 			}
 		}
 
-		// TBD
+		const vertices: number[] = [];
+		for(const idx of idxVertices) {
+			vertices.push(points[idx][0], points[idx][1], points[idx][2]);
+		}
+
+		// Add distances from the convex hull
+		const distance = this.distanceFromConvexHull3D(points, hull);
+		this.accumulator.setNumberOfComponents(3);
+
 		return {
 			dimension: 3,
-			x, y, z, d,
-			y0,
-			d0,
-			y1,
-			d1,
-			y2,
-			d2
+			x, y, z,
+			step,
+			parts,
+			vertices,
+			idxVertices: [...idxVertices],
+			distance
 		};
 	}
 
@@ -880,8 +983,8 @@ export class VariableComposition extends NodeCore {
 			++idx;
 			if(!structure.enabled) continue;
 			const energy = structure.energy!;
-			x.push(structure.position[0]);
-			y.push(structure.position[1]);
+			// x.push(structure.position[0]);
+			// y.push(structure.position[1]);
 			z.push(energy);
 			d.push(idx);
 			if(structure.parts[0] === 1 &&
@@ -921,36 +1024,43 @@ export class VariableComposition extends NodeCore {
 	}
 
 	/**
+	 * Prepare the data for the visualization of the convex hull
+	 *
+	 * @param dimension - Number of components
+	 * @returns Data for the convex hull (for visualization and use)
+	 */
+	private prepareData(dimension: number): CtrlParams {
+
+		if(!this.accumulator.hasEnergies()) return {error: "Structures have no energies"};
+
+		switch(dimension) {
+			case 2: return this.prepareDim2Data();
+			case 3: return this.prepareDim3Data();
+			case 4: return this.prepareDim4Data();
+		}
+		return {error: "Invalid dimension"};
+	}
+
+	/**
 	 * Channel handler to start analyzing the compositions
 	 *
 	 * @returns Error message or empty on success
 	 */
 	private channelConvexHull(params: CtrlParams): CtrlParams {
 
-		const showChart = params.showChart as boolean ?? false;
-		const dimension = params.dimension as number ?? 2;
+		const dimension = params.dimension as number ?? 0;
 
-		let result: CtrlParams = {};
-		switch(dimension) {
-			case 2:
-				result = this.prepareDim2Data();
-				break;
-			case 3:
-				result = this.prepareDim3Data();
-				break;
-			case 4:
-				result = this.prepareDim4Data();
-				break;
-			default:
-				return {error: "Invalid dimension"};
-		}
+		const result = this.prepareData(dimension);
+
+		if(result.error) return result;
 
 		// Open the chart if so requested
+		const showChart = params.showChart as boolean ?? false;
 		if(showChart) {
 
 			createOrUpdateSecondaryWindow({
 				routerPath: "/components-hull",
-				width: 1600,
+				width: 1130,
 				height: 900,
 				title: "Variable composition convex hull",
 				data: result
