@@ -6,15 +6,15 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-29
  */
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
-import {Scatter} from "@unovis/ts";
-import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip} from "@unovis/vue";
+import {Scatter, BulletShape} from "@unovis/ts";
+import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip, VisBulletLegend} from "@unovis/vue";
 
 const windowPath = "/components-hull";
 
@@ -135,6 +135,11 @@ const triggers = {
     }
 };
 
+const legend = [
+    {name: "structures", color: "#00FF00"},
+    {name: "structures on the convex hull", color: "#FF0000", shape: BulletShape.Square}
+];
+const position = computed(() => (dimension.value === 2 ? "left: 120px" : "left: 20px"));
 </script>
 
 
@@ -163,6 +168,7 @@ const triggers = {
          type="error"
          color="red-darken-4"
          class="cursor-pointer" />
+    <VisBulletLegend :items="legend" class="hull-legend" :style="position"/>
     <v-container class="hull-buttons">
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
@@ -196,4 +202,10 @@ const triggers = {
   align-items: baseline
 }
 
+.hull-legend {
+    position: absolute;
+    top: 10px;
+    left: 120px;
+    /* left: 20px; */
+}
 </style>

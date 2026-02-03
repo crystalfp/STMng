@@ -4,7 +4,7 @@
   "productName": "STMng",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.52.1",
+  "version": "1.52.2",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@mdi/svg": "^7.4.47",
-    "@oxlint/migrate": "^1.42.0",
+    "@oxlint/migrate": "^1.43.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",

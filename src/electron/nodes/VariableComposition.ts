@@ -908,7 +908,9 @@ export class VariableComposition extends NodeCore {
 			const p2 = structureParts[2]/pt;
 			p.push([p0, p1, p2]);
 
-			x.push(0.5*p2+(1-p2)*p0);
+			const xx = p2 === 1 ? 0.5 : 0.5*p2+(1-p2)*p0/(p0+p1);
+			x.push(xx);
+			// x.push(0.5*p2+(1-p2)*p0);
 			y.push(p2*0.8660254038); // Math.sqrt(3)/2
 			z.push(energy);
 		}

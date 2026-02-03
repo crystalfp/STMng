@@ -443,7 +443,7 @@ const showCharts = (): void => {
     <node-alert node="variableComposition2" class="mt-1"/>
 
   <v-btn block class="mt-2" :disabled="disableCharts" @click="showCharts">
-    Show charts
+    Show chart
   </v-btn>
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
             label="Consolidate output" class="ml-2 mt-2"/>

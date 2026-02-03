@@ -21,9 +21,9 @@
 
 <h2>Two components</h2>
 
-<img src="./hull2d.png" width="1073" height="690" style="margin-bottom: 1rem">
+<img src="./hull2d.png" width="500" height="400" style="margin-bottom: 1rem">
 <p>The chart shows a point for each structure after removing duplicates. The composition ratio is: <b>component<sub>2</sub>/(component<sub>1</sub>+component<sub>2</sub>)</b></p>
-<p>The line is the lower part of the convex hull enclosing the points. The red squares are structures exactly on the convex hull line.</p>
+<p>The line is the lower part of the convex hull enclosing the points. The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull line.</p>
 <p>Hovering a point shows a popup with the following information:</p>
 <table>
   <tr><td class="c1">Step</td><td>Step of the structure in the loaded sequence</td></tr>
@@ -33,7 +33,18 @@
 </table>
 
 <h2>Three components</h2>
-<p>⚠ Work in progress ⚠</p>
+<img src="./hull3d.png" width="500" height="400" style="margin-bottom: 1rem">
+<p>The chart shows a point for each structure after removing duplicates. On the corners of the triangles are the three end-members components. The enthalpy of formation lies on the axis perpendicular to the image.</p>
+<p>The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull surface. This surface lies below the visualized triangle and is the bottom half of the convex hull enclosing the points.</p>
+<p>Hovering a point shows a popup with the following information:</p>
+<table>
+  <tr><td class="c1">Step</td><td>Step of the structure in the loaded sequence</td></tr>
+  <tr><td class="c1">Composition</td><td>Proportion of the three components</td></tr>
+  <tr><td class="c1">Enthalpy of formation</td><td>Enthalpy of formation (eV/atom)</td></tr>
+  <tr><td class="c1">Distance from convex hull</td><td>Enthalpy difference with the convex hull surface</td></tr>
+</table>
+<p>The image shows an example of the popup.</p>
+
 <h2>Four components</h2>
 <p>⚠ Work in progress ⚠</p>
 
