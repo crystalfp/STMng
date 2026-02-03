@@ -686,6 +686,21 @@ export class VariableComposition extends NodeCore {
 	}
 
 	/**
+	 * Check for points on the border of a triangle
+	 *
+	 * @param point - Point to test
+	 * @param nearest - Nearest point
+	 * @returns Zero if the points are coincident, otherwise -1
+	 */
+	private coincident(point: number[], nearest: number[]): number {
+
+		const dx = point[0] - nearest[0];
+		const dy = point[1] - nearest[1];
+		const dz = point[2] - nearest[2];
+		return Math.abs(dx*dx + dy*dy + dz*dz) < 1e-10 ? 0 : -1;
+	}
+
+	/**
 	 * Distance from the closest point inside the triangle
 	 * @remarks Code ported from <https://stackoverflow.com/questions/2924795/fastest-way-to-compute-point-to-triangle-distance-in-3d/74395029>
 	 *
@@ -703,26 +718,56 @@ export class VariableComposition extends NodeCore {
 
 		const d1 = dot(ab, ap);
 		const d2 = dot(ac, ap);
-		if(d1 <= 0 && d2 <= 0) return -1; // #1
+		if(d1 <= 0 && d2 <= 0) return this.coincident(p, a); // #1
 
 		const bp = [p[0] - b[0], p[1] - b[1], p[2] - b[2]];
 		const d3 = dot(ab, bp);
 		const d4 = dot(ac, bp);
-		if(d3 >= 0 && d4 <= d3) return -1; // #2
+		if(d3 >= 0 && d4 <= d3) return this.coincident(p, b); // #2
 
 		const cp = [p[0] - c[0], p[1] - c[1], p[2] - c[2]];
   		const d5 = dot(ab, cp);
   		const d6 = dot(ac, cp);
-  		if(d6 >= 0 && d5 <= d6) return -1; // #3
+  		if(d6 >= 0 && d5 <= d6) return this.coincident(p, c); // #3
 
   		const vc = d1 * d4 - d3 * d2;
-		if(vc <= 0 && d1 >= 0 && d3 <= 0) return -1; // #4
+		if(vc <= 0 && d1 >= 0 && d3 <= 0) {
+
+			const v = d1 / (d1 - d3);
+			const x = [
+				a[0] + v * ab[0],
+				a[1] + v * ab[1],
+				a[2] + v * ab[2]
+			];
+
+			return this.coincident(p, x); // #4
+		}
 
 		const vb = d5 * d2 - d1 * d6;
-  		if(vb <= 0 && d2 >= 0 && d6 <= 0) return -1; // #5
+  		if(vb <= 0 && d2 >= 0 && d6 <= 0) {
+
+			const v = d2 / (d2 - d6);
+			const x = [
+				a[0] + v * ac[0],
+				a[1] + v * ac[1],
+				a[2] + v * ac[2]
+			];
+
+			return this.coincident(p, x); // #5
+		}
 
   		const va = d3 * d6 - d5 * d4;
-  		if(va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) return -1; // #6
+  		if(va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) {
+
+			const v = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+			const x = [
+				b[0] + v*(c[0]-b[0]),
+				b[1] + v*(c[1]-b[1]),
+				b[2] + v*(c[2]-b[2])
+			];
+
+			return this.coincident(p, x); // #6
+		}
 
 		const denom = 1 / (va + vb + vc);
 		const v = vb * denom;
