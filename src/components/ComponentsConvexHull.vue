@@ -6,15 +6,16 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-29
  */
-import {computed, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
-import {Scatter, BulletShape} from "@unovis/ts";
-import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip, VisBulletLegend} from "@unovis/vue";
+import {Scatter, BulletShape, type BulletLegendItemInterface} from "@unovis/ts";
+import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip,
+        VisBulletLegend} from "@unovis/vue";
 
 const windowPath = "/components-hull";
 
@@ -114,7 +115,7 @@ requestData(windowPath, (params: CtrlParams) => {
     forceUpdate.value = !forceUpdate.value;
 });
 
-// Accessors for the charts
+// Accessors for the charts and hover popup
 const xp = (d: DataRecord): number => d.x;
 const yp = (d: DataRecord): number => d.y;
 const triggers = {
@@ -135,31 +136,56 @@ const triggers = {
     }
 };
 
-const legend = [
-    {name: "structures", color: "#00FF00"},
-    {name: "structures on the convex hull", color: "#FF0000", shape: BulletShape.Square}
-];
+// Chart legend
+const legend = reactive([
+    {name: "structures", color: "#00FF00", inactive: false},
+    {name: "structures on the convex hull", color: "#FF0000",
+     shape: BulletShape.Square, inactive: false}
+]);
 const position = computed(() => (dimension.value === 2 ? "left: 120px" : "left: 20px"));
+
+const showStructures = ref(true);
+const showOnLine = ref(true);
+
+/**
+ * Toggle visibility of the chart items
+ *
+ * @param item - Legend item
+ * @param which - Which legend item is selected
+ */
+const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
+
+    if(which === 0) showStructures.value = item.inactive!;
+    else if(which === 1) showOnLine.value = item.inactive!;
+    item.inactive = !item.inactive;
+};
+
 </script>
 
 
 <template>
 <v-app :theme>
   <div class="hull-portal">
-    <VisXYContainer v-if="dimension===2" :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
+    <VisXYContainer v-if="dimension===2"
+                    :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
-      <VisScatter :data="points" :x="xp" :y="yp" color="#00FF00" :size="7" cursor="pointer"/>
-      <VisScatter :data="line" :x="xp" :y="yp" color="#FF0000" :size="15" cursor="pointer" shape="square"/>
+      <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
+                  color="#00FF00" :size="7" cursor="pointer"/>
+      <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
+                  color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisAxis type="x" :gridLine="false" label="Composition ratio"
               :labelFontSize="24"/>
       <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
-              :fullSize="true" :labelFontSize="24"/>
+              :fullSize="true" :labelFontSize="24" />
       <VisTooltip :triggers :followCursor="false" />
     </VisXYContainer>
-    <VisXYContainer v-else-if="dimension===3" :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
+    <VisXYContainer v-else-if="dimension===3"
+                    :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
-      <VisScatter :data="points" :x="xp" :y="yp" color="#00FF00" :size="7" cursor="pointer"/>
-      <VisScatter :data="vertex" :x="xp" :y="yp" color="#FF0000" :size="15" cursor="pointer" shape="square"/>
+      <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
+                  color="#00FF00" :size="7" cursor="pointer"/>
+      <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
+                  color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisTooltip :triggers :followCursor="false" />
     </VisXYContainer>
     <v-alert v-else
@@ -168,7 +194,9 @@ const position = computed(() => (dimension.value === 2 ? "left: 120px" : "left: 
          type="error"
          color="red-darken-4"
          class="cursor-pointer" />
-    <VisBulletLegend :items="legend" class="hull-legend" :style="position"/>
+    <VisBulletLegend :items="legend" class="hull-legend" :style="position"
+                     :onLegendItemClick="toggleItem"
+                     labelFontSize="medium" bulletSize="15px"/>
     <v-container class="hull-buttons">
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>

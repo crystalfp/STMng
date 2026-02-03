@@ -179,6 +179,18 @@ export class VariableCompositionAccumulator {
 	}
 
 	/**
+	 * Iterator on the accumulated structures that are enabled
+	 *
+	 * @returns An iterator on the enabled structures
+	 */
+	* iterateEnabledStructures(): Generator<VariableComponent> {
+
+		for(const entry of this.accumulator) {
+			if(entry.enabled) yield entry;
+		}
+	}
+
+	/**
 	 * Initialize the mapping between key and index to accumulator entries
 	 */
 	initializeKeyMap(): void {
