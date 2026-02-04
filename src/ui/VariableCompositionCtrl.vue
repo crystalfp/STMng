@@ -84,6 +84,8 @@ const {variableCompositionAccumulate} = storeToRefs(controlStore);
 
 // > Persistent state that is saved in the project file
 const state = reactive({
+    filterOnDistance: false,
+    distanceFromHull: 0.1,
     forceCutoff: false,
     manualCutoffDistance: 10,
     fingerprintingMethod: 0,
@@ -109,6 +111,30 @@ watch([species, countComponents], ([sp, cc]) => {
     count.value.length = len;
     for(let i=0; i < len; ++i) count.value[i] = 0;
 }, {deep: true, immediate: true});
+
+/** Disable the compute compositions button */
+const noComputeCompositions = computed(() => {
+
+    // Disable if no structures
+    if(countAccumulated.value === 0) return true;
+
+    // Disabled if any component has no atom defined
+    const ns = species.value.length;
+    const nc = countComponents.value;
+    for(let i=0; i < nc; ++i) {
+        let n = 0;
+        for(let j=0; j < ns; ++j) n += count.value[i*ns+j];
+        if(n === 0) return true;
+    }
+
+    // Disabled if any specie is not represented in any component
+    for(let j=0; j < ns; ++j) {
+        let n = 0;
+        for(let i=0; i < nc; ++i) n += count.value[i*ns+j];
+        if(n === 0) return true;
+    }
+    return false;
+});
 
 // > Initialize the ui
 resetNodeAlert();
@@ -191,27 +217,11 @@ const resetAccumulator = (): void => {
 };
 
 /**
- * Compute grouping
+ * Compute compositions
  */
-const computeGroups = (): void => {
+const computeCompositions = (): void => {
 
     resetNodeAlert();
-
-    // Check if all components are valid
-    for(let i=0; i < countComponents.value; ++i) {
-        let allZeroes = true;
-        for(let j=0; j < species.value.length; ++j) {
-            if(count.value[i*species.value.length+j] !== 0) {
-                allZeroes = false;
-                break;
-            }
-        }
-        if(allZeroes) {
-            showNodeAlert(`All zero content for component ${i+1}`,
-                          "variableComposition");
-            return;
-        }
-    }
 
     askNode(id, "group", {
         componentsCount: countComponents.value,
@@ -366,12 +376,18 @@ const showCharts = (): void => {
   </titled-slot>
 
   <div v-show="countAccumulated > 0">
-    <v-label class="ml-2 mb-2">End-member compositions (by column)</v-label>
-    <table class="ml-2">
+    <v-label class="ml-2 mb-2">End-member compositions</v-label>
+    <table class="ml-2 collapse">
+      <thead>
+        <tr>
+          <th></th>
+          <th v-for="value of species" :key="value">{{ value }}</th>
+        </tr>
+      </thead>
       <tbody>
-        <tr v-for="(value, idx) of species" :key="value">
-          <td class="pb-4">{{ value }}</td>
-          <td v-for="n in countComponents" :key="n">
+        <tr v-for="n in countComponents" :key="n">
+          <td class="pb-5 pr-1">{{ n }}</td>
+          <td v-for="(value, idx) of species" :key="value">
             <v-number-input v-model="count[idx+(n-1)*species.length]"
                             :step="1" :min="0" :max="999" class="ml-1" />
           </td>
@@ -379,8 +395,8 @@ const showCharts = (): void => {
       </tbody>
     </table>
 
-    <v-btn class="w-100 mb-2" :disabled="countAccumulated === 0"
-           @click="savedFiles=-1; analysisDone=false; computeGroups()">Compute compositions</v-btn>
+    <v-btn class="w-100 mb-2" :disabled="noComputeCompositions"
+           @click="savedFiles=-1; analysisDone=false; computeCompositions()">Compute compositions</v-btn>
   </div>
 
   <node-alert node="variableComposition" class="mt-1"/>
@@ -391,6 +407,15 @@ const showCharts = (): void => {
                 class="ml-2 pr-2" density="compact" select-strategy="all" items-per-page="-1"
                 fixed-header hover height="250px" show-select item-value="key"
                 hide-default-footer :headers hide-no-data />
+
+  <v-label class="separator-title">Filter structures</v-label>
+
+  <v-row class="ml-0 mr-2 pt-3">
+    <v-switch v-model="state.filterOnDistance"
+            label="Filter" class="ml-2 mr-6 mb-5" />
+    <v-number-input v-model="state.distanceFromHull" :disabled="!state.filterOnDistance"
+            label="Distance from convex hull" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
+  </v-row>
 
   <v-label class="separator-title">Compute distances</v-label>
 

@@ -200,7 +200,7 @@ const loadStructure = (side: Side, step: number): void => {
 
     askNode("SYSTEM", "get-structure", {step})
         .then((response: CtrlParams) => {
-            if(!("basis" in response)) throw Error("Cannot load the requested structure");
+            if(!response.basis) throw Error("Cannot load the requested structure");
 
             const bb = response.basis as BasisType;
 

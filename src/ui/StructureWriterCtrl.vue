@@ -93,7 +93,7 @@ const startStopCapture = (): void => {
                         filename: outputFileFull.value
             })
             .then((params) => {
-                if("error" in params) throw Error(params.error as string);
+                if(params.error) throw Error(params.error as string);
                 if(!controlStore.writerAccumulate) {
                     showNodeAlert(`File written to: ${outputFileFull.value}`,
                                   "structureWriter", {level: "success"});
@@ -112,7 +112,7 @@ const startStopCapture = (): void => {
                         filename: outputFileFull.value
             })
             .then((params) => {
-                if("error" in params) throw Error(params.error as string);
+                if(params.error) throw Error(params.error as string);
                 showNodeAlert(`File written to: ${outputFileFull.value}`,
                               "structureWriter", {level: "success"});
             })

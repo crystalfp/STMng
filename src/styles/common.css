@@ -127,6 +127,11 @@ html {
   background-color: var(--v-theme-background);
 }
 
+/* For tables */
+.collapse {
+  border-collapse: collapse;
+}
+
 /* > Secondary windows */
 .button-strip {
   display: flex;

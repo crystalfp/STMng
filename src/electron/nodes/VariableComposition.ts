@@ -41,7 +41,10 @@ export class VariableComposition extends NodeCore {
 	private enableAnalysis = false;
 	private structure: Structure | undefined;
 
+	// Mirror of the UI reactive state
 	private state = {
+		filterOnDistance: false,
+		distanceFromHull: 0.1,
 		forceCutoff: false,
 		manualCutoffDistance: 10,
 		fingerprintingMethod: 0,
@@ -115,7 +118,9 @@ export class VariableComposition extends NodeCore {
 
 	private initializeState(params: CtrlParams): void {
 
-   		this.state.forceCutoff = params.forceCutoff as boolean ?? false;
+   	    this.state.filterOnDistance = params.filterOnDistance as boolean ?? false;
+    	this.state.distanceFromHull = params.distanceFromHull as number ?? 0.1;
+		this.state.forceCutoff = params.forceCutoff as boolean ?? false;
     	this.state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
     	this.state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
     	this.state.binSize = params.binSize as number ?? 0.05;
@@ -136,26 +141,31 @@ export class VariableComposition extends NodeCore {
 	/**
 	 * Verify step validity
 	 *
-	 * @param step - Composition of the step to check
+	 * @param composition - Composition of the step to check
 	 * @param parts - Computed percentages for each component
 	 * @param nspecies - Number of species (is the size of step array)
 	 * @param ncomponents - Number of components
 	 * @param components - All components
-	 * @returns True if the step is the given combination of components
+	 * @returns Empty string if the step is the given combination of components,
+	 * 			otherwise the error message
 	 */
-	private verify(step: number[], parts: number[], nspecies: number,
-				   ncomponents: number, components: number[]): boolean {
+	private verify(composition: number[], parts: number[], nspecies: number,
+				   ncomponents: number, components: number[]): string {
 
-		for(const part of parts) if(!Number.isInteger(part)) return false;
+		for(let j=0; j < ncomponents; ++j) {
+			const part = parts[j];
+			if(!Number.isInteger(part) || part < 0) return `Invalid part ${j+1} "${part}"`;
+		}
+
 		for(let i=0; i < nspecies; ++i) {
 			let count = 0;
 			for(let j=0; j < ncomponents; ++j) {
 				count += parts[j] * components[j*nspecies+i];
 			}
-			if(count !== step[i]) return false;
+			if(count !== composition[i]) return `Specie ${i+1} count mismatch`;
 		}
 
-		return true;
+		return "";
 	}
 
 	/**
@@ -247,9 +257,10 @@ export class VariableComposition extends NodeCore {
 				}
 			}
 
-			if(!this.verify(step, parts, nspecies, ncomponents, components)) {
+			const sts = this.verify(step, parts, nspecies, ncomponents, components);
+			if(sts !== "") {
 
-				sendAlertToClient(`Invalid composition for step ${stepNumber}`,
+				sendAlertToClient(`Invalid composition for step ${stepNumber}: ${sts}`,
 								  {node: "variableComposition"});
 				return [];
 			}
@@ -662,7 +673,7 @@ export class VariableComposition extends NodeCore {
 	 *
 	 * @param x - Points X coordinates
 	 * @param y - Points Y coordinates
-	 * @param vertices - Vertices of the convex hull line
+	 * @param vertices - Vertices of the convex hull line [x, y, x, y,...]
 	 * @returns Distances of the points from the line
 	 */
 	private distanceFromConvexHull2D(x: number[], y: number[], vertices: number[]): number[] {

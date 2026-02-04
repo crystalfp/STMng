@@ -155,6 +155,7 @@ export default defineConfig([
         "@typescript-eslint/no-shadow": [
             "error", {hoist: "functions-and-types"}
         ],
+        "no-restricted-syntax": ["error", "BinaryExpression[operator='in']"],
         // "no-implicit-coercion": "error",
         // "no-undef": "error",
         // "no-extend-native": "error",
@@ -383,6 +384,11 @@ export default defineConfig([
         "unicorn/switch-case-braces": "off",
         "unicorn/prefer-json-parse-buffer": "off",
         "unicorn/prefer-class-fields": "warn",
+        // === Enable non-recommended rules that add value ===
+        'unicorn/better-regex': 'warn',              // Simplify regexes: /[0-9]/ → /\d/
+        'unicorn/custom-error-definition': 'error',  // Correct Error subclassing
+        'unicorn/no-unused-properties': 'warn',      // Dead code detection
+        'unicorn/consistent-destructuring': 'warn',  // Use destructured vars consistently
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],
@@ -408,11 +414,6 @@ export default defineConfig([
         "sonarjs/no-selector-parameter": "off",
 
         // > ******************* other plugins ***********************
-        // "promise/no-return-wrap": "warn",
-        // "promise/no-promise-in-callback": "warn",
-        // "promise/no-nesting": "warn",
-        // "promise/no-callback-in-promise": "warn",
-        // "security/detect-child-process": "warn",
         "depend/ban-dependencies": ["warn", {
                                     "presets": ["native", "microutilities", "preferred"]
         }],
@@ -425,19 +426,30 @@ export default defineConfig([
         // "vue/no-v-html": "off",
         // "vue/multi-word-component-names": "off",
         // "vue/comment-directive": "warn",
-        // "import/no-cycle": "error",
-        "import/no-unresolved": "error",
-        // "import/namespace": "off",
-        // "import/no-named-as-default": "off",
-        // "import/no-named-as-default-member": "off",
         "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
         "vue/attributes-order": "warn",
         "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
+        "vue/prefer-use-template-ref": "error",
+        "vue/no-unused-properties": ["error", {
+            "groups": ["props", "data", "computed", "methods"]
+        }],
+        "vue/no-unused-refs": "error",
+        "vue/no-unused-emit-declarations": "error",
+        // "import/no-cycle": "error",
+        // "import/namespace": "off",
+        // "import/no-named-as-default": "off",
+        // "import/no-named-as-default-member": "off",
+        "import/no-unresolved": "error",
         "import/default": "off",
-        // "tsdoc/syntax": "warn",
+        // "promise/no-return-wrap": "warn",
+        // "promise/no-promise-in-callback": "warn",
+        // "promise/no-nesting": "warn",
+        // "promise/no-callback-in-promise": "warn",
         "promise/always-return": "off",
         "promise/catch-or-return": ["warn", {allowFinally: true}],
+        // "security/detect-child-process": "warn",
         "security/detect-non-literal-fs-filename": "off",
         "security/detect-object-injection": "off",
+        // "tsdoc/syntax": "warn",
     }
 }]);

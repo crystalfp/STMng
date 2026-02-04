@@ -8,6 +8,7 @@
  */
 import type {NodeProps} from "@vue-flow/core";
 
+// eslint-disable-next-line vue/no-unused-properties
 defineProps<NodeProps>();
 
 </script>

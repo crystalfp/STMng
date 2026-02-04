@@ -121,7 +121,7 @@ const batchRead = async (): Promise<void> => {
         useBohr: useBohr.value,
     });
 
-    if("error" in readParams) throw Error(readParams.error as string);
+    if(readParams.error) throw Error(readParams.error as string);
     countSteps.value = readParams.countSteps as number ?? 1;
     inProgress.value = false;
     resetCamera();
@@ -141,7 +141,7 @@ const batchRead = async (): Promise<void> => {
         format: format.value,
         auxFileToRead: params.auxFile,
     });
-    if("error" in auxParams) throw Error(auxParams.error as string);
+    if(auxParams.error) throw Error(auxParams.error as string);
     countSteps.value = auxParams.countSteps as number ?? 1;
     stepRange.value[0] = 1;
     stepRange.value[1] = countSteps.value;
@@ -193,7 +193,7 @@ watch([step], (
             step: step.value,
         })
         .then((params) => {
-            if("error" in params) throw Error(params.error as string);
+            if(params.error) throw Error(params.error as string);
             if(configStore.camera.autoReset) resetCamera();
         })
         .catch((error: Error) => {
@@ -254,7 +254,7 @@ watch([running], async () => {
 
         try {
             const response = await askNode(id, "step", {step: nextStep});
-            if("error" in response) throw Error(response.error as string);
+            if(response.error) throw Error(response.error as string);
             step.value = response.step as number;
             if(configStore.camera.autoReset) resetCamera();
             if(!running.value) break;
@@ -416,7 +416,7 @@ const selectedFile = (filename: string): void => {
             useBohr: useBohr.value,
         })
         .then((params) => {
-            if("error" in params) throw Error(params.error as string);
+            if(params.error) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
             resetCamera();
@@ -450,7 +450,7 @@ const droppedFile = (content: string, filename: string): void => {
             filename
         })
         .then((params) => {
-            if("error" in params) throw Error(params.error as string);
+            if(params.error) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             inProgress.value = false;
             resetCamera();
@@ -476,7 +476,7 @@ const droppedAuxFile = (content: string): void => {
             auxFileContent: content,
         })
         .then((params) => {
-            if("error" in params) throw Error(params.error as string);
+            if(params.error) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             stepRange.value[0] = 1;
             stepRange.value[1] = countSteps.value;
@@ -499,7 +499,7 @@ const selectedAuxFile = (filename: string): void => {
             auxFileToRead: filename,
         })
         .then((params) => {
-            if("error" in params) throw Error(params.error as string);
+            if(params.error) throw Error(params.error as string);
             countSteps.value = params.countSteps as number ?? 1;
             stepRange.value[0] = 1;
             stepRange.value[1] = countSteps.value;

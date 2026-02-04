@@ -19,7 +19,7 @@ import type {SelectedAtom, BondData, CtrlParams} from "@/types";
 import CellParameters from "@/widgets/CellParameters.vue";
 
 // > Properties
-const {id} = defineProps<{
+const {id, label} = defineProps<{
 
     /** Its own module id */
     id: string;
@@ -88,7 +88,7 @@ watch(controlStore.atomsSelected, () => {
             renderer.measureBonds(params, bondDataTable, pointSize);
         })
         .catch((error: Error) => {
-            showSystemAlert(`Error from computing bonds lengths: ${error.message}`);
+            showSystemAlert(`Error computing bonds lengths in ${label}: ${error.message}`);
         });
         return;
     }
