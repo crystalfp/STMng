@@ -8,16 +8,16 @@
  */
 import {getAtomicSymbol} from "../modules/AtomData";
 import {hasNoUnitCell} from "../modules/Helpers";
-import type {Structure, BasisType} from "@/types";
+import type {Structure, Atom, BasisType} from "@/types";
 
 /**
  * Content of the entries of the accumulator
  */
 export interface VariableComponent {
 
-	/** If the structure is to consider after reducing to one for group */
+	/** If the structure should be consider after reducing to one for group */
 	enabled: boolean;
-	/** Index of the structure in the input full set of structures (not selected) */
+	/** Step of the structure in the input full set of structures */
 	step: number;
 	/** The structure energy, if any, otherwise undefined */
 	energy?: number;
@@ -30,6 +30,8 @@ export interface VariableComponent {
 	atomsZ: number[];
 	/** Map from atomic number to count of atoms with this atomic number */
 	species: Map<number, number>;
+	/** Chemical formula in HTML */
+	formula: string;
 
 	/** Size of each component part of this structure */
 	parts: number[];
@@ -57,7 +59,38 @@ export class VariableCompositionAccumulator {
 	private allHaveEnergies: boolean | undefined = undefined;
 	private readonly allSpecies = new Set<number>();
 	private readonly keyMap = new Map<string, number[]>();
-	private numberOfComponents = 0;
+
+	/**
+	 * Extract the chemical formula of a structure
+	 *
+	 * @param atoms - Atoms in the input structure
+	 * @returns The chemical formula as HTML string (with subscript as <sub></sub>)
+	 */
+	private getFormula(atoms: Atom[]): string {
+
+		let formula = "";
+		let currentZ = 0;
+		let currentCount = 1;
+		for(const atom of atoms) {
+			if(currentZ === 0) currentZ = atom.atomZ;
+			else if(atom.atomZ === currentZ) {
+				++currentCount;
+			}
+			else {
+				// Save atom part of the formula
+				const sub = currentCount === 1 ? "" : `<sub>${currentCount}</sub>`;
+				formula += `${getAtomicSymbol(currentZ)}${sub}`;
+
+				// Reinitialize count
+				currentZ = atom.atomZ;
+				currentCount = 1;
+			}
+		}
+		const sub = currentCount === 1 ? "" : `<sub>${currentCount}</sub>`;
+		formula += `${getAtomicSymbol(currentZ)}${sub}`;
+
+		return formula;
+	}
 
 	/**
 	 * Load a structure
@@ -92,6 +125,8 @@ export class VariableCompositionAccumulator {
 			atomsPosition: [],
 			atomsZ: [],
 			species: new Map<number, number>(),
+			formula: this.getFormula(atoms),
+
 			parts: [],
 			key: "",
 			distance: 0,
@@ -128,7 +163,6 @@ export class VariableCompositionAccumulator {
 		this.allSpecies.clear();
 		this.allHaveEnergies = undefined;
 		this.keyMap.clear();
-		this.numberOfComponents = 0;
 	}
 
 	/**
@@ -159,7 +193,7 @@ export class VariableCompositionAccumulator {
 	/**
 	 * Return all species present in the accumulator as Z values
 	 *
-	 * @returns All accumulated species Z value
+	 * @returns Z values for the accumulated species
 	 */
 	species(): number[] {
 
@@ -194,6 +228,7 @@ export class VariableCompositionAccumulator {
 	 * Initialize the mapping between key and index to accumulator entries
 	 */
 	initializeKeyMap(): void {
+
 		this.keyMap.clear();
 		const count = this.accumulator.length;
 		for(let i=0; i < count; ++i) {
@@ -265,43 +300,6 @@ export class VariableCompositionAccumulator {
 		for(const idx of indices) {
 			const entry = this.accumulator[idx];
 			entry.enabled = enable;
-		}
-	}
-
-	/**
-	 * Save the number of components
-	 *
-	 * @param n - Number of component (set to zero if distances not loaded)
-	 */
-	setNumberOfComponents(n: number): void {
-		this.numberOfComponents = n;
-	}
-
-	/**
-	 * Get the number of components
-	 *
-	 * @returns Number of components or zero if no distance loaded
-	 */
-	getNumberOfComponents(): number {
-		return this.numberOfComponents;
-	}
-
-	/**
-	 * Set structure distance from the convex hull
-	 *
-	 * @param distances - Distances from the convex hull as computed in prepareData
-	 */
-	setDistances(distances: number[] | undefined): void {
-
-		if(!distances) {
-			this.numberOfComponents = 0;
-			return;
-		}
-		let idx = 0;
-		for(const entry of this.accumulator) {
-			if(entry.enabled) {
-				entry.distance = distances[idx++];
-			}
 		}
 	}
 }

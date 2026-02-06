@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
+  "$schema": "file:///C:/Users/mvalle/AppData/Roaming/npm/node_modules/knip/schema-jsonc.json",
   "entry": [
     "src/main.ts",
     "src/electron/main.ts",
@@ -15,7 +15,6 @@
     "oxlint",
     "vue-mess-detector",
     "dot",
-    "node-gyp",
     "migrate"
   ],
   "ignoreDependencies": [

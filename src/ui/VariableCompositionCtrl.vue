@@ -76,6 +76,7 @@ const distanceMethods = reactive<DistanceMethodsNames[]>([]);
 const analysisRunning = ref(false);
 const analysisDone = ref(false);
 const savedFiles = ref(-1);
+const remainingAfterFilter = ref(0);
 
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
@@ -160,6 +161,8 @@ askNode(id, "init")
             distanceMethods.push({value: i, label: distanceMethodsRaw[i]});
         }
 
+   	    state.filterOnDistance = params.filterOnDistance as boolean ?? false;
+    	state.distanceFromHull = params.distanceFromHull as number ?? 0.1;
         state.forceCutoff = params.forceCutoff as boolean ?? false;
         state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
         state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
@@ -223,7 +226,7 @@ const computeCompositions = (): void => {
 
     resetNodeAlert();
 
-    askNode(id, "group", {
+    askNode(id, "compositions", {
         componentsCount: countComponents.value,
         components: toRaw(count.value)
     })
@@ -237,6 +240,7 @@ const computeCompositions = (): void => {
             results.value.push(recipe);
             selected.value.push(recipe.key);
         }
+        remainingAfterFilter.value = params.remaining as number ?? 0;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from variable composition: ${error.message}`,
@@ -311,16 +315,19 @@ const analyzeSelected = async (): Promise<void> => {
  */
 const saveAnalyzed = (): void => {
 
-    askNode(id, "save", {selected: toRaw(selected.value)})
-        .then((params) => {
-            if(params.error) throw Error(params.error as string);
-            savedFiles.value = params.saved as number ?? -1;
-        })
-        .catch((error: Error) => {
-            savedFiles.value = -1;
-            showNodeAlert(`Error saving variable composition results: ${error.message}`,
-                          "variableComposition2");
-        });
+    askNode(id, "save", {
+        selected: toRaw(selected.value),
+        countComponents: countComponents.value
+    })
+    .then((params) => {
+        if(params.error) throw Error(params.error as string);
+        savedFiles.value = params.saved as number ?? -1;
+    })
+    .catch((error: Error) => {
+        savedFiles.value = -1;
+        showNodeAlert(`Error saving variable composition results: ${error.message}`,
+                        "variableComposition2");
+    });
 };
 
 const disableSave = computed(() => {
@@ -350,6 +357,31 @@ const showCharts = (): void => {
                       "variableComposition2");
     });
 };
+
+let lastFilterOnDistance: boolean;
+let lastDistanceFromHull: number;
+watch([state, selected], ([st, sel], [_ost, osel]) => {
+
+    if(st.filterOnDistance !== lastFilterOnDistance ||
+       st.distanceFromHull !== lastDistanceFromHull ||
+       sel.length !== osel.length) {
+        lastFilterOnDistance = st.filterOnDistance;
+        lastDistanceFromHull = st.distanceFromHull;
+        askNode(id, "filter", {
+            filterOnDistance: st.filterOnDistance,
+            distanceFromHull: st.distanceFromHull,
+            selected: toRaw(selected.value)
+        })
+        .then((response) => {
+
+            remainingAfterFilter.value = response.remaining as number ?? 0;
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Filter structures error: ${error.message}`,
+                          "variableComposition");
+        });
+    }
+});
 
 </script>
 
@@ -412,9 +444,12 @@ const showCharts = (): void => {
 
   <v-row class="ml-0 mr-2 pt-3">
     <v-switch v-model="state.filterOnDistance"
-            label="Filter" class="ml-2 mr-6 mb-5" />
+            label="Filter" class="ml-2 mr-3 mb-6" />
     <v-number-input v-model="state.distanceFromHull" :disabled="!state.filterOnDistance"
-            label="Distance from convex hull" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
+            label="Convex hull dist." :min="0" :max="1" :step="0.005"
+            :precision="3" class="mt-0 mr-1 w-33"/>
+    <v-number-input v-model="remainingAfterFilter" label="Remaining"
+            readonly control-variant="hidden"/>
   </v-row>
 
   <v-label class="separator-title">Compute distances</v-label>

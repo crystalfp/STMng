@@ -84,7 +84,7 @@ interface ComputeValidResult {
  * Mark duplicated structures
  *
  * @param accumulator - Accumulated structures
- * @param indices - List of indices to be analyzed
+ * @param indices - List of valid structure indices to be analyzed
  * @param params - Parameters for the computation
  * @returns Number of structures considered valid and eventually an error message
  */
@@ -120,8 +120,7 @@ export const computeValid = async (accumulator: VariableCompositionAccumulator,
 	for(const idx of indices) {
 
 		const entry = accumulator.getEntry(idx);
-		if(entry === undefined) continue;
-		entry.enabled = true;
+		if(!entry?.enabled) continue;
 
 		// Extract data to send to the worker to compute fingerprint
 		const lenP = entry.atomsPosition.length;

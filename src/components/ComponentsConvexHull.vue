@@ -6,7 +6,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-29
  */
-import {computed, reactive, ref} from "vue";
+import {computed, ref} from "vue";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -36,6 +36,8 @@ interface DataRecord {
     parts?: string;
     /** Enthalpy of formation */
     enthalpy?: number;
+    /** Chemical formula */
+    formula?: string;
 }
 
 const points = ref<DataRecord[]>([]);
@@ -61,12 +63,13 @@ requestData(windowPath, (params: CtrlParams) => {
 
     // Collect values for the scatterplot
     const dataX = params.x as number[];
-    const dataY = params.y as number[];
+    const dataY = dimension.value === 2 ? params.e as number[] : params.y as number[];
     const dist  = params.distance as number[];
     const step  = params.step as number[];
     const parts = params.parts as string[];
+    const formula = params.formula as string[];
+    const enthalpy = params.e as number[];
 
-    const enthalpy = dimension.value === 2 ? params.y as number[] : params.z as number[];
     let len = dataX.length;
     points.value.length = 0;
     for(let i=0; i < len; ++i) {
@@ -76,7 +79,8 @@ requestData(windowPath, (params: CtrlParams) => {
             dist: dist[i],
             step: step[i],
             parts: parts[i],
-            enthalpy: enthalpy[i]
+            enthalpy: enthalpy[i],
+            formula: formula[i]
         });
     }
 
@@ -91,14 +95,14 @@ requestData(windowPath, (params: CtrlParams) => {
                 const idx = idxVertices[i/2];
                 line.value.push({x: vertices[i], y: vertices[i+1],
                                 step: step[idx], parts: parts[idx],
-                                enthalpy: vertices[i+1]});
+                                enthalpy: vertices[i+1], formula: formula[idx]});
             }
             break;
         case 3:
             line.value.length = 0;
             line.value.push({x: 0,   y: 0},
                             {x: 1,   y: 0},
-                            {x: 0.5, y: 0.8660254038}, // Math.sqrt(3)/2
+                            {x: 0.5, y: 0.8660254038}, // √3/2
                             {x: 0,   y: 0});
             vertex.value.length = 0;
             len = vertices.length;
@@ -106,7 +110,7 @@ requestData(windowPath, (params: CtrlParams) => {
                 const idx = idxVertices[i/3];
                 vertex.value.push({x: vertices[i], y: vertices[i+1],
                                    step: step[idx], parts: parts[idx],
-                                   enthalpy: vertices[i+2]});
+                                   enthalpy: vertices[i+2], formula: formula[idx]});
             }
             break;
         default:
@@ -122,12 +126,14 @@ const triggers = {
     [Scatter.selectors.point]: (d: DataRecord) => {
 
         if(d.dist === undefined) return `
+            <b>${d.formula!}</b><br>
             Step: ${d.step}<br>
             Composition: ${d.parts!.replaceAll("-", ":")}<br>
             Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
             Distance from convex hull: 0.0000
         `;
         return `
+            <b>${d.formula!}</b><br>
             Step: ${d.step}<br>
             Composition: ${d.parts!.replaceAll("-", ":")}<br>
             Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
@@ -137,7 +143,7 @@ const triggers = {
 };
 
 // Chart legend
-const legend = reactive([
+const legend = ref<BulletLegendItemInterface[]>([
     {name: "structures", color: "#00FF00", inactive: false},
     {name: "structures on the convex hull", color: "#FF0000",
      shape: BulletShape.Square, inactive: false}
@@ -149,6 +155,7 @@ const showOnLine = ref(true);
 
 /**
  * Toggle visibility of the chart items
+ * Implementing the fix from: <https://github.com/f5/unovis/issues/729#issuecomment-3850102309>
  *
  * @param item - Legend item
  * @param which - Which legend item is selected
@@ -157,7 +164,10 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
 
     if(which === 0) showStructures.value = item.inactive!;
     else if(which === 1) showOnLine.value = item.inactive!;
-    item.inactive = !item.inactive;
+
+    const updItems = [...legend.value];
+    updItems[which] = {...item, inactive: !item.inactive};
+    legend.value = updItems;
 };
 
 </script>
