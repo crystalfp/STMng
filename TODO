@@ -62,6 +62,7 @@ Nice to have/Future:
   ☐ <https://vuefinder.ozdemir.be/> Alternative file selector
   ☐ Remove debug statements with `@rollup/plugin-strip`
   ☐ Add a `metadata` section to project files.
+  ☐ Investigate git workspaces for STMng preprocessor
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>

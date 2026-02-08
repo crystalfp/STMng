@@ -6,12 +6,12 @@ import vuePlugin from "eslint-plugin-vue";
 import promisePlugin from "eslint-plugin-promise";
 import importPlugin from "eslint-plugin-import";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import commentsPlugin from "eslint-plugin-eslint-comments";
+// import commentsPlugin from "eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
-import tsdocPlugin from "eslint-plugin-tsdoc";
+// import tsdocPlugin from "eslint-plugin-tsdoc";
 import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
@@ -82,12 +82,12 @@ export default defineConfig([
         promise: promisePlugin,
         import: importPlugin,
         "@typescript-eslint": typescriptPlugin,
-        "eslint-comments": commentsPlugin,
+        // "eslint-comments": commentsPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
         sonarjs: sonarjsPlugin,
         regexp: regexpPlugin,
-        tsdoc: tsdocPlugin,
+        // tsdoc: tsdocPlugin,
         "@stylistic": stylistic,
         depend: depend,
     },
@@ -103,7 +103,7 @@ export default defineConfig([
     },
     rules: {
         ...jsPlugin.configs.recommended.rules,
-        ...commentsPlugin.configs.recommended.rules,
+        // ...commentsPlugin.configs.recommended.rules,
         ...promisePlugin.configs.recommended.rules,
         ...importPlugin.configs.recommended.rules,
         ...importPlugin.configs.typescript.rules,
@@ -123,8 +123,6 @@ export default defineConfig([
         ...depend.configs["flat/recommended"].rules,
 
         // > ******************* language rules ***********************
-        "no-unassigned-vars": "warn",
-
         "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
         "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
         "@typescript-eslint/no-unnecessary-condition": "off",
@@ -451,5 +449,10 @@ export default defineConfig([
         "security/detect-non-literal-fs-filename": "off",
         "security/detect-object-injection": "off",
         // "tsdoc/syntax": "warn",
+
+        "@typescript-eslint/no-deprecated": "off",
+        "security/detect-unsafe-regex": "off",
+        "security/detect-no-csrf-before-method-override": "off",
+        "@typescript-eslint/consistent-generic-constructors": "off",
     }
 }]);

@@ -196,7 +196,7 @@ class AtomData {
 	 * @returns The corresponding atomic symbol
 	 */
 	atomicSymbol(atomZ: number): string {
-		return this.data[atomZ].symbol;
+		return this.data[atomZ]?.symbol ?? "Xx";
 	}
 
 	/**
@@ -207,7 +207,10 @@ class AtomData {
 	 */
 	atomicData(atomZ: number): AtomInfo {
 
-		const {symbol, rCov, rVdW, maxBonds, color, bondStrength, mass} = this.data[atomZ];
+		let data = this.data[atomZ];
+		if(!data) data = this.data[0];
+
+		const {symbol, rCov, rVdW, maxBonds, color, bondStrength, mass} = data;
 
 		return {
 			symbol,
