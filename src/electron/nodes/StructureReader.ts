@@ -8,17 +8,17 @@
  */
 import log from "electron-log";
 import {tmpNameSync} from "tmp";
-import {globSync} from "tinyglobby";
 import {unlinkSync, writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {getDBforSearch, getPrototypeStructure} from "../modules/PrototypeDb";
+import {publicDirPath} from "../modules/GetPublicPath";
+import {CollectionDb} from "../modules/CollectionDb";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
-import {publicDirPath} from "../modules/GetPublicPath";
 
 const formatsThatNeedsAtomTypes = new Set(["POSCAR", "CHGCAR", "LAMMPS",
 										   "LAMMPStrj", "POSCAR + XDATCAR", "XDATCAR5",
@@ -43,7 +43,7 @@ export class StructureReader extends NodeCore {
 	private fileToRead = "";
 	private reader: ReaderImplementation | undefined;
 	private readerOptions: ReaderOptions = {};
-	private cachedCollection = "";
+	private readonly collection = new CollectionDb();
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -66,7 +66,7 @@ export class StructureReader extends NodeCore {
 		{name: "aux-dropped",	type: "invokeAsync", callback: this.channelAuxDropped.bind(this)},
 		{name: "proto", 	 	type: "invokeAsync", callback: this.channelProto.bind(this)},
 		{name: "species", 	 	type: "invokeAsync", callback: this.channelSpecies.bind(this)},
-		{name: "collection", 	type: "invokeAsync", callback: this.channelCollection.bind(this)},
+		{name: "collection", 	type: "invoke", 	 callback: this.channelCollection.bind(this)},
 	];
 
 	/**
@@ -735,64 +735,40 @@ export class StructureReader extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private async channelCollection(params: CtrlParams): Promise<CtrlParams> {
+	private channelCollection(params: CtrlParams): CtrlParams {
 
-		const root = publicDirPath("StructureCollection").replaceAll("\\", "/");
-
+		// If called without arguments load the collection
 		if(!params) {
-
-			if(!this.cachedCollection) {
-
-				const files = globSync(`${root}/*.cif`, {
-					onlyFiles: true, cwd: root, expandDirectories: false
-				});
-
-				let next = false;
-				this.cachedCollection = "[";
-				for(const file of files) {
-					if(next) this.cachedCollection += ",";
-					else next = true;
-					const title = file.replace(".cif", "").replaceAll("_", " ").replaceAll("-", " ");
-					this.cachedCollection += `{"title":"${title}","filename":"${file}"}`;
-				}
-				this.cachedCollection += "]";
-			}
-
-			return {list: this.cachedCollection};
+			const db = publicDirPath("structure-collection").replaceAll("\\", "/");
+			const list = this.collection.loadList(db);
+			return {list: JSON.stringify(list)};
 		}
 
-		// Load a single file from the collection
-		const filename = params.filename as string;
-		if(!filename) {
+		// Do the query
+		const fileID = params.fileID as string;
+		if(!fileID) {
 			this.toNextNode(new EmptyStructure());
 			return {result: "Empty filename"};
 		}
 
-		const {ReaderCIF} = await import("../readers/ReadCIF");
-		const reader = new ReaderCIF();
-
-		// Read the file and catch format errors
-		const fullPath = `${root}/${filename}`;
-		const structures = await reader.readStructure(fullPath)
-			.catch((error: Error) => {
-				return `Format "CIF" error: ${error.message}`;
-			});
-		if(typeof structures === "string") {
-			log.error(structures);
-			return {error: structures};
+		const structure = this.collection.getStructure(fileID);
+		if(structure === undefined) {
+			this.toNextNode(new EmptyStructure());
+			const message = `File for ID "${fileID}" not found`;
+			log.error(message);
+			return {error: message};
 		}
-		this.structures = structures;
-		this.structures[0].extra.step = 1;
-
-		// Clean and check the structure list
-		StructureReader.removeEmptyStructures(this.structures);
+		this.structures = [structure];
 		if(StructureReader.checkStructures(this.structures)) {
 			this.toNextNode(this.structures[0]);
-			this.countSteps = this.structures.length;
+			this.countSteps = 1;
 			return {countSteps: this.countSteps};
 		}
 
-		const message = 'Invalid "CIF" file content';
+		// For some reason the db is corrupted
+		this.toNextNode(new EmptyStructure());
+
+		const message = `File for ID "${fileID}" invalid`;
 		log.error(message);
 		return {error: message};
 	}

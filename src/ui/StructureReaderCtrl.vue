@@ -58,14 +58,14 @@ const fileFormats = [
 ];
 
 /**
- * Collection entry for autocomplete a query
+ * Collection entry for the autocomplete query
  * @notExported
  */
 interface CollectionType {
     /** Title that appears in the widget (and the one searched over) */
     title: string;
-    /** Corresponding filename to load */
-    filename: string;
+    /** Corresponding fileID to load */
+    id: string;
 }
 
 // > UI parameters
@@ -94,7 +94,7 @@ const pearson         = ref("");     // The selected prototype pearson tag
 const strukturbericht = ref("");     // The selected prototype strukturbericht tag
 const aflowTag        = ref("");     // The selected prototype aflow tag
 const collection      = ref<CollectionType[]>([]); // The structure collection
-const collectionQuery = ref("");     // The selected collection entry filename
+const collectionQuery = ref("");     // The selected collection entry ID
 
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
@@ -679,10 +679,10 @@ const startQuery = (aflow: string): void => {
  *
  * @param filename - Filename to load
  */
-const startCollectionQuery = (filename: string): void => {
+const startCollectionQuery = (fileID: string): void => {
 
-    if(!filename) filename = "";
-    askNode(id, "collection", {filename})
+    if(!fileID) fileID = "";
+    askNode(id, "collection", {fileID})
         .then((result) => {
             if(result.error) throw Error(result.error as string);
         })
@@ -718,7 +718,7 @@ const startCollectionQuery = (filename: string): void => {
   </v-container>
   <v-container v-else-if="showCollection" class="pa-0">
     <v-autocomplete v-model="collectionQuery" label="Collection query"
-                  :items="collection" item-title="title" item-value="filename"
+                  :items="collection" item-title="title" item-value="id"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No entry found" spellcheck="false"
                   @update:modelValue="startCollectionQuery"/>
