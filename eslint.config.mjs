@@ -450,9 +450,11 @@ export default defineConfig([
         "security/detect-object-injection": "off",
         // "tsdoc/syntax": "warn",
 
+        // > ******************* for eslint 10 (temporary) ***********************
         "@typescript-eslint/no-deprecated": "off",
         "security/detect-unsafe-regex": "off",
         "security/detect-no-csrf-before-method-override": "off",
         "@typescript-eslint/consistent-generic-constructors": "off",
+        "no-useless-assignment": "off"
     }
 }]);

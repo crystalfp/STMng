@@ -24,8 +24,16 @@ interface CollectionDbEntry {
 	length: number;
 }
 
-/** Index of the collection */
-export type CollectionIndex = {id: string; title: string}[];
+/**
+ * Index of the collection
+ * @notExported
+ */
+interface CollectionIndexEntry {
+	/** Unique structure identifier */
+	id: string;
+	/** User facing structure title */
+	title: string;
+}
 
 /**
  * Access to the structure collection in binary form
@@ -58,7 +66,7 @@ export class CollectionDb {
 	 * "Collection database not found" or "Corrupted collection database" or
 	 * "Collection database format invalid"
 	 */
-	loadList(prefix: string): CollectionIndex {
+	loadList(prefix: string): CollectionIndexEntry[] {
 
 		// If not already loaded load it
 		if(!this.entries?.length || this.dbPrefix !== prefix) {
@@ -88,7 +96,7 @@ export class CollectionDb {
 			this.dbPrefix = prefix;
 		}
 
-		const out: CollectionIndex = [];
+		const out: CollectionIndexEntry[] = [];
 		for(let i=0; i < this.entries.length; ++i) {
 			out.push({
 				id: i.toString(),

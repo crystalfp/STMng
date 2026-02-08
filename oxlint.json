@@ -485,7 +485,7 @@
     "defineEmits": "readonly",
     "defineModel": "readonly",
     "withDefaults": "readonly",
-    "ResizeObserver": "readonly",
-    "Mesh": "readonly"
+    "ResizeObserver": "readonly"
+
   }
 }

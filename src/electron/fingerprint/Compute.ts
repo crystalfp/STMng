@@ -20,7 +20,7 @@ import type {WorkerResults} from "./Worker";
  * Computation result for the user interface
  * @notExported
  */
-export interface FingerprintingComputeResult {
+interface FingerprintingComputeResult {
 
 	/** Computed fingerprint length */
 	dimension: number;
