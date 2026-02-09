@@ -8,7 +8,6 @@
  */
 import {invertBasis} from "../modules/Helpers";
 import type {BasisType, PositionType} from "@/types";
-import log from "electron-log";
 
 /**
  * Infinite slab abstraction
@@ -180,8 +179,7 @@ export class Slab {
             }
             // eslint-disable-next-line @stylistic/keyword-spacing
             catch {
-                log.error("In computeInteratomicDistances basis matrix is not invertible");
-                return;
+                throw Error("In computeInteratomicDistances basis matrix is not invertible");
             }
 
             this.computeExpansion(basis, this.cutoff, expansion);
@@ -432,13 +430,14 @@ export class Slab {
      * @param natoms - Number of atoms
      * @param atomsPosition - Atoms coordinates
      * @param computeFP - Routine that receive the two vectors and accumulate the fingerprint
+     * @returns False on basis matrix not invertible
      */
     computeVectorPairs(basis: Float64Array,
                        natoms: number,
                        atomsPosition: Float64Array,
                        cutoffDistance: number,
                        computeFP: (vAB: number[], vAC: number[],
-                                   magnitudeAB: number, magnitudeAC: number) => void): void {
+                                   magnitudeAB: number, magnitudeAC: number) => void): boolean {
 
         // Compute how many copies of the unit cell are needed to contain the cutoff distance
         const expansion: PositionType = [0, 0, 0];
@@ -451,8 +450,7 @@ export class Slab {
             }
             // eslint-disable-next-line @stylistic/keyword-spacing
             catch {
-                log.error("In computeVectorPairs basis matrix is not invertible");
-                return;
+                return false;
             }
 
             this.computeExpansion(basis, this.cutoff, expansion);
@@ -547,5 +545,6 @@ export class Slab {
                 }
             }
         }
+        return true;
     }
 }

@@ -12,7 +12,7 @@ import workerpool from "workerpool";
 import {publicDirPath} from "../modules/GetPublicPath";
 import {VariableCompositionAccumulator} from "./Accumulator";
 import {isRejected, isFulfilled} from "../fingerprint/AllSettledHelpers";
-import {variablePerSiteFinishStep} from "../fingerprint/OganovValleFingerprint";
+import {variablePerSiteFinishStep} from "../fingerprint/OganovValleFinishStep";
 import {computeDistances} from "./ComputeDistances";
 import {measuringMethods} from "../fingerprint/DistanceMethods";
 import {removeDuplicatePoints} from "./RemoveDuplicates";

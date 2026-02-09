@@ -10,7 +10,6 @@ import {Slab} from "./Slab";
 import {getCellVolume} from "./Helpers";
 import {UpperTriangularMatrix} from "./UpperTriangularMatrix";
 import type {FingerprintingParameters, FingerprintingResult} from "@/types";
-// import fs from "node:fs";
 /**
  * Create the function to accumulate one value for the fingerprint
  *
@@ -84,14 +83,10 @@ export const fingerprintingDotMatrix = (params: FingerprintingParameters,
 	const computeFP = setupComputeFP(params, natoms, cellVolume, delta, fp);
 
 	// Compute the fingerprint
-	slab.computeVectorPairs(basis, natoms, positions, cutoffDistance, computeFP);
+	if(!slab.computeVectorPairs(basis, natoms, positions, cutoffDistance, computeFP)) {
+	    throw Error("In computeVectorPairs basis matrix is not invertible");
+	}
 	const fingerprint = fp.getVector();
-
-	// const fd = fs.openSync("fingerprint.txt", "w");
-	// for(let i=0; i < fingerprint.length; ++i) {
-	// 	fs.writeSync(fd, `${i} ${fingerprint[i]}\n`);
-	// }
-	// fs.close(fd);
 
 	// Compute the weights
 	const weights = new Float64Array(1);

@@ -10,7 +10,7 @@ import workerpool from "workerpool";
 import os from "node:os";
 import log from "electron-log";
 import {publicDirPath} from "../modules/GetPublicPath";
-import {perSiteFinishStep} from "./OganovValleFingerprint";
+import {perSiteFinishStep} from "./OganovValleFinishStep";
 import {isRejected, isFulfilled} from "./AllSettledHelpers";
 import type {FingerprintingParameters} from "@/types";
 import type {FingerprintsAccumulator} from "./Accumulator";
