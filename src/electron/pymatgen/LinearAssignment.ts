@@ -13,7 +13,7 @@
 * @author Will Richards (original Python implementation)
 * @since 2025-10-17
 */
-/* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
+/* eslint-disable unicorn/no-null */
 
 /**
  * This class finds the solution to the Linear Assignment Problem.
@@ -233,7 +233,6 @@ export class LinearAssignment {
                     this._x[k] = -1;
                     this._x[i] = j1;
                     this._y[j1] = i;
-                    // eslint-disable-next-line sonarjs/updated-loop-counter
                     i = k;
                 }
 

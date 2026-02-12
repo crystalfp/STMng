@@ -7,7 +7,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-10-14
  */
-/* eslint-disable eslint-comments/disable-enable-pair, unicorn/no-null */
+/* eslint-disable unicorn/no-null */
 
 import {inv, multiply} from "mathjs";
 import {LinearAssignment} from "./LinearAssignment";

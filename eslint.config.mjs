@@ -6,7 +6,7 @@ import vuePlugin from "eslint-plugin-vue";
 import promisePlugin from "eslint-plugin-promise";
 import importPlugin from "eslint-plugin-import";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-// import commentsPlugin from "eslint-plugin-eslint-comments";
+import commentsPlugin from "eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
@@ -82,7 +82,7 @@ export default defineConfig([
         promise: promisePlugin,
         import: importPlugin,
         "@typescript-eslint": typescriptPlugin,
-        // "eslint-comments": commentsPlugin,
+        "eslint-comments": commentsPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
         sonarjs: sonarjsPlugin,
@@ -103,7 +103,7 @@ export default defineConfig([
     },
     rules: {
         ...jsPlugin.configs.recommended.rules,
-        // ...commentsPlugin.configs.recommended.rules,
+        ...commentsPlugin.configs.recommended.rules,
         ...promisePlugin.configs.recommended.rules,
         ...importPlugin.configs.recommended.rules,
         ...importPlugin.configs.typescript.rules,
@@ -455,6 +455,13 @@ export default defineConfig([
         "security/detect-unsafe-regex": "off",
         "security/detect-no-csrf-before-method-override": "off",
         "@typescript-eslint/consistent-generic-constructors": "off",
-        "no-useless-assignment": "off"
+        "no-useless-assignment": "off",
+        "eslint-comments/disable-enable-pair": "off",
+        "eslint-comments/no-aggregating-enable": "off",
+        "eslint-comments/no-duplicate-disable": "off",
+        "eslint-comments/no-unlimited-disable": "off",
+        "eslint-comments/no-unused-disable": "off",
+        "eslint-comments/no-unused-enable": "off",
+        "eslint-comments/no-use": "off",
     }
 }]);

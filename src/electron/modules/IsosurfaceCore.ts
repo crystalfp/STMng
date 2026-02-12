@@ -7,7 +7,7 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
  */
-/* eslint-disable eslint-comments/disable-enable-pair, @stylistic/computed-property-spacing */
+/* eslint-disable @stylistic/computed-property-spacing */
 import {getCase, getEdge} from "./IsosurfaceTables";
 import type {PositionType, BasisType} from "@/types";
 

@@ -137,7 +137,7 @@ export class ReaderCIF implements ReaderImplementation {
 			// Clear line from comments and control characters
 			const lineNC = line.replace(/#.*/, "").trim();
 			if(lineNC === "") continue;
-			// eslint-disable-next-line sonarjs/no-control-regex, no-control-regex
+			// eslint-disable-next-line no-control-regex
 			if(/[\u0000-\u0008\u000E-\u001F]/.test(lineNC)) continue;
 
 			// The keys are case insensitive

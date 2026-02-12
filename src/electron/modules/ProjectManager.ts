@@ -40,6 +40,7 @@ import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
 import {PrototypeMatcher} from "../nodes/PrototypeMatcher";
 import {VariableComposition} from "../nodes/VariableComposition";
+import {CollectionMatcher} from "../nodes/CollectionMatcher";
 
 /**
  * Manage everything related to the loaded project
@@ -114,6 +115,9 @@ class ProjectManager {
 		{type: "prototype-matcher",     in: true,  out: false, opt: false, graphic: "none",
 										handler: PrototypeMatcher,
 									   	idPrefix: "matcher", ui: "PrototypeMatcherCtrl"},
+		{type: "collection-matcher",    in: true,  out: false, opt: false, graphic: "none",
+										handler: CollectionMatcher,
+									   	idPrefix: "collection", ui: "CollectionMatcherCtrl"},
 		{type: "variable-composition",  in: true,  out: false, opt: false, graphic: "none",
 										handler: VariableComposition,
 									   	idPrefix: "variable", ui: "VariableCompositionCtrl"},

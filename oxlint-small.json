@@ -1,0 +1,62 @@
+{
+  "$schema": "file:///C:/Users/mvalle/AppData/Roaming/npm/node_modules/oxlint/configuration_schema.json",
+  "categories": {
+  },
+  "plugins": [
+    "vue",
+    "import",
+    "eslint",
+    "typescript",
+    "promise",
+    "node",
+    "unicorn",
+    "oxc"
+  ],
+  "jsPlugins": [
+    "eslint-plugin-sonarjs",
+    "@stylistic/eslint-plugin"
+  ],
+  "ignorePatterns": [
+    "src/vite-env.d.ts",
+    "src/assets",
+    "src/cpp",
+    "src/electron/fingerprint/rollup.config.mjs",
+    "src/electron/fingerprint/KDtree.js",
+    "save/**",
+    "proto-test/**",
+    "docgen.config.js",
+    "eslint.config.mjs",
+    ".dependency-cruiser.js",
+    "work/**",
+    "public/doc/scripts.js",
+    "tests/**"
+  ],
+  "rules": {
+    "no-undef": "error",
+  },
+  "globals": {
+    "document": "readonly",
+    "window": "readonly",
+    "NodeJS": "readonly",
+    "test": "readonly",
+    "afterAll": "readonly",
+    "beforeAll": "readonly",
+    "describe": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "setTimeout": "readonly",
+    "setInterval": "readonly",
+    "clearInterval": "readonly",
+    "clearTimeout": "readonly",
+    "console": "readonly",
+    "Buffer": "readonly",
+    "structuredClone": "readonly",
+    "addEventListener": "readonly",
+    "defineProps": "readonly",
+    "defineEmits": "readonly",
+    "defineModel": "readonly",
+    "withDefaults": "readonly",
+    "ResizeObserver": "readonly",
+	"Mesh": "readonly"
+  }
+}
