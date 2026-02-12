@@ -100,7 +100,7 @@ class Table {
 	}
 
 	/**
-	 * Dump the table for debug
+	 * Dump the table for debugging
 	 */
 	// dump(): void {
 	// 	console.log("=====");
@@ -183,6 +183,10 @@ export class ReaderCIF implements ReaderImplementation {
 				continue;
 			}
 			else if(lineLC.startsWith("loop_")) {
+
+				// Everything before a data block is ignored
+				if(!isInDataBlock) continue;
+
 				isInLoop = true;
 				isInLoopHeader = true;
 				this.tbl.startTable();
@@ -249,6 +253,9 @@ export class ReaderCIF implements ReaderImplementation {
 
 		// Close a table at the end of the file
 		if(isInLoop) this.useTable();
+
+		// The file should have a data_<block_name> line
+		if(!isInDataBlock) throw Error("Missing data_ line in file");
 
 		// Build the structure
 		for(const structure of this.structures) {

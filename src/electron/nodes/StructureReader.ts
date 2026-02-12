@@ -15,7 +15,7 @@ import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {getDBforSearch, getPrototypeStructure} from "../modules/PrototypeDb";
 import {publicDirPath} from "../modules/GetPublicPath";
-import {CollectionDb} from "../modules/CollectionDb";
+import {collectionLoadList, collectionGetStructure} from "../modules/CollectionDb";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
@@ -43,7 +43,6 @@ export class StructureReader extends NodeCore {
 	private fileToRead = "";
 	private reader: ReaderImplementation | undefined;
 	private readerOptions: ReaderOptions = {};
-	private readonly collection = new CollectionDb();
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -740,7 +739,7 @@ export class StructureReader extends NodeCore {
 		// If called without arguments load the collection
 		if(!params) {
 			const db = publicDirPath("structure-collection").replaceAll("\\", "/");
-			const list = this.collection.loadList(db);
+			const list = collectionLoadList(db);
 			return {list: JSON.stringify(list)};
 		}
 
@@ -751,7 +750,7 @@ export class StructureReader extends NodeCore {
 			return {result: "Empty filename"};
 		}
 
-		const structure = this.collection.getStructure(fileID);
+		const structure = collectionGetStructure(fileID);
 		if(structure === undefined) {
 			this.toNextNode(new EmptyStructure());
 			const message = `File for ID "${fileID}" not found`;

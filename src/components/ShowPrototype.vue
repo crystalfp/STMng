@@ -15,7 +15,7 @@ import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
 import {SimpleViewer} from "@/services/SimpleViewer";
-import {/* addOutsideAtoms, clearOutsideAtoms, */ computeBonds} from "@/services/BondsSupport";
+import {computeBonds} from "@/services/BondsSupport";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
@@ -81,9 +81,14 @@ requestData(windowPath, (params: CtrlParams) => {
 
     sv.setSceneModified();
 
-    const sb = strukturbericht.replace(/_([^_]+)$/, "<sub>$1</sub>");
-    prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
-                          `strukturbericht: ${sb},&ensp;pearson: ${pearson})`;
+    if(!mineral && !aflow && !pearson && !strukturbericht) {
+        prototypeName.value = "";
+    }
+    else {
+        const sb = strukturbericht.replace(/_([^_]+)$/, "<sub>$1</sub>");
+        prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
+                              `strukturbericht: ${sb},&ensp;pearson: ${pearson})`;
+    }
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */

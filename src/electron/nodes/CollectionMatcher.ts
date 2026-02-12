@@ -7,16 +7,17 @@
  * @since 2026-02-11
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {ChannelDefinition, CtrlParams, FingerprintingParameters, Structure} from "@/types";
+import type {ChannelDefinition, CtrlParams, FingerprintingParameters, PrototypeAtomsData, Structure} from "@/types";
 import {sendToClient} from "../modules/ToClient";
 import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
-import {CollectionDb} from "../modules/CollectionDb";
+import {collectionLoadFingerprints, collectionGetNearestStructures, collectionGetStructure} from "../modules/CollectionDb";
 import {publicDirPath} from "../modules/GetPublicPath";
+import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
+import {getAtomData} from "../modules/AtomData";
 
 export class CollectionMatcher extends NodeCore {
 
 	private structure: Structure | undefined;
-	private readonly collection = new CollectionDb();
 
 	// Mirror of the UI reactive state
 	private state = {
@@ -28,8 +29,8 @@ export class CollectionMatcher extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
-		{name: "enable",	type: "invoke", callback: this.channelEnable.bind(this)},
 		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
+		{name: "show",		type: "invoke", callback: this.channelShow.bind(this)},
 	];
 
 	/**
@@ -43,7 +44,7 @@ export class CollectionMatcher extends NodeCore {
 
 		const db = publicDirPath("structure-collection").replaceAll("\\", "/");
 
-		this.collection.loadFingerprints(db);
+		collectionLoadFingerprints(db);
 	}
 
 	// > Load/save status
@@ -123,7 +124,7 @@ export class CollectionMatcher extends NodeCore {
 
 		// Find similar
 		const threshold = this.state.noThreshold ? 0 : this.state.threshold;
-		const results = this.collection.getNearestStructures(fp, this.state.numberMatches, threshold);
+		const results = collectionGetNearestStructures(fp, this.state.numberMatches, threshold);
 
 		// Prepare the data for the client
 		const titles: string[] = [];
@@ -160,20 +161,6 @@ export class CollectionMatcher extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for enabling the collection matcher
-	 *
-	 * @param params - Params from the client
-	 * @returns Params with the operation status
-	 */
-	private channelEnable(params: CtrlParams): CtrlParams {
-
-		this.state.enabled = params.enabled as boolean ?? false;
-
-		// TBD
-		return {results: ""};
-	}
-
-	/**
 	 * Channel handler for saving the UI status
 	 */
 	private channelState(params: CtrlParams): void {
@@ -181,5 +168,55 @@ export class CollectionMatcher extends NodeCore {
 		this.initializeState(params);
 
 		this.findSimilar();
+	}
+
+	/**
+	 * Channel handler for display the collection structure matched
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private channelShow(params: CtrlParams): CtrlParams {
+
+		const id = params.id as string;
+		if(!id) return {result: "Empty file ID"};
+
+		const structure = collectionGetStructure(id);
+		if(structure === undefined) {
+			const message = `File for ID "${id}" not found`;
+			return {error: message};
+		}
+
+		const out: PrototypeAtomsData = {
+			positions: [],
+			labels: [],
+			radius: [],
+			color: [],
+		};
+
+		for(const atom of structure.atoms) {
+
+			out.positions.push(...atom.position);
+			out.labels.push(atom.label);
+
+			const ad = getAtomData(atom.atomZ);
+			out.radius.push(ad.rCov);
+			out.color.push(ad.color);
+		}
+
+		const dataForClient: CtrlParams = {
+			matrix: structure.crystal.basis,
+			atoms: JSON.stringify(out)
+		};
+
+		createOrUpdateSecondaryWindow({
+			routerPath: "/prototype",
+			width: 1400,
+			height: 900,
+			title: "Collection structure",
+			data: dataForClient
+		});
+
+		return {result: "Success!"};
 	}
 }

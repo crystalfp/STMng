@@ -49,10 +49,10 @@ const openDocumentation = async (kind: "top" | "node" | "secondary", file?: stri
     }
     if(existsSync(url)) {
         const sts = await shell.openPath(url);
-        if(sts) return `Error from help file "${file}.html" for ${kind}: ${sts}`;
+        if(sts) return `Error from help file "${file}.html" for this ${kind}: ${sts}`;
         return "";
     }
-    return `Help file "${file}.html" for ${kind} not found`;
+    return `Help file "${file}.html" for this ${kind} not found`;
 };
 
 let systemMenu: Menu;

@@ -32,24 +32,20 @@ const state = reactive({
     numberMatches: 1
 });
 
-const hasInput = ref(true);
+const hasInput = ref(false);
 const showNumberMatches = ref(1);
 const similar = reactive<CollectionIndexEntry[]>([]);
-
-const selectResult = (fileID: string): void => {
-    console.log("Select", fileID); // TBD
-};
-
 
 // > Initialize ui
 resetNodeAlert();
 
 askNode(id, "init")
     .then((params) => {
-		    state.enabled = params.enableMatcher as boolean ?? false;
+		state.enabled = params.enableMatcher as boolean ?? false;
         state.noThreshold = params.noThreshold as boolean ?? false;
         state.numberMatches = params.numberMatches as number ?? 1;
         state.threshold = params.threshold as number ?? 0.01;
+        hasInput.value = false;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
@@ -61,8 +57,6 @@ watch(state, (after) => {
 
     sendToNode(id, "state", toRaw(after));
 });
-
-/** Parameter changes */
 
 /** Receive the parameters of the structures loaded */
 receiveFromNode(id, "load", (params) => {
@@ -79,7 +73,25 @@ receiveFromNode(id, "load", (params) => {
             distance: distances[i]
         });
     }
+    hasInput.value = len > 0;
 });
+
+/**
+ * Show a given file
+ *
+ * @param fileID - Collection structure file ID
+ */
+const selectResult = (fileID: string): void => {
+
+    // Retrieve prototype
+    askNode(id, "show", {id: fileID})
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            showNodeAlert(error.message, "collectionMatcher");
+        });
+};
 
 </script>
 
@@ -97,7 +109,7 @@ receiveFromNode(id, "load", (params) => {
     </v-col>
     <v-col>
       <v-number-input v-model="state.threshold" :disabled="state.noThreshold"
-                      label="Max. distance" :precision="2"
+                      label="Max distance" :precision="2"
                       :step="0.01" :min="0.01" :max="1" class="ml-1" />
     </v-col>
   </v-row>

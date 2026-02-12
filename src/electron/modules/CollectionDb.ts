@@ -53,7 +53,9 @@ export interface CollectionIndexEntry {
 /**
  * Access to the structure collection in binary form
  */
-export class CollectionDb {
+class CollectionDb {
+
+	private static instance: CollectionDb;
 
 	private entries: CollectionDbEntry[] | undefined;
 	private dbPrefix = "";
@@ -69,7 +71,7 @@ export class CollectionDb {
 	/**
 	 * Initialize the interface to the collection db
 	 */
-	constructor() {
+	private constructor() {
 
 		// Data file magic ("STMng") and file format version (1-255)
 		this.headerToCheck = new Uint8Array([83, 84, 77, 110, 103, this.format]);
@@ -313,4 +315,70 @@ export class CollectionDb {
 		}
 		return out;
 	}
+
+	// > Access the singleton instance
+	/**
+	 * Access the singleton instance
+	 *
+	 * This is the static method that controls the access to the singleton instance.
+	 * This implementation let you subclass the Singleton class while keeping
+	 * just one instance of each subclass around.
+	 *
+	 * @returns The CollectionDb object
+	 */
+    static getInstance(): CollectionDb {
+
+        if(!CollectionDb.instance) {
+            CollectionDb.instance = new CollectionDb();
+        }
+
+        return CollectionDb.instance;
+    }
 }
+
+/**
+ * Get structures near the given one
+ *
+ * @param fp - Fingerprint to test
+ * @param n - Number of nearest structures to return
+ * @param threshold - Maximum distance to consider.
+ * 					  If zero do not filter distances
+ * @returns List of nearest structures id, title and distance
+ */
+export const collectionGetNearestStructures = (fp: Float64Array,
+											   n=1,
+											   threshold=0): CollectionIndexEntry[] =>
+	CollectionDb.getInstance().getNearestStructures(fp, n, threshold);
+
+/**
+ * Cache the collection fingerprints if not already loaded
+ *
+ * @param prefix - Filename without extension for the fingerprints file
+ * 				   (extension .cfp)
+ */
+export const collectionLoadFingerprints = (prefix: string): void =>
+	CollectionDb.getInstance().loadFingerprints(prefix);
+
+/**
+ * Load the collection and return the index
+ *
+ * @param prefix - Filename without extension for the files that
+ *    			   compose the database (extensions .idx and .dat and .cfp)
+ * @returns Array of db index entries
+ * @throws Error.
+ * "Collection database not found" or "Corrupted collection database" or
+ * "Collection database format invalid" or "Collection database not loaded"
+ */
+export const collectionLoadList = (prefix: string): CollectionIndexEntry[] =>
+	CollectionDb.getInstance().loadList(prefix);
+
+/**
+ * Get the collection structure with the given ID
+ *
+ * @param id - ID of the collection entry to access
+ * @returns The collection structure or undefined if not found
+ * @throws Error.
+ * "Collection database not loaded"
+ */
+export const collectionGetStructure = (id: string): Structure | undefined =>
+	CollectionDb.getInstance().getStructure(id);
