@@ -32,7 +32,6 @@
     "@oxlint/migrate",
     "@typescript/native-preview",
     // Till migration to eslint 10 works
-    "eslint-plugin-eslint-comments",
     "eslint-plugin-tsdoc"
 
   ],
