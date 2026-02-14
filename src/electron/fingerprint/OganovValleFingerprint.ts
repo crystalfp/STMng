@@ -12,6 +12,37 @@ import {getCellVolume} from "./Helpers";
 import type {FingerprintingParameters, FingerprintingResult} from "@/types";
 
 /**
+ * Rescale lengths to be multiples of r0
+ * r0 is roughly similar to the mean atomic radius
+ *
+ * @param basis - Basis vectors for the structure
+ * @param natoms - Number of atoms
+ * @param positions - Position of the atoms
+ * @returns Rescaled cell volume
+ */
+const rescaleLengths = (basis: Float64Array, natoms: number, positions: Float64Array): number => {
+
+	// Compute cell volume
+	const cellVolume = getCellVolume(basis);
+
+	// Compute scaling parameter
+	const r0 = Math.cbrt(cellVolume/natoms)/2;
+
+	// Scale basis
+	for(let i=0; i < 9; ++i) basis[i] /= r0;
+
+	// Scale positions
+	for(let i=0; i < natoms; ++i) {
+		positions[i*3]   /= r0;
+		positions[i*3+1] /= r0;
+		positions[i*3+2] /= r0;
+	}
+
+	// Return rescaled cell volume
+	return cellVolume/(r0*r0*r0);
+};
+
+/**
  * Compute the Oganov-Valle fingerprint on a given structure
  *
  * @param params - Parameters for the computation
@@ -45,9 +76,6 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 		species.set(atomZ, n+1);
 	}
 
-	// Compute cell volume
-	const cellVolume = getCellVolume(basis, areNanoclusters);
-
 	// Initialize counts
 	const countSpecies = species.size;
 	const countSections = (countSpecies*(countSpecies+1))/2;
@@ -55,6 +83,9 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 	// Initialize the fingerprint histogram
 	const fingerprint = new Float64Array(nbins*countSections);
 	fingerprint.fill(-1);
+
+	// Rescale lengths to be multiples of r0. r0 is roughly similar to the mean atomic radius
+	const rescaledCellVolume = areNanoclusters ? 1 :rescaleLengths(basis, natoms, positions);
 
 	// With the infinite slab compute interatomic distances
 	slab.computeInteratomicDistances(basis, natoms, atomsZ, positions);
@@ -80,7 +111,7 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 			// Compute the peak value Fing
 			let fing = areNanoclusters ?
 								1/(Nj*Ni*binSize) :
-								1/(4*Math.PI*Rij*Rij*(Nj/cellVolume)*2*Ni*binSize);
+								1/(4*Math.PI*Rij*Rij*(Nj/rescaledCellVolume)*2*Ni*binSize);
 
 			// The components AA, BB, etc. should be counted twice
 			if(Zi === Zj) fing *= 2;

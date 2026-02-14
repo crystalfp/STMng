@@ -7,13 +7,15 @@
  * @since 2026-02-11
  */
 import {NodeCore} from "../modules/NodeCore";
-import type {ChannelDefinition, CtrlParams, FingerprintingParameters, PrototypeAtomsData, Structure} from "@/types";
 import {sendToClient} from "../modules/ToClient";
 import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
-import {collectionLoadFingerprints, collectionGetNearestStructures, collectionGetStructure} from "../modules/CollectionDb";
+import {collectionLoadFingerprints, collectionGetNearestStructures,
+		collectionGetStructure} from "../modules/CollectionDb";
 import {publicDirPath} from "../modules/GetPublicPath";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomData} from "../modules/AtomData";
+import type {ChannelDefinition, CtrlParams, FingerprintingParameters,
+			 PrototypeAtomsData, Structure} from "@/types";
 
 export class CollectionMatcher extends NodeCore {
 
@@ -74,17 +76,25 @@ export class CollectionMatcher extends NodeCore {
 		this.findSimilar();
 	}
 
+	// > Computation
+	/**
+	 * Compute fingerprints
+	 *
+	 * @param structure - Input structure for which fingerprint should be computed
+	 * @returns The fingerprint
+	 */
 	private computeFingerprint(structure: Structure): Float64Array {
 
 		const {atoms, crystal} = structure;
 
+		// Should be the same values set in the preprocessor
 		const params: FingerprintingParameters = {
 
 			method: 0,
 			areNanoclusters: false,
-			cutoffDistance: 10,
-			binSize: 0.05,
-			peakWidth: 0.02,
+			cutoffDistance: 20,
+			binSize: 0.03,
+			peakWidth: 0.01,
 			processParallelism: false
 		};
 		const natoms = atoms.length;
@@ -107,6 +117,9 @@ export class CollectionMatcher extends NodeCore {
 		return result.fingerprint;
 	}
 
+	/**
+	 * Find similar structures from the collection
+	 */
 	private findSimilar(): void {
 
 		// Nothing to do
@@ -143,7 +156,6 @@ export class CollectionMatcher extends NodeCore {
 		});
 	}
 
-
 	// > Channel handlers
 	/**
 	 * Channel handler for UI initialization
@@ -161,7 +173,7 @@ export class CollectionMatcher extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for saving the UI status
+	 * Channel handler for saving the UI status and start computation
 	 */
 	private channelState(params: CtrlParams): void {
 

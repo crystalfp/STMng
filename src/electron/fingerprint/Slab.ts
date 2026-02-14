@@ -34,7 +34,6 @@ export class Slab {
 
         // Initialize try points
 		if(!isNanocluster) this.computeTryPoints(8, 8);
-		// if(!isNanocluster) this.computeTryPoints(16, 16);
     }
 
 	/**

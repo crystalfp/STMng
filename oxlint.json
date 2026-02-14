@@ -289,6 +289,7 @@
     "no-unused-expressions": "error",
     "@typescript-eslint/no-wrapper-object-types": "error",
     "@typescript-eslint/prefer-as-const": "error",
+    "@typescript-eslint/prefer-optional-chain": "error",
     "@typescript-eslint/prefer-namespace-keyword": "error",
     "@typescript-eslint/triple-slash-reference": "error",
     "@typescript-eslint/await-thenable": "error",
