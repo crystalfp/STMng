@@ -31,9 +31,6 @@
     "oxlint-tsgolint",
     "@oxlint/migrate",
     "@typescript/native-preview",
-    // Till migration to eslint 10 works
-    "eslint-plugin-tsdoc"
-
   ],
   // "includeEntryExports": true,
   "ignore": ["**/KDtree.d.ts"],

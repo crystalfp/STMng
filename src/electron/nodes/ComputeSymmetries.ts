@@ -278,7 +278,7 @@ export class ComputeSymmetries extends NodeCore {
 		}
 
 		// Prepare parameters for the computational part
-		let fractionalCoordinates: number[] = [];
+		let fractionalCoordinates: number[];
 		try {
 			fractionalCoordinates = cartesianToFractionalCoordinates(this.inputStructure);
 		}
@@ -428,7 +428,7 @@ export class ComputeSymmetries extends NodeCore {
 			chains.push(atom.chain);
 		}
 
-		let fractionalCoordinates: number[] = [];
+		let fractionalCoordinates: number[];
 		try {
 			fractionalCoordinates = cartesianToFractionalCoordinates(structure);
 		}

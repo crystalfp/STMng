@@ -52,7 +52,7 @@ export class ReaderDLPOLY implements ReaderImplementation {
 		let natoms = 0;
 		let step = 1;
 		let keytrj = 0;
-		let fields: string[] = [];
+		let fields: string[];
 
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {

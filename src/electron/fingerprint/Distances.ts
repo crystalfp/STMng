@@ -105,7 +105,7 @@ export class DistanceMatrix {
      * @returns The matrix index
      */
 	private mapIndex(id: number): number {
-		let idx = 0;
+		let idx;
 		if(this.id2idx.has(id)) idx = this.id2idx.get(id)!;
 		else {idx = this.nextIdx++; this.id2idx.set(id, idx);}
 		return idx;

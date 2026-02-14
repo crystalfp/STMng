@@ -745,7 +745,7 @@ export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number
             G = matrixMultiply(transpose(M), matrixMultiply(G, M));
 
             // Update parameters
-            A = G[0][0];
+            // A = G[0][0];
             B = G[1][1];
             C = G[2][2];
             E = 2 * G[1][2];

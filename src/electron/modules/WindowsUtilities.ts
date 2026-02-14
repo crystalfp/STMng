@@ -226,13 +226,11 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
  */
 const closeSecondaryWindow = (routerPath: string): void => {
 
-    let win = openedWindows.get(routerPath);
+    const win = openedWindows.get(routerPath);
     if(!win) return;
 
     win.close();
     openedWindows.delete(routerPath);
-    // eslint-disable-next-line sonarjs/no-dead-store
-    win = undefined;
 };
 
 // > Check if a secondary window is on screen

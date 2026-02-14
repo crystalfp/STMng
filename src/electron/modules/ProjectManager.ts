@@ -306,7 +306,7 @@ class ProjectManager {
 	 */
 	projectGraphForEditor(): string {
 
-		let projectInfo: ClientProjectInfo = {};
+		let projectInfo: ClientProjectInfo;
 		try {
 			projectInfo = this.buildProjectInfo();
 		}

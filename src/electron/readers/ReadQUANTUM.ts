@@ -59,7 +59,6 @@ export class ReaderQUANTUM implements ReaderImplementation {
 		let inBasis = false;
 		let basisKind = "";
 		let basisLine = 0;
-		let alat = 0;
 		let spaceGroupNumber = 0;
 		let inputAtoms = 0;
 
@@ -161,7 +160,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 			cosAC = celldm[5];
 			cosBC = celldm[4];
 		}
-		alat = a;
+		const alat = a;
 		const halfAlat = alat*0.5;
 
 		// Compute the basis vectors

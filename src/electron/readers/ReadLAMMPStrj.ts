@@ -67,7 +67,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let lineType: Step = LineType.item;
 		let atomIdx = 0;
 		const correspond: number[] = [];
-		let atomZ = 0;
+		let atomZ;
 		let hasErrors = false;
 		let boxType: Box = BoxType.unknown;
 		const boxValues: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];

@@ -11,7 +11,7 @@ import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
-// import tsdocPlugin from "eslint-plugin-tsdoc";
+import tsdocPlugin from "eslint-plugin-tsdoc";
 import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
@@ -87,7 +87,7 @@ export default defineConfig([
         security: securityPlugin,
         sonarjs: sonarjsPlugin,
         regexp: regexpPlugin,
-        // tsdoc: tsdocPlugin,
+        tsdoc: tsdocPlugin,
         "@stylistic": stylistic,
         depend: depend,
     },
@@ -448,14 +448,13 @@ export default defineConfig([
         // "security/detect-child-process": "warn",
         "security/detect-non-literal-fs-filename": "off",
         "security/detect-object-injection": "off",
-        // "tsdoc/syntax": "warn",
 
         // > ******************* for eslint 10 (temporary) ***********************
+        "tsdoc/syntax": "off",
         "@typescript-eslint/no-deprecated": "off",
         "security/detect-unsafe-regex": "off",
         "security/detect-no-csrf-before-method-override": "off",
         "@typescript-eslint/consistent-generic-constructors": "off",
-        "no-useless-assignment": "off",
         "eslint-comments/disable-enable-pair": "off",
         "eslint-comments/no-aggregating-enable": "off",
         "eslint-comments/no-duplicate-disable": "off",

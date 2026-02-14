@@ -493,7 +493,7 @@ export class DrawStructureRenderer {
 		let idx = 0;
 		for(const atom of atoms) {
 
-			let offset = 0;
+			let offset;
 			switch(drawKind) {
 				case "ball-and-stick":
 					offset = atom.rCov * R_COV_SCALE * spheresRadiusMultiplier * 1.3;
