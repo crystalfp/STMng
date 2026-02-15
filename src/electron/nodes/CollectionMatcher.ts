@@ -92,7 +92,7 @@ export class CollectionMatcher extends NodeCore {
 
 			method: 0,
 			areNanoclusters: false,
-			cutoffDistance: 20,
+			cutoffDistance: 10,
 			binSize: 0.03,
 			peakWidth: 0.01,
 			processParallelism: false

@@ -109,7 +109,7 @@ export default defineConfig([
         ...importPlugin.configs.typescript.rules,
         ...unicornPlugin.configs.all.rules,
         ...securityPlugin.configs.recommended.rules,
-        ...securityPlugin.configs["recommended-legacy"].rules,
+        // ...securityPlugin.configs["recommended-legacy"].rules,
         ...sonarjsPlugin.configs.recommended.rules,
         ...regexpPlugin.configs.recommended.rules,
         ...vuePlugin.configs["flat/essential"].rules,

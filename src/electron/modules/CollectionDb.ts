@@ -66,7 +66,7 @@ class CollectionDb {
 	private cfpFilename = "";
 	private cfp: Float64Array | undefined;
 	private cfpLength = 0;
-	private readonly format = 2;
+	private readonly format = 3;
 
 	/**
 	 * Initialize the interface to the collection db
@@ -193,14 +193,14 @@ class CollectionDb {
 		const structure = new EmptyStructure();
 
 		const fd = openSync(this.dataFilename, "r");
-		const natomsBuffer = new Uint8Array(1);
-		readSync(fd, natomsBuffer, 0, 1, start);
-		const natoms = natomsBuffer[0];
+		const natomsBuffer = new Uint8Array(2);
+		readSync(fd, natomsBuffer, 0, 2, start);
+		const natoms = natomsBuffer[1]*256+natomsBuffer[0];
 		const atomsZBuffer = new Uint8Array(natoms);
-		readSync(fd, atomsZBuffer, 0, natoms, start+1);
+		readSync(fd, atomsZBuffer, 0, natoms, start+2);
 		const floatPart = new Float32Array(9+natoms*3);
 		const floatLength = floatPart.byteLength;
-		readSync(fd, floatPart, 0, floatLength, start+1+natoms);
+		readSync(fd, floatPart, 0, floatLength, start+2+natoms);
 		for(let i=0; i < 9; ++i) {
 			structure.crystal.basis[i] = floatPart[i];
 		}
@@ -218,7 +218,7 @@ class CollectionDb {
 			structure.atoms.push(atom);
 		}
 
-		const sgStart = start + 1 + natoms + floatLength;
+		const sgStart = start + 2 + natoms + floatLength;
 		const sgLength = length - (sgStart - start);
 		const spaceGroupBuffer = new Uint8Array(sgLength);
 		readSync(fd, spaceGroupBuffer, 0, sgLength, sgStart);
