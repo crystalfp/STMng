@@ -1,5 +1,6 @@
 declare module "troika-three-text" {
 
+	/* oxlint-disable-next-line no-redeclare */
 	import type {Mesh, Color, MeshBasicMaterial, MeshStandardMaterial} from "three";
 
 	declare function preloadFont(options: {font: string, characters: string}, callback: () => void): void;
