@@ -292,10 +292,13 @@ class CollectionDb {
 		const candidates: [number, number][] = [];
 		for(let i=0; i < this.countEntries; ++i) {
 
+			// Check if this is an excluded file
+			if(this.cfp[i*this.cfpLength] < -1) continue;
+
 			// Compute distance
 			const dist = this.computeFpDistance(fp, i);
 
-			if(threshold === 0 || dist < threshold) {
+			if(threshold === 0 || dist <= threshold) {
 				if(candidates.length === n && dist >= candidates[n-1][1]) {
 					continue;
 				}
