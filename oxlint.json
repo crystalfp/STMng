@@ -384,6 +384,7 @@
     "@typescript-eslint/promise-function-async": "error",
     "@typescript-eslint/require-array-sort-compare": "error",
     "@typescript-eslint/switch-exhaustiveness-check": "error",
+    "@typescript-eslint/no-unnecessary-condition": "off",
 
     "eslint/max-lines-per-function ": "off",
     "eslint/max-depth": "off",

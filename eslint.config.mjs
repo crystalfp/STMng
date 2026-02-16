@@ -11,7 +11,7 @@ import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
-import tsdocPlugin from "eslint-plugin-tsdoc";
+// import tsdocPlugin from "eslint-plugin-tsdoc";
 import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
@@ -87,7 +87,7 @@ export default defineConfig([
         security: securityPlugin,
         sonarjs: sonarjsPlugin,
         regexp: regexpPlugin,
-        tsdoc: tsdocPlugin,
+        // tsdoc: tsdocPlugin,
         "@stylistic": stylistic,
         depend: depend,
     },
@@ -450,7 +450,7 @@ export default defineConfig([
         "security/detect-object-injection": "off",
 
         // > ******************* for eslint 10 (temporary) ***********************
-        "tsdoc/syntax": "off",
+        // "tsdoc/syntax": "off",
         "@typescript-eslint/no-deprecated": "off",
         "security/detect-unsafe-regex": "off",
         "security/detect-no-csrf-before-method-override": "off",
