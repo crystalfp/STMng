@@ -20,8 +20,6 @@ interface CollectionDbEntry {
 	title: string;
 	/** Start byte of the structure in the db */
 	start: number;
-	/** Length of the structure in the db */
-	length: number;
 }
 
 /**
@@ -66,7 +64,7 @@ class CollectionDb {
 	private cfpFilename = "";
 	private cfp: Float64Array | undefined;
 	private cfpLength = 0;
-	private readonly format = 3;
+	private readonly format = 4;
 
 	/**
 	 * Initialize the interface to the collection db
@@ -188,7 +186,7 @@ class CollectionDb {
 		if(Number.isNaN(idx) || idx < 0 || idx >= this.countEntries) return;
 		const entry = this.entries[idx];
 		if(!entry) return;
-		const {start, length} = entry;
+		const {start} = entry;
 
 		const structure = new EmptyStructure();
 
@@ -218,11 +216,11 @@ class CollectionDb {
 			structure.atoms.push(atom);
 		}
 
-		const sgStart = start + 2 + natoms + floatLength;
-		const sgLength = length - (sgStart - start);
-		const spaceGroupBuffer = new Uint8Array(sgLength);
-		readSync(fd, spaceGroupBuffer, 0, sgLength, sgStart);
-		structure.crystal.spaceGroup = Buffer.from(spaceGroupBuffer).toString("utf8");
+		// const sgStart = start + 2 + natoms + floatLength;
+		// const sgLength = length - (sgStart - start);
+		// const spaceGroupBuffer = new Uint8Array(sgLength);
+		// readSync(fd, spaceGroupBuffer, 0, sgLength, sgStart);
+		// structure.crystal.spaceGroup = Buffer.from(spaceGroupBuffer).toString("utf8");
 
 		closeSync(fd);
 
