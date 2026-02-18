@@ -27,6 +27,9 @@
 <li>Oganov, A. R., &amp; Valle, M. (2009). <i>How to quantify energy landscapes of solids.</i>  J. Chem. Phys. 14 March 2009; 130 (10): 104504, DOI: <a href="https://doi.org/10.1063/1.3079326">10.1063/1.3079326</a>
 <li>Valle, M., &amp; Oganov, A. R. (2010). <i>Crystal fingerprint space – a novel paradigm for studying crystal-structure sets.</i> Acta Crystallographica Section A, 66(5), 507–517, DOI: <a href="https://doi.org/10.1107/S0108767310026395 ">10.1107/S0108767310026395</a></li>
 </ul>
+<p>There is a notable difference in the implementation respect to the published algorithm. In this module the distances (interatomic distances and cell sizes) are scaled by:</p>
+<img src="scaling.png" width="194" height="81">
+<p>where <i>V</i> is the cell volume and <i>N</i> is the number of atoms in the cell. The scaling factor <i>r<sub>0</sub></i> is roughly similar to the mean atomic radius.</p>
 </div>
 
 <h2>Controls</h2>

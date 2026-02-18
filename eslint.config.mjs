@@ -16,9 +16,10 @@ import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
 
+import {vueRules} from "./eslint.vue.config.mjs";
+
 export default defineConfig([
     stylistic.configs.customize({
-        flat: true, // required for flat config
         indent: 4,
         quotes: "double",
         semi: true,
@@ -112,15 +113,16 @@ export default defineConfig([
         // ...securityPlugin.configs["recommended-legacy"].rules,
         ...sonarjsPlugin.configs.recommended.rules,
         ...regexpPlugin.configs.recommended.rules,
-        ...vuePlugin.configs["flat/essential"].rules,
-        ...vuePlugin.configs["flat/strongly-recommended"].rules,
-        ...vuePlugin.configs["flat/recommended"].rules,
         ...typescriptPlugin.configs.recommended.rules,
         ...typescriptPlugin.configs["recommended-type-checked"].rules,
         ...typescriptPlugin.configs["stylistic-type-checked"].rules,
         ...typescriptPlugin.configs["strict-type-checked"].rules,
         // oxlint-disable-next-line no-named-as-default-member
         ...depend.configs["flat/recommended"].rules,
+
+
+        // > ******************* unified rules ***********************
+        ...vueRules,
 
         // > ******************* language rules ***********************
         "@typescript-eslint/consistent-type-assertions": ["warn", {assertionStyle: "as"}],
@@ -415,24 +417,6 @@ export default defineConfig([
         "depend/ban-dependencies": ["warn", {
                                     "presets": ["native", "microutilities", "preferred"]
         }],
-        // "vue/first-attribute-linebreak": "off",
-        // "vue/html-indent": "off",
-        // "vue/max-attributes-per-line": "off",
-        // "vue/html-closing-bracket-newline": "off",
-        // "vue/multiline-html-element-content-newline": "off",
-        // "vue/singleline-html-element-content-newline": "off",
-        // "vue/no-v-html": "off",
-        // "vue/multi-word-component-names": "off",
-        // "vue/comment-directive": "warn",
-        "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
-        "vue/attributes-order": "warn",
-        "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
-        "vue/prefer-use-template-ref": "error",
-        "vue/no-unused-properties": ["error", {
-            "groups": ["props", "data", "computed", "methods"]
-        }],
-        "vue/no-unused-refs": "error",
-        "vue/no-unused-emit-declarations": "error",
         // "import/no-cycle": "error",
         // "import/namespace": "off",
         // "import/no-named-as-default": "off",
