@@ -288,7 +288,9 @@ export default defineConfig([
         "@typescript-eslint/unbound-method": "error",
         "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
         "no-dupe-keys": "error",
-        "@typescript-eslint/no-useless-default-assignment": "off",
+        "@typescript-eslint/no-useless-default-assignment": "warn",
+        "@typescript-eslint/no-deprecated": "warn",
+        "@typescript-eslint/consistent-generic-constructors": "warn",
 
         // > ******************* stylistic ***********************
         "@stylistic/lines-between-class-members": "warn",
@@ -435,10 +437,8 @@ export default defineConfig([
 
         // > ******************* for eslint 10 (temporary) ***********************
         // "tsdoc/syntax": "off",
-        "@typescript-eslint/no-deprecated": "off",
         "security/detect-unsafe-regex": "off",
         "security/detect-no-csrf-before-method-override": "off",
-        "@typescript-eslint/consistent-generic-constructors": "off",
         "eslint-comments/disable-enable-pair": "off",
         "eslint-comments/no-aggregating-enable": "off",
         "eslint-comments/no-duplicate-disable": "off",

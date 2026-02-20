@@ -10,9 +10,9 @@ import {ref} from "vue";
 import {mdiPalette} from "@mdi/js";
 
 // > Properties
-const {transparency = false, label} = defineProps<{
+const {transparency, label} = defineProps<{
 
-    /** If true, select also transparency */
+    /** If true, select also transparency (if not present it is false) */
     transparency?: boolean;
 
     /** Label on the button */
@@ -27,7 +27,7 @@ const color = defineModel<string>();
 
 <template>
   <v-row>
-    <v-col cols="12" class="pb-0">
+    <v-col cols="12" class="pb-0 pr-5">
       <v-btn class="w-100"
              variant="outlined"
              :prepend-icon="mdiPalette"

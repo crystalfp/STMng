@@ -21,6 +21,7 @@ html {
 :root {
   --container-height: calc(100vh - 121px);
   --scrollbar-track: light-dark(#e6e6e6, #202020);
+  --scrollbar-thumb: light-dark(#b0b0b0, #3e3e3e);
   --separator-color: rgb(var(--v-theme-secondary));
 }
 
@@ -30,7 +31,7 @@ html {
 .container {
   overflow: clip auto;
   height: var(--container-height);
-  padding: 0 !important;
+  padding: 0 0 0 2px !important;
 }
 
 /* >> Elements on the UI */
@@ -103,28 +104,9 @@ html {
 }
 
 /* >> Scrollbar */
-::-webkit-scrollbar {
-  width: 15px;
-  height: 15px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: var(--scrollbar-track);
-  border-left: 1px solid light-dark(#dadada, #2c2c2c);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: light-dark(#b0b0b0, #3e3e3e);
-  border: solid 3px var(--scrollbar-track);
-  border-radius: 7px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: light-dark(#808080, #B3B3B3);
-}
-
-::-webkit-scrollbar-corner {
-  background-color: var(--v-theme-background);
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
 }
 
 /* For tables */

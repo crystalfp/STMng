@@ -182,7 +182,7 @@ const confirmedExit = (): void => {
 
 .layout-gutter {
   width: 6px;
-  background-color: rgb(var(--v-theme-surface-light));
+  background-color: light-dark(#b0b0b0, #3e3e3e);
   cursor: pointer;
 }
 </style>

@@ -144,7 +144,7 @@ const onDragLeave = (): void => {
       @dragleave.prevent="onDragLeave">
   <v-text-field :model-value="label" :disabled :label="props.label ?? props.title"
                 readonly :prepend-icon="mdiFileOutline"
-                class="mb-2 mr-0 ml-2 cursor-pointer" hide-details="auto"
+                class="mb-2 cursor-pointer" hide-details="auto"
                 :loading="inProgress" spellcheck="false"
                 @click="openSelector" />
 </div>

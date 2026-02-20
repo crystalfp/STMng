@@ -24,6 +24,7 @@ To do:
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters
   ☐ Add count elements of groups in scatterplot
+  ✔ Experiment with css `scrollbar-*` <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/scrollbar-color> @done(2026-02-20 09:06)
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

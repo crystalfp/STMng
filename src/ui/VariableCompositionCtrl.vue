@@ -13,6 +13,7 @@ import {useControlStore} from "@/stores/controlStore";
 import {storeToRefs} from "pinia";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -496,20 +497,15 @@ watch([state, selected], ([st, sel], [_ost, osel]) => {
 
   <v-label v-if="analysisRunning" class="mb-2 result-label cursor-wait">
            Analysis running&hellip;</v-label>
-  <v-btn v-else block :disabled="selected.length === 0 || !state.removeDuplicates"
-         @click="analysisRunning=true; savedFiles=-1; analyzeSelected()">
-    Analyze selected for duplicates
-  </v-btn>
+  <block-button v-else :disabled="selected.length === 0 || !state.removeDuplicates"
+         @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"
+         label="Analyze selected for duplicates" class="mb-n2"/>
     <node-alert node="variableComposition2" class="mt-1"/>
 
-  <v-btn block class="mt-2" :disabled="disableCharts" @click="showCharts">
-    Show chart
-  </v-btn>
+  <block-button class="mt-2" :disabled="disableCharts" @click="showCharts" label="Show chart" />
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
-            label="Consolidate output" class="ml-2 mt-2"/>
-  <v-btn block class="mt-2" :disabled="disableSave" @click="saveAnalyzed">
-    Save analyzed
-  </v-btn>
+            label="Consolidate output" class="ml-2 mt-n2"/>
+  <block-button class="mt-2" :disabled="disableSave" @click="saveAnalyzed" label="Save analyzed" />
   <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-2">
     {{ `Files saved: ${savedFiles}` }}
   </v-label>

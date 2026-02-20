@@ -13,6 +13,7 @@ import type {CtrlParams, DBType} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 const enableProto = ref(false);
 const lengthTolerance = ref(0.2);
@@ -184,23 +185,23 @@ const startQuery = (aflow: string): void => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="enableProto" label="Enable prototype matcher" class="mt-6 ml-3" />
+  <v-switch v-model="enableProto" label="Enable prototype matcher" class="mt-6 ml-1" />
   <debounced-slider v-slot="{value}" v-model="lengthTolerance" :disabled="!enableProto"
-                      :min="0.05" :max="0.4" :step="0.05" class="ml-2 mb-3 mt-6">
+                      :min="0.05" :max="0.4" :step="0.05" class="mb-3 mt-6">
     <v-label :text="`Fractional length tolerance (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
   <debounced-slider v-slot="{value}" v-model="siteTolerance" :disabled="!enableProto"
-                      :min="0.05" :max="0.6" :step="0.05" class="ml-2 mb-3 mt-2">
+                      :min="0.05" :max="0.6" :step="0.05" class="mb-3 mt-2">
     <v-label :text="`Site tolerance (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
   <debounced-slider v-slot="{value}" v-model="angleTolerance" :disabled="!enableProto"
-                      :min="0.5" :max="10" :step="0.5" class="ml-2 mb-3 mt-2">
+                      :min="0.5" :max="10" :step="0.5" class="mb-3 mt-2">
     <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
   </debounced-slider>
-  <v-btn block class="mt-5 mb-4" :disabled="!enableProto"
-         @click="resetParams">Reset parameters</v-btn>
+  <block-button class="mt-5 mb-0" :disabled="!enableProto" label="Reset parameters"
+         @click="resetParams" />
   <v-container v-if="enableProto && hasInput" class="mt-2 ml-2 mb-6 pa-0 pr-2">
-    <v-label v-if="formula !== ''" class="mb-3 pb-1 bigger-result"
+    <v-label v-if="formula !== ''" class="mb-3 pb-1 ml-n2 bigger-result"
              v-html="`Prototypes for ${formula}`" />
     <v-container v-for="entry of prototypes" :key="entry[1]" v-ripple
                  class="mb-4 py-1 pl-2 border-thin rounded-lg cursor-pointer"
@@ -210,7 +211,7 @@ const startQuery = (aflow: string): void => {
     </v-container>
   </v-container>
   <v-label class="separator-title">Query prototypes db</v-label>
-  <v-autocomplete v-model="query" label="Query"
+  <v-autocomplete v-model="query" label="Query" class="mr-2"
                   :items="db" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="" spellcheck="false"

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
  * @component
- * Button with dead time after one activation
+ * <<DESCRIPTION>>
  *
  * @author Mario Valle "mvalle at ikmail.com"
- * @since 2025-11-30
+ * @since 2026-02-20
  */
 
  // > Properties & events
@@ -13,16 +13,12 @@ const props = withDefaults(defineProps<{
     /** Label for the button */
     label?: string;
 
-    /** Timeout for debouncing (in milliseconds) */
-    timeout?: number;
-
     /** Button disable */
     disabled?: boolean;
 
   }>(), {
 
     label: "Push me!",
-    timeout: 500,
     disabled: false
 });
 
@@ -31,25 +27,11 @@ const emit = defineEmits<{
     click: [];
 }>();
 
-/** Button is in the dead-time period */
-let waiting = false;
-
-/**
- * Button activated
- */
-const click = (): void => {
-
-    if(waiting) return;
-    setTimeout(() => {waiting = false;}, props.timeout);
-    waiting = true;
-    emit("click");
-};
-
 </script>
 
 
 <template>
 <v-container class="pl-0 pt-0 pr-2">
-  <v-btn block :disabled @click="click">{{ label }}</v-btn>
+  <v-btn block :disabled @click="emit('click')">{{ label }}</v-btn>
 </v-container>
 </template>

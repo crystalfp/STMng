@@ -16,6 +16,7 @@ import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import ThrottledButton from "@/widgets/ThrottledButton.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -548,12 +549,11 @@ const showEnergyLandscape = (): void => {
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
   <v-switch v-model="processParallelism" label="Multi process parallelism" class="ml-2 mb-2"/>
-  <v-btn block :disabled="countSelected === 0"
-         @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()">
-    Compute fingerprints & distances
-  </v-btn>
+  <block-button :disabled="countSelected === 0"
+         @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()"
+         label="Compute fingerprints & distances" />
 
-  <v-row class="ml-0 mt-1 mb-2">
+  <v-row class="ml-0 mt-n2 mb-2">
     <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
       {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
     <v-label v-if="fingerprintingBusy" class="mt-4 result-label cursor-wait">Working&hellip;</v-label>
@@ -619,10 +619,9 @@ const showEnergyLandscape = (): void => {
                     label="Margin" :min="0" :step="1" class="ml-2"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
-  <v-btn block :disabled="countDistances === 0"
-         @click="groupingBusy = true; ClassifyStructures()">
-    Group similar structures
-  </v-btn>
+  <block-button :disabled="countDistances === 0"
+                @click="groupingBusy = true; ClassifyStructures()"
+                label="Group similar structures" />
   <v-container class="pa-0">
     <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">
       {{ `Found ${countGroups} groups` }}

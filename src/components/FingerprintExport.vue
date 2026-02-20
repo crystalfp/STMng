@@ -13,6 +13,7 @@ import {closeWindow, requestData, askNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 const kind = ref("");
 const showExport = ref(false);
@@ -78,20 +79,16 @@ const toggleExport = (exportKind: "all" | "min"): void => {
 <template>
 <v-app :theme class="d-flex">
   <v-container class="flex-1-1">
-  <v-btn block class="mb-2"
-         @click="toggleExport('all')">
-    Export results
-  </v-btn>
-  <v-btn :disabled="!hasEnergies" block class="mt-4 mb-4"
-         @click="toggleExport('min')">
-    Min energy per group
-  </v-btn>
+    <block-button class="mb-2"
+         @click="toggleExport('all')" label="Export results"/>
+    <block-button :disabled="!hasEnergies"
+         @click="toggleExport('min')" label="Min energy per group"/>
 
-  <select-file v-if="showExport" class="mt-4 ml-n1" title="Select output file"
+  <select-file v-if="showExport" class="ml-n1" title="Select output file"
                :filter="filterPOSCAR" kind="save"
                @selected="selectedExportFile" />
   <v-switch v-if="showExport && hasEnergies" v-model="saveEnergyPerAtom"
-               class="ml-2 mt-2" label="Save energy per atom"/>
+               class="ml-2" label="Save energy per atom"/>
   <v-alert v-if="errorMessage !== ''" title="Error" class="mt-4 ml-1 cursor-pointer"
       :text="errorMessage" type="error" density="compact"
       color="red" @click="errorMessage=''" />

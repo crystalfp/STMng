@@ -15,6 +15,8 @@ import NodeAlert from "@/widgets/NodeAlert.vue";
 import {SliceStructureRenderer} from "@/renderers/SliceStructureRenderer";
 import type {CtrlParams, SlicingModes, AtomSelectorModes} from "@/types";
 
+import BlockButton from "@/widgets/BlockButton.vue";
+
 // > Properties
 const {id, label} = defineProps<{
 
@@ -310,73 +312,73 @@ watchEffect(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-4 ml-3" />
+  <v-switch v-model="enableSlicer" label="Enable slicer" class="mt-4 ml-1" />
   <v-switch v-model="showSlicer" :disabled="mode==='direct' || mode==='bonded'"
-            label="Show slicer geometry" class="ml-3" />
-  <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-3" />
+            label="Show slicer geometry" class="ml-1" />
+  <v-switch v-model="sliceInside" label="Slice inside" class="mb-4 ml-1" />
   <v-select v-model="mode"
     :items="modeList"
     label="Slice mode"
     item-title="label"
     item-value="value"
-    class="ml-2 mb-6" />
+    class="mb-6 mr-2" />
 
   <v-container v-if="mode==='plane' || mode==='slab'" class="pa-0">
-    <v-switch v-model="parallelA" label="Parallel to a" class="mt-2 ml-4" />
-    <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
+    <v-switch v-model="parallelA" label="Parallel to a" class="mt-2 ml-1" />
+    <slider-with-steppers v-model="percentA" v-model:raw="showPercentA" class="ml-0"
                           :disabled="parallelA" label-width="5rem"
                           :label="`a (${showPercentA.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
-    <v-switch v-model="parallelB" label="Parallel to b" class="mt-2 ml-4" />
-    <slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
+    <v-switch v-model="parallelB" label="Parallel to b" class="mt-2 ml-1" />
+    <slider-with-steppers v-model="percentB" v-model:raw="showPercentB" class="ml-0"
                           :disabled="parallelB" label-width="5rem"
                           :label="`b (${showPercentB.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
-    <v-switch v-model="parallelC" label="Parallel to c" class="mt-2 ml-4" />
-    <slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
+    <v-switch v-model="parallelC" label="Parallel to c" class="mt-2 ml-1" />
+    <slider-with-steppers v-model="percentC" v-model:raw="showPercentC" class="ml-0"
                           :disabled="parallelC" label-width="5rem"
                           :label="`c (${showPercentC.toFixed(1)}%)`"
                           :min="-100" :max="100" :step="0.1" />
     <slider-with-steppers v-if="mode==='slab'" v-model="thickness"
                           v-model:raw="showThickness"
-                          class="mt-6" label-width="8rem"
+                          class="mt-6 ml-0" label-width="8rem"
                           :label="`Thickness (${showThickness.toFixed(1)})`"
                           :min="0.1" :max="10" :step="0.1" />
   </v-container>
   <v-container v-else-if="mode==='miller'" class="pa-0">
     <slider-with-steppers v-model="millerH"
-                          v-model:raw="showMillerH" label-width="3rem"
+                          v-model:raw="showMillerH" label-width="3rem" class="ml-0"
                           :label="`h (${showMillerH.toFixed(0)})`"
                           :min="-9" :max="9" :step="1" />
     <slider-with-steppers v-model="millerK"
-                          v-model:raw="showMillerK" label-width="3rem"
+                          v-model:raw="showMillerK" label-width="3rem" class="ml-0"
                           :label="`k (${showMillerK.toFixed(0)})`"
                           :min="-9" :max="9" :step="1" />
     <slider-with-steppers v-model="millerL"
-                          v-model:raw="showMillerL" label-width="3rem"
+                          v-model:raw="showMillerL" label-width="3rem" class="ml-0"
                           :label="`l (${showMillerL.toFixed(0)})`"
                           :min="-9" :max="9" :step="1" />
     <slider-with-steppers v-model="millerPlaneOffset"
                           v-model:raw="showMillerPlaneOffset" label-width="6rem"
                           :label="`offset (${showMillerPlaneOffset.toFixed(1)})`"
-                          :min="-10" :max="10" :step="0.1" class="mt-3 mb-4"/>
+                          :min="-10" :max="10" :step="0.1" class="mt-3 mb-4 ml-0"/>
   </v-container>
   <v-container v-else-if="mode==='sphere'" class="pa-0">
     <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"
                       channel="check"
-                      class="ml-2 mb-n2 mt-2" :hide="['all']"
+                      class="ml-0 mb-n2 mt-2" :hide="['all']"
                       title="Select center atom by" placeholder="Central atom selector" />
     <slider-with-steppers v-model="sphereRadius"
-                          v-model:raw="showSphereRadius" label-width="7rem"
+                          v-model:raw="showSphereRadius" label-width="7rem" class="ml-1"
                           :label="`Radius (${showSphereRadius.toFixed(1)})`"
                           :min="0.1" :max="50" :step="0.1" />
   </v-container>
   <v-container v-else-if="mode==='direct' || mode==='bonded'" class="pa-0 pt-2">
     <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"
-                   channel="check" class="ml-2 mb-n4" :hide="['all']"
+                   channel="check" class="ml-0 mb-n4" :hide="['all']"
                    title="Select atoms by" placeholder="Atom selector" />
   </v-container>
-  <v-btn block class="mt-6" @click="resetParameters">Reset parameters</v-btn>
+  <block-button class="mt-4" @click="resetParameters" label="Reset parameters"/>
 
   <node-alert node="slicer" />
 

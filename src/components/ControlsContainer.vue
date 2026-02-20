@@ -67,7 +67,7 @@ sendCurrentNode(() => {
             item-value="id" variant="solo-filled" rounded="0"
             :menu-props="{stickToTarget: true}"/>
 </v-container>
-<v-container v-for="panel of panelList" :key="panel.id" class="px-2 py-0">
+<v-container v-for="panel of panelList" :key="panel.id" class="pl-2 pr-0 py-0">
   <component :is="panel.ctrl" v-show="panel.id === selectedTabId"
   			 :id="panel.id" :label="panel.label" />
 </v-container>

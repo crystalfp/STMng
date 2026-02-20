@@ -18,7 +18,7 @@ import type {AtomSelectorModes, PositionType} from "@/types";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import ThrottledButton from "@/widgets/ThrottledButton.vue";
-
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -153,11 +153,11 @@ const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red
       <v-label :text="`Point cloud size (${value}%)`" class="no-select" />
     </debounced-slider>
   </v-container>
-  <throttled-button block class="mb-5"
+  <throttled-button class="mb-2"
                     label="Show averages" @click="sendToNode(id, 'means')" />
-  <v-btn block class="mb-5"
+  <block-button class="mb-2"
          :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
-         :color="startStopColor" @click="toggleRecording">{{ startStop }}</v-btn>
-  <v-btn block class="mb-6" @click="resetTraces">Clear trajectories</v-btn>
+         :color="startStopColor" @click="toggleRecording" :label="startStop"/>
+  <block-button @click="resetTraces" label="Clear trajectories"/>
 </v-container>
 </template>

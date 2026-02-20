@@ -9,12 +9,12 @@
 import {useSlots} from "vue";
 
 // > Properties
-const {title, inline=false} = defineProps<{
+const {title, inline} = defineProps<{
 
     /** Title for the slot */
     title: string;
 
-    /** True if the label is on the same line as the slot */
+    /** True if the label is on the same line as the slot (if not present it is false) */
     inline?: boolean;
 }>();
 

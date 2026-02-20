@@ -323,6 +323,7 @@ const setFormat = (): void => {
     }
     showPrototypes.value = false;
     showCollection.value = false;
+    countSteps.value = 0;
 
     // Clean the labels of the file selectors
     label1.value = "";
@@ -698,7 +699,7 @@ const startCollectionQuery = (fileID: string): void => {
 <v-container class="container">
 
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="my-4"
+            :items="fileFormats" class="my-4 mr-2"
             @update:model-value="setFormat" />
 
   <v-container v-if="showPrototypes" class="pa-0">
@@ -727,13 +728,13 @@ const startCollectionQuery = (fileID: string): void => {
 
     <v-text-field v-if="needsAtomTypes(format)" v-model.trim="atomsTypes"
                   label="Atoms types"
-                  placeholder="Space separated list" class="mb-6"
+                  placeholder="Space separated list" class="mb-6 mr-2"
                   hide-details="auto"
                   clearable spellcheck="false"
                   @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
                   @click:clear="clearAtomTypes"/>
     <v-switch v-model="appendFile"
-              label="Append" class="ml-4 mt-4"
+              label="Append" class="ml-2 mt-4"
               @update:model-value="setAppendFile" />
 
     <select-file v-model="label1" :disabled="format === ''"
@@ -744,7 +745,7 @@ const startCollectionQuery = (fileID: string): void => {
                 @dropped="droppedFile" />
 
     <v-switch v-if="format === 'POSCAR + ENERGY'" v-model="energyPerAtom"
-              label="File has energy per atom" class="ml-4 mt-2"
+              label="File has energy per atom" class="ml-2 mt-2"
               @update:model-value="setEnergyPerAtom" />
 
     <select-file v-if="auxSetup.hasAux" v-model="label2"
@@ -764,7 +765,7 @@ const startCollectionQuery = (fileID: string): void => {
         <v-switch v-model="loopSteps" label="Loop" class="mr-5 mb-6" />
         <v-switch v-model="stepBackward" label="Reverse" class="mb-6" />
         <v-number-input v-model="stepIncrement" label="Step increment" :min="1"
-                        :precision="0" class="ml-3 mr-8" />
+                        :precision="0" class="ml-3 mr-10" />
       </v-row>
       <v-row class="ml-0 d-flex ga-1 align-center">
         <v-label class="no-select pb-4 mt-4 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>

@@ -9,8 +9,9 @@
 
 import {onMounted, watchEffect, useTemplateRef} from "vue";
 import {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
-        Raycaster, type Object3D, type Mesh, type MeshLambertMaterial, Clock,
-        Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere, MathUtils} from "three";
+        Raycaster, type Object3D, type Mesh, type MeshLambertMaterial,
+        Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere,
+        Timer, MathUtils} from "three";
 import CameraControls from "camera-controls";
 import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
@@ -112,7 +113,7 @@ onMounted(() => {
 
     // Add mouse controls to move the camera
     const subsetOfTHREE = {PerspectiveCamera, OrthographicCamera, Vector3,
-                           Vector2, WebGLRenderer, Raycaster, Clock, Vector4,
+                           Vector2, WebGLRenderer, Raycaster, Vector4,
                            Quaternion, Matrix4, Spherical, Box3,
                            Sphere, MathUtils};
     CameraControls.install({THREE: subsetOfTHREE});
@@ -548,8 +549,11 @@ onMounted(() => {
     camera.lookAt(viewportGizmo.target);
 
     // Rendering function for the run
-    const clock = new Clock();
+    const clock = new Timer();
+    clock.connect(document);
     const animate = (): void => {
+
+        clock.update();
         const doRender = controls.update(clock.getDelta());
         if(doRender || sm.needRendering()) {
 
@@ -563,6 +567,7 @@ onMounted(() => {
     };
 
     // First time render everything
+    clock.update();
     controls.update(clock.getDelta());
     renderer.render(scene, camera);
     if(configStore.helpers.showGizmo) viewportGizmo.render();

@@ -177,7 +177,7 @@ watch([colormapName, colorIsolines], () => {
 <v-container class="container">
   <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-4 mb-4 ml-3" />
 
-  <dataset-selector v-model="dataset" :count-datasets />
+  <dataset-selector v-model="dataset" :count-datasets class="ml-2"/>
 
   <titled-slot title="Axis" class="mb-2 ml-2">
     <v-btn-toggle v-model="axis" mandatory>
@@ -194,7 +194,7 @@ watch([colormapName, colorIsolines], () => {
 
   <debounced-range-slider v-slot="{values}" v-model="limits"
                             :step :min="valueMin" :max="valueMax"
-                            class="ml-4 mt-1 pr-4">
+                            class="ml-4 mt-1 pr-6">
     <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
              class="ml-n2 no-select" />
   </debounced-range-slider>
@@ -205,10 +205,10 @@ watch([colormapName, colorIsolines], () => {
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </debounced-slider>
 
-  <select-colormap v-model="colormapName" class="mx-2" />
+  <select-colormap v-model="colormapName" class="mx-2 mr-4" />
 
-  <v-switch v-model="showIsolines" label="Show isolines" class="mt-6 ml-4" />
-  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-4 mb-5" />
+  <v-switch v-model="showIsolines" label="Show isolines" class="mt-6 ml-3" />
+  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-3 mb-5" />
 
   <debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
                       :step :min="valueMin" :max="valueMax" class="ml-2 mt-1">

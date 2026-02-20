@@ -58,12 +58,12 @@ watch([interpolateVolume, pointsToAdd, dataset], () => {
 <template>
 <v-container class="container">
   <v-switch v-model="interpolateVolume"
-            label="Interpolate volume data" class="mt-4 ml-4 mb-4" />
+            label="Interpolate volume data" class="mt-4 ml-1 mb-4" />
 
   <dataset-selector v-model="dataset" :count-datasets />
 
   <debounced-slider v-slot="{value}" v-model="pointsToAdd" :step="1" :min="1" :max="10"
-                      :disabled="!interpolateVolume" class="ml-2 mt-1">
+                      :disabled="!interpolateVolume" class="mt-1">
     <v-label :text="`Points to add (${value})`" class="no-select" />
   </debounced-slider>
 </v-container>

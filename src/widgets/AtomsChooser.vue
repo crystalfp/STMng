@@ -12,7 +12,7 @@ import type {AtomSelectorModes} from "@/types";
 import {askNode} from "@/services/RoutesClient";
 
 // > Properties
-const {disabled = false, hide = [], id, channel} = defineProps<{
+const {disabled, hide = [], id, channel} = defineProps<{
 
     /** Title for the widget */
     title: string;
@@ -20,7 +20,7 @@ const {disabled = false, hide = [], id, channel} = defineProps<{
     /** Placeholder text inside atoms selector */
     placeholder: string;
 
-    /** Disable the component */
+    /** Disable the component (if not present it is false) */
     disabled?: boolean;
 
     /** Hide some of the buttons */
@@ -99,9 +99,7 @@ const getSelector = (): void => {
  * @param name - Name of the button to check
  * @returns True if the button is not hidden
  */
-const notHidden = (name: string): boolean => {
-    return !hide?.includes(name);
-};
+const notHidden = (name: string): boolean => !hide?.includes(name);
 
 /**
  * Clear selector when selecting all atoms or clearing the field

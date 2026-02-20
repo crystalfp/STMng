@@ -11,7 +11,7 @@ import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, OrthographicCamera, Vector3, Vector2,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-        Box3, Sphere, MathUtils, Clock, Mesh} from "three";
+        Box3, Sphere, MathUtils, Timer, Mesh} from "three";
 
 /** Simple 3D viewer */
 export class SimpleViewer {
@@ -129,9 +129,11 @@ export class SimpleViewer {
 		this.scene.add(ambient);
 
 		// Rendering function for the run
-		const clock = new Clock();
+		const clock = new Timer();
+		clock.connect(document);
 		const animationLoop = (): void => {
 
+			clock.update();
 			const doRender = this.controls!.update(clock.getDelta());
 			if(doRender || this.needRendering()) {
 

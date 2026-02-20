@@ -242,7 +242,7 @@ const finalValue = computed(() => {
     </v-row>
   </v-container>
 
-  <cell-parameters :sides :angles class="ml-3 pr-1 mt-n2"/>
+  <cell-parameters :sides :angles class="ml-3 pr-3 mt-n2"/>
 
   <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4 mb-n2" />
   <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
@@ -270,7 +270,7 @@ const finalValue = computed(() => {
     </v-row>
   </v-container>
 
-  <throttled-button block class="mb-4" label="Show symmetries dialog"
+  <throttled-button label="Show symmetries dialog"
                     @click="sendToNode(id, 'window')" />
 
   <node-alert node="symmetries" />

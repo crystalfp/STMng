@@ -100,6 +100,7 @@ const format = (value: number): string => {
   margin: 0;
   height: 100%;
   max-width: 3000px !important;
+  scrollbar-gutter: stable;
 }
 
 th {

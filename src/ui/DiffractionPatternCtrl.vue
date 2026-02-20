@@ -103,14 +103,14 @@ const openChartWindow = (): void => {
 
 <template>
 <v-container class="container">
-  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="ml-2 my-4"
+  <v-select v-model="wavelengthCode" :items="wavelengthCodes" class="mx-2 my-4"
             label="Wavelength"/>
   <v-number-input v-if="wavelengthCode === 'Manual'" v-model="wavelengthNumeric"
                   label="Numeric wavelength" :precision="6"
                   :min="0.1" :max="4" :step="0.1" class="ml-2 mr-0" />
   <debounced-range-slider v-slot="{values}" v-model="theta"
                               :step="0.01" :min="0" :max="90"
-                              class="ml-4 mt-2 pr-4">
+                              class="ml-4 mt-2 pr-6">
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
   </debounced-range-slider>
@@ -120,7 +120,7 @@ const openChartWindow = (): void => {
                       class="ml-2 mb-6 mt-1">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
-  <throttled-button block label="Open chart"
+  <throttled-button label="Open chart"
                     :disabled="!enableComputation" @click="openChartWindow" />
 </v-container>
 </template>

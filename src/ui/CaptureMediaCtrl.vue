@@ -11,6 +11,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Access the stores
 const configStore = useConfigStore();
@@ -29,7 +30,7 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
 <v-container class="container">
   <v-label class="separator-title first-title">Snapshot</v-label>
 
-  <titled-slot title="Format:" inline class="mt-4 ml-0 mb-3">
+  <titled-slot title="Format:" inline class="mt-4 ml-1 mb-3">
     <v-btn-toggle v-model="configStore.camera.snapshotFormat" mandatory>
       <v-btn value="png">PNG</v-btn>
       <v-btn value="jpeg">JPEG</v-btn>
@@ -40,24 +41,24 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
   <v-switch v-model="configStore.camera.snapshotTransparent"
             :disabled="configStore.camera.snapshotFormat!=='png'"
             label="Transparent background" class="mt-4 ml-2" />
-  <v-btn block class="mt-4" @click="controlStore.snapshot = true">Capture snapshot</v-btn>
-  <node-alert node="captureSnapshot" class="mt-4" />
+  <block-button class="mt-4 mb-n6" @click="controlStore.snapshot = true" label="Capture snapshot"/>
+  <node-alert node="captureSnapshot" class="mt-6 mb-n4" />
 
   <v-label class="mt-10 separator-title">Movie</v-label>
-  <v-btn block class="mt-3" :color="controlStore.movie ? 'red' : 'primary'"
-        @click="controlStore.movie = !controlStore.movie">{{ startStop }}</v-btn>
-  <node-alert node="captureMovie" :timeout="0" class="mt-4" />
+  <block-button class="mt-3 mb-n4" :color="controlStore.movie ? 'red' : 'primary'"
+        @click="controlStore.movie = !controlStore.movie" :label="startStop"/>
+  <node-alert node="captureMovie" :timeout="0" class="mt-4 mb-0" />
 
-  <v-label class="mt-10 separator-title">STL</v-label>
+  <v-label class="mt-8 separator-title">STL</v-label>
 
-  <titled-slot title="Format:" inline class="mt-4 ml-0 mb-6">
+  <titled-slot title="Format:" inline class="mt-4 ml-1 mb-6">
     <v-btn-toggle v-model="configStore.camera.stlFormat" mandatory>
       <v-btn value="ascii">ASCII</v-btn>
       <v-btn value="binary">Binary</v-btn>
     </v-btn-toggle>
   </titled-slot>
 
-  <v-btn block class="mt-3" @click="controlStore.stl = true">Capture geometry</v-btn>
-  <node-alert node="captureSTL" class="mt-4" />
+  <block-button class="mt-3" @click="controlStore.stl = true" label="Capture geometry" />
+  <node-alert node="captureSTL" class="mt-2" />
 </v-container>
 </template>

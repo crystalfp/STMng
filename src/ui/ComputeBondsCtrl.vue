@@ -16,6 +16,7 @@ import type {CtrlParams} from "@/types";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -217,7 +218,7 @@ const resetSliders = (): void => {
     </debounced-slider>
   </v-container>
 
-  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-4 ml-2">
+  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-2 ml-2">
     <v-btn-toggle v-model="enlargementKind" mandatory>
       <v-btn value="none">None</v-btn>
       <v-btn value="neighbors">Neighbors</v-btn>
@@ -226,7 +227,7 @@ const resetSliders = (): void => {
     </v-btn-toggle>
   </titled-slot>
 
-  <v-btn block @click="resetSliders">Reset parameters</v-btn>
+  <block-button @click="resetSliders" label="Reset parameters"/>
 
 </v-container>
 </template>

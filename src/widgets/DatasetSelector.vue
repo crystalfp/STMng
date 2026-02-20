@@ -20,10 +20,10 @@ const dataset = defineModel<number>();
 
 <template>
 <v-container class="pa-0">
-  <v-label v-if="countDatasets === 0" class="ml-2 mb-4 result-label">There is no volumetric data</v-label>
+  <v-label v-if="countDatasets === 0" class="mb-4 result-label">There is no volumetric data</v-label>
   <div v-else>
-    <v-label :text="`Dataset (${dataset})`" class="ml-2 no-select" />
-    <v-slider v-model="dataset" min="0" :max="countDatasets-1" step="1" class="ml-5 mr-5" />
+    <v-label :text="`Dataset (${dataset})`" class="ml-1 no-select" />
+    <v-slider v-model="dataset" min="0" :max="countDatasets-1" step="1" class="ml-2 mr-6" />
   </div>
 </v-container>
 </template>

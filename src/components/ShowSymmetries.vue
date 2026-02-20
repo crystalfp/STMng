@@ -100,6 +100,7 @@ const finalValue = computed(() => {
   height: 100%;
   padding-top: 15px;
   max-width: 3000px !important;
+  scrollbar-gutter: stable;
 }
 
 .show-symmetry {

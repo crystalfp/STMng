@@ -13,6 +13,7 @@ import {useControlStore} from "@/stores/controlStore";
 import {askNode, sendViewer3DState} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import AlignLabels from "@/widgets/AlignLabels.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -225,7 +226,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
 
 
 <template>
-<v-container class="container">
+<v-container class="container pr-2 pl-0">
   <v-expansion-panels class="mt-2">
     <v-expansion-panel>
       <v-expansion-panel-title>
@@ -388,6 +389,6 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
-  <v-btn block class="mt-2" @click="configStore.resetViewer">Restore viewer settings</v-btn>
+  <block-button class="mt-2 ml-1" @click="configStore.resetViewer" label="Restore viewer settings"/>
 </v-container>
 </template>

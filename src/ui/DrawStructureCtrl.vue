@@ -16,6 +16,7 @@ import type {StructureRenderInfo, ColoringType} from "@/types";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import ColorSelector from "@/widgets/ColorSelector.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
+import BlockButton from "@/widgets/BlockButton.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -272,7 +273,7 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
 
 <template>
 <v-container class="container">
-  <titled-slot title="Structure rendering mode" class="mt-4 mb-6 ml-2">
+  <titled-slot title="Structure rendering mode" class="mt-4 mb-6 ml-1">
     <v-btn-toggle v-model="drawKind" mandatory>
       <v-btn value="ball-and-stick">CPK</v-btn>
       <v-btn value="van-der-waals">VdW</v-btn>
@@ -282,11 +283,11 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
   </titled-slot>
 
   <v-switch v-model="shadedBonds" :disabled="disableShadedBonds"
-            label="Smooth color bonds" class="mt-n4 ml-4" />
+            label="Smooth color bonds" class="mt-n4 ml-2" />
   <v-switch v-model="showBondsStrengths" :disabled="disableBondsStrengths"
-            label="Show bonds strengths" class="mt-n1 mb-6 ml-4" />
+            label="Show bonds strengths" class="mt-n1 mb-6 ml-2" />
 
-  <titled-slot title="Atom label" class="mb-2 ml-2">
+  <titled-slot title="Atom label" class="mb-2 ml-1">
     <v-btn-toggle v-model="labelKind" :disabled="!showLabels" mandatory>
       <v-btn value="symbol">Symbol</v-btn>
       <v-btn value="label">Label</v-btn>
@@ -294,7 +295,7 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
     </v-btn-toggle>
   </titled-slot>
 
-  <titled-slot title="Atom color" class="mb-2 ml-2">
+  <titled-slot title="Atom color" class="mb-2 ml-1">
     <v-btn-toggle v-model="atomColoring" :disabled="!showAtoms || drawKind === 'lines'" mandatory>
       <v-btn value="type">Type</v-btn>
       <v-btn value="mono">Mono</v-btn>
@@ -302,13 +303,13 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
     </v-btn-toggle>
     <template #extra>
       <color-selector v-if="atomColoring==='mono'" v-model="monochromeColor"
-                      label="Atom mono color" class="mb-2" />
+                      label="Atom mono color" class="mb-2 mr-n6" />
     </template>
   </titled-slot>
   <v-switch v-if="atomColoring==='bonds'" v-model="showLegend"
-            class="ml-4 mb-8 mt-n6" label="Show legend" />
+            class="ml-2 mb-8 mt-n6" label="Show legend" />
 
-  <titled-slot title="Visibility" class="mb-2 ml-2 mt-n4">
+  <titled-slot title="Visibility" class="mb-2 ml-1 mt-n4">
     <v-btn-toggle v-model="showCombined" multiple>
       <v-btn value="atoms">Atoms</v-btn>
       <v-btn value="bonds">Bonds</v-btn>
@@ -316,7 +317,7 @@ watch([showLegend, atomColoring], (after: [boolean, string]) => {
       <v-btn value="display" active>{{ showAll ? "Show" : "Hide" }}</v-btn>
     </v-btn-toggle>
   </titled-slot>
-  <v-btn block class="mt-4" text="Visual parameters" @click="showVisuals = !showVisuals"/>
+  <block-button class="mt-4" label="Visual parameters" @click="showVisuals = !showVisuals"/>
   <div v-if="showVisuals">
 
     <titled-slot title="Quality" class="ml-2 mt-4 mb-2">

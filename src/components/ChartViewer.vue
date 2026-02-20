@@ -167,7 +167,7 @@ const savePoints = (): void => {
   overflow-y: auto;
   width: 100vw;
   flex: 2;
-  padding: 10px;
+  padding: 10px 10px 0 0;
 }
 
 </style>

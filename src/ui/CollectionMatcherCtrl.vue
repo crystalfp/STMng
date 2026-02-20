@@ -98,30 +98,32 @@ const selectResult = (fileID: string): void => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="state.enabled" label="Enable collection matcher" class="mt-6 ml-3" />
+  <v-switch v-model="state.enabled" label="Enable collection matcher" class="mt-6 ml-1" />
   <slider-with-steppers v-model="state.numberMatches" v-model:raw="showNumberMatches"
-                        class="mb-2 ml-2 mt-2" label-width="7rem"
+                        class="mb-2 ml-0 mt-2" label-width="7rem"
                         :label="`Neighbors (${showNumberMatches})`"
                         :min="1" :max="8" :step="1" />
   <v-row class="mt-2 pr-2">
     <v-col>
-      <v-switch v-model="state.noThreshold" label="No max distance" class="ml-3" />
+      <v-switch v-model="state.noThreshold" label="No max distance" class="ml-1" />
     </v-col>
     <v-col>
       <v-number-input v-model="state.threshold" :disabled="state.noThreshold"
                       label="Max distance" :precision="2"
-                      :step="0.01" :min="0.01" :max="1" class="ml-1" />
+                      :step="0.01" :min="0.01" :max="1" class="ml-1 mr-2" />
     </v-col>
   </v-row>
   <v-container v-if="state.enabled && hasInput" class="pa-0 mt-n6">
     <v-label class="separator-title">Similar structures</v-label>
-    <v-container v-for="entry of similar" :key="entry.id" v-ripple
-                  class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
-                  @click="selectResult(entry.id)">
-      <v-label class="result-label pb-1 bigger-result cursor-pointer">
-          {{ entry.title }}</v-label><br>
-      <v-label class="bigger-result cursor-pointer">
-          {{ `distance: ${entry.distance!.toFixed(4)}` }}</v-label>
+    <v-container class="pt-0 pl-0">
+      <v-container v-for="entry of similar" :key="entry.id" v-ripple
+                   class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
+                   @click="selectResult(entry.id)">
+        <v-label class="result-label pb-1 bigger-result cursor-pointer">
+            {{ entry.title }}</v-label><br>
+        <v-label class="bigger-result cursor-pointer">
+            {{ `distance: ${entry.distance!.toFixed(4)}` }}</v-label>
+      </v-container>
     </v-container>
   </v-container>
   <node-alert node="collectionMatcher" />
