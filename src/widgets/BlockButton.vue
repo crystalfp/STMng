@@ -8,17 +8,16 @@
  */
 
  // > Properties & events
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
 
     /** Label for the button */
-    label?: string;
+    label: string;
 
     /** Button disable */
     disabled?: boolean;
 
   }>(), {
 
-    label: "Push me!",
     disabled: false
 });
 

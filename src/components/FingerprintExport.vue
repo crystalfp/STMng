@@ -5,6 +5,22 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-08-22
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
 import {ref} from "vue";
 import {theme} from "@/services/ReceiveTheme";
@@ -79,10 +95,10 @@ const toggleExport = (exportKind: "all" | "min"): void => {
 <template>
 <v-app :theme class="d-flex">
   <v-container class="flex-1-1">
-    <block-button class="mb-2"
-         @click="toggleExport('all')" label="Export results"/>
-    <block-button :disabled="!hasEnergies"
-         @click="toggleExport('min')" label="Min energy per group"/>
+    <block-button class="mb-2" label="Export results"
+                  @click="toggleExport('all')"/>
+    <block-button :disabled="!hasEnergies" label="Min energy per group"
+                  @click="toggleExport('min')"/>
 
   <select-file v-if="showExport" class="ml-n1" title="Select output file"
                :filter="filterPOSCAR" kind="save"

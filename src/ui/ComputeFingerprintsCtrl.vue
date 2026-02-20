@@ -550,8 +550,8 @@ const showEnergyLandscape = (): void => {
   </v-row>
   <v-switch v-model="processParallelism" label="Multi process parallelism" class="ml-2 mb-2"/>
   <block-button :disabled="countSelected === 0"
-         @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()"
-         label="Compute fingerprints & distances" />
+         label="Compute fingerprints & distances"
+         @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()"/>
 
   <v-row class="ml-0 mt-n2 mb-2">
     <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
@@ -620,8 +620,8 @@ const showEnergyLandscape = (): void => {
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
   <block-button :disabled="countDistances === 0"
-                @click="groupingBusy = true; ClassifyStructures()"
-                label="Group similar structures" />
+                label="Group similar structures"
+                @click="groupingBusy = true; ClassifyStructures()" />
   <v-container class="pa-0">
     <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">
       {{ `Found ${countGroups} groups` }}

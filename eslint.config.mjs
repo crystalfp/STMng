@@ -97,9 +97,9 @@ export default defineConfig([
         "import/extensions": [".js", ".ts", ".vue", ".mts", ".mjs"],
         "import/ignore": ["node_modules"],
         "import/resolver": {
-            "typescript": {"alwaysTryTypes": true},
-            "alias": {"map": {"@/": "./src/"},
-            "extensions": [".vue", ".ts"]}
+            typescript: {alwaysTryTypes: true},
+            alias: {map: {"@/": "./src/"},
+            extensions: [".vue", ".ts"]}
         }
     },
     rules: {
@@ -137,14 +137,14 @@ export default defineConfig([
         "@typescript-eslint/no-redeclare": ["error", {builtinGlobals: true}],
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": ["error", {
-            "vars": "all",
-            "args": "all",
-            "argsIgnorePattern": "^_",
-            "caughtErrors": "all",
-            "caughtErrorsIgnorePattern": "^_",
-            "destructuredArrayIgnorePattern": "^_",
-            "varsIgnorePattern": "^_",
-            "ignoreRestSiblings": true
+            vars: "all",
+            args: "all",
+            argsIgnorePattern: "^_",
+            caughtErrors: "all",
+            caughtErrorsIgnorePattern: "^_",
+            destructuredArrayIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            ignoreRestSiblings: true
         }],
         "no-empty-function": "warn",
         "no-useless-constructor": "warn",
@@ -163,7 +163,7 @@ export default defineConfig([
         // "no-new": "error",
         // "no-bitwise": "off",
         // "no-unsafe-negation": ["warn", {enforceForOrderingRelations: true}],
-        "eqeqeq": ["error", "always"],
+        eqeqeq: ["error", "always"],
         // "strict": ["error", "global"],
         // "max-params": ["warn", 6],
         // "space-before-blocks": "warn",
@@ -185,7 +185,7 @@ export default defineConfig([
         // "no-var": "error",
         // "block-scoped-var": "error",
         // "yoda": "error",
-        "camelcase": ["warn", {properties: "never"}],
+        camelcase: ["warn", {properties: "never"}],
         // "max-depth": ["warn", 8],
         // "arrow-parens": "error",
         "no-confusing-arrow": ["error", {allowParens: true}],
@@ -249,7 +249,7 @@ export default defineConfig([
         // "no-fallthrough": ["error", {allowEmptyCase: true, commentPattern: "[Ff]alls?\\s?through"}],
         "no-loss-of-precision": "error",
         // "no-mixed-spaces-and-tabs": "off",
-        "no-duplicate-imports": ["error", {"allowSeparateTypeImports": true}],
+        "no-duplicate-imports": ["error", {allowSeparateTypeImports: true}],
 
         "@typescript-eslint/await-thenable": "error",
         "@typescript-eslint/no-array-delete": "error",
@@ -313,7 +313,7 @@ export default defineConfig([
         "@stylistic/operator-linebreak": "off",
         "@stylistic/indent-binary-ops": "off",
         "@stylistic/key-spacing": "off",
-        "@stylistic/max-statements-per-line": ["warn", {"max": 2}],
+        "@stylistic/max-statements-per-line": ["warn", {max: 2}],
         "@stylistic/comma-dangle": ["off", {arrays: "only-multiline", objects: "only-multiline"}],
         "@stylistic/spaced-comment": ["warn", "always", {markers: [":", "-", "+", "::", "/"]}],
         "@stylistic/space-infix-ops": "off",
@@ -387,10 +387,10 @@ export default defineConfig([
         "unicorn/prefer-json-parse-buffer": "off",
         "unicorn/prefer-class-fields": "warn",
         // === Enable non-recommended rules that add value ===
-        'unicorn/better-regex': 'warn',              // Simplify regexes: /[0-9]/ → /\d/
-        'unicorn/custom-error-definition': 'error',  // Correct Error subclassing
-        'unicorn/no-unused-properties': 'warn',      // Dead code detection
-        'unicorn/consistent-destructuring': 'warn',  // Use destructured vars consistently
+        "unicorn/better-regex": "warn",              // Simplify regexes: /[0-9]/ → /\d/
+        "unicorn/custom-error-definition": "error",  // Correct Error subclassing
+        "unicorn/no-unused-properties": "warn",      // Dead code detection
+        "unicorn/consistent-destructuring": "warn",  // Use destructured vars consistently
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],
@@ -417,7 +417,7 @@ export default defineConfig([
 
         // > ******************* other plugins ***********************
         "depend/ban-dependencies": ["warn", {
-                                    "presets": ["native", "microutilities", "preferred"]
+                                    presets: ["native", "microutilities", "preferred"]
         }],
         // "import/no-cycle": "error",
         // "import/namespace": "off",

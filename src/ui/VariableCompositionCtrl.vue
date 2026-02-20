@@ -498,14 +498,14 @@ watch([state, selected], ([st, sel], [_ost, osel]) => {
   <v-label v-if="analysisRunning" class="mb-2 result-label cursor-wait">
            Analysis running&hellip;</v-label>
   <block-button v-else :disabled="selected.length === 0 || !state.removeDuplicates"
-         @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"
-         label="Analyze selected for duplicates" class="mb-n2"/>
+         label="Analyze selected for duplicates" class="mb-n2"
+         @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>
     <node-alert node="variableComposition2" class="mt-1"/>
 
-  <block-button class="mt-2" :disabled="disableCharts" @click="showCharts" label="Show chart" />
+  <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
             label="Consolidate output" class="ml-2 mt-n2"/>
-  <block-button class="mt-2" :disabled="disableSave" @click="saveAnalyzed" label="Save analyzed" />
+  <block-button class="mt-2" :disabled="disableSave" label="Save analyzed" @click="saveAnalyzed" />
   <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-2">
     {{ `Files saved: ${savedFiles}` }}
   </v-label>

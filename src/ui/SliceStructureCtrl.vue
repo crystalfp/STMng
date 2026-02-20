@@ -378,7 +378,7 @@ watchEffect(() => {
                    channel="check" class="ml-0 mb-n4" :hide="['all']"
                    title="Select atoms by" placeholder="Atom selector" />
   </v-container>
-  <block-button class="mt-4" @click="resetParameters" label="Reset parameters"/>
+  <block-button class="mt-4" label="Reset parameters" @click="resetParameters"/>
 
   <node-alert node="slicer" />
 

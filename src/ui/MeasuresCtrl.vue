@@ -318,7 +318,7 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     </tbody></table>
   </v-container>
 
-  <block-button class="mt-4 mb-4" @click="controlStore.deselectAll()" label="Deselect" />
+  <block-button class="mt-4 mb-4" label="Deselect" @click="controlStore.deselectAll()" />
 </v-container>
 </template>
 

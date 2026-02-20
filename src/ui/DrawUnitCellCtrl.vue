@@ -257,7 +257,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
   <slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
                           :min="1" :max="10" :step="1" />
-  <block-button :disabled="!hasSupercell()" class="mt-2" @click="resetSliders" label="Reset" />
+  <block-button :disabled="!hasSupercell()" class="mt-2" label="Reset" @click="resetSliders" />
   <v-switch v-model="showSupercell" :disabled="!hasSupercell()"
             label="Show supercell" class="ml-4" />
   <v-switch v-model="dashedSupercell" :disabled="!hasSupercell() || lineWidth > 0"
@@ -274,7 +274,7 @@ const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && p
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
                           :min="-50" :max="50" :step="1" />
   <v-switch v-model="shrink" label="Shrink cell" class="ml-4 my-2" />
-  <block-button :disabled="noShift()" class="mt-2 mb-4" @click="resetShift" label="Reset" />
+  <block-button :disabled="noShift()" class="mt-2 mb-4" label="Reset" @click="resetShift" />
 
 </v-container>
 </template>

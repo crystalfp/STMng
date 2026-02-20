@@ -14,12 +14,12 @@ export const vueRules = {
 	// "vue/no-v-html": "off",
 	// "vue/multi-word-component-names": "off",
 	// "vue/comment-directive": "warn",
-	"vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
+	"vue/v-bind-style": ["warn", "shorthand", {sameNameShorthand: "always"}],
 	"vue/attributes-order": "warn",
-	"vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
+	"vue/no-undef-components": ["error", {ignorePatterns: ["^v-", "^router-"]}],
 	"vue/prefer-use-template-ref": "error",
 	"vue/no-unused-properties": ["error", {
-		"groups": ["props", "data", "computed", "methods"]
+		groups: ["props", "data", "computed", "methods"]
 	}],
 	"vue/no-unused-refs": "error",
 	"vue/no-unused-emit-declarations": "error",

@@ -31,6 +31,7 @@
     "proto-test/**",
     "docgen.config.js",
     "eslint.config.mjs",
+    "eslint.vue.config.mjs",
     ".dependency-cruiser.js",
     "work/**",
     "public/doc/scripts.js",

@@ -157,7 +157,7 @@ const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red
                     label="Show averages" @click="sendToNode(id, 'means')" />
   <block-button class="mb-2"
          :disabled="atomsSelector.trim() === '' && labelKind !== 'all'"
-         :color="startStopColor" @click="toggleRecording" :label="startStop"/>
-  <block-button @click="resetTraces" label="Clear trajectories"/>
+         :color="startStopColor" :label="startStop" @click="toggleRecording"/>
+  <block-button label="Clear trajectories" @click="resetTraces"/>
 </v-container>
 </template>

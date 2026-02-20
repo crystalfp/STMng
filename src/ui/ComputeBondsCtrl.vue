@@ -227,7 +227,7 @@ const resetSliders = (): void => {
     </v-btn-toggle>
   </titled-slot>
 
-  <block-button @click="resetSliders" label="Reset parameters"/>
+  <block-button label="Reset parameters" @click="resetSliders"/>
 
 </v-container>
 </template>
