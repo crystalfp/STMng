@@ -84,7 +84,7 @@ requestData(windowPath, (params: CtrlParams) => {
     const strukturbericht = params.strukturbericht as string ?? "";
 
     const uc = computeLatticeVertices(matrix);
-    const center = addUnitCell(uc);
+    /* const center = */ addUnitCell(uc);
 
     const {bonds, atoms: fullAtoms} = addAtoms(atoms, matrix);
 
@@ -92,8 +92,7 @@ requestData(windowPath, (params: CtrlParams) => {
 
     addBonds(fullAtoms, bonds);
 
-    sv.centerCamera(center);
-    sv.rotateCamera(0);
+    sv.positionCamera(atomsGroup);
 
     sv.setSceneModified();
 

@@ -9,7 +9,7 @@
 import {onMounted, onBeforeUnmount} from "vue";
 import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
-        AmbientLight, OrthographicCamera, Vector3, Vector2,
+        AmbientLight, OrthographicCamera, Vector3, Vector2, type Group,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
         Box3, Sphere, MathUtils, Timer, Mesh} from "three";
 
@@ -197,6 +197,36 @@ export class SimpleViewer {
 				.setLookAt(center[0], center[1], center[2] + 2*maxSide,
 						   center[0], center[1], center[2], false);
 		void this.controls.zoomTo(zoom, false);
+
+		this.camera.updateProjectionMatrix();
+	}
+
+	/**
+	 * Center camera and controls
+	 *
+	 * @param atomsGroup - Structure visualized
+	 * @param zoom - Camera zoom value
+	 */
+	positionCamera(atomsGroup: Group, zoom=1): void {
+
+		if(!this.camera || !this.controls) return;
+
+		const boundingBox = new Box3().setFromObject(atomsGroup);
+		const boundingSphere = boundingBox.getBoundingSphere(new Sphere());
+		const sphereCenter = boundingSphere.center;
+		const center = [sphereCenter.x, sphereCenter.y, sphereCenter.z];
+		const radius = boundingSphere.radius;
+
+		this.camera.lookAt(sphereCenter);
+		this.camera.position.set(center[0]+radius, center[1]+radius, center[2]+radius);
+
+		this.controls.setOrbitPoint(center[0], center[1], center[2]);
+		void this.controls
+				.normalizeRotations()
+				.setLookAt(center[0]+radius, center[1]+radius, center[2]+radius,
+						   center[0], center[1], center[2], false);
+		void this.controls.zoomTo(zoom, false);
+		this.controls.azimuthAngle = 0;
 
 		this.camera.updateProjectionMatrix();
 	}
