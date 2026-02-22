@@ -14,8 +14,8 @@ export const vueRules = {
 	// "vue/no-v-html": "off",
 	// "vue/multi-word-component-names": "off",
 	// "vue/comment-directive": "warn",
-	"vue/v-bind-style": ["warn", "shorthand", {sameNameShorthand: "always"}],
-	"vue/attributes-order": "warn",
+	"vue/v-bind-style": ["error", "shorthand", {sameNameShorthand: "always"}],
+	"vue/attributes-order": "error",
 	"vue/no-undef-components": ["error", {ignorePatterns: ["^v-", "^router-"]}],
 	"vue/prefer-use-template-ref": "error",
 	"vue/no-unused-properties": ["error", {

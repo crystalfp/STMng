@@ -20,7 +20,7 @@ import type {Prototype, PrototypeEntry, SNL, Site} from "../pymatgen/types";
  * @param structure - STMng structure to be converted
  * @returns The structure in SNL format or undefined if it has no unit cell
  */
-const structureToSNL = (structure: Structure): SNL | undefined => {
+export const structureToSNL = (structure: Structure): SNL | undefined => {
 
 	const {crystal, atoms} = structure;
 	const {basis}= crystal;

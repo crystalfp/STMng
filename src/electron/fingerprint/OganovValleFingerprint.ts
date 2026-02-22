@@ -85,7 +85,7 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 	fingerprint.fill(-1);
 
 	// Rescale lengths to be multiples of r0. r0 is roughly similar to the mean atomic radius
-	const rescaledCellVolume = areNanoclusters ? 1 :rescaleLengths(basis, natoms, positions);
+	const rescaledCellVolume = areNanoclusters ? 1 : rescaleLengths(basis, natoms, positions);
 
 	// With the infinite slab compute interatomic distances
 	slab.computeInteratomicDistances(basis, natoms, atomsZ, positions);

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng structure-matchers node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2026-02-22"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Structure matchers</title>
+</head>
+
+<body>
+<h1 class="title">Structure matchers</h1>
+<h1 class="subh1">Match a structure against known “Prototype” and “Collection” structures</h1>
+
+<div class="description">
+<p>This module matches crystal structures against two collections of structures: known crystallographic “prototypes” structures from the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> and a collection of interesting structures from various sources.</p>
+
+<p>The “Prototype” structures are accessible as a <a href="structure-reader.html">Structure reader</a> special collection. The match is done using code ported from the <a href="https://pymatgen.org/">Pymatgen</a> Python library class <a href="https://pymatgen.org/pymatgen.analysis.html#pymatgen.analysis.prototypes.AflowPrototypeMatcher">AflowPrototypeMatcher</a>. The prototype found is shown by its “mineral” tag field that, in the Aflow’s <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a>, is identified as the “Notes” field. These values have been updated by inputs provided by Prof. Artem Oganov. If you find that any string could be made clearer or more precise, do not hesitate to contact the author.</p>
+
+<p>The “Collection” structures are accessible as a <a href="structure-reader.html">Structure reader</a> special collection. The match is done using the Oganov Valle fingerprints (see the <a href="./compute-fingerprints.html">Compute fingerprints</a> node) and ordering the result on increasing cosine distance between the two fingerprints. To compute the fingerprints all the atomic species are changed to hydrogen.</p>
+</div>
+
+<h2>Controls</h2>
+<h3>Common controls</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Enable matchers</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Enable the matchers. Note that the process could be time consuming and computational heavy, so by default the module is disabled.</td>
+</tr>
+<tr>
+	<td class="c1">Input structure: <i>formula</i></td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Show the empirical formula for the loaded structure.</td>
+</tr>
+<tr>
+	<td class="c1">Reset parameters</td>
+	<td class="c2">button</td>
+	<td class="c3">Reset parameters to the default values.</td>
+</tr>
+</table>
+
+<h3>Collection matcher</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Neighbors</td>
+	<td class="c2">slider</td>
+	<td class="c3">Number of structures returned. The returned structures are ordered by increasing cosine distance.</td>
+</tr>
+<tr>
+	<td class="c1">No max distance</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If set the returned structures’ distances are not limited to be less than the value set as “Max distance”.</td>
+</tr>
+<tr>
+	<td class="c1">Max distance</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">Maximum value of distance of the returned structures from the test structure. This field is disabled if the “No max distance” toggle is set. Note that cosine distances goes from 0 to 1.</td>
+</tr>
+<tr>
+	<td class="c1">Similar structures</td>
+	<td class="c2">clickable text</td>
+	<td class="c3">List of the structures from the collection similar to the input one and their distances. Clicking on the entries opens the <a href="../secondary/prototype.html">secondary window</a> that shows the corresponding collection structure.</td>
+</tr>
+</table>
+
+<h3>Prototype matcher</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Fractional length tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the unit cell sides during structure matching.</td>
+</tr>
+<tr>
+	<td class="c1">Site tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the fractional atoms’ positions during structure matching.</td>
+</tr>
+<tr>
+	<td class="c1">Angle tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the lattice angles for the structure matcher.</td>
+</tr>
+<tr>
+	<td class="c1">Matched structure</td>
+	<td class="c2">clickable text</td>
+	<td class="c3">List of the “mineral” tags from the matched prototypes and the corresponding “Aflow UID” string. If no match is found “No match found” is shown. Note that the tag field could be overridden by an internal map from the “Aflow UID” to a different one. Clicking on the entries opens the <a href="../secondary/prototype.html">secondary window</a> that shows the corresponding prototype structure.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+
+<p>The <a href="https://aflow.org/">Aflow</a> project has made available the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> which can be searched and loaded by part of the Aflow UID string or mineral name.</p>
+<p>The prototypes database is described in:
+    Mehl, M. J., Hicks, D., Toher, C., Levy, O., Hanson, R. M., Hart, G., & Curtarolo, S. (2017).
+    <i>The AFLOW library of crystallographic prototypes: part 1.</i>
+    Computational Materials Science, 136, S1-S828. DOI:
+    <a href="https://doi.org/10.1016/j.commatsci.2017.01.017">10.1016/j.commatsci.2017.01.017</a></p>
+<p>The files in the Collection have been collected from various sources and provided by Prof. Artem Oganov.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

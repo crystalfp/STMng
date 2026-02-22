@@ -72,7 +72,10 @@ export interface OneNodeInfo {
 	ui: string;
 
 	/** The class that will be instanced if the node is active */
-	handler: {new (id: string): NodeCore}; 	// eslint-disable-line @typescript-eslint/prefer-function-type
+	handler: {
+		/** Class constructor */
+		new (id: string): NodeCore; // eslint-disable-line @typescript-eslint/prefer-function-type
+	};
 }
 
 /** List of ui modules descriptions to the client */

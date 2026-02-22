@@ -1,5 +1,5 @@
 /**
- * <<DESCRIPTION>>
+ * Helpers to classify the results of Promise.allSettled()
  *
  * @packageDocumentation
  *

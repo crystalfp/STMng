@@ -6,9 +6,10 @@
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-02-07
  */
+import {closeSync, existsSync, openSync, readFileSync, readSync} from "node:fs";
 import {getAtomicSymbol} from "./AtomData";
 import {EmptyStructure} from "./EmptyStructure";
-import {closeSync, existsSync, openSync, readFileSync, readSync} from "node:fs";
+import {publicDirPath} from "./GetPublicPath";
 import type {Structure, Atom} from "@/types";
 
 /**
@@ -56,7 +57,7 @@ class CollectionDb {
 	private static instance: CollectionDb;
 
 	private entries: CollectionDbEntry[] | undefined;
-	private dbPrefix = "";
+	private readonly dbPrefix: string;
 	private countEntries = 0;
 	private readonly headerToCheck: Uint8Array;
 	private indexFilename = "";
@@ -71,30 +72,34 @@ class CollectionDb {
 	 */
 	private constructor() {
 
+		// Filename without extension for the files composing the collection
+		// (three files: .idx, .dat, .cfp)
+		this.dbPrefix = publicDirPath("structure-collection").replaceAll("\\", "/");
+
 		// Data file magic ("STMng") and file format version (1-255)
 		this.headerToCheck = new Uint8Array([83, 84, 77, 110, 103, this.format]);
+
+		// Load the collection files
+		this.cacheStructureFiles();
+		this.cacheFingerprintFile();
 	}
 
 	/**
 	 * Cache the collection if not already loaded
 	 *
-	 * @param prefix - Filename without extension for the two files that
-	 *    			   compose the database (extensions .idx and .dat)
 	 * @throws Error.
 	 * "Collection database not found" or "Corrupted collection database" or
 	 * "Collection database format invalid" or "Collection database not loaded"
 	 */
-	private cacheStructureFiles(prefix: string): void {
+	private cacheStructureFiles(): void {
 
 		// If already loaded do nothing
 		if(this.entries?.length &&
-		   this.dbPrefix !== "" &&
-		   this.dbPrefix === prefix &&
 		   this.countEntries === this.entries.length) return;
 
 		// Save the filenames
-		this.dataFilename = `${prefix}.dat`;
-		this.indexFilename = `${prefix}.idx`;
+		this.dataFilename = `${this.dbPrefix}.dat`;
+		this.indexFilename = `${this.dbPrefix}.idx`;
 
 		// Check the files exist
 		if(!existsSync(this.indexFilename) || !existsSync(this.dataFilename)) {
@@ -122,7 +127,6 @@ class CollectionDb {
 		this.entries = db.index;
 		this.countEntries = this.entries.length;
 		this.cfpLength = db.cfpLength;
-		this.dbPrefix = prefix;
 	}
 
 	/**
@@ -140,30 +144,33 @@ class CollectionDb {
 
 		const fd = openSync(this.cfpFilename, "r");
 		this.cfp = new Float64Array(this.countEntries*this.cfpLength);
-		readSync(fd, this.cfp);
+		const bytes = readSync(fd, this.cfp);
 		closeSync(fd);
+
+		if(bytes === 0) throw Error("Collection fingerprints not loaded");
+		if(this.cfp.length !== this.countEntries*this.cfpLength) {
+			const n = this.cfp.BYTES_PER_ELEMENT;
+			throw Error(`Fingerprint file size ${this.cfp.length*n} ` +
+						" is not a multiple of the number of entries " +
+						this.countEntries*this.cfpLength*n);
+		}
 	}
 
 	/**
 	 * Load the collection and return the index
 	 *
-	 * @param prefix - Filename without extension for the two files that
-	 *    			   compose the database (extensions .idx and .dat)
 	 * @returns Array of db index entries
 	 * @throws Error.
 	 * "Collection database not found" or "Corrupted collection database" or
 	 * "Collection database format invalid" or "Collection database not loaded"
 	 */
-	loadList(prefix: string): CollectionIndexEntry[] {
-
-		this.cacheStructureFiles(prefix);
-		if(!this.entries) throw Error("Collection database not loaded");
+	loadList(): CollectionIndexEntry[] {
 
 		const out: CollectionIndexEntry[] = [];
 		for(let i=0; i < this.countEntries; ++i) {
 			out.push({
 				id: i.toString(),
-				title: this.entries[i].title
+				title: this.entries![i].title
 			});
 		}
 
@@ -180,11 +187,9 @@ class CollectionDb {
 	 */
 	getStructure(id: string): Structure | undefined {
 
-		if(!this.entries) throw Error("Collection database not loaded");
-
 		const idx = Number.parseInt(id, 10);
 		if(Number.isNaN(idx) || idx < 0 || idx >= this.countEntries) return;
-		const entry = this.entries[idx];
+		const entry = this.entries![idx];
 		if(!entry) return;
 		const {start} = entry;
 
@@ -216,36 +221,9 @@ class CollectionDb {
 			structure.atoms.push(atom);
 		}
 
-		// const sgStart = start + 2 + natoms + floatLength;
-		// const sgLength = length - (sgStart - start);
-		// const spaceGroupBuffer = new Uint8Array(sgLength);
-		// readSync(fd, spaceGroupBuffer, 0, sgLength, sgStart);
-		// structure.crystal.spaceGroup = Buffer.from(spaceGroupBuffer).toString("utf8");
-
 		closeSync(fd);
 
 		return structure;
-	}
-
-	/**
-	 * Cache the collection fingerprints if not already loaded
-	 *
-	 * @param prefix - Filename without extension for the fingerprints file
-	 * 				   (extension .cfp)
-	 */
-	loadFingerprints(prefix: string): void {
-
-		this.cacheStructureFiles(prefix);
-		if(!this.entries) throw Error("Collection database not loaded");
-
-		this.cacheFingerprintFile();
-		if(!this.cfp) throw Error("Collection fingerprints not loaded");
-		if(this.cfp.length !== this.countEntries*this.cfpLength) {
-			const n = this.cfp.BYTES_PER_ELEMENT;
-			throw Error(`Fingerprint file size ${this.cfp.length*n} ` +
-						" is not a multiple of the number of entries " +
-						this.countEntries*this.cfpLength*n);
-		}
 	}
 
 	/**
@@ -283,7 +261,6 @@ class CollectionDb {
 	 */
 	getNearestStructures(fp: Float64Array, n=1, threshold=0): CollectionIndexEntry[] {
 
-		if(!this.cfp) throw Error("Collection database not loaded");
 		if(n < 1) n = 1;
 		if(fp.length !== this.cfpLength || threshold < 0) return [];
 
@@ -291,7 +268,7 @@ class CollectionDb {
 		for(let i=0; i < this.countEntries; ++i) {
 
 			// Check if this is an excluded file
-			if(this.cfp[i*this.cfpLength] < -1) continue;
+			if(this.cfp![i*this.cfpLength] < -1) continue;
 
 			// Compute distance
 			const dist = this.computeFpDistance(fp, i);
@@ -352,26 +329,15 @@ export const collectionGetNearestStructures = (fp: Float64Array,
 	CollectionDb.getInstance().getNearestStructures(fp, n, threshold);
 
 /**
- * Cache the collection fingerprints if not already loaded
- *
- * @param prefix - Filename without extension for the fingerprints file
- * 				   (extension .cfp)
- */
-export const collectionLoadFingerprints = (prefix: string): void =>
-	CollectionDb.getInstance().loadFingerprints(prefix);
-
-/**
  * Load the collection and return the index
  *
- * @param prefix - Filename without extension for the files that
- *    			   compose the database (extensions .idx and .dat and .cfp)
  * @returns Array of db index entries
  * @throws Error.
  * "Collection database not found" or "Corrupted collection database" or
  * "Collection database format invalid" or "Collection database not loaded"
  */
-export const collectionLoadList = (prefix: string): CollectionIndexEntry[] =>
-	CollectionDb.getInstance().loadList(prefix);
+export const collectionLoadList = (): CollectionIndexEntry[] =>
+	CollectionDb.getInstance().loadList();
 
 /**
  * Get the collection structure with the given ID

@@ -4,18 +4,47 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle at ikmail.com"
- * @since 2025-11-23
+ * @since 2026-02-21
  */
+
 import {readFileSync, existsSync, createReadStream} from "node:fs";
 import {createGunzip} from "node:zlib";
 import {publicDirPath} from "./GetPublicPath";
 import {EmptyStructure} from "./EmptyStructure";
-import {getAtomicNumber, getAtomData} from "./AtomData";
-import type {PrototypeEntry, SNL, PrototypeTags} from "../pymatgen/types";
-import type {DBType, PositionType, PrototypeAtomsData, Structure} from "@/types";
+import {getAtomicNumber, getAtomicSymbol} from "./AtomData";
+import {hasNoUnitCell, invertBasis} from "./Helpers";
+import {markDuplicates} from "./MarkDuplicates";
+import {AflowPrototypeMatcher} from "../pymatgen/AflowPrototypeMatcher";
+import {matrixToLattice} from "../pymatgen/Lattice";
+import type {PrototypeEntry, PrototypeTags, Site, SNL} from "../pymatgen/types";
+import type {DBType, PositionType, Structure} from "@/types";
 
 /**
- * getPrototypeStructure return type
+ * Correction to the Prototype library
+ * @notExported
+ */
+interface AdjunctMap {
+	/** Correction to the mineral field */
+	m?: string;
+	/** Correction to the strukturbericht field */
+	s?: string;
+	/** Correction to the pearson field */
+	p?: string;
+}
+
+/**
+ * Entries inside the Pymatgen prototypes library file
+ * @notExported
+ */
+interface LibraryEntry {
+	/** Prototype structure */
+	snl: SNL;
+	/** Corresponding tags */
+	tags: PrototypeTags;
+}
+
+/**
+ * prototypeGetStructure return type
  * @notExported
  */
 interface PrototypeStructure {
@@ -35,60 +64,27 @@ interface PrototypeStructure {
 }
 
 /**
- * getPrototypeForDisplay return type
- * @notExported
+ * Found matches from the prototype db
  */
-interface PrototypeDisplay {
-
-	/** Pearson symbol */
-	pearson: string;
-	/** AFLOW identifier (UID) */
-	aflow: string;
-	/** A detailed crystal structure classification by analogy to another known structure */
-	strukturbericht: string;
-	/** Prototype mineral/component name */
-	mineral: string;
-	/** Prototype lattice matrix */
-	matrix: number[][];
-	/** Prototype formatted for display */
-	atoms: PrototypeAtomsData;
-	/** Error message if any */
-	error?: string;
+interface Matches {
+	/** Match mineral field */
+	mineral: string[];
+	/** Corresponding Aflow UID */
+	aflow: string[];
 }
 
 /**
- * Entries inside the Pymatgen prototypes library file
- * @notExported
+ * Access to the prototypes collection
  */
-interface LibraryEntry {
-	/** Prototype structure */
-	snl: SNL;
-	/** Corresponding tags */
-	tags: PrototypeTags;
-}
-
-/**
- * Correction to the Prototype library
- * @notExported
- */
-interface AdjunctMap {
-	/** Correction to the mineral field */
-	m?: string;
-	/** Correction to the strukturbericht field */
-	s?: string;
-	/** Correction to the pearson field */
-	p?: string;
-}
-
 class PrototypeDb {
 
-    private static instance: PrototypeDb;
+	private static instance: PrototypeDb;
+
 	private aflowPrototypeLibrary: PrototypeEntry[] = [];
 	private readonly aflowAdjunctMap = new Map<string, AdjunctMap>();
-	private errorMessage = "";
+	private searchDb = "";
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 	private readonly aflowSrcMap = new Map<string, number>();
-	private searchDb = "";
 
 	/**
 	 * Build the class by loading the prototype data
@@ -97,22 +93,17 @@ class PrototypeDb {
 
 		const filePath = publicDirPath("aflow_prepared_prototypes.json");
 		const adjunctPath = publicDirPath("mineral_overrides.json");
-		try {
-			const aflowPrototypeLibraryRaw = readFileSync(filePath, "utf8");
-			this.aflowPrototypeLibrary = JSON.parse(aflowPrototypeLibraryRaw) as PrototypeEntry[];
-			if(this.aflowPrototypeLibrary.length === 0) throw Error("No prototypes loaded");
 
-			if(existsSync(adjunctPath)) {
-				const adjunctRaw = readFileSync(adjunctPath, "utf8");
-				if(adjunctRaw) {
-					const adjunct = JSON.parse(adjunctRaw) as Record<string, AdjunctMap>;
-					for(const entry in adjunct) this.aflowAdjunctMap.set(entry, adjunct[entry]);
-				}
+		const aflowPrototypeLibraryRaw = readFileSync(filePath, "utf8");
+		this.aflowPrototypeLibrary = JSON.parse(aflowPrototypeLibraryRaw) as PrototypeEntry[];
+		if(this.aflowPrototypeLibrary.length === 0) throw Error("No prototypes loaded");
+
+		if(existsSync(adjunctPath)) {
+			const adjunctRaw = readFileSync(adjunctPath, "utf8");
+			if(adjunctRaw) {
+				const adjunct = JSON.parse(adjunctRaw) as Record<string, AdjunctMap>;
+				for(const entry in adjunct) this.aflowAdjunctMap.set(entry, adjunct[entry]);
 			}
-		}
-		catch(error: unknown) {
-			this.errorMessage = `Error initializing PrototypeDb: ${(error as Error).message}`;
-			this.aflowPrototypeLibrary = [];
 		}
 	}
 
@@ -131,21 +122,27 @@ class PrototypeDb {
 	}
 
 	/**
-	 * Returns error message if any
-	 *
-	 * @returns The error message or empty string on success
+	 * Read the original list of prototypes as provided by Pymatgen
 	 */
-	getDBError(): string {
-		return this.errorMessage;
-	}
+	private async readCompressedPrototypes(): Promise<void> {
 
-	/**
-	 * Returns the list of preprocessed prototype entries
-	 *
-	 * @returns The list of preprocessed prototype entries
-	 */
-	getPreprocessedPrototypes(): PrototypeEntry[] {
-		return this.aflowPrototypeLibrary;
+		// Read compressed AFLOW prototypes
+		const gunzip = createGunzip();
+		const prototypesPath = publicDirPath("aflow_prototypes.json.gz");
+		const source = createReadStream(prototypesPath);
+		const stream = source.pipe(gunzip);
+
+		let rawResult = "";
+		stream.on("data", (chunk: Buffer) => {
+			rawResult += chunk.toString("utf8");
+		});
+		return new Promise<void>((resolve) => {
+			stream.on("end", () => {
+				// Preprocess AFLOW prototypes
+				this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
+				resolve();
+			});
+		});
 	}
 
 	/**
@@ -172,11 +169,120 @@ class PrototypeDb {
 	}
 
 	/**
+	 * Get prototype tags for a given UID
+	 * @remarks The aflowSrcPrototypeLibrary is already initialized
+	 *
+	 * @param aflow - Aflow UID
+	 * @returns Prototype tags (undefined if not found)
+	 */
+	getPrototypeTags(aflow: string): (PrototypeTags & {error?: string}) | undefined {
+
+		const idx = this.aflowSrcMap.get(aflow);
+		if(idx === undefined) return undefined;
+
+		const proto = this.aflowSrcPrototypeLibrary[idx];
+		if(!proto) return undefined;
+
+		return this.correctTags(aflow, proto.tags);
+	}
+
+	/**
+	 * Format aflow prototype as ordinary structure
+	 *
+	 * @param snl - Prototype structure from the aflow database
+	 * @returns Prototype structure as STMng Structure
+	 */
+	private snlToStructure(snl: SNL): Structure {
+
+		const structure = new EmptyStructure();
+
+		const m = snl.lattice.matrix;
+		structure.crystal = {
+			basis: [
+				m[0][0], m[0][1], m[0][2],
+				m[1][0], m[1][1], m[1][2],
+				m[2][0], m[2][1], m[2][2]
+			],
+			origin: [0, 0, 0],
+			spaceGroup: ""
+		};
+
+		for(const site of snl.sites) {
+
+			const atomZ = getAtomicNumber(site.species[0].element);
+			structure.atoms.push({
+				atomZ,
+				position: [...site.xyz] as PositionType,
+				label: site.label,
+				chain: ""
+			});
+		}
+
+		return structure;
+	}
+
+	/**
+	 * Convert structure to the format required by the code
+	 *
+	 * @param structure - STMng structure to be converted
+	 * @returns The structure in SNL format or undefined if it has no unit cell
+	 */
+	structureToSNL(structure: Structure, duplicates: boolean[]): SNL | undefined {
+
+		const {crystal, atoms} = structure;
+		const {basis, origin} = crystal;
+
+		if(hasNoUnitCell(basis)) return;
+
+		const matrix = [
+			[basis[0], basis[1], basis[2]],
+			[basis[3], basis[4], basis[5]],
+			[basis[6], basis[7], basis[8]]
+		];
+
+		const lattice = matrixToLattice(matrix);
+
+		// Compute inverse matrix
+		const inverse = invertBasis(basis);
+
+		// Convert each atom into site
+		const sites: Site[] = [];
+		let idx = 0;
+		for(const {position, label, atomZ} of atoms) {
+
+			if(duplicates[idx++]) continue;
+
+			const cx = position[0] - origin[0];
+			const cy = position[1] - origin[1];
+			const cz = position[2] - origin[2];
+
+			const abc = [cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
+						 cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
+						 cx*inverse[2] + cy*inverse[5] + cz*inverse[8]];
+
+			sites.push({
+				abc,
+				xyz: [...position],
+				label: label,
+				species: [
+					{element: getAtomicSymbol(atomZ), occu: 1}
+				]
+			});
+		}
+
+		return {
+			sites,
+			lattice
+		};
+	}
+
+	// > Exported functions
+	/**
 	 * Prepare the list for querying the prototype database
 	 *
 	 * @returns JSON encoded list of prototypes names and aflow UID
 	 */
-	async getDBforSearch(): Promise<string> {
+	async prototypeLoadList(): Promise<string> {
 
 		if(this.searchDb) return this.searchDb;
 
@@ -209,49 +315,14 @@ class PrototypeDb {
 	}
 
 	/**
-	 * Read the original list of prototypes as provided by Pymatgen
-	 */
-	private async readCompressedPrototypes(): Promise<void> {
-
-		// Read compressed AFLOW prototypes
-		const gunzip = createGunzip();
-		const prototypesPath = publicDirPath("aflow_prototypes.json.gz");
-		const source = createReadStream(prototypesPath);
-		const stream = source.pipe(gunzip);
-
-		let rawResult = "";
-		stream.on("data", (chunk: Buffer) => {
-			rawResult += chunk.toString("utf8");
-		});
-		return new Promise<void>((resolve) => {
-			stream.on("end", () => {
-				// Preprocess AFLOW prototypes
-				this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
-				resolve();
-			});
-		});
-	}
-
-	/**
 	 * Get prototype for a given UID formatted for reader
 	 *
 	 * @param aflow - Aflow UID
 	 * @returns Prototype data as ordinary structure (undefined if not found)
 	 */
-	async getPrototypeStructure(aflow: string): Promise<PrototypeStructure | undefined> {
+	async prototypeGetStructure(aflow: string): Promise<PrototypeStructure | undefined> {
 
 		await this.initSrcPrototypeLibrary();
-
-		if(this.errorMessage) {
-			return {
-				pearson: "",
-				aflow: "",
-				strukturbericht: "",
-				mineral: "",
-				structure: new EmptyStructure(),
-				error: this.errorMessage
-			};
-		}
 
 		const idx = this.aflowSrcMap.get(aflow);
 		if(idx === undefined) return undefined;
@@ -271,129 +342,49 @@ class PrototypeDb {
 	}
 
 	/**
-	 * Format aflow prototype as ordinary structure
+	 * Find the matching prototype to a given structure and format them for the client
 	 *
-	 * @param snl - Prototype structure from the aflow database
-	 * @returns Prototype structure as STMng Structure
-	 */
-	private snlToStructure(snl: SNL): Structure {
-
-		const structure = new EmptyStructure();
-
-		const m = snl.lattice.matrix;
-		structure.crystal = {
-			basis: [
-				m[0][0], m[0][1], m[0][2],
-				m[1][0], m[1][1], m[1][2],
-				m[2][0], m[2][1], m[2][2]
-			],
-			origin: [0, 0, 0],
-			spaceGroup: ""
-		};
-
-		for(const site of snl.sites) {
-
-			const atomZ = getAtomicNumber(site.species[0].element);
-			structure.atoms.push({
-				atomZ,
-				position: site.xyz as PositionType,
-				label: site.label,
-				chain: ""
-			});
-		}
-
-		return structure;
-	}
-
-	/**
-	 * Get prototype for a given UID formatted for display
+	 * @remarks The prototype data is composed by, for example:
+	 * 'pearson': 'cF8',
+	 * 'aflow': 'AB_cF8_216_c_a',
+	 * 'strukturbericht': 'B3',
+	 * 'mineral': 'Zincblende, Sphalerite'
 	 *
-	 * @param aflow - Aflow UID
-	 * @returns Prototype data for display in secondary window (undefined if not found)
+	 * @param structure - The structure to match
+	 * @param initialLtol - Fractional length tolerance
+	 * @param initialStol - Site tolerance
+	 * @param initialAngleTol - Angle tolerance
+	 * @returns JSON encoded prototypes found as [mineral, aflow][]
 	 */
-	async getPrototypeForDisplay(aflow: string): Promise<PrototypeDisplay | undefined> {
+	findMatchingPrototypes(structure: Structure,
+						   initialLtol: number,
+						   initialStol: number,
+						   initialAngleTol: number): Matches {
 
-		await this.initSrcPrototypeLibrary();
+		const afpm = new AflowPrototypeMatcher(this.aflowPrototypeLibrary,
+											   initialLtol, initialStol,
+											   initialAngleTol);
 
-		if(this.errorMessage) {
-			return {
-				pearson: "",
-				aflow: "",
-				strukturbericht: "",
-				mineral: "",
-				matrix: [],
-				atoms: {
-					positions: [],
-					labels: [],
-					radius: [],
-					color: []
-				},
-				error: this.errorMessage
-			};
-		}
+		const {crystal, atoms} = structure;
+		const duplicates = markDuplicates(atoms, crystal);
 
-		const idx = this.aflowSrcMap.get(aflow);
-		if(idx === undefined) return undefined;
+		// Convert STMng Structure to Pymatgen SNL
+		const snl = this.structureToSNL(structure, duplicates);
 
-		const proto = this.aflowSrcPrototypeLibrary[idx];
-		if(!proto) return undefined;
+		// If valid get the prototypes
+		if(!snl) return {mineral: [], aflow: []};
+		const prototypes = afpm.getPrototypes(snl);
 
-		const tags = this.correctTags(aflow, proto.tags);
+		// If no prototypes found
+		if(prototypes.length === 0) return {mineral: [], aflow: []};
 
-		return {
-			pearson: tags.pearson,
-			aflow,
-			strukturbericht: tags.strukturbericht,
-			mineral: tags.mineral,
-			matrix: proto.snl.lattice.matrix,
-			atoms: this.extractAtoms(proto.snl)
-		};
-	}
+		// Format an ordered list for display
+		const out: Matches = {mineral: [], aflow: []};
+		for(const entry of prototypes) {
 
-	/**
-	 * Get prototype tags for a given UID
-	 * @remarks The aflowSrcPrototypeLibrary is already initialized
-	 *
-	 * @param aflow - Aflow UID
-	 * @returns Prototype tags (undefined if not found)
-	 */
-	getPrototypeTags(aflow: string): (PrototypeTags & {error?: string}) | undefined {
-
-		// await this.initSrcPrototypeLibrary();
-
-		const idx = this.aflowSrcMap.get(aflow);
-		if(idx === undefined) return undefined;
-
-		const proto = this.aflowSrcPrototypeLibrary[idx];
-		if(!proto) return undefined;
-
-		return this.correctTags(aflow, proto.tags);
-	}
-
-	/**
-	 * Reformat atom data for rendering
-	 *
-	 * @param structure - Prototype structure from the aflow library
-	 * @returns Atoms data for rendering
-	 */
-	private extractAtoms(structure: SNL): PrototypeAtomsData {
-
-		const out: PrototypeAtomsData = {
-			positions: [],
-			labels: [],
-			radius: [],
-			color: [],
-		};
-
-		for(const site of structure.sites) {
-
-			out.positions.push(...site.xyz);
-			out.labels.push(site.label);
-
-			const atomZ = getAtomicNumber(site.species[0].element);
-			const ad = getAtomData(atomZ);
-			out.radius.push(ad.rCov);
-			out.color.push(ad.color);
+			const tags = this.getPrototypeTags(entry.tags.aflow);
+			out.mineral.push(tags ? tags.mineral : "—");
+			out.aflow.push(entry.tags.aflow);
 		}
 
 		return out;
@@ -413,34 +404,19 @@ class PrototypeDb {
 
         if(!PrototypeDb.instance) {
             PrototypeDb.instance = new PrototypeDb();
-        }
+       	}
 
         return PrototypeDb.instance;
-    }
+   	}
 }
-
-/**
- * Returns error message if any
- *
- * @returns The error message or empty string on success
- */
-export const getDBError = (): string => PrototypeDb.getInstance().getDBError();
-
-/**
- * Returns the list of preprocessed prototype entries
- *
- * @returns The list of preprocessed prototype entries
- */
-export const getPreprocessedPrototypes = (): PrototypeEntry[] =>
-						PrototypeDb.getInstance().getPreprocessedPrototypes();
 
 /**
  * Prepare the list of entries for querying the prototype database
  *
  * @returns JSON encoded list of prototypes names and aflow UID
  */
-export const getDBforSearch = async (): Promise<string> =>
-						PrototypeDb.getInstance().getDBforSearch();
+export const prototypeLoadList = async (): Promise<string> =>
+								PrototypeDb.getInstance().prototypeLoadList();
 
 /**
  * Get prototype for a given UID formatted for reader
@@ -448,23 +424,27 @@ export const getDBforSearch = async (): Promise<string> =>
  * @param aflow - Aflow UID
  * @returns Prototype data as ordinary structure (undefined if not found)
  */
-export const getPrototypeStructure = async (aflow: string): Promise<PrototypeStructure | undefined> =>
-						PrototypeDb.getInstance().getPrototypeStructure(aflow);
+export const prototypeGetStructure = async (aflow: string): Promise<PrototypeStructure | undefined> =>
+						PrototypeDb.getInstance().prototypeGetStructure(aflow);
 
 /**
- * Get prototype for a given UID formatted for display
+ * Find the matching prototypes to a given structure and format them for the client
  *
- * @param aflow - Aflow UID
- * @returns Prototype data for display in secondary window (undefined if not found)
- */
-export const getPrototypeForDisplay = async (aflow: string): Promise<PrototypeDisplay | undefined> =>
-						PrototypeDb.getInstance().getPrototypeForDisplay(aflow);
-
-/**
- * Get prototype tags for a given UID
+ * @remarks The prototype data is composed by, for example:
+ * 'pearson': 'cF8',
+ * 'aflow': 'AB_cF8_216_c_a',
+ * 'strukturbericht': 'B3',
+ * 'mineral': 'Zincblende, Sphalerite'
  *
- * @param aflow - Aflow UID
- * @returns Prototype tags (undefined if not found)
+ * @param structure - The structure to match
+ * @param initialLtol - Fractional length tolerance
+ * @param initialStol - Site tolerance
+ * @param initialAngleTol - Angle tolerance
+ * @returns Prototypes found as {mineral[], aflow[]}
  */
-export const getPrototypeTags = (aflow: string): PrototypeTags | undefined =>
-						PrototypeDb.getInstance().getPrototypeTags(aflow);
+export const findMatchingPrototypes = (structure: Structure,
+									   initialLtol: number,
+									   initialStol: number,
+									   initialAngleTol: number): Matches =>
+					PrototypeDb.getInstance().findMatchingPrototypes(structure,
+						initialLtol, initialStol, initialAngleTol);

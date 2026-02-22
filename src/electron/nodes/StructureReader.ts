@@ -13,8 +13,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {getDBforSearch, getPrototypeStructure} from "../modules/PrototypeDb";
-import {publicDirPath} from "../modules/GetPublicPath";
+import {prototypeLoadList, prototypeGetStructure} from "../modules/PrototypeDb";
 import {collectionLoadList, collectionGetStructure} from "../modules/CollectionDb";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
@@ -115,7 +114,7 @@ export class StructureReader extends NodeCore {
 	 */
 	private async channelInit(): Promise<CtrlParams> {
 
-		const db = await getDBforSearch();
+		const db = await prototypeLoadList();
 		return {
 			loopSteps: this.loopSteps,
 			stepBackward: this.stepBackward,
@@ -668,7 +667,7 @@ export class StructureReader extends NodeCore {
 			return {result: "Empty aflow ID"};
 		}
 
-		const proto = await getPrototypeStructure(aflow);
+		const proto = await prototypeGetStructure(aflow);
 		if(proto?.error) {
 			log.error(proto.error);
 			return {error: proto.error};
@@ -738,8 +737,7 @@ export class StructureReader extends NodeCore {
 
 		// If called without arguments load the collection
 		if(!params) {
-			const db = publicDirPath("structure-collection").replaceAll("\\", "/");
-			const list = collectionLoadList(db);
+			const list = collectionLoadList();
 			return {list: JSON.stringify(list)};
 		}
 

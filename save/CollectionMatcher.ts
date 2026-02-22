@@ -9,9 +9,8 @@
 import {NodeCore} from "../modules/NodeCore";
 import {sendToClient} from "../modules/ToClient";
 import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
-import {collectionLoadFingerprints, collectionGetNearestStructures,
+import {collectionGetNearestStructures,
 		collectionGetStructure} from "../modules/CollectionDb";
-import {publicDirPath} from "../modules/GetPublicPath";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomData} from "../modules/AtomData";
 import {hasNoUnitCell} from "../modules/Helpers";
@@ -46,10 +45,6 @@ export class CollectionMatcher extends NodeCore {
 	constructor(id: string) {
 		super(id);
 		this.setupChannels(id, this.channels);
-
-		const db = publicDirPath("structure-collection").replaceAll("\\", "/");
-
-		collectionLoadFingerprints(db);
 	}
 
 	// > Load/save status

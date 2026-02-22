@@ -434,11 +434,11 @@ export default defineConfig([
         // "security/detect-child-process": "warn",
         "security/detect-non-literal-fs-filename": "off",
         "security/detect-object-injection": "off",
+        "security/detect-unsafe-regex": "error",
+        "security/detect-no-csrf-before-method-override": "error",
 
         // > ******************* for eslint 10 (temporary) ***********************
         // "tsdoc/syntax": "off",
-        "security/detect-unsafe-regex": "off",
-        "security/detect-no-csrf-before-method-override": "off",
         "eslint-comments/disable-enable-pair": "off",
         "eslint-comments/no-aggregating-enable": "off",
         "eslint-comments/no-duplicate-disable": "off",
