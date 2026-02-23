@@ -42,8 +42,7 @@
     "vite.config.mts",
     "troika-three-text.d.ts",
     "src/**/*.ts",
-    "src/**/*.vue",
-    "package.json"
+    "src/**/*.vue"
   ],
   "exclude": [
     "src/cpp/spglib*/**/*.ts"

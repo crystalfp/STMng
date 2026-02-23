@@ -4,7 +4,7 @@
   "productName": "STMng",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.54.6",
+  "version": "1.54.7",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://www.electronjs.org",
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@golar/vue": "^0.0.13",
     "@mdi/svg": "^7.4.47",
     "@oxlint/migrate": "^1.49.0",
     "@rollup/plugin-commonjs": "^29.0.0",
@@ -87,6 +88,7 @@
     "eslint-plugin-tsdoc": "^0.5.0",
     "eslint-plugin-unicorn": "^63.0.0",
     "eslint-plugin-vue": "^10.8.0",
+    "golar": "^0.0.13",
     "node-addon-api": "^8.5.0",
     "node-gyp": "^12.2.0",
     "oxlint-tsgolint": "^0.14.2",
@@ -109,6 +111,7 @@
     "vitest": "^4.0.18",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.4.0",
-    "vue-tsc": "^3.2.5"
+    "vue-tsc": "^3.2.5",
+    "vue-tsgo": "^0.0.4"
   }
 }

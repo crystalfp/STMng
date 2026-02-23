@@ -202,7 +202,7 @@ export class SimpleViewer {
 	}
 
 	/**
-	 * Center camera and controls
+	 * Center camera and controls using scene bounding sphere
 	 *
 	 * @param atomsGroup - Structure visualized
 	 * @param zoom - Camera zoom value
