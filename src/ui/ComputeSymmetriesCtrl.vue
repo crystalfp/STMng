@@ -225,7 +225,7 @@ const finalValue = computed(() => {
     </v-btn-toggle>
   </titled-slot>
 
-  <v-container v-if="!disableInputSymmetries" class="pl-6 mt-2">
+  <v-container v-if="!disableInputSymmetries" class="pl-3 mt-2">
     <v-row>
       <v-label text="Input symmetry:" class="result-label no-select" />
     </v-row>
@@ -233,7 +233,7 @@ const finalValue = computed(() => {
       <v-label :text="inputValue" class="show-symmetry" />
     </v-row>
   </v-container>
-  <v-container v-if="enableFindSymmetries && finalValue" class="pl-6 mt-2">
+  <v-container v-if="enableFindSymmetries && finalValue" class="pl-3">
     <v-row>
       <v-label text="Final symmetry:" class="result-label no-select" />
     </v-row>

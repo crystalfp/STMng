@@ -77,14 +77,15 @@ const finalValue = computed(() => {
 <v-app :theme>
 <v-container class="symmetry-portal">
   <v-row class="symmetry-container">
-    <v-col class="left-col">
-      <v-label class="text-h5 justify-center mt-n2 w-100">Input symmetry</v-label>
+    <v-col cols="4" class="flex-1-1-0 pr-6">
+      <v-label class="text-headline-small justify-center mt-n2 w-100">Input symmetry</v-label>
       <v-label :text="inputValue" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
-    <v-col class="right-col">
-      <v-label v-if="pointGroup!==''" class="text-h5 justify-center mt-n2 w-100">Point group</v-label>
+    <v-divider vertical thickness="6px" opacity="0.6"/>
+    <v-col cols="5" class="flex-1-1-0 pr-4">
+      <v-label v-if="pointGroup!==''" class="text-headline-small justify-center mt-n2 w-100">Point group</v-label>
       <v-label v-if="pointGroup!==''" :text="pointGroup" class="justify-center w-100 my-2 show-pg" />
-      <v-label class="text-h5 justify-center mt-n2 w-100">Output symmetry</v-label>
+      <v-label class="text-headline-small justify-center mt-n2 w-100">Output symmetry</v-label>
       <v-label :text="finalValue" class="mt-4 justify-center show-symmetry w-100" />
     </v-col>
   </v-row>
@@ -124,15 +125,6 @@ const finalValue = computed(() => {
   font-family: monospace;
   color: light-dark(#7ca911, #baf434) !important;
   opacity: 1 !important;
-}
-
-.left-col {
-  flex: 1;
-  border-right: 3px solid #B8B8B8;
-}
-
-.right-col {
-  flex: 1;
 }
 
 .show-pg {

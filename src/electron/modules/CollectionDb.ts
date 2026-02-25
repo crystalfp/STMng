@@ -255,16 +255,15 @@ class CollectionDb {
 	 *
 	 * @param fp - Fingerprint to test
 	 * @param n - Number of nearest structures to return
-	 * @param threshold - Maximum distance to consider.
-	 * 					  If zero do not filter distances
 	 * @returns List of nearest structures id, title and distance
 	 */
-	getNearestStructures(fp: Float64Array, n=1, threshold=0): CollectionIndexEntry[] {
+	getNearestStructures(fp: Float64Array, n=1): CollectionIndexEntry[] {
 
 		if(n < 1) n = 1;
-		if(fp.length !== this.cfpLength || threshold < 0) return [];
+		if(fp.length !== this.cfpLength) return [];
 
-		const candidates: [number, number][] = [];
+		const candidates = new Map<number, number[]>();
+
 		for(let i=0; i < this.countEntries; ++i) {
 
 			// Check if this is an excluded file
@@ -273,24 +272,26 @@ class CollectionDb {
 			// Compute distance
 			const dist = this.computeFpDistance(fp, i);
 
-			if(threshold === 0 || dist <= threshold) {
-				if(candidates.length === n && dist >= candidates[n-1][1]) {
-					continue;
-				}
-				candidates.push([i, dist]);
-				candidates.sort((a, b) => a[1]-b[1]);
-				if(candidates.length > n) candidates.pop();
-			}
+			// Group by distances
+			const key = dist === 0 || Object.is(dist, -0) ? 0 : Math.round(dist*1000);
+			if(candidates.has(key)) candidates.get(key)!.push(i);
+			else candidates.set(key, [i]);
 		}
 
 		const out: CollectionIndexEntry[] = [];
-		for(const result of candidates) {
-			out.push({
-				id: result[0].toString(),
-				title: this.entries![result[0]].title,
-				distance: result[1]
-			});
+		const keys = [...candidates.keys()].toSorted((a, b) => a-b).slice(0, n);
+		for(const key of keys) {
+			const result = candidates.get(key)!;
+			const distance = key/1000;
+			for(const idx of result) {
+				out.push({
+					id: idx.toString(),
+					title: this.entries![idx].title,
+					distance
+				});
+			}
 		}
+
 		return out;
 	}
 
@@ -319,14 +320,11 @@ class CollectionDb {
  *
  * @param fp - Fingerprint to test
  * @param n - Number of nearest structures to return
- * @param threshold - Maximum distance to consider.
- * 					  If zero do not filter distances
  * @returns List of nearest structures id, title and distance
  */
 export const collectionGetNearestStructures = (fp: Float64Array,
-											   n=1,
-											   threshold=0): CollectionIndexEntry[] =>
-	CollectionDb.getInstance().getNearestStructures(fp, n, threshold);
+											   n=1): CollectionIndexEntry[] =>
+	CollectionDb.getInstance().getNearestStructures(fp, n);
 
 /**
  * Load the collection and return the index

@@ -171,6 +171,7 @@ const showMatches = (): void => {
         distance,
         aflow,
         titlePrototypes,
+        id
     });
 };
 </script>

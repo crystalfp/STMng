@@ -23,13 +23,15 @@
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
 import {reactive} from "vue";
-import {closeWindow, requestData} from "@/services/RoutesClient";
+import log from "electron-log";
+import {askNode, closeWindow, requestData} from "@/services/RoutesClient";
+import {showNodeAlert} from "@/services/AlertMessage";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import type {CtrlParams} from "@/types";
-import log from "electron-log";
 
 const windowPath = "/matches";
+let id = "";
 
 interface PrototypesMatch {
     aflow: string;
@@ -52,6 +54,8 @@ requestData(windowPath, (params: CtrlParams) => {
         log.error(`Error requesting data for "${windowPath}". Error: ${params.error as string}`);
         return;
     }
+
+    id = params.id as string ?? "";
 
     const aflow = params.aflow as string[] ?? [];
     const titlePrototypes = params.titlePrototypes as string[] ?? [];
@@ -91,9 +95,16 @@ handleSpecialKeys(windowPath);
  */
 const selectResult = (idOrAflow: string, isCollection: boolean): void => {
 
-    // TBD
-    void idOrAflow;
-    void isCollection;
+    if(id === "") return;
+
+    // Retrieve prototype
+    askNode(id, "show", {id: idOrAflow, isCollection})
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            showNodeAlert(error.message, "matchers");
+        });
 };
 
 </script>

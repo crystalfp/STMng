@@ -82,7 +82,7 @@ class PrototypeDb {
 	private readonly aflowPrototypeLibrary: PrototypeEntry[] = [];
 	private readonly aflowAdjunctMap = new Map<string, AdjunctMap>();
 	private searchDb = "";
-	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
+	private readonly aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 	private readonly aflowSrcMap = new Map<string, number>();
 	private readonly uniqueAflowMap = new Set<string>();
 
