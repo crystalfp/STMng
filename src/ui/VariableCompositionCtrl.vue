@@ -391,7 +391,7 @@ watch([state, selected], ([st, sel], [_ost, osel]) => {
 <v-container class="container pb-8">
   <v-label class="separator-title first-title">Accumulated structures</v-label>
 
-  <v-row class="mx-0">
+  <v-row class="ml-2 mr-2">
     <v-col cols="7">
       <v-label class="result-label pt-1">{{ `Count: ${countAccumulated}` }}</v-label>
     </v-col>

@@ -865,9 +865,9 @@ const confirmNewProject = (): void => {
   </v-card>
 </v-dialog>
 
-<v-snackbar-queue v-model="notificationQueue" multi-line timeout="6000" timer="info" max-width="250"
+<v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
+                  timer="bottom" max-width="250"
                   close-on-content-click color="red-darken-4" />
-
 </v-app>
 </template>
 

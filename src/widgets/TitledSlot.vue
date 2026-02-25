@@ -30,14 +30,14 @@ const slots = useSlots();
   <slot />
 </v-row>
 <v-row v-else>
-  <v-col cols="12" class="pa-0 mb-n2">
+  <v-col cols="12" class="pa-0 mb-n1">
     <v-label :text="title" class="no-select" />
   </v-col>
-  <v-col class="ml-n3">
+  <v-col>
     <!-- @slot Here add the btn toggle -->
     <slot />
   </v-col>
-  <v-col v-if="slots.extra" cols="12" class="ml-n3">
+  <v-col v-if="slots.extra" cols="12">
     <!-- @slot Here add another (optional) component that should align with the rest -->
     <slot name="extra" />
   </v-col>

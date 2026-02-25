@@ -27,7 +27,7 @@ const color = defineModel<string>();
 
 <template>
   <v-row>
-    <v-col cols="12" class="pb-0 pr-5">
+    <v-col cols="12" class="pb-0 pr-2">
       <v-btn class="w-100"
              variant="outlined"
              :prepend-icon="mdiPalette"

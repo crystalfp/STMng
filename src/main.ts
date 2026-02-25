@@ -118,7 +118,8 @@ const app = createApp(App)
 			},
 			VBtn: {
       			density: "default",
-				variant: "outlined"
+				variant: "outlined",
+				style: "text-transform: uppercase;letter-spacing: 0.3px;"
     		},
 			VSwitch: {
 				density: "compact",

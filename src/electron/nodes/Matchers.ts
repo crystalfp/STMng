@@ -27,18 +27,17 @@ export class Matchers extends NodeCore {
 	// Mirror of the UI reactive state
 	private state = {
 		enabled: false,
-		noThreshold: false,
-		threshold: 0.01,
-		numberMatches: 1,
+		numberMatches: 3,
 		lengthTolerance: 0.2,
 		siteTolerance: 0.3,
 		angleTolerance: 5,
 	};
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",	type: "invoke", 		callback: this.channelInit.bind(this)},
-		{name: "state",	type: "send",			callback: this.channelState.bind(this)},
-		{name: "show",	type: "invokeAsync",	callback: this.channelShow.bind(this)},
+		{name: "init",		type: "invoke", 		callback: this.channelInit.bind(this)},
+		{name: "state",		type: "send",			callback: this.channelState.bind(this)},
+		{name: "show",		type: "invokeAsync",	callback: this.channelShow.bind(this)},
+		{name: "matches",	type: "send",			callback: this.channelMatches.bind(this)},
 	];
 
 	/**
@@ -60,9 +59,7 @@ export class Matchers extends NodeCore {
 	private initializeState(params: CtrlParams): void {
 
    	    this.state.enabled = params.enabled as boolean ?? false;
-        this.state.noThreshold = params.noThreshold as boolean ?? false;
         this.state.numberMatches = params.numberMatches as number ?? 1;
-        this.state.threshold = params.threshold as number ?? 0.01;
 		this.state.lengthTolerance = params.lengthTolerance as number ?? 0.2;
 		this.state.siteTolerance = params.siteTolerance as number ?? 0.3;
 		this.state.angleTolerance = params.angleTolerance as number ?? 5;
@@ -125,8 +122,7 @@ export class Matchers extends NodeCore {
 		const fp = this.computeFingerprint(atoms, crystal, duplicates);
 
 		// Find similar
-		const threshold = this.state.noThreshold ? 0 : this.state.threshold;
-		const results = collectionGetNearestStructures(fp, this.state.numberMatches, threshold);
+		const results = collectionGetNearestStructures(fp, this.state.numberMatches);
 
 		// Prepare the data for the client
 		const titles: string[] = [];
@@ -255,14 +251,17 @@ export class Matchers extends NodeCore {
 
 		return {
 			enabled: this.state.enabled,
-        	noThreshold: this.state.noThreshold,
         	numberMatches: this.state.numberMatches,
-        	threshold: this.state.threshold
+			lengthTolerance: this.state.lengthTolerance,
+			siteTolerance: this.state.siteTolerance,
+			angleTolerance: this.state.angleTolerance,
 		};
 	}
 
 	/**
 	 * Channel handler for saving the UI status and start computation
+	 *
+	 * @param params - Status from client
 	 */
 	private channelState(params: CtrlParams): void {
 
@@ -350,5 +349,21 @@ export class Matchers extends NodeCore {
 		});
 
 		return {result: "Success!"};
+	}
+
+	/**
+	 * Channel handler for opening a secondary window with matches
+	 *
+	 * @param params - Matchers results
+	 */
+	private channelMatches(params: CtrlParams): void {
+
+		createOrUpdateSecondaryWindow({
+			routerPath: "/matches",
+			width: 850,
+			height: 700,
+			title: "Structure matches in prototypes and collection",
+			data: params
+		});
 	}
 }

@@ -226,8 +226,8 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
 
 
 <template>
-<v-container class="container pr-2 pl-0">
-  <v-expansion-panels class="mt-2">
+<v-container class="container">
+  <v-expansion-panels class="panels mt-2">
     <v-expansion-panel>
       <v-expansion-panel-title>
         {{ cameraType }}
@@ -389,7 +389,13 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
-  <block-button class="mt-2 ml-1" label="Restore viewer settings"
+  <block-button class="mt-2 ml-0 pr-3" label="Restore viewer settings"
                 @click="configStore.resetViewer"/>
 </v-container>
 </template>
+
+<style scoped>
+.panels {
+  padding-right: 12px !important;
+}
+</style>

@@ -41,7 +41,7 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
   <v-switch v-model="configStore.camera.snapshotTransparent"
             :disabled="configStore.camera.snapshotFormat!=='png'"
             label="Transparent background" class="mt-4 ml-2" />
-  <block-button class="mt-4 mb-n6" label="Capture snapshot" @click="controlStore.snapshot = true"/>
+  <block-button class="mt-4 mb-n4" label="Capture snapshot" @click="controlStore.snapshot = true"/>
   <node-alert node="captureSnapshot" class="mt-6 mb-n4" />
 
   <v-label class="mt-10 separator-title">Movie</v-label>

@@ -85,6 +85,7 @@ class PrototypeDb {
 	private searchDb = "";
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 	private readonly aflowSrcMap = new Map<string, number>();
+	private uniqueAflowMap = new Set<string>();
 
 	/**
 	 * Build the class by loading the prototype data
@@ -157,7 +158,8 @@ class PrototypeDb {
 		const correction = this.aflowAdjunctMap.get(aflow);
 		if(correction) {
 			let mineral = correction.m ?? tags.mineral;
-			if(!mineral) mineral = "—";
+			// eslint-disable-next-line unicorn/better-regex
+			mineral = mineral ? mineral.replaceAll(/\\.\{(.)\}/g, "$1") : "—";
 			return {
 				pearson: correction.p ?? tags.pearson,
 				aflow,
@@ -165,7 +167,32 @@ class PrototypeDb {
 				mineral
 			};
 		}
-		return tags;
+
+		// eslint-disable-next-line unicorn/better-regex
+		const mineral = tags.mineral ? tags.mineral.replaceAll(/\\.\{(.)\}/g, "$1") : "—";
+		return {
+			pearson: tags.pearson,
+			aflow,
+			strukturbericht: tags.strukturbericht,
+			mineral
+		};
+	}
+
+	private makeAflowUnique(aflow: string): string {
+
+		while(this.uniqueAflowMap.has(aflow)) {
+
+			if(aflow.startsWith("#")) {
+				const prefix = aflow.slice(1, 3);
+				const taflow = aflow.slice(3);
+				const idx = Number.parseInt(prefix, 10)+1;
+				aflow = `#${idx.toString().padStart(2, "0")}${taflow}`;
+			}
+			else aflow = "#00" + aflow;
+		}
+		this.uniqueAflowMap.add(aflow);
+
+		return aflow;
 	}
 
 	/**
@@ -295,12 +322,12 @@ class PrototypeDb {
 
 			if(tags.mineral) {
 
-				db.set(tags.mineral, proto.tags.aflow);
-				db.set(proto.tags.aflow, "#"+proto.tags.aflow); // Marked to avoid duplicates
+				db.set(tags.mineral, this.makeAflowUnique(proto.tags.aflow));
+				db.set(proto.tags.aflow, this.makeAflowUnique(proto.tags.aflow));
 			}
 			else {
 
-				db.set(proto.tags.aflow, proto.tags.aflow);
+				db.set(proto.tags.aflow, this.makeAflowUnique(proto.tags.aflow));
 			}
 		}
 
@@ -311,6 +338,7 @@ class PrototypeDb {
 		}
 
 		this.searchDb = JSON.stringify(out.toSorted((a, b) => a.title.localeCompare(b.title)));
+
 		return this.searchDb;
 	}
 

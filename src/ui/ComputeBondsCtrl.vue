@@ -218,7 +218,7 @@ const resetSliders = (): void => {
     </debounced-slider>
   </v-container>
 
-  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-2 ml-2">
+  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-4 ml-2">
     <v-btn-toggle v-model="enlargementKind" mandatory>
       <v-btn value="none">None</v-btn>
       <v-btn value="neighbors">Neighbors</v-btn>

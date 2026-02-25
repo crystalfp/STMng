@@ -6,12 +6,12 @@ import vuePlugin from "eslint-plugin-vue";
 import promisePlugin from "eslint-plugin-promise";
 import importPlugin from "eslint-plugin-import";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import commentsPlugin from "eslint-plugin-eslint-comments";
+import commentsPlugin from "@eslint-community/eslint-plugin-eslint-comments"
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
-// import tsdocPlugin from "eslint-plugin-tsdoc";
+import tsdocPlugin from "eslint-plugin-tsdoc";
 import jsPlugin from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
@@ -83,14 +83,15 @@ export default defineConfig([
         promise: promisePlugin,
         import: importPlugin,
         "@typescript-eslint": typescriptPlugin,
-        "eslint-comments": commentsPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
         sonarjs: sonarjsPlugin,
         regexp: regexpPlugin,
-        // tsdoc: tsdocPlugin,
+        tsdoc: tsdocPlugin,
         "@stylistic": stylistic,
         depend: depend,
+        "@eslint-community/eslint-comments": commentsPlugin,
+        "@eslint/js": jsPlugin,
     },
     settings: {
         "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx", ".mts"]},
@@ -110,7 +111,6 @@ export default defineConfig([
         ...importPlugin.configs.typescript.rules,
         ...unicornPlugin.configs.all.rules,
         ...securityPlugin.configs.recommended.rules,
-        // ...securityPlugin.configs["recommended-legacy"].rules,
         ...sonarjsPlugin.configs.recommended.rules,
         ...regexpPlugin.configs.recommended.rules,
         ...typescriptPlugin.configs.recommended.rules,
@@ -386,7 +386,6 @@ export default defineConfig([
         "unicorn/switch-case-braces": "off",
         "unicorn/prefer-json-parse-buffer": "off",
         "unicorn/prefer-class-fields": "warn",
-        // === Enable non-recommended rules that add value ===
         "unicorn/better-regex": "warn",              // Simplify regexes: /[0-9]/ → /\d/
         "unicorn/custom-error-definition": "error",  // Correct Error subclassing
         "unicorn/no-unused-properties": "warn",      // Dead code detection
@@ -436,15 +435,12 @@ export default defineConfig([
         "security/detect-object-injection": "off",
         "security/detect-unsafe-regex": "error",
         "security/detect-no-csrf-before-method-override": "error",
-
-        // > ******************* for eslint 10 (temporary) ***********************
-        // "tsdoc/syntax": "off",
-        "eslint-comments/disable-enable-pair": "off",
-        "eslint-comments/no-aggregating-enable": "off",
-        "eslint-comments/no-duplicate-disable": "off",
-        "eslint-comments/no-unlimited-disable": "off",
-        "eslint-comments/no-unused-disable": "off",
-        "eslint-comments/no-unused-enable": "off",
-        "eslint-comments/no-use": "off",
+        "@eslint-community/eslint-comments/disable-enable-pair": "off",
+        // "@eslint-community/eslint-comments/no-aggregating-enable": "warn",
+        // "@eslint-community/eslint-comments/no-duplicate-disable": "warn",
+        // "@eslint-community/eslint-comments/no-unlimited-disable": "warn",
+        "@eslint-community/eslint-comments/no-unused-disable": "warn",
+        "@eslint-community/eslint-comments/no-unused-enable": "warn",
+        "tsdoc/syntax": "off",
     }
 }]);

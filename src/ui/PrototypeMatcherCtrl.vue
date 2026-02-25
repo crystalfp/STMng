@@ -176,7 +176,7 @@ const selectPrototype = (aflow: string): void => {
 const startQuery = (aflow: string): void => {
 
     if(!aflow) return;
-    if(aflow.startsWith("#")) aflow = aflow.slice(1);
+    if(aflow.startsWith("#")) aflow = aflow.slice(3);
     selectPrototype(aflow);
 };
 

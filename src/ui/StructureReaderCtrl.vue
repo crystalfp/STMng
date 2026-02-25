@@ -170,6 +170,19 @@ askNode(id, "init")
             showNodeAlert(`Error from batch read for ${label}: ${error.message}`,
                           "structureReader");
         });
+
+        if(format.value === "Collection") {
+            showCollection.value = true;
+            showPrototypes.value = false;
+        }
+        else if(format.value === "Prototypes") {
+            showCollection.value = false;
+            showPrototypes.value = true;
+        }
+        else {
+            showCollection.value = false;
+            showPrototypes.value = false;
+        }
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -306,6 +319,7 @@ const setFormat = (): void => {
 
     if(format.value === "Prototypes") {
         showPrototypes.value = true;
+        showCollection.value = false;
         return;
     }
     if(format.value === "Collection") {
@@ -313,6 +327,7 @@ const setFormat = (): void => {
             .then((result) => {
 
                 collection.value = JSON.parse(result.list as string ?? "[]") as CollectionType[];
+                showPrototypes.value = false;
                 showCollection.value = true;
             })
             .catch((error: Error) => {
@@ -658,7 +673,7 @@ const resetRange = (): void => {
 const startQuery = (aflow: string): void => {
 
     if(!aflow) aflow = "";
-    else if(aflow.startsWith("#")) aflow = aflow.slice(1);
+    else if(aflow.startsWith("#")) aflow = aflow.slice(3);
 
     // Retrieve prototype
     askNode(id, "proto", {aflow})
@@ -703,7 +718,7 @@ const startCollectionQuery = (fileID: string): void => {
             @update:model-value="setFormat" />
 
   <v-container v-if="showPrototypes" class="pa-0">
-    <v-autocomplete v-model="query" label="Prototype query"
+    <v-autocomplete v-model="query" label="Prototype query" class="mr-2"
                   :items="db" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
@@ -718,7 +733,7 @@ const startCollectionQuery = (fileID: string): void => {
     </table>
   </v-container>
   <v-container v-else-if="showCollection" class="pa-0">
-    <v-autocomplete v-model="collectionQuery" label="Collection query"
+    <v-autocomplete v-model="collectionQuery" label="Collection query" class="mr-2"
                   :items="collection" item-title="title" item-value="id"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No entry found" spellcheck="false"
