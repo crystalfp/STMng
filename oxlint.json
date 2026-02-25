@@ -386,6 +386,7 @@
     "@typescript-eslint/require-array-sort-compare": "error",
     "@typescript-eslint/switch-exhaustiveness-check": "error",
     "@typescript-eslint/no-unnecessary-condition": "off",
+    "@typescript-eslint/prefer-readonly-parameter-types": "off",
 
     "eslint/max-lines-per-function ": "off",
     "eslint/max-depth": "off",

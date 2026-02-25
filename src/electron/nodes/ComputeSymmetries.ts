@@ -126,7 +126,7 @@ export class ComputeSymmetries extends NodeCore {
 	private pointGroup = "";
 	private positionTolerance = 0.3;
 	private eigenvalueTolerance = 0.01;
-	private pointGroupAnalyzer = new PointGroupAnalyzer();
+	private readonly pointGroupAnalyzer = new PointGroupAnalyzer();
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",   		 type: "invoke", callback: this.channelInit.bind(this)},

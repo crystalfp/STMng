@@ -49,7 +49,7 @@ export class StructureReader extends NodeCore {
 	private structures: Structure[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",			type: "invokeAsync", callback: this.channelInit.bind(this)},
+		{name: "init",			type: "invoke", 	 callback: this.channelInit.bind(this)},
 		{name: "read",			type: "invokeAsync", callback: this.channelRead.bind(this)},
 		{name: "types",			type: "send",        callback: this.channelTypes.bind(this)},
 		{name: "formats",		type: "send",        callback: this.channelFormats.bind(this)},
@@ -62,7 +62,7 @@ export class StructureReader extends NodeCore {
 		{name: "append",		type: "send",      	 callback: this.channelAppend.bind(this)},
 		{name: "read-dropped",	type: "invokeAsync", callback: this.channelReadDropped.bind(this)},
 		{name: "aux-dropped",	type: "invokeAsync", callback: this.channelAuxDropped.bind(this)},
-		{name: "proto", 	 	type: "invokeAsync", callback: this.channelProto.bind(this)},
+		{name: "proto", 	 	type: "invoke",		 callback: this.channelProto.bind(this)},
 		{name: "species", 	 	type: "invokeAsync", callback: this.channelSpecies.bind(this)},
 		{name: "collection", 	type: "invoke", 	 callback: this.channelCollection.bind(this)},
 	];
@@ -112,9 +112,9 @@ export class StructureReader extends NodeCore {
 	 *
 	 * @returns Parameters to initialize the user interface
 	 */
-	private async channelInit(): Promise<CtrlParams> {
+	private channelInit(): CtrlParams {
 
-		const db = await prototypeLoadList();
+		const db = prototypeLoadList();
 		return {
 			loopSteps: this.loopSteps,
 			stepBackward: this.stepBackward,
@@ -659,7 +659,7 @@ export class StructureReader extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private async channelProto(params: CtrlParams): Promise<CtrlParams> {
+	private channelProto(params: CtrlParams): CtrlParams {
 
 		const aflow = params.aflow as string;
 		if(!aflow) {
@@ -667,7 +667,7 @@ export class StructureReader extends NodeCore {
 			return {result: "Empty aflow ID"};
 		}
 
-		const proto = await prototypeGetStructure(aflow);
+		const proto = prototypeGetStructure(aflow);
 		if(proto?.error) {
 			log.error(proto.error);
 			return {error: proto.error};

@@ -99,7 +99,7 @@ export class ReorderAtomsInSteps {
 
 	/** Key is atomZ */
 	private previousStep = new Map<number, Positions>();
-	private currentStep = new Map<number, Positions>();
+	private readonly currentStep = new Map<number, Positions>();
 	private basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private hasUnitCell = false;
 

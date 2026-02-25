@@ -386,6 +386,7 @@ export class SliceStructure extends NodeCore {
 			case "plane":  return this.slicePlane();
 			case "miller": return this.slicePlane();
 			case "slab":   return this.sliceSlab();
+			default: return new EmptyStructure();
 		}
 	}
 

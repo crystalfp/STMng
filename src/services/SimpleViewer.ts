@@ -271,15 +271,4 @@ export class SimpleViewer {
 		if(removeGroup) this.scene.remove(group);
 		this.isSceneModified = true;
 	}
-
-	/**
-	 * Rotate the camera around the scene
-	 *
-	 * @param azimuth - Azimuth angle to be set
-	 */
-	rotateCamera(azimuth: number): void {
-
-		if(!this.controls) return;
-		this.controls.azimuthAngle = azimuth;
-	}
 }

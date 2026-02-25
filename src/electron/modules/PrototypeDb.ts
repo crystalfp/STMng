@@ -7,8 +7,7 @@
  * @since 2026-02-21
  */
 
-import {readFileSync, existsSync, createReadStream} from "node:fs";
-import {createGunzip} from "node:zlib";
+import {readFileSync, existsSync} from "node:fs";
 import {publicDirPath} from "./GetPublicPath";
 import {EmptyStructure} from "./EmptyStructure";
 import {getAtomicNumber, getAtomicSymbol} from "./AtomData";
@@ -80,12 +79,12 @@ class PrototypeDb {
 
 	private static instance: PrototypeDb;
 
-	private aflowPrototypeLibrary: PrototypeEntry[] = [];
+	private readonly aflowPrototypeLibrary: PrototypeEntry[] = [];
 	private readonly aflowAdjunctMap = new Map<string, AdjunctMap>();
 	private searchDb = "";
 	private aflowSrcPrototypeLibrary: LibraryEntry[] = [];
 	private readonly aflowSrcMap = new Map<string, number>();
-	private uniqueAflowMap = new Set<string>();
+	private readonly uniqueAflowMap = new Set<string>();
 
 	/**
 	 * Build the class by loading the prototype data
@@ -94,6 +93,7 @@ class PrototypeDb {
 
 		const filePath = publicDirPath("aflow_prepared_prototypes.json");
 		const adjunctPath = publicDirPath("mineral_overrides.json");
+		const prototypesPath = publicDirPath("aflow_prototypes.json");
 
 		const aflowPrototypeLibraryRaw = readFileSync(filePath, "utf8");
 		this.aflowPrototypeLibrary = JSON.parse(aflowPrototypeLibraryRaw) as PrototypeEntry[];
@@ -106,44 +106,13 @@ class PrototypeDb {
 				for(const entry in adjunct) this.aflowAdjunctMap.set(entry, adjunct[entry]);
 			}
 		}
-	}
 
-	/**
-	 * Initialize the aflowSrcPrototypeLibrary
-	 */
-	async initSrcPrototypeLibrary(): Promise<void> {
+		const rawResult = readFileSync(prototypesPath, "utf8");
+		this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
 
-		if(this.aflowSrcPrototypeLibrary.length === 0) {
-
-			await this.readCompressedPrototypes();
-			for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
-				this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
-			}
+		for(let i=0; i < this.aflowSrcPrototypeLibrary.length; ++i) {
+			this.aflowSrcMap.set(this.aflowSrcPrototypeLibrary[i].tags.aflow, i);
 		}
-	}
-
-	/**
-	 * Read the original list of prototypes as provided by Pymatgen
-	 */
-	private async readCompressedPrototypes(): Promise<void> {
-
-		// Read compressed AFLOW prototypes
-		const gunzip = createGunzip();
-		const prototypesPath = publicDirPath("aflow_prototypes.json.gz");
-		const source = createReadStream(prototypesPath);
-		const stream = source.pipe(gunzip);
-
-		let rawResult = "";
-		stream.on("data", (chunk: Buffer) => {
-			rawResult += chunk.toString("utf8");
-		});
-		return new Promise<void>((resolve) => {
-			stream.on("end", () => {
-				// Preprocess AFLOW prototypes
-				this.aflowSrcPrototypeLibrary = JSON.parse(rawResult) as LibraryEntry[];
-				resolve();
-			});
-		});
 	}
 
 	/**
@@ -309,11 +278,9 @@ class PrototypeDb {
 	 *
 	 * @returns JSON encoded list of prototypes names and aflow UID
 	 */
-	async prototypeLoadList(): Promise<string> {
+	prototypeLoadList(): string {
 
 		if(this.searchDb) return this.searchDb;
-
-		await this.initSrcPrototypeLibrary();
 
 		const db = new Map<string, string>();
 		for(const proto of this.aflowSrcPrototypeLibrary) {
@@ -321,14 +288,9 @@ class PrototypeDb {
 			const tags = this.correctTags(proto.tags.aflow, proto.tags);
 
 			if(tags.mineral) {
-
 				db.set(tags.mineral, this.makeAflowUnique(proto.tags.aflow));
-				db.set(proto.tags.aflow, this.makeAflowUnique(proto.tags.aflow));
 			}
-			else {
-
-				db.set(proto.tags.aflow, this.makeAflowUnique(proto.tags.aflow));
-			}
+			db.set(proto.tags.aflow, this.makeAflowUnique(proto.tags.aflow));
 		}
 
 		const out: DBType[] = [];
@@ -348,9 +310,7 @@ class PrototypeDb {
 	 * @param aflow - Aflow UID
 	 * @returns Prototype data as ordinary structure (undefined if not found)
 	 */
-	async prototypeGetStructure(aflow: string): Promise<PrototypeStructure | undefined> {
-
-		await this.initSrcPrototypeLibrary();
+	prototypeGetStructure(aflow: string): PrototypeStructure | undefined {
 
 		const idx = this.aflowSrcMap.get(aflow);
 		if(idx === undefined) return undefined;
@@ -443,7 +403,7 @@ class PrototypeDb {
  *
  * @returns JSON encoded list of prototypes names and aflow UID
  */
-export const prototypeLoadList = async (): Promise<string> =>
+export const prototypeLoadList = (): string =>
 								PrototypeDb.getInstance().prototypeLoadList();
 
 /**
@@ -452,7 +412,7 @@ export const prototypeLoadList = async (): Promise<string> =>
  * @param aflow - Aflow UID
  * @returns Prototype data as ordinary structure (undefined if not found)
  */
-export const prototypeGetStructure = async (aflow: string): Promise<PrototypeStructure | undefined> =>
+export const prototypeGetStructure = (aflow: string): PrototypeStructure | undefined =>
 						PrototypeDb.getInstance().prototypeGetStructure(aflow);
 
 /**

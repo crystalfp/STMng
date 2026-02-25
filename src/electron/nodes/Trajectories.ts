@@ -27,7 +27,7 @@ export class Trajectories extends NodeCore {
 	private nextSteps = false;
 	private positionCloudsSize = 100;
 	private indices: number[] = [];
-	private disentangler = new ReorderAtomsInSteps();
+	private readonly disentangler = new ReorderAtomsInSteps();
 
 	private readonly segments: PositionType[][] = [];
 	private readonly segmentsColor: string[] = [];

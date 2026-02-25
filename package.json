@@ -71,7 +71,7 @@
     "@types/tmp": "^0.2.6",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
-    "@typescript/native-preview": "^7.0.0-dev.20260224.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260225.1",
     "@vitejs/plugin-vue": "^6.0.4",
     "dependency-cruiser": "^17.3.8",
     "electron": "^40.6.1",
@@ -94,7 +94,7 @@
     "node-gyp": "^12.2.0",
     "oxlint-tsgolint": "^0.15.0",
     "postcss-html": "^1.8.1",
-    "stylelint": "^17.3.0",
+    "stylelint": "^17.4.0",
     "stylelint-config-recommended-scss": "^17.0.0",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^40.0.0",
@@ -113,6 +113,6 @@
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.5",
-    "vue-tsgo": "^0.0.4"
+    "vue-tsgo": "^0.1.0"
   }
 }

@@ -15,7 +15,7 @@ import {existsSync, mkdirSync, readFileSync, writeFileSync} from "node:fs";
  */
 export class Store {
 
-	private data = new Map<string, string>();
+	private readonly data = new Map<string, string>();
 	private readonly filePath: string;
 
 	/**

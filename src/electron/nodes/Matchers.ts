@@ -25,7 +25,7 @@ export class Matchers extends NodeCore {
 	private formula = "";
 
 	// Mirror of the UI reactive state
-	private state = {
+	private readonly state = {
 		enabled: false,
 		numberMatches: 3,
 		lengthTolerance: 0.2,
@@ -34,10 +34,10 @@ export class Matchers extends NodeCore {
 	};
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",		type: "invoke", 		callback: this.channelInit.bind(this)},
-		{name: "state",		type: "send",			callback: this.channelState.bind(this)},
-		{name: "show",		type: "invokeAsync",	callback: this.channelShow.bind(this)},
-		{name: "matches",	type: "send",			callback: this.channelMatches.bind(this)},
+		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
+		{name: "show",		type: "invoke",	callback: this.channelShow.bind(this)},
+		{name: "matches",	type: "send",	callback: this.channelMatches.bind(this)},
 	];
 
 	/**
@@ -304,7 +304,7 @@ export class Matchers extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private async channelShow(params: CtrlParams): Promise<CtrlParams> {
+	private channelShow(params: CtrlParams): CtrlParams {
 
 		const id = params.id as string;
 		if(!id) return {result: "Empty file ID"};
@@ -324,7 +324,7 @@ export class Matchers extends NodeCore {
 			};
 		}
 		else {
-			const prototype = await prototypeGetStructure(id);
+			const prototype = prototypeGetStructure(id);
 			if(prototype === undefined) {
 				const message = `File for Aflow "${id}" not found`;
 				return {error: message};

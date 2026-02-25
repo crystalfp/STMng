@@ -21,18 +21,18 @@
  */
 export class LinearAssignment {
 
-    private origC: number[][];
-    private nx: number;
-    private ny: number;
-    private n: number;
-    private c: number[][];
-    private epsilon: number;
+    private readonly origC: number[][];
+    private readonly nx: number;
+    private readonly ny: number;
+    private readonly n: number;
+    private readonly c: number[][];
+    private readonly epsilon: number;
     private _x: number[];
     private _y: number[];
     private _v: number[];
     private _d: number[];
     //   private _inds: number[];
-    private cred: number[][];
+    private readonly cred: number[][];
     private _minCost: number | null = null;
 
     /**

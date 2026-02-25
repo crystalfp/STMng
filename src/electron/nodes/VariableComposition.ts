@@ -43,7 +43,7 @@ export class VariableComposition extends NodeCore {
 	private readonly hull = new VariableCompositionConvexHull(this.accumulator);
 
 	// Mirror of the UI reactive state
-	private state = {
+	private readonly state = {
 		filterOnDistance: false,
 		distanceFromHull: 0.1,
 		forceCutoff: false,
