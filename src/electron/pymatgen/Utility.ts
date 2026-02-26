@@ -273,7 +273,7 @@ export const solveLinearSystem = (A: number[][], b: number[][]): number[][] | un
 
     // Simple 3x3 matrix inverse and multiplication
     const det = determinant(A);
-    if(Math.abs(det) < 1e-10) return;
+    if(Math.abs(det) < 1e-10) return undefined;
 
     // Calculate inverse matrix
     const invA: number[][] = [

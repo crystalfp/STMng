@@ -228,7 +228,7 @@ class PrototypeDb {
 		const {crystal, atoms} = structure;
 		const {basis, origin} = crystal;
 
-		if(hasNoUnitCell(basis)) return;
+		if(hasNoUnitCell(basis)) return undefined;
 
 		const matrix = [
 			[basis[0], basis[1], basis[2]],

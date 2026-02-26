@@ -188,9 +188,9 @@ class CollectionDb {
 	getStructure(id: string): Structure | undefined {
 
 		const idx = Number.parseInt(id, 10);
-		if(Number.isNaN(idx) || idx < 0 || idx >= this.countEntries) return;
+		if(Number.isNaN(idx) || idx < 0 || idx >= this.countEntries) return undefined;
 		const entry = this.entries![idx];
-		if(!entry) return;
+		if(!entry) return undefined;
 		const {start} = entry;
 
 		const structure = new EmptyStructure();

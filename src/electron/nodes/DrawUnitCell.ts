@@ -143,10 +143,11 @@ export class DrawUnitCell extends NodeCore {
 	 */
 	private replicateUnitCell(structure: Structure): Structure | undefined {
 
-		if(!structure) return;
+		if(!structure) return undefined;
 		const natoms = structure.atoms.length;
-		if(natoms === 0) return;
+		if(natoms === 0) return undefined;
 		const bs = structure.crystal.basis;
+
 		const atoms: Atom[] = [];
 		for(let a=0; a < this.repetitionsA; ++a) {
 			for(let b=0; b < this.repetitionsB; ++b) {

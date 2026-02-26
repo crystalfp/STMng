@@ -5,7 +5,7 @@
     "unit":       {"label": "Unit Cell",            "type": "draw-unit-cell",       "in": "symmetry"},
     "bonds":      {"label": "Bonds",                "type": "compute-bonds",        "in": "unit"},
     "draw":       {"label": "Draw structure",       "type": "draw-structure",       "in": "slice"},
-    "matchers":   {"label": "Matchers",             "type": "structure-matchers",   "in": "symmetry"},
+    "matchers":   {"label": "Find similar structures", "type": "find-similar","in": "symmetry"},
     "slice":      {"label": "Slicer",               "type": "slice-structure",      "in": "bonds"},
     "backbone":   {"label": "Backbone",             "type": "structure-backbone",   "in": "symmetry"},
     "cfp":        {"label": "Fingerprints",         "type": "compute-fingerprints", "in": "reader"},

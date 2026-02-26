@@ -13,16 +13,22 @@ import {markDuplicates} from "../modules/MarkDuplicates";
 import {sendToClient} from "../modules/ToClient";
 import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
-import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen, sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {collectionGetNearestStructures, collectionGetStructure} from "../modules/CollectionDb";
 import {findMatchingPrototypes, prototypeGetStructure} from "../modules/PrototypeDb";
 import type {Atom, ChannelDefinition, Crystal, CtrlParams,
 			 FingerprintingParameters, PrototypeAtomsData, Structure} from "@/types";
 
-export class Matchers extends NodeCore {
+export class FindSimilar extends NodeCore {
 
 	private structure: Structure | undefined;
 	private formula = "";
+
+	private readonly idCollection: string[] = [];
+	private readonly titleCollection: string[] = [];
+	private readonly distance: number[] = [];
+	private readonly idPrototypes: string[] = [];
+	private readonly titlePrototypes: string[] = [];
 
 	// Mirror of the UI reactive state
 	private readonly state = {
@@ -76,6 +82,20 @@ export class Matchers extends NodeCore {
 		this.structure = data;
 
 		this.findSimilar();
+
+		if(isSecondaryWindowOpen("/matches")) {
+
+			const dataToSend: CtrlParams = {
+				id: this.id,
+				idCollection: this.idCollection,
+				titleCollection: this.titleCollection,
+				distance: this.distance,
+				aflow: this.idPrototypes,
+				titlePrototypes: this.titlePrototypes
+			};
+
+			sendToSecondaryWindow("/matches", dataToSend);
+		}
 	}
 
 	// > Computation
@@ -118,6 +138,8 @@ export class Matchers extends NodeCore {
 		// Remove duplicate and outside unit cell atoms
 		const duplicates = markDuplicates(atoms, crystal);
 
+		this.formula = this.getChemicalFormula(this.structure, duplicates);
+
 		// Compute the input structure fingerprint
 		const fp = this.computeFingerprint(atoms, crystal, duplicates);
 
@@ -125,19 +147,19 @@ export class Matchers extends NodeCore {
 		const results = collectionGetNearestStructures(fp, this.state.numberMatches);
 
 		// Prepare the data for the client
-		const titles: string[] = [];
-		const ids: string[] = [];
-		const distances: number[] = [];
+		this.idCollection.length = 0;
+		this.titleCollection.length = 0;
+		this.distance.length = 0;
 
 		for(const result of results) {
-			titles.push(result.title);
-			ids.push(result.id);
-			distances.push(result.distance!);
+			this.titleCollection.push(result.title);
+			this.idCollection.push(result.id);
+			this.distance.push(result.distance!);
 		}
 		sendToClient(this.id, "load-coll", {
-			titles,
-			ids,
-			distances
+			titles: this.titleCollection,
+			ids: this.idCollection,
+			distances: this.distance
 		});
 	}
 
@@ -199,13 +221,20 @@ export class Matchers extends NodeCore {
 	 */
 	private findSimilarInPrototypes(): void {
 
-		const hasInput = this.structure !== undefined && this.structure?.atoms.length > 0;
-		this.formula = hasInput ? this.getChemicalFormula(this.structure!) : "";
-
 		const matches = findMatchingPrototypes(this.structure!,
 			this.state.lengthTolerance,
 			this.state.siteTolerance,
 			this.state.angleTolerance);
+
+		// Prepare the data for the client
+		this.idPrototypes.length = 0;
+		this.titlePrototypes.length = 0;
+		const len = matches.aflow.length;
+		for(let i=0; i < len; ++i) {
+
+			this.idPrototypes.push(matches.aflow[i]);
+			this.titlePrototypes.push(matches.mineral[i]);
+		}
 
 		sendToClient(this.id, "load-proto", {
 			titles: matches.mineral,
@@ -218,12 +247,17 @@ export class Matchers extends NodeCore {
 	 * Get the input structure empirical formula
 	 *
 	 * @param structure - Input structure
+	 * @param duplicates - Atoms marked as duplicates and thus ignored
 	 * @returns HTML string with the structure empirical formula
 	 */
-	private getChemicalFormula(structure: Structure): string {
+	private getChemicalFormula(structure: Structure | undefined, duplicates: boolean[]): string {
+
+		if(!structure || structure.atoms.length === 0) return "";
 
 		const species = new Map<number, number>();
+		let idx = 0;
 		for(const atom of structure.atoms) {
+			if(duplicates[idx++]) continue;
 			if(species.has(atom.atomZ)) {
 				species.set(atom.atomZ, species.get(atom.atomZ)! + 1);
 			}

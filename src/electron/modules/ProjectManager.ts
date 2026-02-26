@@ -39,7 +39,7 @@ import {DiffractionPattern} from "../nodes/DiffractionPattern";
 import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
 import {VariableComposition} from "../nodes/VariableComposition";
-import {Matchers} from "../nodes/Matchers";
+import {FindSimilar} from "../nodes/FindSimilar";
 
 /**
  * Manage everything related to the loaded project
@@ -111,9 +111,9 @@ class ProjectManager {
 		{type: "viewer-3d",            	in: false, out: false, opt: false, graphic: "in",
 										handler: Viewer3D,
 									   	idPrefix: "viewer",    ui: "Viewer3DCtrl"},
-		{type: "structure-matchers",	in: true,  out: false, opt: false, graphic: "none",
-										handler: Matchers,
-									   	idPrefix: "matchers", ui: "MatchersCtrl"},
+		{type: "find-similar",			in: true,  out: false, opt: false, graphic: "none",
+										handler: FindSimilar,
+									   	idPrefix: "similar", ui: "FindSimilarCtrl"},
 		{type: "variable-composition",  in: true,  out: false, opt: false, graphic: "none",
 										handler: VariableComposition,
 									   	idPrefix: "variable", ui: "VariableCompositionCtrl"},
