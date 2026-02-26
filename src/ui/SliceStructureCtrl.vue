@@ -133,7 +133,7 @@ askNode(id, "init")
 const renderer = new SliceStructureRenderer(id);
 
 /** Change parameters for sphere slice */
-watch([enableSlicer, mode, selectorKind, atomsSelector,
+const stopWatcher1 = watch([enableSlicer, mode, selectorKind, atomsSelector,
        sphereRadius, sliceInside, showSlicer], () => {
 
     if((!enableSlicer.value && !showSlicer.value) || mode.value !== "sphere") return;
@@ -157,7 +157,7 @@ watch([enableSlicer, mode, selectorKind, atomsSelector,
 });
 
 /** Selected plane slice */
-watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
+const stopWatcher2 = watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
        parallelC, percentC, sliceInside, showSlicer], () => {
 
     if((!enableSlicer.value && !showSlicer.value) || mode.value !== "plane") return;
@@ -182,7 +182,7 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
 });
 
 /** Slice along a slab */
-watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
+const stopWatcher3 = watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
        parallelC, percentC, thickness, sliceInside, showSlicer], () => {
 
     if((!enableSlicer.value && !showSlicer.value) || mode.value !== "slab") return;
@@ -209,7 +209,7 @@ watch([enableSlicer, mode, parallelA, percentA, parallelB, percentB,
 });
 
 /** Slice along a Miller plane */
-watch([enableSlicer, mode, millerH, millerK, millerL,
+const stopWatcher4 = watch([enableSlicer, mode, millerH, millerK, millerL,
        millerPlaneOffset, sliceInside, showSlicer], () => {
 
     if((!enableSlicer.value && !showSlicer.value) || mode.value !== "miller") return;
@@ -233,7 +233,7 @@ watch([enableSlicer, mode, millerH, millerK, millerL,
 });
 
 /** Change parameters for direct atoms slicer */
-watch([enableSlicer, mode, selectorKind,
+const stopWatcher5 = watch([enableSlicer, mode, selectorKind,
        atomsSelector, sliceInside], () => {
 
     if(!enableSlicer.value) return;
@@ -259,7 +259,7 @@ watch([enableSlicer, mode, selectorKind,
 });
 
 /** Set the other parameters */
-watch([enableSlicer, showSlicer, mode], () => {
+const stopWatcher6 = watch([enableSlicer, showSlicer, mode], () => {
 
     sendToNode(id, "set", {
         enableSlicer: enableSlicer.value,
@@ -304,7 +304,7 @@ const resetParameters = (): void => {
 };
 
 /** Check parameters validity */
-const stopWatcher = watchEffect(() => {
+const stopWatcher7 = watchEffect(() => {
 
     if(parallelA.value && parallelB.value && parallelC.value) {
         showNodeAlert("Only one or two parallel directions can be selected", "slicer");
@@ -324,7 +324,15 @@ const stopWatcher = watchEffect(() => {
 });
 
 // Cleanup
-onUnmounted(() => stopWatcher());
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
+    stopWatcher5();
+    stopWatcher6();
+    stopWatcher7();
+});
 
 </script>
 

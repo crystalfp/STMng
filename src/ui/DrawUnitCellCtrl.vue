@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {ref, watch} from "vue";
+import {onUnmounted, ref, watch} from "vue";
 import {askNode, receiveVerticesFromNode, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawUnitCellRenderer} from "@/renderers/DrawUnitCellRenderer";
@@ -155,7 +170,7 @@ const resetSliders = (): void => {
     showRepetitionsC.value = 1;
 };
 
-watch([showUnitCell, showSupercell, showBasisVectors], () => {
+const stopWatcher1 = watch([showUnitCell, showSupercell, showBasisVectors], () => {
 
     renderer.setVisibility(showUnitCell.value, showSupercell.value, showBasisVectors.value);
 
@@ -166,7 +181,7 @@ watch([showUnitCell, showSupercell, showBasisVectors], () => {
     });
 });
 
-watch([repetitionsA, repetitionsB, repetitionsC], () => {
+const stopWatcher2 = watch([repetitionsA, repetitionsB, repetitionsC], () => {
 
     showSupercell.value = hasSupercell();
     sendToNode(id, "repeat", {
@@ -176,7 +191,7 @@ watch([repetitionsA, repetitionsB, repetitionsC], () => {
     });
 });
 
-watch([dashedLine, lineColor, dashedSupercell, supercellColor], () => {
+const stopWatcher3 = watch([dashedLine, lineColor, dashedSupercell, supercellColor], () => {
 
     renderer.changeMaterials(lineColor.value, dashedLine.value,
                              supercellColor.value, dashedSupercell.value);
@@ -189,7 +204,7 @@ watch([dashedLine, lineColor, dashedSupercell, supercellColor], () => {
    });
 });
 
-watch([percentA, percentB, percentC, shrink], () => {
+const stopWatcher4 = watch([percentA, percentB, percentC, shrink], () => {
 
     sendToNode(id, "origin", {
         percentA: percentA.value,
@@ -199,7 +214,7 @@ watch([percentA, percentB, percentC, shrink], () => {
     });
 });
 
-watch([lineWidth, showBasisVectors], ([afterLw, afterSbv]) => {
+const stopWatcher5 = watch([lineWidth, showBasisVectors], ([afterLw, afterSbv]) => {
 
     if(afterLw > 0) {
         renderer.drawFatCell(verticesUC, lineColor.value, showUnitCell.value,
@@ -234,6 +249,15 @@ const resetShift = (): void => {
  * Check if there is no shift
  */
 const noShift = (): boolean => percentA.value === 0 && percentB.value === 0 && percentC.value === 0;
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
+    stopWatcher5();
+});
 
 </script>
 

@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {ref, reactive, watch} from "vue";
+import {ref, reactive, watch, onUnmounted} from "vue";
 import {askNode, sendToNode, receivePolyhedraFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {DrawPolyhedraRenderer} from "@/renderers/DrawPolyhedraRenderer";
@@ -64,7 +79,7 @@ askNode(id, "init")
 const renderer = new DrawPolyhedraRenderer(id);
 
 // > React to changes
-watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () => {
+const stopWatcher1 = watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () => {
 
     sendToNode(id, "look", {
         showPolyhedra: showPolyhedra.value,
@@ -89,7 +104,7 @@ watch([showPolyhedra, surfaceColor, colorByCenterAtom, opacityByCenterAtom], () 
 });
 
 
-watch([constrains], () => {
+const stopWatcher2 = watch([constrains], () => {
 
     sendToNode(id, "constrain", {
         constrainVertices: constrains.type,
@@ -106,6 +121,13 @@ receivePolyhedraFromNode(id, "vertices",
 
     // Render the polyhedron
     renderer.drawPolyhedra(colorByCenterAtom.value, showPolyhedra.value);
+});
+
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
 });
 
 </script>

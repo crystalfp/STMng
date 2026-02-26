@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, watch, computed} from "vue";
+import {ref, watch, computed, onUnmounted} from "vue";
 import {mdiAlphaXBoxOutline, mdiAlphaABoxOutline, mdiAlphaHBoxOutline,
         mdiPlus, mdiMinus} from "@mdi/js";
 import {useControlStore} from "@/stores/controlStore";
@@ -32,7 +32,7 @@ const controlStore = useControlStore();
 const showPanel = ref(0);
 const axisSign = ref("+");
 const lookAxis = ref("z");
-watch(lookAxis, (after) => {
+const stopWatcher = watch(lookAxis, (after) => {
 
     switch(after) {
         case "r":
@@ -59,6 +59,9 @@ watch(lookAxis, (after) => {
     }
     lookAxis.value = "";
 });
+
+// Cleanup
+onUnmounted(() => stopWatcher());
 
 const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
 

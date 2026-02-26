@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {ref, computed, watch} from "vue";
+import {ref, computed, watch, onUnmounted} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsoOrthoFromNode, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
@@ -135,7 +150,7 @@ receiveIsoOrthoFromNode(id, "computed", (vertices: number[],
 });
 
 // > Send updated parameters to main process
-watch([dataset, axis, plane, colorClasses, useColorClasses,
+const stopWatcher1 = watch([dataset, axis, plane, colorClasses, useColorClasses,
        isoValue, showOrthoslice, showIsolines, limits], () => {
 
     sendToNode(id, "change", {
@@ -154,7 +169,7 @@ watch([dataset, axis, plane, colorClasses, useColorClasses,
     renderer.setVisibility(showIsolines.value, showOrthoslice.value);
 }, {deep: true});
 
-watch([colormapName, colorIsolines], () => {
+const stopWatcher2 = watch([colormapName, colorIsolines], () => {
 
     sendToNode(id, "show", {
         colormapName: colormapName.value,
@@ -168,6 +183,12 @@ watch([colormapName, colorIsolines], () => {
     renderer.drawOrthoIso(currentVertices, currentIndices, currentValues,
                           currentIsolineVertices, currentIsolineValues,
                           showOrthoslice.value, showIsolines.value, colorIsolines.value);
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
 });
 
 </script>

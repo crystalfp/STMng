@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, reactive, computed, watch} from "vue";
+import {ref, reactive, computed, watch, onUnmounted} from "vue";
 import {storeToRefs} from "pinia";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
@@ -214,7 +230,7 @@ const resetAccumulator = (): void => {
 };
 
 /** Changes accumulating structures request */
-watch([fingerprintsAccumulate], () => {
+const stopWatcher1 = watch([fingerprintsAccumulate], () => {
 
     askNode(id, "capture", {
         fingerprintsAccumulate: controlStore.fingerprintsAccumulate,
@@ -242,7 +258,7 @@ const accumulatedLabel = computed(() => {
 });
 
 /** On change of the energy filtering parameters */
-watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
+const stopWatcher2 = watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
 
     askNode(id, "energy", {
 
@@ -268,7 +284,7 @@ watch([enableEnergyFiltering, thresholdFromMinimum, energyThreshold], () => {
 });
 
 /** On changing manual cutoff distance */
-watch([forceCutoff, manualCutoffDistance], () => {
+const stopWatcher3 = watch([forceCutoff, manualCutoffDistance], () => {
 
     askNode(id, "cutoff", {
         forceCutoff: forceCutoff.value,
@@ -302,7 +318,7 @@ const cutoffLabel = computed(() => {
 });
 
 /** On fingerprinting parameters change */
-watch([fingerprintingMethod, binSize, peakWidth], () => {
+const stopWatcher4 = watch([fingerprintingMethod, binSize, peakWidth], () => {
 
     resultDimensionality.value = 0;
     countDistances.value = 0;
@@ -356,7 +372,7 @@ const computeFingerprints = (): void => {
 };
 
 /** On changing distance computation parameters */
-watch([distanceMethod, fixTriangleInequality], () => {
+const stopWatcher5 = watch([distanceMethod, fixTriangleInequality], () => {
 
     countDistances.value = 0;
     countGroups.value = 0;
@@ -386,7 +402,7 @@ watch([distanceMethod, fixTriangleInequality], () => {
 });
 
 /** On changing remove duplicates parameters */
-watch([removeDuplicates, duplicatesThreshold], () => {
+const stopWatcher6 = watch([removeDuplicates, duplicatesThreshold], () => {
 
   askNode(id, "duplicates", {
         removeDuplicates: removeDuplicates.value,
@@ -406,7 +422,7 @@ watch([removeDuplicates, duplicatesThreshold], () => {
 });
 
 /** On changing grouping parameters */
-watch([groupingMethod, groupingThreshold, addedMargin], () => {
+const stopWatcher7 = watch([groupingMethod, groupingThreshold, addedMargin], () => {
 
     countGroups.value = 0;
 
@@ -416,6 +432,17 @@ watch([groupingMethod, groupingThreshold, addedMargin], () => {
         groupingThreshold: groupingThreshold.value,
         addedMargin: addedMargin.value,
     });
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
+    stopWatcher5();
+    stopWatcher6();
+    stopWatcher7();
 });
 
 /**

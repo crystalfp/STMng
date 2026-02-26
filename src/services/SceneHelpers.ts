@@ -42,11 +42,11 @@ export const setupSceneHelpers = (): void => {
 	const configStore = useConfigStore();
 
 	const {helpers} = storeToRefs(configStore);
-	watch(helpers, () => {
+	const stopWatcher1 = watch(helpers, () => {
 		sm.modified();
 	}, {deep: true});
 
-	const stopWatcher = watchEffect(() => {
+	const stopWatcher2 = watchEffect(() => {
 
 		// Manage axis helper
 		let axis = sm.getObjectByName("AxisHelper") as Group | undefined;
@@ -142,7 +142,10 @@ export const setupSceneHelpers = (): void => {
 	});
 
 	// Cleanup
-	onUnmounted(() => stopWatcher());
+	onUnmounted(() => {
+		stopWatcher1();
+		stopWatcher2();
+	});
 };
 
 /**

@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-12
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {computed, ref, watch} from "vue";
+import {computed, onUnmounted, ref, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useControlStore} from "@/stores/controlStore";
 import {askNode, receiveSegmentsFromNode, sendToNode} from "@/services/RoutesClient";
@@ -82,7 +97,7 @@ const resetTraces = (): void => {
 };
 
 const {trajectoriesRecording} = storeToRefs(controlStore);
-watch(trajectoriesRecording, () => {
+const stopWatcher1 = watch(trajectoriesRecording, () => {
 
     sendToNode(id, "run", {
         createTrajectories: controlStore.trajectoriesRecording
@@ -90,7 +105,7 @@ watch(trajectoriesRecording, () => {
 });
 
 /** Capture selection of atoms to trace */
-watch([labelKind, atomsSelector], () => {
+const stopWatcher2 = watch([labelKind, atomsSelector], () => {
 
     controlStore.trajectoriesHasSelector = atomsSelector.value.trim() !== "" ||
                                            labelKind.value === "all";
@@ -98,7 +113,7 @@ watch([labelKind, atomsSelector], () => {
 });
 
 /** Max displacement to take part of a single trace */
-watch([maxDisplacement], () => {
+const stopWatcher3 = watch([maxDisplacement], () => {
 
     sendToNode(id, "gap", {
         maxDisplacement: maxDisplacement.value,
@@ -106,7 +121,7 @@ watch([maxDisplacement], () => {
 });
 
 /** Capture position clouds related variables */
-watch([showPositionClouds, positionCloudsSize],
+const stopWatcher4 = watch([showPositionClouds, positionCloudsSize],
       (after:  [boolean, number], before: [boolean, number]) => {
 
     if(after[1] !== before[1]) renderer.changeSize(after[1]);
@@ -129,6 +144,14 @@ const startStop = computed(() => (controlStore.trajectoriesRecording ?
                                             "Stop trajectories" :
                                             "Start trajectories"));
 const startStopColor = computed(() => (controlStore.trajectoriesRecording ? "red" : "primary"));
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
+});
 
 </script>
 

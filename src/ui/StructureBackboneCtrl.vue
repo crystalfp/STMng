@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-02-28
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {reactive, ref, watch} from "vue";
+import {onUnmounted, reactive, ref, watch} from "vue";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {StructureBackboneRenderer} from "@/renderers/StructureBackboneRenderer";
@@ -100,7 +116,8 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     }
 });
 
-watch([enableBackbone, showChains, selectorKind, atomsSelector, threshold, radius], () => {
+const stopWatcher1 = watch([enableBackbone, showChains, selectorKind,
+                            atomsSelector, threshold, radius], () => {
 
     const selectedChains: string[] = [];
     for(const key in showChains) {
@@ -125,7 +142,7 @@ receiveFromNode(id, "positions", (params: CtrlParams) => {
     renderer.drawChains(coordinates, chainStart, radius.value, enableBackbone.value);
 });
 
-watch([radius, enableBackbone], () => {
+const stopWatcher2 = watch([radius, enableBackbone], () => {
     renderer.drawChains(coordinates, chainStart, radius.value, enableBackbone.value);
 });
 
@@ -139,6 +156,12 @@ const selectDeselect = (select: boolean): void => {
         showChains[key] = select;
     }
 };
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+});
 
 // > Template
 </script>

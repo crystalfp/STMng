@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, watch, computed} from "vue";
+import {ref, watch, computed, onUnmounted} from "vue";
 import {PlaneGeometry, MeshStandardMaterial, Material,
         Float32BufferAttribute, Mesh, DoubleSide,
         BufferGeometry,
@@ -96,7 +96,7 @@ requestData(windowPath, (params: CtrlParams) => {
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
 
-watch([gridSide, power], () => {
+const stopWatcher1 = watch([gridSide, power], () => {
 
     if(!energyLandscapeData) return;
 
@@ -112,22 +112,30 @@ watch([gridSide, power], () => {
     renderSurface();
 });
 
-watch(energyScale, () => {
+const stopWatcher2 = watch(energyScale, () => {
 
     renderPoints();
     renderSurface();
 });
 
-watch(colormapName, () => {
+const stopWatcher3 = watch(colormapName, () => {
 
     lut.setColorMap(colormapName.value, 256);
     renderPoints();
     renderSurface();
 });
 
-watch(showPoints, () => {
+const stopWatcher4 = watch(showPoints, () => {
 
     renderPoints();
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
 });
 
 /**

@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-13
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, toRaw, watch, reactive, computed} from "vue";
+import {ref, toRaw, watch, reactive, computed, onUnmounted} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
@@ -101,13 +117,13 @@ const state = reactive({
 });
 
 /** Pass state changes to the main process for saving in the project file */
-watch(state, (after) => {
+const stopWatcher1 = watch(state, (after) => {
 
     sendToNode(id, "state", toRaw(after));
 });
 
 /** Update the components composition UI */
-watch([species, countComponents], ([sp, cc]) => {
+const stopWatcher2 = watch([species, countComponents], ([sp, cc]) => {
 
     const len = sp.length*cc;
     count.value.length = len;
@@ -190,7 +206,7 @@ receiveFromNode(id, "load", (params) => {
 });
 
 /** Accumulation enabled in the reader */
-watch(variableCompositionAccumulate, () => {
+const stopWatcher3 = watch(variableCompositionAccumulate, () => {
 
     askNode(id, "capture", {
         enableAnalysis: controlStore.variableCompositionAccumulate
@@ -361,7 +377,7 @@ const showCharts = (): void => {
 
 let lastFilterOnDistance: boolean;
 let lastDistanceFromHull: number;
-watch([state, selected], ([st, sel], [_ost, osel]) => {
+const stopWatcher4 = watch([state, selected], ([st, sel], [_ost, osel]) => {
 
     if(st.filterOnDistance !== lastFilterOnDistance ||
        st.distanceFromHull !== lastDistanceFromHull ||
@@ -382,6 +398,14 @@ watch([state, selected], ([st, sel], [_ost, osel]) => {
                           "variableComposition");
         });
     }
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
 });
 
 </script>

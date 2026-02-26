@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-09
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {ref, reactive, watch, computed} from "vue";
+import {ref, reactive, watch, computed, onUnmounted} from "vue";
 import {storeToRefs} from "pinia";
 import {sm} from "@/services/SceneManager";
 import {useControlStore} from "@/stores/controlStore";
@@ -60,7 +75,7 @@ const uc = reactive<number[]>([]);
 const renderer = new MeasuresRenderer(id);
 
 // Watch atoms selection
-watch(controlStore.atomsSelected, () => {
+const stopWatcher1 = watch(controlStore.atomsSelected, () => {
 
     // Check if atoms have been deselected
     const nselected = controlStore.atomsSelected.length;
@@ -167,7 +182,7 @@ const bondsLabel = computed<string>(() => {
 
 // Watch polyhedra selection
 const {polyhedronNewIdx} = storeToRefs(controlStore);
-watch(polyhedronNewIdx, () => {
+const stopWatcher2 = watch(polyhedronNewIdx, () => {
 
     // No polyhedra selected
     if(controlStore.polyhedronNewIdx === undefined) return;
@@ -207,7 +222,7 @@ watch(polyhedronNewIdx, () => {
 });
 
 // Watch measurement change. Every measurement should start with nothing selected
-watch(measurementType, () => {controlStore.deselectAll();});
+const stopWatcher3 = watch(measurementType, () => {controlStore.deselectAll();});
 
 /**
  * Format one coordinate (cartesian or fractional) of the selected atom.
@@ -224,6 +239,13 @@ const showCoords = (detail: SelectedAtom, idx: number): string => {
     }
     return detail.position[idx].toFixed(3);
 };
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+});
 
 </script>
 

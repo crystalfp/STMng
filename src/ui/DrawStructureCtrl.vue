@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-27
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, watch, computed} from "vue";
+import {ref, watch, computed, onUnmounted} from "vue";
 import {askNode, receiveFromNodeForRendering, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {DrawStructureRenderer} from "@/renderers/DrawStructureRenderer";
@@ -175,8 +191,10 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 });
 
 // Change draw parameters
-watch([labelKind, drawKind, shadedBonds, showBondsStrengths, spheresRadiusMultiplier,
-       bondsRadiusMultiplier, atomColoring, monochromeColor], () => {
+const stopWatcher1 = watch([labelKind, drawKind, shadedBonds,
+                            showBondsStrengths, spheresRadiusMultiplier,
+                            bondsRadiusMultiplier, atomColoring,
+                            monochromeColor], () => {
 
     if(renderInfo) {
         renderer.drawStructure(renderInfo, drawKind.value, shadedBonds.value,
@@ -201,7 +219,7 @@ watch([labelKind, drawKind, shadedBonds, showBondsStrengths, spheresRadiusMultip
 });
 
 // Change visibility
-watch([showAtoms, showBonds, showLabels], () => {
+const stopWatcher2 = watch([showAtoms, showBonds, showLabels], () => {
 
     renderer.setVisibility(showAtoms.value, showBonds.value, showLabels.value);
 
@@ -213,7 +231,7 @@ watch([showAtoms, showBonds, showLabels], () => {
 });
 
 // Change material parameters
-watch([drawRoughness, drawMetalness, drawQuality], () => {
+const stopWatcher3 = watch([drawRoughness, drawMetalness, drawQuality], () => {
 
     renderer.adjustMaterials(drawQuality.value, drawRoughness.value, drawMetalness.value);
     sendToNode(id, "save", {
@@ -264,8 +282,16 @@ const disableSphereMultiplier = computed(() =>
 
 // Show legend only when required
 const showLegend = ref(false);
-watch([showLegend, atomColoring], (after: [boolean, string]) => {
+const stopWatcher4 = watch([showLegend, atomColoring], (after: [boolean, string]) => {
     controlStore.legend = after[0] && after[1] === "bonds";
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
 });
 
 </script>

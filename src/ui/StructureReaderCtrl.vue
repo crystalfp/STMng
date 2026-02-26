@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, reactive, watch, computed} from "vue";
+import {ref, reactive, watch, computed, onUnmounted} from "vue";
 import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
         mdiChevronLeft, mdiChevronRight,
         mdiArrowExpandHorizontal} from "@mdi/js";
@@ -205,13 +205,13 @@ askNode(id, "init")
     });
 
 // Reset accumulate for fingerprint when changing to a single step structure
-watch([countSteps], (after: [number], before: [number]) => {
+const stopWatcher1 = watch([countSteps], (after: [number], before: [number]) => {
 
     if(before[0] > 1 && after[0] === 1) controlStore.fingerprintsAccumulate = false;
 });
 
 // Manage the step selection
-watch([step], (
+const stopWatcher2 = watch([step], (
        after:  [number],
        before: [number]) => {
 
@@ -230,7 +230,7 @@ watch([step], (
 });
 
 // Manage the running step
-watch([running], async () => {
+const stopWatcher3 = watch([running], async () => {
 
     let isRunning = running.value;
 
@@ -295,7 +295,7 @@ watch([running], async () => {
     running.value = false;
 });
 
-watch([loopSteps, stepIncrement, stepBackward, speed], () => {
+const stopWatcher4 = watch([loopSteps, stepIncrement, stepBackward, speed], () => {
 
     sendToNode(id, "step-ctrl", {
         loopSteps: loopSteps.value,
@@ -618,7 +618,7 @@ const label1 = ref("");
 const label2 = ref("");
 
 // Add loaded file to the window title
-watch(label1, () => {setFileInTitle(label1.value);});
+const stopWatcher5 = watch(label1, () => {setFileInTitle(label1.value);});
 
 /** Data for formats that have an auxiliary file */
 const auxSetup = computed(() => {
@@ -665,7 +665,7 @@ const clearAtomTypes = (): void => {
 };
 
 /** Limit the step inside the step range */
-watch(stepRange, () => {
+const stopWatcher6 = watch(stepRange, () => {
 
     if(step.value < stepRange.value[0]) step.value = stepRange.value[0];
     else if(step.value > stepRange.value[1]) step.value = stepRange.value[1];
@@ -721,6 +721,16 @@ const startCollectionQuery = (fileID: string): void => {
             showNodeAlert(error.message, "structureReader");
         });
 };
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+    stopWatcher4();
+    stopWatcher5();
+    stopWatcher6();
+});
 
 </script>
 

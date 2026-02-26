@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-05
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {ref, computed, watch} from "vue";
+import {ref, computed, watch, onUnmounted} from "vue";
 import {humanFormat} from "@/services/HumanFormat";
 import {askNode, receiveIsosurfacesFromNode, sendToNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
@@ -93,7 +108,7 @@ receiveIsosurfacesFromNode(id, "iso", (indices: number[][],
     renderer.drawIsosurfaces(indices, vertices, normals, isoValues, opacity.value, showIsosurface.value);
 });
 
-watch([limitColormap, colormapName, limits, valueMin, valueMax], () => {
+const stopWatcher1 = watch([limitColormap, colormapName, limits, valueMin, valueMax], () => {
 
     // Set colormap
     if(limitColormap.value) {
@@ -105,7 +120,7 @@ watch([limitColormap, colormapName, limits, valueMin, valueMax], () => {
 }, {deep: true});
 
 // To recompute the isosurfaces
-watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
+const stopWatcher2 = watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
 
     sendToNode(id, "change", {
 
@@ -120,7 +135,7 @@ watch([dataset, nestedIsosurfaces, countIsosurfaces, limits, isoValue], () => {
 }, {deep: true});
 
 // To change locally
-watch([showIsosurface, limitColormap, colormapName, opacity], () => {
+const stopWatcher3 = watch([showIsosurface, limitColormap, colormapName, opacity], () => {
 
     sendToNode(id, "show", {
         showIsosurface: showIsosurface.value,
@@ -132,6 +147,13 @@ watch([showIsosurface, limitColormap, colormapName, opacity], () => {
     renderer.changeRendering(showIsosurface.value, opacity.value);
 });
 
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+});
 </script>
 
 
