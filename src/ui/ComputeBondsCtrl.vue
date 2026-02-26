@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-20
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {computed, ref, reactive, watch} from "vue";
+import {computed, ref, reactive, watch, onUnmounted} from "vue";
 import {askNode, sendToNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {resetCamera} from "@/services/ResetCamera";
@@ -95,7 +110,7 @@ const scales = computed((old?: number[]) => {
     return out;
 });
 
-watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
+const stopWatch1 = watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
        maxHValenceAngle, enableComputeBonds, bondScale, perPairScale,
        scales, enlargementKind], (
         [aminbd, amaxbd, amaxhbd, amaxva, aen, abs, apps, as, aek],
@@ -137,7 +152,13 @@ watch([minBondingDistance, maxBondingDistance, maxHBondingDistance,
     });
 }, {deep: true});
 
-watch(enlargementKind, () => resetCamera());
+const stopWatch2 = watch(enlargementKind, () => resetCamera());
+
+// Cleanup
+onUnmounted(() => {
+    stopWatch1();
+    stopWatch2();
+});
 
 receiveFromNode(id, "params", (params: CtrlParams) => {
 

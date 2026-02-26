@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-02-20
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {reactive, ref, toRaw, watch} from "vue";
+import {onUnmounted, reactive, ref, toRaw, watch} from "vue";
 
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
@@ -71,10 +87,13 @@ askNode(id, "init")
     });
 
 /** Pass state changes to the main process for saving in the project file */
-watch(state, (after) => {
+const stopWatcher = watch(state, (after) => {
 
     sendToNode(id, "state", toRaw(after));
 });
+
+// Cleanup
+onUnmounted(() => stopWatcher());
 
 /** Receive the parameters of the structures loaded */
 receiveFromNode(id, "load-coll", (params) => {

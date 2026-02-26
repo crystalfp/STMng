@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {computed, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
+import {computed, onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import log from "electron-log";
 import {Lut} from "three/addons/math/Lut.js";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -498,7 +498,7 @@ const pointClicked = (event: MouseEvent): void => {
 };
 
 // Redraw canvas if parameters change
-watch([
+const stopWatcher1 = watch([
     pointRadius, scatterplotType, selectedPoints, textShow,
     x, y, width, height, showSelectionRectangle
 ], drawPoints, {deep: true});
@@ -538,12 +538,18 @@ onBeforeUnmount(() => {
 });
 
 // Request the data for a given plot
-watch(scatterplotType, () => {
+const stopWatcher2 = watch(scatterplotType, () => {
 
     textShow.value = false;
     sendToNode("SYSTEM", "selected-plot", {
         plotType: scatterplotType.value,
     });
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
 });
 
 const windowPath = "/fp-scatterplot";

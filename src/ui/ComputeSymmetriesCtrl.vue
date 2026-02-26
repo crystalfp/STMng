@@ -5,9 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-20
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {computed, ref, watch} from "vue";
+import {computed, onUnmounted, ref, watch} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {setStandardizedInTitle} from "@/services/SetTitle";
@@ -95,7 +110,7 @@ askNode(id, "init")
                       "symmetries");
     });
 
-watch([applyInputSymmetries,
+const stopWatcher1 = watch([applyInputSymmetries,
        enableFindSymmetries,
        standardizeCell,
        symprecStandardize,
@@ -120,7 +135,7 @@ watch([applyInputSymmetries,
     setStandardizedInTitle(enableFindSymmetries.value && standardizeCell.value);
 });
 
-watch([
+const stopWatcher2 = watch([
     computePointGroup,
     positionTolerance,
     eigenvalueTolerance
@@ -133,8 +148,15 @@ watch([
     });
 });
 
-watch(displayMode, () => {
+const stopWatcher3 = watch(displayMode, () => {
     sendToNode(id, "display", {displayMode: displayMode.value});
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
 });
 
 receiveFromNode(id, "show", (params: CtrlParams) => {

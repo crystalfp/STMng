@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-01-06
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {reactive, ref, watch} from "vue";
+import {onUnmounted, reactive, ref, watch} from "vue";
 import {Lut} from "three/addons/math/Lut.js";
 
 // > Properties
@@ -39,13 +55,14 @@ let colorScale;
 const haveFooter = ref(false);
 if(valuesContinue) {
 
-    watch(() => valuesContinue, () => {
+    const stopWatch = watch(() => valuesContinue, () => {
         // Create the color scale for the legend
         const lut = new Lut(valuesContinue.colormap, 128);
         colorScale = lut.createCanvas().toDataURL();
         haveFooter.value = !!valuesContinue.footer;
 
     }, {deep: true, immediate: true});
+    onUnmounted(() => stopWatch());
 }
 const haveHeader = ref(!!title);
 
@@ -54,10 +71,10 @@ const haveHeader = ref(!!title);
 
 <template>
 <div class="legend" :style>
-  <div v-if="valuesDiscrete !== undefined" style="padding: 5px 3px">
-    <p v-if="haveHeader">{{ title }}</p>
+  <div v-if="valuesDiscrete !== undefined" class="px-1">
+    <div v-if="haveHeader" class="w-100 d-flex justify-center mt-2 mb-1">{{ title }}</div>
     <div v-for="n of valuesDiscrete" :key="n.color">
-      <span :style="{backgroundColor: n.color}">&emsp;</span>{{ n.label }}
+      <span :style="{backgroundColor: n.color}" class="ml-2 mr-3">&emsp;</span>{{ n.label }}
     </div>
   </div>
     <div v-else-if="valuesContinue !== undefined" class="legend-grid">
@@ -80,17 +97,6 @@ const haveHeader = ref(!!title);
   overflow: hidden auto;
   padding: 0 !important;
   color: light-dark(#202020, #e6e6e6);
-}
-
-p {
-  width: 100%;
-  text-align: center;
-  margin-bottom: 5px;
-}
-
-span {
-  margin-left: 7px;
-  margin-right: 10px;
 }
 
 .legend-grid {

@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {computed, ref, reactive, shallowRef, watch} from "vue";
+import {computed, ref, reactive, shallowRef, watch, onUnmounted} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
@@ -259,7 +259,7 @@ requestData(windowPath, (params: CtrlParams) => {
 handleSpecialKeys(windowPath);
 
 /** Send user choices to the main process */
-watch([fpIndex, chartType, binCount], () => {
+const stopWatcher = watch([fpIndex, chartType, binCount], () => {
 
     sendToNode("SYSTEM", "chart-request", {
         fpIndex: fpIndex.value,
@@ -267,6 +267,9 @@ watch([fpIndex, chartType, binCount], () => {
         chartType: chartType.value
     });
 });
+
+// Cleanup
+onUnmounted(() => stopWatcher());
 
 /** Helpers to show sliders */
 const showStepSlider = computed(() => ["fp", "di"].includes(chartType.value));

@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-08-22
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, watchEffect} from "vue";
+import {onUnmounted, ref, watchEffect} from "vue";
 import {mdiFileOutline} from "@mdi/js";
 import {askNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
@@ -78,12 +94,15 @@ const dropActive = ref("placeholder");
 
 // To show the drop target on entering the application
 const controlStore = useControlStore();
-watchEffect(() => {
+const stopWatcher = watchEffect(() => {
 
     dropActive.value = props.kind === "load" &&
                        !props.disabled &&
                        controlStore.draggingFile ? "drop" : "placeholder";
 });
+
+// Cleanup
+onUnmounted(() => stopWatcher());
 
 /**
  * On dropping a file

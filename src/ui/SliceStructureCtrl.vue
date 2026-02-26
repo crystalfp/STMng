@@ -5,8 +5,24 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-04-09
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, reactive, watch, watchEffect} from "vue";
+import {ref, reactive, watch, watchEffect, onUnmounted} from "vue";
 import {askNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import AtomsChooser from "@/widgets/AtomsChooser.vue";
@@ -288,7 +304,7 @@ const resetParameters = (): void => {
 };
 
 /** Check parameters validity */
-watchEffect(() => {
+const stopWatcher = watchEffect(() => {
 
     if(parallelA.value && parallelB.value && parallelC.value) {
         showNodeAlert("Only one or two parallel directions can be selected", "slicer");
@@ -306,6 +322,9 @@ watchEffect(() => {
         showNodeAlert("Slab thickness must be greater than zero", "slicer");
     }
 });
+
+// Cleanup
+onUnmounted(() => stopWatcher());
 
 </script>
 

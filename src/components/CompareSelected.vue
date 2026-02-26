@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
-import {ref, reactive, watch} from "vue";
+import {ref, reactive, watch, onUnmounted} from "vue";
 import log from "electron-log";
 import {Scene, Group, LineBasicMaterial, Vector3, Quaternion, MathUtils,
         LineSegments, IcosahedronGeometry, MeshStandardMaterial, Mesh,
@@ -410,7 +410,7 @@ const resetRotations = (): void => {
   showAroundC.value = 0;
 };
 
-watch([aroundA, aroundB, aroundC],
+const stopWatcher = watch([aroundA, aroundB, aroundC],
       ([aAfter, bAfter, cAfter], [aBefore, bBefore, cBefore]) => {
 
     if(selectedStep0.value === -1 || selectedStep1.value === -1) return;
@@ -429,6 +429,9 @@ watch([aroundA, aroundB, aroundC],
     }
     sv.setSceneModified();
 });
+
+// Cleanup
+onUnmounted(() => stopWatcher());
 
 </script>
 
