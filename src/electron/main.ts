@@ -7,6 +7,22 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-07-09
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
  */
 import {app, BrowserWindow, screen as electronScreen} from "electron";
 import log from "electron-log";
@@ -65,10 +81,12 @@ interface ProgramOptions {
 }
 const options = program.opts<ProgramOptions>();
 
-// Verbose can be set also with the "STM_NG_VERBOSE" environment variable set to any value
+// Verbose can be set also with the "STM_NG_VERBOSE"
+// environment variable set to any value
 const verbose = options.verbose ?? process.env.STM_NG_VERBOSE !== undefined;
 
-// Tools can be enabled in production also with the "STM_NG_ENABLE" environment variable set to any value
+// Tools can be enabled in production also with the "STM_NG_ENABLE"
+// environment variable set to any value
 const enable = options.enable ?? process.env.STM_NG_ENABLE !== undefined;
 const isDevelopment = import.meta.env.DEV || enable;
 
@@ -95,11 +113,13 @@ log.eventLogger.startLogging();
 
 // Handle uncaught errors
 process.on("uncaughtException", (event): void => {
-    log.error(`%cUnhandled exception: %c${event.message}\n`, "color: red", "color: unset", event.stack);
+    log.error(`%cUnhandled exception: %c${event.message}\n`,
+              "color: red", "color: unset", event.stack);
 });
 
 process.on("unhandledRejection", (event: PromiseRejectionEvent): void => {
-    if(event.reason) log.error("%cUnhandled rejection:", "color: red", event.reason);
+    if(event.reason) log.error("%cUnhandled rejection:",
+                               "color: red", event.reason);
 });
 
 // Initialize the channels between main process and client
