@@ -1,0 +1,84 @@
+/**
+ * Compute materials.
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2024-08-01
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ */
+import {type Color, type Material, DataTexture,
+		MeshStandardMaterial, FrontSide} from "three";
+
+/**
+ * Compute material that interpolates between two colors
+ *
+ * @param colorFrom - First side color
+ * @param colorTo - End side color
+ * @param roughness - Rugosity of the material
+ * @param metalness - Metal shining of the material
+ * @param width - Width of the surface
+ * @param shaded - If true bonds have a linear color interpolation, else have two color areas
+ * @returns Material to apply
+ */
+export const colorTextureMaterial = (colorFrom: Color,
+									 colorTo: Color,
+									 roughness: number,
+									 metalness: number,
+									 width: number,
+									 shaded: boolean): Material => {
+
+	const height = shaded ? 32 : 2;
+	const size = width * height;
+	const data = new Uint8Array(4 * size);
+
+	const cf = colorFrom.convertSRGBToLinear();
+	const rf = Math.floor(cf.r * 255);
+	const gf = Math.floor(cf.g * 255);
+	const bf = Math.floor(cf.b * 255);
+
+	const ct = colorTo.convertSRGBToLinear();
+	const rt = Math.floor(ct.r * 255);
+	const gt = Math.floor(ct.g * 255);
+	const bt = Math.floor(ct.b * 255);
+
+	for(let h = 0; h < height; ++h) {
+
+		const tt = h/(height-1);
+		const tf = 1-tt;
+
+		for(let i = 0; i < width; ++i) {
+			const stride = (h*width+i)*4;
+			data[stride]   = rf*tf+rt*tt;
+			data[stride+1] = gf*tf+gt*tt;
+			data[stride+2] = bf*tf+bt*tt;
+			data[stride+3] = 255;
+		}
+	}
+
+	// Use the buffer to create a DataTexture
+	const texture = new DataTexture(data, width, height);
+	texture.needsUpdate = true;
+
+	return new MeshStandardMaterial({
+		roughness,
+		metalness,
+		side: FrontSide,
+		map: texture
+	});
+};

@@ -1,0 +1,228 @@
+/**
+ * Render graphical output for Draw Polyhedra.
+ *
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2024-11-29
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ */
+import {MeshLambertMaterial, FrontSide, Group, Vector3,
+		Color, Mesh, EdgesGeometry, LineSegments, LineBasicMaterial,
+		BufferGeometry, DoubleSide} from "three";
+import {sm} from "@/services/SceneManager";
+import {ConvexGeometry} from "three/addons/geometries/ConvexGeometry.js";
+
+/**
+ * Renderer for polyhedra graphical output
+ */
+export class DrawPolyhedraRenderer {
+
+	private readonly group = new Group();
+	private readonly name;
+	private readonly polyhedraVertices: Vector3[][] = [];
+	private readonly centerAtomColorList: string[] = [];
+	private countPolyhedra = 0;
+	private readonly material = new MeshLambertMaterial({
+		color: "#FFFFFF",
+		opacity: 0.5,
+		side: FrontSide,
+		transparent: true,
+		polygonOffset: true,
+		polygonOffsetFactor: 1
+	});
+
+	/**
+	 * Create the renderer
+	 *
+	 * @param id - The node ID
+	 */
+	constructor(id: string) {
+
+		// Prepare the names of the various graphical objects
+		this.name = "DrawPolyhedra-" + id;
+
+		// Prepare the group for the polyhedra and add it to the scene
+		this.group.name = this.name;
+		sm.clearAndAddGroup(this.group);
+	}
+
+	/**
+	 * Find a contrasting color
+	 *
+	 * @param materialColor - Polyhedra color
+	 * @param bw - True (default) to create contrasting black and white color
+	 * @returns Color for the polyhedra edges
+	 */
+	private static createContrastingColor(materialColor: Color, bw=true): number {
+
+		const {r, g, b} = materialColor;
+
+		// B&W output (https://stackoverflow.com/a/3943023/112731)
+		if(bw) return (r * 76.245 + g * 149.685 + b * 29.07) > 186 ? 0x000000 : 0xFFFFFF;
+
+		// Invert color components
+		return (((1-r)*255 + (1-g))*255 + (1-b))*255;
+	}
+
+	/**
+	 * Prepare the data received from the main process
+	 *
+	 * @param vertices - Polyhedra vertices received from the main process
+	 * @param centerAtomsColor - Color of the polyhedra center atoms
+	 */
+	formatPolyhedraData(vertices: number[][], centerAtomsColor: string[]): void {
+
+		// Format the received data
+		this.polyhedraVertices.length = 0;
+		this.centerAtomColorList.length = 0;
+		this.countPolyhedra = vertices.length;
+		for(let i=0; i < this.countPolyhedra; ++i) {
+
+			// Convert the list of coordinates into a THREE.Vector3 list
+			const points: Vector3[] = [];
+			const len = vertices[i].length;
+			for(let j=0; j < len; j += 3) {
+				const point = new Vector3(vertices[i][j], vertices[i][j+1], vertices[i][j+2]);
+				points.push(point);
+			}
+			this.polyhedraVertices.push(points);
+
+			// Save the list of center atoms colors
+			this.centerAtomColorList.push(centerAtomsColor[i]);
+		}
+	}
+
+	/**
+	 * Create the graphical objects
+	 *
+	 * @param colorByCenterAtom - If the polyhedra should be colored by the center atom
+	 * @param showPolyhedra - If the polyhedra are visible
+	 */
+	drawPolyhedra(colorByCenterAtom: boolean, showPolyhedra: boolean): void {
+
+		// Empty the group
+		this.group.clear();
+
+		for(let i=0; i < this.countPolyhedra; ++i) {
+
+			const mesh = new Mesh();
+			let side;
+
+			if(this.polyhedraVertices[i].length === 3) {
+
+				// If it is a triangle
+				mesh.geometry = new BufferGeometry().setFromPoints(this.polyhedraVertices[i]);
+				mesh.name = "Triangle";
+				side = DoubleSide;
+			}
+			else {
+				// The polyhedron
+				mesh.geometry = new ConvexGeometry(this.polyhedraVertices[i]);
+				mesh.name = "Polyhedron";
+				side = FrontSide;
+			}
+
+			let color;
+			const material = this.material.clone();
+			if(colorByCenterAtom) {
+				color = new Color(this.centerAtomColorList[i]);
+				material.color = color;
+				material.color.convertSRGBToLinear();
+			}
+			else {
+				color = this.material.color;
+			}
+			mesh.material = material;
+			mesh.material.side = side;
+			this.group.add(mesh);
+
+			// Identify the polyhedron
+			mesh.userData = {idx: i};
+
+			// The polyhedron edges
+			const edgeColor = DrawPolyhedraRenderer.createContrastingColor(color);
+			const edges = new EdgesGeometry(mesh.geometry);
+			const line = new LineSegments(edges, new LineBasicMaterial({color: edgeColor}));
+			this.group.add(line);
+		}
+
+		this.group.visible = showPolyhedra;
+		sm.modified();
+	}
+
+	/**
+	 * Change polyhedra visibility
+	 *
+	 * @param visible - If the polyhedra should be visible
+	 * @returns True if only the visibility changes
+	 */
+	changeVisibility(visible: boolean): boolean {
+
+		if(this.group.visible !== visible) {
+			this.group.visible = visible;
+			sm.modified();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Change polyhedra opacity
+	 *
+	 * @param opacity - Opacity of the polyhedra
+	 */
+	changeOpacity(opacity: number): void {
+		this.material.opacity = opacity;
+	}
+
+	/**
+	 * Extract the color from a string containing alpha
+	 *
+	 * @param color - Color in #RRGGBBAA format
+	 * @returns The color part
+	 */
+	private static extractColor(color: string): Color {
+
+		const colorString = color.slice(0, 7);
+		return new Color(colorString);
+	}
+
+	/**
+	 * Extract the opacity from a string containing alpha
+	 *
+	 * @param color - Color in #RRGGBBAA format
+	 * @returns The opacity value
+	 */
+	private static extractOpacity(color: string): number {
+
+		if(color.length < 9) return 1;
+		return Number.parseInt(color.slice(7, 9), 16) / 255;
+	}
+
+	/**
+	 * Change polyhedra surface color
+	 *
+	 * @param surfaceColor - Color to be set in #RRGGBBAA format
+	 */
+	changeColor(surfaceColor: string): void {
+
+		this.material.color = DrawPolyhedraRenderer.extractColor(surfaceColor);
+		this.material.opacity = DrawPolyhedraRenderer.extractOpacity(surfaceColor);
+	}
+}

@@ -1,0 +1,149 @@
+/*
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ */
+/* > Globals */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* >> For vuetify */
+html {
+  overflow: hidden !important;
+}
+
+.cet-container {
+  overflow: hidden !important;
+}
+
+:root {
+  --container-height: calc(100vh - 121px);
+  --scrollbar-track: light-dark(#e6e6e6, #202020);
+  --scrollbar-thumb: light-dark(#b0b0b0, #3e3e3e);
+  --separator-color: rgb(var(--v-theme-secondary));
+}
+
+/* > Vuetify specific */
+
+/* Height of the various nodes UI areas */
+.container {
+  overflow: clip auto;
+  height: var(--container-height);
+  padding: 0 0 0 2px !important;
+}
+
+/* >> Elements on the UI */
+.result-label {
+  color: light-dark(#7ca911, #baf434) !important;
+  opacity: 1 !important;
+  user-select: none !important;
+}
+
+.bigger-result {
+  overflow-wrap: break-word;
+  white-space: break-spaces;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.separator-title {
+  font-size: 1.5rem !important;
+  line-height: 1.333;
+  width: 100% !important;
+  justify-content: center !important;
+  user-select: none !important;
+  margin: 14px 0 12px 0;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  border-top: solid 5px var(--separator-color);
+  padding-top: 2px;
+  letter-spacing: 0.06rem !important;
+}
+
+.first-title {
+  border-top: none;
+  margin-top: 4px;
+}
+
+.simple-title {
+  font-size: 1.5rem !important;
+  line-height: 1.333;
+  width: 100% !important;
+  justify-content: center !important;
+  user-select: none !important;
+  margin: 12px 0 12px 0;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  padding: 1px 0;
+  letter-spacing: 0.06rem !important;
+}
+
+.column-title {
+  font-size: 1.2rem !important;
+  font-weight: bold;
+  justify-content: left !important;
+  user-select: none !important;
+  opacity: 1 !important;
+  color: var(--separator-color) !important;
+  letter-spacing: 0.06rem !important;
+}
+
+/* >> Make labels not selectable */
+.no-select {
+  user-select: none !important;
+}
+
+.v-label--clickable {
+  user-select: none !important;
+}
+
+.v-slider__label {
+  user-select: none !important;
+}
+
+/* >> Scrollbar */
+* {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* For tables */
+.collapse {
+  border-collapse: collapse;
+}
+
+/* > Secondary windows */
+.button-strip {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 3000px !important;
+  width: 100vw;
+  gap: 10px;
+}
+
+/* > Buttons in dialog with focus */
+.focus-visible-buttons .v-btn:focus {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+  background-color: rgb(var(--v-theme-primary), 0.3) !important;
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary));
+}

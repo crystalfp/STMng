@@ -1,0 +1,309 @@
+<script setup lang="ts">
+/**
+ * @component
+ * Controls for the symmetry find and apply node.
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2024-08-20
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ */
+import {computed, onUnmounted, ref, watch} from "vue";
+import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
+import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
+import {setStandardizedInTitle} from "@/services/SetTitle";
+import type {CtrlParams} from "@/types";
+
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import NodeAlert from "@/widgets/NodeAlert.vue";
+import ThrottledButton from "@/widgets/ThrottledButton.vue";
+import CellParameters from "@/widgets/CellParameters.vue";
+import TitledSlot from "@/widgets/TitledSlot.vue";
+
+// > Properties
+const {id, label} = defineProps<{
+
+    /** Its own module id */
+    id: string;
+
+    /** Label on the node selector */
+    label: string;
+}>();
+
+// > Get and set ui parameters from the switchboard
+const applyInputSymmetries = ref(true);
+const disableInputSymmetries = ref(true);
+const enableFindSymmetries = ref(true);
+const standardizeCell = ref(true);
+const symprecStandardize = ref(-1);
+const symprecDataset = ref(-1);
+const fillUnitCell = ref(true);
+const showSymmetriesDialog = ref(false);
+const standardizeOnly = ref(false);
+const inputSpaceGroup = ref("");
+const computedSpaceGroup = ref("");
+const intlSymbol = ref("");
+const sgNumberIn = ref(0);
+const sgNumberOut = ref(0);
+const fillTolerance = ref(-5);
+const createPrimitiveCell = ref(false);
+const displayMode = ref("international");
+const computePointGroup = ref(false);
+const pointGroup = ref("");
+const positionTolerance = ref(0.3);
+const eigenvalueTolerance = ref(0.01);
+
+const sides = ref([0, 0, 0]);
+const angles = ref([0, 0, 0]);
+
+/**
+ * Convert in human readable format the exponent of 10
+ *
+ * @param value - Power of 10 to convert in human readable format
+ * @returns The value converted to string (value -3 → 1.00e-3)
+ */
+const showExponential = (value: number): string => (10**value).toExponential(2);
+
+// Initialize the control
+resetNodeAlert();
+askNode(id, "init")
+    .then((params) => {
+
+        applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
+        enableFindSymmetries.value = params.enableFindSymmetries as boolean ?? true;
+        standardizeCell.value = params.standardizeCell as boolean ?? true;
+        symprecStandardize.value = params.symprecStandardize as number ?? -1;
+        symprecDataset.value = params.symprecDataset as number ?? -1;
+        fillUnitCell.value  = params.fillUnitCell as boolean ?? true;
+        fillTolerance.value = params.fillTolerance as number ?? -5;
+        showSymmetriesDialog.value = params.showSymmetriesDialog as boolean ?? false;
+        standardizeOnly.value = params.standardizeOnly as boolean ?? false;
+        createPrimitiveCell.value = params.createPrimitiveCell as boolean ?? false;
+
+        setStandardizedInTitle(enableFindSymmetries.value && standardizeCell.value);
+
+        computePointGroup.value = params.computePointGroup as boolean ?? false;
+        pointGroup.value = params.pointGroup as string ?? "";
+        positionTolerance.value = params.positionTolerance as number ?? 0.3;
+        eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
+        intlSymbol.value = params.intlSymbol as string ?? "";
+        displayMode.value = params.displayMode as string ?? "international";
+        sgNumberIn.value = params.sgNumberIn as number ?? 0;
+        sgNumberOut.value = params.sgNumberOut as number ?? 0;
+    })
+    .catch((error: Error) => {
+        showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+                      "symmetries");
+    });
+
+const stopWatcher1 = watch([applyInputSymmetries,
+       enableFindSymmetries,
+       standardizeCell,
+       symprecStandardize,
+       symprecDataset,
+       fillUnitCell,
+       fillTolerance,
+       createPrimitiveCell,
+       standardizeOnly], () => {
+
+    sendToNode(id, "compute", {
+        applyInputSymmetries: applyInputSymmetries.value,
+        enableFindSymmetries: enableFindSymmetries.value,
+        standardizeCell: standardizeCell.value,
+        symprecStandardize: symprecStandardize.value,
+        symprecDataset: symprecDataset.value,
+        fillUnitCell: fillUnitCell.value,
+        fillTolerance: fillTolerance.value,
+        standardizeOnly: standardizeOnly.value,
+        createPrimitiveCell: createPrimitiveCell.value
+    });
+
+    setStandardizedInTitle(enableFindSymmetries.value && standardizeCell.value);
+});
+
+const stopWatcher2 = watch([
+    computePointGroup,
+    positionTolerance,
+    eigenvalueTolerance
+], () => {
+
+    sendToNode(id, "do-point-group", {
+        computePointGroup: computePointGroup.value,
+        positionTolerance: positionTolerance.value,
+        eigenvalueTolerance: eigenvalueTolerance.value,
+    });
+});
+
+const stopWatcher3 = watch(displayMode, () => {
+    sendToNode(id, "display", {displayMode: displayMode.value});
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+    stopWatcher3();
+});
+
+receiveFromNode(id, "show", (params: CtrlParams) => {
+
+    if(params.inSymmetry !== undefined) inputSpaceGroup.value = params.inSymmetry as string;
+    if(params.outSymmetry !== undefined) computedSpaceGroup.value = params.outSymmetry as string;
+    if(params.enableFindSymmetries !== undefined) enableFindSymmetries.value = params.enableFindSymmetries as boolean;
+    if(params.pointGroup !== undefined) pointGroup.value = params.pointGroup as string;
+    if(params.intlSymbol !== undefined) intlSymbol.value = params.intlSymbol as string;
+    if(params.sgNumberIn !== undefined) sgNumberIn.value = params.sgNumberIn as number;
+    if(params.sgNumberOut !== undefined) sgNumberOut.value = params.sgNumberOut as number;
+});
+
+receiveFromNode(id, "input-symmetries", (params: CtrlParams) => {
+
+    // if(params.noInputSymmetries === undefined) return;
+
+    const noInputSymmetries = params.noInputSymmetries as boolean ?? true;
+    if(noInputSymmetries) {
+        disableInputSymmetries.value = true;
+        applyInputSymmetries.value = false;
+    }
+    else {
+        disableInputSymmetries.value = false;
+        applyInputSymmetries.value = params.applyInputSymmetries as boolean ?? true;
+    }
+
+    if(params.sides !== undefined) sides.value[0] = 0;
+});
+
+receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
+
+    const ss = params.sides as number[];
+    const aa = params.angles as number[];
+    if(!ss || ss[0] === 0 || !aa) {
+        sides.value[0] = 0;
+        return;
+    }
+    sides.value[0] = ss[0];
+    sides.value[1] = ss[1];
+    sides.value[2] = ss[2];
+    angles.value[0] = aa[0];
+    angles.value[1] = aa[1];
+    angles.value[2] = aa[2];
+});
+
+const inputValue = computed(() => {
+    if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
+    return inputSpaceGroup.value;
+});
+const finalValue = computed(() => {
+    if(displayMode.value === "table" && sgNumberOut.value !== 0) return sgNumberOut.value.toString();
+    if(displayMode.value === "symmop") return computedSpaceGroup.value;
+    return intlSymbol.value;
+});
+
+</script>
+
+
+<template>
+<v-container class="container">
+  <v-switch v-model="applyInputSymmetries" :disabled="disableInputSymmetries"
+            label="Apply input symmetries" class="mt-2 ml-3" />
+  <v-switch v-model="enableFindSymmetries"
+            label="Enable find symmetries" class="ml-3 mt-n2" />
+  <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
+    <v-switch v-model="standardizeCell" label="Standardize cell" class="ml-3" />
+    <v-container v-if="standardizeCell" class="pa-0 mt-n2">
+      <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2" />
+      <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-3 mt-n2" />
+      <debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
+                        :min="-3" :max="0" :step="0.02" class="ml-2 mt-4">
+        <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
+      </debounced-slider>
+    </v-container>
+    <debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
+                        :min="-3" :max="0" :step="0.02" class="ml-2 mt-2">
+      <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="no-select" />
+    </debounced-slider>
+  </v-container>
+
+  <titled-slot v-if="!disableInputSymmetries || (enableFindSymmetries && finalValue)"
+               title="Symmetry display mode" class="mt-2 mb-2 ml-2">
+    <v-btn-toggle v-model="displayMode" mandatory>
+      <v-btn value="international">Intl.</v-btn>
+      <v-btn value="symmop">SymmOp</v-btn>
+      <v-btn value="table">Table</v-btn>
+    </v-btn-toggle>
+  </titled-slot>
+
+  <v-container v-if="!disableInputSymmetries" class="pl-3 mt-2">
+    <v-row>
+      <v-label text="Input symmetry:" class="result-label no-select" />
+    </v-row>
+    <v-row>
+      <v-label :text="inputValue" class="show-symmetry" />
+    </v-row>
+  </v-container>
+  <v-container v-if="enableFindSymmetries && finalValue" class="pl-3">
+    <v-row>
+      <v-label text="Final symmetry:" class="result-label no-select" />
+    </v-row>
+    <v-row>
+      <v-label :text="finalValue" class="show-symmetry" />
+    </v-row>
+  </v-container>
+
+  <cell-parameters :sides :angles class="ml-3 pr-3 mt-n2"/>
+
+  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4 mb-n2" />
+  <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
+                      :min="-5" :max="-1" :step="0.02" class="ml-2 mb-3 mt-6">
+    <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
+  </debounced-slider>
+
+  <v-switch v-model="computePointGroup" label="Compute point group" class="ml-3 mb-4" />
+  <v-container v-if="computePointGroup" class="pa-0">
+    <debounced-slider v-slot="{value}" v-model="positionTolerance"
+                      :min="0.01" :max="1" :step="0.01" class="ml-2 mb-2 mt-4">
+      <v-label :text="`Position tolerance (${value})`" class="no-select" />
+    </debounced-slider>
+    <debounced-slider v-slot="{value}" v-model="eigenvalueTolerance"
+                      :min="0.001" :max="0.1" :step="0.001" class="ml-2 mb-4 mt-2">
+      <v-label :text="`Eigenvalues tolerance (${value})`" class="no-select" />
+    </debounced-slider>
+    <v-row class="pl-2 mb-4 align-center">
+      <v-col cols="5">
+        <v-label text="Point group:" class="result-label no-select" />
+      </v-col>
+      <v-col cols="7">
+        <v-label :text="pointGroup" class="show-symmetry" />
+      </v-col>
+    </v-row>
+  </v-container>
+
+  <throttled-button label="Show symmetries dialog"
+                    @click="sendToNode(id, 'window')" />
+
+  <node-alert node="symmetries" />
+</v-container>
+</template>
+
+<style scoped>
+.show-symmetry {
+  overflow-wrap: break-word;
+  white-space: break-spaces;
+  font-family: monospace;
+  font-size: 110%;
+}
+</style>
