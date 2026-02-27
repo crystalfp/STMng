@@ -1,0 +1,921 @@
+<script setup lang="ts">
+/**
+ * @component
+ * Show the structure of the loaded project and makes possible to edit it.
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2025-03-10
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ */
+import {computed, ref, reactive, onMounted} from "vue";
+import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLineType, Position,
+        Panel, MarkerType, type GraphEdge, type Connection,
+        type VueFlowError} from "@vue-flow/core";
+import log from "electron-log";
+import {closeWindow, requestData, askNode} from "@/services/RoutesClient";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
+import {theme} from "@/services/ReceiveTheme";
+import SpecialNode from "./SpecialNode.vue";
+import type {ProjectInfo, GraphicType} from "@/types/NodeInfo";
+import type {CtrlParams, ProjectGraph} from "@/types";
+
+/**
+ * The graph description for the Vue Flow graph editor
+ * @notExported
+ */
+interface GraphFlowItem {
+
+	/** ID of the node */
+	id: string;
+
+    /** The label that appears on the node selector */
+    label: string;
+
+	/** Node id from which the node takes input. If none, it is the empty string */
+	in: string;
+
+    /** True if the node accepts inputs */
+    hasInput: boolean;
+
+	/** True if the node send a structure down the pipeline */
+	hasOutput: boolean;
+
+	/** "out": generates graphical output, "in": the viewer, "none": is pure computation */
+	graphic: GraphicType;
+
+	/** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+	type: string;
+
+    /** Node position on the graph */
+    position: {x: number; y: number};
+}
+
+/**
+ * VueFlow graph node additional data (the "data" object inside Node)
+ * @notExported
+ */
+interface NodeData {
+
+    /** The label that appears on the node selector */
+    label: string;
+
+    /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+    type: string;
+
+    /** Node id from which the node takes input. If none, it is the empty string */
+    in: string;
+
+    /** If generates or accepts graphical output */
+    graphic: string;
+}
+
+/** The graph in the format accepted by the graph editor */
+const graphFlow = reactive<GraphFlowItem[]>([]);
+
+// Spacing between nodes in the diagonal default layout
+const X_INCREMENT = 150;
+const Y_INCREMENT = 70;
+
+/**
+ * Available node
+ * @notExported
+ */
+interface AvailableNode {
+
+    /** ID of the node */
+    idPrefix: string;
+
+    /** The label that appears on the node selector */
+    label: string;
+
+    /** True if the node accepts inputs */
+    hasInput: boolean;
+
+    /** True if the node send a structure down the pipeline */
+    hasOutput: boolean;
+
+    /** True if the output could remain unconnected */
+    hasOptionalOutput: boolean;
+
+    /** "out": generates graphical output, "in": the viewer, "none": is pure computation */
+    graphic: GraphicType;
+
+    /** The type of the node (valid values in electron/modules/ProjectManager.ts) */
+    type: string;
+}
+
+const deleteLabel = ref("Delete node");
+
+/** List of available nodes */
+const availableNodes = reactive<AvailableNode[]>([]);
+
+/** Path to the current loaded project file or empty for default project */
+const currentProjectPath = ref("");
+
+
+/**
+ * Format graph data for the editor
+ *
+ * @param projectInfo - Project data from the main process
+ */
+const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
+
+    let x = 5;
+    let y = 5;
+
+    graphFlow.length = 0;
+    for(const item in projectInfo.graph) {
+
+        const node = projectInfo.graph[item];
+
+        let hasOutput = false;
+        let hasInput = false;
+        let graphic: GraphicType = "none";
+        for(const all of projectInfo.allNodes) {
+            if(all.type === node.type) {
+                hasInput = all.in;
+                hasOutput = all.out;
+                graphic = all.graphic;
+                break;
+            }
+        }
+        if(node.x !== undefined && node.y !== undefined) {
+            x = node.x;
+            y = node.y;
+        }
+        graphFlow.push({
+            id: item,
+            label: node.label,
+            in: node.in,
+            hasInput,
+            hasOutput,
+            graphic,
+            type: node.type,
+            position: {x, y}
+        });
+
+        x += X_INCREMENT;
+        y += Y_INCREMENT;
+    }
+};
+
+/**
+ * Format available nodes list
+ *
+ * @param projectInfo - Project data from the main process
+ */
+ const prepareAvailableNodes = (projectInfo: ProjectInfo): void => {
+
+    availableNodes.length = 0;
+    for(const item of projectInfo.allNodes) {
+
+        if(item.type === "viewer-3d") continue;
+
+        const availableNode: AvailableNode = {
+
+            idPrefix: item.idPrefix,
+            label: item.type[0].toUpperCase() + item.type.slice(1).replaceAll("-", " "),
+            hasInput: item.in,
+            hasOutput: item.out,
+            hasOptionalOutput: item.opt,
+            graphic: item.graphic,
+            type: item.type
+        };
+
+        availableNodes.push(availableNode);
+    }
+    availableNodes.sort((a: AvailableNode, b: AvailableNode) => a.label.localeCompare(b.label));
+};
+
+const windowPath = "/project-editor";
+
+/** Receive the data and build the graph data and available nodes list */
+requestData(windowPath, (params: CtrlParams) => {
+
+    if(!params.project) return;
+
+    const info = JSON.parse(params.project as string) as ProjectInfo;
+
+    currentProjectPath.value = info.projectPath;
+    prepareGraphFlow(info);
+    prepareAvailableNodes(info);
+});
+
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys(windowPath);
+
+/** If the project has been modified */
+const projectModified = ref(false);
+
+/** Show the info panel */
+const showPanel = ref(false);
+
+/** List of selected node ids */
+const selectedIds = new Set<string>();
+
+// VueFlow related routines
+const {onNodesChange, updateNode, findNode, screenToFlowCoordinate} = useVueFlow();
+
+/**
+ * Node information for the panel inside the graph chart
+ * @notExported
+ */
+interface OneNodeInfo {
+
+    /** Unique identifier */
+    id: string;
+
+    /** The table line label */
+    label: string;
+
+    /** The corresponding value */
+    value: string;
+}
+const nodeInfo = reactive<OneNodeInfo[]>([]);
+
+/** Listen to node selection */
+let x: number | undefined;
+let y: number | undefined;
+onNodesChange((changes) => {
+
+    for(const change of changes) {
+
+        switch(change.type) {
+            case "position":
+                if(change.position) {
+                    x = change.position.x;
+                    y = change.position.y;
+                }
+                else if(x !== undefined && y !== undefined) {
+                    for(const node of graphFlow) {
+                        if(node.id === change.id) {
+                            node.position.x = x;
+                            node.position.y = y;
+                            projectModified.value = true;
+                            x = undefined;
+                            y = undefined;
+                            break;
+                        }
+                    }
+                }
+                break;
+
+            case "select":
+                if(change.selected) {
+
+                    updateNode(change.id, {class: "vue-flow__node-default mark"});
+                    selectedIds.add(change.id);
+                }
+                else {
+                    updateNode(change.id, {class: "vue-flow__node-default"});
+                    selectedIds.delete(change.id);
+                }
+
+                // Update the panel node information if only a single node selected
+                nodeInfo.length = 0;
+                if(selectedIds.size === 1) {
+
+                    const [id] = selectedIds; // Was: const id = [...selectedIds][0];
+                    const node = findNode<NodeData>(id);
+                    if(node) {
+                        nodeInfo.push(
+                            {id: "id", label: "Node id:",    value: id},
+                            {id: "lb", label: "Label:",      value: node.data.label},
+                            {id: "ty", label: "Node type:",  value: node.data.type},
+                        );
+                        if(node.data.in !== "") {
+                            nodeInfo.push({id: "in", label: "Input from:", value: node.data.in});
+                        }
+                        nodeInfo.push(
+                            {id: "gr", label: "Graphics:",   value: node.data.graphic}
+                        );
+                    }
+                    else nodeInfo.push({id: "id", label: "Node id:", value: id});
+                    deleteLabel.value = "Delete node";
+                }
+                else deleteLabel.value = "Delete nodes";
+
+                break;
+            case "dimensions":
+            case "remove":
+            case "add":
+                break;
+        }
+    }
+    showPanel.value = selectedIds.size > 0;
+});
+
+/** Graph nodes */
+const nodes = computed<Node<NodeData>[]>(() => {
+
+    const resultNodes: Node<NodeData>[] = [];
+    for(const graphNode of graphFlow) {
+
+        let type = "default";
+        if(graphNode.hasInput && !graphNode.hasOutput) type = "output";
+        else if(!graphNode.hasInput && graphNode.hasOutput) type = "input";
+        else if(!graphNode.hasInput && !graphNode.hasOutput) type = "none";
+
+        const out: Node<NodeData> = {
+            id: graphNode.id,
+            position: graphNode.position,
+            data: {
+                label: graphNode.label,
+                graphic: graphNode.graphic,
+                type: graphNode.type,
+                in: graphNode.in
+            },
+            type,
+            targetPosition: Position.Left,
+            sourcePosition: Position.Right,
+            width: 100
+        };
+        if(type === "none") out.class = "vue-flow__node-default";
+        resultNodes.push(out);
+    }
+    return resultNodes;
+});
+
+const crossingLinesFilter = theme.value === "dark" ?
+                    "drop-shadow(1px 1px 1px black) " +
+                    "drop-shadow(1px -1px 1px black) " +
+                    "drop-shadow(-1px 1px 1px black) " +
+                    "drop-shadow(-1px -1px 1px black)" :
+                    "drop-shadow(1px 1px 1px white) " +
+                    "drop-shadow(1px -1px 1px white) " +
+                    "drop-shadow(-1px 1px 1px white) " +
+                    "drop-shadow(-1px -1px 1px white)";
+
+/** Graph edges */
+const edges = computed<Edge[]>(() => {
+
+    const resultEdges: Edge[] = [];
+    for(const graphNode of graphFlow) {
+
+        if(graphNode.in) {
+            const out: Edge = {
+                id: `${graphNode.in}->${graphNode.id}`,
+                source: graphNode.in,
+                target: graphNode.id,
+                markerEnd: MarkerType.ArrowClosed,
+                type: ConnectionLineType.SmoothStep,
+                style: {strokeWidth: 2, filter: crossingLinesFilter}
+            };
+            resultEdges.push(out);
+        }
+    }
+    return resultEdges;
+});
+
+/**
+ * Type of the onEdgeUpdate parameters
+ * @notExported
+ */
+interface EdgeUpdateParams {
+    /** Edge before update */
+    edge: GraphEdge;
+    /** Updated connection */
+    connection: Connection;
+}
+
+/**
+ * Handler for the edge move from a terminal to another
+ *
+ * @param params - Parameters from the edge updated call
+ */
+const onEdgeUpdate = (params: EdgeUpdateParams): void => {
+
+    const {edge, connection} = params;
+    projectModified.value = true;
+    for(const graphNode of graphFlow) {
+        if(graphNode.id === edge.target) {
+            graphNode.in = "";
+        }
+        else if(graphNode.id === connection.target) {
+            graphNode.in = connection.source;
+        }
+    }
+};
+
+/**
+ * Create a connection
+ *
+ * @param params - Connection created
+ */
+const onConnect = (params: Connection): void => {
+
+    let nodeSource: GraphFlowItem | undefined;
+    let nodeTarget: GraphFlowItem | undefined;
+    for(const graphNode of graphFlow) {
+        if(graphNode.id === params.source) {
+            nodeSource = graphNode;
+        }
+        else if(graphNode.id === params.target) {
+            nodeTarget = graphNode;
+        }
+    }
+    if(!nodeSource || !nodeTarget) return;
+
+    nodeTarget.in = nodeTarget.in === params.source ? "" : params.source;
+    projectModified.value = true;
+};
+
+/**
+ * Compare element in node list to produce the saved graph
+ *
+ * @param a - First element in the node list
+ * @param b - Second element in the node list
+ */
+const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
+
+    const dx = a.position.x - b.position.x;
+    if(dx < 10 && dx > -10) {
+        return a.position.y - b.position.y; // This is dy
+    }
+    return dx;
+};
+
+/** To show error messages */
+const notificationQueue = ref<string[]>([]);
+
+/**
+ * Report an error on video and on the log file
+ *
+ * @param message - Error message
+ */
+const reportError = (message: string): void => {
+
+    notificationQueue.value.push(message);
+    log.error(message);
+};
+
+/**
+ * Save the modified project
+ *
+ * @param saveAs - True if the project filename should be asked
+ */
+const saveProjectGraph = (saveAs: boolean): void => {
+
+    let hasErrors = false;
+    for(const node of graphFlow) {
+        for(const availableNode of availableNodes) {
+            if(node.type === availableNode.type) {
+                if(node.in === "" && availableNode.hasInput) {
+                    reportError(`Node "${node.label}" input is unconnected`);
+                    hasErrors = true;
+                }
+                if(availableNode.hasOutput && !availableNode.hasOptionalOutput) {
+                    let isConnected = false;
+                    for(const node2 of graphFlow) {
+                        if(node2.in === node.id) {
+                            isConnected = true;
+                            break;
+                        }
+                    }
+                    if(!isConnected) {
+                        reportError(`Node "${node.label}" output is unconnected`);
+                        hasErrors = true;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    if(hasErrors || !projectModified.value) return;
+
+    // Sort the node left to right and top to bottom
+    const sortedGraph = graphFlow.toSorted(sortGraph);
+
+    const graph: ProjectGraph = {};
+    for(const node of sortedGraph) {
+        graph[node.id] = {
+            label: node.label,
+            type: node.type,
+            x: Math.round(node.position.x),
+            y: Math.round(node.position.y)
+        };
+        if(node.in !== "") graph[node.id].in = node.in;
+    }
+
+    askNode("SYSTEM", "modified-project", {
+        projectModified: JSON.stringify(graph),
+        projectPath: saveAs ? "" : currentProjectPath.value
+    })
+    .then((result) => {
+        if(result.saved) {
+            projectModified.value = false;
+            showConfirmNew.value = false;
+        }
+    })
+    .catch((error: Error) => {
+        reportError(`Error from project save. Error: ${error.message}`);
+    });
+};
+
+// For node deletion
+const showConfirm = ref(false);
+const selectedLabel = ref("");
+
+/**
+ * Delete the selected node or nodes
+ */
+const deleteNode = (): void => {
+
+    if(selectedIds.size === 1) {
+        const [id] = selectedIds;
+        const node = findNode<NodeData>(id);
+        selectedLabel.value = `"${node?.data.label ?? "No label"}" node`;
+        showConfirm.value = true;
+    }
+    else if(selectedIds.size > 1) {
+        selectedLabel.value = "selected nodes";
+        showConfirm.value = true;
+    }
+};
+
+/**
+ * Confirmed deletion of the selected node
+ */
+const confirmDeletion = (): void => {
+
+    // Close the dialog
+    showConfirm.value = false;
+
+    let found = false;
+    const last = graphFlow.length-1;
+    for(let idx = last; idx >= 0; --idx) {
+
+        if(selectedIds.has(graphFlow[idx].id)) {
+            graphFlow.splice(idx, 1);
+            projectModified.value = true;
+            showPanel.value = false;
+            found = true;
+        }
+    }
+    if(found) {
+        for(const node of graphFlow) {
+            if(selectedIds.has(node.in)) {
+                node.in = "";
+            }
+        }
+    }
+};
+
+/**
+ * Drop a node into the graph
+ *
+ * @param event - Drag event
+ */
+const handleDrop = (event: DragEvent): void => {
+
+    const nodeModel = JSON.parse(event.dataTransfer?.getData("node") ?? "{}") as AvailableNode;
+
+    let id = nodeModel.idPrefix;
+    if(id === undefined) return;
+
+    let seq = 0;
+    let found = true;
+    while(found) {
+        found = false;
+        for(const entry of graphFlow) {
+            if(entry.id === id) {
+                found = true;
+                ++seq;
+                id = `${nodeModel.idPrefix}${seq}`;
+                break;
+            }
+        }
+    }
+
+    const label = `${nodeModel.label} (${id})`;
+
+    const position = screenToFlowCoordinate({
+        x: event.clientX,
+        y: event.clientY,
+    });
+
+    const node: GraphFlowItem = {
+
+        id,
+        label,
+        in: "",
+        hasInput: nodeModel.hasInput,
+        hasOutput: nodeModel.hasOutput,
+        graphic: nodeModel.graphic,
+        type: nodeModel.type,
+        position
+    };
+    graphFlow.push(node);
+};
+
+/**
+ * Enter the graph area with a node to add
+ * @remarks preventDefault is on the v-on call
+ *
+ * @param event - Drag event
+ */
+const handleDragOver = (event: DragEvent): void => {
+
+    if(event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+    }
+};
+
+/**
+ * Start dragging from the available nodes list
+ *
+ * @param event - Drag event
+ * @param nodeModel - Node from the available nodes list
+ */
+const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
+
+    if(event.dataTransfer) {
+        event.dataTransfer.setData("node", JSON.stringify(nodeModel));
+        event.dataTransfer.effectAllowed = "move";
+    }
+};
+
+/**
+ * Update node label on the graph
+ *
+ * @param label - Edited label
+ */
+const updateLabel = (label: string): void => {
+
+    if(!label) return;
+
+    let id;
+    for(const entry of nodeInfo) {
+        if(entry.id === "id") {
+            id = entry.value;
+            break;
+        }
+    }
+    if(!id) return;
+
+    for(const entry of graphFlow) {
+        if(entry.id === id) {
+            entry.label = label;
+            projectModified.value = true;
+            updateNode(entry.id, {class: "vue-flow__node-default mark"});
+
+            break;
+        }
+    }
+};
+
+/**
+ * Handle VueFlow specific errors
+ *
+ * @param error - Error from VueFlow
+ */
+const handleError = (error: VueFlowError): void => {
+
+    reportError(`Error from VueFlow: ${error.message}`);
+};
+
+/**
+ * Create a new, empty project
+ */
+const createProjectGraph = (): void => {
+
+    graphFlow.length = 0;
+    graphFlow.push({
+        id: "viewer",
+        label: "Viewer",
+        in: "",
+        hasInput: false,
+        hasOutput: false,
+        graphic: "in",
+        type: "viewer-3d",
+        position: {x: 360, y: 300}
+    });
+    projectModified.value = true;
+};
+
+// > Exit guards
+const showConfirmExit = ref(false);
+/**
+ * Exit check before unload handler
+ *
+ * @param event - The before unload event
+ */
+const beforeClose = (event: BeforeUnloadEvent): void => {
+
+    if(projectModified.value) {
+        showConfirmExit.value = true;
+        event.preventDefault();
+    }
+};
+
+/**
+ * Add event listener for window closing
+ */
+onMounted(() => {
+
+    window.addEventListener("beforeunload", beforeClose);
+});
+
+/**
+ * Exit from the exit confirmation dialog without saving modifications
+ */
+const exitWithoutSave = (): void => {
+
+    window.removeEventListener("beforeunload", beforeClose);
+    closeWindow(windowPath);
+};
+
+/**
+ * Exit from the exit confirmation dialog saving modifications
+ */
+const exitAndSave = (): void => {
+
+    showConfirmExit.value = false;
+    window.removeEventListener("beforeunload", beforeClose);
+    saveProjectGraph(true);
+    closeWindow(windowPath);
+};
+
+/**
+ * Exit request with check if modifications saved
+ */
+const tryToExit = (): void => {
+
+    if(projectModified.value) {
+        showConfirmExit.value = true;
+    }
+    else {
+        window.removeEventListener("beforeunload", beforeClose);
+        closeWindow(windowPath);
+    }
+};
+
+const showConfirmNew = ref(false);
+
+const confirmNewProject = (): void => {
+
+    if(projectModified.value) showConfirmNew.value = true;
+    else createProjectGraph();
+};
+
+</script>
+
+
+<template>
+<v-app :theme>
+  <div class="program-editor-container">
+    <div class="tr"><v-label class="column-title">Available nodes</v-label></div>
+    <div class="cr">
+      <div v-for="item in availableNodes" :key="item.type" class="list-item"
+           draggable="true" @dragstart="handleDragStart($event, item)">
+        {{ item.label }}
+      </div>
+    </div>
+    <div class="vv" @drop="handleDrop" @dragover.prevent="handleDragOver">
+      <VueFlow :nodes :edges fit-view-on-init
+                :delete-key-code="null"
+                edges-updatable
+                snap-to-grid
+                :snap-grid="[30, 30]"
+                :connection-mode="ConnectionMode.Strict"
+                :connection-radius="30"
+                @error="handleError"
+                @edge-update="onEdgeUpdate"
+                @connect="onConnect">
+        <Panel v-if="showPanel" position="top-right">
+          <table class="w-100 mb-2">
+            <tr v-for="ni of nodeInfo" :key="ni.id">
+              <td class="info-line">{{ ni.label }}</td>
+              <td v-if="ni.id === 'lb'">
+                <v-text-field v-model.trim="ni.value" :hide-details="true" density="compact"
+                              @update:modelValue="updateLabel"/></td>
+              <td v-else><v-label>{{ ni.value }}</v-label></td>
+            </tr>
+          </table>
+          <v-btn block @click="deleteNode">{{ deleteLabel }}</v-btn>
+        </Panel>
+        <!-- bind your custom node type to a component by using slots,
+            slot names are always `node-<type>` auto-connect -->
+        <template #node-none="specialNodeProps">
+          <SpecialNode v-bind="specialNodeProps" />
+        </template>
+
+        <!-- bind your custom edge type to a component by using slots,
+            slot names are always `edge-<type>`
+        <template #edge-special="specialEdgeProps">
+          <SpecialEdge v-bind="specialEdgeProps" />
+        </template> -->
+      </VueFlow>
+    </div>
+    <div class="bb button-strip pr-7">
+      <v-btn @click="confirmNewProject">New project</v-btn>
+      <v-btn :disabled="!projectModified || currentProjectPath===''"
+            @click="saveProjectGraph(false)">Save</v-btn>
+      <v-btn :disabled="!projectModified" @click="saveProjectGraph(true)">Save as…</v-btn>
+      <v-btn v-focus @click="tryToExit">Close</v-btn>
+    </div>
+  </div>
+
+  <v-dialog v-model="showConfirm">
+  <v-card title="Confirm deletion" :text='`Do you want to remove the ${selectedLabel}?`'
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
+        <v-btn @click="confirmDeletion">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="showConfirmExit">
+  <v-card title="Confirm editor close" text="Project modified. Do you want to save it?"
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirmExit=false">Dismiss</v-btn>
+        <v-btn @click="exitWithoutSave">Discard</v-btn>
+        <v-btn @click="exitAndSave">Save</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="showConfirmNew">
+  <v-card title="Discard editor content?" text="Project modified. Do you want to save it?"
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+    <v-card-actions>
+        <v-btn v-focus @click="showConfirmNew=false">Dismiss</v-btn>
+        <v-btn @click="showConfirmNew=false;createProjectGraph()">Discard</v-btn>
+        <v-btn @click="saveProjectGraph">Save</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
+                  timer="bottom" max-width="250"
+                  close-on-content-click color="red-darken-4" />
+</v-app>
+</template>
+
+
+<style>
+/* These are necessary styles for vue flow */
+@import "@vue-flow/core/dist/style.css";
+
+/* This contains the default theme, these are optional styles */
+@import "@vue-flow/core/dist/theme-default.css";
+
+.program-editor-container {
+  display: grid;
+  gap: 0 10px;
+  grid-auto-flow: row;
+  grid-template:
+    "tr vv" 3rem
+    "cr vv" 1fr
+    "bb bb" auto / 250px 1fr;
+  width: 100vw;
+  height: 100vh;
+  padding: 10px 10px 10px 15px;
+}
+
+.tr {grid-area: tr; margin-left: 10px;}
+.cr {grid-area: cr; margin-right: 0; margin-left: 10px; overflow-y: auto;}
+.bb {grid-area: bb; padding: 10px 20px 0 0;}
+.vv {grid-area: vv; margin-right: 30px; border: 1px solid light-dark(#808080, #B3B3B3);}
+
+.list-item {
+  border: 1px solid transparent;
+  user-select: none;
+  cursor: move;
+}
+
+.vue-flow__panel {
+  background-color: light-dark(#AAAAAAC0, #2D3748C0);
+  border-radius: 8px;
+  padding: 7px;
+  margin-right: 10px;
+  width: 350px;
+}
+
+.info-line {
+  width: 30%;
+  height: 43px;
+}
+
+.mark {
+  background-color: #DDDD00 !important;
+}
+</style>

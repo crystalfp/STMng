@@ -1,0 +1,83 @@
+<script setup lang="ts">
+/**
+ * @component
+ * Ask the main process for the versions of the application, Node, Electron
+ * and Chrome and display them in a dialog.
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2024-07-05
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ */
+import {reactive, ref, version as VueVersion} from "vue";
+import {REVISION} from "three";
+import {getVersions, type Versions} from "@/services/RoutesClient";
+
+// > Events
+const emit = defineEmits<{
+	/** Communicate with the parent component to close this component */
+	"close-panel": [];
+}>();
+
+const versions = reactive<Versions>({app: "", node: "", electron: "", chrome: ""});
+const isDevelopment = import.meta.env.DEV;
+const isOpen = ref(true);
+
+getVersions()
+    .then((receivedVersions) => {
+
+        versions.chrome   = receivedVersions.chrome;
+        versions.electron = receivedVersions.electron;
+        versions.app      = receivedVersions.app;
+        versions.node     = receivedVersions.node;
+    })
+    .catch((error: Error) => {
+        versions.chrome   = error.message;
+        versions.electron = error.message;
+        versions.app      = error.message;
+        versions.node     = error.message;
+    });
+
+</script>
+
+
+<template>
+<v-dialog v-model="isOpen" width="26rem">
+  <v-card>
+    <v-card-text class="pl-2 pb-0">
+      <div class="ml-2 mt-1 text-body-1">See The Molecule new generation (STMng) is a
+            chemistry and crystallographic visualization tool that implements some of the original STM4 functionalities.</div>
+      <div class="mb-4 ml-2 mt-3 text-body-1">Author: Mario Valle
+           &lsaquo;<a href="mailto:mvalle@ikmail.com">mvalle@ikmail.com</a>&rsaquo;</div>
+      <table class="text-body-2 ml-2">
+        <tbody>
+          <tr><td class="w-50">STMng:</td><td>{{ versions.app }}</td></tr>
+          <tr><td class="w-50">ElectronJS:</td><td>{{ versions.electron }}</td></tr>
+          <tr><td class="w-50">Chromium:</td><td>{{ versions.chrome }}</td></tr>
+          <tr><td class="w-50">Node:</td><td>{{ versions.node }}</td></tr>
+          <tr><td class="w-50">Three.js:</td><td>{{ REVISION }}</td></tr>
+          <tr><td class="w-50">Vue:</td><td>{{ VueVersion }}</td></tr>
+        </tbody>
+      </table>
+      <div v-if="isDevelopment" class="mt-4 ml-2 text-body-1">Currently running in the development environment</div>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn v-focus @click="isOpen = false; emit('close-panel')">Close</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+</template>
