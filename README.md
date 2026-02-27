@@ -22,7 +22,7 @@ So, remember: Goal of STMng is to help your understanding, not to provide fancy 
 
 A quick video tutorial [is available](https://www.youtube.com/watch?v=2t7hD9XwINQ).
 
-You can access the documentation from within STMng with the F1 key. Specifically, you can access the documentation of the selected node by pushing Ctrl-F1.
+You can access the documentation from within STMng with the F1 key. Specifically, you can access the documentation of the selected node by pushing Ctrl-F1. As soon as I understand how to create GitHub pages, I will put also this documentation online.
 
 ## Installation
 ### Windows (Windows 11)
