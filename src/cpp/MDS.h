@@ -1,0 +1,9 @@
+#include <cmath>
+#include <vector>
+
+extern void doMDS(
+	std::vector<double_t> distances,	// Distances vector
+	int count,							// Side of the distance matrix
+	std::vector<double_t>& points2D,	// Projected points in 2D
+	std::vector<double_t>& points3D		// Projected points in 3D
+);
