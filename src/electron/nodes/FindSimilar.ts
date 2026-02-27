@@ -43,6 +43,7 @@ export class FindSimilar extends NodeCore {
 	private readonly idCollection: string[] = [];
 	private readonly titleCollection: string[] = [];
 	private readonly distance: number[] = [];
+	private readonly colorBand: string[] = [];
 	private readonly idPrototypes: string[] = [];
 	private readonly titlePrototypes: string[] = [];
 
@@ -106,6 +107,7 @@ export class FindSimilar extends NodeCore {
 				idCollection: this.idCollection,
 				titleCollection: this.titleCollection,
 				distance: this.distance,
+				color: this.colorBand,
 				aflow: this.idPrototypes,
 				titlePrototypes: this.titlePrototypes
 			};
@@ -128,7 +130,9 @@ export class FindSimilar extends NodeCore {
 			sendToClient(this.id, "load-coll", {
 				titles: [],
 				ids: [],
-				distances: []
+				distances: [],
+				color: [],
+				spaceGroup: ""
 			});
 
 			sendToClient(this.id, "load-proto", {
@@ -166,17 +170,40 @@ export class FindSimilar extends NodeCore {
 		this.idCollection.length = 0;
 		this.titleCollection.length = 0;
 		this.distance.length = 0;
+		this.colorBand.length = 0;
 
 		for(const result of results) {
 			this.titleCollection.push(result.title);
 			this.idCollection.push(result.id);
 			this.distance.push(result.distance!);
+			this.colorBand.push(this.getBand(result.distance!));
 		}
 		sendToClient(this.id, "load-coll", {
 			titles: this.titleCollection,
 			ids: this.idCollection,
-			distances: this.distance
+			distances: this.distance,
+			color: this.colorBand,
+			spaceGroup: this.structure!.crystal.spaceGroup
 		});
+	}
+
+	/**
+	 * Assign color for the distance range
+	 *
+	 * @param distance - Structure distance from the input one
+	 * @returns Color based on distance
+	 */
+	private getBand(distance: number): string {
+
+		// #FF1700		>0.15 - questionable relatives
+		// #FFC200		0.12-0.15 distant relatives
+		// #D5FF00		0.04-0.12 - related structures
+		// #00FF00		up to 0.04 mean identical structures
+
+		if(distance <= 0.04) return "#00FF00";
+		if(distance <= 0.12) return "#D5FF00";
+		if(distance <= 0.15) return "#FFC200";
+		return "#FF0000";
 	}
 
 	/**
@@ -403,17 +430,25 @@ export class FindSimilar extends NodeCore {
 
 	/**
 	 * Channel handler for opening a secondary window with matches
-	 *
-	 * @param params - Matchers results
 	 */
-	private channelMatches(params: CtrlParams): void {
+	private channelMatches(): void {
+
+		const dataToSend: CtrlParams = {
+			id: this.id,
+			idCollection: this.idCollection,
+			titleCollection: this.titleCollection,
+			distance: this.distance,
+			color: this.colorBand,
+			aflow: this.idPrototypes,
+			titlePrototypes: this.titlePrototypes
+		};
 
 		createOrUpdateSecondaryWindow({
 			routerPath: "/matches",
 			width: 850,
 			height: 700,
 			title: "Structure matches in prototypes and collection",
-			data: params
+			data: dataToSend
 		});
 	}
 }

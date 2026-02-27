@@ -208,12 +208,16 @@ span[onclick] {
 }
 
 .color-word {
-    padding: 0 10px;
-    color: white;
+  padding: 0 10px;
+  color: white;
 }
 
 .color-word-rev {
-    padding: 0 10px;
-    color: black;
-    border: 1px solid black
+  padding: 0 10px;
+  color: black;
+  border: 1px solid black
+}
+
+.b {
+  border: 1px solid black
 }

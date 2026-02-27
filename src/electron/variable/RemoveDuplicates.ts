@@ -1,5 +1,5 @@
 /**
- * <<DESCRIPTION>>
+ * Remove structures whose distance is less than the threshold
  *
  * @packageDocumentation
  *

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Viewer for the aflow prototype structures.
+ * Viewer for the aflow prototype and collection structures.
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2025-11-01

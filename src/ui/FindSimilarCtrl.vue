@@ -63,6 +63,17 @@ const similar = reactive<CollectionIndexEntry[]>([]);
 const showParameters = ref(false);
 const prototypes = reactive<Prototype[]>([]);
 const formula = ref("");
+const spaceGroup = ref("");
+const showDetails = ref(false);
+
+/** Color legend */
+const legend = ref(false);
+const colorRanges = reactive<{color: string; range: string; label: string}[]>([
+    {color: "#FF1700", range: "over 0.15",   label: "questionable relatives"},
+    {color: "#FFC200", range: "0.12 - 0.15", label: "distant relatives"},
+    {color: "#D5FF00", range: "0.04 - 0.12", label: "related structures"},
+    {color: "#00FF00", range: "up to 0.04",  label: "identical structures"},
+]);
 
 /** The result selector is in the dead-time period */
 let waiting = false;
@@ -101,13 +112,17 @@ receiveFromNode(id, "load-coll", (params) => {
     const ids = params.ids as string[] ?? [];
     const titles = params.titles as string[] ?? [];
     const distances = params.distances as number[] ?? [];
+    const color = params.color as string[] ?? [];
+    spaceGroup.value = params.spaceGroup as string ?? "";
+
     const len = ids.length;
     similar.length = 0;
     for(let i=0; i < len; ++i) {
         similar.push({
             id: ids[i],
             title: titles[i],
-            distance: distances[i]
+            distance: distances[i],
+            color: color[i]
         });
     }
 });
@@ -168,39 +183,30 @@ const showMatches = (): void => {
 
     if(prototypes.length === 0 && similar.length === 0) return;
 
-    const idCollection: string[] = [];
-    const titleCollection: string[] = [];
-    const distance: number[] = [];
-    const aflow: string[] = [];
-    const titlePrototypes: string[] = [];
-
-    for(const proto of prototypes) {
-        aflow.push(proto[1]);
-        titlePrototypes.push(proto[0]);
-    }
-    for(const coll of similar) {
-        idCollection.push(coll.id);
-        titleCollection.push(coll.title);
-        distance.push(coll.distance!);
-    }
-
-    sendToNode(id, "matches", {
-        idCollection,
-        titleCollection,
-        distance,
-        aflow,
-        titlePrototypes,
-        id
-    });
+    sendToNode(id, "matches");
 };
+
 </script>
 
 
 <template>
 <v-container class="container">
-  <v-switch v-model="state.enabled" label="Enable matchers" class="mt-4 ml-1 mb-2" />
-  <v-label v-if="formula !== ''" class="pb-2 ml-1 bigger-result"
-           v-html="`Input structure: <span class='ml-2 result-label'>${formula}</span>`" />
+  <v-switch v-model="state.enabled" label="Enable matchers" class="mt-4 ml-1" />
+  <v-switch v-model="showDetails" label="Show input details" class="mt-n2 ml-1 mb-0" />
+  <v-container v-if="showDetails" class="pl-1 pt-2 pb-0">
+    <v-row>
+      <v-label text="Structure:" class="bigger-result no-select mt-n2" />
+    </v-row>
+    <v-row>
+      <v-label class="pb-2 bigger-result ml-2 result-label show-formula" v-html="formula" />
+    </v-row>
+    <v-row>
+      <v-label text="Symmetry:" class="bigger-result no-select mt-n2" />
+    </v-row>
+    <v-row>
+      <v-label :text="spaceGroup" class="show-symmetry result-label bigger-result" />
+    </v-row>
+  </v-container>
 
   <node-alert node="matchers" />
 
@@ -221,12 +227,20 @@ const showMatches = (): void => {
                    @click="selectResult(entry.id, true)">
         <v-label class="result-label pb-1 bigger-result cursor-pointer">
             {{ entry.title }}</v-label><br>
-        <v-label class="bigger-result cursor-pointer">
-            {{ `distance: ${entry.distance!.toFixed(4)}` }}</v-label>
+        <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
+        <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
+            {{ entry.distance!.toFixed(4) }}</v-label>
       </v-container>
   </v-container>
-
-  <block-button label="Matchers parameters" class="mb-n2" @click="showParameters = !showParameters"/>
+  <v-switch v-model="legend" label="Show color legend" class="mt-n3 ml-1 mb-n1" />
+  <v-container v-if="legend" class="pb-0">
+    <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
+      <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
+      <span style="width: 5.5rem;" class="w-25">{{ n.range }}</span>{{ n.label }}
+    </div>
+  </v-container>
+  <block-button label="Matchers parameters" class="mb-n2 mt-4"
+                @click="showParameters = !showParameters"/>
   <v-container v-if="showParameters" class="pa-0">
     <debounced-slider v-slot="{value}" v-model="state.numberMatches"
                         :min="1" :max="8" :step="1" class="mb-2 mt-2">
@@ -261,5 +275,18 @@ const showMatches = (): void => {
 
 .reduce-top {
   margin-top: -4px !important;
+}
+
+.show-symmetry {
+  font-family: monospace;
+  margin-left: 2rem;
+  font-size: 1.2rem;
+}
+
+.show-formula {
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  font-family: monospace;
+  letter-spacing: 1px;
 }
 </style>

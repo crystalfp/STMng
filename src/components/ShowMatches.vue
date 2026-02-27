@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * <<DESCRIPTION>>
+ * Secondary window to show the results of the matchers
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-02-24
@@ -42,6 +42,7 @@ interface CollectionMatch {
     id: string;
     title: string;
     distance: number;
+    color: string;
 }
 const prototypes = reactive<PrototypesMatch[]>([]);
 const collection = reactive<CollectionMatch[]>([]);
@@ -72,6 +73,7 @@ requestData(windowPath, (params: CtrlParams) => {
     const idCollection = params.idCollection as string[] ?? [];
     const titleCollection = params.titleCollection as string[] ?? [];
     const distance = params.distance as number[] ?? [];
+    const color = params.color as string[] ?? [];
 
     len = idCollection.length;
     collection.length = 0;
@@ -79,7 +81,8 @@ requestData(windowPath, (params: CtrlParams) => {
         collection.push({
             id: idCollection[i],
             title: titleCollection[i],
-            distance: distance[i]
+            distance: distance[i],
+            color: color[i]
         });
     }
 });
@@ -131,8 +134,9 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
                    @click="selectResult(entry.id, true)">
         <v-label class="result-label pb-1 bigger-result cursor-pointer">
             {{ entry.title }}</v-label><br>
-        <v-label class="bigger-result cursor-pointer">
-            {{ `distance: ${entry.distance!.toFixed(4)}` }}</v-label>
+        <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
+        <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
+            {{ entry.distance!.toFixed(4) }}</v-label>
       </v-container>
     </v-col>
   </v-row>

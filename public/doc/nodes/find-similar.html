@@ -15,7 +15,6 @@
 
   <title>STMng — Find similar structures</title>
 </head>
-
 <body>
 <h1 class="title">Find similar structures</h1>
 <h1 class="subh1">Match a structure against known “Prototype” and “Collection” structures</h1>
@@ -37,9 +36,9 @@
 	<td class="c3">Enable the matchers. Note that the process could be time consuming and computational heavy, so by default the module is disabled.</td>
 </tr>
 <tr>
-	<td class="c1">Input structure: <i>formula</i></td>
-	<td class="c2">readonly text</td>
-	<td class="c3">Show the empirical formula for the loaded structure.</td>
+	<td class="c1">Show input details</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Show the empirical formula of the loaded structure and its symmetry.</td>
 </tr>
 <tr>
 	<td class="c1">Matchers parameters</td>
@@ -49,7 +48,7 @@
 <tr>
 	<td class="c1">Show matches</td>
 	<td class="c2">button</td>
-	<td class="c3">Open a <a href="../secondary/matches.html">secondary window</a> to relay the matchers results.</td>
+	<td class="c3">Open a <a href="../secondary/matches.html">secondary window</a> to display the matchers results.</td>
 </tr>
 </table>
 
@@ -96,9 +95,25 @@
 <tr>
 	<td class="c1">Similar structures</td>
 	<td class="c2">clickable text</td>
-	<td class="c3">List of the structures from the collection similar to the input one and their distances. Clicking on the entries opens the <a href="../secondary/prototype.html">secondary window</a> that shows the corresponding collection structure. If there are more than one structure at the same distance, they are listed together.</td>
+	<td class="c3">List of the structures from the collection similar to the input one and their distances. Clicking on the entries opens the <a href="../secondary/prototype.html">secondary window</a> that shows the corresponding collection structure. If there are more than one structure at the same distance, they are listed together. The distances are color coded to show the relationship of the structure with the input one (see below).</td>
+</tr>
+<tr>
+	<td class="c1">Show color legend</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Show the color legend for the distances.</td>
 </tr>
 </table>
+<p style="margin-top: 2rem;">The color legend for the distances is:</p>
+<ul style="list-style-type:none">
+<li><span style="background-color: #FF1700;" class="b">&emsp;</span>
+    questionable relatives (distance over 0.15)</li>
+<li><span style="background-color: #FFC200;" class="b">&emsp;</span>
+    distant relatives (distance: 0.12 - 0.15)</li>
+<li><span style="background-color: #D5FF00;" class="b">&emsp;</span>
+    related structures (distance: 0.04 - 0.12)</li>
+<li><span style="background-color: #00FF00;" class="b">&emsp;</span>
+    identical structures (distance up to 0.04)</li>
+</ul>
 
 <h2>Credits</h2>
 
