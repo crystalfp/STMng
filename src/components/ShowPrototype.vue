@@ -427,18 +427,20 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
     sv.clearGroup("Bonds");
 
     const nBonds = bonds.length;
+    const {positions, color} = atoms;
 
     for(let i=0; i < nBonds; ++i) {
 
-        const from = bonds[i].from;
-        const to   = bonds[i].to;
+        const {from, to} = bonds[i];
+        const from3 = 3*from;
+        const to3   = 3*to;
 
-        const colorFrom = atoms.color[from];
-        const colorTo   = atoms.color[to];
+        const colorFrom = color[from];
+        const colorTo   = color[to];
 
-        const dx = atoms.positions[3*to+0] - atoms.positions[3*from+0];
-        const dy = atoms.positions[3*to+1] - atoms.positions[3*from+1];
-        const dz = atoms.positions[3*to+2] - atoms.positions[3*from+2];
+        const dx = positions[to3]   - positions[from3];
+        const dy = positions[to3+1] - positions[from3+1];
+        const dz = positions[to3+2] - positions[from3+2];
         const len = Math.hypot(dx, dy, dz);
 
         const geometry = new CylinderGeometry(0.1, 0.1, len, 10, 1, true);
@@ -457,9 +459,9 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
                                                new Vector3(dx/len, dy/len, dz/len));
 
 		// Move it to the midpoint between atoms
-        const midx = (atoms.positions[3*to+0] + atoms.positions[3*from+0])/2;
-        const midy = (atoms.positions[3*to+1] + atoms.positions[3*from+1])/2;
-        const midz = (atoms.positions[3*to+2] + atoms.positions[3*from+2])/2;
+        const midx = (positions[to3]   + positions[from3])/2;
+        const midy = (positions[to3+1] + positions[from3+1])/2;
+        const midz = (positions[to3+2] + positions[from3+2])/2;
 		cylinder.position.set(midx, midy, midz);
 
 		// Add to the scene

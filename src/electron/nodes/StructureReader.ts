@@ -649,8 +649,7 @@ export class StructureReader extends NodeCore {
 		// Read the file again
 		const structures = await this.reader!.readStructure(this.fileToRead, {readHydrogen: this.readHydrogen})
 			.catch((error: Error) => {
-				const message = `Format "PDB" error: ${error.message}`;
-				return message;
+				return `Format "PDB" error: ${error.message}`;
 			});
 		if(typeof structures === "string") {
 

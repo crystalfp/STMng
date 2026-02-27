@@ -133,8 +133,7 @@ export class VariableCompositionConvexHull {
 		const toOrder: {x: number; y: number; idx: number}[] = [];
 		for(const facet of hull) {
 			if(facet.plane[1] < 0) {
-				const v1 = facet.verts[0];
-				const v2 = facet.verts[1];
+				const [v1, v2] = facet.verts;
 
 				toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},
 							 {x: points[v2][0], y: points[v2][1], idx: v2});
@@ -244,9 +243,7 @@ export class VariableCompositionConvexHull {
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
 			if(facet.plane[2] < 0) {
-				const v1 = facet.verts[0];
-				const v2 = facet.verts[1];
-				const v3 = facet.verts[2];
+				const [v1, v2, v3] = facet.verts;
 				idxVertices.add(v1);
 				idxVertices.add(v2);
 				idxVertices.add(v3);
@@ -379,10 +376,7 @@ export class VariableCompositionConvexHull {
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
 			if(facet.plane[3] < 0) {
-				const v1 = facet.verts[0];
-				const v2 = facet.verts[1];
-				const v3 = facet.verts[2];
-				const v4 = facet.verts[3];
+				const [v1, v2, v3, v4] = facet.verts;
 				idxVertices.add(v1);
 				idxVertices.add(v2);
 				idxVertices.add(v3);
@@ -542,9 +536,8 @@ export class VariableCompositionConvexHull {
 			for(const facet of hull) {
 				if(facet.plane[2] < 0) {
 
-					const v1 = facet.verts[0];
-					const v2 = facet.verts[1];
-					const v3 = facet.verts[2];
+					const [v1, v2, v3] = facet.verts;
+
 					// Test if closest triangle
 					const d = this.closestPointTriangle(point, points[v1], points[v2], points[v3]);
 					if(d !== -1 && d < dist) dist = d;

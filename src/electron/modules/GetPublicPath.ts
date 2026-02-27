@@ -28,8 +28,8 @@ import {app} from "electron";
 
 /**
  * Add the correct path to the public directory for development and production
- * @remarks The files should be copied into `resources/` directory in a extraFiles section in
- * electron-builder.yaml file
+ * @remarks The files should be copied into `resources/` directory in an
+ * extraFiles section in electron-builder.yaml file
  *
  * @param filename - Filename inside the public directory
  * @param unpacked - True if the packaged file is under the `resources/` directory
@@ -41,7 +41,7 @@ export const publicDirPath = (filename: string, unpacked=false): string => {
 		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
 		return path.join(mainSourceDirectory, "..", "public", filename);
 	}
-	else if(unpacked) {
+	if(unpacked) {
 		return path.join(process.resourcesPath, filename);
 	}
 	return path.join(path.resolve(process.resourcesPath, "app.asar/dist"), filename);

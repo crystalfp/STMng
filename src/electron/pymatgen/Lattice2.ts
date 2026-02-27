@@ -127,14 +127,13 @@ export class Lattice {
 	 */
 	toCartesianCoordinates(fractional: number[]): PositionType {
 
-		const fx = fractional[0];
-		const fy = fractional[1];
-		const fz = fractional[2];
+		const [fx, fy, fz] = fractional;
+		const {basis} = this;
 
 		return [
-			fx*this.basis[0] + fy*this.basis[3] + fz*this.basis[6],
-			fx*this.basis[1] + fy*this.basis[4] + fz*this.basis[7],
-			fx*this.basis[2] + fy*this.basis[5] + fz*this.basis[8],
+			fx*basis[0] + fy*basis[3] + fz*basis[6],
+			fx*basis[1] + fy*basis[4] + fz*basis[7],
+			fx*basis[2] + fy*basis[5] + fz*basis[8],
 		];
 	}
 

@@ -38,6 +38,7 @@ export default defineConfig([
         "src/**/*.ts",
         "src/**/*.vue",
         "eslint.config.mjs",
+        "eslint.vue.config.mjs",
         "vite.config.mts"
     ],
     languageOptions: {
@@ -52,7 +53,6 @@ export default defineConfig([
             beforeAll: "readonly",
             describe: "readonly",
             process: "readonly",
-            requestAnimationFrame: "readonly",
             setTimeout: "readonly",
             setInterval: "readonly",
             clearInterval: "readonly",
@@ -338,8 +338,6 @@ export default defineConfig([
 
         // > ******************* unicorn ***********************
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],
-        // "unicorn/no-console-spaces": "warn",
-        // "unicorn/prefer-string-replace-all": "warn",
         "unicorn/prevent-abbreviations": ["warn", {
                 replacements: {
                     len: false,
@@ -364,25 +362,13 @@ export default defineConfig([
                 checkFilenames: false
             }
         ],
-        // "unicorn/template-indent": ["warn", {indent: 4}],
         "unicorn/prefer-top-level-await": "off",
         "unicorn/no-zero-fractions": "off",
         "unicorn/no-for-loop": "off",
         "unicorn/prefer-import-meta-properties": "off",
-        // "unicorn/no-keyword-prefix": ["warn", {checkProperties: false}],
-        // "unicorn/prefer-array-some": "warn",
-        // "unicorn/prefer-default-parameters": "warn",
-        // "unicorn/prefer-array-index-of": "warn",
-        // "unicorn/prefer-regexp-test": "warn",
-        // "unicorn/consistent-destructuring": "warn",
-        // "unicorn/prefer-string-starts-ends-with": "warn",
         "unicorn/filename-case": ["off", {case: "camelCase"}],
         "unicorn/throw-new-error": "off",
         "unicorn/new-for-builtins": "off",
-        // "unicorn/expiring-todo-comments": "off",
-        // "unicorn/better-regex": "off",
-        // "unicorn/no-null": "off",
-        // "unicorn/prefer-add-event-listener": "warn",
         "unicorn/switch-case-braces": "off",
         "unicorn/prefer-json-parse-buffer": "off",
         "unicorn/prefer-class-fields": "warn",
@@ -393,26 +379,21 @@ export default defineConfig([
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],
-        // "sonarjs/no-duplicate-string": ["off", 6],
-        // "sonarjs/elseif-without-else": "off",
-        // "sonarjs/no-nested-switch": "off",
-        "sonarjs/no-commented-code": "warn",
         "sonarjs/void-use": "off",
         "sonarjs/different-types-comparison": "off",
-        // "sonarjs/sonar-no-fallthrough": "off",
-        // "sonarjs/no-gratuitous-expressions": "warn",
-        // "sonarjs/no-empty-collection": "warn",
-        // "sonarjs/no-unused-collection": "warn",
-        // "sonarjs/no-use-of-empty-return-value": "warn",
-        // "sonarjs/no-extra-arguments": "warn",
-        // "sonarjs/no-redundant-jump": "warn",
-        // "sonarjs/no-one-iteration-loop": "warn",
         "sonarjs/no-unenclosed-multiline-block": "off",
         "sonarjs/fixme-tag": "off",
         "sonarjs/no-labels": "off",
         "sonarjs/todo-tag": "off",
         "sonarjs/pseudo-random": "off",
         "sonarjs/no-selector-parameter": "off",
+        "sonarjs/array-constructor": "error",
+        "sonarjs/destructuring-assignment-syntax": "warn",
+        "sonarjs/no-collapsible-if": "warn",
+        "sonarjs/no-collection-size-mischeck": "warn",
+        "sonarjs/no-unused-function-argument": "warn",
+        "sonarjs/prefer-immediate-return": "warn",
+        "sonarjs/prefer-object-literal": "warn",
 
         // > ******************* other plugins ***********************
         "depend/ban-dependencies": ["warn", {

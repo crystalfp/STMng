@@ -445,8 +445,7 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
 
     const dx = a.position.x - b.position.x;
     if(dx < 10 && dx > -10) {
-        const dy = a.position.y - b.position.y;
-        return dy;
+        return a.position.y - b.position.y; // This is dy
     }
     return dx;
 };

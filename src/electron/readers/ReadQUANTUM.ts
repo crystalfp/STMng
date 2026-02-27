@@ -397,9 +397,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 			case "crystal_sg":
 			case "crystal":
 				for(let i=0; i < natoms; ++i) {
-					const fx = positions[i][0];
-					const fy = positions[i][1];
-					const fz = positions[i][2];
+					const [fx, fy, fz] = positions[i];
 					const position = fractionalToCartesianCoordinates(basis, fx, fy, fz);
 					positions[i][0] = position[0];
 					positions[i][1] = position[1];

@@ -273,8 +273,7 @@ onMounted(() => {
 
         const vd = controlStore.viewDirection;
         if(vd === "") return;
-        const sign = vd[0];
-        const axis = vd[1];
+        const [sign, axis] = vd;
 
         const dx = configStore.camera.position[0]-configStore.camera.lookAt[0];
         const dy = configStore.camera.position[1]-configStore.camera.lookAt[1];

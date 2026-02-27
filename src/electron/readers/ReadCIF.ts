@@ -422,14 +422,10 @@ export class ReaderCIF implements ReaderImplementation {
 		const atomsToRemove = new Set<number>();
 
 		for(let i=0; i < natoms-1; ++i) {
-			const ix = atoms[i].position[0];
-			const iy = atoms[i].position[1];
-			const iz = atoms[i].position[2];
+			const [ix, iy, iz] = atoms[i].position;
 
 			for(let j=i+1; j < natoms; ++j) {
-				const jx = atoms[j].position[0];
-				const jy = atoms[j].position[1];
-				const jz = atoms[j].position[2];
+				const [jx, jy, jz] = atoms[j].position;
 
 				if(Math.abs(ix-jx) < TOL &&
 				   Math.abs(iy-jy) < TOL &&

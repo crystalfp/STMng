@@ -377,12 +377,11 @@ export class ComputeSymmetries extends NodeCore {
 
 		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
 		outSymmetry ??= inSymmetry;
-		const intlSymbol = this.intlSymbol;
-		const sgNumberIn = this.sgNumberIn;
-		const sgNumberOut = this.sgNumberOut;
+		const {intlSymbol, sgNumberIn, sgNumberOut, id, displayMode} = this;
 
 		// Update the UI
-		sendToClient(this.id, "show", {inSymmetry, outSymmetry, pointGroup, intlSymbol, sgNumberIn, sgNumberOut});
+		sendToClient(id, "show", {inSymmetry, outSymmetry, pointGroup,
+								  intlSymbol, sgNumberIn, sgNumberOut});
 
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {
@@ -394,7 +393,7 @@ export class ComputeSymmetries extends NodeCore {
 				intlSymbol,
 				sgNumberIn,
 				sgNumberOut,
-				displayMode: this.displayMode,
+				displayMode,
 			};
 			sendToSecondaryWindow("/symmetries", dataToSend);
 		}

@@ -155,10 +155,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 							structure.crystal.origin[2] *= BOHR_TO_ANGSTROM;
 						}
 
-						const nv1 = voxelsPerSide[0];
-						const nv2 = voxelsPerSide[1];
-						const nv3 = voxelsPerSide[2];
-
+						const [nv1, nv2, nv3] = voxelsPerSide;
 						nvoxels = nv1*nv2*nv3;
 						voxels = Array<number>(nvoxels).fill(0);
 						lineType = LineType.atoms;
@@ -208,13 +205,11 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 
 					if(nvoxels === 0) {
 
-						const nvx = voxelsPerSide[0];
-						const nvy = voxelsPerSide[1];
-						const nvz = voxelsPerSide[2];
+						const [nvx, nvy, nvz] = voxelsPerSide;
 
-						const nx = voxelsPerSide[0]+1;
-						const ny = voxelsPerSide[1]+1;
-						const nz = voxelsPerSide[2]+1;
+						const nx = nvx+1;
+						const ny = nvy+1;
+						const nz = nvz+1;
 						structure.volume[0].values = Array<number>(nx*ny*nz).fill(0);
 
 						for(let iz=0; iz < nz; ++iz) {

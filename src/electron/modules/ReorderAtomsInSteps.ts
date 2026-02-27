@@ -218,8 +218,7 @@ export class ReorderAtomsInSteps {
 				// Reorder values
 				for(const pair of paired) {
 
-					const previous = pair[0];
-					const current = pair[1];
+					const [previous, current] = pair;
 
 					const currentIdx = this.currentStep.get(specie[0])!.idx[current];
 

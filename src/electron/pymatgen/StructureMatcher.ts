@@ -256,9 +256,7 @@ export class StructureMatcher {
 
         const {struct1: s1, struct2: s2, fu, s1Supercell} = this.preprocess(struct1, struct2, skipStructureReduction);
 
-        const matches = this.anonymousMatch(s1, s2, fu, s1Supercell);
-
-        return matches;
+        return this.anonymousMatch(s1, s2, fu, s1Supercell);
 	}
 
     /**

@@ -471,7 +471,6 @@
     "beforeAll": "readonly",
     "describe": "readonly",
     "process": "readonly",
-    "requestAnimationFrame": "readonly",
     "setTimeout": "readonly",
     "setInterval": "readonly",
     "clearInterval": "readonly",

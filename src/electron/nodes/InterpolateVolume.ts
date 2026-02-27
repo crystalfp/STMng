@@ -132,9 +132,7 @@ export class InterpolateVolume extends NodeCore {
 	private interpolate(volume: Volume): Volume {
 
 		// Cache some important values
-		const sx = volume.sides[0];
-		const sy = volume.sides[1];
-		const sz = volume.sides[2];
+		const [sx, sy, sz] = volume.sides;
 		const pa = this.pointsToAdd;
 
 		// Check at least 4 points in each direction and points to add > 0

@@ -509,7 +509,7 @@ function getPointsInSphere(
 
     const cartCoords = getCartesianCoords(fracPoints, lattice);
 
-    const neighbors = getPointsInSpheres(
+    return getPointsInSpheres(
         cartCoords,
         [center],
         r,
@@ -518,8 +518,6 @@ function getPointsInSphere(
         lattice,
         true
     )[0];
-
-    return neighbors;
 }
 
 /**
@@ -898,12 +896,11 @@ export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number
         }
 
         // Return lattice with negated matrix
-        const negatedMatrix = [
+        return [
             [-mapped[0][0][0], -mapped[0][0][1], -mapped[0][0][2]],
             [-mapped[0][1][0], -mapped[0][1][1], -mapped[0][1][2]],
             [-mapped[0][2][0], -mapped[0][2][1], -mapped[0][2][2]]
         ];
-        return negatedMatrix;
     }
 
     throw new Error("Can't find niggli");

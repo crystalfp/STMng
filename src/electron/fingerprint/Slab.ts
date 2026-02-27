@@ -201,9 +201,7 @@ export class Slab {
         }
 
         // Create the table to decode the fused loop
-        const ex = expansion[0];
-        const ey = expansion[1];
-        const ez = expansion[2];
+        const [ex, ey, ez] = expansion;
         let originalCellIndex;
         const replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
         const dd = Array<number>(replicaMaxIndex);
@@ -472,9 +470,7 @@ export class Slab {
         }
 
         // Create the table to decode the fused loop
-        const ex = expansion[0];
-        const ey = expansion[1];
-        const ez = expansion[2];
+        const [ex, ey, ez] = expansion;
         const replicaMaxIndex = (2*ex+1)*(2*ey+1)*(2*ez+1)*3;
         const dd = Array<number>(replicaMaxIndex);
 
