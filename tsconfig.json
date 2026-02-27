@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "Preserve",
+    "types": ["node"],
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
+    "noErrorTruncation": true,
+    "esModuleInterop": true,
+    "composite": true,
+    "allowSyntheticDefaultImports": true,
+    "useUnknownInCatchVariables": true,
+    "useDefineForClassFields": true,
+    "moduleDetection": "force",
+    "erasableSyntaxOnly": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "isolatedDeclarations": false,
+    "noEmit": true,
+    "jsx": "preserve",
+    "removeComments": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "allowUnreachableCode": false,
+    "noUncheckedSideEffectImports": false,
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+  },
+  "include": [
+    "vite.config.mts",
+    "troika-three-text.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "src/cpp/spglib*/**/*.ts"
+  ]
+}

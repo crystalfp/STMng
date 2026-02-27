@@ -1,0 +1,59 @@
+{
+	"$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+    "extends": ["typedoc/tsdoc.json"],
+    "tagDefinitions": [
+        {
+            "tagName": "@description",
+            "syntaxKind": "block"
+        },
+        {
+            "tagName": "@implements",
+            "syntaxKind": "modifier"
+        },
+        {
+            "tagName": "@arg",
+            "syntaxKind": "block"
+        },
+        {
+            "tagName": "@displayName",
+            "syntaxKind": "block"
+        },
+        {
+            "tagName": "@component",
+            "syntaxKind": "block"
+        },
+        {
+            "tagName": "@todo",
+            "syntaxKind": "block"
+        },
+        {
+            "tagName": "@notExported",
+            "syntaxKind": "modifier"
+        },
+        {
+            "tagName": "@knipIgnore",
+            "syntaxKind": "modifier"
+        }
+    ],
+    "supportForTags": {
+        "@author": true,
+        "@description": true,
+        "@implements": true,
+        "@internal": true,
+        "@returns": true,
+        "@param": true,
+        "@remarks": true,
+        "@arg": true,
+        "@displayName": true,
+        "@component": true,
+        "@deprecated": true,
+        "@typeParam": true,
+        "@packageDocumentation": true,
+        "@since": true,
+        "@todo": true,
+        "@link": true,
+        "@notExported": true,
+        "@throws": true,
+        "@knipIgnore": true
+    }
+}

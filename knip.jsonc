@@ -1,0 +1,45 @@
+{
+  "$schema": "file:///C:/Users/mvalle/AppData/Roaming/npm/node_modules/knip/schema-jsonc.json",
+  "entry": [
+    "src/electron/main.ts",
+    "src/electron/preload.ts",
+    "src/components/*.vue",
+    "src/ui/*.vue",
+    "src/router/index.ts",
+    "src/electron/fingerprint/Worker.ts"
+  ],
+  "project": ["src/**/*.{js,ts,vue}"],
+  "ignoreBinaries": [
+    "start",
+    "oxlint",
+    "vue-mess-detector",
+    "dot",
+    "migrate"
+  ],
+  "ignoreDependencies": [
+    "vue-docgen-cli",
+    "@mdi/svg",
+    "node-addon-api",
+    "typedoc",
+    "typedoc-plugin-vue",
+    "typedoc-plugin-missing-exports",
+    "postcss-scss",
+    "@rollup/plugin-commonjs",
+    "@rollup/plugin-node-resolve",
+    "@rollup/plugin-terser",
+    "@rollup/plugin-typescript",
+    "oxlint-tsgolint",
+    "@oxlint/migrate",
+    "@typescript/native-preview",
+    "@golar/vue",
+    "golar",
+    "vue-tsgo",
+    "eslint-plugin-eslint-comments"
+  ],
+  // "includeEntryExports": true,
+  // "ignore": ["**/KDtree.d.ts"],
+  "oxlint": true,
+  "rollup": true,
+  "include": ["classMembers"],
+  "tags": ["-knipIgnore"]
+}
