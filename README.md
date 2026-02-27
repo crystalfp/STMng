@@ -6,11 +6,11 @@ STMng primary use is to analyze the results of the [USPEX](https://uspex-team.or
 ### First a quick remainder
 Similarly to what Richard Hamming — of the “Numerical methods for scientists and engineers” fame — said in 1962: *“The purpose of computing is insight, not numbers”,* for every visualization tool we should remember that: *“The purpose of visualization is insight, not images”.*
 
-So, remember: Goal of STMng is to help your understanding, not providing fancy images only!
+So, remember: Goal of STMng is to help your understanding, not to provide fancy images only!
 
 ### Highlights
 - Unlike its predecessor, STMng is built on top of open source framework and libraries.
-- STMng is multiplatform: currently available for Windows and Linux, for Apple, need help.
+- STMng is multiplatform: currently available for Windows and Linux, for Apple, I need help.
 - The tool is stable and used in actual research. This repository, instead, is under development 🚧.
 - STMng could read for analysis and visualization various file formats.
 - The available computational function (called nodes) could be combined in user defined projects.
@@ -20,7 +20,7 @@ So, remember: Goal of STMng is to help your understanding, not providing fancy i
 
 ## Documentation
 
-A quick video tutorial is available <a href="https://www.youtube.com/watch?v=2t7hD9XwINQ">here</a>.
+A quick video tutorial [is available](https://www.youtube.com/watch?v=2t7hD9XwINQ).
 
 You can access the documentation from within STMng with the F1 key. Specifically, you can access the documentation of the selected node by pushing Ctrl-F1.
 
@@ -65,7 +65,3 @@ The 3D viewer uses the [three.js](https://threejs.org/) interface to WebGL provi
 The development toolchain is based on [Vite](https://vite.dev/), the final build for production is done by [electron-builder](https://www.electron.build/). The bundling of the code for the parallel computations is done by [Rollup](https://rollupjs.org/).
 
 Credits for specific libraries used are listed in the respective node documentation pages.
-
-## License
-
-STMng comes with no warranty of any kind and is not liable for any direct or indirect damages.
