@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng compute-fingerprints node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Fingerprints</title>
+</head>
+
+<body>
+<h1 class="title">Fingerprints</h1>
+<h1 class="subh1">Compute fingerprints for a set of structures to group and analyze them</h1>
+
+<div class="description">
+<p>The module implements the fingerprinting method to group similar structures as presented in:</p>
+<ul>
+<li>Valle, M., &amp; Oganov, A. R. (2008). <i>Crystal Structures Classifier for an Evolutionary Algorithm Structure Predictor.</i> IEEE Symposium On Visual Analytics Science and Technology, VAST 2008, 11–18, DOI: <a href="https://doi.org/10.1109/VAST.2008.4677351">10.1109/VAST.2008.4677351</a></li>
+<li>Oganov, A. R., &amp; Valle, M. (2009). <i>How to quantify energy landscapes of solids.</i>  J. Chem. Phys. 14 March 2009; 130 (10): 104504, DOI: <a href="https://doi.org/10.1063/1.3079326">10.1063/1.3079326</a>
+<li>Valle, M., &amp; Oganov, A. R. (2010). <i>Crystal fingerprint space – a novel paradigm for studying crystal-structure sets.</i> Acta Crystallographica Section A, 66(5), 507–517, DOI: <a href="https://doi.org/10.1107/S0108767310026395 ">10.1107/S0108767310026395</a></li>
+</ul>
+<p>There is a notable difference in the implementation respect to the published algorithm. In this module the distances (interatomic distances and cell sizes) are scaled by:</p>
+<img src="scaling.png" width="194" height="81">
+<p>where <i>V</i> is the cell volume and <i>N</i> is the number of atoms in the cell. The scaling factor <i>r<sub>0</sub></i> is roughly similar to the mean atomic radius.</p>
+</div>
+
+<h2>Controls</h2>
+<p>The controls are grouped in logical steps that normally should be completed top to bottom.</p>
+
+<h3>Accumulated structures</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Structures loaded</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of accumulated structures. The start and stop of the accumulation are done from the <a href="./structure-reader.html">Structure Reader</a> page.</td>
+</tr>
+<tr>
+	<td class="c1">Load one</td>
+	<td class="c2">button</td>
+	<td class="c3">Load the current structure only. Useful to compute the fingerprint of a single structure that is not part of a sequence of structures.</td>
+</tr>
+<tr>
+	<td class="c1">Reset</td>
+	<td class="c2">button</td>
+	<td class="c3">Clear the accumulated structures.</td>
+</tr>
+</table>
+
+<h3>Filter structures</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Filter by energy per atom</td>
+	<td class="c2">toggle</td>
+	<td class="c3">From the accumulated structures extract only the ones that satisfy the following constrains on the energy per atom.</td>
+</tr>
+<tr>
+	<td class="c1">Threshold from minimum energy</td>
+	<td class="c2">toggle</td>
+	<td class="c3">The maximum energy threshold is computed from the minimum per atom energy of accumulated structures.</td>
+</tr>
+<tr>
+	<td class="c1">Energy from minimum / Max energy</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">For filtering structures enter the maximum energy per atom the structures should have or, when “Threshold from minimum energy” is set, the offset from the minimum energy per atom of the accumulated structures to establish the threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Max energy</td>
+	<td class="c2">readonly numeric field</td>
+	<td class="c3">The computed or manually entered energy threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Structures selected</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of structures eventually selected by energy over the total number of structures.</td>
+</tr>
+</table>
+
+<h3>Compute fingerprints</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Structures are nanoclusters</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Mark the structures as nanoclusters, that is, they are not crystals with a periodic structure.</td>
+</tr>
+<tr>
+	<td class="c1">Force cutoff at:</td>
+	<td class="c2">toggle + numeric field</td>
+	<td class="c3">When set, forces the cutoff distance for the computation of fingerprint to the value entered.</td>
+</tr>
+<tr>
+	<td class="c1">Cutoff</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">The cutoff distance (computed or manually entered) that will be used by the fingerprint computation.</td>
+</tr>
+<tr>
+  <td class="c1">Fingerprinting method</td>
+  <td class="c2">list</td>
+  <td class="c3">Select the method for computing the fingerprints:
+    <dl>
+      <dt>Oganov-Valle fingerprint</dt><dd>The fingerprint is composed by a section for each atom type in the unit cell. Each section is an ascending ordered set of distances from the corresponding atom to all the other atoms of the extended unit cell. All these sets contain the same number of distances.</dd>
+      <dt>Oganov-Valle per site fingerprint</dt><dd>It is the same as “Oganov-Valle fingerprint” but the centroid of all fingerprints is removed from each fingerprint.</dd>
+      <dt>Dot-matrix fingerprint</dt><dd>This method takes three atoms, one (A) in the unit cell and two (B &amp; C) in the extended unit cell (cells added around the unit cell to cover the cutoff distance). Then fill a square matrix in which row and column indices are computed from the AB and AC distances. The accumulated value is:<br><img src="dot-matrix.png" width="440" height="96" alt="Dot-matrix increment formula"><br>The matrix is then transformed to a vector appending the diagonals of the upper triangle starting from the longest one. <b>Note:</b> this method is quite slow.</dd>
+    </dl>
+  </td>
+</tr>
+<tr>
+  <td class="c1">Peak width</td>
+  <td class="c2">numeric field</td>
+  <td class="c3">The distance values are smoothed with a gaussian of this full width at half maximum (FWHM) value and then binned.</td>
+</tr>
+<tr>
+	<td class="c1">Bin size</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">To convert smoothed distance peaks into a vector of values, that is, the fingerprint, the smoothed interatomic distances are binned to this size.</td>
+</tr>
+<tr>
+	<td class="c1">Multi process parallelism</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Select to parallelize computation using multiple processes. If not set the parallelization is done using threads in a single process. The multi-process method is slower, but gives more memory to each computation. Select it if selecting parallelization on threads has memory problems.</td>
+</tr>
+<tr>
+  <td class="c1">Compute fingerprints &amp; distances</td>
+  <td class="c2">button</td>
+  <td class="c3">Compute the fingerprints for the selected structures and their distances.</td>
+</tr>
+<tr>
+	<td class="c1">Fingerprint dimension</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation shows the length of the computed fingerprints, that is, the dimensionality of the space containing the fingerprints.</td>
+</tr>
+<tr>
+	<td class="c1">Intrinsic dimension &amp; theoretical value</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Estimation of the dimensionality of the embedded fingerprint space (the subspace containing the fingerprints that is embedded in the fingerprint space). The estimation is done using a Maximum Likelihood Estimator that provides local dimension estimates. The theory gives a value of <tt>3&nbsp;*&nbsp;numAtoms&nbsp;+&nbsp;3</tt> (three coordinates per atom, less three for an atom fixed at the origin, plus six cell parameters).</td>
+</tr>
+<tr>
+	<td class="c1">Local dimension range</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Range of the local intrinsic space dimensions around each fingerprint.</td>
+</tr>
+</table>
+
+<h3>Compute distances</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Distance method</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the measuring method to obtain the distance between fingerprints:
+		<dl>
+      <dt>Cosine distance</dt><dd>Cosine distance between fingerprints interpreted as multidimensional vectors. The distances are scaled between 0 and 1. This measure violates the triangle inequality.</dd>
+      <dt>Euclidean distance</dt><dd>Euclidean distance between fingerprints interpreted as points in a multidimensional space.</dd>
+      <dt>Minkowski distance of order ⅓</dt><dd>The <a href="https://en.wikipedia.org/wiki/Minkowski_distance">Minkowski distance</a> with order p = ⅓. With this order value, the measure violates the triangle inequality but spread points better in the multidimensional space facilitating grouping.</dd>
+    </dl></td>
+</tr>
+<tr>
+	<td class="c1">Fix triangle inequality</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Iteratively adjust distances to satisfy the triangle inequality for every triples of distances.</td>
+</tr>
+<tr>
+	<td class="c1">Distances computed</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation shows the number of computed distances.</td>
+</tr>
+<tr>
+	<td class="c1">Fixed inequalities</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation with "Fix triangle inequality" set shows the result of the fixing.</td>
+</tr>
+</table>
+
+<h3>Remove duplicates</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Remove</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Enable removal of duplicated structures, that is, structures distant less than the distance threshold.</td>
+</tr>
+<tr>
+	<td class="c1">Distance threshold</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">The maximum distance between two fingerprints to consider the highest energy one for removal. If the energies are missing, retains the most central point in the group of near fingerprints.</td>
+</tr>
+<tr>
+	<td class="c1">Points removed</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation show the number of structures removed over the total.</td>
+</tr>
+</table>
+
+<h3>Group similar</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Grouping method</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the method to group similar fingerprints:
+		<dl>
+      <dt>Pseudo SNN</dt><dd>Structure clustering method based on the number of nearest neighbors points shared between pairs of connected points and confirm this last connection only if the number is at least K (equal to one plus the margin value). SNN means Shared Nearest Neighbor and is “Pseudo” becouse laks the final DBSCAN step to refine clustering.</dd>
+      <dt>Hierarchical grouping (single linkage)</dt><dd>It is a methods of hierarchical clustering based on grouping clusters in bottom-up fashion, at each step combining two clusters that contain the closest pair of elements not yet belonging to the same cluster as each other.</dd>
+      <dt>Hierarchical grouping (complete linkage)</dt><dd>It is an agglomerative hierarchical clustering that at the beginning of the process, has each element is in a cluster of its own. The clusters are then sequentially combined into larger clusters until all elements end up being in the same cluster.</dd>
+    </dl>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Distance thresh.</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">Distance threshold for two structures to consider them in the same group. The distance is given as a percentage of the global maximum distance.</td>
+</tr>
+<tr>
+	<td class="c1">Margin</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">For the Pseudo SNN method it is the number of connection above one to consider two structures connected.</td>
+</tr>
+<tr>
+  <td class="c1">Group similar structures</td>
+  <td class="c2">button</td>
+  <td class="c3">Classify fingerprints into groups of similar ones.</td>
+</tr>
+<tr>
+	<td class="c1">Groups found</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">At the end of the computation shows the number of groups found.</td>
+</tr>
+</table>
+
+<h3>Show results</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+  <td class="c1">Export results</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the <a href="../secondary/fp-export.html">Export results</a> window.</td>
+</tr>
+<tr>
+  <td class="c1">Show scatterplot</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the <a href="../secondary/fp-scatterplot.html">Fingerprints scatterplot</a> window.</td>
+</tr>
+<tr>
+  <td class="c1">Show charts</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the <a href="../secondary/fp-charts.html">Fingerprints charts</a> window.</td>
+</tr>
+<tr>
+  <td class="c1">Show energy landscape</td>
+  <td class="c2">button</td>
+  <td class="c3">Open the <a href="../secondary/fp-landscape.html">Show energy landscape</a> window.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+<p>Code to create contrasting colors has been derived from: Tim Holy (2024). <i>Generate maximally perceptually-distinct colors,</i> <a href="https://www.mathworks.com/matlabcentral/fileexchange/29702-generate-maximally-perceptually-distinct-colors">MATLAB Central File Exchange</a>. Retrieved December 29, 2024.</p>
+<p>Routines to convert CIELAB color to RGB color and vice versa are from: <a href="https://github.com/antimatter15/rgb-lab/tree/master">github.com/antimatter15/rgb-lab/tree/master</a>.</p>
+<p>Code to compute the perceptual difference between two colors in CIELAB color space has been ported from: <a href="https://github.com/PoshCode/Pansies/blob/main/Source/Assembly/ColorSpaces/Comparisons/Cie94Comparison.cs">github.com/PoshCode/Pansies/blob/main/Source/Assembly/ColorSpaces/Comparisons/Cie94Comparison.cs</a>.</p>
+<p>The initial classical <a href="https://en.wikipedia.org/wiki/Multidimensional_scaling">Multidimensional Scaling (MDS)</a> code has been generated by <a href="https://claude.ai/">Claude AI</a> and implemented using the <a href="https://eigen.tuxfamily.org/">Eigen</a> C++ template library for linear algebra.</p>
+<!-- <p>The Chemical Scale factors are from: Zahed Allahyari and Artem R. Oganov, <i>Nonempirical Definition of the Mendeleev Numbers: Organizing the Chemical Space,</i> The Journal of Physical Chemistry C 2020 124 (43), 23867-23878, DOI: <a href="https://doi.org/10.1021/acs.jpcc.0c07857">10.1021/acs.jpcc.0c07857</a></p> -->
+<p>The generalized convex hull is computed using the <a href="https://www.npmjs.com/package/quickhull3d">quickhull3d</a> library.</p>
+<p>The K-D tree code to select points on the scatterplot is from <a href="https://github.com/benmaier/kd-tree-js">github.com/benmaier/kd-tree-js</a>.</p>
+<p>The MLE embedded dimensionality estimator code has been generated by <a href="https://claude.ai/">Claude AI</a> with corrections from: James A. D. Binnie, Paweł Dłotko, John Harvey, Jakub Malinowski, Ka Man Yim. <a href="https://arxiv.org/abs/2507.13887">A Survey of Dimension Estimation Methods</a> (2025). arXiv preprint arXiv:2507.13887</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

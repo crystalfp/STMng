@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng structure-reader node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Reader</title>
+</head>
+
+<body>
+<h1 class="title">Reader</h1>
+<h1 class="subh1">Structure reader</h1>
+
+<div class="description">
+<a>Read structural chemical data. The file could contain a
+single structure or a sequence of structures to specify a trajectory or a set of <a href="https://uspex-team.org/">USPEX</a> results.</p>
+
+<p>If the format needs an auxiliary file, the module shows its file selector.</p>
+
+<p>The files could be also drag from elsewhere and dropped on the file selectors.</p>
+
+<p>There are also two special formats: “Prototypes”, that queries and load one prototype from the Aflow prototype database, and “Collection”, that queries and load one structure from a collection of useful structures.</p>
+
+<p>If set in the <a href="./viewer-3d.html">Viewer 3D</a> controls, the camera position could be reset at each frame loaded.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">File format</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the format of the file to be read from the list of <a href="../general/formats.html">available formats</a>. At the end of the list a section titled “Special sources” contains sources that are not coming from a file. These are:
+	<ul>
+		<li><b>Prototypes:</b> opens the prototypes search and load panel (see below) instead of the following controls.</li>
+		<li><b>Collection:</b> open a search panel to search files in the structure collection (see below) instead of the following controls.</li>
+	</ul></td>
+</tr>
+<tr>
+	<td class="c1">Atoms types</td>
+	<td class="c2">input (space separated list)</td>
+	<td class="c3">Enter the symbols of the atoms present in the file. This field appears only for
+	POSCAR, POSCAR + XDATCAR, POSCAR + ENERGY, CHGCAR, LAMMPS and LAMMPStrj formats.
+	The field content is accepted only with the ENTER key or moving the focus away from the field.
+	The atoms types could be changed after file loading.</td>
+</tr>
+<tr>
+	<td class="c1">Append</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If set, the next file read will have its content appended to what has already been read.
+		Note that for the POSCAR + XDATCAR format the POSCAR file is read once to give the unit cell parameters even if the “Append” toggle is set.</td>
+</tr>
+<tr>
+	<td class="c1">Select or drop input file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">Select or drop here the file to be read.</td>
+</tr>
+<tr>
+	<td class="c1">File has energy per atom</td>
+	<td class="c2">toggle</td>
+	<td class="c3">For POSCAR + ENERGY format selects if the energy file has energy per atom instead of energy per structure. Note that this toggle should be set before loading the ENERGY file.</td>
+</tr>
+<tr>
+	<td class="c1">Select or drop &lt;<i>auxiliary format</i>&gt; file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">Select or drop here the auxiliary file associated to the input file, to be read. Show the auxiliary file format name. This field appears only if needed.</td>
+</tr>
+<tr>
+	<td class="c1">Use Bohr units</td>
+	<td class="c2">toggle</td>
+	<td class="c3">For the Gaussian cube format selects the measurement unit to be used: Bohr or Å.</td>
+</tr>
+<tr>
+	<td class="c1">Read hydrogens</td>
+	<td class="c2">toggle</td>
+	<td class="c3">For the PDB format selects if hydrogen atoms should be loaded and visualized.</td>
+</tr>
+</table>
+<div class="description" style="margin-top: 1rem;">
+<p>The following fields appear if the format contains multiple steps:</p>
+</div>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Movie from steps</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This toggle appears only if the <a href="capture-view.html">Capture</a> module is present in the project. Start recording a movie as soon as the steps animation starts. As soon as the animation stop, a file selector will ask for the movie file to be created.</td>
+</tr>
+<tr>
+	<td class="c1">Record trajectories</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This toggle appears only if the <a href="draw-trajectories.html">Trajectories</a> module is present in the project. Starts recording trajectories. It is disabled if no atom to trace has been selected in the Trajectories module.</td>
+</tr>
+<tr>
+	<td class="c1">Accumulate for fingerprinting</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This toggle appears only if the <a href="compute-fingerprints.html">Fingerprinting</a> module is present in the project. It enables accumulating structures for fingerprinting.</td>
+</tr>
+<tr>
+	<td class="c1">Collect for structure writer</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This toggle appears only if the <a href="structure-writer.html">Writer</a> module is present in the project. Starts accumulating structures to be saved in a single file.</td>
+</tr>
+<tr>
+	<td class="c1">Collect for variable composition</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This toggle appears only if the <a href="variable-composition.html">Variable composition</a> module is present in the project. It enables accumulating structures for decomposing them into components.</td>
+</tr>
+<tr>
+	<td class="c1">Loop</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Play the steps in a loop.</td>
+</tr>
+<tr>
+	<td class="c1">Reverse</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Play the steps in reverse direction.</td>
+</tr>
+<tr>
+	<td class="c1">Step increment</td>
+	<td class="c2">numeric spinner</td>
+	<td class="c3">Set how many steps the system does at every tick.</td>
+</tr>
+<tr>
+	<td class="c1">Step</td>
+	<td class="c2">slider</td>
+	<td class="c3">Move between the steps and show the actual step and the total number of steps. If speed is set to “Fast” this slider is not visible.</td>
+</tr>
+<tr>
+	<td class="c1">Step range</td>
+	<td class="c2">range slider</td>
+	<td class="c3">Set the first and last steps to be visualized. When the first step value is more than one or the final value is less than the number of steps from the file, a Range label became visible with the first and last steps and the <img src="../range.png" width="27" height="25" alt="Reset"style="transform:translateY(6px); margin-top: -6px"> button to reset its values to cover the full range of steps from file. Note that this slider is not labelled.</td>
+</tr>
+<tr>
+	<td class="c1">Control buttons</td>
+	<td class="c2">buttons</td>
+	<td class="c3">Standard control buttons for the steps playback. From left: go to beginning, go to previous step, play/stop, go to next step, go to last step.</td>
+</tr>
+<tr>
+	<td class="c1">Speed</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Speed of playback by defining a delay between steps.
+    <dl>
+      <dt>Fast</dt>
+      <dd>No delay between steps. <b>Note:</b> to speedup playback, the step slider is hidden.</dd>
+      <dt>Medium</dt>
+      <dd>200 msec delay between steps.</dd>
+      <dt>Slow</dt>
+      <dd>400 msec delay between steps.</dd>
+    </dl>
+  </td>
+</tr>
+</table>
+<div class="description">
+<p>The following fields appear if the selected format is “Prototypes”:</p>
+</div>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Prototype query</td>
+	<td class="c2">text with autocomplete</td>
+	<td class="c3">Query the full list of prototypes. The query show a list of possible minerals/aflow UID and each character entered shorten the list.</td>
+</tr>
+<tr>
+	<td class="c1">Query result</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">When a prototype has been selected, here appears its name (called “mineral” in aflow database), the aflow UID, its strukturbericht and the Pearson values.</td>
+</tr>
+</table>
+<div class="description">
+<p>The following field appears if the selected format is “Collection”:</p>
+</div>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Collection query</td>
+	<td class="c2">text with autocomplete</td>
+	<td class="c3">Query the full list of structures in the collection. The query show a list of possible structure file names and each character entered shorten the list.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+
+<p>The <a href="https://aflow.org/">Aflow</a> project has made available the <a href="https://aflow.org/prototype-encyclopedia/">Encyclopedia of crystallographic prototypes</a> which can be searched and loaded by part of the Aflow UID string or mineral name.</p>
+<p>The prototypes database is described in:
+    Mehl, M. J., Hicks, D., Toher, C., Levy, O., Hanson, R. M., Hart, G., & Curtarolo, S. (2017).
+    <i>The AFLOW library of crystallographic prototypes: part 1.</i>
+    Computational Materials Science, 136, S1-S828. DOI:
+    <a href="https://doi.org/10.1016/j.commatsci.2017.01.017">10.1016/j.commatsci.2017.01.017</a></p>
+<p>The files in the Collection have been collected from various sources and provided by Prof. Artem Oganov.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

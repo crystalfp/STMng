@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng diffraction-pattern node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-11-07"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — X-Ray diffraction</title>
+</head>
+
+<body>
+<h1 class="title">X-Ray diffraction</h1>
+<h1 class="subh1">Compute and display the X-Ray diffraction spectra</h1>
+
+<div class="description">
+<p>Compute and display the X-Ray diffraction spectra for the current structure. The code is ported from the one in the <tt>Pymatgen</tt> Python library.</p>
+<p>From the atomic positions, STMng solves Braggs Law to identify peak positions and diffraction angle. Peak intensities are obtained from the structure factor. Combining the Miller indices, the angle of diffraction and structure factor, it plots the powder diffraction pattern.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Wavelength</td>
+	<td class="c2">list</td>
+	<td class="c3">Select the type of X-Ray source used to obtain the spectra. If selected the last entry of the list ("Manual") then a numeric field opens to manually enter the wavelength.</td>
+</tr>
+<tr>
+	<td class="c1">Numeric wavelength</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">Manually enter the X-Ray source wavelength used to obtain the spectra. Appears only if the last entry of the list of wavelength codes ("Manual") is selected.</td>
+</tr>
+<tr>
+	<td class="c1">Two theta range</td>
+	<td class="c2">range slider</td>
+	<td class="c3">Angle range where the spectra should be computed.</td>
+</tr>
+<tr>
+	<td class="c1">Chart scaled</td>
+	<td class="c2">toggle</td>
+	<td class="c3">When set, the intensities are scaled to have 100 as the maximum value.</td>
+</tr>
+<tr>
+	<td class="c1">Show HKL</td>
+	<td class="c2">toggle</td>
+	<td class="c3">When set, near the peaks on the chart display the corresponding <i>hkl</i> values with the relative multiplicity.</td>
+</tr>
+<tr>
+	<td class="c1">Peak width</td>
+	<td class="c2">slider</td>
+	<td class="c3">Width of the peaks at half maximum (FWHM). If set to zero show the peaks without smoothing.</td>
+</tr>
+<tr>
+	<td class="c1">Open chart</td>
+	<td class="c2">button</td>
+	<td class="c3">Open a window showing the <a href="../secondary/chart.html">diffraction spectra</a> and the <i>hkl</i> plus multiplicity peak values. The button is disabled if no structure has been loaded or if the structure has no unit cell.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+<p>The code has been ported from the Python library <a href="https://pymatgen.org/">Pymatgen</a>
+<a href="https://pymatgen.org/pymatgen.analysis.diffraction.html#pymatgen-analysis-diffraction-xrd-module">XRD pattern calculator</a>.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+</body>
+</html>

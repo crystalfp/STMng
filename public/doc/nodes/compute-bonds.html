@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng compute-bonds node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Bonds</title>
+</head>
+
+<body>
+<h1 class="title">Bonds</h1>
+<h1 class="subh1">Add bonds to the input structure</h1>
+
+<div class="description">
+<p>Compute bonds based on interatomic distances multiplied by a fraction of the sum of covalent radii.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Enable compute bonds</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Enable bonds computation.</td>
+</tr>
+<tr>
+	<td class="c1">Bonding min distance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Minimum distance between atoms to create a bond.</td>
+</tr>
+<tr>
+	<td class="c1">Bonding max distance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Maximum distance between atoms to create a bond.</td>
+</tr>
+<tr>
+	<td class="c1">H Bonding max distance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Maximum distance between atoms to create a hydrogen bond.</td>
+</tr>
+<tr>
+	<td class="c1">H Bonding max valence angle</td>
+	<td class="c2">slider</td>
+	<td class="c3">Maximum valence angle to create a hydrogen bond. In <tt>X–––H···Y</tt> the valence angle is <tt>HX̂Y</tt></td>
+</tr>
+<tr>
+	<td class="c1">Multiplier per atom pair</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If not set, there is only one multiplier for all atoms pairs sum of covalent radii.
+  Otherwise, a table appears with an entry for each possible atom types pair with different multipliers.
+  </td>
+</tr>
+<tr>
+	<td class="c1">Add bonded atoms outside unit cell</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select how to continue the bonds outside the unit cell.
+  <dl>
+  <dt>None</dt>
+  <dd>No bonds are added outside the unit cell.</dd>
+  <dt>Neighbors</dt>
+  <dd>Atoms are added outside the unit cell that have a bond to some inside atom (default).</dd>
+  <dt>Full</dt>
+  <dd>Atoms are added outside the unit cell until a bond exists with an atom inside the cell or with an atom outside the cell that have a bond with an atom connected to an inside atom. This method is useful for molecular crystals.</dd>
+  <dt>Poly</dt>
+  <dd>Atoms that could form a polyhedra with at least one internal atom and one or two outside atoms are added outside the unit cell.</dd>
+  </dl>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Reset parameters</td>
+	<td class="c2">button</td>
+	<td class="c3">Reset parameters to the default values.</td>
+</tr>
+</table>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

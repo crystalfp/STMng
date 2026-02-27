@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Program file editor for the STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2025-05-20"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>STMng — Program editor</title>
+<style>
+.move {transform:translateY(4px)}
+</style>
+</head><body>
+<h1>STMng — Program editor documentation</h1>
+
+<p>The loaded project structure could be seen and changed using the <b>File → Project editor</b> menu entry.
+This entry opens the <b>Project editor</b> in its own window as depicted below.</p>
+<p><img src="project-editor.png" alt="Project editor" width="1024" height="455"/></p>
+<p>The window title contains the filename of the currently loaded project or the “default project” mark.</p>
+<p>The leftmost column, labelled “Available nodes”, list all the nodes types provided by the application.</p>
+<p>Nodes from this column could be dragged to the graph chart on the right to create a new node in the project. In the name an unique string in parenthesis marks these created nodes.</p>
+<p>Clicking a node in the graph chart marks it as selected with a <span style="background-color: yellow" class="color-word-rev">yellow</span> background. Clicking on the chart background deselects it. When a node is selected, its data is visualized in a panel shown at the top right of the chart. The label of the node could be edited in this panel. With a button on the panel, the node could be deleted after asking for confirmation.</p>
+<p>The nodes’ positions could be changed by dragging the nodes around. To move a group of nodes use shift-drag to draw a rectangular selection, then drag them. Using ctrl-click multiple nodes could be selected. For multi node selections the panel show only a button to delete the group of selected nodes.</p>
+<p>The connection between nodes is done clicking on the output port (the rightmost one) and, when the cursor becomes a cross <img src=crosshair.png width="20" height="20" class="move">, dragging it to a free input port (the left one). If a connection is redone, it is deleted.</p>
+<p>Going to one end of the connection the cursor changes to
+  <img src="move.png" width="20" height="20" class="move"> then this end can be drag to another connection point.</p>
+<p>The graph could be zoomed using the mouse wheel.</p>
+<p>At the end, Pushing “Save as…” button asks for a project filename (with extension <tt>.stm</tt>), save here the modified project and load it in the application. Instead, the “Save” button, active if the current project is not the default one, save the currently loaded project. A confirmation dialog appears if the project has modifications. Closing the window with the “Discard” button loses the changes. If there are errors (unconnected ports) the project cannot be saved.</p>
+<p>Note that the order of entries in the project file, and thus in the Node selector, is determined by the left-to-right and then top-to-bottom order of the nodes in the editor.</p>
+<p>The “New project” button empties the graph leaving only the “Viewer” node to build a new graph. This button is enabled only when there are no pending changes to be saved in the graph.</p>
+
+<h2>Credits</h2>
+<p>The graph display uses the excellent <a href="https://vueflow.dev/">Vue Flow</a> component.</p>
+<p>The code for checking the absence of loops in the project graph has been ported from:
+<a href="https://github.com/dexcodeinc/graph_algorithm.js/blob/master/graph_algorithm.js">Detects loops in a directed graph using a graph coloring algorithm</a>.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

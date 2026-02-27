@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng compute-symmetries node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Symmetries</title>
+</head>
+
+<body>
+<h1 class="title">Symmetries</h1>
+<h1 class="subh1">Compute and apply symmetries</h1>
+
+<div class="description">
+<p>Apply the symmetries present in the input structure using the <a href="https://cci.lbl.gov/sginfo/">SgInfo</a> library. Then search for symmetries using the <a href="https://spglib.readthedocs.io/en/latest/">Spglib</a> library. This step could also standardize the structure cell and compute the Point group of the output structure.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Apply input symmetries</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Apply or ignore the symmetries contained in the input structure.
+		This toggle is disabled if no input symmetry is present.</td>
+</tr>
+<tr>
+	<td class="c1">Enable find symmetries</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Search for symmetries.</td>
+</tr>
+<tr>
+	<td class="c1">Standardize cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Standardize the structure cell.</td>
+</tr>
+<tr>
+	<td class="c1">Only standardize cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Standardize the structure cell without searching for symmetries.</td>
+</tr>
+<tr>
+	<td class="c1">Primitive cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Try to find a primitive cell instead of a conventional one.</td>
+</tr>
+<tr>
+	<td class="c1">Standardize cell tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the standardization process.</td>
+</tr>
+<tr>
+	<td class="c1">Find symmetries tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the search of symmetries.</td>
+</tr>
+<tr>
+	<td class="c1">Symmetry display mode</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select how to visualize the symmetries on output. The input symmetries obey the chosen representation if it is possible. This control is hidden if no display of symmetries are present.
+  <dl>
+	<dt>Intl.</dt>
+	<dd>Show the international symbol.</dd>
+	<dt>SymmOp</dt>
+	<dd>Show the final symmetry as a list of symmetry operations.</dd>
+	<dt>Table</dt>
+	<dd>Show the space group type number as defined in the International Tables for Crystallography (ITA).</dd>
+  </dl>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Input symmetry</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Input structure symmetry. The field is hidden if no input symmetry is present.</td>
+</tr>
+<tr>
+	<td class="c1">Final symmetry</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Output structure symmetry. The field is hidden if “Enable find symmetries” is not set.</td>
+</tr>
+<tr>
+	<td class="c1">Fill unit cell</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Copies atoms that are on the cell borders and sides to the other side of the cell.</td>
+</tr>
+<tr>
+	<td class="c1">Fill unit cell tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance used when checking if an atom is on the boundary of the cell.</td>
+</tr>
+<tr>
+	<td class="c1">Compute point group</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Compute point group (Schoenflies symbol) for the output structure.</td>
+</tr>
+<tr>
+	<td class="c1">Position tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Distance tolerance to consider sites as symmetrically equivalent. This control appears only when the “Compute point group” toggle is set.</td>
+</tr>
+<tr>
+	<td class="c1">Eigenvalues tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance to compare eigen values of the inertia tensor. This control appears only when the “Compute point group” toggle is set.</td>
+</tr>
+<tr>
+	<td class="c1">Point group</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">The Schoenflies symbol of the detected point group. This output appears only when the “Compute point group” toggle is set.</td>
+</tr>
+<tr>
+	<td class="c1">Show symmetries dialog</td>
+	<td class="c2">button</td>
+	<td class="c3">Open a window to <a href="../secondary/symmetries.html">show input and output symmetries</a>.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+<p>Apply symmetries uses the <a href="https://cci.lbl.gov/sginfo/">SgInfo</a> library.</p>
+<p>Find symmetries and standardize cell uses the <a href="https://spglib.readthedocs.io/en/latest/">Spglib</a> library. The detailed algorithm of spglib is described in: “<tt>Spglib</tt>: a software library for crystal symmetry search”, Atsushi Togo, Kohei Shinohara, and Isao Tanaka, Sci. Technol. Adv. Mater., Meth. 4, 2384822-2384836 (2024). DOI: <a href="https://doi.org/10.1080/27660400.2024.2384822">10.1080/27660400.2024.2384822</a></p>
+<p>The point group analyzer is the porting to Typescript of the <a href="https://pymatgen.org/">Pymatgen</a> class <a href="https://pymatgen.org/pymatgen.symmetry.html#pymatgen.symmetry.analyzer.PointGroupAnalyzer"> PointGroupAnalyzer</a>.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

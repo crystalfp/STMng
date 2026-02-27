@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Fingerprints charts for the STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2025-05-20"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>STMng — Fingerprints charts</title>
+
+</head><body>
+<h1>STMng — Fingerprints charts window</h1>
+<p>This window shows seven different kinds of charts:</p>
+<dl style="margin-left: 20px;">
+  <dt>Fingerprint</dt><dd>Fingerprint for the selected structure step.</dd>
+  <dt>Energy</dt><dd>Chart of per atom energy for all structures.</dd>
+  <dt>Energy-Dist</dt><dd>Chart of per atom energy differences from the minimum energy versus the distance from the point of minimal energy.</dd>
+  <dt>Hist energies</dt><dd>Histogram of energies.</dd>
+  <dt>Hist distances</dt><dd>Histogram of distances.</dd>
+  <dt>Order</dt><dd>Order parameter for all structures. It is computed from eq. 8 of:
+  Artem R. Oganov, Mario Valle; How to quantify energy landscapes of solids. J. Chem. Phys. 14 March 2009; 130 (10): 104504. DOI: <a href="https://doi.org/10.1063/1.3079326">10.1063/1.3079326</a>.</dd>
+  <dt>Distances</dt><dd>Distances from the given fingerprint.</dd>
+</dl>
+<p>Besides the chart kind selector, the window has the following controls:
+</p>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Structure step selector</td>
+	<td class="c2">slider</td>
+	<td class="c3">Select the structure step for which the fingerprint or the distances should be charted. This control appears only when fingerprint or distances chart are selected.</td>
+</tr>
+<tr>
+	<td class="c1">Bin count</td>
+	<td class="c2">slider</td>
+	<td class="c3">Set the number of bins for the histograms. This control appears only when one of the two histograms are selected.</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window.</td>
+</tr>
+</table>
+
+<p class="back-btn"><a href="../nodes/compute-fingerprints.html" title="Return to Fingerprinting documentation" class="back">Back to Fingerprinting</a></p>
+
+</body>
+</html>

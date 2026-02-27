@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Fingerprints charts for the STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2025-05-20"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+  <title>STMng — Fingerprints results export</title>
+
+</head><body>
+<h1>STMng — Fingerprints results export window</h1>
+<p>This window collect the export commands for some of the fingerprints results:</p>
+<dl style="margin-left: 20px;">
+  <dt>Export results</dt><dd>Export the structures selected without duplicates to a POSCAR file and a corresponding energy per structure or atom file. The entries are sorted on increasing energy values. If no energy has been loaded, the energy file is not created and the structures are unsorted.</dd>
+  <dt>Min. energy per group</dt><dd>Select one point per group that has minimal energy.</dd>
+</dl>
+<p>Note that these functions are the same found in the <a href="fp-scatterplot.html">Fingerprint scatterplot</a> window.</p>
+<p>When selecting one of these export functions, a file selector appears to select a POSCAR file. If energies are present, a corresponding file with extension <tt>.energy</tt> will be created.</p>
+<p>If energies are present, a toggle appears to select if the energy saved should be per atom and not per structure.</p>
+<p><b>Note:</b> This windows enables exporting results without incurring the high cost of projecting fingerprints to 2D before visualizing the scatterplot.</p>
+
+<p class="back-btn"><a href="../nodes/compute-fingerprints.html" title="Return to Fingerprinting documentation" class="back">Back to Fingerprinting</a></p>
+</body>
+</html>

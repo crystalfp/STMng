@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng draw-structure node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Draw structure</title>
+</head>
+
+<body>
+<h1 class="title">Draw structure</h1>
+<h1 class="subh1">Display the loaded structure</h1>
+
+<div class="description">
+<p>Render a structure to the screen.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Structure rendering mode</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">How to render the structure.
+  <dl>
+  <dt>CPK</dt>
+  <dd>Atoms are represented with a radius proportional to their covalent radius.</dd>
+  <dt>VdW</dt>
+  <dd>Atoms are represented with a radius proportional to their Van der Waals radius. No bonds are rendered.</dd>
+  <dt>Licorice</dt>
+  <dd>Atoms are represented with a radius equal to the bond radius.</dd>
+  <dt>Lines</dt>
+  <dd>Bonds are rendered by lines. Atoms are not rendered.</dd>
+  </dl></td>
+</tr>
+<tr>
+	<td class="c1">Smooth color bonds</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Bonds are colored by a smooth transition between the bonded atoms colors. Otherwise there are only two color bands. This does not apply to line rendering.</td>
+</tr>
+<tr>
+	<td class="c1">Show bonds strengths</td>
+	<td class="c2">toggle</td>
+	<td class="c3">In CPK mode modify the bonds diameter to reflect their strength as computed from the goodBonds values as used by <a href="https://www.sciencedirect.com/science/article/abs/pii/S0010465506002931">USPEX</a>.</td>
+</tr>
+<tr>
+	<td class="c1">Atom label</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">What represents the label on each atom.
+  <dl>
+  <dt>Symbol</dt>
+  <dd>The atom type symbol.</dd>
+  <dt>Label</dt>
+  <dd>The atom label eventually present in the input structure.</dd>
+  <dt>Index</dt>
+  <dd>Index of the atom inside the structure. The index starts from zero.</dd>
+  </dl></td>
+</tr>
+<tr>
+	<td class="c1">Atom color</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Selects color for atoms and bonds.
+  <dl>
+  <dt>Type</dt>
+  <dd>The atoms are colored by the atom specie as defined in <a href="../general/atom-data.html">OpenBabel data</a>.</dd>
+  <dt>Mono</dt>
+  <dd>Monochrome coloring. When selected, a color selector becomes visible below.</dd>
+  <dt>Bonds</dt>
+  <dd>Atoms are colored by their number of bonds. The color scale tries to use colors as different as possible.</dd>
+  </dl>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Show legend</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Display a legend for the coloring of bonds count. This control appears only when coloring atoms by bonds.</td>
+</tr>
+<tr>
+	<td class="c1">Visibility</td>
+	<td class="c2">toggle buttons</td>
+	<td class="c3">Selects what is rendered.
+  <ul>
+  <li>Structure</li>
+  <li>Bonds</li>
+  <li>Labels</li>
+  </ul>
+  <p>The last button labelled "Hide" / "Show" deselect or set all previous buttons.</p>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Visual parameters</td>
+	<td class="c2">button</td>
+	<td class="c3">Toggles the visibility of the next section containing parameters related to the visual appearance of the structure.</td>
+</tr>
+</table>
+
+<h3>Visual parameters</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Quality</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Select the quality of the rendering by varying the number of subdivisions of spheres and cylinders.
+  <ul>
+  <li>Low</li>
+  <li>Medium</li>
+  <li>Good</li>
+  <li>Best</li>
+  </ul></td>
+</tr>
+<tr>
+	<td class="c1">Bonds radius multiplier</td>
+	<td class="c2">slider</td>
+	<td class="c3">Multiplier for the standard bonds radius. It is enabled only for “CPK” and “Licorice” modes.</td>
+</tr>
+<tr>
+	<td class="c1">Sphere radius multiplier</td>
+	<td class="c2">slider</td>
+	<td class="c3">Multiplier for the standard spheres radius. It is enabled only for “CPK” mode.</td>
+</tr>
+<tr>
+	<td class="c1">Roughness</td>
+	<td class="c2">slider</td>
+	<td class="c3">Roughness of the surfaces.</td>
+</tr>
+<tr>
+	<td class="c1">Metalness</td>
+	<td class="c2">slider</td>
+	<td class="c3">Metal-like shining of the surfaces.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+<p>The parameters to compute bonds strengths are from <a href="https://uspex-team.org/online_utilities/tmp/uspex_manual_release/EnglishVersion/uspex_manual_english/appendix_goodbonds.html">USPEX manual</a>. Their initial proposal is from: Andriy O. Lyakhov and Artem R. Oganov, “Evolutionary search for superhard materials: Methodology and applications to forms of carbon and TiO2”, Phys. Rev. B 84, 092103 – Published 12 September, 2011, DOI: <a href="https://doi.org/10.1103/PhysRevB.84.092103">10.1103/PhysRevB.84.092103</a>.</p>
+
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

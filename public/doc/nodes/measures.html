@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng measures node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Measures</title>
+</head>
+
+<body>
+<h1 class="title">Measures</h1>
+<h1 class="subh1">Measure distance and angles</h1>
+
+<div class="description">
+<p>This module provides three types of interactive measurements and a summary of the current structure.</p>
+<p>The structure summary shows:</p>
+<ul>
+	<li><b>Step:</b> The step of the current visualized structure.</li>
+	<li><b>Atom count:</b> The total number of atoms subdivided by atom type in the following lines. Inside parenthesis the counts inside the unit cell.</li>
+	<li><b>Bonds count:</b> The number of bonds present and, if present, how may of them are H bonds.</li>
+</ul>
+<p>The unit cell summary shows:</p>
+<ul>
+	<li><b>Sides:</b> The sides of the unit cell <i>(a, b, c)</i>.</li>
+	<li><b>Angles:</b> The angles (in degrees) of the unit cell <i>(α, β, γ)</i>.</li>
+	<li><b>Origin:</b> The origin of the unit cell <i>(x, y, z)</i>.</li>
+</ul>
+
+<p>The module provides three types of measurements:</p>
+<dl>
+<dt>Atoms</dt>
+<dd>Clicking (Ctrl-Click) on one to three atoms gives their coordinates, distances and angle.</dd>
+<dt>Polyhedra</dt>
+<dd>Clicking (Ctrl-Click) on a polyhedra gives its volume.</dd>
+<dt>Bonds</dt>
+<dd>Clicking (Ctrl-Click) on an atom gives the lengths of its bonds.</dd>
+</dl>
+<p>The results table shows, when the measurement type <b>Atom</b> is selected:</p>
+<ul>
+<li>Atoms type and their coordinates.
+These lines are colored like the atoms selection marker.</li>
+<li>Distances between pair or atoms.</li>
+<li>Angle (in degrees) created by the three atoms.</li>
+<li>The information provided depends on the number of atoms selected. If more than three atoms are selected the first one will be deselected. Selecting again a selected atom deselects it.</li>
+</ul>
+
+<p>The results table shows, when the measurement type <b>Polyhedra</b> is selected:</p>
+<ul><li>When a polyhedra is selected by Ctrl-Click, its color changes and its volume is shown.</li></ul>
+
+<p>The results table shows, when the measurement type <b>Bonds</b> is selected:</p>
+<ul><li>The bonded atom index and its bond length. The bonds length are also put near the corresponding bond in the viewer3D.</li></ul>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Structure summary</td>
+	<td class="c2">table</td>
+	<td class="c3">Here the structure summary appears.</td>
+</tr>
+<tr>
+	<td class="c1">Unit cell</td>
+	<td class="c2">table</td>
+	<td class="c3">If the structure has an unit cell, here its summary appears.</td>
+</tr>
+<tr>
+	<td class="c1">Measurement type</td>
+	<td class="c2">radio button</td>
+	<td class="c3">Selects the measurement to make: <b>Atoms</b>, <b>Polyhedra</b> or <b>Bonds</b></td>
+</tr>
+<tr>
+	<td class="c1">Show fractional coordinates</td>
+	<td class="c2">toggle</td>
+	<td class="c3">This control appears only if <b>Atoms</b> measurement is selected and the structure has unit cell. If set, the atoms coordinates shown change from cartesian to fractional.</td>
+</tr>
+<tr>
+	<td class="c1">Results</td>
+	<td class="c2">table</td>
+	<td class="c3">Depending on the type of measurement, here the measurement results appear.</td>
+</tr>
+<tr>
+	<td class="c1">Deselect</td>
+	<td class="c2">button</td>
+	<td class="c3">Deselect selected atoms and polyhedra.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+<p>The polyhedron volume computation is done using the formula from <a href="https://mathworld.wolfram.com/PolyhedronVolume.html">Wolfram MathWorld</a>.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

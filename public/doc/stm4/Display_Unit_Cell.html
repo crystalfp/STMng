@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-us"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Organization" content="Swiss National Supercomputing Centre, Switzerland">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="STM4 module Display_Unit_Cell documentation">
+  <meta name="keywords" content="AVS,AVS/Express,STM4">
+  <meta name="copyright" content="Copyright 1999-2012 by CSCS-ETH Zurich">
+
+  <title>Display Unit Cell</title>
+
+  <link rel="stylesheet" href="stm4.css" type="text/css">
+
+</head><body>
+
+<h1>Display Unit Cell</h1>
+
+<h2>Description</h2>
+<p>Displays the borders of the unit cell. Nothing is displayed if the molecular data does not contain unit cell data.</p>
+
+<h2>Input Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">structure_in</td>
+	<td class="c2"><a href="MoleculeType.html">MoleculeType</a></td>
+	<td class="c3">Molecular structure data containing unit cell definition.</td>
+</tr>
+</table>
+
+<h2>Parameters</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Black</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If set draw the unit cell borders black, otherwise white.</td>
+</tr>
+<tr>
+	<td class="c1">Shift origin back</td>
+	<td class="c2">toggle</td>
+	<td class="c3">If set moves the origin of the unit cell from the center of the true unit cell
+	back to the correct origin.</td>
+</tr>
+<tr>
+	<td class="c1">Visible</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Toggle unit cell visibility.</td>
+</tr>
+</table>
+
+<h2>Output Ports</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">fld</td>
+	<td class="c2">Mesh+Node_Data</td>
+	<td class="c3">The unit cell as a Line cell. The node data is set to RGB white or black.</td>
+</tr>
+<tr>
+	<td class="c1">obj</td>
+	<td class="c2">DefaultObject</td>
+	<td class="c3">The renderable version of fld.</td>
+</tr>
+</table>
+
+<h2>See also</h2>
+<ul>
+	<li><a href="Replicate_Lattice.html">Replicate Lattice</a>.</li>
+	<li><a href="Read_Structure.html">Read Structure</a> for the list of formats that support the Unit Cell definition.</li>
+</ul>
+
+<div class="back"><a href="../index.html" class="back">Return to index</a></div>
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng orthoslice node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2024-09-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Orthoslice</title>
+</head>
+
+<body>
+<h1 class="title">Orthoslice</h1>
+<h1 class="subh1">Orthoslice of volumetric data</h1>
+
+<div class="description">
+<p>Draw an isosurface, a plane perpendicular to a chosen axis and map the values on it.</p>
+<p>It draw isolines on these planes if requested.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Show orthoslice</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Make orthoslice visible.</td>
+</tr>
+<tr>
+	<td class="c1">Dataset</td>
+	<td class="c2">slider</td>
+	<td class="c3">Which volumetric data set should be used.</td>
+</tr>
+<tr>
+	<td class="c1">Axis</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Perpendicular to which axis the slice is taken.</td>
+</tr>
+<tr>
+	<td class="c1">Plane</td>
+	<td class="c2">slider</td>
+	<td class="c3">Which plane of the volumetric data should be taken.</td>
+</tr>
+<tr>
+	<td class="c1">Values range</td>
+	<td class="c2">range slider</td>
+	<td class="c3">The volumetric data values range. Could be made smaller than the full values range to highlight a specific set of values.</td>
+</tr>
+<tr>
+	<td class="c1">Use discrete classes</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Divide the range in bands instead of a continuum range of colors between minimum and maximum.</td>
+</tr>
+<tr>
+	<td class="c1">Number of classes</td>
+	<td class="c2">slider</td>
+	<td class="c3">Number of bands to create. This control appears only if “Use discrete classes” is selected.</td>
+</tr>
+<tr>
+	<td class="c1">Colormap</td>
+	<td class="c2">selector</td>
+	<td class="c3">Name of the colormap to convert values into colors.</td>
+</tr>
+<tr>
+	<td class="c1">Show isolines</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Show isolines (one if not using discrete classes, otherwise multiple).</td>
+</tr>
+<tr>
+	<td class="c1">Color isolines</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Color isolines by the value they take.</td>
+</tr>
+<tr>
+	<td class="c1">Isoline value</td>
+	<td class="c2">slider</td>
+	<td class="c3">When not using multiple classes, set the value of the single isoline.</td>
+</tr>
+</table>
+
+<h2>Credits</h2>
+<p>Isolines computation is based on the <a href="https://en.wikipedia.org/wiki/Marching_squares">marching square</a> algorithm.</p>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

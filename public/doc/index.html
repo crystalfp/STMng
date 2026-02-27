@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation entry point for the STMng application">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2025-04-15"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>STMng documentation</title>
+  <link rel="stylesheet" href="style.css" />
+	<link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="scripts.js"></script>
+  <style>
+    .move {transform:translateY(6px); margin-top: -6px;}
+  </style>
+</head>
+<body>
+<header>
+<img src="title.png" width="900" height="506" alt="See The Molecule new generation (STMng) documentation" style="margin-bottom: 1rem">
+<p><b>See The Molecule new generation (STMng)</b> is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old <a href="http://mariovalle.name/STM4/index.html">STM4</a> visualization tool.</p>
+<p>The main motivation to build STMng is to have a tool to analyze the results of the <a href="https://uspex-team.org/">USPEX</a> computational material discovery system.</p>
+<p>Unlike its predecessor, STMng is built on top of <span onclick="openDetails('#tech'); return false;">open-source framework and libraries</span>.</p>
+<button onclick="toggleDetails()" class="toggle-button">Expand&hairsp;/&hairsp;Collapse cards</button>
+</header>
+<details>
+  <summary>STMng screen</summary>
+  <img src="screen.png" width="899" height="483" alt="Main parts of the STMng application screen" style="margin-bottom: 1rem;">
+  <p>The main STMng screen is divided into two areas: on the right the <b>Viewer</b> and on the left the <b>Node controls panel</b>.</p>
+  <p>Clicking on the separator between the two areas (the <b>Gutter</b>) hides the node control panel. Clicking again on it, that now is on the left of the full screen viewer, unhide the panel. The same functionality is available from the View&nbsp;→&nbsp;Extend&nbsp;viewer main menu entry. Note that, if the window is not maximized, the gutter restore functionality is overridden by the resize window handle and therefore it is not available.</p>
+  <p>On the title bar of the window is visible the currently loaded
+    <span onclick="openDetails('#project'); return false;">project</span> by its project file name or the “default project” mark. If a file is loaded in the <a href="nodes/structure-reader.html">Structure reader</a> node, the filename is also shown. If the loaded unit cell has been standardized in the <a href="nodes/compute-symmetries.html">Compute symmetries</a> node, on the right of the filename the mark “<tt>(standardized)</tt>” is added.</p>
+  <p>The <b>Node controls panel</b> contains the <b>Node selector</b> that selects the node for which the controls are shown. Below it are the parameter’s controls of the selected node.</p>
+  <p>At the bottom there are controls to <b>reset the camera position</b> in the viewer and to <b>orient the camera</b> along various axis. By default the “Reset camera” button is visible that resets the camera position to center the loaded structure. On its left side the <img src="x-button.png" width="27" height="25" alt="X" class="move"> button shows the next set of buttons that align the camera with the XYZ axis. Here on the right the toggle button that shows the <img src="plus-button.png" width="27" height="25" alt="plus" class="move"> or <img src="minus-button.png" width="27" height="25" alt="minus" class="move"> signs, sets the viewing direction along the chosen axis. If the structure in the viewer has a unit cell defined, on the left side the <img src="a-button.png" width="27" height="25" alt="A" class="move"> button opens the next set of buttons that align the camera with the ABC cell basis vectors with the same toggle button for the viewing direction. In this set of buttons and in the previous one if the cell is not present, the <img src="h-button.png" width="27" height="25" alt="H" class="move"> button returns to the “Reset camera” button.</p>
+  <p>Some nodes and menu entries open a <span onclick="openDetails('#secondary'); return false;">secondary window</span>, that can be resized and positioned freely outside the main window boundaries, with data and controls specific for its functionality.</p>
+  <p>The main window size and its maximization status are saved as user preferences and applied again on the next run.</p>
+</details>
+<details>
+  <summary>Available processing nodes documentation</summary>
+  <p>Nodes are the building blocks of the graph that controls the STMng behavior and provide its functionalities. Each node could have inputs and/or outputs and could generate graphical objects that are visualized in the viewer.</p>
+  <p>The connections between nodes are described in the loaded <span onclick="openDetails('#project'); return false;">project</span>.</p>
+  <p>STMng makes available all the nodes listed below in the so called “default project”, but the ones made available to the user could be varied creating or editing a project in the <a href="secondary/project-editor.html">Project editor</a>.</p>
+  <table>
+    <tr><td class="m1"><a href="nodes/capture-view.html">Capture view</a></td>
+        <td>Capture the viewer content as image, STL model or movie.</td></tr>
+    <tr><td><a href="nodes/compute-bonds.html">Compute bonds</a></td>
+        <td>Add bonds to the given atomic structure.</td></tr>
+    <tr><td><a href="nodes/compute-fingerprints.html">Compute fingerprints</a></td>
+        <td>Compute fingerprints for a set of structures.</td></tr>
+    <tr><td><a href="nodes/compute-symmetries.html">Compute symmetries</a></td>
+        <td>Find and apply symmetries to the structure.</td></tr>
+    <tr><td><a href="nodes/diffraction-pattern.html">Compute X-Ray diffraction</a></td>
+        <td>Compute and display the X-Ray diffraction spectra.</td></tr>
+    <tr><td><a href="nodes/structure-backbone.html">Draw a backbone tube</a></td>
+        <td>Draw a backbone tube passing through selected atoms or chain.</td></tr>
+    <tr><td><a href="nodes/draw-polyhedra.html">Draw polyhedra</a></td>
+        <td>Draw polyhedra and triangles around selected atoms.</td></tr>
+    <tr><td><a href="nodes/draw-structure.html">Draw structure</a></td>
+        <td>Transform the atomic structure data into graphic objects for display.</td></tr>
+    <tr><td><a href="nodes/draw-trajectories.html">Draw trajectories</a></td>
+        <td>Draw selected atoms trajectories as lines avoiding large jumps.</td></tr>
+    <tr><td><a href="nodes/draw-unit-cell.html">Draw unit cell</a></td>
+        <td>Draw unit cell and supercell. Compute supercell structure.</td></tr>
+    <tr><td><a href="nodes/interpolate-volume.html">Interpolate</a></td>
+        <td>Interpolate volumetric data.</td></tr>
+    <tr><td><a href="nodes/find-similar.html">Find similar structures</a></td>
+        <td>Match a structure against the “prototype” and “collection” structures.</td></tr>
+    <tr><td><a href="nodes/isosurface.html">Isosurface</a></td>
+        <td>Isosurface and nested isosurfaces from volumetric data.</td></tr>
+    <tr><td><a href="nodes/measures.html">Measures</a></td>
+        <td>Interactively measure distances, angles and polyhedra volume.</td></tr>
+    <tr><td><a href="nodes/orthoslice.html">Orthoslice</a></td>
+        <td>Draw orthoslices and isolines of volumetric data.</td></tr>
+    <tr><td><a href="nodes/slice-structure.html">Slice the structure</a></td>
+        <td>Slice the structure along various geometries.</td></tr>
+    <tr><td><a href="nodes/structure-reader.html">Structure reader</a></td>
+        <td>Read a file containing one or more atomic structures.</td></tr>
+    <tr><td><a href="nodes/structure-writer.html">Structure writer</a></td>
+        <td>Writes a single or a sequence of structures to a given format structure file.</td></tr>
+    <tr><td><a href="nodes/variable-composition.html">Variable composition</a></td>
+        <td>Split compositions and remove duplicates structures.</td></tr>
+    <tr><td><a href="nodes/viewer-3d.html">Viewer 3D</a></td>
+        <td>The 3D viewer configuration.</td></tr>
+  </table>
+</details>
+<details id="secondary">
+  <summary>Secondary windows documentation</summary>
+  <table>
+    <tr><td class="m1"><a href="secondary/log.html">Application log visualizer</a></td>
+        <td>Show the application messages log.</td></tr>
+    <tr><td class="m1"><a href="secondary/compare.html">Compare structures</a></td>
+        <td>Visually compare pair of structures.</td></tr>
+    <tr><td class="m1"><a href="secondary/fp-charts.html">Fingerprints charts</a></td>
+        <td>This window shows various charts related to fingerprinting.</td></tr>
+    <tr><td class="m1"><a href="secondary/fp-landscape.html">Fingerprints energy landscape</a></td>
+        <td>Show the energy surface interpolating the computed fingerprints.</td></tr>
+    <tr><td class="m1"><a href="secondary/fp-scatterplot.html">Fingerprints scatterplot</a></td>
+        <td>Show the fingerprints as points in a 2D space.</td></tr>
+    <tr><td class="m1"><a href="secondary/project-editor.html">Project editor</a></td>
+        <td>The editor for the loaded project file.</td></tr>
+    <tr><td class="m1"><a href="secondary/prototype.html">Show matched structures</a></td>
+        <td>Show the structure of a prototype from the <a href="https://aflow.org/prototype-encyclopedia/">Aflow prototypes library</a> or from the Collection.</td></tr>
+    <tr><td class="m1"><a href="secondary/symmetries.html">Show structure symmetries</a></td>
+        <td>Show structure symmetries in input and output from the <a href="nodes/compute-symmetries.html">Symmetry</a> node.</td></tr>
+    <tr><td class="m1"><a href="secondary/displacements.html">Show trajectory displacements</a></td>
+        <td>Show atom’s trajectory average positions and displacements.</td></tr>
+    <tr><td class="m1"><a href="secondary/components-hull.html">Variable composition convex hull</a></td>
+        <td>Show enthalpy of formation for the structures versus they compositions.</td></tr>
+    <tr><td class="m1"><a href="secondary/chart.html">X-Ray diffraction chart</a></td>
+        <td>The window shows the diffraction spectra.</td></tr>
+  </table>
+</details>
+<details>
+  <summary>Reference information</summary>
+  <table>
+    <tr><td class="m1"><a href="general/formats.html">Supported formats</a></td>
+        <td>The file formats read and written by STMng.</td></tr>
+    <tr><td class="m1"><a href="general/atom-data.html">Atom data provenance</a></td>
+        <td>The source of the atomic data used by STMng.</td></tr>
+  </table>
+</details>
+<details>
+  <summary>Old STM4 documentation</summary>
+  <p>Access the old STM4 <a href="stm4/index.html">documentation pages</a> related to the new nodes.</p>
+</details>
+<details id="project">
+  <summary>Project: the node graph description</summary>
+  <p>The <b>project</b> is the description of the nodes used, their interconnections
+  and their parameters.</p>
+  <p>The nodes provided by the project have their UI visible in the UI section of the screen.</p>
+  <p>The application comes with a hardcoded project, called the <b>default project,</b>
+  composed by all the nodes shipped. It cannot be changed but can be edited and saved as
+  a different project.</p>
+  <p>The current project or the default project is automatically loaded when the application starts.
+  The project file could also be loaded from the command line.</p>
+  <p>A <b>project</b> is a JSON formatted file with extension <tt>.stm</tt>
+  containing a JSON record with the following keys:</p>
+  <code>{
+  "graph": {
+    // List the loaded nodes and their interconnections
+  },
+  "viewer": {
+    // Optional section to collect the viewer 3D parameters
+  },
+  "ui": {
+    // Optional section that collects the parameters for each node
+  }
+}</code>
+
+  <h2>Graph section</h2>
+  <p>This section is a JSON record with the unique identifier of the nodes as keys and, for example, the following content:</p>
+  <code>{
+  "graph": {
+    "draw": {                     // The unique identifier of the node
+      "label": "Draw structure",  // The label that appears in the selection panel
+      "type": "draw-structure",   // The type of node, that is, its functionality
+      "x": 510,  // The (optional) X position of the node in the project editor
+      "y": 210,  // The (optional) Y position of the node in the project editor
+      "in": "reader"  // The id of the node from which this node takes the input.
+                      // It is missing if the node has no input or if the input
+                      // comes only from the graphical scene
+    },
+    // Other nodes
+  },
+  . . .
+}</code>
+  <h2>Project editor</h2>
+  <p>The graph structure could be seen using the <b>File → Project editor</b> menu entry. This menu entry opens the <a href="secondary/project-editor.html">Project editor</a>. This editor allows the modification of the currently loaded project that, at the end, could be saved and becomes the current project. Also, an entirely new project could be created and saved.</p>
+</details>
+<details>
+  <summary>Main menu and application shortcuts</summary>
+  <h2>System menu</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">File</td>
+      <td class="c2">Alt+F</td>
+      <td class="c3">Open the File submenu</td>
+    </tr>
+    <tr>
+      <td class="c1">View</td>
+      <td class="c2">Alt+V</td>
+      <td class="c3">Open the View submenu</td>
+    </tr>
+    <tr>
+      <td class="c1">Help</td>
+      <td class="c2">Alt+H</td>
+      <td class="c3">Open the Help submenu</td>
+    </tr>
+  </tbody>
+  </table>
+
+  <h2>File submenu</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Load project from…</td>
+      <td class="c2">Control+O</td>
+      <td class="c3">Select and load a <span onclick="openDetails('#project'); return false;">project file</span></td>
+    </tr>
+    <tr>
+      <td class="c1">Load default project</td>
+      <td class="c2">Control+D</td>
+      <td class="c3">Load the <span onclick="openDetails('#project'); return false;">default project</span></td>
+    </tr>
+    <tr>
+      <td class="c1">Save project</td>
+      <td class="c2">Control+S</td>
+      <td class="c3">Save the project to the file from which has been loaded. Disabled if the loaded project is the default one</td>
+    </tr>
+    <tr>
+      <td class="c1">Save project as…</td>
+      <td class="c2">Control+Shift+S</td>
+      <td class="c3">Save the project to a selected file. This file will be loaded automatically on next execution</td>
+    </tr>
+    <tr>
+      <td class="c1">Project editor</td>
+      <td class="c2"></td>
+      <td class="c3">Open the <a href="secondary/project-editor.html">project editor</a> window</td>
+    </tr>
+    <tr>
+      <td class="c1">Quit application</td>
+      <td class="c2">Control+Q</td>
+      <td class="c3">Quit the application after asking confirmation</td>
+    </tr>
+  </tbody>
+  </table>
+
+  <h2>View submenu</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Reload</td>
+      <td class="c2">Control+R</td>
+      <td class="c3">Reload the application</td>
+    </tr>
+    <tr>
+      <td class="c1">Toggle full screen</td>
+      <td class="c2">F11</td>
+      <td class="c3">Toggle the application full screen</td>
+    </tr>
+    <tr>
+      <td class="c1">Dark theme</td>
+      <td class="c2">Control+T</td>
+      <td class="c3">Toggle the dark theme for the application</td>
+    </tr>
+    <tr>
+      <td class="c1">Extend viewer</td>
+      <td class="c2">Control+E</td>
+      <td class="c3">Toggle the viewer extension, that is, hide the control panel on the left. The same effect is achieved clicking on the separator between the two panels (the <b>Gutter</b>)</td>
+    </tr>
+  </tbody>
+  </table>
+  <p style="margin: 0 8px 1rem 1rem;hyphens: auto;text-align: justify;">During development or calling STMng with the “<tt>-e</tt>” command line option, the following keys are also available:</p>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Toggle DevTools</td>
+      <td class="c2">F12</td>
+      <td class="c3">Toggle development tools on the main window</td>
+    </tr>
+    <tr>
+      <td class="c1">Show scene 3D</td>
+      <td class="c2"></td>
+      <td class="c3">Show in the development tools console the tree of graphical objects in the viewer</td>
+    </tr>
+  </tbody>
+  </table>
+
+  <h2>Help submenu</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">STMng documentation</td>
+      <td class="c2">F1</td>
+      <td class="c3">Open the STMng help (this file) in the default system browser</td>
+    </tr>
+    <tr>
+      <td class="c1">Current node documentation</td>
+      <td class="c2">Control+F1</td>
+      <td class="c3">Show help for the current active node in the default system browser</td>
+    </tr>
+    <tr>
+      <td class="c1">Show application log</td>
+      <td class="c2"></td>
+      <td class="c3">Open the <a href="secondary/log.html">application log file viewer</a></td>
+    </tr>
+    <tr>
+      <td class="c1">About</td>
+      <td class="c2"></td>
+      <td class="c3">Open the “About” dialog with the version of the main libraries used in the application</td>
+    </tr>
+  </tbody>
+  </table>
+</details>
+<details>
+  <summary>Convenient shortcuts</summary>
+  <h2>Sliders with increment/decrement buttons</h2>
+  <p>Clicking on the increment (<tt>+</tt>) or decrement (<tt>-</tt>) buttons with <tt>Ctrl</tt> key multiplies the value change by 10. With the <tt>Shift</tt> key (alone or together with <tt>Ctrl</tt> key), the value is multiplied by 100.</p>
+  <h2>Gutter</h2>
+  <p>Clicking on the separator between the node interfaces panel and the viewer (the gutter) hides the node controls. Clicking again on the left side of the viewer unhide the panel.</p>
+  <h2>Secondary windows</h2>
+  <p>On all <span onclick="openDetails('#secondary'); return false;">secondary windows</span> the following keys are active:</p>
+  <dl>
+    <dt>ESC</dt><dd>Close the window.</dd>
+    <dt>F1</dt><dd>Opens the help file for the current window.</dd>
+    <dt>F12</dt><dd>During development or calling STMng with the “<tt>-e</tt>” command line option, opens the development tools for the current window.</dd>
+  </dl>
+</details>
+<details>
+  <summary>Interaction with the viewers</summary>
+  <p>Interacting with the viewer means moving the camera around the visualized object.</p>
+  <p>This interaction is done through mouse movements and using keyboard arrows. Note that the same mouse actions are applicable to <a href="secondary/fp-landscape.html">Energy Landscape</a>, <a href="secondary/compare.html">Compare Structures</a> and <a href="secondary/prototype.html">Show prototype structure</a> viewers, but not the keyboard arrows shortcuts.</p>
+  <h2>Terminology</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Rotate</td>
+      <td class="c3">Rotate the camera around the scene center</td>
+    </tr>
+    <tr>
+      <td class="c1">Pan</td>
+      <td class="c3">Move the camera on the viewer plane</td>
+    </tr>
+    <tr>
+      <td class="c1">Zoom</td>
+      <td class="c3">Change the magnification of the camera without moving it</td>
+    </tr>
+    <tr>
+      <td class="c1">Dolly</td>
+      <td class="c3">Move the camera perpendicular to the viewer plane</td>
+    </tr>
+  </tbody>
+  </table>
+
+  <h2>Mouse</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Drag with left mouse button</td>
+      <td class="c3">Rotate</td>
+    </tr>
+    <tr>
+      <td class="c1">Drag with right mouse button</td>
+      <td class="c3">Pan</td>
+    </tr>
+    <tr>
+      <td class="c1">Drag with center mouse button</td>
+      <td class="c3">Dolly</td>
+    </tr>
+    <tr>
+      <td class="c1">Mouse wheel</td>
+      <td class="c3">Zoom</td>
+    </tr>
+  </tbody>
+  </table>
+
+  <h2>Keyboard arrows</h2>
+  <table class="menu">
+  <tbody>
+    <tr>
+      <td class="c1">Any arrow</td>
+      <td class="c3">Pan</td>
+    </tr>
+    <tr>
+      <td class="c1">Control + any arrow</td>
+      <td class="c3">Rotate</td>
+    </tr>
+    <tr>
+      <td class="c1">Shift + any arrow</td>
+      <td class="c3">Zoom (Left and Down do the same, as do Right and Up)</td>
+    </tr>
+    <tr>
+      <td class="c1">Alt + any arrow</td>
+      <td class="c3">Dolly (Left and Down do the same, as do Right and Up)</td>
+    </tr>
+  </tbody>
+  </table>
+  <p>Dolly movements have a visible effect only with the Perspective camera. Instead with the Orthographic camera objects too near or too far from the camera are cut from view. If this happens, a dolly movement helps to restore objects’ integrity.</p>
+</details>
+<details>
+  <summary>Command line options</summary>
+  <code>
+Usage: STMng [options] [project-file]
+
+See The Molecule new generation (STMng) is a chemical and crystallographic
+structure visualization and analysis tool that inherits some functionalities
+of STM4
+
+Arguments:
+  project-file            project file to be loaded
+
+Options:
+  -V, --version           output the version number
+  -t, --theme &lt;theme&gt;     user interface theme (choices: "dark", "light")
+  -d, --default           force load of default project
+  -v, --verbose           verbose
+  -n, --no-antialiasing   disable antialiasing (for performance)
+  -e, --enable            enable developer tools in production build
+  -x, --extra &lt;switches&gt;  extra command line switches
+  -r, --read &lt;file&gt;       input file to be read
+  -a, --aux &lt;file&gt;        auxiliary file to be read
+  -h, --help              display help for command
+
+</code>
+<p>The “<tt>-x</tt>” command line switch passes the arguments that follow it to the internal processes. To pass a command line switch (e.g., <tt>--enable-unsafe-swiftshader</tt> used to solve on Linux a problem with the graphic driver) remove the initial double dash. When there is more than one argument, separate them by commas; if a value is provided, it appears after the argument and is joined to it with a “<tt>=</tt>” sign.</p>
+<p>Verbose can be set also with the “<tt>STM_NG_VERBOSE</tt>” environment variable set to any value.</p>
+<p>Developer tools can be enabled in production also with the “<tt>STM_NG_ENABLE</tt>” environment variable set to any value.</p>
+<p>The “<tt>-n</tt>” switch disable the antialiasing in the 2D viewer to gain some performance at the expense of graphic quality.</p>
+<p style="margin-bottom:0.1rem">The “<tt>-r</tt>” and the “<tt>-a</tt>” switches accept path to a file containing the structure (<tt>-r</tt>) and optionally an auxiliary file (<tt>-a</tt>) respectively that will be loaded in batch if the project has already defined the file format. Typical usage is:</p>
+<code>
+$ STMng --read file.poscar --aux file.energy compute-fingerprints.stm
+
+</code>
+</details>
+<details id="tech">
+  <summary>Technology</summary>
+  <p>STMng is an <a href="https://www.electronjs.org/">ElectronJS</a> multiplatform application written in <a href="https://www.typescriptlang.org/">Typescript</a> with small interface parts written in C++.</p>
+  <p>The user interface is based on the <a href="https://vuejs.org/">Vue</a> framework with <a href="https://vuetifyjs.com/en/">Vuetify</a> widgets.</p>
+  <p>The 3D viewer uses the <a href="https://threejs.org/">three.js</a> interface to WebGL provided by the Chromium browser integrated inside ElectronJS.</p>
+  <p>The development toolchain is based on <a href="https://vite.dev/">Vite</a>, the final build for production uses <a href="https://www.electron.build/">electron-builder</a>. The bundling of the code for the parallel computations is done by <a href="https://rollupjs.org/">Rollup</a>.</p>
+  <p>Credits for specific libraries used are listed in the respective node documentation pages.</p>
+</details>
+<details>
+  <summary>License</summary>
+
+<div style="float:left;margin: 5px 10px 3px 0">
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="img"><img alt="Licenza Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" width="88" height="31" /></a>
+</div>
+
+<p style="margin-top:0"><span itemprop="work">STMng</span> by <a href="mailto:mvalle@ikmail.com?Subject=Contact%20from%20STMng" itemprop="author">Mario Valle</a> is licensed under Creative Commons License <i>Attribution, Non Commercial, Share Alike 4.0 International</i> (CC BY-NC-SA 4.0)</p>
+<div style="clear:both;">&nbsp;</div>
+
+<p style="margin-top:-2rem">You are free to:</p>
+<ul style="list-style-type: none;">
+<li><strong>Share</strong> &mdash; copy and redistribute the material in any medium or format.</li>
+<li><strong>Adapt</strong> &mdash; remix, transform, and build upon the material.</li>
+</ul>
+
+<p>Under the following terms:</p>
+<ul style="list-style-type: none;">
+<li><strong>Attribution</strong> &mdash; You must give proper credit, provide a link to the license, and show if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
+
+<li><strong>Non-Commercial</strong> &mdash; You may not use the material for commercial purposes.</li>
+
+<li><strong>Share Alike</strong> &mdash; If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.</li>
+</ul>
+
+<p>This is a human-readable summary of (and not a substitute for) the <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">license</a>. More information can be found at: <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" itemprop="license">creativecommons.org/licenses/by-nc-sa/4.0/</a></p>
+</details>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    parts = window.location.href.split("#");
+    if(parts.length === 2) openDetails("#"+parts[1]);
+  }, {once: true});
+</script>
+</body>
+</html>
