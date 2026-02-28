@@ -225,8 +225,8 @@ const showMatches = (): void => {
       <v-container v-for="entry of similar" :key="entry.id" v-ripple
                    class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
                    @click="selectResult(entry.id, true)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer">
-            {{ entry.title }}</v-label><br>
+        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" />
+        <br>
         <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
         <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
             {{ entry.distance!.toFixed(4) }}</v-label>

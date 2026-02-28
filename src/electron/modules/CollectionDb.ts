@@ -188,7 +188,7 @@ class CollectionDb {
 		for(let i=0; i < this.countEntries; ++i) {
 			out.push({
 				id: i.toString(),
-				title: this.entries![i].title
+				title: this.entries![i].title.replaceAll(/<\/?sub>/g, "")
 			});
 		}
 

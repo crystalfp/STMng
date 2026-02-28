@@ -485,12 +485,14 @@ export class ComputeSymmetries extends NodeCore {
 
 		const MARGIN = 10**this.fillTolerance;
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels, chains, extra} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels,
+			   intlSymbol, chains, extra} = out;
+
 		const structure: Structure = {
 			crystal: {
 				basis,
 				origin: [0, 0, 0],
-				spaceGroup
+				spaceGroup: intlSymbol || spaceGroup
 			},
 			atoms: [],
 			bonds: [],
@@ -678,12 +680,13 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private buildStructure(out: ComputeSymmetriesOutput): Structure {
 
-		const {basis, spaceGroup, fractionalCoordinates, atomsZ, chains, extra, labels} = out;
+		const {basis, spaceGroup, fractionalCoordinates, atomsZ,
+			   chains, extra, labels, intlSymbol} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
 				origin: [0, 0, 0],
-				spaceGroup
+				spaceGroup: intlSymbol || spaceGroup
 			},
 			atoms: [],
 			bonds: [],
