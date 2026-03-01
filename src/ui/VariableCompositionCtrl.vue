@@ -417,7 +417,7 @@ onUnmounted(() => {
 
   <v-row class="ml-2 mr-2">
     <v-col cols="7">
-      <v-label class="result-label pt-1">{{ `Count: ${countAccumulated}` }}</v-label>
+      <v-label class="result-label pt-2">{{ `Count: ${countAccumulated}` }}</v-label>
     </v-col>
     <v-col>
       <v-btn :disabled="countAccumulated===0" class="w-100" @click="resetAccumulator">Reset</v-btn>
@@ -467,7 +467,7 @@ onUnmounted(() => {
 
   <v-label class="separator-title">Filter structures</v-label>
 
-  <v-row class="ml-0 mr-2 pt-3">
+  <v-row class="ml-0 mr-2 pt-1 mb-n4">
     <v-switch v-model="state.filterOnDistance"
             label="Filter" class="ml-2 mr-3 mb-6" />
     <v-number-input v-model="state.distanceFromHull" :disabled="!state.filterOnDistance"
@@ -491,7 +491,7 @@ onUnmounted(() => {
     label="Fingerprinting method"
     item-title="label"
     item-value="value"
-    class="mx-2 mb-6" />
+    class="mx-2 mb-4" />
 
   <v-row class="ml-0 mr-2">
     <v-number-input v-model="state.peakWidth" :precision="2"
@@ -505,7 +505,7 @@ onUnmounted(() => {
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    class="mx-2 mb-4 mt-1" />
+    class="mx-2 mb-4 mt-n1" />
 
   <v-switch v-model="state.fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n1" />
@@ -519,12 +519,11 @@ onUnmounted(() => {
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
 
-  <v-label v-if="analysisRunning" class="mb-2 result-label cursor-wait">
-           Analysis running&hellip;</v-label>
-  <block-button v-else :disabled="selected.length === 0 || !state.removeDuplicates"
-         label="Analyze selected for duplicates" class="mb-n2"
-         @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>
-    <node-alert node="variableComposition2" class="mt-1"/>
+  <block-button :disabled="selected.length === 0 || !state.removeDuplicates"
+                :loading="analysisRunning"
+                label="Analyze selected for duplicates" class="mb-n2"
+                @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>
+  <node-alert node="variableComposition2" class="mt-1"/>
 
   <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"

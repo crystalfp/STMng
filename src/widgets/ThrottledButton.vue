@@ -35,11 +35,15 @@ const props = withDefaults(defineProps<{
     /** Button disable */
     disabled?: boolean;
 
+    /** Show that the corresponding operation is running */
+    loading?: boolean;
+
   }>(), {
 
     label: "Push me!",
     timeout: 500,
-    disabled: false
+    disabled: false,
+    loading: false
 });
 
 const emit = defineEmits<{
@@ -66,6 +70,6 @@ const click = (): void => {
 
 <template>
 <v-container class="pl-0 pt-0 pr-2">
-  <v-btn block :disabled @click="click">{{ label }}</v-btn>
+  <v-btn block :disabled :loading @click="click">{{ label }}</v-btn>
 </v-container>
 </template>

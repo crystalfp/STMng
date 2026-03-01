@@ -525,7 +525,7 @@ const showEnergyLandscape = (): void => {
       <v-btn :disabled="countAccumulated!==0" class="w-100"
              @click="fingerprintsAccumulate=true">Load one</v-btn>
     </div>
-    <div class="grid-bl">
+    <div class="grid-bl pt-2">
       <v-label class="result-label">{{ `Structures loaded: ${countAccumulated}` }}</v-label>
     </div>
     <div class="grid-br">
@@ -547,20 +547,20 @@ const showEnergyLandscape = (): void => {
                     label="Max energy" readonly :precision="4" class="ml-2 mr-5" />
   </v-row>
 
-  <v-label class="mt-2 mb-2 result-label"> {{ accumulatedLabel }}</v-label>
+  <v-label class="mb-2 result-label"> {{ accumulatedLabel }}</v-label>
 
   <v-label class="separator-title">Compute fingerprints</v-label>
 
   <v-switch v-model="areNanoclusters"
             label="Structures are nanoclusters" class="ml-2 mt-n1" />
-  <v-row class="mt-0 mx-0">
+  <v-row class="ma-0 mb-n2">
     <v-switch v-model="forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
     <v-number-input v-model="manualCutoffDistance" label="Cutoff distance"
                     :min="0.1" :step="0.1" :precision="2"
                     :disabled="!forceCutoff" class="ml-4 mr-2" />
   </v-row>
 
-  <v-label class="mt-1 mb-4 result-label">{{ cutoffLabel }}</v-label>
+  <v-label class="mb-4 result-label">{{ cutoffLabel }}</v-label>
 
   <v-select v-model="fingerprintingMethod"
     :items="fingerprintMethodsNames"
@@ -578,12 +578,12 @@ const showEnergyLandscape = (): void => {
   <v-switch v-model="processParallelism" label="Multi process parallelism" class="ml-2 mb-2"/>
   <block-button :disabled="countSelected === 0"
          label="Compute fingerprints & distances"
+         :loading="fingerprintingBusy"
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()"/>
 
   <v-row class="ml-0 mt-n2 mb-2">
-    <v-label v-if="resultDimensionality > 0" class="mt-4 mb-2 result-label">
+    <v-label v-if="resultDimensionality > 0" class="mt-4 mb-0 result-label">
       {{ `Fingerprint dimension: ${resultDimensionality}` }}</v-label>
-    <v-label v-if="fingerprintingBusy" class="mt-4 result-label cursor-wait">Working&hellip;</v-label>
     <v-container v-if="intrinsicDimension > 0 && !fingerprintingBusy" class="pa-0 my-n2">
       <v-label class="result-label">
               {{ `Intrinsic dimension: ${intrinsicDimension.toFixed(2)} (theory: ${theoreticalDimension.toFixed(2)})` }}</v-label>
@@ -604,13 +604,13 @@ const showEnergyLandscape = (): void => {
 
   <v-switch v-model="fixTriangleInequality"
             label="Fix triangle inequality" class="ml-2 mt-n1" />
-  <v-row v-if="countDistances > 0" class="mt-n1 mb-n2">
+  <v-row v-if="countDistances > 0" class="mt-1 mb-n1">
     <v-col cols="12">
       <v-label class="result-label">
         {{ `Distances computed: ${countDistances}` }}
       </v-label>
     </v-col>
-      <v-col v-if="endMessage !== '' && fixTriangleInequality" cols="12" class="mt-n4">
+      <v-col v-if="endMessage !== '' && fixTriangleInequality" cols="12" class="mt-n2">
         <v-label class="result-label">
           {{ endMessage }}
         </v-label>
@@ -625,7 +625,7 @@ const showEnergyLandscape = (): void => {
     <v-number-input v-model="duplicatesThreshold" :disabled="!removeDuplicates"
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
-  <v-label v-if="pointsRemoved >= 0 && removeDuplicates" class="result-label mt-2">
+  <v-label v-if="pointsRemoved >= 0 && removeDuplicates" class="result-label">
     {{ `Points removed: ${pointsRemoved} of ${countSelected}` }}
   </v-label>
 
@@ -647,24 +647,20 @@ const showEnergyLandscape = (): void => {
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
   <block-button :disabled="countDistances === 0"
-                label="Group similar structures"
+                label="Group similar structures" :loading="groupingBusy"
                 @click="groupingBusy = true; ClassifyStructures()" />
-  <v-container class="pa-0">
-    <v-label v-if="countGroups > 0" class="mt-4 mb-2 result-label">
-      {{ `Found ${countGroups} groups` }}
-    </v-label>
-    <v-label v-if="groupingBusy" class="mt-4 mb-2 result-label cursor-wait">Working&hellip;</v-label>
-  </v-container>
+  <v-label v-if="countGroups > 0" class="mb-2 result-label">
+    {{ `Found ${countGroups} groups` }}
+  </v-label>
 
   <v-label class="separator-title">Show results</v-label>
 
-  <throttled-button block class="mb-2" :disabled="countDistances === 0"
+  <throttled-button block :disabled="countDistances === 0"
                     label="Export results" @click="exportResults" />
-  <v-label v-if="working" class="result-label mb-3 mt-1 cursor-wait">
-           Show scatterplot is working&hellip;</v-label>
-  <throttled-button v-else block class="mb-2" label="Show scatterplot"
-                    :disabled="countDistances === 0" @click="working=true;showScatterplot()" />
-  <throttled-button block class="mb-2" :disabled="!resultDimensionality"
+  <throttled-button block label="Show scatterplot"
+                    :loading="working" :disabled="countDistances === 0"
+                    @click="working=true;showScatterplot()" />
+  <throttled-button block :disabled="!resultDimensionality"
                     label="Show charts" @click="showCharts" />
   <throttled-button block class="mb-6" :disabled="countDistances === 0 || !haveEnergies"
                     label="Show energy landscape" @click="showEnergyLandscape" />
