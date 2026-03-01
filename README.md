@@ -1,4 +1,7 @@
 # See The Molecule new generation (STMng)
+<div align="center">
+    <img src="./resources/icon.png" width="180" height="180">
+</div>
 See The Molecule new generation (STMng) is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old [STM4](http://mariovalle.name/STM4/index.html) visualization tool.
 
 STMng primary use is to analyze the results of the [USPEX](https://uspex-team.org/) computational material discovery system.
