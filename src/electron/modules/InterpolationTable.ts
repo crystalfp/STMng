@@ -21,7 +21,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 /** Matrix 64x64 of coefficients to compute values interpolation in volume */
 export const M: number[][] = [

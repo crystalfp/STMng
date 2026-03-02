@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {reactive} from "vue";
 import log from "electron-log";
@@ -132,8 +132,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
       <v-container v-for="entry of collection" :key="entry.id" v-ripple
                    class="mb-3 py-1 pl-2 ml-2 border-thin rounded-lg cursor-pointer"
                    @click="selectResult(entry.id, true)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer">
-            {{ entry.title }}</v-label><br>
+        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title"/><br>
         <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
         <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
             {{ entry.distance!.toFixed(4) }}</v-label>
@@ -168,4 +167,10 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
   max-width: 3000px !important;
   scrollbar-gutter: stable;
 }
+
+:deep(sub) {
+  position: relative;
+  bottom: -0.5rem;
+}
+
 </style>

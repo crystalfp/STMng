@@ -28,7 +28,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 /** Parameters pairs to compute `a*exp(-b)` for atom scattering */
 export const ATOMIC_SCATTERING_PARAMS: Record<string, number[][]> = {

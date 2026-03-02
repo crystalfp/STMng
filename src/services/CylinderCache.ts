@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {Color, CylinderGeometry, InstancedMesh, type Material, Matrix4,
 		type Mesh, Quaternion, Vector3, type Group} from "three";
