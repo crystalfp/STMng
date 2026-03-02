@@ -158,6 +158,7 @@ static void applySymmetriesInput(string& spaceGroup,
 								 vector<double_t>& fractionalCoordinates,
 								 vector<int32_t>& atomsZ,
 								 int& sgNumber,
+								 string& intlSymbolIn,
 								 string& error)
 {
 	// Initialize the error message to no message and no space group number
@@ -396,10 +397,7 @@ static void applySymmetriesInput(string& spaceGroup,
 	}
 
 	sgNumber = SgInfo.TabSgName ? SgInfo.TabSgName->SgNumber : 0;
-
-	// TEST
-	// This is the intl. symbol. Remove all "_"
-	// cout << "LABELS: " << SgInfo.TabSgName->SgLabels << "\n";
+	intlSymbolIn = SgInfo.TabSgName ? SgInfo.TabSgName->SgLabels : "";
 
 	// Apply symmetries
 	if(applySymmetries) {
@@ -625,6 +623,7 @@ string doFindAndApplySymmetries(
 	double symprecDataset,
 	bool& unitCellModified,
 	string& intlSymbol,
+	string& intlSymbolIn,
 	int& sgNumberIn,
 	int& sgNumberOut)
 {
@@ -632,13 +631,14 @@ string doFindAndApplySymmetries(
 	string status("");
 	unitCellModified = false;
 	intlSymbol = "";
+	intlSymbolIn = "";
 	sgNumberIn = 0;
 	sgNumberOut = 0;
 
 	// Apply input symmetries
 	if(spaceGroup != "")
 	{
-		applySymmetriesInput(spaceGroup, applyInputSymmetries, fractionalCoordinates, atomsZ, sgNumberIn, status);
+		applySymmetriesInput(spaceGroup, applyInputSymmetries, fractionalCoordinates, atomsZ, sgNumberIn, intlSymbolIn, status);
 	}
 
 #ifdef DEBUG
@@ -801,8 +801,6 @@ string doFindAndApplySymmetries(
 
 			// Release the dataset
 			spg_free_dataset(dataset);
-
-			// applySymmetriesInput(spaceGroup, fractionalCoordinates, atomsZ, status);
 		}
 
 		free(types);

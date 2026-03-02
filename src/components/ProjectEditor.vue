@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {computed, ref, reactive, onMounted} from "vue";
 import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLineType, Position,
@@ -575,6 +575,7 @@ const confirmDeletion = (): void => {
             }
         }
     }
+    selectedIds.clear();
 };
 
 /**

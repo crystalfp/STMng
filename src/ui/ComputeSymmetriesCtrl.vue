@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {computed, onUnmounted, ref, watch} from "vue";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
@@ -57,6 +57,7 @@ const standardizeOnly = ref(false);
 const inputSpaceGroup = ref("");
 const computedSpaceGroup = ref("");
 const intlSymbol = ref("");
+const intlSymbolIn = ref("");
 const sgNumberIn = ref(0);
 const sgNumberOut = ref(0);
 const fillTolerance = ref(-5);
@@ -101,6 +102,7 @@ askNode(id, "init")
         positionTolerance.value = params.positionTolerance as number ?? 0.3;
         eigenvalueTolerance.value = params.eigenvalueTolerance as number ?? 0.01;
         intlSymbol.value = params.intlSymbol as string ?? "";
+        intlSymbolIn.value = params.intlSymbolIn as string ?? "";
         displayMode.value = params.displayMode as string ?? "international";
         sgNumberIn.value = params.sgNumberIn as number ?? 0;
         sgNumberOut.value = params.sgNumberOut as number ?? 0;
@@ -166,6 +168,7 @@ receiveFromNode(id, "show", (params: CtrlParams) => {
     if(params.enableFindSymmetries !== undefined) enableFindSymmetries.value = params.enableFindSymmetries as boolean;
     if(params.pointGroup !== undefined) pointGroup.value = params.pointGroup as string;
     if(params.intlSymbol !== undefined) intlSymbol.value = params.intlSymbol as string;
+    if(params.intlSymbolIn !== undefined) intlSymbolIn.value = params.intlSymbolIn as string;
     if(params.sgNumberIn !== undefined) sgNumberIn.value = params.sgNumberIn as number;
     if(params.sgNumberOut !== undefined) sgNumberOut.value = params.sgNumberOut as number;
 });
@@ -204,6 +207,7 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
 });
 
 const inputValue = computed(() => {
+    if(displayMode.value === "international" && intlSymbolIn.value !== "") return intlSymbolIn.value;
     if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
     return inputSpaceGroup.value;
 });

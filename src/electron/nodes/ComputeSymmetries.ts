@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {NodeCore} from "../modules/NodeCore";
 import {findAndApplySymmetries} from "../modules/NativeFunctions";
@@ -46,6 +46,8 @@ interface ComputeSymmetriesOutput {
 	spaceGroup: string;
 	/** International symmetry symbol */
 	intlSymbol: string;
+	/** International symmetry symbol on input */
+	intlSymbolIn: string;
 	/** Input space group number */
 	sgNumberIn: number;
 	/** Computed space group number */
@@ -136,6 +138,7 @@ export class ComputeSymmetries extends NodeCore {
 	private sgNumberIn = 0;
 	private sgNumberOut = 0;
 	private intlSymbol = "";
+	private intlSymbolIn = "";
 	private displayMode = "international";
 	private createPrimitiveCell = false;
 	private computePointGroup = false;
@@ -337,11 +340,18 @@ export class ComputeSymmetries extends NodeCore {
 			}
 		}
 
+		const intlSymbolIn = computed.intlSymbolIn.replaceAll("_", "");
+
+		const sg = (this.enableFindSymmetries || this.standardizeCell || this.standardizeOnly) ?
+						computed.intlSymbol || computed.spaceGroup :
+						intlSymbolIn;
+
 		// Return results to the client
 		const out: ComputeSymmetriesOutput = {
 			basis: [...computed.basis] as BasisType,
-			spaceGroup: computed.spaceGroup,
+			spaceGroup: sg,
 			intlSymbol: computed.intlSymbol,
+			intlSymbolIn: intlSymbolIn,
 			sgNumberIn: computed.sgNumberIn,
 			sgNumberOut: computed.sgNumberOut,
 			atomsZ: atomsZOut,
@@ -357,6 +367,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		this.computedSpaceGroup = computed.spaceGroup;
 		this.intlSymbol = computed.intlSymbol;
+		this.intlSymbolIn = intlSymbolIn;
 		this.sgNumberIn = computed.sgNumberIn;
 		this.sgNumberOut = computed.sgNumberOut;
 
@@ -377,11 +388,11 @@ export class ComputeSymmetries extends NodeCore {
 
 		const inSymmetry = this.inputStructure?.crystal?.spaceGroup ?? "";
 		outSymmetry ??= inSymmetry;
-		const {intlSymbol, sgNumberIn, sgNumberOut, id, displayMode} = this;
+		const {intlSymbol, intlSymbolIn, sgNumberIn, sgNumberOut, id, displayMode} = this;
 
 		// Update the UI
 		sendToClient(id, "show", {inSymmetry, outSymmetry, pointGroup,
-								  intlSymbol, sgNumberIn, sgNumberOut});
+								  intlSymbol, intlSymbolIn, sgNumberIn, sgNumberOut});
 
 		// Update the dialog if it is open
 		if(isSecondaryWindowOpen("/symmetries")) {
@@ -391,6 +402,7 @@ export class ComputeSymmetries extends NodeCore {
 				outSymmetry,
 				pointGroup,
 				intlSymbol,
+				intlSymbolIn,
 				sgNumberIn,
 				sgNumberOut,
 				displayMode,
@@ -458,6 +470,7 @@ export class ComputeSymmetries extends NodeCore {
 			basis,
 			spaceGroup,
 			intlSymbol: "",
+			intlSymbolIn: "",
 			sgNumberIn: 0,
 			sgNumberOut: 0,
 			atomsZ,
@@ -486,13 +499,13 @@ export class ComputeSymmetries extends NodeCore {
 		const MARGIN = 10**this.fillTolerance;
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels,
-			   intlSymbol, chains, extra} = out;
+			   chains, extra} = out;
 
 		const structure: Structure = {
 			crystal: {
 				basis,
 				origin: [0, 0, 0],
-				spaceGroup: intlSymbol || spaceGroup
+				spaceGroup: spaceGroup
 			},
 			atoms: [],
 			bonds: [],
@@ -681,12 +694,12 @@ export class ComputeSymmetries extends NodeCore {
 	private buildStructure(out: ComputeSymmetriesOutput): Structure {
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ,
-			   chains, extra, labels, intlSymbol} = out;
+			   chains, extra, labels} = out;
 		const structure: Structure = {
 			crystal: {
 				basis,
 				origin: [0, 0, 0],
-				spaceGroup: intlSymbol || spaceGroup
+				spaceGroup: spaceGroup
 			},
 			atoms: [],
 			bonds: [],
@@ -731,6 +744,7 @@ export class ComputeSymmetries extends NodeCore {
 			eigenvalueTolerance: this.eigenvalueTolerance,
 			pointGroup: this.pointGroup,
 			intlSymbol: this.intlSymbol,
+			intlSymbolIn: this.intlSymbolIn,
 			displayMode: this.displayMode,
 			sgNumberIn: this.sgNumberIn,
 			sgNumberOut: this.sgNumberOut
@@ -825,6 +839,7 @@ export class ComputeSymmetries extends NodeCore {
 			outSymmetry: this.computedSpaceGroup,
 			pointGroup: this.pointGroup,
 			intlSymbol: this.intlSymbol,
+			intlSymbolIn: this.intlSymbolIn,
 			displayMode: this.displayMode,
 			sgNumberIn: this.sgNumberIn,
 			sgNumberOut: this.sgNumberOut

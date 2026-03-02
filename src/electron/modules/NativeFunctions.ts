@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see <http://www.gnu.org/licenses/>.
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {createRequire} from "node:module";
 const rq = createRequire(import.meta.url);
@@ -35,6 +35,8 @@ interface FindAndApplySymmetriesOutput {
 	spaceGroup: string;
 	/** International symmetry symbol */
 	intlSymbol: string;
+	/** International symmetry symbol on input */
+	intlSymbolIn: string;
 	/** Input space group number */
 	sgNumberIn: number;
 	/** Computed space group number */

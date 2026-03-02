@@ -422,6 +422,6 @@ export default defineConfig([
         // "@eslint-community/eslint-comments/no-unlimited-disable": "warn",
         "@eslint-community/eslint-comments/no-unused-disable": "warn",
         "@eslint-community/eslint-comments/no-unused-enable": "warn",
-        "tsdoc/syntax": "off",
+        "tsdoc/syntax": "warn",
     }
 }]);
