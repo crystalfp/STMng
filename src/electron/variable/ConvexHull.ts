@@ -441,7 +441,7 @@ export class VariableCompositionConvexHull {
 
 	/**
 	 * Distance from the closest point inside the triangle
-	 * @remarks Code ported from <https://stackoverflow.com/questions/2924795/fastest-way-to-compute-point-to-triangle-distance-in-3d/74395029>
+	 * @remarks Code ported from: https://stackoverflow.com/questions/2924795/fastest-way-to-compute-point-to-triangle-distance-in-3d/74395029
 	 *
 	 * @param p - Point to test
 	 * @param a - Vertex of the triangle

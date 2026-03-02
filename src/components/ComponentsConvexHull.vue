@@ -171,7 +171,7 @@ const showOnLine = ref(true);
 
 /**
  * Toggle visibility of the chart items
- * Implementing the fix from: <https://github.com/f5/unovis/issues/729#issuecomment-3850102309>
+ * Implementing the fix from: https://github.com/f5/unovis/issues/729#issuecomment-3850102309
  *
  * @param item - Legend item
  * @param which - Which legend item is selected

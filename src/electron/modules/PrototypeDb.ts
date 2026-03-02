@@ -443,7 +443,7 @@ export const prototypeGetStructure = (aflow: string): PrototypeStructure | undef
  * @param initialLtol - Fractional length tolerance
  * @param initialStol - Site tolerance
  * @param initialAngleTol - Angle tolerance
- * @returns Prototypes found as {mineral[], aflow[]}
+ * @returns Prototypes found as (mineral[], aflow[])
  */
 export const findMatchingPrototypes = (structure: Structure,
 									   initialLtol: number,

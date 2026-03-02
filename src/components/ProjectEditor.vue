@@ -109,9 +109,6 @@ interface AvailableNode {
     /** True if the node send a structure down the pipeline */
     hasOutput: boolean;
 
-    /** True if the output could remain unconnected */
-    hasOptionalOutput: boolean;
-
     /** "out": generates graphical output, "in": the viewer, "none": is pure computation */
     graphic: GraphicType;
 
@@ -189,10 +186,10 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
         const availableNode: AvailableNode = {
 
             idPrefix: item.idPrefix,
-            label: item.type[0].toUpperCase() + item.type.slice(1).replaceAll("-", " "),
+            label: item.type[0].toUpperCase() +
+                   item.type.slice(1).replaceAll("-", " "),
             hasInput: item.in,
             hasOutput: item.out,
-            hasOptionalOutput: item.opt,
             graphic: item.graphic,
             type: item.type
         };
@@ -478,19 +475,6 @@ const saveProjectGraph = (saveAs: boolean): void => {
                 if(node.in === "" && availableNode.hasInput) {
                     reportError(`Node "${node.label}" input is unconnected`);
                     hasErrors = true;
-                }
-                if(availableNode.hasOutput && !availableNode.hasOptionalOutput) {
-                    let isConnected = false;
-                    for(const node2 of graphFlow) {
-                        if(node2.in === node.id) {
-                            isConnected = true;
-                            break;
-                        }
-                    }
-                    if(!isConnected) {
-                        reportError(`Node "${node.label}" output is unconnected`);
-                        hasErrors = true;
-                    }
                 }
                 break;
             }

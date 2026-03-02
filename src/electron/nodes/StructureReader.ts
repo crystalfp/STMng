@@ -251,6 +251,8 @@ export class StructureReader extends NodeCore {
 				return message;
 			});
 		if(typeof structures === "string") {
+			this.toNextNode(new EmptyStructure());
+			log.error(message);
 			return {error: structures};
 		}
 
@@ -281,6 +283,7 @@ export class StructureReader extends NodeCore {
 
 		message = `Invalid "${requestedFormat}" file content`;
 		log.error(message);
+		this.toNextNode(new EmptyStructure());
 		return {error: message};
 	}
 

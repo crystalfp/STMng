@@ -62,10 +62,10 @@ export class SymmOp {
         this.matrix = matrix;
     }
 
-	/**
+	/*
 	 * Print SymmOp
 	 *
-	 * @returns Human readable content of the affine matrix
+	 * returns Human readable content of the affine matrix
 	 *
 	toString(): string {
 
