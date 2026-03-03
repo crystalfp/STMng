@@ -31,8 +31,7 @@ const Step = {
     start: 		1,
     normal:  	2,
     blank:   	3,
-    quoted:   	4,
-    endQuoted:  5
+    quoted:   	4
 } as const;
 
 /**
@@ -92,7 +91,7 @@ export class ParseQuotedLine {
 	 */
 	private save(ch: string): void {
 
-		this.partial += ch;
+		this.partial += (ch === "|") ? "'" : ch;
 	}
 
 	/**
@@ -129,7 +128,7 @@ export class ParseQuotedLine {
 
 		const nextStart = new Map<CharType, Transition>([
 			[Char.normal, {next: Step.normal, action: this.start.bind(this)}],
-			[Char.blank,  {next: Step.blank}],
+			[Char.blank,  {next: Step.start}],
 			[Char.quote,  {next: Step.quoted, action: this.startEmpty.bind(this)}],
 		]);
 		this.transitions.set(Step.start, nextStart);
@@ -137,7 +136,7 @@ export class ParseQuotedLine {
 		const nextNormal = new Map<CharType, Transition>([
 			[Char.normal, {next: Step.normal, action: this.save.bind(this)}],
 			[Char.blank,  {next: Step.blank,  action: this.end.bind(this)}],
-			[Char.quote,  {next: Step.quoted, action: this.end.bind(this)}],
+			[Char.quote,  {next: Step.normal, action: this.save.bind(this)}],
 		]);
 		this.transitions.set(Step.normal, nextNormal);
 
@@ -149,25 +148,17 @@ export class ParseQuotedLine {
 		this.transitions.set(Step.blank, nextBlank);
 
 		const nextQuoted = new Map<CharType, Transition>([
-			[Char.normal, {next: Step.quoted,    action: this.save.bind(this)}],
-			[Char.blank,  {next: Step.quoted,    action: this.save.bind(this)}],
-			[Char.quote,  {next: Step.endQuoted, action: this.end.bind(this)}],
+			[Char.normal, {next: Step.quoted, action: this.save.bind(this)}],
+			[Char.blank,  {next: Step.quoted, action: this.save.bind(this)}],
+			[Char.quote,  {next: Step.blank,  action: this.end.bind(this)}],
 		]);
 		this.transitions.set(Step.quoted, nextQuoted);
-
-		const nextEndQuoted = new Map<CharType, Transition>([
-			[Char.normal, {next: Step.normal,    action: this.start.bind(this)}],
-			[Char.blank,  {next: Step.endQuoted, action: this.startEmpty.bind(this)}],
-			[Char.quote,  {next: Step.quoted,    action: this.start.bind(this)}],
-		]);
-		this.transitions.set(Step.endQuoted, nextEndQuoted);
 
 		this.finish = new Map<StepType, EndAction | undefined>([
 			[Step.start, 	 undefined],
 			[Step.normal, 	 this.end.bind(this)],
 			[Step.blank, 	 undefined],
 			[Step.quoted, 	 this.end.bind(this)],
-			[Step.endQuoted, undefined],
 		]);
 	}
 
@@ -181,7 +172,7 @@ export class ParseQuotedLine {
 
 		const l2 = line.replaceAll(String.raw`\'`, "⸳").replaceAll(String.raw`\"`, "†");
 		// eslint-disable-next-line sonarjs/slow-regex
-		const l3 = l2.replaceAll(/(?:^|\s+)["']/g, "|").replaceAll(/["'](?:\s+|$)/g, "|");
+		const l3 = l2.replaceAll(/(?:^|\s+)["']/g, " |").replaceAll(/["'](?:\s+|$)/g, "| ");
 		const l4 = l3.replaceAll("⸳", "'").replaceAll("†", '"');
 
 		this.partial = "";
@@ -215,6 +206,7 @@ export class ParseQuotedLine {
 
 /*
 const examples = [
+  "C5' C 0.0734(6) 0.1405(6) 0.4244(5) 0.046(4) Uani 0.50 1 d PD A 2",
   "field1 field2 field3",
   'field1 "field 2" field3',
   "name 'John Doe' age 30",

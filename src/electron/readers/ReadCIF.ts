@@ -270,12 +270,7 @@ export class ReaderCIF implements ReaderImplementation {
 		if(isInLoop) this.useTable();
 
 		// The file should have a data_<block_name> line
-		if(!isInDataBlock) throw Error("Missing data_ line in file");
-
-		// Build the structure
-		for(const structure of this.structures) {
-			structure.bonds = [];
-		}
+		if(!isInDataBlock) throw Error("Missing 'data_' line in file");
 
 		return this.structures;
 	}
