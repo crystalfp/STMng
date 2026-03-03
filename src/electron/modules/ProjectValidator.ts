@@ -84,7 +84,9 @@ export const projectIsValid = (prj: Project): boolean => {
 };
 
 // > Check node IDs in the project
-const reservedIds = new Set<string>(["SYSTEM", "PROJECT", "PREFERENCES", "WINDOW", "LOGFILE"]);
+// __proto__ added for security
+const reservedIds = new Set<string>(["SYSTEM", "PROJECT", "PREFERENCES",
+									 "WINDOW", "LOGFILE", "__proto__"]);
 
 /**
  * Check node IDs in the project

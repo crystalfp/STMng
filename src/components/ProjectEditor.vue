@@ -494,7 +494,7 @@ const saveProjectGraph = (saveAs: boolean): void => {
             x: Math.round(node.position.x),
             y: Math.round(node.position.y)
         };
-        if(node.in !== "") graph[node.id].in = node.in;
+        if(node.in !== "" && node.in !== "__proto__") graph[node.id].in = node.in;
     }
 
     askNode("SYSTEM", "modified-project", {
