@@ -131,6 +131,7 @@ export class StructureReader extends NodeCore {
 	private channelInit(): CtrlParams {
 
 		const db = prototypeLoadList();
+		const collection = JSON.stringify(collectionLoadList());
 		return {
 			loopSteps: this.loopSteps,
 			stepBackward: this.stepBackward,
@@ -141,7 +142,8 @@ export class StructureReader extends NodeCore {
 			energyPerAtom: this.energyPerAtom,
 			stepIncrement: this.stepIncrement,
 			speed: this.speed,
-			db
+			db,
+			collection
 		};
 	}
 
@@ -752,12 +754,6 @@ export class StructureReader extends NodeCore {
 	 * @returns Params with the operation status
 	 */
 	private channelCollection(params: CtrlParams): CtrlParams {
-
-		// If called without arguments load the collection
-		if(!params) {
-			const list = collectionLoadList();
-			return {list: JSON.stringify(list)};
-		}
 
 		// Do the query
 		const fileID = params.fileID as string;

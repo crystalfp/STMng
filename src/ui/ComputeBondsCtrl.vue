@@ -224,7 +224,7 @@ const resetSliders = (): void => {
   <v-switch v-model="perPairScale" :disabled="perPairData.length < 2"
             label="Multiplier per atom pair" class="ml-2 mt-2 mb-4" />
   <v-container v-if="perPairScale" class="pa-0">
-    <v-table class="px-2 py-1 mr-2">
+    <v-table class="px-2 mr-2 mt-n2" style="background-color: transparent">
       <tr v-for="(item, idx) of perPairData" :key="item.label" class="per-pair-row">
         <td class="first-column">{{ item.label }}</td>
         <td><slider-with-steppers v-model="item.scale" v-model:raw="showScale[idx]"

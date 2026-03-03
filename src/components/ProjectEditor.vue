@@ -244,6 +244,7 @@ interface OneNodeInfo {
     value: string;
 }
 const nodeInfo = reactive<OneNodeInfo[]>([]);
+const dontDelete = ref(false);
 
 /** Listen to node selection */
 let x: number | undefined;
@@ -285,6 +286,7 @@ onNodesChange((changes) => {
 
                 // Update the panel node information if only a single node selected
                 nodeInfo.length = 0;
+                dontDelete.value = false;
                 if(selectedIds.size === 1) {
 
                     const [id] = selectedIds; // Was: const id = [...selectedIds][0];
@@ -301,12 +303,23 @@ onNodesChange((changes) => {
                         nodeInfo.push(
                             {id: "gr", label: "Graphics:",   value: node.data.graphic}
                         );
+                        dontDelete.value = node.data.type === "viewer-3d";
                     }
                     else nodeInfo.push({id: "id", label: "Node id:", value: id});
                     deleteLabel.value = "Delete node";
                 }
-                else deleteLabel.value = "Delete nodes";
+                else {
+                    deleteLabel.value = "Delete nodes";
 
+                    // If select the viewer, inhibit deletion
+                    for(const id of selectedIds) {
+                        const node = findNode<NodeData>(id);
+                        if(node?.data.type === "viewer-3d") {
+                            dontDelete.value = true;
+                            break;
+                        }
+                    }
+                }
                 break;
             case "dimensions":
             case "remove":
@@ -793,7 +806,7 @@ const confirmNewProject = (): void => {
               <td v-else><v-label>{{ ni.value }}</v-label></td>
             </tr>
           </table>
-          <v-btn block @click="deleteNode">{{ deleteLabel }}</v-btn>
+          <v-btn :disabled="dontDelete" block @click="deleteNode">{{ deleteLabel }}</v-btn>
         </Panel>
         <!-- bind your custom node type to a component by using slots,
             slot names are always `node-<type>` auto-connect -->

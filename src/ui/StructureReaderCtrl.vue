@@ -179,6 +179,9 @@ askNode(id, "init")
         const dbRaw = JSON.parse(params.db as string ?? "[]") as DBType[];
         db.length = 0;
         for(const entry of dbRaw) db.push(entry);
+        const collectionRaw = JSON.parse(params.collection as string ?? "[]") as CollectionType[];
+        collection.value.length = 0;
+        for(const entry of collectionRaw) collection.value.push(entry);
 
         // eslint-disable-next-line promise/no-nesting
         batchRead().catch((error: Error) => {
@@ -338,17 +341,8 @@ const setFormat = (): void => {
         return;
     }
     if(format.value === "Collection") {
-        askNode(id, "collection")
-            .then((result) => {
-
-                collection.value = JSON.parse(result.list as string ?? "[]") as CollectionType[];
-                showPrototypes.value = false;
-                showCollection.value = true;
-            })
-            .catch((error: Error) => {
-                showNodeAlert(`Error loading collection: ${error.message}`,
-                              "structureReader");
-            });
+        showPrototypes.value = false;
+        showCollection.value = true;
         return;
     }
     showPrototypes.value = false;
@@ -752,7 +746,8 @@ onUnmounted(() => {
     <table v-if="query" class="ml-4 text-body-2">
       <tbody>
         <tr><td class="c1">aflow:</td><td>{{ aflowTag }}</td></tr>
-        <tr><td class="c1">strukturbericht:</td><td v-html="strukturbericht.replace(/_([^_]+)$/, '<sub>$1</sub>')"/></tr>
+        <tr><td class="c1">strukturbericht:</td>
+            <td v-html="strukturbericht.replace(/_([^_]+)$/, '<sub>$1</sub>')"/></tr>
         <tr><td class="c1">pearson:</td><td>{{ pearson }}</td></tr>
       </tbody>
     </table>
