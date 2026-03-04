@@ -147,11 +147,13 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	std::string intlSymbolIn;
 	int sgNumberIn;
 	int sgNumberOut;
+	std::vector<int32_t> atomsIdx;
 
 	std::string out = doFindAndApplySymmetries(
 		basis,
 		spaceGroup,
 		atomsZ,
+		atomsIdx,
 		fractionalCoordinates,
 		applyInputSymmetries,
 		enableFindSymmetries,
@@ -183,6 +185,10 @@ Napi::Value findAndApplySymmetries(const Napi::CallbackInfo& info) {
 	Napi::Int32Array atomsZOut = Napi::Int32Array::New(env, natomsOut);
 	for(size_t i=0; i < natomsOut; ++i) atomsZOut[i] = atomsZ[i];
 	obj.Set("atomsZ", atomsZOut);
+
+	Napi::Int32Array atomsIdxOut = Napi::Int32Array::New(env, natomsOut);
+	for(size_t i=0; i < natomsOut; ++i) atomsIdxOut[i] = atomsIdx[i];
+	obj.Set("atomsIdx", atomsIdxOut);
 
 	Napi::Float64Array fcOut = Napi::Float64Array::New(env, natomsOut*3);
 	for(size_t i=0; i < natomsOut*3; ++i) fcOut[i] = fractionalCoordinates[i];

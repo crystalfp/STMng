@@ -330,16 +330,27 @@ export class ComputeSymmetries extends NodeCore {
 		const labels: string[] = [];
 		const chains: string[] = [];
 
-		const repetitions = Math.ceil(atomsZOut.length/atoms.length);
-		for(let i=0; i < repetitions; ++i) {
+		// Adjust labels and chains
+		const counts = new Map<number, number>();
+		const repetition = [];
+		for(const idx of computed.atomsIdx) {
 
-			for(const atom of atoms) {
-				labels.push(atom.label);
-				const chain = i === 0 ? atom.chain : (atom.chain || "Remaining") + i.toString();
-				chains.push(chain);
-			}
+			const n = (counts.get(idx) ?? 0) + 1;
+			counts.set(idx, n);
+			repetition.push(n);
 		}
 
+		let k = 0;
+		for(const idx of computed.atomsIdx) {
+
+			const n = repetition[k++];
+			const rpt = n === 1 ? "" : ` (${n-1})`;
+			const label = `${atoms[idx].label}${rpt}`;
+			labels.push(label);
+			chains.push(atoms[idx].chain);
+		}
+
+		// Get the space group
 		const intlSymbolIn = computed.intlSymbolIn.replaceAll("_", "");
 
 		const sg = (this.enableFindSymmetries || this.standardizeCell || this.standardizeOnly) ?

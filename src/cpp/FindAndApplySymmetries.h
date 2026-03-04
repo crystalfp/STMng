@@ -6,6 +6,7 @@ extern std::string doFindAndApplySymmetries(
 	std::vector<double_t>& basis,					// Basis vectors (in/out)
 	std::string& spaceGroup,						// Space group or empty string if none (in/out)
 	std::vector<int32_t>& atomsZ,					// Atomic numbers (in/out)
+	std::vector<int32_t>& atomsIdx,					// Corresponding input atom index
 	std::vector<double_t>& fractionalCoordinates,	// Fractional coordinates (in/out)
 	bool applyInputSymmetries,						// Apply symmetries from input structure
 	bool enableFindSymmetries,						// Enable find symmetries and standardize cell

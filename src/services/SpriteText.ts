@@ -35,6 +35,7 @@ import localRobotoBold from "@/assets/Roboto-Bold.ttf";
  *
  * @param text - The text to display
  * @param color - Color of the text (as #RRGGBB or color name)
+ * @param size - Size of the characters
  * @param position - Position of the label
  * @returns The sprite to be added to the scene
  */

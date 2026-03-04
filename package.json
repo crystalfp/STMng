@@ -53,7 +53,7 @@
     "vue": "^3.5.29",
     "vue-chartjs": "^5.3.3",
     "vue-router": "^5.0.3",
-    "vuetify": "^4.0.0",
+    "vuetify": "^4.0.1",
     "workerpool": "^10.0.1"
   },
   "devDependencies": {
@@ -71,7 +71,7 @@
     "@types/tmp": "^0.2.6",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
-    "@typescript/native-preview": "^7.0.0-dev.20260303.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260304.1",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vitest/ui": "^4.0.18",
     "dependency-cruiser": "^17.3.8",

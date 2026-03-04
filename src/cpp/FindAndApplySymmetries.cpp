@@ -41,6 +41,7 @@ static double foldIntoUnitCell(double fc)
 // Replicate the atoms using the symmetries found
 static void ApplyComputedSymmetries(vector<double_t>& fc,
 									vector<int32_t>& atomsZ,
+									vector<int32_t>& atomsIdx,
 									T_SgInfo& SgInfo)
 {
 	int nLoopInv   = Sg_nLoopInv(&SgInfo);
@@ -50,6 +51,7 @@ static void ApplyComputedSymmetries(vector<double_t>& fc,
 	// Compute the resulting number of atoms and prepare the list of coordinates and indices
 	vector<double_t> fcOut;
 	vector<int32_t> typesOut;
+	vector<int32_t> idxOut;
 
 	// To remove duplicates
 	bool different = true;
@@ -140,6 +142,9 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 						// Save the atom type
 						typesOut.push_back(atomsZ[i]);
 
+						// Save the corresponding index
+						idxOut.push_back(i);
+
 						different = false;
 					}
 				}
@@ -157,6 +162,7 @@ static void applySymmetriesInput(string& spaceGroup,
 								 bool applySymmetries,
 								 vector<double_t>& fractionalCoordinates,
 								 vector<int32_t>& atomsZ,
+								 vector<int32_t>& atomsIdx,
 								 int& sgNumber,
 								 string& intlSymbolIn,
 								 string& error)
@@ -401,7 +407,7 @@ static void applySymmetriesInput(string& spaceGroup,
 
 	// Apply symmetries
 	if(applySymmetries) {
-		ApplyComputedSymmetries(fractionalCoordinates, atomsZ, SgInfo);
+		ApplyComputedSymmetries(fractionalCoordinates, atomsZ, atomsIdx, SgInfo);
 	}
 
 	// Release everything
@@ -423,11 +429,13 @@ static void applyTransformations(SpglibDataset* dataset,
 								 double (*positions)[3],
 								 int *types,
 								 vector<int32_t>& outTypes,
-								 vector<double_t>& outFc)
+								 vector<double_t>& outFc,
+								 vector<int32_t>& outIdx)
 {
 	bool different = true;
 	outTypes.clear();
 	outFc.clear();
+	vector<int32_t> updIdx;
 
 	int nops = dataset->n_operations;
 	for(size_t j=0; j < natoms; ++j)
@@ -481,10 +489,12 @@ static void applyTransformations(SpglibDataset* dataset,
 				outFc.push_back(fy);
 				outFc.push_back(fz);
 				outTypes.push_back(types[j]);
+				updIdx.push_back(outIdx[j]);
 				different = false;
 			}
 		}
 	}
+	outIdx = updIdx;
 }
 
 // Convert symmetry rotations and translations into
@@ -613,6 +623,7 @@ string doFindAndApplySymmetries(
 	vector<double_t>& basis,
 	string& spaceGroup,
 	vector<int32_t>& atomsZ,
+	vector<int32_t>& atomsIdx,
 	vector<double_t>& fractionalCoordinates,
 	bool applyInputSymmetries,
 	bool enableFindSymmetries,
@@ -635,10 +646,16 @@ string doFindAndApplySymmetries(
 	sgNumberIn = 0;
 	sgNumberOut = 0;
 
+	size_t natoms = atomsZ.size();
+
+	for(size_t i=0; i < natoms; ++i) atomsIdx.push_back(i);
+
 	// Apply input symmetries
 	if(spaceGroup != "")
 	{
-		applySymmetriesInput(spaceGroup, applyInputSymmetries, fractionalCoordinates, atomsZ, sgNumberIn, intlSymbolIn, status);
+		applySymmetriesInput(spaceGroup, applyInputSymmetries,
+							 fractionalCoordinates, atomsZ, atomsIdx,
+							 sgNumberIn, intlSymbolIn, status);
 	}
 
 #ifdef DEBUG
@@ -674,7 +691,6 @@ string doFindAndApplySymmetries(
 		}
 
 		// Prepare the mutable list of atoms' atomic numbers
-		size_t natoms = atomsZ.size();
 		int *types = (int *)malloc(4*natoms*sizeof(int));
 		for(size_t i=0; i < natoms; ++i) types[i] = atomsZ[i];
 		int num_primitive_atom = natoms;
@@ -779,7 +795,7 @@ string doFindAndApplySymmetries(
 			vector<int32_t> outTypes;
 			vector<double_t> outPositions;
 			applyTransformations(dataset, num_primitive_atom, positions,
-								 types, outTypes, outPositions);
+								 types, outTypes, outPositions, atomsIdx);
 
 			// Compute the space group as symbol or as symmetry equivalent positions
 			spaceGroup  = formatTransformations(dataset);

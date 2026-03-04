@@ -65,6 +65,7 @@ export class StructureBackbone extends NodeCore {
 		for(const atom of data.atoms) {
 			this.chains.add(atom.chain);
 		}
+
 		sendToClient(this.id, "chains", {
 			chains: this.chains.size > 1 ? [...this.chains] : [],
 			hasCell: hasUnitCell(data.crystal.basis)

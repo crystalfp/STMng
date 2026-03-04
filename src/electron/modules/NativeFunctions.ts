@@ -45,6 +45,8 @@ interface FindAndApplySymmetriesOutput {
 	basis: Float64Array;
 	/** The atom types */
 	atomsZ: Int32Array;
+	/** The input atom index */
+	atomsIdx: Int32Array;
 	/** The atom fractional coordinates */
 	fractionalCoordinates: Float64Array;
 	/** If the unit cell has changed */
