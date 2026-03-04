@@ -32,6 +32,7 @@ import {SliceStructureRenderer} from "@/renderers/SliceStructureRenderer";
 import type {CtrlParams, SlicingModes, AtomSelectorModes} from "@/types";
 
 import BlockButton from "@/widgets/BlockButton.vue";
+import ColorSelector from "@/widgets/ColorSelector.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -48,6 +49,7 @@ const enableSlicer = ref(false);
 const showSlicer = ref(false);
 const sliceInside = ref(false);
 const mode = ref<SlicingModes>("plane");
+const geometryColor = ref("#FFFFFF80");
 
 /** Available modes */
 const modeList = reactive<{label: string; value: SlicingModes}[]>([
@@ -114,6 +116,7 @@ askNode(id, "init")
 		atomsSelector.value = params.atomsSelector as string ?? "";
         sphereRadius.value = params.sphereRadius as number ?? 1;
         thickness.value = params.thickness as number ?? 1;
+        geometryColor.value = params.geometryColor as string ?? "#FFFFFF80";
 
         showPercentA.value = percentA.value;
         showPercentB.value = percentB.value;
@@ -259,14 +262,16 @@ const stopWatcher5 = watch([enableSlicer, mode, selectorKind,
 });
 
 /** Set the other parameters */
-const stopWatcher6 = watch([enableSlicer, showSlicer, mode], () => {
+const stopWatcher6 = watch([enableSlicer, showSlicer, mode, geometryColor], () => {
 
     sendToNode(id, "set", {
         enableSlicer: enableSlicer.value,
         showSlicer: showSlicer.value,
-        mode: mode.value
+        mode: mode.value,
+        geometryColor: geometryColor.value
     });
     renderer.setVisibility(showSlicer.value);
+    renderer.setGeometryColor(geometryColor.value);
 });
 
 /**
@@ -301,6 +306,8 @@ const resetParameters = (): void => {
 
     selectorKind.value = "symbol";
     atomsSelector.value = "";
+
+    geometryColor.value = "#FFFFFF80";
 };
 
 /** Check parameters validity */
@@ -349,6 +356,8 @@ onUnmounted(() => {
     item-title="label"
     item-value="value"
     class="mb-6 mr-2" />
+  <color-selector v-model="geometryColor" label="Slicer geometry color"
+                  :transparency="true" class="ml-0 mt-n2"/>
 
   <v-container v-if="mode==='plane' || mode==='slab'" class="pa-0">
     <v-switch v-model="parallelA" label="Parallel to a" class="mt-2 ml-1" />
@@ -374,7 +383,7 @@ onUnmounted(() => {
   </v-container>
   <v-container v-else-if="mode==='miller'" class="pa-0">
     <slider-with-steppers v-model="millerH"
-                          v-model:raw="showMillerH" label-width="3rem" class="ml-0"
+                          v-model:raw="showMillerH" label-width="3rem" class="ml-0 mt-2"
                           :label="`h (${showMillerH.toFixed(0)})`"
                           :min="-9" :max="9" :step="1" />
     <slider-with-steppers v-model="millerK"
@@ -388,7 +397,7 @@ onUnmounted(() => {
     <slider-with-steppers v-model="millerPlaneOffset"
                           v-model:raw="showMillerPlaneOffset" label-width="6rem"
                           :label="`offset (${showMillerPlaneOffset.toFixed(1)})`"
-                          :min="-10" :max="10" :step="0.1" class="mt-3 mb-4 ml-0"/>
+                          :min="-10" :max="10" :step="0.1" class="mt-3 mb-4"/>
   </v-container>
   <v-container v-else-if="mode==='sphere'" class="pa-0">
     <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"

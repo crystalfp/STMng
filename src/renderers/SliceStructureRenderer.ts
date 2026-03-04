@@ -23,7 +23,8 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {Group, SphereGeometry, MeshLambertMaterial, DoubleSide,
-		Mesh, BufferGeometry, Float32BufferAttribute} from "three";
+		Mesh, BufferGeometry, Float32BufferAttribute,
+		Color} from "three";
 import {sm} from "@/services/SceneManager";
 
 /**
@@ -113,6 +114,29 @@ export class SliceStructureRenderer {
 	setVisibility(visible: boolean): void {
 
 		this.group.visible = visible;
+		sm.modified();
+	}
+
+	/**
+	 * Set slicing geometry color and transparency
+	 *
+	 * @param color - Geometry color (#RRGGBBAA)
+	 */
+	setGeometryColor(color: string): void {
+
+		const geometryColor = new Color(color.slice(0, 7));
+		this.material.color.set(geometryColor.convertSRGBToLinear());
+
+		if(color.length < 9) {
+			this.material.transparent = false;
+			this.material.opacity = 1;
+		}
+		else {
+			const opacity = Number.parseInt(color.slice(7, 9), 16) / 255;
+			this.material.transparent = opacity < 1;
+			this.material.opacity = opacity;
+		}
+
 		sm.modified();
 	}
 }

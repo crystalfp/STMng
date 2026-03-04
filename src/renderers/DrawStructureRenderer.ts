@@ -22,8 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {Group, type Mesh, type MeshStandardMaterial, IcosahedronGeometry, CylinderGeometry,
-		LineDashedMaterial, LineBasicMaterial, Vector3, BufferGeometry, Line, Color,
+import {Group, type Mesh, type MeshStandardMaterial, IcosahedronGeometry,
+		CylinderGeometry, LineDashedMaterial, LineBasicMaterial, Vector3,
+		BufferGeometry, Line, Color,
 		Float32BufferAttribute, LineSegments, FrontSide} from "three";
 import {sm} from "@/services/SceneManager";
 import {spriteText, disposeTextInGroup, BillboardBatchedText} from "@/services/SpriteText";

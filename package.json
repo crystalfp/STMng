@@ -59,7 +59,7 @@
   "devDependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
     "@eslint/js": "^10.0.1",
-    "@golar/vue": "^0.0.14",
+    "@golar/vue": "^0.0.15",
     "@mdi/svg": "^7.4.47",
     "@oxlint/migrate": "^1.51.0",
     "@rollup/plugin-commonjs": "^29.0.0",
@@ -90,7 +90,7 @@
     "eslint-plugin-tsdoc": "^0.5.2",
     "eslint-plugin-unicorn": "^63.0.0",
     "eslint-plugin-vue": "^10.8.0",
-    "golar": "^0.0.14",
+    "golar": "^0.0.15",
     "node-addon-api": "^8.6.0",
     "node-gyp": "^12.2.0",
     "oxlint-tsgolint": "^0.16.0",
