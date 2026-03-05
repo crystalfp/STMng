@@ -448,7 +448,7 @@ onMounted(() => {
             controlStore.stl = false;
             resetNodeAlert();
 
-            const result = sm.createSTL(configStore.camera.stlFormat);
+            const result = sm.createSTL(configStore.camera.stlFormat, controlStore.stlScale);
             askNode("SYSTEM", "stl", {
                 binary: configStore.camera.stlFormat === "binary",
                 content: result

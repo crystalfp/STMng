@@ -55,6 +55,8 @@ interface GlobalControls {
 	movie: boolean;
 	/** Capture a STL file */
 	stl: boolean;
+	/** STL file scale */
+	stlScale: number;
 
 	/** Capture for fingerprinting */
 	fingerprintsAccumulate: boolean;
@@ -123,6 +125,7 @@ export const useControlStore = defineStore("ControlStore", {
 		snapshot: false,
 		movie: false,
 		stl: false,
+		stlScale: 1,
 
 		fingerprintsAccumulate: false,
 		trajectoriesRecording: false,

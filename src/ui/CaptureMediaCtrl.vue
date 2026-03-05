@@ -22,12 +22,13 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
 // > Access the stores
 const configStore = useConfigStore();
@@ -35,6 +36,8 @@ const controlStore = useControlStore();
 
 // Show this module has been loaded
 controlStore.hasCapture = true;
+
+const showScale = ref(1);
 
 /** Simplify label */
 const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start recording"));
@@ -67,12 +70,15 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
 
   <v-label class="mt-8 separator-title">STL</v-label>
 
-  <titled-slot title="Format:" inline class="mt-4 ml-1 mb-6">
+  <titled-slot title="Format:" inline class="mt-4 ml-1 mb-4">
     <v-btn-toggle v-model="configStore.camera.stlFormat" mandatory>
       <v-btn value="ascii">ASCII</v-btn>
       <v-btn value="binary">Binary</v-btn>
     </v-btn-toggle>
   </titled-slot>
+  <slider-with-steppers v-model="controlStore.stlScale" v-model:raw="showScale"
+                        :label="`Scale (${showScale})`" label-width="5rem"
+                        :min="1" :max="20" :step="1" class="mb-4 ml-1"/>
 
   <block-button class="mt-3" label="Capture geometry" @click="controlStore.stl = true" />
   <node-alert node="captureSTL" class="mt-2" />

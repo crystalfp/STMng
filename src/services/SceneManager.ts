@@ -25,7 +25,7 @@
 import {Group, type Material, Mesh, Scene, type Object3D,
 		type InstancedMesh, MeshBasicMaterial, Fog,
 		DirectionalLight, AmbientLight, Color, Matrix4,
-		CylinderGeometry, SphereGeometry} from "three";
+		CylinderGeometry, SphereGeometry, Vector3, Quaternion} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
@@ -394,13 +394,34 @@ class SceneManager {
 	}
 
 	/**
+	 * Scale an object matrix
+	 *
+	 * @param matrix - Object matrix
+	 * @param scale - How much to scale
+	 * @returns The input matrix scaled by the given amount
+	 */
+	private scaleMatrix(matrix: Matrix4, scale: number): Matrix4 {
+
+		const position = new Vector3();
+		const rotation = new Quaternion();
+		const scaleVector = new Vector3();
+		matrix.decompose(position, rotation, scaleVector);
+		scaleVector.multiplyScalar(scale);
+		position.multiplyScalar(scale);
+		const outMatrix = new Matrix4();
+		outMatrix.compose(position, rotation, scaleVector);
+		return outMatrix;
+	}
+
+	/**
 	 * Export as STL encoded file the scene content
 	 *
 	 * @param format - STL file format
+	 * @param scale - Scale the resulting geometry
 	 * @returns A string (format: ascii) or an ArrayBuffer (format: binary)
 	 *			with the content of the STL file to be written
 	 */
-	createSTL(format: "ascii" | "binary"): string | ArrayBuffer {
+	createSTL(format: "ascii" | "binary", scale: number): string | ArrayBuffer {
 
 		// Instance the exporter if not already instanced
 		this.exporter ??= new STLExporter();
@@ -418,7 +439,8 @@ class SceneManager {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
 						const geometry = new SphereGeometry(1, 18, 18);
-						geometry.applyMatrix4(matrix);
+						const out = this.scaleMatrix(matrix, scale);
+						geometry.applyMatrix4(out);
 						const material = new MeshBasicMaterial();
 						const sphere = new Mesh(geometry, material);
 						structure.add(sphere);
@@ -438,7 +460,8 @@ class SceneManager {
 						const matrix = new Matrix4();
 						im.getMatrixAt(idx, matrix);
 						const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, false);
-						geometry.applyMatrix4(matrix);
+						const out = this.scaleMatrix(matrix, scale);
+						geometry.applyMatrix4(out);
 						const material = new MeshBasicMaterial();
 						const cylinder = new Mesh(geometry, material);
 						structure.add(cylinder);
