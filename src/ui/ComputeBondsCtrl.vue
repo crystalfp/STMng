@@ -201,28 +201,27 @@ const resetSliders = (): void => {
 
 <template>
 <v-container class="container">
-
   <v-switch v-model="enableComputeBonds"
-            label="Enable compute bonds" class="my-4 ml-2" />
+            label="Enable compute bonds" class="my-4 ml-1" />
 
   <debounced-slider v-slot="{value}" v-model="minBondingDistance" :min="0.6" :max="1" :step="0.01"
-                      class="ml-2 mb-2 mt-1">
+                      class="ml-1 mb-2 mt-1">
     <v-label :text="`Bonding min distance (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
   <debounced-slider v-slot="{value}" v-model="maxBondingDistance" :min="2.0" :max="5.0" :step="0.01"
-                      class="ml-2 mb-2">
+                      class="ml-1 mb-2">
     <v-label :text="`Bonding max distance (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
   <debounced-slider v-slot="{value}" v-model="maxHBondingDistance" :min="2.5" :max="4.0" :step="0.01"
-                      class="ml-2 mb-2">
+                      class="ml-1 mb-2">
     <v-label :text="`H Bonding max distance (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
-  <debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-2 mb-4">
+  <debounced-slider v-slot="{value}" v-model="maxHValenceAngle" :min="0" :max="45" :step="1" class="ml-1 mb-4">
     <v-label :text="`H Bonding max valence angle (${value.toFixed(2)})`" class="no-select" />
   </debounced-slider>
-  <v-label class="ml-2 no-select">Sum of covalent radii multiplier</v-label>
+  <v-label class="ml-1 no-select">Sum of covalent radii multiplier</v-label>
   <v-switch v-model="perPairScale" :disabled="perPairData.length < 2"
-            label="Multiplier per atom pair" class="ml-2 mt-2 mb-4" />
+            label="Multiplier per atom pair" class="ml-1 mt-2 mb-4" />
   <v-container v-if="perPairScale" class="pa-0">
     <v-table class="px-2 mr-2 mt-n2" style="background-color: transparent">
       <tr v-for="(item, idx) of perPairData" :key="item.label" class="per-pair-row">
@@ -233,13 +232,14 @@ const resetSliders = (): void => {
       </tr>
     </v-table>
   </v-container>
-  <v-container v-else class="pa-0 mt-n3">
-    <debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01" class="ml-2">
+  <v-container v-else class="pa-0 mt-n2">
+    <debounced-slider v-slot="{value}" v-model="bondScale" :min="0" :max="3.0" :step="0.01"
+                      class="ml-1">
       <v-label :text="`For all atom pairs (${value.toFixed(2)})`" class="no-select" />
     </debounced-slider>
   </v-container>
 
-  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-4 ml-2">
+  <titled-slot title="Add bonded atoms outside unit cell" class="mt-4 mb-4 ml-1">
     <v-btn-toggle v-model="enlargementKind" mandatory>
       <v-btn value="none">None</v-btn>
       <v-btn value="neighbors">Neighbors</v-btn>
@@ -249,7 +249,6 @@ const resetSliders = (): void => {
   </titled-slot>
 
   <block-button label="Reset parameters" @click="resetSliders"/>
-
 </v-container>
 </template>
 

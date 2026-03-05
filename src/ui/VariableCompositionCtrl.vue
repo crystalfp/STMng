@@ -415,7 +415,7 @@ onUnmounted(() => {
 <v-container class="container pb-8">
   <v-label class="separator-title first-title">Accumulated structures</v-label>
 
-  <v-row class="ml-2 mr-2">
+  <v-row>
     <v-col cols="7">
       <v-label class="result-label pt-2">{{ `Count: ${countAccumulated}` }}</v-label>
     </v-col>
@@ -424,7 +424,7 @@ onUnmounted(() => {
     </v-col>
   </v-row>
 
-  <titled-slot title="Number of components" class="ml-2 mt-4 mb-2">
+  <titled-slot title="Number of components" class="mt-4 mb-2">
     <v-btn-toggle v-model="countComponents" mandatory :disabled="countAccumulated === 0">
       <v-btn :value="2">2</v-btn>
       <v-btn :value="3">3</v-btn>
@@ -433,8 +433,8 @@ onUnmounted(() => {
   </titled-slot>
 
   <div v-show="countAccumulated > 0">
-    <v-label class="ml-2 mb-2">End-member compositions</v-label>
-    <table class="ml-2 collapse">
+    <v-label class="mb-2 mt-2">End-member compositions</v-label>
+    <table class="collapse">
       <thead>
         <tr>
           <th></th>
@@ -461,15 +461,15 @@ onUnmounted(() => {
   <v-label class="separator-title">Compositions</v-label>
 
   <v-data-table v-if="results.length > 0" v-model="selected" :items="results"
-                class="ml-2 pr-2" density="compact" select-strategy="all" items-per-page="-1"
+                class="pr-2" density="compact" select-strategy="all" items-per-page="-1"
                 fixed-header hover height="250px" show-select item-value="key"
                 hide-default-footer :headers hide-no-data />
 
   <v-label class="separator-title">Filter structures</v-label>
 
-  <v-row class="ml-0 mr-2 pt-1 mb-n4">
+  <v-row class="pt-1 mb-n4">
     <v-switch v-model="state.filterOnDistance"
-            label="Filter" class="ml-2 mr-3 mb-6" />
+            label="Filter" class="ml-1 mr-2 mb-6" />
     <v-number-input v-model="state.distanceFromHull" :disabled="!state.filterOnDistance"
             label="Convex hull dist." :min="0" :max="1" :step="0.005"
             :precision="3" class="mt-0 mr-1 w-33"/>
@@ -480,10 +480,10 @@ onUnmounted(() => {
   <v-label class="separator-title">Compute distances</v-label>
 
   <v-row class="ma-0 mb-n2">
-    <v-switch v-model="state.forceCutoff" label="Force cutoff at:" class="ml-2 mb-6" />
+    <v-switch v-model="state.forceCutoff" label="Force cutoff at:" class="ml-1 mb-6" />
     <v-number-input v-model="state.manualCutoffDistance" label="Cutoff distance"
                     :min="0.1" :step="0.1" :precision="2"
-                    :disabled="!state.forceCutoff" class="ml-4 mr-2" />
+                    :disabled="!state.forceCutoff" class="ml-4" />
   </v-row>
 
   <v-select v-model="state.fingerprintingMethod"
@@ -491,11 +491,11 @@ onUnmounted(() => {
     label="Fingerprinting method"
     item-title="label"
     item-value="value"
-    class="mx-2 mb-4" />
+    class="mb-4" />
 
-  <v-row class="ml-0 mr-2">
+  <v-row>
     <v-number-input v-model="state.peakWidth" :precision="2"
-                    label="Peak width" :min="0" :step="0.01" class="mr-2 ml-2" />
+                    label="Peak width" :min="0" :step="0.01" class="mr-2" />
     <v-number-input v-model="state.binSize" :precision="2"
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
@@ -505,16 +505,16 @@ onUnmounted(() => {
     :items="distanceMethods"
     item-title="label"
     item-value="value"
-    class="mx-2 mb-4 mt-n1" />
+    class="mb-4 mt-n1" />
 
   <v-switch v-model="state.fixTriangleInequality"
-            label="Fix triangle inequality" class="ml-2 mt-n1" />
+            label="Fix triangle inequality" class="ml-1 mt-n1" />
 
   <v-label class="separator-title">Remove duplicates</v-label>
 
-  <v-row class="ml-0 mr-2 pt-3">
+  <v-row class="pt-3">
     <v-switch v-model="state.removeDuplicates"
-              label="Remove" class="ml-2 mr-6 mb-5" />
+              label="Remove" class="ml-1 mr-6 mb-5" />
     <v-number-input v-model="state.duplicatesThreshold" :disabled="!state.removeDuplicates"
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
@@ -527,9 +527,9 @@ onUnmounted(() => {
 
   <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
-            label="Consolidate output" class="ml-2 mt-n2"/>
+            label="Consolidate output" class="ml-1 mt-n2"/>
   <block-button class="mt-2" :disabled="disableSave" label="Save analyzed" @click="saveAnalyzed" />
-  <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-2">
+  <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-1">
     {{ `Files saved: ${savedFiles}` }}
   </v-label>
 </v-container>

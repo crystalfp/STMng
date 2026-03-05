@@ -264,40 +264,40 @@ onUnmounted(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-4 ml-4" />
-  <v-switch v-model="dashedLine" :disabled="lineWidth > 0" label="Dashed lines" class="ml-4" />
-  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-4" />
+  <v-switch v-model="showUnitCell" label="Show unit cell" class="mt-4 ml-2" />
+  <v-switch v-model="dashedLine" :disabled="lineWidth > 0" label="Dashed lines" class="ml-2" />
+  <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-2" />
   <slider-with-steppers v-model="lineWidth" v-model:raw="showLineWidth"
                           :label="`Line width (${showLineWidth})`" label-width="7rem"
-                          :min="0" :max="3" :step="1" class="mb-2"/>
+                          :min="0" :max="3" :step="1" class="mb-2 ml-1"/>
   <color-selector v-model="lineColor" label="Line color" />
   <v-label class="separator-title">Cell repetitions</v-label>
   <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
                           :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
-                          :min="1" :max="10" :step="1" />
+                          :min="1" :max="10" :step="1" class="ml-1"/>
   <slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB"
                           :label="`Along b (${showRepetitionsB})`" label-width="5.5rem"
-                          :min="1" :max="10" :step="1" />
+                          :min="1" :max="10" :step="1" class="ml-1" />
   <slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
                           :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
-                          :min="1" :max="10" :step="1" />
+                          :min="1" :max="10" :step="1" class="ml-1" />
   <block-button :disabled="!hasSupercell()" class="mt-2" label="Reset" @click="resetSliders" />
   <v-switch v-model="showSupercell" :disabled="!hasSupercell()"
-            label="Show supercell" class="ml-4" />
+            label="Show supercell" class="ml-2" />
   <v-switch v-model="dashedSupercell" :disabled="!hasSupercell() || lineWidth > 0"
-            label="Dashed lines supercell" class="ml-4 mb-4" />
+            label="Dashed lines supercell" class="ml-2 mb-4" />
   <color-selector v-model="supercellColor" label="Line color" />
   <v-label class="separator-title">Shift origin</v-label>
   <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
                           :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
-                          :min="-50" :max="50" :step="1" />
+                          :min="-50" :max="50" :step="1" class="ml-1" />
   <slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
                           :label="`Along b (${showPercentB}%)`" label-width="7.2rem"
-                          :min="-50" :max="50" :step="1" />
+                          :min="-50" :max="50" :step="1" class="ml-1" />
   <slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
-                          :min="-50" :max="50" :step="1" />
-  <v-switch v-model="shrink" label="Shrink cell" class="ml-4 my-2" />
+                          :min="-50" :max="50" :step="1" class="ml-1" />
+  <v-switch v-model="shrink" label="Shrink cell" class="ml-2 my-2" />
   <block-button :disabled="noShift()" class="mt-2 mb-4" label="Reset" @click="resetShift" />
 
 </v-container>

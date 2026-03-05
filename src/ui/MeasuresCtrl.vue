@@ -252,7 +252,7 @@ onUnmounted(() => {
 
 <template>
 <v-container class="container">
-  <v-container v-if="natoms > 0" class="mt-n1 pa-0 ml-2">
+  <v-container v-if="natoms > 0" class="mt-n1 pa-0 ml-1">
     <v-label class="simple-title mb-2">Structure summary</v-label>
     <table class="pl-0 pr-6 py-1 text-body-2 w-100">
       <tbody>
@@ -281,7 +281,7 @@ onUnmounted(() => {
                      :origin="[uc[6],uc[7],uc[8]]"/>
   </v-container>
   <v-label class="mt-4 separator-title">Measurement type</v-label>
-  <v-btn-toggle v-model="measurementType" mandatory class="ml-2 mb-6">
+  <v-btn-toggle v-model="measurementType" mandatory class="ml-0 mb-6">
     <v-btn value="atoms">Atoms</v-btn>
     <v-btn value="polyhedra">Polyhedra</v-btn>
     <v-btn value="bonds">Bonds</v-btn>
@@ -289,7 +289,7 @@ onUnmounted(() => {
 
   <v-container v-if="measurementType === 'atoms'" class="pa-0">
     <v-switch v-model="useFractional" label="Show fractional coordinates"
-              class="ml-4" :disabled="uc[0] === 0"/>
+              class="ml-2" :disabled="uc[0] === 0"/>
     <v-label v-if="details.length > 0"
              class="simple-title mb-2">Selected atoms</v-label>
     <table v-if="details.length > 0" class="pa-1 pr-4 w-100 text-body-2">

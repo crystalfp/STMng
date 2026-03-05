@@ -196,11 +196,11 @@ onUnmounted(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-4 mb-4 ml-3" />
+  <v-switch v-model="showOrthoslice" label="Show orthoslice" class="mt-4 mb-4 ml-2" />
 
   <dataset-selector v-model="dataset" :count-datasets class="ml-2"/>
 
-  <titled-slot title="Axis" class="mb-2 ml-2">
+  <titled-slot title="Axis" class="mb-6 ml-2">
     <v-btn-toggle v-model="axis" mandatory>
       <v-btn :value="0">A</v-btn>
       <v-btn :value="1">B</v-btn>
@@ -215,9 +215,9 @@ onUnmounted(() => {
 
   <debounced-range-slider v-slot="{values}" v-model="limits"
                             :step :min="valueMin" :max="valueMax"
-                            class="ml-4 mt-1 pr-6">
+                            class="ml-2 mt-1 pr-2">
     <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
-             class="ml-n2 no-select" />
+             class="no-select" />
   </debounced-range-slider>
 
   <v-switch v-model="useColorClasses" label="Use discrete classes" class="ml-3 mb-4" />
@@ -226,13 +226,13 @@ onUnmounted(() => {
     <v-label :text="`Number of classes (${value})`" class="no-select"/>
   </debounced-slider>
 
-  <select-colormap v-model="colormapName" class="mx-2 mr-4" />
+  <select-colormap v-model="colormapName" class="ml-2 mr-0" />
 
-  <v-switch v-model="showIsolines" label="Show isolines" class="mt-6 ml-3" />
-  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-3 mb-5" />
+  <v-switch v-model="showIsolines" label="Show isolines" class="mt-6 ml-2" />
+  <v-switch v-model="colorIsolines" label="Color isolines" class="ml-2 mb-5" />
 
   <debounced-slider v-if="!useColorClasses" v-slot="{value}" v-model="isoValue"
-                      :step :min="valueMin" :max="valueMax" class="ml-2 mt-1">
+                      :step :min="valueMin" :max="valueMax" class="ml-1 mt-1">
     <v-label :text="`Isoline value (${humanFormat(value)})`" class="no-select"/>
   </debounced-slider>
 </v-container>

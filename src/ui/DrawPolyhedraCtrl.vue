@@ -136,19 +136,19 @@ onUnmounted(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="showPolyhedra" label="Show polyhedra & triangles" class="mt-4 ml-1" />
-  <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-6 ml-1" />
+  <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-4 ml-1" />
   <atoms-chooser :id v-model:kind="labelKind" v-model:selector="atomsSelector"
                  channel="select" class="ml-0 mb-n2"
                  title="Select central atoms by"
                  placeholder="Central atoms selector"/>
   <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"
-                          v-model:raw="showOpacity" label-width="7rem" class="ml-1"
+                          v-model:raw="showOpacity" label-width="7rem"
                           :label="`Opacity (${showOpacity.toFixed(1)})`"
-                          :min="0" :max="1" :step="0.1" />
+                          :min="0" :max="1" :step="0.1" class="ml-1" />
   <color-selector v-else v-model="surfaceColor" label="Surface color"
-                  :transparency="true" class="ml-n2 mt-n4"/>
+                  :transparency="true" class="ml-1 mt-n2 mb-n1"/>
 
-  <titled-slot title="Constrain vertex count" class="mt-6 mb-2 ml-1">
+  <titled-slot title="Constrain vertex count" class="mt-6 mb-4 ml-1">
     <v-btn-toggle v-model="constrains.type" mandatory>
       <v-btn value="any">Any</v-btn>
       <v-btn value="exact">Exact</v-btn>
@@ -158,6 +158,6 @@ onUnmounted(() => {
   <slider-with-steppers v-if="constrains.type !== 'any'" v-model="constrains.count"
                           v-model:raw="constrains.showCount" label-width="6rem"
                           :label="`Vertices (${constrains.showCount.toFixed(0)})`"
-                          :min="3" :max="20" :step="1" />
+                          :min="3" :max="20" :step="1" class="ml-1"/>
 </v-container>
 </template>

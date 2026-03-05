@@ -144,7 +144,7 @@ const clearSelector = (): void => {
   </v-btn-toggle>
   <template #extra>
     <v-text-field v-model.trim="atomsSelectorInternal" :label="placeholder"
-                  :disabled="labelKind === 'all' || disabled" class="mr-2"
+                  :disabled="labelKind === 'all' || disabled" class="mr-2 mt-1"
                   placeholder="Space separated list"
                   :error="errorStatus" :error-messages="errorMessage"
                   clearable spellcheck="false"

@@ -159,22 +159,22 @@ onUnmounted(() => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="showIsosurface" label="Show isosurface" class="mt-4 ml-3 mb-4" />
+  <v-switch v-model="showIsosurface" label="Show isosurface" class="mt-4 ml-2 mb-4" />
 
-  <dataset-selector v-model="dataset" :count-datasets class="ml-2"/>
+  <dataset-selector v-model="dataset" :count-datasets class="ml-1"/>
 
-  <v-switch v-model="nestedIsosurfaces" label="Nested isosurfaces" class="mt-1 ml-3 mb-4" />
+  <v-switch v-model="nestedIsosurfaces" label="Nested isosurfaces" class="mt-1 ml-2 mb-4" />
 
-  <v-container v-if="nestedIsosurfaces" class="pa-0 pl-2">
+  <v-container v-if="nestedIsosurfaces" class="pa-0">
     <debounced-slider v-slot="{value}" v-model="countIsosurfaces"
-                        :step="1" :min="2" :max="10" class="mb-4">
+                        :step="1" :min="2" :max="10" class="mb-4 ml-2">
       <v-label :text="`Number of isosurfaces (${value})`" class="no-select" />
     </debounced-slider>
     <debounced-range-slider v-slot="{values}" v-model="limits"
                               :step :min="valueMin" :max="valueMax"
-                              class="ml-4 mt-1 pr-6">
+                              class="ml-2 mt-1 pr-6">
       <v-label :text="`Values range (${humanFormat(values[0])} – ${humanFormat(values[1])})`"
-               class="ml-n2 no-select"/>
+               class="no-select"/>
     </debounced-range-slider>
     <v-switch v-model="limitColormap" label="Limit colormap to range" class="mt-1 ml-3 mb-4" />
   </v-container>
@@ -186,7 +186,7 @@ onUnmounted(() => {
     </debounced-slider>
   </v-container>
 
-  <select-colormap v-model="colormapName" class="ml-2 mb-6 mr-4" />
+  <select-colormap v-model="colormapName" class="ml-2 mb-6 mr-2" />
 
   <debounced-slider v-slot="{value}" v-model="opacity" :step="0.1" :min="0" :max="1" class="ml-2 mt-2">
     <v-label :text="`Opacity (${value.toFixed(1)})`" class="no-select" />

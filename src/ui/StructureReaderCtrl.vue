@@ -733,11 +733,11 @@ onUnmounted(() => {
 <v-container class="container">
 
   <v-select v-model="format" label="File format"
-            :items="fileFormats" class="my-4 mr-2"
+            :items="fileFormats" class="my-4"
             @update:model-value="setFormat" />
 
   <v-container v-if="showPrototypes" class="pa-0">
-    <v-autocomplete v-model="query" label="Prototype query" class="mr-2"
+    <v-autocomplete v-model="query" label="Prototype query"
                   :items="db" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
@@ -753,7 +753,7 @@ onUnmounted(() => {
     </table>
   </v-container>
   <v-container v-else-if="showCollection" class="pa-0">
-    <v-autocomplete v-model="collectionQuery" label="Collection query" class="mr-2"
+    <v-autocomplete v-model="collectionQuery" label="Collection query"
                   :items="collection" item-title="title" item-value="id"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No entry found" spellcheck="false"
@@ -763,7 +763,7 @@ onUnmounted(() => {
 
     <v-text-field v-if="needsAtomTypes(format)" v-model.trim="atomsTypes"
                   label="Atoms types"
-                  placeholder="Space separated list" class="mb-6 mr-2"
+                  placeholder="Space separated list" class="mb-6"
                   hide-details="auto"
                   clearable spellcheck="false"
                   @blur="getAtomsTypes" @keyup.enter="getAtomsTypes"
@@ -791,39 +791,44 @@ onUnmounted(() => {
                 @dropped="droppedAuxFile" />
 
     <v-switch v-else-if="format === 'Gaussian Cube'" v-model="useBohr"
-              label="Use Bohr units" class="ml-4 mt-4" @update:model-value="setUseBohr" />
+              label="Use Bohr units" class="ml-2 mt-0" @update:model-value="setUseBohr" />
     <v-switch v-else-if="format === 'PDB'" v-model="readHydrogen"
-              label="Read hydrogens" class="ml-4 mt-4" @update:model-value="setReadHydrogen" />
+              label="Read hydrogens" class="ml-2 mt-0" @update:model-value="setReadHydrogen" />
     <v-container v-if="countSteps > 1" class="ml-4 pa-0 mt-6 pt-4">
       <enable-capture />
-      <v-row class="pl-3 mt-0">
+      <v-row class="pl-0 mt-0">
         <v-switch v-model="loopSteps" label="Loop" class="mr-5 mb-6" />
         <v-switch v-model="stepBackward" label="Reverse" class="mb-6" />
-        <v-number-input v-model="stepIncrement" label="Step increment" :min="1"
-                        :precision="0" class="ml-3 mr-10" />
+        <v-number-input v-model="stepIncrement" label="Increment" :min="1"
+                        :precision="0" class="ml-3 mr-4" />
       </v-row>
       <v-row class="ml-0 d-flex ga-1 align-center">
-        <v-label class="no-select pb-4 mt-4 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>
+        <v-label class="no-select pb-4 ml-n2 mt-n2 flex-1-1">{{ `Step ${step}/${stepRange[1]-stepRange[0]+1}` }}</v-label>
         <v-label v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
-                class="no-select pb-4 mt-4">
+                class="no-select pb-4 mt-n2">
                 {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
         <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps" variant="plain"
-              class="mr-10" :icon="mdiArrowExpandHorizontal" @click="resetRange" />
+              class="mr-6 mt-n6" :icon="mdiArrowExpandHorizontal" @click="resetRange" />
       </v-row>
       <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
                 :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
       <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
-      <v-row class="mr-4">
+      <v-row class="mr-8">
         <v-spacer />
-        <v-btn variant="tonal" :disabled="step <= stepRange[0]" :icon="mdiChevronDoubleLeft" class="mr-1"
+        <v-btn variant="tonal" :disabled="step <= stepRange[0]"
+                :icon="mdiChevronDoubleLeft" class="mr-1"
                 @click="step = stepRange[0]" />
-        <v-btn variant="tonal" :disabled="step <= stepRange[0]" :icon="mdiChevronLeft" class="mr-1"
+        <v-btn variant="tonal" :disabled="step <= stepRange[0]"
+                :icon="mdiChevronLeft" class="mr-1"
                 @click="deltaStep(-1)" />
-        <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay" class="mr-1"
+        <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay"
+                class="mr-1"
                 @click="togglePlay" />
-        <v-btn variant="tonal" :disabled="step >= stepRange[1]" :icon="mdiChevronRight" class="mr-1"
+        <v-btn variant="tonal" :disabled="step >= stepRange[1]"
+                :icon="mdiChevronRight" class="mr-1"
                 @click="deltaStep(1)" />
-        <v-btn variant="tonal" :disabled="step >= stepRange[1]" :icon="mdiChevronDoubleRight"
+        <v-btn variant="tonal" :disabled="step >= stepRange[1]"
+                :icon="mdiChevronDoubleRight"
                 @click="step = stepRange[1]; running = false" />
         <v-spacer />
       </v-row>

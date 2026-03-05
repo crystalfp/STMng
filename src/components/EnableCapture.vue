@@ -41,8 +41,8 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
 
 
 <template>
-<v-container v-if="showSection" class="pa-0 mb-4 mt-n5">
-  <v-divider thickness="2" class="mr-n1 ml-n2 mb-2"/>
+<v-container v-if="showSection" class="pa-0 mb-4 mt-n8">
+  <v-divider thickness="2" class="mr-4 ml-n4 mb-2"/>
   <v-switch v-if="controlStore.hasCapture"
             v-model="controlStore.movie"
             label="Movie from steps" />
@@ -59,6 +59,6 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
   <v-switch v-if="controlStore.hasVariableComposition"
             v-model="controlStore.variableCompositionAccumulate"
             label="Collect for variable composition" />
-  <v-divider thickness="2" class="mr-n1 ml-n2 mt-2"/>
+  <v-divider thickness="2" class="mr-4 ml-n4 mb-2 mt-2"/>
 </v-container>
 </template>

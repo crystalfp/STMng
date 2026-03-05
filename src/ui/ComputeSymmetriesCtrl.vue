@@ -223,27 +223,27 @@ const finalValue = computed(() => {
 <template>
 <v-container class="container">
   <v-switch v-model="applyInputSymmetries" :disabled="disableInputSymmetries"
-            label="Apply input symmetries" class="mt-2 ml-3" />
+            label="Apply input symmetries" class="mt-2 ml-2" />
   <v-switch v-model="enableFindSymmetries"
-            label="Enable find symmetries" class="ml-3 mt-n2" />
+            label="Enable find symmetries" class="ml-2 mt-n2" />
   <v-container v-if="enableFindSymmetries" class="pa-0 mt-n2">
-    <v-switch v-model="standardizeCell" label="Standardize cell" class="ml-3" />
+    <v-switch v-model="standardizeCell" label="Standardize cell" class="ml-2" />
     <v-container v-if="standardizeCell" class="pa-0 mt-n2">
-      <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-3 mt-n2" />
-      <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-3 mt-n2" />
+      <v-switch v-model="standardizeOnly" label="Only standardize cell" class="ml-2 mt-n2" />
+      <v-switch v-model="createPrimitiveCell" label="Primitive cell" class="ml-2 mt-n2" />
       <debounced-slider v-show="standardizeCell" v-slot="{value}" v-model="symprecStandardize"
-                        :min="-3" :max="0" :step="0.02" class="ml-2 mt-4">
+                        :min="-3" :max="0" :step="0.02" class="ml-1 mt-4">
         <v-label :text="`Standardize cell tolerance (${showExponential(value)})`" class="no-select" />
       </debounced-slider>
     </v-container>
     <debounced-slider v-show="!standardizeOnly" v-slot="{value}" v-model="symprecDataset"
-                        :min="-3" :max="0" :step="0.02" class="ml-2 mt-2">
+                        :min="-3" :max="0" :step="0.02" class="ml-1 mt-2">
       <v-label :text="`Find symmetries tolerance (${showExponential(value)})`" class="no-select" />
     </debounced-slider>
   </v-container>
 
   <titled-slot v-if="!disableInputSymmetries || (enableFindSymmetries && finalValue)"
-               title="Symmetry display mode" class="mt-2 mb-2 ml-2">
+               title="Symmetry display mode" class="mt-2 mb-2 ml-1">
     <v-btn-toggle v-model="displayMode" mandatory>
       <v-btn value="international">Intl.</v-btn>
       <v-btn value="symmop">SymmOp</v-btn>
@@ -251,7 +251,7 @@ const finalValue = computed(() => {
     </v-btn-toggle>
   </titled-slot>
 
-  <v-container v-if="!disableInputSymmetries" class="pl-3 mt-2">
+  <v-container v-if="!disableInputSymmetries" class="pl-2 mt-2">
     <v-row>
       <v-label text="Input symmetry:" class="result-label no-select" />
     </v-row>
@@ -259,7 +259,7 @@ const finalValue = computed(() => {
       <v-label :text="inputValue" class="show-symmetry" />
     </v-row>
   </v-container>
-  <v-container v-if="enableFindSymmetries && finalValue" class="pl-3">
+  <v-container v-if="enableFindSymmetries && finalValue" class="pl-2">
     <v-row>
       <v-label text="Final symmetry:" class="result-label no-select" />
     </v-row>
@@ -268,25 +268,25 @@ const finalValue = computed(() => {
     </v-row>
   </v-container>
 
-  <cell-parameters :sides :angles class="ml-3 pr-3 mt-n2"/>
+  <cell-parameters :sides :angles class="ml-2 pr-3 mt-n2"/>
 
-  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-3 mt-4 mb-n2" />
+  <v-switch v-model="fillUnitCell" label="Fill unit cell" class="ml-2 mt-4 mb-n2" />
   <debounced-slider v-show="fillUnitCell" v-slot="{value}" v-model="fillTolerance"
-                      :min="-5" :max="-1" :step="0.02" class="ml-2 mb-3 mt-6">
+                      :min="-5" :max="-1" :step="0.02" class="ml-1 mb-3 mt-6">
     <v-label :text="`Fill unit cell tolerance (${showExponential(value)})`" class="no-select" />
   </debounced-slider>
 
-  <v-switch v-model="computePointGroup" label="Compute point group" class="ml-3 mb-4" />
+  <v-switch v-model="computePointGroup" label="Compute point group" class="ml-2 mb-4" />
   <v-container v-if="computePointGroup" class="pa-0">
     <debounced-slider v-slot="{value}" v-model="positionTolerance"
-                      :min="0.01" :max="1" :step="0.01" class="ml-2 mb-2 mt-4">
+                      :min="0.01" :max="1" :step="0.01" class="ml-1 mb-2 mt-4">
       <v-label :text="`Position tolerance (${value})`" class="no-select" />
     </debounced-slider>
     <debounced-slider v-slot="{value}" v-model="eigenvalueTolerance"
-                      :min="0.001" :max="0.1" :step="0.001" class="ml-2 mb-4 mt-2">
+                      :min="0.001" :max="0.1" :step="0.001" class="ml-1 mb-4 mt-2">
       <v-label :text="`Eigenvalues tolerance (${value})`" class="no-select" />
     </debounced-slider>
-    <v-row class="pl-2 mb-4 align-center">
+    <v-row class="pl-1 mb-4 align-center">
       <v-col cols="5">
         <v-label text="Point group:" class="result-label no-select" />
       </v-col>

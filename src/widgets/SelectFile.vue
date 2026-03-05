@@ -161,9 +161,10 @@ const onDragLeave = (): void => {
       @drop.prevent="onDrop"
       @dragover.prevent="onDragOver"
       @dragleave.prevent="onDragLeave">
-  <v-text-field :model-value="label" :disabled :label="props.label ?? props.title"
+  <v-text-field :model-value="label" :disabled
+                :label="props.label ?? props.title"
                 readonly :prepend-icon="mdiFileOutline"
-                class="mb-2 cursor-pointer" hide-details="auto"
+                class="mb-2 cursor-pointer mr-n4" hide-details="auto"
                 :loading="inProgress" spellcheck="false"
                 @click="openSelector" />
 </div>

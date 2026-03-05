@@ -47,7 +47,7 @@ html {
 .container {
   overflow: clip auto;
   height: var(--container-height);
-  padding: 0 0 0 2px !important;
+  padding: 0 12px 0 4px !important;
 }
 
 /* >> Elements on the UI */
