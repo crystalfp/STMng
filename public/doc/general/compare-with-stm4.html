@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Chemistry files formats supported by STMng visualization tool"/>
+  <meta name="keywords" content="STMng,chemistry visualization">
+  <meta name="date" content="2024-02-20"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <style>
+.m1s {
+	width: 15rem;
+	vertical-align: top;
+	/* padding-left: 2rem; */
+}
+.m2s {
+	vertical-align: top;
+}
+.m1 {
+	width: 15rem;
+	vertical-align: top;
+  font-weight: bold;
+}
+.m2 {
+	width: 35rem;
+	vertical-align: top;
+}
+.m3 {
+	vertical-align: top;
+  width: 30px;
+}
+.m4 {
+	width: 30rem;
+	vertical-align: top;
+}
+td {
+  padding: 5px;
+}
+tr:nth-child(odd) {
+  background: #D0E4F5;
+}
+table {
+  margin-left: 2rem;
+  width: 95%
+}
+.m1n {
+	width: 20rem;
+	vertical-align: top;
+}
+
+  </style>
+  <title>STMng — comparison with STM4</title>
+</head><body>
+
+<h1>STMng — functionalities comparison with STM4</h1>
+
+<p>The following tables comes directly from the STM4 documentation and have been augmented with references to the corresponding functions in STMng.</p>
+<p>The STM4 modules are grouped by function:</p>
+<table>
+  <tr>
+    <td class="m1s"><a href="#DATAIO">Readers Writers</a></td>
+    <td class="m2s">Readers and writer for various, static and dynamic, chemical file formats plus movies and images production.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#BONDS">Bonds</a></td>
+    <td class="m2s">Bonds computation, editing and management.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#MODULES">Modules</a></td>
+    <td class="m2s">Modules that compute derived structures.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#SELECTION">Selection</a></td>
+    <td class="m2s">Selector modules to extract a subset of the atoms.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#TRAJECTORY">Trajectories</a></td>
+    <td class="m2s">Modules related to dynamic data.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#CRYSTAL">Crystallography</a></td>
+    <td class="m2s">Unit cells, periodic lattices and symmetries support.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#VOLUME">Volume</a></td>
+    <td class="m2s">Rendering of volumetric data like Gaussian cubes.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#DISPLAY">Display</a></td>
+    <td class="m2s">Rendering of chemical structures and other graphical objects.</td>
+  </tr>
+  <tr>
+    <td class="m1s"><a href="#PROBE">Probe and Measure</a></td>
+    <td class="m2s">Interact with the structures: measure and editing.</td>
+  </tr>
+</table>
+
+<p style="margin-top: 1rem">The symbols below show how the STM4 functionality is found in STMng:</p>
+<table>
+  <tr><td><img src="yes-icon.svg" width="25" height="25"></td><td>The functionality is in STMng</td></tr>
+  <tr><td><img src="no-icon.svg" width="25" height="25"></td><td>The functionality is not and will not be in STMng</td></tr>
+  <tr><td><img src="almost-icon.svg" width="25" height="25"></td><td>The functionality is in STMng with some adjustment or differences</td></tr>
+  <tr><td><img src="maybe-icon.svg" width="25" height="25"></td><td>The functionality could be implemented in STMng if users ask for it</td></tr>
+</table>
+
+<p style="margin-top: 1rem">At the end there is a <a href="#NEW">list</a> of STMng functionalities not present in STM4.</p>
+
+<h2><a name="DATAIO"></a>Readers Writers</h2>
+<table>
+<tr>
+  <td class="m1">Read Structure</td>
+  <td class="m2">Read structural and volumetric chemical data.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/structure-reader.html">Structure Reader</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Read Structure No Bonds</td>
+  <td class="m2">Read a structure from file without computing bonds.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/structure-reader.html">Structure Reader</a> with removing or disabling the subsequent <a href="../nodes/compute-bonds.html">Compute bonds</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Read Scalar</td>
+  <td class="m2">Read a set of scalar values from a file.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4">The reader for a column of scalars representing energies is already included in the <a href="../nodes/structure-reader.html">Structure Reader</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Read Vector</td>
+  <td class="m2">Read a set of 3D vector values from a file.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">In the current architecture there is no place for vector values.</td>
+</tr>
+<tr>
+  <td class="m1">Make Movie</td>
+  <td class="m2">Capture a sequence of frames, one for each different viewer content, and assemble them in a movie (AVI or MPEG).</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/capture-view.html">Capture view</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Output Image</td>
+  <td class="m2">Save a snapshot of the content of the current viewer.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/capture-view.html">Capture view</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Write Structure</td>
+  <td class="m2">Write a single structure or a trajectory to a chemistry data file in the selected format.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/structure-writer.html">Structure writer</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Write POV Ray</td>
+  <td class="m2">Write the current view as a POV-Ray raytracer scene.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">Maybe could be of interest to export scene for the <a href="https://www.povray.org/">Persistence of Vision Raytracer</a>.</td>
+</tr>
+<tr>
+  <td class="m1">Read Fermi Surface</td>
+  <td class="m2">Read a file in EIGENVAL format and output a volume that,
+    using isosurfaces, display the Fermi surfaces at a given energy level.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+<tr>
+  <td class="m1">Read Fermi Bands</td>
+  <td class="m2">Read a file in EIGENVAL format and output for all bands their energy along a given polyline.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+<tr>
+  <td class="m1">Write Summary</td>
+  <td class="m2">Write a summary of the series of structures given as input.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4">A summary of the current structure is available in the <a href="../nodes/measures.html">Measures</a> node although it is not exported and not covers all structures loaded.</td>
+</tr>
+</table>
+
+<h2><a name="BONDS"></a>Bonds</h2>
+<table>
+<tr>
+  <td class="m1">Compute Bonds</td>
+  <td class="m2">Compute atomic bonds.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/compute-bonds.html">Compute bonds</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Count Bonds</td>
+  <td class="m2">Add as atom data the atom's number of bonds.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-structure.html">Draw structure</a> could color atoms by their number of bonds.</td>
+</tr>
+<tr>
+  <td class="m1">Count H Bonds</td>
+  <td class="m2">Count the number of H Bonds present in the input structure. The count is added to the structure global data.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4">A count of the current structure bonds and H bonds is available in the <a href="../nodes/measures.html">Measures</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Compute Selected Bonds</td>
+  <td class="m2">Adds bonds to specific atoms using a distance criteria.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is not entirely clear what is the original goal of this module.</td>
+</tr>
+<tr>
+  <td class="m1">Set Manual Bonds</td>
+  <td class="m2">Manually add bonds between atoms.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is not entirely clear what is the original goal of this module.</td>
+</tr>
+</table>
+
+<h2><a name="MODULES"></a>Modules</h2>
+<table>
+<tr>
+  <td class="m1">Solvent Excluded Surface</td>
+  <td class="m2">Compute the molecule Solvent Excluded Surface.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+<tr>
+  <td class="m1">Backbone</td>
+  <td class="m2">Compute a protein backbone.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/structure-backbone.html">Structure backbone</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">General Backbone</td>
+  <td class="m2">Display a tube through user selected atoms.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/structure-backbone.html">Structure backbone</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Vector Glyph</td>
+  <td class="m2">Display with arrows the vector data associated with a given structure.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Currently there is no provision for vector values associated to the atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Merge Values</td>
+  <td class="m2">Add a new scalar or vector data to atoms, bonds or globally to the given structure.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Currently there is no provision for values associated to the atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Atoms Values Trasp</td>
+  <td class="m2">Atoms are rendered with transparency dependent on the associated scalar value</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Currently there is no provision for values associated to the atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Particle Density</td>
+  <td class="m2">Compute the average particle mass density using uniform binning.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+<tr>
+  <td class="m1">Interpolating Plane</td>
+  <td class="m2">Build the least square plane interpolating a set of picked atoms.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">What could be done with the interpolated plane?</td>
+</tr>
+</table>
+
+<h2><a name="SELECTION"></a>Selection</h2>
+<table>
+<tr>
+  <td class="m1">Select Atoms</td>
+  <td class="m2">Select specific atoms.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">What could be done with the selected atoms?</td>
+</tr>
+<tr>
+  <td class="m1">Select Fragments</td>
+  <td class="m2">Select specific structure fragments (i.e. residues).</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">What could be done with the selected atoms?</td>
+</tr>
+<tr>
+  <td class="m1">Threshold Data</td>
+  <td class="m2">Select atoms whose associated scalar value meets various criteria.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">No scalar value associated to atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Delete Atoms</td>
+  <td class="m2">Interactively delete atoms.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+</table>
+
+<h2><a name="TRAJECTORY"></a>Trajectories</h2>
+<table>
+<tr>
+  <td class="m1">Accumulate Traces</a></td>
+  <td class="m2">Accumulate traces (accumulated positions) for specific atoms in a sequence of time steps.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-trajectories.html">Draw trajectory</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Accumulate Global Data</td>
+  <td class="m2">Accumulate a global scalar data in a form suitable for charting.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">No scalar value associated to atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Interpolate Sequence</td>
+  <td class="m2">Linearly interpolate a given number of positions between each pair of timesteps.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">With the current architecture the implementation of a similar module is not simple.</td>
+</tr>
+<tr>
+  <td class="m1">Velocity Mean</td>
+  <td class="m2">Compute the average particle velocity using uniform binning.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+<tr>
+  <td class="m1">Enthalpy Transitions</td>
+  <td class="m2">Search a range of pressure values to find where the structure with the minimum enthalphy changes.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+</table>
+
+<h2><a name="CRYSTAL"></a>Crystallography</h2>
+<table>
+<tr>
+  <td class="m1">Replicate Lattice</td>
+  <td class="m2">Replicate the structure unit cell along the three base vectors.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-unit-cell.html">Draw unit cell</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Apply Symmetries</td>
+  <td class="m2">Compute new atoms positions from the space group of the input molecule.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/compute-symmetries.html">Compute symmetries</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Shift Unit Cell</td>
+  <td class="m2">Shift the unit cell to re-center periodic phenomena that are split between the opposite sides of the cell.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-unit-cell.html">Draw unit cell</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Enlarge Unit Cell</td>
+  <td class="m2">Add atoms outside the unit cell by different criteria.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/compute-bonds.html">Compute bonds</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Move Structure</td>
+  <td class="m2">Translate and rotate a given structure modifying all the atoms coordinates.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4">Not very useful for a single structure visualized. Something similar is available from the <a href="../nodes/compute-fingerprints.html">Compute fingerprints</a> <a href="../secondary/compare.html">Compare selected</a> window.</td>
+</tr>
+<tr>
+  <td class="m1">Crop Structure</td>
+  <td class="m2">Crop a structure and the optional volume data inside a given geometry.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/slice-structure.html">Slice structure</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Crop From Plane</td>
+  <td class="m2">Remove atoms that dist more than a given value from a plane.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/slice-structure.html">Slice structure</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Miller Plane</td>
+  <td class="m2">Crop the atoms using the plane identified by given Miller indices.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/slice-structure.html">Slice structure</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Draw Polyhedra</td>
+  <td class="m2">Display a convex polyhedron around selected atoms.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-polyhedra.html">Draw polyhedra</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Draw Simple Polyhedra</td>
+  <td class="m2">Display a convex polyhedron around selected atoms using a different setup.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-polyhedra.html">Draw polyhedra</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">X Ray Structure Factor</td>
+  <td class="m2">Compute and display simplified X-Ray structure factors.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/diffraction-pattern.html">Compute X-Ray diffraction</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Remove Border Atoms</td>
+  <td class="m2">Remove atoms that bonds with atoms outside the unit cell.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">Not clear the goal of this module.</td>
+</tr>
+<tr>
+  <td class="m1">Merge Unit Cell</td>
+  <td class="m2">Apply the unit cell of one structure to another one.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Not clear the goal of this module.</td>
+</tr>
+<tr>
+  <td class="m1">Find Symmetries</td>
+  <td class="m2">Find symmetries in the input structure and simplify it.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/compute-symmetries.html">Compute symmetries</a> node.</td>
+</tr>
+</table>
+
+<h2><a name="VOLUME"></a>Volume</h2>
+<table>
+<tr>
+  <td class="m1">Isosurface</td>
+  <td class="m2">Create an isosurface for a given scalar volumetric value.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/isosurface.html">Isosurface</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Orthoslice</td>
+  <td class="m2">Create an orthoslice for a given scalar volumetric value.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/orthoslice.html">Orthoslice</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Volume Render</td>
+  <td class="m2">Volumetric render of a scalar valued volume.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">Need to understand how to implement volume rendering.</td>
+</tr>
+<tr>
+  <td class="m1">Cube on Surface</td>
+  <td class="m2">Assign to a surface the values of the volume in which the surface is immersed in the positions occupied by the surface itself.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is like a free orientation orthoslice. Instead a generic surface is not possible.</td>
+</tr>
+<tr>
+  <td class="m1">Cut Surface</td>
+  <td class="m2">Cut a surface (eg. a Solvent Excluded Surface) with a plane.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is not clear the goal of this module.</td>
+</tr>
+<tr>
+  <td class="m1">Bicolor Surface</td>
+  <td class="m2">Color a surface on one side with a user specified color leaving the other one with its original coloring.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is not clear the goal of this module.</td>
+</tr>
+<tr>
+  <td class="m1">Interpolate Volume</td>
+  <td class="m2">Interpolate a given scalar volume adding points between original grid points.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/interpolate-volume.html">Interpolate volume</a> node.</td>
+</tr>
+</table>
+
+<h2><a name="DISPLAY"></a>Display</h2>
+<table>
+<tr>
+  <td class="m1">Draw Structure</td>
+  <td class="m2">Transform the molecule structure data into graphic objects for display.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-structure.html">Draw structure</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Draw Sw Structure</td>
+  <td class="m2">Transform the molecule structure data into graphic objects for display using a software render method.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-structure.html">Draw structure</a> node but note that there is no software render in STMng.</td>
+</tr>
+<tr>
+  <td class="m1">Info Sets Editor</td>
+  <td class="m2">Manage, edit, create and destroy Info Sets.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">This will appear when editing of the atoms characteristics will be implemented.</td>
+</tr>
+<tr>
+  <td class="m1">Display Unit Cell</td>
+  <td class="m2">Displays the borders of the unit cell.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/draw-unit-cell.html">Draw unit cell</a> node.</td>
+</tr>
+ <tr>
+  <td class="m1">Set Rendering Mode</td>
+  <td class="m2">Set the rendering mode on an atom by atom base.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Not useful.</td>
+</tr>
+<tr>
+  <td class="m1">Axis Glyph</td>
+  <td class="m2">Display three arrows to mark the origin and the XYZ axis directions, or the unit cell abc vectors. The glyph could also be offset from the origin.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/viewer-3d.html">Viewer 3D</a> helpers, but they cannot be offset from the origin. Note that there are also plane orientation helpers. Also the <a href="../nodes/draw-unit-cell.html">Display unit cell</a> node could show the cell basis vectors.</td>
+</tr>
+<tr>
+  <td class="m1">Background Fade</td>
+  <td class="m2">Provide a colored backdrop for which you can set the four corners colors.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Not useful.</td>
+</tr>
+<tr>
+  <td class="m1">Logo</td>
+  <td class="m2">Create a logo image to be added to a viewer. The image is locked in the viewer and is not transformed by standard mouse actions.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">Is it useful?</td>
+</tr>
+<tr>
+  <td class="m1">Enclosing Ellipsoid</td>
+  <td class="m2">Compute an ellipsoid that encloses the given set of atoms.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4"></td>
+</tr>
+<tr>
+  <td class="m1">Time Legend</td>
+  <td class="m2">Display a progress bar to show the current timestep / current time for an animated molecule trajectory.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">The progress bar is in the <a href="../nodes/structure-reader.html">Structure reader</a> node. But for a movie could be useful to have it in the viewer.</td>
+</tr>
+<tr>
+  <td class="m1">Color Legend</td>
+  <td class="m2">Display a legend for the structure representation colors.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is visualized from specific nodes.</td>
+</tr>
+<tr>
+  <td class="m1">Discrete Legend</td>
+  <td class="m2">Color legend for integer values in an user specified range.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is visualized from specific nodes.</td>
+</tr>
+<tr>
+  <td class="m1">Smooth Tube</td>
+  <td class="m2">Create a tube that connect all the given points.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4">The <a href="../nodes/structure-backbone.html">Structure backbone</a> node draws a tube through selected atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Error Tube</td>
+  <td class="m2">Create a tube with a radius proportional to the values associated to the connected points.</td>
+  <td class="m3"><img src="no-icon.svg" width="25" height="25"></td>
+  <td class="m4">Currently there is no provision for scalar values associated to the atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Structure Info</td>
+  <td class="m2">Show count of the number of atoms present in the input structure.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/measures.html">Measures</a> node.</td>
+</tr>
+</table>
+
+<h2><a name="PROBE"></a>Probe and Measure</h2>
+<table>
+<tr>
+  <td class="m1">Measure Structure</td>
+  <td class="m2">Access information about and measure a displayed structure.</td>
+  <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/measures.html">Measures</a> node.</td>
+</tr>
+<tr>
+  <td class="m1">Measure Closer Atoms</td>
+  <td class="m2">Measure intra-atomic distances between a given atom and the surrounding ones in a given range.</td>
+  <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
+  <td class="m4"><a href="../nodes/measures.html">Measures</a> node gives distances for bonded atoms.</td>
+</tr>
+<tr>
+  <td class="m1">Pick Unit Cell</td>
+  <td class="m2">Redefines the unit cell for the displayed structure by picking on four atoms.</td>
+  <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
+  <td class="m4">It is not clear the goal of this module.</td>
+</tr>
+</table>
+
+<h1><a name="NEW"></a>Exclusive functionalities in STMng</h1>
+<table>
+  <tr><td class="m1n"><a href="../nodes/compute-fingerprints.html">Compute fingerprints</a></td>
+      <td>Compute fingerprints for a set of structures.</td></tr>
+  <tr><td class="m1n"><a href="../nodes/find-similar.html">Find similar structures</a></td>
+      <td>Match a structure against the “prototype” and “collection” structures.</td></tr>
+  <tr><td class="m1n"><a href="../nodes/structure-reader.html">Structure reader special collections</a></td>
+      <td>Collection of model structures and prototypes.</td></tr>
+  <tr><td class="m1n"><a href="../nodes/variable-composition.html">Variable composition</a></td>
+      <td>Split compositions and remove duplicates structures.</td></tr>
+
+  <tr><td class="m1n"><a href="../secondary/compare.html">Compare structures</a></td>
+      <td>Visually compare pair of structures.</td></tr>
+  <tr><td class="m1n"><a href="../secondary/fp-landscape.html">Fingerprints energy landscape</a></td>
+      <td>Show the energy surface interpolating the computed fingerprints.</td></tr>
+  <tr><td class="m1n"><a href="../secondary/fp-scatterplot.html">Fingerprints scatterplot</a></td>
+      <td>Show the fingerprints as points in a 2D space.</td></tr>
+  <tr><td class="m1n"><a href="../secondary/displacements.html">Show trajectory displacements</a></td>
+      <td>Show atom’s trajectory average positions and displacements.</td></tr>
+  <tr><td class="m1n"><a href="../secondary/components-hull.html">Variable composition convex hull</a></td>
+        <td>Show enthalpy of formation for the structures versus they compositions.</td></tr>
+</table>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>
