@@ -103,7 +103,7 @@ const {variableCompositionAccumulate} = storeToRefs(controlStore);
 // > Persistent state that is saved in the project file
 const state = reactive({
     filterOnDistance: false,
-    distanceFromHull: 0.1,
+    distanceFromHull: 0.15,
     forceCutoff: false,
     manualCutoffDistance: 10,
     fingerprintingMethod: 0,
@@ -112,7 +112,7 @@ const state = reactive({
     distanceMethod: 0,
     fixTriangleInequality: false,
     removeDuplicates: true,
-    duplicatesThreshold: 0.015,
+    duplicatesThreshold: 0.03,
     consolidateOutput: false
 });
 
@@ -179,7 +179,7 @@ askNode(id, "init")
         }
 
    	    state.filterOnDistance = params.filterOnDistance as boolean ?? false;
-    	state.distanceFromHull = params.distanceFromHull as number ?? 0.1;
+    	state.distanceFromHull = params.distanceFromHull as number ?? 0.15;
         state.forceCutoff = params.forceCutoff as boolean ?? false;
         state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
         state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
@@ -188,7 +188,7 @@ askNode(id, "init")
         state.distanceMethod = params.distanceMethod as number ?? 0;
         state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
         state.removeDuplicates = params.removeDuplicates as boolean ?? true;
-        state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+        state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.03;
         state.consolidateOutput = params.consolidateOutput as boolean ?? false;
     })
     .catch((error: Error) => {

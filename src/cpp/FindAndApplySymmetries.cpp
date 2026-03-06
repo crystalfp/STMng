@@ -155,6 +155,7 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 	// Output the results
 	fc = fcOut;
 	atomsZ = typesOut;
+	atomsIdx = idxOut;
 }
 
 // Apply symmetries from the input space group
@@ -618,7 +619,7 @@ void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const i
 }
 #endif
 
-// Entry point
+// > Entry point
 string doFindAndApplySymmetries(
 	vector<double_t>& basis,
 	string& spaceGroup,
@@ -646,8 +647,9 @@ string doFindAndApplySymmetries(
 	sgNumberIn = 0;
 	sgNumberOut = 0;
 
+	// Initialize the atom index list
 	size_t natoms = atomsZ.size();
-
+	atomsIdx.clear();
 	for(size_t i=0; i < natoms; ++i) atomsIdx.push_back(i);
 
 	// Apply input symmetries
@@ -691,6 +693,7 @@ string doFindAndApplySymmetries(
 		}
 
 		// Prepare the mutable list of atoms' atomic numbers
+		size_t natoms = atomsZ.size();
 		int *types = (int *)malloc(4*natoms*sizeof(int));
 		for(size_t i=0; i < natoms; ++i) types[i] = atomsZ[i];
 		int num_primitive_atom = natoms;
@@ -703,6 +706,12 @@ string doFindAndApplySymmetries(
 			positions[j][1] = fractionalCoordinates[3*j+1];
 			positions[j][2] = fractionalCoordinates[3*j+2];
 		}
+#ifdef DEBUG
+		cout << "\n\n*** In enableFindSymmetries" << endl; // TBD
+		for(auto x : atomsIdx) cout << x << ' ';
+		cout << "\n*** AtomsZ " << num_primitive_atom << endl;
+		for(size_t i=0; i < num_primitive_atom; ++i) cout << types[i] << ' ';
+#endif
 
 		// Standardize the cell before finding symmetries
 		if(standardizeCell)
@@ -792,10 +801,24 @@ string doFindAndApplySymmetries(
 		}
 		else
 		{
+#ifdef DEBUG
+			cout << "\n\n*** Initial " << endl; // TBD
+			for(auto x : atomsIdx) cout << x << ' ';
+			cout << "\n*** AtomsZ " << num_primitive_atom << endl;
+			for(size_t i=0; i < num_primitive_atom; ++i) cout << types[i] << ' ';
+#endif
 			vector<int32_t> outTypes;
 			vector<double_t> outPositions;
 			applyTransformations(dataset, num_primitive_atom, positions,
 								 types, outTypes, outPositions, atomsIdx);
+
+#ifdef DEBUG
+			cout << "\n\n*** After " << endl;
+			for(auto x : atomsIdx) cout << x << ' ';
+			cout << "\n*** AtomsZout" << endl;
+			for(auto x : outTypes) cout << x << ' ';
+			cout << endl;
+#endif
 
 			// Compute the space group as symbol or as symmetry equivalent positions
 			spaceGroup  = formatTransformations(dataset);

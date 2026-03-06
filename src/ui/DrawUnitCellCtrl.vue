@@ -298,7 +298,7 @@ onUnmounted(() => {
                           :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
   <v-switch v-model="shrink" label="Shrink cell" class="ml-2 my-2" />
-  <block-button :disabled="noShift()" class="mt-2 mb-4" label="Reset" @click="resetShift" />
+  <block-button :disabled="noShift()" class="mt-4" label="Reset" @click="resetShift" />
 
 </v-container>
 </template>

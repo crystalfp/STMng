@@ -61,7 +61,7 @@ export class VariableComposition extends NodeCore {
 	// Mirror of the UI reactive state
 	private readonly state = {
 		filterOnDistance: false,
-		distanceFromHull: 0.1,
+		distanceFromHull: 0.15,
 		forceCutoff: false,
 		manualCutoffDistance: 10,
 		fingerprintingMethod: 0,
@@ -70,7 +70,7 @@ export class VariableComposition extends NodeCore {
 		distanceMethod: 0,
 		fixTriangleInequality: false,
 		removeDuplicates: true,
-		duplicatesThreshold: 0.015,
+		duplicatesThreshold: 0.03,
 		consolidateOutput: false
 	};
 
@@ -82,7 +82,7 @@ export class VariableComposition extends NodeCore {
 		binSize: 0.05,
 		peakWidth: 0.02,
 		fixTriangleInequality: false,
-		duplicatesThreshold: 0.015,
+		duplicatesThreshold: 0.03,
 		removeDuplicates: true,
 	};
 
@@ -137,7 +137,7 @@ export class VariableComposition extends NodeCore {
 	private initializeState(params: CtrlParams): void {
 
    	    this.state.filterOnDistance = params.filterOnDistance as boolean ?? false;
-    	this.state.distanceFromHull = params.distanceFromHull as number ?? 0.1;
+    	this.state.distanceFromHull = params.distanceFromHull as number ?? 0.15;
 		this.state.forceCutoff = params.forceCutoff as boolean ?? false;
     	this.state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
     	this.state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
@@ -146,7 +146,7 @@ export class VariableComposition extends NodeCore {
     	this.state.distanceMethod = params.distanceMethod as number ?? 0;
     	this.state.fixTriangleInequality = params.fixTriangleInequality as boolean ?? false;
     	this.state.removeDuplicates = params.removeDuplicates as boolean ?? true;
-    	this.state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
+    	this.state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.03;
 		this.state.consolidateOutput = params.consolidateOutput as boolean ?? false;
 	}
 
@@ -655,7 +655,7 @@ export class VariableComposition extends NodeCore {
 	private channelFilter(params: CtrlParams): CtrlParams {
 
 		this.state.filterOnDistance = params.filterOnDistance as boolean ?? false;
-        this.state.distanceFromHull = params.distanceFromHull as number ?? 0.1;
+        this.state.distanceFromHull = params.distanceFromHull as number ?? 0.15;
 
 		const remaining = this.filterStructures(params.selected as string[] ?? []);
 
@@ -682,7 +682,7 @@ export class VariableComposition extends NodeCore {
 			binSize: params.binSize as number ?? 0.05,
 			peakWidth: params.peakWidth as number ?? 0.02,
 			fixTriangleInequality: params.fixTriangleInequality as boolean ?? false,
-			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.015,
+			duplicatesThreshold: params.duplicatesThreshold as number ?? 0.03,
 			removeDuplicates: params.removeDuplicates as boolean ?? true,
 		};
 
