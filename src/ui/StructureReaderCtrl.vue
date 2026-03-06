@@ -726,6 +726,13 @@ onUnmounted(() => {
     stopWatcher6();
 });
 
+/**
+ * Clear error messages
+ */
+const clearErrors = (): void => {
+    resetNodeAlert();
+};
+
 </script>
 
 
@@ -741,7 +748,8 @@ onUnmounted(() => {
                   :items="db" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
-                  @update:modelValue="startQuery"/>
+                  @update:modelValue="startQuery"
+                  @click:clear="clearErrors"/>
     <v-label v-if="query" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
     <table v-if="query" class="ml-4 text-body-2">
       <tbody>
@@ -757,7 +765,8 @@ onUnmounted(() => {
                   :items="collection" item-title="title" item-value="id"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No entry found" spellcheck="false"
-                  @update:modelValue="startCollectionQuery"/>
+                  @update:modelValue="startCollectionQuery"
+                  @click:clear="clearErrors"/>
   </v-container>
   <v-container v-else class="pa-0">
 

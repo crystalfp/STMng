@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import log from "electron-log";
 import {askNode, closeWindow, requestData} from "@/services/RoutesClient";
 import {showNodeAlert} from "@/services/AlertMessage";
@@ -46,6 +46,8 @@ interface CollectionMatch {
 }
 const prototypes = reactive<PrototypesMatch[]>([]);
 const collection = reactive<CollectionMatch[]>([]);
+const spaceGroup = ref("");
+const formula    = ref("");
 
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
@@ -85,6 +87,9 @@ requestData(windowPath, (params: CtrlParams) => {
             color: color[i]
         });
     }
+
+    spaceGroup.value = params.spaceGroup as string ?? "";
+    formula.value = params.formula as string ?? "";
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -118,7 +123,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
 <v-container class="matches-portal">
   <v-row class="matches-container">
     <v-col cols="4" class="flex-1-1-0 pr-6">
-      <v-label class="text-headline-small justify-center mt-n2 mb-2 w-100">Prototype matches</v-label>
+      <v-label class="text-headline-small no-select justify-center mt-n2 mb-2 w-100">Prototype matches</v-label>
       <v-container v-for="entry of prototypes" :key="entry.aflow" v-ripple
                   class="mb-3 ml-4 py-1 pl-2 border-thin rounded-lg cursor-pointer"
                   @click="selectResult(entry.aflow, false)">
@@ -128,7 +133,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
     </v-col>
     <v-divider vertical thickness="6px" opacity="0.6"/>
     <v-col cols="5" class="flex-1-1-0 pr-4">
-      <v-label class="text-headline-small justify-center mt-n2 mb-2 w-100">Collection matches</v-label>
+      <v-label class="text-headline-small no-select justify-center mt-n2 mb-2 w-100">Collection matches</v-label>
       <v-container v-for="entry of collection" :key="entry.id" v-ripple
                    class="mb-3 py-1 pl-2 ml-2 border-thin rounded-lg cursor-pointer"
                    @click="selectResult(entry.id, true)">
@@ -139,7 +144,13 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
       </v-container>
     </v-col>
   </v-row>
-  <v-container class="button-strip">
+  <v-container class="button-strip put-symmetry">
+    <div>
+      <span class="text-title-medium no-select mr-2">Structure:</span>
+      <span class="text-title-medium result-label" v-html="formula" />
+      <span class="text-title-medium no-select mr-2 ml-4">Symmetry:</span>
+      <span class="text-title-medium result-label">{{ spaceGroup || 'No symmetry' }}</span>
+    </div>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
 </v-container>
@@ -170,7 +181,10 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
 
 :deep(sub) {
   position: relative;
-  bottom: -0.5rem;
+  bottom: -0.2rem;
 }
 
+.put-symmetry {
+  justify-content: space-between;
+}
 </style>

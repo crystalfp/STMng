@@ -269,24 +269,24 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-label text="Camera position" class="mb-4 no-select" />
-        <v-row class="pl-1">
+        <v-row>
           <v-number-input v-model="forcedCameraPositionX" label="x"
-                          :step="0.1" :precision="1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" />
           <v-number-input v-model="forcedCameraPositionY" label="y"
-                          :step="0.1" :precision="1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2" />
           <v-number-input v-model="forcedCameraPositionZ" label="z"
-                          :step="0.1" :precision="1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2" />
         </v-row>
         <v-label text="Camera look at" class="mb-4 no-select" />
-        <v-row class="pl-1">
+        <v-row>
           <v-number-input v-model="forcedCameraLookAtX" label="x"
-                          :step="0.1" :precision="1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" />
           <v-number-input v-model="forcedCameraLookAtY" label="y"
-                          :step="0.1" :precision="1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2" />
           <v-number-input v-model="forcedCameraLookAtZ" label="z"
-                          :step="0.1" :precision="1" class="ml-2 mr-0" />
+                          :step="0.1" :precision="1" class="ml-2" />
         </v-row>
-        <v-row class="d-flex justify-center gc-2 pl-3 pb-1">
+        <v-row class="d-flex justify-center gc-2 pb-1">
           <v-btn density="comfortable" @click="loadPosition">Load current</v-btn>
           <v-btn density="comfortable" @click="forcePosition">Force position</v-btn>
         </v-row>
@@ -320,13 +320,13 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-switch v-model="configStore.scene.depthCueing" label="Enable depth cueing" class="ml-2 mt-1" />
-        <v-row class="pl-1 mt-4">
+        <v-row class="mt-4">
           <v-number-input v-model="configStore.scene.depthNear" label="Near"
                           :disabled="!configStore.scene.depthCueing"
-                          :step="1" :precision="0" class="ml-2 mr-0" />
+                          :step="1" :precision="0" class="ml-1" />
           <v-number-input v-model="configStore.scene.depthFar" label="Far"
                           :disabled="!configStore.scene.depthCueing"
-                          :step="1" :precision="0" class="ml-2 mr-0" />
+                          :step="1" :precision="0" class="ml-2 mr-n2" />
         </v-row>
       </v-expansion-panel-text>
     </v-expansion-panel>
@@ -392,7 +392,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       <v-expansion-panel-text>
         <v-switch v-model="configStore.helpers.showAxis"
                   label="Show axis" class="mt-3 mb-4" />
-        <align-labels label-width="5rem" class="ml-n4 mt-n5">
+        <align-labels label-width="5rem" class="ml-n2 mt-n5">
           <v-slider v-model="configStore.helpers.axisLength" label="Axis length" density="compact"
                     min="0.5" max="20" step="0.5" thumb-label />
         </align-labels>
@@ -402,7 +402,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
                   label="Show grid XY" />
         <v-switch v-model="configStore.helpers.showGridYZ"
                   label="Show grid YZ" />
-        <align-labels label-width="5rem" class="ml-n4">
+        <align-labels label-width="5rem" class="ml-n2">
           <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
                     min="2" max="40" step="2" thumb-label />
         </align-labels>
@@ -411,13 +411,13 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-text>
     </v-expansion-panel>
   </v-expansion-panels>
-  <block-button class="mt-2 ml-0 pr-3" label="Restore viewer settings"
+  <block-button class="mt-3" label="Restore viewer settings"
                 @click="configStore.resetViewer"/>
 </v-container>
 </template>
 
 <style scoped>
 .panels {
-  padding-right: 12px !important;
+  padding-right: 6px !important;
 }
 </style>

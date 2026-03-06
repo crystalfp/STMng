@@ -109,7 +109,9 @@ export class FindSimilar extends NodeCore {
 				distance: this.distance,
 				color: this.colorBand,
 				aflow: this.idPrototypes,
-				titlePrototypes: this.titlePrototypes
+				titlePrototypes: this.titlePrototypes,
+				spaceGroup: this.structure.crystal.spaceGroup,
+				formula: this.formula
 			};
 
 			sendToSecondaryWindow("/matches", dataToSend);
@@ -440,7 +442,9 @@ export class FindSimilar extends NodeCore {
 			distance: this.distance,
 			color: this.colorBand,
 			aflow: this.idPrototypes,
-			titlePrototypes: this.titlePrototypes
+			titlePrototypes: this.titlePrototypes,
+			spaceGroup: this.structure!.crystal.spaceGroup,
+			formula: this.formula
 		};
 
 		createOrUpdateSecondaryWindow({
