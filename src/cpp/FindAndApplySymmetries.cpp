@@ -437,6 +437,7 @@ static void applyTransformations(SpglibDataset* dataset,
 	outTypes.clear();
 	outFc.clear();
 	vector<int32_t> updIdx;
+	int inputSize = outIdx.size();
 
 	int nops = dataset->n_operations;
 	for(size_t j=0; j < natoms; ++j)
@@ -490,7 +491,7 @@ static void applyTransformations(SpglibDataset* dataset,
 				outFc.push_back(fy);
 				outFc.push_back(fz);
 				outTypes.push_back(types[j]);
-				updIdx.push_back(outIdx[j]);
+				updIdx.push_back(outIdx[j%inputSize]);
 				different = false;
 			}
 		}
@@ -693,14 +694,13 @@ string doFindAndApplySymmetries(
 		}
 
 		// Prepare the mutable list of atoms' atomic numbers
-		size_t natoms = atomsZ.size();
-		int *types = (int *)malloc(4*natoms*sizeof(int));
-		for(size_t i=0; i < natoms; ++i) types[i] = atomsZ[i];
-		int num_primitive_atom = natoms;
+		int num_primitive_atom = atomsZ.size();
+		int *types = (int *)malloc(4*num_primitive_atom*sizeof(int));
+		for(size_t i=0; i < num_primitive_atom; ++i) types[i] = atomsZ[i];
 
 		// Prepare the mutable list of atoms positions
-		double (*positions)[3] { new double[4*natoms][3] };
-		for(size_t j=0; j < natoms; ++j)
+		double (*positions)[3] { new double[4*num_primitive_atom][3] };
+		for(size_t j=0; j < num_primitive_atom; ++j)
 		{
 			positions[j][0] = fractionalCoordinates[3*j+0];
 			positions[j][1] = fractionalCoordinates[3*j+1];
@@ -711,6 +711,7 @@ string doFindAndApplySymmetries(
 		for(auto x : atomsIdx) cout << x << ' ';
 		cout << "\n*** AtomsZ " << num_primitive_atom << endl;
 		for(size_t i=0; i < num_primitive_atom; ++i) cout << types[i] << ' ';
+		cout << "\n";
 #endif
 
 		// Standardize the cell before finding symmetries
@@ -802,10 +803,11 @@ string doFindAndApplySymmetries(
 		else
 		{
 #ifdef DEBUG
-			cout << "\n\n*** Initial " << endl; // TBD
+			cout << "\n\n*** Before transformation " << endl; // TBD
 			for(auto x : atomsIdx) cout << x << ' ';
 			cout << "\n*** AtomsZ " << num_primitive_atom << endl;
 			for(size_t i=0; i < num_primitive_atom; ++i) cout << types[i] << ' ';
+			cout << "\n";
 #endif
 			vector<int32_t> outTypes;
 			vector<double_t> outPositions;
@@ -813,7 +815,7 @@ string doFindAndApplySymmetries(
 								 types, outTypes, outPositions, atomsIdx);
 
 #ifdef DEBUG
-			cout << "\n\n*** After " << endl;
+			cout << "\n\n*** After transformation" << endl;
 			for(auto x : atomsIdx) cout << x << ' ';
 			cout << "\n*** AtomsZout" << endl;
 			for(auto x : outTypes) cout << x << ' ';
