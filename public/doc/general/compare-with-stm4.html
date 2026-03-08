@@ -57,8 +57,17 @@ table {
 
 <h1>STMng — functionalities comparison with STM4</h1>
 
-<p>The following tables comes directly from the STM4 documentation and have been augmented with references to the corresponding functions in STMng.</p>
-<p>The STM4 modules are grouped by function:</p>
+<p>At the root, the difference between STMng and its predecessor STM4 is that the latter is built on top of the commercial tool <a href="https://www.avs.com/products/express">AVS/Express</a> and the former uses <a href="../index.html#tech">open tools and languages</a>.</p>
+
+<p>AVS/Express is a comprehensive and versatile data visualization tool designed for sophisticated problem-solving in fields like science, engineering, medicine, telecommunications, and environmental research. In this environment STM4 is one of the possible applications. Instead STMng is an application focused on one goal only: visualize and analyze chemistry and crystallographic data.</p>
+
+<p>Going deeper, the main difference lies in the underlying architecture. STM4 uses the Object Manager from AVS/Express that manages a DAG of modules. STMng instead is based on a simpler linear assembly of modules. If you open the <a href="../secondary/project-editor.html">project editor</a> you immediately see this.</p>
+
+<p>Also AVS/Express supports the creation of macro modules that combine modules into super-modules. STMng instead has only the <a href="../index.html#project">project</a> as the unit of customization.</p>
+
+<p>The following tables comes directly from the STM4 documentation and have been augmented with references to the corresponding functions in STMng. At the end there is a <a href="#NEW">list</a> of STMng functionalities not present in STM4.</p>
+
+<p>The STM4 modules grouped by function:</p>
 <table>
   <tr>
     <td class="m1s"><a href="#DATAIO">Readers Writers</a></td>
@@ -100,13 +109,11 @@ table {
 
 <p style="margin-top: 1rem">The symbols below show how the STM4 functionality is found in STMng:</p>
 <table>
-  <tr><td><img src="yes-icon.svg" width="25" height="25"></td><td>The functionality is in STMng</td></tr>
+  <tr><td style="width: 30px"><img src="yes-icon.svg" width="25" height="25"></td><td>The functionality is in STMng</td></tr>
   <tr><td><img src="no-icon.svg" width="25" height="25"></td><td>The functionality is not and will not be in STMng</td></tr>
   <tr><td><img src="almost-icon.svg" width="25" height="25"></td><td>The functionality is in STMng with some adjustment or differences</td></tr>
   <tr><td><img src="maybe-icon.svg" width="25" height="25"></td><td>The functionality could be implemented in STMng if users ask for it</td></tr>
 </table>
-
-<p style="margin-top: 1rem">At the end there is a <a href="#NEW">list</a> of STMng functionalities not present in STM4.</p>
 
 <h2><a name="DATAIO"></a>Readers Writers</h2>
 <table>
@@ -138,13 +145,13 @@ table {
   <td class="m1">Make Movie</td>
   <td class="m2">Capture a sequence of frames, one for each different viewer content, and assemble them in a movie (AVI or MPEG).</td>
   <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
-  <td class="m4"><a href="../nodes/capture-view.html">Capture view</a> node.</td>
+  <td class="m4"><a href="../nodes/capture-view.html">Capture view</a> node. Note that the movie formats offered are the newer ones (MP4, Matrioska, WebM) and not the legacy ones.</td>
 </tr>
 <tr>
   <td class="m1">Output Image</td>
   <td class="m2">Save a snapshot of the content of the current viewer.</td>
   <td class="m3"><img src="yes-icon.svg" width="25" height="25"></td>
-  <td class="m4"><a href="../nodes/capture-view.html">Capture view</a> node.</td>
+  <td class="m4"><a href="../nodes/capture-view.html">Capture view</a> node. Also PDF is offered as an output format.</td>
 </tr>
 <tr>
   <td class="m1">Write Structure</td>
@@ -156,7 +163,7 @@ table {
   <td class="m1">Write POV Ray</td>
   <td class="m2">Write the current view as a POV-Ray raytracer scene.</td>
   <td class="m3"><img src="maybe-icon.svg" width="25" height="25"></td>
-  <td class="m4">Maybe could be of interest to export scene for the <a href="https://www.povray.org/">Persistence of Vision Raytracer</a>.</td>
+  <td class="m4">Maybe could be of interest to export scene for the <a href="https://www.povray.org/">Persistence of Vision Raytracer</a>. Or could be more interesting the WebXR augmented reality support.</td>
 </tr>
 <tr>
   <td class="m1">Read Fermi Surface</td>
@@ -175,7 +182,7 @@ table {
   <td class="m1">Write Summary</td>
   <td class="m2">Write a summary of the series of structures given as input.</td>
   <td class="m3"><img src="almost-icon.svg" width="25" height="25"></td>
-  <td class="m4">A summary of the current structure is available in the <a href="../nodes/measures.html">Measures</a> node although it is not exported and not covers all structures loaded.</td>
+  <td class="m4">A summary of the current structure is available in the <a href="../nodes/measures.html">Measures</a> node although it is not exported and it does not cover a sequence of structures loaded.</td>
 </tr>
 </table>
 
@@ -587,6 +594,8 @@ table {
       <td>Collection of model structures and prototypes.</td></tr>
   <tr><td class="m1n"><a href="../nodes/variable-composition.html">Variable composition</a></td>
       <td>Split compositions and remove duplicates structures.</td></tr>
+  <tr><td class="m1"><a href="../nodes/capture-view.html">Capture view</a></td>
+      <td>Capture the viewer content also as an STL model for 3D printing.</td></tr>
 
   <tr><td class="m1n"><a href="../secondary/compare.html">Compare structures</a></td>
       <td>Visually compare pair of structures.</td></tr>

@@ -28,9 +28,13 @@
  * @notExported
  */
 const Step = {
+	/** Start */
     start: 		1,
+	/** Normal character */
     normal:  	2,
+	/** Space */
     blank:   	3,
+	/** Inside quoted string */
     quoted:   	4
 } as const;
 
@@ -45,8 +49,11 @@ type StepType = (typeof Step)[keyof typeof Step];
  * @notExported
  */
 const Char = {
+	/** Normal character */
     normal:	0,
+	/** Space character (blank and tab) */
     blank:  1,
+	/** Quote character (' and ") */
     quote:  2,
 } as const;
 
