@@ -83,6 +83,7 @@ const countComponents = ref(2);
 const count = ref<number[]>([0]);
 const results = ref<Recipe[]>([]);
 const hasEnergies = ref(false);
+const summary = ref<[number, number]>([0, 0]);
 
 /** Selected table entries */
 const selected = ref<string[]>([]);
@@ -234,6 +235,8 @@ const resetAccumulator = (): void => {
     savedFiles.value = -1;
     resetNodeAlert();
     analysisDone.value = false;
+    summary.value[0] = 0;
+    summary.value[1] = 0;
 };
 
 /**
@@ -250,6 +253,8 @@ const computeCompositions = (): void => {
     .then((params) => {
 
         const recipes = JSON.parse(params.recipes as string ?? "[]") as Recipe[];
+        summary.value[0] = 0;
+        summary.value[1] = 0;
         results.value.length = 0;
         selected.value.length = 0;
         for(const recipe of recipes) {
@@ -289,6 +294,7 @@ const analyzeSelected = async (): Promise<void> => {
                         "variableComposition");
         return;
     }
+    for(const r of results.value) r.valid = "";
 
     // Sort selected entries by increasing composition size
     const compositions = results.value
@@ -296,6 +302,8 @@ const analyzeSelected = async (): Promise<void> => {
                                 .toSorted((a, b) => a.count - b.count)
                                 .map((entry) => entry.key);
 
+    summary.value[0] = 0; // Total
+    summary.value[1] = 0; // Remaining
     for(const composition of compositions) {
 
         const key = composition.replaceAll("\u2009:\u2009", "-");
@@ -317,7 +325,10 @@ const analyzeSelected = async (): Promise<void> => {
 
         for(const r of results.value) {
             if(r.key === composition) {
-                r.valid = (result.valid as number).toFixed(0);
+                const valid = result.valid as number;
+                r.valid = valid.toFixed(0);
+                summary.value[0] += r.count;
+                summary.value[1] += valid;
                 break;
             }
         }
@@ -407,6 +418,13 @@ onUnmounted(() => {
     stopWatcher3();
     stopWatcher4();
 });
+
+// Simplify label for the result of removing duplicates
+const summaryLabel = computed(() =>
+    (summary.value[0] > 0 ?
+        `Removed ${summary.value[0]-summary.value[1]} of ${summary.value[0]}` :
+        " ")
+);
 
 </script>
 
@@ -512,16 +530,16 @@ onUnmounted(() => {
 
   <v-label class="separator-title">Remove duplicates</v-label>
 
-  <v-row class="pt-3">
+  <v-row class="pt-1 mb-n2">
     <v-switch v-model="state.removeDuplicates"
               label="Remove" class="ml-1 mr-6 mb-5" />
     <v-number-input v-model="state.duplicatesThreshold" :disabled="!state.removeDuplicates"
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
-
+  <v-label class="result-label ml-1">{{ summaryLabel }}</v-label>
   <block-button :disabled="selected.length === 0 || !state.removeDuplicates"
                 :loading="analysisRunning"
-                label="Analyze selected for duplicates" class="mb-n2"
+                label="Analyze selected for duplicates" class="mb-n2 mt-2"
                 @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>
   <node-alert node="variableComposition2" class="mt-1"/>
 

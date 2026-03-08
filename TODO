@@ -1,9 +1,7 @@
 Bugs:
   ☐ Does not load spglib on Linux
   ☐ Bounding sphere does not consider supercell
-  ☐ Transform to international symbol also input symmops
   ☐ Changing theme does not changes points color in scatterplot
-  ☐ In X-ray doc add reference to the pymatgen routine
   ☐ Still problems with incomplete polyhedra
 
 Latest requests (backlog):
@@ -13,6 +11,7 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
+  ☐ Variable composition convex hull 3 components as 3D object
 
 To do:
   ☐ Check error return from main process to client
@@ -24,7 +23,6 @@ To do:
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters
   ☐ Add count elements of groups in scatterplot
-  ✔ Experiment with css `scrollbar-*` <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/scrollbar-color> @done(2026-02-20 09:06)
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -77,6 +75,10 @@ Reference:
   ☐ For the charts <https://unovis.dev/>
 
 Archive:
+  ✔ In X-ray doc add reference to the pymatgen routine @done(2026-03-08 04:28) @project(Bugs)
+  ✔ Summary line in variable composition after "analyze selected for duplicates" @done(2026-03-08 04:27) @project(To do)
+  ✔ Transform to international symbol also input symmops @done(2026-03-07 18:04) @project(Bugs)
+  ✔ Experiment with css `scrollbar-*` <https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/scrollbar-color> @done(2026-02-20 09:06) @project(To do)
   ✘ FatLinesBatch from <https://codesandbox.io/p/sandbox/serene-margulis-iuiob3?file=%2Fsrc%2Findex.js%3A63%2C17-63%2C30> @cancelled(2026-02-01 15:38) @project(ToDo eventually)
   ✔ Polyhedra, ignore H bonds @done(2026-01-26 14:41) @project(Bugs)
   ✔ Analysis of variable composition data sets. @done(2026-01-26 14:41) @project(Latest requests (backlog))

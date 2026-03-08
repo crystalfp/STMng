@@ -63,12 +63,12 @@ type CharType = (typeof Char)[keyof typeof Char];
 interface Transition {
 	/** Next step */
 	next: StepType;
-	/** Action for these step */
+	/** Action for this step */
 	action?: (ch: string) => void;
 }
 
 /**
- * Action for the finish step
+ * Action for the final step
  * @notExported
  */
 type EndAction = (step: StepType) => void;

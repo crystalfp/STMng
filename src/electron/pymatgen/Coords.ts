@@ -161,6 +161,17 @@ const generateImageVectors = (): number[][] => {
 };
 
 /**
+ * Result of pbcShortestVectors
+ * @notExported
+ */
+interface ShortestVectorsResult {
+	/** Shortest vectors */
+    vecs: number[][][];
+	/** Distances */
+    d2: number[][];
+}
+
+/**
  * Get the shortest vectors between two lists of coordinates taking into
  * account periodic boundary conditions and the lattice.
  *
@@ -180,7 +191,7 @@ export const pbcShortestVectors = (lattice: Lattice,
 								   fcoords1: number[][],
 								   fcoords2: number[][],
 								   mask: number[][],
-								   lllFracTol?: number[]): {vecs: number[][][]; d2: number[][]} => {
+								   lllFracTol?: number[]): ShortestVectorsResult => {
 
 	const nPbcImg = 27;
 
