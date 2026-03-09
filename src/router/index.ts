@@ -1,5 +1,6 @@
 /**
- * Setup router. Besides main entry, one route for each independent window to be created
+ * Setup router.
+ * Besides main entry, one route for each independent window to be created
  *
  * @packageDocumentation
  *
@@ -86,6 +87,10 @@ export const router = createRouter({
         {
             path: "/components-hull",
             component: (): Component => import("@/components/ComponentsConvexHull.vue")
+        },
+        {
+            path: "/hull-3d",
+            component: (): Component => import("@/components/ComponentsConvexHull3D.vue")
         },
         {
             // Catch errors in paths

@@ -65,10 +65,10 @@ const openDocumentation = async (kind: "top" | "node" | "secondary", file?: stri
     }
     if(existsSync(url)) {
         const sts = await shell.openPath(url);
-        if(sts) return `Error from help file "${file}.html" for this ${kind}: ${sts}`;
+        if(sts) return `Error from help file "${file}.html" for this "${kind}": ${sts}`;
         return "";
     }
-    return `Help file "${file}.html" for this ${kind} not found`;
+    return `Help file "${file}.html" for this "${kind}" not found`;
 };
 
 let systemMenu: Menu;
@@ -304,6 +304,9 @@ export const setupChannelMenu = (isDevelopment: boolean): void => {
         // Show help for the secondary window
         if(key === "F1") {
             openDocumentation("secondary", request)
+                .then((sts) => {
+                    if(sts) sendAlertToClient(sts);
+                })
                 .catch((error: Error) => {
                     sendAlertToClient(`Error getting help for secondary window: ${error.message}`);
                 });

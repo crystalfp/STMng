@@ -367,6 +367,11 @@ const disableCharts = computed(() => {
             (!analysisDone.value && state.removeDuplicates) ||
             selected.value.length === 0;
 });
+const disable3DView = computed(() => {
+    return !hasEnergies.value || countComponents.value < 3 ||
+            (!analysisDone.value && state.removeDuplicates) ||
+            selected.value.length === 0;
+});
 
 /**
  * Open the convex hull secondary window
@@ -382,6 +387,24 @@ const showCharts = (): void => {
     })
     .catch((error: Error) => {
         showNodeAlert(`Convex hull computation error: ${error.message}`,
+                      "variableComposition2");
+    });
+};
+
+/**
+ * Open the convex hull 3D view in a secondary window
+ */
+const show3DView = (): void => {
+
+    askNode(id, "convex-hull-3d", {
+        show3DView: true,
+        dimension: countComponents.value
+    })
+    .then((result) => {
+        if(result.error) throw Error(result.error as string);
+    })
+    .catch((error: Error) => {
+        showNodeAlert(`3D convex hull computation error: ${error.message}`,
                       "variableComposition2");
     });
 };
@@ -537,13 +560,14 @@ const summaryLabel = computed(() =>
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
   <v-label class="result-label ml-1">{{ summaryLabel }}</v-label>
-  <block-button :disabled="selected.length === 0 || !state.removeDuplicates"
+  <block-button :disabled="selected.length === 0 || !state.removeDuplicates || analysisRunning"
                 :loading="analysisRunning"
                 label="Analyze selected for duplicates" class="mb-n2 mt-2"
                 @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>
   <node-alert node="variableComposition2" class="mt-1"/>
 
   <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
+  <block-button :disabled="disable3DView" label="3D view" @click="show3DView" />
   <v-switch v-model="state.consolidateOutput" :disabled="disableSave"
             label="Consolidate output" class="ml-1 mt-n2"/>
   <block-button class="mt-2" :disabled="disableSave" label="Save analyzed" @click="saveAnalyzed" />

@@ -646,7 +646,7 @@ const showEnergyLandscape = (): void => {
                     label="Margin" :min="0" :step="1" class="ml-2"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
-  <block-button :disabled="countDistances === 0"
+  <block-button :disabled="countDistances === 0 || groupingBusy"
                 label="Group similar structures" :loading="groupingBusy"
                 @click="groupingBusy = true; ClassifyStructures()" />
   <v-label v-if="countGroups > 0" class="mb-2 result-label">
@@ -658,7 +658,7 @@ const showEnergyLandscape = (): void => {
   <throttled-button block :disabled="countDistances === 0"
                     label="Export results" @click="exportResults" />
   <throttled-button block label="Show scatterplot"
-                    :loading="working" :disabled="countDistances === 0"
+                    :loading="working" :disabled="countDistances === 0 || working"
                     @click="working=true;showScatterplot()" />
   <throttled-button block :disabled="!resultDimensionality"
                     label="Show charts" @click="showCharts" />

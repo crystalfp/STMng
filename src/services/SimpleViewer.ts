@@ -218,6 +218,32 @@ export class SimpleViewer {
 	}
 
 	/**
+	 * Set camera position and look-at point
+	 *
+	 * @param position - Camera position to be set
+	 * @param target - Camera look at point
+	 * @param zoom - Camera zoom
+	 */
+	setCamera(position: [number, number, number],
+			  target: [number, number, number],
+			  zoom=1): void {
+
+		if(!this.camera || !this.controls) return;
+
+		this.camera.position.set(position[0], position[1], position[2]);
+		this.camera.lookAt(new Vector3(...target));
+
+		this.controls.setOrbitPoint(...target);
+		void this.controls
+				.normalizeRotations()
+				.setLookAt(position[0], position[1], position[2],
+						   target[0], target[1], target[2], false);
+		void this.controls.zoomTo(zoom, false);
+
+		this.camera.updateProjectionMatrix();
+	}
+
+	/**
 	 * Center camera and controls using scene bounding sphere
 	 *
 	 * @param atomsGroup - Structure visualized

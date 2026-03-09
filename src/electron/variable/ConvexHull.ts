@@ -45,6 +45,8 @@ export class VariableCompositionConvexHull {
 	private idxVertices: number[] = [];
 	private distances: number[] = [];
 
+	private readonly trianglesVertices: number[] = [];
+
 	/**
 	 * Build the convex hull in variable composition space
 	 *
@@ -237,6 +239,7 @@ export class VariableCompositionConvexHull {
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2;
 
 		// Find convex hull (only the lower part)
+		this.trianglesVertices.length = 0;
 		const points: number[][] = [];
 		for(let i=0; i < len; ++i) points.push([this.x[i], this.y[i], this.e[i]]);
 		const hull = quickHull(points);
@@ -247,6 +250,9 @@ export class VariableCompositionConvexHull {
 				idxVertices.add(v1);
 				idxVertices.add(v2);
 				idxVertices.add(v3);
+				this.trianglesVertices.push(points[v1][0], points[v1][1], points[v1][2],
+											points[v2][0], points[v2][1], points[v2][2],
+											points[v3][0], points[v3][1], points[v3][2]);
 			}
 		}
 
@@ -656,5 +662,31 @@ export class VariableCompositionConvexHull {
 			};
 		}
 		return {error: `Invalid dimension ${this.dimension}`};
+	}
+
+	/**
+	 * Extract data for display in 3D view
+	 *
+	 * @returns Data to be passed to the secondary window for display
+	 */
+	dataForDisplay3D(): CtrlParams {
+
+		switch(this.dimension) {
+			case 3: return {
+				dimension: 3,
+				trianglesVertices: this.trianglesVertices,
+				x: this.x,
+				y: this.y,
+				e: this.e,
+			};
+			case 4: return {
+				dimension: 4,
+				x: this.x,
+				y: this.y,
+				z: this.z,
+				e: this.e,
+			};
+		}
+		return {error: `Invalid dimension ${this.dimension} for 3D view`};
 	}
 }

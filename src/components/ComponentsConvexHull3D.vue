@@ -1,0 +1,279 @@
+<script setup lang="ts">
+/**
+ * @component
+ * Display convex hull for variable composition results
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2026-03-08
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ */
+import {onUnmounted, ref, watch} from "vue";
+import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
+        Float32BufferAttribute, LineBasicMaterial, LineLoop,
+        Mesh, MeshBasicMaterial, MeshStandardMaterial, LineSegments,
+        Group, Scene} from "three";
+import {theme} from "@/services/ReceiveTheme";
+import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
+import {closeWindow, requestData} from "@/services/RoutesClient";
+import {SimpleViewer} from "@/services/SimpleViewer";
+import {showSystemAlert} from "@/services/AlertMessage";
+import type {CtrlParams} from "@/types";
+
+import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+
+const windowPath = "/hull-3d";
+
+const scale = ref(0.2);
+const showScale = ref(0.2);
+const pointSize = ref(0.02);
+const showPointSize = ref(0.02);
+
+let trianglesVertices: number[] = [];
+let x: number[] = [];
+let y: number[] = [];
+let e: number[] = [];
+let zCenter = 0;
+
+/** Capture and handle special keys (Escape, F1, F12) */
+handleSpecialKeys(windowPath);
+
+// Group containing all points
+const pointsGroup = new Group();
+
+/** Initialize the 3D viewer */
+const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
+
+    pointsGroup.name = "ConvexHullPoints";
+    scene.add(pointsGroup);
+
+    createReference(scene);
+});
+
+/**
+ * Create convex hull surface
+ *
+ * @param vertices - Triangle vertices of the convex hull surface
+ * @param zScale - Scale along z axis
+ */
+const createSurface = (vertices: number[], zScale: number): void => {
+
+    // Remove existing surface
+    const scene = sv.getScene();
+    const mesh = scene.getObjectByName("ConvexHull") as Mesh;
+    if(mesh) {
+        mesh.geometry.dispose();
+        (mesh.material as MeshStandardMaterial).dispose();
+        mesh.removeFromParent();
+    }
+    const mesh2 = scene.getObjectByName("ConvexHullEdges") as Mesh;
+    if(mesh2) {
+        mesh2.geometry.dispose();
+        (mesh2.material as LineBasicMaterial).dispose();
+        mesh2.removeFromParent();
+    }
+
+    // Get surface triangles
+    if(vertices.length === 0) return;
+
+    // Define surface material
+    const material = new MeshStandardMaterial({
+        side: DoubleSide,
+        roughness: 0.5,
+        metalness: 0.6,
+        color: "#FFFFFF",
+        transparent: true,
+        opacity: 0.5
+    });
+
+    // Create convex hull surface
+    const geometry = new BufferGeometry();
+    const index = [];
+    const len = vertices.length/3;
+    for(let i=0; i < len; ++i) index.push(i);
+    geometry.setIndex(index);
+    geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+    geometry.computeVertexNormals();
+    geometry.scale(1, 1, zScale);
+    const surface = new Mesh(geometry, material);
+    surface.name = "ConvexHull";
+    scene.add(surface);
+
+    const edges = new EdgesGeometry(geometry);
+	const line = new LineSegments(edges, new LineBasicMaterial({color: "#000000"}));
+    line.name = "ConvexHullEdges";
+    scene.add(line);
+
+    sv.setSceneModified();
+};
+
+/**
+ * Create the reference triangle
+ *
+ * @param scene - The scene
+ */
+const createReference = (scene: Scene): void => {
+
+    const mesh = scene.getObjectByName("ConvexHullRef") as LineLoop;
+    if(mesh) {
+        mesh.geometry.dispose();
+        (mesh.material as LineBasicMaterial).dispose();
+        mesh.removeFromParent();
+    }
+
+    const points = [
+        0, 0, 0,
+        1, 0, 0,
+        0.5, 0.86602540378, 0,  // √3/4
+    ];
+    const edges = new BufferGeometry();
+    edges.setAttribute("position", new Float32BufferAttribute(points, 3));
+
+    const line = new LineLoop(edges, new LineBasicMaterial({color: "#0000FF"}));
+    line.name = "ConvexHullRef";
+
+    scene.add(line);
+    sv.setSceneModified();
+};
+
+/**
+ * Add points corresponding to the structures
+ *
+ * @param px - Point x position
+ * @param py - Point y position
+ * @param pz - Point z position
+ * @param zScale - Scale along the z axis
+ * @param size - Point size
+ */
+const createPoints = (px: number[], py: number[], pz: number[],
+                      zScale: number, size: number): void => {
+
+    sv.clearGroup("ConvexHullPoints");
+
+    for(let i=0; i < px.length; ++i) {
+
+        const geometry = new BoxGeometry(size, size, size);
+        const material = new MeshBasicMaterial({color: 0xFF0000});
+        const cube = new Mesh(geometry, material);
+        cube.position.set(px[i], py[i], pz[i]*zScale);
+        pointsGroup.add(cube);
+    }
+    sv.setSceneModified();
+};
+
+/** Request the initial data and handle subsequent updates */
+requestData(windowPath, (params: CtrlParams) => {
+
+    // Collect the data
+    const dimension = params.dimension as number;
+    if(!dimension) return;
+
+    const tv = params.trianglesVertices as number[];
+    trianglesVertices = tv ? [...tv] : [];
+    const xx = params.x as number[];
+    x = xx ? [...xx] : [];
+    const yy = params.y as number[];
+    y = yy ? [...yy] : [];
+    const ee = params.e as number[];
+    e = ee ? [...ee] : [];
+
+    if(dimension === 3) {
+
+        createSurface(trianglesVertices, scale.value);
+        createPoints(x, y, e, scale.value, pointSize.value);
+
+        // Find the center of the convex hull
+        let minEnergy = Number.POSITIVE_INFINITY;
+        for(const z of e) if(z < minEnergy) minEnergy = z;
+        zCenter = 0.5*minEnergy*scale.value;
+
+        // Move the camera to have the surface at the center of the viewer
+        sv.setCamera([0.5, 0.433, 1], [0.5, 0.433, zCenter], 20);
+    }
+    else if(dimension === 4) {
+        showSystemAlert("Convex hull 3D view for 4 components not yet implemented");
+    }
+    else {
+        showSystemAlert(`Invalid number of components (${dimension}) for convex hull 3D view`);
+    }
+});
+
+/** Update scene on parameters change */
+const stopWatcher1 = watch([scale, pointSize], ([sa, pa], [sb, pb]) => {
+
+    if(sa !== sb) {
+        zCenter *= sa/sb;
+        sv.setCamera([0.5, 0.433, 1], [0.5, 0.433, zCenter], 12);
+        createSurface(trianglesVertices, scale.value);
+        createPoints(x, y, e, scale.value, pointSize.value);
+    }
+    else if(pa !== pb) {
+        createPoints(x, y, e, scale.value, pointSize.value);
+    }
+});
+const stopWatcher2 = watch([scale, pointSize], () => {
+
+    createSurface(trianglesVertices, scale.value);
+    createPoints(x, y, e, scale.value, pointSize.value);
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher1();
+    stopWatcher2();
+});
+
+</script>
+
+
+<template>
+<v-app :theme>
+  <div class="hull3d-portal">
+    <div class="hull3d-viewer" />
+    <v-container class="button-strip">
+      <slider-with-steppers v-model="scale" v-model:raw="showScale"
+                            label-width="5.5rem"
+                            :label="`Scale (${showScale})`"
+                            :min="0" :max="1" :step="0.01" />
+      <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
+                            label-width="8rem"
+                            :label="`Point size (${showPointSize})`"
+                            :min="0.005" :max="0.1" :step="0.005" />
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+    </v-container>
+  </div>
+</v-app>
+</template>
+
+
+<style scoped>
+
+.hull3d-portal {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-width: 1100px;
+  padding: 0;
+}
+
+.hull3d-viewer {
+  overflow: hidden;
+  width: 100vw;
+  flex: 2;
+  padding: 0;
+}
+</style>

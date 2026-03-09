@@ -87,16 +87,17 @@ export class VariableComposition extends NodeCore {
 	};
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",			type: "invoke",		 callback: this.channelInit.bind(this)},
-		{name: "reset",     	type: "send",   	 callback: this.channelReset.bind(this)},
-		{name: "compositions",	type: "invoke",		 callback: this.channelCompositions.bind(this)},
-		{name: "capture",		type: "invoke",		 callback: this.channelCapture.bind(this)},
-		{name: "save",			type: "invoke",		 callback: this.channelSave.bind(this)},
-		{name: "state",			type: "send",		 callback: this.channelState.bind(this)},
-		{name: "start",			type: "invoke",		 callback: this.channelStart.bind(this)},
-		{name: "analyze",		type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
-		{name: "convex-hull",	type: "invoke",		 callback: this.channelConvexHull.bind(this)},
-		{name: "filter",		type: "invoke",		 callback: this.channelFilter.bind(this)},
+		{name: "init",			 type: "invoke",	  callback: this.channelInit.bind(this)},
+		{name: "reset",     	 type: "send",   	  callback: this.channelReset.bind(this)},
+		{name: "compositions",	 type: "invoke",	  callback: this.channelCompositions.bind(this)},
+		{name: "capture",		 type: "invoke",	  callback: this.channelCapture.bind(this)},
+		{name: "save",			 type: "invoke",	  callback: this.channelSave.bind(this)},
+		{name: "state",			 type: "send",		  callback: this.channelState.bind(this)},
+		{name: "start",			 type: "invoke",	  callback: this.channelStart.bind(this)},
+		{name: "analyze",		 type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
+		{name: "convex-hull",	 type: "invoke",	  callback: this.channelConvexHull.bind(this)},
+		{name: "convex-hull-3d", type: "invoke",	  callback: this.channelConvexHull3D.bind(this)},
+		{name: "filter",		 type: "invoke",	  callback: this.channelFilter.bind(this)},
 	];
 
 	/**
@@ -771,6 +772,34 @@ export class VariableComposition extends NodeCore {
 				height: 900,
 				title: "Variable composition convex hull",
 				data: this.hull.dataForDisplay()
+			});
+		}
+		return {status: "OK!"};
+	}
+
+	/**
+	 * Channel handler to start analyzing the compositions
+	 *
+	 * @returns Error message or empty on success
+	 */
+	private channelConvexHull3D(params: CtrlParams): CtrlParams {
+
+		const dimension = params.dimension as number ?? 0;
+
+		const result = this.hull.prepareData(dimension);
+
+		if(result) return {error: result};
+
+		// Open the chart if so requested
+		const show3DView = params.show3DView as boolean ?? false;
+		if(show3DView) {
+
+			createOrUpdateSecondaryWindow({
+				routerPath: "/hull-3d",
+				width: 1130,
+				height: 900,
+				title: "Variable composition 3D convex hull",
+				data: this.hull.dataForDisplay3D()
 			});
 		}
 		return {status: "OK!"};
