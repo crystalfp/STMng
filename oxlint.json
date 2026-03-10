@@ -37,6 +37,10 @@
     "public/doc/scripts.js",
     "tests/**"
   ],
+  "options":{
+    "typeAware": true,
+    "typeCheck": true
+  },
   "rules": {
     "constructor-super": "error",
     "for-direction": "error",
