@@ -27,7 +27,8 @@ import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, OrthographicCamera, Vector3, Vector2, type Group,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-        Box3, Sphere, MathUtils, Timer, Mesh} from "three";
+        Box3, Sphere, MathUtils, Timer, Mesh,
+		Object3D} from "three";
 
 /** Simple 3D viewer */
 export class SimpleViewer {
@@ -312,5 +313,39 @@ export class SimpleViewer {
 		// Remove the group itself
 		if(removeGroup) this.scene.remove(group);
 		this.isSceneModified = true;
+	}
+
+	/**
+	 * Set object pick with Ctrl-Left click
+	 *
+	 * @param targetName - Name of the objects to pick
+	 * @param callback - Routine called on the picked object
+	 */
+	setRaycaster(targetName: string, callback: (object: Object3D) => void): void {
+
+		if(!this.renderer || !this.camera) return;
+
+        this.renderer.domElement.addEventListener("mousedown", (event: MouseEvent): void => {
+
+			if(!event.ctrlKey) return;
+			event.preventDefault();
+
+			const mouse2D = new Vector2((event.offsetX / this.canvasWidth) * 2 - 1,
+									   -(event.offsetY / this.canvasHeight) * 2 + 1);
+			const raycaster = new Raycaster();
+			raycaster.setFromCamera(mouse2D, this.camera!);
+
+			const objects: Object3D[] = [];
+			this.scene.traverse((object: Object3D) => {
+				if(object.name === targetName) objects.push(object);
+			});
+			const intersects = raycaster.intersectObjects(objects);
+
+			if(intersects.length > 0 && intersects[0]) {
+
+				const {object} = intersects[0];
+				callback(object);
+			}
+        });
 	}
 }

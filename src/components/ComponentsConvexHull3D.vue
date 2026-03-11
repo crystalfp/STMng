@@ -25,8 +25,8 @@
 import {onUnmounted, ref, watch} from "vue";
 import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Float32BufferAttribute, LineBasicMaterial, LineLoop,
-        Mesh, MeshBasicMaterial, MeshStandardMaterial, LineSegments,
-        Group, Scene} from "three";
+        Mesh, MeshStandardMaterial, LineSegments, Group, Scene,
+        FrontSide, Object3D} from "three";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
@@ -47,7 +47,19 @@ let trianglesVertices: number[] = [];
 let x: number[] = [];
 let y: number[] = [];
 let e: number[] = [];
+let v: number[] = [];
 let zCenter = 0;
+
+let step: number[] = [];
+let parts: string[] = [];
+let distance: number[] = [];
+let formula: string[] = [];
+
+const viewStep = ref("");
+const viewParts = ref("");
+const viewDistance = ref("");
+const viewFormula = ref("");
+const viewEnthalpy = ref("");
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
@@ -62,6 +74,17 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     scene.add(pointsGroup);
 
     createReference(scene);
+
+    sv.setRaycaster("Pt", (object: Object3D): void => {
+
+        const idx = object.userData.index as number;
+
+        viewFormula.value = "<b>" + formula[idx] + "</b>";
+        viewStep.value = step[idx].toFixed(0);
+        viewParts.value = parts[idx].replaceAll("-", ":");
+        viewDistance.value = distance[idx].toFixed(4);
+        viewEnthalpy.value = e[idx].toFixed(4);
+    });
 });
 
 /**
@@ -113,7 +136,7 @@ const createSurface = (vertices: number[], zScale: number): void => {
     surface.name = "ConvexHull";
     scene.add(surface);
 
-    const edges = new EdgesGeometry(geometry);
+    const edges = new EdgesGeometry(geometry, 0); // Zero to get coplanar triangles
 	const line = new LineSegments(edges, new LineBasicMaterial({color: "#000000"}));
     line.name = "ConvexHullEdges";
     scene.add(line);
@@ -156,22 +179,54 @@ const createReference = (scene: Scene): void => {
  * @param px - Point x position
  * @param py - Point y position
  * @param pz - Point z position
+ * @param stableVertices - Points exactly on the convex hull
  * @param zScale - Scale along the z axis
  * @param size - Point size
  */
 const createPoints = (px: number[], py: number[], pz: number[],
-                      zScale: number, size: number): void => {
+                      stableVertices: number[], zScale: number,
+                      size: number): void => {
 
     sv.clearGroup("ConvexHullPoints");
 
-    for(let i=0; i < px.length; ++i) {
+    // Points not on the convex hull
+    const geometry1 = new BoxGeometry(size, size, size);
+    const material1 = new MeshStandardMaterial({
+        side: FrontSide,
+        roughness: 0.5,
+        metalness: 0.6,
+        color: "#00FF00",
+    });
 
-        const geometry = new BoxGeometry(size, size, size);
-        const material = new MeshBasicMaterial({color: 0xFF0000});
-        const cube = new Mesh(geometry, material);
+    let len = px.length;
+    for(let i=0; i < len; ++i) {
+
+        const cube = new Mesh(geometry1, material1);
         cube.position.set(px[i], py[i], pz[i]*zScale);
+        cube.userData = {index: i};
+        cube.name = "Pt";
         pointsGroup.add(cube);
     }
+
+    // Points on the convex hull
+    const specialSize = size*1.1;
+    const geometry2 = new BoxGeometry(specialSize, specialSize, specialSize);
+    const material2 = new MeshStandardMaterial({
+        side: FrontSide,
+        roughness: 0.5,
+        metalness: 0.6,
+        color: "#FF0000",
+    });
+
+    len = stableVertices.length/3;
+    for(let i=0; i < len; ++i) {
+
+        const i3 = 3*i;
+        const cube = new Mesh(geometry2, material2);
+        cube.position.set(stableVertices[i3], stableVertices[i3+1], stableVertices[i3+2]*zScale);
+        pointsGroup.add(cube);
+    }
+
     sv.setSceneModified();
 };
 
@@ -191,10 +246,23 @@ requestData(windowPath, (params: CtrlParams) => {
     const ee = params.e as number[];
     e = ee ? [...ee] : [];
 
+    const vv = params.vertices as number[];
+    v = vv ? [...vv] : [];
+
+    const ss = params.step as number[];
+    step = ss ? [...ss] : [];
+    const pp = params.parts as string[];
+    parts = pp ? [...pp] : [];
+
+	const dd = params.distance as number[];
+	distance = dd ? [...dd] : [];
+	const ff = params.formula as string[];
+    formula = ff ? [...ff] : [];
+
     if(dimension === 3) {
 
         createSurface(trianglesVertices, scale.value);
-        createPoints(x, y, e, scale.value, pointSize.value);
+        createPoints(x, y, e, v, scale.value, pointSize.value);
 
         // Find the center of the convex hull
         let minEnergy = Number.POSITIVE_INFINITY;
@@ -202,7 +270,7 @@ requestData(windowPath, (params: CtrlParams) => {
         zCenter = 0.5*minEnergy*scale.value;
 
         // Move the camera to have the surface at the center of the viewer
-        sv.setCamera([0.5, 0.433, 1], [0.5, 0.433, zCenter], 20);
+        sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
     }
     else if(dimension === 4) {
         showSystemAlert("Convex hull 3D view for 4 components not yet implemented");
@@ -213,29 +281,30 @@ requestData(windowPath, (params: CtrlParams) => {
 });
 
 /** Update scene on parameters change */
-const stopWatcher1 = watch([scale, pointSize], ([sa, pa], [sb, pb]) => {
+const stopWatcher = watch([scale, pointSize], ([sa, pa], [sb, pb]) => {
 
     if(sa !== sb) {
         zCenter *= sa/sb;
-        sv.setCamera([0.5, 0.433, 1], [0.5, 0.433, zCenter], 12);
+        sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
         createSurface(trianglesVertices, scale.value);
-        createPoints(x, y, e, scale.value, pointSize.value);
+        createPoints(x, y, e, v, scale.value, pointSize.value);
     }
     else if(pa !== pb) {
-        createPoints(x, y, e, scale.value, pointSize.value);
+        createPoints(x, y, e, v, scale.value, pointSize.value);
     }
-});
-const stopWatcher2 = watch([scale, pointSize], () => {
-
-    createSurface(trianglesVertices, scale.value);
-    createPoints(x, y, e, scale.value, pointSize.value);
 });
 
 // Cleanup
 onUnmounted(() => {
-    stopWatcher1();
-    stopWatcher2();
+    stopWatcher();
 });
+
+/**
+ * Center the view as was in the initial position
+ */
+const centerView = (): void => {
+    sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
+};
 
 </script>
 
@@ -244,6 +313,17 @@ onUnmounted(() => {
 <v-app :theme>
   <div class="hull3d-portal">
     <div class="hull3d-viewer" />
+    <div v-if="viewStep !== ''" class="hull3d-panel">
+      <div v-html="viewFormula"/>
+      <table>
+        <tbody>
+          <tr><td>Step:</td><td class="align">{{ viewStep }}</td></tr>
+          <tr><td>Composition:</td><td class="align">{{ viewParts }}</td></tr>
+          <tr><td>Enthalpy:</td><td class="align">{{ viewEnthalpy }}</td></tr>
+          <tr><td>Distance:</td><td class="align">{{ viewDistance }}</td></tr>
+        </tbody>
+      </table>
+    </div>
     <v-container class="button-strip">
       <slider-with-steppers v-model="scale" v-model:raw="showScale"
                             label-width="5.5rem"
@@ -253,6 +333,7 @@ onUnmounted(() => {
                             label-width="8rem"
                             :label="`Point size (${showPointSize})`"
                             :min="0.005" :max="0.1" :step="0.005" />
+      <v-btn @click="centerView">Center</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
@@ -275,5 +356,19 @@ onUnmounted(() => {
   width: 100vw;
   flex: 2;
   padding: 0;
+}
+.hull3d-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 800;
+  background-color: #7e7e7e46;
+  overflow: hidden auto;
+  padding: 7px 10px 0 7px !important;
+  color: #202020;
+}
+
+.align {
+    text-align: right;
 }
 </style>

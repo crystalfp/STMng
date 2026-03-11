@@ -431,6 +431,68 @@ export class VariableCompositionConvexHull {
 	}
 
 	/**
+	 * Compute barycentric coordinates on the XY plane
+	 * @remarks Algorithm from: https://blackpawn.com/texts/pointinpoly/
+	 *  - u corresponds to c vertex
+	 *  - v corresponds to b vertex
+	 *  - w corresponds to a vertex
+	 *
+	 * @param point - Point to test (only x and y used)
+	 * @param a - Vertex of the triangle (only x and y used)
+	 * @param b - Vertex of the triangle (only x and y used)
+	 * @param c - Vertex of the triangle (only x and y used)
+	 * @returns Barycentric coordinates [u, v, w] of the point
+	 */
+	private barycentricCoordinates(point: number[],
+								   a: number[],
+								   b: number[],
+								   c: number[]): [number, number, number] {
+
+		// Compute vectors and dot products
+		const [cx, cy] = point;
+		const v0x = c[0]-a[0];
+		const v0y = c[1]-a[1];
+		const v1x = b[0]-a[0];
+		const v1y = b[1]-a[1];
+		const v2x = cx-a[0];
+		const v2y = cy-a[1];
+		const dot00 = v0x*v0x + v0y*v0y;
+		const dot01 = v0x*v1x + v0y*v1y;
+		const dot02 = v0x*v2x + v0y*v2y;
+		const dot11 = v1x*v1x + v1y*v1y;
+		const dot12 = v1x*v2x + v1y*v2y;
+
+		// Compute barycentric coordinates
+		const d = (dot00 * dot11 - dot01 * dot01);
+		const inv = d === 0 ? 0 : (1 / d);
+		const u = (dot11*dot02 - dot01*dot12) * inv;
+		const v = (dot00*dot12 - dot01*dot02) * inv;
+
+		return [u, v, 1-u-v];
+	}
+
+	/**
+	 * Distance from the closest point inside the triangle along Z axis
+	 * @remarks Algorithm from: https://blackpawn.com/texts/pointinpoly/
+	 *
+	 * @param p - Point to test
+	 * @param a - Vertex of the triangle
+	 * @param b - Vertex of the triangle
+	 * @param c - Vertex of the triangle
+	 * @returns Distance from the triangle or -1 if the point is not perpendicular to the triangle
+	 */
+	closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
+
+		const [u, v, w] = this.barycentricCoordinates(p, a, b, c);
+		if(u >= 0 && v >= 0 && w >= 0) {
+
+			const z = u*c[2]+v*b[2]+w*a[2];
+			return p[2]-z;
+		}
+		return -1;
+	}
+
+	/**
 	 * Check for points on the border of a triangle
 	 *
 	 * @param point - Point to test
@@ -442,7 +504,7 @@ export class VariableCompositionConvexHull {
 		const dx = point[0] - nearest[0];
 		const dy = point[1] - nearest[1];
 		const dz = point[2] - nearest[2];
-		return Math.abs(dx*dx + dy*dy + dz*dz) < 1e-10 ? 0 : -1;
+		return Math.abs(dx*dx + dy*dy) < 1e-10 ? dz : -1;
 	}
 
 	/**
@@ -545,7 +607,7 @@ export class VariableCompositionConvexHull {
 					const [v1, v2, v3] = facet.verts;
 
 					// Test if closest triangle
-					const d = this.closestPointTriangle(point, points[v1], points[v2], points[v3]);
+					const d = this.closestPointTriangleAlongZ(point, points[v1], points[v2], points[v3]);
 					if(d !== -1 && d < dist) dist = d;
 				}
 			}
@@ -678,6 +740,11 @@ export class VariableCompositionConvexHull {
 				x: this.x,
 				y: this.y,
 				e: this.e,
+				vertices: this.vertices,
+				step: this.step,
+				parts: this.parts,
+				distance: this.distances,
+				formula: this.formula
 			};
 			case 4: return {
 				dimension: 4,
@@ -685,6 +752,7 @@ export class VariableCompositionConvexHull {
 				y: this.y,
 				z: this.z,
 				e: this.e,
+				vertices: this.vertices
 			};
 		}
 		return {error: `Invalid dimension ${this.dimension} for 3D view`};
