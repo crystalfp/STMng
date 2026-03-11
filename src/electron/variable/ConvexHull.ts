@@ -221,10 +221,11 @@ export class VariableCompositionConvexHull {
 			const p2 = parts[2]/pt;
 			p.push([p0, p1, p2]);
 
-			const xx = p2 === 1 ? 0.5 : 0.5*p2+(1-p2)*p0/(p0+p1);
-			this.x.push(xx);
-			// x.push(0.5*p2+(1-p2)*p0);
-			this.y.push(p2*0.8660254038); // √3/2
+			// Using barycentric coordinates
+			// const x = p0*0+p1*1+p2*0.5;
+			// const y = p0*0+p1*0+p2*0.8660254038;
+			this.x.push(p1+p2*0.5);
+			this.y.push(p2*0.8660254038);
 			this.e.push(structureEnergy);
 		}
 
@@ -337,31 +338,13 @@ export class VariableCompositionConvexHull {
 			const p3 = parts[3]/pt;
 			p.push([p0, p1, p2, p3]);
 
-			if(p3 === 1) {
-				this.x.push(0.5);
-				this.y.push(0.2886751346); // √3/6
-				this.z.push(0.8660254038); // √3/2
-			}
-			else if(p2 === 1) {
-				this.x.push(0.5);
-				this.y.push(0.8660254038-0.5773502692*p3); // √3/2-√3/3*p3
-				this.z.push(p3*0.8660254038); // √3/2
-			}
-			else {
-				this.z.push(p3*0.8660254038); // √3/2
-
-				const x0 = 0.5*p3;
-				const y0 = 0.2886751346*p3;
-				const x1 = 1-p3/2;
-				// const y1 = y0;
-				const x2 = 0.5;
-				const y2 = 0.8660254038-0.5773502692*p3;
-
-				this.y.push(y0+(y2-y0)*p2);
-				const xa = x0 + (x2-x0)*p2;
-				const xb = x1 + (x1-x2)*p2;
-				this.x.push(xa+(xb-xa)*p1/(p0+p1));
-			}
+			// Using barycentric coordinates
+			// const x = p0*0+p1*1+p2*0.5         +p3*0.5;
+			// const y = p0*0+p1*0+p2*0.8660254038+p3*0.2886751346;
+			// const z = p0*0+p1*0+p2*0           +p3*0.8660254038;
+			this.x.push(p1+(p2+p3)*0.5);
+			this.y.push(p2*0.8660254038+p3*0.2886751346);
+			this.z.push(p3*0.8660254038);
 		}
 
 		if(e0 === Number.POSITIVE_INFINITY ||
@@ -393,7 +376,7 @@ export class VariableCompositionConvexHull {
 		this.vertices = [];
 		this.idxVertices = [...idxVertices];
 		for(const idx of idxVertices) {
-			this.vertices.push(points[idx][0], points[idx][1], points[idx][2], points[idx][3]);
+			this.vertices.push(points[idx][0], points[idx][1], points[idx][2]);
 		}
 
 		// Add distances from the convex hull
@@ -752,7 +735,11 @@ export class VariableCompositionConvexHull {
 				y: this.y,
 				z: this.z,
 				e: this.e,
-				vertices: this.vertices
+				vertices: this.vertices,
+				step: this.step,
+				parts: this.parts,
+				distance: this.distances,
+				formula: this.formula
 			};
 		}
 		return {error: `Invalid dimension ${this.dimension} for 3D view`};

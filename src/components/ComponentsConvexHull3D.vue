@@ -25,13 +25,14 @@
 import {onUnmounted, ref, watch} from "vue";
 import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Float32BufferAttribute, LineBasicMaterial, LineLoop,
-        Mesh, MeshStandardMaterial, LineSegments, Group, Scene,
+        Mesh, MeshStandardMaterial, LineSegments, Group,
         FrontSide, Object3D} from "three";
+import {Line2, LineGeometry, LineMaterial} from "three/examples/jsm/Addons.js";
+import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
 import {SimpleViewer} from "@/services/SimpleViewer";
-import {showSystemAlert} from "@/services/AlertMessage";
 import type {CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
@@ -42,10 +43,26 @@ const scale = ref(0.2);
 const showScale = ref(0.2);
 const pointSize = ref(0.02);
 const showPointSize = ref(0.02);
+const disableScale = ref(false);
+
+/** To show error messages */
+const notificationQueue = ref<string[]>([]);
+
+/**
+ * Report an error on video and on the log file
+ *
+ * @param message - Error message
+ */
+const reportError = (message: string): void => {
+
+    notificationQueue.value.push(message);
+    log.error(message);
+};
 
 let trianglesVertices: number[] = [];
 let x: number[] = [];
 let y: number[] = [];
+let z: number[] = [];
 let e: number[] = [];
 let v: number[] = [];
 let zCenter = 0;
@@ -73,9 +90,13 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     pointsGroup.name = "ConvexHullPoints";
     scene.add(pointsGroup);
 
-    createReference(scene);
+    sv.setRaycaster("Pt", (object?: Object3D): void => {
 
-    sv.setRaycaster("Pt", (object: Object3D): void => {
+        // To hide the panel
+        if(!object) {
+            viewStep.value = "";
+            return;
+        }
 
         const idx = object.userData.index as number;
 
@@ -146,11 +167,11 @@ const createSurface = (vertices: number[], zScale: number): void => {
 
 /**
  * Create the reference triangle
- *
- * @param scene - The scene
  */
-const createReference = (scene: Scene): void => {
+const createReference3D = (): void => {
 
+    // Remove existing surface
+    const scene = sv.getScene();
     const mesh = scene.getObjectByName("ConvexHullRef") as LineLoop;
     if(mesh) {
         mesh.geometry.dispose();
@@ -161,12 +182,46 @@ const createReference = (scene: Scene): void => {
     const points = [
         0, 0, 0,
         1, 0, 0,
-        0.5, 0.86602540378, 0,  // √3/4
+        0.5, 0.86602540378, 0,  // √3/2
     ];
     const edges = new BufferGeometry();
     edges.setAttribute("position", new Float32BufferAttribute(points, 3));
 
     const line = new LineLoop(edges, new LineBasicMaterial({color: "#0000FF"}));
+    line.name = "ConvexHullRef";
+
+    scene.add(line);
+    sv.setSceneModified();
+};
+
+/**
+ * Create the reference tetrahedra
+ */
+const createReference4D = (): void => {
+
+    // Remove existing surface
+    const scene = sv.getScene();
+    const mesh = scene.getObjectByName("ConvexHullRef") as Mesh;
+    if(mesh) {
+        mesh.geometry.dispose();
+        (mesh.material as LineBasicMaterial).dispose();
+        mesh.removeFromParent();
+    }
+
+    const points = [
+        0, 0, 0,                1, 0, 0,
+        1, 0, 0,                0.5, 0.86602540378, 0,
+        0.5, 0.86602540378, 0,  0, 0, 0, // √3/2
+        0, 0, 0,                0.5, 0.2886751346, 0.86602540378,
+        1, 0, 0,                0.5, 0.2886751346, 0.86602540378,
+        0.5, 0.86602540378, 0,  0.5, 0.2886751346, 0.86602540378,
+    ];
+
+    const geometry = new LineGeometry();
+    geometry.setPositions(points);
+
+    const material = new LineMaterial({linewidth: 1, color: "#0000FF"});
+    const line = new Line2(geometry, material);
     line.name = "ConvexHullRef";
 
     scene.add(line);
@@ -243,6 +298,8 @@ requestData(windowPath, (params: CtrlParams) => {
     x = xx ? [...xx] : [];
     const yy = params.y as number[];
     y = yy ? [...yy] : [];
+    const zz = params.z as number[];
+    z = zz ? [...zz] : [];
     const ee = params.e as number[];
     e = ee ? [...ee] : [];
 
@@ -261,22 +318,32 @@ requestData(windowPath, (params: CtrlParams) => {
 
     if(dimension === 3) {
 
+        createReference3D();
         createSurface(trianglesVertices, scale.value);
         createPoints(x, y, e, v, scale.value, pointSize.value);
 
         // Find the center of the convex hull
         let minEnergy = Number.POSITIVE_INFINITY;
-        for(const z of e) if(z < minEnergy) minEnergy = z;
+        for(const en of e) if(en < minEnergy) minEnergy = en;
         zCenter = 0.5*minEnergy*scale.value;
 
         // Move the camera to have the surface at the center of the viewer
-        sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
+        sv.setCamera([0.5, 0.43301, 2], [0.5, 0.43301, zCenter], 20);
+
+        disableScale.value = false;
     }
     else if(dimension === 4) {
-        showSystemAlert("Convex hull 3D view for 4 components not yet implemented");
+
+        createReference4D();
+        createPoints(x, y, z, v, 1, pointSize.value);
+
+        // Move the camera to have the surface at the center of the viewer
+        sv.setCamera([0.5, 0.43301, 2], [0.5, 0.43301, 0.43301], 20);
+
+        disableScale.value = true;
     }
     else {
-        showSystemAlert(`Invalid number of components (${dimension}) for convex hull 3D view`);
+        reportError(`Invalid number of components (${dimension}) for convex hull 3D view`);
     }
 });
 
@@ -326,7 +393,7 @@ const centerView = (): void => {
     </div>
     <v-container class="button-strip">
       <slider-with-steppers v-model="scale" v-model:raw="showScale"
-                            label-width="5.5rem"
+                            label-width="5.5rem" :disabled="disableScale"
                             :label="`Scale (${showScale})`"
                             :min="0" :max="1" :step="0.01" />
       <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
@@ -337,6 +404,9 @@ const centerView = (): void => {
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
+  <v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
+                    timer="bottom" max-width="250"
+                    close-on-content-click color="red-darken-4" />
 </v-app>
 </template>
 

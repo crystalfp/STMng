@@ -321,7 +321,7 @@ export class SimpleViewer {
 	 * @param targetName - Name of the objects to pick
 	 * @param callback - Routine called on the picked object
 	 */
-	setRaycaster(targetName: string, callback: (object: Object3D) => void): void {
+	setRaycaster(targetName: string, callback: (object?: Object3D) => void): void {
 
 		if(!this.renderer || !this.camera) return;
 
@@ -345,6 +345,9 @@ export class SimpleViewer {
 
 				const {object} = intersects[0];
 				callback(object);
+			}
+			else {
+				callback();
 			}
         });
 	}
