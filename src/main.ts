@@ -164,7 +164,10 @@ const app = createApp(App)
 			},
 			VRangeSlider: {
 				color: "primary"
-			}
+			},
+			VAutocomplete: {
+				variant: "solo",
+			},
 		}
   	}))
 

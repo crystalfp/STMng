@@ -7,6 +7,7 @@ import cleanPlugin from "vite-plugin-clean-pattern";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
+// const importMetaUrlPolyfillVariableName = '__import_meta_url__';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -56,6 +57,10 @@ export default defineConfig({
         reportCompressedSize: false,
         emptyOutDir: true,
         chunkSizeWarningLimit: 700,
+        // rolldownOptions: {
+        //     output.intro: `
+        //     `
+        // },
         rollupOptions: {
             output: {
                 manualChunks: {

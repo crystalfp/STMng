@@ -313,6 +313,21 @@ class CollectionDb {
 		return out;
 	}
 
+	/**
+	 * Return entry name
+	 *
+	 * @param id - ID of the collection entry to access
+	 * @returns The corresponding title
+	 */
+	getName(id: string): string {
+
+		const idx = Number.parseInt(id, 10);
+		if(Number.isNaN(idx) || idx < 0 || idx >= this.countEntries) return "";
+		const entry = this.entries![idx];
+		if(entry) return this.entries![idx].title;
+		return "";
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance
@@ -365,3 +380,12 @@ export const collectionLoadList = (): CollectionIndexEntry[] =>
  */
 export const collectionGetStructure = (id: string): Structure | undefined =>
 	CollectionDb.getInstance().getStructure(id);
+
+/**
+ * Return entry name
+ *
+ * @param id - ID of the collection entry to access
+ * @returns The corresponding title
+ */
+export const collectionGetName = (id: string): string =>
+	CollectionDb.getInstance().getName(id);

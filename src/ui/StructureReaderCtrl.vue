@@ -693,6 +693,7 @@ const startQuery = (aflow: string): void => {
             strukturbericht.value = result.strukturbericht as string ?? "";
             pearson.value = result.pearson as string ?? "";
             resetCamera();
+            setFileInTitle("prototype: " + mineral.value);
         })
         .catch((error: Error) => {
             showNodeAlert(error.message, "structureReader");
@@ -710,6 +711,7 @@ const startCollectionQuery = (fileID: string): void => {
     askNode(id, "collection", {fileID})
         .then((result) => {
             if(result.error) throw Error(result.error as string);
+            setFileInTitle("collection: " + (result.name as string));
         })
         .catch((error: Error) => {
             showNodeAlert(error.message, "structureReader");

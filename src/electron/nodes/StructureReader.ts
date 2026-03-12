@@ -30,7 +30,7 @@ import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {prototypeLoadList, prototypeGetStructure} from "../modules/PrototypeDb";
-import {collectionLoadList, collectionGetStructure} from "../modules/CollectionDb";
+import {collectionLoadList, collectionGetStructure, collectionGetName} from "../modules/CollectionDb";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
@@ -771,9 +771,11 @@ export class StructureReader extends NodeCore {
 		}
 		this.structures = [structure];
 		if(StructureReader.checkStructures(this.structures)) {
+
+			const name = collectionGetName(fileID);
 			this.toNextNode(this.structures[0]);
 			this.countSteps = 1;
-			return {countSteps: this.countSteps};
+			return {name};
 		}
 
 		// For some reason the db is corrupted
