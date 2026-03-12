@@ -247,5 +247,6 @@ export const useControlStore = defineStore("ControlStore", {
 
 // > Support HMR during development
 if(import.meta.hot) {
+	/* oxlint-disable-next-line @typescript-eslint/strict-void-return */
     import.meta.hot.accept(acceptHMRUpdate(useControlStore, import.meta.hot));
 }

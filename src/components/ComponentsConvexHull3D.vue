@@ -41,8 +41,8 @@ const windowPath = "/hull-3d";
 
 const scale = ref(0.2);
 const showScale = ref(0.2);
-const pointSize = ref(0.02);
-const showPointSize = ref(0.02);
+const pointSize = ref(0.01);
+const showPointSize = ref(0.01);
 const disableScale = ref(false);
 
 /** To show error messages */
@@ -399,7 +399,7 @@ const centerView = (): void => {
       <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
                             label-width="8rem"
                             :label="`Point size (${showPointSize})`"
-                            :min="0.005" :max="0.1" :step="0.005" />
+                            :min="0.005" :max="0.05" :step="0.005" />
       <v-btn @click="centerView">Center</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
