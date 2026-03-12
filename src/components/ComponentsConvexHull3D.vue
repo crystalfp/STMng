@@ -250,7 +250,7 @@ const createPoints = (px: number[], py: number[], pz: number[],
         side: FrontSide,
         roughness: 0.5,
         metalness: 0.6,
-        color: "#00FF00",
+        color: "#03C03C",
     });
 
     let len = px.length;

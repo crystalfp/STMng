@@ -146,20 +146,21 @@ const app = createApp(App)
 				density: "comfortable",
 				color: "primary",
 				variant: "outlined",
-				divided: true
+				divided: true,
+				rounded: "xl"
 			},
 			VSelect: {
 				density: "compact",
-				variant: "filled",
+				variant: "solo",
 				hideDetails: true
 			},
 			VNumberInput: {
-				variant: "filled",
+				variant: "solo",
 				controlVariant: "stacked",
 				density: "compact"
 			},
 			VTextField: {
-				variant: "filled",
+				variant: "solo",
 			},
 			VRangeSlider: {
 				color: "primary"

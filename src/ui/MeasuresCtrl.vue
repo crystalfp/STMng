@@ -252,8 +252,8 @@ onUnmounted(() => {
 
 <template>
 <v-container class="container">
+  <v-label class="simple-title mb-2">Structure summary</v-label>
   <v-container v-if="natoms > 0" class="mt-n1 pa-0 ml-1">
-    <v-label class="simple-title mb-2">Structure summary</v-label>
     <table class="pl-0 pr-6 py-1 text-body-2 w-100">
       <tbody>
       <tr>
@@ -280,6 +280,7 @@ onUnmounted(() => {
                      :angles="[uc[3],uc[4],uc[5]]"
                      :origin="[uc[6],uc[7],uc[8]]"/>
   </v-container>
+  <v-string v-else class="result-label">No structure loaded</v-string>
   <v-label class="mt-4 separator-title">Measurement type</v-label>
   <v-btn-toggle v-model="measurementType" mandatory class="ml-0 mb-6">
     <v-btn value="atoms">Atoms</v-btn>

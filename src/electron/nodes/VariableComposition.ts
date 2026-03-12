@@ -767,7 +767,7 @@ export class VariableComposition extends NodeCore {
 
 			createOrUpdateSecondaryWindow({
 				routerPath: "/components-hull",
-				width: 1130,
+				width: 1000,
 				height: 900,
 				title: "Variable composition convex hull",
 				data: this.hull.dataForDisplay()

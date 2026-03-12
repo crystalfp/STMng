@@ -175,7 +175,7 @@ const triggers = {
 
 // Chart legend
 const legend = ref<BulletLegendItemInterface[]>([
-    {name: "structures", color: "#00FF00", inactive: false},
+    {name: "structures", color: "#03C03C", inactive: false},
     {name: "structures on the convex hull", color: "#FF0000",
      shape: BulletShape.Square, inactive: false}
 ]);
@@ -208,10 +208,10 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
 <v-app :theme>
   <div class="hull-portal">
     <VisXYContainer v-if="dimension===2"
-                    :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
+                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" class="hull-viewer">
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
-                  color="#00FF00" :size="7" cursor="pointer"/>
+                  color="#03C03C" :size="7" cursor="pointer"/>
       <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisAxis type="x" :gridLine="false" label="Composition ratio"
@@ -221,11 +221,11 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
       <VisTooltip :triggers :followCursor="false" />
     </VisXYContainer>
     <VisXYContainer v-else-if="dimension===3"
-                    :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
+                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" class="hull-viewer">
       <VisLine :key="forceUpdate" :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
-                  color="#00FF00" :size="9" cursor="pointer"/>
+                  color="#03C03C" :size="9" cursor="pointer"/>
       <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisTooltip :triggers :followCursor="false" />
@@ -252,7 +252,7 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  min-width: 1100px;
+  min-width: 800px;
   padding: 0;
 }
 
@@ -261,6 +261,7 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
   width: 100vw;
   flex: 2;
   padding: 0;
+  background-color: #E3E3E3;
 }
 
 .hull-buttons {

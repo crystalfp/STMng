@@ -825,19 +825,19 @@ const clearErrors = (): void => {
       <v-row class="mr-8">
         <v-spacer />
         <v-btn variant="tonal" :disabled="step <= stepRange[0]"
-                :icon="mdiChevronDoubleLeft" class="mr-1"
+                :icon="mdiChevronDoubleLeft" class="mr-1" rounded="xl"
                 @click="step = stepRange[0]" />
         <v-btn variant="tonal" :disabled="step <= stepRange[0]"
-                :icon="mdiChevronLeft" class="mr-1"
+                :icon="mdiChevronLeft" class="mr-1" rounded="xl"
                 @click="deltaStep(-1)" />
         <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay"
-                class="mr-1"
+                class="mr-1" rounded="xl"
                 @click="togglePlay" />
         <v-btn variant="tonal" :disabled="step >= stepRange[1]"
-                :icon="mdiChevronRight" class="mr-1"
+                :icon="mdiChevronRight" class="mr-1" rounded="xl"
                 @click="deltaStep(1)" />
         <v-btn variant="tonal" :disabled="step >= stepRange[1]"
-                :icon="mdiChevronDoubleRight"
+                :icon="mdiChevronDoubleRight" rounded="xl"
                 @click="step = stepRange[1]; running = false" />
         <v-spacer />
       </v-row>
