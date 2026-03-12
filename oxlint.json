@@ -154,6 +154,7 @@
         "case": "camelCase"
       }
     ],
+    "unicorn/no-length-as-slice-end": "error",
     "unicorn/new-for-builtins": "off",
     "unicorn/no-abusive-eslint-disable": "error",
     "unicorn/no-accessor-recursion": "error",

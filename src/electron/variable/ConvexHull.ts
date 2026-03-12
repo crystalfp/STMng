@@ -129,12 +129,13 @@ export class VariableCompositionConvexHull {
 		for(let i=0; i < len; ++i) this.e[i] -= e0+this.x[i]*(e1-e0);
 
 		// Find convex hull (only the lower part)
+		// The facet is encoded as (normal[2], offset)
 		const points: number[][] = [];
 		for(let i=0; i < len; ++i) points.push([this.x[i], this.e[i]]);
 		const hull = quickHull(points);
 		const toOrder: {x: number; y: number; idx: number}[] = [];
 		for(const facet of hull) {
-			if(facet.plane[1] < 0) {
+			if(facet.plane[1] < -1e-13) {
 				const [v1, v2] = facet.verts;
 
 				toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},
@@ -240,13 +241,14 @@ export class VariableCompositionConvexHull {
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2;
 
 		// Find convex hull (only the lower part)
+		// The facet is encoded as (normal[3], offset)
 		this.trianglesVertices.length = 0;
 		const points: number[][] = [];
 		for(let i=0; i < len; ++i) points.push([this.x[i], this.y[i], this.e[i]]);
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
-			if(facet.plane[2] < 0) {
+			if(facet.plane[2] < -1e-13) {
 				const [v1, v2, v3] = facet.verts;
 				idxVertices.add(v1);
 				idxVertices.add(v2);
@@ -359,12 +361,13 @@ export class VariableCompositionConvexHull {
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2+p[i][3]*e3;
 
 		// Find convex hull (only the lower part)
+		// The facet is encoded as (normal[4], offset)
 		const points: number[][] = [];
 		for(let i=0; i < len; ++i) points.push([this.x[i], this.y[i], this.z[i], this.e[i]]);
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
-			if(facet.plane[3] < 0) {
+			if(facet.plane[3] < -1e-13) {
 				const [v1, v2, v3, v4] = facet.verts;
 				idxVertices.add(v1);
 				idxVertices.add(v2);
@@ -585,7 +588,7 @@ export class VariableCompositionConvexHull {
 
 			let dist = Number.POSITIVE_INFINITY;
 			for(const facet of hull) {
-				if(facet.plane[2] < 0) {
+				if(facet.plane[2] < -1e-13) {
 
 					const [v1, v2, v3] = facet.verts;
 
@@ -620,7 +623,7 @@ export class VariableCompositionConvexHull {
 
 			let dist = Number.POSITIVE_INFINITY;
 			for(const facet of hull) {
-				if(facet.plane[3] < 0) {
+				if(facet.plane[3] < -1e-13) {
 
 					for(const v of vertices) {
 						const v1 = facet.verts[v[0]];
