@@ -501,20 +501,24 @@ export class VariableComposition extends NodeCore {
 				const structure = this.accumulator.getEntry(idx);
 				if(structure?.enabled) {
 					valid = true;
-					if(structure.distance >= 0) {
-						toOrder.push([structure.distance, idx]);
-					}
-					else {
-						toOrder.push([structure.energy ?? 0, idx]);
-					}
+					toOrder.push([structure.distance, structure.energy ?? 0, idx]);
 				}
 			}
 			if(!valid) continue;
 
 			// Order entries by increasing distance from convex hull or energy
-			entry[1] = toOrder
-							.toSorted((a, b) => a[0] - b[0])
-							.map((value) => value[1]);
+			entry[1] = toOrder.toSorted((a, b) => {
+									const d = a[0] - b[0];
+									if(d !== 0) return d;
+									const e = a[1] - b[1];
+									if(e !== 0) return e;
+									return a[2] - b[2];
+								}).map((value) => value[2]);
+
+			// Order entries by increasing distance from convex hull or energy
+			// entry[1] = toOrder
+			// 				.toSorted((a, b) => a[0] - b[0])
+			// 				.map((value) => value[1]);
 
 			const name = `composition-${entry[0]}`;
 			const dataFile = path.join(dir, `${name}.poscar`);
@@ -561,12 +565,7 @@ export class VariableComposition extends NodeCore {
 				const structure = this.accumulator.getEntry(idx);
 				if(structure?.enabled) {
 					const energy = structure.energy ?? 0;
-					if(structure.distance >= 0) {
-						all.push([structure.distance, energy, idx]);
-					}
-					else {
-						all.push([energy, energy, idx]);
-					}
+					all.push([structure.distance, energy, idx]);
 				}
 			}
 		}

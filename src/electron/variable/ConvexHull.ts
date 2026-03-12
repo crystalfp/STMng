@@ -685,6 +685,7 @@ export class VariableCompositionConvexHull {
 			};
 			case 3: return {
 				dimension: 3,
+				trianglesVertices: this.trianglesVertices,
 				x: this.x,
 				y: this.y,
 				e: this.e,

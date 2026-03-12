@@ -41,9 +41,9 @@ const windowPath = "/components-hull";
  */
 interface DataRecord {
     /** X value */
-    x: number;
+    x: number | undefined;
     /** Y value */
-    y: number;
+    y: number | undefined;
     /** Distance from the convex hull */
     dist?: number;
     /** Corresponding step in the loaded sequence */
@@ -61,6 +61,7 @@ const line = ref<DataRecord[]>([]);
 const vertex = ref<DataRecord[]>([]);
 const forceUpdate = ref(true);
 const dimension = ref(2);
+const edges = ref<DataRecord[]>([]);
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
@@ -85,6 +86,7 @@ requestData(windowPath, (params: CtrlParams) => {
     const parts = params.parts as string[];
     const formula = params.formula as string[];
     const enthalpy = params.e as number[];
+    const tri = params.trianglesVertices as number[];
 
     let len = dataX.length;
     points.value.length = 0;
@@ -128,6 +130,19 @@ requestData(windowPath, (params: CtrlParams) => {
                                    step: step[idx], parts: parts[idx],
                                    enthalpy: vertices[i+2], formula: formula[idx]});
             }
+            edges.value.length = 0;
+            len = tri.length;
+            for(let i=0; i < len; i+=9) {
+                if(i > 0) edges.value.push(
+                    {x: undefined, y: undefined},
+                );
+                edges.value.push(
+                    {x: tri[i],    y: tri[i+1]},
+                    {x: tri[i+3],  y: tri[i+4]},
+                    {x: tri[i+6],  y: tri[i+7]},
+                    {x: tri[i],    y: tri[i+1]},
+                );
+            }
             break;
         default:
             break;
@@ -136,8 +151,8 @@ requestData(windowPath, (params: CtrlParams) => {
 });
 
 // Accessors for the charts and hover popup
-const xp = (d: DataRecord): number => d.x;
-const yp = (d: DataRecord): number => d.y;
+const xp = (d: DataRecord): number => d.x!;
+const yp = (d: DataRecord): number => d.y!;
 const triggers = {
     [Scatter.selectors.point]: (d: DataRecord) => {
 
@@ -207,9 +222,10 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
     </VisXYContainer>
     <VisXYContainer v-else-if="dimension===3"
                     :margin="{right: 20, top: 20, left: 20}" class="hull-viewer">
-      <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
+      <VisLine :key="forceUpdate" :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
+      <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
-                  color="#00FF00" :size="7" cursor="pointer"/>
+                  color="#00FF00" :size="9" cursor="pointer"/>
       <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisTooltip :triggers :followCursor="false" />
