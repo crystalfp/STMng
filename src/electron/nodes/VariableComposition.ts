@@ -508,17 +508,17 @@ export class VariableComposition extends NodeCore {
 
 			// Order entries by increasing distance from convex hull or energy
 			entry[1] = toOrder.toSorted((a, b) => {
-									const d = a[0] - b[0];
-									if(d !== 0) return d;
 									const e = a[1] - b[1];
 									if(e !== 0) return e;
+									const d = a[0] - b[0];
+									if(d !== 0) return d;
 									return a[2] - b[2];
 								}).map((value) => value[2]);
 
 			// Order entries by increasing distance from convex hull or energy
 			// entry[1] = toOrder
-			// 				.toSorted((a, b) => a[0] - b[0])
-			// 				.map((value) => value[1]);
+			// 				.toSorted((a, b) => a[1] - b[1])
+			// 				.map((value) => value[2]);
 
 			const name = `composition-${entry[0]}`;
 			const dataFile = path.join(dir, `${name}.poscar`);
@@ -570,11 +570,18 @@ export class VariableComposition extends NodeCore {
 			}
 		}
 
+		// all.sort((a, b) => {
+		// 	const d = a[0] - b[0];
+		// 	if(d !== 0) return d;
+		// 	const e = a[1] - b[1];
+		// 	if(e !== 0) return e;
+		// 	return a[2] - b[2];
+		// });
 		all.sort((a, b) => {
-			const d = a[0] - b[0];
-			if(d !== 0) return d;
 			const e = a[1] - b[1];
 			if(e !== 0) return e;
+			const d = a[0] - b[0];
+			if(d !== 0) return d;
 			return a[2] - b[2];
 		});
 

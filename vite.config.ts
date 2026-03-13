@@ -56,29 +56,54 @@ export default defineConfig({
         assetsInlineLimit: 8096,
         reportCompressedSize: false,
         emptyOutDir: true,
-        chunkSizeWarningLimit: 700,
+        chunkSizeWarningLimit: 1500,
         // rolldownOptions: {
         //     output.intro: `
         //     `
         // },
-        rollupOptions: {
+        rolldownOptions: {
             output: {
-                manualChunks: {
-                    vue: [
-                        "vue",
-                        "vue-router",
-                        "pinia",
-                        "vuetify",
-                        "@mdi/js",
-                    ],
-                    three: [
-                        "three"
-                    ],
-                    troika: [
-                        "troika-three-text"
+                codeSplitting: {
+                    groups: [
+                        {
+                            name: "vue",
+                            test: (id) => {
+                                return id.includes("vue") ||
+                                       id.includes("pinia") ||
+                                       id.includes("vuetify") ||
+                                       id.includes("@mdi/js");
+                            }
+                        },
+                        {
+                            name: "three",
+                            test: /node_modules[\\/]three/
+                        },
+                        {
+                            name: "troika",
+                            test: /node_modules[\\/]troika-three-text/
+                        }
                     ]
                 }
-            },
+            }
         }
+        // rollupOptions: {
+        //     output: {
+        //         manualChunks: {
+        //             vue: [
+        //                 "vue",
+        //                 "vue-router",
+        //                 "pinia",
+        //                 "vuetify",
+        //                 "@mdi/js",
+        //             ],
+        //             three: [
+        //                 "three"
+        //             ],
+        //             troika: [
+        //                 "troika-three-text"
+        //             ]
+        //         }
+        //     },
+        // }
     },
 });
