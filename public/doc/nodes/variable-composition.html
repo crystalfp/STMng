@@ -22,6 +22,13 @@
 
 <div class="description">
 <p>The module splits input structures by their composition. Then, for each composition, computes the structure fingerprints and their distances to remove duplicates. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one.</p>
+<p>Note that the entries in the saved files are ordered as:</p>
+<dl>
+	<dt>For one file per composition</dt>
+	<dd>In each file the structures are ordered by increasing energy.</dd>
+	<dt>For consolidated file</dt>
+	<dd>In the single file the structures are ordered by increasing distance from the convex hull and, if they have the same distance, by increasing energy.</dd>
+</dl>
 </div>
 
 <h2>Controls</h2>
@@ -152,7 +159,7 @@
 <tr>
 	<td class="c1">Consolidate output</td>
 	<td class="c2">toggle</td>
-	<td class="c3">When set, “Save analyzed” saves all resulting structures into a single file ordered by energy and then by distance from the convex hull. Otherwise there is a file per composition with structures ordered by energy and then by increasing distance from the convex hull.</td>
+	<td class="c3">When set, “Save analyzed” saves all resulting structures into a single file with a different ordering.</td>
 </tr>
 <tr>
 	<td class="c1">Save analyzed</td>

@@ -458,9 +458,9 @@ onUnmounted(() => stopWatcher());
     </div>
     <div class="side-n" />
     <div class="side-s">
-      <slider-with-steppers v-model="aroundA" v-model:raw="showAroundA"
+      <slider-with-steppers v-model="aroundA" v-model:raw="showAroundA" class="ml-2"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"
-                      label-width="7.4rem" :label="`Around: a (${showAroundA}°)`"
+                      label-width="8rem" :label="`Around: a (${showAroundA}°)`"
                       :min="-180" :max="180" :step="1" :timeout="0" />
       <slider-with-steppers v-model="aroundB" v-model:raw="showAroundB"
                       :disabled="selectedStep0 === -1 || selectedStep1 === -1"

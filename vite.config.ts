@@ -67,7 +67,7 @@ export default defineConfig({
                     groups: [
                         {
                             name: "vue",
-                            test: (id) => {
+                            test: (id: string) => {
                                 return id.includes("vue") ||
                                        id.includes("pinia") ||
                                        id.includes("vuetify") ||

@@ -40,7 +40,7 @@ import "@/styles/common.css";
 import "vuetify/styles";
 import {createVuetify} from "vuetify";
 import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
-import {md2} from "vuetify/blueprints";
+import {md3} from "vuetify/blueprints";
 
 // Vuetify components that will be used
 import {VSlider} from "vuetify/components/VSlider";
@@ -127,7 +127,7 @@ const app = createApp(App)
 				mdi,
 			},
   		},
-		blueprint: md2,
+		blueprint: md3,
 		defaults: {
 			global: {
 				density: "compact"
@@ -150,23 +150,27 @@ const app = createApp(App)
 				rounded: "xl"
 			},
 			VSelect: {
-				density: "compact",
-				variant: "solo",
+				// density: "compact",
+				// variant: "solo",
+				variant: "filled",
 				hideDetails: true
 			},
 			VNumberInput: {
-				variant: "solo",
+				// variant: "solo",
+				variant: "filled",
 				controlVariant: "stacked",
 				density: "compact"
 			},
 			VTextField: {
-				variant: "solo",
+				// variant: "solo",
+				variant: "filled",
 			},
 			VRangeSlider: {
 				color: "primary"
 			},
 			VAutocomplete: {
-				variant: "solo",
+				// variant: "solo",
+				variant: "filled",
 			},
 		}
   	}))

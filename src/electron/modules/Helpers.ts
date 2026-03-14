@@ -402,7 +402,8 @@ export const format = (value: number): string => value.toFixed(6).padStart(10, "
  * @param basis - The basis matrix to test
  * @returns True if the basis has no vector defined
  */
-export const hasNoUnitCell = (basis: BasisType): boolean => basis.every((value) => value === 0);
+export const hasNoUnitCell = (basis: BasisType): boolean =>
+								basis.every((value: number) => value === 0);
 
 /**
  * Check if it is a valid basis matrix

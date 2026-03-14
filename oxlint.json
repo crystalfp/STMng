@@ -19,7 +19,12 @@
   ],
   "jsPlugins": [
     "eslint-plugin-sonarjs",
-    "@stylistic/eslint-plugin"
+    "@stylistic/eslint-plugin",
+    "@eslint-community/eslint-plugin-eslint-comments",
+    "eslint-plugin-security",
+    "eslint-plugin-regexp",
+    "eslint-plugin-depend",
+    "eslint-plugin-tsdoc"
   ],
   "ignorePatterns": [
     "src/vite-env.d.ts",
@@ -40,6 +45,10 @@
   "options":{
     "typeAware": true,
     "typeCheck": true
+  },
+  "env": {
+    "es2026": true,
+    "builtin": true
   },
   "rules": {
     "constructor-super": "error",

@@ -576,7 +576,7 @@ const showEnergyLandscape = (): void => {
                     label="Bin size" :min="0.01" :step="0.01" />
   </v-row>
   <v-switch v-model="processParallelism" label="Multi process parallelism" class="ml-1 mb-2"/>
-  <block-button :disabled="countSelected === 0"
+  <block-button :disabled="countSelected === 0" class="mr-n1"
          label="Compute fingerprints & distances"
          :loading="fingerprintingBusy"
          @click="fingerprintingBusy=true; resultDimensionality=0; computeFingerprints()"/>
@@ -646,7 +646,7 @@ const showEnergyLandscape = (): void => {
                     label="Margin" :min="0" :step="1" class="ml-2"
                     @blur="adjInteger" @keyup.enter="adjInteger" />
   </v-row>
-  <block-button :disabled="countDistances === 0 || groupingBusy"
+  <block-button :disabled="countDistances === 0 || groupingBusy" class="mr-n1"
                 label="Group similar structures" :loading="groupingBusy"
                 @click="groupingBusy = true; ClassifyStructures()" />
   <v-label v-if="countGroups > 0" class="mb-2 result-label">
@@ -655,14 +655,14 @@ const showEnergyLandscape = (): void => {
 
   <v-label class="separator-title">Show results</v-label>
 
-  <throttled-button block :disabled="countDistances === 0"
+  <throttled-button block :disabled="countDistances === 0" class="mr-n1"
                     label="Export results" @click="exportResults" />
-  <throttled-button block label="Show scatterplot"
+  <throttled-button block label="Show scatterplot" class="mr-n1"
                     :loading="working" :disabled="countDistances === 0 || working"
                     @click="working=true;showScatterplot()" />
-  <throttled-button block :disabled="!resultDimensionality"
+  <throttled-button block :disabled="!resultDimensionality" class="mr-n1"
                     label="Show charts" @click="showCharts" />
-  <throttled-button block class="mb-6" :disabled="countDistances === 0 || !haveEnergies"
+  <throttled-button block class="mb-6 mr-n1" :disabled="countDistances === 0 || !haveEnergies"
                     label="Show energy landscape" @click="showEnergyLandscape" />
 </v-container>
 </template>

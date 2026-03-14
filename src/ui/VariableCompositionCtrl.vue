@@ -493,8 +493,8 @@ const summaryLabel = computed(() =>
       </tbody>
     </table>
 
-    <v-btn class="w-100 mb-2" :disabled="noComputeCompositions"
-           @click="savedFiles=-1; analysisDone=false; computeCompositions()">Compute compositions</v-btn>
+    <block-button label="Compute compositions" :disabled="noComputeCompositions"
+           @click="savedFiles=-1; analysisDone=false; computeCompositions()"/>
   </div>
 
   <node-alert node="variableComposition" class="mt-1"/>

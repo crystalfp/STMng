@@ -917,7 +917,7 @@ const vc = computed(() => {
       <v-divider thickness="2" class="mr-n1 ml-1"/>
       <slider-with-steppers v-model="selectedGroup" v-model:raw="showSelectedGroup"
                               :disabled="!scatterplotData?.countGroups" label-width="7rem"
-                              :label="`Group (${showSelectedGroup})`" class="mt-2"
+                              :label="`Group (${showSelectedGroup})`" class="mt-2 ml-2 mr-n2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
       <v-btn :disabled="!scatterplotData?.countGroups"
              block class="mt-4 ml-1 mb-4" @click="selectByGroup">
@@ -979,11 +979,13 @@ const vc = computed(() => {
                                 v-model:raw="showPointRadius" label-width="9rem"
                                 :label="`Point radius (${showPointRadius})`"
                                 :min="3" :max="20" :step="1" />
-        <v-btn :disabled="selectedPoints.size === 0" @click="resetSelected">Deselect</v-btn>
+        <v-btn :disabled="selectedPoints.size === 0" style="width: 6.5rem"
+               @click="resetSelected">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
-        <v-btn v-focus class="mr-2 mb-4" @click="closeWindow(windowPath)">Close</v-btn>
+        <v-btn v-focus class="mr-2 mb-4" style="width: 6.5rem"
+               @click="closeWindow(windowPath)">Close</v-btn>
       </div>
     </div>
   </div>

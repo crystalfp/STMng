@@ -343,7 +343,7 @@ onUnmounted(() => {
       <v-btn value="display" active>{{ showAll ? "Show" : "Hide" }}</v-btn>
     </v-btn-toggle>
   </titled-slot>
-  <block-button class="mt-4" label="Visual parameters" @click="showVisuals = !showVisuals"/>
+  <block-button class="mt-4 ml-1" label="Visual parameters" @click="showVisuals = !showVisuals"/>
   <div v-if="showVisuals">
 
     <titled-slot title="Quality" class="ml-2 mb-4">

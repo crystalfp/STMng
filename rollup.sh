@@ -1,2 +1,3 @@
 cd src/electron/fingerprint
-rollup -c
+# rollup -c
+npx rolldown -c rolldown.config.mjs

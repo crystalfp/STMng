@@ -501,19 +501,19 @@ export class VariableComposition extends NodeCore {
 				const structure = this.accumulator.getEntry(idx);
 				if(structure?.enabled) {
 					valid = true;
-					toOrder.push([structure.distance, structure.energy ?? 0, idx]);
+					toOrder.push([structure.energy ?? 0, idx]);
 				}
 			}
 			if(!valid) continue;
 
-			// Order entries by increasing energy and then distance from convex hull
+			// Order entries by increasing energy
+			// (the distance from convex hull is proportional to energy,
+			// so it is not relevant)
 			entry[1] = toOrder.toSorted((a, b) => {
-									const e = a[1] - b[1];
+									const e = a[0] - b[0];
 									if(e !== 0) return e;
-									const d = a[0] - b[0];
-									if(d !== 0) return d;
-									return a[2] - b[2];
-								}).map((value) => value[2]);
+									return a[1] - b[1];
+								}).map((value) => value[1]);
 
 			const name = `composition-${entry[0]}`;
 			const dataFile = path.join(dir, `${name}.poscar`);
@@ -528,7 +528,7 @@ export class VariableComposition extends NodeCore {
 				if(!structure?.enabled) continue;
 
 				writeSync(fd, this.entryToPoscar(structure));
-				if(fde !== undefined) writeSync(fde, `${structure.energy?.toFixed(6) ?? "?"}\n`);
+				if(fde !== undefined) writeSync(fde, `${structure.energy?.toFixed(6) ?? "0"}\n`);
 			}
 			closeSync(fd);
 			if(fde !== undefined) closeSync(fde);
@@ -565,12 +565,12 @@ export class VariableComposition extends NodeCore {
 			}
 		}
 
-		// Order entries by increasing energy and then distance from convex hull
+		// Order entries by increasing distance from convex hull and then energy
 		all.sort((a, b) => {
-			const e = a[1] - b[1];
-			if(e !== 0) return e;
 			const d = a[0] - b[0];
 			if(d !== 0) return d;
+			const e = a[1] - b[1];
+			if(e !== 0) return e;
 			return a[2] - b[2];
 		});
 
