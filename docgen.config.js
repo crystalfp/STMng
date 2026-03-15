@@ -11,32 +11,32 @@ module.exports = {
             ) => {
 
                 const cd = astPath.tokens.find(
-												token => token.type === 'CommentBlock' &&
-												token.value.includes('@component')
-											)
+					(token) => token.type === 'CommentBlock' &&
+							   token.value.includes('@component')
+				);
 				const rawValue = cd.value
 						.replaceAll("\r", "")
 						.replace(/^[*\n ]+/, "")
 						.replace(/[*\n ]+$/, "")
 						.replace(/^\*\n/, "")
 						.replaceAll(/\n *\* */g, "\n")
-						.replaceAll(String.raw`\@`, "#$%")
+						.replaceAll(String.raw`\@`, "#$%");
 				const values = rawValue.split(/ *@/).map((item) => item.trim());
 
 				for(const vv of values) {
 					if(vv === "") continue;
 					const vv1 = vv.replaceAll("#$%", "@");
 					if(vv1.startsWith("component")) {
-						const text = vv1.replace(/^component[ \n]+/, "")
-                    	documentation.set('description', text);
+						const text = vv1.replace(/^component[ \n]+/, "");
+                    	documentation.set("description", text);
 					}
 					else if(vv1.startsWith("author")) {
-						const text = vv1.replace(/^author[ \n]+/, "")
-                    	documentation.set('author', text);
+						const text = vv1.replace(/^author[ \n]+/, "");
+                    	documentation.set("author", text);
 					}
 					else if(vv1.startsWith("since")) {
-						const text = vv1.replace(/^since[ \n]+/, "")
-                    	documentation.set('since', text);
+						const text = vv1.replace(/^since[ \n]+/, "");
+                    	documentation.set("since", text);
 					}
 				}
             }
@@ -55,22 +55,22 @@ module.exports = {
 			}
 			if(hasSubComponents) {
 				// show more than one level on subcomponents
-				frontMatter.push('sidebarDepth: 2');
+				frontMatter.push("sidebarDepth: 2");
 			}
 
-			return `${frontMatter.length > 0 && !isSubComponent ? `---\n${frontMatter.join('\n')}---` : ''}
-  ${isSubComponent || hasSubComponents ? '#' : ''}# ${deprecated ? `~~${displayName}~~` : displayName}
+			return `${frontMatter.length > 0 && !isSubComponent ? `---\n${frontMatter.join("\n")}---` : ""}
+  ${isSubComponent || hasSubComponents ? "#" : ""}# ${deprecated ? `~~${displayName}~~` : displayName}
 
-  ${deprecated ? `> **Deprecated** ${deprecated[0].description}\n` : ''}
-  ${description ?? ''}
+  ${deprecated ? `> **Deprecated** ${deprecated[0].description}\n` : ""}
+  ${description ?? ""}
 
-  ${functional ? renderedUsage.functionalTag : ''}
+  ${functional ? renderedUsage.functionalTag : ""}
   ${author ? `Author: ${author}` : ""}
   ${since ? `\\\nCreated: ${since}` : ""}
-  ${version ? `Version: ${version[0].description}\n` : ''}
-  ${see ? see.map(s => `[See](${s.description})\n`) : ''}
-  ${link ? link.map(l => `[See](${l.description})\n`) : ''}
-  ${docsBlocks ? '\n' + docsBlocks.join('\n---\n') : ''}
+  ${version ? `Version: ${version[0].description}\n` : ""}
+  ${see ? see.map(s => `[See](${s.description})\n`) : ""}
+  ${link ? link.map(l => `[See](${l.description})\n`) : ""}
+  ${docsBlocks ? "\n" + docsBlocks.join("\n---\n") : ""}
 
   ${renderedUsage.props}
   ${renderedUsage.methods}
@@ -78,8 +78,8 @@ module.exports = {
   ${renderedUsage.slots}
 
   ${requiresMd.length > 0
-        ? '---\n' + requiresMd.map(component => component.content).join('\n---\n')
-        : ''}
+        ? "---\n" + requiresMd.map((component) => component.content).join("\n---\n")
+        : ""}
   `;
 		}
 	},
@@ -97,4 +97,4 @@ module.exports = {
 		  outFile: "widgets.md"
 		}
 	]
-}
+};

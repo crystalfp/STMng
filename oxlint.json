@@ -418,21 +418,19 @@
     "vue/attributes-order": "warn",
     "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
 
-    "@stylistic/lines-between-class-members": ["warn", "always", {"exceptAfterSingleLine": true}],
+    "@stylistic/lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
     "@stylistic/quotes": ["warn", "double", {"avoidEscape": true}],
     "@stylistic/space-before-function-paren": [
         "error", {"anonymous": "never", "named": "never", "asyncArrow": "always", "catch": "never"}
     ],
     "@stylistic/comma-spacing": ["error", {"before": false, "after": true}],
-/*     "@stylistic/keyword-spacing": ["warn", {"before": true, "after": true, "overrides": {
+    "@stylistic/keyword-spacing": ["warn", {"before": true, "after": true, "overrides": {
         "if": {"after": false},
         "switch": {"after": false},
         "catch": {"after": false},
         "while": {"after": false},
         "for": {"after": false},
     }}],
-    */
-    "@stylistic/object-curly-spacing": ["warn", "never"],
 
     "@stylistic/spaced-comment": ["warn", "always", {"markers": [":", "-", "+", "::", "/"]}],
     /* "@stylistic/semi-spacing": "error",
@@ -452,6 +450,10 @@
     "@stylistic/eol-last": ["error", "always"],
     "@stylistic/new-parens": "error",
     "@stylistic/quote-props": ["warn", "as-needed"],
+    "@stylistic/padded-blocks": "off",
+    "@stylistic/indent": "off",
+    "@stylistic/no-tabs": "off",
+    "@stylistic/no-mixed-spaces-and-tabs": "off",
 
     "sonarjs/no-commented-code": "warn",
     "eslint/no-inline-comments": "off",

@@ -4,17 +4,18 @@ import vueParser from "vue-eslint-parser";
 
 import vuePlugin from "eslint-plugin-vue";
 import promisePlugin from "eslint-plugin-promise";
-import importPlugin from "eslint-plugin-import";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
-import commentsPlugin from "@eslint-community/eslint-plugin-eslint-comments"
+import commentsPlugin from "@eslint-community/eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
 import securityPlugin from "eslint-plugin-security";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import regexpPlugin from "eslint-plugin-regexp";
 import tsdocPlugin from "eslint-plugin-tsdoc";
-import jsPlugin from "@eslint/js"
+import jsPlugin from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
+import {createNodeResolver, importX} from "eslint-plugin-import-x";
+import {createTypeScriptImportResolver} from "eslint-import-resolver-typescript";
 
 import {vueRules} from "./eslint.vue.config.mjs";
 
@@ -32,6 +33,7 @@ export default defineConfig([
 		"src/assets",
         "src/cpp",
         "src/electron/fingerprint/rollup.config.mjs",
+        "src/electron/fingerprint/rolldown.config.mjs",
         "src/electron/fingerprint/KDtree.js",
     ]}, {
     files: [
@@ -61,6 +63,11 @@ export default defineConfig([
             Buffer: "readonly",
             structuredClone: "readonly",
             addEventListener: "readonly",
+            ResizeObserver: "readonly",
+            defineProps: "readonly",
+            defineEmits: "readonly",
+            defineModel: "readonly",
+            withDefaults: "readonly"
         },
         parserOptions: {
             parser: tsParser,
@@ -81,7 +88,7 @@ export default defineConfig([
     plugins: {
         vue: vuePlugin,
         promise: promisePlugin,
-        import: importPlugin,
+        "import-x": importX,
         "@typescript-eslint": typescriptPlugin,
         unicorn: unicornPlugin,
         security: securityPlugin,
@@ -94,21 +101,21 @@ export default defineConfig([
         "@eslint/js": jsPlugin,
     },
     settings: {
-        "import/parsers": {"@typescript-eslint/parser": [".ts", ".tsx", ".mts"]},
-        "import/extensions": [".js", ".ts", ".vue", ".mts", ".mjs"],
-        "import/ignore": ["node_modules"],
-        "import/resolver": {
-            typescript: {alwaysTryTypes: true},
-            alias: {map: {"@/": "./src/"},
-            extensions: [".vue", ".ts"]}
-        }
+        "import-x/parsers": {"@typescript-eslint/parser": [".ts", ".tsx", ".mts"]},
+        "import-x/extensions": [".js", ".ts", ".vue", ".mts", ".mjs"],
+        "import-x/ignore": ["node_modules"],
+        "import-x/core-modules": ["electron"],
+        "import-x/resolver-next": [
+            createTypeScriptImportResolver(),
+            createNodeResolver()
+        ]
     },
     rules: {
         ...jsPlugin.configs.recommended.rules,
         ...commentsPlugin.configs.recommended.rules,
         ...promisePlugin.configs.recommended.rules,
-        ...importPlugin.configs.recommended.rules,
-        ...importPlugin.configs.typescript.rules,
+        ...importX.flatConfigs.recommended.rules,
+        ...importX.flatConfigs.typescript.rules,
         ...unicornPlugin.configs.all.rules,
         ...securityPlugin.configs.recommended.rules,
         ...sonarjsPlugin.configs.recommended.rules,
@@ -403,8 +410,8 @@ export default defineConfig([
         // "import/namespace": "off",
         // "import/no-named-as-default": "off",
         // "import/no-named-as-default-member": "off",
-        "import/no-unresolved": "error",
-        "import/default": "off",
+        "import-x/no-unresolved": "error",
+        "import-x/default": "off",
         // "promise/no-return-wrap": "warn",
         // "promise/no-promise-in-callback": "warn",
         // "promise/no-nesting": "warn",
