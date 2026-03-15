@@ -22,26 +22,17 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {computed, ref, reactive, shallowRef, watch, onUnmounted} from "vue";
+import {computed, ref, reactive, watch, onUnmounted} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
-import {Scatter} from "vue-chartjs";
-import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
-        LinearScale, PointElement, LineElement} from "chart.js";
-import type {ChartData, ChartOptions, CtrlParams, FingerprintsChartData, FingerprintsChartKind} from "@/types";
+import type {CtrlParams, FingerprintsChartData,
+             FingerprintsChartKind} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
-/** Setup chart component */
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend);
+import {Scatter} from "@unovis/ts";
+import {VisXYContainer, VisScatter, VisAxis, VisLine, VisPlotline, VisTooltip} from "@unovis/vue";
 
 /** The chart type */
 const chartType = ref<FingerprintsChartKind>("fp");
@@ -58,107 +49,42 @@ const showBinCount = ref(50);
 const haveEnergies = ref(false);
 const haveDistances = ref(false);
 
-/** Data and options for the chart component (will be filled when receiving data) */
-const chartOptions = shallowRef<ChartOptions>({
-    responsive: true,
-    maintainAspectRatio: false,
-});
-const chartData = shallowRef<ChartData>({
-    datasets: []
-});
-
 const windowPath = "/fp-charts";
 
 /**
- * Build data for the chart
- *
- * @param label - Dataset label
- * @param data - The data as an array of xy pairs
- * @param showLine - If the line should be visible
- * @param pointRadius - Radius of the points
+ * Chart data
+ * @notExported
  */
-const buildChartData = (label: string,
-                        data: {x: number; y: number}[],
-                        showLine: boolean,
-                        pointRadius: number): ChartData => ({
-    datasets: [{
-        label,
-        data,
-        borderColor: "#00ff00",
-        backgroundColor: "#00ff00",
-        showLine,
-        pointRadius
-     }]
-});
+interface DataRecord {
+    /** X value */
+    x: number;
+    /** Y value */
+    y: number;
+}
 
-/**
- * Build the layout data for the chart
- *
- * @param labelX - Label for X axis
- * @param labelY - Label for Y axis
- */
-const buildChartOptions = (labelX: string, labelY: string): ChartOptions => ({
+const points = ref<DataRecord[]>([]);
+const forceUpdate = ref(true);
+const titleX = ref("");
+const titleY = ref("");
+const showLine = ref(true);
+const showPoints = ref(false);
+const showZero = ref(false);
 
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: {
-            display: false
-        },
-    },
-    elements: {line: {borderWidth: 2}},
-    layout: {padding: 20},
-    scales: {
-        x: {
-            title: {
-                color: "red",
-                display: true,
-                text: labelX,
-                font: {
-                    size: 20,
-                },
-            },
-            grid: {
-                color: "#575757"
-            }
-        },
-        y: {
-            title: {
-                color: "red",
-                display: true,
-                text: labelY,
-                font: {
-                    size: 20,
-                },
-            },
-            grid: {
-                color: "#575757"
-            }
-        }
+// Accessors for the charts
+const xp = (d: DataRecord): number => d.x;
+const yp = (d: DataRecord): number => d.y;
+const triggers = {
+
+    [Scatter.selectors.point]: (d: DataRecord) => {
+
+        const x = titleX.value.includes("step") ? d.x.toFixed(0) : d.x.toFixed(3);
+        return `
+        <table>
+        <tr><td>${titleX.value}:</td><td>${x}</td></tr>
+        <tr><td>${titleY.value}:</td><td>${d.y.toFixed(3)}</td></tr>
+        </table>
+        `;
     }
-});
-
-/**
- * Prepare the coordinates for visualizing an histogram
- *
- * @param histogram - Histogram data: one entry per bin as x has the bin value and y the count
- */
-const prepareHistogramCoordinates = (histogram: [x: number, y: number][]): {x: number; y: number}[] => {
-
-    const lineCoordinates: {x: number; y: number}[] = [];
-
-    let previousY = 0;
-    for(const entry of histogram) {
-        lineCoordinates.push({x: entry[0], y: previousY},
-                             {x: entry[0], y: entry[1]});
-        previousY = entry[1];
-    }
-    const lastX = histogram.at(-1)![0];
-    const width = lastX - histogram.at(-2)![0];
-    lineCoordinates.push({x: lastX+width, y: previousY},
-                         {x: lastX+width, y: 0});
-
-    return lineCoordinates;
 };
 
 /** Receive the chart data from the main window */
@@ -186,73 +112,95 @@ requestData(windowPath, (params: CtrlParams) => {
         ids.length = 0;
         for(const id of structureIds) ids.push(id);
 
-        const lineCoordinates: {x: number; y: number}[] = [];
-        let previousY = fingerprint[0][1];
-        lineCoordinates.push({x: 0, y: fingerprint[0][1]});
-        const len = fingerprint.length;
-        for(let i=1; i < len; ++i) {
-            lineCoordinates.push({x: fingerprint[i][0], y: previousY},
-                                 {x: fingerprint[i][0], y: fingerprint[i][1]});
-            previousY = fingerprint[i][1];
+        points.value.length = 0;
+        for(const fp of fingerprint) {
+            points.value.push({x: fp[0], y: fp[1]});
         }
 
-        chartData.value = buildChartData("Fingerprint", lineCoordinates, true, 0);
-
-        chartOptions.value = buildChartOptions("Distance", "Fingerprint value");
+        titleX.value = "Distance";
+        titleY.value = "Fingerprint value";
+        showLine.value = true;
+        showPoints.value = false;
+        showZero.value = true;
     }
     else if(energy) {
-        const lineCoordinates = energy.map((value) => ({x: value[0], y: value[1]}));
 
-        chartData.value = buildChartData("Energy", lineCoordinates, false, 4);
+        points.value.length = 0;
+        for(const pt of energy) {
+            points.value.push({x: pt[0], y: pt[1]});
+        }
 
-        chartOptions.value = buildChartOptions("Structure step", "Energy per atom");
+        titleX.value = "Structure step";
+        titleY.value = "Energy per atom";
+        showLine.value = false;
+        showPoints.value = true;
+        showZero.value = false;
     }
     else if(energyDistance) {
 
-        const lineCoordinates: {x: number; y: number}[] = [];
+        points.value.length = 0;
         for(const pair of energyDistance) {
-            lineCoordinates.push({x: pair[0], y: pair[1]});
+            points.value.push({x: pair[0], y: pair[1]});
         }
-
-        chartData.value = buildChartData("Energy delta", lineCoordinates, false, 4);
-
-        chartOptions.value = buildChartOptions("Distance from energy minimum",
-                                               "Energy difference from minimum");
+        titleX.value = "Distance from energy minimum";
+        titleY.value = "Energy difference from minimum";
+        showLine.value = false;
+        showPoints.value = true;
+        showZero.value = false;
     }
     else if(energyHistogram) {
 
-        const lineCoordinates = prepareHistogramCoordinates(energyHistogram);
+        points.value.length = 0;
+        for(const pt of energyHistogram) {
+            points.value.push({x: pt[0], y: pt[1]});
+        }
 
-        chartData.value = buildChartData("Energy histogram", lineCoordinates, true, 0);
-
-        chartOptions.value = buildChartOptions("Energy per atom", "Count");
+        titleX.value = "Energy per atom";
+        titleY.value = "Count";
+        showLine.value = true;
+        showPoints.value = false;
+        showZero.value = false;
     }
     else if(distanceHistogram) {
 
-        const lineCoordinates = prepareHistogramCoordinates(distanceHistogram);
+        points.value.length = 0;
+        for(const pt of distanceHistogram) {
+            points.value.push({x: pt[0], y: pt[1]});
+        }
 
-        chartData.value = buildChartData("Distance histogram", lineCoordinates, true, 0);
-
-        chartOptions.value = buildChartOptions("Distance", "Count");
+        titleX.value = "Distance";
+        titleY.value = "Count";
+        showLine.value = true;
+        showPoints.value = false;
+        showZero.value = false;
     }
     else if(order) {
 
-        const lineCoordinates = order.map((value) => ({x: value[0], y: value[1]}));
+        points.value.length = 0;
+        for(const pair of order) {
+            points.value.push({x: pair[0], y: pair[1]});
+        }
 
-        chartData.value = buildChartData("Order parameter", lineCoordinates, false, 4);
-
-        chartOptions.value = buildChartOptions("Structure step",
-                                               "Order parameter");
+        titleX.value = "Structure step";
+        titleY.value = "Order parameter";
+        showLine.value = false;
+        showPoints.value = true;
+        showZero.value = false;
     }
     else if(distances) {
 
-        const lineCoordinates = distances.map((value) => ({x: value[0], y: value[1]}));
+        points.value.length = 0;
+        for(const pair of distances) {
+            points.value.push({x: pair[0], y: pair[1]});
+        }
 
-        chartData.value = buildChartData("distance", lineCoordinates, false, 4);
-
-        chartOptions.value = buildChartOptions("Structure step",
-                                               "Fingerprint distance from selected step");
+        titleX.value = "Structure step";
+        titleY.value = "Fingerprint distance from selected step";
+        showLine.value = false;
+        showPoints.value = true;
+        showZero.value = false;
     }
+    forceUpdate.value = !forceUpdate.value;
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -281,9 +229,17 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
 <template>
 <v-app :theme>
   <div class="fp-chart-portal">
-    <div class="fp-chart-viewer">
-      <Scatter :options="chartOptions" :data="chartData" />
-    </div>
+    <VisXYContainer :margin="{right: 40, top: 20, left: 10, bottom: 50}" class="fp-chart-viewer">
+      <VisLine v-if="showLine" :key="forceUpdate" :data="points" :x="xp" :y="yp" curveType="step"/>
+      <VisScatter v-if="showPoints" :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                  :size="8" shape="square"/>
+      <VisPlotline v-if="showZero" lineStyle="dot" :value="0" />
+      <VisAxis type="x" :gridLine="false" :label="titleX" :fullSize="true"
+              :labelFontSize="24"/>
+      <VisAxis type="y" :gridLine="false" :label="titleY"
+              :fullSize="true" :labelFontSize="24" />
+      <VisTooltip :triggers :followCursor="false" verticalPlacement="bottom" />
+    </VisXYContainer>
     <v-container class="fp-chart-buttons">
       <div class="buttons-line1">
         <slider-with-steppers v-show="showStepSlider" v-model="fpIndex"

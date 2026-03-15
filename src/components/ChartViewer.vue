@@ -22,57 +22,71 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {ref, shallowRef, useTemplateRef} from "vue";
-import {Scatter} from "vue-chartjs";
-import {Chart as ChartJS, Title, Tooltip, Legend, CategoryScale,
-        LinearScale, PointElement, LineElement} from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-import type {Context} from "chartjs-plugin-datalabels";
-import log from "electron-log";
-import {askNode, closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
+import {computed, ref} from "vue";
+import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
-import type {ChartParams, ChartData, ChartOptions, CtrlParams} from "@/types";
+import {VisXYContainer, VisLine, VisAxis, VisScatter} from "@unovis/vue";
+import type {CtrlParams} from "@/types";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    ChartDataLabels,
-    Title,
-    Tooltip,
-    Legend);
+// const transparent = ref(false);
 
-const emptyChartData = {
-    datasets: []
-};
-const emptyChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false
-};
-const chartOptions = shallowRef<ChartOptions>(emptyChartOptions);
-const chartData = shallowRef<ChartData>(emptyChartData);
-const chartType = ref("");
-const transparent = ref(false);
 const windowPath = "/chart";
+
+/**
+ * Chart data
+ * @notExported
+ */
+interface DataRecord {
+    /** X value */
+    x: number;
+    /** Y value */
+    y: number;
+    /** Optional label */
+    label?: string;
+}
+
+const points = ref<DataRecord[]>([]);
+const scatter = ref<DataRecord[]>([]);
+const forceUpdate = ref(true);
+const showLabels = ref(false);
+const lineSmooth = ref(true);
+const range = ref([0, 90]);
+
+// Accessors for the charts
+const xp = (d: DataRecord): number => d.x;
+const yp = (d: DataRecord): number => d.y;
+const lp = (d: DataRecord): string => d.label!;
 
 /** Receive the chart data from the main window */
 requestData(windowPath, (params: CtrlParams) => {
 
-    const {data, options, type} = JSON.parse(params.chart as string ?? "{}") as ChartParams;
+    const labelX = params.labelX as number[] ?? [];
+    const labelY = params.labelY as number[] ?? [];
+    const labelText = params.labelText as string[] ?? [];
+		const lineX = params.lineX as number[] ?? [];
+		const lineY = params.lineY as number[] ?? [];
+    lineSmooth.value = params.lineSmooth as boolean ?? true;
+    const rangeRaw = params.range as number[] ?? [0, 90];
+    range.value[0] = rangeRaw[0];
+    range.value[1] = rangeRaw[1];
 
-    chartType.value = type;
-    chartData.value = data;
-
-    if(data.labels && options.plugins) {
-        options.plugins.datalabels = {
-            formatter: (_value: unknown, context: Context): string =>
-                context.chart.data.labels![context.dataIndex] as string
-        };
+    points.value.length = 0;
+    let len = lineX.length;
+    for(let i=0; i < len; ++i) {
+        points.value.push({x: lineX[i], y: lineY[i]});
     }
 
-    chartOptions.value = options;
+    showLabels.value = params.labelShow as boolean ?? false;
+    if(showLabels.value) {
+        len = labelX.length;
+        for(let i=0; i < len; ++i) scatter.value.push({
+            x: labelX[i],
+            y: labelY[i],
+            label: labelText[i]
+        });
+    }
+    forceUpdate.value = !forceUpdate.value;
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -82,12 +96,12 @@ handleSpecialKeys(windowPath);
  * Reference to the chart
  * @notExported
  */
-interface ChartCanvas {
-    chart: {
-        canvas: HTMLCanvasElement;
-    };
-}
-const chartElement = useTemplateRef<ChartCanvas>("chart");
+// interface ChartCanvas {
+//     chart: {
+//         canvas: HTMLCanvasElement;
+//     };
+// }
+// const chartElement = useTemplateRef<ChartCanvas>("chart");
 
 /**
  * Make a chart snapshot
@@ -97,6 +111,10 @@ const chartElement = useTemplateRef<ChartCanvas>("chart");
  */
 const makeImage = (): void => {
 
+    // Workaround for the save image
+    sendToNode("SYSTEM", "save-png");
+
+    /*
     if(chartElement.value) {
 
         const {canvas} = chartElement.value.chart;
@@ -137,6 +155,7 @@ const makeImage = (): void => {
                 log.error(`Error saving chart snapshot: ${error.message}`);
             });
     }
+    */
 };
 
 /**
@@ -147,23 +166,29 @@ const savePoints = (): void => {
     sendToNode("SYSTEM", "save-xrd");
 };
 
+const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
+
 </script>
 
 
 <template>
 <v-app :theme>
   <div class="chart-portal">
-    <div class="chart-container">
-      <Scatter
-        ref="chart"
-        :options="chartOptions"
-        :data="chartData"
-      />
-    </div>
+    <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                    :scaleByDomain="true" :xDomain="range" class="chart-container">
+      <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
+      <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
+                  color="red" :size="4"
+                  :label="lp" labelColor="red" labelPosition="right" />
+      <VisAxis type="x" :gridLine="false" label="2θ" :fullSize="true"
+              :labelFontSize="24" numTicks="10"/>
+      <VisAxis type="y" :gridLine="false" label="Intensity"
+              :fullSize="true" :labelFontSize="24" />
+    </VisXYContainer>
     <v-container class="button-strip">
       <v-btn @click="savePoints">Save points</v-btn>
       <v-btn @click="makeImage">Save image</v-btn>
-      <v-switch v-model="transparent" label="Transparent" class="ml-4 mr-3"/>
+      <!-- <v-switch v-model="transparent" label="Transparent" class="ml-4 mr-3"/> -->
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>

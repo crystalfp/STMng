@@ -31,10 +31,8 @@
     "oxlint-tsgolint",
     "@oxlint/migrate",
     "@typescript/native-preview",
-    "@golar/vue",
-    "golar",
-    "vue-tsgo",
-    "eslint-plugin-eslint-comments"
+    "eslint-plugin-eslint-comments",
+    "vite"
   ],
   // "includeEntryExports": true,
   // "ignore": ["**/KDtree.d.ts"],

@@ -280,7 +280,7 @@ onUnmounted(() => {
                      :angles="[uc[3],uc[4],uc[5]]"
                      :origin="[uc[6],uc[7],uc[8]]"/>
   </v-container>
-  <v-string v-else class="result-label">No structure loaded</v-string>
+  <v-label v-else class="result-label">No structure loaded</v-label>
   <v-label class="mt-4 separator-title">Measurement type</v-label>
   <v-btn-toggle v-model="measurementType" mandatory class="ml-0 mb-6">
     <v-btn value="atoms">Atoms</v-btn>
