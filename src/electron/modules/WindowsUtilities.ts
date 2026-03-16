@@ -234,15 +234,6 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
     }
 };
 
-/**
- * Get a secondary window
- *
- * @param routerPath - Path to the window to retrieve
- * @returns The window or undefined if the window is not open
- */
-export const getSecondaryWindow = (routerPath: string): BrowserWindow | undefined =>
-                                            openedWindows.get(routerPath);
-
 // > Close the secondary window
 /**
  * Close the secondary window

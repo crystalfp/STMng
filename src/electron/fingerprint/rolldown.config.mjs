@@ -27,9 +27,6 @@ export default defineConfig({
 		format: "cjs",
 		sourcemap: false,
 	},
-	checks: {
-		pluginTimings: false
-	},
 	plugins: [
 		terser(),
 		typescript({

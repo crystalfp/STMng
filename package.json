@@ -12,7 +12,7 @@
   "gypfile": true,
   "scripts": {
     "dev": "vite",
-    "prebuild": "node-gyp rebuild && electron-builder install-app-deps && sh ./rollup.sh",
+    "prebuild": "node-gyp rebuild && electron-builder install-app-deps && .\\rolldown.cmd",
     "build": "golar && vite build && electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "preview": "vite preview",
