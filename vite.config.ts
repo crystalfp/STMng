@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import {defineConfig} from "vite";
+import {defineConfig} from "rolldown-vite";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
 import vueDevTools from "vite-plugin-vue-devtools";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Show a chart in a secondary window.
+ * Show the X-Ray diffraction chart in a secondary window.
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2024-09-05
@@ -23,13 +23,13 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {computed, ref} from "vue";
+import log from "electron-log";
+import {toPng} from "html-to-image";
+import {VisXYContainer, VisLine, VisAxis, VisScatter} from "@unovis/vue";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
-import {VisXYContainer, VisLine, VisAxis, VisScatter} from "@unovis/vue";
 import type {CtrlParams} from "@/types";
-
-// const transparent = ref(false);
 
 const windowPath = "/chart";
 
@@ -51,7 +51,7 @@ const scatter = ref<DataRecord[]>([]);
 const forceUpdate = ref(true);
 const showLabels = ref(false);
 const lineSmooth = ref(true);
-const range = ref([0, 90]);
+const range = ref([0, 180]);
 
 // Accessors for the charts
 const xp = (d: DataRecord): number => d.x;
@@ -64,10 +64,10 @@ requestData(windowPath, (params: CtrlParams) => {
     const labelX = params.labelX as number[] ?? [];
     const labelY = params.labelY as number[] ?? [];
     const labelText = params.labelText as string[] ?? [];
-		const lineX = params.lineX as number[] ?? [];
-		const lineY = params.lineY as number[] ?? [];
+    const lineX = params.lineX as number[] ?? [];
+    const lineY = params.lineY as number[] ?? [];
     lineSmooth.value = params.lineSmooth as boolean ?? true;
-    const rangeRaw = params.range as number[] ?? [0, 90];
+    const rangeRaw = params.range as number[] ?? [0, 180];
     range.value[0] = rangeRaw[0];
     range.value[1] = rangeRaw[1];
 
@@ -93,17 +93,6 @@ requestData(windowPath, (params: CtrlParams) => {
 handleSpecialKeys(windowPath);
 
 /**
- * Reference to the chart
- * @notExported
- */
-// interface ChartCanvas {
-//     chart: {
-//         canvas: HTMLCanvasElement;
-//     };
-// }
-// const chartElement = useTemplateRef<ChartCanvas>("chart");
-
-/**
  * Make a chart snapshot
  *
  * @throws "Error"
@@ -111,51 +100,16 @@ handleSpecialKeys(windowPath);
  */
 const makeImage = (): void => {
 
-    // Workaround for the save image
-    sendToNode("SYSTEM", "save-png");
+    const svg = document.querySelector<HTMLElement>("svg");
+    if(!svg) return;
 
-    /*
-    if(chartElement.value) {
-
-        const {canvas} = chartElement.value.chart;
-
-        const ctx = canvas.getContext("2d");
-        if(ctx) {
-            ctx.save();
-            ctx.globalCompositeOperation = "destination-over";
-            if(transparent.value) {
-                ctx.fillStyle = "transparent";
-            }
-            else {
-                ctx.fillStyle = theme.value === "dark" ? "#121212" : "#FFFFFF";
-            }
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-        }
-
-        const dataURI = canvas.toDataURL("image/png");
-        askNode("SYSTEM", "snapshot", {dataURI, format: "png"})
-            .then((response) => {
-
-                if(!transparent.value) {
-                    const ctx2 = canvas.getContext("2d");
-                    if(ctx2) {
-                        ctx2.save();
-                        ctx2.globalCompositeOperation = "destination-over";
-                        ctx2.fillStyle = "transparent";
-                        ctx2.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx2.restore();
-                    }
-                }
-
-                if(response.error) throw Error(response.error as string);
-            })
-            .catch((error: Error) => {
-
-                log.error(`Error saving chart snapshot: ${error.message}`);
-            });
-    }
-    */
+    toPng(svg)
+        .then((dataURI: string) => {
+            sendToNode("SYSTEM", "save-png", {dataURI});
+        })
+        .catch((error: Error) => {
+            log.error(`Error saving chart snapshot: ${error.message}`);
+        });
 };
 
 /**
@@ -168,6 +122,9 @@ const savePoints = (): void => {
 
 const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 
+// Below there are settings (like labelColor) that seems redundant, but make
+// the screenshot works
+
 </script>
 
 
@@ -176,19 +133,18 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
   <div class="chart-portal">
     <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
                     :scaleByDomain="true" :xDomain="range" class="chart-container">
-      <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
+      <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType :opacity="0"/>
       <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
                   color="red" :size="4"
                   :label="lp" labelColor="red" labelPosition="right" />
-      <VisAxis type="x" :gridLine="false" label="2θ" :fullSize="true"
+      <VisAxis type="x" :gridLine="false" label="2θ" :fullSize="true" labelColor="#6C778C"
               :labelFontSize="24" numTicks="10"/>
-      <VisAxis type="y" :gridLine="false" label="Intensity"
+      <VisAxis type="y" :gridLine="false" label="Intensity" labelColor="#6C778C"
               :fullSize="true" :labelFontSize="24" />
     </VisXYContainer>
     <v-container class="button-strip">
       <v-btn @click="savePoints">Save points</v-btn>
       <v-btn @click="makeImage">Save image</v-btn>
-      <!-- <v-switch v-model="transparent" label="Transparent" class="ml-4 mr-3"/> -->
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>

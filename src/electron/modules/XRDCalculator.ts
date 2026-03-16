@@ -96,7 +96,7 @@ export class XRDCalculator {
 	 * @param scaled - Whether to return scaled intensities. The maximum peak is set to a value of 100.
        Defaults to true. Use false if you need the absolute values to combine XRD plots.
 	 * @param thetaLow - Low value for range of two_thetas to calculate in degrees. Defaults to 0.
-	 * @param thetaHigh - High value for range of two_thetas to calculate in degrees. Defaults to 90.
+	 * @param thetaHigh - High value for range of two_thetas to calculate in degrees. Defaults to 180.
 	 * @returns The computed diffraction pattern
      * @throws Error.
      * Unable to calculate XRD pattern as there is no scattering coefficients for specie
@@ -105,7 +105,7 @@ export class XRDCalculator {
                           wavelengthCode="CuKa",
                           scaled=true,
                           thetaLow=0,
-                          thetaHigh=90,
+                          thetaHigh=180,
                           wavelengthNumeric=1.5): DiffractionPatternResult {
 
         // Convert the wavelength symbol to the numeric wavelength

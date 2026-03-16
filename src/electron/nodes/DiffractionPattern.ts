@@ -26,7 +26,7 @@ import {ipcMain, dialog} from "electron";
 import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import {createOrUpdateSecondaryWindow, getSecondaryWindow, isSecondaryWindowOpen,
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {hasUnitCell} from "../modules/Helpers";
@@ -48,7 +48,7 @@ export class DiffractionPattern extends NodeCore {
 	private readonly state = {
 		scaled: true,
 		thetaLow: 0,
-		thetaHigh: 90,
+		thetaHigh: 180,
 		width: 0.75,
 		wavelengthCode: "CuKa",
 		wavelengthNumeric: 1.5,
@@ -110,7 +110,7 @@ export class DiffractionPattern extends NodeCore {
 	private initializeState(params: CtrlParams): void {
 		this.state.scaled = params.scaled as boolean ?? true;
 		this.state.thetaLow = params.thetaLow as number ?? 0;
-		this.state.thetaHigh = params.thetaHigh as number ?? 90;
+		this.state.thetaHigh = params.thetaHigh as number ?? 180;
 		this.state.width = params.width as number ?? 0.25;
 		this.state.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		this.state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
@@ -286,7 +286,7 @@ export class DiffractionPattern extends NodeCore {
 		const wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		const wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
 		const thetaLow = params.thetaLow as number ?? 0;
-		const thetaHigh = params.thetaHigh as number ?? 90;
+		const thetaHigh = params.thetaHigh as number ?? 180;
 		const scaled = params.scaled as boolean ?? true;
 
 		const recompute = this.state.wavelengthCode !== wavelengthCode ||
@@ -356,7 +356,7 @@ export class DiffractionPattern extends NodeCore {
 			// if already open, update chart, otherwise create the window
 			createOrUpdateSecondaryWindow({
 				routerPath: "/chart",
-				width: 1100,
+				width: 1150,
 				height: 800,
 				title: "X-Ray diffraction pattern",
 				data: dataToSend
@@ -389,10 +389,7 @@ export class DiffractionPattern extends NodeCore {
 					}
 				});
 
-				ipcMain.on("SYSTEM:save-png", () => {
-
-					const win = getSecondaryWindow("/chart");
-					if(!win) return;
+				ipcMain.on("SYSTEM:save-png", (_event, payload: {dataURI: string}) => {
 
 					const file = dialog.showSaveDialogSync({
 						title: "Save X-Ray diffraction chart snapshot",
@@ -402,21 +399,8 @@ export class DiffractionPattern extends NodeCore {
 					});
 					if(!file) return;
 
-					win.capturePage()
-						.then((img) => {
-
-							const size = img.getSize();
-							const cropped = img.crop({
-								x: 0,
-								y: 0,
-								width: size.width,
-								height: size.height - 60
-							});
-							const png = cropped.toPNG();
-							writeFileSync(file, png);
-						})
-						.catch((error: Error) =>
-							sendAlertToClient(`Error saving PNG: ${error.message}`));
+					const data = payload.dataURI.split(",");
+					writeFileSync(file, Buffer.from(data[1], "base64"));
 				});
 			}
 		}
