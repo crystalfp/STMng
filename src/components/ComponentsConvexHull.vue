@@ -31,7 +31,7 @@ import type {CtrlParams} from "@/types";
 
 import {Scatter, BulletShape, type BulletLegendItemInterface} from "@unovis/ts";
 import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip,
-        VisBulletLegend} from "@unovis/vue";
+        VisBulletLegend, VisAnnotations} from "@unovis/vue";
 
 const windowPath = "/components-hull";
 
@@ -63,8 +63,55 @@ const forceUpdate = ref(true);
 const dimension = ref(2);
 const edges = ref<DataRecord[]>([]);
 
+/** Coordinates for UnoVis */
+type Coordinate = number | `${number}%` | `${number}px`;
+
+/** Configuration for the annotations */
+interface AnnotationItem {
+
+    /** Annotation */
+    content: string;
+    /** Connected to */
+    subject?: {
+        /** x */
+        x: Coordinate;
+        /** y */
+        y: Coordinate;
+    };
+
+    /** Position X of the annotation */
+    x: Coordinate;
+    /** Position Y of the annotation */
+    y: Coordinate;
+}
+
+const labels = ref<AnnotationItem[]>([
+    {x: 0,     y: "90%", content: "", subject: {x: "10px", y: "99%"}},
+    {x: "98%", y: "90%", content: "", subject: {x: "99%",  y: "99%"}},
+    {x: "55%", y: 0,     content: "", subject: {x: "50%",  y: "10px"}}
+]);
+
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
+
+const setCornerFormula3 = (data: DataRecord[]): void => {
+
+    for(const record of data) {
+
+        // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+        switch(record.parts) {
+            case "1-0-0":
+                labels.value[0].content = record.formula!;
+                break;
+            case "0-1-0":
+                labels.value[1].content = record.formula!;
+                break;
+            case "0-0-1":
+                labels.value[2].content = record.formula!;
+                break;
+        }
+    }
+};
 
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
@@ -143,6 +190,7 @@ requestData(windowPath, (params: CtrlParams) => {
                     {x: tri[i],    y: tri[i+1]},
                 );
             }
+            setCornerFormula3(points.value);
             break;
         default:
             break;
@@ -201,6 +249,23 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
     legend.value = updItems;
 };
 
+/**
+ * Accessor for the label at the extreme of the range
+ *
+ * @param d - One data record
+ */
+const lp2 = (d: DataRecord): string => {
+
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+    switch(d.parts) {
+        case "1-0":
+        case "0-1":
+            return d.formula!.replaceAll(/<.?sub>/g, "");
+        default:
+            return "";
+    }
+};
+
 </script>
 
 
@@ -212,7 +277,7 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
                   color="#03C03C" :size="7" cursor="pointer"/>
-      <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
+      <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp" :label="lp2"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisAxis type="x" :gridLine="false" label="Composition ratio"
               :labelFontSize="24"/>
@@ -229,6 +294,7 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
       <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisTooltip :triggers :followCursor="false" />
+      <VisAnnotations :items="labels" />
     </VisXYContainer>
     <v-alert v-else
          title="Not implemented yet"
