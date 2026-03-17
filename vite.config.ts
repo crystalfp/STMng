@@ -1,4 +1,4 @@
-/// <reference types="vitest/config" />
+// <reference types="vitest/config" />
 import {defineConfig} from "rolldown-vite";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
@@ -22,9 +22,6 @@ export default defineConfig({
                   "test-data", "proto-test", "work", "tests"],
         holdUntilCrawlEnd: false
     },
-    // define: {
-    //     __VUE_PROD_DEVTOOLS__: "false",
-    // },
     plugins: [
         // dts({
         //     tsconfigPath: './tsconfig.json',
@@ -56,54 +53,27 @@ export default defineConfig({
         assetsInlineLimit: 8096,
         reportCompressedSize: false,
         emptyOutDir: true,
-        chunkSizeWarningLimit: 1500,
+        chunkSizeWarningLimit: 850,
         // rolldownOptions: {
         //     output.intro: `
         //     `
         // },
         rolldownOptions: {
             output: {
-                codeSplitting: {
-                    groups: [
-                        {
-                            name: "vue",
-                            test: (id: string) => {
-                                return id.includes("vue") ||
-                                       id.includes("pinia") ||
-                                       id.includes("vuetify") ||
-                                       id.includes("@mdi/js");
-                            }
-                        },
-                        {
-                            name: "three",
-                            test: /node_modules[\\/]three/
-                        },
-                        {
-                            name: "troika",
-                            test: /node_modules[\\/]troika-three-text/
-                        }
-                    ]
+                manualChunks(id: string) {
+                    if(id.includes('node_modules')) {
+                        if(id.includes('vue') ||
+                           id.includes('pinia') ||
+                           id.includes('vuetify') ||
+                           id.includes('@mdi/js')) return 'vue';
+
+                        if(id.includes('three')) return 'three';
+
+                        if(id.includes('troika-three-text')) return 'troika';
+                    }
+                    // return undefined to let Rollup decide for app code
                 }
             }
         }
-        // rollupOptions: {
-        //     output: {
-        //         manualChunks: {
-        //             vue: [
-        //                 "vue",
-        //                 "vue-router",
-        //                 "pinia",
-        //                 "vuetify",
-        //                 "@mdi/js",
-        //             ],
-        //             three: [
-        //                 "three"
-        //             ],
-        //             troika: [
-        //                 "troika-three-text"
-        //             ]
-        //         }
-        //     },
-        // }
     },
 });

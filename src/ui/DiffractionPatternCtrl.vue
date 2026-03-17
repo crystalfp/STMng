@@ -47,10 +47,10 @@ const enableComputation = ref(false);
 // > Persistent state that is saved in the project file
 // Except thetaLow and thetaHigh that are combined in the theta variable
 const state = reactive({
-    scaled: true,
-    width: 0.75,
+    width: 0.25,
+    threshold: 3,
     wavelengthCode: "CuKa",
-    wavelengthNumeric: 1.5,
+    wavelengthNumeric: 1.54184,
     showHKL: false
 });
 const theta = ref([0, 180]);
@@ -69,7 +69,6 @@ const {id, label} = defineProps<{
 askNode(id, "init")
     .then((params) => {
         enableComputation.value = params.enableComputation as boolean ?? false;
-        state.scaled = params.scaled as boolean ?? true;
         theta.value[0] = params.thetaLow as number ?? 0;
         theta.value[1] = params.thetaHigh as number ?? 180;
         state.width = params.width as number ?? 0.25;
@@ -79,7 +78,8 @@ askNode(id, "init")
         for(const code of codes) wavelengthCodes.push({title: code, value: code});
         wavelengthCodes.push({type:  "divider"}, {title: "Manual", value: "Manual"});
         state.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
-        state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
+        state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
+        state.threshold = params.threshold as number ?? 3;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from UI init for ${label}: ${error.message}`);
@@ -93,9 +93,9 @@ const stopWatcher = watchEffect(() => {
         wavelengthNumeric: state.wavelengthNumeric,
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
-        scaled: state.scaled,
         width: state.width,
-        showHKL: state.showHKL
+        showHKL: state.showHKL,
+        threshold: state.threshold
     });
 });
 
@@ -114,9 +114,10 @@ receiveFromNode(id, "enable", (params: CtrlParams) => {
 
 <template>
 <v-container class="container">
-  <v-select v-model="state.wavelengthCode" :items="wavelengthCodes" class="my-4"
-            label="Wavelength"/>
-  <v-number-input v-if="state.wavelengthCode === 'Manual'" v-model="state.wavelengthNumeric"
+  <v-select v-model="state.wavelengthCode" :items="wavelengthCodes"
+            class="my-4" label="Wavelength"/>
+  <v-number-input v-if="state.wavelengthCode === 'Manual'"
+                  v-model="state.wavelengthNumeric"
                   label="Numeric wavelength" :precision="6"
                   :min="0.1" :max="4" :step="0.1" />
   <debounced-range-slider v-slot="{values}" v-model="theta"
@@ -125,15 +126,17 @@ receiveFromNode(id, "enable", (params: CtrlParams) => {
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
   </debounced-range-slider>
-  <v-switch v-model="state.scaled" label="Chart scaled" class="ml-3" />
   <v-switch v-model="state.showHKL" label="Show HKL" class="ml-3 mb-6" />
-  <debounced-slider v-slot="{value}" v-model="state.width" :min="0" :max="5" :step="0.05"
-                      class="ml-2 mb-6 mt-1">
+  <debounced-slider v-slot="{value}" v-model="state.width"
+                    :min="0" :max="2" :step="0.05" class="ml-2 mb-2">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />
+  </debounced-slider>
+  <debounced-slider v-slot="{value}" v-model="state.threshold"
+                    :min="0" :max="10" :step="1" class="ml-2 mb-6">
+    <v-label :text="`Peak threshold (${value.toFixed(0)}%)`" class="no-select" />
   </debounced-slider>
   <throttled-button label="Open chart"
                     :disabled="!enableComputation"
                     @click="sendToNode(id, 'open')" />
-
 </v-container>
 </template>

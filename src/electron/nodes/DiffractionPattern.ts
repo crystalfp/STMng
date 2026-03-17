@@ -46,13 +46,13 @@ export class DiffractionPattern extends NodeCore {
 
 	// Mirror of the UI reactive state
 	private readonly state = {
-		scaled: true,
 		thetaLow: 0,
 		thetaHigh: 180,
-		width: 0.75,
+		width: 0.25,
 		wavelengthCode: "CuKa",
-		wavelengthNumeric: 1.5,
-		showHKL: false
+		wavelengthNumeric: 1.54184,
+		showHKL: false,
+		threshold: 3
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -85,7 +85,7 @@ export class DiffractionPattern extends NodeCore {
 			try {
 				this.xy = this.xrd.getDiffractionPattern(this.structure,
 														 this.state.wavelengthCode,
-														 this.state.scaled,
+														 true,
 														 this.state.thetaLow,
 														 this.state.thetaHigh);
 			}
@@ -108,12 +108,12 @@ export class DiffractionPattern extends NodeCore {
 	}
 
 	private initializeState(params: CtrlParams): void {
-		this.state.scaled = params.scaled as boolean ?? true;
+		this.state.threshold = params.threshold as number ?? 3;
 		this.state.thetaLow = params.thetaLow as number ?? 0;
 		this.state.thetaHigh = params.thetaHigh as number ?? 180;
 		this.state.width = params.width as number ?? 0.25;
 		this.state.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
-		this.state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
+		this.state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
 		this.state.showHKL = params.showHKL as boolean ?? false;
 	}
 
@@ -133,36 +133,45 @@ export class DiffractionPattern extends NodeCore {
 		const y = [...this.xy.intensity];
 		if(this.state.width > 0) {
 			const mult = 0.9394372786996513/this.state.width;
-			for(let i=0; i < len; ++i) {
-				y[i] *= mult;
-			}
+			for(let i=0; i < len; ++i) y[i] *= mult;
 		}
 
-		// And scale them to 100
-		if(this.state.scaled) {
-			let maxValue = -1;
-			for(let i=0; i < len; ++i) {
-				if(y[i] > maxValue) maxValue = y[i];
+		// Find scale to have them from 0 to 100
+		let maxValue = -1;
+		for(let i=0; i < len; ++i) {
+			if(y[i] > maxValue) maxValue = y[i];
+		}
+		const scale = 100/maxValue;
+
+		// Scale intensities to 100 and remove peaks below threshold
+		const xCleaned: number[] = [];
+		const yCleaned: number[] = [];
+		const labelCleaned: string[] = [];
+		for(let i=0; i < len; ++i) {
+			const yy = y[i]*scale;
+			if(yy >= this.state.threshold) {
+				xCleaned.push(this.xy.twoTheta[i]);
+				yCleaned.push(yy);
+				labelCleaned.push(this.xy.label[i]);
 			}
-			const scale = 100/maxValue;
-			for(let i=0; i < len; ++i) y[i] *= scale;
 		}
 
 		// Chart of the line spectra
 		this.lineCoordinates = this.state.width > 0 ?
-									this.smoothPeaks(this.xy.twoTheta,
-													 y,
+									this.smoothPeaks(xCleaned,
+													 yCleaned,
 													 this.state.thetaLow,
 													 this.state.thetaHigh,
 													 this.state.width) :
-									this.hardPeaks(this.xy,
+									this.hardPeaks(xCleaned,
+												   yCleaned,
 												   this.state.thetaLow,
 												   this.state.thetaHigh);
 
 		return {
-			labelX: this.xy.twoTheta,
-			labelY: y,
-			labelText: this.xy.label,
+			labelX: xCleaned,
+			labelY: yCleaned,
+			labelText: labelCleaned,
 			labelShow: this.state.showHKL,
 			lineX: this.lineCoordinates.x,
 			lineY: this.lineCoordinates.y,
@@ -174,8 +183,8 @@ export class DiffractionPattern extends NodeCore {
 	/**
 	 * Smooth the diffraction peaks using a gaussian
 	 *
-	 * @param x - Peak intensities
-	 * @param y - Peak position
+	 * @param x - Diffraction pattern peak positions
+	 * @param y - Diffraction pattern peak intensities (already scaled)
 	 * @param min - Theta min value
 	 * @param max - Theta max value
 	 * @param width - Width of the gaussian to be used to smooth the peaks (FWHM)
@@ -187,37 +196,44 @@ export class DiffractionPattern extends NodeCore {
 						max: number,
 						width: number): LineCoordinates {
 
-		const xOut: number[] = [];
-		const yOut: number[] = [];
+		const xCompute: number[] = [];
+		const yComputed: number[] = [];
 
-		const step = (max-min)/2_000;
-		for(let xx=min; xx <= max; xx += step) {
-			xOut.push(xx);
-			yOut.push(0);
+		const step = 0.05; // 0...180 are 3600 points
+		for(let xx=min-2; xx <= max+2; xx += step) {
+			xCompute.push(xx);
+			yComputed.push(0);
 		}
-		const nPoints = xOut.length;
+		const nPoints = xCompute.length;
+
+  		const sigma = width * 0.5;
 
 		const len = x.length;
 		for(let i=0; i < len; ++i) {
 
-			const mean = x[i];
-			const peak = y[i];
-			const den = width**2/2.772588722239781;
+			const peakPos = x[i];
+			const peakInt = y[i];
 
 			for(let j=0; j < nPoints; ++j) {
-				yOut[j] += peak*Math.exp(-((xOut[j]-mean)**2)/den);
+				const gaussian = peakInt * Math.exp(-0.5 * ((xCompute[j] - peakPos) / sigma) ** 2);
+				yComputed[j] = Math.max(yComputed[j], gaussian);
 			}
 		}
-		if(this.state.scaled) {
 
-			let maxIntensity = 0;
-			for(let j=0; j < nPoints; ++j) {
-				if(yOut[j] > maxIntensity) maxIntensity = yOut[j];
-			}
-			const scale = 100/maxIntensity;
-			for(let j=0; j < nPoints; ++j) {
-				yOut[j] *= scale;
-			}
+		let maxIntensity = 0;
+		for(let j=0; j < nPoints; ++j) {
+			if(yComputed[j] > maxIntensity) maxIntensity = yComputed[j];
+		}
+		const scale = 100/maxIntensity;
+		for(let j=0; j < nPoints; ++j) yComputed[j] *= scale;
+
+		const xOut: number[] = [];
+		const yOut: number[] = [];
+		for(let i=0; i < nPoints; ++i) {
+			const xx = xCompute[i];
+			if(xx < min || xx > max) continue;
+			xOut.push(xCompute[i]);
+			yOut.push(yComputed[i]);
 		}
 		return {x: xOut, y: yOut};
 	}
@@ -225,31 +241,23 @@ export class DiffractionPattern extends NodeCore {
 	/**
 	 * The computed diffraction peaks without smoothing
 	 *
-	 * @param xy - The computed diffraction pattern
+	 * @param twoTheta - Diffraction pattern peak positions
+	 * @param intensity - Diffraction pattern peak intensities (already scaled)
 	 * @param min - Theta min value
 	 * @param max - Theta max value
 	 * @returns Array of points coordinates to be used in the chart
 	 */
-	private hardPeaks(xy: DiffractionPatternResult,
+	private hardPeaks(twoTheta: number[],
+					  intensity: number[],
 					  min: number,
 					  max: number): LineCoordinates {
 
-		const len = xy.intensity.length;
-		let scale = 1;
-		if(this.state.scaled) {
-
-			let maxIntensity = 0;
-			for(let j=0; j < len; ++j) {
-				if(xy.intensity[j] > maxIntensity) maxIntensity = xy.intensity[j];
-			}
-			scale = maxIntensity > 0 ? 100/maxIntensity : 1;
-		}
-
+		const len = intensity.length;
 		const x: number[] = [min];
 		const y: number[] = [0];
 		for(let i=0; i < len; ++i) {
-			const mean = xy.twoTheta[i];
-			const peak = xy.intensity[i]*scale;
+			const mean = twoTheta[i];
+			const peak = intensity[i];
 			x.push(mean, mean, mean);
 			y.push(0, peak, 0);
 		}
@@ -268,13 +276,14 @@ export class DiffractionPattern extends NodeCore {
 
 		return {
 			enableComputation: Boolean(this.structure),
-			scaled: this.state.scaled,
 			thetaLow: this.state.thetaLow,
 			thetaHigh: this.state.thetaHigh,
 			width: this.state.width,
 			wavelengthCode: this.state.wavelengthCode,
 			wavelengthCodes: this.xrd.getWavelengthNames(),
-			wavelengthNumeric: this.state.wavelengthNumeric
+			wavelengthNumeric: this.state.wavelengthNumeric,
+			showHKL: this.state.showHKL,
+			threshold: this.state.threshold
 		};
 	}
 
@@ -284,24 +293,24 @@ export class DiffractionPattern extends NodeCore {
 	private channelCompute(params: CtrlParams): void {
 
 		const wavelengthCode = params.wavelengthCode as string ?? "CuKa";
-		const wavelengthNumeric = params.wavelengthNumeric as number ?? 1.5;
+		const wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
 		const thetaLow = params.thetaLow as number ?? 0;
 		const thetaHigh = params.thetaHigh as number ?? 180;
-		const scaled = params.scaled as boolean ?? true;
+		const threshold = params.threshold as number ?? 3;
 
 		const recompute = this.state.wavelengthCode !== wavelengthCode ||
-							this.state.wavelengthNumeric !== wavelengthNumeric ||
-							this.state.thetaLow !== thetaLow ||
-							this.state.thetaHigh !== thetaHigh ||
-							this.state.scaled !== scaled;
+						  this.state.wavelengthNumeric !== wavelengthNumeric ||
+						  this.state.thetaLow !== thetaLow ||
+						  this.state.thetaHigh !== thetaHigh ||
+						  this.state.threshold !== threshold;
 
 		this.state.wavelengthCode = wavelengthCode;
 		this.state.wavelengthNumeric = wavelengthNumeric;
 		this.state.thetaLow = thetaLow;
 		this.state.thetaHigh = thetaHigh;
-		this.state.scaled = scaled;
 		this.state.width = params.width as number ?? 0.25;
 		this.state.showHKL = params.showHKL as boolean ?? false;
+		this.state.threshold = threshold;
 
 		// Compute spectra if the view window is open
 		if(this.structure && isSecondaryWindowOpen("/chart")) {
@@ -310,7 +319,7 @@ export class DiffractionPattern extends NodeCore {
 				try {
 					this.xy = this.xrd.getDiffractionPattern(this.structure,
 															 this.state.wavelengthCode,
-															 this.state.scaled,
+															 true,
 															 this.state.thetaLow,
 															 this.state.thetaHigh,
 															 this.state.wavelengthNumeric);
@@ -340,7 +349,7 @@ export class DiffractionPattern extends NodeCore {
 			try {
 				this.xy = this.xrd.getDiffractionPattern(this.structure,
 														 this.state.wavelengthCode,
-														 this.state.scaled,
+														 true,
 														 this.state.thetaLow,
 														 this.state.thetaHigh,
 														 this.state.wavelengthNumeric);

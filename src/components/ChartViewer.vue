@@ -131,16 +131,18 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 <template>
 <v-app :theme>
   <div class="chart-portal">
-    <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+    <VisXYContainer :margin="{right: 20, top: 30, left: 20, bottom: 10}"
                     :scaleByDomain="true" :xDomain="range" class="chart-container">
-      <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType :opacity="0"/>
+      <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
       <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
                   color="red" :size="4"
                   :label="lp" labelColor="red" labelPosition="right" />
-      <VisAxis type="x" :gridLine="false" label="2θ" :fullSize="true" labelColor="#6C778C"
-              :labelFontSize="24" numTicks="10"/>
-      <VisAxis type="y" :gridLine="false" label="Intensity" labelColor="#6C778C"
-              :fullSize="true" :labelFontSize="24" />
+      <VisAxis type="x" :gridLine="false" label="2θ (degrees)" :fullSize="true"
+               labelColor="#6C778C" :labelFontSize="24" numTicks="10"
+               tickTextColor="#6C778C"/>
+      <VisAxis type="y" :gridLine="false" label="Intensity (a. u.)"
+               labelColor="#6C778C" :fullSize="true" :labelFontSize="24"
+               tickTextColor="#6C778C"/>
     </VisXYContainer>
     <v-container class="button-strip">
       <v-btn @click="savePoints">Save points</v-btn>
@@ -164,7 +166,7 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
   overflow-y: auto;
   width: 100vw;
   flex: 2;
-  padding: 10px 10px 0 0;
+  padding: 0;
 }
 
 </style>
