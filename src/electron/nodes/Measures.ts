@@ -26,15 +26,13 @@
 import {NodeCore} from "../modules/NodeCore";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {sendToClient} from "../modules/ToClient";
-import {basisToLengthAngles, cartesianToFractionalCoordinates, hasNoUnitCell, isHydrogenBond} from "../modules/Helpers";
+import {basisToLengthAngles, cartesianToFractionalCoordinates, hasNoUnitCell,
+		isHydrogenBond, RAD2DEG} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 SelectedAtom, PositionType, BondData} from "@/types";
 
 const labels = ["Atom A:", "Atom B:", "Atom C:"];
 const colors = ["#FF0000", "#00C300", "#4263FF"];
-
-/** Convert radiants to degrees */
-const RAD2DEG = 180/Math.PI;
 
 export class Measures extends NodeCore {
 

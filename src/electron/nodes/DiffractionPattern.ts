@@ -47,7 +47,7 @@ export class DiffractionPattern extends NodeCore {
 	// Mirror of the UI reactive state
 	private readonly state = {
 		thetaLow: 0,
-		thetaHigh: 180,
+		thetaHigh: 90,
 		width: 0.25,
 		wavelengthCode: "CuKa",
 		wavelengthNumeric: 1.54184,
@@ -110,7 +110,7 @@ export class DiffractionPattern extends NodeCore {
 	private initializeState(params: CtrlParams): void {
 		this.state.threshold = params.threshold as number ?? 3;
 		this.state.thetaLow = params.thetaLow as number ?? 0;
-		this.state.thetaHigh = params.thetaHigh as number ?? 180;
+		this.state.thetaHigh = params.thetaHigh as number ?? 90;
 		this.state.width = params.width as number ?? 0.25;
 		this.state.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		this.state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
@@ -199,7 +199,7 @@ export class DiffractionPattern extends NodeCore {
 		const xCompute: number[] = [];
 		const yComputed: number[] = [];
 
-		const step = 0.05; // 0...180 are 3600 points
+		const step = 0.04; // 0...90 are 2250 points
 		for(let xx=min-2; xx <= max+2; xx += step) {
 			xCompute.push(xx);
 			yComputed.push(0);
@@ -295,7 +295,7 @@ export class DiffractionPattern extends NodeCore {
 		const wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		const wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
 		const thetaLow = params.thetaLow as number ?? 0;
-		const thetaHigh = params.thetaHigh as number ?? 180;
+		const thetaHigh = params.thetaHigh as number ?? 90;
 		const threshold = params.threshold as number ?? 3;
 
 		const recompute = this.state.wavelengthCode !== wavelengthCode ||

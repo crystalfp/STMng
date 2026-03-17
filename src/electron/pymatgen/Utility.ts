@@ -31,6 +31,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {inv, multiply} from "mathjs";
+import {RAD2DEG} from "../modules/Helpers";
 
 /**
  * Create zero matrix
@@ -345,7 +346,7 @@ export const cellAngle = (v1: number[], v2: number[]): number => {
     const dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
     const mag1 = Math.hypot(...v1);
     const mag2 = Math.hypot(...v2);
-    return Math.acos(dot / (mag1 * mag2))*180/Math.PI;
+    return Math.acos(dot / (mag1 * mag2))*RAD2DEG;
 };
 
 /**

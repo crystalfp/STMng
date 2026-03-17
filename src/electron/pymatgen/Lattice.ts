@@ -32,7 +32,7 @@
  */
 /* eslint-disable unicorn/no-null */
 import {inv} from "mathjs";
-import {extractBasis} from "../modules/Helpers";
+import {extractBasis, RAD2DEG} from "../modules/Helpers";
 import {createZeroMatrix, createIdentityMatrix, createDiagonalMatrix,
         copyMatrix, reciprocaCrystallographyclLatticeLengths,
         transpose, dotProduct, getColumn, matrixVectorMultiply,
@@ -246,7 +246,7 @@ function getAngles(v1: number[][], v2: number[][], l1: number[], l2: number[]): 
             // Clamp to [-1, 1] to avoid numerical issues
             x = Math.max(-1, Math.min(1, x));
 
-            const angle = (Math.acos(x) * 180.0) / Math.PI;
+            const angle = Math.acos(x) * RAD2DEG;
             row.push(angle);
         }
         result.push(row);
@@ -900,9 +900,9 @@ export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number
     const a = Math.sqrt(A);
     const b = Math.sqrt(B);
     const c = Math.sqrt(C);
-    const alpha = (Math.acos(E / (2 * b * c)) * 180) / Math.PI;
-    const beta  = (Math.acos(N / (2 * a * c)) * 180) / Math.PI;
-    const gamma = (Math.acos(Y / (2 * a * b)) * 180) / Math.PI;
+    const alpha = Math.acos(E / (2 * b * c)) * RAD2DEG;
+    const beta  = Math.acos(N / (2 * a * c)) * RAD2DEG;
+    const gamma = Math.acos(Y / (2 * a * b)) * RAD2DEG;
 
     const ll = extractBasis(a, b, c, alpha, beta, gamma);
 

@@ -27,8 +27,8 @@ import {BondType} from "../../services/SharedConstants";
 import type {BasisType, Bond, LengthsAnglesType, PositionType, Structure} from "@/types";
 
 /** Convert degrees to radiants and viceversa */
-const DEG2RAD = Math.PI/180;
-const RAD2DEG = 180/Math.PI;
+export const DEG2RAD = Math.PI/180;
+export const RAD2DEG = 180/Math.PI;
 
 /**
  * Extract the basis vectors from basis lengths and angles

@@ -51,7 +51,7 @@ const scatter = ref<DataRecord[]>([]);
 const forceUpdate = ref(true);
 const showLabels = ref(false);
 const lineSmooth = ref(true);
-const range = ref([0, 180]);
+const range = ref([0, 90]);
 
 // Accessors for the charts
 const xp = (d: DataRecord): number => d.x;
@@ -67,7 +67,7 @@ requestData(windowPath, (params: CtrlParams) => {
     const lineX = params.lineX as number[] ?? [];
     const lineY = params.lineY as number[] ?? [];
     lineSmooth.value = params.lineSmooth as boolean ?? true;
-    const rangeRaw = params.range as number[] ?? [0, 180];
+    const rangeRaw = params.range as number[] ?? [0, 90];
     range.value[0] = rangeRaw[0];
     range.value[1] = rangeRaw[1];
 

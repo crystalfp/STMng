@@ -31,7 +31,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {inv, multiply} from "mathjs";
-import {normalize} from "../modules/Helpers";
+import {DEG2RAD, normalize} from "../modules/Helpers";
 
 /**
  * SymmOp represents a symmetry operation in Cartesian space using a 4x4 affine matrix.
@@ -135,7 +135,7 @@ export class SymmOp {
 	 */
 	static fromAxisAngleAndTranslation(axis: number[], angle: number): SymmOp {
 
-		angle *= Math.PI / 180;
+		angle *= DEG2RAD;
         const co = Math.cos(angle);
         const si = Math.sin(angle);
 

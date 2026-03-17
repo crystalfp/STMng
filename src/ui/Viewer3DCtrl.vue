@@ -29,6 +29,7 @@ import {askNode, sendViewer3DState} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import AlignLabels from "@/widgets/AlignLabels.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
+import {DEG2RAD, RAD2DEG} from "@/electron/modules/Helpers";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -39,10 +40,6 @@ const {id, label} = defineProps<{
     /** Label on the node selector */
     label: string;
 }>();
-
-/** Convert degrees to radiants */
-const DEG2RAD = Math.PI/180;
-const RAD2DEG = 1/DEG2RAD;
 
 // > Access the store
 const configStore = useConfigStore();

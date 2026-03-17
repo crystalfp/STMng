@@ -53,7 +53,7 @@ const state = reactive({
     wavelengthNumeric: 1.54184,
     showHKL: false
 });
-const theta = ref([0, 180]);
+const theta = ref([0, 90]);
 
 // > Properties
 const {id, label} = defineProps<{
@@ -70,7 +70,7 @@ askNode(id, "init")
     .then((params) => {
         enableComputation.value = params.enableComputation as boolean ?? false;
         theta.value[0] = params.thetaLow as number ?? 0;
-        theta.value[1] = params.thetaHigh as number ?? 180;
+        theta.value[1] = params.thetaHigh as number ?? 90;
         state.width = params.width as number ?? 0.25;
 		state.showHKL = params.showHKL as boolean ?? false;
         const codes = params.wavelengthCodes as string[] ?? [];
@@ -121,7 +121,7 @@ receiveFromNode(id, "enable", (params: CtrlParams) => {
                   label="Numeric wavelength" :precision="6"
                   :min="0.1" :max="4" :step="0.1" />
   <debounced-range-slider v-slot="{values}" v-model="theta"
-                          :step="0.01" :min="0" :max="180"
+                          :step="0.01" :min="0" :max="90"
                           class="ml-2 mt-2 pr-6">
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>

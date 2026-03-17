@@ -27,6 +27,7 @@ import {ReciprocalLattice, type ReciprocalPoint} from "../pymatgen/ReciprocalLat
 import {ATOMIC_SCATTERING_PARAMS} from "../pymatgen/AtomicScatteringParams";
 import {getAtomicSymbol} from "./AtomData";
 import type {Structure, PositionType} from "@/types";
+import {RAD2DEG, DEG2RAD} from "./Helpers";
 
 /** Type of the XRD calculator output */
 export interface DiffractionPatternResult {
@@ -96,7 +97,7 @@ export class XRDCalculator {
 	 * @param scaled - Whether to return scaled intensities. The maximum peak is set to a value of 100.
        Defaults to true. Use false if you need the absolute values to combine XRD plots.
 	 * @param thetaLow - Low value for range of two_thetas to calculate in degrees. Defaults to 0.
-	 * @param thetaHigh - High value for range of two_thetas to calculate in degrees. Defaults to 180.
+	 * @param thetaHigh - High value for range of two_thetas to calculate in degrees. Defaults to 90.
 	 * @returns The computed diffraction pattern
      * @throws Error.
      * Unable to calculate XRD pattern as there is no scattering coefficients for specie
@@ -105,7 +106,7 @@ export class XRDCalculator {
                           wavelengthCode="CuKa",
                           scaled=true,
                           thetaLow=0,
-                          thetaHigh=180,
+                          thetaHigh=90,
                           wavelengthNumeric=1.5): DiffractionPatternResult {
 
         // Convert the wavelength symbol to the numeric wavelength
@@ -116,8 +117,8 @@ export class XRDCalculator {
         // Obtained from Bragg condition.
 		// Remember that reciprocal lattice vector length is 1 / d_hkl.
         // rLimits is [min_r, max_r]
-        const rLimits = [2 * Math.sin((thetaLow  * Math.PI/180) / 2) / this.wavelength,
-                         2 * Math.sin((thetaHigh * Math.PI/180) / 2) / this.wavelength];
+        const rLimits = [2 * Math.sin((thetaLow  * DEG2RAD) / 2) / this.wavelength,
+                         2 * Math.sin((thetaHigh * DEG2RAD) / 2) / this.wavelength];
 
 		// Load the structure and check if it is hexagonal
 		const lattice = new Lattice(structure);
@@ -215,7 +216,7 @@ export class XRDCalculator {
             // Intensity for hkl is modulus square of structure factor
             const iHKL = fHKL[0] * fHKL[0] + fHKL[1] * fHKL[1];
 
-            const twoTheta = 2 * theta * 180 / Math.PI;
+            const twoTheta = 2 * theta * RAD2DEG;
 
             // Use Miller-Bravais indices for hexagonal lattices
             if(isHex) {
