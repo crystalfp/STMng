@@ -23,8 +23,6 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {computed, ref} from "vue";
-import log from "electron-log";
-import {toPng} from "html-to-image";
 import {VisXYContainer, VisLine, VisAxis, VisScatter} from "@unovis/vue";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -94,22 +92,10 @@ handleSpecialKeys(windowPath);
 
 /**
  * Make a chart snapshot
- *
- * @throws "Error"
- * Error saving chart snapshot
  */
 const makeImage = (): void => {
 
-    const svg = document.querySelector<HTMLElement>("svg");
-    if(!svg) return;
-
-    toPng(svg)
-        .then((dataURI: string) => {
-            sendToNode("SYSTEM", "save-png", {dataURI});
-        })
-        .catch((error: Error) => {
-            log.error(`Error saving chart snapshot: ${error.message}`);
-        });
+    sendToNode("SYSTEM", "save-png");
 };
 
 /**
@@ -122,9 +108,8 @@ const savePoints = (): void => {
 
 const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 
-// Below there are settings (like labelColor) that seems redundant, but make
-// the screenshot works
-
+// Below there are settings (like labelColor) that seems redundant,
+// but they make the screenshot works
 </script>
 
 
@@ -167,6 +152,7 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
   width: 100vw;
   flex: 2;
   padding: 0;
+  --vis-axis-tick-color: #6C778C;
 }
 
 </style>
