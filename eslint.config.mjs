@@ -35,6 +35,7 @@ export default defineConfig([
         "src/electron/fingerprint/rollup.config.mjs",
         "src/electron/fingerprint/rolldown.config.mjs",
         "src/electron/fingerprint/KDtree.js",
+        "src/electron/fingerprint/.rollup.cache/**",
     ]}, {
     files: [
         "src/**/*.ts",

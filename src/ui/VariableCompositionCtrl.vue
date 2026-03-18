@@ -103,9 +103,9 @@ const {variableCompositionAccumulate} = storeToRefs(controlStore);
 
 // > Persistent state that is saved in the project file
 const state = reactive({
-    filterOnDistance: false,
+    filterOnDistance: true,
     distanceFromHull: 0.15,
-    forceCutoff: false,
+    forceCutoff: true,
     manualCutoffDistance: 10,
     fingerprintingMethod: 0,
     binSize: 0.05,
@@ -179,9 +179,9 @@ askNode(id, "init")
             distanceMethods.push({value: i, label: distanceMethodsRaw[i]});
         }
 
-   	    state.filterOnDistance = params.filterOnDistance as boolean ?? false;
+   	    state.filterOnDistance = params.filterOnDistance as boolean ?? true;
     	state.distanceFromHull = params.distanceFromHull as number ?? 0.15;
-        state.forceCutoff = params.forceCutoff as boolean ?? false;
+        state.forceCutoff = params.forceCutoff as boolean ?? true;
         state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
         state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
         state.binSize = params.binSize as number ?? 0.05;

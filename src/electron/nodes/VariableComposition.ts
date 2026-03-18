@@ -60,9 +60,9 @@ export class VariableComposition extends NodeCore {
 
 	// Mirror of the UI reactive state
 	private readonly state = {
-		filterOnDistance: false,
+		filterOnDistance: true,
 		distanceFromHull: 0.15,
-		forceCutoff: false,
+		forceCutoff: true,
 		manualCutoffDistance: 10,
 		fingerprintingMethod: 0,
 		binSize: 0.05,
@@ -76,7 +76,7 @@ export class VariableComposition extends NodeCore {
 
 	private options: ComputeValidParameters = {
 		method: 0,
-		forceCutoff: false,
+		forceCutoff: true,
 		manualCutoffDistance: 10,
 		distanceMethod: 0,
 		binSize: 0.05,
@@ -137,9 +137,9 @@ export class VariableComposition extends NodeCore {
 
 	private initializeState(params: CtrlParams): void {
 
-   	    this.state.filterOnDistance = params.filterOnDistance as boolean ?? false;
+   	    this.state.filterOnDistance = params.filterOnDistance as boolean ?? true;
     	this.state.distanceFromHull = params.distanceFromHull as number ?? 0.15;
-		this.state.forceCutoff = params.forceCutoff as boolean ?? false;
+		this.state.forceCutoff = params.forceCutoff as boolean ?? true;
     	this.state.manualCutoffDistance = params.manualCutoffDistance as number ?? 10;
     	this.state.fingerprintingMethod = params.fingerprintingMethod as number ?? 0;
     	this.state.binSize = params.binSize as number ?? 0.05;
@@ -650,7 +650,7 @@ export class VariableComposition extends NodeCore {
 
 	private channelFilter(params: CtrlParams): CtrlParams {
 
-		this.state.filterOnDistance = params.filterOnDistance as boolean ?? false;
+		this.state.filterOnDistance = params.filterOnDistance as boolean ?? true;
         this.state.distanceFromHull = params.distanceFromHull as number ?? 0.15;
 
 		const remaining = this.filterStructures(params.selected as string[] ?? []);
@@ -672,7 +672,7 @@ export class VariableComposition extends NodeCore {
 
 		this.options = {
 			method: params.fingerprintingMethod as number ?? 0,
-			forceCutoff: params.forceCutoff as boolean ?? false,
+			forceCutoff: params.forceCutoff as boolean ?? true,
 			manualCutoffDistance: params.manualCutoffDistance as number ?? 10,
 			distanceMethod: params.distanceMethod as number ?? 0,
 			binSize: params.binSize as number ?? 0.05,

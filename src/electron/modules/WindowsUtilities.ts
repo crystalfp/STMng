@@ -236,37 +236,6 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
 };
 
 /**
- * Save a secondary window snapshot
- *
- * @param routerPath - Path to the window for which the snapshot should be taken
- * @param filename - Where to save the snapshot (should be a PNG filename)
- * @param margin - Number of pixel to remove in the lower part of the window
- */
-export const saveSecondaryWindowSnapshot = (routerPath: string,
-                                            filename: string,
-                                            margin=60): void => {
-
-    const win = openedWindows.get(routerPath);
-    if(!win) return;
-
-    win.capturePage()
-        .then((img) => {
-
-            const size = img.getSize();
-            const cropped = img.crop({
-                x: 0,
-                y: 0,
-                width: size.width,
-                height: size.height - margin
-            });
-            const png = cropped.toPNG();
-            writeFileSync(filename, png);
-        })
-        .catch((error: Error) =>
-            sendAlertToClient(`Error saving PNG: ${error.message}`));
-};
-
-/**
  * Setup the channel to take a snapshot of a secondary window
  */
 export const setupChannelSnapshot = (): void => {

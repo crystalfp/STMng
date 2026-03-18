@@ -60,16 +60,16 @@ export default defineConfig({
         // },
         rolldownOptions: {
             output: {
-                manualChunks(id: string) {
-                    if(id.includes('node_modules')) {
-                        if(id.includes('vue') ||
-                           id.includes('pinia') ||
-                           id.includes('vuetify') ||
-                           id.includes('@mdi/js')) return 'vue';
+                manualChunks(id: string): string | undefined {
+                    if(id.includes("node_modules")) {
+                        if(id.includes("vue") ||
+                           id.includes("pinia") ||
+                           id.includes("vuetify") ||
+                           id.includes("@mdi/js")) return "vue";
 
-                        if(id.includes('three')) return 'three';
+                        if(id.includes("three")) return "three";
 
-                        if(id.includes('troika-three-text')) return 'troika';
+                        if(id.includes("troika-three-text")) return "troika";
                     }
                     // return undefined to let Rollup decide for app code
                 }
