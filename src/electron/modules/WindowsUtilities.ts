@@ -22,8 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {app, BrowserWindow, nativeImage, ipcMain} from "electron";
+import {app, BrowserWindow, nativeImage, ipcMain, dialog} from "electron";
 import path from "node:path";
+import {writeFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {attachTitlebarToWindow} from "custom-electron-titlebar/main";
 import log from "electron-log";
@@ -235,13 +236,79 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
 };
 
 /**
- * Get a secondary window
+ * Save a secondary window snapshot
  *
- * @param routerPath - Path to the window to retrieve
- * @returns The window or undefined if the window is not open
+ * @param routerPath - Path to the window for which the snapshot should be taken
+ * @param filename - Where to save the snapshot (should be a PNG filename)
+ * @param margin - Number of pixel to remove in the lower part of the window
  */
-export const getSecondaryWindow = (routerPath: string): BrowserWindow | undefined =>
-                                            openedWindows.get(routerPath);
+export const saveSecondaryWindowSnapshot = (routerPath: string,
+                                            filename: string,
+                                            margin=60): void => {
+
+    const win = openedWindows.get(routerPath);
+    if(!win) return;
+
+    win.capturePage()
+        .then((img) => {
+
+            const size = img.getSize();
+            const cropped = img.crop({
+                x: 0,
+                y: 0,
+                width: size.width,
+                height: size.height - margin
+            });
+            const png = cropped.toPNG();
+            writeFileSync(filename, png);
+        })
+        .catch((error: Error) =>
+            sendAlertToClient(`Error saving PNG: ${error.message}`));
+};
+
+/**
+ * Setup the channel to take a snapshot of a secondary window
+ */
+export const setupChannelSnapshot = (): void => {
+
+    ipcMain.on("SYSTEM:save-snapshot", (_event,
+                                        payload: {
+                                            routerPath: string;
+                                            title: string;
+                                            margin: number;
+                                        }) => {
+
+        const {routerPath, title, margin} = payload;
+        if(!routerPath || !title || margin === undefined) return;
+
+        const win = openedWindows.get(routerPath);
+        if(!win) return;
+
+        const file = dialog.showSaveDialogSync({
+            title,
+            filters: [
+                {name: "PNG", extensions: ["png"]},
+            ]
+        });
+        if(!file) return;
+
+        win.capturePage()
+            .then((img) => {
+
+                const size = img.getSize();
+                const cropped = img.crop({
+                    x: 0,
+                    y: 0,
+                    width: size.width,
+                    height: size.height - margin
+                });
+                const png = cropped.toPNG();
+                writeFileSync(file, png);
+            })
+            .catch((error: Error) =>
+                sendAlertToClient(`Error saving screenshot: ${error.message}`));
+    });
+};
 
 // > Close the secondary window
 /**

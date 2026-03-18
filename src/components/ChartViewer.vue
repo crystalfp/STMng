@@ -95,7 +95,11 @@ handleSpecialKeys(windowPath);
  */
 const makeImage = (): void => {
 
-    sendToNode("SYSTEM", "save-png");
+    sendToNode("SYSTEM", "save-snapshot", {
+        routerPath: windowPath,
+        title: "Save X-Ray diffraction chart snapshot",
+        margin: 60
+    });
 };
 
 /**

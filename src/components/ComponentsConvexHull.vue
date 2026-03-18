@@ -26,12 +26,12 @@ import {computed, ref} from "vue";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
-import {closeWindow, requestData} from "@/services/RoutesClient";
+import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
-import {Scatter, BulletShape, type BulletLegendItemInterface} from "@unovis/ts";
+import {Scatter, BulletShape, XYLabels, type BulletLegendItemInterface} from "@unovis/ts";
 import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip,
-        VisBulletLegend, VisAnnotations} from "@unovis/vue";
+        VisBulletLegend, VisXYLabels} from "@unovis/vue";
 
 const windowPath = "/components-hull";
 
@@ -63,55 +63,8 @@ const forceUpdate = ref(true);
 const dimension = ref(2);
 const edges = ref<DataRecord[]>([]);
 
-/** Coordinates for UnoVis */
-type Coordinate = number | `${number}%` | `${number}px`;
-
-/** Configuration for the annotations */
-interface AnnotationItem {
-
-    /** Annotation */
-    content: string;
-    /** Connected to */
-    subject?: {
-        /** x */
-        x: Coordinate;
-        /** y */
-        y: Coordinate;
-    };
-
-    /** Position X of the annotation */
-    x: Coordinate;
-    /** Position Y of the annotation */
-    y: Coordinate;
-}
-
-const labels = ref<AnnotationItem[]>([
-    {x: 0,     y: "90%", content: "", subject: {x: "10px", y: "99%"}},
-    {x: "98%", y: "90%", content: "", subject: {x: "99%",  y: "99%"}},
-    {x: "55%", y: 0,     content: "", subject: {x: "50%",  y: "10px"}}
-]);
-
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
-
-const setCornerFormula3 = (data: DataRecord[]): void => {
-
-    for(const record of data) {
-
-        // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
-        switch(record.parts) {
-            case "1-0-0":
-                labels.value[0].content = record.formula!;
-                break;
-            case "0-1-0":
-                labels.value[1].content = record.formula!;
-                break;
-            case "0-0-1":
-                labels.value[2].content = record.formula!;
-                break;
-        }
-    }
-};
 
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
@@ -190,7 +143,6 @@ requestData(windowPath, (params: CtrlParams) => {
                     {x: tri[i],    y: tri[i+1]},
                 );
             }
-            setCornerFormula3(points.value);
             break;
         default:
             break;
@@ -201,36 +153,42 @@ requestData(windowPath, (params: CtrlParams) => {
 // Accessors for the charts and hover popup
 const xp = (d: DataRecord): number => d.x!;
 const yp = (d: DataRecord): number => d.y!;
-const triggers = {
-    [Scatter.selectors.point]: (d: DataRecord) => {
 
-        if(d.dist === undefined) return `
-            <b>${d.formula!}</b><br>
-            Step: ${d.step}<br>
-            Composition: ${d.parts!.replaceAll("-", ":")}<br>
-            Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
-            Distance from convex hull: 0.0000
-        `;
-        return `
-            <b>${d.formula!}</b><br>
-            Step: ${d.step}<br>
-            Composition: ${d.parts!.replaceAll("-", ":")}<br>
-            Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
-            Distance from convex hull: ${d.dist.toFixed(4)}
-        `;
-    }
+const triggerFunction = (d: DataRecord): string => {
+
+    if(d.dist === undefined) return `
+        <b>${d.formula!}</b><br>
+        Step: ${d.step}<br>
+        Composition: ${d.parts!.replaceAll("-", ":")}<br>
+        Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
+        Distance from convex hull: 0.0000
+    `;
+    return `
+        <b>${d.formula!}</b><br>
+        Step: ${d.step}<br>
+        Composition: ${d.parts!.replaceAll("-", ":")}<br>
+        Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
+        Distance from convex hull: ${d.dist.toFixed(4)}
+    `;
+};
+
+const triggers = {
+    [Scatter.selectors.point]: triggerFunction,
+    [XYLabels.selectors.label]: triggerFunction,
 };
 
 // Chart legend
 const legend = ref<BulletLegendItemInterface[]>([
     {name: "structures", color: "#03C03C", inactive: false},
-    {name: "structures on the convex hull", color: "#FF0000",
-     shape: BulletShape.Square, inactive: false}
+    {name: "on the convex hull", color: "#FF0000",
+     shape: BulletShape.Square, inactive: false},
+    {name: "labels", color: "#598DFF", inactive: false},
 ]);
 const position = computed(() => (dimension.value === 2 ? "left: 120px" : "left: 20px"));
 
 const showStructures = ref(true);
 const showOnLine = ref(true);
+const showFormula = ref(true);
 
 /**
  * Toggle visibility of the chart items
@@ -241,9 +199,17 @@ const showOnLine = ref(true);
  */
 const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
 
-    if(which === 0) showStructures.value = item.inactive!;
-    else if(which === 1) showOnLine.value = item.inactive!;
-
+    switch(which) {
+        case 0:
+            showStructures.value = item.inactive!;
+            break;
+        case 1:
+            showOnLine.value = item.inactive!;
+            break;
+        case 2:
+            showFormula.value = item.inactive!;
+            break;
+    }
     const updItems = [...legend.value];
     updItems[which] = {...item, inactive: !item.inactive};
     legend.value = updItems;
@@ -254,16 +220,30 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
  *
  * @param d - One data record
  */
-const lp2 = (d: DataRecord): string => {
+const lp = (d: DataRecord): string => {
 
-    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
-    switch(d.parts) {
-        case "1-0":
-        case "0-1":
+    // switch(d.parts) {
+    //     case "1-0-0":
+    //     case "0-1-0":
+    //     case "0-0-1":
+    //     case "1-0":
+    //     case "0-1":
             return d.formula!.replaceAll(/<.?sub>/g, "");
-        default:
-            return "";
-    }
+    //     default:
+    //         return "";
+    // }
+};
+
+/**
+ * Make a chart snapshot
+ */
+const makeImage = (): void => {
+
+    sendToNode("SYSTEM", "save-snapshot", {
+        routerPath: windowPath,
+        title: "Save chart snapshot",
+        margin: 70
+    });
 };
 
 </script>
@@ -277,13 +257,15 @@ const lp2 = (d: DataRecord): string => {
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
                   color="#03C03C" :size="7" cursor="pointer"/>
-      <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp" :label="lp2"
+      <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisAxis type="x" :gridLine="false" label="Composition ratio"
-              :labelFontSize="24"/>
+              labelColor="#6C778C" :labelFontSize="24" tickTextColor="#6C778C"/>
       <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
-              :fullSize="true" :labelFontSize="24" />
+              labelColor="#6C778C" :fullSize="true" :labelFontSize="24" tickTextColor="#6C778C"/>
       <VisTooltip :triggers :followCursor="false" />
+      <VisXYLabels v-if="showFormula" :data="line" :x="xp" :y="yp" :label="lp"
+                   xPositioning="data_space" yPositioning="data_space"/>
     </VisXYContainer>
     <VisXYContainer v-else-if="dimension===3"
                     :margin="{right: 20, top: 20, left: 20, bottom: 20}" class="hull-viewer">
@@ -294,7 +276,8 @@ const lp2 = (d: DataRecord): string => {
       <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisTooltip :triggers :followCursor="false" />
-      <VisAnnotations :items="labels" />
+      <VisXYLabels v-if="showFormula" :data="vertex" :x="xp" :y="yp" :label="lp"
+                   xPositioning="data_space" yPositioning="data_space"/>
     </VisXYContainer>
     <v-alert v-else
          title="Not implemented yet"
@@ -306,6 +289,7 @@ const lp2 = (d: DataRecord): string => {
                      :onLegendItemClick="toggleItem"
                      labelFontSize="medium" bulletSize="15px"/>
     <v-container class="hull-buttons">
+      <v-btn @click="makeImage">Save image</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
@@ -327,7 +311,8 @@ const lp2 = (d: DataRecord): string => {
   width: 100vw;
   flex: 2;
   padding: 0;
-  background-color: #E3E3E3;
+  background-color: #FFFFFF;
+  --vis-axis-tick-color: #6C778C;
 }
 
 .hull-buttons {

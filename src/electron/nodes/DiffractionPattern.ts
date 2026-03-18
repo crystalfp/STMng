@@ -26,7 +26,7 @@ import {ipcMain, dialog} from "electron";
 import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalculator";
-import {createOrUpdateSecondaryWindow, getSecondaryWindow, isSecondaryWindowOpen,
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {hasUnitCell} from "../modules/Helpers";
@@ -396,36 +396,6 @@ export class DiffractionPattern extends NodeCore {
 							sendAlertToClient(`Error in save-xrd: ${(error as Error).message}`);
 						}
 					}
-				});
-
-				ipcMain.on("SYSTEM:save-png", () => {
-
-					const win = getSecondaryWindow("/chart");
-					if(!win) return;
-
-					const file = dialog.showSaveDialogSync({
-						title: "Save X-Ray diffraction chart snapshot",
-						filters: [
-							{name: "PNG", extensions: ["png"]},
-						]
-					});
-					if(!file) return;
-
-					win.capturePage()
-						.then((img) => {
-
-							const size = img.getSize();
-							const cropped = img.crop({
-								x: 0,
-								y: 0,
-								width: size.width,
-								height: size.height - 60
-							});
-							const png = cropped.toPNG();
-							writeFileSync(file, png);
-						})
-						.catch((error: Error) =>
-							sendAlertToClient(`Error saving PNG: ${error.message}`));
 				});
 			}
 		}

@@ -30,7 +30,7 @@ import {Command, Option} from "commander";
 import {version, description} from "../../package.json" with {type: "json"};
 import {setupTitlebar} from "custom-electron-titlebar/main";
 import {setupChannelPreferences, setMainTheme, setAntialiasing} from "./modules/Preferences";
-import {createMainWindow} from "./modules/WindowsUtilities";
+import {createMainWindow, setupChannelSnapshot} from "./modules/WindowsUtilities";
 import {disableSaveProjectEntry, setupChannelMenu} from "./modules/SystemMenu";
 import {setupChannelVersions} from "./modules/Versions";
 import {setupChannelFileSelector} from "./modules/SelectFile";
@@ -130,6 +130,7 @@ setupChannelProject();
 setupChannelLogFile();
 setupChannelMenu(isDevelopment);
 setupChannelSpecialSwitches(specialSwitches);
+setupChannelSnapshot();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");
