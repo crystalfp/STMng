@@ -113,8 +113,9 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
  *
  * @param vertices - Triangle vertices of the convex hull surface
  * @param zScale - Scale along z axis
+ * @param withSurfaces - Draw also the semitransparent triangles not only the edges
  */
-const createSurface = (vertices: number[], zScale: number): void => {
+const createSurface = (vertices: number[], zScale: number, withSurfaces=true): void => {
 
     // Remove existing surface
     const scene = sv.getScene();
@@ -151,11 +152,13 @@ const createSurface = (vertices: number[], zScale: number): void => {
     for(let i=0; i < len; ++i) index.push(i);
     geometry.setIndex(index);
     geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
-    geometry.computeVertexNormals();
-    geometry.scale(1, 1, zScale);
-    const surface = new Mesh(geometry, material);
-    surface.name = "ConvexHull";
-    scene.add(surface);
+    if(withSurfaces) {
+        geometry.computeVertexNormals();
+        geometry.scale(1, 1, zScale);
+        const surface = new Mesh(geometry, material);
+        surface.name = "ConvexHull";
+        scene.add(surface);
+    }
 
     const edges = new EdgesGeometry(geometry, 0); // Zero to get coplanar triangles
 	const line = new LineSegments(edges, new LineBasicMaterial({color: "#000000"}));
@@ -336,6 +339,7 @@ requestData(windowPath, (params: CtrlParams) => {
 
         createReference4D();
         createPoints(x, y, z, v, 1, pointSize.value);
+        createSurface(trianglesVertices, 1, false);
 
         // Move the camera to have the surface at the center of the viewer
         sv.setCamera([0.5, 0.43301, 2], [0.5, 0.43301, 0.43301], 20);

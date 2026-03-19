@@ -373,6 +373,22 @@ export class VariableCompositionConvexHull {
 				idxVertices.add(v2);
 				idxVertices.add(v3);
 				idxVertices.add(v4);
+				this.trianglesVertices.push(points[v1][0], points[v1][1], points[v1][2],
+											points[v2][0], points[v2][1], points[v2][2],
+											points[v3][0], points[v3][1], points[v3][2],
+
+											points[v1][0], points[v1][1], points[v1][2],
+											points[v2][0], points[v2][1], points[v2][2],
+											points[v4][0], points[v4][1], points[v4][2],
+
+											points[v4][0], points[v4][1], points[v4][2],
+											points[v2][0], points[v2][1], points[v2][2],
+											points[v3][0], points[v3][1], points[v3][2],
+
+											points[v4][0], points[v4][1], points[v4][2],
+											points[v3][0], points[v3][1], points[v3][2],
+											points[v1][0], points[v1][1], points[v1][2]);
+
 			}
 		}
 
@@ -724,6 +740,7 @@ export class VariableCompositionConvexHull {
 			};
 			case 4: return {
 				dimension: 4,
+				trianglesVertices: this.trianglesVertices,
 				x: this.x,
 				y: this.y,
 				z: this.z,
