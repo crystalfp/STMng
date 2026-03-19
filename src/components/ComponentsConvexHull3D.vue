@@ -27,13 +27,15 @@ import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Float32BufferAttribute, LineBasicMaterial, LineLoop,
         Mesh, MeshStandardMaterial, LineSegments, Group,
         FrontSide, Object3D} from "three";
+// import {CSS2DRenderer, CSS2DObject} from "three/addons/renderers/CSS2DRenderer.js";
 import {Line2, LineGeometry, LineMaterial} from "three/examples/jsm/Addons.js";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
 import {SimpleViewer} from "@/services/SimpleViewer";
-import type {CtrlParams} from "@/types";
+import type {CtrlParams, PositionType} from "@/types";
+import {spriteText, /* disposeTextInGroup */} from "@/services/SpriteText";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
@@ -106,6 +108,16 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
         viewDistance.value = distance[idx].toFixed(4);
         viewEnthalpy.value = e[idx].toFixed(4);
     });
+
+    // const labelRenderer = new CSS2DRenderer();
+    // labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    // labelRenderer.domElement.style.position = "absolute";
+    // labelRenderer.domElement.style.top = "0px";
+    // labelRenderer.domElement.style.pointerEvents = "none";
+    // labelRenderer.domElement.style.zIndex = "999999";
+    // const viewerContainer = document.querySelector(".hull3d-viewer");
+    // if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
+    // document.body.append(labelRenderer.domElement);
 });
 
 /**
@@ -243,7 +255,7 @@ const createReference4D = (): void => {
  */
 const createPoints = (px: number[], py: number[], pz: number[],
                       stableVertices: number[], zScale: number,
-                      size: number): void => {
+                      size: number, formulaText?: string[]): void => {
 
     sv.clearGroup("ConvexHullPoints");
 
@@ -283,6 +295,30 @@ const createPoints = (px: number[], py: number[], pz: number[],
         const cube = new Mesh(geometry2, material2);
         cube.position.set(stableVertices[i3], stableVertices[i3+1], stableVertices[i3+2]*zScale);
         pointsGroup.add(cube);
+
+        if(formulaText) {
+
+            // const text = document.createElement("div");
+			// // eslint-disable-next-line unicorn/no-keyword-prefix
+			// text.className = "label";
+			// text.style.color = "black";
+			// text.style.backgroundColor = "white";
+            // text.style.fontSize = "40px";
+			// text.innerHTML = formulaText[i];
+
+	        // const label = new CSS2DObject(text);
+			// label.position.set(stableVertices[i3], stableVertices[i3+1], stableVertices[i3+2]*zScale);
+			// pointsGroup.add(label);
+
+            const labelPosition: PositionType = [
+                stableVertices[i3],
+                stableVertices[i3+1],
+                stableVertices[i3+2]*zScale+specialSize
+            ];
+            const labelText = formulaText[i].replaceAll(/<.?sub>/g, "");
+		    const atomLabel = spriteText(labelText, "#FFFFFF", 0.01, labelPosition);
+			pointsGroup.add(atomLabel);
+        }
     }
 
     sv.setSceneModified();
@@ -337,9 +373,9 @@ requestData(windowPath, (params: CtrlParams) => {
     }
     else if(dimension === 4) {
 
-        createReference4D();
-        createPoints(x, y, z, v, 1, pointSize.value);
+        createPoints(x, y, z, v, 1, pointSize.value, formula);
         createSurface(trianglesVertices, 1, false);
+        createReference4D();
 
         // Move the camera to have the surface at the center of the viewer
         sv.setCamera([0.5, 0.43301, 2], [0.5, 0.43301, 0.43301], 20);
@@ -443,6 +479,12 @@ const centerView = (): void => {
 }
 
 .align {
-    text-align: right;
+  text-align: right;
+}
+
+.label {
+  text-shadow: -1px 1px 1px rgb(0,0,0);
+  margin-left: 25px;
+  font-size: 20px;
 }
 </style>
