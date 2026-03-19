@@ -135,7 +135,7 @@ const stopWatcher2 = watch([species, countComponents], ([sp, cc]) => {
 const noComputeCompositions = computed(() => {
 
     // Disable if no structures
-    if(countAccumulated.value === 0) return true;
+    if(countAccumulated.value === 0 || !hasEnergies.value) return true;
 
     // Disabled if any component has no atom defined
     const ns = species.value.length;
@@ -204,6 +204,7 @@ receiveFromNode(id, "load", (params) => {
     species.value.length = 0;
     for(const s of params.species as string[] ?? []) species.value.push(s);
     hasEnergies.value = params.hasEnergies as boolean ?? false;
+    if(!hasEnergies.value) countAccumulated.value = 0;
 });
 
 /** Accumulation enabled in the reader */
@@ -307,12 +308,7 @@ const analyzeSelected = async (): Promise<void> => {
     for(const composition of compositions) {
 
         const key = composition.replaceAll("\u2009:\u2009", "-");
-        const result = await askNode(id, "analyze", {key})
-                                    .catch((error: Error) => ({
-                                        error: error.message,
-                                        key,
-                                        valid: 0
-                                    }));
+        const result = await askNode(id, "analyze", {key});
 
         if(result.error) {
             analysisRunning.value = false;
@@ -327,11 +323,12 @@ const analyzeSelected = async (): Promise<void> => {
             if(r.key === composition) {
                 const valid = result.valid as number;
                 r.valid = valid.toFixed(0);
-                summary.value[0] += r.count;
-                summary.value[1] += valid;
                 break;
             }
         }
+
+        summary.value[0] += result.total as number;
+        summary.value[1] += result.valid as number;
     }
 
     analysisRunning.value = false;
@@ -359,15 +356,18 @@ const saveAnalyzed = (): void => {
 };
 
 const disableSave = computed(() => {
+
     return (!analysisDone.value && state.removeDuplicates) || selected.value.length === 0;
 });
 
 const disableCharts = computed(() => {
+
     return !hasEnergies.value || countComponents.value > 3 ||
             (!analysisDone.value && state.removeDuplicates) ||
             selected.value.length === 0;
 });
 const disable3DView = computed(() => {
+
     return !hasEnergies.value || countComponents.value < 3 ||
             (!analysisDone.value && state.removeDuplicates) ||
             selected.value.length === 0;
@@ -426,6 +426,8 @@ const stopWatcher4 = watch([state, selected], ([st, sel], [_ost, osel]) => {
         .then((response) => {
 
             remainingAfterFilter.value = response.remaining as number ?? 0;
+            summary.value[0] = 0;
+            summary.value[1] = 0;
         })
         .catch((error: Error) => {
             showNodeAlert(`Filter structures error: ${error.message}`,

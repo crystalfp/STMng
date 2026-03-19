@@ -113,6 +113,12 @@ export class VariableComposition extends NodeCore {
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data?.atoms.length) {
+			this.accumulator.clear();
+			sendToClient(this.id, "load", {
+				countAccumulated: 0,
+				species: [],
+				hasEnergies: false
+			});
 			return;
 		}
 		this.structure = data;
@@ -400,11 +406,12 @@ export class VariableComposition extends NodeCore {
 		// Filter on distances
 		for(const entry of this.accumulator.iterateEnabledStructures()) {
 
-			if(entry.distance > this.state.distanceFromHull) {
+			if(entry.enabled && entry.distance > this.state.distanceFromHull) {
 				entry.enabled = false;
 				--enabled;
 			}
 		}
+
 		return enabled;
 	}
 
@@ -444,6 +451,13 @@ export class VariableComposition extends NodeCore {
 		const components = params.components as number[] ?? [];
 
 		const recipes = this.fitComposition(ncomponents, components);
+		const remaining0 = this.filterStructures();
+
+		if(remaining0 === 0) {
+			const message = "Please reload data or change filter parameters";
+			sendAlertToClient(message, {node: "variableComposition"});
+			return {error: message};
+		}
 
 		const sts = this.hull.prepareData(ncomponents);
 		if(sts !== "") {
@@ -451,6 +465,12 @@ export class VariableComposition extends NodeCore {
 			return {error: sts};
 		}
 		const remaining = this.filterStructures();
+
+		if(remaining === 0) {
+			const message = "Please reload data or change filter parameters";
+			sendAlertToClient(message, {node: "variableComposition"});
+			return {error: message};
+		}
 
 		return {
 			recipes: JSON.stringify(recipes, ["key", "count"]),
@@ -741,7 +761,7 @@ export class VariableComposition extends NodeCore {
 
 		const status = await computeValid(this.accumulator, validIndices, this.options);
 		if(status.error) return {error: status.error, key};
-		return {status: "OK!", total: indices.length, valid: status.count, key};
+		return {status: "OK!", total: count, valid: status.count, key};
 	}
 
 	/**

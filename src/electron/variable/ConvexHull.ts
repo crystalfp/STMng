@@ -24,7 +24,7 @@
  */
 import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {VariableCompositionAccumulator} from "./Accumulator";
-import {dot} from "mathjs";
+import {dot, cross} from "mathjs";
 import type {CtrlParams} from "@/types";
 
 /**
@@ -296,7 +296,6 @@ export class VariableCompositionConvexHull {
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
 			const {parts, step, energy, key, formula} = structure;
-
 			const structureEnergy = energy ?? 0;
 
 			this.e.push(structureEnergy);
@@ -332,7 +331,8 @@ export class VariableCompositionConvexHull {
 			this.parts.push(key);
 			this.formula.push(formula);
 
-			// Compute the component proportions
+			// Compute the component proportions that are
+			// the barycentric coordinates of the point in the tetrahedra
 			const pt = parts[0]+parts[1]+parts[2]+parts[3];
 			const p0 = parts[0]/pt;
 			const p1 = parts[1]/pt;
@@ -479,102 +479,6 @@ export class VariableCompositionConvexHull {
 	}
 
 	/**
-	 * Check for points on the border of a triangle
-	 *
-	 * @param point - Point to test
-	 * @param nearest - Nearest point
-	 * @returns Zero if the points are coincident, otherwise -1
-	 */
-	private coincident(point: number[], nearest: number[]): number {
-
-		const dx = point[0] - nearest[0];
-		const dy = point[1] - nearest[1];
-		const dz = point[2] - nearest[2];
-		return Math.abs(dx*dx + dy*dy) < 1e-10 ? dz : -1;
-	}
-
-	/**
-	 * Distance from the closest point inside the triangle
-	 * @remarks Code ported from: https://stackoverflow.com/questions/2924795/fastest-way-to-compute-point-to-triangle-distance-in-3d/74395029
-	 *
-	 * @param p - Point to test
-	 * @param a - Vertex of the triangle
-	 * @param b - Vertex of the triangle
-	 * @param c - Vertex of the triangle
-	 * @returns Distance from the triangle or -1 if the point is not perpendicular to the triangle
-	 */
-	private closestPointTriangle(p: number[], a: number[], b: number[], c: number[]): number {
-
-		const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
-		const ac = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
-		const ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
-
-		const d1 = dot(ab, ap);
-		const d2 = dot(ac, ap);
-		if(d1 <= 0 && d2 <= 0) return this.coincident(p, a); // #1
-
-		const bp = [p[0] - b[0], p[1] - b[1], p[2] - b[2]];
-		const d3 = dot(ab, bp);
-		const d4 = dot(ac, bp);
-		if(d3 >= 0 && d4 <= d3) return this.coincident(p, b); // #2
-
-		const cp = [p[0] - c[0], p[1] - c[1], p[2] - c[2]];
-  		const d5 = dot(ab, cp);
-  		const d6 = dot(ac, cp);
-  		if(d6 >= 0 && d5 <= d6) return this.coincident(p, c); // #3
-
-  		const vc = d1 * d4 - d3 * d2;
-		if(vc <= 0 && d1 >= 0 && d3 <= 0) {
-
-			const v = d1 / (d1 - d3);
-			const x = [
-				a[0] + v * ab[0],
-				a[1] + v * ab[1],
-				a[2] + v * ab[2]
-			];
-
-			return this.coincident(p, x); // #4
-		}
-
-		const vb = d5 * d2 - d1 * d6;
-  		if(vb <= 0 && d2 >= 0 && d6 <= 0) {
-
-			const v = d2 / (d2 - d6);
-			const x = [
-				a[0] + v * ac[0],
-				a[1] + v * ac[1],
-				a[2] + v * ac[2]
-			];
-
-			return this.coincident(p, x); // #5
-		}
-
-  		const va = d3 * d6 - d5 * d4;
-  		if(va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0) {
-
-			const v = (d4 - d3) / ((d4 - d3) + (d5 - d6));
-			const x = [
-				b[0] + v*(c[0]-b[0]),
-				b[1] + v*(c[1]-b[1]),
-				b[2] + v*(c[2]-b[2])
-			];
-
-			return this.coincident(p, x); // #6
-		}
-
-		const denom = 1 / (va + vb + vc);
-		const v = vb * denom;
-		const w = vc * denom;
-		const q = [
-			a[0] + v * ab[0] + w * ac[0],
-			a[1] + v * ab[1] + w * ac[1],
-			a[2] + v * ab[2] + w * ac[2]
-		];
-		// return a + v * ab + w * ac; //#0
-		return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
-	}
-
-	/**
 	 * Distances of 3D points from the convex hull triangulated surface
 	 *
 	 * @param points - Points coordinates
@@ -593,7 +497,10 @@ export class VariableCompositionConvexHull {
 					const [v1, v2, v3] = facet.verts;
 
 					// Test if closest triangle
-					const d = this.closestPointTriangleAlongZ(point, points[v1], points[v2], points[v3]);
+					const d = this.closestPointTriangleAlongZ(point,
+															  points[v1],
+															  points[v2],
+															  points[v3]);
 					if(d !== -1 && d < dist) dist = d;
 				}
 			}
@@ -601,6 +508,77 @@ export class VariableCompositionConvexHull {
 		}
 
 		return distances;
+	}
+
+	/**
+	 * Compute barycentric coordinates of a tetrahedra
+	 * @remarks Algorithm from: https://www.cdsimpson.net/2014/10/barycentric-coordinates.html
+	 *  - w1, w2, w3, w4 corresponds to a, b, c, d vertices
+	 *
+	 * @param pt - Point to test (only x, y and z used)
+	 * @param a - Vertex of the tetrahedra (only x, y and z used)
+	 * @param b - Vertex of the tetrahedra (only x, y and z used)
+	 * @param c - Vertex of the tetrahedra (only x, y and z used)
+	 * @param d - Vertex of the tetrahedra (only x, y and z used)
+	 * @returns Barycentric coordinates [w1, w2, w3, w4] of the point
+	 */
+	private barycentricCoordinates3D(pt: number[],
+									 a: number[],
+									 b: number[],
+									 c: number[],
+									 d: number[]): number[] {
+
+		const vab = [
+			b[0] - a[0],
+			b[1] - a[1],
+			b[2] - a[2]
+		];
+		const vac = [
+			c[0] - a[0],
+			c[1] - a[1],
+			c[2] - a[2]
+		];
+		const vad = [
+			d[0] - a[0],
+			d[1] - a[1],
+			d[2] - a[2]
+		];
+		const vap = [
+			pt[0] - a[0],
+			pt[1] - a[1],
+			pt[2] - a[2]
+		];
+		const vbp = [
+			pt[0] - b[0],
+			pt[1] - b[1],
+			pt[2] - b[2]
+		];
+		const vbc = [
+			c[0] - b[0],
+			c[1] - b[1],
+			c[2] - b[2]
+		];
+		const vbd = [
+			d[0] - b[0],
+			d[1] - b[1],
+			d[2] - b[2]
+		];
+
+		// All volumes are multiplied by 6
+		const totalVolume = Math.abs(dot(vab, cross(vac, vad)));
+		if(totalVolume === 0) return [0, 0, 0, 1];
+		const volumeA = dot(vbp, cross(vbd, vbc));
+		const volumeB = dot(vap, cross(vac, vad));
+		const volumeC = dot(vap, cross(vad, vab));
+		// const volumeD = dot(vap, cross(vab, vac));
+		// const w4 = volumeD*inv;
+
+		const w1 = volumeA/totalVolume;
+		const w2 = volumeB/totalVolume;
+		const w3 = volumeC/totalVolume;
+		const w4 = 1 - w1 - w2 - w3;
+
+		return [w1, w2, w3, w4];
 	}
 
 	/**
@@ -612,33 +590,44 @@ export class VariableCompositionConvexHull {
 	 */
 	private distanceFromConvexHull4D(points: number[][], hull: Facet[]): number[] {
 
-		const vertices = [
-			[0, 1, 2],
-			[0, 2, 3],
-			[0, 1, 3],
-			[1, 2, 3]
-		];
-		const distances: number[] = [];
-		for(const point of points) {
+		// For each point
+		const npoints = points.length;
+		const distances = Array<number>(npoints).fill(Number.POSITIVE_INFINITY);
+		for(let idx = 0; idx < npoints; ++idx) {
 
-			let dist = Number.POSITIVE_INFINITY;
 			for(const facet of hull) {
+
+				// For each valid tetrahedra
 				if(facet.plane[3] < -1e-13) {
 
-					for(const v of vertices) {
-						const v1 = facet.verts[v[0]];
-						const v2 = facet.verts[v[1]];
-						const v3 = facet.verts[v[2]];
-						// Test if closest triangle
-						const d = this.closestPointTriangle(point,
+					const [v1, v2, v3, v4] = facet.verts;
+
+					// Coincident with a vertex of the tetrahedra: distance is zero
+					if(idx === v1 || idx === v2 || idx === v3 || idx === v4) {
+						distances[idx] = 0;
+						break;
+					}
+
+					const w = this.barycentricCoordinates3D(points[idx],
 															points[v1],
 															points[v2],
-															points[v3]);
-						if(d !== -1 && d < dist) dist = d;
-					}
+															points[v3],
+															points[v4]);
+
+					// Check if the point is inside the tetrahedra
+					if(w[0] < 0 || w[0] > 1 ||
+					   w[1] < 0 || w[1] > 1 ||
+					   w[2] < 0 || w[2] > 1 ||
+					   w[3] < 0 || w[3] > 1) continue;
+
+					distances[idx] = Math.abs(points[idx][3] -
+									points[v1][3]*w[0] -
+									points[v2][3]*w[1] -
+									points[v3][3]*w[2] -
+									points[v4][3]*w[3]);
+					break;
 				}
 			}
-			distances.push(dist);
 		}
 
 		return distances;

@@ -27,8 +27,7 @@ import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, OrthographicCamera, Vector3, Vector2, type Group,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-        Box3, Sphere, MathUtils, Timer, Mesh,
-		Object3D} from "three";
+        Box3, Sphere, MathUtils, Timer, Mesh, Object3D} from "three";
 
 /** Simple 3D viewer */
 export class SimpleViewer {
@@ -139,10 +138,10 @@ export class SimpleViewer {
 		CameraControls.install({THREE: subsetOfTHREE});
 		this.controls = new CameraControls(this.camera, this.renderer.domElement);
 
-		const light = new DirectionalLight("white", 3);
-		light.position.set(0, 1, 0);
+		const light = new DirectionalLight("white", 4);
+		light.position.set(-0.5, 0.5, 0.5);
 		this.scene.add(light);
-		const ambient = new AmbientLight("#BBBBBB", 1);
+		const ambient = new AmbientLight("white", 0.5);
 		this.scene.add(ambient);
 
 		// Rendering function for the run
@@ -154,7 +153,7 @@ export class SimpleViewer {
 			const doRender = this.controls!.update(clock.getDelta());
 			if(doRender || this.needRendering()) {
 
-				light.position.copy(this.camera!.position);
+				// light.position.copy(this.camera!.position);
 				this.renderer!.render(this.scene, this.camera!);
 			}
 		};
