@@ -11,7 +11,6 @@ Latest requests (backlog):
   ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
   ☐ Add editor for atoms dimensions and colors
   ☐ Visualization of crystal shapes (based on bond strengths).
-  ☐ Variable composition convex hull 3 components as 3D object
 
 To do:
   ☐ Check error return from main process to client
@@ -75,6 +74,7 @@ Reference:
   ☐ For the charts <https://unovis.dev/>
 
 Archive:
+  ✔ Variable composition convex hull 3 components as 3D object @done(2026-03-20 15:21) @project(Latest requests (backlog))
   ✔ In X-ray doc add reference to the pymatgen routine @done(2026-03-08 04:28) @project(Bugs)
   ✔ Summary line in variable composition after "analyze selected for duplicates" @done(2026-03-08 04:27) @project(To do)
   ✔ Transform to international symbol also input symmops @done(2026-03-07 18:04) @project(Bugs)

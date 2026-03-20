@@ -27,15 +27,14 @@ import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Float32BufferAttribute, LineBasicMaterial, LineLoop,
         Mesh, MeshStandardMaterial, LineSegments, Group,
         FrontSide, Object3D} from "three";
-// import {CSS2DRenderer, CSS2DObject} from "three/addons/renderers/CSS2DRenderer.js";
+import {CSS2DRenderer, CSS2DObject} from "three/addons/renderers/CSS2DRenderer.js";
 import {Line2, LineGeometry, LineMaterial} from "three/examples/jsm/Addons.js";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
 import {SimpleViewer} from "@/services/SimpleViewer";
-import type {CtrlParams, PositionType} from "@/types";
-import {spriteText, /* disposeTextInGroup */} from "@/services/SpriteText";
+import type {CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 
@@ -86,6 +85,8 @@ handleSpecialKeys(windowPath);
 // Group containing all points
 const pointsGroup = new Group();
 
+let labelRenderer: CSS2DRenderer;
+
 /** Initialize the 3D viewer */
 const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
 
@@ -109,15 +110,17 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
         viewEnthalpy.value = e[idx].toFixed(4);
     });
 
-    // const labelRenderer = new CSS2DRenderer();
-    // labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    // labelRenderer.domElement.style.position = "absolute";
-    // labelRenderer.domElement.style.top = "0px";
-    // labelRenderer.domElement.style.pointerEvents = "none";
-    // labelRenderer.domElement.style.zIndex = "999999";
-    // const viewerContainer = document.querySelector(".hull3d-viewer");
-    // if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
-    // document.body.append(labelRenderer.domElement);
+    labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = "absolute";
+    labelRenderer.domElement.style.top = "0px";
+    labelRenderer.domElement.style.pointerEvents = "none";
+    const viewerContainer = document.querySelector(".hull3d-viewer");
+    if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
+    document.body.append(labelRenderer.domElement);
+},
+(scene, camera) => {
+    labelRenderer.render(scene, camera);
 });
 
 /**
@@ -298,26 +301,16 @@ const createPoints = (px: number[], py: number[], pz: number[],
 
         if(formulaText) {
 
-            // const text = document.createElement("div");
-			// // eslint-disable-next-line unicorn/no-keyword-prefix
-			// text.className = "label";
-			// text.style.color = "black";
-			// text.style.backgroundColor = "white";
-            // text.style.fontSize = "40px";
-			// text.innerHTML = formulaText[i];
+            const text = document.createElement("div");
+			text.style.color = "blue";
+            text.style.fontSize = "18px";
+			text.innerHTML = formulaText[i];
 
-	        // const label = new CSS2DObject(text);
-			// label.position.set(stableVertices[i3], stableVertices[i3+1], stableVertices[i3+2]*zScale);
-			// pointsGroup.add(label);
-
-            const labelPosition: PositionType = [
-                stableVertices[i3],
-                stableVertices[i3+1],
-                stableVertices[i3+2]*zScale+specialSize
-            ];
-            const labelText = formulaText[i].replaceAll(/<.?sub>/g, "");
-		    const atomLabel = spriteText(labelText, "#FFFFFF", 0.01, labelPosition);
-			pointsGroup.add(atomLabel);
+	        const label = new CSS2DObject(text);
+			label.position.set(stableVertices[i3],
+                               stableVertices[i3+1]*0.9+0.1,
+                               stableVertices[i3+2]*zScale);
+			pointsGroup.add(label);
         }
     }
 
@@ -482,9 +475,4 @@ const centerView = (): void => {
   text-align: right;
 }
 
-.label {
-  text-shadow: -1px 1px 1px rgb(0,0,0);
-  margin-left: 25px;
-  font-size: 20px;
-}
 </style>

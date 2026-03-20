@@ -401,7 +401,40 @@ export class VariableCompositionConvexHull {
 		// Add distances from the convex hull
 		this.distances = this.distanceFromConvexHull4D(points, hull);
 
+		this.fixUnassignedDistances(points, e0, e1, e2, e3);
+
 		return "";
+	}
+
+	/**
+	 * Assign a distance to the points not inside any tetrahedra
+	 *
+	 * @param points - Points to check
+	 * @param e0 - Enthalpy at the 1:0:0:0 vertex
+	 * @param e1 - Enthalpy at the 0:1:0:0 vertex
+	 * @param e2 - Enthalpy at the 0:0:1:0 vertex
+	 * @param e3 - Enthalpy at the 0:0:0:1 vertex
+	 */
+	private fixUnassignedDistances(points: number[][],
+								   e0: number, e1: number,
+								   e2: number, e3: number): void {
+
+		// Vertices of the containing tetrahedra
+		const a = [0, 0, 0];
+		const b = [1, 0, 0];
+		const c = [0.5, 0.8660254038, 0];
+		const d = [0.5, 0.2886751346, 0.8660254038];
+
+		// Check points that are not in any tetrahedra
+		const npoints = points.length;
+		for(let idx = 0; idx < npoints; ++idx) {
+			if(this.distances[idx] < Number.POSITIVE_INFINITY) continue;
+
+			const w = this.barycentricCoordinates3D(points[idx], a, b, c, d);
+
+			const dist = Math.abs(points[idx][3]-e0*w[0]-e1*w[1]-e2*w[2]-e3*w[3]);
+			this.distances[idx] = dist;
+		}
 	}
 
 	// > Distances computations
@@ -581,13 +614,17 @@ export class VariableCompositionConvexHull {
 		];
 
 		// All volumes are multiplied by 6
-		const totalVolume = Math.abs(dot(vab, cross(vac, vad)));
-		if(totalVolume === 0) return [0, 0, 0, 1];
 		const volumeA = dot(vbp, cross(vbd, vbc));
 		const volumeB = dot(vap, cross(vac, vad));
 		const volumeC = dot(vap, cross(vad, vab));
-		// const volumeD = dot(vap, cross(vab, vac));
-		// const w4 = volumeD*inv;
+
+		const totalVolume = Math.abs(dot(vab, cross(vac, vad)));
+		if(totalVolume < 1e-15) {
+			const volumeD = dot(vap, cross(vab, vac));
+			return this.coordinatesForCoplanarPoints(pt, a, b, c, d,
+													 volumeA, volumeB,
+													 volumeC, volumeD);
+		}
 
 		const w1 = volumeA/totalVolume;
 		const w2 = volumeB/totalVolume;
@@ -595,6 +632,62 @@ export class VariableCompositionConvexHull {
 		const w4 = 1 - w1 - w2 - w3;
 
 		return [w1, w2, w3, w4];
+	}
+
+	/**
+	 * Compute barycentric coordinates when the tetrahedra has zero volume
+	 *
+	 * @param pt - Point to test (only x, y and z used)
+	 * @param a - Vertex of the tetrahedra (only x, y and z used)
+	 * @param b - Vertex of the tetrahedra (only x, y and z used)
+	 * @param c - Vertex of the tetrahedra (only x, y and z used)
+	 * @param d - Vertex of the tetrahedra (only x, y and z used)
+	 * @param volumeA - Computed volume opposite to vertex a
+	 * @param volumeB - Computed volume opposite to vertex b
+	 * @param volumeC - Computed volume opposite to vertex c
+	 * @param volumeD - Computed volume opposite to vertex d
+	 * @returns Barycentric coordinates [w1, w2, w3, w4] of the point
+	 */
+	private coordinatesForCoplanarPoints(pt: number[],
+									 	 a: number[],
+									 	 b: number[],
+									 	 c: number[],
+									 	 d: number[],
+										 volumeA: number,
+										 volumeB: number,
+										 volumeC: number,
+										 volumeD: number): number[] {
+
+		// If the subvolumes are zero the pt point is coplanar
+		if(Math.abs(volumeA) < 1e-15 &&
+		   Math.abs(volumeB) < 1e-15 &&
+		   Math.abs(volumeC) < 1e-15 &&
+		   Math.abs(volumeD) < 1e-15) {
+
+			let w = this.barycentricCoordinates(pt, a, b, c);
+			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
+
+				return [w[2], w[1], w[0], 0];
+			}
+			w = this.barycentricCoordinates(pt, a, d, c);
+			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
+
+				return [w[2], 0, w[0], w[1]];
+			}
+			w = this.barycentricCoordinates(pt, a, b, d);
+			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
+
+				return [w[2], w[1], 0, w[0]];
+			}
+			w = this.barycentricCoordinates(pt, b, c, d);
+			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
+
+				return [0, w[2], w[1], w[0]];
+			}
+		}
+
+		// Point outside the plane so it is outside the tetrahedra
+		return [-1, -1, -1, -1];
 	}
 
 	/**
@@ -636,12 +729,13 @@ export class VariableCompositionConvexHull {
 					   w[2] < 0 || w[2] > 1 ||
 					   w[3] < 0 || w[3] > 1) continue;
 
-					distances[idx] = Math.abs(points[idx][3] -
-									points[v1][3]*w[0] -
-									points[v2][3]*w[1] -
-									points[v3][3]*w[2] -
-									points[v4][3]*w[3]);
-					break;
+					if(distances[idx] === 0) continue;
+					const d = Math.abs(points[idx][3] -
+									   points[v1][3]*w[0] -
+									   points[v2][3]*w[1] -
+									   points[v3][3]*w[2] -
+									   points[v4][3]*w[3]);
+					if(d < distances[idx]) distances[idx] = d;
 				}
 			}
 		}

@@ -43,6 +43,7 @@ export class SimpleViewer {
     private isSceneModified = true;
     private retry = 0;
 	private readonly isPerspective: boolean;
+	private readonly extraOnRendering: ((scene: Scene, camera: PerspectiveCamera | OrthographicCamera) => void) | undefined;
 
 	/**
 	 * Create the simple viewer 3D
@@ -53,9 +54,11 @@ export class SimpleViewer {
 	 */
 	constructor(containerSelector: string,
 				isPerspective: boolean,
-				extraOnMounted?: (scene: Scene) => void) {
+				extraOnMounted?: (scene: Scene) => void,
+			    extraOnRendering?: (scene: Scene, camera: PerspectiveCamera | OrthographicCamera) => void) {
 
 		this.isPerspective = isPerspective;
+		this.extraOnRendering = extraOnRendering;
 
 		onMounted(() => {
 
@@ -154,6 +157,7 @@ export class SimpleViewer {
 			if(doRender || this.needRendering()) {
 
 				// light.position.copy(this.camera!.position);
+				if(this.extraOnRendering) this.extraOnRendering(this.scene, this.camera!);
 				this.renderer!.render(this.scene, this.camera!);
 			}
 		};
