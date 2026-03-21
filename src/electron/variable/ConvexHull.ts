@@ -830,7 +830,8 @@ export class VariableCompositionConvexHull {
 				step: this.step,
 				parts: this.parts,
 				distance: this.distances,
-				formula: this.formula
+				formula: this.formula,
+				idxVertices: this.idxVertices
 			};
 			case 4: return {
 				dimension: 4,
@@ -843,7 +844,8 @@ export class VariableCompositionConvexHull {
 				step: this.step,
 				parts: this.parts,
 				distance: this.distances,
-				formula: this.formula
+				formula: this.formula,
+				idxVertices: this.idxVertices,
 			};
 		}
 		return {error: `Invalid dimension ${this.dimension} for 3D view`};

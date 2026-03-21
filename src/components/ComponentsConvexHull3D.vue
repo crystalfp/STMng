@@ -66,6 +66,7 @@ let y: number[] = [];
 let z: number[] = [];
 let e: number[] = [];
 let v: number[] = [];
+let iv: number[] = [];
 let zCenter = 0;
 
 let step: number[] = [];
@@ -84,6 +85,7 @@ handleSpecialKeys(windowPath);
 
 // Group containing all points
 const pointsGroup = new Group();
+const labelsGroup = new Group();
 
 let labelRenderer: CSS2DRenderer;
 
@@ -92,6 +94,8 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
 
     pointsGroup.name = "ConvexHullPoints";
     scene.add(pointsGroup);
+    labelsGroup.name = "ConvexHullLabels";
+    scene.add(labelsGroup);
 
     sv.setRaycaster("Pt", (object?: Object3D): void => {
 
@@ -258,7 +262,7 @@ const createReference4D = (): void => {
  */
 const createPoints = (px: number[], py: number[], pz: number[],
                       stableVertices: number[], zScale: number,
-                      size: number, formulaText?: string[]): void => {
+                      size: number): void => {
 
     sv.clearGroup("ConvexHullPoints");
 
@@ -298,20 +302,38 @@ const createPoints = (px: number[], py: number[], pz: number[],
         const cube = new Mesh(geometry2, material2);
         cube.position.set(stableVertices[i3], stableVertices[i3+1], stableVertices[i3+2]*zScale);
         pointsGroup.add(cube);
+    }
 
-        if(formulaText) {
+    sv.setSceneModified();
+};
 
-            const text = document.createElement("div");
-			text.style.color = "blue";
-            text.style.fontSize = "18px";
-			text.innerHTML = formulaText[i];
+/**
+ *
+ * @param stableVertices - Points exactly on the convex hull
+ * @param zScale - Scale along the z axis
+ */
+const createLabels = (stableVertices: number[], zScale: number,
+                      indexVertices: number[], formulaText: string[]): void => {
 
-	        const label = new CSS2DObject(text);
-			label.position.set(stableVertices[i3],
-                               stableVertices[i3+1]*0.9+0.1,
-                               stableVertices[i3+2]*zScale);
-			pointsGroup.add(label);
-        }
+    sv.clearGroup("ConvexHullLabels");
+    for(const element of document.querySelectorAll(".label")) element.remove();
+
+    const len = stableVertices.length/3;
+    for(let i=0; i < len; ++i) {
+
+        const text = document.createElement("div");
+        text.style.color = "blue";
+        text.style.fontSize = "18px";
+        text.innerHTML = formulaText[indexVertices[i]];
+        // eslint-disable-next-line unicorn/no-keyword-prefix
+        text.className = "label";
+
+        const label = new CSS2DObject(text);
+        const i3 = 3*i;
+        label.position.set(stableVertices[i3],
+                            stableVertices[i3+1]*0.9+0.1,
+                            stableVertices[i3+2]*zScale);
+        labelsGroup.add(label);
     }
 
     sv.setSceneModified();
@@ -337,6 +359,8 @@ requestData(windowPath, (params: CtrlParams) => {
 
     const vv = params.vertices as number[];
     v = vv ? [...vv] : [];
+    const ii = params.idxVertices as number[];
+    iv = ii ? [...ii] : [];
 
     const ss = params.step as number[];
     step = ss ? [...ss] : [];
@@ -353,6 +377,7 @@ requestData(windowPath, (params: CtrlParams) => {
         createReference3D();
         createSurface(trianglesVertices, scale.value);
         createPoints(x, y, e, v, scale.value, pointSize.value);
+        createLabels(v, scale.value, iv, formula);
 
         // Find the center of the convex hull
         let minEnergy = Number.POSITIVE_INFINITY;
@@ -366,9 +391,10 @@ requestData(windowPath, (params: CtrlParams) => {
     }
     else if(dimension === 4) {
 
-        createPoints(x, y, z, v, 1, pointSize.value, formula);
+        createPoints(x, y, z, v, 1, pointSize.value);
         createSurface(trianglesVertices, 1, false);
         createReference4D();
+        createLabels(v, 1, iv, formula);
 
         // Move the camera to have the surface at the center of the viewer
         sv.setCamera([0.5, 0.43301, 2], [0.5, 0.43301, 0.43301], 20);

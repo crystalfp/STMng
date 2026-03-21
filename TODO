@@ -22,6 +22,7 @@ To do:
   ☐ Add tooltip with description to the "available nodes" in Program editor
   ☐ Don't use flags as function parameters
   ☐ Add count elements of groups in scatterplot
+  ☐ Parallelize group analysis in variable composition
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"

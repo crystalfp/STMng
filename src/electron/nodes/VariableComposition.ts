@@ -95,6 +95,7 @@ export class VariableComposition extends NodeCore {
 		{name: "state",			 type: "send",		  callback: this.channelState.bind(this)},
 		{name: "start",			 type: "invoke",	  callback: this.channelStart.bind(this)},
 		{name: "analyze",		 type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
+		{name: "analyze-simple", type: "invoke",	  callback: this.channelAnalyzeSimple.bind(this)},
 		{name: "convex-hull",	 type: "invoke",	  callback: this.channelConvexHull.bind(this)},
 		{name: "convex-hull-3d", type: "invoke",	  callback: this.channelConvexHull3D.bind(this)},
 		{name: "filter",		 type: "invoke",	  callback: this.channelFilter.bind(this)},
@@ -719,6 +720,88 @@ export class VariableComposition extends NodeCore {
 		}
 
 		return {};
+	}
+
+	/**
+	 * Channel handler for analyzing the results of a single composition
+	 *
+	 * @returns Analysis result status
+	 */
+	private channelAnalyzeSimple(params: CtrlParams): CtrlParams {
+
+		const summary = [0, 0];
+		const resultsKeys: string[] = [];
+		const resultsValid: string[] = [];
+		const compositionsReduced: string[] = [];
+
+		// No composition
+		const compositions = params.compositions as string[];
+		if(!compositions?.length) return {
+
+			resultsKeys,
+			resultsValid,
+			summary,
+			compositionsReduced
+		};
+
+		// For each selected composition
+		for(const composition of compositions) {
+
+			const key = composition.replaceAll("\u2009:\u2009", "-");
+			const indices = this.accumulator.getIndicesForKey(key);
+
+			// No composition
+			if(!indices?.length) {
+				resultsKeys.push(composition);
+				resultsValid.push("0");
+				continue;
+			}
+
+			// One element
+			if(indices.length === 1) {
+				const entry = this.accumulator.getEntry(indices[0]);
+				if(entry === undefined) {
+					resultsKeys.push(composition);
+					resultsValid.push("0");
+					continue;
+				}
+
+				const count  = entry.enabled? 1 : 0;
+				resultsKeys.push(composition);
+				resultsValid.push(count.toString());
+				summary[0] += count;
+				summary[1] += count;
+				continue;
+			}
+
+			// Count how many are enabled
+			let countEnabled = 0;
+			for(const idx of indices) {
+				const entry = this.accumulator.getEntry(idx);
+				if(entry === undefined) continue;
+				if(entry.enabled) ++countEnabled;
+			}
+
+			// If one or zero enabled
+			if(countEnabled < 2) {
+				resultsKeys.push(composition);
+				resultsValid.push(countEnabled.toString());
+				summary[0] += countEnabled;
+				summary[1] += countEnabled;
+				continue;
+			}
+
+			// Not simple
+			compositionsReduced.push(composition);
+		}
+
+		return {
+
+			resultsKeys,
+			resultsValid,
+			summary,
+			compositionsReduced
+		};
 	}
 
 	/**

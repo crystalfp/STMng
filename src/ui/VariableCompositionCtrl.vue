@@ -275,16 +275,21 @@ type Align = "center" | "start" | "end";
 const alignEnd = "end" as Align;
 
 /** Headers for the results table */
-const headers = [
-    {key: "key",   title: "Composition", sortable: false, maxWidth: 10},
+const headers = ref([
+    {key: "key",   title: "Composition", sortable: false, maxWidth: 13},
     {key: "count", title: "Count",       align: alignEnd, maxWidth: 5},
     {key: "valid", title: "Remain",      align: alignEnd, maxWidth: 5}
-];
+]);
 
 /**
  * Do the variable composition analysis on the selected entries
  */
 const analyzeSelected = async (): Promise<void> => {
+
+    // Initialize interface
+    for(const r of results.value) r.valid = "";
+    summary.value[0] = 0; // Total
+    summary.value[1] = 0; // Remaining
 
     // Initialize and validate the analysis parameters
     const sts = await askNode(id, "start", toRaw(state));
@@ -292,10 +297,9 @@ const analyzeSelected = async (): Promise<void> => {
         analysisRunning.value = false;
         analysisDone.value = false;
         showNodeAlert(`Error starting variable composition results analysis: ${sts.error as string}`,
-                        "variableComposition");
+                      "variableComposition");
         return;
     }
-    for(const r of results.value) r.valid = "";
 
     // Sort selected entries by increasing composition size
     const compositions = results.value
@@ -303,9 +307,36 @@ const analyzeSelected = async (): Promise<void> => {
                                 .toSorted((a, b) => a.count - b.count)
                                 .map((entry) => entry.key);
 
-    summary.value[0] = 0; // Total
-    summary.value[1] = 0; // Remaining
-    for(const composition of compositions) {
+    // Analyze the simple ones
+    // Returns:
+    //  compositionsReduced: string[]   // Not simple compositions to analyze
+    //  resultsKeys: string[]           // Key to set on the screen
+    //  resultsValid: string[]          // Corresponding remaining value
+    //  summary: number[]               // Total and Remaining to set summary
+    const remaining = await askNode(id, "analyze-simple", {compositions});
+    if(remaining.error) {
+        analysisRunning.value = false;
+        analysisDone.value = false;
+        showNodeAlert(`Error analyzing simple compositions: ${sts.error as string}`,
+                      "variableComposition");
+        return;
+    }
+    summary.value[0] = (remaining.summary as number[])[0]; // Total
+    summary.value[1] = (remaining.summary as number[])[1]; // Remaining
+
+    const len = (remaining.resultsKeys as string[]).length;
+    for(let i=0; i < len; ++i) {
+
+        const composition = (remaining.resultsKeys as string[])[i];
+        for(const r of results.value) {
+            if(r.key === composition) {
+                r.valid = (remaining.resultsValid as string[])[i];
+                break;
+            }
+        }
+    }
+
+    for(const composition of (remaining.compositionsReduced as string[])) {
 
         const key = composition.replaceAll("\u2009:\u2009", "-");
         const result = await askNode(id, "analyze", {key});
