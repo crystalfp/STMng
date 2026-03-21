@@ -39,7 +39,7 @@ node_modules/.bin/typedoc \
 --sourceLinkTemplate "vscode://file$root/src/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
 --exclude troika-three-text.d.ts \
-`/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree`
+`/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree | grep -v .rollup.cache`
 fi
 
 

@@ -41,6 +41,7 @@ export class Lattice {
 
 	private readonly lengthsAngles: LengthsAnglesType;
 	private readonly inverseBasis: BasisType;
+	/** The cell origin */
 	public readonly origin: number[];
 	private readonly basis: BasisType;
 

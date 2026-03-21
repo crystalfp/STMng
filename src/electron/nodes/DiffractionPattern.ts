@@ -32,8 +32,11 @@ import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {hasUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
+/** Points coordinates for the chart */
 interface LineCoordinates {
+	/** X coordinates */
 	x: number[];
+	/** Y coordinates */
 	y: number[];
 }
 export class DiffractionPattern extends NodeCore {

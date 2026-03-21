@@ -49,10 +49,15 @@ import type {Lattice, SNL} from "./types";
  * @notExported
  */
 interface MatchResult {
+    /** RMS error */
     rms: number;
+    /** Maximum distance */
     maxDist: number;
+    /** Mask */
     mask: number[][];
+    /** Cost */
     cost: number;
+    /** Mapping */
     mapping: number[];
 }
 
@@ -61,10 +66,14 @@ interface MatchResult {
  * @notExported
  */
 interface SupercellResult {
-  s1Coords: number[][];
-  s2Coords: number[][];
-  avgLattice: Lattice;
-  supercellMatrix: number[][];
+    /** First set of coordinates */
+    s1Coords: number[][];
+    /** Second set of coordinates */
+    s2Coords: number[][];
+    /** Average lattice */
+    avgLattice: Lattice;
+    /** Supercell matrix */
+    supercellMatrix: number[][];
 }
 
 /**

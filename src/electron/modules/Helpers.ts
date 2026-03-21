@@ -26,8 +26,9 @@ import {getAtomicSymbol} from "./AtomData";
 import {BondType} from "../../services/SharedConstants";
 import type {BasisType, Bond, LengthsAnglesType, PositionType, Structure} from "@/types";
 
-/** Convert degrees to radiants and viceversa */
+/** Convert degrees to radiants */
 export const DEG2RAD = Math.PI/180;
+/** Convert radiants to degrees */
 export const RAD2DEG = 180/Math.PI;
 
 /**
