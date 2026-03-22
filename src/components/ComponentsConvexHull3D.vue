@@ -125,6 +125,9 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
 },
 (scene, camera) => {
     labelRenderer.render(scene, camera);
+},
+(width: number, height: number) => {
+    labelRenderer.setSize(width, height);
 });
 
 /**

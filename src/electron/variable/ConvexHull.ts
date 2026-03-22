@@ -403,6 +403,15 @@ export class VariableCompositionConvexHull {
 
 		this.fixUnassignedDistances(points, e0, e1, e2, e3);
 
+		// TEST
+		// {
+		// 	let out = "";
+		// 	for(let i=0; i < points.length; ++i) {
+		// 		out += `${this.parts[i]} ${this.e[i]} ${this.distances[i]}\n`;
+		// 	}
+		// 	console.log(out);
+		// }
+
 		return "";
 	}
 

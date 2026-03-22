@@ -51,11 +51,15 @@ export class SimpleViewer {
 	 * @param containerSelector - CSS Selector of the viewer container
 	 * @param isPerspective - True for a perspective viewer, otherwise orthographic
 	 * @param extraOnMounted - Optional routine to be called during onMounted phase
+	 * @param extraOnRendering - Optional routine to be called during rendering loop
+	 * @param extraOnResize - Optional routine to be called during resize event
 	 */
 	constructor(containerSelector: string,
 				isPerspective: boolean,
 				extraOnMounted?: (scene: Scene) => void,
-			    extraOnRendering?: (scene: Scene, camera: PerspectiveCamera | OrthographicCamera) => void) {
+			    extraOnRendering?: (scene: Scene,
+									camera: PerspectiveCamera | OrthographicCamera) => void,
+				extraOnResize?: (width: number, height: number) => void) {
 
 		this.isPerspective = isPerspective;
 		this.extraOnRendering = extraOnRendering;
@@ -89,6 +93,7 @@ export class SimpleViewer {
 				this.camera!.updateProjectionMatrix();
 				this.renderer!.setSize(this.canvasWidth, this.canvasHeight);
 				this.setSceneModified();
+				if(extraOnResize) extraOnResize(window.innerWidth, window.innerHeight);
 			});
 
 			this.init(container);
@@ -116,7 +121,6 @@ export class SimpleViewer {
 
 		if(this.isPerspective) {
 			this.camera = new PerspectiveCamera(30, this.canvasWidth/this.canvasHeight);
-			// this.camera.position.set(1.7, 2.1, 1.9);
 			this.camera.position.set(20, 20, 20);
 		}
 		else {
@@ -124,7 +128,6 @@ export class SimpleViewer {
 			const hw = hh * this.canvasWidth/this.canvasHeight;
 			this.camera = new OrthographicCamera(-hw, hw, hh, -hh, 0.1, 500);
 			this.camera.position.set(11.6, 12.8, 11.4);
-			// this.camera.position.set(7.7, 8.5, 7.6);
 			this.camera.zoom = 1;
 		}
 		this.camera.lookAt(this.scene.position);
