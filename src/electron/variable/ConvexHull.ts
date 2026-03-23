@@ -26,6 +26,7 @@ import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {VariableCompositionAccumulator} from "./Accumulator";
 import {dot, cross} from "mathjs";
 import type {CtrlParams} from "@/types";
+// import {writeFileSync} from "node:fs";
 
 /**
  * Interface to the convex hull in the variable composition space
@@ -304,7 +305,7 @@ export class VariableCompositionConvexHull {
 			   parts[2] === 0 &&
 			   parts[3] === 0 &&
 			   structureEnergy < e0) {
-				e0 = structureEnergy;
+						e0 = structureEnergy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 1 &&
@@ -407,9 +408,9 @@ export class VariableCompositionConvexHull {
 		// {
 		// 	let out = "";
 		// 	for(let i=0; i < points.length; ++i) {
-		// 		out += `${this.parts[i]} ${this.e[i]} ${this.distances[i]}\n`;
+		// 		out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
 		// 	}
-		// 	console.log(out);
+		// 	writeFileSync("test.txt", out, "utf8");
 		// }
 
 		return "";
