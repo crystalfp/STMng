@@ -25,7 +25,7 @@
  */
 import {reactive, ref, version as VueVersion} from "vue";
 import {REVISION} from "three";
-import {getVersions, type Versions} from "@/services/RoutesClient";
+import {getVersions} from "@/services/RoutesClient";
 
 // > Events
 const emit = defineEmits<{
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 	"close-panel": [];
 }>();
 
-const versions = reactive<Versions>({app: "", node: "", electron: "", chrome: ""});
+const versions = reactive({app: "", node: "", electron: "", chrome: ""});
 const isDevelopment = import.meta.env.DEV;
 const isOpen = ref(true);
 

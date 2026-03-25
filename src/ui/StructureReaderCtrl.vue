@@ -193,13 +193,9 @@ askNode(id, "init")
             showCollection.value = true;
             showPrototypes.value = false;
         }
-        else if(format.value === "Prototypes") {
-            showCollection.value = false;
-            showPrototypes.value = true;
-        }
         else {
             showCollection.value = false;
-            showPrototypes.value = false;
+            showPrototypes.value = format.value === "Prototypes";
         }
     })
     .catch((error: Error) => {

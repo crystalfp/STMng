@@ -62,6 +62,7 @@ Nice to have/Future:
   ☐ Remove debug statements with `@rollup/plugin-strip`
   ☐ Add a `metadata` section to project files.
   ☐ Investigate git workspaces for STMng preprocessor
+  ☐ Instead of color manipulation use package <https://www.npmjs.com/package/color-convert>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>

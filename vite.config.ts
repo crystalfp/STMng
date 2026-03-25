@@ -60,6 +60,7 @@ export default defineConfig({
         // },
         rolldownOptions: {
             output: {
+                // oxlint-disable-next-line @typescript-eslint/consistent-return
                 manualChunks(id: string): string | undefined {
                     if(id.includes("node_modules")) {
                         if(id.includes("vue") ||

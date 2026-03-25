@@ -200,9 +200,11 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
 export const setTitle = (title: string): void => window.api.setTitle(title);
 
 // > Preferences
-
-/** Versions of the various application components */
-export interface Versions {
+/**
+ * Versions of the various application components
+ * @notExported
+ */
+interface Versions {
 	/** The application version */
 	app: string;
 	/** The Node version */
@@ -218,7 +220,8 @@ export interface Versions {
  *
  * @returns The list of versions of iie, node, electron, chrome
  */
-export const getVersions = async (): Promise<Versions> => window.electron.ipcRenderer.invoke("SYSTEM:VERSIONS") as Promise<Versions>;
+export const getVersions = async (): Promise<Versions> =>
+	window.electron.ipcRenderer.invoke("SYSTEM:VERSIONS") as Promise<Versions>;
 
 /**
  * Synchronously return a preference
