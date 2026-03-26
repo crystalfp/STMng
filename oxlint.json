@@ -138,6 +138,7 @@
     "promise/no-new-statics": "error",
     "promise/no-return-in-finally": "warn",
     "promise/valid-params": "warn",
+    "promise/no-native": "off",
     "import/named": "off",
     "import/namespace": "error",
     "import/default": "off",

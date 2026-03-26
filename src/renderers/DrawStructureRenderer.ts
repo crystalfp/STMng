@@ -282,7 +282,7 @@ export class DrawStructureRenderer {
 	 * @param monochromeColor - Color for monochrome coloring
 	 * @returns The atom color
 	 */
-	private computeAtomColor(atomColoring: ColoringType,
+	private computeAtomColor(atomColoring: ColoringType, // oxlint-disable-line @typescript-eslint/consistent-return
 							 atom: AtomRenderInfo,
 							 monochromeColor: string): string {
 

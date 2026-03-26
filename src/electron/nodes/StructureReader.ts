@@ -25,6 +25,7 @@
 import log from "electron-log";
 import {tmpNameSync} from "tmp";
 import {unlinkSync, writeFileSync} from "node:fs";
+import path from "node:path";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
@@ -283,7 +284,7 @@ export class StructureReader extends NodeCore {
 			return {countSteps: this.countSteps};
 		}
 
-		message = `Invalid "${requestedFormat}" file content`;
+		message = `Invalid "${path.basename(filename)}" file content for "${requestedFormat}" format`;
 		log.error(message);
 		this.toNextNode(new EmptyStructure());
 		return {error: message};

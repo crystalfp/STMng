@@ -183,7 +183,6 @@ askNode(id, "init")
         collection.value.length = 0;
         for(const entry of collectionRaw) collection.value.push(entry);
 
-        // eslint-disable-next-line promise/no-nesting
         batchRead().catch((error: Error) => {
             showNodeAlert(`Error from batch read for ${label}: ${error.message}`,
                           "structureReader");

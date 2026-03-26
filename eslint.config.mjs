@@ -3,7 +3,7 @@ import tsParser from "@typescript-eslint/parser";
 import vueParser from "vue-eslint-parser";
 
 import vuePlugin from "eslint-plugin-vue";
-import promisePlugin from "eslint-plugin-promise";
+// import promisePlugin from "eslint-plugin-promise";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 import commentsPlugin from "@eslint-community/eslint-plugin-eslint-comments";
 import unicornPlugin from "eslint-plugin-unicorn";
@@ -88,7 +88,7 @@ export default defineConfig([
     },
     plugins: {
         vue: vuePlugin,
-        promise: promisePlugin,
+        // promise: promisePlugin,
         "import-x": importX,
         "@typescript-eslint": typescriptPlugin,
         unicorn: unicornPlugin,
@@ -114,7 +114,7 @@ export default defineConfig([
     rules: {
         ...jsPlugin.configs.recommended.rules,
         ...commentsPlugin.configs.recommended.rules,
-        ...promisePlugin.configs.recommended.rules,
+        // ...promisePlugin.configs.recommended.rules,
         ...importX.flatConfigs.recommended.rules,
         ...importX.flatConfigs.typescript.rules,
         ...unicornPlugin.configs.all.rules,
@@ -417,8 +417,8 @@ export default defineConfig([
         // "promise/no-promise-in-callback": "warn",
         // "promise/no-nesting": "warn",
         // "promise/no-callback-in-promise": "warn",
-        "promise/always-return": "off",
-        "promise/catch-or-return": ["warn", {allowFinally: true}],
+        // "promise/always-return": "off",
+        // "promise/catch-or-return": ["warn", {allowFinally: true}],
         // "security/detect-child-process": "warn",
         "security/detect-non-literal-fs-filename": "off",
         "security/detect-object-injection": "off",

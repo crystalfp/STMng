@@ -494,7 +494,7 @@ class ProjectManager {
 		const graphAsString = JSON.stringify(graph, (key, value) => {
 			if(key === "in" && value === "") return;
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			if(!this.keyToRemove.has(key)) return value;
+			if(!this.keyToRemove.has(key)) return value; // oxlint-disable-line @typescript-eslint/consistent-return
 		});
 
 		// Prepare the output
