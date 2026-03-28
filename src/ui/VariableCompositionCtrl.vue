@@ -80,10 +80,11 @@ interface DistanceMethodsNames {
 const countAccumulated = ref(0);
 const species = ref<string[]>([]);
 const countComponents = ref(2);
-const count = ref<number[]>([0]);
+const count = ref([0]);
 const results = ref<Recipe[]>([]);
 const hasEnergies = ref(false);
-const summary = ref<[number, number]>([0, 0]);
+const summary = ref([0, 0]);
+const compositionRunning = ref(false);
 
 /** Selected table entries */
 const selected = ref<string[]>([]);
@@ -268,7 +269,8 @@ const computeCompositions = (): void => {
     .catch((error: Error) => {
         showNodeAlert(`Error from variable composition: ${error.message}`,
                       "variableComposition");
-    });
+    })
+    .finally(() => compositionRunning.value = false);
 };
 
 type Align = "center" | "start" | "end";
@@ -526,8 +528,10 @@ const summaryLabel = computed(() =>
       </tbody>
     </table>
 
-    <block-button label="Compute compositions" :disabled="noComputeCompositions"
-           @click="savedFiles=-1; analysisDone=false; computeCompositions()"/>
+    <block-button label="Compute compositions"
+                  :disabled="noComputeCompositions || compositionRunning"
+                  :loading="compositionRunning"
+           @click="savedFiles=-1; analysisDone=false; compositionRunning=true; computeCompositions()"/>
   </div>
 
   <node-alert node="variableComposition" class="mt-1"/>

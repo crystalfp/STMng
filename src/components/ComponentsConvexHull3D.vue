@@ -115,19 +115,19 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     });
 
     labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight-70);
     labelRenderer.domElement.style.position = "absolute";
     labelRenderer.domElement.style.top = "0px";
+    labelRenderer.domElement.style.height = `${window.innerHeight-70}px`;
     labelRenderer.domElement.style.pointerEvents = "none";
     const viewerContainer = document.querySelector(".hull3d-viewer");
     if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
-    document.body.append(labelRenderer.domElement);
 },
 (scene, camera) => {
     labelRenderer.render(scene, camera);
 },
 (width: number, height: number) => {
-    labelRenderer.setSize(width, height);
+    labelRenderer.setSize(width, height-70);
 });
 
 /**
