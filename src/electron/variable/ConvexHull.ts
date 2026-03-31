@@ -26,7 +26,7 @@ import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {VariableCompositionAccumulator} from "./Accumulator";
 import {dot, cross} from "mathjs";
 import type {CtrlParams} from "@/types";
-// import {writeFileSync} from "node:fs";
+import {writeFileSync} from "node:fs";
 
 /**
  * Interface to the convex hull in the variable composition space
@@ -35,13 +35,13 @@ export class VariableCompositionConvexHull {
 
 	private readonly accumulator: VariableCompositionAccumulator;
 	private dimension = 0;
-	private readonly x: number[] = [];
-	private readonly y: number[] = [];
-	private readonly z: number[] = [];
-	private readonly e: number[] = [];
-	private readonly step: number[] = [];
-	private readonly parts: string[] = [];
-	private readonly formula: string[] = [];
+	private x: number[] = [];
+	private y: number[] = [];
+	private z: number[] = [];
+	private e: number[] = [];
+	private step: number[] = [];
+	private parts: string[] = [];
+	private formula: string[] = [];
 	private vertices: number[] = [];
 	private idxVertices: number[] = [];
 	private distances: number[] = [];
@@ -56,6 +56,144 @@ export class VariableCompositionConvexHull {
 	constructor(accumulator: VariableCompositionAccumulator) {
 
 		this.accumulator = accumulator;
+	}
+
+	/**
+	 * Remove coincident points in composition space
+	 *
+	 * @param dimension - For which dimension prepare the points
+	 * @returns List of points for the convex hull routine
+	 */
+	private preparePointsForConvexHull(dimension: number, p?: number[][]): number[][] {
+
+		// For coincident configurations retain only the one with minimal energy
+		const minEnergies = new Map<string, {idx: number; energy: number}>();
+
+		const len = this.x.length;
+		for(let i=0; i < len; ++i) {
+			const key = this.parts[i];
+			if(minEnergies.has(key)) {
+				const entry = minEnergies.get(key)!;
+				if(this.e[i] < entry.energy) {
+					minEnergies.set(key, {idx: i, energy: this.e[i]});
+				}
+			}
+			else {
+				minEnergies.set(key, {idx: i, energy: this.e[i]});
+			}
+		}
+
+		const validIdx = minEnergies
+					.values()
+					.map((entry) => entry.idx)
+					.toArray()
+					.toSorted((a, b) => a-b);
+
+		const points: number[][] = [];
+		const tx: number[] = [];
+		const ty: number[] = [];
+		const tz: number[] = [];
+		const te: number[] = [];
+		const tstep: number[] = [];
+		const tparts: string[] = [];
+		const tformula: string[] = [];
+
+		switch(dimension) {
+			case 2:
+				for(const i of validIdx) {
+					points.push([this.x[i], this.e[i]]);
+					tx.push(this.x[i]);
+					te.push(this.e[i]);
+					tstep.push(this.step[i]);
+					tparts.push(this.parts[i]);
+					tformula.push(this.formula[i]);
+				}
+				break;
+			case 3:
+				for(const i of validIdx) {
+					points.push([this.x[i], this.y[i], this.e[i]]);
+					tx.push(this.x[i]);
+					ty.push(this.y[i]);
+					te.push(this.e[i]);
+					tstep.push(this.step[i]);
+					tparts.push(this.parts[i]);
+					tformula.push(this.formula[i]);
+				}
+				break;
+			case 4:
+				for(const i of validIdx) {
+					points.push([p![i][0], p![i][1], p![i][2], this.e[i]]);
+					// points.push([this.x[i], this.y[i], this.z[i], this.e[i]]);
+					tx.push(this.x[i]);
+					ty.push(this.y[i]);
+					tz.push(this.z[i]);
+					te.push(this.e[i]);
+					tstep.push(this.step[i]);
+					tparts.push(this.parts[i]);
+					tformula.push(this.formula[i]);
+				}
+				break;
+		}
+
+		// Update the points list
+		this.x = tx;
+		this.y = ty;
+		this.z = tz;
+		this.e = te;
+		this.step = tstep;
+		this.parts = tparts;
+		this.formula = tformula;
+
+		// Disable coincident points
+		const validIdxSet = new Set(validIdx);
+		let idx = 0;
+		for(const entry of this.accumulator.iterateEnabledStructures()) {
+
+			if(!validIdxSet.has(idx)) entry.enabled = false;
+			++idx;
+		}
+
+		return points;
+	}
+
+	/**
+	 * Remove coincident points in composition space for four components
+	 *
+	 * @param dimension - For which dimension prepare the points
+	 * @param validIdx - List of indices to retain
+	 * @returns List of points for the convex hull routine
+	 */
+	private preparePointsForConvexHull4D(p: number[][]): {points: number[][]; idx: number[]} {
+
+		// For coincident configurations retain only the one with minimal energy
+		const minEnergies = new Map<string, {idx: number; energy: number}>();
+
+		const len = this.e.length;
+		for(let i=0; i < len; ++i) {
+			const key = this.parts[i];
+			if(minEnergies.has(key)) {
+				const entry = minEnergies.get(key)!;
+				if(this.e[i] < entry.energy) {
+					minEnergies.set(key, {idx: i, energy: this.e[i]});
+				}
+			}
+			else {
+				minEnergies.set(key, {idx: i, energy: this.e[i]});
+			}
+		}
+
+		const validIdx = minEnergies
+							.values()
+							.map((entry) => entry.idx)
+							.toArray()
+							.toSorted((a, b) => a-b);
+
+		const points: number[][] = [];
+		for(const i of validIdx) {
+			points.push([p[i][0], p[i][1], p[i][2], this.e[i]]);
+		}
+
+		return {points, idx: validIdx};
 	}
 
 	// > Prepare data
@@ -131,8 +269,7 @@ export class VariableCompositionConvexHull {
 
 		// Find convex hull (only the lower part)
 		// The facet is encoded as (normal[2], offset)
-		const points: number[][] = [];
-		for(let i=0; i < len; ++i) points.push([this.x[i], this.e[i]]);
+		const points = this.preparePointsForConvexHull(2);
 		const hull = quickHull(points);
 		const toOrder: {x: number; y: number; idx: number}[] = [];
 		for(const facet of hull) {
@@ -244,8 +381,7 @@ export class VariableCompositionConvexHull {
 		// Find convex hull (only the lower part)
 		// The facet is encoded as (normal[3], offset)
 		this.trianglesVertices.length = 0;
-		const points: number[][] = [];
-		for(let i=0; i < len; ++i) points.push([this.x[i], this.y[i], this.e[i]]);
+		const points = this.preparePointsForConvexHull(3);
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
@@ -293,12 +429,13 @@ export class VariableCompositionConvexHull {
 		this.parts.length = 0;
 		this.formula.length = 0;
 
+		const e = [];
 		const p: number[][] = [];
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
 			const {parts, step, energy, key, formula} = structure;
 			const structureEnergy = energy ?? 0;
-
+			e.push(structureEnergy);
 			this.e.push(structureEnergy);
 			if(parts[0] === 1 &&
 			   parts[1] === 0 &&
@@ -361,57 +498,81 @@ export class VariableCompositionConvexHull {
 		const len = this.e.length;
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2+p[i][3]*e3;
 
+		// Remove coincident points for computing the convex hull
+		// idx maps index in points to original point
+		const {points, idx} = this.preparePointsForConvexHull4D(p);
+
 		// Find convex hull (only the lower part)
 		// The facet is encoded as (normal[4], offset)
-		const points: number[][] = [];
-		for(let i=0; i < len; ++i) points.push([this.x[i], this.y[i], this.z[i], this.e[i]]);
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
+		const facetA: number[][] = [];
+		const facetC: number[] = [];
 		for(const facet of hull) {
-			if(facet.plane[3] < -1e-13) {
+			if(facet.plane[3] < -1e-8) {
+
 				const [v1, v2, v3, v4] = facet.verts;
-				idxVertices.add(v1);
-				idxVertices.add(v2);
-				idxVertices.add(v3);
-				idxVertices.add(v4);
-				this.trianglesVertices.push(points[v1][0], points[v1][1], points[v1][2],
-											points[v2][0], points[v2][1], points[v2][2],
-											points[v3][0], points[v3][1], points[v3][2],
 
-											points[v1][0], points[v1][1], points[v1][2],
-											points[v2][0], points[v2][1], points[v2][2],
-											points[v4][0], points[v4][1], points[v4][2],
+				const w1 = idx[v1];
+				const w2 = idx[v2];
+				const w3 = idx[v3];
+				const w4 = idx[v4];
+				idxVertices.add(w1);
+				idxVertices.add(w2);
+				idxVertices.add(w3);
+				idxVertices.add(w4);
+				this.trianglesVertices.push(this.x[w1], this.y[w1], this.z[w1],
+											this.x[w2], this.y[w2], this.z[w2],
+											this.x[w3], this.y[w3], this.z[w3],
 
-											points[v4][0], points[v4][1], points[v4][2],
-											points[v2][0], points[v2][1], points[v2][2],
-											points[v3][0], points[v3][1], points[v3][2],
+											this.x[w1], this.y[w1], this.z[w1],
+											this.x[w2], this.y[w2], this.z[w2],
+											this.x[w4], this.y[w4], this.z[w4],
 
-											points[v4][0], points[v4][1], points[v4][2],
-											points[v3][0], points[v3][1], points[v3][2],
-											points[v1][0], points[v1][1], points[v1][2]);
+											this.x[w4], this.y[w4], this.z[w4],
+											this.x[w2], this.y[w2], this.z[w2],
+											this.x[w3], this.y[w3], this.z[w3],
 
+											this.x[w4], this.y[w4], this.z[w4],
+											this.x[w3], this.y[w3], this.z[w3],
+											this.x[w1], this.y[w1], this.z[w1]);
+
+				// Hyperplane coordinates to compute distance from the facet
+				const a = [
+					-facet.plane[0]/facet.plane[3],
+					-facet.plane[1]/facet.plane[3],
+					-facet.plane[2]/facet.plane[3]
+				];
+				facetA.push(a);
+
+				const c = -facet.plane[4]/facet.plane[3];
+				facetC.push(c);
 			}
 		}
 
 		this.vertices = [];
 		this.idxVertices = [...idxVertices];
-		for(const idx of idxVertices) {
-			this.vertices.push(points[idx][0], points[idx][1], points[idx][2]);
+		for(const i of idxVertices) {
+			this.vertices.push(this.x[i], this.y[i], this.z[i]);
 		}
 
-		// Add distances from the convex hull
-		this.distances = this.distanceFromConvexHull4D(points, hull);
+		this.distances = this.distanceFromConvexHull4Db(p, idxVertices, facetA, facetC);
+void this.distanceFromConvexHull4D;
+void this.fixUnassignedDistances;
 
-		this.fixUnassignedDistances(points, e0, e1, e2, e3);
+		// Add distances from the convex hull
+		// this.distances = this.distanceFromConvexHull4D(points, hull);
+
+		// this.fixUnassignedDistances(points, e0, e1, e2, e3);
 
 		// TEST
-		// {
-		// 	let out = "";
-		// 	for(let i=0; i < points.length; ++i) {
-		// 		out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
-		// 	}
-		// 	writeFileSync("test.txt", out, "utf8");
-		// }
+		{
+			let out = "";
+			for(let i=0; i < p.length; ++i) {
+				out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
+			}
+			writeFileSync("test.txt", out, "utf8");
+		}
 
 		return "";
 	}
@@ -698,6 +859,38 @@ export class VariableCompositionConvexHull {
 
 		// Point outside the plane so it is outside the tetrahedra
 		return [-1, -1, -1, -1];
+	}
+
+	private distanceFromConvexHull4Db(parts: number[][],
+									  idxVertices: Set<number>,
+									  facetA: number[][],
+									  facetC: number[]): number[] {
+
+		const distances: number[] = [];
+
+		for(let idx = 0; idx < parts.length; ++idx) {
+
+			if(idxVertices.has(idx)) {
+				distances.push(0);
+				continue;
+			}
+
+			const part = parts[idx];
+
+			let dist = Number.POSITIVE_INFINITY;
+			for(let i=0; i < facetA.length; ++i) {
+
+				// Ehull = np.max(facet_a.dot(p) + facet_c)
+				const eHull = facetA[i][0]*part[0] +
+							  facetA[i][1]*part[1] +
+							  facetA[i][2]*part[2] +
+							  facetC[i];
+				const d = Math.abs(this.e[i]-eHull);
+				if(d < dist) dist = d;
+			}
+			distances.push(dist);
+		}
+		return distances;
 	}
 
 	/**
