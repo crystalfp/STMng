@@ -32,7 +32,8 @@
     "@oxlint/migrate",
     "@typescript/native-preview",
     "eslint-plugin-eslint-comments",
-    "vite"
+    "vite",
+    "@golar/vue"
   ],
   "oxlint": true,
   "rollup": true,

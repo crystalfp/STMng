@@ -310,8 +310,8 @@ onMounted(() => {
             configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[0]*m;
             configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[1]*m;
             configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[2]*m;
-            }
             break;
+        }
         case "b": {
             const len = Math.hypot(controlStore.basis[3],
                                    controlStore.basis[4],
@@ -320,8 +320,8 @@ onMounted(() => {
             configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[3]*m;
             configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[4]*m;
             configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[5]*m;
-            }
             break;
+        }
         case "c": {
             const len = Math.hypot(controlStore.basis[6],
                                    controlStore.basis[7],
@@ -330,8 +330,8 @@ onMounted(() => {
             configStore.camera.position[0] = configStore.camera.lookAt[0] + controlStore.basis[6]*m;
             configStore.camera.position[1] = configStore.camera.lookAt[1] + controlStore.basis[7]*m;
             configStore.camera.position[2] = configStore.camera.lookAt[2] + controlStore.basis[8]*m;
-            }
             break;
+        }
         default:
             return;
         }
@@ -557,6 +557,7 @@ onMounted(() => {
     viewportGizmo.addEventListener("start", () => (controls.enabled = false));
     viewportGizmo.addEventListener("end", () => (controls.enabled = true));
     viewportGizmo.addEventListener("change", () => {
+        // eslint-disable-next-line unicorn/no-useless-iterator-to-array
         void controls.normalizeRotations().setPosition(...camera.position.toArray());
     });
 
@@ -566,6 +567,7 @@ onMounted(() => {
     });
 
     // Set the target
+    // eslint-disable-next-line unicorn/no-useless-iterator-to-array
     void controls.normalizeRotations().setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
     camera.lookAt(viewportGizmo.target);
 

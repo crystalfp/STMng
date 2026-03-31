@@ -164,68 +164,68 @@ export class StructureReader extends NodeCore {
 
 			switch(requestedFormat) {
 				case "XYZ": {
-						const {ReaderXYZ} = await import("../readers/ReadXYZ");
-						this.reader = new ReaderXYZ();
-					}
+					const {ReaderXYZ} = await import("../readers/ReadXYZ");
+					this.reader = new ReaderXYZ();
 					break;
+				}
 				case "XDATCAR5": {
-						const {ReaderXDATCAR5} = await import("../readers/ReadXDATCAR5");
-						this.reader = new ReaderXDATCAR5();
-					}
+					const {ReaderXDATCAR5} = await import("../readers/ReadXDATCAR5");
+					this.reader = new ReaderXDATCAR5();
 					break;
+				}
 				case "Shel-X": {
-						const {ReaderSHELX} = await import("../readers/ReadSHELX");
-						this.reader = new ReaderSHELX();
-					}
+					const {ReaderSHELX} = await import("../readers/ReadSHELX");
+					this.reader = new ReaderSHELX();
 					break;
+				}
 				case "LAMMPS": {
-						const {ReaderLAMMPS} = await import("../readers/ReadLAMMPS");
-						this.reader = new ReaderLAMMPS();
-					}
+					const {ReaderLAMMPS} = await import("../readers/ReadLAMMPS");
+					this.reader = new ReaderLAMMPS();
 					break;
+				}
 				case "LAMMPStrj": {
-						const {ReaderLAMMPStrj} = await import("../readers/ReadLAMMPStrj");
-						this.reader = new ReaderLAMMPStrj();
-					}
+					const {ReaderLAMMPStrj} = await import("../readers/ReadLAMMPStrj");
+					this.reader = new ReaderLAMMPStrj();
 					break;
+				}
 				case "POSCAR":
 				case "POSCAR + XDATCAR":
 				case "POSCAR + CP2K":
 				case "POSCAR + ENERGY": {
-						const {ReaderPOSCAR} = await import("../readers/ReadPOSCAR");
-						this.reader = new ReaderPOSCAR();
-					}
+					const {ReaderPOSCAR} = await import("../readers/ReadPOSCAR");
+					this.reader = new ReaderPOSCAR();
 					break;
+				}
 				case "CIF": {
-						const {ReaderCIF} = await import("../readers/ReadCIF");
-						this.reader = new ReaderCIF();
-					}
+					const {ReaderCIF} = await import("../readers/ReadCIF");
+					this.reader = new ReaderCIF();
 					break;
+				}
 				case "CHGCAR": {
-						const {ReaderCHGCAR} = await import("../readers/ReadCHGCAR");
-						this.reader = new ReaderCHGCAR();
-					}
+					const {ReaderCHGCAR} = await import("../readers/ReadCHGCAR");
+					this.reader = new ReaderCHGCAR();
 					break;
+				}
 				case "Gaussian Cube": {
-						const {ReaderGAUSSIAN} = await import("../readers/ReadGAUSSIAN");
-						this.reader = new ReaderGAUSSIAN();
-					}
+					const {ReaderGAUSSIAN} = await import("../readers/ReadGAUSSIAN");
+					this.reader = new ReaderGAUSSIAN();
 					break;
+				}
 				case "PDB": {
-						const {ReaderPDB} = await import("../readers/ReadPDB");
-						this.reader = new ReaderPDB();
-					}
+					const {ReaderPDB} = await import("../readers/ReadPDB");
+					this.reader = new ReaderPDB();
 					break;
+				}
 				case "DL_POLY HISTORY": {
-						const {ReaderDLPOLY} = await import("../readers/ReadDLPOLY");
-						this.reader = new ReaderDLPOLY();
-					}
+					const {ReaderDLPOLY} = await import("../readers/ReadDLPOLY");
+					this.reader = new ReaderDLPOLY();
 					break;
+				}
 				case "Quantum ESPRESSO": {
-						const {ReaderQUANTUM} = await import("../readers/ReadQUANTUM");
-						this.reader = new ReaderQUANTUM();
-					}
+					const {ReaderQUANTUM} = await import("../readers/ReadQUANTUM");
+					this.reader = new ReaderQUANTUM();
 					break;
+				}
 				default: throw Error("Format not implemented");
 			}
 		}
@@ -372,27 +372,27 @@ export class StructureReader extends NodeCore {
 
 			switch(mainFormat) {
 				case "POSCAR + XDATCAR": {
-						const {readAuxXDATCAR} = await import("../readers/AuxXDATCAR");
-						this.structures = await readAuxXDATCAR(filename,
-															   this.structures,
-															   this.appendFile);
-					}
-					break;
-				case "POSCAR + ENERGY": {
-						const {readAuxENERGY} = await import("../readers/AuxENERGY");
-						this.structures = readAuxENERGY(filename,
-														this.structures,
-														this.appendFrom,
-														this.energyPerAtom);
-					}
-					break;
-				case "POSCAR + CP2K": {
-						const {readAuxCP2K} = await import("../readers/AuxCP2K");
-						this.structures = await readAuxCP2K(filename,
+					const {readAuxXDATCAR} = await import("../readers/AuxXDATCAR");
+					this.structures = await readAuxXDATCAR(filename,
 															this.structures,
-															this.appendFrom);
-					}
+															this.appendFile);
 					break;
+				}
+				case "POSCAR + ENERGY": {
+					const {readAuxENERGY} = await import("../readers/AuxENERGY");
+					this.structures = readAuxENERGY(filename,
+													this.structures,
+													this.appendFrom,
+													this.energyPerAtom);
+					break;
+				}
+				case "POSCAR + CP2K": {
+					const {readAuxCP2K} = await import("../readers/AuxCP2K");
+					this.structures = await readAuxCP2K(filename,
+														this.structures,
+														this.appendFrom);
+					break;
+				}
 				default:
 					throw Error(`Format "${mainFormat}" has no auxiliary file`);
 			}

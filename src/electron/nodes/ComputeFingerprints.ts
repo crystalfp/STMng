@@ -413,12 +413,12 @@ export class ComputeFingerprints extends NodeCore {
 				}
 				break;
 			case "silhouette": {
-					const silhouette =
-						this.grouping.computeSilhouetteCoefficients(this.dist.getDistanceMatrix(),
-																	enabled);
-					for(const s of silhouette) values.push(s);
-				}
+				const silhouette =
+					this.grouping.computeSilhouetteCoefficients(this.dist.getDistanceMatrix(),
+																enabled);
+				for(const s of silhouette) values.push(s);
 				break;
+			}
 			case "fidelity":
 			case undefined:
 				throw Error(`Invalid "${options.plotType}" plot type`);
@@ -631,8 +631,8 @@ export class ComputeFingerprints extends NodeCore {
 					chartData.fingerprint.push([x, value]);
 					x += this.binSize;
 				}
-				}
 				break;
+			}
 
 			case "eh":
 				if(haveEnergies) {
@@ -671,8 +671,8 @@ export class ComputeFingerprints extends NodeCore {
 
 				chartData.distances = methodDistances(this.dist.getDistanceMatrix(),
 													  ids, enabled, lambda);
-				}
 				break;
+			}
 		}
 		const dataToSend = JSON.stringify(chartData);
 

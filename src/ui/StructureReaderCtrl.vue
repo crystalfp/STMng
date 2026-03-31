@@ -165,7 +165,7 @@ const batchRead = async (): Promise<void> => {
 // Initialize the control
 resetNodeAlert();
 askNode(id, "init")
-    .then((params) => {
+    .then(async (params) => {
 
         loopSteps.value     = params.loopSteps as boolean ?? false;
         stepBackward.value  = params.stepBackward as boolean ?? false;
@@ -183,11 +183,6 @@ askNode(id, "init")
         collection.value.length = 0;
         for(const entry of collectionRaw) collection.value.push(entry);
 
-        batchRead().catch((error: Error) => {
-            showNodeAlert(`Error from batch read for ${label}: ${error.message}`,
-                          "structureReader");
-        });
-
         if(format.value === "Collection") {
             showCollection.value = true;
             showPrototypes.value = false;
@@ -196,9 +191,15 @@ askNode(id, "init")
             showCollection.value = false;
             showPrototypes.value = format.value === "Prototypes";
         }
+
+        // batchRead().catch((error: Error) => {
+        //     showNodeAlert(`Error from batch read for ${label}: ${error.message}`,
+        //                   "structureReader");
+        // });
+        return batchRead();
     })
     .catch((error: Error) => {
-        showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
+        showNodeAlert(`Error in initialization for ${label}: ${error.message}`,
                       "structureReader");
     });
 

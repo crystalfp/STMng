@@ -24,9 +24,8 @@
  */
 import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {VariableCompositionAccumulator} from "./Accumulator";
-import {dot, cross} from "mathjs";
 import type {CtrlParams} from "@/types";
-import {writeFileSync} from "node:fs";
+// import {writeFileSync} from "node:fs";
 
 /**
  * Interface to the convex hull in the variable composition space
@@ -429,13 +428,18 @@ export class VariableCompositionConvexHull {
 		this.parts.length = 0;
 		this.formula.length = 0;
 
-		const e = [];
+		// TEST
+		// const e = [];
+
 		const p: number[][] = [];
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
 			const {parts, step, energy, key, formula} = structure;
 			const structureEnergy = energy ?? 0;
-			e.push(structureEnergy);
+
+			// TEST
+			// e.push(structureEnergy);
+
 			this.e.push(structureEnergy);
 			if(parts[0] === 1 &&
 			   parts[1] === 0 &&
@@ -556,56 +560,19 @@ export class VariableCompositionConvexHull {
 			this.vertices.push(this.x[i], this.y[i], this.z[i]);
 		}
 
-		this.distances = this.distanceFromConvexHull4Db(p, idxVertices, facetA, facetC);
-void this.distanceFromConvexHull4D;
-void this.fixUnassignedDistances;
-
 		// Add distances from the convex hull
-		// this.distances = this.distanceFromConvexHull4D(points, hull);
-
-		// this.fixUnassignedDistances(points, e0, e1, e2, e3);
+		this.distances = this.distanceFromConvexHull4D(p, idxVertices, facetA, facetC);
 
 		// TEST
-		{
-			let out = "";
-			for(let i=0; i < p.length; ++i) {
-				out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
-			}
-			writeFileSync("test.txt", out, "utf8");
-		}
+		// {
+		// 	let out = "";
+		// 	for(let i=0; i < p.length; ++i) {
+		// 		out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
+		// 	}
+		// 	writeFileSync("test.txt", out, "utf8");
+		// }
 
 		return "";
-	}
-
-	/**
-	 * Assign a distance to the points not inside any tetrahedra
-	 *
-	 * @param points - Points to check
-	 * @param e0 - Enthalpy at the 1:0:0:0 vertex
-	 * @param e1 - Enthalpy at the 0:1:0:0 vertex
-	 * @param e2 - Enthalpy at the 0:0:1:0 vertex
-	 * @param e3 - Enthalpy at the 0:0:0:1 vertex
-	 */
-	private fixUnassignedDistances(points: number[][],
-								   e0: number, e1: number,
-								   e2: number, e3: number): void {
-
-		// Vertices of the containing tetrahedra
-		const a = [0, 0, 0];
-		const b = [1, 0, 0];
-		const c = [0.5, 0.8660254038, 0];
-		const d = [0.5, 0.2886751346, 0.8660254038];
-
-		// Check points that are not in any tetrahedra
-		const npoints = points.length;
-		for(let idx = 0; idx < npoints; ++idx) {
-			if(this.distances[idx] < Number.POSITIVE_INFINITY) continue;
-
-			const w = this.barycentricCoordinates3D(points[idx], a, b, c, d);
-
-			const dist = Math.abs(points[idx][3]-e0*w[0]-e1*w[1]-e2*w[2]-e3*w[3]);
-			this.distances[idx] = dist;
-		}
 	}
 
 	// > Distances computations
@@ -731,140 +698,18 @@ void this.fixUnassignedDistances;
 	}
 
 	/**
-	 * Compute barycentric coordinates of a tetrahedra
-	 * @remarks Algorithm from: https://www.cdsimpson.net/2014/10/barycentric-coordinates.html
-	 *  - w1, w2, w3, w4 corresponds to a, b, c, d vertices
+	 * Distances of 4D points from the convex hull triangulated surface
 	 *
-	 * @param pt - Point to test (only x, y and z used)
-	 * @param a - Vertex of the tetrahedra (only x, y and z used)
-	 * @param b - Vertex of the tetrahedra (only x, y and z used)
-	 * @param c - Vertex of the tetrahedra (only x, y and z used)
-	 * @param d - Vertex of the tetrahedra (only x, y and z used)
-	 * @returns Barycentric coordinates [w1, w2, w3, w4] of the point
+	 * @param parts - List of parts for each structure
+	 * @param idxVertices - Index of the points that are vertices for the convex hull
+	 * @param facetA - Hyperplane a parameter from the convex hull
+	 * @param facetC - Hyperplane c parameter from the convex hull
+	 * @returns Minimal distance from the convex hull for each structure
 	 */
-	private barycentricCoordinates3D(pt: number[],
-									 a: number[],
-									 b: number[],
-									 c: number[],
-									 d: number[]): number[] {
-
-		const vab = [
-			b[0] - a[0],
-			b[1] - a[1],
-			b[2] - a[2]
-		];
-		const vac = [
-			c[0] - a[0],
-			c[1] - a[1],
-			c[2] - a[2]
-		];
-		const vad = [
-			d[0] - a[0],
-			d[1] - a[1],
-			d[2] - a[2]
-		];
-		const vap = [
-			pt[0] - a[0],
-			pt[1] - a[1],
-			pt[2] - a[2]
-		];
-		const vbp = [
-			pt[0] - b[0],
-			pt[1] - b[1],
-			pt[2] - b[2]
-		];
-		const vbc = [
-			c[0] - b[0],
-			c[1] - b[1],
-			c[2] - b[2]
-		];
-		const vbd = [
-			d[0] - b[0],
-			d[1] - b[1],
-			d[2] - b[2]
-		];
-
-		// All volumes are multiplied by 6
-		const volumeA = dot(vbp, cross(vbd, vbc));
-		const volumeB = dot(vap, cross(vac, vad));
-		const volumeC = dot(vap, cross(vad, vab));
-
-		const totalVolume = Math.abs(dot(vab, cross(vac, vad)));
-		if(totalVolume < 1e-15) {
-			const volumeD = dot(vap, cross(vab, vac));
-			return this.coordinatesForCoplanarPoints(pt, a, b, c, d,
-													 volumeA, volumeB,
-													 volumeC, volumeD);
-		}
-
-		const w1 = volumeA/totalVolume;
-		const w2 = volumeB/totalVolume;
-		const w3 = volumeC/totalVolume;
-		const w4 = 1 - w1 - w2 - w3;
-
-		return [w1, w2, w3, w4];
-	}
-
-	/**
-	 * Compute barycentric coordinates when the tetrahedra has zero volume
-	 *
-	 * @param pt - Point to test (only x, y and z used)
-	 * @param a - Vertex of the tetrahedra (only x, y and z used)
-	 * @param b - Vertex of the tetrahedra (only x, y and z used)
-	 * @param c - Vertex of the tetrahedra (only x, y and z used)
-	 * @param d - Vertex of the tetrahedra (only x, y and z used)
-	 * @param volumeA - Computed volume opposite to vertex a
-	 * @param volumeB - Computed volume opposite to vertex b
-	 * @param volumeC - Computed volume opposite to vertex c
-	 * @param volumeD - Computed volume opposite to vertex d
-	 * @returns Barycentric coordinates [w1, w2, w3, w4] of the point
-	 */
-	private coordinatesForCoplanarPoints(pt: number[],
-									 	 a: number[],
-									 	 b: number[],
-									 	 c: number[],
-									 	 d: number[],
-										 volumeA: number,
-										 volumeB: number,
-										 volumeC: number,
-										 volumeD: number): number[] {
-
-		// If the subvolumes are zero the pt point is coplanar
-		if(Math.abs(volumeA) < 1e-15 &&
-		   Math.abs(volumeB) < 1e-15 &&
-		   Math.abs(volumeC) < 1e-15 &&
-		   Math.abs(volumeD) < 1e-15) {
-
-			let w = this.barycentricCoordinates(pt, a, b, c);
-			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
-
-				return [w[2], w[1], w[0], 0];
-			}
-			w = this.barycentricCoordinates(pt, a, d, c);
-			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
-
-				return [w[2], 0, w[0], w[1]];
-			}
-			w = this.barycentricCoordinates(pt, a, b, d);
-			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
-
-				return [w[2], w[1], 0, w[0]];
-			}
-			w = this.barycentricCoordinates(pt, b, c, d);
-			if(w[0] >= 0 && w[1] >= 0 && w[2] >= 0) {
-
-				return [0, w[2], w[1], w[0]];
-			}
-		}
-
-		// Point outside the plane so it is outside the tetrahedra
-		return [-1, -1, -1, -1];
-	}
-
-	private distanceFromConvexHull4Db(parts: number[][],
-									  idxVertices: Set<number>,
-									  facetA: number[][],
-									  facetC: number[]): number[] {
+	private distanceFromConvexHull4D(parts: number[][],
+									 idxVertices: Set<number>,
+									 facetA: number[][],
+									 facetC: number[]): number[] {
 
 		const distances: number[] = [];
 
@@ -890,59 +735,6 @@ void this.fixUnassignedDistances;
 			}
 			distances.push(dist);
 		}
-		return distances;
-	}
-
-	/**
-	 * Distances of 4D points from the convex hull triangulated surface
-	 *
-	 * @param points - Points coordinates
-	 * @param hull - Convex hull facets
-	 * @returns Distances of the points from the surface
-	 */
-	private distanceFromConvexHull4D(points: number[][], hull: Facet[]): number[] {
-
-		// For each point
-		const npoints = points.length;
-		const distances = Array<number>(npoints).fill(Number.POSITIVE_INFINITY);
-		for(let idx = 0; idx < npoints; ++idx) {
-
-			for(const facet of hull) {
-
-				// For each valid tetrahedra
-				if(facet.plane[3] < -1e-13) {
-
-					const [v1, v2, v3, v4] = facet.verts;
-
-					// Coincident with a vertex of the tetrahedra: distance is zero
-					if(idx === v1 || idx === v2 || idx === v3 || idx === v4) {
-						distances[idx] = 0;
-						break;
-					}
-
-					const w = this.barycentricCoordinates3D(points[idx],
-															points[v1],
-															points[v2],
-															points[v3],
-															points[v4]);
-
-					// Check if the point is inside the tetrahedra
-					if(w[0] < 0 || w[0] > 1 ||
-					   w[1] < 0 || w[1] > 1 ||
-					   w[2] < 0 || w[2] > 1 ||
-					   w[3] < 0 || w[3] > 1) continue;
-
-					if(distances[idx] === 0) continue;
-					const d = Math.abs(points[idx][3] -
-									   points[v1][3]*w[0] -
-									   points[v2][3]*w[1] -
-									   points[v3][3]*w[2] -
-									   points[v4][3]*w[3]);
-					if(d < distances[idx]) distances[idx] = d;
-				}
-			}
-		}
-
 		return distances;
 	}
 

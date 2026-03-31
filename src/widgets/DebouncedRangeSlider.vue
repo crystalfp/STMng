@@ -50,7 +50,7 @@ const props = withDefaults(defineProps<{
 /** Returning the debounced slider value */
 const value = defineModel<number[]>();
 
-const limitsToDebounce = ref<number[]>(value.value ?? [props.min, props.max]);
+const limitsToDebounce = ref(value.value ?? [props.min, props.max]);
 const stopWatcher1 = watch(value, () => {
 
     if(value.value) {

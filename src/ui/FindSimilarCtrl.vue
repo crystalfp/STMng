@@ -68,7 +68,7 @@ const showDetails = ref(false);
 
 /** Color legend */
 const legend = ref(false);
-const colorRanges = reactive<{color: string; range: string; label: string}[]>([
+const colorRanges = reactive([
     {color: "#FF1700", range: "over 0.15",   label: "questionable relatives"},
     {color: "#FFC200", range: "0.12 - 0.15", label: "distant relatives"},
     {color: "#D5FF00", range: "0.04 - 0.12", label: "related structures"},

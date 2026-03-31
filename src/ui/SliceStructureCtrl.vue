@@ -52,7 +52,7 @@ const mode = ref<SlicingModes>("plane");
 const geometryColor = ref("#FFFFFF80");
 
 /** Available modes */
-const modeList = reactive<{label: string; value: SlicingModes}[]>([
+const modeList = reactive([
     {label: "Plane",    value: "plane"},
     {label: "Miller",   value: "miller"},
     {label: "Sphere",   value: "sphere"},
