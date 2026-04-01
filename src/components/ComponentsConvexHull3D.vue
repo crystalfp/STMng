@@ -22,13 +22,14 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {onUnmounted, ref, watch} from "vue";
+import {onUnmounted, ref, watch, computed} from "vue";
 import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Float32BufferAttribute, LineBasicMaterial, LineLoop,
         Mesh, MeshStandardMaterial, LineSegments, Group,
-        FrontSide, Object3D} from "three";
+        FrontSide, Object3D, Color, AmbientLight} from "three";
 import {CSS2DRenderer, CSS2DObject} from "three/addons/renderers/CSS2DRenderer.js";
 import {Line2, LineGeometry, LineMaterial} from "three/examples/jsm/Addons.js";
+import {Lut} from "three/addons/math/Lut.js";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -37,6 +38,7 @@ import {SimpleViewer} from "@/services/SimpleViewer";
 import type {CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
+import ViewerLegend from "@/widgets/ViewerLegend.vue";
 
 const windowPath = "/hull-3d";
 
@@ -45,6 +47,8 @@ const showScale = ref(0.2);
 const pointSize = ref(0.01);
 const showPointSize = ref(0.01);
 const disableScale = ref(false);
+let dimension = 3;
+const showLegend = ref(false);
 
 /** To show error messages */
 const notificationQueue = ref<string[]>([]);
@@ -79,6 +83,13 @@ const viewParts = ref("");
 const viewDistance = ref("");
 const viewFormula = ref("");
 const viewEnthalpy = ref("");
+
+/** Colormap */
+const colormapName = ref("rainbow");
+const lut = new Lut(colormapName.value, 128);
+const vertexColors: Color[] = [];
+const lutMin = ref(0);
+const lutMax = ref(1);
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
@@ -122,6 +133,14 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     labelRenderer.domElement.style.pointerEvents = "none";
     const viewerContainer = document.querySelector(".hull3d-viewer");
     if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
+
+    // Increase ambient light intensity
+    scene.traverse((object) => {
+        if(object.type === "AmbientLight") {
+            const light = object as AmbientLight;
+            light.intensity = 1;
+        }
+    });
 },
 (scene, camera) => {
     labelRenderer.render(scene, camera);
@@ -271,17 +290,17 @@ const createPoints = (px: number[], py: number[], pz: number[],
 
     // Points not on the convex hull
     const geometry1 = new BoxGeometry(size, size, size);
-    const material1 = new MeshStandardMaterial({
-        side: FrontSide,
-        roughness: 0.5,
-        metalness: 0.6,
-        color: "#03C03C",
-    });
 
     let len = px.length;
     for(let i=0; i < len; ++i) {
 
-        const cube = new Mesh(geometry1, material1);
+        const material = new MeshStandardMaterial({
+            side: FrontSide,
+            roughness: 0.5,
+            metalness: 0.6,
+            color: vertexColors[i].convertSRGBToLinear()
+        });
+        const cube = new Mesh(geometry1, material);
         cube.position.set(px[i], py[i], pz[i]*zScale);
         cube.userData = {index: i};
         cube.name = "Pt";
@@ -295,7 +314,7 @@ const createPoints = (px: number[], py: number[], pz: number[],
         side: FrontSide,
         roughness: 0.5,
         metalness: 0.6,
-        color: "#FF0000",
+        color: "#8F0177",
     });
 
     len = stableVertices.length/3;
@@ -311,9 +330,12 @@ const createPoints = (px: number[], py: number[], pz: number[],
 };
 
 /**
+ * Create labels on the stable vertices
  *
  * @param stableVertices - Points exactly on the convex hull
  * @param zScale - Scale along the z axis
+ * @param indexVertices - Mapping between the stable vertex and the list of points
+ * @param formulaText - Label to show on the stable vertices
  */
 const createLabels = (stableVertices: number[], zScale: number,
                       indexVertices: number[], formulaText: string[]): void => {
@@ -342,11 +364,38 @@ const createLabels = (stableVertices: number[], zScale: number,
     sv.setSceneModified();
 };
 
+/**
+ * Create colormap for the enthalpies
+ *
+ * @param energies - Array of points energies
+ */
+const createColors = (energies: number[]): void => {
+
+    let maxEnergy = Number.NEGATIVE_INFINITY;
+    let minEnergy = Number.POSITIVE_INFINITY;
+    for(const energy of energies) {
+        if(energy > maxEnergy) maxEnergy = energy;
+        if(energy < minEnergy) minEnergy = energy;
+    }
+
+    lut.setMax(maxEnergy);
+    lut.setMin(minEnergy);
+    lutMin.value = minEnergy;
+    lutMax.value = maxEnergy;
+
+    vertexColors.length = 0;
+    for(const energy of energies) {
+
+        const color = lut.getColor(energy);
+        vertexColors.push(color.clone());
+    }
+};
+
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
 
     // Collect the data
-    const dimension = params.dimension as number;
+    dimension = params.dimension as number;
     if(!dimension) return;
 
     const tv = params.trianglesVertices as number[];
@@ -374,6 +423,8 @@ requestData(windowPath, (params: CtrlParams) => {
 	distance = dd ? [...dd] : [];
 	const ff = params.formula as string[];
     formula = ff ? [...ff] : [];
+
+    createColors(e);
 
     if(dimension === 3) {
 
@@ -419,7 +470,12 @@ const stopWatcher = watch([scale, pointSize], ([sa, pa], [sb, pb]) => {
         createPoints(x, y, e, v, scale.value, pointSize.value);
     }
     else if(pa !== pb) {
-        createPoints(x, y, e, v, scale.value, pointSize.value);
+        if(dimension === 3) {
+            createPoints(x, y, e, v, scale.value, pointSize.value);
+        }
+        else {
+            createPoints(x, y, z, v, 1, pointSize.value);
+        }
     }
 });
 
@@ -434,6 +490,15 @@ onUnmounted(() => {
 const centerView = (): void => {
     sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
 };
+
+/** Data for the legend */
+const vc = computed(() => {
+    return {
+        min: lutMin.value.toFixed(4),
+        max: lutMax.value.toFixed(4),
+        colormap: colormapName.value
+    };
+});
 
 </script>
 
@@ -462,10 +527,15 @@ const centerView = (): void => {
                             label-width="8rem"
                             :label="`Point size (${showPointSize})`"
                             :min="0.005" :max="0.05" :step="0.005" />
+      <v-switch v-model="showLegend" label="Legend"/>
       <v-btn @click="centerView">Center</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
+  <viewer-legend v-if="showLegend"
+                 :width="130" :height="285" :bottom="70" :right="0"
+                 title="Enthalpy" :values-continue="vc"/>
+
   <v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
                     timer="bottom" max-width="250"
                     close-on-content-click color="red-darken-4" />

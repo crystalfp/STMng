@@ -58,109 +58,10 @@ export class VariableCompositionConvexHull {
 	}
 
 	/**
-	 * Remove coincident points in composition space
-	 *
-	 * @param dimension - For which dimension prepare the points
-	 * @returns List of points for the convex hull routine
-	 */
-	private preparePointsForConvexHull(dimension: number, p?: number[][]): number[][] {
-
-		// For coincident configurations retain only the one with minimal energy
-		const minEnergies = new Map<string, {idx: number; energy: number}>();
-
-		const len = this.x.length;
-		for(let i=0; i < len; ++i) {
-			const key = this.parts[i];
-			if(minEnergies.has(key)) {
-				const entry = minEnergies.get(key)!;
-				if(this.e[i] < entry.energy) {
-					minEnergies.set(key, {idx: i, energy: this.e[i]});
-				}
-			}
-			else {
-				minEnergies.set(key, {idx: i, energy: this.e[i]});
-			}
-		}
-
-		const validIdx = minEnergies
-					.values()
-					.map((entry) => entry.idx)
-					.toArray()
-					.toSorted((a, b) => a-b);
-
-		const points: number[][] = [];
-		const tx: number[] = [];
-		const ty: number[] = [];
-		const tz: number[] = [];
-		const te: number[] = [];
-		const tstep: number[] = [];
-		const tparts: string[] = [];
-		const tformula: string[] = [];
-
-		switch(dimension) {
-			case 2:
-				for(const i of validIdx) {
-					points.push([this.x[i], this.e[i]]);
-					tx.push(this.x[i]);
-					te.push(this.e[i]);
-					tstep.push(this.step[i]);
-					tparts.push(this.parts[i]);
-					tformula.push(this.formula[i]);
-				}
-				break;
-			case 3:
-				for(const i of validIdx) {
-					points.push([this.x[i], this.y[i], this.e[i]]);
-					tx.push(this.x[i]);
-					ty.push(this.y[i]);
-					te.push(this.e[i]);
-					tstep.push(this.step[i]);
-					tparts.push(this.parts[i]);
-					tformula.push(this.formula[i]);
-				}
-				break;
-			case 4:
-				for(const i of validIdx) {
-					points.push([p![i][0], p![i][1], p![i][2], this.e[i]]);
-					// points.push([this.x[i], this.y[i], this.z[i], this.e[i]]);
-					tx.push(this.x[i]);
-					ty.push(this.y[i]);
-					tz.push(this.z[i]);
-					te.push(this.e[i]);
-					tstep.push(this.step[i]);
-					tparts.push(this.parts[i]);
-					tformula.push(this.formula[i]);
-				}
-				break;
-		}
-
-		// Update the points list
-		this.x = tx;
-		this.y = ty;
-		this.z = tz;
-		this.e = te;
-		this.step = tstep;
-		this.parts = tparts;
-		this.formula = tformula;
-
-		// Disable coincident points
-		const validIdxSet = new Set(validIdx);
-		let idx = 0;
-		for(const entry of this.accumulator.iterateEnabledStructures()) {
-
-			if(!validIdxSet.has(idx)) entry.enabled = false;
-			++idx;
-		}
-
-		return points;
-	}
-
-	/**
 	 * Remove coincident points in composition space for four components
 	 *
-	 * @param dimension - For which dimension prepare the points
-	 * @param validIdx - List of indices to retain
-	 * @returns List of points for the convex hull routine
+	 * @param p - Proportions (barycentric coordinates) for each point
+	 * @returns List of points for the convex hull routine and mapping to the original point
 	 */
 	private preparePointsForConvexHull4D(p: number[][]): {points: number[][]; idx: number[]} {
 
@@ -266,9 +167,14 @@ export class VariableCompositionConvexHull {
 		let len = this.e.length;
 		for(let i=0; i < len; ++i) this.e[i] -= e0+this.x[i]*(e1-e0);
 
+		// Prepare the points for the convex hull
+		const points: number[][] = [];
+		for(let i=0; i < len; ++i) {
+			points.push([this.x[i], this.e[i]]);
+		}
+
 		// Find convex hull (only the lower part)
 		// The facet is encoded as (normal[2], offset)
-		const points = this.preparePointsForConvexHull(2);
 		const hull = quickHull(points);
 		const toOrder: {x: number; y: number; idx: number}[] = [];
 		for(const facet of hull) {
@@ -377,10 +283,15 @@ export class VariableCompositionConvexHull {
 		const len = this.e.length;
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2;
 
+		// Prepare the points for the convex hull
+		const points: number[][] = [];
+		for(let i=0; i < len; ++i) {
+			points.push([this.x[i], this.y[i], this.e[i]]);
+		}
+
 		// Find convex hull (only the lower part)
 		// The facet is encoded as (normal[3], offset)
 		this.trianglesVertices.length = 0;
-		const points = this.preparePointsForConvexHull(3);
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {

@@ -63,6 +63,7 @@ Nice to have/Future:
   ☐ Add a `metadata` section to project files.
   ☐ Investigate git workspaces for STMng preprocessor
   ☐ Instead of color manipulation use package <https://www.npmjs.com/package/color-convert>
+  ☐ Labels using MSDF <https://github.com/leochocolat/three-msdf-text-utils>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
