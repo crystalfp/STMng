@@ -74,16 +74,19 @@ requestData(windowPath, (params: CtrlParams) => {
     for(let i=0; i < len; ++i) {
         points.value.push({x: lineX[i], y: lineY[i]});
     }
-
+    scatter.value.length = 0;
     showLabels.value = params.labelShow as boolean ?? false;
     if(showLabels.value) {
         len = labelX.length;
-        for(let i=0; i < len; ++i) scatter.value.push({
-            x: labelX[i],
-            y: labelY[i],
-            label: labelText[i]
-        });
+        for(let i=0; i < len; ++i) {
+            scatter.value.push({
+                x: labelX[i],
+                y: labelY[i],
+                label: labelText[i]
+            });
+        }
     }
+
     forceUpdate.value = !forceUpdate.value;
 });
 
@@ -110,6 +113,14 @@ const savePoints = (): void => {
     sendToNode("SYSTEM", "save-xrd");
 };
 
+/**
+ * Save the spectra peaks to a file
+ */
+const savePeaks = (): void => {
+
+    sendToNode("SYSTEM", "save-peaks");
+};
+
 const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 
 // Below there are settings (like labelColor) that seems redundant,
@@ -134,6 +145,7 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
                tickTextColor="#6C778C"/>
     </VisXYContainer>
     <v-container class="button-strip">
+      <v-btn @click="savePeaks">Save peaks</v-btn>
       <v-btn @click="savePoints">Save points</v-btn>
       <v-btn @click="makeImage">Save image</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>

@@ -45,6 +45,7 @@ export class DiffractionPattern extends NodeCore {
 	private readonly xrd = new XRDCalculator();
 	private xy: DiffractionPatternResult = {twoTheta: [], intensity: [], label: []};
 	private channelSavePointsOpened = false;
+	private channelSavePeaksOpened = false;
 	private lineCoordinates: LineCoordinates = {x: [], y: []};
 
 	// Mirror of the UI reactive state
@@ -397,6 +398,36 @@ export class DiffractionPattern extends NodeCore {
 						}
 						catch(error: unknown) {
 							sendAlertToClient(`Error in save-xrd: ${(error as Error).message}`);
+						}
+					}
+				});
+			}
+
+			if(!this.channelSavePeaksOpened) {
+				this.channelSavePeaksOpened = true;
+
+				ipcMain.on("SYSTEM:save-peaks", () => {
+
+					const file = dialog.showSaveDialogSync({
+						title: "Save X-Ray diffraction peaks",
+						filters: [
+							{name: "Peaks data", extensions: ["dat"]},
+						]
+					});
+					if(file) {
+						try {
+							let out = "";
+							// twoTheta: [], intensity: [], label: []
+							const len = this.xy.twoTheta.length;
+							for(let i=0; i < len; ++i) {
+								out += this.xy.twoTheta[i].toFixed(4);
+								out += ` ${this.xy.intensity[i].toExponential(8)}`;
+								out += ` "${this.xy.label[i]}"\n`;
+							}
+							writeFileSync(file, out, "utf8");
+						}
+						catch(error: unknown) {
+							sendAlertToClient(`Error in save-peaks: ${(error as Error).message}`);
 						}
 					}
 				});

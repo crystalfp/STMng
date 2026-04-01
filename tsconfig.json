@@ -36,7 +36,7 @@
 
     "paths": {
       "@/*": ["./src/*"]
-    },
+    }
   },
   "include": [
     "vite.config.mts",
