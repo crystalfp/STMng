@@ -23,7 +23,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {computed, ref} from "vue";
-import {VisXYContainer, VisLine, VisAxis, VisScatter} from "@unovis/vue";
+import {VisXYContainer, VisLine, VisAxis, VisScatter, VisCrosshair, VisTooltip} from "@unovis/vue";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
@@ -124,6 +124,15 @@ const savePeaks = (): void => {
 
 const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 
+/**
+ * String to be visualized in the tooltip
+ *
+ * @param d - Data at the point
+ */
+const template = (d: DataRecord): string =>
+`<table><tr><td>2θ:</td><td style="text-align:right">${d.x.toFixed(2)}</td></tr>
+<tr><td>Int.:</td><td style="text-align:right">${d.y.toFixed(2)}</td></tr></table>`;
+
 // Below there are settings (like labelColor) that seems redundant,
 // but they make the screenshot works
 </script>
@@ -145,6 +154,8 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
       <VisAxis type="y" label="Intensity (a. u.)" :gridLine="showGrid"
                labelColor="#6C778C" :labelFontSize="24"
                tickTextColor="#6C778C"/>
+      <VisTooltip />
+      <VisCrosshair :data="points" :x="xp" :y="yp" :template />
     </VisXYContainer>
     <v-container class="button-strip">
       <v-switch v-model="showGrid" label="Show grid"/>
