@@ -253,7 +253,8 @@ const makeImage = (): void => {
 <v-app :theme>
   <div class="hull-portal">
     <VisXYContainer v-if="dimension===2"
-                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" class="hull-viewer">
+                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" :duration="0"
+                    class="hull-viewer">
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
                   color="#03C03C" :size="7" cursor="pointer"/>
@@ -268,7 +269,8 @@ const makeImage = (): void => {
                    xPositioning="data_space" yPositioning="data_space"/>
     </VisXYContainer>
     <VisXYContainer v-else-if="dimension===3"
-                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" class="hull-viewer">
+                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" :duration="0"
+                    class="hull-viewer">
       <VisLine :key="forceUpdate" :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
       <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
       <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"

@@ -50,6 +50,7 @@ const forceUpdate = ref(true);
 const showLabels = ref(false);
 const lineSmooth = ref(true);
 const range = ref([0, 90]);
+const showGrid = ref(true);
 
 // Accessors for the charts
 const xp = (d: DataRecord): number => d.x;
@@ -132,19 +133,21 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 <v-app :theme>
   <div class="chart-portal">
     <VisXYContainer :margin="{right: 20, top: 30, left: 20, bottom: 10}"
-                    :scaleByDomain="true" :xDomain="range" class="chart-container">
+                    :xDomain="range" :yDomain="[0, 100]" :duration="0"
+                    :scaleByDomain="true" class="chart-container">
       <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
       <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
                   color="red" :size="4"
                   :label="lp" labelColor="red" labelPosition="right" />
-      <VisAxis type="x" :gridLine="false" label="2θ (degrees)" :fullSize="true"
+      <VisAxis type="x" label="2θ (degrees)" :gridLine="showGrid"
                labelColor="#6C778C" :labelFontSize="24" numTicks="10"
                tickTextColor="#6C778C"/>
-      <VisAxis type="y" :gridLine="false" label="Intensity (a. u.)"
-               labelColor="#6C778C" :fullSize="true" :labelFontSize="24"
+      <VisAxis type="y" label="Intensity (a. u.)" :gridLine="showGrid"
+               labelColor="#6C778C" :labelFontSize="24"
                tickTextColor="#6C778C"/>
     </VisXYContainer>
     <v-container class="button-strip">
+      <v-switch v-model="showGrid" label="Show grid"/>
       <v-btn @click="savePeaks">Save peaks</v-btn>
       <v-btn @click="savePoints">Save points</v-btn>
       <v-btn @click="makeImage">Save image</v-btn>
@@ -169,6 +172,8 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
   flex: 2;
   padding: 0;
   --vis-axis-tick-color: #6C778C;
+  --vis-axis-grid-color: #6C778C;
+  --vis-axis-grid-line-dasharray: 1 3
 }
 
 </style>

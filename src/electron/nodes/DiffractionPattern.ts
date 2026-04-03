@@ -39,6 +39,7 @@ interface LineCoordinates {
 	/** Y coordinates */
 	y: number[];
 }
+
 export class DiffractionPattern extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -200,17 +201,17 @@ export class DiffractionPattern extends NodeCore {
 						max: number,
 						width: number): LineCoordinates {
 
-		const xCompute: number[] = [];
+  		const sigma = width * 0.5;
+
+		const xComputed: number[] = [];
 		const yComputed: number[] = [];
 
-		const step = 0.04; // 0...90 are 2250 points
-		for(let xx=min-2; xx <= max+2; xx += step) {
-			xCompute.push(xx);
+		const step = (max+sigma-min+sigma)/2000;
+		for(let xx=min-sigma; xx <= max+sigma; xx += step) {
+			xComputed.push(xx);
 			yComputed.push(0);
 		}
-		const nPoints = xCompute.length;
-
-  		const sigma = width * 0.5;
+		const nPoints = xComputed.length;
 
 		const len = x.length;
 		for(let i=0; i < len; ++i) {
@@ -219,7 +220,7 @@ export class DiffractionPattern extends NodeCore {
 			const peakInt = y[i];
 
 			for(let j=0; j < nPoints; ++j) {
-				const gaussian = peakInt * Math.exp(-0.5 * ((xCompute[j] - peakPos) / sigma) ** 2);
+				const gaussian = peakInt * Math.exp(-0.5 * ((xComputed[j] - peakPos) / sigma) ** 2);
 				yComputed[j] = Math.max(yComputed[j], gaussian);
 			}
 		}
@@ -234,9 +235,9 @@ export class DiffractionPattern extends NodeCore {
 		const xOut: number[] = [];
 		const yOut: number[] = [];
 		for(let i=0; i < nPoints; ++i) {
-			const xx = xCompute[i];
+			const xx = xComputed[i];
 			if(xx < min || xx > max) continue;
-			xOut.push(xCompute[i]);
+			xOut.push(xComputed[i]);
 			yOut.push(yComputed[i]);
 		}
 		return {x: xOut, y: yOut};
@@ -417,7 +418,6 @@ export class DiffractionPattern extends NodeCore {
 					if(file) {
 						try {
 							let out = "";
-							// twoTheta: [], intensity: [], label: []
 							const len = this.xy.twoTheta.length;
 							for(let i=0; i < len; ++i) {
 								out += this.xy.twoTheta[i].toFixed(4);

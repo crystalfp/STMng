@@ -138,7 +138,6 @@
     "promise/no-new-statics": "error",
     "promise/no-return-in-finally": "warn",
     "promise/valid-params": "warn",
-    "promise/no-native": "off",
     "import/named": "off",
     "import/namespace": "error",
     "import/default": "off",
@@ -403,7 +402,6 @@
     "@typescript-eslint/no-unnecessary-condition": "off",
     "@typescript-eslint/prefer-readonly-parameter-types": "off",
 
-    "eslint/max-lines-per-function ": "off",
     "eslint/max-depth": "off",
     "eslint/no-await-in-loop": "off",
     "import/max-dependencies": "off",
@@ -415,9 +413,9 @@
     "eslint/max-classes-per-file": "off",
     "oxc/approx-constant": "off",
 
-    "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
-    "vue/attributes-order": "warn",
-    "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
+    // "vue/v-bind-style": ["warn", "shorthand", {"sameNameShorthand": "always"}],
+    // "vue/attributes-order": "warn",
+    // "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
 
     "@stylistic/lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
     "@stylistic/quotes": ["warn", "double", {"avoidEscape": true}],

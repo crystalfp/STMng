@@ -229,7 +229,8 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
 <template>
 <v-app :theme>
   <div class="fp-chart-portal">
-    <VisXYContainer :margin="{right: 40, top: 20, left: 10, bottom: 50}" class="fp-chart-viewer">
+    <VisXYContainer :margin="{right: 40, top: 20, left: 10, bottom: 50}" :duration="0"
+                    class="fp-chart-viewer">
       <VisLine v-if="showLine" :key="forceUpdate" :data="points" :x="xp" :y="yp" curveType="step"/>
       <VisScatter v-if="showPoints" :key="forceUpdate" :data="points" :x="xp" :y="yp"
                   :size="8" shape="square"/>
