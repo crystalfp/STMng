@@ -101,7 +101,8 @@ export class WriterCIF implements WriterImplementation {
 				for(const atom of reduced.atoms) {
 
 					const fc = atom.frac;
-					writeSync(fd, `${atom.symbol.padEnd(4)} ${atom.label.padEnd(7)} 1.0 ` +
+					const label = `"${atom.label}"`;
+					writeSync(fd, `${atom.symbol.padEnd(4)} ${label.padEnd(12)} 1.0 ` +
 								  `${format(fc[0])} ${format(fc[1])} ${format(fc[2])}\n`);
 				}
 
