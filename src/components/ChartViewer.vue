@@ -184,7 +184,8 @@ const template = (d: DataRecord): string =>
   padding: 0;
   --vis-axis-tick-color: #6C778C;
   --vis-axis-grid-color: #6C778C;
-  --vis-axis-grid-line-dasharray: 1 3
+  --vis-axis-grid-line-dasharray: 1 3;
+  --vis-axis-domain-line-dasharray: 'none';
 }
 
 </style>
