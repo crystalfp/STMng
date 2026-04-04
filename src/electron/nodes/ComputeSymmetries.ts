@@ -325,6 +325,12 @@ export class ComputeSymmetries extends NodeCore {
 												this.standardizeOnly, this.createPrimitiveCell,
 												symprecStandardize, symprecDataset);
 
+		// Fix equivalent atoms (eg. [0, 1, 1] -> [0, 0, 0])
+		const len = computed.fractionalCoordinates.length;
+		for(let i=0; i < len; ++i) {
+			if(computed.fractionalCoordinates[i] > 1-1e-8) computed.fractionalCoordinates[i] = 0;
+		}
+
 		// Reformat the returned values
 		const atomsZOut = [...computed.atomsZ];
 		const labels: string[] = [];
