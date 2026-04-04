@@ -24,7 +24,6 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {onUnmounted, ref, watch} from "vue";
-import {mdiMinus, mdiPlus} from "@mdi/js";
 
 // > Properties
 const props = withDefaults(defineProps<{
@@ -111,10 +110,10 @@ onUnmounted(() => {
   <slot :value="valueToDebounce" />
   <v-slider v-model="valueToDebounce" :min :max :step :disabled hide-details class="ml-n2">
     <template #prepend>
-      <v-btn :icon="mdiMinus" size="small" variant="text" @click="decrement" />
+      <v-btn icon="mdi-minus" size="small" variant="text" @click="decrement" />
     </template>
     <template #append>
-      <v-btn :icon="mdiPlus" size="small" variant="text" @click="increment" />
+      <v-btn icon="mdi-plus" size="small" variant="text" @click="increment" />
     </template>
   </v-slider>
 </v-container>

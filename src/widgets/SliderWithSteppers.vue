@@ -22,7 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {mdiMinus, mdiPlus} from "@mdi/js";
 import {onUnmounted, watch} from "vue";
 
 // > Properties
@@ -119,10 +118,10 @@ onUnmounted(() => {
 <v-slider v-model="valueToDebounce" :min :max :step :label
           :disabled hide-details class="slider-with-stepper">
   <template #prepend>
-    <v-btn :icon="mdiMinus" size="small" variant="text" @click="decrement" />
+    <v-btn icon="mdi-minus" size="small" variant="text" @click="decrement" />
   </template>
   <template #append>
-    <v-btn :icon="mdiPlus" size="small" variant="text" @click="increment" />
+    <v-btn icon="mdi-plus" size="small" variant="text" @click="increment" />
   </template>
 </v-slider>
 </template>

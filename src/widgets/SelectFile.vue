@@ -23,7 +23,6 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {onUnmounted, ref, watchEffect} from "vue";
-import {mdiFileOutline} from "@mdi/js";
 import {askNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
@@ -163,7 +162,7 @@ const onDragLeave = (): void => {
       @dragleave.prevent="onDragLeave">
   <v-text-field :model-value="label" :disabled
                 :label="props.label ?? props.title"
-                readonly :prepend-icon="mdiFileOutline"
+                readonly prepend-icon="mdi-file-outline"
                 class="mb-2 cursor-pointer mr-n4" hide-details="auto"
                 :loading="inProgress" spellcheck="false"
                 @click="openSelector" />

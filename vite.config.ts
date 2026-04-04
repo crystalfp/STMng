@@ -65,8 +65,7 @@ export default defineConfig({
                     if(id.includes("node_modules")) {
                         if(id.includes("vue") ||
                            id.includes("pinia") ||
-                           id.includes("vuetify") ||
-                           id.includes("@mdi/js")) return "vue";
+                           id.includes("vuetify")) return "vue";
 
                         if(id.includes("three")) return "three";
 

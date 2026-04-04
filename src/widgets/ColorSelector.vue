@@ -23,7 +23,6 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {ref} from "vue";
-import {mdiPalette} from "@mdi/js";
 
 // > Properties
 const {transparency, label} = defineProps<{
@@ -46,7 +45,7 @@ const color = defineModel<string>();
     <v-col cols="12" class="pb-0 pr-2">
       <v-btn class="w-100"
              variant="outlined"
-             :prepend-icon="mdiPalette"
+             prepend-icon="mdi-palette"
              @click="colorPickerShow = !colorPickerShow">
         <template #prepend>
           <v-icon size="x-large" :color></v-icon>

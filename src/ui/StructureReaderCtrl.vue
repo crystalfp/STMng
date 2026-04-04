@@ -23,9 +23,6 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {ref, reactive, watch, computed, onUnmounted} from "vue";
-import {mdiPlay, mdiStop, mdiChevronDoubleLeft, mdiChevronDoubleRight,
-        mdiChevronLeft, mdiChevronRight,
-        mdiArrowExpandHorizontal} from "@mdi/js";
 import {askNode, sendToNode} from "@/services/RoutesClient";
 import {setFileInTitle} from "@/services/SetTitle";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
@@ -815,7 +812,7 @@ const clearErrors = (): void => {
                 class="no-select pb-4 mt-n2">
                 {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
         <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps" variant="plain"
-              class="mr-6 mt-n6" :icon="mdiArrowExpandHorizontal" @click="resetRange" />
+              class="mr-6 mt-n6" icon="mdi-arrow-expand-horizontal" @click="resetRange" />
       </v-row>
       <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
                 :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
@@ -823,19 +820,19 @@ const clearErrors = (): void => {
       <v-row class="mr-8">
         <v-spacer />
         <v-btn variant="tonal" :disabled="step <= stepRange[0]"
-                :icon="mdiChevronDoubleLeft" class="mr-1" rounded="xl"
+                icon="mdi-chevron-double-left" class="mr-1" rounded="xl"
                 @click="step = stepRange[0]" />
         <v-btn variant="tonal" :disabled="step <= stepRange[0]"
-                :icon="mdiChevronLeft" class="mr-1" rounded="xl"
+                icon="mdi-chevron-left" class="mr-1" rounded="xl"
                 @click="deltaStep(-1)" />
-        <v-btn variant="tonal" :icon="running ? mdiStop : mdiPlay"
+        <v-btn variant="tonal" :icon="running ? 'mdi-stop' : 'mdi-play'"
                 class="mr-1" rounded="xl"
                 @click="togglePlay" />
         <v-btn variant="tonal" :disabled="step >= stepRange[1]"
-                :icon="mdiChevronRight" class="mr-1" rounded="xl"
+                icon="mdi-chevron-right" class="mr-1" rounded="xl"
                 @click="deltaStep(1)" />
         <v-btn variant="tonal" :disabled="step >= stepRange[1]"
-                :icon="mdiChevronDoubleRight" rounded="xl"
+                icon="mdi-chevron-double-right" rounded="xl"
                 @click="step = stepRange[1]; running = false" />
         <v-spacer />
       </v-row>

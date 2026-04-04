@@ -38,8 +38,9 @@ import "@/styles/common.css";
 
 // Vuetify
 import "vuetify/styles";
+import "@mdi/font/css/materialdesignicons.css";
 import {createVuetify} from "vuetify";
-import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
+import {aliases, mdi} from "vuetify/iconsets/mdi";
 import {md3} from "vuetify/blueprints";
 
 // Vuetify components that will be used
@@ -150,26 +151,21 @@ const app = createApp(App)
 				rounded: "xl"
 			},
 			VSelect: {
-				// density: "compact",
-				// variant: "solo",
 				variant: "filled",
 				hideDetails: true
 			},
 			VNumberInput: {
-				// variant: "solo",
 				variant: "filled",
 				controlVariant: "stacked",
 				density: "compact"
 			},
 			VTextField: {
-				// variant: "solo",
 				variant: "filled",
 			},
 			VRangeSlider: {
 				color: "primary"
 			},
 			VAutocomplete: {
-				// variant: "solo",
 				variant: "filled",
 			},
 		}
