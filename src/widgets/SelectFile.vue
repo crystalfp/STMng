@@ -69,6 +69,7 @@ const inProgress = ref(false);
  */
 const openSelector = (): void => {
 
+    dropActive.value = "placeholder";
     inProgress.value = true;
     askNode("SYSTEM", "select", {kind: props.kind, title: props.title, filter: props.filter})
         .then((params) => {
@@ -143,14 +144,17 @@ const onDragOver = (event: DragEvent): void => {
         dt.dropEffect = "move";
         dropActive.value = "drop";
     }
-    else dt.dropEffect = "none";
+    else {
+        dt.dropEffect = "none";
+        dropActive.value = "placeholder";
+    }
 };
 
 /**
  * Remove the drop zone marker on leaving
  */
 const onDragLeave = (): void => {
-    // dropActive.value = "placeholder";
+    dropActive.value = "placeholder";
 };
 
 </script>

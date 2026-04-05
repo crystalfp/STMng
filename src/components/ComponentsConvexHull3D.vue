@@ -559,6 +559,7 @@ const vc = computed(() => {
   flex: 2;
   padding: 0;
 }
+
 .hull3d-panel {
   position: absolute;
   top: 0;

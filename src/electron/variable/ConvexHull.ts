@@ -25,7 +25,7 @@
 import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {VariableCompositionAccumulator} from "./Accumulator";
 import type {CtrlParams} from "@/types";
-// import {writeFileSync} from "node:fs";
+// import {writeFileSync} from "node:fs"; // TEST
 
 /**
  * Interface to the convex hull in the variable composition space
@@ -476,11 +476,11 @@ export class VariableCompositionConvexHull {
 
 		// TEST
 		// {
-		// 	let out = "";
+		// 	let out = "idx key formation distance enthalpy\n";
 		// 	for(let i=0; i < p.length; ++i) {
 		// 		out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
 		// 	}
-		// 	writeFileSync("test.txt", out, "utf8");
+		// 	writeFileSync("work/conv_h_2/test.txt", out, "utf8");
 		// }
 
 		return "";

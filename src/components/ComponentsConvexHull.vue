@@ -314,6 +314,7 @@ const makeImage = (): void => {
   flex: 2;
   padding: 0;
   background-color: #FFFFFF;
+
   --vis-axis-tick-color: #6C778C;
 }
 
