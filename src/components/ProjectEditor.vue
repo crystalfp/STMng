@@ -91,6 +91,22 @@ const graphFlow = reactive<GraphFlowItem[]>([]);
 const X_INCREMENT = 150;
 const Y_INCREMENT = 70;
 
+// Keys that must never be used as object property names to avoid prototype pollution
+const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+/**
+ * Sanitize an identifier so it is safe to use as an object key.
+ * Returns a safe identifier, or null if the input is not usable.
+ */
+function sanitizeId(id: string | undefined | null): string | null {
+    if (!id) return null;
+    if (DANGEROUS_KEYS.has(id)) {
+        // Prefix dangerous keys to ensure they cannot collide with Object.prototype
+        return `id_${id}`;
+    }
+    return id;
+}
+
 /**
  * Available node
  * @notExported
@@ -501,13 +517,17 @@ const saveProjectGraph = (saveAs: boolean): void => {
 
     const graph: ProjectGraph = {};
     for(const node of sortedGraph) {
-        graph[node.id] = {
+        const safeId = sanitizeId(node.id);
+        if (!safeId) {
+            continue;
+        }
+        graph[safeId] = {
             label: node.label,
             type: node.type,
             x: Math.round(node.position.x),
             y: Math.round(node.position.y)
         };
-        if(node.in !== "" && node.in !== "__proto__") graph[node.id].in = node.in;
+        if(node.in !== "" && node.in !== "__proto__") graph[safeId].in = node.in;
     }
 
     askNode("SYSTEM", "modified-project", {
@@ -584,8 +604,8 @@ const handleDrop = (event: DragEvent): void => {
 
     const nodeModel = JSON.parse(event.dataTransfer?.getData("node") ?? "{}") as AvailableNode;
 
-    let id = nodeModel.idPrefix;
-    if(id === undefined) return;
+    let id = sanitizeId(nodeModel.idPrefix);
+    if(id === null) return;
 
     let seq = 0;
     let found = true;
