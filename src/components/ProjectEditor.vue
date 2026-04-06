@@ -98,14 +98,15 @@ const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
  * Sanitize an identifier so it is safe to use as an object key.
  * Returns a safe identifier, or null if the input is not usable.
  */
-function sanitizeId(id: string | undefined | null): string | null {
-    if (!id) return null;
-    if (DANGEROUS_KEYS.has(id)) {
+const sanitizeId = (id: string | undefined | null): string | undefined => {
+
+    if(!id) return undefined;
+    if(DANGEROUS_KEYS.has(id)) {
         // Prefix dangerous keys to ensure they cannot collide with Object.prototype
         return `id_${id}`;
     }
     return id;
-}
+};
 
 /**
  * Available node
@@ -517,17 +518,17 @@ const saveProjectGraph = (saveAs: boolean): void => {
 
     const graph: ProjectGraph = {};
     for(const node of sortedGraph) {
+
         const safeId = sanitizeId(node.id);
-        if (!safeId) {
-            continue;
-        }
+        if(!safeId) continue;
+
         graph[safeId] = {
             label: node.label,
             type: node.type,
             x: Math.round(node.position.x),
             y: Math.round(node.position.y)
         };
-        if(node.in !== "" && node.in !== "__proto__") graph[safeId].in = node.in;
+        if(node.in !== "") graph[safeId].in = node.in;
     }
 
     askNode("SYSTEM", "modified-project", {
@@ -605,7 +606,7 @@ const handleDrop = (event: DragEvent): void => {
     const nodeModel = JSON.parse(event.dataTransfer?.getData("node") ?? "{}") as AvailableNode;
 
     let id = sanitizeId(nodeModel.idPrefix);
-    if(id === null) return;
+    if(id === undefined) return;
 
     let seq = 0;
     let found = true;
