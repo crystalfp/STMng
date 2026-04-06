@@ -73,7 +73,9 @@ export class VariableCompositionConvexHull {
 			const key = this.parts[i];
 			if(minEnergies.has(key)) {
 				const entry = minEnergies.get(key)!;
-				if(this.e[i] < entry.energy) {
+				const tol = Math.max(1e-8, Math.abs(entry.energy) * 1e-6);
+				if((this.e[i] < (entry.energy - tol)) ||
+				   (Math.abs(this.e[i] - entry.energy) <= tol && i < entry.idx)) {
 					minEnergies.set(key, {idx: i, energy: this.e[i]});
 				}
 			}
@@ -424,6 +426,7 @@ export class VariableCompositionConvexHull {
 		const facetA: number[][] = [];
 		const facetC: number[] = [];
 		for(const facet of hull) {
+
 			if(facet.plane[3] < -1e-8) {
 
 				const [v1, v2, v3, v4] = facet.verts;
