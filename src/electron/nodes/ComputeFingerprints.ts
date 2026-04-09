@@ -153,6 +153,10 @@ export class ComputeFingerprints extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Compute fingerprints for an accumulated set of structures to group and analyze them";
+	}
+
 	/**
 	 * Add one structure to accumulator
 	 *

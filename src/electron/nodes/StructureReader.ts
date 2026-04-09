@@ -95,6 +95,10 @@ export class StructureReader extends NodeCore {
 		this.toNextNode(new EmptyStructure());
 	}
 
+	description(): string {
+		return "Read a structure from file optionally with its auxiliary file";
+	}
+
 	// > Load/save status
 	saveStatus(): string {
         const statusToSave = {

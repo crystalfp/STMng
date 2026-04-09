@@ -73,6 +73,10 @@ export class FindSimilar extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Matches input structure against two collections of structures: known crystallographic “Prototypes” structures from the Encyclopedia of crystallographic prototypes and a “Collection” of interesting structures from various sources";
+	}
+
 	// > Load/save status
 	saveStatus(): string {
 

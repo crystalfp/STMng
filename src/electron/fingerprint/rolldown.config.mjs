@@ -40,7 +40,8 @@ export default defineConfig({
 				"Worker.ts",
 				"../modules/AtomData.ts",
 				"../modules/Helpers.ts",
-				"../../services/SharedConstants.ts"
+				"../../services/SharedConstants.ts",
+				"../../types/index.ts"
 			],
 			tsconfig: "../../../tsconfig.json",
 			outputToFilesystem: true,

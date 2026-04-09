@@ -67,7 +67,6 @@ export class ComputeBonds extends NodeCore {
 	private enlargementKind         = "neighbors";
 	private readonly bondsList      = new Map<number, number[]>();
 
-
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke",	callback: this.channelInit.bind(this)},
 		{name: "changes",	type: "send",	callback: this.channelChanges.bind(this)},
@@ -81,6 +80,10 @@ export class ComputeBonds extends NodeCore {
 	constructor(id: string) {
 		super(id);
 		this.setupChannels(id, this.channels);
+	}
+
+	description(): string {
+		return "Add bonds bonds based on interatomic distances to the input structure";
 	}
 
 	override fromPreviousNode(data: Structure): void {

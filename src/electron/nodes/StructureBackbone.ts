@@ -56,6 +56,10 @@ export class StructureBackbone extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Draw a backbone tube passing through given atoms and optionally pertaining to a specific chain";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.inputStructure = data;

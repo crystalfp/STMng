@@ -57,6 +57,10 @@ export class StructureWriter extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Writes a single structure or a sequence of structures to a specific format structure file";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data?.atoms.length) {

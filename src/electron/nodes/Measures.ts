@@ -58,6 +58,10 @@ export class Measures extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Measure interatomic distances, angles and polyhedra volume. Show also a summary of the input structure";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		sendToClient(this.id, "new", this.summarizeStructure(data));

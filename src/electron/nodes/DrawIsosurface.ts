@@ -61,6 +61,10 @@ export class DrawIsosurface extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Draw isosurfaces of the volumetric data in input structure";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;

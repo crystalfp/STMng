@@ -23,10 +23,11 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {readFileSync, writeFileSync, statSync} from "node:fs";
+import {readFileSync, writeFileSync, statSync, existsSync} from "node:fs";
 import {writeFile} from "node:fs/promises";
-import {ipcMain, dialog} from "electron";
+import {ipcMain, dialog, shell} from "electron";
 import path from "node:path";
+import log from "electron-log";
 import {publicDirPath} from "./GetPublicPath";
 import {projectIsValid} from "./ProjectValidator";
 import {getProjectPath, setProjectPath, removeProjectPath} from "./Preferences";
@@ -504,6 +505,20 @@ class ProjectManager {
 		return `${JSON.stringify(JSON.parse(out), undefined, 2)}\n`;
 	}
 
+	/**
+	 * Get node description
+	 *
+	 * @param key - Type of the node
+	 * @returns The short description of the node
+	 */
+	getDescription(key: string): string {
+
+		const entry = this.allNodesMap.get(key);
+		if(!entry) return `Missing description for node "${key}"`;
+		const node = new entry.handler(key);
+		return node.description();
+	}
+
 	// > Access the singleton instance
 	/**
 	 * Access the singleton instance.
@@ -568,5 +583,33 @@ export const setupChannelProject = (): void => {
 		else return {saved: false};
 
 		return {saved: true};
+	});
+
+	ipcMain.handle("SYSTEM:description", (_event, params: CtrlParams) => {
+
+		const key = params.key as string;
+		if(!key) return;
+
+		return {description: pm.getDescription(key)};
+	});
+
+	ipcMain.on("SYSTEM:node-help", (_event, params: CtrlParams) => {
+
+		const file = params.key as string;
+		if(!file) return;
+
+		const url = publicDirPath(`doc/nodes/${file}.html`, true);
+		if(existsSync(url)) {
+			shell.openPath(url)
+				.then((sts) => {
+					if(sts) throw Error(sts);
+				})
+				.catch((error: Error) => {
+					log.error(`Error from help file "${file}.html": ${error.message}`);
+				});
+		}
+		else {
+			log.error(`Help file "${file}.html" not found`);
+		}
 	});
 };

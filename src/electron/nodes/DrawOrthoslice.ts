@@ -70,6 +70,10 @@ export class DrawOrthoslice extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Draw an orthoslice of the volumetric data in input structure";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;

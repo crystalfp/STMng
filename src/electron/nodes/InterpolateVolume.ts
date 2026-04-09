@@ -62,6 +62,10 @@ export class InterpolateVolume extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Add grid points to the volumetric data to increase resolution";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;

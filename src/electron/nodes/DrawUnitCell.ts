@@ -67,6 +67,10 @@ export class DrawUnitCell extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Draw the structure unit cell and supercell with the opportunity to shift them";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		// No data, output an empty structure

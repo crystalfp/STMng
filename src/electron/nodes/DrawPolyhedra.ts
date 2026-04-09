@@ -60,6 +60,10 @@ export class DrawPolyhedra extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Draw polyhedra and triangles passing through atoms bonded to selected ones";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;

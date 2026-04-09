@@ -81,6 +81,13 @@ export abstract class NodeCore {
 		throw Error("Notifier should not be called for this node");
 	}
 
+	/**
+	 * Return a short description of the node
+	 *
+	 * @returns Description string
+	 */
+	abstract description(): string;
+
     /**
      * Save the node status
      *

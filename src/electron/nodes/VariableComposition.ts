@@ -111,6 +111,10 @@ export class VariableComposition extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Split input structures by their composition of 2-4 components. Then, for each composition, removes duplicates. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data?.atoms.length) {

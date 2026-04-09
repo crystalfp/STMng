@@ -76,6 +76,10 @@ export class DiffractionPattern extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Compute and display the X-Ray diffraction spectra for the input structure";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;

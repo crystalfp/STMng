@@ -165,6 +165,10 @@ export class ComputeSymmetries extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Apply the symmetries present in the input structure and search for symmetries. Standardize the structure cell and compute the Point group of the output structure";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data?.atoms.length) {

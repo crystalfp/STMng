@@ -44,6 +44,10 @@ export class Viewer3D extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Controls for the 3D viewer parameters grouped under eight collapsable categories";
+	}
+
 	// > Load/save status
 	async saveStatus(): Promise<string> {
 

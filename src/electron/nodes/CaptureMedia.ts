@@ -48,6 +48,10 @@ export class CaptureView extends NodeCore {
 		this.setupChannels("SYSTEM", this.channels);
 	}
 
+	description(): string {
+		return "Capture the screen content as a snapshot in an image or PDF file or the 3D objects as a STL model. Captures also a sequence of screens as a movie file";
+	}
+
 	// > Load/save status
 	saveStatus(): string {
 		return "";

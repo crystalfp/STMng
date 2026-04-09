@@ -69,6 +69,10 @@ export class Trajectories extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Draw selected atoms trajectories in a sequence of steps as lines or cloud. Computes also a summary of mean displacements";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data) return;

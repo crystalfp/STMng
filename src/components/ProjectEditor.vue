@@ -27,7 +27,7 @@ import {VueFlow, type Node, type Edge, useVueFlow, ConnectionMode, ConnectionLin
         Panel, MarkerType, type GraphEdge, type Connection,
         type VueFlowError} from "@vue-flow/core";
 import log from "electron-log";
-import {closeWindow, requestData, askNode} from "@/services/RoutesClient";
+import {closeWindow, requestData, askNode, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import SpecialNode from "./SpecialNode.vue";
@@ -96,7 +96,9 @@ const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /**
  * Sanitize an identifier so it is safe to use as an object key.
- * Returns a safe identifier, or null if the input is not usable.
+ *
+ * @param id - The identifier to sanitize
+ * @returns Safe identifier, or undefined if the input is not usable.
  */
 const sanitizeId = (id: string | undefined | null): string | undefined => {
 
@@ -481,7 +483,7 @@ const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
 const notificationQueue = ref<string[]>([]);
 
 /**
- * Report an error on video and on the log file
+ * Report an error on screen and on the log file
  *
  * @param message - Error message
  */
@@ -787,10 +789,62 @@ const tryToExit = (): void => {
 
 const showConfirmNew = ref(false);
 
+/**
+ * Confirm the creation of a new project
+ */
 const confirmNewProject = (): void => {
 
     if(projectModified.value) showConfirmNew.value = true;
     else createProjectGraph();
+};
+
+const show = ref(false);
+const xMenu = ref(0);
+const yMenu = ref(0);
+const textMenu = ref("");
+const titleMenu = ref("");
+const keyMenu = ref("");
+
+/**
+ * Show a popup with the node description
+ *
+ * @param event - Mouse event
+ * @param entry - Node type string
+ * @param label - Node human readable name
+ */
+const contextMenu = (event: MouseEvent, entry: string, label: string): void => {
+
+    if(show.value) {
+        show.value = false;
+    }
+    else {
+        askNode("SYSTEM", "description", {key: entry})
+        .then((result) => {
+            show.value = true;
+            xMenu.value = event.clientX;
+            yMenu.value = event.clientY;
+            textMenu.value = result.description as string ?? "";
+            titleMenu.value = label;
+            keyMenu.value = entry;
+        })
+        .catch((error: Error) => {
+            reportError(`Error asking for node description: ${error.message}`);
+        });
+    }
+};
+
+/**
+ * Open the help file for the selected node
+ */
+const openHelp = (): void => {
+    sendToNode("SYSTEM", "node-help", {key: keyMenu.value});
+};
+
+/**
+ * Reset the popup when clicking outside a node string
+ */
+const resetContextMenu = (): void => {
+    show.value = false;
 };
 
 </script>
@@ -798,13 +852,22 @@ const confirmNewProject = (): void => {
 
 <template>
 <v-app :theme>
-  <div class="program-editor-container">
+  <div class="program-editor-container" @contextmenu="resetContextMenu" @click="resetContextMenu">
     <div class="tr"><v-label class="column-title">Available nodes</v-label></div>
     <div class="cr">
       <div v-for="item in availableNodes" :key="item.type" class="list-item"
-           draggable="true" @dragstart="handleDragStart($event, item)">
+           draggable @dragstart="handleDragStart($event, item)"
+           @contextmenu="contextMenu($event, item.type, item.label)">
         {{ item.label }}
       </div>
+      <v-menu :modelValue="show" :target="[xMenu, yMenu]" width="350">
+        <v-card :title="titleMenu">
+          <v-card-text>{{ textMenu }}</v-card-text>
+          <v-card-actions>
+            <v-btn @click="openHelp">Long description</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
     </div>
     <div class="vv" @drop="handleDrop" @dragover.prevent="handleDragOver">
       <VueFlow :nodes :edges fit-view-on-init
@@ -936,5 +999,9 @@ const confirmNewProject = (): void => {
 
 .mark {
   background-color: #DDDD00 !important;
+}
+
+.v-card-item__content {
+    text-align: center;
 }
 </style>

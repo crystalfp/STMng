@@ -61,6 +61,10 @@ export class DrawStructure extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Render the input structure in 3D";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data?.atoms.length) {

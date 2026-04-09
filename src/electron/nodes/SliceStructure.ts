@@ -96,6 +96,10 @@ export class SliceStructure extends NodeCore {
 		this.setupChannels(id, this.channels);
 	}
 
+	description(): string {
+		return "Remove part of a structure using a sphere, a plane or a pair of planes. Also specific atoms or specific atoms plus directly bonded atoms could be directly selected for removal by symbol, label or index. The removed part could be inside or outside the selected geometry or list of atoms";
+	}
+
 	override fromPreviousNode(data: Structure): void {
 
 		if(!data?.atoms.length) {
