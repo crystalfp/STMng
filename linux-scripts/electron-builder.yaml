@@ -1,0 +1,61 @@
+---
+"$schema": https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json
+appId: com.electron.{productName}
+productName: STMng
+copyright: Copyright © 2026 ${author}
+asar: true
+directories:
+  output: release/${version}
+  buildResources: resources
+files:
+  - dist-electron
+  - dist
+  - build/Release/native.node
+  - "!**/node_modules/**/*.d.ts.map"
+  - "!**/node_modules/**/*.flow"
+  - "!**/node_modules/**/tsconfig.tsbuildinfo"
+  - "!**/node_modules/**/{test,__tests__,tests,powered-test,example,examples}"
+  - "!**/spglib-2.7.0/**/*.*"
+  - "!dist/doc/**/*.*"
+  - "!dist/Worker.js"
+extraFiles:
+  - filter: "**/*.*"
+    from: dist/doc/
+    to: resources/doc/
+  - from: dist/Worker.js
+    to: resources/
+electronLanguages:
+  - en-US
+linux:
+  icon: resources/icon.png
+  category: Visualization
+  target:
+  - AppImage
+  extraFiles:
+    - from: build/Release/libsymspg.so.2.7.0
+      to: ./libsymspg.so.2
+    - from: build/Release/libsymspg.so.2.7.0
+      to: ./libsymspg.so
+mac:
+  artifactName: "${productName}_${version}.${ext}"
+  target:
+  - dmg
+win:
+  target:
+  - target: nsis
+    arch:
+    - x64
+  artifactName: ${productName}-${version}-setup.${ext}
+  extraFiles:
+    - from: build/Release/symspg.dll
+      to: .
+nsis:
+  oneClick: false
+  perMachine: true
+  selectPerMachineByDefault: true
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  # createStartMenuShortcut: true
