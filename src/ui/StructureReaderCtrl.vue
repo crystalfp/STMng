@@ -817,7 +817,7 @@ const clearErrors = (): void => {
       <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
                 :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
       <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
-      <v-row class="mr-8">
+      <v-row class="mr-8 mt-n2">
         <v-spacer />
         <v-btn variant="tonal" :disabled="step <= stepRange[0]"
                 icon="mdi-chevron-double-left" class="mr-1" rounded="xl"
@@ -837,7 +837,7 @@ const clearErrors = (): void => {
         <v-spacer />
       </v-row>
 
-      <titled-slot title="Speed:" inline class="mt-10 mb-6 ml-0">
+      <titled-slot title="Speed:" inline class="mt-6 mb-6 ml-0">
         <v-btn-toggle v-model="speed" mandatory>
           <v-btn>Fast</v-btn>
           <v-btn>Medium</v-btn>

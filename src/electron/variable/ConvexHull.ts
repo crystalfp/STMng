@@ -25,7 +25,6 @@
 import {quickHull, type Facet} from "@derschmale/tympanum";
 import type {VariableCompositionAccumulator} from "./Accumulator";
 import type {CtrlParams} from "@/types";
-// import {writeFileSync} from "node:fs"; // TEST
 
 /**
  * Interface to the convex hull in the variable composition space
@@ -341,17 +340,11 @@ export class VariableCompositionConvexHull {
 		this.parts.length = 0;
 		this.formula.length = 0;
 
-		// TEST
-		// const e = [];
-
 		const p: number[][] = [];
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
 			const {parts, step, energy, key, formula} = structure;
 			const structureEnergy = energy ?? 0;
-
-			// TEST
-			// e.push(structureEnergy);
 
 			this.e.push(structureEnergy);
 			if(parts[0] === 1 &&
@@ -427,10 +420,9 @@ export class VariableCompositionConvexHull {
 		const facetC: number[] = [];
 		for(const facet of hull) {
 
-			if(facet.plane[3] < -1e-8) {
+			if(facet.plane[3] < -1e-4) {
 
 				const [v1, v2, v3, v4] = facet.verts;
-
 				const w1 = idx[v1];
 				const w2 = idx[v2];
 				const w3 = idx[v3];
@@ -476,15 +468,6 @@ export class VariableCompositionConvexHull {
 
 		// Add distances from the convex hull
 		this.distances = this.distanceFromConvexHull4D(p, idxVertices, facetA, facetC);
-
-		// TEST
-		// {
-		// 	let out = "idx key formation distance enthalpy\n";
-		// 	for(let i=0; i < p.length; ++i) {
-		// 		out += `${i} ${this.parts[i]} ${this.e[i].toFixed(3)} ${this.distances[i].toFixed(3)} ${e[i].toFixed(3)}\n`;
-		// 	}
-		// 	writeFileSync("work/conv_h_2/test.txt", out, "utf8");
-		// }
 
 		return "";
 	}
@@ -635,20 +618,20 @@ export class VariableCompositionConvexHull {
 			}
 
 			const part = parts[idx];
-
-			let dist = Number.POSITIVE_INFINITY;
+			let eHull = Number.NEGATIVE_INFINITY;
 			for(let i=0; i < facetA.length; ++i) {
 
-				// Ehull = np.max(facet_a.dot(p) + facet_c)
-				const eHull = facetA[i][0]*part[0] +
-							  facetA[i][1]*part[1] +
-							  facetA[i][2]*part[2] +
-							  facetC[i];
-				const d = Math.abs(this.e[i]-eHull);
-				if(d < dist) dist = d;
+				const eh = facetA[i][0]*part[0] +
+						   facetA[i][1]*part[1] +
+						   facetA[i][2]*part[2] +
+						   facetC[i];
+				if(eh > eHull) eHull = eh;
 			}
-			distances.push(dist);
+
+			const diff = this.e[idx]-eHull;
+			distances.push(diff < 1e-8 ? 0 : diff);
 		}
+
 		return distances;
 	}
 

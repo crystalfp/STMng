@@ -588,9 +588,8 @@ export const setupChannelProject = (): void => {
 	ipcMain.handle("SYSTEM:description", (_event, params: CtrlParams) => {
 
 		const key = params.key as string;
-		if(!key) return;
 
-		return {description: pm.getDescription(key)};
+		return {description: key ? pm.getDescription(key) : "No description available"};
 	});
 
 	ipcMain.on("SYSTEM:node-help", (_event, params: CtrlParams) => {
