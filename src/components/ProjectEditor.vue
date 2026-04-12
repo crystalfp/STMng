@@ -215,7 +215,9 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
 
         availableNodes.push(availableNode);
     }
-    availableNodes.sort((a: AvailableNode, b: AvailableNode) => a.label.localeCompare(b.label));
+
+    const collator = new Intl.Collator();
+    availableNodes.sort((a, b) => collator.compare(a.label, b.label));
 };
 
 const windowPath = "/project-editor";

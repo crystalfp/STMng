@@ -319,7 +319,8 @@ export class StructureMatcher {
             parts.push(`${k}${count}`);
         }
 
-        return parts.toSorted((a, b) => a.localeCompare(b)).join("");
+        const collator = new Intl.Collator();
+        return parts.toSorted((a, b) => collator.compare(a, b)).join("");
     }
 
     /**

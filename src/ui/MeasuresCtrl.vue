@@ -156,7 +156,8 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
         });
         natomsUC.value += countsRaw[entry][1];
     }
-    counts.sort((a, b) => a.symbol.localeCompare(b.symbol));
+    const collator = new Intl.Collator();
+    counts.sort((a, b) => collator.compare(a.symbol, b.symbol));
 
     // Unit cell. The values are: [a, b, c, α, β, γ, x0, y0, z0]
     uc.length = 9;

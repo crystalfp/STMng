@@ -225,7 +225,8 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
     for(const site of structure.sites) {
         sites.push({element: site.species[0].element, frac: site.abc, cart: site.xyz});
     }
-    sites.sort((a, b) => a.element.localeCompare(b.element));
+    const collator = new Intl.Collator();
+    sites.sort((a, b) => collator.compare(a.element, b.element));
 
     const map = new Map<string, SiteElement[]>();
     for(const element of sites) {

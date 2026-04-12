@@ -314,7 +314,8 @@ class PrototypeDb {
 			out.push({title, aflow: v});
 		}
 
-		this.searchDb = JSON.stringify(out.toSorted((a, b) => a.title.localeCompare(b.title)));
+    	const collator = new Intl.Collator();
+		this.searchDb = JSON.stringify(out.toSorted((a, b) => collator.compare(a.title, b.title)));
 
 		return this.searchDb;
 	}

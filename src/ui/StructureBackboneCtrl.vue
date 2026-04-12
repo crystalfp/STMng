@@ -95,9 +95,10 @@ receiveFromNode(id, "chains", (params: CtrlParams) => {
     hasCell.value = params.hasCell as boolean ?? false;
 
     // If the list of chains has not changed, don't reset the switch values
+    const collator = new Intl.Collator();
     let shouldReset = false;
-    const tcSorted = thoseChains.toSorted((a, b) => a.localeCompare(b));
-    const cSorted = chains.toSorted((a, b) => a.localeCompare(b));
+    const tcSorted = thoseChains.toSorted((a, b) => collator.compare(a, b));
+    const cSorted = chains.toSorted((a, b) => collator.compare(a, b));
     const tcSortedLength = tcSorted.length;
     if(tcSortedLength === cSorted.length) {
         for(let i = 0; i < tcSortedLength; i++) {
