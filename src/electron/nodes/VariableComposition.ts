@@ -411,7 +411,7 @@ export class VariableComposition extends NodeCore {
 		// Filter on distances
 		for(const entry of this.accumulator.iterateEnabledStructures()) {
 
-			if(entry.enabled && entry.distance > this.state.distanceFromHull) {
+			if(entry.distance > this.state.distanceFromHull) {
 				entry.enabled = false;
 				--enabled;
 			}
@@ -585,18 +585,18 @@ export class VariableComposition extends NodeCore {
 				const structure = this.accumulator.getEntry(idx);
 				if(structure?.enabled) {
 					const energy = structure.energy ?? 0;
-					all.push([structure.distance, energy, idx]);
+					all.push([idx, energy, structure.distance]);
 				}
 			}
 		}
 
 		// Order entries by increasing distance from convex hull and then energy
 		all.sort((a, b) => {
-			const d = a[0] - b[0];
+			const d = a[2] - b[2];
 			if(d !== 0) return d;
 			const e = a[1] - b[1];
 			if(e !== 0) return e;
-			return a[2] - b[2];
+			return a[0] - b[0];
 		});
 
 		const name = "composition-all";
@@ -606,13 +606,13 @@ export class VariableComposition extends NodeCore {
 		const fd = openSync(dataFile, "w");
 		const fde = hasEnergies ? openSync(energyFile, "w") : undefined;
 
-		for(const one of all) {
+		for(const [idx, energy] of all) {
 
-			const structure = this.accumulator.getEntry(one[2])!;
+			const structure = this.accumulator.getEntry(idx)!;
 			if(!structure?.enabled) continue;
 
 			writeSync(fd, this.entryToPoscar(structure));
-			if(fde !== undefined) writeSync(fde, `${one[1].toFixed(6)}\n`);
+			if(fde !== undefined) writeSync(fde, `${energy.toFixed(6)}\n`);
 		}
 		closeSync(fd);
 		if(fde !== undefined) closeSync(fde);
@@ -631,16 +631,6 @@ export class VariableComposition extends NodeCore {
 		if(selectedRaw.length === 0) return {saved: -1};
 		const nc = params.componentsCount as number ?? 2;
 		if(nc === 0) return {saved: -1};
-
-		const hasEnergies = this.accumulator.hasEnergies();
-		if(hasEnergies && nc > 0) {
-			const sts = this.hull.prepareData(nc);
-			if(sts !== "") {
-				sendAlertToClient(sts, {node: "variableComposition"});
-				return {saved: -1};
-			}
-			this.hull.updateDistances();
-		}
 
 		const selected = new Set<string>();
 		for(const s of selectedRaw) {

@@ -570,7 +570,6 @@ export class StructureMatcher {
             true  // skipRotationMatrix
         );
 
-        // eslint-disable-next-line sonarjs/no-unused-vars
         for(const [latt, _, scaleM] of lattices) {
             const det = determinant(scaleM);
             if(this.isClose(Math.abs(det), supercellSize, 0.5, 0)) {

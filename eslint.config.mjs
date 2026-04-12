@@ -402,6 +402,7 @@ export default defineConfig([
         "sonarjs/no-unused-function-argument": "warn",
         "sonarjs/prefer-immediate-return": "warn",
         "sonarjs/prefer-object-literal": "warn",
+        "sonarjs/no-unused-vars": "off",
 
         // > ******************* other plugins ***********************
         "depend/ban-dependencies": ["warn", {

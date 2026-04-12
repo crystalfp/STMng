@@ -35,7 +35,7 @@ export interface VariableComponent {
 	enabled: boolean;
 	/** Step of the structure in the input full set of structures */
 	step: number;
-	/** The structure energy, if any, otherwise undefined */
+	/** The per atom energy, if any, otherwise undefined */
 	energy?: number;
 
 	/** Unit cell basis vectors */
@@ -145,7 +145,7 @@ export class VariableCompositionAccumulator {
 
 			parts: [],
 			key: "",
-			distance: 0,
+			distance: -1,
 
 			fingerprint: [],
 			countSections: 0,
