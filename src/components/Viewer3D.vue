@@ -27,6 +27,7 @@ import {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
         Raycaster, type Object3D, type Mesh, type MeshLambertMaterial,
         Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere,
         Timer, MathUtils} from "three";
+import WebGL from "three/addons/capabilities/WebGL.js";
 import CameraControls from "camera-controls";
 import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
@@ -98,7 +99,11 @@ const scene = sm.createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        showSystemAlert("Cannot create Viewer3D. Quitting.");
+        showSystemAlert("Cannot create Viewer3D. Continue without viewer.");
+        return;
+    }
+    if(!WebGL.isWebGL2Available()) {
+        showSystemAlert("Your graphics card does not seem to support WebGL2. Continue without viewer.");
         return;
     }
 
