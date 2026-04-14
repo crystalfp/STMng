@@ -382,7 +382,7 @@ const nodes = computed<Node<NodeData>[]>(() => {
     return resultNodes;
 });
 
-const crossingLinesFilter = theme.value === "dark" ?
+const crossingLinesFilter = computed(() => (theme.value === "dark" ?
                     "drop-shadow(1px 1px 1px black) " +
                     "drop-shadow(1px -1px 1px black) " +
                     "drop-shadow(-1px 1px 1px black) " +
@@ -390,7 +390,7 @@ const crossingLinesFilter = theme.value === "dark" ?
                     "drop-shadow(1px 1px 1px white) " +
                     "drop-shadow(1px -1px 1px white) " +
                     "drop-shadow(-1px 1px 1px white) " +
-                    "drop-shadow(-1px -1px 1px white)";
+                    "drop-shadow(-1px -1px 1px white)"));
 
 /** Graph edges */
 const edges = computed<Edge[]>(() => {
@@ -405,7 +405,7 @@ const edges = computed<Edge[]>(() => {
                 target: graphNode.id,
                 markerEnd: MarkerType.ArrowClosed,
                 type: ConnectionLineType.SmoothStep,
-                style: {strokeWidth: 2, filter: crossingLinesFilter}
+                style: {strokeWidth: 2, filter: crossingLinesFilter.value}
             };
             resultEdges.push(out);
         }

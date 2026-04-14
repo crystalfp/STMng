@@ -1,13 +1,11 @@
 // <reference types="vitest/config" />
-import {defineConfig} from "rolldown-vite";
+import {defineConfig} from "vite";
 import electron from "vite-plugin-electron";
-import renderer from "vite-plugin-electron-renderer";
 import vueDevTools from "vite-plugin-vue-devtools";
 import cleanPlugin from "vite-plugin-clean-pattern";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
-// const importMetaUrlPolyfillVariableName = '__import_meta_url__';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,6 +31,16 @@ export default defineConfig({
             {
                 // Main-Process entry file of the Electron App.
                 entry: "src/electron/main.ts",
+                vite: {
+                    build: {
+                        reportCompressedSize: false,
+                        rolldownOptions: {
+                            output: {
+                                intro: "globalThis.modulePath = new URL('file:' + __filename).href",
+                            }
+                        },
+                    },
+                }
             },
             {
                 entry: "src/electron/preload.ts",
@@ -43,7 +51,6 @@ export default defineConfig({
                 },
             },
         ]),
-        renderer(),
         vueDevTools(),
         cleanPlugin({
             targetFiles: ["dist", "dist-electron"]
@@ -53,25 +60,24 @@ export default defineConfig({
         assetsInlineLimit: 8096,
         reportCompressedSize: false,
         emptyOutDir: true,
-        chunkSizeWarningLimit: 850,
-        // rolldownOptions: {
-        //     output.intro: `
-        //     `
-        // },
+        chunkSizeWarningLimit: 700,
         rolldownOptions: {
             output: {
-                // oxlint-disable-next-line @typescript-eslint/consistent-return
-                manualChunks(id: string): string | undefined {
-                    if(id.includes("node_modules")) {
-                        if(id.includes("vue") ||
-                           id.includes("pinia") ||
-                           id.includes("vuetify")) return "vue";
-
-                        if(id.includes("three")) return "three";
-
-                        if(id.includes("troika-three-text")) return "troika";
-                    }
-                    // return undefined to let Rollup decide for app code
+                codeSplitting: {
+                    groups: [
+                        {
+                            name: "three",
+                            test: /node_modules[\\/]three/
+                        },
+                        {
+                            name: "troika",
+                            test: /node_modules[\\/]troika-three-text/
+                        },
+                        {
+                            name: "vue",
+                            test: /node_modules[\\/](vue|pinia|vuetify)/
+                        },
+                    ]
                 }
             }
         }

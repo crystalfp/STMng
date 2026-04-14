@@ -44,8 +44,9 @@ let mainWin: BrowserWindow;
 let finalExit = false;
 
 /** Access needed directories */
+const modulePath = (globalThis as unknown as {modulePath: string}).modulePath;
 const {VITE_DEV_SERVER_URL} = process.env;
-const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+const mainSourceDirectory = path.dirname(fileURLToPath(modulePath));
 const DIST = path.join(mainSourceDirectory, "..", "dist");
 
 // > Create the main application window
@@ -166,7 +167,7 @@ const createSecondaryWindow = (params: WindowsParams): void => {
 		show: false,
         backgroundColor: "#272822",
         webPreferences: {
-            preload: path.join(path.dirname(fileURLToPath(import.meta.url)), "preload.js"),
+            preload: path.join(path.dirname(fileURLToPath(modulePath)), "preload.js"),
             nodeIntegration: false,
             contextIsolation: true,
             defaultFontSize: 18,

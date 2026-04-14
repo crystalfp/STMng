@@ -18,13 +18,11 @@
   ],
   "ignoreDependencies": [
     "vue-docgen-cli",
-    "@mdi/svg",
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
     "typedoc-plugin-missing-exports",
     "postcss-scss",
-    "@rollup/plugin-commonjs",
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-terser",
     "@rollup/plugin-typescript",
@@ -32,7 +30,6 @@
     "@oxlint/migrate",
     "@typescript/native-preview",
     "eslint-plugin-eslint-comments",
-    "vite",
     "@golar/vue",
     "rolldown"
   ],

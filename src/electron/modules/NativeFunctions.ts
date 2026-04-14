@@ -22,9 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {createRequire} from "node:module";
-const rq = createRequire(import.meta.url);
-const addon = rq("../build/Release/native") as NativeModule;
 
 /**
  * Type of the native code output
@@ -115,6 +112,11 @@ interface NativeModule {
 
 	MDS: (distancesVector: Float64Array, pointsCount: number) => MDS2D3DOutput;
 }
+
+import {createRequire} from "node:module";
+const modulePath = (globalThis as unknown as {modulePath: string}).modulePath;
+const rq = createRequire(modulePath);
+const addon = rq("../build/Release/native") as NativeModule;
 
 /**
  * Find and apply symmetries

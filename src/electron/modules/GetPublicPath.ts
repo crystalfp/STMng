@@ -37,8 +37,10 @@ import {app} from "electron";
  */
 export const publicDirPath = (filename: string, unpacked=false): string => {
 
+	const modulePath = (globalThis as unknown as {modulePath: string}).modulePath;
+
 	if(!app.isPackaged) {
-		const mainSourceDirectory = path.dirname(fileURLToPath(import.meta.url));
+		const mainSourceDirectory = path.dirname(fileURLToPath(modulePath));
 		return path.join(mainSourceDirectory, "..", "public", filename);
 	}
 	if(unpacked) {

@@ -19,7 +19,7 @@ To do:
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
-  ☐ Add tooltip with description to the "available nodes" in Program editor
+  ✔ Add tooltip with description to the "available nodes" in Program editor @done(2026-04-13 06:00)
   ☐ Don't use flags as function parameters
   ☐ Add count elements of groups in scatterplot
   ☐ Parallelize group analysis in variable composition
