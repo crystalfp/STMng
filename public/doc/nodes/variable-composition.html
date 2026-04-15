@@ -53,7 +53,7 @@
 <tr>
 	<td class="c1">End-member compositions</td>
 	<td class="c2">editable table</td>
-	<td class="c3">Each row is a component in the input structures. There is an atomic specie per column ordered alphabetically and the numeric values is the multiplicity of this specie in the given component. For example for MgO + SiO<sub>2</sub> the two rows should be 1, 1, 0 and 0, 2, 1.</td>
+	<td class="c3">Each row is a component in the input structures. There is an atomic specie per column ordered alphabetically and the numeric values is the multiplicity of this specie in the given component. For example for MgO + SiO<sub>2</sub> the three columns are labelled “Mg”, “O” and “Si” and the two rows should be 1, 1, 0 and 0, 2, 1.</td>
 </tr>
 <tr>
 	<td class="c1">Compute compositions</td>
@@ -164,7 +164,7 @@
 <tr>
 	<td class="c1">Save analyzed</td>
 	<td class="c2">button</td>
-	<td class="c3">Show the output directory selector to save the analysis output.</td>
+	<td class="c3">Show the output directory selector or the single file selector to save the analysis output.</td>
 </tr>
 <tr>
 	<td class="c1">Output directory</td>
@@ -172,14 +172,17 @@
 	<td class="c3">Select the directory where the output files will be saved. There is a file (or a pair of files) for each selected composition. The files are called
 		<tt>composition&#8209;&lt;<i>proportions</i>&gt;.poscar</tt>.
 		If they have an associated per atom energy, the file
-		<tt>composition&#8209;&lt;<i>proportions</i>&gt;.energy</tt> is created with them.
-		If the “Consolidate output” toggle is set, the <tt><i>proportions</i></tt> part of the filenames
-		is changed to the “all” string.</td>
+		<tt>composition&#8209;&lt;<i>proportions</i>&gt;.energy</tt> is created with them.</td>
+</tr>
+<tr>
+	<td class="c1">Output file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">If the “Consolidate output” toggle is set, the file selector selects the POSCAR file that will contains all the selections. The default filename is “composition-all.poscar”. If the structures have energies, a second file with same name and path but extension changed to “.energy” is created. The saved energies are per atom.</td>
 </tr>
 <tr>
 	<td class="c1">Files saved</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">At the end of the save step, show the number of files created.</td>
+	<td class="c3">At the end of the save step, show the number of files created or the path to the saved consolidated file.</td>
 </tr>
 </table>
 

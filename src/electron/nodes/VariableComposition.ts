@@ -567,10 +567,9 @@ export class VariableComposition extends NodeCore {
 	 * Save all compositions in one file in the given directory
 	 *
 	 * @param selected - All selected compositions codes (separated by "-")
-	 * @param dir - Directory where to save the compositions
-	 * @returns Number of files saved, that is, one
+	 * @param dataFile - Filename for the structure file where to save the compositions
 	 */
-	private saveAllCompositions(selected: Set<string>, dir: string): number {
+	private saveAllCompositions(selected: Set<string>, dataFile: string): void {
 
 		const hasEnergies = this.accumulator.hasEnergies();
 
@@ -599,9 +598,10 @@ export class VariableComposition extends NodeCore {
 			return a[0] - b[0];
 		});
 
-		const name = "composition-all";
-		const dataFile = path.join(dir, `${name}.poscar`);
-		const energyFile = path.join(dir, `${name}.energy`);
+		const pos = dataFile.lastIndexOf(".");
+		const energyFile = pos > 0 ?
+									`${dataFile.slice(0, pos)}.energy` :
+									`${dataFile}.energy`;
 
 		const fd = openSync(dataFile, "w");
 		const fde = hasEnergies ? openSync(energyFile, "w") : undefined;
@@ -616,8 +616,6 @@ export class VariableComposition extends NodeCore {
 		}
 		closeSync(fd);
 		if(fde !== undefined) closeSync(fde);
-
-		return 1;
 	}
 
 	/**
@@ -637,6 +635,24 @@ export class VariableComposition extends NodeCore {
 			selected.add(s.replaceAll("\u2009:\u2009", "-"));
 		}
 
+		if(this.state.consolidateOutput) {
+			const file = dialog.showSaveDialogSync({
+				title: "Output consolidated structure file",
+				defaultPath: "composition-all.poscar",
+				filters: [{name: "POSCAR", extensions: ["poscar"]}],
+			});
+			if(!file) return {saved: -1};
+
+			this.accumulator.initializeKeyMap();
+
+			this.saveAllCompositions(selected, file);
+
+			sendAlertToClient(`Saved consolidated variable composition file ${file}`,
+						  	  {level: "success"});
+
+			return {saved: 1};
+		}
+
 		const dir = dialog.showOpenDialogSync({
 			title: "Output directory",
 			properties: ["openDirectory"],
@@ -645,9 +661,7 @@ export class VariableComposition extends NodeCore {
 
 		this.accumulator.initializeKeyMap();
 
-		const saved = this.state.consolidateOutput ?
-								this.saveAllCompositions(selected, dir[0]) :
-								this.saveByComposition(selected, dir[0]);
+		const saved = this.saveByComposition(selected, dir[0]);
 
 		sendAlertToClient(`Saved ${saved} variable composition file${saved === 1 ? "" : "s"}`,
 						  {level: "success"});

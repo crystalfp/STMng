@@ -536,8 +536,9 @@ const vc = computed(() => {
                  :width="130" :height="285" :bottom="70" :right="0"
                  title="Enthalpy" :values-continue="vc"/>
 
-  <v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
-                    timer="bottom" max-width="250"
+  <v-snackbar-queue v-model="notificationQueue" min-height="68"
+                    display-strategy="overflow" :total-visible="5"
+                    timer="bottom" max-width="250" timeout="6000"
                     close-on-content-click color="red-darken-4" />
 </v-app>
 </template>

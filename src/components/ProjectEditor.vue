@@ -949,6 +949,7 @@ const resetContextMenu = (): void => {
 </v-dialog>
 
 <v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
+                  display-strategy="overflow" :total-visible="5"
                   timer="bottom" max-width="250"
                   close-on-content-click color="red-darken-4" />
 </v-app>

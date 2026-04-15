@@ -162,7 +162,8 @@ const confirmedExit = (): void => {
   <div class="layout-gutter" @click="toggleNormalScreen" />
   <Viewer3D />
   <v-snackbar-queue v-model="notificationQueue" min-height="68" timeout="6000"
-                    timer="bottom" max-width="250" close-on-content-click />
+                    display-strategy="overflow" :total-visible="5"
+                    timer="bottom" max-width="400" close-on-content-click />
 </div>
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
 
