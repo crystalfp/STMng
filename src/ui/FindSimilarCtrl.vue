@@ -236,7 +236,7 @@ const showMatches = (): void => {
   <v-container v-if="legend" class="pb-0">
     <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
       <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
-      <span style="width: 5.5rem;" class="w-25">{{ n.range }}</span>{{ n.label }}
+      <span style="width: 5.5rem;margin-right:3px">{{ n.range }}</span>{{ n.label }}
     </div>
   </v-container>
   <block-button label="Matchers parameters" class="mb-n2 mt-4"

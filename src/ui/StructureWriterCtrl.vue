@@ -217,9 +217,10 @@ const selectedSaveFile = (filename: string): void => {
                :filter="filterFromFormat(format)"
                kind="save" @selected="selectedSaveFile" />
 
-  <v-row class="mt-6" >
+  <v-row class="mt-2" >
     <v-switch v-model="continuous" label="Continuous write" density="compact"
-              class="ml-3 mr-8 mt-n1" :disabled="controlStore.writerAccumulate" />
+              class="ml-3 mt-n1" :disabled="controlStore.writerAccumulate" />
+    <v-spacer/>
     <v-btn :disabled="format === '' || outputFile === ''" @click="startStopCapture">
       {{ captureButtonLabel }}
     </v-btn>

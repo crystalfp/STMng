@@ -27,7 +27,6 @@ import {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
         Raycaster, type Object3D, type Mesh, type MeshLambertMaterial,
         Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere,
         Timer, MathUtils} from "three";
-import WebGL from "three/addons/capabilities/WebGL.js";
 import CameraControls from "camera-controls";
 import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
@@ -46,6 +45,26 @@ import ViewerLegend from "@/widgets/ViewerLegend.vue";
 // > Access the stores
 const configStore  = useConfigStore();
 const controlStore = useControlStore();
+
+/**
+ * Check WebGL2 availability
+ * Code taken and adapted from "three/addons/capabilities/WebGL.js";
+ */
+const isWebGL2Available = (): boolean => {
+
+    try {
+
+        const canvas = document.createElement("canvas");
+        const has = !!(globalThis.WebGL2RenderingContext && canvas.getContext("webgl2"));
+        canvas.remove();
+        return has;
+    }
+    // eslint-disable-next-line @stylistic/keyword-spacing
+    catch {
+
+        return false;
+    }
+};
 
 /**
  * Copy the position of the perspective camera to the orthographic camera
@@ -99,11 +118,11 @@ const scene = sm.createScene();
 onMounted(() => {
 
     if(!cnv.value) {
-        showSystemAlert("Cannot create Viewer3D. Continue without viewer.");
+        showSystemAlert("Cannot create Viewer3D. Continue without the viewer.");
         return;
     }
-    if(!WebGL.isWebGL2Available()) {
-        showSystemAlert("Your graphics card does not seem to support WebGL2. Continue without viewer.");
+    if(!isWebGL2Available()) {
+        showSystemAlert("The graphics card does not support WebGL2. Continue without the viewer.");
         return;
     }
 

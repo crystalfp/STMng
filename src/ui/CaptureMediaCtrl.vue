@@ -77,7 +77,7 @@ const startStop = computed(() => (controlStore.movie ? "Stop recording" : "Start
     </v-btn-toggle>
   </titled-slot>
   <slider-with-steppers v-model="controlStore.stlScale" v-model:raw="showScale"
-                        :label="`Scale (${showScale})`" label-width="5rem"
+                        :label="`Scale (${showScale})`" label-width="5.1rem"
                         :min="1" :max="20" :step="1" class="mb-4 ml-1"/>
 
   <block-button class="mt-3" label="Capture geometry" @click="controlStore.stl = true" />

@@ -183,7 +183,7 @@ const stopWatcher1 = watch([showUnitCell, showSupercell, showBasisVectors], () =
 
 const stopWatcher2 = watch([repetitionsA, repetitionsB, repetitionsC], () => {
 
-    showSupercell.value = hasSupercell();
+    if(!hasSupercell()) showSupercell.value = false;
     sendToNode(id, "repeat", {
         repetitionsA: repetitionsA.value,
         repetitionsB: repetitionsB.value,
@@ -273,13 +273,13 @@ onUnmounted(() => {
   <color-selector v-model="lineColor" label="Line color" />
   <v-label class="separator-title">Cell repetitions</v-label>
   <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
-                          :label="`Along a (${showRepetitionsA})`" label-width="5.5rem"
+                          :label="`Along a (${showRepetitionsA})`" label-width="6.1rem"
                           :min="1" :max="10" :step="1" class="ml-1"/>
   <slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB"
-                          :label="`Along b (${showRepetitionsB})`" label-width="5.5rem"
+                          :label="`Along b (${showRepetitionsB})`" label-width="6.1rem"
                           :min="1" :max="10" :step="1" class="ml-1" />
   <slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
-                          :label="`Along c (${showRepetitionsC})`" label-width="5.5rem"
+                          :label="`Along c (${showRepetitionsC})`" label-width="6.1rem"
                           :min="1" :max="10" :step="1" class="ml-1" />
   <block-button :disabled="!hasSupercell()" class="mt-2" label="Reset" @click="resetSliders" />
   <v-switch v-model="showSupercell" :disabled="!hasSupercell()"
@@ -289,13 +289,13 @@ onUnmounted(() => {
   <color-selector v-model="supercellColor" label="Line color" />
   <v-label class="separator-title">Shift origin</v-label>
   <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
-                          :label="`Along a (${showPercentA}%)`" label-width="7.2rem"
+                          :label="`Along a (${showPercentA}%)`" label-width="7.5rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
   <slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
-                          :label="`Along b (${showPercentB}%)`" label-width="7.2rem"
+                          :label="`Along b (${showPercentB}%)`" label-width="7.5rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
   <slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
-                          :label="`Along c (${showPercentC}%)`" label-width="7.2rem"
+                          :label="`Along c (${showPercentC}%)`" label-width="7.5rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
   <v-switch v-model="shrink" label="Shrink cell" class="ml-2 my-2" />
   <block-button :disabled="noShift()" class="mt-4" label="Reset" @click="resetShift" />

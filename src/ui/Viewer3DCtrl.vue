@@ -266,7 +266,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-label text="Camera position" class="mb-4 no-select" />
-        <v-row>
+        <v-row class="ga-0">
           <v-number-input v-model="forcedCameraPositionX" label="x"
                           :step="0.1" :precision="1" />
           <v-number-input v-model="forcedCameraPositionY" label="y"
@@ -275,7 +275,7 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
                           :step="0.1" :precision="1" class="ml-2" />
         </v-row>
         <v-label text="Camera look at" class="mb-4 no-select" />
-        <v-row>
+        <v-row class="ga-0">
           <v-number-input v-model="forcedCameraLookAtX" label="x"
                           :step="0.1" :precision="1" />
           <v-number-input v-model="forcedCameraLookAtY" label="y"
@@ -389,9 +389,9 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
       <v-expansion-panel-text>
         <v-switch v-model="configStore.helpers.showAxis"
                   label="Show axis" class="mt-3 mb-4" />
-        <align-labels label-width="5rem" class="ml-n2 mt-n5">
+        <align-labels label-width="5.7rem" class="ml-n2 mt-n5">
           <v-slider v-model="configStore.helpers.axisLength" label="Axis length" density="compact"
-                    min="0.5" max="20" step="0.5" thumb-label />
+                    min="0.5" max="20" step="0.5" thumb-label="hover" />
         </align-labels>
         <v-switch v-model="configStore.helpers.showGridXZ"
                   label="Show grid XZ" class="mt-n6" />
@@ -399,9 +399,9 @@ const cameraType = computed(() => `Camera type (${configStore.camera.type})`);
                   label="Show grid XY" />
         <v-switch v-model="configStore.helpers.showGridYZ"
                   label="Show grid YZ" />
-        <align-labels label-width="5rem" class="ml-n2">
+        <align-labels label-width="5.7rem" class="ml-n2">
           <v-slider v-model="configStore.helpers.gridSize" label="Grid side" density="compact"
-                    min="2" max="40" step="2" thumb-label />
+                    min="2" max="40" step="2" thumb-label="hover" />
         </align-labels>
         <v-switch v-model="configStore.helpers.showGizmo"
                   label="Show orientation helper" class="mt-n6" />

@@ -173,11 +173,11 @@ onUnmounted(() => {
 
   <v-switch v-model="enableBackbone"
             label="Show backbone" class="mt-4 mb-2 ml-1" />
-  <slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8rem"
+  <slider-with-steppers v-model="threshold" v-model:raw="showThreshold" label-width="8.5rem"
                           :label="`Threshold (${(showThreshold*100).toFixed(0)}%)`"
                           :min="0" :max="1" :step="0.1" :disabled="!hasCell" class="ml-0"/>
   <slider-with-steppers v-model="radius" v-model:raw="showRadius"
-                          label-width="8rem" class="mb-6 ml-0"
+                          label-width="8.5rem" class="mb-6 ml-0"
                           :label="`Tube radius (${showRadius.toFixed(1)})`"
                           :min="0" :max="2" :step="0.1" />
   <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"

@@ -139,7 +139,12 @@ receiveBroadcast((eventType: string) => {
 // Application exit confirmation
 const showExitConfirm = ref(false);
 handleExitConfirmation(() => {
+
     showExitConfirm.value = true;
+
+    // Workaround to focus the button "Dismiss" on Linux
+    const dom = document.querySelector<HTMLElement>(".px-4");
+    if(dom) dom.focus();
 });
 const confirmedExit = (): void => {
     showExitConfirm.value = false;
@@ -163,9 +168,9 @@ const confirmedExit = (): void => {
 
 <v-dialog v-model="showExitConfirm">
   <v-card title="Confirm exit application" text="Do you want to quit the application?"
-          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+          class="mx-auto no-select" elevation="16" max-width="500">
   <v-card-actions>
-      <v-btn v-focus @click="showExitConfirm=false">Dismiss</v-btn>
+      <v-btn v-focus class="px-4" @click="showExitConfirm=false">Dismiss</v-btn>
       <v-btn @click="confirmedExit">Yes</v-btn>
     </v-card-actions>
   </v-card>
