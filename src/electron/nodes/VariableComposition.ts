@@ -903,7 +903,7 @@ export class VariableComposition extends NodeCore {
 			createOrUpdateSecondaryWindow({
 				routerPath: "/hull-3d",
 				width: 1130,
-				height: 900,
+				height: 950,
 				title: "Variable composition 3D convex hull",
 				data: this.hull.dataForDisplay3D()
 			});

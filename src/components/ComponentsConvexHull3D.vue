@@ -39,8 +39,11 @@ import type {CtrlParams} from "@/types";
 
 import SliderWithSteppers from "@/widgets/SliderWithSteppers.vue";
 import ViewerLegend from "@/widgets/ViewerLegend.vue";
+import SelectColormap from "@/widgets/SelectColormap.vue";
 
 const windowPath = "/hull-3d";
+
+const CONTROLS_HEIGHT = 128;
 
 const scale = ref(0.2);
 const showScale = ref(0.2);
@@ -49,6 +52,9 @@ const showPointSize = ref(0.01);
 const disableScale = ref(false);
 let dimension = 3;
 const showLegend = ref(false);
+const showLines = ref(true);
+const showLabels = ref(true);
+const pointColoring = ref("formation");
 
 /** To show error messages */
 const notificationQueue = ref<string[]>([]);
@@ -86,7 +92,6 @@ const viewEnthalpy = ref("");
 
 /** Colormap */
 const colormapName = ref("rainbow");
-const lut = new Lut(colormapName.value, 128);
 const vertexColors: Color[] = [];
 const lutMin = ref(0);
 const lutMax = ref(1);
@@ -126,10 +131,10 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     });
 
     labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight-70);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight-CONTROLS_HEIGHT);
     labelRenderer.domElement.style.position = "absolute";
     labelRenderer.domElement.style.top = "0px";
-    labelRenderer.domElement.style.height = `${window.innerHeight-70}px`;
+    labelRenderer.domElement.style.height = `${window.innerHeight-CONTROLS_HEIGHT}px`;
     labelRenderer.domElement.style.pointerEvents = "none";
     const viewerContainer = document.querySelector(".hull3d-viewer");
     if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
@@ -146,7 +151,7 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     labelRenderer.render(scene, camera);
 },
 (width: number, height: number) => {
-    labelRenderer.setSize(width, height-70);
+    labelRenderer.setSize(width, height-CONTROLS_HEIGHT);
 });
 
 /**
@@ -365,28 +370,29 @@ const createLabels = (stableVertices: number[], zScale: number,
 };
 
 /**
- * Create colormap for the enthalpies
+ * Create colormap for the point values (enthalpy or distance)
  *
- * @param energies - Array of points energies
+ * @param values - Array of points values
  */
-const createColors = (energies: number[]): void => {
+const createColors = (values: number[]): void => {
 
-    let maxEnergy = Number.NEGATIVE_INFINITY;
-    let minEnergy = Number.POSITIVE_INFINITY;
-    for(const energy of energies) {
-        if(energy > maxEnergy) maxEnergy = energy;
-        if(energy < minEnergy) minEnergy = energy;
+    let maxValue = Number.NEGATIVE_INFINITY;
+    let minValue = Number.POSITIVE_INFINITY;
+    for(const value of values) {
+        if(value > maxValue) maxValue = value;
+        if(value < minValue) minValue = value;
     }
 
-    lut.setMax(maxEnergy);
-    lut.setMin(minEnergy);
-    lutMin.value = minEnergy;
-    lutMax.value = maxEnergy;
+    const lut = new Lut(colormapName.value, 128);
+    lut.setMax(maxValue);
+    lut.setMin(minValue);
+    lutMin.value = minValue;
+    lutMax.value = maxValue;
 
     vertexColors.length = 0;
-    for(const energy of energies) {
+    for(const value of values) {
 
-        const color = lut.getColor(energy);
+        const color = lut.getColor(value);
         vertexColors.push(color.clone());
     }
 };
@@ -419,9 +425,9 @@ requestData(windowPath, (params: CtrlParams) => {
     const pp = params.parts as string[];
     parts = pp ? [...pp] : [];
 
-	const dd = params.distance as number[];
-	distance = dd ? [...dd] : [];
-	const ff = params.formula as string[];
+    const dd = params.distance as number[];
+    distance = dd ? [...dd] : [];
+    const ff = params.formula as string[];
     formula = ff ? [...ff] : [];
 
     createColors(e);
@@ -460,8 +466,8 @@ requestData(windowPath, (params: CtrlParams) => {
     }
 });
 
-/** Update scene on parameters change */
-const stopWatcher = watch([scale, pointSize], ([sa, pa], [sb, pb]) => {
+/** Update scene on scale change */
+const stopWatcher1 = watch(scale, (sa, sb) => {
 
     if(sa !== sb) {
         zCenter *= sa/sb;
@@ -469,19 +475,26 @@ const stopWatcher = watch([scale, pointSize], ([sa, pa], [sb, pb]) => {
         createSurface(trianglesVertices, scale.value);
         createPoints(x, y, e, v, scale.value, pointSize.value);
     }
-    else if(pa !== pb) {
-        if(dimension === 3) {
-            createPoints(x, y, e, v, scale.value, pointSize.value);
-        }
-        else {
-            createPoints(x, y, z, v, 1, pointSize.value);
-        }
+});
+
+/** Update scene on point coloring change */
+const stopWatcher2 = watch([colormapName, pointColoring, pointSize], () => {
+
+    if(pointColoring.value === "distance") createColors(distance);
+    else createColors(e);
+
+    if(dimension === 3) {
+        createPoints(x, y, e, v, scale.value, pointSize.value);
+    }
+    else {
+        createPoints(x, y, z, v, 1, pointSize.value);
     }
 });
 
 // Cleanup
 onUnmounted(() => {
-    stopWatcher();
+    stopWatcher1();
+    stopWatcher2();
 });
 
 /**
@@ -499,6 +512,22 @@ const vc = computed(() => {
         colormap: colormapName.value
     };
 });
+
+/** Set legend title */
+const legendTitle = computed(() => {
+    if(pointColoring.value === "distance") return "Distance";
+    return "Enthalpy of formation";
+});
+
+/**
+ * Change visibility of lines and labels
+ */
+const changeVisibility = (): void => {
+    const edges = sv.getScene().getObjectByName("ConvexHullEdges") as Mesh;
+    edges.visible = showLines.value;
+    labelsGroup.visible = showLabels.value;
+    sv.setSceneModified();
+};
 
 </script>
 
@@ -518,23 +547,34 @@ const vc = computed(() => {
         </tbody>
       </table>
     </div>
-    <v-container class="button-strip">
-      <slider-with-steppers v-model="scale" v-model:raw="showScale"
+    <v-container class="hull3d-controls">
+      <slider-with-steppers v-model="scale" v-model:raw="showScale" class="aa"
                             label-width="5.5rem" :disabled="disableScale"
                             :label="`Scale (${showScale})`"
                             :min="0" :max="1" :step="0.01" />
       <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
-                            label-width="8rem"
+                            label-width="8rem" class="bb"
                             :label="`Point size (${showPointSize})`"
                             :min="0.005" :max="0.05" :step="0.005" />
-      <v-switch v-model="showLegend" label="Legend"/>
-      <v-btn @click="centerView">Center</v-btn>
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+      <div class="dd">
+        <v-switch v-model="showLegend" label="Show legend"/>
+        <select-colormap v-model="colormapName" class="colormap"/>
+        <v-btn-toggle v-model="pointColoring" mandatory>
+          <v-btn value="formation">Formation</v-btn>
+          <v-btn value="distance">Distance</v-btn>
+        </v-btn-toggle>
+        <v-switch v-model="showLines" label="Show lines"
+                  @update:modelValue="changeVisibility"/>
+        <v-switch v-model="showLabels" label="Show labels" class="mr-2"
+                  @update:modelValue="changeVisibility"/>
+      </div>
+      <v-btn class="cc" @click="centerView">Center</v-btn>
+      <v-btn v-focus class="ff" @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
   <viewer-legend v-if="showLegend"
-                 :width="130" :height="285" :bottom="70" :right="0"
-                 title="Enthalpy" :values-continue="vc"/>
+                 :width="130" :height="285" :bottom="CONTROLS_HEIGHT" :right="0"
+                 :title="legendTitle" :values-continue="vc"/>
 
   <v-snackbar-queue v-model="notificationQueue" min-height="68"
                     display-strategy="overflow" :total-visible="5"
@@ -575,5 +615,30 @@ const vc = computed(() => {
 .align {
   text-align: right;
 }
+
+.hull3d-controls {
+  display: grid;
+  gap: 10px 10px;
+  grid-auto-flow: row;
+  grid-template:
+    "aa bb cc" 1fr
+    "dd dd ff" 1fr / 1fr 1fr 0.2fr;
+  max-width: 3000px !important;
+}
+
+.aa { grid-area: aa; }
+
+.bb { grid-area: bb; }
+
+.cc { grid-area: cc; }
+
+.dd {
+  grid-area: dd;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.ff { grid-area: ff; }
 
 </style>
