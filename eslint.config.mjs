@@ -384,6 +384,7 @@ export default defineConfig([
         "unicorn/custom-error-definition": "error",  // Correct Error subclassing
         "unicorn/no-unused-properties": "warn",      // Dead code detection
         "unicorn/consistent-destructuring": "warn",  // Use destructured vars consistently
+        "unicorn/no-keyword-prefix": ["warn", {"checkProperties": false}],
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],

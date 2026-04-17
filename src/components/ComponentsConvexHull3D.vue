@@ -303,7 +303,7 @@ const createPoints = (px: number[], py: number[], pz: number[],
             side: FrontSide,
             roughness: 0.5,
             metalness: 0.6,
-            color: vertexColors[i].convertSRGBToLinear()
+            color: vertexColors.length === 0 ? "#00FF00" : vertexColors[i].convertSRGBToLinear()
         });
         const cube = new Mesh(geometry1, material);
         cube.position.set(px[i], py[i], pz[i]*zScale);
@@ -346,7 +346,7 @@ const createLabels = (stableVertices: number[], zScale: number,
                       indexVertices: number[], formulaText: string[]): void => {
 
     sv.clearGroup("ConvexHullLabels");
-    for(const element of document.querySelectorAll(".label")) element.remove();
+    for(const element of document.querySelectorAll<HTMLDivElement>(".label")) element.remove();
 
     const len = stableVertices.length/3;
     for(let i=0; i < len; ++i) {
@@ -355,7 +355,6 @@ const createLabels = (stableVertices: number[], zScale: number,
         text.style.color = "blue";
         text.style.fontSize = "18px";
         text.innerHTML = formulaText[indexVertices[i]];
-        // eslint-disable-next-line unicorn/no-keyword-prefix
         text.className = "label";
 
         const label = new CSS2DObject(text);
@@ -372,9 +371,14 @@ const createLabels = (stableVertices: number[], zScale: number,
 /**
  * Create colormap for the point values (enthalpy or distance)
  *
- * @param values - Array of points values
+ * @param values - Array of points values. If missing the points are colored all green.
  */
-const createColors = (values: number[]): void => {
+const createColors = (values?: number[]): void => {
+
+    if(!values) {
+        vertexColors.length = 0;
+        return;
+    }
 
     let maxValue = Number.NEGATIVE_INFINITY;
     let minValue = Number.POSITIVE_INFINITY;
@@ -474,6 +478,7 @@ const stopWatcher1 = watch(scale, (sa, sb) => {
         sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
         createSurface(trianglesVertices, scale.value);
         createPoints(x, y, e, v, scale.value, pointSize.value);
+        createLabels(v, scale.value, iv, formula);
     }
 });
 
@@ -481,6 +486,7 @@ const stopWatcher1 = watch(scale, (sa, sb) => {
 const stopWatcher2 = watch([colormapName, pointColoring, pointSize], () => {
 
     if(pointColoring.value === "distance") createColors(distance);
+    else if(pointColoring.value === "none") createColors();
     else createColors(e);
 
     if(dimension === 3) {
@@ -557,9 +563,10 @@ const changeVisibility = (): void => {
                             :label="`Point size (${showPointSize})`"
                             :min="0.005" :max="0.05" :step="0.005" />
       <div class="dd">
-        <v-switch v-model="showLegend" label="Show legend"/>
+        <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
         <select-colormap v-model="colormapName" class="colormap"/>
         <v-btn-toggle v-model="pointColoring" mandatory>
+          <v-btn value="none">None</v-btn>
           <v-btn value="formation">Formation</v-btn>
           <v-btn value="distance">Distance</v-btn>
         </v-btn-toggle>

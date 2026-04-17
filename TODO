@@ -19,10 +19,10 @@ To do:
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
-  ✔ Add tooltip with description to the "available nodes" in Program editor @done(2026-04-13 06:00)
   ☐ Don't use flags as function parameters
   ☐ Add count elements of groups in scatterplot
   ☐ Parallelize group analysis in variable composition
+  ☐ Add colors in 2D convex hull
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -77,6 +77,8 @@ Reference:
   ☐ For the charts <https://unovis.dev/>
 
 Archive:
+  ✔ Changing scale in 3D 3components does not move the labels @done(2026-04-17 08:43) @project(Bugs)
+  ✔ Add tooltip with description to the "available nodes" in Program editor @done(2026-04-13 06:00) @project(To do)
   ✔ Variable composition convex hull 3 components as 3D object @done(2026-03-20 15:21) @project(Latest requests (backlog))
   ✔ In X-ray doc add reference to the pymatgen routine @done(2026-03-08 04:28) @project(Bugs)
   ✔ Summary line in variable composition after "analyze selected for duplicates" @done(2026-03-08 04:27) @project(To do)
