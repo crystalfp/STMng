@@ -179,7 +179,7 @@ export class VariableCompositionConvexHull {
 		const hull = quickHull(points);
 		const toOrder: {x: number; y: number; idx: number}[] = [];
 		for(const facet of hull) {
-			if(facet.plane[1] < -1e-13) {
+			if(facet.plane[1] < -1e-4) {
 				const [v1, v2] = facet.verts;
 
 				toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},
@@ -296,7 +296,7 @@ export class VariableCompositionConvexHull {
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
-			if(facet.plane[2] < -1e-13) {
+			if(facet.plane[2] < -1e-4) {
 				const [v1, v2, v3] = facet.verts;
 				idxVertices.add(v1);
 				idxVertices.add(v2);
@@ -544,6 +544,7 @@ export class VariableCompositionConvexHull {
 	/**
 	 * Distance from the closest point inside the triangle along Z axis
 	 * @remarks Algorithm from: https://blackpawn.com/texts/pointinpoly/
+	 * @remarks The test for inclusion takes care of the rounding errors
 	 *
 	 * @param p - Point to test
 	 * @param a - Vertex of the triangle
@@ -554,7 +555,7 @@ export class VariableCompositionConvexHull {
 	closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
 
 		const [u, v, w] = this.barycentricCoordinates(p, a, b, c);
-		if(u >= 0 && v >= 0 && w >= 0) {
+		if(u >= -1e-15 && v >= -1e-15 && w >= -1e-15) {
 
 			const z = u*c[2]+v*b[2]+w*a[2];
 			return p[2]-z;
@@ -576,7 +577,7 @@ export class VariableCompositionConvexHull {
 
 			let dist = Number.POSITIVE_INFINITY;
 			for(const facet of hull) {
-				if(facet.plane[2] < -1e-13) {
+				if(facet.plane[2] < -1e-4) {
 
 					const [v1, v2, v3] = facet.verts;
 

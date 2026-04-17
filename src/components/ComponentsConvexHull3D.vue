@@ -524,7 +524,7 @@ const legendTitle = computed(() => {
  */
 const changeVisibility = (): void => {
     const edges = sv.getScene().getObjectByName("ConvexHullEdges") as Mesh;
-    edges.visible = showLines.value;
+    if(edges) edges.visible = showLines.value;
     labelsGroup.visible = showLabels.value;
     sv.setSceneModified();
 };
