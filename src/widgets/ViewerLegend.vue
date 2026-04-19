@@ -26,10 +26,13 @@ import {onUnmounted, reactive, ref, watch} from "vue";
 import {Lut} from "three/addons/math/Lut.js";
 
 // > Properties
-const {title, bottom=40, right=10, width=140, height=215, valuesContinue} = defineProps<{
+const {title, top, bottom=40, right=10, width=140,
+       height=215, valuesContinue, dark=false} = defineProps<{
 
     /** Legend title */
     title?: string;
+    /** Positioning */
+    top?: number;
     /** Positioning */
     bottom?: number;
     /** Positioning */
@@ -42,14 +45,24 @@ const {title, bottom=40, right=10, width=140, height=215, valuesContinue} = defi
     valuesDiscrete?: {color: string; label: string}[];
     /** Values for a continuous legend */
     valuesContinue?: {min: string; max: string; footer?: string; colormap: string};
+    /** Force black text */
+    dark?: boolean;
 }>();
 
-const style = reactive({
-    bottom: `${bottom}px`,
-    right: `${right}px`,
-    width: `${width}px`,
-    height: `${height}px`
-});
+const style = top === undefined ?
+                reactive({
+                    bottom: `${bottom}px`,
+                    right: `${right}px`,
+                    width: `${width}px`,
+                    height: `${height}px`
+                }) :
+                reactive({
+
+                    top: `${top}px`,
+                    right: `${right}px`,
+                    width: `${width}px`,
+                    height: `${height}px`
+                });
 
 let colorScale;
 const haveFooter = ref(false);
@@ -66,6 +79,7 @@ if(valuesContinue) {
 }
 const haveHeader = ref(!!title);
 
+const useDark = dark ? "dark" : "";
 </script>
 
 
@@ -77,7 +91,7 @@ const haveHeader = ref(!!title);
       <span :style="{backgroundColor: n.color}" class="ml-2 mr-3">&emsp;</span>{{ n.label }}
     </div>
   </div>
-    <div v-else-if="valuesContinue !== undefined" class="legend-grid">
+    <div v-else-if="valuesContinue !== undefined" class="legend-grid" :class="useDark">
       <div v-show="haveHeader" class="side-tt">{{ title }}</div>
       <div class="side-ll"><img :src="colorScale" height="100%" width="30"></div>
       <div class="side-rt">{{ valuesContinue.max }}</div>
@@ -122,4 +136,7 @@ const haveHeader = ref(!!title);
 
 .side-bb {grid-area: bb; text-align: center;}
 
+.dark {
+  color: black;
+}
 </style>

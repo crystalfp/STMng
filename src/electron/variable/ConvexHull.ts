@@ -555,7 +555,7 @@ export class VariableCompositionConvexHull {
 	closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
 
 		const [u, v, w] = this.barycentricCoordinates(p, a, b, c);
-		if(u >= -1e-15 && v >= -1e-15 && w >= -1e-15) {
+		if(u >= -1e-13 && v >= -1e-13 && w >= -1e-13) {
 
 			const z = u*c[2]+v*b[2]+w*a[2];
 			return p[2]-z;

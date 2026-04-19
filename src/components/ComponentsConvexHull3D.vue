@@ -564,9 +564,9 @@ const changeVisibility = (): void => {
                             :min="0.005" :max="0.05" :step="0.005" />
       <div class="dd">
         <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
-        <select-colormap v-model="colormapName" class="colormap"/>
+        <select-colormap v-model="colormapName"/>
         <v-btn-toggle v-model="pointColoring" mandatory>
-          <v-btn value="none">None</v-btn>
+          <v-btn value="none" @click="showLegend=false">None</v-btn>
           <v-btn value="formation">Formation</v-btn>
           <v-btn value="distance">Distance</v-btn>
         </v-btn-toggle>

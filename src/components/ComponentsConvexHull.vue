@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {computed, ref} from "vue";
+import {computed, onUnmounted, ref, watch} from "vue";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
@@ -32,6 +32,10 @@ import type {CtrlParams} from "@/types";
 import {Scatter, BulletShape, XYLabels, type BulletLegendItemInterface} from "@unovis/ts";
 import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip,
         VisBulletLegend, VisXYLabels} from "@unovis/vue";
+import {Lut} from "three/addons/math/Lut.js";
+
+import SelectColormap from "@/widgets/SelectColormap.vue";
+import ViewerLegend from "@/widgets/ViewerLegend.vue";
 
 const windowPath = "/components-hull";
 
@@ -54,6 +58,8 @@ interface DataRecord {
     enthalpy?: number;
     /** Chemical formula */
     formula?: string;
+    /** Points color */
+    color?: string;
 }
 
 const points = ref<DataRecord[]>([]);
@@ -65,6 +71,9 @@ const edges = ref<DataRecord[]>([]);
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
+
+let dist: number[] = [];
+let enthalpy: number[] = [];
 
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
@@ -81,12 +90,14 @@ requestData(windowPath, (params: CtrlParams) => {
     // Collect values for the scatterplot
     const dataX = params.x as number[];
     const dataY = dimension.value === 2 ? params.e as number[] : params.y as number[];
-    const dist  = params.distance as number[];
+    dist  = params.distance as number[];
     const step  = params.step as number[];
     const parts = params.parts as string[];
     const formula = params.formula as string[];
-    const enthalpy = params.e as number[];
+    enthalpy = params.e as number[];
     const tri = params.trianglesVertices as number[];
+
+    const colors = createColors(pointColoring.value, "rainbow", enthalpy, dist);
 
     let len = dataX.length;
     points.value.length = 0;
@@ -98,7 +109,8 @@ requestData(windowPath, (params: CtrlParams) => {
             step: step[i],
             parts: parts[i],
             enthalpy: enthalpy[i],
-            formula: formula[i]
+            formula: formula[i],
+            color: colors[i]
         });
     }
 
@@ -186,9 +198,16 @@ const legend = ref<BulletLegendItemInterface[]>([
 ]);
 const position = computed(() => (dimension.value === 2 ? "left: 120px" : "left: 20px"));
 
+type ColoringKind = "none" | "formation" | "distance";
+
 const showStructures = ref(true);
 const showOnLine = ref(true);
+const showLegend = ref(false);
 const showFormula = ref(true);
+const pointColoring = ref<ColoringKind>("formation");
+const colormapName = ref("rainbow");
+const lutMin = ref(0);
+const lutMax = ref(1);
 
 /**
  * Toggle visibility of the chart items
@@ -234,6 +253,8 @@ const lp = (d: DataRecord): string => {
     // }
 };
 
+const cp = (d: DataRecord): string => d.color!;
+
 /**
  * Make a chart snapshot
  */
@@ -246,6 +267,75 @@ const makeImage = (): void => {
     });
 };
 
+/**
+ * Create colormap for the point values (enthalpy or distance)
+ *
+ * @param kind - Coloring method
+ * @param colormap - Name of the colormap to use
+ * @param energy - Point enthalpies of formation
+ * @param distance - Point distance from the convex hull
+ */
+const createColors = (kind: ColoringKind, colormap: string,
+                      energy: number[], distance: number[]): string[] => {
+
+    if(kind === "none") return Array<string>(energy.length).fill("#03C03C");
+    const values = kind === "distance" ? distance : energy;
+
+    let maxValue = Number.NEGATIVE_INFINITY;
+    let minValue = Number.POSITIVE_INFINITY;
+    for(const value of values) {
+        if(value > maxValue) maxValue = value;
+        if(value < minValue) minValue = value;
+    }
+
+    const lut = new Lut(colormap, 128);
+    lut.setMax(maxValue);
+    lut.setMin(minValue);
+    lutMin.value = minValue;
+    lutMax.value = maxValue;
+
+    const vertexColors: string[] = [];
+    for(const value of values) {
+
+        vertexColors.push(`#${lut.getColor(value).getHexString()}`);
+    }
+
+    return vertexColors;
+};
+
+const stopWatcher = watch([colormapName, pointColoring], () => {
+
+    const colors = createColors(pointColoring.value, colormapName.value,
+                                enthalpy, dist);
+
+    let len = points.value.length;
+    for(let i=0; i < len; ++i) {
+        points.value[i].color = colors[i];
+    }
+    forceUpdate.value = !forceUpdate.value;
+});
+
+// Cleanup
+onUnmounted(() => {
+    stopWatcher();
+});
+
+
+/** Data for the legend */
+const vc = computed(() => {
+    return {
+        min: lutMin.value.toFixed(4),
+        max: lutMax.value.toFixed(4),
+        colormap: colormapName.value
+    };
+});
+
+/** Set legend title */
+const legendTitle = computed(() => {
+    if(pointColoring.value === "distance") return "Distance";
+    return "Enthalpy of formation";
+});
+
 </script>
 
 
@@ -253,28 +343,28 @@ const makeImage = (): void => {
 <v-app :theme>
   <div class="hull-portal">
     <VisXYContainer v-if="dimension===2"
-                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" :duration="0"
-                    class="hull-viewer">
-      <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear"/>
-      <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
-                  color="#03C03C" :size="7" cursor="pointer"/>
+                    :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                    :duration="0" class="hull-viewer">
+      <VisLine :data="line" :x="xp" :y="yp" curveType="linear"/>
+      <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                  :color="cp" :size="7" cursor="pointer"/>
       <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisAxis type="x" :gridLine="false" label="Composition ratio"
-              labelColor="#6C778C" :labelFontSize="24" tickTextColor="#6C778C"/>
+              labelColor="black" :labelFontSize="24" tickTextColor="black"/>
       <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
-              labelColor="#6C778C" :fullSize="true" :labelFontSize="24" tickTextColor="#6C778C"/>
+              labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
       <VisTooltip :triggers :followCursor="false" />
       <VisXYLabels v-if="showFormula" :data="line" :x="xp" :y="yp" :label="lp"
                    xPositioning="data_space" yPositioning="data_space"/>
     </VisXYContainer>
     <VisXYContainer v-else-if="dimension===3"
-                    :margin="{right: 20, top: 20, left: 20, bottom: 20}" :duration="0"
-                    class="hull-viewer">
-      <VisLine :key="forceUpdate" :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
-      <VisLine :key="forceUpdate" :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
-      <VisScatter v-if="showStructures" :data="points" :x="xp" :y="yp"
-                  color="#03C03C" :size="9" cursor="pointer"/>
+                    :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                    :duration="0" class="hull-viewer">
+      <VisLine :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
+      <VisLine :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
+      <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                  :color="cp" :size="9" cursor="pointer"/>
       <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
                   color="#FF0000" :size="15" cursor="pointer" shape="square"/>
       <VisTooltip :triggers :followCursor="false" />
@@ -282,15 +372,25 @@ const makeImage = (): void => {
                    xPositioning="data_space" yPositioning="data_space"/>
     </VisXYContainer>
     <v-alert v-else
-         title="Not implemented yet"
-         :text="`Visualization for ${dimension} components not implemented`"
+         title="Not implemented"
+         :text="`Visualization 2D for ${dimension}-components is not implemented`"
          type="error"
          color="red-darken-4"
          class="cursor-pointer" />
     <VisBulletLegend :items="legend" class="hull-legend" :style="position"
-                     :onLegendItemClick="toggleItem"
+                     :onLegendItemClick="toggleItem" labelClassName="legend-color"
                      labelFontSize="medium" bulletSize="15px"/>
+    <viewer-legend v-if="showLegend"
+                 :width="130" :height="200" :right="0" :top="0" :dark="true"
+                 :title="legendTitle" :values-continue="vc"/>
     <v-container class="hull-buttons">
+      <v-btn-toggle v-model="pointColoring" mandatory>
+        <v-btn value="none" @click="showLegend=false">None</v-btn>
+        <v-btn value="formation">Formation</v-btn>
+        <v-btn value="distance">Distance</v-btn>
+      </v-btn-toggle>
+      <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
+      <select-colormap v-model="colormapName" class="mt-n1"/>
       <v-btn @click="makeImage">Save image</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
@@ -313,9 +413,9 @@ const makeImage = (): void => {
   width: 100vw;
   flex: 2;
   padding: 0;
-  background-color: #FFFFFF;
+  background-color: #90CEEC;
 
-  --vis-axis-tick-color: #6C778C;
+  --vis-axis-tick-color: black;
 }
 
 .hull-buttons {
@@ -324,13 +424,15 @@ const makeImage = (): void => {
   width: 100vw;
   gap: 10px;
   justify-content: end;
-  align-items: baseline
 }
 
 .hull-legend {
     position: absolute;
     top: 10px;
     left: 120px;
-    /* left: 20px; */
+}
+
+:deep(.legend-color) {
+  color: black;
 }
 </style>

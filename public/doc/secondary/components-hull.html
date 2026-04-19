@@ -19,13 +19,61 @@
 
 <p>Depending on the number of components, the window shows the distribution of enthalpy of formation for the structures versus their composition.</p>
 <p>Clicking on the legend entries show or hide the corresponding points in the chart.</p>
-<p>The window has also a button to save a snapshot of the chart.</p>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Color by</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Selects value to be represented as color of the points.
+  <dl>
+  <dt>None</dt>
+  <dd>All points are colored <span style="background-color: green" class="color-word">green</span>.</dd>
+  <dt>Formation</dt>
+  <dd>The points are colored by their enthalpy of formation.</dd>
+  <dt>Distance</dt>
+  <dd>The points are colored by their distance from the convex hull.</dd>
+  </dl>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Show legend</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Show the legend for the points color. Disabled if the points have color “None”.</td>
+</tr>
+<tr>
+	<td class="c1">Colormap</td>
+	<td class="c2">selector</td>
+	<td class="c3">Name of the colormap to convert values into colors.</td>
+</tr>
+<tr>
+	<td class="c1">Save image</td>
+	<td class="c2">button</td>
+	<td class="c3">Save a snapshot of the chart.</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window.</td>
+</tr>
+</table>
+
+<h2>Legend</h2>
+<p>The legend on the top left of the chart is active. Clicking on one entry hide or show the corresponding points.</p>
+<dl>
+  <dt>structures</dt>
+  <dd>The points not on the convex hull.</dd>
+  <dt>on the convex hull</dt>
+  <dd>The <span style="background-color: red" class="color-word">red</span> squares representing the points that lies exactly on the convex hull.</dd>
+  <dt>labels</dt>
+  <dd>The formula of the points on the convex hull.</dd>
+</dl>
 
 <h2>Two components</h2>
 
-<img src="./hull2d.png" width="500" height="400" style="margin-bottom: 1rem">
+<img src="./hull2d.png" width="500" height="453" style="margin-bottom: 1rem">
 <p>The chart shows a point for each structure after removing duplicates. The composition ratio is: <b>component<sub>2</sub>/(component<sub>1</sub>+component<sub>2</sub>)</b></p>
-<p>The line is the lower part of the convex hull enclosing the points. The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull line.</p>
+<p>The line is the lower part of the convex hull enclosing the points. The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull line. In the image these points are overlaid by the corresponding formula.</p>
 <p>Hovering a point shows a popup with the following information:</p>
 <table>
   <tr><td class="c1">Step</td><td>Step of the structure in the loaded sequence</td></tr>
@@ -35,9 +83,10 @@
 </table>
 
 <h2>Three components</h2>
-<img src="./hull3d.png" width="500" height="400" style="margin-bottom: 1rem">
+<img src="./hull3d.png" width="500" height="453" style="margin-bottom: 1rem">
 <p>The chart shows a point for each structure after removing duplicates. On the corners of the triangles are the three end-members components. The enthalpy of formation lies on the axis perpendicular to the image.</p>
 <p>The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull surface. This surface lies below the visualized triangle and is the bottom half of the convex hull enclosing the points.</p>
+<p>Clicking on the top-left legend “labels” entry show the formula corresponding to these points.</p>
 <p>Hovering a point shows a popup with the following information:</p>
 <table>
   <tr><td class="c1">Step</td><td>Step of the structure in the loaded sequence</td></tr>
