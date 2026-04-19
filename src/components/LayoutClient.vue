@@ -24,7 +24,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 
-import {ref, shallowRef, defineAsyncComponent} from "vue";
+import {ref, shallowRef, defineAsyncComponent, nextTick} from "vue";
 import {sm} from "@/services/SceneManager";
 import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
@@ -144,7 +144,7 @@ handleExitConfirmation(() => {
 
     // Workaround to focus the button "Dismiss" on Linux
     const dom = document.querySelector<HTMLElement>(".px-4");
-    if(dom) dom.focus();
+    if(dom) void nextTick(() => {dom.focus();});
 });
 const confirmedExit = (): void => {
     showExitConfirm.value = false;

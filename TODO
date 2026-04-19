@@ -1,3 +1,16 @@
+ToDo:
+  ☐ Add an editor for atoms color and dimensions
+  ☐ Fix loading of the SPGlib library files on Linux
+  ☐ Publish build instructions for STMng
+  ☐ Publish a web site with the STMng documentation
+  ☐ Fix that when changing theme, the points color in scatterplot does not change
+  ☐ Experiment with a more efficient way to visualize labels to atoms
+  ☐ Parallelize more the group analysis in variable composition
+  ☐ Add count elements of groups in scatterplot
+  ☐ (future) Move to WebGPU renderer from current WebGL renderer
+  ☐ (maybe) Add a metadata section to project files.
+  ☐ Create a tutorial
+
 Bugs:
   ☐ Does not load spglib on Linux
   ☐ Bounding sphere does not consider supercell
@@ -22,7 +35,7 @@ To do:
   ☐ Don't use flags as function parameters
   ☐ Add count elements of groups in scatterplot
   ☐ Parallelize group analysis in variable composition
-  ☐ Add colors in 2D convex hull
+  ✔ Add colors in 2D convex hull @done(2026-04-19 07:20)
 
 Performance:
   ☐ Block screen update when "accumulating for fingerprinting" and "fast"
@@ -74,7 +87,7 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
-  ☐ For the charts <https://unovis.dev/>
+  ✔ For the charts <https://unovis.dev/> @done(2026-04-19 07:28)
 
 Archive:
   ✔ Changing scale in 3D 3components does not move the labels @done(2026-04-17 08:43) @project(Bugs)

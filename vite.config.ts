@@ -49,6 +49,11 @@ export default defineConfig({
                     // is complete, instead of restarting the entire Electron App.
                     options.reload();
                 },
+                vite: {
+                    build: {
+                        reportCompressedSize: false,
+                    }
+                }
             },
         ]),
         vueDevTools(),

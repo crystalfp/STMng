@@ -552,6 +552,8 @@ onUnmounted(() => {
     stopWatcher2();
 });
 
+const countPerGroup = reactive(new Map<number, number>());
+
 const windowPath = "/fp-scatterplot";
 
 /** Receive the chart data from the main window */
@@ -565,6 +567,15 @@ requestData(windowPath, (params: CtrlParams) => {
     }
 
     drawPoints();
+
+    if(scatterplotType.value === "group") {
+
+        countPerGroup.clear();
+        for(const group of scatterplotData.value.values) {
+            const n = countPerGroup.get(group) ?? 0;
+            countPerGroup.set(group, n+1);
+        }
+    }
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -895,6 +906,12 @@ const vc = computed(() => {
     };
 });
 
+const count = computed(() => {
+    if(countPerGroup.has(showSelectedGroup.value)) {
+        return `Group size:  ${countPerGroup.get(showSelectedGroup.value)}`;
+    }
+    return "";
+});
 
 // > Start template
 </script>
@@ -917,8 +934,9 @@ const vc = computed(() => {
       <v-divider thickness="2" class="mr-n1 ml-1"/>
       <slider-with-steppers v-model="selectedGroup" v-model:raw="showSelectedGroup"
                               :disabled="!scatterplotData?.countGroups" label-width="7rem"
-                              :label="`Group (${showSelectedGroup})`" class="mt-2 ml-2 mr-n2"
+                              :label="`Group ${showSelectedGroup}`" class="mt-2 ml-2 mr-n2"
                               :min="0" :max="(scatterplotData?.countGroups || 1) - 1" :step="1" />
+      <v-label class="ml-2">{{ count }}</v-label>
       <v-btn :disabled="!scatterplotData?.countGroups"
              block class="mt-4 ml-1 mb-4" @click="selectByGroup">
         Select group
