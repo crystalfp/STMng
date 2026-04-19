@@ -27,7 +27,7 @@ import {Lut} from "three/addons/math/Lut.js";
 
 // > Properties
 const {title, top, bottom=40, right=10, width=140,
-       height=215, valuesContinue, dark=false} = defineProps<{
+       height=215, valuesContinue, dark} = defineProps<{
 
     /** Legend title */
     title?: string;

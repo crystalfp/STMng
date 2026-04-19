@@ -308,7 +308,7 @@ const stopWatcher = watch([colormapName, pointColoring], () => {
     const colors = createColors(pointColoring.value, colormapName.value,
                                 enthalpy, dist);
 
-    let len = points.value.length;
+    const len = points.value.length;
     for(let i=0; i < len; ++i) {
         points.value[i].color = colors[i];
     }
