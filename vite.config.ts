@@ -16,8 +16,10 @@ export default defineConfig({
         preserveSymlinks: true
     },
     optimizeDeps: {
-        exclude: [".git", ".vscode", "doc", "release", "save", "other", "bugs",
-                  "test-data", "proto-test", "work", "tests"],
+        exclude: [
+            ".git", ".vscode", ".gemini", ".github", "linux-scripts",
+            "doc", "release", "save", "other", "bugs",
+            "test-data", "proto-test", "work", "tests"],
         holdUntilCrawlEnd: false
     },
     plugins: [
@@ -86,5 +88,18 @@ export default defineConfig({
                 }
             }
         }
+    },
+    server: {
+        warmup: {
+            clientFiles: [
+                "./src/components/Viewer3D.vue",
+                "./src/components/ControlsContainer.vue",
+                "./src/ui/StructureReaderCtrl.vue",
+                "./src/ui/DrawUnitCellCtrl.vue",
+                "./src/ui/ComputeSymmetriesCtrl.vue",
+                "./src/ui/ComputeFingerprintsCtrl.vue",
+                "./src/ui/VariableCompositionCtrl.vue"
+            ],
+        },
     },
 });

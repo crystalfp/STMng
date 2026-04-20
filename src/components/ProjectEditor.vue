@@ -858,7 +858,7 @@ const resetContextMenu = (): void => {
     <div class="tr"><v-label class="column-title">Available nodes</v-label></div>
     <div class="cr">
       <div v-for="item in availableNodes" :key="item.type" class="list-item"
-           draggable @dragstart="handleDragStart($event, item)"
+           :draggable="true" @dragstart="handleDragStart($event, item)"
            @contextmenu="contextMenu($event, item.type, item.label)">
         {{ item.label }}
       </div>
