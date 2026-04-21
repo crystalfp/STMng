@@ -1,7 +1,7 @@
 ToDo:
   ☐ Add an editor for atoms color and dimensions
   ☐ Fix loading of the SPGlib library files on Linux
-  ☐ Publish build instructions for STMng
+  ✔ Publish build instructions for STMng @done(2026-04-21 10:21)
   ☐ Publish a web site with the STMng documentation
   ☐ Fix that when changing theme, the points color in scatterplot does not change
   ☐ Experiment with a more efficient way to visualize labels to atoms
@@ -11,7 +11,7 @@ ToDo:
   ☐ (maybe) Add a metadata section to project files.
   ☐ Create a tutorial
   ☐ Fixing X-ray diffraction
-  ☐ Incomplete polyhedra.
+  ☐ (waiting) Incomplete polyhedra.
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Extending variable composition analysis to systems with >5 components.
   ☐ Estimation of phase transition pressures for fixed and variable composition datasets.

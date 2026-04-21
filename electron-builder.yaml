@@ -34,6 +34,8 @@ linux:
   extraFiles:
     - from: build/Release/libsymspg.so.2.7.0
       to: ./libsymspg.so.2
+    - from: build/Release/libsymspg.so.2.7.0
+      to: ./libsymspg.so
 mac:
   artifactName: "${productName}_${version}.${ext}"
   target:
