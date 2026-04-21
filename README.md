@@ -13,10 +13,10 @@ So, remember: goal of STMng is to help your understanding, not to provide fancy 
 
 ### Highlights
 - Unlike its predecessor, STMng is built on top of open source framework and libraries.
-- STMng is multiplatform: currently available for Windows and Linux, for Apple, I need help.
+- STMng is multiplatform: currently available for Windows and Linux. For Apple, I need help.
 - The tool is stable and used in actual research. This repository, instead, is under development 🚧.
-- STMng could read for analysis and visualization various file formats.
-- The available computational function (called nodes) could be combined in user defined projects.
+- STMng could read various file formats for analysis and visualization.
+- The available computational functions (called nodes) could be combined in user defined projects.
 - The resulting visualization could be captured as images, movies and STL files.
 - STMng can match your loaded structure to a collection of prototypes.
 - You can perform fingerprint computation and analysis of a set of loaded structures.
@@ -72,3 +72,4 @@ Credits for specific libraries used are listed in the respective node documentat
 ## Build from sources
 - Build on Windows: [instructions](BUILD-Windows.md)
 - Build on Linux: [instructions](BUILD-Linux.md)
+- Build on Mac: if you dare to contribute...

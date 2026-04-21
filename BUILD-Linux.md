@@ -6,13 +6,13 @@
 
 ## Prerequisite tools
 1. Python 3.12
-2. nodejs 25.x
+2. Node 25.x
 3. CMake (to build SPGlib)
 4. Check if the compilers are installed: `cc --version` and `g++ --version`. Install them if missing.
 
 ### Install needed libraries
-2. `cd STMng`
-3. Install the following libraries:
+1. `cd STMng`
+2. Install the following libraries:
 	1. **sginfo**
 
 		- Download `sginfo_1_01open.tar.gz` from <https://cci.lbl.gov/sginfo/#getting_sginfo>
@@ -35,11 +35,13 @@
 		- `mv eigen-5.0.0/Eigen .`
 		- `rm -rf eigen-5.0.0`
 
+3. Remember that to run the application you need to have the package `fuse` installed.
+
 ## Build STMng
 1. Return to the `STMng` directory
 2. `mv linux-scripts/* .`
 3. `npm install`
-4. Now you can run STMng in development mode by executing `npx vite` or `npm run dev` in the `STMng` directory
+4. Now you can run STMng in development mode from here by executing `npx vite` or `npm run dev`
 5. To build the bundled application: `npm run build` (ignore the typescript plugin errors)
 6. You will have the bundled application under `release/<version>` as `STMng-<version>.AppImage`
-7. To run the packaged version you need to have the package `fuse` installed. Then run `./release/<version>/STMng-<version>.AppImage`
+7. To run it: `./release/<version>/STMng-<version>.AppImage`
