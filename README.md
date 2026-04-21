@@ -2,9 +2,10 @@
 <div align="center">
     <img src="./resources/icon.png" width="180" height="180">
 </div>
-See The Molecule new generation (STMng) is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old [STM4](http://mariovalle.name/STM4/index.html) visualization tool.
 
-STMng primary use is to analyze the results of the [USPEX](https://uspex-team.org/) computational material discovery system but it is useful also as a general crystallographic visualization tool.
+**See The Molecule new generation** (STMng) is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old STM4 visualization tool.
+
+STMng primary use is to analyze the results of the [USPEX](https://uspex-team.org/) computational material discovery system, but it is useful also as a general crystallographic visualization tool.
 
 ### First a quick remainder
 Similarly to what Richard Hamming — of the “Numerical methods for scientists and engineers” fame — said in 1962: *“The purpose of computing is insight, not numbers”,* for every visualization tool we should remember that: *“The purpose of visualization is insight, not images”.*
@@ -29,17 +30,17 @@ You can access the documentation from within STMng with the F1 key. Specifically
 
 ## Installation
 ### Windows (Windows 11)
-- Download STMng-*\<version\>*-setup.exe
+- Download `STMng-<version>-setup.exe`
 - Execute it as Administrator
 - Select an installation directory (normally: "C:\Program Files\STMng")
 - Run STMng from the start menu
 
 ### Linux (Ubuntu 22)
-- Download STMng-*\<version\>*.AppImage
+- Download `STMng-<version>.AppImage`
 - Verify you have the package **fuse** installed
 - Install **SPGlib** shared libraries (see [How to install spglib C-API](https://spglib.readthedocs.io/en/latest/install.html))
-- chmod a+x ./STMng-*\<version\>*.AppImage
-- Run ./STMng-*\<version\>*.AppImage\
+- `chmod a+x ./STMng-<version>.AppImage`
+- Run `./STMng-<version>.AppImage`\
   Sometimes this step fails with: “The SUID sandbox helper binary was found, but is not configured correctly. Rather than run without sandboxing I'm aborting now. You need to make sure that /tmp/.mount_STMng-*nnnn*/chrome-sandbox is owned by root and has mode 4755.” so do what suggested.
 
 

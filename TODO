@@ -11,11 +11,11 @@ ToDo:
   ☐ (maybe) Add a metadata section to project files.
   ☐ Create a tutorial
   ☐ Fixing X-ray diffraction
-  ☐ (waiting) Incomplete polyhedra.
+  ☐ (low priority) Incomplete polyhedra.
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Extending variable composition analysis to systems with >5 components.
-  ☐ Estimation of phase transition pressures for fixed and variable composition datasets.
-  ☐ Block rendering when loading using Fast reading
+  ☐ Estimation of phase transition pressures for fixed (and, in the future, variable composition) datasets.
+  ☐ Block the rendering when loading using Fast reading
 
 Bugs:
   ☐ Does not load spglib on Linux

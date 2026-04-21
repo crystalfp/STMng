@@ -1,12 +1,12 @@
 
 # Build STMng on Windows
 
-1. [Download](https://github.com/crystalfp/STMng/releases) and unzip `STMng-<version>.zip`
+1. [Download](https://github.com/crystalfp/STMng/releases) the source code and unzip `STMng-<version>.zip`
 2. Rename directory `STMng-<version>` to `STMng`
 
 ## Prerequisite tools
 1. Python 3.12
-2. Node 25.x
+2. NodeJS 25.x
 3. Visual Studio or Visual Studio Community (2022)
 4. CMake (to build SPGlib)
 

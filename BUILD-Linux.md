@@ -1,13 +1,16 @@
 
 # Build STMng on Linux
 
-1. [Download](https://github.com/crystalfp/STMng/releases) and untar `STMng-<version>.tar.gz`
+1. [Download](https://github.com/crystalfp/STMng/releases) the source code and untar `STMng-<version>.tar.gz`
 2. Rename directory `STMng-<version>` to `STMng`
 
 ## Prerequisite tools
 1. Python 3.12
-2. Node 25.x
+2. NodeJS 25.x
+   1. Install NodeJS following the instructions here <https://nodejs.org/en/download/package-manager/current>
+   2. Verify the NodeJS installation running `node --version ` and `npm --version`
 3. CMake (to build SPGlib)
+   1. Verify installation with `cmake --version`
 4. Check if the compilers are installed: `cc --version` and `g++ --version`. Install them if missing.
 
 ### Install needed libraries
@@ -44,4 +47,5 @@
 4. Now you can run STMng in development mode from here by executing `npx vite` or `npm run dev`
 5. To build the bundled application: `npm run build` (ignore the typescript plugin errors)
 6. You will have the bundled application under `release/<version>` as `STMng-<version>.AppImage`
-7. To run it: `./release/<version>/STMng-<version>.AppImage`
+7. If needed change permissions: `chmod a+x ./release/<version>/STMng-<version>.AppImage`
+8. To run it: `./release/<version>/STMng-<version>.AppImage`
