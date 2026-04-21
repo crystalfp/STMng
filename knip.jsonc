@@ -11,8 +11,6 @@
   "project": ["src/**/*.{js,ts,vue}"],
   "ignoreBinaries": [
     "start",
-    "oxlint",
-    "vue-mess-detector",
     "dot",
     "migrate"
   ],
@@ -26,7 +24,6 @@
     "@rollup/plugin-node-resolve",
     "@rollup/plugin-terser",
     "@rollup/plugin-typescript",
-    "oxlint-tsgolint",
     "@oxlint/migrate",
     "@typescript/native-preview",
     "eslint-plugin-eslint-comments",

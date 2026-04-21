@@ -4,12 +4,12 @@
 </div>
 See The Molecule new generation (STMng) is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old [STM4](http://mariovalle.name/STM4/index.html) visualization tool.
 
-STMng primary use is to analyze the results of the [USPEX](https://uspex-team.org/) computational material discovery system.
+STMng primary use is to analyze the results of the [USPEX](https://uspex-team.org/) computational material discovery system but it is useful also as a general crystallographic visualization tool.
 
 ### First a quick remainder
 Similarly to what Richard Hamming — of the “Numerical methods for scientists and engineers” fame — said in 1962: *“The purpose of computing is insight, not numbers”,* for every visualization tool we should remember that: *“The purpose of visualization is insight, not images”.*
 
-So, remember: Goal of STMng is to help your understanding, not to provide fancy images only!
+So, remember: goal of STMng is to help your understanding, not to provide fancy images only!
 
 ### Highlights
 - Unlike its predecessor, STMng is built on top of open source framework and libraries.
@@ -18,8 +18,8 @@ So, remember: Goal of STMng is to help your understanding, not to provide fancy 
 - STMng could read for analysis and visualization various file formats.
 - The available computational function (called nodes) could be combined in user defined projects.
 - The resulting visualization could be captured as images, movies and STL files.
-- Can match your loaded structure to a collection of prototypes.
-- Fingerprint computation and analysis of a set of loaded structures.
+- STMng can match your loaded structure to a collection of prototypes.
+- You can perform fingerprint computation and analysis of a set of loaded structures.
 
 ## Documentation
 
@@ -65,6 +65,10 @@ The user interface is based on the [Vue](https://vuejs.org/) framework and is do
 
 The 3D viewer uses the [three.js](https://threejs.org/) interface to WebGL provided by the Chromium browser integrated inside ElectronJS.
 
-The development toolchain is based on [Vite](https://vite.dev/), the final build for production is done by [electron-builder](https://www.electron.build/). The bundling of the code for the parallel computations is done by [Rollup](https://rollupjs.org/).
+The development toolchain is based on [Vite](https://vite.dev/), the final build for production is done by [electron-builder](https://www.electron.build/). The bundling of the code for the parallel computations is done by [Rolldown](https://rolldown.rs/).
 
 Credits for specific libraries used are listed in the respective node documentation pages.
+
+## Build from sources
+- Build on Windows: [instructions](BUILD-Windows.md)
+- Build on Linux: Work in progress 🚧
