@@ -71,4 +71,4 @@ Credits for specific libraries used are listed in the respective node documentat
 
 ## Build from sources
 - Build on Windows: [instructions](BUILD-Windows.md)
-- Build on Linux: Work in progress 🚧
+- Build on Linux: [instructions](BUILD-Linux.md)
