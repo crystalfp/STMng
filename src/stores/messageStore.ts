@@ -51,12 +51,12 @@ interface MessageState {
 /** Access the message store that contains messages that flow from computations to the UI */
 export const useMessageStore = defineStore("MessageStore", {
 
-    state: () => ({
+    state: (): MessageState => ({
 		system: {message: "", level: "error"},
 		node: "",
 		level: "error",
 		text: ""
-	} as MessageState),
+	}),
 });
 
 // > Support HMR during development

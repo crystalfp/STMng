@@ -40,6 +40,8 @@ interface GlobalControls {
 	sceneRadius: number;
 	/** The unit cell is visible and should be considered in bounding sphere computation */
 	sceneUnitCell: boolean;
+	/** Block rendering on fast load */
+	blockRendering: boolean;
 
 	/** Forced camera view direction */
 	viewDirection: string;
@@ -111,11 +113,12 @@ interface GlobalControls {
 /** Access the control store that contains global control variables not saved as status */
 export const useControlStore = defineStore("ControlStore", {
 
-    state: () => ({
+    state: (): GlobalControls => ({
 		reset: false,
 		sceneCenter: [0, 0, 0],
 		sceneRadius: 1,
 		sceneUnitCell: true,
+		blockRendering: false,
 
 		viewDirection: "",
 		basis: [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -151,7 +154,7 @@ export const useControlStore = defineStore("ControlStore", {
 		legend: false,
 		legendDiscrete: []
 
-	} as GlobalControls),
+	}),
 
     // > Actions
     actions: {

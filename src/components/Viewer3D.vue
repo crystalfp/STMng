@@ -601,6 +601,7 @@ onMounted(() => {
     const animate = (): void => {
 
         clock.update();
+        if(controlStore.blockRendering) return;
         const doRender = controls.update(clock.getDelta());
         if(doRender || sm.needRendering()) {
 

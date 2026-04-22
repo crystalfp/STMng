@@ -28,7 +28,7 @@ import type {Viewer3DState} from "@/types";
 /** Access the configuration store that contains the shared state of the viewer */
 export const useConfigStore = defineStore("ConfigStore", {
 
-    state: () => ({
+    state: (): Viewer3DState => ({
 
 		camera: {
 			type: "orthographic",
@@ -70,7 +70,7 @@ export const useConfigStore = defineStore("ConfigStore", {
             axisLength: 1,
             showGizmo: false
         }
-	} as Viewer3DState),
+	}),
 
     // > Getters
     getters: {

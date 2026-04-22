@@ -728,6 +728,13 @@ const clearErrors = (): void => {
     resetNodeAlert();
 };
 
+/**
+ * Block rendering when speed === "fast"
+ */
+const checkRenderingSpeed = (): void => {
+    controlStore.blockRendering = speed.value === 0;
+};
+
 </script>
 
 
@@ -838,8 +845,8 @@ const clearErrors = (): void => {
       </v-row>
 
       <titled-slot title="Speed:" inline class="mt-6 mb-6 ml-0">
-        <v-btn-toggle v-model="speed" mandatory>
-          <v-btn>Fast</v-btn>
+        <v-btn-toggle v-model="speed" mandatory @update:modelValue="checkRenderingSpeed">
+          <v-btn color="red">Fast</v-btn>
           <v-btn>Medium</v-btn>
           <v-btn>Slow</v-btn>
         </v-btn-toggle>
