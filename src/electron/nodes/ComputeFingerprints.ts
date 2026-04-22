@@ -1258,7 +1258,7 @@ export class ComputeFingerprints extends NodeCore {
 			if(!structure) return empty;
 
 			const out: CtrlParams = {
-				basis: structure.basis as number[],
+				basis: structure.basis,
 				positions: structure.atomsPosition,
 				radii: [],
 				bonds: []

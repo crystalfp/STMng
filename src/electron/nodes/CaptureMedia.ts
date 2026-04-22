@@ -121,7 +121,7 @@ export class CaptureView extends NodeCore {
 			landscape: true,
 			scale: 1.4,
 			printBackground: false,
-			pageSize: "A4" as "A4" | "Letter"
+			pageSize: "A4"
 		};
 		const windowPDF = new BrowserWindow({show : false});
 		try {

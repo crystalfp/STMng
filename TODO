@@ -15,7 +15,7 @@ ToDo:
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Extending variable composition analysis to systems with >5 components.
   ☐ Estimation of phase transition pressures for fixed (and, in the future, variable composition) datasets.
-  ☐ Block the rendering when loading using Fast reading
+  ✔ Block the rendering when loading using Fast reading @done(2026-04-22 19:04)
 
 Bugs:
   ☐ Does not load spglib on Linux
