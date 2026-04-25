@@ -62,7 +62,7 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
             label="Collect for variable composition" />
   <v-switch v-if="controlStore.hasEnthalpyTransition"
             v-model="controlStore.enthalpyTransitionAccumulate"
-            label="Collect for enthalpy transition" />
+            label="Collect for enthalpy transitions" />
   <v-divider thickness="2" class="mr-4 ml-n4 mb-2 mt-2"/>
 </v-container>
 </template>

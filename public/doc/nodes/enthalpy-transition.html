@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng enthalpy-transition node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2026-04-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Enthalpy transitions</title>
+</head>
+
+<body>
+<h1 class="title">Enthalpy transitions</h1>
+<h1 class="subh1">Compute enthalpy transitions under pressure changes</h1>
+
+<div class="description">
+<p>The structure enthalpy increases with pressure this way: <i>H = E + PV</i>&ensp;where <i>H</i> is the enthalpy (eV), <i>E</i> the structure energy (eV), <i>P</i> the pressure (GPa) and <i>V</i> the cell volume (Å³).</p>
+<p>This node find the structures more stable when pressure increases and list them.</p>
+
+<h2>Controls</h2>
+
+<h3>Accumulated structures</h3>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Count</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Count of accumulated structures. The start and stop of the accumulation are done from the <a href="./structure-reader.html">Structure Reader</a> page.</td>
+</tr>
+<tr>
+	<td class="c1">Reset</td>
+	<td class="c2">button</td>
+	<td class="c3">Clear the accumulated structures.</td>
+</tr>
+</table>
+
+<h3>Results</h3>
+<p>The enthalpy transition structures data table has the following columns:</p>
+<table>
+  <tr><td class="c0">Step</td><td>The structure step in the input sequence.</td></tr>
+  <tr><td class="c0">Formula</td><td>The structure formula.</td></tr>
+  <tr><td class="c0">Pressure (GPa)</td><td>The pressure from which this structure is the most stable one.</td></tr>
+</table>
+
+<h3>Save results</h3>
+
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Save transition structures</td>
+	<td class="c2">button</td>
+	<td class="c3">Show the output file selector to save the analysis output.</td>
+</tr>
+<tr>
+	<td class="c1">Output file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">The file selector selects the POSCAR file that will contains the transition structures. Then a second file with same name and path but extension changed to “.energy” is created with the structure energies. The saved energies are per structure.</td>
+</tr>
+</table>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+
+</body>
+</html>

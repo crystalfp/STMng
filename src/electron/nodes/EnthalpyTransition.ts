@@ -40,16 +40,10 @@ export class EnthalpyTransition extends NodeCore {
 	private pressure: number[] = [];
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",      type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "capture",	type: "invoke",	callback: this.channelCapture.bind(this)},
 		{name: "save",		type: "send",	callback: this.channelSave.bind(this)},
 		{name: "reset",     type: "send",   callback: this.channelReset.bind(this)},
 	];
-
-	// TBD Define the state of this node
-	private readonly state = {
-		dummy: "",
-	};
 
 	/**
 	 * Create the node
@@ -62,7 +56,7 @@ export class EnthalpyTransition extends NodeCore {
 	}
 
 	description(): string {
-		return "Compute enthalpy transition under pressure changes";
+		return "Compute enthalpy transitions under pressure changes";
 	}
 
 	override fromPreviousNode(data: Structure): void {
@@ -93,17 +87,12 @@ export class EnthalpyTransition extends NodeCore {
 	// > Load/save status
 	saveStatus(): string {
 
-		return `"${this.id}": ${JSON.stringify(this.state)}`;
+		return "";
 	}
 
-	private initializeState(params: CtrlParams): void {
+	loadStatus(): void {
 
-   	    this.state.dummy = params.dummy as string ?? "";
-	}
-
-	loadStatus(params: CtrlParams): void {
-
-		this.initializeState(params);
+		// No body necessary
 	}
 
 	// > Compute
@@ -281,22 +270,6 @@ export class EnthalpyTransition extends NodeCore {
 
 
 	// > Channel handlers
-	/**
-	 * Channel handler for UI initialization
-	 *
-	 * @returns Parameters to initialize the user interface
-	 */
-	private channelInit(): CtrlParams {
-
-		return {
-			// species: this.accumulator.symbols(),
-			// countAccumulated: this.accumulator.size(),
-			// fingerprintMethods: fingerprintMethodsNames(),
-			// distanceMethods: distanceMethodsNames(),
-			...this.state
-		};
-	}
-
 	/**
 	 * Channel handler for accumulate change
 	 *

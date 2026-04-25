@@ -5,6 +5,22 @@
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-04-23
+ *
+ * Copyright 2026 Mario Valle
+ *
+ * This file is part of STMng.
+ *
+ * STMng is free software: you can redistribute it and/or modify
+ * it under the terms of the version 3 of the GNU General Public License
+ * as published by the Free Software Foundation.
+ *
+ * STMng is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import type {BasisType, Structure} from "@/types";
 import {hasNoUnitCell, invertBasis} from "../modules/Helpers";
@@ -159,31 +175,6 @@ export class EnthalpyTransitionAccumulator {
 	getStructureEnergy(idx: number): number {
 		return this.accumulator[idx].energy;
 	}
-/*
-	computeIntersections(): {points: number[][]; pairs: number[][]} {
-
-		const intersections: number[][] = [];
-		const idxIntersections: number[][] = [];
-		const len = this.accumulator.length;
-		for(let i=0; i < len-1; ++i) {
-
-			const {energy: ei, volume: vi} = this.accumulator[i];
-
-			for(let j=i+1; j < len; ++j) {
-
-				const {energy: ej, volume: vj} = this.accumulator[j];
-
-				const p = (ei-ej)/(vj-vi);
-				if(p < 0) continue;
-				const e = ej+p*vj;
-
-				intersections.push([p, e]);
-				idxIntersections.push([i, j]);
-			}
-		}
-
-		return {points: intersections, pairs: idxIntersections};
-	}*/
 
 	/**
 	 * Format entry as POSCAR file
