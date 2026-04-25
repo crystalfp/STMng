@@ -493,7 +493,7 @@ const summaryLabel = computed(() =>
 
   <v-row>
     <v-col cols="7">
-      <v-label class="result-label pt-2">{{ `Count: ${countAccumulated}` }}</v-label>
+      <v-label class="result-label pt-1">{{ `Count: ${countAccumulated}` }}</v-label>
     </v-col>
     <v-col>
       <v-btn :disabled="countAccumulated===0" class="w-100" @click="resetAccumulator">Reset</v-btn>

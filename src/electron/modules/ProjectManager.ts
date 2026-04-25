@@ -58,6 +58,7 @@ import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
 import {VariableComposition} from "../nodes/VariableComposition";
 import {FindSimilar} from "../nodes/FindSimilar";
+import {EnthalpyTransition} from "../nodes/EnthalpyTransition";
 
 /**
  * Manage everything related to the loaded project
@@ -135,6 +136,9 @@ class ProjectManager {
 		{type: "variable-composition",  in: true,  out: false, graphic: "none",
 										handler: VariableComposition,
 									   	idPrefix: "variable", ui: "VariableCompositionCtrl"},
+		{type: "enthalpy-transition",   in: true,  out: false, graphic: "none",
+										handler: EnthalpyTransition,
+									   	idPrefix: "transition", ui: "EnthalpyTransitionCtrl"},
 	];
 
 	/**

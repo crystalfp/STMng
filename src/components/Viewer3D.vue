@@ -26,7 +26,7 @@ import {onMounted, watchEffect, useTemplateRef} from "vue";
 import {PerspectiveCamera, OrthographicCamera, Vector3, Vector2, WebGLRenderer,
         Raycaster, type Object3D, type Mesh, type MeshLambertMaterial,
         Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere,
-        Timer, MathUtils} from "three";
+        Timer, MathUtils, Scene, Color} from "three";
 import CameraControls from "camera-controls";
 import {ViewportGizmo, type GizmoOptions} from "three-viewport-gizmo";
 import {useConfigStore} from "@/stores/configStore";
@@ -595,13 +595,28 @@ onMounted(() => {
     void controls.normalizeRotations().setTarget(...viewportGizmo.target.set(0, 3, 0).toArray());
     camera.lookAt(viewportGizmo.target);
 
+    // When rendering blocked, show an empty scene
+    let renderedEmptyScene = false;
+
     // Rendering function for the run
     const clock = new Timer();
     clock.connect(document);
     const animate = (): void => {
 
         clock.update();
-        if(controlStore.blockRendering) return;
+
+        // When rendering blocked, show an empty scene
+        if(controlStore.blockRendering) {
+            if(!renderedEmptyScene) {
+                const emptyScene = new Scene();
+                emptyScene.background = new Color(configStore.scene.background);
+                renderer.render(emptyScene, camera);
+                renderedEmptyScene = true;
+            }
+            return;
+        }
+        renderedEmptyScene = false;
+
         const doRender = controls.update(clock.getDelta());
         if(doRender || sm.needRendering()) {
 
