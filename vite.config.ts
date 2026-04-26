@@ -19,7 +19,8 @@ export default defineConfig({
         exclude: [
             ".git", ".vscode", ".gemini", ".github", "linux-scripts",
             "doc", "release", "save", "other", "bugs",
-            "test-data", "proto-test", "work", "tests"],
+            "test-data", "proto-test", "work", "tests"
+        ],
         holdUntilCrawlEnd: false
     },
     plugins: [
@@ -82,7 +83,7 @@ export default defineConfig({
                         },
                         {
                             name: "vue",
-                            test: /node_modules[\\/](vue|pinia|vuetify)/
+                            test: /node_modules[\\/](vue|pinia)/ // Covers also vuetify
                         },
                     ]
                 }

@@ -51,6 +51,7 @@ interface AtomInfo {
 	mass: number;
 }
 
+/* oxlint-disable @stylistic/key-spacing */
 /** Atom data (before was atom-data.json file) */
 const atomData = [
 {symbol:"Xx", rCov:0,    rVdW:0,    maxBonds:0,  color:"#000000", bondStrength:0,    mass:0},
@@ -167,6 +168,7 @@ const atomData = [
 {symbol:"Ds", rCov:1.6,  rVdW:2,    maxBonds:6,  color:"#ED0024", bondStrength:0.1,  mass:281.16},
 {symbol:"Rg", rCov:1.6,  rVdW:2,    maxBonds:6,  color:"#F00021", bondStrength:0.1,  mass:280.16}
 ];
+/* oxlint-enable @stylistic/key-spacing */
 
 
 class AtomData {

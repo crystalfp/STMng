@@ -123,7 +123,7 @@ export class CaptureView extends NodeCore {
 			printBackground: false,
 			pageSize: "A4"
 		};
-		const windowPDF = new BrowserWindow({show : false});
+		const windowPDF = new BrowserWindow({show: false});
 		try {
 			await windowPDF.loadURL(dataURI);
 			const data = await windowPDF.webContents.printToPDF(options);

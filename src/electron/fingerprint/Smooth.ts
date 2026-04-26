@@ -28,7 +28,7 @@ const ERF_TABLE_SIZE = 215;
 /** X step between entries in the table */
 const LOOKUP_STEP = 0.02;
 
-/** 0.5*(1.+erf(x)) function lookup table with x: [-LOOKUP_STEP..(ERF_TABLE_SIZE-1)*LOOKUP_STEP]*/
+/** 0.5*(1.+erf(x)) function lookup table with x: [-LOOKUP_STEP..(ERF_TABLE_SIZE-1)*LOOKUP_STEP] */
 const erfTable = [
     0.4887177127,
     0.5000000000, 0.5112822873, 0.5225555531, 0.5338107972, 0.5450390629, 0.5562314580, 0.5673791759,
