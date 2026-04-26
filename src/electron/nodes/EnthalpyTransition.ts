@@ -152,23 +152,56 @@ export class EnthalpyTransition extends NodeCore {
 			}
 		}
 
-		this.vertices.length = 0;
-		this.idxVertices.length = 0;
-		this.pressure.length = 0;
-
 		// Starting point
-		this.vertices.push(vertices[2*idxMin], vertices[2*idxMin+1]);
-		this.idxVertices.push(idxVertices[idxMin]);
-		this.pressure.push(0);
+		const orderPressures = [{
+			volume: vertices[2*idxMin],
+			energy: vertices[2*idxMin+1],
+			idx: idxVertices[idxMin],
+			pressure: 0
+		}];
 
 		len = idxVertices.length;
 		for(let i=idxMin+1; i < len; ++i) {
 
 			const i2 = 2*i;
-			this.vertices.push(vertices[i2], vertices[i2+1]);
-			this.idxVertices.push(idxVertices[i]);
-			const currentPressure = -(vertices[i2+1] - vertices[i2-1]) / (vertices[i2-2]-vertices[i2]);
-			this.pressure.push(currentPressure*160.218); // Coefficient to convert from eV/Å³ to GPa
+			const currentPressure = (vertices[i2+1] - vertices[i2-1]) / (vertices[i2-2]-vertices[i2]);
+
+			orderPressures.push({
+				volume: vertices[i2],
+				energy: vertices[i2+1],
+				idx: idxVertices[i],
+				pressure: currentPressure*160.218
+			});
+		}
+		for(let i=idxMin-1; i >= 0; --i) {
+			const i2 = 2*i;
+			const currentPressure = -(vertices[i2+3] - vertices[i2+1]) / (vertices[i2+2]-vertices[i2]);
+
+			orderPressures.push({
+				volume: vertices[i2],
+				energy: vertices[i2+1],
+				idx: idxVertices[i],
+				pressure: currentPressure*160.218
+			});
+		}
+
+		orderPressures.sort((a, b) => {
+			if(a.pressure !== b.pressure) return a.pressure - b.pressure;
+			if(a.volume !== b.volume) return a.volume - b.volume;
+			return a.energy - b.energy;
+		});
+
+		this.vertices.length = 0;
+		this.idxVertices.length = 0;
+		this.pressure.length = 0;
+
+		len = orderPressures.length;
+		for(let i=0; i < len; ++i) {
+
+			const {volume, energy, idx, pressure} = orderPressures[i];
+			this.vertices.push(volume, energy);
+			this.idxVertices.push(idx);
+			this.pressure.push(pressure);
 		}
 	}
 
