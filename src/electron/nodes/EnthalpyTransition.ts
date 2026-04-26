@@ -160,7 +160,6 @@ export class EnthalpyTransition extends NodeCore {
 		this.vertices.push(vertices[2*idxMin], vertices[2*idxMin+1]);
 		this.idxVertices.push(idxVertices[idxMin]);
 		this.pressure.push(0);
-		let currentPressure = 0;
 
 		len = idxVertices.length;
 		for(let i=idxMin+1; i < len; ++i) {
@@ -168,8 +167,8 @@ export class EnthalpyTransition extends NodeCore {
 			const i2 = 2*i;
 			this.vertices.push(vertices[i2], vertices[i2+1]);
 			this.idxVertices.push(idxVertices[i]);
-			currentPressure += (vertices[i2+1] - vertices[i2-1]) / vertices[i2-2];
-			this.pressure.push(currentPressure*160.218);
+			const currentPressure = -(vertices[i2+1] - vertices[i2-1]) / (vertices[i2-2]-vertices[i2]);
+			this.pressure.push(currentPressure*160.218); // Coefficient to convert from eV/Å³ to GPa
 		}
 	}
 /*
@@ -313,8 +312,10 @@ export class EnthalpyTransition extends NodeCore {
 
 		for(let i=0; i < this.idxVertices.length; ++i) {
 			const idx = this.idxVertices[i];
-			const pressure = this.pressure[i];
-			writeSync(fd, this.accumulator.entryToPoscar(idx, pressure));
+			const p0 = this.pressure[i];
+			const p1 = i === this.idxVertices.length-1? Infinity : this.pressure[i+1];
+
+			writeSync(fd, this.accumulator.entryToPoscar(idx, p0, p1));
 			const energy = this.accumulator.getStructureEnergy(idx);
 			writeSync(fde, `${energy.toFixed(6)}\n`);
 		}

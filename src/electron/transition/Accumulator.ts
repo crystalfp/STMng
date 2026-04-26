@@ -182,12 +182,15 @@ export class EnthalpyTransitionAccumulator {
 	 * @param entry - One composition to convert to POSCAR
 	 * @returns Content of the POSCAR file
 	 */
-	entryToPoscar(idx: number, pressure: number): string {
+	entryToPoscar(idx: number, pressureFrom: number, pressureTo: number): string {
 
 		const entry = this.accumulator[idx];
 
+		const p0 = pressureFrom.toFixed(4);
+		const p1 = pressureTo === Infinity ? "up" : pressureTo.toFixed(4);
+
 		let out = "Enthalpy transition structures by STMng. " +
-				  `Step: ${entry.step} Pressure: ${pressure.toFixed(4)} GPa\n1.0\n`;
+				  `Step: ${entry.step} Pressure range: ${p0} - ${p1} GPa\n1.0\n`;
 
 		const basisString = Array<string>(9);
 		for(let i=0; i < 9; ++i) {
