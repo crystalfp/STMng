@@ -234,7 +234,6 @@ export class EnthalpyTransition extends NodeCore {
 		});
 	}
 
-
 	// > Channel handlers
 	/**
 	 * Channel handler for accumulate change

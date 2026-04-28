@@ -139,7 +139,7 @@ const headers = ref([
 <v-container class="container">
   <v-label class="separator-title first-title">Accumulated structures</v-label>
 
-  <v-row class="mb-4">
+  <v-row class="mb-2">
     <v-col cols="7">
       <v-label class="result-label pt-1">{{ `Count: ${countAccumulated}` }}</v-label>
     </v-col>
@@ -147,6 +147,8 @@ const headers = ref([
       <v-btn :disabled="countAccumulated===0" class="w-100" @click="resetAccumulator">Reset</v-btn>
     </v-col>
   </v-row>
+
+  <v-label class="separator-title">Enthalpy transitions</v-label>
   <v-data-table v-if="table.length > 0" :items="table"
                 class="pr-2" density="compact" select-strategy="all" items-per-page="-1"
                 fixed-header hover height="300px"
