@@ -35,7 +35,8 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
                                             controlStore.hasFingerprints ||
                                             controlStore.hasWriter ||
                                             controlStore.hasVariableComposition ||
-                                            controlStore.hasEnthalpyTransition
+                                            controlStore.hasEnthalpyTransition ||
+                                            controlStore.hasAnalyzeStructureSets
 );
 
 </script>
@@ -63,6 +64,9 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
   <v-switch v-if="controlStore.hasEnthalpyTransition"
             v-model="controlStore.enthalpyTransitionAccumulate"
             label="Collect for enthalpy transitions" />
+  <v-switch v-if="controlStore.hasAnalyzeStructureSets"
+            v-model="controlStore.analyzeStructureSetsAccumulate"
+            label="Collect for analyze structure sets" />
   <v-divider thickness="2" class="mr-4 ml-n4 mb-2 mt-2"/>
 </v-container>
 </template>

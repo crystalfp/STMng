@@ -24,6 +24,7 @@
  */
 import type {FingerprintsAccumulator} from "./Accumulator";
 import type {VariableCompositionAccumulator} from "../variable/Accumulator";
+import type {StructureSetsAccumulator} from "../analysis/Accumulator";
 
 /**
  * Post computation on all fingerprints. Here removes the centroid
@@ -68,12 +69,14 @@ export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void =>
 	centroid.length = 0;
 };
 
+type Accumulator = VariableCompositionAccumulator | StructureSetsAccumulator;
+
 /**
  * Post computation on all fingerprints. Here removes the centroid
  *
  * @param accumulator - The structures accumulator
  */
-export const variablePerSiteFinishStep = (accumulator: VariableCompositionAccumulator,
+export const variablePerSiteFinishStep = (accumulator: Accumulator,
 										  indices: number[]): void => {
 
     const centroid: number[] = [];

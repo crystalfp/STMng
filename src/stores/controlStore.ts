@@ -72,6 +72,8 @@ interface GlobalControls {
 	variableCompositionAccumulate: boolean;
 	/** Capture for enthalpy transition */
 	enthalpyTransitionAccumulate: boolean;
+	/** Capture for analyze structure sets */
+	analyzeStructureSetsAccumulate: boolean;
 
 	/** Set if capture node is present to add its control in StructureReader */
 	hasCapture: boolean;
@@ -85,6 +87,8 @@ interface GlobalControls {
 	hasVariableComposition: boolean;
 	/** Set if the enthalpyTransition module is present to add its control in StructureReader */
 	hasEnthalpyTransition: boolean;
+	/** Set if the analyze structure set module is present to add its control in StructureReader */
+	hasAnalyzeStructureSets: boolean;
 
 	/** Atoms selection */
 	atomsSelected: number[];
@@ -140,6 +144,8 @@ export const useControlStore = defineStore("ControlStore", {
 		writerAccumulate: false,
 		variableCompositionAccumulate: false,
 		enthalpyTransitionAccumulate: false,
+		analyzeStructureSetsAccumulate: false,
+
 
 		hasCapture: false,
 		hasFingerprints: false,
@@ -147,6 +153,7 @@ export const useControlStore = defineStore("ControlStore", {
 		hasWriter: false,
 		hasVariableComposition: false,
 		hasEnthalpyTransition: false,
+		hasAnalyzeStructureSets: false,
 
 		atomsSelected: [],
 		selectedAtomMap: [],

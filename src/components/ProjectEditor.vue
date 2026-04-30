@@ -840,6 +840,13 @@ const contextMenu = (event: MouseEvent, entry: string, label: string): void => {
  */
 const openHelp = (): void => {
     sendToNode("SYSTEM", "node-help", {key: keyMenu.value});
+    askNode("SYSTEM", "node-help", {key: keyMenu.value})
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            reportError(`Error requesting node long description: ${error.message}`);
+        });
 };
 
 /**

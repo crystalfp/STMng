@@ -59,6 +59,7 @@ import {SliceStructure} from "../nodes/SliceStructure";
 import {VariableComposition} from "../nodes/VariableComposition";
 import {FindSimilar} from "../nodes/FindSimilar";
 import {EnthalpyTransition} from "../nodes/EnthalpyTransition";
+import {AnalyzeStructureSets} from "../nodes/AnalyzeStructureSets";
 
 /**
  * Manage everything related to the loaded project
@@ -76,69 +77,72 @@ class ProjectManager {
 	// NOTE 2) Add here the type of all nodes
 	private readonly allNodes: OneNodeInfo[] = [
 
-		{type: "structure-reader",		in: false, out: true, graphic: "none",
-										handler: StructureReader,
-										idPrefix: "reader",    ui: "StructureReaderCtrl"},
-		{type: "structure-backbone",   	in: true,  out: false, graphic: "out",
-										handler: StructureBackbone,
-									   	idPrefix: "backbone",  ui: "StructureBackboneCtrl"},
-		{type: "compute-symmetries",   	in: true,  out: true, graphic: "none",
-										handler: ComputeSymmetries,
-									   	idPrefix: "symmetry",  ui: "ComputeSymmetriesCtrl"},
-		{type: "diffraction-pattern",  	in: true,  out: false, graphic: "none",
-										handler: DiffractionPattern,
-									   	idPrefix: "xray",      ui: "DiffractionPatternCtrl"},
-		{type: "draw-structure",       	in: true,  out: false, graphic: "out",
-										handler: DrawStructure,
-									   	idPrefix: "draw",      ui: "DrawStructureCtrl"},
-		{type: "draw-unit-cell",       	in: true,  out: true,  graphic: "out",
-										handler: DrawUnitCell,
-									   	idPrefix: "unit",      ui: "DrawUnitCellCtrl"},
-		{type: "compute-bonds",        	in: true,  out: true, graphic: "none",
-										handler: ComputeBonds,
-									   	idPrefix: "bonds",     ui: "ComputeBondsCtrl"},
-		{type: "compute-fingerprints", 	in: true,  out: false, graphic: "none",
-										handler: ComputeFingerprints,
-									   	idPrefix: "cfp",       ui: "ComputeFingerprintsCtrl"},
-		{type: "isosurface",           	in: true,  out: false, graphic: "out",
-										handler: DrawIsosurface,
-									   	idPrefix: "iso",       ui: "DrawIsosurfaceCtrl"},
-		{type: "orthoslice",           	in: true,  out: false, graphic: "out",
-										handler: DrawOrthoslice,
-									   	idPrefix: "ortho",     ui: "DrawOrthosliceCtrl"},
-		{type: "draw-polyhedra",       	in: true,  out: false, graphic: "out",
-										handler: DrawPolyhedra,
-									   	idPrefix: "polyhedra", ui: "DrawPolyhedraCtrl"},
-		{type: "interpolate-volume",   	in: true,  out: true, graphic: "none",
-										handler: InterpolateVolume,
-									   	idPrefix: "smooth",    ui: "InterpolateVolumeCtrl"},
-		{type: "slice-structure",      	in: true,  out: true, graphic: "out",
-										handler: SliceStructure,
-									   	idPrefix: "slice",     ui: "SliceStructureCtrl"},
-		{type: "measures",             	in: true,  out: false, graphic: "out",
-										handler: Measures,
-									   	idPrefix: "measure",   ui: "MeasuresCtrl"},
-		{type: "structure-writer",     	in: true,  out: false, graphic: "none",
-										handler: StructureWriter,
-									   	idPrefix: "writer",    ui: "StructureWriterCtrl"},
-		{type: "draw-trajectories",    	in: true,  out: true, graphic: "out",
-										handler: Trajectories,
-									   	idPrefix: "trace",     ui: "TrajectoriesCtrl"},
-		{type: "capture-view",         	in: false, out: false, graphic: "none",
-										handler: CaptureView,
-									   	idPrefix: "capture",   ui: "CaptureMediaCtrl"},
-		{type: "viewer-3d",            	in: false, out: false, graphic: "in",
-										handler: Viewer3D,
-									   	idPrefix: "viewer",    ui: "Viewer3DCtrl"},
-		{type: "find-similar",			in: true,  out: false, graphic: "none",
-										handler: FindSimilar,
-									   	idPrefix: "similar", ui: "FindSimilarCtrl"},
-		{type: "variable-composition",  in: true,  out: false, graphic: "none",
-										handler: VariableComposition,
-									   	idPrefix: "variable", ui: "VariableCompositionCtrl"},
-		{type: "enthalpy-transition",   in: true,  out: false, graphic: "none",
-										handler: EnthalpyTransition,
-									   	idPrefix: "transition", ui: "EnthalpyTransitionCtrl"},
+		{type: "structure-reader",			in: false, out: true, graphic: "none",
+											handler: StructureReader,
+											idPrefix: "reader",    ui: "StructureReaderCtrl"},
+		{type: "structure-backbone",   		in: true,  out: false, graphic: "out",
+											handler: StructureBackbone,
+									   		idPrefix: "backbone",  ui: "StructureBackboneCtrl"},
+		{type: "compute-symmetries",   		in: true,  out: true, graphic: "none",
+											handler: ComputeSymmetries,
+									   		idPrefix: "symmetry",  ui: "ComputeSymmetriesCtrl"},
+		{type: "diffraction-pattern",  		in: true,  out: false, graphic: "none",
+											handler: DiffractionPattern,
+									   		idPrefix: "xray",      ui: "DiffractionPatternCtrl"},
+		{type: "draw-structure",       		in: true,  out: false, graphic: "out",
+											handler: DrawStructure,
+									   		idPrefix: "draw",      ui: "DrawStructureCtrl"},
+		{type: "draw-unit-cell",       		in: true,  out: true,  graphic: "out",
+											handler: DrawUnitCell,
+									   		idPrefix: "unit",      ui: "DrawUnitCellCtrl"},
+		{type: "compute-bonds",        		in: true,  out: true, graphic: "none",
+											handler: ComputeBonds,
+									   		idPrefix: "bonds",     ui: "ComputeBondsCtrl"},
+		{type: "compute-fingerprints", 		in: true,  out: false, graphic: "none",
+											handler: ComputeFingerprints,
+									   		idPrefix: "cfp",       ui: "ComputeFingerprintsCtrl"},
+		{type: "isosurface",           		in: true,  out: false, graphic: "out",
+											handler: DrawIsosurface,
+									   		idPrefix: "iso",       ui: "DrawIsosurfaceCtrl"},
+		{type: "orthoslice",           		in: true,  out: false, graphic: "out",
+											handler: DrawOrthoslice,
+									   		idPrefix: "ortho",     ui: "DrawOrthosliceCtrl"},
+		{type: "draw-polyhedra",       		in: true,  out: false, graphic: "out",
+											handler: DrawPolyhedra,
+									   		idPrefix: "polyhedra", ui: "DrawPolyhedraCtrl"},
+		{type: "interpolate-volume",   		in: true,  out: true, graphic: "none",
+											handler: InterpolateVolume,
+									   		idPrefix: "smooth",    ui: "InterpolateVolumeCtrl"},
+		{type: "slice-structure",      		in: true,  out: true, graphic: "out",
+											handler: SliceStructure,
+									   		idPrefix: "slice",     ui: "SliceStructureCtrl"},
+		{type: "measures",             		in: true,  out: false, graphic: "out",
+											handler: Measures,
+									   		idPrefix: "measure",   ui: "MeasuresCtrl"},
+		{type: "structure-writer",     		in: true,  out: false, graphic: "none",
+											handler: StructureWriter,
+									   		idPrefix: "writer",    ui: "StructureWriterCtrl"},
+		{type: "draw-trajectories",    		in: true,  out: true, graphic: "out",
+											handler: Trajectories,
+									   		idPrefix: "trace",     ui: "TrajectoriesCtrl"},
+		{type: "capture-view",         		in: false, out: false, graphic: "none",
+											handler: CaptureView,
+									   		idPrefix: "capture",   ui: "CaptureMediaCtrl"},
+		{type: "viewer-3d",            		in: false, out: false, graphic: "in",
+											handler: Viewer3D,
+									   		idPrefix: "viewer",    ui: "Viewer3DCtrl"},
+		{type: "find-similar",				in: true,  out: false, graphic: "none",
+											handler: FindSimilar,
+									   		idPrefix: "similar", ui: "FindSimilarCtrl"},
+		{type: "variable-composition",  	in: true,  out: false, graphic: "none",
+											handler: VariableComposition,
+									   		idPrefix: "variable", ui: "VariableCompositionCtrl"},
+		{type: "enthalpy-transition",   	in: true,  out: false, graphic: "none",
+											handler: EnthalpyTransition,
+									   		idPrefix: "transition", ui: "EnthalpyTransitionCtrl"},
+		{type: "analyze-structure-sets",	in: true,  out: false, graphic: "none",
+											handler: AnalyzeStructureSets,
+									   		idPrefix: "sets", ui: "AnalyzeStructureSetsCtrl"},
 	];
 
 	/**
@@ -596,23 +600,27 @@ export const setupChannelProject = (): void => {
 		return {description: key ? pm.getDescription(key) : "No description available"};
 	});
 
-	ipcMain.on("SYSTEM:node-help", (_event, params: CtrlParams) => {
+	ipcMain.handle("SYSTEM:node-help", async (_event, params: CtrlParams) => {
 
 		const file = params.key as string;
-		if(!file) return;
+		if(!file) return {status: "Empty key"};
 
 		const url = publicDirPath(`doc/nodes/${file}.html`, true);
 		if(existsSync(url)) {
-			shell.openPath(url)
-				.then((sts) => {
-					if(sts) throw Error(sts);
-				})
-				.catch((error: Error) => {
-					log.error(`Error from help file "${file}.html": ${error.message}`);
-				});
+			try {
+				const sts = await shell.openPath(url);
+				if(sts) throw Error(sts);
+			}
+			catch(error) {
+				const message = `Error from help file "${file}.html": ${(error as Error).message}`;
+				log.error(message);
+				return {error: message};
+			}
+			return {status: "Success"};
 		}
-		else {
-			log.error(`Help file "${file}.html" not found`);
-		}
+
+		const message = `Help file "${file}.html" not found`;
+		log.error(message);
+		return {error: message};
 	});
 };
