@@ -4,7 +4,7 @@
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle at ikmail.com"
- * @since 2026-01-13
+ * @since 2026-04-24
  *
  * Copyright 2026 Mario Valle
  *
@@ -28,16 +28,14 @@ import {gcd} from "mathjs";
 import {dialog} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
-import {invertBasis} from "../modules/Helpers";
-import {getAtomicSymbol} from "../modules/AtomData";
-import {StructureSetsAccumulator,
-		type SetEntry} from "../analysis/Accumulator";
+import {StructureSetsAccumulator} from "../analysis/Accumulator";
 import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../analysis/ComputeValid";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {VariableCompositionConvexHull} from "../analysis/ConvexHull";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 import {computeTransitions, type TransitionTable} from "../analysis/EnthalpyTransitions";
+import {entryToPoscar} from "../modules/EntryToPoscar";
 
 /**
  * Grouping results
@@ -124,7 +122,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	}
 
 	description(): string {
-		return "Analyze set of structures with 1 to 4 components, remove duplicates structures. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. Computes also the enthalpy transition under pressure changes.";
+		return "Analyze set of structures with 1 to 4 components to remove duplicates structures. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. Computes also the enthalpy transition under pressure changes.";
 	}
 
 	override fromPreviousNode(data: Structure): void {
@@ -348,54 +346,6 @@ export class AnalyzeStructureSets extends NodeCore {
 	}
 
 	/**
-	 * Format entry as POSCAR file
-	 *
-	 * @param entry - One composition to convert to POSCAR
-	 * @returns Content of the POSCAR file
-	 */
-	private entryToPoscar(entry: SetEntry): string {
-
-		let out = "Variable composition by STMng. " +
-				  `Composition key: ${entry.key}. Step: ${entry.step} ` +
-				  `Distance from convex hull: ${entry.distance.toFixed(4)}\n1.0\n`;
-
-		const basisString = Array<string>(9);
-		for(let i=0; i < 9; ++i) {
-			basisString[i] = entry.basis[i].toFixed(10).padStart(15);
-		}
-
-		out += `${basisString[0]} ${basisString[1]} ${basisString[2]}\n`;
-		out += `${basisString[3]} ${basisString[4]} ${basisString[5]}\n`;
-		out += `${basisString[6]} ${basisString[7]} ${basisString[8]}\n`;
-
-		out += entry.species.keys().map((z) => getAtomicSymbol(z)).toArray().join(" ") + "\n";
-		out += entry.species.values().map((value) => value.toFixed(0)).toArray().join(" ");
-		out += "\nDirect\n";
-
-		// Compute inverse matrix
-		const inverse = invertBasis(entry.basis);
-
-		// For each atom compute the fractional coordinates
-		const len = entry.atomsPosition.length;
-		for(let i=0; i < len; i+=3) {
-
-			const cx = entry.atomsPosition[i];
-			const cy = entry.atomsPosition[i+1];
-			const cz = entry.atomsPosition[i+2];
-
-			const fx = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
-			const fy = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
-			const fz = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
-
-			out += `${fx.toFixed(10).padStart(15)} ` +
-				   `${fy.toFixed(10).padStart(15)} ` +
-				   `${fz.toFixed(10).padStart(15)}\n`;
-		}
-
-		return out;
-	}
-
-	/**
 	 * Filter structures on composition and distance from the convex hull
 	 *
 	 * @param selected - Selected compositions or undefined if all compositions are included
@@ -587,7 +537,11 @@ export class AnalyzeStructureSets extends NodeCore {
 				const structure = this.accumulator.getEntry(idx)!;
 				if(!structure?.enabled) continue;
 
-				writeSync(fd, this.entryToPoscar(structure));
+				const comment = "Variable composition by STMng. " +
+								`Composition key: ${structure.key}; Step: ${structure.step}; ` +
+								`Distance from convex hull: ${structure.distance.toFixed(4)}`;
+
+				writeSync(fd, entryToPoscar(structure, comment));
 				writeSync(fde, `${structure.energy?.toFixed(6) ?? "0"}\n`);
 			}
 			closeSync(fd);
@@ -644,7 +598,11 @@ export class AnalyzeStructureSets extends NodeCore {
 			const structure = this.accumulator.getEntry(idx)!;
 			if(!structure?.enabled) continue;
 
-			writeSync(fd, this.entryToPoscar(structure));
+			const comment = "Variable composition by STMng. " +
+							`Composition key: ${structure.key}; Step: ${structure.step}; ` +
+							`Distance from convex hull: ${structure.distance.toFixed(4)}`;
+
+			writeSync(fd, entryToPoscar(structure, comment));
 			writeSync(fde, `${energy.toFixed(6)}\n`);
 		}
 		closeSync(fd);
@@ -976,13 +934,19 @@ export class AnalyzeStructureSets extends NodeCore {
 		const len = this.transitionTable.pressures.length;
 		for(let i=0; i < len; ++i) {
 
-			const p0 = this.transitionTable.pressures[i];
-			const p1 = i === len-1? Infinity : this.transitionTable.pressures[i+1];
-
 			const step = this.transitionTable.steps[i];
-			writeSync(fd, this.accumulator.entryToPoscar(step, p0, p1));
-			const energy = this.accumulator.getStructureEnergy(step);
-			writeSync(fde, `${energy.toFixed(6)}\n`);
+
+			const entry = this.accumulator.getEntryByStep(step);
+			if(!entry) continue;
+
+			const p0 = this.transitionTable.pressures[i].toFixed(4);
+			const p1 = i === len-1? "up" : this.transitionTable.pressures[i+1].toFixed(4);
+
+			const comment = "Enthalpy transition structures by STMng. " +
+				  			`Step: ${entry.step} Pressure range: [${p0}, ${p1}] GPa`;
+
+			writeSync(fd, entryToPoscar(entry, comment));
+			writeSync(fde, `${entry.energy.toFixed(6)}\n`);
 		}
 		closeSync(fd);
 		closeSync(fde);

@@ -4,7 +4,7 @@
  * Controls for structure sets analysis
  *
  * @author Mario Valle "mvalle at ikmail.com"
- * @since 2026-01-13
+ * @since 2026-04-24
  *
  * Copyright 2026 Mario Valle
  *
@@ -23,10 +23,11 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {ref, toRaw, watch, reactive, computed, onUnmounted} from "vue";
+import {storeToRefs} from "pinia";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
-import {storeToRefs} from "pinia";
+
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
@@ -461,6 +462,7 @@ const show3DView = (): void => {
     });
 };
 
+/** Change filtering parameters */
 let lastFilterStructures = true;
 let lastDistanceFromHull = 0;
 let lastEnergyFromMinimum = 0;
@@ -514,7 +516,6 @@ const compositionsLabel = computed(() => {
     return `Compositions: ${numberCompositions.value}`;
 });
 
-
 /** Result table entry */
 interface TableEntry {
     /** Structure step */
@@ -526,6 +527,9 @@ interface TableEntry {
 }
 const table = ref<TableEntry[]>([]);
 
+/**
+ * Compute enthalpy transitions
+ */
 const enthalpyTransition = (): void => {
 
     askNode(id, "transitions")

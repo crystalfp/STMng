@@ -28,15 +28,13 @@ import {gcd} from "mathjs";
 import {dialog} from "electron";
 import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
-import {invertBasis} from "../modules/Helpers";
-import {getAtomicSymbol} from "../modules/AtomData";
-import {VariableCompositionAccumulator,
-		type VariableComponent} from "../variable/Accumulator";
+import {VariableCompositionAccumulator} from "../variable/Accumulator";
 import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../variable/ComputeValid";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 import {VariableCompositionConvexHull} from "../variable/ConvexHull";
+import {entryToPoscar} from "../modules/EntryToPoscar";
 
 /**
  * Grouping results
@@ -330,54 +328,6 @@ export class VariableComposition extends NodeCore {
 	}
 
 	/**
-	 * Format entry as POSCAR file
-	 *
-	 * @param entry - One composition to convert to POSCAR
-	 * @returns Content of the POSCAR file
-	 */
-	private entryToPoscar(entry: VariableComponent): string {
-
-		let out = "Variable composition by STMng. " +
-				  `Composition key: ${entry.key}. Step: ${entry.step} ` +
-				  `Distance from convex hull: ${entry.distance.toFixed(4)}\n1.0\n`;
-
-		const basisString = Array<string>(9);
-		for(let i=0; i < 9; ++i) {
-			basisString[i] = entry.basis[i].toFixed(10).padStart(15);
-		}
-
-		out += `${basisString[0]} ${basisString[1]} ${basisString[2]}\n`;
-		out += `${basisString[3]} ${basisString[4]} ${basisString[5]}\n`;
-		out += `${basisString[6]} ${basisString[7]} ${basisString[8]}\n`;
-
-		out += entry.species.keys().map((z) => getAtomicSymbol(z)).toArray().join(" ") + "\n";
-		out += entry.species.values().map((value) => value.toFixed(0)).toArray().join(" ");
-		out += "\nDirect\n";
-
-		// Compute inverse matrix
-		const inverse = invertBasis(entry.basis);
-
-		// For each atom compute the fractional coordinates
-		const len = entry.atomsPosition.length;
-		for(let i=0; i < len; i+=3) {
-
-			const cx = entry.atomsPosition[i];
-			const cy = entry.atomsPosition[i+1];
-			const cz = entry.atomsPosition[i+2];
-
-			const fx = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
-			const fy = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
-			const fz = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
-
-			out += `${fx.toFixed(10).padStart(15)} ` +
-				   `${fy.toFixed(10).padStart(15)} ` +
-				   `${fz.toFixed(10).padStart(15)}\n`;
-		}
-
-		return out;
-	}
-
-	/**
 	 * Filter structures on composition and distance from the convex hull
 	 *
 	 * @param selected - Selected compositions or undefined if all compositions are included
@@ -552,7 +502,11 @@ export class VariableComposition extends NodeCore {
 				const structure = this.accumulator.getEntry(idx)!;
 				if(!structure?.enabled) continue;
 
-				writeSync(fd, this.entryToPoscar(structure));
+				const comment = "Variable composition by STMng. " +
+								`Composition key: ${structure.key}; Step: ${structure.step}; ` +
+								`Distance from convex hull: ${structure.distance.toFixed(4)}`;
+
+				writeSync(fd, entryToPoscar(structure, comment));
 				if(fde !== undefined) writeSync(fde, `${structure.energy?.toFixed(6) ?? "0"}\n`);
 			}
 			closeSync(fd);
@@ -611,7 +565,12 @@ export class VariableComposition extends NodeCore {
 			const structure = this.accumulator.getEntry(idx)!;
 			if(!structure?.enabled) continue;
 
-			writeSync(fd, this.entryToPoscar(structure));
+
+			const comment = "Variable composition by STMng. " +
+							`Composition key: ${structure.key}; Step: ${structure.step}; ` +
+							`Distance from convex hull: ${structure.distance.toFixed(4)}`;
+
+			writeSync(fd, entryToPoscar(structure, comment));
 			if(fde !== undefined) writeSync(fde, `${energy.toFixed(6)}\n`);
 		}
 		closeSync(fd);

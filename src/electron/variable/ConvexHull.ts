@@ -544,7 +544,7 @@ export class VariableCompositionConvexHull {
 	/**
 	 * Distance from the closest point inside the triangle along Z axis
 	 * @remarks Algorithm from: https://blackpawn.com/texts/pointinpoly/
-	 * @remarks The test for inclusion takes care of the rounding errors
+	 * 			The test for inclusion takes care of the rounding errors
 	 *
 	 * @param p - Point to test
 	 * @param a - Vertex of the triangle

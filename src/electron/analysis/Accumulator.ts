@@ -23,13 +23,14 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {getAtomicSymbol} from "../modules/AtomData";
-import {hasNoUnitCell, invertBasis} from "../modules/Helpers";
+import {hasNoUnitCell} from "../modules/Helpers";
 import type {Structure, Atom, BasisType} from "@/types";
 
 /**
  * Content of the entries of the accumulator
+ * @notExported
  */
-export interface SetEntry {
+interface SetEntry {
 
 	/** If the structure should be consider after filtering and removing duplicates */
 	enabled: boolean;
@@ -71,7 +72,7 @@ export interface SetEntry {
 }
 
 /**
- * Accumulate structures for variable composition calculation.
+ * Accumulate structures for structure sets calculations.
  */
 export class StructureSetsAccumulator {
 
@@ -349,87 +350,19 @@ export class StructureSetsAccumulator {
 	}
 
 	/**
-	 * Get structure energy
+	 * Get structure entry at a given step
 	 *
 	 * @param step - Entry step
 	 * @returns The corresponding structure energy
 	 */
-	getStructureEnergy(step: number): number {
+	getEntryByStep(step: number): SetEntry | undefined {
 
 		for(const entry of this.accumulator) {
 			if(entry.step === step) {
-				return entry.energy;
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * Format entry as POSCAR file
-	 *
-	 * @param step - Entry step
-	 * @param pressureFrom - Pressure range start
-	 * @param pressureTo - Pressure range end
-	 * @returns Content of the POSCAR file
-	 */
-	entryToPoscar(step: number, pressureFrom: number, pressureTo: number): string {
-
-		let entry;
-		for(entry of this.accumulator) {
-			if(entry.step === step) {
-				break;
-			}
-		}
-		if(!entry) return "";
-
-		const p0 = pressureFrom.toFixed(4);
-		const p1 = pressureTo === Infinity ? "up" : pressureTo.toFixed(4);
-
-		let out = "Enthalpy transition structures by STMng. " +
-				  `Step: ${entry.step} Pressure range: [${p0}, ${p1}] GPa\n1.0\n`;
-
-		const basisString = Array<string>(9);
-		for(let i=0; i < 9; ++i) {
-			basisString[i] = entry.basis[i].toFixed(10).padStart(15);
-		}
-
-		out += `${basisString[0]} ${basisString[1]} ${basisString[2]}\n`;
-		out += `${basisString[3]} ${basisString[4]} ${basisString[5]}\n`;
-		out += `${basisString[6]} ${basisString[7]} ${basisString[8]}\n`;
-
-		const species = new Map<number, number>();
-
-		for(const z of entry.atomsZ) {
-			const n = species.get(z);
-			species.set(z, n ? n+1 : 1);
-		}
-		out += species.keys().map((z) => getAtomicSymbol(z)).toArray().join(" ") + "\n";
-		out += species.values().map((value) => value.toFixed(0)).toArray().join(" ");
-		out += "\nDirect\n";
-
-		// Compute inverse matrix
-		const inverse = invertBasis(entry.basis);
-
-		for(const atomZ of species.keys()) {
-			for(let i=0; i < entry.atomsZ.length; ++i) {
-
-				if(entry.atomsZ[i] !== atomZ) continue;
-
-				const i3 = i*3;
-				const cx = entry.atomsPosition[i3];
-				const cy = entry.atomsPosition[i3+1];
-				const cz = entry.atomsPosition[i3+2];
-
-				const fx = cx*inverse[0] + cy*inverse[3] + cz*inverse[6];
-				const fy = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
-				const fz = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
-
-				out += `${fx.toFixed(10).padStart(15)} ` +
-					   `${fy.toFixed(10).padStart(15)} ` +
-					   `${fz.toFixed(10).padStart(15)}\n`;
+				return entry;
 			}
 		}
 
-		return out;
+		return undefined;
 	}
 }

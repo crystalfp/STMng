@@ -24,7 +24,7 @@
  */
 import {measuringMethods} from "../fingerprint/DistanceMethods";
 import {Delta} from "../fingerprint/Distances";
-import type {VariableCompositionAccumulator} from "./Accumulator";
+import type {StructureSetsAccumulator} from "./Accumulator";
 import type {StructureReduced} from "../fingerprint/Accumulator";
 
 /**
@@ -231,7 +231,7 @@ const fixTriangleInequalityViolations = (distances: DistanceMatrix, maxIteration
  * @param fixTriangleInequality - If the triangle inequality should be checked for all distances
  * @returns Resulting distance matrix
  */
-export const computeDistances = (accumulator: VariableCompositionAccumulator,
+export const computeDistances = (accumulator: StructureSetsAccumulator,
 								 indices: number[],
 								 distanceMethod: number,
 								 fixTriangleInequality: boolean): DistanceMatrix => {

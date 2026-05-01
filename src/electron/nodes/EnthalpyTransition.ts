@@ -29,6 +29,7 @@ import {EnthalpyTransitionAccumulator} from "../transition/Accumulator";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 import {dialog} from "electron";
 import {closeSync, openSync, writeSync} from "node:fs";
+import {entryToPoscar} from "../modules/EntryToPoscar";
 
 export class EnthalpyTransition extends NodeCore {
 
@@ -276,14 +277,19 @@ export class EnthalpyTransition extends NodeCore {
 
 		const fde = openSync(energyFile, "w");
 
-		for(let i=0; i < this.idxVertices.length; ++i) {
-			const idx = this.idxVertices[i];
-			const p0 = this.pressure[i];
-			const p1 = i === this.idxVertices.length-1? Infinity : this.pressure[i+1];
+		const len = this.idxVertices.length;
+		for(let i=0; i < len; ++i) {
 
-			writeSync(fd, this.accumulator.entryToPoscar(idx, p0, p1));
-			const energy = this.accumulator.getStructureEnergy(idx);
-			writeSync(fde, `${energy.toFixed(6)}\n`);
+			const idx = this.idxVertices[i];
+			const p0 = this.pressure[i].toFixed(4);
+			const p1 = i === len-1? "up" : this.pressure[i+1].toFixed(4);
+
+			const entry = this.accumulator.getEntry(idx);
+			const comment = "Enthalpy transition structures by STMng. " +
+				  			`Step: ${entry.step} Pressure range: [${p0}, ${p1}] GPa`;
+
+			writeSync(fd, entryToPoscar(entry, comment));
+			writeSync(fde, `${entry.energy.toFixed(6)}\n`);
 		}
 		closeSync(fd);
 		closeSync(fde);

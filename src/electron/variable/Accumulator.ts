@@ -28,8 +28,9 @@ import type {Structure, Atom, BasisType} from "@/types";
 
 /**
  * Content of the entries of the accumulator
+ * @notExported
  */
-export interface VariableComponent {
+interface VariableComponent {
 
 	/** If the structure should be consider after reducing to one for group */
 	enabled: boolean;

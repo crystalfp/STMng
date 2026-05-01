@@ -6,7 +6,7 @@
   <meta name="author" content="Mario Valle">
   <meta name="description" content="Documentation for the STMng analyze-structure-sets node">
   <meta name="keywords" content="STMng">
-  <meta name="date" content="2025-01-26"/>
+  <meta name="date" content="2025-05-01"/>
   <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
   <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -21,14 +21,7 @@
 <h1 class="subh1">Analyze set of structures with one to four components</h1>
 
 <div class="description">
-<p>The module splits input structures by their composition of 2-4 components. Then, for each composition, computes the structure fingerprints and their distances to remove duplicates. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one.</p>
-<p>Note that the entries in the saved files are ordered as:</p>
-<dl>
-	<dt>For one file per composition</dt>
-	<dd>In each file the structures are ordered by increasing energy.</dd>
-	<dt>For consolidated file</dt>
-	<dd>In the single file the structures are ordered by increasing distance from the convex hull and, if they have the same distance, by increasing energy.</dd>
-</dl>
+<p>Analyze set of structures with 1 to 4 components starting by filtering structures on energy distance from minimum or by distance from the convex hull then by removing duplicates structures. Then could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. Computes also the enthalpy transition under pressure changes.</p>
 </div>
 
 <h2>Controls</h2>
@@ -38,7 +31,7 @@
 <tr>
 	<td class="c1">Count</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">Count of accumulated structures. The start and stop of the accumulation are done from the <a href="./structure-reader.html">Structure Reader</a> page.</td>
+	<td class="c3">Count of accumulated structures. The start and stop of the accumulation are done from the <a href="./structure-reader.html">Structure Reader</a> interface.</td>
 </tr>
 <tr>
 	<td class="c1">Reset</td>
@@ -48,27 +41,23 @@
 <tr>
 	<td class="c1">Number of components</td>
 	<td class="c2">radio buttons</td>
-	<td class="c3">Number of component in the input structures. The count values could range from 2 to 4.</td>
+	<td class="c3">Number of component in the input structures. The count values could range from 1 to 4.</td>
 </tr>
 <tr>
 	<td class="c1">End-member compositions</td>
 	<td class="c2">editable table</td>
-	<td class="c3">Each row is a component in the input structures. There is an atomic specie per column ordered alphabetically and the numeric values is the multiplicity of this specie in the given component. For example for MgO + SiO<sub>2</sub> the three columns are labelled “Mg”, “O” and “Si” and the two rows should be 1, 1, 0 and 0, 2, 1.</td>
+	<td class="c3">This appears only for 2 to 4 components. Each row is a component in the input structures. There is an atomic specie per column ordered alphabetically and the numeric values is the multiplicity of this specie in the given component. For example for MgO + SiO<sub>2</sub> the three columns are labelled “Mg”, “O” and “Si” and the two rows should be 1, 1, 0 and 0, 2, 1.</td>
 </tr>
 <tr>
 	<td class="c1">Compute compositions</td>
 	<td class="c2">button</td>
 	<td class="c3">Compute the proportion of the given components for each structure accumulated. If for some structure the components are not valid, an error message appears. Note that for some compositions, where there is ambiguity, it reports that it cannot proceed.</td>
 </tr>
-</table>
-
-<h3>Compositions</h3>
-<p>The data table has the following columns:</p>
-<table>
-  <tr><td class="c0">Select</td><td>Select for the analysis and output the given composition. All compositions are selected by default. The toggle in the header selects or deselects all compositions.</td></tr>
-  <tr><td class="c0">Composition</td><td>The proportion of the various components.</td></tr>
-  <tr><td class="c0">Count</td><td>The number of structures with the given composition. The column is sortable by clicking on the column header.</td></tr>
-  <tr><td class="c0">Remain</td><td>After filtering, computing distances and removing duplicates, this column is populated with the resulting number of structures. The column is sortable by clicking on the column header.</td></tr>
+<tr>
+	<td class="c1">Compositions</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">Number of compositions in the input structures.</td>
+</tr>
 </table>
 
 <h3>Filter structures</h3>
@@ -76,12 +65,12 @@
 <tr>
 	<td class="c1">Filter</td>
 	<td class="c2">toggle</td>
-	<td class="c3">When set, remove from input the structures with a distance from convex hull greater than “Convex hull dist.”.</td>
+	<td class="c3">When set, remove from input the structures with a distance from convex hull greater than “Convex hull dist.” for components 2 to 4 or energies more than “Energy from min.” from minimum energy for 1 component.</td>
 </tr>
 <tr>
-  <td class="c1">Convex hull dist.</td>
+  <td class="c1">Convex hull dist./Energy from min.</td>
   <td class="c2">numeric field</td>
-  <td class="c3">The maximum distance of a structure from the convex hull to be retained. The field is disabled if filter toggle is not set.</td>
+  <td class="c3">The maximum distance of a structure from the convex hull to be retained. For one component the maximum energy from minimum to be retained. The field is disabled if filter toggle is not set.</td>
 </tr>
 <tr>
   <td class="c1">Remaining</td>
@@ -146,6 +135,18 @@
 	<td class="c2">button</td>
 	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures. The compositions are computed in increasing count of structures. The computations are not parallelized but done one by one.</td>
 </tr>
+</table>
+
+<h3>Variable composition</h3>
+<p>Note that the entries in the saved files are ordered as:</p>
+<dl>
+	<dt>For one file per composition</dt>
+	<dd>In each file the structures are ordered by increasing energy.</dd>
+	<dt>For consolidated file</dt>
+	<dd>In the single file the structures are ordered by increasing distance from the convex hull and, if they have the same distance, by increasing energy.</dd>
+</dl>
+
+<table cellpadding="2" cellspacing="2">
 <tr>
 	<td class="c1">Show chart</td>
 	<td class="c2">button</td>
@@ -183,6 +184,40 @@
 	<td class="c1">Files saved</td>
 	<td class="c2">readonly text</td>
 	<td class="c3">At the end of the save step, show the number of files created or the path to the saved consolidated file.</td>
+</tr>
+</table>
+
+<h3>Enthalpy transitions</h3>
+<p>The structure enthalpy increases with pressure this way: <i>H = E + PV</i>&ensp;where <i>H</i> is the enthalpy (eV), <i>E</i> the structure energy (eV), <i>P</i> the pressure (GPa) and <i>V</i> the cell volume (Å³).</p>
+<p>This node find the structures more stable when pressure increases and list them.</p>
+<p>The resulting enthalpy transition structures data table has the following columns:</p>
+<dl>
+	<dt>Step</dt><dd>The structure step in the input sequence.</dd>
+	<dt>Formula</dt><dd>The structure formula.</dd>
+	<dt>Pressure (GPa)</dt><dd>The pressure from which this structure is the most stable one.</dd>
+</dl>
+
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Compute transitions</td>
+	<td class="c2">button</td>
+	<td class="c3">Compute enthalpy transitions under pressure changes, that is, it finds the structures more stable when pressure increases and list them.</td>
+</tr>
+<tr>
+	<td class="c1">Results</td>
+	<td class="c2">table</td>
+	<td class="c3">The computed enthalpy transitions under pressure changes, in the format show above.</td>
+</tr>
+<tr>
+	<td class="c1">Save transition structures</td>
+	<td class="c2">button</td>
+	<td class="c3">Show the output file selector to save the analysis output.</td>
+</tr>
+<tr>
+	<td class="c1">Output file</td>
+	<td class="c2">file selector</td>
+	<td class="c3">The file selector selects the POSCAR file that will contains the transition structures. Then a second file with same name and path but extension changed to “.energy” is created with the structure energies per structure. In the step comment is listed the range of pressures for which the structure is the most stable one. In the file saved after computing the enthalpy transitions the entries are ordered by increasing transition pressure.</td>
+
 </tr>
 </table>
 

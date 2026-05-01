@@ -35,6 +35,12 @@ export interface TransitionTable {
 	pressures: number[];
 }
 
+/**
+ * Compute enthalpy transitions
+ *
+ * @param accumulator - Accumulated structures
+ * @returns Table of enthalpy structures transitions
+ */
 export const computeTransitions = (accumulator: StructureSetsAccumulator): TransitionTable => {
 
 	const transitionTable: TransitionTable = {

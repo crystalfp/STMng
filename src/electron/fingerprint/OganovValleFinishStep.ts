@@ -69,6 +69,7 @@ export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void =>
 	centroid.length = 0;
 };
 
+/** Work for various accumulators */
 type Accumulator = VariableCompositionAccumulator | StructureSetsAccumulator;
 
 /**

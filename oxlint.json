@@ -119,6 +119,7 @@
     "no-useless-backreference": "off",
     "no-useless-catch": "error",
     "no-useless-escape": "error",
+    "no-underscore-dangle": "off",
     "no-with": "error",
     "require-yield": "error",
     "use-isnan": "error",
