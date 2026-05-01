@@ -56,9 +56,7 @@ import {Viewer3D} from "../nodes/Viewer3D";
 import {DiffractionPattern} from "../nodes/DiffractionPattern";
 import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
-import {VariableComposition} from "../nodes/VariableComposition";
 import {FindSimilar} from "../nodes/FindSimilar";
-import {EnthalpyTransition} from "../nodes/EnthalpyTransition";
 import {AnalyzeStructureSets} from "../nodes/AnalyzeStructureSets";
 
 /**
@@ -134,12 +132,6 @@ class ProjectManager {
 		{type: "find-similar",				in: true,  out: false, graphic: "none",
 											handler: FindSimilar,
 									   		idPrefix: "similar", ui: "FindSimilarCtrl"},
-		{type: "variable-composition",  	in: true,  out: false, graphic: "none",
-											handler: VariableComposition,
-									   		idPrefix: "variable", ui: "VariableCompositionCtrl"},
-		{type: "enthalpy-transition",   	in: true,  out: false, graphic: "none",
-											handler: EnthalpyTransition,
-									   		idPrefix: "transition", ui: "EnthalpyTransitionCtrl"},
 		{type: "analyze-structure-sets",	in: true,  out: false, graphic: "none",
 											handler: AnalyzeStructureSets,
 									   		idPrefix: "sets", ui: "AnalyzeStructureSetsCtrl"},

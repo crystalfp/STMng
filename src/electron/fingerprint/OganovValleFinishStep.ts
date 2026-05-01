@@ -23,7 +23,6 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import type {FingerprintsAccumulator} from "./Accumulator";
-import type {VariableCompositionAccumulator} from "../variable/Accumulator";
 import type {StructureSetsAccumulator} from "../analysis/Accumulator";
 
 /**
@@ -70,7 +69,7 @@ export const perSiteFinishStep = (accumulator: FingerprintsAccumulator): void =>
 };
 
 /** Work for various accumulators */
-type Accumulator = VariableCompositionAccumulator | StructureSetsAccumulator;
+type Accumulator = StructureSetsAccumulator;
 
 /**
  * Post computation on all fingerprints. Here removes the centroid
