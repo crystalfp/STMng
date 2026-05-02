@@ -491,18 +491,14 @@ export class AnalyzeStructureSets extends NodeCore {
 	/**
 	 * Save compositions one per file in the given directory
 	 *
-	 * @param selected - All selected compositions codes (with "-" separator)
 	 * @param dir - Directory where to save the compositions
 	 * @returns Number of files saved
 	 */
-	private saveByComposition(selected: Set<string>, dir: string): number {
+	private saveByComposition(dir: string): number {
 
 		let saved = 0;
 
 		for(const entry of this.accumulator.iterateKeys()) {
-
-			// If this key has been processed
-			if(!selected.has(entry[0])) continue;
 
 			// Check that at least one entry is enabled
 			const toOrder = [];
@@ -555,17 +551,13 @@ export class AnalyzeStructureSets extends NodeCore {
 	/**
 	 * Save all compositions in one file in the given directory
 	 *
-	 * @param selected - All selected compositions codes (separated by "-")
 	 * @param dataFile - Filename for the structure file where to save the compositions
 	 */
-	private saveAllCompositions(selected: Set<string>, dataFile: string): void {
+	private saveAllCompositions(dataFile: string): void {
 
 		const all: [number, number, number][] = [];
 
 		for(const entry of this.accumulator.iterateKeys()) {
-
-			// If this key has been processed
-			if(!selected.has(entry[0])) continue;
 
 			for(const idx of entry[1]) {
 				const structure = this.accumulator.getEntry(idx);
@@ -616,15 +608,8 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private channelSave(params: CtrlParams): CtrlParams {
 
-		const selectedRaw = params.selected as string[] ?? [];
-		if(selectedRaw.length === 0) return {saved: -1};
 		const nc = params.componentsCount as number ?? 2;
 		if(nc === 0) return {saved: -1};
-
-		const selected = new Set<string>();
-		for(const s of selectedRaw) {
-			selected.add(s.replaceAll("\u2009:\u2009", "-"));
-		}
 
 		if(this.state.consolidateOutput) {
 			const file = dialog.showSaveDialogSync({
@@ -636,7 +621,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 			this.accumulator.initializeKeyMap();
 
-			this.saveAllCompositions(selected, file);
+			this.saveAllCompositions(file);
 
 			sendAlertToClient(`Saved consolidated variable composition file ${file}`,
 						  	  {level: "success"});
@@ -652,7 +637,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		this.accumulator.initializeKeyMap();
 
-		const saved = this.saveByComposition(selected, dir[0]);
+		const saved = this.saveByComposition(dir[0]);
 
 		sendAlertToClient(`Saved ${saved} variable composition file${saved === 1 ? "" : "s"}`,
 						  {level: "success"});
@@ -668,6 +653,12 @@ export class AnalyzeStructureSets extends NodeCore {
 		this.initializeState(params);
 	}
 
+	/**
+	 * Channel handler for filtering
+	 *
+	 * @param params - Filtering parameters
+	 * @returns Remaining structures after filtering
+	 */
 	private channelFilter(params: CtrlParams): CtrlParams {
 
 		this.state.numberComponents = params.numberComponents as number ?? 2;

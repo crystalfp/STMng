@@ -87,9 +87,6 @@ const summary = ref([0, 0]);
 const compositionRunning = ref(false);
 const numberCompositions = ref(0);
 
-/** Selected table entries */
-const selected = ref<string[]>([]);
-
 // > Compute
 const fingerprintMethodsNames = reactive<FPmethodName[]>([]);
 const distanceMethods = reactive<DistanceMethodsNames[]>([]);
@@ -278,15 +275,14 @@ const computeCompositions = (): void => {
         components: toRaw(count.value)
     })
     .then((params) => {
+
         const recipes = JSON.parse(params.recipes as string ?? "[]") as Recipe[];
         summary.value[0] = 0;
         summary.value[1] = 0;
         results.value.length = 0;
-        selected.value.length = 0;
         for(const recipe of recipes) {
             recipe.valid = "";
             results.value.push(recipe);
-            selected.value.push(recipe.key);
         }
         remainingAfterFilter.value = params.remaining as number ?? 0;
         numberCompositions.value = recipes.length;
@@ -395,7 +391,6 @@ const analyzeSelected = async (): Promise<void> => {
 const saveAnalyzed = (): void => {
 
     askNode(id, "save", {
-        selected: toRaw(selected.value),
         countComponents: countComponents.value
     })
     .then((params) => {
