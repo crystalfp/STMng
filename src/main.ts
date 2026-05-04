@@ -180,13 +180,13 @@ const app = createApp(App)
 	});
 
 // Add global error handlers
-app.config.errorHandler = (error: unknown, instance: unknown, info: string) => {
+app.config.errorHandler = (error: unknown, _instance: unknown, info: string) => {
 
 	const e = error as Error;
 
 	log.error(`%cUnhandled exception: %c${e.message}\n`,
 			  "color: red", "color: unset",
-			  `In component ${JSON.stringify(instance)}\n`,
+			//   `In component ${JSON.stringify(instance)}\n`,
 			  `Error info: ${info}\n`,
 			   e.stack);
 };
