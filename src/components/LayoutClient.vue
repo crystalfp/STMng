@@ -101,6 +101,9 @@ receiveMenuSelection((menuEntry: string, payload: string) => {
         case "clear-scene":
             sm.clearScene();
             break;
+        case "edit-atom-data":
+            loadedPanel.value = defineAsyncComponent(async () => import("./EditAtomData.vue"));
+            break;
         default:
             showSystemAlert(`Menu entry "${menuEntry}" is not implemented`);
             break;

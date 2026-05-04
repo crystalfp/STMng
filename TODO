@@ -1,35 +1,24 @@
-ToDo:
+Requests:
   ☐ Add an editor for atoms color and dimensions
   ☐ Fix loading of the SPGlib library files on Linux
-  ✔ Publish build instructions for STMng @done(2026-04-21 10:21)
   ☐ Publish a web site with the STMng documentation
   ☐ Fix that when changing theme, the points color in scatterplot does not change
   ☐ Experiment with a more efficient way to visualize labels to atoms
   ☐ Parallelize more the group analysis in variable composition
-  ✔ Add count elements of groups in scatterplot @done(2026-04-19 12:05)
   ☐ (future) Move to WebGPU renderer from current WebGL renderer
-  ☐ (maybe) Add a metadata section to project files.
+  ☐ (maybe) Add a `metadata` section to project files.
   ☐ Create a tutorial
   ☐ Fixing X-ray diffraction
   ☐ (low priority) Incomplete polyhedra.
   ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Extending variable composition analysis to systems with >5 components.
-  ☐ Estimation of phase transition pressures for fixed (and, in the future, variable composition) datasets.
-  ✔ Block the rendering when loading using Fast reading @done(2026-04-22 19:04)
+  ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
 Bugs:
   ☐ Does not load spglib on Linux
   ☐ Bounding sphere does not consider supercell
   ☐ Changing theme does not changes points color in scatterplot
   ☐ Still problems with incomplete polyhedra
-
-Latest requests (backlog):
-  ☐ Can the tool extract one or two crystallographic planes (it is dislocation simply) from structure in purpose to see how left atoms will be replaced?
-  ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
-  ☐ Coloring atoms according to their local order parameter (for this, we need fingerprinting, we had this in STM4)
-  ☐ Coloring atoms according to their bond orientation parameter (I think we had it in STM4)
-  ☐ Add editor for atoms dimensions and colors
-  ☐ Visualization of crystal shapes (based on bond strengths).
 
 To do:
   ☐ Check error return from main process to client
@@ -39,12 +28,9 @@ To do:
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
-  ☐ Add count elements of groups in scatterplot
   ☐ Parallelize group analysis in variable composition
-  ✔ Add colors in 2D convex hull @done(2026-04-19 07:20)
 
 Performance:
-  ☐ Block screen update when "accumulating for fingerprinting" and "fast"
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
   ☐ Nice ideas in <https://ruoyusun.com/2024/01/23/cividle-optimization>
   ☐ Avoid blocking the event loop (see <https://dev.to/dipakahirav/20-ways-to-improve-nodejs-performance-at-scale-25nf> section 19)
@@ -79,7 +65,6 @@ Nice to have/Future:
   ☐ Rendering in a worker thread <https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas> or <https://threejs.org/examples/webgl_worker_offscreencanvas.html>
   ☐ <https://vuefinder.ozdemir.be/> Alternative file selector
   ☐ Remove debug statements with `@rollup/plugin-strip`
-  ☐ Add a `metadata` section to project files.
   ☐ Investigate git workspaces for STMng preprocessor
   ☐ Instead of color manipulation use package <https://www.npmjs.com/package/color-convert>
   ☐ Labels using MSDF <https://github.com/leochocolat/three-msdf-text-utils>
@@ -93,9 +78,16 @@ Reference:
   ☐ Speedup electron <https://blog.inkdrop.app/how-to-make-your-electron-app-launch-1000ms-faster-32ce1e0bb52c>
   ☐ General js optimizations <https://romgrk.com/posts/optimizing-javascript>
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
-  ✔ For the charts <https://unovis.dev/> @done(2026-04-19 07:28)
 
 Archive:
+  ✔ Block screen update when "accumulating for fingerprinting" and "fast" @done(2026-05-02 07:14) @project(Performance)
+  ✔ For the charts <https://unovis.dev/> @done(2026-04-19 07:28) @project(Reference)
+  ✔ Add count elements of groups in scatterplot @done(2026-05-02 07:13) @project(To do)
+  ✔ Add colors in 2D convex hull @done(2026-04-19 07:20) @project(To do)
+  ✔ Estimation of phase transition pressures for fixed (and, in the future, variable composition) datasets. @done(2026-05-02 07:10) @project(Requests)
+  ✔ Block the rendering when loading using Fast reading @done(2026-04-22 19:04) @project(Requests)
+  ✔ Publish build instructions for STMng @done(2026-04-21 10:21) @project(Requests)
+  ✔ Add count elements of groups in scatterplot @done(2026-04-19 12:05) @project(Requests)
   ✔ Changing scale in 3D 3components does not move the labels @done(2026-04-17 08:43) @project(Bugs)
   ✔ Add tooltip with description to the "available nodes" in Program editor @done(2026-04-13 06:00) @project(To do)
   ✔ Variable composition convex hull 3 components as 3D object @done(2026-03-20 15:21) @project(Latest requests (backlog))

@@ -37,6 +37,7 @@ import {setupChannelFileSelector} from "./modules/SelectFile";
 import {pm, setupChannelProject} from "./modules/ProjectManager";
 import {setupChannelLogFile} from "./modules/AccessLog";
 import {setupChannelSpecialSwitches} from "./modules/SpecialSwitches";
+import {setupChannelAtomData} from "./modules/AtomDataManager";
 import type {CtrlParams} from "@/types";
 
 // > Command line parsing
@@ -131,6 +132,7 @@ setupChannelLogFile();
 setupChannelMenu(isDevelopment);
 setupChannelSpecialSwitches(specialSwitches);
 setupChannelSnapshot();
+setupChannelAtomData();
 
 // Initialize the theme to use
 if(!options.theme) setMainTheme("dark");

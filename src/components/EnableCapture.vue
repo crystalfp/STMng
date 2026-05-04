@@ -34,8 +34,6 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
                                             controlStore.hasTrajectory ||
                                             controlStore.hasFingerprints ||
                                             controlStore.hasWriter ||
-                                            controlStore.hasVariableComposition ||
-                                            controlStore.hasEnthalpyTransition ||
                                             controlStore.hasAnalyzeStructureSets
 );
 
@@ -58,12 +56,6 @@ const showSection = computed<boolean>(() => controlStore.hasCapture ||
   <v-switch v-if="controlStore.hasWriter"
             v-model="controlStore.writerAccumulate"
             label="Collect for structure writer" />
-  <v-switch v-if="controlStore.hasVariableComposition"
-            v-model="controlStore.variableCompositionAccumulate"
-            label="Collect for variable composition" />
-  <v-switch v-if="controlStore.hasEnthalpyTransition"
-            v-model="controlStore.enthalpyTransitionAccumulate"
-            label="Collect for enthalpy transitions" />
   <v-switch v-if="controlStore.hasAnalyzeStructureSets"
             v-model="controlStore.analyzeStructureSetsAccumulate"
             label="Collect for analyze structure sets" />

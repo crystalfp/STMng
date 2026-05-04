@@ -154,3 +154,23 @@ export const setAntialiasing = (setAA: boolean): void => {
 
 	store.setBoolean("Antialiasing", setAA);
 };
+
+/**
+ * Check if using default atom data set
+ *
+ * @returns True if using the default atom data set.
+ */
+export const getAtomDataDefault = (): boolean => {
+
+	return store.getBoolean("UseDefaultAtomData", true);
+};
+
+/**
+ * Set default atom data set
+ *
+ * @param use - True if should use the default atom data set
+ */
+export const setAtomDataDefault = (use: boolean): void => {
+
+	store.setBoolean("UseDefaultAtomData", use);
+};

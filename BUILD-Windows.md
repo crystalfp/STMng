@@ -7,8 +7,12 @@
 ## Prerequisite tools
 1. Python 3.12
 2. NodeJS 25.x
+   1. Install the prebuild NodeJS from <https://nodejs.org/en/download>
+   2. Verify the NodeJS installation running `node --version ` and `npm --version`
 3. Visual Studio or Visual Studio Community (2022)
-4. CMake (to build SPGlib)
+4. CMake 4.3.2 (to build SPGlib)
+   1. Download installer from <https://cmake.org/download/>
+   2. After installation verify it with `cmake --version`
 
 ### Install needed libraries
 1. Next steps need a terminal open
@@ -41,6 +45,6 @@
 2. `npm install`
 3. Now you can run STMng in development mode from here by executing `npx vite` or `npm run dev`
 4. To build the installer: `npm run build` (ignore the typescript plugin errors)
-5. For some unknown reason sometimes the step above hangs after running rolldown. Simply kill it and rerun step 4.
+5. For some unknown reason sometimes the step above hangs after running rolldown. Simply kill it and rerun step 4
 6. You will have the installer under `release/<version>` as `STMng-<version>-setup.exe`
-7. To install the production version execute `STMng-<version>-setup.exe`, select an installation directory then run STMng from the Start menu
+7. To install the production version execute `STMng-<version>-setup.exe`, select an installation directory and then run STMng from the Start menu

@@ -99,7 +99,7 @@ export default defineConfig({
                 "./src/ui/DrawUnitCellCtrl.vue",
                 "./src/ui/ComputeSymmetriesCtrl.vue",
                 "./src/ui/ComputeFingerprintsCtrl.vue",
-                "./src/ui/VariableCompositionCtrl.vue"
+                "./src/ui/AnalyzeStructureSetsCtrl.vue",
             ],
         },
     },

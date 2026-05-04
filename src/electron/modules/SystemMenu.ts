@@ -33,6 +33,7 @@ import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import {pm} from "./ProjectManager";
 import {publicDirPath} from "./GetPublicPath";
 import {showLogFile} from "./AccessLog";
+import {isUsingDefaultAtomData, selectAtomDataFile} from "./AtomDataManager";
 import type {CtrlParams} from "@/types";
 
 /**
@@ -157,6 +158,25 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     }
                 },
             ],
+        },
+        {
+            label: "&Data",
+            submenu: [
+                {
+                    label: "Use default atom data",
+                    type: "checkbox",
+                    checked: isUsingDefaultAtomData(),
+                    click(event) {
+                        selectAtomDataFile(event.checked);
+                    }
+                },
+                {
+                    label: "Edit atom data",
+                    click() {
+                        openMenuEntry("edit-atom-data");
+                    }
+                }
+            ]
         },
         {
             label: "&View",
