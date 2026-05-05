@@ -43,7 +43,14 @@ askNode("ATOM-DATA", "GET")
         usingDefault.value = params.useDefault as boolean ?? true;
         const dataRaw = JSON.parse(params.data as string ?? "[]") as AtomInfo[];
         atomData.length = 0;
-        for(const entry of dataRaw) atomData.push(entry);
+        let first = true;
+        for(const entry of dataRaw) {
+            if(first) {
+                first = false;
+                continue;
+            }
+            atomData.push(entry);
+        }
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from set atom data initialization: ${error.message}`,
@@ -108,6 +115,7 @@ const radius = (rCov: number): string => {
 const currentIdx = ref(0);
 const currentAtom = reactive({
     symbol: "H",
+    atomZ: 1,
     color: "#FFFFFF",
     rCov: 0.32,
     rVdW: 2,
@@ -138,6 +146,7 @@ const select = (idx: number): void => {
     const entry = atomData[idx];
     currentAtom.color = entry.color;
     currentAtom.symbol = entry.symbol;
+    currentAtom.atomZ = idx+1;
     currentAtom.rCov = entry.rCov;
     currentAtom.rVdW = entry.rVdW;
     currentAtom.bondStrength = entry.bondStrength;
@@ -160,7 +169,7 @@ const select = (idx: number): void => {
         </div>
       </div>
       <div class="rt">
-        <v-label class="mb-1">{{ `Symbol: ${currentAtom.symbol}` }}</v-label>
+        <v-label class="mb-1">{{ `Atom: ${currentAtom.symbol} (${currentAtom.atomZ})` }}</v-label>
         <v-color-picker v-model="currentAtom.color" :modes="['hex']" elevation="0" />
         <v-row>
           <v-col cols="8" class="mt-2">
@@ -190,9 +199,6 @@ const select = (idx: number): void => {
           </v-col>
         </v-row>
       </div>
-      <div class="rb">
-        hello
-      </div>
     </v-card-text>
     <v-card-actions>
       <v-btn @click="resetDialog">Reset</v-btn>
@@ -209,16 +215,14 @@ const select = (idx: number): void => {
   gap: 0 5px;
   grid-auto-flow: row;
   grid-template:
-    "ls rt" 1fr
-    "ls rb" 0.2fr / 1fr 0.3fr;
+    "ls rt" 780px / 1fr 0.3fr;
   width: 100%;
   height: 800px;
-  padding: 10px 10px 10px 15px;
+  padding: 10px;
 }
 
 .ls {grid-area: ls;}
 .rt {grid-area: rt;}
-.rb {grid-area: rb; background-color: navajowhite; color: black}
 
 .ls-container {
   height: 100%;
@@ -229,7 +233,7 @@ const select = (idx: number): void => {
 
 .entry {
   border: 1px solid light-dark(#3e3e3e, #b0b0b0);
-  width: 100px;
+  width: 90px;
   height: 110px;
   flex: auto;
   padding-top: 5px;

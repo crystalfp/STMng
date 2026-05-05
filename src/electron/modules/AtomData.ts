@@ -23,11 +23,8 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 
-import {readFileSync} from "node:fs";
-import {publicDirPath} from "./GetPublicPath";
-
 /**
- * Info regarding one atom type
+ * One atom type data
  * @notExported
  */
 export interface AtomInfo {
@@ -57,17 +54,26 @@ export interface AtomInfo {
 class AtomData {
 
     private static instance: AtomData;
-	private readonly data;
+	private data: AtomInfo[] = [];
 	private readonly symbol2atomZ = new Map<string, number>();
 
 	/**
-	 * Build the class by loading the atomic data
+	 * Build the class
 	 */
 	private constructor() {
+		this.data = [];
+		this.symbol2atomZ.clear();
+	}
 
-		const filename = publicDirPath("default-atom-data.json");
-		this.data = JSON.parse(readFileSync(filename, "utf8")) as AtomInfo[];
+	/**
+	 * Load atom data
+	 *
+	 * @param data - Atom data to load
+	 */
+	loadData(data: AtomInfo[]): void {
 
+		this.data = data;
+		this.symbol2atomZ.clear();
 		const len = this.data.length;
 		for(let i=1; i < len; ++i) {
 			const {symbol} = this.data[i];
@@ -82,12 +88,23 @@ class AtomData {
 	}
 
 	/**
+	 * Access the atom data
+	 *
+	 * @returns The atom data table loaded
+	 */
+	getData(): AtomInfo[] {
+
+		return this.data;
+	}
+
+	/**
 	 * Convert atomic symbol to atom Z
 	 *
 	 * @param symbol - Atomic symbol as read from the structure file
 	 * @returns The atom Z value or zero if it is an invalid symbol
 	 */
 	atomicNumber(symbol: string): number {
+
 		return this.symbol2atomZ.get(symbol) ?? 0;
 	}
 
@@ -98,6 +115,7 @@ class AtomData {
 	 * @returns The corresponding atomic symbol
 	 */
 	atomicSymbol(atomZ: number): string {
+
 		return this.data[atomZ]?.symbol ?? "Xx";
 	}
 
@@ -197,3 +215,17 @@ export const getAtomData = (atomZ: number): AtomInfo => AtomData.getInstance().a
  * @returns Corresponding Z value
  */
 export const getAtomicNumberByMass = (mass: number): number => AtomData.getInstance().atomicNumberByMass(mass);
+
+/**
+ * Load atom data
+ *
+ * @param data - Atom data to load
+ */
+export const loadData = (data: AtomInfo[]): void => AtomData.getInstance().loadData(data);
+
+/**
+ * Access the atom data
+ *
+ * @returns The atom data table loaded
+ */
+export const getData = (): AtomInfo[] => AtomData.getInstance().getData();

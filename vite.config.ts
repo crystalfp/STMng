@@ -93,13 +93,10 @@ export default defineConfig({
     server: {
         warmup: {
             clientFiles: [
+
+                "./src/components/LayoutClient.vue",
                 "./src/components/Viewer3D.vue",
                 "./src/components/ControlsContainer.vue",
-                "./src/ui/StructureReaderCtrl.vue",
-                "./src/ui/DrawUnitCellCtrl.vue",
-                "./src/ui/ComputeSymmetriesCtrl.vue",
-                "./src/ui/ComputeFingerprintsCtrl.vue",
-                "./src/ui/AnalyzeStructureSetsCtrl.vue",
             ],
         },
     },
