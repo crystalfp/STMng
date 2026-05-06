@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @component
- * Select the set of atom data to use.
+ * Edit the set of atom data.
  *
  * @author Mario Valle "mvalle at ikmail.com"
  * @since 2026-05-03
@@ -36,6 +36,8 @@ const emit = defineEmits<{
 const usingDefault = ref(true);
 const isOpen = ref(true);
 const atomData = reactive<AtomInfo[]>([]);
+const modified = ref(false);
+const confirm = ref(false);
 
 /** Initial data loading */
 askNode("ATOM-DATA", "GET")
@@ -43,14 +45,7 @@ askNode("ATOM-DATA", "GET")
         usingDefault.value = params.useDefault as boolean ?? true;
         const dataRaw = JSON.parse(params.data as string ?? "[]") as AtomInfo[];
         atomData.length = 0;
-        let first = true;
-        for(const entry of dataRaw) {
-            if(first) {
-                first = false;
-                continue;
-            }
-            atomData.push(entry);
-        }
+        for(const entry of dataRaw) atomData.push(entry);
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from set atom data initialization: ${error.message}`,
@@ -61,8 +56,14 @@ askNode("ATOM-DATA", "GET")
  * Close the dialog discarding all modifications
  */
 const closeDialog = (): void => {
-    isOpen.value = false;
-    emit("close-panel");
+
+    if(modified.value) {
+        confirm.value = true;
+    }
+    else {
+        isOpen.value = false;
+        emit("close-panel");
+    }
 };
 
 /**
@@ -74,11 +75,14 @@ const saveDialog = (): void => {
         useDefault: false,
         data: JSON.stringify(toRaw(atomData))
     });
+    modified.value = false;
     isOpen.value = false;
     emit("close-panel");
 };
 
-// TBD
+/**
+ * Reset data from the default atom data set
+ */
 const resetDialog = (): void => {
   askNode("ATOM-DATA", "GET")
   .then((params) => {
@@ -86,17 +90,21 @@ const resetDialog = (): void => {
       const dataRaw = JSON.parse(params.data as string ?? "[]") as AtomInfo[];
       atomData.length = 0;
       for(const entry of dataRaw) atomData.push(entry);
+      modified.value = false;
   })
   .catch((error: Error) => {
-      showNodeAlert(`Error from set atom data initialization: ${error.message}`,
+      showNodeAlert(`Error from set atom data reset: ${error.message}`,
                     "selectAtomData");
   });
 };
 
 /** Which set is loaded */
-const currentSet = computed(() => (usingDefault.value ?
-                                              "Using default atom data" :
-                                              "Using user atom data"));
+const currentSet = computed(() => {
+
+    const set = usingDefault.value ? "Using default atom data" :
+                                     "Using user atom data";
+    return `${set}${modified.value ? " (modified)" : ""}`;
+});
 
 /**
  * Compute the visual size of the atom representation
@@ -117,9 +125,9 @@ const currentAtom = reactive({
     symbol: "H",
     atomZ: 1,
     color: "#FFFFFF",
-    rCov: 0.32,
-    rVdW: 2,
-    bondStrength: 0.5
+    rCov: 0.37,
+    rVdW: 1.2,
+    bondStrength: 0.2
 });
 const stopWatcher = watch(currentAtom, () => {
 
@@ -152,11 +160,147 @@ const select = (idx: number): void => {
     currentAtom.bondStrength = entry.bondStrength;
 };
 
+/** Names of the atomic species */
+const names = [
+    "Dummy",
+    "Hydrogen",
+    "Helium",
+    "Lithium",
+    "Beryllium",
+    "Boron",
+    "Carbon",
+    "Nitrogen",
+    "Oxygen",
+    "Fluorine",
+    "Neon",
+    "Sodium",
+    "Magnesium",
+    "Aluminium",
+    "Silicon",
+    "Phosphorus",
+    "Sulfur",
+    "Chlorine",
+    "Argon",
+    "Potassium",
+    "Calcium",
+    "Scandium",
+    "Titanium",
+    "Vanadium",
+    "Chromium",
+    "Manganese",
+    "Iron",
+    "Cobalt",
+    "Nickel",
+    "Copper",
+    "Zinc",
+    "Gallium",
+    "Germanium",
+    "Arsenic",
+    "Selenium",
+    "Bromine",
+    "Krypton",
+    "Rubidium",
+    "Strontium",
+    "Yttrium",
+    "Zirconium",
+    "Niobium",
+    "Molybdenum",
+    "Technetium",
+    "Ruthenium",
+    "Rhodium",
+    "Palladium",
+    "Silver",
+    "Cadmium",
+    "Indium",
+    "Tin",
+    "Antimony",
+    "Tellurium",
+    "Iodine",
+    "Xenon",
+    "Caesium",
+    "Barium",
+    "Lanthanum",
+    "Cerium",
+    "Praseodymium",
+    "Neodymium",
+    "Promethium",
+    "Samarium",
+    "Europium",
+    "Gadolinium",
+    "Terbium",
+    "Dysprosium",
+    "Holmium",
+    "Erbium",
+    "Thulium",
+    "Ytterbium",
+    "Lutetium",
+    "Hafnium",
+    "Tantalum",
+    "Tungsten",
+    "Rhenium",
+    "Osmium",
+    "Iridium",
+    "Platinum",
+    "Gold",
+    "Mercury",
+    "Thallium",
+    "Lead",
+    "Bismuth",
+    "Polonium",
+    "Astatine",
+    "Radon",
+    "Francium",
+    "Radium",
+    "Actinium",
+    "Thorium",
+    "Protactinium",
+    "Uranium",
+    "Neptunium",
+    "Plutonium",
+    "Americium",
+    "Curium",
+    "Berkelium",
+    "Californium",
+    "Einsteinium",
+    "Fermium",
+    "Mendelevium",
+    "Nobelium",
+    "Lawrencium",
+    "Rutherfordium",
+    "Dubnium",
+    "Seaborgium",
+    "Bohrium",
+    "Hassium",
+    "Meitnerium",
+    "Darmstadtium",
+    "Roentgenium",
+    "Copernicium",
+    "Nihonium",
+    "Flerovium",
+    "Moscovium",
+    "Livermorium",
+    "Tennessine",
+    "Oganesson"
+];
+
+/** Current atom identity */
+const identity = computed(() => {
+    return `Atom: ${currentAtom.symbol} (${currentAtom.atomZ}) ${names[currentAtom.atomZ]}`;
+});
+
+/**
+ * Set the table as modified
+ */
+const update = (): void => {
+
+    modified.value = true;
+};
+
 </script>
 
 
 <template>
-<v-dialog v-model="isOpen" width="1200px">
+<v-dialog v-model="isOpen" width="1200px" persistent>
   <v-card title="Edit atom data" :subtitle="currentSet">
     <v-card-text class="atom-data-container">
       <div class="ls">
@@ -169,15 +313,17 @@ const select = (idx: number): void => {
         </div>
       </div>
       <div class="rt">
-        <v-label class="mb-1">{{ `Atom: ${currentAtom.symbol} (${currentAtom.atomZ})` }}</v-label>
-        <v-color-picker v-model="currentAtom.color" :modes="['hex']" elevation="0" />
+        <v-label class="mb-1" :text="identity" />
+        <v-color-picker v-model="currentAtom.color" :modes="['hex']"
+                        elevation="0" @update:modelValue="update"/>
         <v-row>
           <v-col cols="8" class="mt-2">
             <v-label>Covalent radius:</v-label>
           </v-col>
           <v-col>
             <v-number-input v-model="currentAtom.rCov"
-                            :min="0.1" :max="3" :step="0.01" :precision="2"/>
+                            :min="0.1" :max="3" :step="0.01" :precision="2"
+                            @update:modelValue="update"/>
           </v-col>
         </v-row>
         <v-row class="mt-n4">
@@ -186,7 +332,8 @@ const select = (idx: number): void => {
           </v-col>
           <v-col>
             <v-number-input v-model="currentAtom.rVdW"
-                            :min="0.1" :max="3" :step="0.01" :precision="2"/>
+                            :min="0.1" :max="3" :step="0.01" :precision="2"
+                            @update:modelValue="update"/>
           </v-col>
         </v-row>
         <v-row class="mt-n4">
@@ -195,15 +342,27 @@ const select = (idx: number): void => {
           </v-col>
           <v-col>
             <v-number-input v-model="currentAtom.bondStrength"
-                            :min="0.01" :max="1" :step="0.01" :precision="2"/>
+                            :min="0.01" :max="1" :step="0.01" :precision="2"
+                            @update:modelValue="update"/>
           </v-col>
         </v-row>
       </div>
     </v-card-text>
     <v-card-actions>
-      <v-btn @click="resetDialog">Reset</v-btn>
+      <v-btn :disabled="!modified" @click="resetDialog">Reset</v-btn>
       <v-btn @click="saveDialog">Save</v-btn>
       <v-btn v-focus @click="closeDialog">Close</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+<v-dialog v-model="confirm" persistent width="400">
+  <v-card title="Dialog">
+    <v-card-text>
+      Confirm exit without saving?
+    </v-card-text>
+    <v-card-actions>
+      <v-btn v-focus @click="confirm=false; saveDialog()">Save</v-btn>
+      <v-btn v-focus @click="confirm=false; isOpen=false">Discard</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>

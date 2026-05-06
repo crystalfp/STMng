@@ -22,23 +22,12 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-
 import {app, ipcMain} from "electron";
-import {existsSync, mkdirSync, copyFileSync, readFileSync} from "node:fs";
+import {existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync} from "node:fs";
 import path from "node:path";
 import {getAtomDataDefault, setAtomDataDefault} from "./Preferences";
 import {publicDirPath} from "./GetPublicPath";
-import {getData, loadData, type AtomInfo} from "./AtomData";
-
-/**
- * Check if default data set is in use
- *
- * @returns True if the default atom data set is in use
- */
-export const isUsingDefaultAtomData = (): boolean => {
-
-	return getAtomDataDefault();
-};
+import {getDataTable, loadDataTable, type AtomInfo} from "./AtomData";
 
 /**
  * Get path to the user atom data file
@@ -57,28 +46,19 @@ const getDataFilePath = (filename: string): string => {
 };
 
 /**
- * Load atom data
- *
- * @param filePath - Path to the atom data file to load and use
- */
-const loadAtomData = (filePath: string): void => {
-
-	const content = readFileSync(filePath, "utf8");
-	const data = JSON.parse(content) as AtomInfo[];
-	loadData(data);
-};
-
-/**
  * Select the atom data set to use
  *
  * @param useDefault - True if the default atom data should be used
  */
 export const selectAtomDataFile = (useDefault: boolean): void => {
 
+	// Save the preference
 	setAtomDataDefault(useDefault);
 
+	// Get the path
 	let filePath;
 	if(useDefault) {
+
 		filePath = publicDirPath("default-atom-data.json");
 	}
 	else {
@@ -90,26 +70,33 @@ export const selectAtomDataFile = (useDefault: boolean): void => {
 			copyFileSync(sourcePath, filePath);
 		}
 	}
-	loadAtomData(filePath);
+
+	// Read and load the file
+	const content = readFileSync(filePath, "utf8");
+	const data = JSON.parse(content) as AtomInfo[];
+	loadDataTable(data);
 };
 
 /**
- * Setup channel to read the preferences
+ * Setup channel to read and write the atom data
  */
 export const setupChannelAtomData = (): void => {
 
+	// Load the initial atom data set
 	selectAtomDataFile(getAtomDataDefault());
 
 	ipcMain.handle("ATOM-DATA:GET", () => {
 
 		return {
 			useDefault: getAtomDataDefault(),
-			data: JSON.stringify(getData())
+			data: JSON.stringify(getDataTable())
 		};
 	});
 
 	ipcMain.on("ATOM-DATA:SET", (_event, params: {useDefault: boolean; data: string}) => {
 
 		setAtomDataDefault(params.useDefault);
+		loadDataTable(JSON.parse(params.data) as AtomInfo[]);
+		writeFileSync(getDataFilePath("atom-data.json"), params.data, "utf8");
 	});
 };

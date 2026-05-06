@@ -28,12 +28,12 @@ import {existsSync} from "node:fs";
 import {broadcastMessage, showDevToolsOnSecondaryWindow} from "./WindowsUtilities";
 import {refreshSystemMenu, openMenuEntry, sendAlertToClient,
         getCurrentNode} from "./ToClient";
-import {setMainTheme, isExtended, setExtended} from "./Preferences";
+import {setMainTheme, isExtended, setExtended, getAtomDataDefault} from "./Preferences";
 import {createProjectEditor, sendProjectToEditor} from "./ProjectEditor";
 import {pm} from "./ProjectManager";
 import {publicDirPath} from "./GetPublicPath";
 import {showLogFile} from "./AccessLog";
-import {isUsingDefaultAtomData, selectAtomDataFile} from "./AtomDataManager";
+import {selectAtomDataFile} from "./AtomDataManager";
 import type {CtrlParams} from "@/types";
 
 /**
@@ -165,7 +165,7 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                 {
                     label: "Use default atom data",
                     type: "checkbox",
-                    checked: isUsingDefaultAtomData(),
+                    checked: getAtomDataDefault(),
                     click(event) {
                         selectAtomDataFile(event.checked);
                     }

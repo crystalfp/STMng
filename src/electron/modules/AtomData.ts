@@ -25,7 +25,6 @@
 
 /**
  * One atom type data
- * @notExported
  */
 export interface AtomInfo {
 
@@ -68,18 +67,29 @@ class AtomData {
 	/**
 	 * Load atom data
 	 *
-	 * @param data - Atom data to load
+	 * @param data - Atom data to load (without the dummy entry)
 	 */
-	loadData(data: AtomInfo[]): void {
+	loadDataTable(data: AtomInfo[]): void {
 
-		this.data = data;
+		// Add the dummy entry
+		this.data = [{
+			symbol: "Xx",
+			rCov: 0,
+			rVdW: 0,
+			maxBonds: 0,
+			color: "#000000",
+			bondStrength :0,
+			mass: 0
+		}];
+
 		this.symbol2atomZ.clear();
-		const len = this.data.length;
-		for(let i=1; i < len; ++i) {
-			const {symbol} = this.data[i];
-			this.symbol2atomZ.set(symbol, i);
-			this.symbol2atomZ.set(symbol.toLowerCase(), i);
-			this.symbol2atomZ.set(symbol.toUpperCase(), i);
+		const len = data.length;
+		for(let i=0; i < len; ++i) {
+			this.data.push(data[i]);
+			const {symbol} = data[i];
+			this.symbol2atomZ.set(symbol, i+1);
+			this.symbol2atomZ.set(symbol.toLowerCase(), i+1);
+			this.symbol2atomZ.set(symbol.toUpperCase(), i+1);
 		}
 
 		// Add Deuterium
@@ -90,11 +100,11 @@ class AtomData {
 	/**
 	 * Access the atom data
 	 *
-	 * @returns The atom data table loaded
+	 * @returns The atom data table loaded (without the dummy entry)
 	 */
-	getData(): AtomInfo[] {
+	getDataTable(): AtomInfo[] {
 
-		return this.data;
+		return this.data.slice(1);
 	}
 
 	/**
@@ -214,18 +224,20 @@ export const getAtomData = (atomZ: number): AtomInfo => AtomData.getInstance().a
  * @param mass - Atomic mass
  * @returns Corresponding Z value
  */
-export const getAtomicNumberByMass = (mass: number): number => AtomData.getInstance().atomicNumberByMass(mass);
+export const getAtomicNumberByMass = (mass: number): number =>
+								AtomData.getInstance().atomicNumberByMass(mass);
 
 /**
  * Load atom data
  *
- * @param data - Atom data to load
+ * @param data - Atom data to load (without the dummy entry)
  */
-export const loadData = (data: AtomInfo[]): void => AtomData.getInstance().loadData(data);
+export const loadDataTable = (data: AtomInfo[]): void =>
+					AtomData.getInstance().loadDataTable(data);
 
 /**
  * Access the atom data
  *
- * @returns The atom data table loaded
+ * @returns The atom data table loaded (without the dummy entry)
  */
-export const getData = (): AtomInfo[] => AtomData.getInstance().getData();
+export const getDataTable = (): AtomInfo[] => AtomData.getInstance().getDataTable();
