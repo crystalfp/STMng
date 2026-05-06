@@ -78,7 +78,7 @@ class AtomData {
 			rVdW: 0,
 			maxBonds: 0,
 			color: "#000000",
-			bondStrength :0,
+			bondStrength: 0,
 			mass: 0
 		}];
 

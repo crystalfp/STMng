@@ -46,7 +46,7 @@ export const selectAtomsByKind = (structure: Structure,
 	if(kind !== "all") {
 		atomsSelector = atomsSelector.trim();
 		if(atomsSelector === "") return [];
-		selectorsList = atomsSelector.toLowerCase().split(/\s+/);
+		selectorsList = atomsSelector.toLowerCase().split(/\s+/u);
 	}
 
 	// Extract structure parts
@@ -119,7 +119,7 @@ export const checkAtomsSelector = (structure: Structure,
 	if(kind === "all") return "";
 	atomsSelector = atomsSelector.trim();
 	if(atomsSelector === "") return "";
-	const selectorsList = atomsSelector.toLowerCase().split(/\s+/);
+	const selectorsList = atomsSelector.toLowerCase().split(/\s+/u);
 
 	// Extract structure parts
 	const {atoms} = structure;
@@ -147,7 +147,7 @@ export const checkAtomsSelector = (structure: Structure,
 		}
 		case "index":
 			for(const entry of selectorsList) {
-				if(!/^\d+$/.test(entry)) {
+				if(!/^\d+$/u.test(entry)) {
 					return `Invalid index "${entry}"`;
 				}
 				const idx = Number.parseInt(entry, 10);

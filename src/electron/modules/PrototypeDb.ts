@@ -142,8 +142,7 @@ class PrototypeDb {
 		const correction = this.aflowAdjunctMap.get(aflow);
 		if(correction) {
 			let mineral = correction.m ?? tags.mineral;
-			// eslint-disable-next-line unicorn/better-regex
-			mineral = mineral ? mineral.replaceAll(/\\.\{(.)\}/g, "$1") : "—";
+			mineral = mineral ? mineral.replaceAll(/\\.\{(.)\}/gu, "$1") : "—";
 			return {
 				pearson: correction.p ?? tags.pearson,
 				aflow,
@@ -152,8 +151,7 @@ class PrototypeDb {
 			};
 		}
 
-		// eslint-disable-next-line unicorn/better-regex
-		const mineral = tags.mineral ? tags.mineral.replaceAll(/\\.\{(.)\}/g, "$1") : "—";
+		const mineral = tags.mineral ? tags.mineral.replaceAll(/\\.\{(.)\}/gu, "$1") : "—";
 		return {
 			pearson: tags.pearson,
 			aflow,
@@ -310,7 +308,7 @@ class PrototypeDb {
 
 		const out: DBType[] = [];
 		for(const [k, v] of db) {
-			const title = k.replaceAll(/<\/?sub>/g, "");
+			const title = k.replaceAll(/<\/?sub>/gu, "");
 			out.push({title, aflow: v});
 		}
 

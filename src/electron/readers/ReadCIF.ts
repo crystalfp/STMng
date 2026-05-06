@@ -150,10 +150,10 @@ export class ReaderCIF implements ReaderImplementation {
 		for await (const line of reader) {
 
 			// Clear line from comments and control characters
-			const lineNC = line.replace(/#.*/, "").trim();
+			const lineNC = line.replace(/#.*/u, "").trim();
 			if(lineNC === "") continue;
 			// eslint-disable-next-line no-control-regex
-			if(/[\u0000-\u0008\u000E-\u001F]/.test(lineNC)) continue;
+			if(/[\u0000-\u0008\u000E-\u001F]/u.test(lineNC)) continue;
 
 			// The keys are case insensitive
 			const lineLC = lineNC.toLowerCase();
@@ -212,7 +212,7 @@ export class ReaderCIF implements ReaderImplementation {
 			if(!isInDataBlock) continue;
 
 			// Extract key and value inline
-			const ws = lineLC.split(/\s+/);
+			const ws = lineLC.split(/\s+/u);
 
 			switch(ws[0]) {
 				case "_symmetry.space_group_name_h-m":
@@ -221,10 +221,10 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
 						lineNC
-							.split(/\s+/)
+							.split(/\s+/u)
 							.slice(1)
 							.join(" ")
-							.replace(/^["']([^"']+)["']/, "$1")
+							.replace(/^["']([^"']+)["']/u, "$1")
 							.trim();
 					break;
 				case "_cell_length_a":
@@ -301,7 +301,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const fx = Number.parseFloat(fracX[i]);
 				const fy = Number.parseFloat(fracY[i]);
 				const fz = Number.parseFloat(fracZ[i]);
-				const az = (hasSymbol ? symbol[i] : label[i]).replaceAll(/[^a-z]/gi, "");
+				const az = (hasSymbol ? symbol[i] : label[i]).replaceAll(/[^a-z]/giu, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: hasLabel ? label[i] : symbol[i],
@@ -333,7 +333,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const x = Number.parseFloat(cartnX[i]);
 				const y = Number.parseFloat(cartnY[i]);
 				const z = Number.parseFloat(cartnZ[i]);
-				const symbol = (hasAtomType ? atomType[i] : label[i]).replaceAll(/[^a-z]/gi, "");
+				const symbol = (hasAtomType ? atomType[i] : label[i]).replaceAll(/[^a-z]/giu, "");
 				const atom: Atom = {
 					atomZ: getAtomicNumber(symbol),
 					label: label[i],

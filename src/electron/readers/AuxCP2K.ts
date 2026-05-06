@@ -56,7 +56,7 @@ export const readAuxCP2K = async (filename: string,
 
 		if(lineNumber === 1) {
 
-			const fields = line.toLowerCase().trim().split(/\s+/);
+			const fields = line.toLowerCase().trim().split(/\s+/u);
 			const n = fields.length;
 			for(let i=0; i < n; ++i) {
 				if(fields[i].startsWith("enthalp")) {
@@ -71,8 +71,7 @@ export const readAuxCP2K = async (filename: string,
 			++lineNumber;
 		}
 		else {
-			// eslint-disable-next-line unicorn/better-regex
-			const ln = line.trim().replaceAll(/\[[\d ]+\]/g, "[]").split(/\s+/);
+			const ln = line.trim().replaceAll(/\[[\d ]+\]/gu, "[]").split(/\s+/u);
 			energies.push(Number.parseFloat(ln[column]));
 		}
 	}

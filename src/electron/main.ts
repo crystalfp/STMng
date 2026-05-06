@@ -145,7 +145,7 @@ setupTitlebar();
 // If present, set extra command line switches
 if(options.extra) {
 
-    const switches = options.extra.split(/, */);
+    const switches = options.extra.split(/, */u);
     for(const sw of switches) {
         if(sw.includes("=")) {
             const element = sw.split("=");

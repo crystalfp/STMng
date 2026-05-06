@@ -54,7 +54,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			const line = lineRaw.trim();
 			if(line === "" || line.startsWith("#")) continue;
 
-			const fields = line.split(/\s+/);
+			const fields = line.split(/\s+/u);
 
 			if(lineType === "Atoms") {
 

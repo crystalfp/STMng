@@ -179,7 +179,7 @@ export class ParseQuotedLine {
 
 		const l2 = line.replaceAll(String.raw`\'`, "⸳").replaceAll(String.raw`\"`, "†");
 		// eslint-disable-next-line sonarjs/slow-regex
-		const l3 = l2.replaceAll(/(?:^|\s+)["']/g, " |").replaceAll(/["'](?:\s+|$)/g, "| ");
+		const l3 = l2.replaceAll(/(?:^|\s+)["']/gu, " |").replaceAll(/["'](?:\s+|$)/gu, "| ");
 		const l4 = l3.replaceAll("⸳", "'").replaceAll("†", '"');
 
 		this.partial = "";

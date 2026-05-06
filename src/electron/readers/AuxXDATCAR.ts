@@ -119,9 +119,9 @@ export const readAuxXDATCAR = async (filename: string,
 					};
 					structures.push(structure);
 				}
-				const fields = line.trim().split(/\s+/);
+				const fields = line.trim().split(/\s+/u);
 
-				if(/\d+/.test(fields[0])) {
+				if(/\d+/u.test(fields[0])) {
 					const position = fractionalToCartesianCoordinates(
 										crystal.basis,
 										Number.parseFloat(fields[0]),

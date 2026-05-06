@@ -100,7 +100,7 @@ requestData(windowPath, (params: CtrlParams) => {
         prototypeName.value = "";
     }
     else {
-        const sb = strukturbericht.replace(/_([^_]+)$/, "<sub>$1</sub>");
+        const sb = strukturbericht.replace(/_([^_]+)$/u, "<sub>$1</sub>");
         prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
                               `strukturbericht: ${sb},&ensp;pearson: ${pearson})`;
     }

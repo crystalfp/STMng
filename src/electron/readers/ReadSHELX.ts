@@ -57,7 +57,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			}
 
 			// Ignore keywords and lines starting with blank
-			if(/^[^A-Z]/.test(lineUC) ||
+			if(/^[^A-Z]/u.test(lineUC) ||
 				lineUC.startsWith("TITL") ||
 				lineUC.startsWith("ZERR") ||
 				lineUC.startsWith("SIZE") ||
@@ -71,7 +71,7 @@ export class ReaderSHELX implements ReaderImplementation {
 			// Get the lines to be used
 			if(lineUC.startsWith("SYMM")) {
 				// eslint-disable-next-line sonarjs/slow-regex
-				const sg = lineUC.replace(/\s+\(.+$/, "").replace(/^SYMM\s+/, "");
+				const sg = lineUC.replace(/\s+\(.+$/u, "").replace(/^SYMM\s+/u, "");
 				if(spaceGroup) spaceGroup += "\n" + sg;
 				else spaceGroup = sg;
 			}
@@ -79,7 +79,7 @@ export class ReaderSHELX implements ReaderImplementation {
 				latticeType = Number.parseInt(lineUC.slice(5), 10);
 			}
 			else if(lineUC.startsWith("CELL")) {
-				const fields = lineUC.split(/\s+/);
+				const fields = lineUC.split(/\s+/u);
 				if(fields.length < 8) continue;
 				const a = Number.parseFloat(fields[2]);
 				const b = Number.parseFloat(fields[3]);
@@ -92,11 +92,11 @@ export class ReaderSHELX implements ReaderImplementation {
 			}
 			else {
 				// Ordinary atom line
-				const fields = line.split(/\s+/);
+				const fields = line.split(/\s+/u);
 				if(fields.length < 5) continue;
 
 				// Extract the element type
-				const atomZ = getAtomicNumber(fields[0].replace(/\d+/, ""));
+				const atomZ = getAtomicNumber(fields[0].replace(/\d+/u, ""));
 				if(atomZ === 0) continue;
 
 				// Fractional coordinates converted to cartesian coordinates

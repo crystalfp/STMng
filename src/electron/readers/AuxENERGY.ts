@@ -51,7 +51,7 @@ export const readAuxENERGY = (filename: string,
 	// Read and clean energies
 	const energiesRaw = readFileSync(filename, "utf8") + "\n";
 	const energies = energiesRaw
-								.replaceAll(/\s+/g, "\n")
+								.replaceAll(/\s+/gu, "\n")
 								.split("\n")
 								.map((line) => Number.parseFloat(line));
 

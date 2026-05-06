@@ -82,7 +82,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of stream) {
 
-			const fields = line.trim().split(/\s+/);
+			const fields = line.trim().split(/\s+/u);
 
 			switch(lineType) {
 				case LineType.comment1:

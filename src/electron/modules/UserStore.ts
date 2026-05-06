@@ -64,7 +64,7 @@ export class Store {
 		this.data.clear();
 		for(const line of lines) {
 
-			const fields = line.split(/: +/);
+			const fields = line.split(/: +/u);
 			if(fields.length < 2) continue;
 			this.data.set(fields[0], fields[1]);
 		}

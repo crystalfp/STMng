@@ -6,6 +6,7 @@ import cleanPlugin from "vite-plugin-clean-pattern";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
+/* oxlint-disable require-unicode-regexp */
 
 // https://vitejs.dev/config/
 export default defineConfig({

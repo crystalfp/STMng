@@ -50,12 +50,12 @@ export class ReaderQUANTUM implements ReaderImplementation {
 		const lines = content
 						.replaceAll(",", "\n")
 						.replaceAll("\r\n", "\n")
-						.replaceAll(/\n{2,}/g, "\n")
-						.replaceAll(/ +/g, " ")
-						.replaceAll(/ ?\n ?/g, "\n")
-						.replace(/^ /, "")
-						.replace(/\n$/, "")
-						.replaceAll(/ ?= ?/g, "=")
+						.replaceAll(/\n{2,}/gu, "\n")
+						.replaceAll(/ +/gu, " ")
+						.replaceAll(/ ?\n ?/gu, "\n")
+						.replace(/^ /u, "")
+						.replace(/\n$/u, "")
+						.replaceAll(/ ?= ?/gu, "=")
 						.split("\n");
 
 		let ibrav = 0;
@@ -83,7 +83,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 			if(inPositions) {
 				const fields = line.split(" ");
 				label.push(fields[0]);
-				let type = fields[0].replace(/\d+/, "");
+				let type = fields[0].replace(/\d+/u, "");
 				let zz = getAtomicNumber(type);
 				if(zz === 0) {
 					if(type.length > 2) {
@@ -128,7 +128,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				inputAtoms = Number.parseInt(line.split("=")[1], 10);
 			}
 			else if(line.startsWith("celldm")) {
-				const fields = line.split(/[()=]/);
+				const fields = line.split(/[()=]/u);
 				const ncell = Number.parseInt(fields[1], 10);
 				celldm[ncell] = Number.parseFloat(fields[3].replace("D", "E"));
 				hasCelldm = true;
@@ -156,12 +156,12 @@ export class ReaderQUANTUM implements ReaderImplementation {
 			}
 			else if(line.startsWith("ATOMIC_POSITIONS")) {
 				inPositions = true;
-				positionKind = line.split(" ")[1].replaceAll(/[{}]/g, "");
+				positionKind = line.split(" ")[1].replaceAll(/[{}]/gu, "");
 			}
 			else if(line.startsWith("CELL_PARAMETERS")) {
 				inPositions = false;
 				inBasis = true;
-				basisKind = line.split(" ")[1].replaceAll(/[{}]/g, "");
+				basisKind = line.split(" ")[1].replaceAll(/[{}]/gu, "");
 				basisLine = 0;
 			}
 		}

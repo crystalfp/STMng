@@ -247,7 +247,7 @@ const lp = (d: DataRecord): string => {
     //     case "0-0-1":
     //     case "1-0":
     //     case "0-1":
-            return d.formula!.replaceAll(/<.?sub>/g, "");
+            return d.formula!.replaceAll(/<.?sub>/gu, "");
     //     default:
     //         return "";
     // }

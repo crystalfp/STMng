@@ -168,7 +168,7 @@ export class ReaderPDB implements ReaderImplementation {
 
 					// If there is no valid symbol, try to guess it from the atom label
 					if(atomZ === 0) {
-						atomSymbol = label.replaceAll(/\d+/g, "");
+						atomSymbol = label.replaceAll(/\d+/gu, "");
 						if(["CA", "CD", "CE", "CF"].includes(atomSymbol)) atomSymbol = "C";
 						else if(["HE", "HF", "HG"].includes(atomSymbol)) atomSymbol = "H";
 						atomZ = getAtomicNumber(atomSymbol);
