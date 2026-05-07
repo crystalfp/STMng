@@ -23,7 +23,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import log from "electron-log";
-import {tmpNameSync} from "tmp";
+import {tmpNameSync, setGracefulCleanup} from "tmp";
 import {unlinkSync, writeFileSync} from "node:fs";
 import path from "node:path";
 import {NodeCore} from "../modules/NodeCore";
@@ -93,6 +93,7 @@ export class StructureReader extends NodeCore {
 		super(id);
 		this.setupChannels(id, this.channels);
 		this.toNextNode(new EmptyStructure());
+		setGracefulCleanup();
 	}
 
 	description(): string {
@@ -462,8 +463,8 @@ export class StructureReader extends NodeCore {
 	private async channelReadDropped(params: CtrlParams): Promise<CtrlParams> {
 
 		const filename = params.filename as string;
-		const name = filename ? tmpNameSync({name: filename}) :
-								tmpNameSync({prefix: "stm-ng-"});
+		const nn = path.basename(filename).replaceAll(/[ .]/gu, "-");
+		const name = tmpNameSync({prefix: `stm-ng-${nn}-`});
 		writeFileSync(name, params.fileContent as string, "utf8");
 
 		const response = await this.channelRead({

@@ -411,7 +411,7 @@ const disableOnNoAnalysisDone = computed(() => {
 
 const disableCharts = computed(() => {
 
-    return countComponents.value > 3 ||
+    return countComponents.value > 3 || countComponents.value < 2 ||
             (!analysisDone.value && state.removeDuplicates);
 });
 
