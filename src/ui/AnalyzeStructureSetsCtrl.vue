@@ -506,7 +506,7 @@ const summaryLabel = computed(() =>
 );
 
 const compositionsLabel = computed(() => {
-    if(countAccumulated.value === 0) return  " ";
+    if(countAccumulated.value === 0 || numberCompositions.value === 0) return  " ";
     if(countComponents.value === 1) return "Compositions: 1";
     return `Compositions: ${numberCompositions.value}`;
 });

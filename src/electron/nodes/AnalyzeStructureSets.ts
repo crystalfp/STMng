@@ -392,15 +392,20 @@ export class AnalyzeStructureSets extends NodeCore {
 			return countEnabled;
 		}
 
-		let MinEnergy = Number.POSITIVE_INFINITY;
+		let minEnergy = Number.POSITIVE_INFINITY;
 
 		for(const entry of this.accumulator.iterateStructures()) {
-			if(entry.energy < MinEnergy) MinEnergy = entry.energy;
+			if(entry.energyPerAtom < minEnergy) minEnergy = entry.energyPerAtom;
 		}
 
+		const threshold = minEnergy + this.state.energyFromMinimum;
+
 		for(const entry of this.accumulator.iterateStructures()) {
-			if(entry.energy > MinEnergy+this.state.energyFromMinimum) entry.enabled = false;
-			else ++countEnabled;
+			if(entry.energyPerAtom > threshold) entry.enabled = false;
+			else {
+				entry.enabled = true;
+				++countEnabled;
+			}
 		}
 
 		return countEnabled;

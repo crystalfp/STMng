@@ -135,23 +135,23 @@ export class VariableCompositionConvexHull {
 		this.formula.length = 0;
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
-			const {parts, step, energy, key, formula} = structure;
+			const {parts, step, energyPerAtom, key, formula} = structure;
 
-			const structureEnergy = energy ?? 0;
+			const energy = energyPerAtom ?? 0;
 			this.x.push(parts[1]/(parts[0]+parts[1]));
-			this.e.push(structureEnergy);
+			this.e.push(energy);
 			this.step.push(step);
 			this.parts.push(key);
 			this.formula.push(formula);
 			if(parts[0] === 1 &&
 			   parts[1] === 0 &&
-			   structureEnergy < e0) {
-				e0 = structureEnergy;
+			   energy < e0) {
+				e0 = energy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 1 &&
-					structureEnergy < e1) {
-						e1 = structureEnergy;
+					energy < e1) {
+				e1 = energy;
 			}
 		}
 
@@ -229,29 +229,29 @@ export class VariableCompositionConvexHull {
 		const p: number[][] = [];
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
-			const {parts, step, energy, key, formula} = structure;
+			const {parts, step, energyPerAtom, key, formula} = structure;
 
-			const structureEnergy = energy ?? 0;
+			const energy = energyPerAtom ?? 0;
 			this.step.push(step);
 			this.parts.push(key);
 			this.formula.push(formula);
 			if(parts[0] === 1 &&
 			   parts[1] === 0 &&
 			   parts[2] === 0 &&
-			   structureEnergy < e0) {
-				e0 = structureEnergy;
+			   energy < e0) {
+				e0 = energy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 1 &&
 				    parts[2] === 0 &&
-					structureEnergy < e1) {
-						e1 = structureEnergy;
+					energy < e1) {
+						e1 = energy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 0 &&
 				    parts[2] === 1 &&
-					structureEnergy < e2) {
-						e2 = structureEnergy;
+					energy < e2) {
+						e2 = energy;
 			}
 
 			// Compute the component proportions
@@ -266,7 +266,7 @@ export class VariableCompositionConvexHull {
 			// const y = p0*0+p1*0+p2*0.8660254038;
 			this.x.push(p1+p2*0.5);
 			this.y.push(p2*0.8660254038);
-			this.e.push(structureEnergy);
+			this.e.push(energy);
 		}
 
 		if(e0 === Number.POSITIVE_INFINITY ||
@@ -338,37 +338,37 @@ export class VariableCompositionConvexHull {
 		const p: number[][] = [];
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
-			const {parts, step, energy, key, formula} = structure;
-			const structureEnergy = energy ?? 0;
+			const {parts, step, energyPerAtom, key, formula} = structure;
+			const energy = energyPerAtom ?? 0;
 
-			this.e.push(structureEnergy);
+			this.e.push(energy);
 			if(parts[0] === 1 &&
 			   parts[1] === 0 &&
 			   parts[2] === 0 &&
 			   parts[3] === 0 &&
-			   structureEnergy < e0) {
-						e0 = structureEnergy;
+			   energy < e0) {
+						e0 = energy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 1 &&
 				    parts[2] === 0 &&
 			   		parts[3] === 0 &&
-					structureEnergy < e1) {
-						e1 = structureEnergy;
+					energy < e1) {
+						e1 = energy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 0 &&
 				    parts[2] === 1 &&
 			   		parts[3] === 0 &&
-					structureEnergy < e2) {
-						e2 = structureEnergy;
+					energy < e2) {
+						e2 = energy;
 			}
 			else if(parts[0] === 0 &&
 				    parts[1] === 0 &&
 				    parts[2] === 0 &&
 			   		parts[3] === 1 &&
-					structureEnergy < e3) {
-						e3 = structureEnergy;
+					energy < e3) {
+						e3 = energy;
 			}
 			this.step.push(step);
 			this.parts.push(key);

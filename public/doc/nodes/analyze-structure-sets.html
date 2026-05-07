@@ -21,7 +21,7 @@
 <h1 class="subh1">Analyze set of structures with one to four components</h1>
 
 <div class="description">
-<p>Analyze set of structures with 1 to 4 components starting by filtering structures on energy distance from minimum or by distance from the convex hull then by removing duplicates structures. Then could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. Computes also the enthalpy transition under pressure changes.</p>
+<p>Analyze set of structures with 1 to 4 components starting by filtering structures on energy per atom distance from minimum or by distance from the convex hull then by removing duplicates structures. Then could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. Computes also the enthalpy transition under pressure changes.</p>
 </div>
 
 <h2>Controls</h2>
@@ -56,7 +56,7 @@
 <tr>
 	<td class="c1">Compositions</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">Number of compositions in the input structures.</td>
+	<td class="c3">Number of distinct compositions in the input structures. Does not appear if no compositions.</td>
 </tr>
 </table>
 
@@ -65,12 +65,12 @@
 <tr>
 	<td class="c1">Filter</td>
 	<td class="c2">toggle</td>
-	<td class="c3">When set, remove from input the structures with a distance from convex hull greater than “Convex hull dist.” for components 2 to 4 or energies more than “Energy from min.” from minimum energy for 1 component.</td>
+	<td class="c3">When set, remove from input the structures with a distance from convex hull greater than “Convex hull dist.” for components 2 to 4 or, for 1 component, energies per atom more than “Energy from min.” from minimum per atom energy.</td>
 </tr>
 <tr>
   <td class="c1">Convex hull dist./Energy from min.</td>
   <td class="c2">numeric field</td>
-  <td class="c3">The maximum distance of a structure from the convex hull to be retained. For one component the maximum energy from minimum to be retained. The field is disabled if filter toggle is not set.</td>
+  <td class="c3">The maximum distance of a structure from the convex hull to be retained. For one component the maximum energy per atom from minimum to be retained. The field is disabled if filter toggle is not set.</td>
 </tr>
 <tr>
   <td class="c1">Remaining</td>
@@ -133,18 +133,11 @@
 <tr>
 	<td class="c1">Analyze selected for duplicates</td>
 	<td class="c2">button</td>
-	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures. The compositions are computed in increasing count of structures. The computations are not parallelized but done one by one.</td>
+	<td class="c3">Start the computation of the fingerprints and distances and the removal of duplicated structures.</td>
 </tr>
 </table>
 
 <h3>Variable composition</h3>
-<p>Note that the entries in the saved files are ordered as:</p>
-<dl>
-	<dt>For one file per composition</dt>
-	<dd>In each file the structures are ordered by increasing energy.</dd>
-	<dt>For consolidated file</dt>
-	<dd>In the single file the structures are ordered by increasing distance from the convex hull and, if they have the same distance, by increasing energy.</dd>
-</dl>
 
 <table cellpadding="2" cellspacing="2">
 <tr>
@@ -186,10 +179,18 @@
 	<td class="c3">At the end of the save step, show the number of files created or the path to the saved consolidated file.</td>
 </tr>
 </table>
-
+<div style="margin: 1rem 0 0 20px;">
+<p>The entries in the saved files are ordered as:</p>
+<dl>
+	<dt>For one file per composition</dt>
+	<dd>In each file the structures are ordered by increasing energy.</dd>
+	<dt>For consolidated file</dt>
+	<dd>In the single file the structures are ordered by increasing distance from the convex hull and, if they have the same distance, by increasing energy.</dd>
+</dl>
+</div>
 <h3>Enthalpy transitions</h3>
 <p>The structure enthalpy increases with pressure this way: <i>H = E + PV</i>&ensp;where <i>H</i> is the enthalpy (eV), <i>E</i> the structure energy (eV), <i>P</i> the pressure (GPa) and <i>V</i> the cell volume (Å³).</p>
-<p>This node find the structures more stable when pressure increases and list them.</p>
+<p>The functionality finds the structures more stable when pressure increases and list them.</p>
 <p>The resulting enthalpy transition structures data table has the following columns:</p>
 <dl>
 	<dt>Step</dt><dd>The structure step in the input sequence.</dd>
