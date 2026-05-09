@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {createWebHashHistory, createRouter} from "vue-router";
+import {createWebHashHistory, createRouter, useRoute} from "vue-router";
 import {h, type Component} from "vue";
 
 import LayoutClient from "@/components/LayoutClient.vue";
@@ -93,10 +93,21 @@ export const router = createRouter({
             component: (): Component => import("@/components/ComponentsConvexHull3D.vue")
         },
         {
+            path: "/ev-chart",
+            component: (): Component => import("@/components/EVChart.vue")
+        },
+        {
             // Catch errors in paths
             path: "/:catchAll(.*)*",
             name: "NotFound",
-            component: h("p", {style: "color: red; margin: 1rem"}, "Page not found")
+            props: true,
+            component: {
+                setup() {
+                    const route = useRoute();
+                    return () => h("p", {style: "color: red; margin: 1rem"},
+                        `Page /${route.params.catchAll as string} not found`);
+                }
+            }
         }
     ],
 });

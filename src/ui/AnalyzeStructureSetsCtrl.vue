@@ -411,7 +411,7 @@ const disableOnNoAnalysisDone = computed(() => {
 
 const disableCharts = computed(() => {
 
-    return countComponents.value > 3 || countComponents.value < 2 ||
+    return countComponents.value > 3 ||
             (!analysisDone.value && state.removeDuplicates);
 });
 
@@ -426,17 +426,32 @@ const disable3DView = computed(() => {
  */
 const showCharts = (): void => {
 
-    askNode(id, "convex-hull", {
-        showChart: true,
-        dimension: countComponents.value
-    })
-    .then((result) => {
-        if(result.error) throw Error(result.error as string);
-    })
-    .catch((error: Error) => {
-        showNodeAlert(`Convex hull computation error: ${error.message}`,
-                      "analyzeStructureSets");
-    });
+    if(countComponents.value === 1) {
+        askNode(id, "ev-chart", {
+            showChart: true,
+            dimension: 1
+        })
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`EV chart computation error: ${error.message}`,
+                          "analyzeStructureSets");
+        });
+    }
+    else {
+        askNode(id, "convex-hull", {
+            showChart: true,
+            dimension: countComponents.value
+        })
+        .then((result) => {
+            if(result.error) throw Error(result.error as string);
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Convex hull computation error: ${error.message}`,
+                        "analyzeStructureSets");
+        });
+    }
 };
 
 /**
@@ -506,8 +521,8 @@ const summaryLabel = computed(() =>
 );
 
 const compositionsLabel = computed(() => {
-    if(countAccumulated.value === 0 || numberCompositions.value === 0) return  " ";
     if(countComponents.value === 1) return "Compositions: 1";
+    if(countAccumulated.value === 0 || numberCompositions.value === 0) return  " ";
     return `Compositions: ${numberCompositions.value}`;
 });
 

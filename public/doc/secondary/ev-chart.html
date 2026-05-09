@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="Description" content="Energy volume convex hull for the STMng visualization tool"/>
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2025-05-09"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Energy-volume convex hull</title>
+</head>
+<body>
+<h1>STMng — Energy-volume convex hull window</h1>
+<p>The window show the structure energy vs. cell volume and the lower part of the convex hull. Hovering on the points show a popup with information on the corresponding structure.</p>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Color by</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Selects value to be represented as color of the points.
+  <dl>
+  <dt>None</dt>
+  <dd>All points are colored <span style="background-color: #C45C10" class="color-word">burnt orange</span>.</dd>
+  <dt>Distance</dt>
+  <dd>The points are colored by their energy distance from the convex hull.</dd>
+  </dl>
+  </td>
+</tr>
+<tr>
+	<td class="c1">Show legend</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Show the legend for the points color. Disabled if the points have color “None”.</td>
+</tr>
+<tr>
+	<td class="c1">Colormap</td>
+	<td class="c2">selector</td>
+	<td class="c3">Name of the colormap to convert values into colors.</td>
+</tr>
+<tr>
+  <td class="c1">Close</td>
+  <td class="c2">button</td>
+  <td class="c3">Close the window.</td>
+</tr>
+</table>
+
+<p class="back-btn"><a href="../nodes/analyze-structure-sets.html" title="Return to Analyze structure sets documentation" class="back">Back to Variable composition</a></p>
+
+</body>
+</html>

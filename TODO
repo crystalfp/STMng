@@ -1,5 +1,5 @@
 Requests:
-  ☐ Add an editor for atoms color and dimensions
+  ✔ Add an editor for atoms color and dimensions @done(2026-05-08 15:18)
   ☐ Fix loading of the SPGlib library files on Linux
   ☐ Publish a web site with the STMng documentation
   ☐ Fix that when changing theme, the points color in scatterplot does not change
