@@ -23,6 +23,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {quickHull, type Facet} from "@derschmale/tympanum";
+import {convexHull2D} from "./ConvexHull2D";
 import type {StructureSetsAccumulator} from "./Accumulator";
 import type {CtrlParams} from "@/types";
 
@@ -170,35 +171,14 @@ export class VariableCompositionConvexHull {
 		}
 
 		// Find convex hull (only the lower part)
-		// The facet is encoded as (normal[2], offset)
-		const hull = quickHull(points);
-		const toOrder: {x: number; y: number; idx: number}[] = [];
-		for(const facet of hull) {
-			if(facet.plane[1] < -1e-4) {
-				const [v1, v2] = facet.verts;
+		const {vertexX, vertexY, index} = convexHull2D(points);
 
-				toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},
-							 {x: points[v2][0], y: points[v2][1], idx: v2});
-			}
-		}
-
-		// Sort convex hull points by increasing x value
-		toOrder.sort((a, b) => {
-			if(a.x !== b.x) return a.x - b.x;
-			return a.y - b.y;
-		});
-
-		// Remove duplicated convex hull points
-    	len = toOrder.length;
-		this.vertices = [toOrder[0].x, toOrder[0].y];
-		this.idxVertices = [toOrder[0].idx];
-	    for(let i=0, j=1; j < len; ++j) {
-			if(Math.abs(toOrder[i].x-toOrder[j].x) > 1e-4 ||
-			   Math.abs(toOrder[i].y-toOrder[j].y) > 1e-4) {
-				this.vertices.push(toOrder[j].x, toOrder[j].y);
-				this.idxVertices.push(toOrder[j].idx);
-				i = j;
-			}
+		this.vertices.length = 0;
+		this.idxVertices.length = 0;
+		len = vertexX.length;
+		for(let i=0; i < len; ++i) {
+			this.vertices.push(vertexX[i], vertexY[i]);
+			this.idxVertices.push(index[i]);
 		}
 
 		// Add distances from the convex hull

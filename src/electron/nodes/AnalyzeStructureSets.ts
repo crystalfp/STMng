@@ -31,11 +31,11 @@ import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {StructureSetsAccumulator} from "../analysis/Accumulator";
 import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../analysis/ComputeValid";
-import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {VariableCompositionConvexHull} from "../analysis/ConvexHull";
+import {convexHull2D} from "../analysis/ConvexHull2D";
+import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {computeTransitions, type TransitionTable} from "../analysis/EnthalpyTransitions";
 import {entryToPoscar} from "../modules/EntryToPoscar";
-import {quickHull} from "@derschmale/tympanum";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 /**
@@ -110,7 +110,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		{name: "transitions",	   type: "invoke",	    callback: this.channelTransitions.bind(this)},
 		{name: "save-transitions", type: "send",	    callback:
 																this.channelSaveTransitions.bind(this)},
-		{name: "ev-chart",	   	   type: "invoke",	    callback: this.channelEVChart.bind(this)},
+		{name: "ev-chart",	   	   type: "send",	    callback: this.channelEVChart.bind(this)},
 	];
 
 	/**
@@ -612,51 +612,6 @@ export class AnalyzeStructureSets extends NodeCore {
 	}
 
 	/**
-	 * Compute the convex hull
-	 *
-	 * @param points - Points in the chart
-	 * @returns convex hull vertices and index of the corresponding points
-	 */
-	private evConvexHull(points: number[][]): [number[], number[], number[]] {
-
-		// Find convex hull (only the lower part)
-		// The facet is encoded as (normal[2], offset)
-		const hull = quickHull(points);
-		const toOrder: {x: number; y: number; idx: number}[] = [];
-		for(const facet of hull) {
-			if(facet.plane[1] < -1e-4) {
-				const [v1, v2] = facet.verts;
-
-				toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},
-							 {x: points[v2][0], y: points[v2][1], idx: v2});
-			}
-		}
-
-		// Sort convex hull points by increasing x value
-		toOrder.sort((a, b) => {
-			if(a.x !== b.x) return a.x - b.x;
-			return a.y - b.y;
-		});
-
-		// Remove duplicated convex hull points
-    	const len = toOrder.length;
-		const vertexX = [toOrder[0].x];
-		const vertexY = [toOrder[0].y];
-		const idx     = [toOrder[0].idx];
-	    for(let i=0, j=1; j < len; ++j) {
-			if(Math.abs(toOrder[i].x-toOrder[j].x) > 1e-4 ||
-			   Math.abs(toOrder[i].y-toOrder[j].y) > 1e-4) {
-				vertexX.push(toOrder[j].x);
-				vertexY.push(toOrder[j].y);
-				idx.push(toOrder[j].idx);
-				i = j;
-			}
-		}
-
-		return [vertexX, vertexY, idx];
-	}
-
-	/**
 	 * Compute distances from the convex hull
 	 *
 	 * @param lineX - Convex hull vertices X values
@@ -987,53 +942,52 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @param params - Parameters from the UI
 	 * @returns Status
 	 */
-	private channelEVChart(params: CtrlParams): CtrlParams {
+	private channelEVChart(params: CtrlParams): void {
 
 		// Open the chart if so requested
 		const showChart = params.showChart as boolean ?? false;
-		if(showChart) {
+		if(!showChart) return;
 
-			const energy: number[] = [];
-			const volume: number[] = [];
-			const step: number[] = [];
-			const formula: string[] = [];
-			const hullPoints: number[][] = [];
+		const energy: number[] = [];
+		const volume: number[] = [];
+		const step: number[] = [];
+		const formula: string[] = [];
+		const hullPoints: number[][] = [];
 
-			for(const entry of this.accumulator.iterateEnabledStructures()) {
-				energy.push(entry.energy);
-				volume.push(entry.volume);
-				step.push(entry.step);
-				formula.push(entry.formula);
-				hullPoints.push([entry.volume, entry.energy]);
-			}
-
-			const line = this.evConvexHull(hullPoints);
-			const delta = this.deltaEnergy(line[0], line[1], energy, volume);
-
-			const dataToSend = {
-				energy,
-				volume,
-				step,
-				formula,
-				delta,
-				lineX: line[0],
-				lineY: line[1],
-				idx: line[2]
-			};
-
-			createOrUpdateSecondaryWindow({
-				routerPath: "/ev-chart",
-				width: 1130,
-				height: 950,
-				title: "Energy-volume chart",
-				data: dataToSend
-			});
+		for(const entry of this.accumulator.iterateEnabledStructures()) {
+			energy.push(entry.energy);
+			volume.push(entry.volume);
+			step.push(entry.step);
+			formula.push(entry.formula);
+			hullPoints.push([entry.volume, entry.energy]);
 		}
-		return {status: "OK!"};
+
+		const {vertexX, vertexY, index} = convexHull2D(hullPoints);
+
+		const delta = this.deltaEnergy(vertexX, vertexY, energy, volume);
+
+		const dataToSend = {
+			energy,
+			volume,
+			step,
+			formula,
+			delta,
+			lineX: vertexX,
+			lineY: vertexY,
+			idx: index
+		};
+
+		createOrUpdateSecondaryWindow({
+			routerPath: "/ev-chart",
+			width: 1130,
+			height: 950,
+			title: "Energy-volume chart",
+			data: dataToSend
+		});
 	}
 
 	/**
-	 * Channel for showing the Enthalpy transitions
+	 * Channel for showing the enthalpy transitions
 	 *
 	 * @param params - Parameters from the UI
 	 * @returns Results

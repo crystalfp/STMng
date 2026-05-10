@@ -427,16 +427,9 @@ const disable3DView = computed(() => {
 const showCharts = (): void => {
 
     if(countComponents.value === 1) {
-        askNode(id, "ev-chart", {
+        sendToNode(id, "ev-chart", {
             showChart: true,
             dimension: 1
-        })
-        .then((result) => {
-            if(result.error) throw Error(result.error as string);
-        })
-        .catch((error: Error) => {
-            showNodeAlert(`EV chart computation error: ${error.message}`,
-                          "analyzeStructureSets");
         });
     }
     else {
