@@ -79,73 +79,28 @@ export const computeTransitions = (accumulator: StructureSetsAccumulator): Trans
 
 	// Remove duplicated convex hull points
 	let len = toOrder.length;
-	const vertices = [toOrder[0].v, toOrder[0].e];
-	const idxVertices = [toOrder[0].idx];
+
+	const volumes  = [toOrder[0].v];
+	const energies = [toOrder[0].e];
+	const indices  = [toOrder[0].idx];
+
 	for(let i=0, j=1; j < len; ++j) {
 		if(Math.abs(toOrder[i].v-toOrder[j].v) > 1e-4 ||
 			Math.abs(toOrder[i].e-toOrder[j].e) > 1e-4) {
-			vertices.push(toOrder[j].v, toOrder[j].e);
-			idxVertices.push(toOrder[j].idx);
+
+			volumes.push(toOrder[j].v);
+			energies.push(toOrder[j].e);
+			indices.push(toOrder[j].idx);
 			i = j;
 		}
 	}
 
-	// Find minimal energy
-	let minEnergy = Number.POSITIVE_INFINITY;
-	let idxMin = 0;
-	len = idxVertices.length;
-	for(let i=0; i < len; ++i) {
-		const energy = vertices[2*i+1];
-		if(energy < minEnergy) {
-			minEnergy = energy;
-			idxMin = i;
-		}
-	}
+	len = volumes.length;
+	for(let i=0; i < len-1; ++i) {
 
-	// Starting point
-	const orderPressures = [{
-		volume: vertices[2*idxMin],
-		energy: vertices[2*idxMin+1],
-		idx: idxVertices[idxMin],
-		pressure: 0
-	}];
+		const pressure = ((energies[i+1] - energies[i]) / (volumes[i+1] - volumes[i]))*160.218;
 
-	len = idxVertices.length;
-	for(let i=idxMin+1; i < len; ++i) {
-
-		const i2 = 2*i;
-		const currentPressure = (vertices[i2+1] - vertices[i2-1]) / (vertices[i2-2]-vertices[i2]);
-
-		orderPressures.push({
-			volume: vertices[i2],
-			energy: vertices[i2+1],
-			idx: idxVertices[i],
-			pressure: currentPressure*160.218
-		});
-	}
-	for(let i=idxMin-1; i >= 0; --i) {
-		const i2 = 2*i;
-		const currentPressure = -(vertices[i2+3] - vertices[i2+1]) / (vertices[i2+2]-vertices[i2]);
-
-		orderPressures.push({
-			volume: vertices[i2],
-			energy: vertices[i2+1],
-			idx: idxVertices[i],
-			pressure: currentPressure*160.218
-		});
-	}
-
-	orderPressures.sort((a, b) => {
-		if(a.pressure !== b.pressure) return a.pressure - b.pressure;
-		if(a.volume !== b.volume) return a.volume - b.volume;
-		return a.energy - b.energy;
-	});
-
-	len = orderPressures.length;
-	for(let i=0; i < len; ++i) {
-
-		const {idx, pressure} = orderPressures[i];
-
+		const idx = indices[i];
 		transitionTable.steps.push(pointsSteps[idx]);
 		transitionTable.formulas.push(pointsFormulas[idx]);
 		transitionTable.pressures.push(pressure);

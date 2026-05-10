@@ -652,6 +652,7 @@ export class AnalyzeStructureSets extends NodeCore {
 				i = j;
 			}
 		}
+
 		return [vertexX, vertexY, idx];
 	}
 
