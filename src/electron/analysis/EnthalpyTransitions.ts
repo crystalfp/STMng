@@ -62,9 +62,9 @@ export const computeTransitions = (accumulator: StructureSetsAccumulator): Trans
 	const {vertexX: volumes, vertexY: energies, index: indices} = convexHull2D(points);
 
 	const len = volumes.length;
-	for(let i=0; i < len-1; ++i) {
+	for(let i=len-2; i >= 0; --i) {
 
-		const pressure = ((energies[i+1] - energies[i]) / (volumes[i+1] - volumes[i]))*160.218;
+		const pressure = -((energies[i+1] - energies[i]) / (volumes[i+1] - volumes[i]))*160.218;
 
 		const idx = indices[i];
 		transitionTable.steps.push(pointsSteps[idx]);

@@ -612,3 +612,35 @@ export interface DBType {
     /** aflow corresponding value to access the database */
     aflow: string;
 }
+
+/**
+ * Type of the list of fingerprinting methods names for selection
+ */
+export interface FPmethodName {
+    /** Index of the method */
+    value: number;
+    /** Name of the method */
+    label: string;
+}
+
+/**
+ * Type of the list of distance methods names for selection
+ */
+export interface DistanceMethodsNames {
+    /** Index of the method */
+    value: number;
+    /** Name of the method */
+    label: string;
+}
+
+/**
+ * Type of the list of grouping methods names for selection
+ */
+export interface GroupingMethodsNames {
+    /** Index of the method */
+    value: number;
+    /** Name of the method */
+    label: string;
+    /** If the method should made visible the margin value input */
+    usingMargin: boolean;
+}

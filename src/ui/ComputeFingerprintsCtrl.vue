@@ -27,7 +27,7 @@ import {storeToRefs} from "pinia";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {useControlStore} from "@/stores/controlStore";
-import type {CtrlParams} from "@/types";
+import type {CtrlParams, DistanceMethodsNames, FPmethodName, GroupingMethodsNames} from "@/types";
 import type {GroupingMethodName} from "@/electron/fingerprint/Grouping";
 
 import NodeAlert from "@/widgets/NodeAlert.vue";
@@ -44,40 +44,6 @@ const {id, label} = defineProps<{
     label: string;
 }>();
 
-/**
- * Type of the list of fingerprinting methods names for selection
- * @notExported
- */
-interface FPmethodName {
-    /** Index of the method */
-    value: number;
-    /** Name of the method */
-    label: string;
-}
-
-/**
- * Type of the list of distance methods names for selection
- * @notExported
- */
-interface DistanceMethodsNames {
-    /** Index of the method */
-    value: number;
-    /** Name of the method */
-    label: string;
-}
-
-/**
- * Type of the list of grouping methods names for selection
- * @notExported
- */
-interface GroupingMethodsNames {
-    /** Index of the method */
-    value: number;
-    /** Name of the method */
-    label: string;
-    /** If the method should made visible the margin value input */
-    usingMargin: boolean;
-}
 
 // Prepare the error messages
 resetNodeAlert();

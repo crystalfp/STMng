@@ -31,6 +31,7 @@ import {useControlStore} from "@/stores/controlStore";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
+import type {DistanceMethodsNames, FPmethodName} from "@/types";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -53,28 +54,6 @@ interface Recipe {
 	count: number;
     /** Result after analysis */
     valid?: string;
-}
-
-/**
- * Type of the list of fingerprinting methods names for selection
- * @notExported
- */
-interface FPmethodName {
-    /** Index of the method */
-    value: number;
-    /** Name of the method */
-    label: string;
-}
-
-/**
- * Type of the list of distance methods names for selection
- * @notExported
- */
-interface DistanceMethodsNames {
-    /** Index of the method */
-    value: number;
-    /** Name of the method */
-    label: string;
 }
 
 // > Mark compositions
