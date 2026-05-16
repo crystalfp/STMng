@@ -191,7 +191,7 @@ const triggers = {
 
 // Chart legend
 const legend = ref<BulletLegendItemInterface[]>([
-    {name: "structures", color: "#03C03C", inactive: false},
+    {name: "structures", color: "#C45C10", inactive: false},
     {name: "on the convex hull", color: "#FF0000",
      shape: BulletShape.Square, inactive: false},
     {name: "labels", color: "#598DFF", inactive: false},
@@ -278,7 +278,7 @@ const makeImage = (): void => {
 const createColors = (kind: ColoringKind, colormap: string,
                       energy: number[], distance: number[]): string[] => {
 
-    if(kind === "none") return Array<string>(energy.length).fill("#03C03C");
+    if(kind === "none") return Array<string>(energy.length).fill("#C45C10");
     const values = kind === "distance" ? distance : energy;
 
     let maxValue = Number.NEGATIVE_INFINITY;

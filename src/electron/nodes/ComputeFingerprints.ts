@@ -717,9 +717,10 @@ export class ComputeFingerprints extends NodeCore {
 
 		const steps: number[] = [];
 		if(selectedPoints.length > 0) {
+			const selectedSet = new Set(selectedPoints);
 			let idx = 0;
 			for(const structure of this.accumulator.iterateSelectedStructures()) {
-				if(selectedPoints.includes(idx)) steps.push(structure.step);
+				if(selectedSet.has(idx)) steps.push(structure.step);
 				++idx;
 			}
 		}

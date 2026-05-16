@@ -303,7 +303,7 @@ const createPoints = (px: number[], py: number[], pz: number[],
             side: FrontSide,
             roughness: 0.5,
             metalness: 0.6,
-            color: vertexColors.length === 0 ? "#00FF00" : vertexColors[i].convertSRGBToLinear()
+            color: vertexColors.length === 0 ? "#C45C10" : vertexColors[i].convertSRGBToLinear()
         });
         const cube = new Mesh(geometry1, material);
         cube.position.set(px[i], py[i], pz[i]*zScale);
@@ -371,7 +371,7 @@ const createLabels = (stableVertices: number[], zScale: number,
 /**
  * Create colormap for the point values (enthalpy or distance)
  *
- * @param values - Array of points values. If missing the points are colored all green.
+ * @param values - Array of points values. If missing the points are colored all burnt orange.
  */
 const createColors = (values?: number[]): void => {
 

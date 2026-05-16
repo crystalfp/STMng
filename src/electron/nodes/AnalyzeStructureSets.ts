@@ -35,6 +35,8 @@ import {VariableCompositionConvexHull} from "../analysis/ConvexHull";
 import {convexHull2D} from "../analysis/ConvexHull2D";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {computeTransitions, type TransitionTable} from "../analysis/EnthalpyTransitions";
+import {computeTransitionsVariable,
+		type VariableTransitionTable} from "../analysis/EnthalpyTransitionsVariable";
 import {entryToPoscar} from "../modules/EntryToPoscar";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
@@ -57,10 +59,17 @@ export class AnalyzeStructureSets extends NodeCore {
 	private enableAnalysis = false;
 	private structure: Structure | undefined;
 	private readonly hull = new VariableCompositionConvexHull(this.accumulator);
+
 	private transitionTable: TransitionTable = {
 		steps: [],
 		formulas: [],
 		pressures: []
+	};
+
+	private variableTransitionTable: VariableTransitionTable = {
+		pressures: [],
+		steps: [],
+		formulas: []
 	};
 
 	// Mirror of the UI reactive state
@@ -96,20 +105,25 @@ export class AnalyzeStructureSets extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",			   type: "invoke",	    callback: this.channelInit.bind(this)},
 		{name: "reset",     	   type: "send",   	    callback: this.channelReset.bind(this)},
-		{name: "compositions",	   type: "invoke",	    callback: this.channelCompositions.bind(this)},
+		{name: "compositions",	   type: "invoke",	    callback:
+															this.channelCompositions.bind(this)},
 		{name: "capture",		   type: "invoke",	    callback: this.channelCapture.bind(this)},
 		{name: "save",			   type: "invoke",	    callback: this.channelSave.bind(this)},
 		{name: "state",			   type: "send",	  	callback: this.channelState.bind(this)},
 		{name: "start",			   type: "invoke",	    callback: this.channelStart.bind(this)},
 		{name: "analyze",		   type: "invokeAsync", callback: this.channelAnalyze.bind(this)},
 		{name: "analyze-simple",   type: "invoke",	    callback:
-																this.channelAnalyzeSimple.bind(this)},
+															this.channelAnalyzeSimple.bind(this)},
 		{name: "convex-hull",	   type: "invoke",	    callback: this.channelConvexHull.bind(this)},
-		{name: "convex-hull-3d",   type: "invoke",	    callback: this.channelConvexHull3D.bind(this)},
+		{name: "convex-hull-3d",   type: "invoke",	    callback:
+															this.channelConvexHull3D.bind(this)},
 		{name: "filter",		   type: "invoke",	    callback: this.channelFilter.bind(this)},
-		{name: "transitions",	   type: "invoke",	    callback: this.channelTransitions.bind(this)},
+		{name: "transitions-fix",  type: "invoke",	    callback:
+															this.channelTransitionsFix.bind(this)},
+		{name: "transitions-var",  type: "invoke",	    callback:
+															this.channelTransitionsVar.bind(this)},
 		{name: "save-transitions", type: "send",	    callback:
-																this.channelSaveTransitions.bind(this)},
+															this.channelSaveTransitions.bind(this)},
 		{name: "ev-chart",	   	   type: "send",	    callback: this.channelEVChart.bind(this)},
 	];
 
@@ -987,18 +1001,30 @@ export class AnalyzeStructureSets extends NodeCore {
 	}
 
 	/**
-	 * Channel for showing the enthalpy transitions
+	 * Channel for showing the enthalpy transitions for fixed composition
 	 *
-	 * @param params - Parameters from the UI
 	 * @returns Results
 	 */
-	private channelTransitions(): CtrlParams {
+	private channelTransitionsFix(): CtrlParams {
 
 		this.transitionTable = computeTransitions(this.accumulator);
 		return {
 			steps: this.transitionTable.steps,
 			formulas: this.transitionTable.formulas,
 			pressures: this.transitionTable.pressures
+		};
+	}
+
+	/**
+	 * Channel for showing the enthalpy transitions for variable composition
+	 *
+	 * @returns Results
+	 */
+	private channelTransitionsVar(): CtrlParams {
+
+		this.variableTransitionTable = computeTransitionsVariable(this.accumulator, this.state.numberComponents);
+		return {
+			transitions: JSON.stringify(this.variableTransitionTable),
 		};
 	}
 

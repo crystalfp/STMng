@@ -22,16 +22,18 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
+/* eslint-disable unicorn/prevent-abbreviations */
 import {ref, toRaw, watch, reactive, computed, onUnmounted} from "vue";
 import {storeToRefs} from "pinia";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
+import type {DistanceMethodsNames, FPmethodName} from "@/types";
 
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
-import type {DistanceMethodsNames, FPmethodName} from "@/types";
+import type {VariableTransitionTable} from "@/electron/analysis/EnthalpyTransitionsVariable";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -509,31 +511,78 @@ interface TableEntry {
 }
 const table = ref<TableEntry[]>([]);
 
+/** Result table entry for variable composition */
+interface TableVarEntry {
+    /** Structure step */
+    step: string;
+    /** Corresponding formula */
+    formula: string;
+    /** Transition pressure */
+    pressureRange: string;
+}
+const tableVar = ref<TableVarEntry[]>([]);
+const tableVarRunning = ref(false);
+
 /**
  * Compute enthalpy transitions
  */
 const enthalpyTransition = (): void => {
 
-    askNode(id, "transitions")
-    .then((response) => {
+    tableVarRunning.value = true;
+    if(countComponents.value > 1) {
+        askNode(id, "transitions-var")
+        .then((response) => {
 
-        const rawSteps = response.steps as number[] ?? [];
-        const rawFormulas = response.formulas as string[] ?? [];
-        const rawPressures = response.pressures as number[] ?? [];
+            const transitions = JSON.parse(response.transitions as string ?? "{}") as VariableTransitionTable;
+            tableVar.value.length = 0;
+            const n = transitions.pressures.length;
+            for(let i=0; i < n; ++i) {
+                const [pl, ph] = transitions.pressures[i];
+                const range = `${pl.toFixed(1)}\u2002—\u2002${ph.toFixed(1)}`;
+                tableVar.value.push({
+                    pressureRange: range,
+                    step: "",
+                    formula: ""
+                });
+                const len = transitions.steps[i].length;
+                for(let j=0; j < len; ++j) {
+                    tableVar.value.push({
+                        pressureRange: "",
+                        step: transitions.steps[i][j].toFixed(0),
+                        formula: transitions.formulas[i][j]
+                    });
+                }
+            }
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Compute enthalpy transitions error: ${error.message}`,
+                        "analyzeStructureSets");
+        })
+        .finally(() => tableVarRunning.value = false);
+    }
+    else {
+        askNode(id, "transitions-fix")
+        .then((response) => {
 
-        table.value.length = 0;
-        for(let i=0; i < rawSteps.length; ++i) {
-            table.value.push({
-                step: rawSteps[i].toFixed(0),
-                formula: rawFormulas[i],
-                pressure: rawPressures[i].toFixed(3)
-            });
-        }
-    })
-    .catch((error: Error) => {
-        showNodeAlert(`Compute enthalpy transitions error: ${error.message}`,
-                      "analyzeStructureSets");
-    });
+            const rawSteps = response.steps as number[] ?? [];
+            const rawFormulas = response.formulas as string[] ?? [];
+            const rawPressures = response.pressures as number[] ?? [];
+
+            table.value.length = 0;
+            for(let i=0; i < rawSteps.length; ++i) {
+                table.value.push({
+                    step: rawSteps[i].toFixed(0),
+                    formula: rawFormulas[i],
+                    pressure: rawPressures[i].toFixed(3)
+                });
+            }
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Compute enthalpy transitions error: ${error.message}`,
+                        "analyzeStructureSets");
+        })
+        .finally(() => tableVarRunning.value = false);
+    }
 };
 
 /**
@@ -551,6 +600,11 @@ const headers = ref([
     {key: "step",     title: "Step",           align: alignEnd, width: 2},
     {key: "formula",  title: "Formula"},
     {key: "pressure", title: "Pressure (GPa)", align: alignEnd, width: 10, nowrap: true},
+]);
+const headersVar = ref([
+    {key: "pressureRange", title: "Pressure (GPa)", maxWidth: "160px", nowrap: true},
+    {key: "step",     title: "Step",            maxWidth: "50px", align: alignEnd},
+    {key: "formula",  title: "Formula"},
 ]);
 
 </script>
@@ -671,7 +725,8 @@ const headers = ref([
                 label="Analyze selected for duplicates" class="mb-n2 mt-2"
                 @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>
   <node-alert node="analyzeStructureSets" class="mt-1"/>
-  <v-label class="separator-title">Variable composition</v-label>
+
+  <v-label class="separator-title">Analyze results</v-label>
 
   <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
   <block-button :disabled="disable3DView" label="3D view" @click="show3DView" />
@@ -683,8 +738,8 @@ const headers = ref([
   </v-label>
   <v-label class="separator-title">Enthalpy transitions</v-label>
   <block-button :disabled="disableOnNoAnalysisDone" label="Compute transitions"
-                @click="enthalpyTransition" />
-  <v-data-table v-if="table.length > 0" :items="table"
+                :loading="tableVarRunning" @click="enthalpyTransition" />
+  <v-data-table v-if="table.length > 0 && countComponents === 1" :items="table"
                 class="pr-2" density="compact" select-strategy="all" items-per-page="-1"
                 fixed-header hover height="300px"
                 hide-default-footer :headers hide-no-data>
@@ -692,8 +747,16 @@ const headers = ref([
       <div v-html="item.formula"/>
     </template>
   </v-data-table>
+  <v-data-table v-if="tableVar.length > 0 && countComponents > 1" :items="tableVar"
+                class="pr-2" density="compact" select-strategy="all" items-per-page="-1"
+                fixed-header hover height="300px"
+                hide-default-footer :headers="headersVar" hide-no-data>
+    <template #item.formula="{item}">
+      <div v-html="item.formula"/>
+    </template>
+  </v-data-table>
   <block-button class="mt-4 ml-1" label="Save transition structures"
-                :disabled="table.length === 0" @click="saveStructures"/>
+                :disabled="table.length === 0 && tableVar.length === 0" @click="saveStructures"/>
   <node-alert node="analyzeStructureSets2" class="mt-1"/>
 </v-container>
 </template>

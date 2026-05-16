@@ -1,5 +1,5 @@
 /**
- * Compute enthalpy transition under pressure changes.
+ * Compute enthalpy transition under pressure changes for fixed composition.
  *
  * @packageDocumentation
  *
