@@ -655,6 +655,96 @@ export class AnalyzeStructureSets extends NodeCore {
 		return delta;
 	}
 
+	/**
+	 * Save all the transitions into a single file with a comment listing the pressure range
+	 */
+	private saveTransitionFixed(): void {
+
+		const file = dialog.showSaveDialogSync({
+			title: "Output enthalpy transitions file",
+			filters: [{name: "POSCAR", extensions: ["poscar"]}],
+		});
+		if(!file) return;
+
+		const fd = openSync(file, "w");
+
+		const pos = file.lastIndexOf(".");
+		const energyFile = pos > 0 ?
+									`${file.slice(0, pos)}.energy` :
+									`${file}.energy`;
+
+		const fde = openSync(energyFile, "w");
+
+		const len = this.transitionTable.pressures.length;
+		for(let i=0; i < len; ++i) {
+
+			const step = this.transitionTable.steps[i];
+
+			const entry = this.accumulator.getEntryByStep(step);
+			if(!entry) continue;
+
+			const p0 = this.transitionTable.pressures[i].toFixed(4);
+			const p1 = i === len-1? "up" : this.transitionTable.pressures[i+1].toFixed(4);
+
+			const comment = "Enthalpy transition structures (fixed composition) by STMng. " +
+				  			`Step: ${entry.step} Pressure range: [${p0}, ${p1}] GPa`;
+
+			writeSync(fd, entryToPoscar(entry, comment));
+			writeSync(fde, `${entry.energy.toFixed(6)}\n`);
+		}
+		closeSync(fd);
+		closeSync(fde);
+
+		sendAlertToClient(`Saved enthalpy transition file ${file}`,
+						  {level: "success", node: "analyzeStructureSets2"});
+	}
+
+	/**
+	 * Save all the transitions into a single file with a comment listing the pressure range
+	 * for variable composition
+	 */
+	private saveTransitionsVariable(): void {
+
+		const file = dialog.showSaveDialogSync({
+			title: "Output enthalpy transitions file",
+			filters: [{name: "POSCAR", extensions: ["poscar"]}],
+		});
+		if(!file) return;
+
+		const fd = openSync(file, "w");
+
+		const pos = file.lastIndexOf(".");
+		const energyFile = pos > 0 ?
+									`${file.slice(0, pos)}.energy` :
+									`${file}.energy`;
+
+		const fde = openSync(energyFile, "w");
+
+		const len = this.transitionTable.pressures.length;
+		for(let i=0; i < len; ++i) {
+			const [pl, ph] = this.variableTransitionTable.pressures[i];
+			const n = this.variableTransitionTable.steps[i].length;
+			for(let j=0; j < n; ++j) {
+
+				const step = this.variableTransitionTable.steps[i][j];
+				const entry = this.accumulator.getEntryByStep(step);
+				if(!entry) continue;
+
+				const comment = "Enthalpy transition structures (variable composition) by STMng. " +
+								`Step: ${entry.step} Pressure range: [${pl}, ${ph}] GPa`;
+
+				writeSync(fd, entryToPoscar(entry, comment));
+				writeSync(fde, `${entry.energy.toFixed(6)}\n`);
+			}
+		}
+
+		closeSync(fd);
+		closeSync(fde);
+
+		sendAlertToClient(`Saved enthalpy transition file ${file}`,
+						  {level: "success", node: "analyzeStructureSets2"});
+	}
+
 	// > Channels
 	/**
 	 * Channel handler for saving results into files in a directory
@@ -1033,42 +1123,11 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private channelSaveTransitions(): void {
 
-		const file = dialog.showSaveDialogSync({
-			title: "Output enthalpy transitions file",
-			filters: [{name: "POSCAR", extensions: ["poscar"]}],
-		});
-		if(!file) return;
-
-		const fd = openSync(file, "w");
-
-		const pos = file.lastIndexOf(".");
-		const energyFile = pos > 0 ?
-									`${file.slice(0, pos)}.energy` :
-									`${file}.energy`;
-
-		const fde = openSync(energyFile, "w");
-
-		const len = this.transitionTable.pressures.length;
-		for(let i=0; i < len; ++i) {
-
-			const step = this.transitionTable.steps[i];
-
-			const entry = this.accumulator.getEntryByStep(step);
-			if(!entry) continue;
-
-			const p0 = this.transitionTable.pressures[i].toFixed(4);
-			const p1 = i === len-1? "up" : this.transitionTable.pressures[i+1].toFixed(4);
-
-			const comment = "Enthalpy transition structures by STMng. " +
-				  			`Step: ${entry.step} Pressure range: [${p0}, ${p1}] GPa`;
-
-			writeSync(fd, entryToPoscar(entry, comment));
-			writeSync(fde, `${entry.energy.toFixed(6)}\n`);
+		if(this.state.numberComponents === 1) {
+			this.saveTransitionFixed();
 		}
-		closeSync(fd);
-		closeSync(fde);
-
-		sendAlertToClient(`Saved enthalpy transition file ${file}`,
-						  {level: "success", node: "analyzeStructureSets2"});
+		else {
+			this.saveTransitionsVariable();
+		}
 	}
 }
