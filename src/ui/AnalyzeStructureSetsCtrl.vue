@@ -308,11 +308,6 @@ const analyzeSelected = async (): Promise<void> => {
                                 .map((entry) => entry.key);
 
     // Analyze the simple ones
-    // Returns:
-    //  compositionsReduced: string[]   // Not simple compositions to analyze
-    //  resultsKeys: string[]           // Key to set on the screen
-    //  resultsValid: string[]          // Corresponding remaining value
-    //  summary: number[]               // Total and Remaining to set summary
     const remaining = await askNode(id, "analyze-simple", {compositions});
     if(remaining.error) {
         analysisRunning.value = false;
@@ -513,12 +508,16 @@ const table = ref<TableEntry[]>([]);
 
 /** Result table entry for variable composition */
 interface TableVarEntry {
+    /** An unique identifier for v-for key */
+    id: number;
     /** Structure step */
     step: string;
     /** Corresponding formula */
     formula: string;
     /** Transition pressure */
     pressureRange: string;
+    /** Enthalpy of formation */
+    enthalpy: string;
 }
 const tableVar = ref<TableVarEntry[]>([]);
 const tableVarRunning = ref(false);
@@ -536,20 +535,25 @@ const enthalpyTransition = (): void => {
             const transitions = JSON.parse(response.transitions as string ?? "{}") as VariableTransitionTable;
             tableVar.value.length = 0;
             const n = transitions.pressures.length;
+            let idx = 0;
             for(let i=0; i < n; ++i) {
                 const [pl, ph] = transitions.pressures[i];
-                const range = `${pl.toFixed(1)}\u2002—\u2002${ph.toFixed(1)}`;
+                const range = `\u2002${pl.toFixed(1)}\u2002...\u2002${ph.toFixed(1)}`;
                 tableVar.value.push({
+                    id: idx++,
                     pressureRange: range,
                     step: "",
-                    formula: ""
+                    formula: "",
+                    enthalpy: ""
                 });
                 const len = transitions.steps[i].length;
                 for(let j=0; j < len; ++j) {
                     tableVar.value.push({
+                        id: idx++,
                         pressureRange: "",
                         step: transitions.steps[i][j].toFixed(0),
-                        formula: transitions.formulas[i][j]
+                        formula: transitions.formulas[i][j],
+                        enthalpy: transitions.enthalpies[i][j].toFixed(4)
                     });
                 }
             }
@@ -579,11 +583,16 @@ const enthalpyTransition = (): void => {
         })
         .catch((error: Error) => {
             showNodeAlert(`Compute enthalpy transitions error: ${error.message}`,
-                        "analyzeStructureSets");
+                          "analyzeStructureSets");
         })
         .finally(() => tableVarRunning.value = false);
     }
 };
+
+const showTableVar = computed(() => {
+
+    return tableVar.value.length > 0 && countComponents.value > 1 && countAccumulated.value > 0;
+});
 
 /**
  * Show the chart of the convex hull
@@ -597,14 +606,9 @@ const alignEnd = "end" as "center" | "start" | "end";
 
 /** Headers for the results table */
 const headers = ref([
-    {key: "step",     title: "Step",           align: alignEnd, width: 2},
-    {key: "formula",  title: "Formula"},
-    {key: "pressure", title: "Pressure (GPa)", align: alignEnd, width: 10, nowrap: true},
-]);
-const headersVar = ref([
-    {key: "pressureRange", title: "Pressure (GPa)", maxWidth: "160px", nowrap: true},
-    {key: "step",     title: "Step",            maxWidth: "50px", align: alignEnd},
-    {key: "formula",  title: "Formula"},
+    {key: "step",     title: "Step",    maxWidth: "60px", align: alignEnd},
+    {key: "formula",  title: "Formula", maxWidth: "90px"},
+    {key: "pressure", title: "Pressure (GPa)", align: alignEnd, nowrap: true},
 ]);
 
 </script>
@@ -747,16 +751,88 @@ const headersVar = ref([
       <div v-html="item.formula"/>
     </template>
   </v-data-table>
-  <v-data-table v-if="tableVar.length > 0 && countComponents > 1" :items="tableVar"
-                class="pr-2" density="compact" select-strategy="all" items-per-page="-1"
-                fixed-header hover height="300px"
-                hide-default-footer :headers="headersVar" hide-no-data>
-    <template #item.formula="{item}">
-      <div v-html="item.formula"/>
-    </template>
-  </v-data-table>
+  <div v-if="showTableVar" class="tc1">
+    <table style="width:100%">
+      <thead>
+        <tr>
+          <th class="tds1">Step</th>
+          <th class="tde1">Enthalpy</th>
+          <th class="tdf1">Formula</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div v-if="showTableVar" class="tc">
+    <table style="width:100%">
+      <tbody>
+        <tr v-for="t of tableVar" :key="t.id" class="tr">
+          <td v-if="t.step === ''" colspan="3" class="tdp">
+              {{ `Pressure range (GPa): ${t.pressureRange}` }}</td>
+          <td v-if="t.step !== ''" class="tds">{{ t.step }}</td>
+          <td v-if="t.step !== ''" class="tde">{{ t.enthalpy }}</td>
+          <td v-if="t.step !== ''" class="tdf" v-html="t.formula"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <block-button class="mt-4 ml-1" label="Save transition structures"
                 :disabled="table.length === 0 && tableVar.length === 0" @click="saveStructures"/>
   <node-alert node="analyzeStructureSets2" class="mt-1"/>
 </v-container>
 </template>
+
+<style scoped>
+.tc1 {
+  background-color: light-dark(#FFF, #212121);
+  margin-right: -12px;
+}
+
+.tds1 {
+  width: 40px;
+  text-align: center;
+}
+
+.tde1 {
+  width: 20px;
+  text-align: center;
+}
+
+.tdf1 {
+  width: 120px;
+  text-align: left;
+}
+
+.tc {
+  height: 300px;
+  overflow-y: auto;
+  background-color: light-dark(#FFF, #212121);
+  margin-right: -12px;
+}
+
+.tr {
+  line-height: 20px;
+}
+
+.tdp {
+  border-top: 1px solid light-dark(#E0DCDF, #3C3C3C);
+  width: 100%;
+  padding-left: 5px;
+  padding-top: 4px;
+  color: light-dark(#7ca911, #baf434)
+}
+
+.tds {
+  width: 40px;
+  text-align: right;
+}
+
+.tde {
+  width: 20px;
+  text-align: right;
+}
+
+.tdf {
+  width: 120px;
+  padding-left: 20px;
+}
+</style>

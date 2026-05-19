@@ -69,7 +69,8 @@ export class AnalyzeStructureSets extends NodeCore {
 	private variableTransitionTable: VariableTransitionTable = {
 		pressures: [],
 		steps: [],
-		formulas: []
+		formulas: [],
+		enthalpies: []
 	};
 
 	// Mirror of the UI reactive state
@@ -720,7 +721,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const fde = openSync(energyFile, "w");
 
-		const len = this.transitionTable.pressures.length;
+		const len = this.variableTransitionTable.pressures.length;
 		for(let i=0; i < len; ++i) {
 			const [pl, ph] = this.variableTransitionTable.pressures[i];
 			const n = this.variableTransitionTable.steps[i].length;
@@ -1098,6 +1099,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	private channelTransitionsFix(): CtrlParams {
 
 		this.transitionTable = computeTransitions(this.accumulator);
+
 		return {
 			steps: this.transitionTable.steps,
 			formulas: this.transitionTable.formulas,
@@ -1113,6 +1115,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	private channelTransitionsVar(): CtrlParams {
 
 		this.variableTransitionTable = computeTransitionsVariable(this.accumulator, this.state.numberComponents);
+
 		return {
 			transitions: JSON.stringify(this.variableTransitionTable),
 		};

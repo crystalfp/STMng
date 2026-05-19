@@ -34,6 +34,8 @@ export interface VariableTransitionTable {
 	steps: number[][];
 	/** Structure formula for each range */
 	formulas: string[][];
+	/** Enthalpy of formation for each range */
+	enthalpies: number[][];
 }
 
 /** Convex hull vertex */
@@ -42,6 +44,8 @@ interface Vertex {
 	step: number;
 	/** And formula (HTML formatted) */
 	formula: string;
+	/** Enthalpy of formation */
+	enthalpy: number;
 }
 
 /**
@@ -103,7 +107,7 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	const out: Vertex[] = [];
 	for(const idx of index) {
-		out.push({step: s[idx], formula: f[idx]});
+		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx]});
 	}
 
 	return out;
@@ -202,7 +206,7 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	const out: Vertex[] = [];
 	for(const idx of idxVertices) {
-		out.push({step: s[idx], formula: f[idx]});
+		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx]});
 	}
 
 	return out;
@@ -356,7 +360,7 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	const out: Vertex[] = [];
 	for(const i of idxVertices) {
-		out.push({step: s[i], formula: f[i]});
+		out.push({step: s[i], formula: f[i], enthalpy: e[i]});
 	}
 
 	return out;
@@ -414,18 +418,23 @@ export const computeTransitionsVariable = (
 	const out: VariableTransitionTable = {
 		pressures: [],
 		steps: [],
-		formulas: []
+		formulas: [],
+		enthalpies: []
 	};
 
-	const RANGE_MIN  = -100;
+	const RANGE_MIN  = -200;
 	const RANGE_MAX  =  200;
 	const RANGE_INCR =  0.1;
 
 	// Initialize
 	let pressurePrevious = RANGE_MIN;
 	const verticesPrevious = new Map<number, string>();
+	const enthalpyPrevious = new Map<number, number>();
 	const entries = computeVertices(RANGE_MIN, accumulator, numberComponents);
-	for(const entry of entries) verticesPrevious.set(entry.step, entry.formula);
+	for(const entry of entries) {
+		verticesPrevious.set(entry.step, entry.formula);
+		enthalpyPrevious.set(entry.step, entry.enthalpy);
+	}
 
 	// Variate
 	for(let pressure = RANGE_MIN+RANGE_INCR; pressure < RANGE_MAX; pressure += RANGE_INCR) {
@@ -437,10 +446,15 @@ export const computeTransitionsVariable = (
 			out.pressures.push([pressurePrevious, pressure]);
 			out.steps.push(verticesPrevious.keys().toArray());
 			out.formulas.push(verticesPrevious.values().toArray());
+			out.enthalpies.push(enthalpyPrevious.values().toArray());
 
 			pressurePrevious = pressure;
 			verticesPrevious.clear();
-			for(const entry of currentEntries) verticesPrevious.set(entry.step, entry.formula);
+			enthalpyPrevious.clear();
+			for(const entry of currentEntries) {
+				verticesPrevious.set(entry.step, entry.formula);
+				enthalpyPrevious.set(entry.step, entry.enthalpy);
+			}
 		}
 	}
 
@@ -448,6 +462,7 @@ export const computeTransitionsVariable = (
 	out.pressures.push([pressurePrevious, RANGE_MAX]);
 	out.steps.push(verticesPrevious.keys().toArray());
 	out.formulas.push(verticesPrevious.values().toArray());
+	out.enthalpies.push(enthalpyPrevious.values().toArray());
 
 	return out;
 };
