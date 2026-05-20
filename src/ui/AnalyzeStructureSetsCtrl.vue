@@ -602,6 +602,13 @@ const saveStructures = (): void => {
     sendToNode(id, "save-transitions");
 };
 
+/**
+ * Show the phase diagram
+ */
+const showPhaseDiagram = (): void => {
+    sendToNode(id, "phase-diagram");
+};
+
 const alignEnd = "end" as "center" | "start" | "end";
 
 /** Headers for the results table */
@@ -775,7 +782,9 @@ const headers = ref([
       </tbody>
     </table>
   </div>
-  <block-button class="mt-4 ml-1" label="Save transition structures"
+  <block-button class="mt-4 ml-1" label="Show phase diagram"
+                :disabled="tableVar.length === 0" @click="showPhaseDiagram"/>
+  <block-button class="ml-1" label="Save transition structures"
                 :disabled="table.length === 0 && tableVar.length === 0" @click="saveStructures"/>
   <node-alert node="analyzeStructureSets2" class="mt-1"/>
 </v-container>
@@ -783,7 +792,7 @@ const headers = ref([
 
 <style scoped>
 .tc1 {
-  background-color: light-dark(#FFF, #212121);
+  background-color: light-dark(#FFFFFF, #212121);
   margin-right: -12px;
 }
 
@@ -805,7 +814,7 @@ const headers = ref([
 .tc {
   height: 300px;
   overflow-y: auto;
-  background-color: light-dark(#FFF, #212121);
+  background-color: light-dark(#FFFFFF, #212121);
   margin-right: -12px;
 }
 

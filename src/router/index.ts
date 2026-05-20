@@ -97,6 +97,10 @@ export const router = createRouter({
             component: (): Component => import("@/components/EVChart.vue")
         },
         {
+            path: "/phase-diagram",
+            component: (): Component => import("@/components/PhaseDiagram.vue")
+        },
+        {
             // Catch errors in paths
             path: "/:catchAll(.*)*",
             name: "NotFound",

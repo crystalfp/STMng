@@ -126,6 +126,8 @@ export class AnalyzeStructureSets extends NodeCore {
 		{name: "save-transitions", type: "send",	    callback:
 															this.channelSaveTransitions.bind(this)},
 		{name: "ev-chart",	   	   type: "send",	    callback: this.channelEVChart.bind(this)},
+		{name: "phase-diagram",	   type: "send",	    callback:
+															this.channelPhaseDiagram.bind(this)},
 	];
 
 	/**
@@ -1088,6 +1090,17 @@ export class AnalyzeStructureSets extends NodeCore {
 			height: 950,
 			title: "Energy-volume chart",
 			data: dataToSend
+		});
+	}
+
+	private channelPhaseDiagram(): void {
+
+		createOrUpdateSecondaryWindow({
+			routerPath: "/phase-diagram",
+			width: 1130,
+			height: 950,
+			title: "Phase diagram",
+			data: {transitions: JSON.stringify(this.variableTransitionTable)}
 		});
 	}
 

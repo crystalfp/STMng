@@ -68,9 +68,10 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	for(const structure of accumulator.iterateEnabledStructures()) {
 
-		const {parts, step, energyPerAtom, formula, volume} = structure;
+		const {parts, step, energyPerAtom, formula, volume, atomsZ} = structure;
 
-		const energy = energyPerAtom + pressure*volume/160.218;
+		const natoms = atomsZ.length;
+		const energy = energyPerAtom + pressure*volume/(natoms*160.218);
 		x.push(parts[1]/(parts[0]+parts[1]));
 		e.push(energy);
 		s.push(step);
@@ -136,9 +137,10 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 	const p: number[][] = [];
 	for(const structure of accumulator.iterateEnabledStructures()) {
 
-		const {parts, step, energyPerAtom, volume, formula} = structure;
+		const {parts, step, energyPerAtom, volume, formula, atomsZ} = structure;
 
-		const energy = energyPerAtom + pressure*volume/160.218;
+		const natoms = atomsZ.length;
+		const energy = energyPerAtom + pressure*volume/(natoms*160.218);
 		s.push(step);
 		f.push(formula);
 		if(parts[0] === 1 &&
@@ -276,9 +278,10 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 	const p: number[][] = [];
 	for(const structure of accumulator.iterateEnabledStructures()) {
 
-		const {parts, step, energyPerAtom, volume, formula, key} = structure;
+		const {parts, step, energyPerAtom, volume, formula, key, atomsZ} = structure;
 
-		const energy = energyPerAtom + pressure*volume/160.218;
+		const natoms = atomsZ.length;
+		const energy = energyPerAtom + pressure*volume/(natoms*160.218);
 
 		e.push(energy);
 		if(parts[0] === 1 &&
