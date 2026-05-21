@@ -40,6 +40,18 @@ const windowPath = "/phase-diagram";
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
 
+/** Reordered data by formula */
+interface CoalescingLine {
+    /** Corresponding step */
+    step: number;
+    /** Lower pressure of the range */
+    pl: number;
+    /** Upper pressure of the range */
+    ph: number;
+    /** The formula (HTML) */
+    formula: string;
+}
+
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
 
@@ -47,32 +59,77 @@ requestData(windowPath, (params: CtrlParams) => {
     if(!tableRaw) return;
     const table = JSON.parse(tableRaw) as VariableTransitionTable;
 
-    const species = new Set<string>();
-    range.value.length = 0;
+    // Reorder data by formula
+    const lines = new Map<string, CoalescingLine[]>();
     const len = table.pressures.length;
     for(let i=0; i < len; ++i) {
         const [pl, ph] = table.pressures[i];
         for(let j=0; j < table.formulas[i].length; ++j) {
             const formula = table.formulas[i][j];
+            const name = formula.replaceAll(/<\/?sub>/gu, "");
             const step = table.steps[i][j];
-            const specie = formula.replaceAll(/<\/?sub>/gu, "");
-            range.value.push({
-                pl,
-                ph,
-                specie,
-                step,
-                formula
-            });
-            species.add(specie);
+
+            if(lines.has(name)) {
+                const a = lines.get(name)!;
+                a.push({step, pl, ph, formula});
+            }
+            else {
+              lines.set(name, [{step, pl, ph, formula}]);
+            }
         }
     }
-    lineHeight.value = Math.floor(742/species.size);
+
+    // Coalesce equal intervals
+    range.value.length = 0;
+    for(const [key, value] of lines) {
+
+        const sv = value.toSorted((a, b) => a.pl - b.pl);
+        let lastStep = -1;
+        let lastPl = -200;
+        let lastPh = 200;
+        let lastFormula = "";
+        for(const {step, pl, ph, formula} of sv) {
+
+            if(lastStep < 0) {
+                lastStep = step;
+                lastPl = pl;
+                lastPh = ph;
+                lastFormula = formula;
+            }
+            else if(step === lastStep && pl === lastPh) {
+                lastPh = ph;
+            }
+            else {
+                range.value.push({
+                    pl: lastPl,
+                    ph: lastPh,
+                    specie: key,
+                    step: lastStep,
+                    formula: lastFormula
+                });
+                lastStep = step;
+                lastPl = pl;
+                lastPh = ph;
+                lastFormula = formula;
+            }
+        }
+        range.value.push({
+            pl: lastPl,
+            ph: lastPh,
+            specie: key,
+            step: lastStep,
+            formula: lastFormula
+        });
+    }
+
+    // Compute line height to fill the chart
+    lineHeight.value = Math.max(Math.floor(742/lines.size), 25);
 });
 
+// Chart accessors
 const xp = (d: DataRecord): number => d.pl;
 const lp = (d: DataRecord): number => d.ph-d.pl;
 const sp = (d: DataRecord): string => d.specie;
-
 
 const triggerFunction = (d: DataRecord): string => {
 
@@ -85,6 +142,7 @@ const triggerFunction = (d: DataRecord): string => {
 const triggers = {
     [Timeline.selectors.line]: triggerFunction
 };
+
 </script>
 
 

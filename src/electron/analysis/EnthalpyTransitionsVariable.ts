@@ -22,7 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {convexHull2D} from "./ConvexHull2D";
 import {quickHull} from "@derschmale/tympanum";
 import type {StructureSetsAccumulator} from "./Accumulator";
 
@@ -104,10 +103,19 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 	}
 
 	// Find convex hull (only the lower part)
-	const {index} = convexHull2D(points);
+	// The facet is encoded as (normal[2], offset)
+	const hull = quickHull(points);
+	const idxVertices = new Set<number>();
+	for(const facet of hull) {
+		if(facet.plane[1] < -1e-4) {
+			const [v1, v2] = facet.verts;
+			idxVertices.add(v1);
+			idxVertices.add(v2);
+		}
+	}
 
 	const out: Vertex[] = [];
-	for(const idx of index) {
+	for(const idx of idxVertices) {
 		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx]});
 	}
 

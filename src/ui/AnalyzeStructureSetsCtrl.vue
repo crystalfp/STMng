@@ -560,7 +560,7 @@ const enthalpyTransition = (): void => {
         })
         .catch((error: Error) => {
             showNodeAlert(`Compute enthalpy transitions error: ${error.message}`,
-                        "analyzeStructureSets");
+                          "analyzeStructureSets");
         })
         .finally(() => tableVarRunning.value = false);
     }
@@ -591,7 +591,9 @@ const enthalpyTransition = (): void => {
 
 const showTableVar = computed(() => {
 
-    return tableVar.value.length > 0 && countComponents.value > 1 && countAccumulated.value > 0;
+    return tableVar.value.length > 0 &&
+           countComponents.value > 1 &&
+           countAccumulated.value > 0;
 });
 
 /**
@@ -606,6 +608,7 @@ const saveStructures = (): void => {
  * Show the phase diagram
  */
 const showPhaseDiagram = (): void => {
+
     sendToNode(id, "phase-diagram");
 };
 
