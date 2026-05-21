@@ -152,11 +152,12 @@ const triggers = {
     <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
                     :duration="0" :data="range" class="phase-viewer">
       <VisTimeline :x="xp" :length="lp" :type="sp" :showLabels="true" :alternatingRowColors="true"
-      :rowHeight="lineHeight" :showEmptySegments="true" :lineWidth="20" />
+                   :rowHeight="lineHeight" :showEmptySegments="true"
+                   :lineWidth="20" cursor="pointer" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                labelColor="black" :labelFontSize="24" tickTextColor="black"
                :domainLine="false" :numTicks="21"/>
-        <VisTooltip :triggers :followCursor="false" />
+      <VisTooltip :triggers :followCursor="false" />
     </VisXYContainer>
     <v-container class="phase-buttons">
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
@@ -189,6 +190,7 @@ const triggers = {
 
   --vis-axis-tick-color: black;
   --vis-timeline-label-color: black;
+  --vis-timeline-line-stroke-width: 2;
 }
 
 .phase-buttons {

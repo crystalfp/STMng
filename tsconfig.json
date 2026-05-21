@@ -45,6 +45,7 @@
     "src/**/*.vue"
   ],
   "exclude": [
-    "src/cpp/spglib*/**/*.ts"
+    "src/cpp/spglib*/**/*.ts",
+    "other/**"
   ]
 }
