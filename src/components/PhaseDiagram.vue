@@ -151,9 +151,10 @@ const triggers = {
   <div class="phase-portal">
     <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
                     :duration="0" :data="range" class="phase-viewer">
-      <VisTimeline :x="xp" :length="lp" :type="sp" :showLabels="true" :alternatingRowColors="true"
+      <VisTimeline :lineRow="sp" :x="xp" :lineDuration="lp" :showLabels="true"
+                   :alternatingRowColors="true"
                    :rowHeight="lineHeight" :showEmptySegments="true"
-                   :lineWidth="20" cursor="pointer" />
+                   :lineWidth="20" lineCursor="pointer" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                labelColor="black" :labelFontSize="24" tickTextColor="black"
                :domainLine="false" :numTicks="21"/>

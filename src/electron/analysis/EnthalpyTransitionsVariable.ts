@@ -22,6 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
+import {convexHull2D} from "./ConvexHull2D";
 import {quickHull} from "@derschmale/tympanum";
 import type {StructureSetsAccumulator} from "./Accumulator";
 
@@ -103,19 +104,10 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 	}
 
 	// Find convex hull (only the lower part)
-	// The facet is encoded as (normal[2], offset)
-	const hull = quickHull(points);
-	const idxVertices = new Set<number>();
-	for(const facet of hull) {
-		if(facet.plane[1] < -1e-4) {
-			const [v1, v2] = facet.verts;
-			idxVertices.add(v1);
-			idxVertices.add(v2);
-		}
-	}
+	const {index} = convexHull2D(points);
 
 	const out: Vertex[] = [];
-	for(const idx of idxVertices) {
+	for(const idx of index) {
 		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx]});
 	}
 
@@ -433,9 +425,13 @@ export const computeTransitionsVariable = (
 		enthalpies: []
 	};
 
-	const RANGE_MIN  = -200;
-	const RANGE_MAX  =  200;
-	const RANGE_INCR =  0.1;
+	// Pressure range limits (the increment is 0.1, the values should be integers)
+	const RANGE_MIN = -200;
+	const RANGE_MAX =  200;
+
+	// Pressure range limits multiplied by 10 (so the increment is 1)
+	const INT_RANGE_MIN = RANGE_MIN*10;
+	const INT_RANGE_MAX = RANGE_MAX*10;
 
 	// Initialize
 	let pressurePrevious = RANGE_MIN;
@@ -448,7 +444,9 @@ export const computeTransitionsVariable = (
 	}
 
 	// Variate
-	for(let pressure = RANGE_MIN+RANGE_INCR; pressure < RANGE_MAX; pressure += RANGE_INCR) {
+	for(let i=INT_RANGE_MIN+1; i < INT_RANGE_MAX; ++i) {
+
+		const pressure = i/10;
 
 		const currentEntries = computeVertices(pressure, accumulator, numberComponents);
 
