@@ -36,7 +36,7 @@ export class DrawIsosurface extends NodeCore {
     private dataset = 0;
     private countDatasets = 0;
     private isoValue = 0;
-    private range: [number, number] = [-10, 10];
+    private range: [min: number, max: number] = [-10, 10];
     private colormapName = "rainbow";
     private opacity = 1;
     private nestedIsosurfaces = false;

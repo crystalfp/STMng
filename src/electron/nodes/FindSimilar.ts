@@ -368,12 +368,12 @@ export class FindSimilar extends NodeCore {
 			color: [],
 		};
 
-		for(const atom of atoms) {
+		for(const {position, label, atomZ} of atoms) {
 
-			out.positions.push(...atom.position);
-			out.labels.push(atom.label);
+			out.positions.push(...position);
+			out.labels.push(label);
 
-			const ad = getAtomData(atom.atomZ);
+			const ad = getAtomData(atomZ);
 			out.radius.push(ad.rCov);
 			out.color.push(ad.color);
 		}

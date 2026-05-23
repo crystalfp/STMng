@@ -25,7 +25,7 @@
 import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
-import {fractionalToCartesianCoordinates} from "../modules/Helpers";
+import {fractionalToCartesianCoordinates, nextMax} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
@@ -154,7 +154,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 							// Not sufficient substitutes
 							const countSubstituteTypes = atomsTypes.length;
 							if(countSubstituteTypes < countAtomsTypes) {
-								let nextAtomZ = Math.max(...atomsZ) + 1;
+								let nextAtomZ = nextMax(atomsZ);
 								for(let i=countSubstituteTypes; i < countAtomsTypes; ++i) {
 									atomsZ.push(nextAtomZ);
 									++nextAtomZ;

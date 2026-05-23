@@ -29,7 +29,7 @@ import type {StructureSetsAccumulator} from "./Accumulator";
 /** Enthalpy transitions */
 export interface VariableTransitionTable {
 	/** Transition pressure ranges */
-	pressures: [number, number][];
+	pressures: [low: number, high: number][];
 	/** Structure step for each range */
 	steps: number[][];
 	/** Structure formula for each range */

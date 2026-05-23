@@ -103,7 +103,7 @@ const colors = [
  * @param side - Side of the related structure
  * @returns - Unit cell center coordinates
  */
-const drawUnitCell = (basis: BasisType, side: Side): [number, number, number] => {
+const drawUnitCell = (basis: BasisType, side: Side): [x: number, y: number, z: number] => {
 
     const material = new LineBasicMaterial({color: colors[side]});
     const vertices = computeCellVertices([0, 0, 0], basis);
@@ -114,7 +114,7 @@ const drawUnitCell = (basis: BasisType, side: Side): [number, number, number] =>
     else     groupLeft.add(line);
 
     // Compute the center of the unit cell
-    const center: [number, number, number] = [0, 0, 0];
+    const center: [x: number, y: number, z: number] = [0, 0, 0];
     for(let i=0; i < 8; ++i) {
         for(let j=0; j < 3; ++j) {
             center[j] += vertices[3*i+j];

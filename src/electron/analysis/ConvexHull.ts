@@ -491,7 +491,7 @@ export class VariableCompositionConvexHull {
 	private barycentricCoordinates(point: number[],
 								   a: number[],
 								   b: number[],
-								   c: number[]): [number, number, number] {
+								   c: number[]): [u: number, v: number, w: number] {
 
 		// Compute vectors and dot products
 		const [cx, cy] = point;

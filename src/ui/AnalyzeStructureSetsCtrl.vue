@@ -532,13 +532,16 @@ const enthalpyTransition = (): void => {
         askNode(id, "transitions-var")
         .then((response) => {
 
-            const transitions = JSON.parse(response.transitions as string ?? "{}") as VariableTransitionTable;
             tableVar.value.length = 0;
+            const transitionRaw = response.transitions as string;
+            if(!transitionRaw) throw Error("Empty transitions");
+            const transitions = JSON.parse(transitionRaw) as VariableTransitionTable;
             const n = transitions.pressures.length;
             let idx = 0;
             for(let i=0; i < n; ++i) {
                 const [pl, ph] = transitions.pressures[i];
-                const range = `\u2002${pl.toFixed(1)}\u2002...\u2002${ph.toFixed(1)}`;
+                const range = `\u2002${pl.toFixed(1)}\u2002\u22EF\u2002${ph.toFixed(1)}`;
+                // const range = `\u2002${pl.toFixed(1)}\u2002...\u2002${ph.toFixed(1)}`;
                 tableVar.value.push({
                     id: idx++,
                     pressureRange: range,

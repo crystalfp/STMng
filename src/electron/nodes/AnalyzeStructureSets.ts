@@ -583,7 +583,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private saveAllCompositions(dataFile: string): void {
 
-		const all: [number, number, number][] = [];
+		const all: [idx: number, energy: number, distance: number][] = [];
 
 		let i = -1;
 		for(const entry of this.accumulator.iterateStructures()) {

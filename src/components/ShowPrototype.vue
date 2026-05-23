@@ -134,7 +134,7 @@ const computeLatticeVertices = (matrix: number[]): number[] => [
  * @param vertices - Vertices of the unit cell
  * @returns - Unit cell center coordinates
  */
-const addUnitCell = (vertices: number[]): [number, number, number] => {
+const addUnitCell = (vertices: number[]): [x: number, y: number, z: number] => {
 
     sv.clearGroup("UnitCell");
 
@@ -143,7 +143,7 @@ const addUnitCell = (vertices: number[]): [number, number, number] => {
     cellGroup.add(line);
 
     // Compute the center of the unit cell
-    const center: [number, number, number] = [0, 0, 0];
+    const center: [x: number, y: number, z: number] = [0, 0, 0];
     for(let i=0; i < 24; i+=3) {
         for(let j=0; j < 3; ++j) {
             center[j] += vertices[i+j];

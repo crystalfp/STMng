@@ -31,6 +31,7 @@ import {askNode, receiveFromNode} from "@/services/RoutesClient";
 import {showSystemAlert} from "@/services/AlertMessage";
 import {MeasuresRenderer} from "@/renderers/MeasuresRenderer";
 import type {SelectedAtom, BondData, CtrlParams} from "@/types";
+
 import CellParameters from "@/widgets/CellParameters.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
 
@@ -136,16 +137,20 @@ receiveFromNode(id, "new", (params: CtrlParams) => {
 
     controlStore.deselectAll();
     renderer.clearOutput();
-    if((params.natoms ?? 0) === 0) return;
+    const atomsCount = params.natoms as number;
+    if(!atomsCount) return;
+    const countsString = params.counts as string;
+    if(!countsString) return;
 
     // Visualize summary
-    natoms.value = params.natoms as number ?? 0;
+    natoms.value = atomsCount;
     nbonds.value = params.nbonds as number ?? 0;
     nhbonds.value = params.nhbonds as number ?? 0;
     step.value = params.step as number ?? 1;
 
     // Counts by atom type
-    const countsRaw = JSON.parse(params.counts as string ?? "{}") as Record<string, [number, number]>;
+    const countsRaw = JSON.parse(countsString) as
+                        Record<string, [countsTotal: number, countsUC: number]>;
     counts.length = 0;
     natomsUC.value = 0;
     for(const entry in countsRaw) {

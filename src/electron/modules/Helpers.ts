@@ -424,9 +424,10 @@ export const hasUnitCell = (basis: BasisType): boolean => {
  *
  * @param structure - The structure with volumetric data
  * @param dataset - Which volumetric dataset to analyze
- * @returns If there is volumetric data returns [min volume value, max volume value], otherwise [-10, 10]
+ * @returns If there is volumetric data returns [min volume value, max volume value],
+ * 			otherwise [-10, 10]
  */
-export const getValueLimits = (structure: Structure, dataset: number): [number, number] => {
+export const getValueLimits = (structure: Structure, dataset: number): [min: number, max: number] => {
 
 	// Check if there is the volumetric data to analyze
 	if(!structure?.volume) return [-10, 10];
@@ -469,4 +470,18 @@ export const isHydrogenBond = (bond: Bond): boolean => bond.type === BondType.hy
 export const normalize = (v: number[]): number[] => {
 	const length = Math.hypot(v[0], v[1], v[2]);
 	return [v[0] / length, v[1] / length, v[2] / length];
+};
+
+/**
+ * One after array maximum value
+ *
+ * @param values - Array of numerical values
+ * @returns One after maximum value
+ */
+export const nextMax = (values: number[]): number => {
+	let max = Number.NEGATIVE_INFINITY;
+	for(const value of values) {
+		if(value > max) max = value;
+	}
+	return max+1;
 };

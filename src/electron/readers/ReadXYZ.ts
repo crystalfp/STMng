@@ -65,7 +65,7 @@ export class ReaderXYZ implements ReaderImplementation {
 				if(line === "") throw Error("Invalid empty line found");
 				const fields = line.split(/\s+/u);
 				if(fields.length < 4) throw Error(`Insufficient number of fields in "${line}"`);
-				const position: [number, number, number] = [
+				const position: [x: number, y: number, z: number] = [
 					Number.parseFloat(fields[1]),
 					Number.parseFloat(fields[2]),
 					Number.parseFloat(fields[3]),

@@ -68,7 +68,7 @@
     "@types/tmp": "^0.2.6",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
-    "@typescript/native-preview": "^7.0.0-dev.20260522.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260523.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "dependency-cruiser": "^17.4.0",
     "electron": "^42.2.0",

@@ -31,11 +31,10 @@ import type {BasisType, PositionType} from "@/types";
 export class Slab {
 
     private readonly tryPoints: number[][] = [];
-    private readonly interatomicDistances = new Map<number, [number, number][]>();
-    private inverseBasis: BasisType = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-
+    private readonly interatomicDistances = new Map<number, [Z: number, distance: number][]>();
     private readonly cutoff: number;
     private readonly isNanocluster: boolean;
+    private inverseBasis: BasisType = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
     /**
      * Create the slab

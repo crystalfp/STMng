@@ -42,7 +42,7 @@ export class DrawOrthoslice extends NodeCore {
     private colormapName = "rainbow";
     private limitLow = -10;
     private limitHigh = 10;
-    private valueRange: [number, number] = [-10, 10];
+    private valueRange: [min: number, max: number] = [-10, 10];
     private useColorClasses = false;
     private colorClasses = 5;
     private showIsolines = false;

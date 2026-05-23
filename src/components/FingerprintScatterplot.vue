@@ -152,7 +152,7 @@ const pointsByGroup = (): Glyph[] => {
     const noGroups = scatterplotData.value.countGroups === 0;
     if(!noGroups) {
         // Prepare the list of contrasting colors
-        const backgroundColor: [number, number, number] =
+        const backgroundColor: [r: number, g: number, b: number] =
                     (theme.value === "dark") ? [0.07059, 0.07059, 0.07059] : [1, 1, 1];
         const colorsRaw = contrastingColors(scatterplotData.value.countGroups, backgroundColor);
         groupColors = colorsToRGB(colorsRaw);

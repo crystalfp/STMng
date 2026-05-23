@@ -208,17 +208,17 @@ export class SimpleViewer {
 	 * @param center - Coordinates of the center of the structure
 	 * @param zoom - Camera zoom value
 	 */
-	centerCamera(center: [number, number, number], zoom=1): void {
+	centerCamera(center: [x: number, y: number, z: number], zoom=1): void {
 
 		if(!this.camera || !this.controls) return;
 
-		this.camera.lookAt(new Vector3(...center));
-		this.controls.setOrbitPoint(...center);
-		const maxSide = Math.max(center[0], center[1], center[2]);
+		const [x, y, z] = center;
+		this.camera.lookAt(new Vector3(x, y, z));
+		this.controls.setOrbitPoint(x, y, z);
+		const maxSide = Math.max(x, y, z);
 		void this.controls
-				.normalizeRotations()
-				.setLookAt(center[0], center[1], center[2] + 2*maxSide,
-						   center[0], center[1], center[2], false);
+				 .normalizeRotations()
+				 .setLookAt(x, y, z + 2*maxSide, x, y, z, false);
 		void this.controls.zoomTo(zoom, false);
 
 		this.camera.updateProjectionMatrix();
@@ -231,20 +231,21 @@ export class SimpleViewer {
 	 * @param target - Camera look at point
 	 * @param zoom - Camera zoom
 	 */
-	setCamera(position: [number, number, number],
-			  target: [number, number, number],
+	setCamera(position: [x: number, y: number, z: number],
+			  target: [x: number, y: number, z: number],
 			  zoom=1): void {
 
 		if(!this.camera || !this.controls) return;
 
-		this.camera.position.set(position[0], position[1], position[2]);
-		this.camera.lookAt(new Vector3(...target));
+		const [px, py, pz] = position;
+		const [tx, ty, tz] = target;
+		this.camera.position.set(px, py, pz);
+		this.camera.lookAt(new Vector3(tx, ty, tz));
 
-		this.controls.setOrbitPoint(...target);
+		this.controls.setOrbitPoint(tx, ty, tz);
 		void this.controls
-				.normalizeRotations()
-				.setLookAt(position[0], position[1], position[2],
-						   target[0], target[1], target[2], false);
+				 .normalizeRotations()
+				 .setLookAt(px, py, pz, tx, ty, tz, false);
 		void this.controls.zoomTo(zoom, false);
 
 		this.camera.updateProjectionMatrix();

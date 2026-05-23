@@ -607,7 +607,9 @@ const confirmDeletion = (): void => {
  */
 const handleDrop = (event: DragEvent): void => {
 
-    const nodeModel = JSON.parse(event.dataTransfer?.getData("node") ?? "{}") as AvailableNode;
+    const droppedData = event.dataTransfer?.getData("node");
+    if(!droppedData) return;
+    const nodeModel = JSON.parse(droppedData) as AvailableNode;
 
     let id = sanitizeId(nodeModel.idPrefix);
     if(id === undefined) return;
@@ -645,6 +647,8 @@ const handleDrop = (event: DragEvent): void => {
         position
     };
     graphFlow.push(node);
+
+    projectModified.value = true;
 };
 
 /**
