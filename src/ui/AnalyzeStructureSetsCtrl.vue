@@ -257,15 +257,17 @@ const computeCompositions = (): void => {
     })
     .then((params) => {
 
-        const recipes = JSON.parse(params.recipes as string ?? "[]") as Recipe[];
         summary.value[0] = 0;
         summary.value[1] = 0;
+        remainingAfterFilter.value = params.remaining as number ?? 0;
         results.value.length = 0;
+        const recipesRaw = params.recipes as string;
+        if(!recipesRaw) return;
+        const recipes = JSON.parse(recipesRaw) as Recipe[];
         for(const recipe of recipes) {
             recipe.valid = "";
             results.value.push(recipe);
         }
-        remainingAfterFilter.value = params.remaining as number ?? 0;
         numberCompositions.value = recipes.length;
     })
     .catch((error: Error) => {

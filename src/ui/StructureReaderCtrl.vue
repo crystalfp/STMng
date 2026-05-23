@@ -173,12 +173,18 @@ askNode(id, "init")
         stepIncrement.value = params.stepIncrement as number ?? 1;
         speed.value         = params.speed as 0 | 1 | 2 ?? 1;
         energyPerAtom.value = params.energyPerAtom as boolean ?? false;
-        const dbRaw = JSON.parse(params.db as string ?? "[]") as DBType[];
+        const dbString      = params.db as string;
         db.length = 0;
-        for(const entry of dbRaw) db.push(entry);
-        const collectionRaw = JSON.parse(params.collection as string ?? "[]") as CollectionType[];
+        if(dbString) {
+            const dbRaw = JSON.parse(dbString) as DBType[];
+            for(const entry of dbRaw) db.push(entry);
+        }
         collection.value.length = 0;
-        for(const entry of collectionRaw) collection.value.push(entry);
+        const collectionString = params.collection as string;
+        if(collectionString) {
+            const collectionRaw = JSON.parse(collectionString) as CollectionType[];
+            for(const entry of collectionRaw) collection.value.push(entry);
+        }
 
         if(format.value === "Collection") {
             showCollection.value = true;

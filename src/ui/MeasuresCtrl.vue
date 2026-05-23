@@ -97,9 +97,11 @@ const stopWatcher1 = watch(controlStore.atomsSelected, () => {
         })
         .then((params) => {
 
-            const bondDataTable = JSON.parse(params.labels as string ?? "[]") as BondData[];
-            bondDataTable.sort((a, b) => a.idx - b.idx);
             bondData.length = 0;
+            const rawTable = params.labels as string;
+            if(!rawTable) return;
+            const bondDataTable = JSON.parse(rawTable) as BondData[];
+            bondDataTable.sort((a, b) => a.idx - b.idx);
             for(const bd of bondDataTable) bondData.push(bd);
 
             renderer.measureBonds(params, bondDataTable, pointSize);

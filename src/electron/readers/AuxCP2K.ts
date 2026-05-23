@@ -71,7 +71,10 @@ export const readAuxCP2K = async (filename: string,
 			++lineNumber;
 		}
 		else {
-			const ln = line.trim().replaceAll(/\[[\d ]+\]/gu, "[]").split(/\s+/u);
+			const ln = line
+							.trim()
+							.replaceAll(/\[[\d ]+\]/gu, "[]")
+							.split(/\s+/u);
 			energies.push(Number.parseFloat(ln[column]));
 		}
 	}

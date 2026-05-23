@@ -42,9 +42,11 @@ const confirm = ref(false);
 /** Initial data loading */
 askNode("ATOM-DATA", "GET")
     .then((params) => {
-        usingDefault.value = params.useDefault as boolean ?? true;
-        const dataRaw = JSON.parse(params.data as string ?? "[]") as AtomInfo[];
         atomData.length = 0;
+        usingDefault.value = params.useDefault as boolean ?? true;
+        const dataString = params.data as string;
+        if(!dataString) return;
+        const dataRaw = JSON.parse(dataString) as AtomInfo[];
         for(const entry of dataRaw) atomData.push(entry);
     })
     .catch((error: Error) => {
@@ -86,9 +88,11 @@ const saveDialog = (): void => {
 const resetDialog = (): void => {
   askNode("ATOM-DATA", "GET")
   .then((params) => {
-      usingDefault.value = params.useDefault as boolean ?? true;
-      const dataRaw = JSON.parse(params.data as string ?? "[]") as AtomInfo[];
       atomData.length = 0;
+      usingDefault.value = params.useDefault as boolean ?? true;
+      const dataString = params.data as string;
+      if(!dataString) return;
+      const dataRaw = JSON.parse(dataString) as AtomInfo[];
       for(const entry of dataRaw) atomData.push(entry);
       modified.value = false;
   })

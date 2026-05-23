@@ -76,7 +76,9 @@ const sv = new SimpleViewer(".prototype-viewer", false, (scene) => {
 /** Receive the prototype data from the main window */
 requestData(windowPath, (params: CtrlParams) => {
 
-    const atoms = JSON.parse(params.atoms as string ?? "[]") as PrototypeAtomsData;
+    const atomsRaw = params.atoms as string;
+    if(!atomsRaw) return;
+    const atoms = JSON.parse(atomsRaw) as PrototypeAtomsData;
     const matrix = params.matrix as number[] ?? [0, 0, 0, 0, 0, 0, 0, 0, 0];
     const mineral = params.mineral as string ?? "";
     const aflow = params.aflow as string ?? "";
@@ -84,7 +86,7 @@ requestData(windowPath, (params: CtrlParams) => {
     const strukturbericht = params.strukturbericht as string ?? "";
 
     const uc = computeLatticeVertices(matrix);
-    /* const center = */ addUnitCell(uc);
+    void addUnitCell(uc);
 
     const {bonds, atoms: fullAtoms} = addAtoms(atoms, matrix);
 
