@@ -80,7 +80,7 @@ export const fingerprintMethodsNames = (): string[] => {
 export const distanceMethodsNames = (): string[] => {
 
 	const out: string[] = [];
-	for(const method of measuringMethods) out.push(method.label);
+	for(const {label} of measuringMethods) out.push(label);
 	return out;
 };
 

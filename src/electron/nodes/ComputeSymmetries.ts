@@ -470,10 +470,10 @@ export class ComputeSymmetries extends NodeCore {
 		const atomsZ = [];
 		const labels = [];
 		const chains = [];
-		for(const atom of atoms) {
-			atomsZ.push(atom.atomZ);
-			labels.push(atom.label);
-			chains.push(atom.chain);
+		for(const {atomZ, label, chain} of atoms) {
+			atomsZ.push(atomZ);
+			labels.push(label);
+			chains.push(chain);
 		}
 
 		let fractionalCoordinates: number[];

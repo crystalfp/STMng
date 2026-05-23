@@ -91,9 +91,9 @@ export class StructureSetsAccumulator {
 		let formula = "";
 		let currentZ = 0;
 		let currentCount = 1;
-		for(const atom of atoms) {
-			if(currentZ === 0) currentZ = atom.atomZ;
-			else if(atom.atomZ === currentZ) {
+		for(const {atomZ} of atoms) {
+			if(currentZ === 0) currentZ = atomZ;
+			else if(atomZ === currentZ) {
 				++currentCount;
 			}
 			else {
@@ -102,7 +102,7 @@ export class StructureSetsAccumulator {
 				formula += `${getAtomicSymbol(currentZ)}${sub}`;
 
 				// Reinitialize count
-				currentZ = atom.atomZ;
+				currentZ = atomZ;
 				currentCount = 1;
 			}
 		}
@@ -214,8 +214,8 @@ export class StructureSetsAccumulator {
 	 */
 	enabledCount(): number {
 		let count = 0;
-		for(const entry of this.accumulator) {
-			if(entry.enabled) ++count;
+		for(const {enabled} of this.accumulator) {
+			if(enabled) ++count;
 		}
 		return count;
 	}

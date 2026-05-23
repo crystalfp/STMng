@@ -66,8 +66,8 @@ export class StructureBackbone extends NodeCore {
 		if(!this.inputStructure) return;
 
 		this.chains.clear();
-		for(const atom of data.atoms) {
-			this.chains.add(atom.chain);
+		for(const {chain} of data.atoms) {
+			this.chains.add(chain);
 		}
 
 		sendToClient(this.id, "chains", {

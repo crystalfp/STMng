@@ -181,9 +181,9 @@ export class Measures extends NodeCore {
 
 		if(!structure?.atoms.length) return {natoms: 0};
 		const species = new Map<number, number>();
-		for(const atom of structure.atoms) {
-			const count = species.get(atom.atomZ) ?? 0;
-			species.set(atom.atomZ, count+1);
+		for(const {atomZ} of structure.atoms) {
+			const count = species.get(atomZ) ?? 0;
+			species.set(atomZ, count+1);
 		}
 		const counts: Record<string, number> = {};
 		for(const entry of species) {
@@ -394,28 +394,28 @@ export class Measures extends NodeCore {
 
 		const bondData: BondData[] = [];
 
-		for(const bond of bonds) {
+		for(const {from, to} of bonds) {
 
-			if(bond.from === idx) {
+			if(from === idx) {
 
-				const {position: other, atomZ: otherZ} = atoms[bond.to];
+				const {position: other, atomZ: otherZ} = atoms[to];
 				const distance = Math.hypot(position[0]-other[0],
 											position[1]-other[1],
 											position[2]-other[2]);
 
 				const atomData = getAtomData(otherZ);
-				bondData.push({idx: bond.to, atomPosition: other,
+				bondData.push({idx: to, atomPosition: other,
 							  radius: atomData.rCov, distance, symbol: atomData.symbol});
 			}
-			else if(bond.to === idx) {
+			else if(to === idx) {
 
-				const {position: other, atomZ: otherZ} = atoms[bond.from];
+				const {position: other, atomZ: otherZ} = atoms[from];
 				const distance = Math.hypot(position[0]-other[0],
 											position[1]-other[1],
 											position[2]-other[2]);
 
 				const atomData = getAtomData(otherZ);
-				bondData.push({idx: bond.from, atomPosition: other,
+				bondData.push({idx: from, atomPosition: other,
 							  radius: atomData.rCov, distance, symbol: atomData.symbol});
 			}
 		}

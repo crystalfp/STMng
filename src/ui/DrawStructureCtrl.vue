@@ -133,11 +133,11 @@ const prepareLegend = (info: StructureRenderInfo): void => {
 
     const {bonds, atoms} = info;
     const counts = new Map<number, number>();
-    for(const bond of bonds) {
-        let n = counts.get(bond.from);
-        counts.set(bond.from, n ? n+1 : 1);
-        n = counts.get(bond.to);
-        counts.set(bond.to, n ? n+1 : 1);
+    for(const {from, to} of bonds) {
+        let n = counts.get(from);
+        counts.set(from, n ? n+1 : 1);
+        n = counts.get(to);
+        counts.set(to, n ? n+1 : 1);
     }
     let minBonds = Number.POSITIVE_INFINITY;
     let maxBonds = 0;

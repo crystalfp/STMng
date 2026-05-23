@@ -453,12 +453,12 @@ export class SliceStructure extends NodeCore {
 				mapAtomIdx.set(idx, mappedIdx++);
 			}
 		}
-		for(const bond of bonds) {
-			if(select[bond.from] && select[bond.to]) {
+		for(const {from, to, type} of bonds) {
+			if(select[from] && select[to]) {
 				outStructure.bonds.push({
-					from: mapAtomIdx.get(bond.from)!,
-					to: mapAtomIdx.get(bond.to)!,
-					type: bond.type
+					from: mapAtomIdx.get(from)!,
+					to: mapAtomIdx.get(to)!,
+					type
 				});
 			}
 		}
@@ -689,9 +689,9 @@ export class SliceStructure extends NodeCore {
 		for(const idx of selectedAtoms) {
 
 			inside[idx] = true;
-			for(const bond of this.structure!.bonds) {
-				if(bond.from === idx) inside[bond.to] = true;
-				else if(bond.to === idx) inside[bond.from] = true;
+			for(const {from, to} of this.structure!.bonds) {
+				if(from === idx) inside[to] = true;
+				else if(to === idx) inside[from] = true;
 			}
 		}
 

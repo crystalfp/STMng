@@ -113,8 +113,8 @@ requestData(windowPath, (params: CtrlParams) => {
         for(const id of structureIds) ids.push(id);
 
         points.value.length = 0;
-        for(const fp of fingerprint) {
-            points.value.push({x: fp[0], y: fp[1]});
+        for(const [x, y] of fingerprint) {
+            points.value.push({x, y});
         }
 
         titleX.value = "Distance";
@@ -126,8 +126,8 @@ requestData(windowPath, (params: CtrlParams) => {
     else if(energy) {
 
         points.value.length = 0;
-        for(const pt of energy) {
-            points.value.push({x: pt[0], y: pt[1]});
+        for(const [x, y] of energy) {
+            points.value.push({x, y});
         }
 
         titleX.value = "Structure step";
@@ -139,8 +139,8 @@ requestData(windowPath, (params: CtrlParams) => {
     else if(energyDistance) {
 
         points.value.length = 0;
-        for(const pair of energyDistance) {
-            points.value.push({x: pair[0], y: pair[1]});
+        for(const [x, y] of energyDistance) {
+            points.value.push({x, y});
         }
         titleX.value = "Distance from energy minimum";
         titleY.value = "Energy difference from minimum";
@@ -151,8 +151,8 @@ requestData(windowPath, (params: CtrlParams) => {
     else if(energyHistogram) {
 
         points.value.length = 0;
-        for(const pt of energyHistogram) {
-            points.value.push({x: pt[0], y: pt[1]});
+        for(const [x, y] of energyHistogram) {
+            points.value.push({x, y});
         }
 
         titleX.value = "Energy per atom";
@@ -164,8 +164,8 @@ requestData(windowPath, (params: CtrlParams) => {
     else if(distanceHistogram) {
 
         points.value.length = 0;
-        for(const pt of distanceHistogram) {
-            points.value.push({x: pt[0], y: pt[1]});
+        for(const [x, y] of distanceHistogram) {
+            points.value.push({x, y});
         }
 
         titleX.value = "Distance";
@@ -177,8 +177,8 @@ requestData(windowPath, (params: CtrlParams) => {
     else if(order) {
 
         points.value.length = 0;
-        for(const pair of order) {
-            points.value.push({x: pair[0], y: pair[1]});
+        for(const [x, y] of order) {
+            points.value.push({x, y});
         }
 
         titleX.value = "Structure step";
@@ -190,8 +190,8 @@ requestData(windowPath, (params: CtrlParams) => {
     else if(distances) {
 
         points.value.length = 0;
-        for(const pair of distances) {
-            points.value.push({x: pair[0], y: pair[1]});
+        for(const [x, y] of distances) {
+            points.value.push({x, y});
         }
 
         titleX.value = "Structure step";
@@ -234,11 +234,11 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
       <VisLine v-if="showLine" :key="forceUpdate" :data="points" :x="xp" :y="yp" curveType="step"/>
       <VisScatter v-if="showPoints" :key="forceUpdate" :data="points" :x="xp" :y="yp"
                   :size="8" shape="square"/>
-      <VisPlotline v-if="showZero" lineStyle="dot" :value="0" />
+      <VisPlotline v-if="showZero" lineStyle="dot" :value="0" :duration="0" />
       <VisAxis type="x" :gridLine="false" :label="titleX" :fullSize="true"
-              :labelFontSize="24"/>
+               :labelFontSize="24"/>
       <VisAxis type="y" :gridLine="false" :label="titleY"
-              :fullSize="true" :labelFontSize="24" />
+               :fullSize="true" :labelFontSize="24" />
       <VisTooltip :triggers :followCursor="false" verticalPlacement="bottom" />
     </VisXYContainer>
     <v-container class="fp-chart-buttons">

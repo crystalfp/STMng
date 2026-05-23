@@ -178,11 +178,11 @@ export class FindSimilar extends NodeCore {
 		this.distance.length = 0;
 		this.colorBand.length = 0;
 
-		for(const result of results) {
-			this.titleCollection.push(result.title);
-			this.idCollection.push(result.id);
-			this.distance.push(result.distance!);
-			this.colorBand.push(this.getBand(result.distance!));
+		for(const {title, id, distance} of results) {
+			this.titleCollection.push(title);
+			this.idCollection.push(id);
+			this.distance.push(distance!);
+			this.colorBand.push(this.getBand(distance!));
 		}
 		sendToClient(this.id, "load-coll", {
 			titles: this.titleCollection,
@@ -305,13 +305,13 @@ export class FindSimilar extends NodeCore {
 
 		const species = new Map<number, number>();
 		let idx = 0;
-		for(const atom of structure.atoms) {
+		for(const {atomZ} of structure.atoms) {
 			if(duplicates[idx++]) continue;
-			if(species.has(atom.atomZ)) {
-				species.set(atom.atomZ, species.get(atom.atomZ)! + 1);
+			if(species.has(atomZ)) {
+				species.set(atomZ, species.get(atomZ)! + 1);
 			}
 			else {
-				species.set(atom.atomZ, 1);
+				species.set(atomZ, 1);
 			}
 		}
 		let formula = "";

@@ -86,17 +86,18 @@ export class DrawStructure extends NodeCore {
 
 		for(const atom of data.atoms) {
 
-			const atomData = getAtomData(atom.atomZ);
+			const {atomZ, label, position} = atom;
+			const {symbol, color, rCov, rVdW, bondStrength} = getAtomData(atomZ);
 
 			const atomInfo: AtomRenderInfo = {
-				atomZ: atom.atomZ,
-				symbol: atomData.symbol,
-				label: atom.label,
-				position: atom.position,
-				color: atomData.color,
-				rCov: atomData.rCov,
-				rVdW: atomData.rVdW,
-				bondStrength: atomData.bondStrength,
+				atomZ,
+				symbol,
+				label,
+				position,
+				color,
+				rCov,
+				rVdW,
+				bondStrength,
 				bondCount: 0
 			};
 			renderInfo.atoms.push(atomInfo);

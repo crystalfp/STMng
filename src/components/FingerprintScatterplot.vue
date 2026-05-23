@@ -380,12 +380,12 @@ const drawPoints = (): void => {
     if(glyphs.length === 0) return;
 
     // Draw the points
-    for(const glyph of glyphs) {
+    for(const {px, py, color} of glyphs) {
 
-        const {sx, sy} = pointToScreen(glyph.px, glyph.py);
+        const {sx, sy} = pointToScreen(px, py);
         ctx.beginPath();
         ctx.arc(sx, sy, pointRadius.value, 0, 2 * Math.PI, false);
-        ctx.fillStyle = glyph.color;
+        ctx.fillStyle = color;
         ctx.fill();
     }
 
@@ -832,9 +832,9 @@ const mouseup = (event: MouseEvent): void => {
     textShow.value = false;
     if(event.ctrlKey) {
 
-        for(const glyph of glyphs) {
-            if(glyph.px >= startX && glyph.px <= endX &&
-               glyph.py >= startY && glyph.py <= endY) {
+        for(const {px, py} of glyphs) {
+            if(px >= startX && px <= endX &&
+               py >= startY && py <= endY) {
                 selectedPoints.delete(idx);
             }
             ++idx;
@@ -842,10 +842,10 @@ const mouseup = (event: MouseEvent): void => {
     }
     else {
 
-        for(const glyph of glyphs) {
+        for(const {px, py} of glyphs) {
 
-            if(glyph.px >= startX && glyph.px <= endX &&
-               glyph.py >= startY && glyph.py <= endY) {
+            if(px >= startX && px <= endX &&
+               py >= startY && py <= endY) {
                 selectedPoints.add(idx);
             }
             ++idx;
@@ -994,9 +994,9 @@ const count = computed(() => {
           <v-btn value="silhouette" :disabled="scatterplotData?.countGroups === 0">Quality</v-btn>
         </v-btn-toggle>
         <slider-with-steppers v-model="pointRadius"
-                                v-model:raw="showPointRadius" label-width="9rem"
-                                :label="`Point radius (${showPointRadius})`"
-                                :min="3" :max="20" :step="1" />
+                              v-model:raw="showPointRadius" label-width="8rem"
+                              :label="`Point radius (${showPointRadius})`"
+                              :min="3" :max="20" :step="1" />
         <v-btn :disabled="selectedPoints.size === 0" style="width: 6.5rem"
                @click="resetSelected">Deselect</v-btn>
       </div>

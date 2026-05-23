@@ -511,7 +511,7 @@ export class StructureReader extends NodeCore {
 		for(const structure of this.structures) {
 
 			const {atoms} = structure;
-			for(const atom of atoms) currentAtomsZ.add(atom.atomZ);
+			for(const {atomZ} of atoms) currentAtomsZ.add(atomZ);
 		}
 
 		// Array of the renamed atom types

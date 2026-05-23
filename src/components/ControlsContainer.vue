@@ -25,7 +25,6 @@
 import {ref, reactive, defineAsyncComponent, markRaw} from "vue";
 import {useControlStore} from "@/stores/controlStore";
 import {receiveProjectUI, sendToNode, sendCurrentNode} from "@/services/RoutesClient";
-
 import type {ClientProjectInfo, ClientProjectInfoItem} from "@/types/NodeInfo";
 
 import SetCamera from "./SetCamera.vue";
