@@ -50,7 +50,8 @@ export const convexHull2D = (points: number[][]): ConvexHullVE => {
 	const hull = quickHull(points);
 	const toOrder: {x: number; y: number; idx: number}[] = [];
 	for(const facet of hull) {
-		if(facet.plane[1] < -1e-4) {
+		const len = Math.hypot(facet.plane[0], facet.plane[1]);
+		if(facet.plane[1]/len < -1e-4) {
 			const [v1, v2] = facet.verts;
 
 			toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},

@@ -542,7 +542,8 @@ const enthalpyTransition = (): void => {
             let idx = 0;
             for(let i=0; i < n; ++i) {
                 const [pl, ph] = transitions.pressures[i];
-                const range = `\u2002${pl.toFixed(1)}\u2002\u22EF\u2002${ph.toFixed(1)}`;
+                const range = `\u2002${pl.toFixed(1)}\u2002\u27F7\u2002${ph.toFixed(1)}`;
+                // const range = `\u2002${pl.toFixed(1)}\u2002\u22EF\u2002${ph.toFixed(1)}`;
                 // const range = `\u2002${pl.toFixed(1)}\u2002...\u2002${ph.toFixed(1)}`;
                 tableVar.value.push({
                     id: idx++,

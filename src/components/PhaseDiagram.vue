@@ -135,7 +135,7 @@ const triggerFunction = (d: DataRecord): string => {
 
     return `
         <b>${d.formula}</b> (step: ${d.step})<br>
-        Pressure range: ${d.pl.toFixed(1)}\u2002\u22EF\u2002${d.ph.toFixed(1)}
+        Pressure range: ${d.pl.toFixed(1)}\u2002\u27F7\u2002${d.ph.toFixed(1)}
     `;
 };
 

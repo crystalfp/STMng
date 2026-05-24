@@ -198,7 +198,8 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 	const hull = quickHull(points);
 	const idxVertices = new Set<number>();
 	for(const facet of hull) {
-		if(facet.plane[2] < -1e-4) {
+		const normalLength = Math.hypot(facet.plane[0], facet.plane[1], facet.plane[2]);
+		if(facet.plane[2]/normalLength < -1e-4) {
 			const [v1, v2, v3] = facet.verts;
 			idxVertices.add(v1);
 			idxVertices.add(v2);
@@ -346,8 +347,9 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 	const hull = quickHull(points);
 	const idxVertices = new Set<number>();
 	for(const facet of hull) {
-
-		if(facet.plane[3] < -1e-4) {
+		const normalLength = Math.hypot(facet.plane[0], facet.plane[1],
+										facet.plane[2], facet.plane[3]);
+		if(facet.plane[3]/normalLength < -1e-4) {
 
 			const [v1, v2, v3, v4] = facet.verts;
 			const w1 = idx[v1];
