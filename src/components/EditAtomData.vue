@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
-import {ref, computed, reactive, watch, onUnmounted, toRaw} from "vue";
+import {ref, computed, reactive, watch, onUnmounted, toRaw, onMounted} from "vue";
 import {askNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert} from "@/services/AlertMessage";
 import type {AtomInfo} from "@/electron/modules/AtomData";
@@ -300,11 +300,39 @@ const update = (): void => {
     modified.value = true;
 };
 
+/**
+ * Capture the help key
+ *
+ * @param event - Keyboard event
+ */
+const captureHelp = (event: KeyboardEvent): void => {
+    if(event.key === "F1") {
+
+        sendToNode("SYSTEM", "secondary-key", {
+        		key: "F1",
+        		request: "edit-atom-data"
+		    });
+
+        event.preventDefault();
+        event.stopPropagation();
+    }
+};
+
+onMounted(() => {
+    const d = document.querySelector<HTMLDialogElement>(".capture");
+    if(d) d.addEventListener("keydown", captureHelp);
+});
+
+onUnmounted(() => {
+    const d = document.querySelector<HTMLDialogElement>(".capture");
+    if(d) d.removeEventListener("keydown", captureHelp);
+});
+
 </script>
 
 
 <template>
-<v-dialog v-model="isOpen" width="1200px" persistent>
+<v-dialog v-model="isOpen" width="1200px" persistent class="capture">
   <v-card title="Edit atom data" :subtitle="currentSet">
     <v-card-text class="atom-data-container">
       <div class="ls">

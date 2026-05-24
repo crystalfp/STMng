@@ -43,7 +43,8 @@ import type {CtrlParams} from "@/types";
  *      - "top": Main entry point of documentation
  *      - "node": Help for node of the given type
  *      - "secondary": Help for a secondary window
- * @param file - Node name or window path for which the documentation should be shown.
+ * @param file - Node name or window path for which
+ *               the documentation should be shown.
  * @returns Error message or empty string on success
  */
 const openDocumentation = async (kind: "top" | "node" | "secondary", file?: string): Promise<string> => {
