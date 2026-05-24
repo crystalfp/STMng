@@ -94,17 +94,17 @@ export const adjustOrigin = (structure: Structure,
 
 	// For each atom fold its position to inside the unit cell
 	const updatedAtoms: Atom[] = [];
-	for(const atom of atoms) {
+	for(const {position, atomZ, label, chain} of atoms) {
 
-		const fc = toFractalCoordinates(inverse, updatedOrigin, atom.position);
+		const fc = toFractalCoordinates(inverse, updatedOrigin, position);
 		fc[0] = foldIntoUnitCell(fc[0]);
 		fc[1] = foldIntoUnitCell(fc[1]);
 		fc[2] = foldIntoUnitCell(fc[2]);
 
 		updatedAtoms.push({
-			atomZ: atom.atomZ,
-			label: atom.label,
-			chain: atom.chain,
+			atomZ,
+			label,
+			chain,
 			position: toCartesianCoordinates(updatedBasis, updatedOrigin, fc)
 		});
 	}

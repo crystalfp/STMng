@@ -58,11 +58,11 @@ export const embeddedDimensionEstimator = (accumulator: FingerprintsAccumulator)
     let atomCount = 0;
 
     // Collect computed fingerprints
-    for(const structure of accumulator.iterateSelectedEnabledStructures()) {
+    for(const {fingerprint, atomsZ} of accumulator.iterateSelectedEnabledStructures()) {
 
-        sourceFingerprints.push(structure.fingerprint);
+        sourceFingerprints.push(fingerprint);
         fingerprints.push([]);
-        atomCount += structure.atomsZ.length;
+        atomCount += atomsZ.length;
     }
     const len = sourceFingerprints.length;
     if(len === 0) return {min: 0, max: 0, avg: 0, theory: 0};

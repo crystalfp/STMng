@@ -52,10 +52,10 @@ export const computeTransitions = (accumulator: StructureSetsAccumulator): Trans
 	const points: number[][] = [];
 	const pointsSteps: number[] = [];
 	const pointsFormulas: string[] = [];
-	for(const entry of accumulator.iterateEnabledStructures()) {
-		points.push([entry.volume, entry.energy]);
-		pointsSteps.push(entry.step);
-		pointsFormulas.push(entry.formula);
+	for(const {volume, energy, step, formula} of accumulator.iterateEnabledStructures()) {
+		points.push([volume, energy]);
+		pointsSteps.push(step);
+		pointsFormulas.push(formula);
 	}
 	if(points.length < 3) return transitionTable;
 

@@ -96,9 +96,7 @@ askNode(id, "init")
 const scales = computed((old?: number[]) => {
 
     const out: number[] = [];
-    for(const pair of perPairData) {
-        out.push(pair.scale);
-    }
+    for(const {scale} of perPairData) out.push(scale);
 
     // To avoid changes if nothing changed
     if(old?.length === out.length) {
@@ -187,12 +185,13 @@ const resetSliders = (): void => {
     maxHBondingDistance.value = 3.00;
     maxHValenceAngle.value    = 30;
     bondScale.value           = 1.1;
-    let i = 0;
-    for(const item of perPairData) {
-        item.scale = 1.1;
+
+    const nPairs = perPairData.length;
+    for(let i=0; i < nPairs; ++i) {
+        perPairData[i].scale = 1.1;
         showScale[i] = 1.1;
-        ++i;
     }
+
     enlargementKind.value = "neighbors";
 };
 

@@ -137,7 +137,7 @@ export const checkAtomsSelector = (structure: Structure,
 
 		case "label": {
 			const labels = new Set<string>();
-			for(const atom of atoms) labels.add(atom.label.toLowerCase());
+			for(const {label} of atoms) labels.add(label.toLowerCase());
 			for(const entry of selectorsList) {
 				if(!labels.has(entry)) {
 					return `Non existent label "${entry}"`;
