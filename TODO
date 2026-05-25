@@ -48,6 +48,7 @@ ToDo eventually:
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
   ☐ Labels rotation to always face camera <https://codepen.io/boytchev/pen/WbwEJWL>
+  ☐ Try t-SNE for projecting fingerprints <https://distill.pub/2016/misread-tsne/> <https://projector.tensorflow.org/>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
