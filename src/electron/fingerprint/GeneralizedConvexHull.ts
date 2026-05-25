@@ -59,7 +59,10 @@ export const generalizedConvexHull4D = (mappedPoints: number[][],
 	// The plane is encoded as (normal[4], offset)
 	const vertices = new Set<number>();
 	for(const facet of hull) {
-		if(facet.plane[3] <= -1e-13) {
+
+		const normalLength = Math.hypot(facet.plane[0], facet.plane[1],
+										facet.plane[2], facet.plane[3]);
+		if(facet.plane[3]/normalLength < -1e-4) {
 			for(const vv of facet.verts) vertices.add(vv);
 		}
 	}
