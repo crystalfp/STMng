@@ -35,7 +35,7 @@ import {VariableCompositionConvexHull} from "../analysis/ConvexHull";
 import {convexHull2D} from "../analysis/ConvexHull2D";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {computeTransitions, type TransitionTable} from "../analysis/EnthalpyTransitions";
-import {computeTransitionsVariable,
+import {computeTransitionsVariable, type SummaryTableEntry,
 		type VariableTransitionTable} from "../analysis/EnthalpyTransitionsVariable";
 import {entryToPoscar} from "../modules/EntryToPoscar";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
@@ -70,7 +70,8 @@ export class AnalyzeStructureSets extends NodeCore {
 		pressures: [],
 		steps: [],
 		formulas: [],
-		enthalpies: []
+		enthalpies: [],
+		keys: []
 	};
 
 	// Mirror of the UI reactive state
@@ -141,7 +142,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	}
 
 	description(): string {
-		return "Analyze set of structures with 1 to 4 components to remove duplicates structures. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. Computes also the enthalpy transition under pressure changes.";
+		return "Analyze set of structures with 1 to 4 components to remove duplicates structures. At the end could show a chart of the convex hull results and could save the reduced compositions in different files or consolidate them in a single one. This node computes also the enthalpy transition under pressure changes.";
 	}
 
 	override fromPreviousNode(data: Structure): void {
@@ -434,88 +435,6 @@ export class AnalyzeStructureSets extends NodeCore {
 		return countEnabled;
 	}
 
-	// > Channel handlers
-	/**
-	 * Channel handler for UI initialization
-	 *
-	 * @returns Parameters to initialize the user interface
-	 */
-	private channelInit(): CtrlParams {
-
-		return {
-			species: this.accumulator.symbols(),
-			countAccumulated: this.accumulator.size(),
-			fingerprintMethods: fingerprintMethodsNames(),
-			distanceMethods: distanceMethodsNames(),
-			...this.state
-		};
-	}
-
-	/**
-	 * Channel handler for clearing the accumulated compositions
-	 */
-	private channelReset(): void {
-
-		this.accumulator.clear();
-	}
-
-	/**
-	 * Channel handler for compute compositions
-	 *
-	 * @returns List of compositions
-	 */
-	private channelCompositions(params: CtrlParams): CtrlParams {
-
-		const ncomponents = params.componentsCount as number ?? 2;
-		const components = params.components as number[] ?? [];
-
-		const recipes = this.fitComposition(ncomponents, components);
-		const remaining0 = this.filterStructures();
-
-		if(remaining0 === 0) {
-			const message = "Please reload data or change filter parameters";
-			sendAlertToClient(message, {node: "analyzeStructureSets"});
-			return {error: message};
-		}
-
-		const sts = this.hull.prepareData(ncomponents);
-		if(sts !== "") {
-			sendAlertToClient(sts, {node: "analyzeStructureSets"});
-			return {error: sts};
-		}
-		const remaining = this.filterStructures();
-
-		if(remaining === 0) {
-			const message = "Please reload data or change filter parameters";
-			sendAlertToClient(message, {node: "analyzeStructureSets"});
-			return {error: message};
-		}
-
-		return {
-			recipes: JSON.stringify(recipes, ["key", "count"]),
-			remaining
-		};
-	}
-
-	/**
-	 * Channel handler for variable composition accumulate change
-	 *
-	 * @param params - Variable composition accumulate status
-	 * @returns Counts
-	 */
-	private channelCapture(params: CtrlParams): CtrlParams {
-
-		this.enableAnalysis = params.enableAnalysis as boolean ?? false;
-		if(this.enableAnalysis && this.structure) {
-			this.accumulator.add(this.structure);
-		}
-
-		return {
-			countAccumulated: this.accumulator.size(),
-			species: this.accumulator.symbols(),
-		};
-	}
-
 	/**
 	 * Save compositions one per file in the given directory
 	 *
@@ -748,7 +667,229 @@ export class AnalyzeStructureSets extends NodeCore {
 						  {level: "success", node: "analyzeStructureSets2"});
 	}
 
+	/**
+	 * Merge overlapping intervals
+	 *
+	 * @param intervals - Intervals tuples [inizio, fine] array
+	 * @returns Array of merged intervals
+	 */
+	private mergeIntervals(intervals: [number, number][]): [number, number][] {
+
+		// 1. Se l'array è vuoto o ha un solo elemento, non serve unire
+		if(intervals.length <= 1) return intervals;
+
+		// 2. Ordina gli intervalli in base al punto di inizio
+		const sortedIntervals = intervals.toSorted((a, b) => a[0] - b[0]);
+
+		// 3. Inizializza l'array con il primo intervallo
+		const merged: [number, number][] = [sortedIntervals[0]];
+
+		// 4. Itera e unisci gli intervalli sovrapposti
+		for(let i = 1; i < sortedIntervals.length; ++i) {
+
+			const current = sortedIntervals[i];
+			const lastMerged = merged.at(-1)!;
+
+			// Se l'inizio dell'intervallo corrente è <= alla fine dell'ultimo intervallo unito
+			if(current[0] <= lastMerged[1]) {
+				// C'è sovrapposizione: aggiorna la fine dell'ultimo intervallo
+				lastMerged[1] = Math.max(lastMerged[1], current[1]);
+			}
+			else {
+				// Nessuna sovrapposizione: aggiungi il nuovo intervallo
+				merged.push(current);
+			}
+		}
+
+		return merged;
+	}
+
+	/**
+	 * Create label from key
+	 *
+	 * @param key - Key to convert to label
+	 * @param numberComponents - Number of components
+	 * @param atomTypes - Atom types for all components
+	 * @param atomCounts - Atom count for each atomTypes concatenated for each component
+	 * @returns The label as normal string and the formula as HTML string
+	 */
+	private makeLabel(key: string, numberComponents: number,
+					  atomTypes: string[], atomCounts: number[]): [string, string] {
+
+		const keyParts = key.split("-");
+		const parts = keyParts.map((value) => Number.parseInt(value));
+
+		const formula = new Map<string, number>();
+
+		for(let i=0; i < numberComponents; ++i) {
+
+			const part = parts[i];
+			if(part === 0) continue;
+
+			for(let j=0; j < atomTypes.length; ++j) {
+
+				const count = atomCounts[j*numberComponents+i]*part;
+				if(formula.has(atomTypes[j])) {
+					formula.set(atomTypes[j], formula.get(atomTypes[j])! + count);
+				}
+				else {
+					formula.set(atomTypes[j], count);
+				}
+			}
+		}
+
+		let label = "";
+		let f = "";
+		for(const [atom, count] of formula) {
+			if(count === 1) {
+				label += atom;
+				f += atom;
+			}
+			else if(count > 1) {
+				label += `${atom}${count}`;
+				f += `${atom}<sub>${count}</sub>`;
+			}
+		}
+		return [label, f];
+	}
+
+	/**
+	 * Create data for the summary visualization
+	 *
+	 * @param numberComponents - Number of components
+	 * @param atomTypes - Atom types for all components
+	 * @param atomCounts - Atom count for each atomTypes concatenated for each component
+	 * @returns JSON formatted array of summary info
+	 */
+	private makeSummary(numberComponents: number, atomTypes: string[], atomCounts: number[]): string {
+
+		// Load all intervals for each key
+		const lines = new Map<string, [number, number][]>();
+		const len = this.variableTransitionTable.pressures.length;
+		for(let i=0; i < len; ++i) {
+
+			const [pl, ph] = this.variableTransitionTable.pressures[i];
+			const n = this.variableTransitionTable.steps[i].length;
+			for(let j=0; j < n; ++j) {
+
+				const key = this.variableTransitionTable.keys[i][j];
+				if(lines.has(key)) {
+					lines.get(key)!.push([pl, ph]);
+				}
+				else {
+					lines.set(key, [[pl, ph]]);
+				}
+			}
+		}
+
+		// Merge intervals
+		for(const [key, value] of lines) {
+
+			const updated = this.mergeIntervals(value);
+			lines.set(key, updated);
+		}
+
+		// Format the output data
+		const out: SummaryTableEntry[] = [];
+		for(const [key, value] of lines) {
+
+			const [label, formula] = this.makeLabel(key, numberComponents, atomTypes, atomCounts);
+
+			for(const v of value) {
+				out.push({
+					xs: v[0],
+					xe: v[1],
+					label,
+					formula
+				});
+			}
+		}
+
+		return JSON.stringify(out);
+	}
+
 	// > Channels
+	/**
+	 * Channel handler for UI initialization
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelInit(): CtrlParams {
+
+		return {
+			species: this.accumulator.symbols(),
+			countAccumulated: this.accumulator.size(),
+			fingerprintMethods: fingerprintMethodsNames(),
+			distanceMethods: distanceMethodsNames(),
+			...this.state
+		};
+	}
+
+	/**
+	 * Channel handler for clearing the accumulated compositions
+	 */
+	private channelReset(): void {
+
+		this.accumulator.clear();
+	}
+
+	/**
+	 * Channel handler for compute compositions
+	 *
+	 * @returns List of compositions
+	 */
+	private channelCompositions(params: CtrlParams): CtrlParams {
+
+		const ncomponents = params.componentsCount as number ?? 2;
+		const components = params.components as number[] ?? [];
+
+		const recipes = this.fitComposition(ncomponents, components);
+		const remaining0 = this.filterStructures();
+
+		if(remaining0 === 0) {
+			const message = "Please reload data or change filter parameters";
+			sendAlertToClient(message, {node: "analyzeStructureSets"});
+			return {error: message};
+		}
+
+		const sts = this.hull.prepareData(ncomponents);
+		if(sts !== "") {
+			sendAlertToClient(sts, {node: "analyzeStructureSets"});
+			return {error: sts};
+		}
+		const remaining = this.filterStructures();
+
+		if(remaining === 0) {
+			const message = "Please reload data or change filter parameters";
+			sendAlertToClient(message, {node: "analyzeStructureSets"});
+			return {error: message};
+		}
+
+		return {
+			recipes: JSON.stringify(recipes, ["key", "count"]),
+			remaining
+		};
+	}
+
+	/**
+	 * Channel handler for variable composition accumulate change
+	 *
+	 * @param params - Variable composition accumulate status
+	 * @returns Counts
+	 */
+	private channelCapture(params: CtrlParams): CtrlParams {
+
+		this.enableAnalysis = params.enableAnalysis as boolean ?? false;
+		if(this.enableAnalysis && this.structure) {
+			this.accumulator.add(this.structure);
+		}
+
+		return {
+			countAccumulated: this.accumulator.size(),
+			species: this.accumulator.symbols(),
+		};
+	}
+
 	/**
 	 * Channel handler for saving results into files in a directory
 	 *
@@ -1047,7 +1188,6 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * Channel for showing the EV chart
 	 *
 	 * @param params - Parameters from the UI
-	 * @returns Status
 	 */
 	private channelEVChart(params: CtrlParams): void {
 
@@ -1093,14 +1233,29 @@ export class AnalyzeStructureSets extends NodeCore {
 		});
 	}
 
-	private channelPhaseDiagram(): void {
+	/**
+	 * Channel for showing the phase diagram
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelPhaseDiagram(params: CtrlParams): void {
+
+		const nc = params.numberComponents as number ?? 0;
+		const sp = params.atomTypes as string[] ?? [];
+		const cn = params.atomCounts as number[] ?? [];
+		const valid = nc > 1 && sp.length > 1 && cn.length === sp.length*nc;
+
+		const summary = valid ? this.makeSummary(nc, sp, cn) : "";
 
 		createOrUpdateSecondaryWindow({
 			routerPath: "/phase-diagram",
 			width: 1130,
 			height: 950,
 			title: "Phase diagram",
-			data: {transitions: JSON.stringify(this.variableTransitionTable)}
+			data: {
+				transitions: JSON.stringify(this.variableTransitionTable),
+				summary
+			}
 		});
 	}
 
@@ -1127,7 +1282,9 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private channelTransitionsVar(): CtrlParams {
 
-		this.variableTransitionTable = computeTransitionsVariable(this.accumulator, this.state.numberComponents);
+		this.variableTransitionTable =
+					computeTransitionsVariable(this.accumulator,
+											   this.state.numberComponents);
 
 		return {
 			transitions: JSON.stringify(this.variableTransitionTable),

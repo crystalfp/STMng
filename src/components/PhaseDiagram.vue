@@ -13,7 +13,8 @@ import {closeWindow, requestData} from "@/services/RoutesClient";
 import {Timeline} from "@unovis/ts";
 import {VisXYContainer, VisAxis, VisTimeline, VisTooltip} from "@unovis/vue";
 import type {CtrlParams} from "@/types";
-import type {VariableTransitionTable} from "@/electron/analysis/EnthalpyTransitionsVariable";
+import type {VariableTransitionTable,
+             SummaryTableEntry} from "@/electron/analysis/EnthalpyTransitionsVariable";
 
 /**
  * Chart data
@@ -34,6 +35,9 @@ interface DataRecord {
 
 const range = ref<DataRecord[]>([]);
 const lineHeight = ref(30);
+const summary = ref<SummaryTableEntry[]>([]);
+const summaryLineHeight = ref(30);
+const showSummary = ref(true);
 
 const windowPath = "/phase-diagram";
 
@@ -124,6 +128,27 @@ requestData(windowPath, (params: CtrlParams) => {
 
     // Compute line height to fill the chart
     lineHeight.value = Math.max(Math.floor(742/lines.size), 25);
+
+    // Prepare summary
+    summary.value.length = 0;
+    const summaryRaw = params.summary as string;
+    if(!summaryRaw) {
+        showSummary.value = false;
+        return;
+    }
+    const summaryTable = JSON.parse(summaryRaw) as SummaryTableEntry[];
+
+    for(const entry of summaryTable) {
+        summary.value.push({
+            xs: entry.xs,
+            xe: entry.xe,
+            label: entry.label,
+            formula: entry.formula
+        });
+    }
+
+    // Compute line height to fill the chart
+    summaryLineHeight.value = Math.min(Math.max(Math.floor(742/summaryTable.length), 25), 50);
 });
 
 // Chart accessors
@@ -143,13 +168,45 @@ const triggers = {
     [Timeline.selectors.line]: triggerFunction
 };
 
+// Summary chart accessors
+const xs = (d: SummaryTableEntry): number => d.xs;
+const ls = (d: SummaryTableEntry): number => d.xe-d.xs;
+const ss = (d: SummaryTableEntry): string => d.label;
+
+const summaryTriggerFunction = (d: SummaryTableEntry): string => {
+
+    return `
+        <b>${d.formula}</b><br>
+        Pressure range: ${d.xs.toFixed(1)}\u2002\u27F7\u2002${d.xe.toFixed(1)}
+    `;
+};
+
+const summaryTriggers = {
+    [Timeline.selectors.line]: summaryTriggerFunction
+};
+
 </script>
 
 
 <template>
 <v-app :theme>
   <div class="phase-portal">
-    <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+    <VisXYContainer v-if="showSummary" :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                    :xDomainMinConstraint="[undefined, -200]"
+                    :xDomainMaxConstraint="[200, undefined]"
+                    :duration="0" :data="summary" class="phase-viewer">
+      <VisTimeline :lineRow="ss" :x="xs" :lineDuration="ls" :showLabels="true"
+                   :alternatingRowColors="true"
+                   :rowHeight="summaryLineHeight" :showEmptySegments="true"
+                   :lineWidth="20" lineCursor="pointer" />
+      <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
+               labelColor="black" :labelFontSize="24" tickTextColor="black"
+               :domainLine="false" :numTicks="21"/>
+      <VisTooltip :triggers="summaryTriggers" :followCursor="false" />
+    </VisXYContainer>
+    <VisXYContainer v-else :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                    :xDomainMinConstraint="[undefined, -200]"
+                    :xDomainMaxConstraint="[200, undefined]"
                     :duration="0" :data="range" class="phase-viewer">
       <VisTimeline :lineRow="sp" :x="xp" :lineDuration="lp" :showLabels="true"
                    :alternatingRowColors="true"
@@ -161,6 +218,7 @@ const triggers = {
       <VisTooltip :triggers :followCursor="false" />
     </VisXYContainer>
     <v-container class="phase-buttons">
+      <v-switch v-model="showSummary" label="Show Summary" class="mr-8"/>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>

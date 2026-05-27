@@ -36,6 +36,8 @@ export interface VariableTransitionTable {
 	formulas: string[][];
 	/** Enthalpy of formation for each range */
 	enthalpies: number[][];
+	/** Keys */
+	keys: string[][];
 }
 
 /** Convex hull vertex */
@@ -46,6 +48,20 @@ interface Vertex {
 	formula: string;
 	/** Enthalpy of formation */
 	enthalpy: number;
+	/** Composition */
+	key: string;
+}
+
+/** Summary intervals */
+export interface SummaryTableEntry {
+	/** Interval start pressure */
+	xs: number;
+	/** Interval end pressure */
+	xe: number;
+	/** Formula as normal string */
+	label: string;
+	/** Formula as HTML string */
+	formula: string;
 }
 
 /**
@@ -65,10 +81,11 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 	const e = [];
 	const s = [];
 	const f = [];
+	const k = [];
 
 	for(const structure of accumulator.iterateEnabledStructures()) {
 
-		const {parts, step, energyPerAtom, formula, volume, atomsZ} = structure;
+		const {parts, step, energyPerAtom, formula, volume, atomsZ, key} = structure;
 
 		const natoms = atomsZ.length;
 		const energy = energyPerAtom + pressure*volume/(natoms*160.218);
@@ -76,6 +93,7 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 		e.push(energy);
 		s.push(step);
 		f.push(formula);
+		k.push(key);
 
 		if(parts[0] === 1 &&
 		   parts[1] === 0 &&
@@ -108,7 +126,7 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	const out: Vertex[] = [];
 	for(const idx of index) {
-		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx]});
+		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx], key: k[idx]});
 	}
 
 	return out;
@@ -133,16 +151,19 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 	const e = [];
 	const s = [];
 	const f = [];
+	const k = [];
 
 	const p: number[][] = [];
 	for(const structure of accumulator.iterateEnabledStructures()) {
 
-		const {parts, step, energyPerAtom, volume, formula, atomsZ} = structure;
+		const {parts, step, energyPerAtom, volume, formula, atomsZ, key} = structure;
 
 		const natoms = atomsZ.length;
 		const energy = energyPerAtom + pressure*volume/(natoms*160.218);
 		s.push(step);
 		f.push(formula);
+		k.push(key);
+
 		if(parts[0] === 1 &&
 			parts[1] === 0 &&
 			parts[2] === 0 &&
@@ -211,7 +232,7 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	const out: Vertex[] = [];
 	for(const idx of idxVertices) {
-		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx]});
+		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx], key: k[idx]});
 	}
 
 	return out;
@@ -276,6 +297,7 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 	const e = [];
 	const s = [];
 	const f = [];
+	const k = [];
 	const prt = [];
 
 	const p: number[][] = [];
@@ -317,6 +339,7 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 		}
 		s.push(step);
 		f.push(formula);
+		k.push(key);
 		prt.push(key);
 
 		// Compute the component proportions that are
@@ -367,7 +390,7 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	const out: Vertex[] = [];
 	for(const i of idxVertices) {
-		out.push({step: s[i], formula: f[i], enthalpy: e[i]});
+		out.push({step: s[i], formula: f[i], enthalpy: e[i], key: k[i]});
 	}
 
 	return out;
@@ -400,7 +423,7 @@ const computeVertices = (pressure: number,
  * @param current - Current transition data
  * @returns True if the two sets differ
  */
-const verticesDiffer = (previous: Map<number, string>, current: Vertex[]): boolean => {
+const verticesDiffer = (previous: Map<number, [string, string]>, current: Vertex[]): boolean => {
 
 	if(previous.size !== current.length) return true;
 
@@ -426,12 +449,15 @@ export const computeTransitionsVariable = (
 		pressures: [],
 		steps: [],
 		formulas: [],
-		enthalpies: []
+		enthalpies: [],
+		keys: []
 	};
 
 	// Pressure range limits (the increment is 0.1, the values should be integers)
 	const RANGE_MIN = -200;
 	const RANGE_MAX =  200;
+
+	// NOTE If changed, remember to update limits also in PhaseDiagram.vue
 
 	// Pressure range limits multiplied by 10 (so the increment is 1)
 	const INT_RANGE_MIN = RANGE_MIN*10;
@@ -439,11 +465,11 @@ export const computeTransitionsVariable = (
 
 	// Initialize
 	let pressurePrevious = RANGE_MIN;
-	const verticesPrevious = new Map<number, string>();
+	const verticesPrevious = new Map<number, [string, string]>();
 	const enthalpyPrevious = new Map<number, number>();
 	const entries = computeVertices(RANGE_MIN, accumulator, numberComponents);
 	for(const entry of entries) {
-		verticesPrevious.set(entry.step, entry.formula);
+		verticesPrevious.set(entry.step, [entry.formula, entry.key]);
 		enthalpyPrevious.set(entry.step, entry.enthalpy);
 	}
 
@@ -458,14 +484,22 @@ export const computeTransitionsVariable = (
 
 			out.pressures.push([pressurePrevious, pressure]);
 			out.steps.push(verticesPrevious.keys().toArray());
-			out.formulas.push(verticesPrevious.values().toArray());
+
+			const vf = [];
+			const vk = [];
+			for(const v of verticesPrevious.values()) {
+				vf.push(v[0]);
+				vk.push(v[1]);
+			}
+			out.formulas.push(vf);
+			out.keys.push(vk);
 			out.enthalpies.push(enthalpyPrevious.values().toArray());
 
 			pressurePrevious = pressure;
 			verticesPrevious.clear();
 			enthalpyPrevious.clear();
 			for(const entry of currentEntries) {
-				verticesPrevious.set(entry.step, entry.formula);
+				verticesPrevious.set(entry.step, [entry.formula, entry.key]);
 				enthalpyPrevious.set(entry.step, entry.enthalpy);
 			}
 		}
@@ -474,7 +508,15 @@ export const computeTransitionsVariable = (
 	// Last step
 	out.pressures.push([pressurePrevious, RANGE_MAX]);
 	out.steps.push(verticesPrevious.keys().toArray());
-	out.formulas.push(verticesPrevious.values().toArray());
+	const vf = [];
+	const vk = [];
+	for(const v of verticesPrevious.values()) {
+		vf.push(v[0]);
+		vk.push(v[1]);
+	}
+	out.formulas.push(vf);
+	out.keys.push(vk);
+
 	out.enthalpies.push(enthalpyPrevious.values().toArray());
 
 	return out;

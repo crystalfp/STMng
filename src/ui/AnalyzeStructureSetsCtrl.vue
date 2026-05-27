@@ -615,7 +615,11 @@ const saveStructures = (): void => {
  */
 const showPhaseDiagram = (): void => {
 
-    sendToNode(id, "phase-diagram");
+    sendToNode(id, "phase-diagram", {
+        numberComponents: countComponents.value,
+        atomTypes: toRaw(species.value),
+        atomCounts: toRaw(count.value)
+    });
 };
 
 const alignEnd = "end" as "center" | "start" | "end";

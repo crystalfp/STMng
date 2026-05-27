@@ -570,7 +570,7 @@ const filterFromFormat = (fileFormat: string): string => {
             break;
     	case "PDB":
 			filter = [{name:       "PDB",
-                       extensions: ["pdb"]}];
+                       extensions: ["pdb", "ent"]}];
             break;
 		case "POSCAR":
 		case "POSCAR + XDATCAR":
