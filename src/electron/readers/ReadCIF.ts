@@ -24,11 +24,12 @@
  */
 import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
-import {extractBasis, fractionalToCartesianCoordinates, hasNoUnitCell} from "../modules/Helpers";
+import {extractBasis, fractionalToCartesianCoordinates,
+		hasNoUnitCell, invertBasis} from "../modules/Helpers";
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, Atom, ReaderImplementation} from "@/types";
 import {ParseQuotedLine} from "../modules/ParseQuotedLine";
+import type {Structure, Atom, ReaderImplementation, BasisType} from "@/types";
 
 /** Collect lines from "loop_" constructs */
 class Table {
@@ -142,6 +143,7 @@ export class ReaderCIF implements ReaderImplementation {
 		let isInDataBlock = false;
 		let basisSides  = [0, 0, 0];
 		let basisAngles = [0, 0, 0];
+		const invBasis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		let isInLoop = false;
 		let isInLoopHeader = false;
 
@@ -263,6 +265,25 @@ export class ReaderCIF implements ReaderImplementation {
 											 basisAngles[0], basisAngles[1], basisAngles[2]);
 					}
 					break;
+			}
+
+			// Another way to define the unit cell
+			if(ws[0].startsWith("_atom_sites.fract_transf_matrix")) {
+				// eslint-disable-next-line unicorn/better-regex
+				const match = /\[(\d)\]\[(\d)\]/.exec(ws[0]);
+				const r = Number.parseInt(match![1])-1;
+				const c = Number.parseInt(match![2])-1;
+				invBasis[r*3+c] = Number.parseFloat(ws[1]);
+				if(r === 2 && c === 2) {
+					const basis = invertBasis(invBasis);
+					this.structures[this.step].crystal.basis = basis;
+				}
+			}
+			else if(ws[0].startsWith("_atom_sites.fract_transf_vector")) {
+				// eslint-disable-next-line unicorn/better-regex
+				const match = /\[(\d)\]/.exec(ws[0]);
+				const r = Number.parseInt(match![1])-1;
+				this.structures[this.step].crystal.origin[r] = Number.parseFloat(ws[1]);
 			}
 		}
 

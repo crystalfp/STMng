@@ -209,42 +209,98 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 	for(let i=0; i < len; ++i) e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2;
 
 	// Prepare the points for the convex hull
-	const points: number[][] = [];
-	for(let i=0; i < len; ++i) {
-		points.push([x[i], y[i], e[i]]);
-	}
+	// Remove coincident points for computing the convex hull
+	// idx maps index in points to original point
+	const {points, idx} = preparePointsForConvexHull3D(x, y, e, k);
 
 	// Find convex hull (only the lower part)
 	// The facet is encoded as (normal[3], offset)
 	const hull = quickHull(points);
 	const idxVertices = new Set<number>();
 	for(const facet of hull) {
-		const normalLength = Math.hypot(facet.plane[0],
-										facet.plane[1],
-										facet.plane[2]);
-		if(facet.plane[2]/normalLength < -1e-4) {
+
+		if(facet.plane[2] < -1e-4) {
 			const [v1, v2, v3] = facet.verts;
-			idxVertices.add(v1);
-			idxVertices.add(v2);
-			idxVertices.add(v3);
+			const w1 = idx[v1];
+			const w2 = idx[v2];
+			const w3 = idx[v3];
+
+			idxVertices.add(w1);
+			idxVertices.add(w2);
+			idxVertices.add(w3);
 		}
 	}
 
 	const out: Vertex[] = [];
-	for(const idx of idxVertices) {
-		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx], key: k[idx]});
+	for(const i of idxVertices) {
+		out.push({step: s[i], formula: f[i], enthalpy: e[i], key: k[i]});
 	}
 
 	return out;
 };
 
 /**
+ * Remove coincident points in composition space for three components
+ *
+ * @param x - X barycentric coordinates for each point
+ * @param y - X barycentric coordinates for each point
+ * @param e - Energy for each point
+ * @param k - Key for the points
+ * @returns List of points for the convex hull routine and mapping to the original point
+ */
+export const preparePointsForConvexHull3D = (
+									x: number[],
+									y: number[],
+									e: number[],
+									k: string[]
+								): {points: number[][]; idx: number[]} => {
+
+	// For coincident configurations retain only the one with minimal energy
+	const minEnergies = new Map<string, {idx: number; energy: number}>();
+
+	const len = e.length;
+	for(let i=0; i < len; ++i) {
+		const key = k[i];
+		if(minEnergies.has(key)) {
+			const entry = minEnergies.get(key)!;
+			const tol = Math.max(1e-8, Math.abs(entry.energy) * 1e-6);
+			if((e[i] < (entry.energy - tol)) ||
+			   (Math.abs(e[i] - entry.energy) <= tol && i < entry.idx)) {
+				minEnergies.set(key, {idx: i, energy: e[i]});
+			}
+		}
+		else {
+			minEnergies.set(key, {idx: i, energy: e[i]});
+		}
+	}
+
+	const validIdx = minEnergies
+						.values()
+						.map((entry) => entry.idx)
+						.toArray()
+						.toSorted((a, b) => a-b);
+
+	const points: number[][] = [];
+	for(const i of validIdx) {
+		points.push([x[i], y[i], e[i]]);
+	}
+
+	return {points, idx: validIdx};
+};
+
+/**
  * Remove coincident points in composition space for four components
  *
  * @param p - Proportions (barycentric coordinates) for each point
+ * @param e - Energy for each point
+ * @param parts - Key for the points
  * @returns List of points for the convex hull routine and mapping to the original point
  */
-const preparePointsForConvexHull4D = (p: number[][], e: number[], parts: string[]): {points: number[][]; idx: number[]} => {
+const preparePointsForConvexHull4D = (
+							p: number[][],
+							e: number[],
+							parts: string[]
+						): {points: number[][]; idx: number[]} => {
 
 	// For coincident configurations retain only the one with minimal energy
 	const minEnergies = new Map<string, {idx: number; energy: number}>();
@@ -298,7 +354,6 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 	const s = [];
 	const f = [];
 	const k = [];
-	const prt = [];
 
 	const p: number[][] = [];
 	for(const structure of accumulator.iterateEnabledStructures()) {
@@ -340,7 +395,6 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 		s.push(step);
 		f.push(formula);
 		k.push(key);
-		prt.push(key);
 
 		// Compute the component proportions that are
 		// the barycentric coordinates of the point in the tetrahedra
@@ -365,16 +419,15 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 
 	// Remove coincident points for computing the convex hull
 	// idx maps index in points to original point
-	const {points, idx} = preparePointsForConvexHull4D(p, e, prt);
+	const {points, idx} = preparePointsForConvexHull4D(p, e, k);
 
 	// Find convex hull (only the lower part)
 	// The facet is encoded as (normal[4], offset)
 	const hull = quickHull(points);
 	const idxVertices = new Set<number>();
 	for(const facet of hull) {
-		const normalLength = Math.hypot(facet.plane[0], facet.plane[1],
-										facet.plane[2], facet.plane[3]);
-		if(facet.plane[3]/normalLength < -1e-4) {
+
+		if(facet.plane[3] < -1e-4) {
 
 			const [v1, v2, v3, v4] = facet.verts;
 			const w1 = idx[v1];
@@ -454,10 +507,9 @@ export const computeTransitionsVariable = (
 	};
 
 	// Pressure range limits (the increment is 0.1, the values should be integers)
+	// NOTE If changed, remember to update limits also in PhaseDiagram.vue
 	const RANGE_MIN = -200;
 	const RANGE_MAX =  200;
-
-	// NOTE If changed, remember to update limits also in PhaseDiagram.vue
 
 	// Pressure range limits multiplied by 10 (so the increment is 1)
 	const INT_RANGE_MIN = RANGE_MIN*10;

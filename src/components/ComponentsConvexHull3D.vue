@@ -383,6 +383,7 @@ const createColors = (values?: number[]): void => {
     let maxValue = Number.NEGATIVE_INFINITY;
     let minValue = Number.POSITIVE_INFINITY;
     for(const value of values) {
+        if(value === Number.POSITIVE_INFINITY) continue;
         if(value > maxValue) maxValue = value;
         if(value < minValue) minValue = value;
     }
@@ -395,9 +396,9 @@ const createColors = (values?: number[]): void => {
 
     vertexColors.length = 0;
     for(const value of values) {
-
-        const color = lut.getColor(value);
-        vertexColors.push(color.clone());
+        vertexColors.push(value === Number.POSITIVE_INFINITY ?
+                                    new Color("#000000") :
+                                    lut.getColor(value).clone());
     }
 };
 

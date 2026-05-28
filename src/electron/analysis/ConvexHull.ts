@@ -24,6 +24,7 @@
  */
 import {quickHull, type Facet} from "@derschmale/tympanum";
 import {convexHull2D} from "./ConvexHull2D";
+import {preparePointsForConvexHull3D} from "./EnthalpyTransitionsVariable";
 import type {StructureSetsAccumulator} from "./Accumulator";
 import type {CtrlParams} from "@/types";
 
@@ -260,10 +261,14 @@ export class VariableCompositionConvexHull {
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2;
 
 		// Prepare the points for the convex hull
-		const points: number[][] = [];
-		for(let i=0; i < len; ++i) {
-			points.push([this.x[i], this.y[i], this.e[i]]);
-		}
+		// const points: number[][] = [];
+		// for(let i=0; i < len; ++i) {
+		// 	points.push([this.x[i], this.y[i], this.e[i]]);
+		// }
+
+		// Remove coincident points for computing the convex hull
+		// idx maps index in points to original point
+		const {points, idx} = preparePointsForConvexHull3D(this.x, this.y, this.e, this.parts);
 
 		// Find convex hull (only the lower part)
 		// The facet is encoded as (normal[3], offset)
@@ -271,15 +276,16 @@ export class VariableCompositionConvexHull {
 		const hull = quickHull(points);
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
-			const normalLength = Math.hypot(facet.plane[0],
-											facet.plane[1],
-											facet.plane[2]);
 
-			if(facet.plane[2]/normalLength < -1e-4) {
+			if(facet.plane[2] < -1e-4) {
 				const [v1, v2, v3] = facet.verts;
-				idxVertices.add(v1);
-				idxVertices.add(v2);
-				idxVertices.add(v3);
+				const w1 = idx[v1];
+				const w2 = idx[v2];
+				const w3 = idx[v3];
+
+				idxVertices.add(w1);
+				idxVertices.add(w2);
+				idxVertices.add(w3);
 				this.trianglesVertices.push(points[v1][0], points[v1][1], points[v1][2],
 											points[v2][0], points[v2][1], points[v2][2],
 											points[v3][0], points[v3][1], points[v3][2]);
@@ -288,12 +294,12 @@ export class VariableCompositionConvexHull {
 
 		this.vertices = [];
 		this.idxVertices = [...idxVertices];
-		for(const idx of idxVertices) {
-			this.vertices.push(points[idx][0], points[idx][1], points[idx][2]);
+		for(const i of idxVertices) {
+			this.vertices.push(this.x[i], this.y[i], this.e[i]);
 		}
 
 		// Add distances from the convex hull
-		this.distances = this.distanceFromConvexHull3D(points, hull);
+		this.distances = this.distanceFromConvexHull3D(points, this.x, this.y, this.e, hull);
 
 		return "";
 	}
@@ -398,9 +404,8 @@ export class VariableCompositionConvexHull {
 		const facetA: number[][] = [];
 		const facetC: number[] = [];
 		for(const facet of hull) {
-			const normalLength = Math.hypot(facet.plane[0], facet.plane[1],
-											facet.plane[2], facet.plane[3]);
-			if(facet.plane[3]/normalLength < -1e-4) {
+
+			if(facet.plane[3] < -1e-4) {
 
 				const [v1, v2, v3, v4] = facet.verts;
 				const w1 = idx[v1];
@@ -535,41 +540,51 @@ export class VariableCompositionConvexHull {
 	closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
 
 		const [u, v, w] = this.barycentricCoordinates(p, a, b, c);
-		if(u >= -1e-13 && v >= -1e-13 && w >= -1e-13) {
+		if(u >= -1e-12 && v >= -1e-12 && w >= -1e-12) {
 
 			const z = u*c[2]+v*b[2]+w*a[2];
 			return p[2]-z;
 		}
+
 		return -1;
 	}
 
 	/**
 	 * Distances of 3D points from the convex hull triangulated surface
 	 *
-	 * @param points - Points coordinates
+	 * @param vertices - Convex hull vertices coordinates
+	 * @param x - All points X coordinates
+	 * @param y - All points Y coordinates
+	 * @param e - All points energy (Z) coordinates
 	 * @param hull - Convex hull facets
 	 * @returns Distances of the points from the surface
 	 */
-	private distanceFromConvexHull3D(points: number[][], hull: Facet[]): number[] {
+	private distanceFromConvexHull3D(vertices: number[][], x: number[], y: number[], e: number[], hull: Facet[]): number[] {
 
-		const distances: number[] = [];
-		for(const point of points) {
+		const count = x.length;
+		const distances = Array<number>(count).fill(-1);
+
+		for(let i=0; i < count; ++i) {
+
+			const point = [x[i], y[i], e[i]];
 
 			let dist = Number.POSITIVE_INFINITY;
 			for(const facet of hull) {
+
 				if(facet.plane[2] < -1e-4) {
 
 					const [v1, v2, v3] = facet.verts;
 
 					// Test if closest triangle
 					const d = this.closestPointTriangleAlongZ(point,
-															  points[v1],
-															  points[v2],
-															  points[v3]);
+															  vertices[v1],
+															  vertices[v2],
+															  vertices[v3]);
 					if(d !== -1 && d < dist) dist = d;
 				}
 			}
-			distances.push(dist);
+
+			distances[i] = dist;
 		}
 
 		return distances;

@@ -284,6 +284,7 @@ const createColors = (kind: ColoringKind, colormap: string,
     let maxValue = Number.NEGATIVE_INFINITY;
     let minValue = Number.POSITIVE_INFINITY;
     for(const value of values) {
+        if(value === Number.POSITIVE_INFINITY) continue;
         if(value > maxValue) maxValue = value;
         if(value < minValue) minValue = value;
     }
@@ -297,7 +298,11 @@ const createColors = (kind: ColoringKind, colormap: string,
     const vertexColors: string[] = [];
     for(const value of values) {
 
-        vertexColors.push(`#${lut.getColor(value).getHexString()}`);
+        const hexString = value === Number.POSITIVE_INFINITY ?
+                                    "#000000" :
+                                    `#${lut.getColor(value).getHexString()}`;
+
+        vertexColors.push(hexString);
     }
 
     return vertexColors;
