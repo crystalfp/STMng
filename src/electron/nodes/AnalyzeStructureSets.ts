@@ -717,7 +717,7 @@ export class AnalyzeStructureSets extends NodeCore {
 					  atomTypes: string[], atomCounts: number[]): [string, string] {
 
 		const keyParts = key.split("-");
-		const parts = keyParts.map((value) => Number.parseInt(value));
+		const parts = keyParts.map((value) => Number.parseInt(value, 10));
 
 		const formula = new Map<string, number>();
 

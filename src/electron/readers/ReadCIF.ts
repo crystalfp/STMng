@@ -265,25 +265,26 @@ export class ReaderCIF implements ReaderImplementation {
 											 basisAngles[0], basisAngles[1], basisAngles[2]);
 					}
 					break;
-			}
+				default:
+					// Another way to define the unit cell
+					if(ws[0].startsWith("_atom_sites.fract_transf_matrix")) {
 
-			// Another way to define the unit cell
-			if(ws[0].startsWith("_atom_sites.fract_transf_matrix")) {
-				// eslint-disable-next-line unicorn/better-regex
-				const match = /\[(\d)\]\[(\d)\]/.exec(ws[0]);
-				const r = Number.parseInt(match![1])-1;
-				const c = Number.parseInt(match![2])-1;
-				invBasis[r*3+c] = Number.parseFloat(ws[1]);
-				if(r === 2 && c === 2) {
-					const basis = invertBasis(invBasis);
-					this.structures[this.step].crystal.basis = basis;
-				}
-			}
-			else if(ws[0].startsWith("_atom_sites.fract_transf_vector")) {
-				// eslint-disable-next-line unicorn/better-regex
-				const match = /\[(\d)\]/.exec(ws[0]);
-				const r = Number.parseInt(match![1])-1;
-				this.structures[this.step].crystal.origin[r] = Number.parseFloat(ws[1]);
+						const match = /\[(\d)\]\[(\d)\]/u.exec(ws[0]);
+						const r = Number.parseInt(match![1], 10)-1;
+						const c = Number.parseInt(match![2], 10)-1;
+						invBasis[r*3+c] = Number.parseFloat(ws[1]);
+						if(r === 2 && c === 2) {
+							const basis = invertBasis(invBasis);
+							this.structures[this.step].crystal.basis = basis;
+						}
+					}
+					else if(ws[0].startsWith("_atom_sites.fract_transf_vector")) {
+
+						const match = /\[(\d)\]/u.exec(ws[0]);
+						const r = Number.parseInt(match![1], 10)-1;
+						this.structures[this.step].crystal.origin[r] = Number.parseFloat(ws[1]);
+					}
+					break;
 			}
 		}
 

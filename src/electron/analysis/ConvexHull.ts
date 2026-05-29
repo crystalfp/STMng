@@ -261,11 +261,6 @@ export class VariableCompositionConvexHull {
 		for(let i=0; i < len; ++i) this.e[i] -= p[i][0]*e0+p[i][1]*e1+p[i][2]*e2;
 
 		// Prepare the points for the convex hull
-		// const points: number[][] = [];
-		// for(let i=0; i < len; ++i) {
-		// 	points.push([this.x[i], this.y[i], this.e[i]]);
-		// }
-
 		// Remove coincident points for computing the convex hull
 		// idx maps index in points to original point
 		const {points, idx} = preparePointsForConvexHull3D(this.x, this.y, this.e, this.parts);
