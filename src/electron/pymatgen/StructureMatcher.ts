@@ -326,7 +326,7 @@ export class StructureMatcher {
     /**
      * Replace species
      *
-     * @param mappedStruct - Structure on which the in place swapping should happens
+     * @param mappedStruct - Structure on which the in place swapping should happen
      * @param spMapping - Species to swap. Species can be elements too. e.g.
                 (Element("Li"): Element("Na")) performs a Li for Na substitution.
      */

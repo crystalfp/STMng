@@ -32,7 +32,7 @@
   <dt>Formation</dt>
   <dd>The points are colored by their enthalpy of formation.</dd>
   <dt>Distance</dt>
-  <dd>The points are colored by their distance from the convex hull.</dd>
+  <dd>The points are colored by their distance from the convex hull. If the distance cannot be determined, the color is <span style="background-color: #000000" class="color-word">black</span>. This could happen due to numerical instabilities.</dd>
   </dl>
   </td>
 </tr>
@@ -71,7 +71,7 @@
 
 <h2>Two components</h2>
 
-<img src="./hull2d.png" width="500" height="453" style="margin-bottom: 1rem">
+<img src="./hull2d.png" width="500" height="453">
 <p>The chart shows a point for each structure after removing duplicates. The composition ratio is: <b>component<sub>2</sub>/(component<sub>1</sub>+component<sub>2</sub>)</b></p>
 <p>The line is the lower part of the convex hull enclosing the points. The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull line. In the image these points are overlaid by the corresponding formula.</p>
 <p>Hovering a point shows a popup with the following information:</p>
@@ -83,22 +83,21 @@
 </table>
 
 <h2>Three components</h2>
-<img src="./hull3d.png" width="500" height="453" style="margin-bottom: 1rem">
+<img src="./hull3d.png" width="500" height="453">
 <p>The chart shows a point for each structure after removing duplicates. On the corners of the triangles are the three end-members components. The enthalpy of formation lies on the axis perpendicular to the image.</p>
 <p>The <span style="background-color: red" class="color-word">red</span> squares are structures that lies exactly on the convex hull surface. This surface lies below the visualized triangle and is the bottom half of the convex hull enclosing the points.</p>
-<p>Clicking on the top-left legend “labels” entry show the formula corresponding to these points.</p>
-<p>Hovering a point shows a popup with the following information:</p>
+<p>Clicking on the top-left legend “labels” entry, show the formula corresponding to these points.</p>
+<p>Hovering a point shows a popup with the following information (the image shows an example):</p>
 <table>
   <tr><td class="c1">Step</td><td>Step of the structure in the loaded sequence</td></tr>
   <tr><td class="c1">Composition</td><td>Proportion of the three components</td></tr>
   <tr><td class="c1">Enthalpy of formation</td><td>Enthalpy of formation (eV/atom)</td></tr>
   <tr><td class="c1">Distance from convex hull</td><td>Enthalpy difference with the convex hull surface</td></tr>
 </table>
-<p>The image shows an example of the popup.</p>
-<p>The convex hull can also be viewed in 3D launching the <a href="./hull-3d.html">3D view</a>.</p>
+<p>The convex hull can also be viewed in 3D by launching the <a href="./hull-3d.html">3D view</a>.</p>
 
 <h2>Four components</h2>
-<p>The convex hull is only visible in 3D launching the <a href="./hull-3d.html">3D view</a>.</p>
+<p>The convex hull is only visible in 3D by launching the <a href="./hull-3d.html">3D view</a>.</p>
 
 <p class="back-btn"><a href="../nodes/analyze-structure-sets.html" title="Return to Analyze structure sets documentation" class="back">Back to Variable composition</a></p>
 

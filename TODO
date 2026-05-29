@@ -25,6 +25,7 @@ To do:
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
   ☐ Put names to tuple elements types
+  ☐ Add missing "alt" tags to documentation files images.
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI

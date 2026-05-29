@@ -50,11 +50,11 @@
 	<td class="c3">Selects value to be represented as color of the points.
   <dl>
   <dt>None</dt>
-  <dd>All points are colored <span style="background-color: green" class="color-word">green</span>.</dd>
+  <dd>All points are colored <span style="background-color: #C45C10" class="color-word">burnt orange</span>.</dd>
   <dt>Formation</dt>
   <dd>The points are colored by their enthalpy of formation.</dd>
   <dt>Distance</dt>
-  <dd>The points are colored by their distance from the convex hull.</dd>
+  <dd>The points are colored by their distance from the convex hull. If the distance cannot be determined, the color is <span style="background-color: #000000" class="color-word">black</span>. This could happen due to numerical instabilities.</dd>
   </dl>
   </td>
 </tr>
@@ -74,14 +74,14 @@
   <td class="c3">Close the window.</td>
 </tr>
 </table>
-<p style="margin-top: 1rem">Clicking Ctrl-Left button on the points reveals a panel with the point data. Clicking on the background hides the panel.</p>
+<p>Clicking Ctrl-Left button on the points reveals a panel with the point data. Clicking on the background hides the panel.</p>
 
 <h2>Variable composition with 3 components</h2>
 <p>For a variable composition of 3 components this window shows the convex hull in 3D. X and Y coordinates are the same found in the <a href="components-hull.html">2D convex hull chart</a> and Z is the enthalpy of formation.</p>
 
 <h2>Variable composition with 4 components</h2>
 <p>For 4 components only the points are shown, because the convex hull is composed by 4D tetrahedra.</p>
-<p>The only difference with the 3 components visualization is the scale slider disabled because the energy axis is not visible in 3D. Remember the points live in 4 dimensions: three for the composition (the four percentages should sum to 1 hence the 3) and one for the energy.</p>
+<p>The only difference with the 3 components visualization is the scale slider disabled because the energy axis is not visible in 3D. Remember that the points live in 4 dimensions: three for the composition (the four percentages should sum to 1 hence the 3) and one for the energy.</p>
 
 <p class="back-btn"><a href="../nodes/analyze-structure-sets.html" title="Return to Analyze structure sets documentation" class="back">Back to Variable composition</a></p>
 </body>

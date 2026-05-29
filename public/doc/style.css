@@ -221,3 +221,15 @@ span[onclick] {
 .b {
   border: 1px solid black
 }
+
+table {
+  margin-bottom: 1rem;
+}
+
+img {
+  margin-bottom: 1rem;
+}
+
+.alert {
+  color: red;
+}

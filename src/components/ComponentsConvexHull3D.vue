@@ -580,7 +580,7 @@ const changeVisibility = (): void => {
       <v-btn v-focus class="ff" @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
-  <viewer-legend v-if="showLegend"
+  <viewer-legend v-if="showLegend" :dark="true"
                  :width="130" :height="285" :bottom="CONTROLS_HEIGHT" :right="0"
                  :title="legendTitle" :values-continue="vc"/>
 

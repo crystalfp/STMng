@@ -538,7 +538,9 @@ export class VariableCompositionConvexHull {
 		if(u >= -1e-12 && v >= -1e-12 && w >= -1e-12) {
 
 			const z = u*c[2]+v*b[2]+w*a[2];
-			return p[2]-z;
+			const distance = p[2]-z;
+			if(distance <= 0) return 0;
+			return distance;
 		}
 
 		return -1;
