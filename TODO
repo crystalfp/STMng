@@ -26,6 +26,7 @@ To do:
   ☐ Don't use flags as function parameters
   ☐ Put names to tuple elements types
   ☐ Add missing "alt" tags to documentation files images.
+  ✔ Add atom selections by chain @done(2026-05-29 20:39)
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI

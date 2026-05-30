@@ -582,7 +582,7 @@ export type SlicingModes = "plane" | "miller" | "sphere" | "slab" | "direct" | "
 /**
  * Atoms selector modes for AtomsChooser widget
  */
-export type AtomSelectorModes = "symbol" | "label" | "index" | "all";
+export type AtomSelectorModes = "symbol" | "label" | "index" | "chain" | "all";
 
 /**
  * Prototype atoms data

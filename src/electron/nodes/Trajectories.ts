@@ -23,20 +23,21 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {NodeCore} from "../modules/NodeCore";
-import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendSegmentsToClient} from "../modules/ToClient";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {ReorderAtomsInSteps} from "../modules/ReorderAtomsInSteps";
-import type {Structure, CtrlParams, ChannelDefinition, PositionType} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, PositionType,
+			 AtomSelectorModes} from "@/types";
 
 export class Trajectories extends NodeCore {
 
 	private structure: Structure | undefined;
 	private showTrajectories = false;
 	private createTrajectories = false;
-	private labelKind: SelectorType = "symbol";
+	private labelKind: AtomSelectorModes = "symbol";
 	private atomsSelector = "";
 	private maxDisplacement = 1;
 	private showPositionClouds = false;
@@ -193,7 +194,7 @@ export class Trajectories extends NodeCore {
 
 	loadStatus(params: CtrlParams): void {
 		this.showTrajectories    = params.showTrajectories as boolean ?? false;
-		this.labelKind           = params.labelKind as SelectorType ?? "symbol";
+		this.labelKind           = params.labelKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector       = params.atomsSelector as string ?? "";
 		this.maxDisplacement     = params.maxDisplacement as number ?? 1;
 		this.showPositionClouds  = params.showPositionClouds as boolean ?? false;
@@ -278,7 +279,7 @@ export class Trajectories extends NodeCore {
 	 */
 	private channelSelect(params: CtrlParams): CtrlParams {
 
-        this.labelKind     = params.labelKind as SelectorType ?? "symbol";
+        this.labelKind     = params.labelKind as AtomSelectorModes ?? "symbol";
         this.atomsSelector = params.atomsSelector as string ?? "";
 
 		// Check the selection string

@@ -23,18 +23,17 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {NodeCore} from "../modules/NodeCore";
-import {checkAtomsSelector, selectAtomsByKind,
-		type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {sendPolyhedraToClient} from "../modules/ToClient";
 import {BondType} from "../../services/SharedConstants";
-import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
+import type {Structure, CtrlParams, ChannelDefinition, AtomSelectorModes} from "@/types";
 
 export class DrawPolyhedra extends NodeCore {
 
 	private structure: Structure | undefined;
 	private color = "#FFFFFF80";
-	private labelKind: SelectorType = "symbol";
+	private labelKind: AtomSelectorModes = "symbol";
 	private atomsSelector = "";
 	private showPolyhedra = true;
 	private colorByCenterAtom = true;
@@ -100,7 +99,7 @@ export class DrawPolyhedra extends NodeCore {
 	loadStatus(params: CtrlParams): void {
 
 		this.color = params.color as string ?? "#FFFFFF80";
-		this.labelKind = params.labelKind as SelectorType ?? "symbol";
+		this.labelKind = params.labelKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
 		this.showPolyhedra = params.showPolyhedra as boolean ?? true;
 		this.colorByCenterAtom = params.colorByCenterAtom as boolean ?? true;
@@ -227,7 +226,7 @@ export class DrawPolyhedra extends NodeCore {
 	 */
 	private channelSelect(params: CtrlParams): CtrlParams {
 
-		this.labelKind = params.labelKind as SelectorType ?? "symbol";
+		this.labelKind = params.labelKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
 
 		// Check the selection string

@@ -159,7 +159,7 @@ onUnmounted(() => {
 <template>
 <v-container class="container">
   <atoms-chooser :id v-model:kind="labelKind" v-model:selector="atomsSelector"
-                 channel="select"
+                 channel="select" :hide="['chain']"
                  :disabled="trajectoriesRecording" class="mt-4 mb-n6"
                  title="Select traced atoms by" placeholder="Traced atoms selector" />
   <v-switch v-model="showTrajectories" label="Show trajectories" class="mt-4 ml-2"

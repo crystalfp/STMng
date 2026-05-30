@@ -23,10 +23,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {getAtomicSymbol} from "./AtomData";
-import type {Structure} from "@/types";
-
-/** Valid values for the selection type */
-export type SelectorType = "symbol" | "label" | "index" | "all";
+import type {Structure, AtomSelectorModes} from "@/types";
 
 /**
  * Select atoms in the structure by the criteria entered in the AtomsChooser widget
@@ -37,7 +34,7 @@ export type SelectorType = "symbol" | "label" | "index" | "all";
  * @returns List of atoms indices selected in the structure
  */
 export const selectAtomsByKind = (structure: Structure,
-								  kind: SelectorType,
+								  kind: AtomSelectorModes,
 								  atomsSelector: string): number[] => {
 
 	// Prepare selectors
@@ -83,6 +80,13 @@ export const selectAtomsByKind = (structure: Structure,
 				selectedAtomsIdx.push(idx);
 			}
 			break;
+		case "chain":
+			selectors = new Set<string>(selectorsList);
+			for(let idx=0; idx < natoms; ++idx) {
+				const chain = atoms[idx].chain.toLowerCase();
+				if(chain && selectors.has(chain)) selectedAtomsIdx.push(idx);
+			}
+			break;
 		case "all":
 			for(let idx=0; idx < natoms; ++idx) selectedAtomsIdx.push(idx);
 			break;
@@ -112,7 +116,7 @@ const atomSymbols = new Set([
  * @returns Empty string if all selectors are valid for the given "kind", otherwise the error string
  */
 export const checkAtomsSelector = (structure: Structure,
-								   kind: SelectorType,
+								   kind: AtomSelectorModes,
 								   atomsSelector: string): string => {
 
 	// Prepare selectors
@@ -159,6 +163,16 @@ export const checkAtomsSelector = (structure: Structure,
 				}
 			}
 			break;
+		case "chain": {
+			const chains = new Set<string>();
+			for(const {chain} of atoms) chains.add(chain.toLowerCase());
+			for(const entry of selectorsList) {
+				if(!chains.has(entry)) {
+					return `Non existent chain "${entry}". Valid: ${[...chains].join(", ")}`;
+				}
+			}
+			break;
+		}
 	}
 
 	return "";

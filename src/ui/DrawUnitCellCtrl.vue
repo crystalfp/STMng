@@ -272,13 +272,13 @@ onUnmounted(() => {
                           :min="0" :max="3" :step="1" class="mb-2 ml-1"/>
   <color-selector v-model="lineColor" label="Line color" />
   <v-label class="separator-title">Cell repetitions</v-label>
-  <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA"
+  <slider-with-steppers v-model="repetitionsA" v-model:raw="showRepetitionsA" color="#FF0000"
                           :label="`Along a (${showRepetitionsA})`" label-width="6.1rem"
                           :min="1" :max="10" :step="1" class="ml-1"/>
-  <slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB"
+  <slider-with-steppers v-model="repetitionsB" v-model:raw="showRepetitionsB" color="#79FF00"
                           :label="`Along b (${showRepetitionsB})`" label-width="6.1rem"
                           :min="1" :max="10" :step="1" class="ml-1" />
-  <slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC"
+  <slider-with-steppers v-model="repetitionsC" v-model:raw="showRepetitionsC" color="#0000FF"
                           :label="`Along c (${showRepetitionsC})`" label-width="6.1rem"
                           :min="1" :max="10" :step="1" class="ml-1" />
   <block-button :disabled="!hasSupercell()" class="mt-2" label="Reset" @click="resetSliders" />
@@ -288,13 +288,13 @@ onUnmounted(() => {
             label="Dashed lines supercell" class="ml-2 mb-4" />
   <color-selector v-model="supercellColor" label="Line color" />
   <v-label class="separator-title">Shift origin</v-label>
-  <slider-with-steppers v-model="percentA" v-model:raw="showPercentA"
+  <slider-with-steppers v-model="percentA" v-model:raw="showPercentA" color="#FF0000"
                           :label="`Along a (${showPercentA}%)`" label-width="7.5rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
-  <slider-with-steppers v-model="percentB" v-model:raw="showPercentB"
+  <slider-with-steppers v-model="percentB" v-model:raw="showPercentB" color="#79FF00"
                           :label="`Along b (${showPercentB}%)`" label-width="7.5rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
-  <slider-with-steppers v-model="percentC" v-model:raw="showPercentC"
+  <slider-with-steppers v-model="percentC" v-model:raw="showPercentC" color="#0000FF"
                           :label="`Along c (${showPercentC}%)`" label-width="7.5rem"
                           :min="-50" :max="50" :step="1" class="ml-1" />
   <v-switch v-model="shrink" label="Shrink cell" class="ml-2 my-2" />

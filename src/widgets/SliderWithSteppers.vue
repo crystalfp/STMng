@@ -48,6 +48,9 @@ const props = withDefaults(defineProps<{
     /** Slider disable */
     disabled?: boolean;
 
+    /** Thumb color */
+    color?: string;
+
   }>(), {
     min: 0,
     max: 10,
@@ -115,7 +118,7 @@ onUnmounted(() => {
 
 
 <template>
-<v-slider v-model="valueToDebounce" :min :max :step :label
+<v-slider v-model="valueToDebounce" :min :max :step :label :thumb-color="color"
           :disabled hide-details class="slider-with-stepper">
   <template #prepend>
     <v-btn icon="mdi-minus" size="small" variant="text" @click="decrement" />

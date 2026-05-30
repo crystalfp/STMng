@@ -53,10 +53,11 @@ const {disabled, hide = [], id, channel} = defineProps<{
 const labelKind = defineModel<AtomSelectorModes>("kind");
 
 if(hide) {
-    if(!hide.includes("symbol")) labelKind.value = "symbol";
+    if(!hide.includes("symbol"))     labelKind.value = "symbol";
     else if(!hide.includes("label")) labelKind.value = "label";
     else if(!hide.includes("index")) labelKind.value = "index";
-    else if(!hide.includes("all")) labelKind.value = "all";
+    else if(!hide.includes("chain")) labelKind.value = "chain";
+    else if(!hide.includes("all"))   labelKind.value = "all";
 }
 else labelKind.value = "symbol";
 
@@ -140,6 +141,7 @@ const clearSelector = (): void => {
     <v-btn v-if="notHidden('symbol')" value="symbol">Symbol</v-btn>
     <v-btn v-if="notHidden('label')" value="label">Label</v-btn>
     <v-btn v-if="notHidden('index')" value="index">Index</v-btn>
+    <v-btn v-if="notHidden('chain')" value="chain">Chain</v-btn>
     <v-btn v-if="notHidden('all')" value="all" @click="clearSelector">All</v-btn>
   </v-btn-toggle>
   <template #extra>

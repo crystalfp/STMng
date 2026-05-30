@@ -182,6 +182,7 @@ onUnmounted(() => {
                           :min="0" :max="2" :step="0.1" />
   <atoms-chooser :id v-model:kind="selectorKind" v-model:selector="atomsSelector"
                     :disabled="!enableBackbone" channel="check" class="ml-0 mb-2"
+                    :hide="['all']"
                     title="Select backbone atoms by" placeholder="Atoms selectors" />
   <v-label v-if="chains.length > 0" class="ml-1 no-select">Select backbone segment:</v-label>
   <v-switch v-for="chain of chains" :key="chain" v-model="showChains[chain]"

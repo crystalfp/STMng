@@ -283,16 +283,19 @@ export class StructureReader extends NodeCore {
 
 		// Clean and check the structure list
 		StructureReader.removeEmptyStructures(this.structures);
-		if(StructureReader.checkStructures(this.structures)) {
+		const checkMessage = StructureReader.checkStructures(this.structures);
+		if(!checkMessage) {
 			this.toNextNode(this.structures[0]);
 			this.countSteps = this.structures.length;
 			return {countSteps: this.countSteps};
 		}
 
-		message = `Invalid "${path.basename(filename)}" file content for "${requestedFormat}" format`;
-		log.error(message);
+		const message1 = `Invalid "${path.basename(filename)}" file content ` +
+						 `for "${requestedFormat}" format (${checkMessage})`;
+		log.error(message1);
 		this.toNextNode(new EmptyStructure());
-		return {error: message};
+		const message2 = `Invalid file content for the "${requestedFormat}" format`;
+		return {error: message2};
 	}
 
 	/**
@@ -575,15 +578,15 @@ export class StructureReader extends NodeCore {
 	 * Sanity check for the structures read
 	 *
 	 * @param structures - Structures read
-	 * @returns True if the structures are valid
+	 * @returns Empty string if the structures are valid, otherwise the error message
 	 */
-	private static checkStructures(structures: Structure[]): boolean {
+	private static checkStructures(structures: Structure[]): string {
 
-		if(structures.length === 0) return false;
+		if(structures.length === 0) return "No structures";
 		for(const structure of structures) {
-			if(structure.atoms.length === 0) return false;
+			if(structure.atoms.length === 0) return "There is an empty structure";
 		}
-		return true;
+		return "";
 	}
 
 	/**
@@ -776,7 +779,8 @@ export class StructureReader extends NodeCore {
 			return {error: message};
 		}
 		this.structures = [structure];
-		if(StructureReader.checkStructures(this.structures)) {
+		const checkMessage = StructureReader.checkStructures(this.structures);
+		if(!checkMessage) {
 
 			const name = collectionGetName(fileID);
 			this.toNextNode(this.structures[0]);
@@ -787,7 +791,7 @@ export class StructureReader extends NodeCore {
 		// For some reason the db is corrupted
 		this.toNextNode(new EmptyStructure());
 
-		const message = `File for ID "${fileID}" invalid`;
+		const message = `File for ID "${fileID}" invalid (${checkMessage})`;
 		log.error(message);
 		return {error: message};
 	}

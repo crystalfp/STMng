@@ -25,16 +25,17 @@
  */
 import {hasUnitCell, invertBasis} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
-import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind} from "../modules/AtomsChooser";
 import {sendToClient} from "../modules/ToClient";
-import type {BasisType, ChannelDefinition, CtrlParams, PositionType, Structure} from "@/types";
+import type {BasisType, ChannelDefinition, CtrlParams, PositionType,
+			 Structure, AtomSelectorModes} from "@/types";
 
 export class StructureBackbone extends NodeCore {
 
 	private inputStructure: Structure | undefined;
 	private readonly chains = new Set<string>();
 	private enableStructureBackbone = false;
-	private selectorKind: SelectorType = "label";
+	private selectorKind: AtomSelectorModes = "label";
 	private atomsSelector = "";
 	private selectedChains: string[] = [];
 	private radius = 0.3;
@@ -87,7 +88,7 @@ export class StructureBackbone extends NodeCore {
 	loadStatus(params: CtrlParams): void {
 
         this.enableStructureBackbone = params.enableStructureBackbone as boolean ?? false;
-        this.selectorKind = params.selectorKind as SelectorType ?? "label";
+        this.selectorKind = params.selectorKind as AtomSelectorModes ?? "label";
         this.atomsSelector = params.atomsSelector as string ?? "";
 		this.radius = params.radius as number ?? 0.3;
 		this.threshold = params.threshold as number ?? 0.9;
@@ -250,7 +251,7 @@ export class StructureBackbone extends NodeCore {
 
         this.enableStructureBackbone = params.enableStructureBackbone as boolean ?? false;
 		this.selectedChains = params.selectedChains as string[] ?? [];
-        this.selectorKind = params.selectorKind as SelectorType ?? "label";
+        this.selectorKind = params.selectorKind as AtomSelectorModes ?? "label";
         this.atomsSelector = params.atomsSelector as string ?? "";
 		this.radius = params.radius as number ?? 0.3;
 		this.threshold = params.threshold as number ?? 0.9;
@@ -265,7 +266,7 @@ export class StructureBackbone extends NodeCore {
 	 */
 	private channelCheck(params: CtrlParams): CtrlParams {
 
-		const labelKind = params.labelKind as SelectorType ?? "symbol";
+		const labelKind = params.labelKind as AtomSelectorModes ?? "symbol";
 		const atomsSelector = params.atomsSelector as string;
 
 		if(!this.inputStructure || !atomsSelector) return {status: "none"};

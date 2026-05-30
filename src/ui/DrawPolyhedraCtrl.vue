@@ -138,7 +138,7 @@ onUnmounted(() => {
   <v-switch v-model="showPolyhedra" label="Show polyhedra & triangles" class="mt-4 ml-1" />
   <v-switch v-model="colorByCenterAtom" label="Color by center atom" class="mb-4 ml-1" />
   <atoms-chooser :id v-model:kind="labelKind" v-model:selector="atomsSelector"
-                 channel="select" class="ml-0 mb-n2"
+                 channel="select" class="ml-0 mb-n2" :hide="['chain']"
                  title="Select central atoms by"
                  placeholder="Central atoms selector"/>
   <slider-with-steppers v-if="colorByCenterAtom" v-model="opacityByCenterAtom"

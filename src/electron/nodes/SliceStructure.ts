@@ -24,11 +24,12 @@
  */
 import {hasNoUnitCell} from "../modules/Helpers";
 import {NodeCore} from "../modules/NodeCore";
-import {checkAtomsSelector, selectAtomsByKind, type SelectorType} from "../modules/AtomsChooser";
+import {checkAtomsSelector, selectAtomsByKind} from "../modules/AtomsChooser";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {findIntersections} from "../modules/UnitCellIntersections";
 import type {Structure, ChannelDefinition, CtrlParams,
-			 BasisType, PositionType, SlicingModes} from "@/types";
+			 BasisType, PositionType, SlicingModes,
+			AtomSelectorModes} from "@/types";
 
 /**
  * Slice plane parameters
@@ -50,7 +51,7 @@ export class SliceStructure extends NodeCore {
 	private mode: SlicingModes = "plane";
 	private geometryColor = "#FFFFFF80";
 
-	private selectorKind: SelectorType = "symbol";
+	private selectorKind: AtomSelectorModes = "symbol";
 	private atomsSelector = "";
 	private sphereRadius = 1; // Sphere radius
 
@@ -165,7 +166,7 @@ export class SliceStructure extends NodeCore {
         this.millerK = params.millerK as number ?? 0;
         this.millerL = params.millerL as number ?? 0;
 		this.millerPlaneOffset = params.millerPlaneOffset as number ?? 0;
-        this.selectorKind = params.selectorKind as SelectorType ?? "symbol";
+        this.selectorKind = params.selectorKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
         this.sphereRadius = params.sphereRadius as number ?? 1;
         this.thickness = params.thickness as number ?? 1;
@@ -716,7 +717,7 @@ export class SliceStructure extends NodeCore {
 	 */
 	private channelSphere(params: CtrlParams): CtrlParams {
 
-		this.selectorKind = params.selectorKind as SelectorType ?? "symbol";
+		this.selectorKind = params.selectorKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
         this.sphereRadius = params.sphereRadius as number ?? 1;
         this.sliceInside = params.sliceInside as boolean ?? false;
@@ -811,7 +812,7 @@ export class SliceStructure extends NodeCore {
 	 */
 	private channelDirect(params: CtrlParams): void {
 
-		this.selectorKind = params.selectorKind as SelectorType ?? "symbol";
+		this.selectorKind = params.selectorKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
         this.sliceInside = params.sliceInside as boolean ?? false;
 		this.enableSlicer = params.enableSlicer as boolean ?? false;
@@ -826,7 +827,7 @@ export class SliceStructure extends NodeCore {
 	 */
 	private channelBonded(params: CtrlParams): void {
 
-		this.selectorKind = params.selectorKind as SelectorType ?? "symbol";
+		this.selectorKind = params.selectorKind as AtomSelectorModes ?? "symbol";
 		this.atomsSelector = params.atomsSelector as string ?? "";
         this.sliceInside = params.sliceInside as boolean ?? false;
 		this.enableSlicer = params.enableSlicer as boolean ?? false;
@@ -859,7 +860,7 @@ export class SliceStructure extends NodeCore {
 	 */
 	private channelCheck(params: CtrlParams): CtrlParams {
 
-		const labelKind = params.labelKind as SelectorType ?? "symbol";
+		const labelKind = params.labelKind as AtomSelectorModes ?? "symbol";
 		const atomsSelector = params.atomsSelector as string;
 
 		if(!this.structure || !atomsSelector) return {status: "none"};
