@@ -25,8 +25,6 @@ To do:
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
   ☐ Put names to tuple elements types
-  ☐ Add missing "alt" tags to documentation files images.
-  ✔ Add atom selections by chain @done(2026-05-29 20:39)
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
@@ -78,6 +76,8 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Add missing "alt" tags to documentation files images. @done(2026-05-30 08:57) @project(To do)
+  ✔ Add atom selections by chain @done(2026-05-29 20:39) @project(To do)
   ✔ Add an editor for atoms color and dimensions @done(2026-05-08 15:18) @project(Requests)
   ✔ Block screen update when "accumulating for fingerprinting" and "fast" @done(2026-05-02 07:14) @project(Performance)
   ✔ For the charts <https://unovis.dev/> @done(2026-04-19 07:28) @project(Reference)

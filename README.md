@@ -1,6 +1,6 @@
 # See The Molecule new generation (STMng)
 <div align="center">
-    <img src="./resources/icon.png" width="180" height="180">
+    <img src="./resources/icon.png" width="180" height="180" alt="STMng icon">
 </div>
 
 **See The Molecule new generation** (STMng) is a chemical and crystallographic structures visualization and analysis tool that implements some of the functionalities of the old STM4 visualization tool.
