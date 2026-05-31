@@ -314,7 +314,7 @@ export class ComputeFingerprints extends NodeCore {
 		}
 
 		// Collect points from each filled cell
-		const decimatedPoints: [number, number][] = [];
+		const decimatedPoints: [x: number, y: number][] = [];
 		for(const cell of grid) {
 
 			if(cell?.length > 0) decimatedPoints.push([cell[0], cell[1]]);

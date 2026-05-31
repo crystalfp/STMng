@@ -122,7 +122,7 @@ const stopWatcher3 = watch([maxDisplacement], () => {
 
 /** Capture position clouds related variables */
 const stopWatcher4 = watch([showPositionClouds, positionCloudsSize],
-      (after:  [boolean, number], before: [boolean, number]) => {
+      (after:  [show: boolean, size: number], before: [show: boolean, size: number]) => {
 
     if(after[1] !== before[1]) renderer.changeSize(after[1]);
     renderer.changeCloudsVisibility(after[0]);

@@ -192,7 +192,7 @@ export class Measures extends NodeCore {
 
 		const inside = this.countInsideUnitCell(structure);
 
-		const counts2: Record<string, [number, number]> = {};
+		const counts2: Record<string, [countAll: number, countInside: number]> = {};
 		for(const full in counts) {
 			counts2[full] = [counts[full], inside[full]];
 		}

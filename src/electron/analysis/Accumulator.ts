@@ -296,7 +296,7 @@ export class StructureSetsAccumulator {
 	 *
 	 * @returns An iterator on the composition keys
 	 */
-	* iterateKeys(): Generator<[string, number[]]> {
+	* iterateKeys(): Generator<[key: string, indices: number[]]> {
 
 		for(const entry of this.keyMap) {
 			yield entry;

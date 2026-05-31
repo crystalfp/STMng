@@ -476,10 +476,13 @@ const computeVertices = (pressure: number,
  * @param current - Current transition data
  * @returns True if the two sets differ
  */
-const verticesDiffer = (previous: Map<number, [string, string]>, current: Vertex[]): boolean => {
+const verticesDiffer = (previous: Map<number, [formula: string, key: string]>,
+						current: Vertex[]): boolean => {
 
+	// If length differ they are different
 	if(previous.size !== current.length) return true;
 
+	// Steps number in one should be also in the other
 	for(const entry of current) {
 
 		if(!previous.has(entry.step)) return true;
@@ -517,7 +520,7 @@ export const computeTransitionsVariable = (
 
 	// Initialize
 	let pressurePrevious = RANGE_MIN;
-	const verticesPrevious = new Map<number, [string, string]>();
+	const verticesPrevious = new Map<number, [formula: string, key: string]>();
 	const enthalpyPrevious = new Map<number, number>();
 	const entries = computeVertices(RANGE_MIN, accumulator, numberComponents);
 	for(const entry of entries) {

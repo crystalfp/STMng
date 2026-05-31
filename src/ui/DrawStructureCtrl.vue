@@ -282,7 +282,8 @@ const disableSphereMultiplier = computed(() =>
 
 // Show legend only when required
 const showLegend = ref(false);
-const stopWatcher4 = watch([showLegend, atomColoring], (after: [boolean, string]) => {
+const stopWatcher4 = watch([showLegend, atomColoring],
+                           (after: [showLegend: boolean, color: string]) => {
     controlStore.legend = after[0] && after[1] === "bonds";
 });
 

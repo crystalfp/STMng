@@ -53,6 +53,9 @@ interface Recipe {
 	count: number;
 }
 
+/** Pressure interval type */
+type Interval = [start: number, end: number];
+
 export class AnalyzeStructureSets extends NodeCore {
 
 	private readonly accumulator = new StructureSetsAccumulator();
@@ -670,10 +673,10 @@ export class AnalyzeStructureSets extends NodeCore {
 	/**
 	 * Merge overlapping intervals
 	 *
-	 * @param intervals - Intervals tuples [inizio, fine] array
+	 * @param intervals - Array of intervals tuples [start, end]
 	 * @returns Array of merged intervals
 	 */
-	private mergeIntervals(intervals: [number, number][]): [number, number][] {
+	private mergeIntervals(intervals: Interval[]): Interval[] {
 
 		// 1. Se l'array è vuoto o ha un solo elemento, non serve unire
 		if(intervals.length <= 1) return intervals;
@@ -682,7 +685,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		const sortedIntervals = intervals.toSorted((a, b) => a[0] - b[0]);
 
 		// 3. Inizializza l'array con il primo intervallo
-		const merged: [number, number][] = [sortedIntervals[0]];
+		const merged: Interval[] = [sortedIntervals[0]];
 
 		// 4. Itera e unisci gli intervalli sovrapposti
 		for(let i = 1; i < sortedIntervals.length; ++i) {
@@ -696,7 +699,7 @@ export class AnalyzeStructureSets extends NodeCore {
 				lastMerged[1] = Math.max(lastMerged[1], current[1]);
 			}
 			else {
-				// Nessuna sovrapposizione: aggiungi il nuovo intervallo
+				// No overlapping, add new interval
 				merged.push(current);
 			}
 		}
@@ -714,7 +717,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @returns The label as normal string and the formula as HTML string
 	 */
 	private makeLabel(key: string, numberComponents: number,
-					  atomTypes: string[], atomCounts: number[]): [string, string] {
+					  atomTypes: string[], atomCounts: number[]): [label: string, html: string] {
 
 		const keyParts = key.split("-");
 		const parts = keyParts.map((value) => Number.parseInt(value, 10));
@@ -764,7 +767,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	private makeSummary(numberComponents: number, atomTypes: string[], atomCounts: number[]): string {
 
 		// Load all intervals for each key
-		const lines = new Map<string, [number, number][]>();
+		const lines = new Map<string, Interval[]>();
 		const len = this.variableTransitionTable.pressures.length;
 		for(let i=0; i < len; ++i) {
 
