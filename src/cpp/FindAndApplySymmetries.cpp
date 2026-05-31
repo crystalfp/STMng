@@ -56,7 +56,8 @@ static void ApplyComputedSymmetries(vector<double_t>& fc,
 	// To remove duplicates
 	bool different = true;
 
-	// Compute all symmetries (see http://www.kristall.ethz.ch/LFK/software/sginfo/sginfo_loop_symops.html)
+	// Compute all symmetries
+	// see http://www.kristall.ethz.ch/LFK/software/sginfo/sginfo_loop_symops.html
 	for(int iTrV = 0; iTrV < nTrV; iTrV++, TrV += 3)
 	{
 		for(int iLoopInv = 0; iLoopInv < nLoopInv; iLoopInv++)
@@ -620,6 +621,45 @@ void dumpPOSCAR(double lattice[3][3], double position[][3], int types[], const i
 }
 #endif
 
+int32_t removeDuplicates(
+	size_t natoms,
+	vector<double_t>& fractionalCoordinates,
+	vector<bool>& duplicated
+)
+{
+	int32_t valid = natoms;
+	for(size_t i=0; i < natoms - 1; ++i)
+	{
+		if(duplicated[i]) continue;
+
+		double_t xi = fractionalCoordinates[3*i+0];
+		double_t yi = fractionalCoordinates[3*i+1];
+		double_t zi = fractionalCoordinates[3*i+2];
+
+		for(size_t j=i+1; j < natoms; ++j)
+		{
+			if(duplicated[j]) continue;
+
+			double_t dx = xi - fractionalCoordinates[3*j+0];
+			double_t dy = yi - fractionalCoordinates[3*j+1];
+			double_t dz = zi - fractionalCoordinates[3*j+2];
+
+			if(((dx < FOLD_TOL && dx > -FOLD_TOL) ||
+			     dx > 1-FOLD_TOL || -dx > 1-FOLD_TOL) &&
+			   ((dy < FOLD_TOL && dy > -FOLD_TOL) ||
+			     dy > 1-FOLD_TOL || -dy > 1-FOLD_TOL) &&
+			   ((dz < FOLD_TOL && dz > -FOLD_TOL) ||
+			     dz > 1-FOLD_TOL || -dz > 1-FOLD_TOL))
+			{
+				duplicated[j] = true;
+				--valid;
+			}
+		}
+	}
+
+	return valid;
+}
+
 // > Entry point
 string doFindAndApplySymmetries(
 	vector<double_t>& basis,
@@ -693,21 +733,46 @@ string doFindAndApplySymmetries(
 			// lattice[j][2] = basis[3*j+2];
 		}
 
-		// Prepare the mutable list of atoms' atomic numbers
-		int num_primitive_atom = atomsZ.size();
+#ifdef DEBUG
+		cout << "\n\n*** In enableFindSymmetries (before removing duplicates)" << endl;
+		for(auto x : atomsIdx) cout << x << ' ';
+		cout << "\n*** AtomsZ " << atomsZ.size() << endl;
+		for(auto x : atomsZ) cout << x << ' ';
+		cout << "\n\n";
+#endif
+
+		// Remove duplicates
+		size_t natoms = atomsZ.size();
+		vector<bool> duplicated(natoms, false);
+		int num_primitive_atom = removeDuplicates(natoms, fractionalCoordinates, duplicated);
 		int *types = (int *)malloc(4*num_primitive_atom*sizeof(int));
-		for(size_t i=0; i < num_primitive_atom; ++i) types[i] = atomsZ[i];
+		for(size_t i=0, j=0; i < natoms; ++i)
+		{
+			if(duplicated[i]) continue;
+			types[j++] = atomsZ[i];
+		}
 
 		// Prepare the mutable list of atoms positions
 		double (*positions)[3] { new double[4*num_primitive_atom][3] };
-		for(size_t j=0; j < num_primitive_atom; ++j)
+		for(size_t i=0, j=0; i < natoms; ++i)
 		{
-			positions[j][0] = fractionalCoordinates[3*j+0];
-			positions[j][1] = fractionalCoordinates[3*j+1];
-			positions[j][2] = fractionalCoordinates[3*j+2];
+			if(duplicated[i]) continue;
+			positions[j][0] = fractionalCoordinates[3*i+0];
+			positions[j][1] = fractionalCoordinates[3*i+1];
+			positions[j][2] = fractionalCoordinates[3*i+2];
+			++j;
 		}
+
+		// Updated atoms indices
+		atomsIdx.clear();
+		for(size_t i=0, j=0; i < natoms; ++i)
+		{
+			if(duplicated[i]) continue;
+			atomsIdx.push_back(j++);
+		}
+
 #ifdef DEBUG
-		cout << "\n\n*** In enableFindSymmetries" << endl; // TBD
+		cout << "\n\n*** In enableFindSymmetries (after removing duplicates)" << endl;
 		for(auto x : atomsIdx) cout << x << ' ';
 		cout << "\n*** AtomsZ " << num_primitive_atom << endl;
 		for(size_t i=0; i < num_primitive_atom; ++i) cout << types[i] << ' ';
@@ -721,7 +786,8 @@ string doFindAndApplySymmetries(
 			dumpPOSCAR(lattice, positions, types, natoms, "Before standardizing");
 #endif
 			num_primitive_atom = spg_standardize_cell(lattice, positions, types,
-													  natoms, createPrimitiveCell ? 1 : 0,
+													  num_primitive_atom,
+													  createPrimitiveCell ? 1 : 0,
 													  0, symprecStandardize);
 #ifdef DEBUG
 			dumpPOSCAR(lattice, positions, types, num_primitive_atom, "After standardizing");
