@@ -223,7 +223,7 @@ const showMatches = (): void => {
   <v-label class="separator-title reduce-top">Collection matches</v-label>
   <v-container v-if="state.enabled && similar.length > 0" class="pt-0 pl-0 pr-2 pb-2">
       <v-container v-for="entry of similar" :key="entry.id" v-ripple
-                   class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
+                   class="mb-2 py-1 pl-2 border-thin rounded-lg cursor-pointer"
                    @click="selectResult(entry.id, true)">
         <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" />
         <br>
@@ -236,14 +236,14 @@ const showMatches = (): void => {
   <v-container v-if="legend" class="pb-0">
     <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
       <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
-      <span style="width: 5.5rem;margin-right:3px">{{ n.range }}</span>{{ n.label }}
+      <span style="width: 5.5rem; margin-right: 3px">{{ n.range }}</span>{{ n.label }}
     </div>
   </v-container>
   <block-button label="Matchers parameters" class="mb-n2 mt-4"
                 @click="showParameters = !showParameters"/>
   <v-container v-if="showParameters" class="pa-0">
     <debounced-slider v-slot="{value}" v-model="state.numberMatches"
-                        :min="1" :max="8" :step="1" class="mb-2 mt-2">
+                      :min="1" :max="8" :step="1" class="mb-2 mt-2">
       <v-label :text="`Collection neighbors (${value})`" class="no-select" />
     </debounced-slider>
     <debounced-slider v-slot="{value}" v-model="state.lengthTolerance"

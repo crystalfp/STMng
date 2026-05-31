@@ -734,11 +734,13 @@ export class StructureReader extends NodeCore {
 			.catch((error: Error) => {
 				return `Format "${this.format}" error: ${error.message}`;
 			});
+
+		// If the file has been dropped, it cannot be read again
 		if(typeof structures === "string") {
 
 			sendAlertToClient(structures, {
 				node: "structureReader",
-				userMessage: "Dropped file disappeared. Drop it again"
+				userMessage: "To reset atom types, drop the file again"
 			});
 			return {error: structures};
 		}
