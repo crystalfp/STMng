@@ -131,6 +131,7 @@ export class ReaderCIF implements ReaderImplementation {
 	private readonly tbl = new Table();
 	private readonly structures: Structure[] = [];
 	private step = -1;
+	private alreadyHaveCell = false;
 
 	/**
 	 * Read the structures from the file
@@ -197,6 +198,8 @@ export class ReaderCIF implements ReaderImplementation {
 				}
 				basisSides  = [0, 0, 0];
 				basisAngles = [0, 0, 0];
+				this.alreadyHaveCell = false;
+
 				continue;
 			}
 			else if(lineLC.startsWith("loop_")) {
@@ -245,6 +248,7 @@ export class ReaderCIF implements ReaderImplementation {
 						this.structures[this.step].crystal.basis =
 								extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
 											 basisAngles[0], basisAngles[1], basisAngles[2]);
+						this.alreadyHaveCell = true;
 					}
 					break;
 				case "_cell_angle_alpha":
@@ -263,12 +267,14 @@ export class ReaderCIF implements ReaderImplementation {
 						this.structures[this.step].crystal.basis =
 								extractBasis(basisSides[0],  basisSides[1],  basisSides[2],
 											 basisAngles[0], basisAngles[1], basisAngles[2]);
+						this.alreadyHaveCell = true;
 					}
 					break;
 				default:
 					// Another way to define the unit cell
 					if(ws[0].startsWith("_atom_sites.fract_transf_matrix")) {
 
+						if(this.alreadyHaveCell) continue;
 						const match = /\[(\d)\]\[(\d)\]/u.exec(ws[0]);
 						const r = Number.parseInt(match![1], 10)-1;
 						const c = Number.parseInt(match![2], 10)-1;
