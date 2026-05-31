@@ -104,7 +104,7 @@ const stopWatcher1 = watch([showPolyhedra, surfaceColor, colorByCenterAtom, opac
 });
 
 
-const stopWatcher2 = watch([constrains], () => {
+const stopWatcher2 = watch(constrains, () => {
 
     sendToNode(id, "constrain", {
         constrainVertices: constrains.type,

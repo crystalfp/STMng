@@ -84,9 +84,9 @@ const captureButtonLabel = computed(() => {
     return "Capture";
 });
 
-const stopWatchers = watch([writerAccumulate], () => {
+const stopWatchers = watch(writerAccumulate, (after) => {
 
-    continuous.value = writerAccumulate.value;
+    continuous.value = after;
 });
 
 // Cleanup

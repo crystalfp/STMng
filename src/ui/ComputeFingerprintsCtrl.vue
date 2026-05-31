@@ -196,7 +196,7 @@ const resetAccumulator = (): void => {
 };
 
 /** Changes accumulating structures request */
-const stopWatcher1 = watch([fingerprintsAccumulate], () => {
+const stopWatcher1 = watch(fingerprintsAccumulate, () => {
 
     askNode(id, "capture", {
         fingerprintsAccumulate: controlStore.fingerprintsAccumulate,

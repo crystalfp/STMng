@@ -113,10 +113,10 @@ const stopWatcher2 = watch([labelKind, atomsSelector], () => {
 });
 
 /** Max displacement to take part of a single trace */
-const stopWatcher3 = watch([maxDisplacement], () => {
+const stopWatcher3 = watch(maxDisplacement, (after) => {
 
     sendToNode(id, "gap", {
-        maxDisplacement: maxDisplacement.value,
+        maxDisplacement: after,
     });
 });
 

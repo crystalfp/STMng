@@ -52,7 +52,7 @@ const closeMessage = (): void => {
     clearTimeout(timerID);
 };
 
-const stopWatcher = watch([node], () => {
+const stopWatcher = watch(node, () => {
 
     if(node.value === "") {
         if(text.value === "") showMessage.value = false;
