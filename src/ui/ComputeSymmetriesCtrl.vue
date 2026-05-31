@@ -122,6 +122,7 @@ const stopWatcher1 = watch([applyInputSymmetries,
        createPrimitiveCell,
        standardizeOnly], () => {
 
+    resetNodeAlert();
     sendToNode(id, "compute", {
         applyInputSymmetries: applyInputSymmetries.value,
         enableFindSymmetries: enableFindSymmetries.value,
