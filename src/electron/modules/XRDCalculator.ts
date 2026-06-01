@@ -202,7 +202,7 @@ export class XRDCalculator {
             // Structure factor = sum of atomic scattering factors (with
             // position factor exp(2j * pi * g.r and occupancies).
             // The two elements of the tuple are the real and imaginary parts
-            const fHKL: [number, number] = [0, 0];
+            const fHKL: [re: number, im: number] = [0, 0];
             for(let i=0; i < fs.length; ++i) {
                 const multiplier = fs[i] * occus[i] * dwCorrection[i];
                 const value = Math.PI*2*gDotR[i];

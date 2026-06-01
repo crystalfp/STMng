@@ -64,7 +64,7 @@ import type {Lattice} from "./types";
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
 const computeLLL = (basis: number[][],
-                    delta = 0.75): [number[][], number[][]] => {
+                    delta = 0.75): [reduced: number[][], mapping: number[][]] => {
 
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.

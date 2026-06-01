@@ -88,10 +88,10 @@ export class SymmOp {
     operate(point: number[]): number[] {
 
         // Convert the 3D point to a 4D homogeneous vector [x, y, z, 1]
-        const affinePoint: [number, number, number, number] = [point[0], point[1], point[2], 1];
+        const affinePoint: [x: number, y: number, z: number, w: number] = [point[0], point[1], point[2], 1];
 
         // Perform matrix-vector multiplication: result = matrix * affinePoint
-        const result: [number, number, number, number] = [0, 0, 0, 0];
+        const result: [x: number, y: number, z: number, w: number] = [0, 0, 0, 0];
         for(let i = 0; i < 4; i++) {
             for(let j = 0; j < 4; j++) {
                 result[i] += this.matrix[i][j] * affinePoint[j];

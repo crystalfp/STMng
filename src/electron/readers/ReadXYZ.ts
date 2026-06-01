@@ -26,7 +26,8 @@ import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {getAtomicNumber} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import type {Structure, Atom, ReaderImplementation} from "@/types";
+import type {Structure, Atom,
+			 ReaderImplementation, PositionType} from "@/types";
 
 export class ReaderXYZ implements ReaderImplementation {
 
@@ -65,7 +66,7 @@ export class ReaderXYZ implements ReaderImplementation {
 				if(line === "") throw Error("Invalid empty line found");
 				const fields = line.split(/\s+/u);
 				if(fields.length < 4) throw Error(`Insufficient number of fields in "${line}"`);
-				const position: [x: number, y: number, z: number] = [
+				const position: PositionType = [
 					Number.parseFloat(fields[1]),
 					Number.parseFloat(fields[2]),
 					Number.parseFloat(fields[3]),
