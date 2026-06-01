@@ -7,6 +7,7 @@ import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
 // import dts from "vite-plugin-dts";
 /* oxlint-disable require-unicode-regexp */
+const isProd = process.env.NODE_ENV === "production";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +15,7 @@ export default defineConfig({
         alias: {
             "@": fileURLToPath(new URL("src", import.meta.url))
         },
-        preserveSymlinks: true
+        // preserveSymlinks: true
     },
     optimizeDeps: {
         exclude: [
@@ -37,6 +38,7 @@ export default defineConfig({
                 entry: "src/electron/main.ts",
                 vite: {
                     build: {
+                        minify: isProd,
                         reportCompressedSize: false,
                         rolldownOptions: {
                             output: {
@@ -48,11 +50,11 @@ export default defineConfig({
             },
             {
                 entry: "src/electron/preload.ts",
-                onstart(options): void {
-                    // Notify the Renderer-Process to reload the page when the Preload-Scripts build
-                    // is complete, instead of restarting the entire Electron App.
-                    options.reload();
-                },
+                // onstart(options): void {
+                //     // Notify the Renderer-Process to reload the page when the Preload-Scripts build
+                //     // is complete, instead of restarting the entire Electron App.
+                //     options.reload();
+                // },
                 vite: {
                     build: {
                         reportCompressedSize: false,
