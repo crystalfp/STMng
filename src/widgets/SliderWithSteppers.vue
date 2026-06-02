@@ -121,10 +121,10 @@ onUnmounted(() => {
 <v-slider v-model="valueToDebounce" :min :max :step :label :thumb-color="color"
           :disabled hide-details class="slider-with-stepper">
   <template #prepend>
-    <v-btn icon="mdi-minus" size="small" variant="text" @click="decrement" />
+    <v-icon-btn icon="mdi-minus" size="default" variant="text" @click="decrement" />
   </template>
   <template #append>
-    <v-btn icon="mdi-plus" size="small" variant="text" @click="increment" />
+    <v-icon-btn icon="mdi-plus" size="default" variant="text" @click="increment" />
   </template>
 </v-slider>
 </template>

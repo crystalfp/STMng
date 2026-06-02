@@ -75,6 +75,7 @@ import {Ripple} from "vuetify/directives/ripple";
 import {VSnackbarQueue} from "vuetify/components/VSnackbarQueue";
 import {VAutocomplete} from "vuetify/components/VAutocomplete";
 import {VDataTable} from "vuetify/components/VDataTable";
+import {VIconBtn} from "vuetify/components/VIconBtn";
 
 // Start catching unhandled exceptions and promises
 log.errorHandler.startCatching({showDialog: false});
@@ -112,7 +113,8 @@ const app = createApp(App)
 			// VTooltip,
 			VSnackbarQueue,
 			VAutocomplete,
-			VDataTable
+			VDataTable,
+			VIconBtn
 		},
 		directives: {
 			// Tooltip,
@@ -138,6 +140,11 @@ const app = createApp(App)
 				variant: "outlined",
 				style: "text-transform: uppercase;letter-spacing: 0.3px;"
     		},
+			VIconBtn: {
+				color: "primary",
+				size: "x-large",
+				variant: "tonal"
+			},
 			VSwitch: {
 				density: "compact",
 				color: "primary",

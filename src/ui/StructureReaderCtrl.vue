@@ -824,7 +824,7 @@ const checkRenderingSpeed = (): void => {
         <v-label v-if="stepRange[0] > 1 || stepRange[1] < countSteps"
                 class="no-select pb-4 mt-n2">
                 {{ `Range ${stepRange[0]} — ${stepRange[1]}` }}</v-label>
-        <v-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps" variant="plain"
+        <v-icon-btn v-if="stepRange[0] > 1 || stepRange[1] < countSteps" variant="plain"
               class="mr-6 mt-n6" icon="mdi-arrow-expand-horizontal" @click="resetRange" />
       </v-row>
       <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
@@ -832,21 +832,21 @@ const checkRenderingSpeed = (): void => {
       <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
       <v-row class="mr-8 mt-n2">
         <v-spacer />
-        <v-btn variant="tonal" :disabled="step <= stepRange[0]"
-                icon="mdi-chevron-double-left" class="mr-1" rounded="xl"
-                @click="step = stepRange[0]" />
-        <v-btn variant="tonal" :disabled="step <= stepRange[0]"
-                icon="mdi-chevron-left" class="mr-1" rounded="xl"
-                @click="deltaStep(-1)" />
-        <v-btn variant="tonal" :icon="running ? 'mdi-stop' : 'mdi-play'"
-                class="mr-1" rounded="xl"
-                @click="togglePlay" />
-        <v-btn variant="tonal" :disabled="step >= stepRange[1]"
-                icon="mdi-chevron-right" class="mr-1" rounded="xl"
-                @click="deltaStep(1)" />
-        <v-btn variant="tonal" :disabled="step >= stepRange[1]"
-                icon="mdi-chevron-double-right" rounded="xl"
-                @click="step = stepRange[1]; running = false" />
+        <v-icon-btn v-ripple :disabled="step <= stepRange[0]"
+                    icon="mdi-chevron-double-left"
+                    @click="step = stepRange[0]" />
+        <v-icon-btn v-ripple :disabled="step <= stepRange[0]"
+                    icon="mdi-chevron-left"
+                    @click="deltaStep(-1)" />
+        <v-icon-btn v-ripple
+                    :icon="running ? 'mdi-stop' : 'mdi-play'"
+                    @click="togglePlay" />
+        <v-icon-btn v-ripple :disabled="step >= stepRange[1]"
+                    icon="mdi-chevron-right"
+                    @click="deltaStep(1)" />
+        <v-icon-btn v-ripple :disabled="step >= stepRange[1]"
+                    icon="mdi-chevron-double-right"
+                    @click="step = stepRange[1]; running = false" />
         <v-spacer />
       </v-row>
 

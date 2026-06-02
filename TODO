@@ -18,7 +18,7 @@ Bugs:
 
 To do:
   ☐ Check error return from main process to client
-  ☐ When out of labs use `v-icon-btn` instead of `v-btn` in reader <https://vuetifyjs.com/en/components/icon-buttons/>
+  ✔ When out of labs use `v-icon-btn` instead of `v-btn` in reader <https://vuetifyjs.com/en/components/icon-buttons/> @done(2026-06-02 16:44)
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo

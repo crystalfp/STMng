@@ -73,7 +73,7 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
     <v-btn value="0" icon="mdi-alpha-x-box-outline" size="x-large"/>
     <v-btn value="r" class="pl-16">Reset camera</v-btn>
   </v-btn-toggle>
-  <v-btn-toggle v-if="showPanel===1" v-model="lookAxis" mandatory variant="text" :divided="false"
+  <v-btn-toggle v-else-if="showPanel===1" v-model="lookAxis" mandatory variant="text" :divided="false"
                 rounded="0" class="muted" density="compact">
     <v-btn value="1" :icon="hasCell ? 'mdi-alpha-a-box-outline' : 'mdi-alpha-h-box-outline'" size="x-large"/>
     <v-btn value="x">X</v-btn>
@@ -81,7 +81,7 @@ const hasCell = computed(() => controlStore.basis.some((b) => b !== 0));
     <v-btn value="z">Z</v-btn>
     <v-btn value="s" :icon="axisSign ==='+' ? 'mdi-plus' : 'mdi-minus'"/>
   </v-btn-toggle>
-  <v-btn-toggle v-if="showPanel===2" v-model="lookAxis" mandatory variant="text" :divided="false"
+  <v-btn-toggle v-else-if="showPanel===2" v-model="lookAxis" mandatory variant="text" :divided="false"
                 rounded="0" class="muted" density="compact">
     <v-btn value="2" icon="mdi-alpha-h-box-outline" size="x-large" />
     <v-btn value="a">a</v-btn>
