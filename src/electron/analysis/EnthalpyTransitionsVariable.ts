@@ -65,6 +65,18 @@ export interface SummaryTableEntry {
 }
 
 /**
+ * Points prepared for the convex hull computation
+ *
+ * @notExported
+ */
+interface PreparedPoints {
+	/** Points for the convex hull computation */
+	points: number[][];
+	/** Mapping of these points index to the original set of points */
+	idx: number[];
+}
+
+/**
  * Compute convex hull vertices for 2 components
  *
  * @param pressure - Pressure at which convex hull vertices should be computed
@@ -259,7 +271,7 @@ export const preparePointsForConvexHull3D = (
 									y: number[],
 									e: number[],
 									k: string[]
-								): {points: number[][]; idx: number[]} => {
+								): PreparedPoints => {
 
 	// For coincident configurations retain only the one with minimal energy
 	const minEnergies = new Map<string, {idx: number; energy: number}>();
@@ -306,7 +318,7 @@ const preparePointsForConvexHull4D = (
 							p: number[][],
 							e: number[],
 							parts: string[]
-						): {points: number[][]; idx: number[]} => {
+						): PreparedPoints => {
 
 	// For coincident configurations retain only the one with minimal energy
 	const minEnergies = new Map<string, {idx: number; energy: number}>();
