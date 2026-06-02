@@ -41,7 +41,7 @@ export interface TransitionTable {
  * @param accumulator - Accumulated structures
  * @returns Table of enthalpy structures transitions
  */
-export const computeTransitions = (accumulator: StructureSetsAccumulator): TransitionTable => {
+export const computeTransitions = (accumulator: StructureSetsAccumulator, limit: number): TransitionTable => {
 
 	const transitionTable: TransitionTable = {
 		steps: [],
@@ -59,7 +59,7 @@ export const computeTransitions = (accumulator: StructureSetsAccumulator): Trans
 	}
 	if(points.length < 3) return transitionTable;
 
-	const {vertexX: volumes, vertexY: energies, index: indices} = convexHull2D(points);
+	const {vertexX: volumes, vertexY: energies, index: indices} = convexHull2D(points, limit);
 
 	const len = volumes.length;
 	for(let i=len-2; i >= 0; --i) {

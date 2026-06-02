@@ -41,9 +41,10 @@ interface ConvexHullVE {
  * Compute the convex hull in the plane
  *
  * @param points - Points in the chart
+ * @param limit - Maximum value of the normal to classify the facet as a bottom one
  * @returns Convex hull vertices and index in the points array
  */
-export const convexHull2D = (points: number[][]): ConvexHullVE => {
+export const convexHull2D = (points: number[][], limit: number): ConvexHullVE => {
 
 	// Find convex hull (only the lower part)
 	// The facet is encoded as (normal[2], offset)
@@ -51,7 +52,7 @@ export const convexHull2D = (points: number[][]): ConvexHullVE => {
 	const toOrder: {x: number; y: number; idx: number}[] = [];
 	for(const facet of hull) {
 
-		if(facet.plane[1] < -1e-4) {
+		if(facet.plane[1] < limit) {
 			const [v1, v2] = facet.verts;
 
 			toOrder.push({x: points[v1][0], y: points[v1][1], idx: v1},

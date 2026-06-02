@@ -33,7 +33,7 @@ import {computeValid, distanceMethodsNames, fingerprintMethodsNames,
 		type ComputeValidParameters} from "../analysis/ComputeValid";
 import {VariableCompositionConvexHull} from "../analysis/ConvexHull";
 import {convexHull2D} from "../analysis/ConvexHull2D";
-import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen} from "../modules/WindowsUtilities";
 import {computeTransitions, type TransitionTable} from "../analysis/EnthalpyTransitions";
 import {computeTransitionsVariable, type SummaryTableEntry,
 		type VariableTransitionTable} from "../analysis/EnthalpyTransitionsVariable";
@@ -92,7 +92,8 @@ export class AnalyzeStructureSets extends NodeCore {
 		fixTriangleInequality: false,
 		removeDuplicates: true,
 		duplicatesThreshold: 0.03,
-		consolidateOutput: false
+		consolidateOutput: false,
+		hullUpperLimitExponent: -4
 	};
 
 	private options: ComputeValidParameters = {
@@ -199,6 +200,7 @@ export class AnalyzeStructureSets extends NodeCore {
     	this.state.removeDuplicates = params.removeDuplicates as boolean ?? true;
     	this.state.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.03;
 		this.state.consolidateOutput = params.consolidateOutput as boolean ?? false;
+		this.state.hullUpperLimitExponent = params.hullUpperLimitExponent as number ?? -4;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -811,6 +813,77 @@ export class AnalyzeStructureSets extends NodeCore {
 		return JSON.stringify(out);
 	}
 
+	/**
+	 * Update convex hull computations on limit change
+	 *
+	 * @param exponent - New exponent of the convex hull upper limit
+	 */
+	private changeHullUpperLimit(exponent: number): void {
+
+		const limit = -(10**exponent);
+
+		if(isSecondaryWindowOpen("/components-hull")) {
+
+			const result = this.hull.prepareData(this.state.numberComponents, limit);
+
+			if(result) sendAlertToClient(result, {node: "analyzeStructureSets"});
+			else {
+				// Update the chart
+				createOrUpdateSecondaryWindow({
+					routerPath: "/components-hull",
+					alreadyOpen: true,
+					width: 1000,
+					height: 900,
+					title: "Variable composition convex hull",
+					data: this.hull.dataForDisplay()
+				});
+			}
+		}
+		if(isSecondaryWindowOpen("/hull-3d")) {
+
+			const result = this.hull.prepareData(this.state.numberComponents, limit);
+
+			if(result) sendAlertToClient(result, {node: "analyzeStructureSets"});
+			else {
+
+				// Open the chart
+				createOrUpdateSecondaryWindow({
+					routerPath: "/hull-3d",
+					alreadyOpen: true,
+					width: 1130,
+					height: 950,
+					title: "Variable composition 3D convex hull",
+					data: this.hull.dataForDisplay3D()
+				});
+			}
+		}
+		if(isSecondaryWindowOpen("/ev-chart")) {
+
+			this.channelEVChart();
+		}
+		if(this.transitionTable.steps.length > 0) {
+
+			this.transitionTable = computeTransitions(this.accumulator, limit);
+
+			sendToClient(this.id, "update-table-fix", {
+				steps: this.transitionTable.steps,
+				formulas: this.transitionTable.formulas,
+				pressures: this.transitionTable.pressures
+			});
+		}
+		if(this.variableTransitionTable.steps.length > 0) {
+
+			this.variableTransitionTable =
+					computeTransitionsVariable(this.accumulator,
+											   this.state.numberComponents,
+											   limit);
+
+			sendToClient(this.id, "update-table-var", {
+				transitions: JSON.stringify(this.variableTransitionTable),
+			});
+		}
+	}
+
 	// > Channels
 	/**
 	 * Channel handler for UI initialization
@@ -855,7 +928,8 @@ export class AnalyzeStructureSets extends NodeCore {
 			return {error: message};
 		}
 
-		const sts = this.hull.prepareData(ncomponents);
+		const limit = -(10**this.state.hullUpperLimitExponent);
+		const sts = this.hull.prepareData(ncomponents, limit);
 		if(sts !== "") {
 			sendAlertToClient(sts, {node: "analyzeStructureSets"});
 			return {error: sts};
@@ -942,7 +1016,15 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private channelState(params: CtrlParams): void {
 
+		// Check if hull upper limit changed
+		const exponent = params.hullUpperLimitExponent as number ?? -4;
+		const changed = exponent !== this.state.hullUpperLimitExponent;
+
+		// Save the full state
 		this.initializeState(params);
+
+		// If changed, recompute all convex hulls
+		if(changed) this.changeHullUpperLimit(exponent);
 	}
 
 	/**
@@ -1140,22 +1222,20 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const dimension = params.dimension as number ?? 0;
 
-		const result = this.hull.prepareData(dimension);
+		const limit = -(10**this.state.hullUpperLimitExponent);
+		const result = this.hull.prepareData(dimension, limit);
 
 		if(result) return {error: result};
 
-		// Open the chart if so requested
-		const showChart = params.showChart as boolean ?? false;
-		if(showChart) {
+		// Open the chart
+		createOrUpdateSecondaryWindow({
+			routerPath: "/components-hull",
+			width: 1000,
+			height: 900,
+			title: "Variable composition convex hull",
+			data: this.hull.dataForDisplay()
+		});
 
-			createOrUpdateSecondaryWindow({
-				routerPath: "/components-hull",
-				width: 1000,
-				height: 900,
-				title: "Variable composition convex hull",
-				data: this.hull.dataForDisplay()
-			});
-		}
 		return {status: "OK!"};
 	}
 
@@ -1168,22 +1248,20 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const dimension = params.dimension as number ?? 0;
 
-		const result = this.hull.prepareData(dimension);
+		const limit = -(10**this.state.hullUpperLimitExponent);
+		const result = this.hull.prepareData(dimension, limit);
 
 		if(result) return {error: result};
 
-		// Open the chart if so requested
-		const show3DView = params.show3DView as boolean ?? false;
-		if(show3DView) {
+		// Open the chart
+		createOrUpdateSecondaryWindow({
+			routerPath: "/hull-3d",
+			width: 1130,
+			height: 950,
+			title: "Variable composition 3D convex hull",
+			data: this.hull.dataForDisplay3D()
+		});
 
-			createOrUpdateSecondaryWindow({
-				routerPath: "/hull-3d",
-				width: 1130,
-				height: 950,
-				title: "Variable composition 3D convex hull",
-				data: this.hull.dataForDisplay3D()
-			});
-		}
 		return {status: "OK!"};
 	}
 
@@ -1192,11 +1270,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 *
 	 * @param params - Parameters from the UI
 	 */
-	private channelEVChart(params: CtrlParams): void {
-
-		// Open the chart if so requested
-		const showChart = params.showChart as boolean ?? false;
-		if(!showChart) return;
+	private channelEVChart(): void {
 
 		const energy: number[] = [];
 		const volume: number[] = [];
@@ -1212,7 +1286,8 @@ export class AnalyzeStructureSets extends NodeCore {
 			hullPoints.push([entry.volume, entry.energy]);
 		}
 
-		const {vertexX, vertexY, index} = convexHull2D(hullPoints);
+		const limit = -(10**this.state.hullUpperLimitExponent);
+		const {vertexX, vertexY, index} = convexHull2D(hullPoints, limit);
 
 		const delta = this.deltaEnergy(vertexX, vertexY, energy, volume);
 
@@ -1269,7 +1344,8 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private channelTransitionsFix(): CtrlParams {
 
-		this.transitionTable = computeTransitions(this.accumulator);
+		const limit = -(10**this.state.hullUpperLimitExponent);
+		this.transitionTable = computeTransitions(this.accumulator, limit);
 
 		return {
 			steps: this.transitionTable.steps,
@@ -1285,9 +1361,11 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	private channelTransitionsVar(): CtrlParams {
 
+		const limit = -(10**this.state.hullUpperLimitExponent);
 		this.variableTransitionTable =
 					computeTransitionsVariable(this.accumulator,
-											   this.state.numberComponents);
+											   this.state.numberComponents,
+											limit);
 
 		return {
 			transitions: JSON.stringify(this.variableTransitionTable),

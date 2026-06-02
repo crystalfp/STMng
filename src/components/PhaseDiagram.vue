@@ -38,6 +38,7 @@ const lineHeight = ref(30);
 const summary = ref<SummaryTableEntry[]>([]);
 const summaryLineHeight = ref(30);
 const showSummary = ref(true);
+const forceUpdate = ref(true);
 
 const windowPath = "/phase-diagram";
 
@@ -149,6 +150,8 @@ requestData(windowPath, (params: CtrlParams) => {
 
     // Compute line height to fill the chart
     summaryLineHeight.value = Math.min(Math.max(Math.floor(742/summaryTable.length), 25), 50);
+
+    forceUpdate.value = !forceUpdate.value;
 });
 
 // Chart accessors
@@ -195,8 +198,8 @@ const summaryTriggers = {
                     :xDomainMinConstraint="[undefined, -200]"
                     :xDomainMaxConstraint="[200, undefined]"
                     :duration="0" :data="summary" class="phase-viewer">
-      <VisTimeline :lineRow="ss" :x="xs" :lineDuration="ls" :showLabels="true"
-                   :alternatingRowColors="true"
+      <VisTimeline :key="forceUpdate" :lineRow="ss" :x="xs" :lineDuration="ls"
+                   :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="summaryLineHeight" :showEmptySegments="true"
                    :lineWidth="20" lineCursor="pointer" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
@@ -208,8 +211,8 @@ const summaryTriggers = {
                     :xDomainMinConstraint="[undefined, -200]"
                     :xDomainMaxConstraint="[200, undefined]"
                     :duration="0" :data="range" class="phase-viewer">
-      <VisTimeline :lineRow="sp" :x="xp" :lineDuration="lp" :showLabels="true"
-                   :alternatingRowColors="true"
+      <VisTimeline :key="forceUpdate" :lineRow="sp" :x="xp" :lineDuration="lp"
+                   :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="lineHeight" :showEmptySegments="true"
                    :lineWidth="20" lineCursor="pointer" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"

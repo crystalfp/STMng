@@ -29,11 +29,12 @@ import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import type {DistanceMethodsNames, FPmethodName} from "@/types";
+import type {VariableTransitionTable} from "@/electron/analysis/EnthalpyTransitionsVariable";
 
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
-import type {VariableTransitionTable} from "@/electron/analysis/EnthalpyTransitionsVariable";
+import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -96,14 +97,18 @@ const state = reactive({
     fixTriangleInequality: false,
     removeDuplicates: true,
     duplicatesThreshold: 0.03,
-    consolidateOutput: false
+    consolidateOutput: false,
+    hullUpperLimitExponent: -4
 });
 
-/** Pass state changes to the main process for saving in the project file */
-const stopWatcher1 = watch(state, (after) => {
 
-    sendToNode(id, "state", toRaw(after));
-});
+/**
+ * Convert in human readable format the exponent of 10
+ *
+ * @param value - Power of 10 to convert in human readable format
+ * @returns The value converted to string (value -3 → 1.00e-3)
+ */
+const showExponential = (value: number): string => (10**value).toExponential(2);
 
 /** Update the components composition UI */
 const stopWatcher2 = watch([species, countComponents], ([sp, cc]) => {
@@ -208,6 +213,55 @@ receiveFromNode(id, "load", (params) => {
     species.value.length = 0;
     for(const s of params.species as string[] ?? []) species.value.push(s);
     remainingAfterFilter.value = params.countRemaining as number ?? 0;
+});
+
+/** Receive new table for fixed composition when changing limit value */
+receiveFromNode(id, "update-table-fix", (params) => {
+
+    const rawSteps = params.steps as number[] ?? [];
+    const rawFormulas = params.formulas as string[] ?? [];
+    const rawPressures = params.pressures as number[] ?? [];
+
+    table.value.length = 0;
+    for(let i=0; i < rawSteps.length; ++i) {
+        table.value.push({
+            step: rawSteps[i].toFixed(0),
+            formula: rawFormulas[i],
+            pressure: rawPressures[i].toFixed(3)
+        });
+    }
+});
+
+/** Receive new table for variable composition when changing limit value */
+receiveFromNode(id, "update-table-var", (params) => {
+
+    tableVar.value.length = 0;
+    const transitionRaw = params.transitions as string;
+    if(!transitionRaw) throw Error("Empty transitions");
+    const transitions = JSON.parse(transitionRaw) as VariableTransitionTable;
+    const n = transitions.pressures.length;
+    let idx = 0;
+    for(let i=0; i < n; ++i) {
+        const [pl, ph] = transitions.pressures[i];
+        const range = `\u2002${pl.toFixed(1)}\u2002\u27F7\u2002${ph.toFixed(1)}`;
+        tableVar.value.push({
+            id: idx++,
+            pressureRange: range,
+            step: "",
+            formula: "",
+            enthalpy: ""
+        });
+        const len = transitions.steps[i].length;
+        for(let j=0; j < len; ++j) {
+            tableVar.value.push({
+                id: idx++,
+                pressureRange: "",
+                step: transitions.steps[i][j].toFixed(0),
+                formula: transitions.formulas[i][j],
+                enthalpy: transitions.enthalpies[i][j].toFixed(4)
+            });
+        }
+    }
 });
 
 /** Accumulation enabled in the reader */
@@ -384,18 +438,21 @@ const saveAnalyzed = (): void => {
 
 const disableOnNoAnalysisDone = computed(() => {
 
-    return !analysisDone.value && state.removeDuplicates;
+    return countAccumulated.value === 0 ||
+            (!analysisDone.value && state.removeDuplicates);
 });
 
 const disableCharts = computed(() => {
 
     return countComponents.value > 3 ||
+            countAccumulated.value === 0 ||
             (!analysisDone.value && state.removeDuplicates);
 });
 
 const disable3DView = computed(() => {
 
     return countComponents.value < 3 ||
+            countAccumulated.value === 0 ||
             (!analysisDone.value && state.removeDuplicates);
 });
 
@@ -405,14 +462,10 @@ const disable3DView = computed(() => {
 const showCharts = (): void => {
 
     if(countComponents.value === 1) {
-        sendToNode(id, "ev-chart", {
-            showChart: true,
-            dimension: 1
-        });
+        sendToNode(id, "ev-chart");
     }
     else {
         askNode(id, "convex-hull", {
-            showChart: true,
             dimension: countComponents.value
         })
         .then((result) => {
@@ -431,7 +484,6 @@ const showCharts = (): void => {
 const show3DView = (): void => {
 
     askNode(id, "convex-hull-3d", {
-        show3DView: true,
         dimension: countComponents.value
     })
     .then((result) => {
@@ -448,6 +500,9 @@ let lastFilterStructures = true;
 let lastDistanceFromHull = 0;
 let lastEnergyFromMinimum = 0;
 const stopWatcher4 = watch(state, (st) => {
+
+    // Pass state changes to the main process for saving in the project file
+    sendToNode(id, "state", toRaw(st));
 
     if(st.filterStructures !== lastFilterStructures ||
        st.distanceFromHull !== lastDistanceFromHull ||
@@ -478,7 +533,6 @@ const stopWatcher4 = watch(state, (st) => {
 
 // Cleanup
 onUnmounted(() => {
-    stopWatcher1();
     stopWatcher2();
     stopWatcher3();
     stopWatcher4();
@@ -543,8 +597,6 @@ const enthalpyTransition = (): void => {
             for(let i=0; i < n; ++i) {
                 const [pl, ph] = transitions.pressures[i];
                 const range = `\u2002${pl.toFixed(1)}\u2002\u27F7\u2002${ph.toFixed(1)}`;
-                // const range = `\u2002${pl.toFixed(1)}\u2002\u22EF\u2002${ph.toFixed(1)}`;
-                // const range = `\u2002${pl.toFixed(1)}\u2002...\u2002${ph.toFixed(1)}`;
                 tableVar.value.push({
                     id: idx++,
                     pressureRange: range,
@@ -752,6 +804,11 @@ const headers = ref([
 
   <v-label class="separator-title">Analyze results</v-label>
 
+  <debounced-slider v-slot="{value}" v-model="state.hullUpperLimitExponent"
+                    :min="-12" :max="-1" :step="0.5" class="ml-1 mb-4 mt-2">
+    <v-label :text="`Hull normals upper limit (${'-' + showExponential(value)})`" class="no-select" />
+  </debounced-slider>
+
   <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
   <block-button :disabled="disable3DView" label="3D view" @click="show3DView" />
   <v-switch v-model="state.consolidateOutput" :disabled="disableOnNoAnalysisDone"
@@ -760,7 +817,9 @@ const headers = ref([
   <v-label v-if="savedFiles >= 0" class="result-label pt-4 ml-1 mt-2">
     {{ `Files saved: ${savedFiles}` }}
   </v-label>
+
   <v-label class="separator-title">Enthalpy transitions</v-label>
+
   <block-button :disabled="disableOnNoAnalysisDone" label="Compute transitions"
                 :loading="tableVarRunning" @click="enthalpyTransition" />
   <v-data-table v-if="table.length > 0 && countComponents === 1" :items="table"

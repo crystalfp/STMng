@@ -69,9 +69,12 @@ export interface SummaryTableEntry {
  *
  * @param pressure - Pressure at which convex hull vertices should be computed
  * @param accumulator - Accumulated structures
+ * @param limit - Maximum value of the normal to classify the facet as a bottom one
  * @returns List of vertices at the given pressure
  */
-const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulator): Vertex[] => {
+const computeVertices2D = (pressure: number,
+						   accumulator: StructureSetsAccumulator,
+						   limit: number): Vertex[] => {
 
 	// Find extremes
 	let e0 = Number.POSITIVE_INFINITY;
@@ -122,7 +125,7 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
 	}
 
 	// Find convex hull (only the lower part)
-	const {index} = convexHull2D(points);
+	const {index} = convexHull2D(points, limit);
 
 	const out: Vertex[] = [];
 	for(const idx of index) {
@@ -137,9 +140,12 @@ const computeVertices2D = (pressure: number, accumulator: StructureSetsAccumulat
  *
  * @param pressure - Pressure at which convex hull vertices should be computed
  * @param accumulator - Accumulated structures
+ * @param limit - Maximum value of the normal to classify the facet as a bottom one
  * @returns List of vertices at the given pressure
  */
-const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulator): Vertex[] => {
+const computeVertices3D = (pressure: number,
+						   accumulator: StructureSetsAccumulator,
+						   limit: number): Vertex[] => {
 
 	// Find extremes
 	let e0 = Number.POSITIVE_INFINITY;
@@ -219,7 +225,7 @@ const computeVertices3D = (pressure: number, accumulator: StructureSetsAccumulat
 	const idxVertices = new Set<number>();
 	for(const facet of hull) {
 
-		if(facet.plane[2] < -1e-4) {
+		if(facet.plane[2] < limit) {
 			const [v1, v2, v3] = facet.verts;
 			const w1 = idx[v1];
 			const w2 = idx[v2];
@@ -340,9 +346,12 @@ const preparePointsForConvexHull4D = (
  *
  * @param pressure - Pressure at which convex hull vertices should be computed
  * @param accumulator - Accumulated structures
+ * @param limit - Maximum value of the normal to classify the facet as a bottom one
  * @returns List of vertices at the given pressure
  */
-const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulator): Vertex[] => {
+const computeVertices4D = (pressure: number,
+						   accumulator: StructureSetsAccumulator,
+						   limit: number): Vertex[] => {
 
 	// Find extremes
 	let e0 = Number.POSITIVE_INFINITY;
@@ -427,7 +436,7 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
 	const idxVertices = new Set<number>();
 	for(const facet of hull) {
 
-		if(facet.plane[3] < -1e-4) {
+		if(facet.plane[3] < limit) {
 
 			const [v1, v2, v3, v4] = facet.verts;
 			const w1 = idx[v1];
@@ -455,16 +464,18 @@ const computeVertices4D = (pressure: number, accumulator: StructureSetsAccumulat
  * @param pressure - Pressure at which to compute the convex hull
  * @param accumulator - Loaded structures
  * @param numberComponents - Number of components (2-4)
+ * @param limit - Maximum value of the normal to classify the facet as a bottom one
  * @returns Array of vertices at the given pressure
  */
 const computeVertices = (pressure: number,
 						 accumulator: StructureSetsAccumulator,
-						 numberComponents: number): Vertex[] => {
+						 numberComponents: number,
+						 limit: number): Vertex[] => {
 
 	switch(numberComponents) {
-		case 2:	return computeVertices2D(pressure, accumulator);
-		case 3:	return computeVertices3D(pressure, accumulator);
-		case 4:	return computeVertices4D(pressure, accumulator);
+		case 2:	return computeVertices2D(pressure, accumulator, limit);
+		case 3:	return computeVertices3D(pressure, accumulator, limit);
+		case 4:	return computeVertices4D(pressure, accumulator, limit);
 		default: return [];
 	}
 };
@@ -499,7 +510,8 @@ const verticesDiffer = (previous: Map<number, [formula: string, key: string]>,
  */
 export const computeTransitionsVariable = (
 					accumulator: StructureSetsAccumulator,
-				 	numberComponents: number): VariableTransitionTable => {
+				 	numberComponents: number,
+					limit: number): VariableTransitionTable => {
 
 	const out: VariableTransitionTable = {
 		pressures: [],
@@ -522,7 +534,7 @@ export const computeTransitionsVariable = (
 	let pressurePrevious = RANGE_MIN;
 	const verticesPrevious = new Map<number, [formula: string, key: string]>();
 	const enthalpyPrevious = new Map<number, number>();
-	const entries = computeVertices(RANGE_MIN, accumulator, numberComponents);
+	const entries = computeVertices(RANGE_MIN, accumulator, numberComponents, limit);
 	for(const entry of entries) {
 		verticesPrevious.set(entry.step, [entry.formula, entry.key]);
 		enthalpyPrevious.set(entry.step, entry.enthalpy);
@@ -533,7 +545,7 @@ export const computeTransitionsVariable = (
 
 		const pressure = i/10;
 
-		const currentEntries = computeVertices(pressure, accumulator, numberComponents);
+		const currentEntries = computeVertices(pressure, accumulator, numberComponents, limit);
 
 		if(verticesDiffer(verticesPrevious, currentEntries)) {
 

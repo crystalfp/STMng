@@ -104,16 +104,17 @@ export class VariableCompositionConvexHull {
 	 * Compute data related to the convex hull
 	 *
 	 * @param dimension - Number of components
+	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Empty string on success, otherwise error message
 	 */
-	prepareData(dimension: number): string {
+	prepareData(dimension: number, limit: number): string {
 
 		this.dimension = dimension;
 
 		switch(dimension) {
-			case 2: return this.prepareDim2Data();
-			case 3: return this.prepareDim3Data();
-			case 4: return this.prepareDim4Data();
+			case 2: return this.prepareDim2Data(limit);
+			case 3: return this.prepareDim3Data(limit);
+			case 4: return this.prepareDim4Data(limit);
 		}
 		this.dimension = 0;
 		return "Invalid dimension";
@@ -122,9 +123,10 @@ export class VariableCompositionConvexHull {
 	/**
 	 * Compute data related to the convex hull for two components
 	 *
+	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Empty string on success, otherwise error message
 	 */
-	private prepareDim2Data(): string {
+	private prepareDim2Data(limit: number): string {
 
 		// Find extremes
 		let e0 = Number.POSITIVE_INFINITY;
@@ -172,7 +174,7 @@ export class VariableCompositionConvexHull {
 		}
 
 		// Find convex hull (only the lower part)
-		const {vertexX, vertexY, index} = convexHull2D(points);
+		const {vertexX, vertexY, index} = convexHull2D(points, limit);
 
 		this.vertices.length = 0;
 		this.idxVertices.length = 0;
@@ -191,9 +193,10 @@ export class VariableCompositionConvexHull {
 	/**
 	 * Compute data related to the convex hull for three components
 	 *
+	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Empty string on success, otherwise error message
 	 */
-	private prepareDim3Data(): string {
+	private prepareDim3Data(limit: number): string {
 
 		// Find extremes
 		let e0 = Number.POSITIVE_INFINITY;
@@ -272,7 +275,7 @@ export class VariableCompositionConvexHull {
 		const idxVertices = new Set<number>();
 		for(const facet of hull) {
 
-			if(facet.plane[2] < -1e-4) {
+			if(facet.plane[2] < limit) {
 				const [v1, v2, v3] = facet.verts;
 				const w1 = idx[v1];
 				const w2 = idx[v2];
@@ -294,7 +297,8 @@ export class VariableCompositionConvexHull {
 		}
 
 		// Add distances from the convex hull
-		this.distances = this.distanceFromConvexHull3D(points, this.x, this.y, this.e, hull);
+		this.distances = this.distanceFromConvexHull3D(points, this.x, this.y,
+													   this.e, hull, limit);
 
 		return "";
 	}
@@ -302,9 +306,10 @@ export class VariableCompositionConvexHull {
 	/**
 	 * Compute data related to the convex hull for four components
 	 *
+	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Empty string on success, otherwise error message
 	 */
-	private prepareDim4Data(): string {
+	private prepareDim4Data(limit: number): string {
 
 		// Find extremes
 		let e0 = Number.POSITIVE_INFINITY;
@@ -400,7 +405,7 @@ export class VariableCompositionConvexHull {
 		const facetC: number[] = [];
 		for(const facet of hull) {
 
-			if(facet.plane[3] < -1e-4) {
+			if(facet.plane[3] < limit) {
 
 				const [v1, v2, v3, v4] = facet.verts;
 				const w1 = idx[v1];
@@ -554,9 +559,15 @@ export class VariableCompositionConvexHull {
 	 * @param y - All points Y coordinates
 	 * @param e - All points energy (Z) coordinates
 	 * @param hull - Convex hull facets
+	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Distances of the points from the surface
 	 */
-	private distanceFromConvexHull3D(vertices: number[][], x: number[], y: number[], e: number[], hull: Facet[]): number[] {
+	private distanceFromConvexHull3D(vertices: number[][],
+									 x: number[],
+									 y: number[],
+									 e: number[],
+									 hull: Facet[],
+									 limit: number): number[] {
 
 		const count = x.length;
 		const distances = Array<number>(count).fill(-1);
@@ -568,7 +579,7 @@ export class VariableCompositionConvexHull {
 			let dist = Number.POSITIVE_INFINITY;
 			for(const facet of hull) {
 
-				if(facet.plane[2] < -1e-4) {
+				if(facet.plane[2] < limit) {
 
 					const [v1, v2, v3] = facet.verts;
 
