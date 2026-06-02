@@ -4,7 +4,7 @@
   "productName": "STMng",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.63.1",
+  "version": "1.63.2",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://github.com/crystalfp/STMng",
@@ -40,7 +40,7 @@
     "custom-electron-titlebar": "^4.4.1",
     "electron-log": "^5.4.4",
     "mathjs": "^15.2.0",
-    "mediabunny": "^1.45.4",
+    "mediabunny": "^1.45.5",
     "pinia": "^3.0.4",
     "three": "^0.184.0",
     "three-viewport-gizmo": "^2.2.0",
@@ -49,7 +49,7 @@
     "valibot": "^1.4.1",
     "vue": "^3.5.35",
     "vue-router": "^5.1.0",
-    "vuetify": "^4.0.8",
+    "vuetify": "^4.1.0",
     "workerpool": "^10.0.2"
   },
   "devDependencies": {
@@ -107,7 +107,7 @@
     "vite-plugin-vue-devtools": "^8.1.2",
     "vitest": "^4.1.8",
     "vue-docgen-cli": "^4.79.0",
-    "vue-eslint-parser": "^10.4.0",
+    "vue-eslint-parser": "^10.4.1",
     "vue-mess-detector": "^0.68.1"
   },
   "allowScripts": {
