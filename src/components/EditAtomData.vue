@@ -110,19 +110,6 @@ const currentSet = computed(() => {
     return `${set}${modified.value ? " (modified)" : ""}`;
 });
 
-/**
- * Compute the visual size of the atom representation
- * The size goes from 20px (rCov 0.32) to 70px (rCov 2.25)
- *
- * @param rCov - Covalent radius
- * @returns Size as CSS pixels string
- */
-const radius = (rCov: number): string => {
-
-    const d = 20+50*(rCov-0.32)/(2.25-0.32);
-    return `${Math.round(d)}px`;
-};
-
 /** Currently selected atom */
 const currentIdx = ref(0);
 const currentAtom = reactive({
@@ -328,6 +315,28 @@ onUnmounted(() => {
     if(d) d.removeEventListener("keydown", captureHelp);
 });
 
+/**
+ * Compute the visual style of the atom representation
+ * The size goes from 20px (rCov 0.32) to 70px (rCov 2.25)
+ *
+ * @param color - Atom color
+ * @param rCov - Covalent radius
+ * @returns CSS style for the atom
+ */
+const sphere = (color: string, rCov: number): Record<string, string> => {
+
+    const d = Math.round(20+50*(rCov-0.32)/(2.25-0.32));
+    const dpx = `${d}px`;
+    const opx = d < 41 ? "5px" : "7px";
+
+    return {
+      backgroundColor: color,
+      width: dpx,
+      height: dpx,
+      boxShadow: `${opx} ${opx} 15px black, inset -${opx} -${opx} 10px #333`
+    };
+};
+
 </script>
 
 
@@ -339,13 +348,13 @@ onUnmounted(() => {
         <div class="ls-container">
           <span v-for="(value, idx) in atomData" :key="value.symbol" v-ripple class="entry"
                 @click="select(idx)">
-            <div :style="{backgroundColor: value.color, width: radius(value.rCov), height: radius(value.rCov)}" class="atom">&nbsp;</div>
+            <div :style="sphere(value.color, value.rCov)" class="atom">&nbsp;</div>
             <div class="type">{{ value.symbol }}</div>
           </span>
         </div>
       </div>
       <div class="rt">
-        <v-label class="mb-1" :text="identity" />
+        <v-label class="mb-4 text-title-medium no-select" :text="identity" />
         <v-color-picker v-model="currentAtom.color" :modes="['hex']"
                         elevation="0" @update:modelValue="update"/>
         <v-row>
@@ -394,7 +403,7 @@ onUnmounted(() => {
     </v-card-text>
     <v-card-actions>
       <v-btn v-focus @click="confirm=false; saveDialog()">Save</v-btn>
-      <v-btn v-focus @click="confirm=false; isOpen=false">Discard</v-btn>
+      <v-btn @click="confirm=false; isOpen=false">Discard</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
