@@ -20,8 +20,8 @@ export default defineConfig({
     optimizeDeps: {
         exclude: [
             ".git", ".vscode", ".gemini", ".github", "linux-scripts",
-            "doc", "release", "save", "other", "bugs",
-            "test-data", "proto-test", "work", "tests"
+            "local-doc", "release", "save", "other",
+            "test-data", "work", "tests"
         ],
         holdUntilCrawlEnd: false
     },
@@ -102,5 +102,17 @@ export default defineConfig({
                 "./src/components/ControlsContainer.vue",
             ],
         },
+        watch: {
+            ignored: [
+                "**/local-doc/**",
+                "**/release/**",
+                "**/save/**",
+                "**/other/**",
+                "**/test-data/**",
+                "**/work/**",
+                "**/tests/**",
+                "**/linux-scripts/**",
+            ],
+        }
     },
 });

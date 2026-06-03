@@ -1,7 +1,7 @@
 module.exports = {
 
 	componentsRoot: "src",
-	outDir: "doc/vue",
+	outDir: "local-doc/vue",
 	apiOptions: {
 		addScriptHandlers: [
             (
