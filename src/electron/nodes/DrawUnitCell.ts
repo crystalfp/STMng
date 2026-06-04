@@ -191,7 +191,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Remove duplicates
-		const tol = 1e-5;
+		const TOL = 1e-5;
 		const outAtoms = atoms.length;
 		const duplicated = Array<boolean>(outAtoms).fill(false);
 		for(let i=0; i < outAtoms-1; ++i) {
@@ -200,11 +200,11 @@ export class DrawUnitCell extends NodeCore {
 				if(duplicated[j]) continue;
 
 				const fdx = atoms[i].position[0] - atoms[j].position[0];
-				if(fdx < tol && fdx > -tol) {
+				if(fdx < TOL && fdx > -TOL) {
 					const fdy = atoms[i].position[1] - atoms[j].position[1];
-					if(fdy < tol && fdy > -tol) {
+					if(fdy < TOL && fdy > -TOL) {
 						const fdz = atoms[i].position[2] - atoms[j].position[2];
-						if(fdz < tol && fdz > -tol) {
+						if(fdz < TOL && fdz > -TOL) {
 							duplicated[j] = true;
 						}
 					}

@@ -33,7 +33,7 @@ static double foldIntoUnitCell(double fc)
 	if(fc < FOLD_TOL && fc > -FOLD_TOL) return 0.0;
 
 	if(fc < 0.0) return 1 - (long)fc + fc;
-	if(fc < (1+FOLD_TOL) && fc > (1-FOLD_TOL)) return 1.0;
+	if(fc < (1.0+FOLD_TOL) && fc > (1.0-FOLD_TOL)) return 1.0;
 
 	return fc;
 }
@@ -113,19 +113,19 @@ printf("+ atom %d [%f, %f, %f] -> [%f, %f, %f]\n", i, fc[i*3+0], fc[i*3+1], fc[i
 					{
 						double dx = fcOut[3*k+0]-Bfr[0];
 						if(!((dx < DUPLICATED_TOL     && dx > -DUPLICATED_TOL) ||
-							 (dx < (1+DUPLICATED_TOL) && dx > (1-DUPLICATED_TOL)))) {
+							 (dx < (1.0+DUPLICATED_TOL) && dx > (1.0-DUPLICATED_TOL)))) {
 							different = true;
 							continue;
 						}
 						double dy = fcOut[3*k+1]-Bfr[1];
 						if(!((dy < DUPLICATED_TOL     && dy > -DUPLICATED_TOL) ||
-							 (dy < (1+DUPLICATED_TOL) && dy > (1-DUPLICATED_TOL)))) {
+							 (dy < (1.0+DUPLICATED_TOL) && dy > (1.0-DUPLICATED_TOL)))) {
 							different = true;
 							continue;
 						}
 						double dz = fcOut[3*k+2]-Bfr[2];
 						if(!((dz < DUPLICATED_TOL     && dz > -DUPLICATED_TOL) ||
-							 (dz < (1+DUPLICATED_TOL) && dz > (1-DUPLICATED_TOL)))) {
+							 (dz < (1.0+DUPLICATED_TOL) && dz > (1.0-DUPLICATED_TOL)))) {
 							different = true;
 							continue;
 						}
@@ -525,9 +525,9 @@ vector<fraction_t> fractions = {
 
 static void oneConst(float t, int next, string& res)
 {
-	float tol = 1e-5f;
+	float TOL = 1e-5f;
 
-	if(t > -tol && t < tol) return;
+	if(t > -TOL && t < TOL) return;
 	else if(t > 0.) {
 		if(next) res.append("+");
 	}
@@ -537,7 +537,7 @@ static void oneConst(float t, int next, string& res)
 	}
 
 	for(auto x : fractions) {
-		if(t > x.value-tol && t < x.value+tol) {
+		if(t > x.value-TOL && t < x.value+TOL) {
 			res.append(x.str);
 			return;
 		}
@@ -645,11 +645,11 @@ int32_t removeDuplicates(
 			double_t dz = zi - fractionalCoordinates[3*j+2];
 
 			if(((dx < FOLD_TOL && dx > -FOLD_TOL) ||
-			     dx > 1-FOLD_TOL || -dx > 1-FOLD_TOL) &&
+			     dx > 1.0-FOLD_TOL || -dx > 1.0-FOLD_TOL) &&
 			   ((dy < FOLD_TOL && dy > -FOLD_TOL) ||
-			     dy > 1-FOLD_TOL || -dy > 1-FOLD_TOL) &&
+			     dy > 1.0-FOLD_TOL || -dy > 1.0-FOLD_TOL) &&
 			   ((dz < FOLD_TOL && dz > -FOLD_TOL) ||
-			     dz > 1-FOLD_TOL || -dz > 1-FOLD_TOL))
+			     dz > 1.0-FOLD_TOL || -dz > 1.0-FOLD_TOL))
 			{
 				duplicated[j] = true;
 				--valid;

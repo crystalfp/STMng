@@ -25,6 +25,9 @@
 import {invertBasis} from "../modules/Helpers";
 import type {BasisType, PositionType} from "@/types";
 
+const TOL = 1e-2;
+const TOL_SQUARED = TOL*TOL;
+
 /**
  * Infinite slab abstraction
  */
@@ -180,9 +183,6 @@ export class Slab {
                                 atomsZ: Int32Array,
                                 atomsPosition: Float64Array): void {
 
-        const TOL = 1e-2;
-        const TOL_SQUARED = TOL*TOL;
-
         // Compute how many copies of the unit cell are needed to contain the cutoff distance
         const expansion: PositionType = [0, 0, 0];
         if(!this.isNanocluster) {
@@ -306,7 +306,6 @@ export class Slab {
         const len = natoms*3;
         const fracCoordinates = Array<number>(len);
         const ok = Array<boolean>(natoms).fill(true);
-        const TOL = 1e-2;
         let allInside = true;
 
         if(this.isNanocluster) return ok;
