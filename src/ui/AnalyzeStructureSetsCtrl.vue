@@ -34,7 +34,6 @@ import type {VariableTransitionTable} from "@/electron/analysis/EnthalpyTransiti
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
-import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 
 // > Properties
 const {id, label} = defineProps<{
@@ -65,7 +64,7 @@ const species = ref<string[]>([]);
 const countComponents = ref(2);
 const count = ref([0]);
 const results = ref<Recipe[]>([]);
-const summary = ref([0, 0]);
+const summary = ref<[total: number, remaining: number]>([0, 0]);
 const compositionRunning = ref(false);
 const numberCompositions = ref(0);
 
@@ -97,18 +96,8 @@ const state = reactive({
     fixTriangleInequality: false,
     removeDuplicates: true,
     duplicatesThreshold: 0.03,
-    consolidateOutput: false,
-    hullUpperLimitExponent: -4
+    consolidateOutput: false
 });
-
-
-/**
- * Convert in human readable format the exponent of 10
- *
- * @param value - Power of 10 to convert in human readable format
- * @returns The value converted to string (value -3 → 1.00e-3)
- */
-const showExponential = (value: number): string => (10**value).toExponential(2);
 
 /** Update the components composition UI */
 const stopWatcher2 = watch([species, countComponents], ([sp, cc]) => {
@@ -213,55 +202,6 @@ receiveFromNode(id, "load", (params) => {
     species.value.length = 0;
     for(const s of params.species as string[] ?? []) species.value.push(s);
     remainingAfterFilter.value = params.countRemaining as number ?? 0;
-});
-
-/** Receive new table for fixed composition when changing limit value */
-receiveFromNode(id, "update-table-fix", (params) => {
-
-    const rawSteps = params.steps as number[] ?? [];
-    const rawFormulas = params.formulas as string[] ?? [];
-    const rawPressures = params.pressures as number[] ?? [];
-
-    table.value.length = 0;
-    for(let i=0; i < rawSteps.length; ++i) {
-        table.value.push({
-            step: rawSteps[i].toFixed(0),
-            formula: rawFormulas[i],
-            pressure: rawPressures[i].toFixed(3)
-        });
-    }
-});
-
-/** Receive new table for variable composition when changing limit value */
-receiveFromNode(id, "update-table-var", (params) => {
-
-    tableVar.value.length = 0;
-    const transitionRaw = params.transitions as string;
-    if(!transitionRaw) throw Error("Empty transitions");
-    const transitions = JSON.parse(transitionRaw) as VariableTransitionTable;
-    const n = transitions.pressures.length;
-    let idx = 0;
-    for(let i=0; i < n; ++i) {
-        const [pl, ph] = transitions.pressures[i];
-        const range = `\u2002${pl.toFixed(1)}\u2002\u27F7\u2002${ph.toFixed(1)}`;
-        tableVar.value.push({
-            id: idx++,
-            pressureRange: range,
-            step: "",
-            formula: "",
-            enthalpy: ""
-        });
-        const len = transitions.steps[i].length;
-        for(let j=0; j < len; ++j) {
-            tableVar.value.push({
-                id: idx++,
-                pressureRange: "",
-                step: transitions.steps[i][j].toFixed(0),
-                formula: transitions.formulas[i][j],
-                enthalpy: transitions.enthalpies[i][j].toFixed(4)
-            });
-        }
-    }
 });
 
 /** Accumulation enabled in the reader */
@@ -436,6 +376,7 @@ const saveAnalyzed = (): void => {
     });
 };
 
+/** Various disabler */
 const disableOnNoAnalysisDone = computed(() => {
 
     return countAccumulated.value === 0 ||
@@ -803,11 +744,6 @@ const headers = ref([
   <node-alert node="analyzeStructureSets" class="mt-1"/>
 
   <v-label class="separator-title">Analyze results</v-label>
-
-  <debounced-slider v-slot="{value}" v-model="state.hullUpperLimitExponent"
-                    :min="-12" :max="-1" :step="0.5" class="ml-1 mb-4 mt-2">
-    <v-label :text="`Hull normals upper limit (${'-' + showExponential(value)})`" class="no-select" />
-  </debounced-slider>
 
   <block-button class="mt-2" :disabled="disableCharts" label="Show chart" @click="showCharts" />
   <block-button :disabled="disable3DView" label="3D view" @click="show3DView" />

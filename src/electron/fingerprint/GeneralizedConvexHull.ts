@@ -23,6 +23,7 @@
  * along with STMng. If not, see http://www.gnu.org/licenses/ .
  */
 import {quickHull} from "@derschmale/tympanum";
+import {LIMIT} from "../modules/Constants";
 
 /**
  * Compute the 4D convex hull and take the lower half points starting
@@ -60,7 +61,7 @@ export const generalizedConvexHull4D = (mappedPoints: number[][],
 	const vertices = new Set<number>();
 	for(const facet of hull) {
 
-		if(facet.plane[3] < -1e-4) {
+		if(facet.plane[3] < LIMIT) {
 			for(const vv of facet.verts) vertices.add(vv);
 		}
 	}
