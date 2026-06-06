@@ -62,6 +62,10 @@ export interface SummaryTableEntry {
 	label: string;
 	/** Formula as HTML string */
 	formula: string;
+	/** Corresponding key */
+	key: string;
+	/** Indices of entries in this interval */
+	indices: number[][];
 }
 
 /**

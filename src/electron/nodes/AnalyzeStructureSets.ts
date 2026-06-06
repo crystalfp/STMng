@@ -55,7 +55,7 @@ interface Recipe {
 }
 
 /** Pressure interval type */
-type Interval = [start: number, end: number];
+type Interval = [start: number, end: number, indices: number[][]];
 
 export class AnalyzeStructureSets extends NodeCore {
 
@@ -698,6 +698,7 @@ export class AnalyzeStructureSets extends NodeCore {
 			if(current[0] <= lastMerged[1]) {
 				// C'è sovrapposizione: aggiorna la fine dell'ultimo intervallo
 				lastMerged[1] = Math.max(lastMerged[1], current[1]);
+				lastMerged[2].push(current[2][0]);
 			}
 			else {
 				// No overlapping, add new interval
@@ -778,10 +779,10 @@ export class AnalyzeStructureSets extends NodeCore {
 
 				const key = this.variableTransitionTable.keys[i][j];
 				if(lines.has(key)) {
-					lines.get(key)!.push([pl, ph]);
+					lines.get(key)!.push([pl, ph, [[i, j]]]);
 				}
 				else {
-					lines.set(key, [[pl, ph]]);
+					lines.set(key, [[pl, ph, [[i, j]]]]);
 				}
 			}
 		}
@@ -804,7 +805,9 @@ export class AnalyzeStructureSets extends NodeCore {
 					xs: v[0],
 					xe: v[1],
 					label,
-					formula
+					formula,
+					key,
+					indices: v[2]
 				});
 			}
 		}
@@ -1240,17 +1243,17 @@ export class AnalyzeStructureSets extends NodeCore {
 		const cn = params.atomCounts as number[] ?? [];
 		const valid = nc > 1 && sp.length > 1 && cn.length === sp.length*nc;
 
-		const summary = valid ? this.makeSummary(nc, sp, cn) : "";
+		const dataToSend = {
+			transitions: JSON.stringify(this.variableTransitionTable),
+			summary: valid ? this.makeSummary(nc, sp, cn) : ""
+		};
 
 		createOrUpdateSecondaryWindow({
 			routerPath: "/phase-diagram",
-			width: 1130,
+			width: 1600,
 			height: 950,
 			title: "Phase diagram",
-			data: {
-				transitions: JSON.stringify(this.variableTransitionTable),
-				summary
-			}
+			data: dataToSend
 		});
 	}
 

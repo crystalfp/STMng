@@ -31,6 +31,8 @@ interface DataRecord {
     step: number;
     /** Chemical formula */
     formula: string;
+    /** Indices */
+    indices?: number[][];
 }
 
 const range = ref<DataRecord[]>([]);
@@ -57,12 +59,14 @@ interface CoalescingLine {
     formula: string;
 }
 
+let table: VariableTransitionTable;
+
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
 
     const tableRaw = params.transitions as string;
     if(!tableRaw) return;
-    const table = JSON.parse(tableRaw) as VariableTransitionTable;
+    table = JSON.parse(tableRaw) as VariableTransitionTable;
 
     // Reorder data by formula
     const lines = new Map<string, CoalescingLine[]>();
@@ -144,7 +148,9 @@ requestData(windowPath, (params: CtrlParams) => {
             xs: entry.xs,
             xe: entry.xe,
             label: entry.label,
-            formula: entry.formula
+            formula: entry.formula,
+            key: entry.key,
+            indices: entry.indices
         });
     }
 
@@ -154,11 +160,52 @@ requestData(windowPath, (params: CtrlParams) => {
     forceUpdate.value = !forceUpdate.value;
 });
 
+// TBD
+const selectedTitle = ref("");
+const selectedEntries = ref<{id: number; formula: string; step: string}[]>([]);
+const explainSummaryLine = (d: SummaryTableEntry): void => {
+
+    selectedTitle.value = "Pressure range (GPa): " +
+                          `${d.xs.toFixed(1)}\u2002\u27F7\u2002${d.xe.toFixed(1)}`;
+
+    const key = d.key;
+
+    const unique = new Map<string, Set<number>>();
+    for(const idx of d.indices) {
+
+        const formulas = table.formulas[idx[1]];
+        const steps = table.steps[idx[1]];
+        const keys = table.keys[idx[1]];
+        const len = formulas.length;
+        for(let i=0; i < len; ++i) {
+
+            if(keys[i] !== key) continue;
+
+            const formula = formulas[i];
+            const step = steps[i];
+            if(unique.has(formula)) {
+                unique.get(formula)!.add(step);
+            }
+            else {
+                unique.set(formula, new Set([step]));
+            }
+        }
+    }
+
+    selectedEntries.value.length = 0;
+    let id = 0;
+    for(const [formula, steps] of unique) {
+        const s = [...steps].map((v) => v.toString()).join(", ");
+        selectedEntries.value.push({id: id++, formula, step: s});
+    }
+};
+
 // Chart accessors
 const xp = (d: DataRecord): number => d.pl;
 const lp = (d: DataRecord): number => d.ph-d.pl;
 const sp = (d: DataRecord): string => d.specie;
 
+/** Hover on a chart line */
 const triggerFunction = (d: DataRecord): string => {
 
     return `
@@ -176,6 +223,7 @@ const xs = (d: SummaryTableEntry): number => d.xs;
 const ls = (d: SummaryTableEntry): number => d.xe-d.xs;
 const ss = (d: SummaryTableEntry): string => d.label;
 
+/** Hover on a summary chart line */
 const summaryTriggerFunction = (d: SummaryTableEntry): string => {
 
     return `
@@ -188,26 +236,37 @@ const summaryTriggers = {
     [Timeline.selectors.line]: summaryTriggerFunction
 };
 
+/** Click on a chart line */
+const summaryEvents = {
+    [Timeline.selectors.line]: {
+        click: explainSummaryLine
+    }
+};
+
+/** Unify chart margins */
+const chartMargins = ref({right: 10, top: 70, left: 10, bottom: 10});
+
+const body = document.querySelector("body")!;
+
 </script>
 
 
 <template>
 <v-app :theme>
   <div class="phase-portal">
-    <VisXYContainer v-if="showSummary" :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+    <VisXYContainer v-if="showSummary" :margin="chartMargins"
                     :xDomainMinConstraint="[undefined, -200]"
                     :xDomainMaxConstraint="[200, undefined]"
                     :duration="0" :data="summary" class="phase-viewer">
       <VisTimeline :key="forceUpdate" :lineRow="ss" :x="xs" :lineDuration="ls"
                    :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="summaryLineHeight" :showEmptySegments="true"
-                   :lineWidth="20" lineCursor="pointer" />
+                   :lineWidth="20" lineCursor="pointer" :events="summaryEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
-               labelColor="black" :labelFontSize="24" tickTextColor="black"
-               :domainLine="false" :numTicks="21"/>
-      <VisTooltip :triggers="summaryTriggers" :followCursor="false" />
+               :labelFontSize="24" :domainLine="false" :numTicks="21"/>
+      <VisTooltip :triggers="summaryTriggers" :followCursor="true" :container="body" />
     </VisXYContainer>
-    <VisXYContainer v-else :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+    <VisXYContainer v-else :margin="chartMargins"
                     :xDomainMinConstraint="[undefined, -200]"
                     :xDomainMaxConstraint="[200, undefined]"
                     :duration="0" :data="range" class="phase-viewer">
@@ -216,12 +275,22 @@ const summaryTriggers = {
                    :rowHeight="lineHeight" :showEmptySegments="true"
                    :lineWidth="20" lineCursor="pointer" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
-               labelColor="black" :labelFontSize="24" tickTextColor="black"
-               :domainLine="false" :numTicks="21"/>
-      <VisTooltip :triggers :followCursor="false" />
+               :labelFontSize="24" :domainLine="false" :numTicks="21"/>
+      <VisTooltip :triggers :followCursor="true" :container="body" />
     </VisXYContainer>
+    <v-container class="phase-table">
+      <v-label class="mb-4 text-title-medium no-select" :text="selectedTitle" />
+      <div class="phase-table-container">
+        <v-table v-if="selectedEntries.length > 0" class="pa-2">
+          <tr v-for="e of selectedEntries" :key="e.id">
+            <td class="c1" v-html="e.formula"></td>
+            <td>{{ e.step }}</td>
+          </tr>
+        </v-table>
+      </div>
+    </v-container>
     <v-container class="phase-buttons">
-      <v-switch v-model="showSummary" label="Show Summary" class="mr-8"/>
+      <v-switch v-model="showSummary" label="Show Summary"/>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </div>
@@ -231,35 +300,61 @@ const summaryTriggers = {
 
 <style scoped>
 
-:deep(.rd) {
-  text-align: right;
+:deep(sub) {
+  position: relative;
+  bottom: -0.2rem;
 }
 
 .phase-portal {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  gap: 0;
+  /* grid-auto-flow: row; */
+  grid-template:
+    "bb aa" 1fr
+    "cc cc" 65px / 1fr 400px;
   height: 100vh;
-  min-width: 800px;
+  width: 100vw;
+  margin: 0;
   padding: 0;
 }
 
 .phase-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
-  padding: 0;
-  background-color: #90CEEC;
+  grid-area: bb;
+  /* background-color: #90CEEC; */
+  height: 100vh;
 
-  --vis-axis-tick-color: black;
-  --vis-timeline-label-color: black;
+  --vis-axis-tick-color: light-dark(black, white);
+  --vis-axis-label-color: light-dark(black, white);
+  --vis-axis-tick-label-color: light-dark(black, white);
+  --vis-timeline-label-color: light-dark(black, white);
   --vis-timeline-line-stroke-width: 2;
 }
 
+.phase-table {
+  grid-area: aa;
+  padding: 80px 0 0 10px;
+}
+
+.phase-table-container {
+  overflow-y: auto;
+  margin-top: 10px;
+  height: 90%;
+}
+
+.c1 {
+    width: 110px
+}
+
 .phase-buttons {
+  grid-area: cc;
   display: flex;
   max-width: 3000px !important;
-  width: 100vw;
-  gap: 10px;
+  column-gap: 30px;
   justify-content: end;
+  padding: 0 10px;
+  align-items: center;
+  background-color: rgb(var(--v-theme-background));
+  width:100vw
 }
+
 </style>
