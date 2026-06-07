@@ -109,7 +109,7 @@ const setOrthographicAspect = (perspectiveCamera: PerspectiveCamera,
 };
 
 // Reference to the view
-const cnv = useTemplateRef<HTMLElement>("cnv");
+const cnv = useTemplateRef<HTMLDivElement>("cnv");
 
 // Create the scene
 const scene = sm.createScene();

@@ -42,6 +42,10 @@ const summaryLineHeight = ref(30);
 const showSummary = ref(true);
 const forceUpdate = ref(true);
 
+/** Title and content of the lateral table */
+const selectedTitle = ref("");
+const selectedEntries = ref<{id: number; formula: string; step: string}[]>([]);
+
 const windowPath = "/phase-diagram";
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -160,44 +164,56 @@ requestData(windowPath, (params: CtrlParams) => {
     forceUpdate.value = !forceUpdate.value;
 });
 
-// TBD
-const selectedTitle = ref("");
-const selectedEntries = ref<{id: number; formula: string; step: string}[]>([]);
+/**
+ * Fill the table with the values of the clicked summary line
+ *
+ * @param d - Data of the clicked line
+ */
 const explainSummaryLine = (d: SummaryTableEntry): void => {
 
     selectedTitle.value = "Pressure range (GPa): " +
                           `${d.xs.toFixed(1)}\u2002\u27F7\u2002${d.xe.toFixed(1)}`;
 
-    const key = d.key;
-
-    const unique = new Map<string, Set<number>>();
-    for(const idx of d.indices) {
-
-        const formulas = table.formulas[idx[1]];
-        const steps = table.steps[idx[1]];
-        const keys = table.keys[idx[1]];
-        const len = formulas.length;
-        for(let i=0; i < len; ++i) {
-
-            if(keys[i] !== key) continue;
-
-            const formula = formulas[i];
-            const step = steps[i];
-            if(unique.has(formula)) {
-                unique.get(formula)!.add(step);
-            }
-            else {
-                unique.set(formula, new Set([step]));
-            }
+    // Group the elements with the same key
+    const grouping = new Map<string, Set<number>>();
+    for(const [i, j] of d.indices) {
+        const f = table.formulas[i][j];
+        const s = table.steps[i][j];
+        if(grouping.has(f)) {
+            grouping.get(f)!.add(s);
+        }
+        else {
+            grouping.set(f, new Set<number>([s]));
         }
     }
 
     selectedEntries.value.length = 0;
     let id = 0;
-    for(const [formula, steps] of unique) {
+    for(const [formula, steps] of grouping) {
         const s = [...steps].map((v) => v.toString()).join(", ");
         selectedEntries.value.push({id: id++, formula, step: s});
     }
+};
+
+/**
+ * Reset table to empty when changing type of diagram
+ */
+const resetTable = (): void => {
+    selectedTitle.value = "";
+    selectedEntries.value.length = 0;
+};
+
+/**
+ * Fill the table with the values of the clicked details line
+ *
+ * @param d - Data of the clicked line
+ */
+const explainDetailsLine = (d: DataRecord): void => {
+
+    selectedTitle.value = "Pressure range (GPa): " +
+                          `${d.pl.toFixed(1)}\u2002\u27F7\u2002${d.ph.toFixed(1)}`;
+
+    // TBD
 };
 
 // Chart accessors
@@ -236,24 +252,29 @@ const summaryTriggers = {
     [Timeline.selectors.line]: summaryTriggerFunction
 };
 
-/** Click on a chart line */
+/** Click on a summary chart line */
 const summaryEvents = {
     [Timeline.selectors.line]: {
         click: explainSummaryLine
     }
 };
 
-/** Unify chart margins */
-const chartMargins = ref({right: 10, top: 70, left: 10, bottom: 10});
+/** Click on a detail chart line */
+const detailsEvents = {
+    [Timeline.selectors.line]: {
+        click: explainDetailsLine
+    }
+};
 
-const body = document.querySelector("body")!;
+/** Unify chart margins */
+const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
 
 </script>
 
 
 <template>
-<v-app :theme>
-  <div class="phase-portal">
+<v-app :theme class="phase-layout">
+  <div class="phase-row">
     <VisXYContainer v-if="showSummary" :margin="chartMargins"
                     :xDomainMinConstraint="[undefined, -200]"
                     :xDomainMaxConstraint="[200, undefined]"
@@ -264,7 +285,7 @@ const body = document.querySelector("body")!;
                    :lineWidth="20" lineCursor="pointer" :events="summaryEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                :labelFontSize="24" :domainLine="false" :numTicks="21"/>
-      <VisTooltip :triggers="summaryTriggers" :followCursor="true" :container="body" />
+      <VisTooltip :triggers="summaryTriggers" :followCursor="true" horizontalPlacement="right" />
     </VisXYContainer>
     <VisXYContainer v-else :margin="chartMargins"
                     :xDomainMinConstraint="[undefined, -200]"
@@ -273,15 +294,18 @@ const body = document.querySelector("body")!;
       <VisTimeline :key="forceUpdate" :lineRow="sp" :x="xp" :lineDuration="lp"
                    :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="lineHeight" :showEmptySegments="true"
-                   :lineWidth="20" lineCursor="pointer" />
+                   :lineWidth="20" lineCursor="pointer" :events="detailsEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                :labelFontSize="24" :domainLine="false" :numTicks="21"/>
-      <VisTooltip :triggers :followCursor="true" :container="body" />
+      <VisTooltip :triggers :followCursor="true" horizontalPlacement="right" />
     </VisXYContainer>
     <v-container class="phase-table">
-      <v-label class="mb-4 text-title-medium no-select" :text="selectedTitle" />
+      <v-label class="mb-4 text-title-medium no-select result-label" :text="selectedTitle" />
       <div class="phase-table-container">
-        <v-table v-if="selectedEntries.length > 0" class="pa-2">
+        <v-table v-if="selectedEntries.length > 0 && showSummary" class="pa-2">
+          <thead>
+            <tr><th class="c1 th">Formula</th><th class="th">Steps</th></tr>
+          </thead>
           <tr v-for="e of selectedEntries" :key="e.id">
             <td class="c1" v-html="e.formula"></td>
             <td>{{ e.step }}</td>
@@ -289,11 +313,11 @@ const body = document.querySelector("body")!;
         </v-table>
       </div>
     </v-container>
+  </div>
     <v-container class="phase-buttons">
-      <v-switch v-model="showSummary" label="Show Summary"/>
+      <v-switch v-model="showSummary" label="Show Summary" @update:modelValue="resetTable"/>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
-  </div>
 </v-app>
 </template>
 
@@ -305,23 +329,24 @@ const body = document.querySelector("body")!;
   bottom: -0.2rem;
 }
 
-.phase-portal {
-  display: grid;
-  gap: 0;
-  /* grid-auto-flow: row; */
-  grid-template:
-    "bb aa" 1fr
-    "cc cc" 65px / 1fr 400px;
+.phase-layout {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   width: 100vw;
-  margin: 0;
-  padding: 0;
+}
+
+.phase-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  width: 100vw;
+  gap: 0 5px;
 }
 
 .phase-viewer {
-  grid-area: bb;
-  /* background-color: #90CEEC; */
-  height: 100vh;
+  flex: 2;
+  height: 100%;
 
   --vis-axis-tick-color: light-dark(black, white);
   --vis-axis-label-color: light-dark(black, white);
@@ -331,8 +356,7 @@ const body = document.querySelector("body")!;
 }
 
 .phase-table {
-  grid-area: aa;
-  padding: 80px 0 0 10px;
+  width: 400px;
 }
 
 .phase-table-container {
@@ -342,19 +366,25 @@ const body = document.querySelector("body")!;
 }
 
 .c1 {
-    width: 110px
+    width: 110px;
+    padding-top: 6px;
+}
+
+.th {
+  text-align: left;
+  padding: 0;
+  font-weight: bold;
 }
 
 .phase-buttons {
-  grid-area: cc;
   display: flex;
   max-width: 3000px !important;
   column-gap: 30px;
   justify-content: end;
   padding: 0 10px;
   align-items: center;
-  background-color: rgb(var(--v-theme-background));
-  width:100vw
+  width: 100vw;
+  height: 65px;
 }
 
 </style>

@@ -801,6 +801,7 @@ export class AnalyzeStructureSets extends NodeCore {
 			const [label, formula] = this.makeLabel(key, numberComponents, atomTypes, atomCounts);
 
 			for(const v of value) {
+
 				out.push({
 					xs: v[0],
 					xe: v[1],
