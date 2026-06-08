@@ -391,7 +391,7 @@ const sphere = (color: string, rCov: number): Record<string, string> => {
     </v-card-text>
     <v-card-actions>
       <v-btn :disabled="!modified" @click="resetDialog">Reset</v-btn>
-      <v-btn @click="saveDialog">Save</v-btn>
+      <v-btn :disabled="!modified" @click="saveDialog">Save</v-btn>
       <v-btn v-focus @click="closeDialog">Close</v-btn>
     </v-card-actions>
   </v-card>

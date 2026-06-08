@@ -33,6 +33,8 @@ interface DataRecord {
     formula: string;
     /** Indices */
     indices?: number[][];
+    /** Enthalpy of formation */
+    enthalpy: number;
 }
 
 const range = ref<DataRecord[]>([]);
@@ -44,7 +46,8 @@ const forceUpdate = ref(true);
 
 /** Title and content of the lateral table */
 const selectedTitle = ref("");
-const selectedEntries = ref<{id: number; formula: string; step: string}[]>([]);
+const selectedSummaries = ref<{id: number; formula: string; step: string}[]>([]);
+const selectedDetails = ref<{id: number; pl: string; ph: string; enthalpy: string; step: string}[]>([]);
 
 const windowPath = "/phase-diagram";
 
@@ -61,6 +64,8 @@ interface CoalescingLine {
     ph: number;
     /** The formula (HTML) */
     formula: string;
+    /** Enthalpy of formation */
+    enthalpy: number;
 }
 
 let table: VariableTransitionTable;
@@ -81,13 +86,14 @@ requestData(windowPath, (params: CtrlParams) => {
             const formula = table.formulas[i][j];
             const name = formula.replaceAll(/<\/?sub>/gu, "");
             const step = table.steps[i][j];
+            const enthalpy = table.enthalpies[i][j];
 
             if(lines.has(name)) {
                 const a = lines.get(name)!;
-                a.push({step, pl, ph, formula});
+                a.push({step, pl, ph, formula, enthalpy});
             }
             else {
-              lines.set(name, [{step, pl, ph, formula}]);
+              lines.set(name, [{step, pl, ph, formula, enthalpy}]);
             }
         }
     }
@@ -101,13 +107,15 @@ requestData(windowPath, (params: CtrlParams) => {
         let lastPl = -200;
         let lastPh = 200;
         let lastFormula = "";
-        for(const {step, pl, ph, formula} of sv) {
+        let lastEnthalpy = 0;
+        for(const {step, pl, ph, formula, enthalpy} of sv) {
 
             if(lastStep < 0) {
                 lastStep = step;
                 lastPl = pl;
                 lastPh = ph;
                 lastFormula = formula;
+                lastEnthalpy = enthalpy;
             }
             else if(step === lastStep && pl === lastPh) {
                 lastPh = ph;
@@ -118,12 +126,14 @@ requestData(windowPath, (params: CtrlParams) => {
                     ph: lastPh,
                     specie: key,
                     step: lastStep,
-                    formula: lastFormula
+                    formula: lastFormula,
+                    enthalpy: lastEnthalpy
                 });
                 lastStep = step;
                 lastPl = pl;
                 lastPh = ph;
                 lastFormula = formula;
+                lastEnthalpy = enthalpy;
             }
         }
         range.value.push({
@@ -131,7 +141,8 @@ requestData(windowPath, (params: CtrlParams) => {
             ph: lastPh,
             specie: key,
             step: lastStep,
-            formula: lastFormula
+            formula: lastFormula,
+            enthalpy: lastEnthalpy
         });
     }
 
@@ -187,11 +198,11 @@ const explainSummaryLine = (d: SummaryTableEntry): void => {
         }
     }
 
-    selectedEntries.value.length = 0;
+    selectedSummaries.value.length = 0;
     let id = 0;
     for(const [formula, steps] of grouping) {
         const s = [...steps].map((v) => v.toString()).join(", ");
-        selectedEntries.value.push({id: id++, formula, step: s});
+        selectedSummaries.value.push({id: id++, formula, step: s});
     }
 };
 
@@ -200,7 +211,8 @@ const explainSummaryLine = (d: SummaryTableEntry): void => {
  */
 const resetTable = (): void => {
     selectedTitle.value = "";
-    selectedEntries.value.length = 0;
+    selectedSummaries.value.length = 0;
+    selectedDetails.value.length = 0;
 };
 
 /**
@@ -210,10 +222,24 @@ const resetTable = (): void => {
  */
 const explainDetailsLine = (d: DataRecord): void => {
 
-    selectedTitle.value = "Pressure range (GPa): " +
-                          `${d.pl.toFixed(1)}\u2002\u27F7\u2002${d.ph.toFixed(1)}`;
+    selectedTitle.value = d.formula;
 
-    // TBD
+    selectedDetails.value.length = 0;
+    let id = 0;
+    for(const entry of range.value) {
+
+        if(entry.formula === d.formula) {
+            console.log(entry.pl, entry.ph, entry.step);
+            selectedDetails.value.push({
+                id,
+                pl: entry.pl.toFixed(1),
+                ph: entry.ph.toFixed(1),
+                enthalpy: entry.enthalpy.toFixed(4),
+                step: entry.step.toFixed(0)
+            });
+            ++id;
+        }
+    }
 };
 
 // Chart accessors
@@ -256,6 +282,15 @@ const summaryTriggers = {
 const summaryEvents = {
     [Timeline.selectors.line]: {
         click: explainSummaryLine
+    },
+    [Timeline.selectors.background]: {
+        click: resetTable
+    },
+    [Timeline.selectors.row]: {
+        click: (x: {data: SummaryTableEntry[]}) => {
+          if(x) explainSummaryLine(x.data[0]);
+          else resetTable();
+        }
     }
 };
 
@@ -263,6 +298,15 @@ const summaryEvents = {
 const detailsEvents = {
     [Timeline.selectors.line]: {
         click: explainDetailsLine
+    },
+    [Timeline.selectors.background]: {
+        click: resetTable
+    },
+    [Timeline.selectors.row]: {
+        click: (x: {data: DataRecord[]}) => {
+          if(x) explainDetailsLine(x.data[0]);
+          else resetTable();
+        }
     }
 };
 
@@ -300,15 +344,32 @@ const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
       <VisTooltip :triggers :followCursor="true" horizontalPlacement="right" />
     </VisXYContainer>
     <v-container class="phase-table">
-      <v-label class="mb-4 text-title-medium no-select result-label" :text="selectedTitle" />
+      <v-label class="mb-4 text-title-medium no-select result-label" v-html="selectedTitle" />
       <div class="phase-table-container">
-        <v-table v-if="selectedEntries.length > 0 && showSummary" class="pa-2">
+        <v-table v-if="selectedSummaries.length > 0 && showSummary" class="pa-2">
           <thead>
-            <tr><th class="c1 th">Formula</th><th class="th">Steps</th></tr>
+            <tr>
+              <th class="pa-0">Formula</th>
+              <th class="pa-0">Steps</th></tr>
           </thead>
-          <tr v-for="e of selectedEntries" :key="e.id">
+          <tr v-for="e of selectedSummaries" :key="e.id">
             <td class="c1" v-html="e.formula"></td>
             <td>{{ e.step }}</td>
+          </tr>
+        </v-table>
+        <v-table v-if="selectedDetails.length > 0 && !showSummary" class="pa-2 pr-3">
+          <thead>
+            <tr>
+              <th class="pa-0 text-right font-weight-bold" colspan="2">Pressure range (GPa)</th>
+              <th class="pa-0 text-right font-weight-bold">Enthalpy</th>
+              <th class="pa-0 text-right font-weight-bold">Step</th>
+            </tr>
+          </thead>
+          <tr v-for="e of selectedDetails" :key="e.id">
+            <td class="d1 text-right">{{ `${e.pl}\u2002\u27F7\u2002` }}</td>
+            <td class="d2 text-right">{{ e.ph }}</td>
+            <td class="text-right">{{ e.enthalpy }}</td>
+            <td class="text-right">{{ e.step }}</td>
           </tr>
         </v-table>
       </div>
@@ -327,6 +388,12 @@ const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
 :deep(sub) {
   position: relative;
   bottom: -0.2rem;
+}
+
+.result-label :deep(sub) {
+  position: relative;
+  bottom: -0.5rem;
+
 }
 
 .phase-layout {
@@ -370,10 +437,13 @@ const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
     padding-top: 6px;
 }
 
-.th {
-  text-align: left;
-  padding: 0;
-  font-weight: bold;
+.d1 {
+  width: 130px;
+}
+
+.d2 {
+  width: 30px;
+  padding-right: 20px;
 }
 
 .phase-buttons {
