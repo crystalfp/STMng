@@ -25,6 +25,10 @@ rules:
       width: /v-bind/
       stroke: /v-bind/
       fill: /v-bind/
+      border: /v-bind/
+      border-top: /v-bind/
+      color: /v-bind/
+      background-color: /v-bind/
   alpha-value-notation: number
   at-rule-no-unknown: null
   color-function-notation: null
