@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import type {ReaderImplementation, Structure, Atom} from "@/types";
 import {readFile} from "node:fs/promises";
@@ -122,10 +122,10 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				}
 			}
 			else if(line.startsWith("ibrav")) {
-				ibrav = Number.parseInt(line.split("=")[1], 10);
+				ibrav = Number.parseInt(line.split("=", 2)[1], 10);
 			}
 			else if(line.startsWith("nat=")) {
-				inputAtoms = Number.parseInt(line.split("=")[1], 10);
+				inputAtoms = Number.parseInt(line.split("=", 2)[1], 10);
 			}
 			else if(line.startsWith("celldm")) {
 				const fields = line.split(/[()=]/u);
@@ -134,34 +134,34 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				hasCelldm = true;
 			}
 			else if(line.startsWith("A=")) {
-				a = Number.parseFloat(line.split("=")[1]);
+				a = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("B=")) {
-				b = Number.parseFloat(line.split("=")[1]);
+				b = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("C=")) {
-				c = Number.parseFloat(line.split("=")[1]);
+				c = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("cosAB=")) {
-				cosAB = Number.parseFloat(line.split("=")[1]);
+				cosAB = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("cosAC=")) {
-				cosAC = Number.parseFloat(line.split("=")[1]);
+				cosAC = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("cosBC=")) {
-				cosBC = Number.parseFloat(line.split("=")[1]);
+				cosBC = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("space_group=")) {
-				spaceGroupNumber = Number.parseFloat(line.split("=")[1]);
+				spaceGroupNumber = Number.parseFloat(line.split("=", 2)[1]);
 			}
 			else if(line.startsWith("ATOMIC_POSITIONS")) {
 				inPositions = true;
-				positionKind = line.split(" ")[1].replaceAll(/[{}]/gu, "");
+				positionKind = line.split(" ", 2)[1].replaceAll(/[{}]/gu, "");
 			}
 			else if(line.startsWith("CELL_PARAMETERS")) {
 				inPositions = false;
 				inBasis = true;
-				basisKind = line.split(" ")[1].replaceAll(/[{}]/gu, "");
+				basisKind = line.split(" ", 2)[1].replaceAll(/[{}]/gu, "");
 				basisLine = 0;
 			}
 		}

@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
@@ -164,7 +164,7 @@ export class ReaderPDB implements ReaderImplementation {
 					// "ATOM", "HETATM"
 					let atomSymbol = fixedWidthStringSpaceTrimmed(line, 76, 2);
 					let atomZ = getAtomicNumber(atomSymbol);
-					const label = fixedWidthStringSpaceTrimmed(line, 12, 4).split(" ")[0];
+					const label = fixedWidthStringSpaceTrimmed(line, 12, 4).split(" ", 1)[0];
 
 					// If there is no valid symbol, try to guess it from the atom label
 					if(atomZ === 0) {

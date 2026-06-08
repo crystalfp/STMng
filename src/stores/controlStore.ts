@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {defineStore, acceptHMRUpdate} from "pinia";
 import type {PositionType} from "@/types";
@@ -155,6 +155,7 @@ export const useControlStore = defineStore("ControlStore", {
 		legendDiscrete: []
 	}),
 
+    /* eslint-disable unicorn/no-this-outside-of-class */
     // > Actions
     actions: {
 		/**

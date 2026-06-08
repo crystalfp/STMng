@@ -28,7 +28,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import type {Lattice} from "./Lattice2";
 
@@ -60,7 +60,7 @@ export class ReciprocalLattice {
         this.lattice = lattice;
     }
 
-	// Find all points within a sphere from the point taking into account
+    // Find all points within a sphere from the point taking into account
 	// periodic boundary conditions. This includes sites in other periodic images.
     //
 	// Algorithm:

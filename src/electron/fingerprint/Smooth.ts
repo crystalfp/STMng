@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 
 /** Size of the erf lookup table */
@@ -64,49 +64,6 @@ const erfTable = [
     0.9999999986, 0.9999999988, 0.9999999990, 0.9999999992
 ];
 
-// Precomputed 1/6, 1/3, 1/2
-// const inv6 = 0.1666666666666667;
-// const inv3 = 0.3333333333333333;
-// const inv2 = 0.5;
-
-/**
- * Compute 0.5*(1.+erf(x)) by cubic interpolating tabulated values
- *
- * @param x - The x value where to calculate the area
- * @returns The area under the gaussian distribution from -infinite to x
- */
-/*
-const gaussianIntegral = (x: number): number => {
-
-	// Use symmetry to compute negative values
-	if(x < 0) return 1 - gaussianIntegral(-x);
-
-	// If outside the table or no room for at least one point more after
-	// the interval for the interpolation
-	if(x >= (ERF_TABLE_SIZE-3)*LOOKUP_STEP) return 1;
-
-	// Compute the index of the interpolating interval - 1
-	const idx = Math.floor(x/LOOKUP_STEP);
-
-	// Compute the reduced x: it is between 0 and 1
-	const t = x/LOOKUP_STEP - idx;
-
-	// Precompute some table values
-	const et0 = erfTable[idx];
-	const et1 = erfTable[idx+1];
-	const et2 = erfTable[idx+2];
-	const et3 = erfTable[idx+3];
-
-	// Compute the value by cubic interpolation between the previous point,
-    // the point at the start of the interval and two points after
-	const aa = -inv6*et0 + inv2*et1 - inv2*et2 + inv6*et3;
-	const bb =  inv2*et0 -      et1 + inv2*et2;
-	const cc = -inv3*et0 - inv2*et1 +      et2 - inv6*et3;
-	const dd =                  et1;
-
-	return ((aa*t + bb)*t + cc)*t + dd;
-};
-*/
 /**
  * Compute 0.5*(1.+erf(x)) by linearly interpolating tabulated values
  *

@@ -20,11 +20,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {convexHull2D} from "./ConvexHull2D";
 import {quickHull} from "@derschmale/tympanum";
 import type {StructureSetsAccumulator} from "./Accumulator";
+
+/* eslint-disable unicorn/prefer-includes-over-repeated-comparisons */
 
 /** Enthalpy transitions */
 export interface VariableTransitionTable {

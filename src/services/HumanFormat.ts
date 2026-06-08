@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 
 const formatPrecision = 4;
@@ -37,7 +37,7 @@ const formatZero = `0.${"0".repeat(formatPrecision)}`;
 export const humanFormat = (x: number): string => {
 
     if(x === 0) return formatZero;
-    if(x >= tenToN || x <= -tenToN) return x.toExponential(formatPrecision);
-    if(x < tenToMinusN && x > -tenToMinusN) return x.toExponential(formatPrecision);
+    if(Math.abs(x) >= tenToN) return x.toExponential(formatPrecision);
+    if(Math.abs(x) < tenToMinusN) return x.toExponential(formatPrecision);
     return x.toPrecision(formatPrecision);
 };

@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {openSync, closeSync, writeSync} from "node:fs";
 import log from "electron-log";
@@ -79,17 +79,17 @@ export class WriterPDB implements WriterImplementation {
                                         inverse[0].toFixed(6).padStart(10, " ") +
                                         inverse[1].toFixed(6).padStart(10, " ") +
                                         inverse[2].toFixed(6).padStart(10, " ") +
-                                        "     " + o[0].toFixed(5).padStart(10, " ") + "\n");
+                                        " ".repeat(5) + o[0].toFixed(5).padStart(10, " ") + "\n");
                         writeSync(fd, "SCALE2    " +
                                         inverse[3].toFixed(6).padStart(10, " ") +
                                         inverse[4].toFixed(6).padStart(10, " ") +
                                         inverse[5].toFixed(6).padStart(10, " ") +
-                                        "     " + o[1].toFixed(5).padStart(10, " ") + "\n");
+                                        " ".repeat(5) + o[1].toFixed(5).padStart(10, " ") + "\n");
                         writeSync(fd, "SCALE3    " +
                                         inverse[6].toFixed(6).padStart(10, " ") +
                                         inverse[7].toFixed(6).padStart(10, " ") +
                                         inverse[8].toFixed(6).padStart(10, " ") +
-                                        "     " + o[2].toFixed(5).padStart(10, " ") + "\n");
+                                        " ".repeat(5) + o[2].toFixed(5).padStart(10, " ") + "\n");
                     }
                     catch(error) {
                         log.error(`SCALEn not written. Error: ${(error as Error).message}`);
@@ -106,7 +106,7 @@ export class WriterPDB implements WriterImplementation {
                     const labelShort = label.length > 4 ? label.slice(-4) : label.padStart(4, " ");
                     const chainId = chain === "" ? "A" : chain;
                     writeSync(fd, "ATOM  " + i.toString().padStart(5, " ") + " " +
-                        labelShort + "     " +
+                        labelShort + " ".repeat(5) +
                         chainId + "   1    " +
                         cart[0].toFixed(3).padStart(8, " ") +
                         cart[1].toFixed(3).padStart(8, " ") +
@@ -153,13 +153,13 @@ export class WriterPDB implements WriterImplementation {
                     if(nb > 0 || nhb > 0) {
                         writeSync(fd, `CONECT${i.toString().padStart(5, " ")}`);
                         if(nb > 0) writeSync(fd, ib[i][0].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nb > 1) writeSync(fd, ib[i][1].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nb > 2) writeSync(fd, ib[i][2].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nb > 3) writeSync(fd, ib[i][3].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nhb > 0) writeSync(fd, ihb[i][0].toString().padStart(5, " "));
                         if(nhb > 1) writeSync(fd, ihb[i][1].toString().padStart(5, " "));
                         writeSync(fd, "\n");
@@ -167,13 +167,13 @@ export class WriterPDB implements WriterImplementation {
                     if(nb > 4 || nhb > 2) {
                         writeSync(fd, `CONECT${i.toString().padStart(5, " ")}`);
                         if(nb > 4) writeSync(fd, ib[i][4].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nb > 5) writeSync(fd, ib[i][5].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nb > 6) writeSync(fd, ib[i][6].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nb > 7) writeSync(fd, ib[i][7].toString().padStart(5, " "));
-                        else writeSync(fd, "      ");
+                        else writeSync(fd, " ".repeat(6));
                         if(nhb > 2) writeSync(fd, ihb[i][2].toString().padStart(5, " "));
                         if(nhb > 3) writeSync(fd, ihb[i][3].toString().padStart(5, " "));
                         writeSync(fd, "\n");

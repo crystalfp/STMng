@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {theme} from "@/services/ReceiveTheme";
 import {ref, reactive, nextTick} from "vue";
@@ -61,7 +61,7 @@ const FORMAT_LIMIT = 10**(-FORMAT_MAX_DIGITS);
  */
 const format = (value: number): string => {
 
-    if(value < -FORMAT_LIMIT || value > FORMAT_LIMIT || value === 0) {
+    if(Math.abs(value) > FORMAT_LIMIT || value === 0) {
         return value.toFixed(FORMAT_MAX_DIGITS);
     }
     return value.toExponential(FORMAT_MAX_DIGITS-2);

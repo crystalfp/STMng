@@ -385,6 +385,8 @@ export default defineConfig([
         "unicorn/no-unused-properties": "warn",      // Dead code detection
         "unicorn/consistent-destructuring": "warn",  // Use destructured vars consistently
         "unicorn/no-keyword-prefix": ["warn", {"checkProperties": false}],
+        "unicorn/try-complexity": "off",
+        "unicorn/no-manually-wrapped-comments": "off",
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],

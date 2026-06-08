@@ -20,7 +20,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with STMng. If not, see http://www.gnu.org/licenses/ .
+ * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {Lattice} from "../pymatgen/Lattice2";
 import {ReciprocalLattice, type ReciprocalPoint} from "../pymatgen/ReciprocalLattice";
@@ -285,8 +285,8 @@ export class XRDCalculator {
      */
     private static isPermutation(hkl1: number[], hkl2: number[]): boolean {
 
-        const thkl1 = hkl1.map((nn) => (nn < 0 ? -nn : nn)).toSorted((a, b) => (a - b));
-        const thkl2 = hkl2.map((nn) => (nn < 0 ? -nn : nn)).toSorted((a, b) => (a - b));
+        const thkl1 = hkl1.map((nn) => Math.abs(nn)).toSorted((a, b) => (a - b));
+        const thkl2 = hkl2.map((nn) => Math.abs(nn)).toSorted((a, b) => (a - b));
 
         const len1 = thkl1.length;
         if(len1 !== thkl2.length) return false;
