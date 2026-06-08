@@ -70,6 +70,7 @@ const finalValue = computed(() => {
     if(displayMode.value === "symmop") return outSymmetry.value;
     return intlSymbol.value;
 });
+
 </script>
 
 
@@ -123,12 +124,12 @@ const finalValue = computed(() => {
   overflow-wrap: break-word;
   white-space: break-spaces;
   font-family: monospace;
-  color: light-dark(#7ca911, #baf434) !important;
+  color: #00C853;
   opacity: 1 !important;
 }
 
 .show-pg {
-  color: light-dark(#7ca911, #baf434) !important;
+  color: #00C853;
   opacity: 1 !important;
   font-family: monospace;
 }

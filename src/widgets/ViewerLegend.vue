@@ -22,8 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {onUnmounted, reactive, ref, watch} from "vue";
+import {computed, onUnmounted, reactive, ref, watch} from "vue";
 import {Lut} from "three/addons/math/Lut.js";
+import {theme} from "@/services/ReceiveTheme";
 
 // > Properties
 const {title, top, bottom=40, right=10, width=140,
@@ -80,6 +81,12 @@ if(valuesContinue) {
 const haveHeader = ref(!!title);
 
 const useDark = dark ? "dark" : "";
+
+// Workaround to non-working CSS light-dark() in production
+const highlight = computed(() => {
+    return theme.value === "light" ? "#202020" : "#e6e6e6";
+});
+
 </script>
 
 
@@ -110,7 +117,7 @@ const useDark = dark ? "dark" : "";
   background-color: #7e7e7e46;
   overflow: hidden auto;
   padding: 0 !important;
-  color: light-dark(#202020, #e6e6e6);
+  color: v-bind(highlight);
 }
 
 .legend-grid {

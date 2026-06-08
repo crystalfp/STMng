@@ -860,6 +860,14 @@ const resetContextMenu = (): void => {
     show.value = false;
 };
 
+// Workaround to non-working CSS light-dark() in production
+const bck = computed(() => {
+    return theme.value === "light" ? "#AAAAAAC0" : "#2D3748C0";
+});
+const border = computed(() => {
+    return theme.value === "light" ? "#808080" : "#B3B3B3";
+});
+
 </script>
 
 
@@ -990,7 +998,7 @@ const resetContextMenu = (): void => {
 .tr {grid-area: tr; margin-left: 10px;}
 .cr {grid-area: cr; margin-right: 0; margin-left: 10px; overflow-y: auto;}
 .bb {grid-area: bb; padding: 10px 20px 0 0;}
-.vv {grid-area: vv; margin-right: 30px; border: 1px solid light-dark(#808080, #B3B3B3);}
+.vv {grid-area: vv; margin-right: 30px; border: 1px solid v-bind(border);}
 
 .list-item {
   border: 1px solid transparent;
@@ -999,7 +1007,7 @@ const resetContextMenu = (): void => {
 }
 
 .vue-flow__panel {
-  background-color: light-dark(#AAAAAAC0, #2D3748C0);
+  background-color: v-bind(bck);
   border-radius: 8px;
   padding: 7px;
   margin-right: 10px;

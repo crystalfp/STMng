@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {ref, reactive, watch, onUnmounted} from "vue";
+import {ref, reactive, watch, onUnmounted, computed} from "vue";
 import log from "electron-log";
 import {Scene, Group, LineBasicMaterial, Vector3, Quaternion, MathUtils,
         LineSegments, IcosahedronGeometry, MeshStandardMaterial, Mesh,
@@ -433,6 +433,11 @@ const stopWatcher = watch([aroundA, aroundB, aroundC],
 // Cleanup
 onUnmounted(() => stopWatcher());
 
+// Workaround to non-working CSS light-dark() in production
+const disabled = computed(() => {
+    return theme.value === "light" ? "#1010104D" : "#FFFFFF4D";
+});
+
 </script>
 
 
@@ -532,7 +537,7 @@ onUnmounted(() => stopWatcher());
 }
 
 .disabled {
-  color: light-dark(rgb(16 16 16 / 0.3), rgb(255 255 255 / 0.3));
+  color: v-bind(disabled);
 }
 
 .entry {

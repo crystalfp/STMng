@@ -121,7 +121,7 @@ const format = (value: number): string => {
 
 th {
   text-align: left;
-  color: light-dark(#7ca911, #baf434) !important;
+  color: #00C853 !important;
 }
 
 .right {

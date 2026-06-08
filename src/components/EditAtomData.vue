@@ -432,7 +432,6 @@ const sphere = (color: string, rCov: number): Record<string, string> => {
 }
 
 .entry {
-  border: 1px solid light-dark(#3e3e3e, #b0b0b0);
   width: 90px;
   height: 110px;
   flex: auto;
@@ -445,7 +444,6 @@ const sphere = (color: string, rCov: number): Record<string, string> => {
   height: 50px;
   border-radius: 50%;
   margin: auto;
-  border: 1px solid #3e3e3e;
 }
 
 .type {

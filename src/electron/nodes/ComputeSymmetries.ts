@@ -355,9 +355,9 @@ export class ComputeSymmetries extends NodeCore {
 
 			const n = repetition[k++];
 			const rpt = n === 1 ? "" : ` (${n-1})`;
-			const label = `${atoms[idx].label ?? ""}${rpt}`;
+			const label = `${atoms[idx]?.label ?? ""}${rpt}`;
 			labels.push(label);
-			chains.push(atoms[idx].chain);
+			chains.push(atoms[idx]?.chain ?? "");
 		}
 
 		// Get the space group

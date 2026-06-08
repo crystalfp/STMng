@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
@@ -329,6 +329,11 @@ const detailsEvents = {
 /** Unify chart margins */
 const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
 
+// Workaround to non-working CSS light-dark() in production
+const contrast = computed(() => {
+    return theme.value === "light" ? "#000" : "#FFF";
+});
+
 </script>
 
 
@@ -431,10 +436,10 @@ const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
   flex: 2;
   height: 100%;
 
-  --vis-axis-tick-color: light-dark(black, white);
-  --vis-axis-label-color: light-dark(black, white);
-  --vis-axis-tick-label-color: light-dark(black, white);
-  --vis-timeline-label-color: light-dark(black, white);
+  --vis-axis-tick-color: v-bind(contrast);
+  --vis-axis-label-color: v-bind(contrast);
+  --vis-axis-tick-label-color: v-bind(contrast);
+  --vis-timeline-label-color: v-bind(contrast);
   --vis-timeline-line-stroke-width: 2;
 }
 

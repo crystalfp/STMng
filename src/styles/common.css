@@ -52,7 +52,7 @@ html {
 
 /* >> Elements on the UI */
 .result-label {
-  color: light-dark(#7ca911, #baf434) !important;
+  color: #00C853 !important;
   opacity: 1 !important;
   user-select: none !important;
 }

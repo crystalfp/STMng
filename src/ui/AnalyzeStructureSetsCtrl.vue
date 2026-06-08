@@ -28,6 +28,8 @@ import {storeToRefs} from "pinia";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
+import {theme} from "@/services/ReceiveTheme";
+
 import type {DistanceMethodsNames, FPmethodName} from "@/types";
 import type {VariableTransitionTable} from "@/electron/analysis/EnthalpyTransitionsVariable";
 
@@ -624,6 +626,14 @@ const headers = ref([
     {key: "pressure", title: "Pressure (GPa)", align: alignEnd, nowrap: true},
 ]);
 
+// Workaround to non-working CSS light-dark() in production
+const bck = computed(() => {
+    return theme.value === "light" ? "#FFFFFF" : "#212121";
+});
+const border = computed(() => {
+    return theme.value === "light" ? "#E0DCDF" : "#3C3C3C";
+});
+
 </script>
 
 
@@ -800,7 +810,7 @@ const headers = ref([
 
 <style scoped>
 .tc1 {
-  background-color: light-dark(#FFFFFF, #212121);
+  background-color: v-bind(bck);
   margin-right: -12px;
 }
 
@@ -822,7 +832,7 @@ const headers = ref([
 .tc {
   height: 300px;
   overflow-y: auto;
-  background-color: light-dark(#FFFFFF, #212121);
+  background-color: v-bind(bck);
   margin-right: -12px;
 }
 
@@ -831,11 +841,11 @@ const headers = ref([
 }
 
 .tdp {
-  border-top: 1px solid light-dark(#E0DCDF, #3C3C3C);
+  border-top: 1px solid v-bind(border);
   width: 100%;
   padding-left: 5px;
   padding-top: 4px;
-  color: light-dark(#7ca911, #baf434)
+  color: #00C853 !important;
 }
 
 .tds {

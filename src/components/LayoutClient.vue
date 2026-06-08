@@ -24,7 +24,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 
-import {ref, shallowRef, defineAsyncComponent, nextTick} from "vue";
+import {ref, shallowRef, defineAsyncComponent, nextTick, computed} from "vue";
 import {sm} from "@/services/SceneManager";
 import {isLoaded, handleFullscreen, receiveRefreshMenu,
         setProjectPathInTitle, receiveMenuSelection,
@@ -154,6 +154,11 @@ const confirmedExit = (): void => {
     sendToNode("WINDOW", "EXIT-CONFIRMED");
 };
 
+// Workaround to non-working CSS light-dark() in production
+const gutter = computed(() => {
+    return theme.value === "light" ? "#b0b0b0" : "#3e3e3e";
+});
+
 </script>
 
 <template>
@@ -208,7 +213,7 @@ const confirmedExit = (): void => {
 
 .layout-gutter {
   width: 6px;
-  background-color: light-dark(#b0b0b0, #3e3e3e);
+  background-color: v-bind(gutter);
   cursor: pointer;
 }
 </style>
