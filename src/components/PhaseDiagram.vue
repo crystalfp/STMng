@@ -53,6 +53,33 @@ interface DataRecord {
     enthalpy: number;
 }
 
+/** Selected line by click on the summary diagram */
+interface SelectedSummary {
+    /** Unique id */
+    id: number;
+    /** Formula */
+    formula: string;
+    /** Corresponding step */
+    step: number;
+    /** Lower pressure for the stability range */
+    pl: number;
+    /** Higher pressure for the stability range */
+    ph: number;
+}
+
+interface SelectedDetails {
+    /** Unique id */
+    id: number;
+    /** Lower pressure for the stability range */
+    pl: string;
+    /** Higher pressure for the stability range */
+    ph: string;
+    /** Enthalpy of formation */
+    enthalpy: string;
+    /** Corresponding step */
+    step: string;
+}
+
 const range = ref<DataRecord[]>([]);
 const lineHeight = ref(30);
 const summary = ref<SummaryTableEntry[]>([]);
@@ -62,8 +89,8 @@ const forceUpdate = ref(true);
 
 /** Title and content of the lateral table */
 const selectedTitle = ref("");
-const selectedSummaries = ref<{id: number; formula: string; step: string}[]>([]);
-const selectedDetails = ref<{id: number; pl: string; ph: string; enthalpy: string; step: string}[]>([]);
+const selectedSummaries = ref<SelectedSummary[]>([]);
+const selectedDetails = ref<SelectedDetails[]>([]);
 
 const windowPath = "/phase-diagram";
 
@@ -198,28 +225,77 @@ requestData(windowPath, (params: CtrlParams) => {
  */
 const explainSummaryLine = (d: SummaryTableEntry): void => {
 
-    selectedTitle.value = "Pressure range (GPa): " +
-                          `${d.xs.toFixed(1)}\u2002\u27F7\u2002${d.xe.toFixed(1)}`;
+    selectedTitle.value = `Composition: ${d.formula}`;
 
-    // Group the elements with the same key
+    const ranges = new Map<number, number[][]>();
     const grouping = new Map<string, Set<number>>();
-    for(const [i, j] of d.indices) {
-        const f = table.formulas[i][j];
-        const s = table.steps[i][j];
-        if(grouping.has(f)) {
-            grouping.get(f)!.add(s);
-        }
-        else {
-            grouping.set(f, new Set<number>([s]));
+    const countPressures = table.pressures.length;
+    for(let i=0; i < countPressures; ++i) {
+        const countPoints = table.keys[i].length;
+        const pressures = table.pressures[i];
+        for(let j=0; j < countPoints; ++j) {
+            if(table.keys[i][j] === d.key) {
+                const s = table.steps[i][j];
+                const f = table.formulas[i][j];
+
+                if(ranges.has(s)) {
+                    ranges.get(s)!.push(pressures);
+                }
+                else {
+                    ranges.set(s, [pressures]);
+                }
+                if(grouping.has(f)) {
+                    grouping.get(f)!.add(s);
+                }
+                else {
+                    grouping.set(f, new Set<number>([s]));
+                }
+            }
         }
     }
+
+    /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 
     selectedSummaries.value.length = 0;
     let id = 0;
+
     for(const [formula, steps] of grouping) {
-        const s = [...steps].map((v) => v.toString()).join(", ");
-        selectedSummaries.value.push({id: id++, formula, step: s});
+
+        for(const step of steps) {
+
+            let rangeStart;
+            let rangeEnd;
+            for(const r of ranges.get(step)!.values()) {
+
+                if(rangeStart === undefined) {
+                    rangeStart = r[0];
+                    rangeEnd = r[1];
+                }
+                else if(r[0] <= rangeEnd!) rangeEnd = r[1];
+                else {
+                    selectedSummaries.value.push({
+                        id,
+                        formula,
+                        step,
+                        pl: rangeStart,
+                        ph: rangeEnd!
+                    });
+                    rangeStart = r[0];
+                    rangeEnd = r[1];
+                    ++id;
+                }
+            }
+            selectedSummaries.value.push({
+                id,
+                formula,
+                step,
+                pl: rangeStart!,
+                ph: rangeEnd!
+            });
+        }
     }
+
+    /* eslint-enable @typescript-eslint/no-unnecessary-type-assertion */
 };
 
 /**
@@ -365,29 +441,33 @@ const contrast = computed(() => {
       <VisTooltip :triggers :followCursor="true" horizontalPlacement="right" />
     </VisXYContainer>
     <v-container class="phase-table">
-      <v-label class="mb-4 text-title-medium no-select result-label" v-html="selectedTitle" />
+      <v-label class="ml-1 mb-2 text-title-medium no-select result-label" v-html="selectedTitle" />
       <div class="phase-table-container">
         <v-table v-if="selectedSummaries.length > 0 && showSummary" class="pa-2">
           <thead>
             <tr>
               <th class="pa-0">Formula</th>
-              <th class="pa-0">Steps</th></tr>
+              <th class="c2">Steps</th>
+              <th class="pa-0" colspan="2">Pressure range (GPa)</th>
+            </tr>
           </thead>
           <tr v-for="e of selectedSummaries" :key="e.id">
             <td class="c1" v-html="e.formula"></td>
-            <td>{{ e.step }}</td>
+            <td class="c2">{{ e.step }}</td>
+            <td class="c3">{{ `${e.pl.toFixed(1)}\u2002\u27F7` }}</td>
+            <td class="c4">{{ e.ph.toFixed(1) }}</td>
           </tr>
         </v-table>
         <v-table v-if="selectedDetails.length > 0 && !showSummary" class="pa-2 pr-3">
           <thead>
             <tr>
-              <th class="pa-0 text-right font-weight-bold" colspan="2">Pressure range (GPa)</th>
-              <th class="pa-0 text-right font-weight-bold">Enthalpy</th>
-              <th class="pa-0 text-right font-weight-bold">Step</th>
+              <th class="pa-0 text-right" colspan="2">Pressure range (GPa)</th>
+              <th class="pa-0 text-right">Enthalpy</th>
+              <th class="pa-0 text-right">Step</th>
             </tr>
           </thead>
           <tr v-for="e of selectedDetails" :key="e.id">
-            <td class="d1 text-right">{{ `${e.pl}\u2002\u27F7\u2002` }}</td>
+            <td class="d1 text-right">{{ `${e.pl}\u2002\u27F7` }}</td>
             <td class="d2 text-right">{{ e.ph }}</td>
             <td class="text-right">{{ e.enthalpy }}</td>
             <td class="text-right">{{ e.step }}</td>
@@ -454,8 +534,24 @@ const contrast = computed(() => {
 }
 
 .c1 {
-    width: 110px;
-    padding-top: 6px;
+  width: 110px;
+  padding-top: 6px;
+}
+
+.c2 {
+  width: 80px;
+  text-align: right;
+  padding-right: 25px;
+}
+
+.c3 {
+  text-align: right;
+}
+
+.c4 {
+  width: 70px;
+  text-align: right;
+  padding-right: 20px;
 }
 
 .d1 {
