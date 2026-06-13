@@ -11,6 +11,7 @@
     "cfp":       {"label": "Fingerprints",          "type": "compute-fingerprints","in": "reader"},
     "sets":      {"label": "Analyze structure sets", "type": "analyze-structure-sets", "in": "reader"},
     "polyhedra": {"label": "Polyhedra",             "type": "draw-polyhedra",      "in": "bonds"},
+    "shape":     {"label": "Crystal shape",         "type": "compute-crystal-shape", "in": "bonds"},
     "smooth":    {"label": "Interpolate volume",    "type": "interpolate-volume",  "in": "unit"},
     "ortho":     {"label": "Orthoslice",            "type": "orthoslice",          "in": "smooth"},
     "iso":       {"label": "Isosurface",            "type": "isosurface",          "in": "smooth"},

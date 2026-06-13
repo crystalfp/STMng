@@ -58,6 +58,7 @@ import {StructureBackbone} from "../nodes/StructureBackbone";
 import {SliceStructure} from "../nodes/SliceStructure";
 import {FindSimilar} from "../nodes/FindSimilar";
 import {AnalyzeStructureSets} from "../nodes/AnalyzeStructureSets";
+import {CrystalShape} from "../nodes/CrystalShape";
 
 /**
  * Manage everything related to the loaded project
@@ -135,6 +136,9 @@ class ProjectManager {
 		{type: "analyze-structure-sets",	in: true,  out: false, graphic: "none",
 											handler: AnalyzeStructureSets,
 									   		idPrefix: "sets", ui: "AnalyzeStructureSetsCtrl"},
+		{type: "compute-crystal-shape",		in: true,  out: false, graphic: "none",
+											handler: CrystalShape,
+											idPrefix: "shape", ui: "CrystalShapeCtrl"},
 	];
 
 	/**
