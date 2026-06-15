@@ -25,7 +25,8 @@
 import {ref} from "vue";
 import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
         Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
-        BufferGeometry} from "three";
+        BufferGeometry,
+        AmbientLight} from "three";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import {SimpleViewer} from "@/services/SimpleViewer";
@@ -49,6 +50,13 @@ const sv = new SimpleViewer(".shape-viewer", false, (scene) => {
     basisVectorGroup.name = nameBV;
     basisVectorGroup.visible = visibleBV.value;
     scene.add(basisVectorGroup);
+
+    // Increase ambient light intensity
+    scene.traverse((object) => {
+        if(object.type !== "AmbientLight") return;
+        const light = object as AmbientLight;
+        light.intensity = 1;
+    });
 });
 
 /** Camera position for centering */
@@ -175,8 +183,7 @@ const renderShape = (vertices: number[], index: number[], colors: number[]): num
         side: DoubleSide,
         roughness: 0.5,
         metalness: 0.6,
-        vertexColors: true,
-        flatShading: true
+        vertexColors: true
     });
 
     // Move the camera to have the surface at the center of the viewer

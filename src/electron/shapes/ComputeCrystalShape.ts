@@ -26,6 +26,7 @@ import {multiply, inv, cross} from "mathjs";
 import {getAtomData} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates} from "../modules/Helpers";
 import type {Structure} from "@/types";
+import {cdist, dotRows, transpose2D, range, cross3, norm, matVec} from "./Helpers";
 
 const electronCount = [0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 5, 3, 3, 3, 2, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 5, 3, 3, 3, 2, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
 
@@ -102,9 +103,9 @@ const valenceAffortNormalize = (inputCell: Structure, fractionalCoordinates: num
 				];
 
 				// L2 norm
-				const norm = Math.sqrt(transformed.reduce((sum, x) => sum + x * x, 0));
+				const l2norm = Math.sqrt(transformed.reduce((sum, x) => sum + x * x, 0));
 
-				sumExp += Math.exp(-(norm - rad - radii[a]) / decay);
+				sumExp += Math.exp(-(l2norm - rad - radii[a]) / decay);
 			}
 		}
 
@@ -359,41 +360,6 @@ function adjust(cell: number[][]): number[][] {
   );
 }
 
-// --- Math helpers ---
-
-function matVec(m: number[][], v: number[]): number[] {
-  	return m.map((row) => row.reduce((s, value, i) => s + value * v[i], 0));
-}
-
-function transpose2D(m: number[][]): number[][] {
-  	return Array.from({length: m[0].length}, (_, i) => m.map((row) => row[i]));
-}
-
-function cross3(a: number[], b: number[]): number[] {
-  return [
-    a[1]*b[2] - a[2]*b[1],
-    a[2]*b[0] - a[0]*b[2],
-    a[0]*b[1] - a[1]*b[0],
-  ];
-}
-
-function norm3(v: number[]): number {
-  return Math.sqrt(v.reduce((s, x) => s + x*x, 0));
-}
-
-function dotRows(points: number[][], m: number[][]): number[][] {
-  return points.map((p) => matVec(transpose2D(m), p));
-}
-
-function cdist(A: number[][], B: number[][]): number[][] {
-  return A.map((a) =>
-    B.map((b) => Math.sqrt(a.reduce((s, v, i) => s + (v - b[i])**2, 0)))
-  );
-}
-
-const range = (lo: number, hi: number): number[] =>
-    Array.from({length: hi - lo}, (_, i) => lo + i);
-
 const createBondArray = (
 							cell: number[][],
 							trans: number[][],
@@ -567,7 +533,7 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 							scopeOffsets.push([x, y, z]);
 
 				// measure = ||inputCell.T @ r1  ×  inputCell.T @ r2||
-				const measure = norm3(cross3(matVec(inputCellT, r1), matVec(inputCellT, r2)));
+				const measure = norm(cross3(matVec(inputCellT, r1), matVec(inputCellT, r2)));
 
 				const energiesOut: number[] = [];
 
