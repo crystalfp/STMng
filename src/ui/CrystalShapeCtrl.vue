@@ -23,7 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
-import {askNode, sendToNode} from "@/services/RoutesClient";
+import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 import {onUnmounted, reactive, ref, toRaw, watch} from "vue";
 
 import NodeAlert from "@/widgets/NodeAlert.vue";
@@ -38,6 +38,7 @@ const state = reactive({
 
 // > Local variables
 const computingShapeRunning = ref(false);
+const stepMessage = ref("");
 
 // > Properties
 const {id, label} = defineProps<{
@@ -60,6 +61,12 @@ askNode(id, "init")
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
                       "crystalShape");
     });
+
+/** Receive the parameters of the structures loaded */
+receiveFromNode(id, "step", (params) => {
+
+    stepMessage.value = params.message as string ?? "";
+});
 
 // > Computation
 const computeShape = (): void => {
@@ -105,6 +112,8 @@ onUnmounted(() => {
   <block-button label="Compute crystal shape"
                 :loading="computingShapeRunning"
                 @click="computeShape"/>
+
+  <v-label :text="stepMessage" class="ml-1 mt-2 result-label" />
 
   <node-alert node="crystalShape" class="mt-1"/>
 

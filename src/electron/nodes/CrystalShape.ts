@@ -24,14 +24,17 @@
  */
 import {NodeCore} from "../modules/NodeCore";
 import {hasNoUnitCell} from "../modules/Helpers";
+import {sendToClient} from "../modules/ToClient";
 import {computeCrystalShape} from "../shapes/ComputeCrystalShape";
-import {buildCrystalShape} from "../shapes/BuildCrystal";
+import {buildCrystalShape, type CrystalGeometry} from "../shapes/BuildCrystal";
+import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
-
 
 export class CrystalShape extends NodeCore {
 
 	private structure: Structure | undefined;
+	private crystalResults: CrystalGeometry | undefined;
+	private previousPlanesCount = -1;
 
 	// Mirror of the UI reactive state
 	private readonly state = {
@@ -61,6 +64,8 @@ export class CrystalShape extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
+		this.crystalResults = undefined;
+
 		if(!data?.atoms.length) {
 
 			this.structure = undefined;
@@ -84,6 +89,7 @@ export class CrystalShape extends NodeCore {
 	loadStatus(params: CtrlParams): void {
 
 		this.initializeState(params);
+		this.previousPlanesCount = this.state.allPlanes ? 0 : this.state.maxPlanesCount;
 	}
 
 	// > Channels
@@ -104,6 +110,12 @@ export class CrystalShape extends NodeCore {
 
 		// Save the full state
 		this.initializeState(params);
+		const currentPlanesCount = this.state.allPlanes ? 0 : this.state.maxPlanesCount;
+		if(currentPlanesCount !== this.previousPlanesCount) {
+
+			this.crystalResults = undefined;
+			this.previousPlanesCount = currentPlanesCount;
+		}
 	}
 
 	/**
@@ -123,18 +135,121 @@ export class CrystalShape extends NodeCore {
 			return {error: "Missing unit cell in input to compute crystal shape"};
 		}
 
-		// Do the computation
-		try {
+		if(!this.crystalResults) {
 
-			const planes = computeCrystalShape(this.structure);
+			sendToClient(this.id, "step", {message: "Computing planes"});
 
-			const maxPlanes = this.state.allPlanes ? 0 : this.state.maxPlanesCount;
-			buildCrystalShape(basis, planes, maxPlanes);
+			// Do the computation if data changes
+			try {
+
+				const planes = computeCrystalShape(this.structure);
+				sendToClient(this.id, "step", {message: "Calculating intersections"});
+
+				this.crystalResults = buildCrystalShape(basis, planes, this.previousPlanesCount,
+					(message) => sendToClient(this.id, "step", {message})
+				);
+				if(!this.crystalResults ||
+				   this.crystalResults.vertices.length === 0 ||
+				   this.crystalResults.colors.length === 0) {
+					throw Error("No result from building shape geometry");
+				}
+				sendToClient(this.id, "step", {message: ""});
+			}
+			catch(error) {
+				sendToClient(this.id, "step", {message: ""});
+				return {error: (error as Error).message};
+			}
+
+			// Orient triangles so their normals point to outside
+			this.crystalResults.index = this.orientSurfaces();
+			// this.crystalResults.normals = this.orientSurfaces();
 		}
-		catch(error) {
-			return {error: (error as Error).message};
-		}
+		const dataToSend: CtrlParams = {
+							vertices: this.crystalResults.vertices,
+							colors: this.crystalResults.colors,
+							maxColor: this.crystalResults.maxColor,
+							index: this.crystalResults.index!,
+							basis};
+
+		// Open the chart
+		createOrUpdateSecondaryWindow({
+			routerPath: "/crystal-shape",
+			width: 1000,
+			height: 900,
+			title: "Crystal shape",
+			data: dataToSend
+		});
 
 		return {status: "Success"};
+	}
+
+	private orientSurfaces(): number[] {
+
+		const vert = this.crystalResults!.vertices;
+		const n = vert.length;
+
+		// Find the crystal center
+		let cx = 0;
+		let cy = 0;
+		let cz = 0;
+		for(let i = 0; i < n; i += 3) {
+			cx += vert[i];
+			cy += vert[i+1];
+			cz += vert[i+2];
+		}
+		cx /= n;
+		cy /= n;
+		cz /= n;
+
+		// const normals: number[] = [];
+		const index: number[] = [];
+		// For each triangle find the vector from the crystal center
+		for(let i=0, k=0; i < n; i += 9, k += 3) {
+
+			const x0 = (vert[i]   + vert[i+3] + vert[i+6])/3-cx;
+			const y0 = (vert[i+1] + vert[i+4] + vert[i+7])/3-cy;
+			const z0 = (vert[i+2] + vert[i+5] + vert[i+8])/3-cz;
+
+			const ax = vert[i+3] - vert[i];
+			const ay = vert[i+4] - vert[i+1];
+			const az = vert[i+5] - vert[i+2];
+
+			const bx = vert[i+6] - vert[i];
+			const by = vert[i+7] - vert[i+1];
+			const bz = vert[i+8] - vert[i+2];
+
+			let nx = ay*bz - az*by;
+			let ny = az*bx - ax*bz;
+			let nz = ax*by - ay*bx;
+
+			const nlen = Math.hypot(nx, ny, nz);
+			nx /= nlen;
+			ny /= nlen;
+			nz /= nlen;
+
+			const dot = x0*nx + y0*ny + z0*nz;
+			if(dot < 0) {
+
+				// normals.push(-nx, -ny, -nz, -nx, -ny, -nz, -nx, -ny, -nz);
+				// let t = vert[i];
+				// vert[i] = vert[i+3];
+				// vert[i+3] = t;
+
+				// t = vert[i+1];
+				// vert[i+1] = vert[i+4];
+				// vert[i+4] = t;
+
+				// t = vert[i+2];
+				// vert[i+2] = vert[i+5];
+				// vert[i+5] = t;
+				index.push(k, k+2, k+1);
+			}
+			else {
+				// normals.push(nx, ny, nz, nx, ny, nz, nx, ny, nz);
+				index.push(k, k+1, k+2);
+			}
+		}
+
+		return index;
 	}
 }

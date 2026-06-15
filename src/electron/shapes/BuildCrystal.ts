@@ -23,6 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 /* eslint-disable unicorn/prevent-abbreviations, unicorn/prefer-includes-over-repeated-comparisons */
+import Delaunator from "delaunator";
 import type {BasisType} from "@/types";
 import type {PlaneType} from "./ComputeCrystalShape";
 
@@ -82,6 +83,33 @@ const dot = (a: number[], b: number[]): number => {
   return a.reduce((sum, v, i) => sum + v * b[i], 0);
 };
 
+const dot3 = (a: number[], b: number[]): number =>
+    a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+/** Subtract two 3-vectors. */
+const sub3 = (a: number[], b: number[]): number[] =>
+    [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+
+/** Invert a 3×3 matrix (row-major). Returns undefined if singular. */
+const inv3 = (m: number[][]): number[][] | undefined => {
+  const [[a, b, c], [d, e, f], [g, h, k]] = m;
+  const det = a * (e * k - f * h) - b * (d * k - f * g) + c * (d * h - e * g);
+  if(Math.abs(det) < 1e-14) return undefined;
+  const inv = 1 / det;
+  return [
+    [(e * k - f * h) * inv, (c * h - b * k) * inv, (b * f - c * e) * inv],
+    [(f * g - d * k) * inv, (a * k - c * g) * inv, (c * d - a * f) * inv],
+    [(d * h - e * g) * inv, (b * g - a * h) * inv, (a * e - b * d) * inv],
+  ];
+};
+
+/** Multiply a 1×3 row vector by a 3×3 matrix, returning a 1×3 result. */
+const mulVecMat3 = (v: number[], m: number[][]): number[] => [
+  v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0],
+  v[0] * m[0][1] + v[1] * m[1][1] + v[2] * m[2][1],
+  v[0] * m[0][2] + v[1] * m[1][2] + v[2] * m[2][2],
+];
+
 /**
  * Euclidean distance between two 3-vectors.
  * Inlined to avoid building full distance matrices.
@@ -89,6 +117,11 @@ const dot = (a: number[], b: number[]): number => {
 const euclidean = (a: number[], b: number[]): number => {
     return Math.sqrt(a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0));
 };
+
+// Extract one coordinate column from polyhedraR.
+// Equivalent to polyhedra_R.T[axis]
+const coordColumn = (pts: number[][], axis: 0 | 1 | 2): number[] =>
+  pts.map((p) => p[axis]);
 
 // --- get_normals ---
 // plane_miller: [N, 3]   cell: [3, 3]
@@ -235,14 +268,33 @@ const markDuplicatesInChunk = (chunkStart: number,
     }
 };
 
+/** Resultant geometry of the crystal */
+export interface CrystalGeometry {
+    /** Coordinates of each triangle (no shared vertices) */
+    vertices: number[];
+    /** Vertex colors */
+    colors: number[];
+    /** Maximum color index */
+    maxColor: number;
+    /** Vertex normals */
+    normals?: number[];
+    index?: number[];
+}
+
 /**
  * From the planes compute the crystal shape
  *
  * @param basis - Structure basis
  * @param planes - Planes computed in the previous step
  * @param maxPlanes - Maximum number of planes to use (zero means all)
+ * @returns Vertices and colors of the crystal surface
  */
-export const buildCrystalShape = (basis: BasisType, planes: PlaneType[], maxPlanes=0): void => {
+export const buildCrystalShape = (
+                                    basis: BasisType,
+                                    planes: PlaneType[],
+                                    maxPlanes: number,
+                                    sendMsg: (msg: string) => void
+                                ): CrystalGeometry => {
 
 	// Normalize the cell basis
 	const cell: number[][] = [];
@@ -292,13 +344,12 @@ export const buildCrystalShape = (basis: BasisType, planes: PlaneType[], maxPlan
 	}
 
 	// Compute normals
-	console.log("Compute normals");
 	const [planeNormals, planeRvalue] = getNormalsRvalues(planeMiller, planeEnergy, cell);
 
-	console.log("Calculating intersections");
+	sendMsg("Calculating intersections");
 	const planeR = planeIntersections(planeNormals, planeRvalue);
 
-    console.log("Searching interior polyhedra vertices");
+    sendMsg("Searching interior polyhedra vertices");
 
     // The Python code chunks in blocks of 100 000; with 71 rows here one pass suffices,
     // but the chunked loop is preserved for correctness with larger datasets.
@@ -335,7 +386,160 @@ export const buildCrystalShape = (basis: BasisType, planes: PlaneType[], maxPlan
 
     const polyhedraR: number[][] = polyhedraRNu.filter((_, i) => keep[i]);
 
-    // ─── Output ───────────────────────────────────────────────────────────────────
+    sendMsg("Calculating surface triangulation");
 
-    console.log(polyhedraR);
+    // ─── Step 1: blng  (shape: numPlanes × numVertices) ──────────────────────────
+    // Python: blng = np.isclose(np.dot(polyhedra_R, plane_normals.T), plane_rvalue).astype(int).T
+    //
+    // For each vertex v and each plane p: is dot(v, normal_p) ≈ rvalue_p ?
+    // Then transpose so outer index = plane, inner index = vertex.
+
+    const blng: number[][] = planeNormals.map((normal, p) =>
+        polyhedraR.map((v) => (isClose(dot3(v, normal), planeRvalue[p]) ? 1 : 0))
+    );
+    // blng[p][v] === 1  ↔  vertex v lies on plane p
+
+    // ─── Step 2: present_planes ──────────────────────────────────────────────────
+    // Python: present_planes = (blng.sum(axis=1) >= 3).nonzero()[0]
+    // A plane is "present" if it contains at least 3 vertices.
+
+    const presentPlanes: number[] = blng
+                                        .map((row, p) => ({p, sum: row.reduce((a, b) => a + b, 0)}))
+                                        .filter(({sum}) => sum >= 3)
+                                        .map(({p}) => p);
+
+    // ─── Step 3: pp, pm, pe ──────────────────────────────────────────────────────
+    // Python: pp = present_planes[0 : present_planes.size/2]
+
+    // const pp: number[] = presentPlanes.slice(0, Math.floor(presentPlanes.length / 2));
+    // const pm: number[][] = pp.map(i => planeMiller[i]);
+    // const pe: number[]  = pp.map(i => planeEnergy[i]);
+
+    // ─── Step 4: triangulate each plane face ─────────────────────────────────────
+
+    const vertices: number[][][] = [];   // vertices[face] = array of simplex index-triples
+    const colors: number[][]     = [];   // colors[face]   = array of face-color indices (one per simplex)
+    // const faceSquare: number[]   = [];   // faceSquare[face] = scalar area accumulator
+
+    let count = 0;
+
+    for(const plane of presentPlanes) {
+// console.log("===== plane:", plane);
+        // Vertices that lie on this plane
+        const onPlane: number[] = blng[plane]
+                                    .map((flag, vi) => (flag === 1 ? vi : -1))
+                                    .filter((vi) => vi !== -1);
+// console.log("ONPLANE:", onPlane);
+        const vert: number[][] = onPlane.map((vi) => polyhedraR[vi]);
+// console.log("VERT:", vert);
+        // Project onto the plane's local 2-D coordinate system.
+        // Python: vert_flat = delete(dot(vert - vert[0], inv([v1-v0, v2-v0, normal])), col=2)
+        // eslint-disable-next-line sonarjs/destructuring-assignment-syntax
+        const v0 = vert[0];
+        const v1 = vert[1];
+        const v2 = vert[2];
+        // const [v0, v1, v2] = vert;
+        const base: number[][] = [sub3(v1, v0), sub3(v2, v0), planeNormals[plane]];
+        const basisInv = inv3(base)!;
+
+        const vertFlat: number[][] = vert.map((v) => {
+            const local = mulVecMat3(sub3(v, v0), basisInv);
+            return [local[0], local[1]];   // drop z (column 2) = normal component
+        });
+
+        // Delaunay triangulation in 2-D
+        // delaunator expects a flat [x0,y0, x1,y1, ...] array
+        const flat = new Float64Array(vertFlat.length * 2);
+        // eslint-disable-next-line unicorn/no-array-for-each
+        vertFlat.forEach(([x, y], i) => {
+            flat[2 * i] = x;
+            flat[2 * i + 1] = y;
+        });
+// console.log("FLAT:", flat);
+        const del = new Delaunator(flat as unknown as number[]);
+        // const del = Delaunator.from(flat as unknown as number[]);
+        // const del = Delaunator.from(flat as unknown as ArrayLike<number[]>);
+// console.log("DEL:", del);
+        // del.triangles is a flat Uint32Array of simplex indices (groups of 3)
+        const simplices: [number, number, number][] = [];
+        for(let t = 0; t < del.triangles.length; t += 3) {
+            simplices.push([del.triangles[t], del.triangles[t + 1], del.triangles[t + 2]]);
+        }
+// console.log("SIMPLICES:", simplices);
+
+        // Map local simplex indices back to global polyhedra_R indices
+        vertices.push(simplices.map(([a, b, c]) => [onPlane[a], onPlane[b], onPlane[c]]));
+// console.log("VERTICES:", simplices.map(([a, b, c]) => [onPlane[a], onPlane[b], onPlane[c]]));
+
+        // Color: every simplex on this face gets the same `count`
+        colors.push(Array<number>(simplices.length).fill(count));
+
+        // Face area: sum |cross(v2-v0, v1-v0)| over all simplices
+        // Python: simplices_vert = vert[tri.simplices].transpose([1,0,2])
+        //         face_square += |cross(sv[2]-sv[0], sv[1]-sv[0])|.sum()
+        // const area = simplices.reduce((acc, [a, b, c]) => {
+        //     const va = vert[a], vb = vert[b], vc = vert[c];
+        //     return acc + absSum3(cross3(sub3(vc, va), sub3(vb, va)));
+        // }, 0);
+        // faceSquare.push(area);
+
+        count++;
+    }
+
+    // ─── Step 5: flatten ─────────────────────────────────────────────────────────
+
+    const verticesFlat: number[][] = vertices.flat();
+    const colorsFlat:   number[]   = colors.flat();
+
+    // ─── Triangulation ───────────────────────────────────────────────────────────
+    // matplotlib's Triangulation stores x, y, and the triangle index array.
+    // get_masked_triangles() returns the triangles unchanged when there is no mask
+    // (which is the case here since no mask is supplied).
+
+    const x: number[] = coordColumn(polyhedraR, 0);
+    const y: number[] = coordColumn(polyhedraR, 1);
+    const z: number[] = coordColumn(polyhedraR, 2);
+
+    // triangles == vertices_flat (no mask applied)
+    // const triangles: [number, number, number][] = verticesFlat;
+
+    // console.log("TRI: x =", x, "y =", y, "triangles =", verticesFlat);
+    // console.log("TRIANGLES:", verticesFlat);
+
+    // ─── Build verts ─────────────────────────────────────────────────────────────
+    // Python:
+    //   xt = tri.x[triangles][..., np.newaxis]   shape: (nTri, 3, 1)
+    //   yt = tri.y[triangles][..., np.newaxis]   shape: (nTri, 3, 1)
+    //   zt = tri.z[triangles][..., np.newaxis]   shape: (nTri, 3, 1)
+    //   verts = np.concatenate((xt, yt, zt), axis=2)  shape: (nTri, 3, 3)
+    //
+    // Result: verts[i][j] = [x, y, z] of the j-th vertex of the i-th triangle.
+
+    // const verts: number[][][] = verticesFlat.map(([a, b, c]) => [
+    //     [x[a], y[a], z[a]],
+    //     [x[b], y[b], z[b]],
+    //     [x[c], y[c], z[c]],
+    // ]);
+
+    const coordinates: number[] = [];
+    const vertexColors: number[] = [];
+    let i = 0;
+    let maxColor = -1;
+    for(const [a, b, c] of verticesFlat) {
+
+        coordinates.push(x[a], y[a], z[a],
+                         x[b], y[b], z[b],
+                         x[c], y[c], z[c]);
+
+        const cf = colorsFlat[i];
+        if(cf > maxColor) maxColor = cf;
+        vertexColors.push(cf, cf, cf);
+        ++i;
+    }
+
+    return {
+        vertices: coordinates,
+        colors: vertexColors,
+        maxColor
+    };
 };

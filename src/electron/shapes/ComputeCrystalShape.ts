@@ -505,7 +505,6 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 	for(const {atomZ} of atoms) {
 		const ne = atomZ > electronCount.length ? 3 : electronCount[atomZ];
 		electrons.push(ne);
-		// const r = 0.76; // TBD To have the same results as the python one
 		const r = getAtomData(atomZ).rCov;
 		radii.push(r);
 	}

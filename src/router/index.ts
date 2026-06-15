@@ -101,6 +101,10 @@ export const router = createRouter({
             component: (): Component => import("@/components/PhaseDiagram.vue")
         },
         {
+            path: "/crystal-shape",
+            component: (): Component => import("@/components/ShowCrystalShape.vue")
+        },
+        {
             // Catch errors in paths
             path: "/:catchAll(.*)*",
             name: "NotFound",
