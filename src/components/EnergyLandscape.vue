@@ -184,11 +184,12 @@ const renderSurface = (): void => {
     for(let i=0; i < posCount; i++) {
 
         const z = grid[i];
-        const color = lut.getColor(z);
+        const {r, g, b} = lut.getColor(z);
+        const i3 = i*3;
 
-        colors[i*3]   = color.r;
-        colors[i*3+1] = color.g;
-        colors[i*3+2] = color.b;
+        colors[i3]   = r;
+        colors[i3+1] = g;
+        colors[i3+2] = b;
     }
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
 

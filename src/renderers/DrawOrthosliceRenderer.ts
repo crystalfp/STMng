@@ -97,8 +97,8 @@ export class DrawOrthosliceRenderer {
 		// Create the orthoslice colors
 		const colors: number[] = [];
 		for(const oneValue of values) {
-			const color = this.lut.getColor(oneValue);
-			colors.push(color.r, color.g, color.b);
+			const {r, g, b} = this.lut.getColor(oneValue);
+			colors.push(r, g, b);
 		}
 
 		// Create and add the plane to the scene with no lighting effects
