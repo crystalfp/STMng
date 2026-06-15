@@ -69,7 +69,7 @@ export const setBaseTitle = (baseTitle: string): void => {
 export const setProjectInTitle = (project: string): void => {
 
 	titleParts.project = project || "default project";
-	titleParts.file = "";
+	// titleParts.file = "";
 	setTitle(combineParts());
 };
 

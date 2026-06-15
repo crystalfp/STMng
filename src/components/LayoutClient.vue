@@ -63,7 +63,7 @@ globalThis.addEventListener("DOMContentLoaded", () => {
                                        isFullScreen ? "calc(100vh - 90px)" :
                                                       "calc(100vh - 121px)");
             });
-            setProjectPathInTitle("See the Molecole new generation");
+            setProjectPathInTitle("See the Molecule new generation");
             receiveRefreshMenu();
 
             // Show drop target on entering the application
