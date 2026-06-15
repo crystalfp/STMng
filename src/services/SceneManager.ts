@@ -432,40 +432,40 @@ class SceneManager {
 		if(atoms) {
 
 			atoms.traverse((object) => {
-				if(object.type === "Mesh") {
-					const im = object as InstancedMesh;
-					const count = im.count;
-					for(let idx = 0; idx < count; idx++) {
-						const matrix = new Matrix4();
-						im.getMatrixAt(idx, matrix);
-						const geometry = new SphereGeometry(1, 18, 18);
-						const out = this.scaleMatrix(matrix, scale);
-						geometry.applyMatrix4(out);
-						const material = new MeshBasicMaterial();
-						const sphere = new Mesh(geometry, material);
-						structure.add(sphere);
-					}
+
+				if(object.type !== "Mesh") return;
+				const im = object as InstancedMesh;
+				const count = im.count;
+				for(let idx = 0; idx < count; idx++) {
+					const matrix = new Matrix4();
+					im.getMatrixAt(idx, matrix);
+					const geometry = new SphereGeometry(1, 18, 18);
+					const out = this.scaleMatrix(matrix, scale);
+					geometry.applyMatrix4(out);
+					const material = new MeshBasicMaterial();
+					const sphere = new Mesh(geometry, material);
+					structure.add(sphere);
 				}
 			});
 		}
 		const bonds = SceneManager.scene.getObjectByName("Bonds");
 		if(bonds) {
 			bonds.traverse((object) => {
-				if(object.type === "Mesh") {
-					const im = object as InstancedMesh;
-					const count = im.count;
-					const ImGeometry = im.geometry as CylinderGeometry;
-					const radius = ImGeometry.parameters.radiusTop;
-					for(let idx = 0; idx < count; idx++) {
-						const matrix = new Matrix4();
-						im.getMatrixAt(idx, matrix);
-						const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, false);
-						const out = this.scaleMatrix(matrix, scale);
-						geometry.applyMatrix4(out);
-						const material = new MeshBasicMaterial();
-						const cylinder = new Mesh(geometry, material);
-						structure.add(cylinder);
-					}
+
+				if(object.type !== "Mesh") return;
+				const im = object as InstancedMesh;
+				const count = im.count;
+				const ImGeometry = im.geometry as CylinderGeometry;
+				const radius = ImGeometry.parameters.radiusTop;
+				for(let idx = 0; idx < count; idx++) {
+					const matrix = new Matrix4();
+					im.getMatrixAt(idx, matrix);
+					const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, false);
+					const out = this.scaleMatrix(matrix, scale);
+					geometry.applyMatrix4(out);
+					const material = new MeshBasicMaterial();
+					const cylinder = new Mesh(geometry, material);
+					structure.add(cylinder);
 				}
 			});
 		}

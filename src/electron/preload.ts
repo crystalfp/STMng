@@ -69,4 +69,4 @@ const onContentLoaded = (loadEvent: Event): void => {
     }
 };
 
-globalThis.addEventListener("DOMContentLoaded", onContentLoaded);
+addEventListener("DOMContentLoaded", onContentLoaded);

@@ -41,11 +41,12 @@ import {setupChannelAtomData} from "./modules/AtomDataManager";
 import type {CtrlParams} from "@/types";
 
 // > Command line parsing
+const themeOption = new Option("-t, --theme <theme>", "user interface theme");
 const program = new Command("STMng");
 program
     .version(version)
     .description(description)
-    .addOption(new Option("-t, --theme <theme>", "user interface theme").choices(["dark", "light"]))
+    .addOption(themeOption.choices(["dark", "light"]))
     .option("-d, --default", "force load of default project")
 	.option("-v, --verbose", "verbose")
 	.option("-n, --no-antialiasing", "disable antialiasing (for performance)")

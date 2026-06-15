@@ -287,9 +287,9 @@ class ProjectManager {
 	 */
 	private buildProjectInfo(): ClientProjectInfo {
 
-		const clientProjectInfo: ClientProjectInfo = {};
-
 		if(!this.project) return {};
+
+		const clientProjectInfo: ClientProjectInfo = {};
 
 		for(const entry in this.project.graph) {
 

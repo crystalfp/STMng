@@ -95,13 +95,7 @@ const createColors = (kind: string, colormap: string,
     lutMin.value = minValue;
     lutMax.value = maxValue;
 
-    const vertexColors: string[] = [];
-    for(const value of distance) {
-
-        vertexColors.push(`#${lut.getColor(value).getHexString()}`);
-    }
-
-    return vertexColors;
+    return distance.map((value) => `#${lut.getColor(value).getHexString()}`);
 };
 
 let delta: number[];

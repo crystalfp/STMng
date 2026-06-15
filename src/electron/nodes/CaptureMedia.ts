@@ -87,7 +87,7 @@ export class CaptureView extends NodeCore {
 		// Save the image
 		try {
 			const data = dataURI.split(",");
-			writeFileSync(filename, Buffer.from(data[1], "base64"));
+			writeFileSync(filename, Uint8Array.fromBase64(data[1]));
 			return {payload: filename};
 		}
 		catch(error) {

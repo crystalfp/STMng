@@ -98,7 +98,7 @@ export class SpheresCache {
 
 		// For each cached sphere type
 		let index = 0;
-		for(const entry of this.atomMap.entries()) {
+		for(const entry of this.atomMap) {
 
 			const indices = entry[1];
 			const count = indices.length;

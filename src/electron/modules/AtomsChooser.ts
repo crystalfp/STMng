@@ -39,7 +39,6 @@ export const selectAtomsByKind = (structure: Structure,
 
 	// Prepare selectors
 	let selectorsList: string[] = [];
-	let selectors;
 	if(kind !== "all") {
 		atomsSelector = atomsSelector.trim();
 		if(atomsSelector === "") return [];
@@ -53,6 +52,7 @@ export const selectAtomsByKind = (structure: Structure,
 
 	// For each extraction criteria
 	const selectedAtomsIdx = [];
+	let selectors;
 	switch(kind) {
 		case "symbol":
 			selectors = new Set<string>(selectorsList);

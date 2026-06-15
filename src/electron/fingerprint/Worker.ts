@@ -81,4 +81,5 @@ const worker = (params: FingerprintingParameters,
 };
 
 /** Register the worker routine */
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 workerpool.worker({fingerprinting: worker});

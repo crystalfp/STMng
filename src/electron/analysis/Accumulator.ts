@@ -228,12 +228,7 @@ export class StructureSetsAccumulator {
 	symbols(): string[] {
 
 		// Prepare list of species
-		const speciesSymbols: string[] = [];
-		for(const atomZ of this.allSpecies) {
-			speciesSymbols.push(getAtomicSymbol(atomZ));
-		}
-
-		return speciesSymbols;
+		return this.allSpecies.values().map((atomZ) => getAtomicSymbol(atomZ)).toArray();
 	}
 
 	/**

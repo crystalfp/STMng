@@ -99,10 +99,10 @@ const computeVertices2D = (pressure: number,
 	let e1 = Number.POSITIVE_INFINITY;
 
 	const x = [];
-	const e = [];
-	const s = [];
-	const f = [];
-	const k = [];
+	const e: number[] = [];
+	const s: number[] = [];
+	const f: string[] = [];
+	const k: string[] = [];
 
 	for(const structure of accumulator.iterateEnabledStructures()) {
 
@@ -145,12 +145,7 @@ const computeVertices2D = (pressure: number,
 	// Find convex hull (only the lower part)
 	const {index} = convexHull2D(points, limit);
 
-	const out: Vertex[] = [];
-	for(const idx of index) {
-		out.push({step: s[idx], formula: f[idx], enthalpy: e[idx], key: k[idx]});
-	}
-
-	return out;
+	return index.map((idx) => ({step: s[idx], formula: f[idx], enthalpy: e[idx], key: k[idx]}));
 };
 
 /**
@@ -172,10 +167,10 @@ const computeVertices3D = (pressure: number,
 
 	const x = [];
 	const y = [];
-	const e = [];
-	const s = [];
-	const f = [];
-	const k = [];
+	const e: number[] = [];
+	const s: number[] = [];
+	const f: string[] = [];
+	const k: string[] = [];
 
 	const p: number[][] = [];
 	for(const structure of accumulator.iterateEnabledStructures()) {
@@ -255,12 +250,10 @@ const computeVertices3D = (pressure: number,
 		}
 	}
 
-	const out: Vertex[] = [];
-	for(const i of idxVertices) {
-		out.push({step: s[i], formula: f[i], enthalpy: e[i], key: k[i]});
-	}
-
-	return out;
+	return idxVertices
+				.values()
+				.map((i) => ({step: s[i], formula: f[i], enthalpy: e[i], key: k[i]}))
+				.toArray();
 };
 
 /**
@@ -304,10 +297,7 @@ export const preparePointsForConvexHull3D = (
 						.toArray()
 						.toSorted((a, b) => a-b);
 
-	const points: number[][] = [];
-	for(const i of validIdx) {
-		points.push([x[i], y[i], e[i]]);
-	}
+	const points = validIdx.map((i) => [x[i], y[i], e[i]]);
 
 	return {points, idx: validIdx};
 };
@@ -351,11 +341,7 @@ const preparePointsForConvexHull4D = (
 						.toArray()
 						.toSorted((a, b) => a-b);
 
-	const points: number[][] = [];
-	for(const i of validIdx) {
-		points.push([p[i][0], p[i][1], p[i][2], e[i]]);
-	}
-
+	const points = validIdx.map((i) => [p[i][0], p[i][1], p[i][2], e[i]]);
 	return {points, idx: validIdx};
 };
 
@@ -377,10 +363,10 @@ const computeVertices4D = (pressure: number,
 	let e2 = Number.POSITIVE_INFINITY;
 	let e3 = Number.POSITIVE_INFINITY;
 
-	const e = [];
-	const s = [];
-	const f = [];
-	const k = [];
+	const e: number[] = [];
+	const s: number[] = [];
+	const f: string[] = [];
+	const k: string[] = [];
 
 	const p: number[][] = [];
 	for(const structure of accumulator.iterateEnabledStructures()) {
@@ -468,12 +454,10 @@ const computeVertices4D = (pressure: number,
 		}
 	}
 
-	const out: Vertex[] = [];
-	for(const i of idxVertices) {
-		out.push({step: s[i], formula: f[i], enthalpy: e[i], key: k[i]});
-	}
-
-	return out;
+	return idxVertices
+				.values()
+				.map((i) => ({step: s[i], formula: f[i], enthalpy: e[i], key: k[i]}))
+				.toArray();
 };
 
 /**

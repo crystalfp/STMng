@@ -173,7 +173,7 @@ export class ReaderPDB implements ReaderImplementation {
 						else if(["HE", "HF", "HG"].includes(atomSymbol)) atomSymbol = "H";
 						atomZ = getAtomicNumber(atomSymbol);
 						if(atomZ === 0) {
-							atomZ = getAtomicNumber(atomSymbol[0]);
+							atomZ = getAtomicNumber(atomSymbol.at(0) ?? "");
 							if(atomZ === 0) continue;
 						}
 					}
@@ -298,17 +298,12 @@ export class ReaderPDB implements ReaderImplementation {
 							snMap: Map<number, number>,
 							bonds: Bond[], type: 0 | 1): void {
 
-		if(snMap.has(to)) {
+		if(!snMap.has(to)) return;
 
-			to = snMap.get(to)!;
+		to = snMap.get(to)!;
 
-			const b: Bond = {
-				from,
-				to,
-				type
-			};
+		const b: Bond = {from, to, type};
 
-			bonds.push(b);
-		}
+		bonds.push(b);
 	}
 }

@@ -50,7 +50,8 @@ export const getBoundingSphere = (renderedStructure: Group, renderInfo: Structur
 	const {basis, origin} = cell;
 
 	// Get bounding box from the rendered structure
-	const boundingBox = new Box3().setFromObject(renderedStructure);
+	const box = new Box3();
+	const boundingBox = box.setFromObject(renderedStructure);
 
 	// Bounding sphere without unit cell
 	const boundingSphere = boundingBox.getBoundingSphere(new Sphere());

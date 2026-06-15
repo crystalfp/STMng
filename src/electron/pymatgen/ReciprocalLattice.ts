@@ -319,16 +319,11 @@ export class ReciprocalLattice {
     //
     private static computeCubeIndex(coords: number[][], globalMin: number[], radius: number): number[][] {
 
-        const out: number[][] = [];
-        for(const coord of coords) {
-
-            out.push([
-                Math.floor((coord[0]-globalMin[0])/radius),
-                Math.floor((coord[1]-globalMin[1])/radius),
-                Math.floor((coord[2]-globalMin[2])/radius)
-            ]);
-        }
-        return out;
+        return coords.map((coord) => [
+                    Math.floor((coord[0]-globalMin[0])/radius),
+                    Math.floor((coord[1]-globalMin[1])/radius),
+                    Math.floor((coord[2]-globalMin[2])/radius)
+                ]);
     }
 
     /**

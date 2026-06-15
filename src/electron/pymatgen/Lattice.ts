@@ -308,12 +308,12 @@ function getPointsInSpheres(
   returnFcoords = false
 ): NeighborResult[][] {
 
-    // Handle pbc parameter
-    const pbcArray = typeof pbc === "boolean" ? [pbc, pbc, pbc] : [...pbc];
-
     if(returnFcoords && !lattice) {
         throw new Error("Lattice needs to be supplied to compute fractional coordinates");
     }
+
+    // Handle pbc parameter
+    const pbcArray = typeof pbc === "boolean" ? [pbc, pbc, pbc] : [...pbc];
 
     // Calculate bounds
     const centerCoordsMin = centerCoords[0].map((_, i) =>
@@ -812,7 +812,7 @@ export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number
             let k = n === 1 ? -1 : 1;
 
             if(i * j * k === -1) {
-                // eslint-disable-next-line unicorn/prefer-switch
+
                 if(n === 0) k = -1;
                 else if(m === 0) j = -1;
                 else if(ll === 0) i = -1;

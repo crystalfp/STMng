@@ -510,10 +510,7 @@ export class ComputeFingerprints extends NodeCore {
 		if(!this.accumulator.accumulatedHaveEnergies()) return;
 
 		// Collect energies per structure
-		const energies: number[] = [];
-		for(const structure of this.accumulator.iterateSelectedStructures()) {
-			energies.push(structure.energy!);
-		}
+		const energies = this.accumulator.iterateSelectedStructures().map((structure) => structure.energy!).toArray();
 
 		// Normalize between 0 and 1
 		let minEnergy = Number.POSITIVE_INFINITY;
@@ -668,10 +665,8 @@ export class ComputeFingerprints extends NodeCore {
 
 			case "di": {
 
-				const ids: number[] = [];
-				for(const structure of this.accumulator.iterateSelectedEnabledStructures()) {
-					ids.push(structure.step);
-				}
+				const ids = this.accumulator.iterateSelectedEnabledStructures().map((structure) =>
+								structure.step).toArray();
 
 				chartData.distances = methodDistances(this.dist.getDistanceMatrix(),
 													  ids, enabled, lambda);

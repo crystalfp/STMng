@@ -221,10 +221,11 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
 ): SNL => {
 
     // Group sites by species string
-    const sites: SiteElement[] = [];
-    for(const site of structure.sites) {
-        sites.push({element: site.species[0].element, frac: site.abc, cart: site.xyz});
-    }
+    // const sites: SiteElement[] = [];
+    // for(const site of structure.sites) {
+    //     sites.push({element: site.species[0].element, frac: site.abc, cart: site.xyz});
+    // }
+    const sites = structure.sites.map((site) => ({element: site.species[0].element, frac: site.abc, cart: site.xyz}));
     const collator = new Intl.Collator();
     sites.sort((a, b) => collator.compare(a.element, b.element));
 
@@ -236,9 +237,10 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
         }
         map.get(key)!.push(element);
     }
-    const groupedSites = [...map.values()];
+
+    const groupedSites = map.values().toArray();
     const groupedFracCoords = groupedSites.map((group) =>
-      group.map((s) => s.frac)
+        group.map((s) => s.frac)
     );
 
     // minVecs are approximate periodicities of the cell. The exact
@@ -389,7 +391,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                     groups.reduce((sum, row) => sum + (row[colIdx] ? 1 : 0), 0)
                 );
 
-                if(!groupSums.every((sum) => sum === size)) {
+                if(groupSums.some((sum) => sum !== size)) {
                     valid = false;
                     break;
                 }

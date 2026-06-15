@@ -68,12 +68,11 @@ export class ReaderDLPOLY implements ReaderImplementation {
 		let natoms = 0;
 		let step = 1;
 		let keytrj = 0;
-		let fields: string[];
 
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
-			fields = line.trim().split(/\s+/u);
+			const fields = line.trim().split(/\s+/u);
 
 			switch(lineType) {
 

@@ -225,9 +225,12 @@ const loadStructure = (side: Side, step: number): void => {
             drawBonds(response.positions as number[], response.bonds as number[], side);
 
             if(side === 0) {
-                na = new Vector3(bb[0], bb[1], bb[2]).normalize();
-                nb = new Vector3(bb[3], bb[4], bb[5]).normalize();
-                nc = new Vector3(bb[6], bb[7], bb[8]).normalize();
+                na = new Vector3(bb[0], bb[1], bb[2]);
+                nb = new Vector3(bb[3], bb[4], bb[5]);
+                nc = new Vector3(bb[6], bb[7], bb[8]);
+                na = na.normalize();
+                nb = nb.normalize();
+                nc = nc.normalize();
 
                 sv.centerCamera(center);
             }
@@ -256,8 +259,7 @@ const unloadStructure = (side: Side): void => {
  */
 const updateSelection = (): void => {
 
-    const steps = [];
-    for(const entry of lines) steps.push(entry.step);
+    const steps = lines.map((entry) => entry.step);
     sendToNode("SYSTEM", "updated-selection", {updatedStepsSelection: steps});
 };
 
@@ -417,15 +419,18 @@ const stopWatcher = watch([aroundA, aroundB, aroundC],
 
     if(aAfter !== aBefore) {
         const angle = (aAfter-aBefore)*MathUtils.DEG2RAD;
-        groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(na, angle));
+        const q = new Quaternion();
+        groupRight.applyQuaternion(q.setFromAxisAngle(na, angle));
     }
     if(bAfter !== bBefore) {
         const angle = (bAfter-bBefore)*MathUtils.DEG2RAD;
-        groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(nb, angle));
+        const q = new Quaternion();
+        groupRight.applyQuaternion(q.setFromAxisAngle(nb, angle));
     }
     if(cAfter !== cBefore) {
         const angle = (cAfter-cBefore)*MathUtils.DEG2RAD;
-        groupRight.applyQuaternion(new Quaternion().setFromAxisAngle(nc, angle));
+        const q = new Quaternion();
+        groupRight.applyQuaternion(q.setFromAxisAngle(nc, angle));
     }
     sv.setSceneModified();
 });

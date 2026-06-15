@@ -93,10 +93,7 @@ export class VariableCompositionConvexHull {
 							.toArray()
 							.toSorted((a, b) => a-b);
 
-		const points: number[][] = [];
-		for(const i of validIdx) {
-			points.push([p[i][0], p[i][1], p[i][2], this.e[i]]);
-		}
+		const points = validIdx.map((i) => [p[i][0], p[i][1], p[i][2], this.e[i]]);
 
 		return {points, idx: validIdx};
 	}

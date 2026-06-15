@@ -55,7 +55,7 @@ const isWebGL2Available = (): boolean => {
     try {
 
         const canvas = document.createElement("canvas");
-        const has = !!(globalThis.WebGL2RenderingContext && canvas.getContext("webgl2"));
+        const has = !!(WebGL2RenderingContext && canvas.getContext("webgl2"));
         canvas.remove();
         return has;
     }
@@ -166,7 +166,7 @@ onMounted(() => {
     const controls = new CameraControls(camera, renderer.domElement);
 
     // Add keyboard controls to camera positioning
-    globalThis.addEventListener("keydown", (event: KeyboardEvent): void => {
+    addEventListener("keydown", (event: KeyboardEvent): void => {
 
         switch(event.code) {
             case "ArrowLeft":
@@ -267,29 +267,28 @@ onMounted(() => {
     // Reset camera on request or when the scene objects change
     watchEffect(() => {
 
-        if(controlStore.reset) {
+        if(!controlStore.reset) return;
 
-            controlStore.reset = false;
+        controlStore.reset = false;
 
-            if(configStore.camera.type === "perspective") {
+        if(configStore.camera.type === "perspective") {
 
-                fitCamera(cameraPerspective, controls);
-                copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
-                cameraOrthographic.updateProjectionMatrix();
-            }
-            else {
-                fitCamera(cameraOrthographic, controls);
-            }
-
-            // Set the viewer aspect ratio
-            const rect = cnv.value!.getBoundingClientRect();
-            const w = rect.width;
-            const h = rect.height;
-
-            setOnResize(w, h);
-
-            sm.modified();
+            fitCamera(cameraPerspective, controls);
+            copyPerspectiveCamera(cameraPerspective, cameraOrthographic);
+            cameraOrthographic.updateProjectionMatrix();
         }
+        else {
+            fitCamera(cameraOrthographic, controls);
+        }
+
+        // Set the viewer aspect ratio
+        const rect = cnv.value!.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        setOnResize(w, h);
+
+        sm.modified();
     });
 
     // Move camera to look along an axis or along a crystal basis
@@ -375,21 +374,20 @@ onMounted(() => {
     // Force camera position if requested
     watchEffect(() => {
 
-        if(controlStore.force) {
+        if(!controlStore.force) return;
 
-            controlStore.force = false;
+        controlStore.force = false;
 
-	        void controls.normalizeRotations().setLookAt(
-                configStore.camera.position[0],
-                configStore.camera.position[1],
-                configStore.camera.position[2],
-                configStore.camera.lookAt[0],
-                configStore.camera.lookAt[1],
-                configStore.camera.lookAt[2],
-                true
-            );
-            sm.modified();
-        }
+        void controls.normalizeRotations().setLookAt(
+            configStore.camera.position[0],
+            configStore.camera.position[1],
+            configStore.camera.position[2],
+            configStore.camera.lookAt[0],
+            configStore.camera.lookAt[1],
+            configStore.camera.lookAt[2],
+            true
+        );
+        sm.modified();
     });
 
     // Depth cueing
@@ -411,82 +409,80 @@ onMounted(() => {
     // Take snapshot
     watchEffect(() => {
 
-        if(controlStore.snapshot) {
+        if(!controlStore.snapshot) return;
 
-            controlStore.snapshot = false;
-            resetNodeAlert();
+        controlStore.snapshot = false;
+        resetNodeAlert();
 
-            let mimeTypeFormat = configStore.camera.snapshotFormat;
-            const channel = mimeTypeFormat === "pdf" ? "snapshotPDF" : "snapshot";
-            if(mimeTypeFormat === "pdf") mimeTypeFormat = "jpeg";
-            const mimeType = `image/${mimeTypeFormat}`;
+        let mimeTypeFormat = configStore.camera.snapshotFormat;
+        const channel = mimeTypeFormat === "pdf" ? "snapshotPDF" : "snapshot";
+        if(mimeTypeFormat === "pdf") mimeTypeFormat = "jpeg";
+        const mimeType = `image/${mimeTypeFormat}`;
 
-            // If requested png with transparent background
-            if(configStore.camera.snapshotTransparent && mimeTypeFormat === "png") {
-                sm.transparentSceneBackground(true);
-                setTimeout(() => {
-                    askNode("SYSTEM", channel, {
-                        dataURI: renderer.domElement.toDataURL(mimeType),
-                        format: configStore.camera.snapshotFormat
-                    })
-                    .then((response: CtrlParams) => {
-                        if(response.error) throw Error(response.error as string);
-                        if(response.payload === "") return;
-                        showNodeAlert(response.payload as string, "captureSnapshot",
-                                      {level: "success"});
-                    })
-                    .catch((error: Error) => {
-                        showNodeAlert(`Error saving snapshot. Error: ${error.message}`,
-                                      "captureSnapshot");
-                    })
-                    .finally(() => {
-                        if(configStore.camera.snapshotTransparent) sm.transparentSceneBackground(false);
-                    });
-                }, 200);
-                return;
-            }
-
-            // For snapshots without transparent background
-            askNode("SYSTEM", channel, {
-                dataURI: renderer.domElement.toDataURL(mimeType),
-                format: configStore.camera.snapshotFormat
-            })
-            .then((response: CtrlParams) => {
-                if(response.error) throw Error(response.error as string);
-                if(response.payload === "") return;
-                showNodeAlert(response.payload as string, "captureSnapshot",
-                              {level: "success"});
-            })
-            .catch((error: Error) => {
-                showNodeAlert(`Error saving snapshot. Error: ${error.message}`,
-                              "captureSnapshot");
-            });
+        // If requested png with transparent background
+        if(configStore.camera.snapshotTransparent && mimeTypeFormat === "png") {
+            sm.transparentSceneBackground(true);
+            setTimeout(() => {
+                askNode("SYSTEM", channel, {
+                    dataURI: renderer.domElement.toDataURL(mimeType),
+                    format: configStore.camera.snapshotFormat
+                })
+                .then((response: CtrlParams) => {
+                    if(response.error) throw Error(response.error as string);
+                    if(response.payload === "") return;
+                    showNodeAlert(response.payload as string, "captureSnapshot",
+                                    {level: "success"});
+                })
+                .catch((error: Error) => {
+                    showNodeAlert(`Error saving snapshot. Error: ${error.message}`,
+                                    "captureSnapshot");
+                })
+                .finally(() => {
+                    if(configStore.camera.snapshotTransparent) sm.transparentSceneBackground(false);
+                });
+            }, 200);
+            return;
         }
+
+        // For snapshots without transparent background
+        askNode("SYSTEM", channel, {
+            dataURI: renderer.domElement.toDataURL(mimeType),
+            format: configStore.camera.snapshotFormat
+        })
+        .then((response: CtrlParams) => {
+            if(response.error) throw Error(response.error as string);
+            if(response.payload === "") return;
+            showNodeAlert(response.payload as string, "captureSnapshot",
+                            {level: "success"});
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Error saving snapshot. Error: ${error.message}`,
+                            "captureSnapshot");
+        });
     });
 
     // Export geometry as STL file
     watchEffect(() => {
 
-        if(controlStore.stl) {
+        if(!controlStore.stl) return;
 
-            controlStore.stl = false;
-            resetNodeAlert();
+        controlStore.stl = false;
+        resetNodeAlert();
 
-            const result = sm.createSTL(configStore.camera.stlFormat, controlStore.stlScale);
-            askNode("SYSTEM", "stl", {
-                binary: configStore.camera.stlFormat === "binary",
-                content: result
-            })
-            .then((response: CtrlParams) => {
-                if(response.error) throw Error(response.error as string);
-                if(response.payload === "") return;
-                showNodeAlert(response.payload as string, "captureSTL", {level: "success"});
-            })
-            .catch((error: Error) => {
-                showNodeAlert(`Error saving STL file. Error: ${error.message}`,
-                                "captureSTL");
-            });
-        }
+        const result = sm.createSTL(configStore.camera.stlFormat, controlStore.stlScale);
+        askNode("SYSTEM", "stl", {
+            binary: configStore.camera.stlFormat === "binary",
+            content: result
+        })
+        .then((response: CtrlParams) => {
+            if(response.error) throw Error(response.error as string);
+            if(response.payload === "") return;
+            showNodeAlert(response.payload as string, "captureSTL", {level: "success"});
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Error saving STL file. Error: ${error.message}`,
+                            "captureSTL");
+        });
     });
 
     // Record movie

@@ -676,10 +676,7 @@ const selectedSaveFile = (filename: string): void => {
 
         // selectedPoints contains the index of the on-screen glyph,
         // so it should be converted into the step value
-        const selectedSteps: number[] = [];
-        for(const idx of selectedPoints) {
-            selectedSteps.push(glyphs[idx].id);
-        }
+        const selectedSteps = selectedPoints.values().map((idx) => glyphs[idx].id).toArray();
 
         askNode("SYSTEM", "selected-points", {
             filename,

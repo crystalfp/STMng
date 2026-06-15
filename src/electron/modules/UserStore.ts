@@ -76,7 +76,7 @@ export class Store {
 	private save(): void {
 
 		let out = "";
-		for(const [key, value] of this.data.entries()) {
+		for(const [key, value] of this.data) {
 			out += `${key}: ${value}\n`;
 		}
 		writeFileSync(this.filePath, out, "utf8");

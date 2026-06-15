@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import type {FingerprintsAccumulator, StructureReduced} from "./Accumulator";
+import type {FingerprintsAccumulator} from "./Accumulator";
 import type {Distances} from "./Distances";
 import {HierarchicalSingleLinkageGrouping} from "./GroupingMethods";
 // import {HierarchicalCompleteLinkageGrouping} from "./GroupingMethods";
@@ -67,10 +67,7 @@ export const removeDuplicatePoints = (enabled: boolean,
     }
 
     // Make an index of the structures
-    const structures: StructureReduced[] = [];
-    for(const structure of accumulator.iterateSelectedStructures()) {
-        structures.push(structure);
-    }
+    const structures = accumulator.iterateSelectedStructures().toArray();
 
     // Start with nothing enabled
     accumulator.setEnableStatus(false);

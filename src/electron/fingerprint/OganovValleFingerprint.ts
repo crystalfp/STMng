@@ -107,7 +107,7 @@ export const fingerprintingOganovValle = (params: FingerprintingParameters,
 	slab.computeInteratomicDistances(basis, natoms, atomsZ, positions);
 
 	// Create ordered list of atom z values and list of positions
-	const orderedZ = [...species.keys()].toSorted((a, b) => a-b);
+	const orderedZ = species.keys().toArray().toSorted((a, b) => a-b);
 	const atomsIdx = new Map<number, number>();
 	let pos = 0;
 	for(const atomZ of orderedZ) atomsIdx.set(atomZ, pos++);

@@ -42,7 +42,8 @@ export class UpperTriangularMatrix {
     constructor(side: number, initializer=0) {
 
         this.side = side;
-        this.data = new Float64Array((side*(side+1))/2).fill(initializer);
+        const array = new Float64Array((side*(side+1))/2);
+        this.data = array.fill(initializer);
     }
 
     /**

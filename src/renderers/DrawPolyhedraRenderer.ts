@@ -127,7 +127,8 @@ export class DrawPolyhedraRenderer {
 			if(this.polyhedraVertices[i].length === 3) {
 
 				// If it is a triangle
-				mesh.geometry = new BufferGeometry().setFromPoints(this.polyhedraVertices[i]);
+				const buffer = new BufferGeometry();
+				mesh.geometry = buffer.setFromPoints(this.polyhedraVertices[i]);
 				mesh.name = "Triangle";
 				side = DoubleSide;
 			}

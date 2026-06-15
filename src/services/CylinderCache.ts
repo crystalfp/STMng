@@ -132,7 +132,7 @@ export class CylinderCache {
 		const matrix = new Matrix4();
 
 		// For each cached cylinder type
-		for(const entry of this.colors.entries()) {
+		for(const entry of this.colors) {
 
 			const colors = entry[0].split("-");
 

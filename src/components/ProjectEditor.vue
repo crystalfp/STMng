@@ -205,7 +205,7 @@ const prepareGraphFlow = (projectInfo: ProjectInfo): void => {
         const availableNode: AvailableNode = {
 
             idPrefix: item.idPrefix,
-            label: item.type[0].toUpperCase() +
+            label: item.type.at(0)!.toUpperCase() +
                    item.type.slice(1).replaceAll("-", " "),
             hasInput: item.in,
             hasOutput: item.out,
@@ -540,10 +540,9 @@ const saveProjectGraph = (saveAs: boolean): void => {
         projectPath: saveAs ? "" : currentProjectPath.value
     })
     .then((result) => {
-        if(result.saved) {
-            projectModified.value = false;
-            showConfirmNew.value = false;
-        }
+        if(!result.saved) return;
+        projectModified.value = false;
+        showConfirmNew.value = false;
     })
     .catch((error: Error) => {
         reportError(`Error from project save. Error: ${error.message}`);
@@ -672,10 +671,9 @@ const handleDragOver = (event: DragEvent): void => {
  */
 const handleDragStart = (event: DragEvent, nodeModel: AvailableNode): void => {
 
-    if(event.dataTransfer) {
-        event.dataTransfer.setData("node", JSON.stringify(nodeModel));
-        event.dataTransfer.effectAllowed = "move";
-    }
+    if(!event.dataTransfer) return;
+    event.dataTransfer.setData("node", JSON.stringify(nodeModel));
+    event.dataTransfer.effectAllowed = "move";
 };
 
 /**
@@ -745,10 +743,9 @@ const showConfirmExit = ref(false);
  */
 const beforeClose = (event: BeforeUnloadEvent): void => {
 
-    if(projectModified.value) {
-        showConfirmExit.value = true;
-        event.preventDefault();
-    }
+    if(!projectModified.value) return;
+    showConfirmExit.value = true;
+    event.preventDefault();
 };
 
 /**

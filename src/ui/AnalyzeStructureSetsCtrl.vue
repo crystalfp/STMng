@@ -331,7 +331,7 @@ const analyzeSelected = async (): Promise<void> => {
 
     for(const composition of (remaining.compositionsReduced as string[])) {
 
-        const key = composition.replaceAll("\u2009:\u2009", "-");
+        const key = composition.replaceAll("\u{2009}:\u{2009}", "-");
         const result = await askNode(id, "analyze", {key});
 
         if(result.error) {
@@ -539,7 +539,7 @@ const enthalpyTransition = (): void => {
             let idx = 0;
             for(let i=0; i < n; ++i) {
                 const [pl, ph] = transitions.pressures[i];
-                const range = `\u2002${pl.toFixed(1)}\u2002\u27F7\u2002${ph.toFixed(1)}`;
+                const range = `\u{2002}${pl.toFixed(1)}\u{2002}\u{27F7}\u{2002}${ph.toFixed(1)}`;
                 tableVar.value.push({
                     id: idx++,
                     pressureRange: range,

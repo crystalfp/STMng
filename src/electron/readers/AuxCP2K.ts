@@ -39,17 +39,17 @@ export const readAuxCP2K = async (filename: string,
 							  	  mainStructures: Structure[],
 							  	  appendFrom: number): Promise<Structure[]> => {
 
-	let lineNumber = 1;
-	let energyPerAtom = false;
-	let column = 0;
-	const energies: number[] = [];
-
 	// Sanity check
 	const mainLength = mainStructures?.length ?? 0;
 	if(mainLength === 0) throw Error("Missing main structures");
 	if(appendFrom >= mainLength) {
 		throw Error(`Invalid append position ${appendFrom} on length ${mainLength}`);
 	}
+
+	let lineNumber = 1;
+	let energyPerAtom = false;
+	let column = 0;
+	const energies: number[] = [];
 
 	const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
 	for await (const line of stream) {

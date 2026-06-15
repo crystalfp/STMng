@@ -352,90 +352,89 @@ export class DiffractionPattern extends NodeCore {
 	 */
 	private channelOpen(): void {
 
-		if(this.structure) {
+		if(!this.structure) return;
 
-			// Compute spectra
-			try {
-				this.xy = this.xrd.getDiffractionPattern(this.structure,
-														 this.state.wavelengthCode,
-														 true,
-														 this.state.thetaLow,
-														 this.state.thetaHigh,
-														 this.state.wavelengthNumeric);
-			}
-			catch(error: unknown) {
-				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
-				return;
-			}
+		// Compute spectra
+		try {
+			this.xy = this.xrd.getDiffractionPattern(this.structure,
+														this.state.wavelengthCode,
+														true,
+														this.state.thetaLow,
+														this.state.thetaHigh,
+														this.state.wavelengthNumeric);
+		}
+		catch(error: unknown) {
+			sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
+			return;
+		}
 
-			// Compute chart data
-			const dataToSend = this.createDataForChart();
+		// Compute chart data
+		const dataToSend = this.createDataForChart();
 
-			// if already open, update chart, otherwise create the window
-			createOrUpdateSecondaryWindow({
-				routerPath: "/chart",
-				width: 1150,
-				height: 800,
-				title: "X-Ray diffraction pattern",
-				data: dataToSend
+		// if already open, update chart, otherwise create the window
+		createOrUpdateSecondaryWindow({
+			routerPath: "/chart",
+			width: 1150,
+			height: 800,
+			title: "X-Ray diffraction pattern",
+			data: dataToSend
+		});
+
+		if(!this.channelSavePointsOpened) {
+			this.channelSavePointsOpened = true;
+
+			ipcMain.on("SYSTEM:save-xrd", () => {
+
+				const file = dialog.showSaveDialogSync({
+					title: "Save X-Ray diffraction points",
+					filters: [
+						{name: "Point data", extensions: ["dat"]},
+					]
+				});
+				if(file) {
+					try {
+						let out = "";
+						const len = this.lineCoordinates.x.length;
+						for(let i=0; i < len; ++i) {
+							out += this.lineCoordinates.x[i].toFixed(4);
+							out += ` ${this.lineCoordinates.y[i].toExponential(8)}\n`;
+						}
+						writeFileSync(file, out, "utf8");
+					}
+					catch(error: unknown) {
+						sendAlertToClient(`Error in save-xrd: ${(error as Error).message}`);
+					}
+				}
 			});
+		}
 
-			if(!this.channelSavePointsOpened) {
-				this.channelSavePointsOpened = true;
+		if(!this.channelSavePeaksOpened) {
+			this.channelSavePeaksOpened = true;
 
-				ipcMain.on("SYSTEM:save-xrd", () => {
+			ipcMain.on("SYSTEM:save-peaks", () => {
 
-					const file = dialog.showSaveDialogSync({
-						title: "Save X-Ray diffraction points",
-						filters: [
-							{name: "Point data", extensions: ["dat"]},
-						]
-					});
-					if(file) {
-						try {
-							let out = "";
-							const len = this.lineCoordinates.x.length;
-							for(let i=0; i < len; ++i) {
-								out += this.lineCoordinates.x[i].toFixed(4);
-								out += ` ${this.lineCoordinates.y[i].toExponential(8)}\n`;
-							}
-							writeFileSync(file, out, "utf8");
-						}
-						catch(error: unknown) {
-							sendAlertToClient(`Error in save-xrd: ${(error as Error).message}`);
-						}
-					}
+				const file = dialog.showSaveDialogSync({
+					title: "Save X-Ray diffraction peaks",
+					filters: [
+						{name: "Peaks data", extensions: ["dat"]},
+					]
 				});
-			}
-
-			if(!this.channelSavePeaksOpened) {
-				this.channelSavePeaksOpened = true;
-
-				ipcMain.on("SYSTEM:save-peaks", () => {
-
-					const file = dialog.showSaveDialogSync({
-						title: "Save X-Ray diffraction peaks",
-						filters: [
-							{name: "Peaks data", extensions: ["dat"]},
-						]
-					});
-					if(file) {
-						try {
-							let out = "";
-							const len = this.xy.twoTheta.length;
-							for(let i=0; i < len; ++i) {
-								out += this.xy.twoTheta[i].toFixed(4);
-								out += ` ${this.xy.intensity[i].toExponential(8)}`;
-								out += ` "${this.xy.label[i]}"\n`;
-							}
-							writeFileSync(file, out, "utf8");
+				if(file) {
+					try {
+						let out = "";
+						const len = this.xy.twoTheta.length;
+						for(let i=0; i < len; ++i) {
+							out += this.xy.twoTheta[i].toFixed(4);
+							out += ` ${this.xy.intensity[i].toExponential(8)}`;
+							out += ` "${this.xy.label[i]}"\n`;
 						}
-						catch(error: unknown) {
-							sendAlertToClient(`Error in save-peaks: ${(error as Error).message}`);
-						}
+						writeFileSync(file, out, "utf8");
 					}
-				});
-			}
+					catch(error: unknown) {
+						sendAlertToClient(`Error in save-peaks: ${(error as Error).message}`);
+					}
+				}
+			});
 		}
 	}
 }

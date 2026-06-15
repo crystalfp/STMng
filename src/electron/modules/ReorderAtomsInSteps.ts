@@ -293,16 +293,12 @@ export class ReorderAtomsInSteps {
 	 */
 	prepareMeanStructure(results: AveragesResult[], inputStructure: Structure): Structure {
 
-		const atoms: Atom[] = [];
-
-		for(const entry of results) {
-			atoms.push({
+		const atoms: Atom[] = results.map((entry) => ({
 				atomZ: entry.atomZ,
 				label: entry.atomType,
 				chain: "",
 				position: [entry.position[0], entry.position[1], entry.position[2]],
-			});
-		}
+			}));
 		const basis: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 		if(this.steps > 0) {
 			for(let i=0; i < 9; ++i) basis[i] = this.averageBasis[i]/this.steps;

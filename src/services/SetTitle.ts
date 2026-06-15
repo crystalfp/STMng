@@ -43,9 +43,9 @@ const titleParts = {
  */
 const combineParts = (): string => {
 	let out = titleParts.base;
-	if(titleParts.project) out += "\u2003—\u2003" + titleParts.project;
+	if(titleParts.project) out += "\u{2003}—\u{2003}" + titleParts.project;
 	if(titleParts.file) {
-		out += "\u2003—\u2003" + titleParts.file;
+		out += "\u{2003}—\u{2003}" + titleParts.file;
 		if(titleParts.standardized) out += " (standardized)";
 	}
 	return out;

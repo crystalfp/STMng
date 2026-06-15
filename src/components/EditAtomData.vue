@@ -293,16 +293,15 @@ const update = (): void => {
  * @param event - Keyboard event
  */
 const captureHelp = (event: KeyboardEvent): void => {
-    if(event.key === "F1") {
+    if(event.key !== "F1") return;
 
-        sendToNode("SYSTEM", "secondary-key", {
-        		key: "F1",
-        		request: "edit-atom-data"
-		    });
+    sendToNode("SYSTEM", "secondary-key", {
+        key: "F1",
+        request: "edit-atom-data"
+    });
 
-        event.preventDefault();
-        event.stopPropagation();
-    }
+    event.preventDefault();
+    event.stopPropagation();
 };
 
 onMounted(() => {

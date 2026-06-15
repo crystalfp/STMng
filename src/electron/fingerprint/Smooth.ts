@@ -111,8 +111,6 @@ export const smoothPeak = (peakValue: number, radius: number, delta: number,
 
 	// Compute the central bin index and the values bracketing the bin
 	const idx = Math.floor(radius/delta);
-	const x0 = idx*delta;
-	const MIN_AREA = 1e-6;
 
 	// No smoothing if Gaussian width is zero
 	if(peakWidth <= 0) {
@@ -120,6 +118,9 @@ export const smoothPeak = (peakValue: number, radius: number, delta: number,
 		histogram[idx+start] += peakValue;
 		return;
 	}
+
+	const x0 = idx*delta;
+	const MIN_AREA = 1e-6;
 
 	// Compute the distribution value at the x0 point
 	const oneOverSigmaTimesSqrt2 = 1/(peakWidth*Math.SQRT2);

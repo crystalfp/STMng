@@ -163,13 +163,12 @@ export class MeasuresRenderer {
 	selectPolyhedra(idxNew: number | undefined, idxCurrent: number | undefined): void {
 
 		sm.traverse((object) => {
-			if(object.name === "Polyhedron") {
-				if(object.userData.idx === idxNew) {
-					this.objectNew = object as Mesh;
-				}
-				if(object.userData.idx === idxCurrent) {
-					this.objectCurrent = object as Mesh;
-				}
+			if(object.name !== "Polyhedron") return;
+			if(object.userData.idx === idxNew) {
+				this.objectNew = object as Mesh;
+			}
+			if(object.userData.idx === idxCurrent) {
+				this.objectCurrent = object as Mesh;
 			}
 		});
 	}

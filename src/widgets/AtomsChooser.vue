@@ -101,10 +101,7 @@ const getSelector = (): void => {
             labelKind: labelKind.value,
         })
         .then((params) => {
-            if(params.error) {
-                errorStatus.value = true;
-                errorMessage.value = params.error as string;
-            }
+            if(params.error) throw Error(params.error as string);
         })
         .catch((error: Error) => {
             errorStatus.value = true;

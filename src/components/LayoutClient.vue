@@ -47,7 +47,7 @@ const controlStore = useControlStore();
 const normalScreen = ref(true);
 
 // > Answer fullscreen requests and set title
-globalThis.addEventListener("DOMContentLoaded", () => {
+addEventListener("DOMContentLoaded", () => {
     let count = 0;
     const timer = setInterval(() => {
         ++count;

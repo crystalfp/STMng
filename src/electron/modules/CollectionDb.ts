@@ -297,7 +297,7 @@ class CollectionDb {
 		}
 
 		const out: CollectionIndexEntry[] = [];
-		const keys = [...candidates.keys()].toSorted((a, b) => a-b).slice(0, n);
+		const keys = candidates.keys().toArray().toSorted((a, b) => a-b).slice(0, n);
 		for(const key of keys) {
 			const result = candidates.get(key)!;
 			const distance = key/1000;

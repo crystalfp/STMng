@@ -159,7 +159,8 @@ export class DrawStructureRenderer {
 			new Vector3(from[0], from[1], from[2]),
 			new Vector3(to[0], to[1], to[2]),
 		];
-		const geometry = new BufferGeometry().setFromPoints(points);
+		const buffer = new BufferGeometry();
+		const geometry = buffer.setFromPoints(points);
 		const line = new Line(geometry, material);
 		line.computeLineDistances();
 		group.add(line);
@@ -223,7 +224,8 @@ export class DrawStructureRenderer {
 		const end   = new Vector3(to[0], to[1], to[2]);
 
 		const material = new LineBasicMaterial({color});
-		const geometry = new BufferGeometry().setFromPoints([start, end]);
+		const buffer = new BufferGeometry();
+		const geometry = buffer.setFromPoints([start, end]);
 		group.add(new Line(geometry, material));
 		sm.modified();
 	}

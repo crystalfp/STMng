@@ -166,10 +166,8 @@ export class AnalyzeStructureSets extends NodeCore {
 
 			this.accumulator.add(data);
 
-			let remaining = 0;
-			if(this.state.filterStructures && this.state.numberComponents === 1) {
-				remaining = this.filterOnEnergy();
-			}
+			const remaining = (this.state.filterStructures && this.state.numberComponents === 1) ?
+								this.filterOnEnergy() : 0;
 
 			sendToClient(this.id, "load", {
 				countAccumulated: this.accumulator.size(),
@@ -224,7 +222,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		for(let j=0; j < ncomponents; ++j) {
 			const part = parts[j];
-			if(!Number.isInteger(part) || part < 0) {
+			if(!Number.isSafeInteger(part) || part < 0) {
 				return `Invalid part ${j+1} "${part}"`;
 			}
 		}
@@ -292,10 +290,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		let stepNumber = 1;
 		for(const entry of this.accumulator.iterateStructures()) {
 
-			const step = [];
-			for(const z of species) {
-				step.push(entry.species.get(z) ?? 0);
-			}
+			const step = species.map((z) => entry.species.get(z) ?? 0);
 
 			// If one component without special atom
 			if(minusOnes) {
@@ -348,7 +343,7 @@ export class AnalyzeStructureSets extends NodeCore {
 			entry.parts = [...parts];
 			entry.key = parts.join("-");
 
-			const key = parts.join("\u2009:\u2009");
+			const key = parts.join("\u{2009}:\u{2009}");
 			if(summary.has(key)) {
 				summary.get(key)!.count++;
 			}
@@ -1037,7 +1032,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		// For each selected composition
 		for(const composition of compositions) {
 
-			const key = composition.replaceAll("\u2009:\u2009", "-");
+			const key = composition.replaceAll("\u{2009}:\u{2009}", "-");
 			const indices = this.accumulator.getIndicesForKey(key);
 
 			// No composition

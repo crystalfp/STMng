@@ -183,10 +183,7 @@ export class XRDCalculator {
             const halfDistSquared = halfDist**2;
 
             // Computation of g.r for all fractional coords and hkl
-            const gDotR: number[] = [];
-            for(const fc of fracCoords) {
-                gDotR.push(fc[0]*hkl[0]+fc[1]*hkl[1]+fc[2]*hkl[2]);
-            }
+            const gDotR = fracCoords.map((fc) => fc[0]*hkl[0]+fc[1]*hkl[1]+fc[2]*hkl[2]);
 
             // Computation of atomic scattering factors.
             const fs: number[] = [];

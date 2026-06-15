@@ -388,6 +388,18 @@ export default defineConfig([
         "unicorn/try-complexity": "off",
         "unicorn/no-manually-wrapped-comments": "off",
 
+        "unicorn/no-asterisk-prefix-in-documentation-comments": "off",
+        "unicorn/prefer-number-coercion": "off",
+        "unicorn/no-break-in-nested-loop": "off",
+        "unicorn/max-nested-calls": "off",
+        "unicorn/consistent-class-member-order": "off",
+        "unicorn/prefer-global-number-constants": "off",
+        "unicorn/comment-content": "off",
+        "unicorn/prefer-await": "off",
+        "unicorn/no-computed-property-existence-check": "off",
+        "unicorn/class-reference-in-static-methods": "off", // Should be analyzed
+        "unicorn/prefer-minimal-ternary": "off",
+
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],
         "sonarjs/void-use": "off",

@@ -261,7 +261,8 @@ export class SimpleViewer {
 
 		if(!this.camera || !this.controls) return;
 
-		const boundingBox = new Box3().setFromObject(atomsGroup);
+		const box = new Box3();
+		const boundingBox = box.setFromObject(atomsGroup);
 		const boundingSphere = boundingBox.getBoundingSphere(new Sphere());
 		const sphereCenter = boundingSphere.center;
 		const center = [sphereCenter.x, sphereCenter.y, sphereCenter.z];

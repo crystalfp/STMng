@@ -60,9 +60,8 @@ export class Grouping {
      * @returns The list of grouping methods for the selector on the UI
      */
     getGroupingMethodsNames(): GroupingMethodName[] {
-        const out: GroupingMethodName[] = [];
-        for(const method of groupingMethods) out.push({label: method.label, usingMargin: method.usingMargin});
-        return out;
+
+		return groupingMethods.map((method) => ({label: method.label, usingMargin: method.usingMargin}));
     }
 
 	/**

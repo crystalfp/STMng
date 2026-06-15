@@ -289,7 +289,7 @@ export class ComputeBonds extends NodeCore {
 	private dump(): void {
 
 		console.log("----");
-		for(const [center, connected] of this.bondsList.entries()) {
+		for(const [center, connected] of this.bondsList) {
 
 			let a1 = 0;
 			let a2 = 0;
@@ -334,7 +334,7 @@ export class ComputeBonds extends NodeCore {
 		// this.dump();
 
 		// For each atoms 2nd level of connection
-		for(const [center, connected] of this.bondsList.entries()) {
+		for(const [center, connected] of this.bondsList) {
 
 			if(this.addType[center] !== AddType.added2) continue;
 			// if(this.addType[center] !== AddType.added &&
@@ -622,14 +622,14 @@ export class ComputeBonds extends NodeCore {
 
 			for(let j=i+1; j < atomsCount; ++j) {
 
-				const atomZj = atoms[j].atomZ;
-				const rCj = radii[j];
-				const positionJ = atoms[j].position;
-
 				// Don't compute bonds between external atoms
 				if(this.enlargementKind === "neighbors" &&
 				   this.addType[i] === AddType.outside &&
 				   this.addType[j] === AddType.outside) continue;
+
+				const atomZj = atoms[j].atomZ;
+				const rCj = radii[j];
+				const positionJ = atoms[j].position;
 
 				// Never bond hydrogens to each other...
 				// if(atomZi === 1 && atomZj === 1) continue;

@@ -92,43 +92,6 @@ export class ParseQuotedLine {
 	private out: string[] = [];
 
 	/**
-	 * Add character to field
-	 *
-	 * @param ch - Character to add to the partial read field
-	 */
-	private save(ch: string): void {
-
-		this.partial += (ch === "|") ? "'" : ch;
-	}
-
-	/**
-	 * Start a new field
-	 *
-	 * @param ch - Character to start the partial read field
-	 */
-	private start(ch: string): void {
-
-		this.partial = ch;
-	}
-
-	/**
-	 * Empty a field
-	 */
-	private startEmpty(): void {
-
-		this.partial = "";
-	}
-
-	/**
-	 * End a field and add to the read fields list
-	 */
-	private end(): void {
-
-		this.out.push(this.partial);
-		this.partial = "";
-	}
-
-	/**
 	 * Initialize the state machine
 	 */
 	constructor() {
@@ -208,6 +171,43 @@ export class ParseQuotedLine {
 		if(finalAction) finalAction(step);
 
 		return this.out;
+	}
+
+	/**
+	 * Add character to field
+	 *
+	 * @param ch - Character to add to the partial read field
+	 */
+	private save(ch: string): void {
+
+		this.partial += (ch === "|") ? "'" : ch;
+	}
+
+	/**
+	 * Start a new field
+	 *
+	 * @param ch - Character to start the partial read field
+	 */
+	private start(ch: string): void {
+
+		this.partial = ch;
+	}
+
+	/**
+	 * Empty a field
+	 */
+	private startEmpty(): void {
+
+		this.partial = "";
+	}
+
+	/**
+	 * End a field and add to the read fields list
+	 */
+	private end(): void {
+
+		this.out.push(this.partial);
+		this.partial = "";
 	}
 }
 

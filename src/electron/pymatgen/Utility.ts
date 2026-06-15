@@ -356,20 +356,13 @@ export const cellAngle = (v1: number[], v2: number[]): number => {
  * @param lattice - Basis matrix
  * @returns - Cartesian coordinates
  */
-export const getCartesianCoords = (fracPoints: number[][], lattice: number[][]): number[][] => {
+export const getCartesianCoords = (fracPoints: number[][], lattice: number[][]): number[][] =>
 
-    const out: number[][] = [];
-    for(const pt of fracPoints) {
-
-        out.push([
+    fracPoints.map((pt) => [
             pt[0]*lattice[0][0] + pt[1]*lattice[1][0] + pt[2]*lattice[2][0],
             pt[0]*lattice[0][1] + pt[1]*lattice[1][1] + pt[2]*lattice[2][1],
             pt[0]*lattice[0][2] + pt[1]*lattice[1][2] + pt[2]*lattice[2][2],
-        ]);
-    }
-
-    return out;
-};
+    ]);
 
 /**
  * Convert cartesian coordinates to fractional coordinates

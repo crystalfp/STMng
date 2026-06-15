@@ -95,9 +95,7 @@ export const useConfigStore = defineStore("ConfigStore", {
          * @param state - The store state
          * @returns True if the camera is set to perspective
          */
-        isPerspectiveCamera(state: Viewer3DState): boolean {
-            return state.camera.type === "perspective";
-        }
+        isPerspectiveCamera: (state: Viewer3DState): boolean => state.camera.type === "perspective"
     },
 
     /* eslint-disable unicorn/no-this-outside-of-class */

@@ -28,6 +28,7 @@ import {getPreferenceSync, receiveBroadcast} from "@/services/RoutesClient";
 /** The loaded theme */
 export const theme = ref(getPreferenceSync("Theme", "dark"));
 
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 receiveBroadcast((eventType: string, params: (string | boolean)[]) => {
     if(eventType === "theme-change") {
         theme.value = params[0] as string;

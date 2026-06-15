@@ -95,9 +95,10 @@ class Table {
 	getColumn(header: string): string[] {
 		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
 		if(idx === -1) return [];
-		const result = [];
-		for(const row of this.rows) result.push(row[idx]);
-		return result;
+		// const result = [];
+		// for(const row of this.rows) result.push(row[idx]);
+		// return result;
+		return this.rows.map((row) => row[idx]);
 	}
 
 	/**
@@ -110,9 +111,10 @@ class Table {
 	getColumns(header: string): string[][] {
 		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
 		if(idx === -1) return [];
-		const result = [];
-		for(const row of this.rows) result.push(row);
-		return result;
+		// const result = [];
+		// for(const row of this.rows) result.push(row);
+		// return result;
+		return [...this.rows];
 	}
 
 	/**
@@ -155,8 +157,8 @@ export class ReaderCIF implements ReaderImplementation {
 			// Clear line from comments and control characters
 			const lineNC = line.replace(/#.*/u, "").trim();
 			if(lineNC === "") continue;
-			// eslint-disable-next-line no-control-regex
-			if(/[\u0000-\u0008\u000E-\u001F]/u.test(lineNC)) continue;
+			// eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+			if(/[\u{0}-\u{8}\u{E}-\u{1F}]/u.test(lineNC)) continue;
 
 			// The keys are case insensitive
 			const lineLC = lineNC.toLowerCase();
@@ -173,11 +175,9 @@ export class ReaderCIF implements ReaderImplementation {
 						this.tbl.addColumn(lineLC);
 						continue;
 					}
-					else {
-						isInLoop = false;
-						isInLoopHeader = false;
-						this.useTable();
-					}
+					isInLoop = false;
+					isInLoopHeader = false;
+					this.useTable();
 				}
 				else {
 					isInLoopHeader = false;
@@ -202,7 +202,7 @@ export class ReaderCIF implements ReaderImplementation {
 
 				continue;
 			}
-			else if(lineLC.startsWith("loop_")) {
+			if(lineLC.startsWith("loop_")) {
 
 				// Everything before a data block is ignored
 				if(!isInDataBlock) continue;
@@ -413,7 +413,7 @@ export class ReaderCIF implements ReaderImplementation {
 			if(next) out += "\n";
 			else next = true;
 
-			out += line.length > 1 ? line[1] : line[0];
+			out += line[line.length > 1 ? 1 : 0];
 		}
 
 		return out;

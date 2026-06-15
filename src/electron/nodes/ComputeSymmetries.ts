@@ -575,9 +575,10 @@ export class ComputeSymmetries extends NodeCore {
 		for(let i=0; i < natoms; ++i) {
 
 			const dir = direction[i];
-			const k = 3*i;
 
 			if(dir === 0) continue;
+
+			const k = 3*i;
 
 			switch(dir & (X_ANY|Y_ANY|Z_ANY)) {
 

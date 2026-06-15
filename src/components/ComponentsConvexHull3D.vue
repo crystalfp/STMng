@@ -141,10 +141,9 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
 
     // Increase ambient light intensity
     scene.traverse((object) => {
-        if(object.type === "AmbientLight") {
-            const light = object as AmbientLight;
-            light.intensity = 1;
-        }
+        if(object.type !== "AmbientLight") return;
+        const light = object as AmbientLight;
+        light.intensity = 1;
     });
 },
 (scene, camera) => {
@@ -354,6 +353,7 @@ const createLabels = (stableVertices: number[], zScale: number,
         const text = document.createElement("div");
         text.style.color = "blue";
         text.style.fontSize = "18px";
+        // eslint-disable-next-line unicorn/prefer-dom-node-html-methods, unicorn/no-unsafe-dom-html
         text.innerHTML = formulaText[indexVertices[i]];
         text.className = "label";
 
@@ -474,13 +474,12 @@ requestData(windowPath, (params: CtrlParams) => {
 /** Update scene on scale change */
 const stopWatcher1 = watch(scale, (sa, sb) => {
 
-    if(sa !== sb) {
-        zCenter *= sa/sb;
-        sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
-        createSurface(trianglesVertices, scale.value);
-        createPoints(x, y, e, v, scale.value, pointSize.value);
-        createLabels(v, scale.value, iv, formula);
-    }
+    if(sa === sb) return;
+    zCenter *= sa/sb;
+    sv.setCamera([0.5, 0.43301, 1], [0.5, 0.43301, zCenter], 20);
+    createSurface(trianglesVertices, scale.value);
+    createPoints(x, y, e, v, scale.value, pointSize.value);
+    createLabels(v, scale.value, iv, formula);
 });
 
 /** Update scene on point coloring change */

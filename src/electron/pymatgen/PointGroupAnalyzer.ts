@@ -505,11 +505,11 @@ export class PointGroupAnalyzer {
 	 */
 	private findMirror(mainAxis: number[]): string {
 
-		let mirrorType = "";
-
 		if(this.isValidOp(SymmOp.reflection(mainAxis))) {
 			return "h";
 		}
+
+		let mirrorType = "";
 
 		const n = this.natoms;
 		for(let is1=0; is1 < n-1; ++is1) {

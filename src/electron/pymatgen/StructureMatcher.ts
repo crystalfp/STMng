@@ -844,7 +844,8 @@ export class StructureMatcher {
             return null;
         }
 
-        if(new LinearAssignment(mask).minCost > 0) {
+        const la = new LinearAssignment(mask);
+        if(la.minCost > 0) {
             return null;
         }
 

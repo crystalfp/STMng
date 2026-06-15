@@ -118,8 +118,6 @@ export class Slab {
 
 			// The end point in fractional coordinates
 			const xf = x*this.inverseBasis[0]+y*this.inverseBasis[3]+z*this.inverseBasis[6];
-			const yf = x*this.inverseBasis[1]+y*this.inverseBasis[4]+z*this.inverseBasis[7];
-			const zf = x*this.inverseBasis[2]+y*this.inverseBasis[5]+z*this.inverseBasis[8];
 
 			if(xf < 0) {
 				const n = Math.ceil(-xf);
@@ -129,6 +127,7 @@ export class Slab {
 				const n = Math.ceil(xf) - 1;
 				if(n > ex) ex = n;
 			}
+			const yf = x*this.inverseBasis[1]+y*this.inverseBasis[4]+z*this.inverseBasis[7];
 			if(yf < 0) {
 				const n = Math.ceil(-yf);
 				if(n > ey) ey = n;
@@ -137,6 +136,7 @@ export class Slab {
 				const n = Math.ceil(yf) - 1;
 				if(n > ey) ey = n;
 			}
+			const zf = x*this.inverseBasis[2]+y*this.inverseBasis[5]+z*this.inverseBasis[8];
 			if(zf < 0) {
 				const n = Math.ceil(-zf);
 				if(n > ez) ez = n;
@@ -303,12 +303,13 @@ export class Slab {
      */
     private getDuplicatedAtomsIndex(atomsPosition: Float64Array, natoms: number): boolean[] {
 
-        const len = natoms*3;
-        const fracCoordinates = Array<number>(len);
         const ok = Array<boolean>(natoms).fill(true);
-        let allInside = true;
 
         if(this.isNanocluster) return ok;
+
+        const len = natoms*3;
+        const fracCoordinates = Array<number>(len);
+        let allInside = true;
 
         // Mark the face on which the atom lies. Each triple means:
         //  [on face with a=0, ... b=0, ... c=0] for face Bottom
