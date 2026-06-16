@@ -22,11 +22,15 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
+import os from "node:os";
 import {multiply, transpose} from "mathjs";
+import workerpool from "workerpool";
+import log from "electron-log";
 import {getAtomData} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates} from "../modules/Helpers";
-import {computePlaneEnergy} from "./ComputePlaneEnergy";
+import {publicDirPath} from "../modules/GetPublicPath";
 import type {Structure} from "@/types";
+import type {WorkerResults} from "./WorkerShape";
 
 /**
  * Electrons count for each atom Z value (index equal Z)
@@ -285,6 +289,7 @@ const isSimple = (h: number, k: number, l: number): boolean => {
     return true;
 };
 
+/** Type of one plane computed */
 export type PlaneType = [h: number, k: number, l: number, energy: number];
 
 /**
@@ -293,7 +298,7 @@ export type PlaneType = [h: number, k: number, l: number, energy: number];
  * @param structure - Structure for which the crystal shape should be computed
  * @returns Array of valid hkl planes
  */
-export const computeCrystalShape = (structure: Structure): PlaneType[] => {
+export const computeCrystalShape = async (structure: Structure): Promise<PlaneType[]> => {
 
 	const {atoms, crystal} = structure;
 	const {basis} = crystal;
@@ -341,6 +346,51 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 	const planes = Array<PlaneType>(729);
 	let planeIndex = -1;
 
+	// Find the plane computing worker
+	const worker = publicDirPath("WorkerShape.js", true);
+
+	// Compute the parallelism
+	let availableParallelism = os.availableParallelism();
+	if(availableParallelism > 1) {
+		availableParallelism = 2*availableParallelism-1;
+	}
+
+	// Prepare the worker pool
+	const pool = workerpool.pool(worker, {
+		minWorkers: "max",
+		maxWorkers: availableParallelism,
+		workerType: "process"
+	});
+	const promises: workerpool.Promise<WorkerResults>[] = [];
+
+	// Prepare the data for the worker
+	const lenA = fractionalCoordinates.length;
+	const fractionalCoordinatesE = new Float64Array(lenA);
+	for(let i=0; i < lenA; ++i) fractionalCoordinatesE[i] = fractionalCoordinates[i];
+
+	const basisE = new Float64Array(9);
+	for(let i=0; i < 9; ++i) basisE[i] = basis[i];
+
+	const lenB = radii.length;
+	const radiiE = new Float64Array(lenB);
+	const electronsE = new Int32Array(lenB);
+	for(let i=0; i < lenB; ++i) {
+		electronsE[i] = electrons[i];
+		radiiE[i] = radii[i];
+	}
+
+	const lenC = norms.length;
+	const normsE = new Float64Array(lenC);
+	for(let i=0; i < lenC; ++i) normsE[i] = norms[i];
+
+	const inputCellTE = new Float64Array(9);
+	for(let r=0; r < 3; ++r) {
+		for(let c=0; c < 3; ++c) {
+			inputCellTE[r*3 + c] = inputCellT[r][c];
+		}
+	}
+
+	// For each combination of the hkl indices compute the plane energy
 	for(let mH = -4; mH <= 4; mH++) {
 		for(let mK = -4; mK <= 4; mK++) {
 			for(let mL = -4; mL <= 4; mL++) {
@@ -350,23 +400,44 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 				++planeIndex;
 				planes[planeIndex] = [mH, mK, mL, Number.POSITIVE_INFINITY];
 
-				// TBD This will be parallelized
-				const [index, minEnergy] = computePlaneEnergy(mH, mK, mL, planeIndex,
-															  cell,
-															  trans,
-															  norms,
-															  radii,
-															  electrons,
-															  goodBonds,
-															  extraEnergy,
-															  inputCellT);
-				planes[index][3] = minEnergy;
+				// Send the data to the worker
+				const result = pool.exec("planeEnergy", [
+					mH,
+					mK,
+					mL,
+					planeIndex,
+					fractionalCoordinatesE,
+					basisE,
+					normsE,
+					radiiE,
+					electronsE,
+					goodBonds,
+					extraEnergy,
+					inputCellTE
+				]) as workerpool.Promise<WorkerResults>;
+
+				promises.push(result);
 			}
 		}
 	}
 
+	const results = await Promise.all(promises).catch((error: unknown) => {
+		log.error("Error from the worker pool.", error);
+		return [];
+	});
+
+	// Release the pool
+	pool.terminate();
+
+	if(results.length === 0) return [];
+
 	// Limit planes to the ones really computed
 	planes.length = planeIndex + 1;
+
+	// Extract the results
+	for(const result of results) {
+		planes[result.index][3] = result.energy;
+	}
 
 	// Sort planes by increasing energy
 	planes.sort((a, b) => a[3] - b[3]);

@@ -212,12 +212,29 @@ const MIS_X = 0.00000001;
 const MIS_Y = 0.00000001;
 const MIS_Z = 0.001;
 
+// > Entry point
+/**
+ * Compute plane for a given set of hkl indices
+ *
+ * @param mH - H index of the plane
+ * @param mK - K index of the plane
+ * @param mL - L index of the plane
+ * @param cell - Atom fractional coordinates
+ * @param trans - Unit cell basis vectors
+ * @param norms - ?
+ * @param radii - Atoms covalent radii
+ * @param electrons - Number of electrons for each atom
+ * @param goodBonds - ?
+ * @param extraEnergy - ?
+ * @param inputCellT - Transposed cell basis vectors
+ * @returns Minimal energy for the plane
+ */
 export const computePlaneEnergy = (mH: number, mK: number, mL: number,
-								   planeIndex: number, cell: number[][],
+								   cell: number[][],
 								   trans: number[][], norms: number[], radii: number[],
 								   electrons: number[], goodBonds: number,
 								   extraEnergy: number,
-								   inputCellT: number[][]): [index: number, energy: number] => {
+								   inputCellT: number[][]): number => {
 
 	const [trans2, shift, r1, r2, scope] = determineTransform(mH, mK, mL);
 
@@ -313,5 +330,5 @@ export const computePlaneEnergy = (mH: number, mK: number, mL: number,
 	for(const e of energiesOut) {
 		if(e < minEnergy) minEnergy = e;
 	}
-	return [planeIndex, minEnergy];
+	return minEnergy;
 };

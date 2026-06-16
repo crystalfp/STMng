@@ -43,9 +43,9 @@ export class CrystalShape extends NodeCore {
 	};
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "init",			type: "invoke",	    callback: this.channelInit.bind(this)},
-		{name: "state",			type: "send",	  	callback: this.channelState.bind(this)},
-		{name: "compute",		type: "invoke",	    callback: this.channelCompute.bind(this)},
+		{name: "init",	  type: "invoke",	    callback: this.channelInit.bind(this)},
+		{name: "state",	  type: "send",			callback: this.channelState.bind(this)},
+		{name: "compute", type: "invokeAsync",	callback: this.channelCompute.bind(this)},
 	];
 
 	/**
@@ -123,7 +123,7 @@ export class CrystalShape extends NodeCore {
 	 *
 	 * @returns Computation status
 	 */
-	private channelCompute(): CtrlParams {
+	private async channelCompute(): Promise<CtrlParams> {
 
 		if(!this.structure) return {status: "Do nothing"};
 
@@ -142,7 +142,7 @@ export class CrystalShape extends NodeCore {
 
 			try {
 
-				const planes = computeCrystalShape(this.structure);
+				const planes = await computeCrystalShape(this.structure);
 
 				sendToClient(this.id, "step", {message: "Calculating intersections"});
 
