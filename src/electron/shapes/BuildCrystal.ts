@@ -209,17 +209,6 @@ export const buildCrystalShape = (
                                     sendMsg: (msg: string) => void
                                 ): CrystalGeometry => {
 
-	// Normalize the cell basis
-	const cell: number[][] = [];
-	for(let i=0; i < 3; i++) {
-		const i3 = i*3;
-		cell.push([
-			basis[i3],
-			basis[i3+1],
-			basis[i3+2]
-		]);
-	}
-
 	// Planes used in the subsequent steps
 	const planeMiller: number[][] = [];
 	const planeEnergy: number[] = [];
@@ -254,6 +243,16 @@ export const buildCrystalShape = (
 			planeMiller.push(planes[i].slice(0, 3));
 			planeEnergy.push(planes[i][3]);
 		}
+	}
+
+	// Normalize the cell basis
+	const cell: number[][] = [];
+	for(let i=0, i3=0; i < 3; ++i, i3+=3) {
+		cell.push([
+			basis[i3],
+			basis[i3+1],
+			basis[i3+2]
+		]);
 	}
 
 	// Compute normals

@@ -116,10 +116,9 @@ export const matVec = (m: number[][], v: number[]): number[] => {
   	return m.map((row) => row.reduce((s, value, i) => s + value * v[i], 0));
 };
 
-export const transpose2D = (m: number[][]): number[][] => {
+const transpose2D = (m: number[][]): number[][] => {
   	return Array.from({length: m[0].length}, (_, i) => m.map((row) => row[i]));
 };
-
 
 export const dotRows = (points: number[][], m: number[][]): number[][] => {
   return points.map((p) => matVec(transpose2D(m), p));

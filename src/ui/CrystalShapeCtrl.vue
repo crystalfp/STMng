@@ -80,7 +80,7 @@ const computeShape = (): void => {
         if(response.error) throw Error(response.error as string);
     })
     .catch((error: Error) => {
-        showNodeAlert(`Error computing crystal shape ${label}: ${error.message}`,
+        showNodeAlert(`Error computing crystal shape: ${error.message}`,
                       "crystalShape");
     })
     .finally(() => {
