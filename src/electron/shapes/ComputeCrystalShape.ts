@@ -28,12 +28,23 @@ import {cartesianToFractionalCoordinates} from "../modules/Helpers";
 import type {Structure} from "@/types";
 import {cdist, dotRows, transpose2D, range, cross3, norm, matVec} from "./Helpers";
 
-const electronCount = [0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 5, 3, 3, 3, 2, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 5, 3, 3, 3, 2, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
-
+/**
+ * Electrons count for each atom Z value (index equal Z)
+ */
+const electronCount = [
+	0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6,
+	5, 3, 3, 3, 2, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 5, 3, 3, 3, 2, 2, 3,
+	4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3
+];
 
 /**
  * Generates all integer [x, y, z] triplets where each component
  * is in the range (-maxCoat, maxCoat], i.e. 8*maxCoat^3 points.
+ *
+ * @param maxCoat - Range limit
+ * @returns Array of triples
  */
 const arange3d = (maxCoat: number): number[][] => {
   	const coords: number[][] = [];
@@ -45,16 +56,27 @@ const arange3d = (maxCoat: number): number[][] => {
  	return coords;
 };
 
-const valenceAffortNormalize = (inputCell: Structure, fractionalCoordinates: number[], radii: number[]): number[] => {
+/**
+ * Compute valence
+ *
+ * @param inputCell - Crystal structure
+ * @param fractionalCoordinates - Structure atoms fractional coordinates
+ * @param radii - Atoms covalent radii
+ * @returns Normalized valence effort
+ */
+const valenceAffortNormalize = (inputCell: Structure,
+								fractionalCoordinates: number[],
+								radii: number[]): number[] => {
 
 	const maxCoat = 10;
 	const decay = 0.37;
 
-	// Generate all integer 3D coords in [-maxCoat+1, maxCoat] range, sorted by Chebyshev distance
+	// Generate all integer 3D coords in [-maxCoat+1, maxCoat] range,
+	// sorted by Chebyshev distance
+	// Shape: [8*maxCoat^3, 3]
 	const rawVertices = arange3d(maxCoat).toSorted(
 		(a, b) => Math.max(...a.map((v) => Math.abs(v))) - Math.max(...b.map((v) => Math.abs(v)))
 	);
-	// Shape: [8*maxCoat^3, 3]
 
 	const nAtoms = inputCell.atoms.length;
 
@@ -193,9 +215,9 @@ const determineEnergiesNeeded = (cell: number[][],
 
 	const valueAff: number[][] = Array.from({length: n}, (_, i) =>
 		Array.from({length: n}, (_x, j) => {
-		const rSum = radiiSzCell[i][0] + radiiSzCell[j][0];
-		const nProduct = Math.sqrt(normsSzCell[i][0]) * Math.sqrt(normsSzCell[j][0]);
-		return Math.exp(-(dists[i][j] - rSum) / 0.37) / nProduct;
+			const rSum = radiiSzCell[i][0] + radiiSzCell[j][0];
+			const nProduct = Math.sqrt(normsSzCell[i][0]) * Math.sqrt(normsSzCell[j][0]);
+			return Math.exp(-(dists[i][j] - rSum) / 0.37) / nProduct;
 		})
 	);
 
@@ -452,7 +474,7 @@ const createBondArray = (
 export type PlaneType = [h: number, k: number, l: number, energy: number];
 
 /**
- * Find Miller planes and their energy that characterize the structure
+ * Find Miller planes and their energies that characterize the structure
  *
  * @param structure - Structure for which the crystal shape should be computed
  * @returns Array of valid hkl planes
@@ -463,8 +485,6 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 	const {basis} = crystal;
 
 	const fractionalCoordinates = cartesianToFractionalCoordinates(structure);
-
-	const planes: PlaneType[] = [];
 
 	const electrons = [];
 	const radii = [];
@@ -502,11 +522,18 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 
   	const inputCellT = transpose2D(trans);
 
+	// There are max 9*9*9 planes (from -4 to 4 there are 9 plane indices)
+	const planes = Array<PlaneType>(729);
+	let planeIndex = -1;
+
 	for(let mH = -4; mH <= 4; mH++) {
 		for(let mK = -4; mK <= 4; mK++) {
 			for(let mL = -4; mL <= 4; mL++) {
 
 				if(!checkSign(mH, mK, mL) || !isSimple(mH, mK, mL)) continue;
+
+				++planeIndex;
+				planes[planeIndex] = [mH, mK, mL, Number.POSITIVE_INFINITY];
 
 				const [trans2, shift, r1, r2, scope] = determineTransform(mH, mK, mL);
 
@@ -602,7 +629,7 @@ export const computeCrystalShape = (structure: Structure): PlaneType[] => {
 				for(const e of energiesOut) {
 					if(e < minEnergy) minEnergy = e;
 				}
-				planes.push([mH, mK, mL, minEnergy]);
+				planes[planeIndex][3] = minEnergy;
 			}
 		}
 	}

@@ -25,8 +25,7 @@
 import {ref} from "vue";
 import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
         Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
-        BufferGeometry,
-        AmbientLight} from "three";
+        BufferGeometry, AmbientLight, FrontSide} from "three";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import {SimpleViewer} from "@/services/SimpleViewer";
@@ -110,7 +109,6 @@ const basisVectorArrow = (basis: Vector3, origin: Vector3, size: number,
 
     // Correlate label size to axis length for legibility
     const labelSize = size*4;
-    // const labelSize = 0.4 + 0.6*(basisLen-0.5)/19.5;
 
     // Label
     const labelPosition: PositionType = [
@@ -123,6 +121,13 @@ const basisVectorArrow = (basis: Vector3, origin: Vector3, size: number,
     group.add(cylinder, cone, sprite);
 };
 
+/**
+ * Render the basis vectors
+ *
+ * @param center - Origin of the axis
+ * @param radius - Bounding box sphere radius of the crystal shape
+ * @param basis - Structure basis vectors
+ */
 const renderBasisVectors = (center: [x: number, y: number, z: number],
                             radius: number, basis: number[]): void => {
 
@@ -154,6 +159,14 @@ const renderBasisVectors = (center: [x: number, y: number, z: number],
     sv.setSceneModified();
 };
 
+/**
+ * Render the surface of the crystal shape
+ *
+ * @param vertices - Surface triangles vertices [x0, y0, z0, x1, y1, z1, ...]
+ * @param index - Index of the triangle vertices
+ * @param colors - Color of each vertex
+ * @returns Radius of the bounding sphere
+ */
 const renderShape = (vertices: number[], index: number[], colors: number[]): number => {
 
     const surfaceName = "Shape";
@@ -169,18 +182,14 @@ const renderShape = (vertices: number[], index: number[], colors: number[]): num
 
     // Build the geometry
     const geometry = new BufferGeometry();
-    // const len = colors.length;
-    // const index = [];
-    // for(let i=0; i < len; ++i) index.push(i);
     geometry.setIndex(index);
     geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
-    // geometry.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-    // geometry.computeVertexNormals();
+    geometry.computeVertexNormals();
 
     // Define material
     const material = new MeshStandardMaterial({
-        side: DoubleSide,
+        side: FrontSide,
         roughness: 0.5,
         metalness: 0.6,
         vertexColors: true
@@ -230,8 +239,8 @@ requestData(windowPath, (params: CtrlParams) => {
     if(!index) return;
     const basis = params.basis as number[];
     if(!basis) return;
-console.log(index, colorIndex);
-    // Transform color index into color
+
+    // Transform color index into color per vertex
     const lut = new Lut("rainbow", maxColor+1);
     lut.setMax(maxColor);
     lut.setMin(0);
@@ -251,14 +260,22 @@ console.log(index, colorIndex);
     renderBasisVectors(cameraCenter, radius, basis);
 });
 
+/**
+ * Center the camera
+ */
 const centerView = (): void => {
 
     sv.setCamera(cameraPosition, cameraCenter, cameraZoom);
 };
 
-const updateVisibility = (x: boolean | null): void => {
+/**
+ * Update axis vectors visibility
+ *
+ * @param visible - Toggle position
+ */
+const updateVisibility = (visible: boolean | null): void => {
 
-    basisVectorGroup.visible = x ?? false;
+    basisVectorGroup.visible = visible ?? false;
     sv.setSceneModified();
 };
 

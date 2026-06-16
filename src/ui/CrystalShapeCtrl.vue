@@ -62,13 +62,16 @@ askNode(id, "init")
                       "crystalShape");
     });
 
-/** Receive the parameters of the structures loaded */
+/** Receive the current step description */
 receiveFromNode(id, "step", (params) => {
 
     stepMessage.value = params.message as string ?? "";
 });
 
 // > Computation
+/**
+ * Start the computation
+ */
 const computeShape = (): void => {
 
     computingShapeRunning.value = true;
@@ -85,12 +88,12 @@ const computeShape = (): void => {
     });
 };
 
+/** Send to main process changes in the status */
 const stopWatcher = watch(state, (st) => {
 
     // Pass state changes to the main process for saving in the project file
     sendToNode(id, "state", toRaw(st));
 });
-
 
 // Cleanup
 onUnmounted(() => {
@@ -104,7 +107,7 @@ onUnmounted(() => {
 <v-container class="container pb-8">
   <v-switch v-model="state.allPlanes"
             label="Use all HKL planes" class="ml-1 mr-2 mb-4 mt-4" />
-  <debounced-slider v-slot="{value}" v-model="state.maxPlanesCount" :min="10" :max="1000" :step="1"
+  <debounced-slider v-slot="{value}" v-model="state.maxPlanesCount" :min="10" :max="729" :step="1"
                       class="ml-1 mb-4 mt-1" :disabled="state.allPlanes">
     <v-label :text="`Max HKL planes to use (${value.toFixed(0)})`" class="no-select" />
   </debounced-slider>

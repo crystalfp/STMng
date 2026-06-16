@@ -59,7 +59,7 @@ export class CrystalShape extends NodeCore {
 	}
 
 	description(): string {
-		return "Visualize the shape of the crystal structure.";
+		return "Visualize the shape of the crystal structure based on the Wulff theorem.";
 	}
 
 	override fromPreviousNode(data: Structure): void {
@@ -119,9 +119,9 @@ export class CrystalShape extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for UI initialization
+	 * Channel handler for computing the crystal shape
 	 *
-	 * @returns Parameters to initialize the user interface
+	 * @returns Computation status
 	 */
 	private channelCompute(): CtrlParams {
 
@@ -135,14 +135,15 @@ export class CrystalShape extends NodeCore {
 			return {error: "Missing unit cell in input to compute crystal shape"};
 		}
 
+		// Do the computation if data changes
 		if(!this.crystalResults) {
 
 			sendToClient(this.id, "step", {message: "Computing planes"});
 
-			// Do the computation if data changes
 			try {
 
 				const planes = computeCrystalShape(this.structure);
+
 				sendToClient(this.id, "step", {message: "Calculating intersections"});
 
 				this.crystalResults = buildCrystalShape(basis, planes, this.previousPlanesCount,
@@ -160,9 +161,8 @@ export class CrystalShape extends NodeCore {
 				return {error: (error as Error).message};
 			}
 
-			// Orient triangles so their normals point to outside
+			// Orient triangles so their normals point to the outside
 			this.crystalResults.index = this.orientSurfaces();
-			// this.crystalResults.normals = this.orientSurfaces();
 		}
 		const dataToSend: CtrlParams = {
 							vertices: this.crystalResults.vertices,
@@ -183,10 +183,16 @@ export class CrystalShape extends NodeCore {
 		return {status: "Success"};
 	}
 
+	/**
+	 * Orient triangles to have normals pointing outward
+	 *
+	 * @returns Index array of the triangle vertices
+	 */
 	private orientSurfaces(): number[] {
 
 		const vert = this.crystalResults!.vertices;
 		const n = vert.length;
+		const index: number[] = [];
 
 		// Find the crystal center
 		let cx = 0;
@@ -201,15 +207,15 @@ export class CrystalShape extends NodeCore {
 		cy /= n;
 		cz /= n;
 
-		// const normals: number[] = [];
-		const index: number[] = [];
-		// For each triangle find the vector from the crystal center
+		// For each triangle
 		for(let i=0, k=0; i < n; i += 9, k += 3) {
 
+			// Find the vector from the crystal center
 			const x0 = (vert[i]   + vert[i+3] + vert[i+6])/3-cx;
 			const y0 = (vert[i+1] + vert[i+4] + vert[i+7])/3-cy;
 			const z0 = (vert[i+2] + vert[i+5] + vert[i+8])/3-cz;
 
+			// Find the triangle normal
 			const ax = vert[i+3] - vert[i];
 			const ay = vert[i+4] - vert[i+1];
 			const az = vert[i+5] - vert[i+2];
@@ -218,34 +224,19 @@ export class CrystalShape extends NodeCore {
 			const by = vert[i+7] - vert[i+1];
 			const bz = vert[i+8] - vert[i+2];
 
-			let nx = ay*bz - az*by;
-			let ny = az*bx - ax*bz;
-			let nz = ax*by - ay*bx;
+			const nx = ay*bz - az*by;
+			const ny = az*bx - ax*bz;
+			const nz = ax*by - ay*bx;
 
-			const nlen = Math.hypot(nx, ny, nz);
-			nx /= nlen;
-			ny /= nlen;
-			nz /= nlen;
-
+			// Dot product is positive if both vectors
+			// point in the same direction
 			const dot = x0*nx + y0*ny + z0*nz;
 			if(dot < 0) {
 
-				// normals.push(-nx, -ny, -nz, -nx, -ny, -nz, -nx, -ny, -nz);
-				// let t = vert[i];
-				// vert[i] = vert[i+3];
-				// vert[i+3] = t;
-
-				// t = vert[i+1];
-				// vert[i+1] = vert[i+4];
-				// vert[i+4] = t;
-
-				// t = vert[i+2];
-				// vert[i+2] = vert[i+5];
-				// vert[i+5] = t;
 				index.push(k, k+2, k+1);
 			}
 			else {
-				// normals.push(nx, ny, nz, nx, ny, nz, nx, ny, nz);
+
 				index.push(k, k+1, k+2);
 			}
 		}

@@ -190,8 +190,7 @@ export interface CrystalGeometry {
     colors: number[];
     /** Maximum color index */
     maxColor: number;
-    /** Vertex normals */
-    normals?: number[];
+    /** Triangles vertices index */
     index?: number[];
 }
 
