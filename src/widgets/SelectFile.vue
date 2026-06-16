@@ -58,8 +58,8 @@ const emit = defineEmits<{
 }>();
 
 /** Label to be show (the file selected) */
-const label = defineModel<string>();
-label.value = "";
+const fileLabel = defineModel<string>();
+fileLabel.value = "";
 
 /** True if the file is loading */
 const inProgress = ref(false);
@@ -77,7 +77,7 @@ const openSelector = (): void => {
             const filename = params.filename as string;
             if(filename) {
                 const pos = filename.lastIndexOf("/");
-                label.value = filename.slice(pos+1);
+                fileLabel.value = filename.slice(pos+1);
                 emit("selected", filename);
             }
         })
@@ -121,12 +121,12 @@ const onDrop = (event: DragEvent): void => {
     const filename = dt.files[0].name;
     dt.files[0].text()
         .then((content: string) => {
-            label.value = filename;
+            fileLabel.value = filename;
             emit("dropped", content, filename);
         })
         .finally(() => {inProgress.value = false;})
         .catch((error: Error) => {
-            label.value = "";
+            fileLabel.value = "";
             showSystemAlert(`Error from file drop: ${error.message}`);
         });
 };
@@ -164,7 +164,7 @@ const onDragLeave = (): void => {
       @drop.prevent="onDrop"
       @dragover.prevent="onDragOver"
       @dragleave.prevent="onDragLeave">
-  <v-text-field :model-value="label" :disabled
+  <v-text-field :model-value="fileLabel" :disabled
                 :label="props.label ?? props.title"
                 readonly prepend-icon="mdi-file-outline"
                 class="mb-2 cursor-pointer mr-n4" hide-details="auto"

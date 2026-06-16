@@ -31,12 +31,14 @@ const props = withDefaults(defineProps<{
 
     /** Module that had generated the message */
     node: string;
+
     /** Time to make a success message disappears */
     timeout?: number;
+
 }>(), {timeout: 5_000});
 
 const messageStore = useMessageStore();
-const {node, level, text} = storeToRefs(messageStore);
+const {node: nodeInDb, level, text} = storeToRefs(messageStore);
 
 const showMessage = ref(false);
 const messageTitle = computed(() => (level.value === "error" ? "Error" : "Success!"));
@@ -47,18 +49,18 @@ let timerID: NodeJS.Timeout;
 const closeMessage = (): void => {
 
     showMessage.value = false;
-    node.value = "";
+    nodeInDb.value = "";
     text.value = "";
     clearTimeout(timerID);
 };
 
-const stopWatcher = watch(node, () => {
+const stopWatcher = watch(nodeInDb, () => {
 
-    if(node.value === "") {
+    if(nodeInDb.value === "") {
         if(text.value === "") showMessage.value = false;
         return;
     }
-    if(node.value !== props.node) {
+    if(nodeInDb.value !== props.node) {
         showMessage.value = false;
         return;
     }
@@ -68,7 +70,7 @@ const stopWatcher = watch(node, () => {
     if(level.value !== "error" && props.timeout > 0) {
         timerID = setTimeout(() => {
             showMessage.value = false;
-            node.value = "";
+            nodeInDb.value = "";
             text.value = "";
         }, props.timeout);
     }

@@ -23,4 +23,5 @@ export const vueRules = {
 	}],
 	"vue/no-unused-refs": "error",
 	"vue/no-unused-emit-declarations": "error",
+	"vue/no-dupe-keys": "error"
 }

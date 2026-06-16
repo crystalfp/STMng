@@ -31,7 +31,7 @@ import type {Structure} from "@/types";
 /**
  * Electrons count for each atom Z value (index equal Z)
  */
-export const electronCount = [
+const electronCount = [
 	0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6,
 	5, 3, 3, 3, 2, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 5, 3, 3, 3, 2, 2, 3,
 	4, 5, 6, 7, 8, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
