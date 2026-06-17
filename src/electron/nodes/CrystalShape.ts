@@ -25,9 +25,10 @@
 import {NodeCore} from "../modules/NodeCore";
 import {hasNoUnitCell} from "../modules/Helpers";
 import {sendToClient} from "../modules/ToClient";
-import {computeCrystalShape} from "../shapes/ComputeCrystalShape";
+import {computeCrystalPlanes} from "../shapes/ComputeCrystalPlanes";
 import {buildCrystalShape, type CrystalGeometry} from "../shapes/BuildCrystal";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
+import {markDuplicates} from "../modules/MarkDuplicates";
 import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 export class CrystalShape extends NodeCore {
@@ -127,7 +128,8 @@ export class CrystalShape extends NodeCore {
 
 		if(!this.structure) return {status: "Do nothing"};
 
-		const {basis} = this.structure.crystal;
+		const {atoms, crystal} = this.structure;
+		const {basis} = crystal;
 
 		// Should have the unit cell
 		if(hasNoUnitCell(basis)) {
@@ -135,20 +137,28 @@ export class CrystalShape extends NodeCore {
 			return {error: "Missing unit cell in input to compute crystal shape"};
 		}
 
+
 		// Do the computation if data changes
 		if(!this.crystalResults) {
+
+			sendToClient(this.id, "step", {message: "Cleaning structure"});
+
+			// Remove duplicated and out of cell atoms
+			const duplicated = markDuplicates(atoms, crystal);
+			const goodAtoms = atoms.filter((_, idx) => !duplicated[idx]);
+			this.structure.atoms = goodAtoms;
 
 			sendToClient(this.id, "step", {message: "Computing planes"});
 
 			try {
 
-				const planes = await computeCrystalShape(this.structure);
+				const planes = await computeCrystalPlanes(this.structure);
 
 				if(planes.length === 0) {
 					throw Error("No planes computed");
 				}
 
-				sendToClient(this.id, "step", {message: "Calculating intersections"});
+				sendToClient(this.id, "step", {message: "Computing intersections"});
 
 				this.crystalResults = buildCrystalShape(basis, planes, this.previousPlanesCount,
 					(message) => sendToClient(this.id, "step", {message})

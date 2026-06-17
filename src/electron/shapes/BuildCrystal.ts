@@ -25,7 +25,7 @@
 /* eslint-disable unicorn/prevent-abbreviations, unicorn/prefer-includes-over-repeated-comparisons */
 import Delaunator from "delaunator";
 import type {BasisType} from "@/types";
-import type {PlaneType} from "./ComputeCrystalShape";
+import type {PlaneType} from "./ComputeCrystalPlanes";
 import {argsortByAbsRow, cross3, det3x3, dot, dot3, euclidean,
         inv3, isClose, mulVecMat3, norm, solve3x3, sub3} from "./Helpers";
 
@@ -258,7 +258,6 @@ export const buildCrystalShape = (
 	// Compute normals
 	const [planeNormals, planeRvalue] = getNormalsRvalues(planeMiller, planeEnergy, cell);
 
-	sendMsg("Calculating intersections");
 	const planeR = planeIntersections(planeNormals, planeRvalue);
 
     sendMsg("Searching interior polyhedra vertices");

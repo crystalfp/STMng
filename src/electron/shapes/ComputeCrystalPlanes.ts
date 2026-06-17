@@ -298,7 +298,7 @@ export type PlaneType = [h: number, k: number, l: number, energy: number];
  * @param structure - Structure for which the crystal shape should be computed
  * @returns Array of valid hkl planes
  */
-export const computeCrystalShape = async (structure: Structure): Promise<PlaneType[]> => {
+export const computeCrystalPlanes = async (structure: Structure): Promise<PlaneType[]> => {
 
 	const {atoms, crystal} = structure;
 	const {basis} = crystal;
