@@ -25,7 +25,7 @@ export default defineConfig({
 	output: {
 		file: "../../../public/WorkerShape.js",
 		format: "cjs",
-		sourcemap: false,
+		sourcemap: false
 	},
 	plugins: [
 		terser(),
@@ -40,14 +40,14 @@ export default defineConfig({
 			sourceMap: false,
 			compilerOptions: {
 				target: "esnext",
-			    paths: {
-      				"@/*": ["../../*"]
-    			},
+				paths: {
+					"@/*": ["../../*"]
+				},
 				allowSyntheticDefaultImports: true,
 				resolveJsonModule: true,
 				declarationDir: "../../../public",
 				allowImportingTsExtensions: false
-			},
-		}),
+			}
+		})
 	]
 });

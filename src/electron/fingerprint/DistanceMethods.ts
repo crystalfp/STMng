@@ -318,7 +318,7 @@ class MinkowskiDistance extends DistanceMethod {
                     if(dd < 0) dd = -dd;
                     oneDistance += Math.cbrt(dd);
                 }
-                oneDistance = oneDistance*oneDistance*oneDistance;
+                oneDistance *= oneDistance*oneDistance; // oneDistance³
 
                 // Find the most similar atom in the other structure
                 if(oneDistance < currentDistance) {

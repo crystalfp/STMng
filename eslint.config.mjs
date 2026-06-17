@@ -32,10 +32,11 @@ export default defineConfig([
         "src/vite-env.d.ts",
 		"src/assets",
         "src/cpp",
-        "src/electron/fingerprint/rollup.config.mjs",
         "src/electron/fingerprint/rolldown.config.mjs",
         "src/electron/fingerprint/KDtree.js",
         "src/electron/fingerprint/.rollup.cache/**",
+        "src/electron/shapes/.rollup.cache/**",
+        "src/electron/shapes/rolldown.config.mjs",
     ]}, {
     files: [
         "src/**/*.ts",
@@ -399,6 +400,10 @@ export default defineConfig([
         "unicorn/no-computed-property-existence-check": "off",
         "unicorn/class-reference-in-static-methods": "off", // Should be analyzed
         "unicorn/prefer-minimal-ternary": "off",
+        "unicorn/consistent-boolean-name": "off",
+        "unicorn/no-top-level-assignment-in-function": "off",
+        "unicorn/no-non-function-verb-prefix": "off",
+        "unicorn/no-unreadable-for-of-expression": "off",
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],

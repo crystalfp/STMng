@@ -419,7 +419,6 @@ export class Slab {
                     const dy = fracCoordinates[i3+1] - fracCoordinates[j3+1];
                     if(dx < TOL && dx > -TOL && dy < TOL && dy > -TOL) {
                         ok[j] = false;
-                        continue;
                     }
                 }
             }

@@ -603,6 +603,7 @@ export class StructureReader extends NodeCore {
 
 			const structure = structures[idx];
 			if(structure.atoms.length === 0) {
+				// eslint-disable-next-line unicorn/no-array-splice
 				structures.splice(idx, 1);
 			}
 		}

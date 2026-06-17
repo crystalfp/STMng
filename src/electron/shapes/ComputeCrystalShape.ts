@@ -423,7 +423,7 @@ export const computeCrystalShape = async (structure: Structure): Promise<PlaneTy
 
 	const results = await Promise.all(promises).catch((error: unknown) => {
 		log.error("Error from the worker pool.", error);
-		return [];
+		throw Error(`Error from the worker pool. ${(error as Error).message}`);
 	});
 
 	// Release the pool

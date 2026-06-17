@@ -202,7 +202,8 @@ receiveFromNode(id, "load", (params) => {
 
     countAccumulated.value = params.countAccumulated as number ?? 0;
     species.value.length = 0;
-    for(const s of params.species as string[] ?? []) species.value.push(s);
+    const speciesRaw = params.species as string[] ?? [];
+    for(const s of speciesRaw) species.value.push(s);
     remainingAfterFilter.value = params.countRemaining as number ?? 0;
 });
 

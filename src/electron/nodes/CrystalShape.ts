@@ -144,6 +144,10 @@ export class CrystalShape extends NodeCore {
 
 				const planes = await computeCrystalShape(this.structure);
 
+				if(planes.length === 0) {
+					throw Error("No planes computed");
+				}
+
 				sendToClient(this.id, "step", {message: "Calculating intersections"});
 
 				this.crystalResults = buildCrystalShape(basis, planes, this.previousPlanesCount,
