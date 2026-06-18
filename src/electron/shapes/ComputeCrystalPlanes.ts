@@ -296,9 +296,11 @@ export type PlaneType = [h: number, k: number, l: number, energy: number];
  * Find Miller planes and their energies that characterize the structure
  *
  * @param structure - Structure for which the crystal shape should be computed
+ * @param processParallelism - Use the multi process parallelism instead of threads
  * @returns Array of valid hkl planes
  */
-export const computeCrystalPlanes = async (structure: Structure): Promise<PlaneType[]> => {
+export const computeCrystalPlanes = async (structure: Structure,
+										   processParallelism: boolean): Promise<PlaneType[]> => {
 
 	const {atoms, crystal} = structure;
 	const {basis} = crystal;
@@ -352,14 +354,16 @@ export const computeCrystalPlanes = async (structure: Structure): Promise<PlaneT
 	// Compute the parallelism
 	let availableParallelism = os.availableParallelism();
 	if(availableParallelism > 1) {
-		availableParallelism = 2*availableParallelism-1;
+		availableParallelism = (processParallelism ?
+										2*availableParallelism :
+										availableParallelism)-1;
 	}
 
 	// Prepare the worker pool
 	const pool = workerpool.pool(worker, {
 		minWorkers: "max",
 		maxWorkers: availableParallelism,
-		workerType: "process"
+		workerType: processParallelism ? "process" : "thread"
 	});
 	const promises: workerpool.Promise<WorkerResults>[] = [];
 

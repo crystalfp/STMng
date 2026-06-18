@@ -40,7 +40,8 @@ export class CrystalShape extends NodeCore {
 	// Mirror of the UI reactive state
 	private readonly state = {
 		allPlanes: false,
-		maxPlanesCount: 100
+		maxPlanesCount: 100,
+    	processParallelism: false
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -85,6 +86,7 @@ export class CrystalShape extends NodeCore {
 
         this.state.allPlanes = params.allPlanes as boolean ?? false;
         this.state.maxPlanesCount = params.maxPlanesCount as number ?? 100;
+		this.state.processParallelism = params.processParallelism as boolean ?? false;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -152,7 +154,10 @@ export class CrystalShape extends NodeCore {
 
 			try {
 
-				const planes = await computeCrystalPlanes(this.structure);
+				const planes = await computeCrystalPlanes(
+											this.structure,
+											this.state.processParallelism
+										);
 
 				if(planes.length === 0) {
 					throw Error("No planes computed");

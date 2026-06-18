@@ -21,7 +21,7 @@
 <h1 class="subh1">Display the crystal shape based on the Wulff theorem</h1>
 
 <div class="description">
-<p>Given a structure this node find the shape by intersecting the <i>hkl</i> planes according to the <a href="https://en.wikipedia.org/wiki/Wulff_construction">Wulff theorem</a>.</p>
+<p>Given a crystal structure, this node finds its shape by intersecting the <i>hkl</i> planes according to the <a href="https://en.wikipedia.org/wiki/Wulff_construction">Wulff theorem</a>.</p>
 </div>
 <h2>Controls</h2>
 <table cellpadding="2" cellspacing="2">
@@ -33,12 +33,17 @@
 <tr>
 	<td class="c1">Max HKL planes to use</td>
 	<td class="c2">slider</td>
-	<td class="c3">When not using all planes, this limits how many planes to use. Normally 100 is sufficient, but if there are memory problems could be lowered.</td>
+	<td class="c3">When the previous toggle is not set, this value limits how many planes to use. Normally 100 is sufficient, but if there are memory problems could be lowered.</td>
+</tr>
+<tr>
+	<td class="c1">Multi process parallelism</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Select to parallelize computation using multiple processes. If not set the parallelization is done using threads in a single process. The multi-process method is slower, but gives more memory to each computation. Select it if selecting parallelization on threads has memory problems.</td>
 </tr>
 <tr>
 	<td class="c1">Compute crystal shape</td>
 	<td class="c2">button</td>
-	<td class="c3">Start the crystal shape computation and then open the <a href="../secondary/crystal-shape.html">Crystal shape</a> window to display the result. If nothing ha changed, this button does not recompute the shape, only display it.</td>
+	<td class="c3">Start the crystal shape computation and then open the <a href="../secondary/crystal-shape.html">Crystal shape</a> window to display the result. If nothing ha changed, this button does not recompute the shape, only displays it.</td>
 </tr>
 <tr>
 	<td class="c1">Current step</td>
@@ -47,7 +52,8 @@
 </tr>
 </table>
 <h2>Credits</h2>
-<p>The code has been ported from Python one received from Daniil Poletaev of the Prof. Oganov group.</p>
+<p>The algorithm has been ported from Python code received from the Prof. Oganov group.</p>
+
 <p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
 </body>
 </html>

@@ -33,7 +33,8 @@ import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 // > Persistent state that is saved in the project file
 const state = reactive({
     allPlanes: false,
-    maxPlanesCount: 100
+    maxPlanesCount: 100,
+    processParallelism: false
 });
 
 // > Local variables
@@ -106,11 +107,12 @@ onUnmounted(() => {
 <template>
 <v-container class="container pb-8">
   <v-switch v-model="state.allPlanes"
-            label="Use all HKL planes" class="ml-1 mr-2 mb-4 mt-4" />
+            label="Use all HKL planes" class="ml-1 mb-4 mt-4" />
   <debounced-slider v-slot="{value}" v-model="state.maxPlanesCount" :min="10" :max="729" :step="1"
-                      class="ml-1 mb-4 mt-1" :disabled="state.allPlanes">
+                      class="ml-1 mb-2" :disabled="state.allPlanes">
     <v-label :text="`Max HKL planes to use (${value.toFixed(0)})`" class="no-select" />
   </debounced-slider>
+  <v-switch v-model="state.processParallelism" label="Multi process parallelism" class="ml-1 mb-4"/>
 
   <block-button label="Compute crystal shape"
                 :loading="computingShapeRunning"
