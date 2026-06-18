@@ -131,26 +131,26 @@ const basisVectorArrow = (basis: Vector3, origin: Vector3, size: number,
 const renderBasisVectors = (center: [x: number, y: number, z: number],
                             radius: number, basis: number[]): void => {
 
-    // Clear basis vectors
+    // Clear the basis vectors
     sv.clearGroup(nameBV);
 
-    const origin = new Vector3(center[0]-radius, center[1]-radius, center[2]-radius);
+    const origin = new Vector3(center[0], center[1], center[2]);
 
     const basisA = new Vector3(basis[0], basis[1], basis[2]);
     const basisB = new Vector3(basis[3], basis[4], basis[5]);
     const basisC = new Vector3(basis[6], basis[7], basis[8]);
 
-    // Find the size of the arrows related to the longest axis
+    // Find the size of the arrows related to the shorter axis
     const la = basisA.length();
     const lb = basisB.length();
     const lc = basisC.length();
-    const lmax = Math.max(la, lb, lc);
-    const scale = radius/(3*lmax);
-    const width = scale/4;
+    const lmin = Math.min(la, lb, lc);
+    const scale = 1.6*radius/lmin;
+    const width = scale/8;
 
-	basisA.multiplyScalar(la*scale);
-	basisB.multiplyScalar(lb*scale);
-	basisC.multiplyScalar(lc*scale);
+	basisA.multiplyScalar(scale);
+	basisB.multiplyScalar(scale);
+	basisC.multiplyScalar(scale);
 
 	basisVectorArrow(basisA, origin, width, "#FF0000", "a", basisVectorGroup);
 	basisVectorArrow(basisB, origin, width, "#79FF00", "b", basisVectorGroup);
@@ -199,15 +199,16 @@ const renderShape = (vertices: number[], index: number[], colors: number[]): num
     geometry.computeBoundingSphere();
     const bs = geometry.boundingSphere;
     if(bs) {
+
         cameraCenter = [
             bs.center.x,
             bs.center.y,
             bs.center.z
         ];
         cameraPosition = [
-            cameraCenter[0]+2*bs.radius,
-            cameraCenter[1]+2*bs.radius,
-            cameraCenter[2]+2*bs.radius
+            cameraCenter[0]+4*bs.radius,
+            cameraCenter[1]+4*bs.radius,
+            cameraCenter[2]+4*bs.radius
         ];
         cameraZoom = 8/bs.radius;
     }
