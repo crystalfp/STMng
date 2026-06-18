@@ -70,7 +70,6 @@ const copyToClipboard = async (): Promise<void> => {
 
     // Copy the text inside the text field
     await navigator.clipboard.writeText(copyText.value.value);
-    console.log("done");
 };
 
 </script>
