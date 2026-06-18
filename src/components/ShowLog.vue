@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {ref} from "vue";
+import {ref, useTemplateRef} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {requestData, closeWindow, clearLog} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
@@ -56,6 +56,23 @@ const confirmDeletion = (): void => {
     text.value = "";
 };
 
+const copyText = useTemplateRef<HTMLTextAreaElement>("txt");
+
+/**
+ * Copy the content of the application log to the clipboard
+ */
+const copyToClipboard = async (): Promise<void> => {
+
+    if(!copyText.value) return;
+
+    // Select the text field
+    copyText.value.select();
+
+    // Copy the text inside the text field
+    await navigator.clipboard.writeText(copyText.value.value);
+    console.log("done");
+};
+
 </script>
 
 
@@ -63,11 +80,12 @@ const confirmDeletion = (): void => {
 <v-app :theme>
   <v-row class="log-box">
     <v-container class="log-text-container">
-      <v-textarea :model-value="text" readonly auto-grow hide-details
+      <v-textarea ref="txt" :model-value="text" readonly auto-grow hide-details
                   variant="underlined" flat width="100%" class="pl-2" />
     </v-container>
     <v-container class="button-strip">
       <v-btn @click="showConfirm=true">Wipe log</v-btn>
+      <v-btn :disabled="!copyText" @click="copyToClipboard">Copy to clipboard</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
   </v-row>

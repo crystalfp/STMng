@@ -69,7 +69,8 @@ export default defineConfig([
             defineProps: "readonly",
             defineEmits: "readonly",
             defineModel: "readonly",
-            withDefaults: "readonly"
+            withDefaults: "readonly",
+            navigator: "readonly"
         },
         parserOptions: {
             parser: tsParser,
