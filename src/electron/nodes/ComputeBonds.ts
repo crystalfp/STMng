@@ -767,7 +767,7 @@ export class ComputeBonds extends NodeCore {
 	// > Load/save status
 	saveStatus(): string {
 
-		const pd = this.perPairData.some((entry) => entry.scale !== 1.1) ? JSON.stringify(this.perPairData) : "[]";
+		const pd = this.perPairData.some((entry) => entry.scale < 1.0999 || entry.scale > 1.101) ? JSON.stringify(this.perPairData) : "[]";
         const statusToSave = {
 			minBondingDistance: this.minBondingDistance,
 			maxBondingDistance: this.maxBondingDistance,

@@ -141,7 +141,7 @@ export class ParseQuotedLine {
 	split(line: string): string[] {
 
 		const l2 = line.replaceAll(String.raw`\'`, "⸳").replaceAll(String.raw`\"`, "†");
-		// eslint-disable-next-line sonarjs/slow-regex
+		// eslint-disable-next-line sonarjs/super-linear-regex
 		const l3 = l2.replaceAll(/(?:^|\s+)["']/gu, " |").replaceAll(/["'](?:\s+|$)/gu, "| ");
 		const l4 = l3.replaceAll("⸳", "'").replaceAll("†", '"');
 
