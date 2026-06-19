@@ -40,7 +40,7 @@ export class CrystalShape extends NodeCore {
 	// Mirror of the UI reactive state
 	private readonly state = {
 		allPlanes: false,
-		maxPlanesCount: 100,
+		maxPlanesCount: 80,
     	processParallelism: false
 	};
 
@@ -85,7 +85,7 @@ export class CrystalShape extends NodeCore {
 	private initializeState(params: CtrlParams): void {
 
         this.state.allPlanes = params.allPlanes as boolean ?? false;
-        this.state.maxPlanesCount = params.maxPlanesCount as number ?? 100;
+        this.state.maxPlanesCount = params.maxPlanesCount as number ?? 80;
 		this.state.processParallelism = params.processParallelism as boolean ?? false;
 	}
 

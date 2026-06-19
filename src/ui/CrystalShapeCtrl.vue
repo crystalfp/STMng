@@ -33,7 +33,7 @@ import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 // > Persistent state that is saved in the project file
 const state = reactive({
     allPlanes: false,
-    maxPlanesCount: 100,
+    maxPlanesCount: 80,
     processParallelism: false
 });
 
@@ -56,7 +56,7 @@ resetNodeAlert();
 askNode(id, "init")
     .then((params) => {
         state.allPlanes = params.allPlanes as boolean ?? false;
-        state.maxPlanesCount = params.maxPlanesCount as number ?? 100;
+        state.maxPlanesCount = params.maxPlanesCount as number ?? 80;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
