@@ -348,6 +348,8 @@ export default defineConfig([
 
         // > ******************* unicorn ***********************
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],
+        "unicorn/no-console-spaces": "warn",
+        "unicorn/prefer-string-replace-all": "warn",
         "unicorn/prevent-abbreviations": ["warn", {
                 replacements: {
                     len: false,
