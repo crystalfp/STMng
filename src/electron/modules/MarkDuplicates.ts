@@ -125,9 +125,7 @@ const checkCorrespondence = (li: boolean[], lj: boolean[], ld: boolean[]): boole
 	if(li[1] && li[2] && lj[1] && lj[2] && ld[0]) return true;
 
 	// On the facies
-	if(li[0] && lj[0] && ld[1] && ld[2]) return true;
-	if(li[1] && lj[1] && ld[0] && ld[2]) return true;
-	if(li[2] && lj[2] && ld[0] && ld[1]) return true;
-
-	return false;
+	return (li[0] && lj[0] && ld[1] && ld[2]) ||
+		   (li[1] && lj[1] && ld[0] && ld[2]) ||
+		   (li[2] && lj[2] && ld[0] && ld[1]);
 };

@@ -412,12 +412,10 @@ export const hasNoUnitCell = (basis: BasisType): boolean =>
  * @param basis - The basis matrix to test
  * @returns True if the basis has non-zero vectors defined
  */
-export const hasUnitCell = (basis: BasisType): boolean => {
-	if(basis[0] === 0 && basis[1] === 0 && basis[2] === 0) return false;
-	if(basis[3] === 0 && basis[4] === 0 && basis[5] === 0) return false;
-	if(basis[6] === 0 && basis[7] === 0 && basis[8] === 0) return false;
-	return true;
-};
+export const hasUnitCell = (basis: BasisType): boolean =>
+	(basis[0] !== 0 || basis[1] !== 0 || basis[2] !== 0) &&
+	(basis[3] !== 0 || basis[4] !== 0 || basis[5] !== 0) &&
+	(basis[6] !== 0 || basis[7] !== 0 || basis[8] !== 0);
 
 /**
  * Get the volume value range

@@ -22,7 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-/* eslint-disable unicorn/prevent-abbreviations */
 import {ref, toRaw, watch, reactive, computed, onUnmounted} from "vue";
 import {storeToRefs} from "pinia";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
