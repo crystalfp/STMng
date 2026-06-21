@@ -160,6 +160,7 @@ export class CrystalShape extends NodeCore {
 										);
 
 				if(planes.length === 0) {
+					this.crystalResults = undefined;
 					throw Error("No planes computed");
 				}
 
@@ -171,11 +172,15 @@ export class CrystalShape extends NodeCore {
 				if(!this.crystalResults ||
 				   this.crystalResults.vertices.length === 0 ||
 				   this.crystalResults.colors.length === 0) {
+
+					this.crystalResults = undefined;
+
 					throw Error("No result from building shape geometry");
 				}
 				sendToClient(this.id, "step", {message: ""});
 			}
 			catch(error) {
+				this.crystalResults = undefined;
 				sendToClient(this.id, "step", {message: ""});
 				return {error: (error as Error).message};
 			}

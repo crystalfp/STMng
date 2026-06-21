@@ -75,6 +75,7 @@ receiveFromNode(id, "step", (params) => {
  */
 const computeShape = (): void => {
 
+    resetNodeAlert();
     computingShapeRunning.value = true;
     askNode(id, "compute")
     .then((response) => {
