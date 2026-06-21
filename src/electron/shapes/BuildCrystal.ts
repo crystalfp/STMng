@@ -22,7 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-/* eslint-disable unicorn/prevent-abbreviations, unicorn/prefer-includes-over-repeated-comparisons */
 import Delaunator from "delaunator";
 import type {BasisType} from "@/types";
 import type {PlaneType} from "./ComputeCrystalPlanes";

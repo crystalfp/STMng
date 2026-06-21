@@ -25,7 +25,7 @@
 import {ref} from "vue";
 import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
         Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
-        BufferGeometry, AmbientLight, FrontSide} from "three";
+        BufferGeometry, AmbientLight, FrontSide, DirectionalLight} from "three";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import {SimpleViewer} from "@/services/SimpleViewer";
@@ -56,6 +56,11 @@ const sv = new SimpleViewer(".shape-viewer", false, (scene) => {
         const light = object as AmbientLight;
         light.intensity = 1;
     });
+
+    // Add another light
+    const light = new DirectionalLight("white", 3);
+    light.position.set(0.5, -0.5, 0.5);
+    scene.add(light);
 });
 
 /** Camera position for centering */

@@ -350,7 +350,7 @@ export default defineConfig([
         "unicorn/numeric-separators-style": ["off", {number: {onlyIfContainsSeparator: true, minimumDigits: 3}}],
         "unicorn/no-console-spaces": "warn",
         "unicorn/prefer-string-replace-all": "warn",
-        "unicorn/prevent-abbreviations": ["warn", {
+        "unicorn/name-replacements": ["warn", {
                 replacements: {
                     len: false,
                     params: false,
@@ -369,7 +369,10 @@ export default defineConfig([
                     dist: false,
                     dev: false,
                     temp: false,
-                    e: false
+                    e: false,
+                    proto: false,
+                    msg: false,
+                    var: false
                 },
                 checkFilenames: false
             }
@@ -407,6 +410,7 @@ export default defineConfig([
         "unicorn/no-top-level-assignment-in-function": "off",
         "unicorn/no-non-function-verb-prefix": "off",
         "unicorn/no-unreadable-for-of-expression": "off",
+        "unicorn/prefer-continue": "off",
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],

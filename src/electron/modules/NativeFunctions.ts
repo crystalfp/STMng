@@ -91,6 +91,10 @@ interface MDSOutput {
 	points3D: number[][];
 }
 
+interface SeitzRotationsOutput {
+	matrices: number[];
+	status: string;
+}
 /**
  * Types of the native module exported functions
  * @notExported
@@ -111,6 +115,8 @@ interface NativeModule {
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
 
 	MDS: (distancesVector: Float64Array, pointsCount: number) => MDS2D3DOutput;
+
+	getSeitzRotations: (spaceGroup: string) => SeitzRotationsOutput;
 }
 
 import {createRequire} from "node:module";
@@ -201,4 +207,15 @@ export const MDS = (distancesVector: number[],
 	}
 
 	return {points2D: mappedPoints2D, points3D: mappedPoints3D};
+};
+
+/**
+ * Get the rotation matrices for a given space group
+ *
+ * @param spaceGroup - The space group string
+ * @returns The list of matrices and the status (on error contains the error string)
+ */
+export const getSeitzRotations = (spaceGroup: string): SeitzRotationsOutput => {
+
+	return addon.getSeitzRotations(spaceGroup);
 };

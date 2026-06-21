@@ -2,6 +2,7 @@
 #include <string>
 #include "FindAndApplySymmetries.h"
 #include "ConvertSpaceGroupNumber.h"
+#include "GetSeitzRotations.h"
 #include "MDS.h"
 
 using namespace std;
@@ -299,12 +300,42 @@ Napi::Value MDS(const Napi::CallbackInfo& info) {
 	return obj;
 }
 
+Napi::Value getSeitzRotations(const Napi::CallbackInfo& info) {
+
+	Napi::Env env = info.Env();
+
+	// Check arguments
+	if(info.Length() != 1) {
+    	Napi::TypeError::New(env, "Expecting exactly one argument").ThrowAsJavaScriptException();
+		return info.Env().Undefined();
+	}
+
+	// Argument 1: string
+	std::string spaceGroup = static_cast<std::string>(info[0].As<Napi::String>());
+
+	std::vector<int32_t> m;
+
+	std::string status = doGetSeitzRotations(spaceGroup, m);
+
+	// Return the data
+	Napi::Object obj = Napi::Object::New(env);
+	int numElements = m.size();
+	Napi::Int32Array matrices = Napi::Int32Array::New(env, numElements);
+	for(size_t i=0; i < numElements; ++i) matrices[i] = m[i];
+	obj.Set("matrices", matrices);
+	obj.Set("status", status);
+
+	return obj;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
 	exports.Set(Napi::String::New(env, "findAndApplySymmetries"),
 				Napi::Function::New(env, findAndApplySymmetries));
 	exports.Set(Napi::String::New(env, "convertSpaceGroupNumber"),
 				Napi::Function::New(env, convertSpaceGroupNumber));
+	exports.Set(Napi::String::New(env, "getSeitzRotations"),
+				Napi::Function::New(env, getSeitzRotations));
 	exports.Set(Napi::String::New(env, "MDS"),
 				Napi::Function::New(env, MDS));
 	return exports;

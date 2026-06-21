@@ -29,6 +29,7 @@ import log from "electron-log";
 import {getAtomData} from "../modules/AtomData";
 import {cartesianToFractionalCoordinates} from "../modules/Helpers";
 import {publicDirPath} from "../modules/GetPublicPath";
+import {EquivalentPlanes} from "./EquivalentPlanes";
 import type {Structure} from "@/types";
 import type {WorkerResults} from "./WorkerShape";
 
@@ -161,6 +162,7 @@ const connectedComponents = (matrix: number[][]): {count: number; labels: number
 		const queue = [i];
 		labels[i] = count;
 		while(queue.length > 0) {
+			// eslint-disable-next-line unicorn/no-array-front-mutation
 			const node = queue.shift()!;
 			for(let j = 0; j < n; j++) {
 				if(matrix[node][j] !== 0 && labels[j] === -1) {
@@ -258,23 +260,20 @@ const determineEnergiesNeeded = (cell: number[][],
 	throw Error("Can not make connected");
 };
 
-const checkSign = (h: number, k: number, l: number): boolean => {
-
-    if(h > 0 && k > 0 && l > 0) return true;
-    if(h < 0 && k > 0 && l > 0) return true;
-    if(h > 0 && k < 0 && l > 0) return true;
-    if(h > 0 && k > 0 && l < 0) return true;
-    if(h === 0 && k > 0 && l > 0) return true;
-    if(h === 0 && k < 0 && l > 0) return true;
-    if(h > 0 && k === 0 && l > 0) return true;
-    if(h > 0 && k === 0 && l < 0) return true;
-    if(h > 0 && k > 0 && l === 0) return true;
-    if(h < 0 && k > 0 && l === 0) return true;
-    if(h > 0 && k === 0 && l === 0) return true;
-    if(h === 0 && k > 0 && l === 0) return true;
-    if(h === 0 && k === 0 && l > 0) return true;
-    return false;
-};
+const checkSign = (h: number, k: number, l: number): boolean =>
+	(h > 0 && k > 0 && l > 0) ||
+	(h < 0 && k > 0 && l > 0) ||
+	(h > 0 && k < 0 && l > 0) ||
+	(h > 0 && k > 0 && l < 0) ||
+	(h === 0 && k > 0 && l > 0) ||
+	(h === 0 && k < 0 && l > 0) ||
+	(h > 0 && k === 0 && l > 0) ||
+	(h > 0 && k === 0 && l < 0) ||
+	(h > 0 && k > 0 && l === 0) ||
+	(h < 0 && k > 0 && l === 0) ||
+	(h > 0 && k === 0 && l === 0) ||
+	(h === 0 && k > 0 && l === 0) ||
+	(h === 0 && k === 0 && l > 0);
 
 const isSimple = (h: number, k: number, l: number): boolean => {
 
@@ -289,6 +288,7 @@ const isSimple = (h: number, k: number, l: number): boolean => {
     return true;
 };
 
+// > Entry point
 /** Type of one plane computed */
 export type PlaneType = [h: number, k: number, l: number, energy: number];
 
@@ -303,7 +303,7 @@ export const computeCrystalPlanes = async (structure: Structure,
 										   processParallelism: boolean): Promise<PlaneType[]> => {
 
 	const {atoms, crystal} = structure;
-	const {basis} = crystal;
+	const {basis, spaceGroup} = crystal;
 
 	const fractionalCoordinates = cartesianToFractionalCoordinates(structure);
 
@@ -394,6 +394,9 @@ export const computeCrystalPlanes = async (structure: Structure,
 		}
 	}
 
+	// Initialize the search for equivalent planes
+	const ep = new EquivalentPlanes(spaceGroup);
+ep.dump();
 	// For each combination of the hkl indices compute the plane energy
 	for(let mH = -4; mH <= 4; mH++) {
 		for(let mK = -4; mK <= 4; mK++) {
@@ -403,6 +406,8 @@ export const computeCrystalPlanes = async (structure: Structure,
 
 				++planeIndex;
 				planes[planeIndex] = [mH, mK, mL, Number.POSITIVE_INFINITY];
+
+				if(ep.addCandidatePlane(mH, mK, mL)) continue;
 
 				// Send the data to the worker
 				const result = pool.exec("planeEnergy", [
@@ -442,6 +447,9 @@ export const computeCrystalPlanes = async (structure: Structure,
 	for(const result of results) {
 		planes[result.index][3] = result.energy;
 	}
+
+	// Fill the equivalent planes
+	ep.fillEquivalent(planes);
 
 	// Sort planes by increasing energy
 	planes.sort((a, b) => a[3] - b[3]);

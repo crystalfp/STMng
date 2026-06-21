@@ -14,6 +14,7 @@
 				"src/cpp/sginfo/sgsi.c",
 				"src/cpp/FindAndApplySymmetries.cpp",
 				"src/cpp/ConvertSpaceGroupNumber.cpp",
+				"src/cpp/GetSeitzRotations.cpp",
 				"src/cpp/MDS.cpp"
 			],
 			"include_dirs": [

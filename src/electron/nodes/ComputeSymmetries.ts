@@ -80,7 +80,7 @@ const Y_ANY = 0x002;
 const Z_ANY = 0x004;
 
 /** Space groups that are not symmetries */
-const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1"]);
+const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1", "x,y,z", "x, y, z"]);
 
 /** Tolerance to check for coincident atoms on output is 2/3 of minimum rCov */
 const TOL = 0.21;
