@@ -22,11 +22,8 @@
     "typedoc-plugin-missing-exports",
     "postcss-scss",
     "@rollup/plugin-node-resolve",
-    "@rollup/plugin-terser",
-    "@rollup/plugin-typescript",
     "@oxlint/migrate",
     "@typescript/native-preview",
-    "eslint-plugin-eslint-comments",
     "@golar/vue",
     "rolldown"
   ],

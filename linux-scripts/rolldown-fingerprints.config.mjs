@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import terser from "@rollup/plugin-terser";
-import typescript from "@rollup/plugin-typescript";
 import {defineConfig} from "rolldown";
 
 export default defineConfig({
@@ -26,36 +24,12 @@ export default defineConfig({
 		file: "public/Worker.js",
 		format: "cjs",
 		sourcemap: false,
+		minify: true
 	},
-	plugins: [
-		terser(),
-		typescript({
-			include: [
-				"src/electron/fingerprint/OganovValleFingerprint.ts",
-				"src/electron/fingerprint/DotMatrixFingerprint.ts",
-				"src/electron/fingerprint/Helpers.ts",
-				"src/electron/fingerprint/UpperTriangularMatrix.ts",
-				"src/electron/fingerprint/Slab.ts",
-				"src/electron/fingerprint/Smooth.ts",
-				"src/electron/fingerprint/Worker.ts",
-				"src/electron/modules/AtomData.ts",
-				"src/electron/modules/Helpers.ts",
-				"src/services/SharedConstants.ts",
-				"src/types/index.ts"
-			],
-			tsconfig: "tsconfig.json",
-			outputToFilesystem: true,
-			sourceMap: false,
-			compilerOptions: {
-				target: "esnext",
-			    paths: {
-      				"@/*": ["./src/*"]
-    			},
-				allowSyntheticDefaultImports: true,
-				resolveJsonModule: true,
-				declarationDir: "public",
-				allowImportingTsExtensions: false
-			},
-		}),
-	]
+	resolve: {
+		alias: {
+			"@": "../../"
+		}
+	}
+
 });

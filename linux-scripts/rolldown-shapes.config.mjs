@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import terser from "@rollup/plugin-terser";
-import typescript from "@rollup/plugin-typescript";
 import {defineConfig} from "rolldown";
 
 export default defineConfig({
@@ -25,29 +23,12 @@ export default defineConfig({
 	output: {
 		file: "public/WorkerShape.js",
 		format: "cjs",
-		sourcemap: false
+		sourcemap: false,
+		minify: true
 	},
-	plugins: [
-		terser(),
-		typescript({
-			include: [
-				"src/electron/shapes/ComputePlaneEnergy.ts",
-				"src/electron/shapes/Helpers.ts",
-				"src/electron/shapes/WorkerShape.ts",
-			],
-			tsconfig: "tsconfig.json",
-			outputToFilesystem: true,
-			sourceMap: false,
-			compilerOptions: {
-				target: "esnext",
-				paths: {
-					"@/*": ["./src/*"]
-				},
-				allowSyntheticDefaultImports: true,
-				resolveJsonModule: true,
-				declarationDir: "public",
-				allowImportingTsExtensions: false
-			}
-		})
-	]
+	resolve: {
+		alias: {
+			"@": "../../"
+		}
+	}
 });
