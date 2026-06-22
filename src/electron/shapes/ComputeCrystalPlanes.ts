@@ -396,7 +396,7 @@ export const computeCrystalPlanes = async (structure: Structure,
 
 	// Initialize the search for equivalent planes
 	const ep = new EquivalentPlanes(spaceGroup);
-ep.dump();
+
 	// For each combination of the hkl indices compute the plane energy
 	for(let mH = -4; mH <= 4; mH++) {
 		for(let mK = -4; mK <= 4; mK++) {

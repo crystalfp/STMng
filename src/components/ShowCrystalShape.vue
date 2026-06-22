@@ -211,9 +211,9 @@ const renderShape = (vertices: number[], index: number[], colors: number[]): num
             bs.center.z
         ];
         cameraPosition = [
-            cameraCenter[0]+4*bs.radius,
-            cameraCenter[1]+4*bs.radius,
-            cameraCenter[2]+4*bs.radius
+            cameraCenter[0]+6*bs.radius,
+            cameraCenter[1]+6*bs.radius,
+            cameraCenter[2]+6*bs.radius
         ];
         cameraZoom = 8/bs.radius;
     }

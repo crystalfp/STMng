@@ -193,6 +193,7 @@ export interface CrystalGeometry {
     index?: number[];
 }
 
+// > Main entry point
 /**
  * From the planes compute the crystal shape
  *
@@ -214,7 +215,7 @@ export const buildCrystalShape = (
 
 	// Limit the number of planes
 	const nPlanes = planes.length;
-	if(maxPlanes > 0 && nPlanes > maxPlanes+3) {
+	if(maxPlanes > 0 && nPlanes >= maxPlanes) {
 
 		let e100;
 		let e010;
@@ -230,7 +231,7 @@ export const buildCrystalShape = (
 			throw Error("Missing planes 100 or 010 or 001");
 		}
 
-		for(let i=0; i < maxPlanes; ++i) {
+		for(let i=0; i < maxPlanes-3; ++i) {
 			planeMiller.push(planes[i].slice(0, 3));
 			planeEnergy.push(planes[i][3]);
 		}

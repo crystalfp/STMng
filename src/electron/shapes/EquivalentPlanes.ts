@@ -23,7 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import log from "electron-log";
-import {multiply} from "mathjs";
+import {multiply, inv} from "mathjs";
 import {getSeitzRotations} from "../modules/NativeFunctions";
 import type {PlaneType} from "./ComputeCrystalPlanes";
 
@@ -31,15 +31,25 @@ import type {PlaneType} from "./ComputeCrystalPlanes";
 const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1",
 										"x,y,z", "x, y, z"]);
 
+/**
+ * Manage equivalent hkl planes under a given symmetry
+ */
 export class EquivalentPlanes {
 
 	private hasSymmetry = true;
 	private mR: number[][][] = [];
-	private readonly planes = new Map<number, number>();
+	private readonly equivalents = new Map<number, Set<number>>();
+	private readonly computedFrom = new Map<number, number>();
 
-	constructor(spaceGroup: string) {
+	/**
+	 * Build the equivalent planes
+	 *
+	 * @param spaceGroup - Symmetry for which the equivalent planes should be computed
+	 * @param disable - Disable computation of equivalent planes
+	 */
+	constructor(spaceGroup: string, disable=false) {
 
-		if(noSymmetriesSpaceGroup.has(spaceGroup)) {
+		if(disable || noSymmetriesSpaceGroup.has(spaceGroup)) {
 			this.hasSymmetry = false;
 			return;
 		}
@@ -62,19 +72,14 @@ export class EquivalentPlanes {
 						this.mR[i][c][r] = matrices[idx]; // Transposed
 					}
 				}
-				const m = this.mR[i];
-				console.log("----");
-				console.log(`[${m[0][0]}, ${m[0][1]}, ${m[0][2]}`);
-				console.log(` ${m[1][0]}, ${m[1][1]}, ${m[1][2]}`);
-				console.log(` ${m[2][0]}, ${m[2][1]}, ${m[2][2]}]`);
-				// const t = transpose(this.mR[i]);
-				// // this.mR[i] = transpose(this.mR[i]);
-				// // this.mR[i] = transpose(inv(this.mR[i]));
-				// console.log(`[${t[0][0]}, ${t[0][1]}, ${t[0][2]}`);
-				// console.log(` ${t[1][0]}, ${t[1][1]}, ${t[1][2]}`);
-				// console.log(` ${t[1][0]}, ${t[1][1]}, ${t[1][2]}]`);
-				// this.mR[i] = t;
+
+				// The equivalent hkl planes are:
+				// h'k'l' = transpose(inverse(rotation)) hkl
+				this.mR[i] = inv(this.mR[i]);
 			}
+
+			// List equivalent planes
+			this.computeEquivalents();
 		}
 		else {
 			log.error("Error finding symmetry rotation matrices:", status);
@@ -95,102 +100,99 @@ export class EquivalentPlanes {
 		// If no symmetries all planes should be computed
 		if(!this.hasSymmetry) return false;
 
-		const v = [mH, mK, mL];
-		const hash1 = this.hashVector(v);
+		const hash = this.hash(mH, mK, mL);
 
-		// Check if the new plane is already here
-		// if(this.planes.has(hash1))
-		for(const m of this.mR) {
-			const w = multiply(m, v);
+		// Check if the candidate plane is already here
+		if(this.computedFrom.has(hash)) return true;
 
-			const hash2 = this.hashVector(w);
-			if(this.planes.has(hash2)) {
-				if(this.planes.get(hash2)! !== -1) continue;
-				this.planes.set(hash1, hash2);
-				return true;
-			}
+		// Mark all equivalents as deriving from this and compute it
+		for(const e of this.equivalents.get(hash)!) {
+			this.computedFrom.set(e, hash);
 		}
-
-		this.planes.set(hash1, -1);
 		return false;
 	}
 
-	private hashVector(v: number[]): number {
-		return (v[0]+4)+10*(v[1]+4)+100*(v[2]+4);
+	/**
+	 * Compute the hash for given h, k, l values
+	 *
+	 * @param h - First hkl index
+	 * @param k - Second hkl index
+	 * @param l - Third hkl index
+	 * @returns A single number encoding the given vector
+	 */
+	private hash(h: number, k: number, l: number): number {
+		return (h+4)+10*(k+4)+100*(l+4);
 	}
 
-	private deHash(hash: number): [number, number, number] {
-		const hh = hash%10;
-		const h = hh-4;
-		const kk = ((hash-hh)/10)%10;
-		const k = kk-4;
-		const l = ((hash-hh-kk*10)/100)%10-4;
-		return [h, k, l];
+	/**
+	 * Compute the hash for a given (h, k, l) vector
+	 *
+	 * @param v - Vector of h, k, l values
+	 * @returns A single number encoding the given vector
+	 */
+	private hashVector([h, k, l]: number[]): number {
+		return this.hash(h, k, l);
 	}
 
-	test(): void {
+	/**
+	 * Compute the equivalent planes
+	 */
+	private computeEquivalents(): void {
+
 		for(let mH = -4; mH <= 4; mH++) {
 			for(let mK = -4; mK <= 4; mK++) {
 				for(let mL = -4; mL <= 4; mL++) {
-					this.addCandidatePlane(mH, mK, mL);
-					// const h = this.hash(mH, mK, mL);
-					// const dh = this.deHash(h);
-					// console.log(mH, mK, mL, "->", dh);
-					// const mark = this.addCandidatePlane(mH, mK, mL) ? "*" : " ";
-					// console.log(mark, mH.toString().padStart(2), mK.toString().padStart(2), mL.toString().padStart(2));
-				}
-			}
-		}
 
-		for(const e of this.planes) {
-			const o = this.deHash(e[0]);
-			if(e[1] === -1) {
-				console.log(o[0].toString().padStart(2), o[1].toString().padStart(2), o[2].toString().padStart(2));
-			}
-			else {
-				const w = this.deHash(e[1]);
-				console.log(o[0].toString().padStart(2), o[1].toString().padStart(2), o[2].toString().padStart(2), "->", w[0].toString().padStart(2), w[1].toString().padStart(2), w[2].toString().padStart(2));
+					const v = [mH, mK, mL];
+					const hash = this.hashVector(v);
+
+					let all;
+					if(this.equivalents.has(hash)) {
+						all = this.equivalents.get(hash)!;
+					}
+					else {
+						all = new Set<number>([hash]);
+						this.equivalents.set(hash, all);
+					}
+
+					for(const m of this.mR) {
+						const w = multiply(m, v);
+						all.add(this.hashVector(w));
+					}
+				}
 			}
 		}
 	}
 
-	dump(): void {
-
-		console.log("=== Rotation matrices ===");
-		const nm = this.mR.length;
-		for(let i=0; i < nm; ++i) {
-			let l = "[";
-			for(let r=0; r < 3; ++r) {
-				let s = r===0 ? "" : " ";
-				for(let c=0; c < 3; ++c) {
-
-					s += this.mR[i][r][c].toFixed(0).padStart(c>0 ? 3 : 2);
-				}
-				l += s + (r===2 ? "]" : "\n");
-			}
-			console.log(l);
-		}
-	}
-
+	/**
+	 * Fill the missing energies for the equivalent planes
+	 *
+	 * @param pl - Computed planes
+	 */
 	fillEquivalent(pl: PlaneType[]): void {
 
 		if(!this.hasSymmetry) return;
 
+		// Map hash to position in planes vector
 		const map = new Map<number, number>();
 		const n = pl.length;
 		for(let i=0; i < n; ++i) map.set(this.hashVector(pl[i]), i);
 
-		let neq = 0;
 		for(let i=0; i < n; ++i) {
 			if(pl[i][3] !== Number.POSITIVE_INFINITY) continue;
-			const equivalent = this.planes.get(this.hashVector(pl[i]));
-			if(equivalent === undefined) throw Error("Equivalent plane not found");
-			const energy = map.get(equivalent);
-			if(energy === undefined) throw Error("Equivalent plane energy not found");
-			pl[i][3] = energy;
-			++neq;
-		}
 
-		console.log("Total planes:", n, "of which equivalent:", neq);
+			const hash = this.hashVector(pl[i]);
+
+			const hash2 = this.computedFrom.get(hash);
+			if(hash2 === undefined) {
+				throw Error(`Entry ${pl[i][0]}, ${pl[i][1]}, ${pl[i][2]} not found`);
+			}
+			const idx = map.get(hash2);
+			if(idx === undefined) {
+				throw Error(`Entry ${pl[i][0]}, ${pl[i][1]}, ${pl[i][2]} not found in planes`);
+			}
+
+			pl[i][3] = pl[idx][3];
+		}
 	}
 }

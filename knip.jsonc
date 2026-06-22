@@ -1,12 +1,13 @@
 {
-  "$schema": "file:///C:/Users/mvalle/AppData/Roaming/npm/node_modules/knip/schema-jsonc.json",
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
   "entry": [
     "src/electron/main.ts",
     "src/electron/preload.ts",
     "src/components/*.vue",
     "src/ui/*.vue",
     "src/router/index.ts",
-    "src/electron/fingerprint/Worker.ts"
+    "src/electron/fingerprint/Worker.ts",
+    "src/electron/shapes/WorkerShape.ts"
   ],
   "project": ["src/**/*.{js,ts,vue}"],
   "ignoreBinaries": [
@@ -20,6 +21,7 @@
     "typedoc",
     "typedoc-plugin-vue",
     "typedoc-plugin-missing-exports",
+    "eslint-plugin-eslint-comments",
     "postcss-scss",
     "@rollup/plugin-node-resolve",
     "@oxlint/migrate",
@@ -27,7 +29,5 @@
     "@golar/vue",
     "rolldown"
   ],
-  "oxlint": true,
-  "rollup": true,
   "tags": ["-knipIgnore"]
 }
