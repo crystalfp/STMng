@@ -260,6 +260,14 @@ const determineEnergiesNeeded = (cell: number[][],
 	throw Error("Can not make connected");
 };
 
+/**
+ * Check plane sign
+ *
+ * @param h - First Miller index of the new plane
+ * @param k - Second Miller index of the new plane
+ * @param l - Third Miller index of the new plane
+ * @returns True if the signs are correct
+ */
 const checkSign = (h: number, k: number, l: number): boolean =>
 	(h > 0 && k > 0 && l > 0) ||
 	(h < 0 && k > 0 && l > 0) ||

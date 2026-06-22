@@ -178,7 +178,9 @@ export class EquivalentPlanes {
 		const n = pl.length;
 		for(let i=0; i < n; ++i) map.set(this.hashVector(pl[i]), i);
 
+		let neq = 0;
 		for(let i=0; i < n; ++i) {
+
 			if(pl[i][3] !== Number.POSITIVE_INFINITY) continue;
 
 			const hash = this.hashVector(pl[i]);
@@ -193,6 +195,9 @@ export class EquivalentPlanes {
 			}
 
 			pl[i][3] = pl[idx][3];
+			++neq;
 		}
+
+		log.info("On a total of", n, "planes there are", neq, "equivalent");
 	}
 }

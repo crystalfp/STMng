@@ -91,10 +91,17 @@ interface MDSOutput {
 	points3D: number[][];
 }
 
+/**
+ * List of flattened rotation matrices from the symmetry
+ * @notExported
+ */
 interface SeitzRotationsOutput {
+	/** List of flattened 3x3 rotation matrices */
 	matrices: number[];
+	/** Status of the computation: empty on success otherwise the error message */
 	status: string;
 }
+
 /**
  * Types of the native module exported functions
  * @notExported

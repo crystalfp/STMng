@@ -25,8 +25,6 @@
 const RTOL = 1e-5;
 const ATOL = 1e-8;
 
-// --- helpers ---
-
 export const argsortByAbsRow = (row: number[]): number[] => {
   return row
             .map((v, i) => [Math.abs(v), i] as [number, number])
@@ -42,10 +40,22 @@ export const cross3 = (a: number[], b: number[]): number[] => {
     ];
 };
 
+/**
+ * Compute norm
+ *
+ * @param v - Vector
+ * @returns Norm of the vector
+ */
 export const norm = (v: number[]): number => {
     return Math.sqrt(v.reduce((s, x) => s + x * x, 0));
 };
 
+/**
+ * Compute determinant of 3x3 matrix
+ *
+ * @param m - Matrix
+ * @returns Determinant of the matrix
+ */
 export const det3x3 = (m: number[][]): number => {
     return (
         m[0][0] * (m[1][1]*m[2][2] - m[1][2]*m[2][1]) -
@@ -77,6 +87,7 @@ export const dot = (a: number[], b: number[]): number => {
   return a.reduce((sum, v, i) => sum + v * b[i], 0);
 };
 
+/** Dot product of two 3-vectors */
 export const dot3 = (a: number[], b: number[]): number =>
     a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
