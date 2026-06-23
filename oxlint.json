@@ -279,11 +279,9 @@
     "unicorn/switch-case-braces": "off",
     "unicorn/text-encoding-identifier-case": "error",
     "unicorn/throw-new-error": "off",
+    "unicorn/prefer-number-coercion": "off",
     "@typescript-eslint/ban-ts-comment": [
-      "error",
-      {
-        "minimumDescriptionLength": 10
-      }
+      "error", {"minimumDescriptionLength": 10}
     ],
     "no-array-constructor": "error",
     "@typescript-eslint/no-duplicate-enum-values": "error",
@@ -329,10 +327,7 @@
     "@typescript-eslint/require-await": "error",
     "@typescript-eslint/restrict-plus-operands": "error",
     "@typescript-eslint/restrict-template-expressions": [
-      "warn",
-      {
-        "allowNumber": true
-      }
+      "warn", {"allowNumber": true}
     ],
     "@typescript-eslint/unbound-method": "error",
     "@typescript-eslint/adjacent-overload-signatures": "error",
