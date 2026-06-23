@@ -61,7 +61,7 @@ const getNormalsRvalues = (
 							cell: number[][]
 						): [number[][], number[]] => {
 
-	const normals  = getNormals(planeMiller, cell);
+	const normals    = getNormals(planeMiller, cell);
 	const negNormals = normals.map((n) => n.map((v) => -v));
 
 	// vstack(normals, -normals)  →  [2N, 3]
@@ -113,9 +113,8 @@ const concN = (planeNormals: number[][]): number[][][] => {
 };
 
 // --- plane_intersections ---
-const planeIntersections = (
-                                planeNormals: number[][],
-                                planeRvalue: number[]
+const planeIntersections = (planeNormals: number[][],
+                            planeRvalue: number[]
                            ): number[][] => {
 
     // Build all [3,3] normal matrices for strictly-ordered triples
@@ -141,6 +140,7 @@ const planeIntersections = (
             results.push(solve3x3(filteredN[t], filteredRV[t]));
         }
     }
+
     return results;
 };
 
@@ -258,7 +258,7 @@ export const buildCrystalShape = (
 	// Compute normals
 	const [planeNormals, planeRvalue] = getNormalsRvalues(planeMiller, planeEnergy, cell);
 
-	const planeR = planeIntersections(planeNormals, planeRvalue);
+    const planeR = planeIntersections(planeNormals, planeRvalue);
 
     sendMsg("Searching interior polyhedra vertices");
 
@@ -335,14 +335,14 @@ export const buildCrystalShape = (
     let count = 0;
 
     for(const plane of presentPlanes) {
-// console.log("===== plane:", plane);
+
         // Vertices that lie on this plane
         const onPlane: number[] = blng[plane]
                                     .map((flag, vi) => (flag === 1 ? vi : -1))
                                     .filter((vi) => vi !== -1);
-// console.log("ONPLANE:", onPlane);
+
         const vert: number[][] = onPlane.map((vi) => polyhedraR[vi]);
-// console.log("VERT:", vert);
+
         // Project onto the plane's local 2-D coordinate system.
         // Python: vert_flat = delete(dot(vert - vert[0], inv([v1-v0, v2-v0, normal])), col=2)
         // eslint-disable-next-line sonarjs/destructuring-assignment-syntax
@@ -366,33 +366,20 @@ export const buildCrystalShape = (
             flat[idx++] = x;
             flat[idx++] = y;
         }
-// console.log("FLAT:", flat);
+
         const del = new Delaunator(flat as unknown as number[]);
-        // const del = Delaunator.from(flat as unknown as number[]);
-        // const del = Delaunator.from(flat as unknown as ArrayLike<number[]>);
-// console.log("DEL:", del);
+
         // del.triangles is a flat Uint32Array of simplex indices (groups of 3)
         const simplices: [number, number, number][] = [];
         for(let t = 0; t < del.triangles.length; t += 3) {
             simplices.push([del.triangles[t], del.triangles[t + 1], del.triangles[t + 2]]);
         }
-// console.log("SIMPLICES:", simplices);
 
         // Map local simplex indices back to global polyhedra_R indices
         vertices.push(simplices.map(([a, b, c]) => [onPlane[a], onPlane[b], onPlane[c]]));
-// console.log("VERTICES:", simplices.map(([a, b, c]) => [onPlane[a], onPlane[b], onPlane[c]]));
 
         // Color: every simplex on this face gets the same `count`
         colors.push(Array<number>(simplices.length).fill(count));
-
-        // Face area: sum |cross(v2-v0, v1-v0)| over all simplices
-        // Python: simplices_vert = vert[tri.simplices].transpose([1,0,2])
-        //         face_square += |cross(sv[2]-sv[0], sv[1]-sv[0])|.sum()
-        // const area = simplices.reduce((acc, [a, b, c]) => {
-        //     const va = vert[a], vb = vert[b], vc = vert[c];
-        //     return acc + absSum3(cross3(sub3(vc, va), sub3(vb, va)));
-        // }, 0);
-        // faceSquare.push(area);
 
         count++;
     }
@@ -413,9 +400,6 @@ export const buildCrystalShape = (
 
     // triangles == vertices_flat (no mask applied)
     // const triangles: [number, number, number][] = verticesFlat;
-
-    // console.log("TRI: x =", x, "y =", y, "triangles =", verticesFlat);
-    // console.log("TRIANGLES:", verticesFlat);
 
     // ─── Build verts ─────────────────────────────────────────────────────────────
     // Python:

@@ -321,7 +321,7 @@ const explainDetailsLine = (d: DataRecord): void => {
     for(const entry of range.value) {
 
         if(entry.formula === d.formula) {
-            console.log(entry.pl, entry.ph, entry.step);
+
             selectedDetails.value.push({
                 id,
                 pl: entry.pl.toFixed(1),
