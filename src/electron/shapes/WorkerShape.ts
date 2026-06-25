@@ -121,5 +121,4 @@ const worker = (mH: number,
 };
 
 /** Register the worker routine */
-// eslint-disable-next-line unicorn/no-top-level-side-effects
 workerpool.worker({planeEnergy: worker});

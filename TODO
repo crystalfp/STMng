@@ -1,7 +1,6 @@
 Requests:
   ☐ Fix loading of the SPGlib library files on Linux
-  ✔ Publish a web site with the STMng documentation @done(2026-06-01 18:28)
-  ☐ Fix that when changing theme, the points color in scatterplot does not change
+  ☐ Fix that, when changing theme, the points color in scatterplot does not change
   ☐ Experiment with a more efficient way to visualize labels to atoms (use MSDF)
   ☐ Parallelize more the group analysis in variable composition
   ☐ (future) Move to WebGPU renderer from current WebGL renderer
@@ -9,7 +8,6 @@ Requests:
   ☐ Create a tutorial
   ☐ Fixing X-ray diffraction
   ☐ (low priority) Incomplete polyhedra.
-  ☐ Visualization of crystal shapes (based on bond strengths).
   ☐ Extending variable composition analysis to systems with >5 components.
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
@@ -18,13 +16,12 @@ Bugs:
 
 To do:
   ☐ Check error return from main process to client
-  ✔ When out of labs use `v-icon-btn` instead of `v-btn` in reader <https://vuetifyjs.com/en/components/icon-buttons/> @done(2026-06-02 16:44)
   ☐ Miller planes: not offset, but multiple of indices. See: <https://opengeology.org/Mineralogy/11-crystallography/>
   ☐ Billboard also for Bonds lengths labels
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
-  ✔ Put names to tuple elements types @done(2026-06-01 08:13)
+  ☐ Add synchronization between documentation and site.
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
@@ -76,6 +73,10 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ When out of labs use `v-icon-btn` instead of `v-btn` in reader <https://vuetifyjs.com/en/components/icon-buttons/> @done(2026-06-02 16:44) @project(To do)
+  ✔ Put names to tuple elements types @done(2026-06-01 08:13) @project(To do)
+  ✔ Publish a web site with the STMng documentation @done(2026-06-01 18:28) @project(Requests)
+  ✔ Visualization of crystal shapes (based on bond strengths). @done(2026-06-24 15:33) @project(Requests)
   ✔ Add missing "alt" tags to documentation files images. @done(2026-05-30 08:57) @project(To do)
   ✔ Add atom selections by chain @done(2026-05-29 20:39) @project(To do)
   ✔ Add an editor for atoms color and dimensions @done(2026-05-08 15:18) @project(Requests)

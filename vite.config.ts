@@ -11,6 +11,9 @@ const isProd = process.env.NODE_ENV === "production";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    // experimental: {
+    //     bundledDev: true,
+    // },
     resolve: {
         alias: {
             "@": fileURLToPath(new URL("src", import.meta.url))
@@ -19,9 +22,9 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: [
-            ".git", ".vscode", ".gemini", ".github", "linux-scripts",
-            "local-doc", "release", "save", "other",
-            "test-data", "work", "tests"
+            ".gemini", ".git", ".github", ".vscode", "linux-scripts",
+            "local-doc", "other", "release", "report", "save", "test-data",
+            "tests", "work"
         ],
         holdUntilCrawlEnd: false
     },

@@ -221,7 +221,7 @@ const MIS_Z = 0.001;
  * @param mL - L index of the plane
  * @param cell - Atom fractional coordinates
  * @param trans - Unit cell basis vectors
- * @param norms - ?
+ * @param norms - For each atom its valence distance
  * @param radii - Atoms covalent radii
  * @param electrons - Number of electrons for each atom
  * @param goodBonds - ?

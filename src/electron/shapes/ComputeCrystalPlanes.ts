@@ -62,7 +62,8 @@ const arange3d = (maxCoat: number): number[][] => {
 };
 
 /**
- * Compute valence
+ * Compute valence distance
+ * (exponentially weighted sum of distances less the atom radius)
  *
  * @param inputCell - Crystal structure
  * @param fractionalCoordinates - Structure atoms fractional coordinates
@@ -86,12 +87,13 @@ const valenceAffortNormalize = (inputCell: Structure,
 	const nAtoms = inputCell.atoms.length;
 
 	// Build vertices: [8*maxCoat^3, numAtoms, 3]
+	// Vertices are the atom fractional coordinates in the extended slab 10x10x10
 	// vertices[v][a] = rawVertices[v] + atomCoords[a]
 	const vertices: number[][][] = [];
 	for(const rawVertex of rawVertices) {
 		const v: number[][] = [];
-		for(let i=0; i < nAtoms; i++) {
-			const i3 = i*3;
+		for(let i=0, i3=0; i < nAtoms; i++, i3+=3) {
+
 			const fx = rawVertex[0] + fractionalCoordinates[i3];
 			const fy = rawVertex[1] + fractionalCoordinates[i3 + 1];
 			const fz = rawVertex[2] + fractionalCoordinates[i3 + 2];
@@ -107,13 +109,15 @@ const valenceAffortNormalize = (inputCell: Structure,
 	for(let atomIdx = 0; atomIdx < nAtoms; atomIdx++) {
 
 		const rad = radii[atomIdx];
-		const source = vertices[0][atomIdx]; // [3]
+		const source = vertices[0][atomIdx]; // [3] Original atom position
 
 		// For each vertex v and atom a, compute: (source - vertices[v][a]) @ cell
 		// r_ss_norm[v][a] = L2 norm of that result
 		let sumExp = 0;
 		for(let v = 0; v < rawVertices.length; v++) {
 			for(let a = 0; a < nAtoms; a++) {
+
+				// Compute distance vector
 				const diff = [
 					source[0] - vertices[v][a][0],
 					source[1] - vertices[v][a][1],
@@ -122,7 +126,7 @@ const valenceAffortNormalize = (inputCell: Structure,
 
 				// Multiply diff (1x3) by cell matrix (3x3) → transformed (1x3)
 				// const transformed = matVecMul(inputCell.cell, diff);
-
+				// Back transformed in cartesian coordinates
 				const transformed = [
 					diff[0]*basis[0] + diff[1]*basis[3] + diff[2]*basis[6],
 					diff[0]*basis[1] + diff[1]*basis[4] + diff[2]*basis[7],
@@ -130,7 +134,7 @@ const valenceAffortNormalize = (inputCell: Structure,
 				];
 
 				// L2 norm
-				const l2norm = Math.sqrt(transformed.reduce((sum, x) => sum + x * x, 0));
+				const l2norm = Math.hypot(...transformed);
 
 				sumExp += Math.exp(-(l2norm - rad - radii[a]) / decay);
 			}
@@ -177,6 +181,17 @@ const connectedComponents = (matrix: number[][]): {count: number; labels: number
   	return {count, labels};
 };
 
+/**
+ * Compute energies needed
+ *
+ * @param cell - Atoms fractional coordinates
+ * @param trans - Unit cell vectors
+ * @param norms - Normalized valence distances per atom
+ * @param radii - Atoms covalent radii
+ * @param electrons - Atoms number of electrons
+ * @param goodBonds - ?
+ * @returns Extra energy
+ */
 const determineEnergiesNeeded = (cell: number[][],
 								 trans: number[][],
 								 norms: number[],
@@ -196,6 +211,7 @@ const determineEnergiesNeeded = (cell: number[][],
 	];
 
 	// Build vertices: for each offset, add it to every row of cell
+	// Put the atoms in the other cells around the original ones
 	const vertices: number[][] = [];
 	for(const offset of closestOffsets) {
 		for(const row of cell) {
@@ -204,8 +220,10 @@ const determineEnergiesNeeded = (cell: number[][],
 	}
 
 	// Compute dists = cdist(vertices @ trans, vertices @ trans)
+	// Compute cartesian coordinates
 	const projected = vertices.map((row) => (multiply([row], trans))[0]);
 
+	// Distance matrix between atoms in the extended cell
 	const dists: number[][] = projected.map((a) =>
 		projected.map((b) =>
 			Math.sqrt(a.reduce((sum, v, i) => sum + (v - b[i]) ** 2, 0))
