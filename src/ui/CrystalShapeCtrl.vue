@@ -29,9 +29,16 @@ import {onUnmounted, reactive, ref, toRaw, watch} from "vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
+import type {CtrlParams} from "@/types";
+
+interface StateType {
+    allPlanes: boolean;
+    maxPlanesCount: number;
+    processParallelism: boolean;
+}
 
 // > Persistent state that is saved in the project file
-const state = reactive({
+const state = reactive<StateType>({
     allPlanes: false,
     maxPlanesCount: 80,
     processParallelism: false
@@ -91,7 +98,7 @@ const computeShape = (): void => {
 };
 
 /** Send to main process changes in the status */
-const stopWatcher = watch(state, (st) => {
+const stopWatcher = watch(state, (st: CtrlParams) => {
 
     // Pass state changes to the main process for saving in the project file
     sendToNode(id, "state", toRaw(st));
