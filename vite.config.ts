@@ -21,10 +21,14 @@ export default defineConfig({
         // preserveSymlinks: true
     },
     optimizeDeps: {
+        entries: ["./src/**/*.{vue,js,jsx,ts,tsx}"],
         exclude: [
             ".gemini", ".git", ".github", ".vscode", "linux-scripts",
             "local-doc", "other", "release", "report", "save", "test-data",
             "tests", "work"
+        ],
+        include: [
+            "three/addons/geometries/ConvexGeometry.js"
         ],
         holdUntilCrawlEnd: false
     },
