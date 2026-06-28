@@ -96,6 +96,12 @@ const addedMargin = ref(0); // (1+addedMargin) was called "K" in the old code
 const countGroups = ref(0);
 const groupingBusy = ref(false);
 
+// Use t-SNE for projecting points for scatterplot
+const useTSNE = ref(false);
+const perplexity = ref(30);
+const epsilon = ref(10);
+const iterations = ref(500);
+
 // Show this module has been loaded and access the control store
 const controlStore = useControlStore();
 controlStore.hasFingerprints = true;
@@ -157,6 +163,11 @@ askNode(id, "init")
         countGroups.value = 0;
         pointsRemoved.value = -1;
         intrinsicDimension.value = 0;
+
+        useTSNE.value = params.useTSNE as boolean ?? false;
+        perplexity.value = params.perplexity as number ?? 30;
+        epsilon.value = params.epsilon as number ?? 10;
+        iterations.value = params.iterations as number ?? 500;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for ${label}: ${error.message}`,
@@ -400,6 +411,17 @@ const stopWatcher7 = watch([groupingMethod, groupingThreshold, addedMargin], () 
     });
 });
 
+/** On changing t-SNE parameters */
+const stopWatcher8 = watch([useTSNE, perplexity, epsilon, iterations], () => {
+
+    sendToNode(id, "tsne-params", {
+        useTSNE: useTSNE.value,
+        perplexity: perplexity.value,
+        epsilon: epsilon.value,
+        iterations: iterations.value
+    });
+});
+
 // Cleanup
 onUnmounted(() => {
     stopWatcher1();
@@ -409,6 +431,7 @@ onUnmounted(() => {
     stopWatcher5();
     stopWatcher6();
     stopWatcher7();
+    stopWatcher8();
 });
 
 /**
@@ -623,6 +646,19 @@ const showEnergyLandscape = (): void => {
 
   <throttled-button block :disabled="countDistances === 0" class="mr-n1"
                     label="Export results" @click="exportResults" />
+  <v-switch v-model="useTSNE" :disabled="countDistances === 0 || working"
+            label="Use t-SNE projection method" class="ml-4 mb-2 mt-n2" />
+  <v-row v-if="useTSNE">
+    <v-number-input v-model="perplexity"
+                label="Perplexity" :precision="0"
+                :min="10" :max="50" :step="1" />
+    <v-number-input v-model="epsilon"
+                label="Epsilon" :precision="0"
+                :min="10" :max="50" :step="1" />
+    <v-number-input v-model="iterations"
+                label="Iterations" :precision="0"
+                :min="100" :max="1000" :step="100" />
+  </v-row>
   <throttled-button block label="Show scatterplot" class="mr-n1"
                     :loading="working" :disabled="countDistances === 0 || working"
                     @click="working=true;showScatterplot()" />

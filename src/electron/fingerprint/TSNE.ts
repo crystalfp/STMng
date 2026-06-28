@@ -4,7 +4,9 @@
  *		L.J.P. van der Maaten and G.E. Hinton.
  * 		Visualizing High-Dimensional Data Using t-SNE. Journal of Machine Learning Research
  *		9(Nov):2579-2605, 2008.
- * The code is from: https://github.com/karpathy/tsnejs
+ *		URL: https://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf
+ *
+ * The original code is from: https://github.com/karpathy/tsnejs
  *
  * @packageDocumentation
  *
@@ -214,6 +216,81 @@ export class TSNE {
 		return Pout;
 	}
 
+	private d2p2(N: number, getDists: (i: number, j: number) => number,
+				 perplexity: number, tol: number): number[] {
+
+		const Htarget = Math.log(perplexity); // target entropy of distribution
+		const P = this.zeros(N * N); // temporary probability matrix
+
+		const prow = this.zeros(N); // a temporary storage compartment
+		for(let i=0; i<N; i++) {
+
+			let betamin = -Infinity;
+			let betamax = Infinity;
+			let beta = 1; // initial value of precision
+			let done = false;
+			const maxtries = 50;
+
+			// perform binary search to find a suitable precision beta
+			// so that the entropy of the distribution is appropriate
+			let countIterations = 0;
+			while(!done) {
+
+				// compute entropy and kernel row with beta precision
+				let psum = 0.0;
+				for(let j=0; j<N; j++) {
+					let pj = Math.exp(-getDists(i, j)*beta);
+					// let pj = Math.exp(-D[i*N+j]*beta);
+					if(i === j) pj = 0; // we don't care about diagonals
+					prow[j] = pj;
+					psum += pj;
+				}
+
+				// normalize p and compute entropy
+				let Hhere = 0.0;
+				for(let j=0; j<N; j++) {
+					const pj = psum === 0 ? 0 : prow[j] / psum;
+					prow[j] = pj;
+					if(pj > 1e-7) Hhere -= pj * Math.log(pj);
+				}
+
+				// adjust beta based on result
+				if(Hhere > Htarget) {
+					// entropy was too high (distribution too diffuse)
+					// so we need to increase the precision for more peaky distribution
+					betamin = beta; // move up the bounds
+					beta = betamax === Infinity ? beta * 2 : (beta + betamax) / 2;
+				}
+				else {
+					// converse case. make distribution less peaky
+					betamax = beta;
+					beta = betamin === -Infinity ? beta / 2 : (beta + betamin) / 2;
+				}
+
+				// stopping conditions: too many tries or got a good precision
+				countIterations++;
+				if(Math.abs(Hhere - Htarget) < tol || countIterations >= maxtries) done = true;
+			}
+
+			// console.log('data point ' + i + ' gets precision ' + beta + ' after ' +
+			// num + ' binary search steps.');
+			// copy over the final prow to P at row i
+			for(let j=0; j<N; j++) P[i*N+j] = prow[j];
+
+		} // end loop over examples i
+
+		// symmetrize P and normalize it to sum to 1 over all ij
+		const Pout = this.zeros(N * N);
+		const N2 = N*2;
+		for(let i=0; i<N; i++) {
+			for(let j=0; j<N; j++) {
+				Pout[i*N+j] = Math.max((P[i*N+j] + P[j*N+i])/N2, 1e-100);
+			}
+		}
+
+		return Pout;
+	}
+
 	// helper function
 	private sign(x: number): number {
 		if(x > 0) return 1;
@@ -256,6 +333,13 @@ export class TSNE {
 		this.initSolution(); // refresh this
     }
 
+	initDataDistComputed(N: number, getDist: (i: number, j: number) => number): void {
+
+		this.N = N;
+		this.P = this.d2p2(N, getDist, this.params.perplexity, 1e-4);
+		this.initSolution(); // refresh this
+	}
+
     // (re)initializes the solution to random
     private initSolution(): void {
       // generate random solution to t-SNE
@@ -271,6 +355,33 @@ export class TSNE {
 	 * @returns Array of solution points [N, dims]
 	 */
     getSolution(): number[][] {
+      	return this.Y;
+    }
+
+	/**
+	 * Return the current solution
+	 *
+	 * @returns Array of solution points [N, dims]
+	 */
+    getNormalizedSolution(): number[][] {
+
+		const min = Array<number>(this.params.dim).fill(Number.POSITIVE_INFINITY);
+		const max = Array<number>(this.params.dim).fill(Number.NEGATIVE_INFINITY);
+		const n = this.Y.length;
+		for(let i=0; i<n; ++i) {
+			for(let d=0; d<this.params.dim; ++d) {
+				const y = this.Y[i][d];
+				if(y < min[d]) min[d] = y;
+				if(y > max[d]) max[d] = y;
+			}
+		}
+		for(let i=0; i<n; ++i) {
+			for(let d=0; d<this.params.dim; ++d) {
+
+				this.Y[i][d] = (this.Y[i][d] - min[d]) / (max[d] - min[d]);
+			}
+		}
+
       	return this.Y;
     }
 
@@ -322,7 +433,7 @@ export class TSNE {
 		// Return current cost
 		return cost;
     }
-
+/*
     // for debugging: gradient check
     debugGrad(): void {
 
@@ -349,6 +460,7 @@ export class TSNE {
 			}
 		}
     }
+*/
 
     // return cost and gradient, given an arrangement
     private costGrad(Y: number[][]): {cost: number; grad: number[][]} {
@@ -406,12 +518,22 @@ var dists = [[1.0, 0.1, 0.2], [0.1, 1.0, 0.3], [0.2, 0.1, 1.0]];
 const tsne = new TSNE({perplexity: 30, dim: 2, epsilon: 10});
 tsne.initDataDist(dists);
 
-for(var k = 0; k < 500; k++) {
+for(let k = 0; k < 500; k++) {
   tsne.step(); // every time you call this, solution gets better
 }
 
 const Y = tsne.getSolution(); // Y is an array of 2-D points that you can plot
 console.log(Y);
+console.log("-------");
+
+const tsne2 = new TSNE({perplexity: 30, dim: 2, epsilon: 10});
+tsne2.initDataDistComputed(dists.length, (i, j) => dists[i][j]);
+for(let k = 0; k < 500; k++) {
+  tsne2.step(); // every time you call this, solution gets better
+}
+const Y2 = tsne2.getSolution(); // Y is an array of 2-D points that you can plot
+console.log(Y2);
+
 };
 test();
 */

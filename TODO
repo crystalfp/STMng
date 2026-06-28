@@ -45,7 +45,6 @@ ToDo eventually:
   ☐ Use fat line <https://github.com/pmndrs/meshline> for trajectories
   ☐ If possible remove circular dependencies between modules
   ☐ Labels rotation to always face camera <https://codepen.io/boytchev/pen/WbwEJWL>
-  ☐ Try t-SNE for projecting fingerprints <https://distill.pub/2016/misread-tsne/> <https://projector.tensorflow.org/>
 
 Nice to have/Future:
   ☐ Label color (contrasting with atom color)
@@ -73,6 +72,7 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Try t-SNE for projecting fingerprints <https://distill.pub/2016/misread-tsne/> <https://projector.tensorflow.org/> @done(2026-06-28 16:54) @project(ToDo eventually)
   ✔ When out of labs use `v-icon-btn` instead of `v-btn` in reader <https://vuetifyjs.com/en/components/icon-buttons/> @done(2026-06-02 16:44) @project(To do)
   ✔ Put names to tuple elements types @done(2026-06-01 08:13) @project(To do)
   ✔ Publish a web site with the STMng documentation @done(2026-06-01 18:28) @project(Requests)

@@ -115,6 +115,11 @@ export class ComputeFingerprints extends NodeCore {
 	private chartType: FingerprintsChartKind = "fp";
 	private lambda = 0;
 
+	private useTSNE = false;
+	private perplexity = 30;
+	private epsilon = 10;
+	private iterations = 500;
+
 	private static channelOpened = false;
 	private channelChartsOpened = false;
 	private channelExportOpened = false;
@@ -141,6 +146,7 @@ export class ComputeFingerprints extends NodeCore {
 		{name: "landscape",		type: "send",	callback: this.channelLandscape.bind(this)},
 		{name: "charts",		type: "send",	callback: this.channelCharts.bind(this)},
 		{name: "export",		type: "send",	callback: this.channelExport.bind(this)},
+		{name: "tsne-params",	type: "send",	callback: this.channelTSNEParams.bind(this)},
 	];
 
 	/**
@@ -260,7 +266,11 @@ export class ComputeFingerprints extends NodeCore {
 			addedMargin: this.addedMargin,
 			removeDuplicates: this.removeDuplicates,
 			duplicatesThreshold: this.duplicatesThreshold,
-			processParallelism: this.processParallelism
+			processParallelism: this.processParallelism,
+			useTSNE: this.useTSNE,
+			perplexity: this.perplexity,
+			epsilon: this.epsilon,
+			iterations: this.iterations,
 		};
         return `"${this.id}":${JSON.stringify(statusToSave)}`;
 	}
@@ -467,7 +477,7 @@ export class ComputeFingerprints extends NodeCore {
 		const enabled = this.accumulator.getEnabledStructures();
 
 		// Take the points projected to 2D
-		const points = this.dist.getProjectedPoints();
+		const points = this.dist.getProjectedPoints(this.useTSNE, this.perplexity, this.epsilon, this.iterations);
 
 		// Check if energy present
 		const hasEnergies = this.accumulator.accumulatedHaveEnergies();
@@ -526,7 +536,7 @@ export class ComputeFingerprints extends NodeCore {
 		}
 
 		// Take the distance matrix and project it in 2D
-		const points = this.dist.getProjectedPoints();
+		const points = this.dist.getProjectedPoints(this.useTSNE, this.perplexity, this.epsilon, this.iterations);
 
 		// Filter points as enabled during grouping
 		const filteredPoints: number[][] = [];
@@ -851,6 +861,7 @@ export class ComputeFingerprints extends NodeCore {
 			fingerprintingMethod: this.fingerprintingMethod,
 			binSize: this.binSize,
 			peakWidth: this.peakWidth,
+			processParallelism: this.processParallelism,
 
 			distanceMethods: JSON.stringify(this.dist.getDistancesMethodsNames()),
 			distanceMethod: this.distanceMethod,
@@ -863,6 +874,11 @@ export class ComputeFingerprints extends NodeCore {
 
 			removeDuplicates: this.removeDuplicates,
 			duplicatesThreshold: this.duplicatesThreshold,
+
+			useTSNE: this.useTSNE,
+			perplexity: this.perplexity,
+			epsilon: this.epsilon,
+			iterations: this.iterations,
 		};
 	}
 
@@ -1156,6 +1172,24 @@ export class ComputeFingerprints extends NodeCore {
 		this.updateVisualizations({plotType: this.plotType});
 
 		return {countGroups: result.countGroups};
+	}
+
+	/**
+	 * Channel handler for t-SNE parameters change
+	 *
+	 * @param params - Parameters from the UI
+	 */
+	private channelTSNEParams(params: CtrlParams): void {
+
+		this.useTSNE = params.useTSNE as boolean ?? false;
+		this.perplexity = params.perplexity as number ?? 30;
+		this.epsilon = params.epsilon as number ?? 10;
+		this.iterations = params.iterations as number ?? 500;
+
+		this.dist.invalidateCachedProjectedPoints();
+
+		// Update the scatterplot if it is open
+		this.updateVisualizations({plotType: this.plotType});
 	}
 
 	/**

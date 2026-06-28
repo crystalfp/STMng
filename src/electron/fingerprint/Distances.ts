@@ -25,6 +25,7 @@
 import {measuringMethods} from "./DistanceMethods";
 import {MDS} from "../modules/NativeFunctions";
 import type {FingerprintsAccumulator} from "./Accumulator";
+import {TSNE} from "./TSNE";
 
 /**
  * Matrix of distances between fingerprints
@@ -261,6 +262,10 @@ export class Distances {
     private projectedPoints: number[][] = [];
     private projectedPoints3D: number[][] = [];
     private cachedProjectedPoints = false;
+    private useTSNE = false;
+    private perplexity = 30;
+    private epsilon = 10;
+    private iterations = 500;
 
     /**
      * Return the list of methods names
@@ -445,19 +450,50 @@ export class Distances {
         if(this.cachedProjectedPoints) return;
 
         // Recompute projections if not cached or enabled changed
-        const distanceVector = this.distances.toVector();
-        const result = MDS(distanceVector, countPoints);
-        this.projectedPoints = result.points2D;
-        this.projectedPoints3D = result.points3D;
+        if(this.useTSNE) this.projectUsingTSNE(this.perplexity, this.epsilon, this.iterations);
+        else {
+            const distanceVector = this.distances.toVector();
+            const result = MDS(distanceVector, countPoints);
+            this.projectedPoints = result.points2D;
+            this.projectedPoints3D = result.points3D;
+        }
         this.cachedProjectedPoints = true;
+    }
+
+    private projectUsingTSNE(perplexity: number, epsilon: number, iterations: number): void {
+
+        const tsne = new TSNE({perplexity, dim: 3, epsilon});
+        tsne.initDataDistComputed(this.distances.matrixSize(),
+                                  this.distances.get.bind(this.distances));
+        for(let k = 0; k < iterations; k++) tsne.step();
+
+        this.projectedPoints3D = tsne.getNormalizedSolution();
+        const n = this.projectedPoints3D.length;
+        this.projectedPoints = Array<number[]>(n);
+        for(let i=0; i < n; ++i) {
+            this.projectedPoints[i] = [this.projectedPoints3D[i][0], this.projectedPoints3D[i][1]];
+        }
+    }
+
+    invalidateCachedProjectedPoints(): void {
+        this.cachedProjectedPoints = false;
     }
 
     /**
      * Return the projected points in 2D
      *
+     * @param useTSNE - Use t-SNE and not MDS
+     * @param perplexity - Perplexity parameter for t-SNE
+     * @param epsilon - Learning rate for t-SNE
+     * @param iterations - Number of iterations for t-SNE
      * @returns Points in 2D [0..1]x[0..1] that best preserve distances
      */
-    getProjectedPoints(): number[][] {
+    getProjectedPoints(useTSNE: boolean, perplexity: number, epsilon: number, iterations: number): number[][] {
+
+        this.useTSNE = useTSNE;
+        this.perplexity = perplexity;
+        this.epsilon = epsilon;
+        this.iterations = iterations;
 
         this.checkAndFillCache();
 
