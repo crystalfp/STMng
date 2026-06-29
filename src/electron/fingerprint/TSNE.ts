@@ -30,12 +30,22 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 
+/**
+ * t-SNE algorithm parameters
+ * @notExported
+ */
 interface TSNEParams {
-  perplexity: number;
-  dim: number;
-  epsilon: number;
+	/** Number of points influencing a single point */
+	perplexity: number;
+	/** Dimension of the output space */
+	dim: 2 | 3;
+	/** Learning rate */
+	epsilon: number;
 }
 
+/**
+ * t-SNE projection algorithm
+ */
 export class TSNE {
 
 	private readonly params: TSNEParams;
@@ -48,6 +58,11 @@ export class TSNE {
 	private returnValue = false;
 	private vValue = 0.0;
 
+	/**
+	 * Set parameters for the algorithm
+	 *
+	 * @param opt - Algorithm options
+	 */
 	constructor(opt: Partial<TSNEParams> = {}) {
 
 		const defaults: TSNEParams = {
@@ -66,7 +81,6 @@ export class TSNE {
 	// utility that creates contiguous vector of zeros of size n
 	private zeros(n: number): number[] {
 
-		if(n === undefined || Number.isNaN(n)) return [];
 
 		return Array<number>(n).fill(0);
 	}
@@ -298,8 +312,11 @@ export class TSNE {
 		return 0;
 	}
 
-    // this function takes a set of high-dimensional points
-    // and creates matrix P from them using gaussian kernel
+	/**
+	 * Creates matrix P from input points using gaussian kernel
+	 *
+	 * @param X - Set of high-dimensional points
+	 */
     initDataRaw(X: number[][]): void {
 
 		const N = X.length;
@@ -312,9 +329,11 @@ export class TSNE {
 		this.initSolution(); // refresh this
     }
 
-    // this function takes a given distance matrix and creates
-    // matrix P from them.
-    // D is assumed to be provided as a list of lists, and should be symmetric
+	/**
+	 * This function takes a given distance matrix and creates matrix P from them
+	 *
+	 * @param D - Square and symmetric distance matrix
+	 */
     initDataDist(D: number[][]): void {
 
 		const N = D.length;
@@ -333,6 +352,12 @@ export class TSNE {
 		this.initSolution(); // refresh this
     }
 
+	/**
+	 * This function compute distances and creates matrix P from them
+	 *
+	 * @param N - Number of input points
+	 * @param getDist - Function that returns the distance between points i and j
+	 */
 	initDataDistComputed(N: number, getDist: (i: number, j: number) => number): void {
 
 		this.N = N;
@@ -359,12 +384,13 @@ export class TSNE {
     }
 
 	/**
-	 * Return the current solution
+	 * Return the current solution with coordinates normalized between 0 and 1
 	 *
 	 * @returns Array of solution points [N, dims]
 	 */
     getNormalizedSolution(): number[][] {
 
+		// Find range of each coordinate
 		const min = Array<number>(this.params.dim).fill(Number.POSITIVE_INFINITY);
 		const max = Array<number>(this.params.dim).fill(Number.NEGATIVE_INFINITY);
 		const n = this.Y.length;
@@ -375,6 +401,8 @@ export class TSNE {
 				if(y > max[d]) max[d] = y;
 			}
 		}
+
+		// Normalize the coordinates
 		for(let i=0; i<n; ++i) {
 			for(let d=0; d<this.params.dim; ++d) {
 
@@ -512,27 +540,26 @@ export class TSNE {
 /*
 const test = (): void => {
 
+	// initialize data. Here we have 3 points and some example pairwise dissimilarities
+	var dists = [[1.0, 0.1, 0.2], [0.1, 1.0, 0.3], [0.2, 0.1, 1.0]];
+	const tsne = new TSNE({perplexity: 30, dim: 2, epsilon: 10});
+	tsne.initDataDist(dists);
 
-// initialize data. Here we have 3 points and some example pairwise dissimilarities
-var dists = [[1.0, 0.1, 0.2], [0.1, 1.0, 0.3], [0.2, 0.1, 1.0]];
-const tsne = new TSNE({perplexity: 30, dim: 2, epsilon: 10});
-tsne.initDataDist(dists);
+	for(let k = 0; k < 500; k++) {
+	tsne.step(); // every time you call this, solution gets better
+	}
 
-for(let k = 0; k < 500; k++) {
-  tsne.step(); // every time you call this, solution gets better
-}
+	const Y = tsne.getSolution(); // Y is an array of 2-D points that you can plot
+	console.log(Y);
+	console.log("-------");
 
-const Y = tsne.getSolution(); // Y is an array of 2-D points that you can plot
-console.log(Y);
-console.log("-------");
-
-const tsne2 = new TSNE({perplexity: 30, dim: 2, epsilon: 10});
-tsne2.initDataDistComputed(dists.length, (i, j) => dists[i][j]);
-for(let k = 0; k < 500; k++) {
-  tsne2.step(); // every time you call this, solution gets better
-}
-const Y2 = tsne2.getSolution(); // Y is an array of 2-D points that you can plot
-console.log(Y2);
+	const tsne2 = new TSNE({perplexity: 30, dim: 2, epsilon: 10});
+	tsne2.initDataDistComputed(dists.length, (i, j) => dists[i][j]);
+	for(let k = 0; k < 500; k++) {
+	tsne2.step(); // every time you call this, solution gets better
+	}
+	const Y2 = tsne2.getSolution(); // Y is an array of 2-D points that you can plot
+	console.log(Y2);
 
 };
 test();

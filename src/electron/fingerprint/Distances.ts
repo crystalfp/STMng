@@ -460,6 +460,13 @@ export class Distances {
         this.cachedProjectedPoints = true;
     }
 
+    /**
+     * Project the points using t-SNE
+     *
+     * @param perplexity - Perplexity parameter for t-SNE
+     * @param epsilon - Learning rate for t-SNE
+     * @param iterations - Number of iterations for t-SNE
+     */
     private projectUsingTSNE(perplexity: number, epsilon: number, iterations: number): void {
 
         const tsne = new TSNE({perplexity, dim: 3, epsilon});
@@ -468,6 +475,7 @@ export class Distances {
         for(let k = 0; k < iterations; k++) tsne.step();
 
         this.projectedPoints3D = tsne.getNormalizedSolution();
+
         const n = this.projectedPoints3D.length;
         this.projectedPoints = Array<number[]>(n);
         for(let i=0; i < n; ++i) {
@@ -475,6 +483,9 @@ export class Distances {
         }
     }
 
+    /**
+     * Invalidate the projected points cache
+     */
     invalidateCachedProjectedPoints(): void {
         this.cachedProjectedPoints = false;
     }

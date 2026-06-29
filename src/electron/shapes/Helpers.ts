@@ -25,13 +25,26 @@
 const RTOL = 1e-5;
 const ATOL = 1e-8;
 
+/**
+ * Sort array by absolute value and return their indices
+ *
+ * @param row - Array of values to sort
+ * @returns The sorted values positions
+ */
 export const argsortByAbsRow = (row: number[]): number[] => {
-  return row
-            .map((v, i) => [Math.abs(v), i] as [number, number])
+    return row
+            .map((v, i) => [Math.abs(v), i])
             .toSorted((a, b) => a[0] - b[0])
             .map(([, i]) => i);
 };
 
+/**
+ * Cross product
+ *
+ * @param a - First 3-vector
+ * @param b - Second 3-vector
+ * @returns - Cross product
+ */
 export const cross3 = (a: number[], b: number[]): number[] => {
     return [
         a[1]*b[2] - a[2]*b[1],
@@ -53,7 +66,7 @@ export const norm = (v: number[]): number => {
 /**
  * Compute determinant of 3x3 matrix
  *
- * @param m - Matrix
+ * @param m - Matrix 3x3
  * @returns Determinant of the matrix
  */
 export const det3x3 = (m: number[][]): number => {
@@ -64,6 +77,13 @@ export const det3x3 = (m: number[][]): number => {
     );
 };
 
+/**
+ * Solve the equation Mx = b
+ *
+ * @param m - M 3x3 matrix
+ * @param b - b vector
+ * @returns Solution vector
+ */
 export const solve3x3 = (m: number[][], b: number[]): number[] => {
 
     const det = det3x3(m);
@@ -82,33 +102,63 @@ export const isClose = (a: number, b: number, atol = ATOL, rtol = RTOL): boolean
     return Math.abs(a - b) <= atol + rtol * Math.abs(b);
 };
 
-/** Dot product of two vectors */
+/**
+ * Dot product of two vectors
+ *
+ * @param a - First vector
+ * @param b - Second vector
+ * @returns - Dot product
+ */
 export const dot = (a: number[], b: number[]): number => {
-  return a.reduce((sum, v, i) => sum + v * b[i], 0);
+    return a.reduce((sum, v, i) => sum + v * b[i], 0);
 };
 
-/** Dot product of two 3-vectors */
+/**
+ * Dot product of two 3-vectors
+ *
+ * @param a - First 3-vector
+ * @param b - Second 3-vector
+ * @returns - Dot product
+ */
 export const dot3 = (a: number[], b: number[]): number =>
     a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
-/** Subtract two 3-vectors. */
+/**
+ * Subtract two 3-vectors
+ *
+ * @param a - First vector
+ * @param b - Vector to subtract
+ * @returns Resulting vector
+ */
 export const sub3 = (a: number[], b: number[]): number[] =>
     [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 
-/** Invert a 3×3 matrix (row-major). Returns undefined if singular. */
+/**
+ * Invert a 3×3 matrix (row-major)
+ *
+ * @param m - Matrix to be inverted
+ * @returns - Inverted matrix or undefined if singular
+ */
 export const inv3 = (m: number[][]): number[][] | undefined => {
-  const [[a, b, c], [d, e, f], [g, h, k]] = m;
-  const det = a * (e * k - f * h) - b * (d * k - f * g) + c * (d * h - e * g);
-  if(Math.abs(det) < 1e-14) return undefined;
-  const inv = 1 / det;
-  return [
-    [(e * k - f * h) * inv, (c * h - b * k) * inv, (b * f - c * e) * inv],
-    [(f * g - d * k) * inv, (a * k - c * g) * inv, (c * d - a * f) * inv],
-    [(d * h - e * g) * inv, (b * g - a * h) * inv, (a * e - b * d) * inv],
-  ];
+
+    const [[a, b, c], [d, e, f], [g, h, k]] = m;
+    const det = a * (e * k - f * h) - b * (d * k - f * g) + c * (d * h - e * g);
+    if(Math.abs(det) < 1e-14) return undefined;
+    const inv = 1 / det;
+    return [
+        [(e * k - f * h) * inv, (c * h - b * k) * inv, (b * f - c * e) * inv],
+        [(f * g - d * k) * inv, (a * k - c * g) * inv, (c * d - a * f) * inv],
+        [(d * h - e * g) * inv, (b * g - a * h) * inv, (a * e - b * d) * inv],
+    ];
 };
 
-/** Multiply a 1×3 row vector by a 3×3 matrix, returning a 1×3 result. */
+/**
+ * Multiply a 1×3 row vector by a 3×3 matrix, returning a 1×3 result
+ *
+ * @param v - Vector to be multiplied
+ * @param m - Matrix to multiply
+ * @returns Resulting vector
+ */
 export const mulVecMat3 = (v: number[], m: number[][]): number[] => [
 	v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0],
 	v[0] * m[0][1] + v[1] * m[1][1] + v[2] * m[2][1],
@@ -123,23 +173,59 @@ export const euclidean = (a: number[], b: number[]): number => {
     return Math.sqrt(a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0));
 };
 
+/**
+ * Multiply vector by a matrix
+ *
+ * @param m - Matrix
+ * @param v - Vector
+ * @returns Product Mv
+ */
 export const matVec = (m: number[][], v: number[]): number[] => {
   	return m.map((row) => row.reduce((s, value, i) => s + value * v[i], 0));
 };
 
+/**
+ * Transpose matrix
+ *
+ * @param m - Matrix NxN to transpose
+ * @returns Transposed matrix
+ */
 const transpose2D = (m: number[][]): number[][] => {
   	return Array.from({length: m[0].length}, (_, i) => m.map((row) => row[i]));
 };
 
+/**
+ * Multiply each point by the matrix transpose
+ *
+ * @param points - Points
+ * @param m - Matrix
+ * @returns Each point multiplied by the matrix transpose
+ */
 export const dotRows = (points: number[][], m: number[][]): number[][] => {
-  return points.map((p) => matVec(transpose2D(m), p));
+
+    const mt = transpose2D(m);
+    return points.map((p) => matVec(mt, p));
 };
 
+/**
+ * Compute distance matrix between each point pair
+ *
+ * @param A - First set of points
+ * @param B - Second set of points
+ * @returns Distance matrix between each point pair
+ */
 export const cdist = (A: number[][], B: number[][]): number[][] => {
-  return A.map((a) =>
-    B.map((b) => Math.sqrt(a.reduce((s, v, i) => s + (v - b[i])**2, 0)))
-  );
+    return A.map((a) =>
+        B.map((b) => Math.sqrt(a.reduce((s, v, i) => s + (v - b[i])**2, 0)))
+    );
 };
 
+/**
+ * Create range of number [lo, hi)
+ *
+ * @param lo - Low limit
+ * @param hi - High limit
+ * @returns Array of values
+ */
 export const range = (lo: number, hi: number): number[] =>
     Array.from({length: hi - lo}, (_, i) => lo + i);
