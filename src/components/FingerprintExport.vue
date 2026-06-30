@@ -93,8 +93,8 @@ const toggleExport = (exportKind: "all" | "min"): void => {
 
 
 <template>
-<v-app :theme class="d-flex">
-  <v-container class="flex-1-1 pr-2">
+<v-app :theme class="layout-app">
+  <v-container class="layout-main pr-2">
     <block-button class="mb-2" label="Export results"
                   @click="toggleExport('all')"/>
     <block-button :disabled="!hasEnergies" label="Min energy per group"
@@ -112,7 +112,7 @@ const toggleExport = (exportKind: "all" | "min"): void => {
       type="success" density="compact" class="mt-4 ml-1 cursor-pointer"
       @click="successMessage=''"/>
   </v-container>
-  <v-container class="d-flex flex-0-1 justify-end">
+  <v-container class="layout-buttons">
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
 </v-app>

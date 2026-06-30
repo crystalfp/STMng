@@ -13,6 +13,7 @@ Requests:
 
 Bugs:
   ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43)
+  ☐ Symmetry: display mode=intl. but show symmetry displays symmop
 
 To do:
   ☐ Check error return from main process to client
@@ -21,7 +22,7 @@ To do:
   ☐ Dynamic load ViewportGizmo
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
-  ☐ Add synchronization between documentation and site.
+  ☐ Add synchronization between documentation and site
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI

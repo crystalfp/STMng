@@ -147,3 +147,26 @@ html {
   background-color: rgb(var(--v-theme-primary), 0.3) !important;
   box-shadow: 0 0 0 2px rgb(var(--v-theme-primary));
 }
+
+/* > Layout for secondary windows (see FingerprintExport.vue) */
+.layout-app {
+  display: flex;
+  height: 100vh
+}
+
+.layout-main {
+  flex: 1 1 auto;
+  width: 100%;
+  overflow-y: auto;
+  max-width: 3000px !important;
+  padding: 0;
+}
+
+.layout-buttons {
+  display: flex;
+  flex: 0 1;
+  justify-content: end;
+  max-width: 3000px !important;
+  width: 100%;
+  gap: 10px;
+}

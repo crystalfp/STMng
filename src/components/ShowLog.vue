@@ -36,7 +36,7 @@ requestData(windowPath, (params: CtrlParams) => {
 
     text.value = params.content as string ?? "";
 
-    const element = document.querySelector<HTMLTextAreaElement>(".log-text-container");
+    const element = document.querySelector<HTMLTextAreaElement>(".layout-main");
 
     if(element) {
         setTimeout(() => {element.scrollTop = element.scrollHeight;}, 10);
@@ -76,46 +76,25 @@ const copyToClipboard = async (): Promise<void> => {
 
 
 <template>
-<v-app :theme>
-  <v-row class="log-box">
-    <v-container class="log-text-container">
-      <v-textarea ref="txt" :model-value="text" readonly auto-grow hide-details
+<v-app :theme class="layout-app">
+  <v-container class="layout-main">
+    <v-textarea ref="txt" :model-value="text" readonly auto-grow hide-details
                   variant="underlined" flat width="100%" class="pl-2" />
-    </v-container>
-    <v-container class="button-strip">
-      <v-btn @click="showConfirm=true">Wipe log</v-btn>
-      <v-btn :disabled="!copyText" @click="copyToClipboard">Copy to clipboard</v-btn>
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
-    </v-container>
-  </v-row>
-
-  <v-dialog v-model="showConfirm">
-    <v-card title="Confirm" text="Do you want to clear the application log file?"
-            class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
-    <v-card-actions>
-        <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
-        <v-btn @click="confirmDeletion">Yes</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  </v-container>
+  <v-container class="layout-buttons">
+    <v-btn @click="showConfirm=true">Wipe log</v-btn>
+    <v-btn :disabled="!copyText" @click="copyToClipboard">Copy to clipboard</v-btn>
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+  </v-container>
 </v-app>
+
+<v-dialog v-model="showConfirm">
+  <v-card title="Confirm" text="Do you want to clear the application log file?"
+          class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
+    <v-card-actions>
+      <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
+      <v-btn @click="confirmDeletion">Yes</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 </template>
-
-<style scoped>
-.log-box {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-}
-
-.log-text-container {
-  flex: 2;
-  width: 100%;
-  overflow-y: auto;
-  max-width: 3000px !important;
-  padding: 0;
-}
-</style>

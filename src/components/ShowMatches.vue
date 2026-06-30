@@ -119,10 +119,9 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
 
 
 <template>
-<v-app :theme>
-<v-container class="matches-portal">
-  <v-row class="matches-container">
-    <v-col cols="4" class="flex-1-1-0 pr-6">
+<v-app :theme class="layout-app">
+  <v-row class="layout-main">
+    <v-col cols="4" class="flex-1-1-0 pr-6 pt-4">
       <v-label class="text-headline-small no-select justify-center mt-n2 mb-2 w-100">Prototype matches</v-label>
       <v-container v-for="entry of prototypes" :key="entry.aflow" v-ripple
                   class="mb-3 ml-4 py-1 pl-2 border-thin rounded-lg cursor-pointer"
@@ -132,7 +131,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
       </v-container>
     </v-col>
     <v-divider vertical thickness="6px" opacity="0.6"/>
-    <v-col cols="5" class="flex-1-1-0 pr-4">
+    <v-col cols="5" class="flex-1-1-0 pr-4 pt-4">
       <v-label class="text-headline-small no-select justify-center mt-n2 mb-2 w-100">Collection matches</v-label>
       <v-container v-for="entry of collection" :key="entry.id" v-ripple
                    class="mb-3 py-1 pl-2 ml-2 border-thin rounded-lg cursor-pointer"
@@ -144,7 +143,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
       </v-container>
     </v-col>
   </v-row>
-  <v-container class="button-strip put-symmetry">
+  <v-container class="layout-buttons put-symmetry">
     <div>
       <span class="text-title-medium no-select mr-2">Structure:</span>
       <span class="text-title-medium result-label" v-html="formula" />
@@ -153,31 +152,10 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
     </div>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
-</v-container>
 </v-app>
 </template>
 
 <style scoped>
-
-.matches-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 0;
-}
-
-.matches-container {
-  overflow-y: auto;
-  width: 100vw;
-  flex: 2;
-  display: flex;
-  flex-direction: row;
-  margin: 0;
-  height: 100%;
-  padding-top: 15px;
-  max-width: 3000px !important;
-  scrollbar-gutter: stable;
-}
 
 :deep(sub) {
   position: relative;
