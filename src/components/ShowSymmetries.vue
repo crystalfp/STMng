@@ -33,6 +33,7 @@ const inSymmetry = ref("");
 const outSymmetry = ref("");
 const pointGroup = ref("");
 const intlSymbol = ref("");
+const intlSymbolIn = ref("");
 const displayMode = ref("international");
 const sgNumberIn = ref(0);
 const sgNumberOut = ref(0);
@@ -48,12 +49,13 @@ requestData(windowPath, (params: CtrlParams) => {
         return;
     }
     if(params.inSymmetry !== undefined) {
-        inSymmetry.value  = params.inSymmetry as string;
-        outSymmetry.value = params.outSymmetry as string ?? "";
-        pointGroup.value  = params.pointGroup as string ?? "";
-        intlSymbol.value  = params.intlSymbol as string ?? "";
-        sgNumberIn.value  = params.sgNumberIn as number ?? 0;
-        sgNumberOut.value = params.sgNumberOut as number ?? 0;
+        inSymmetry.value   = params.inSymmetry as string;
+        outSymmetry.value  = params.outSymmetry as string ?? "";
+        pointGroup.value   = params.pointGroup as string ?? "";
+        intlSymbol.value   = params.intlSymbol as string ?? "";
+        intlSymbolIn.value = params.intlSymbolIn as string ?? "";
+        sgNumberIn.value   = params.sgNumberIn as number ?? 0;
+        sgNumberOut.value  = params.sgNumberOut as number ?? 0;
     }
     displayMode.value  = params.displayMode as string ?? "";
 });
@@ -63,6 +65,7 @@ handleSpecialKeys(windowPath);
 
 const inputValue = computed(() => {
     if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
+    if(displayMode.value === "international") return intlSymbolIn.value;
     return inSymmetry.value;
 });
 const finalValue = computed(() => {

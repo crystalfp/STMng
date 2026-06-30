@@ -12,8 +12,6 @@ Requests:
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
 Bugs:
-  ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43)
-  ☐ Symmetry: display mode=intl. but show symmetry displays symmop
 
 To do:
   ☐ Check error return from main process to client
@@ -74,6 +72,8 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43) @project(Bugs)
+  ✔ Symmetry: display mode=intl. but show symmetry displays symmop @done(2026-06-30 15:49) @project(Bugs)
   ✔ Try t-SNE for projecting fingerprints <https://distill.pub/2016/misread-tsne/> <https://projector.tensorflow.org/> @done(2026-06-28 16:54) @project(ToDo eventually)
   ✔ When out of labs use `v-icon-btn` instead of `v-btn` in reader <https://vuetifyjs.com/en/components/icon-buttons/> @done(2026-06-02 16:44) @project(To do)
   ✔ Put names to tuple elements types @done(2026-06-01 08:13) @project(To do)
