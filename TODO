@@ -12,7 +12,7 @@ Requests:
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
 Bugs:
-  ☐ Bounding sphere does not consider supercell
+  ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43)
 
 To do:
   ☐ Check error return from main process to client
@@ -60,6 +60,7 @@ Nice to have/Future:
   ☐ Investigate git workspaces for STMng preprocessor
   ☐ Instead of color manipulation use package <https://www.npmjs.com/package/color-convert>
   ☐ Labels using MSDF <https://github.com/leochocolat/three-msdf-text-utils>
+  ☐ Add other colormaps <https://github.com/bpostlethwaite/colormap>
 
 Reference:
   ☐ Review number formatting <https://www.30secondsofcode.org/js/s/number-formatting/>
