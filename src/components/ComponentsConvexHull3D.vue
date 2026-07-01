@@ -103,7 +103,7 @@ handleSpecialKeys(windowPath);
 const pointsGroup = new Group();
 const labelsGroup = new Group();
 
-let labelRenderer: CSS2DRenderer;
+const labelRenderer = new CSS2DRenderer();
 
 /** Initialize the 3D viewer */
 const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
@@ -130,7 +130,6 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
         viewEnthalpy.value = e[idx].toFixed(4);
     });
 
-    labelRenderer = new CSS2DRenderer();
     labelRenderer.setSize(window.innerWidth, window.innerHeight-CONTROLS_HEIGHT);
     labelRenderer.domElement.style.position = "absolute";
     labelRenderer.domElement.style.top = "0px";
