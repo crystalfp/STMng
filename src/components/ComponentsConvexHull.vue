@@ -325,7 +325,6 @@ onUnmounted(() => {
     stopWatcher();
 });
 
-
 /** Data for the legend */
 const vc = computed(() => {
     return {
@@ -345,96 +344,75 @@ const legendTitle = computed(() => {
 
 
 <template>
-<v-app :theme>
-  <div class="hull-portal">
-    <VisXYContainer v-if="dimension===2"
-                    :margin="{right: 20, top: 20, left: 20, bottom: 20}"
-                    :duration="0" class="hull-viewer">
-      <VisLine :data="line" :x="xp" :y="yp" curveType="linear"/>
-      <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
-                  :color="cp" :size="7" cursor="pointer"/>
-      <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
-                  color="#FF0000" :size="15" cursor="pointer" shape="square"/>
-      <VisAxis type="x" :gridLine="false" label="Composition ratio"
-              labelColor="black" :labelFontSize="24" tickTextColor="black"/>
-      <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
-              labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
-      <VisTooltip :triggers :followCursor="false" />
-      <VisXYLabels v-if="showFormula" :data="line" :x="xp" :y="yp" :label="lp"
-                   xPositioning="data_space" yPositioning="data_space"/>
-    </VisXYContainer>
-    <VisXYContainer v-else-if="dimension===3"
-                    :margin="{right: 20, top: 20, left: 20, bottom: 20}"
-                    :duration="0" class="hull-viewer">
-      <VisLine :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
-      <VisLine :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
-      <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
-                  :color="cp" :size="9" cursor="pointer"/>
-      <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
-                  color="#FF0000" :size="15" cursor="pointer" shape="square"/>
-      <VisTooltip :triggers :followCursor="false" />
-      <VisXYLabels v-if="showFormula" :data="vertex" :x="xp" :y="yp" :label="lp"
-                   xPositioning="data_space" yPositioning="data_space"/>
-    </VisXYContainer>
-    <v-alert v-else
-         title="Not implemented"
-         :text="`Visualization 2D for ${dimension}-components is not implemented`"
-         type="error"
-         color="red-darken-4"
-         class="cursor-pointer" />
-    <VisBulletLegend :items="legend" class="hull-legend" :style="position"
-                     :onLegendItemClick="toggleItem" labelClassName="legend-color"
-                     labelFontSize="medium" bulletSize="15px"/>
-    <viewer-legend v-if="showLegend"
-                 :width="130" :height="200" :right="0" :top="0" :dark="true"
-                 :title="legendTitle" :values-continue="vc"/>
-    <v-container class="hull-buttons">
-      <v-btn-toggle v-model="pointColoring" mandatory>
-        <v-btn value="none" @click="showLegend=false">None</v-btn>
-        <v-btn value="formation">Formation</v-btn>
-        <v-btn value="distance">Distance</v-btn>
-      </v-btn-toggle>
-      <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
-      <select-colormap v-model="colormapName" class="mt-n1"/>
-      <v-btn @click="makeImage">Save image</v-btn>
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
-    </v-container>
-  </div>
+<v-app :theme class="layout-app">
+  <VisXYContainer v-if="dimension===2"
+                  :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                  :duration="0" class="layout-main hull-viewer">
+    <VisLine :data="line" :x="xp" :y="yp" curveType="linear"/>
+    <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                :color="cp" :size="7" cursor="pointer"/>
+    <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
+                color="#FF0000" :size="15" cursor="pointer" shape="square"/>
+    <VisAxis type="x" :gridLine="false" label="Composition ratio"
+            labelColor="black" :labelFontSize="24" tickTextColor="black"/>
+    <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
+            labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
+    <VisTooltip :triggers :followCursor="false" />
+    <VisXYLabels v-if="showFormula" :data="line" :x="xp" :y="yp" :label="lp"
+                  xPositioning="data_space" yPositioning="data_space"/>
+  </VisXYContainer>
+  <VisXYContainer v-else-if="dimension===3"
+                  :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                  :duration="0" class="layout-main hull-viewer">
+    <VisLine :data="edges" :x="xp" :y="yp" curveType="linear" color="#000000"/>
+    <VisLine :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
+    <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                :color="cp" :size="9" cursor="pointer"/>
+    <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
+                color="#FF0000" :size="15" cursor="pointer" shape="square"/>
+    <VisTooltip :triggers :followCursor="false" />
+    <VisXYLabels v-if="showFormula" :data="vertex" :x="xp" :y="yp" :label="lp"
+                  xPositioning="data_space" yPositioning="data_space"/>
+  </VisXYContainer>
+  <v-alert v-else
+        title="Not implemented"
+        :text="`Visualization 2D for ${dimension}-components is not implemented`"
+        type="error"
+        color="red-darken-4"
+        class="cursor-pointer" />
+  <VisBulletLegend :items="legend" class="hull-legend" :style="position"
+                    :onLegendItemClick="toggleItem" labelClassName="legend-color"
+                    labelFontSize="medium" bulletSize="15px"/>
+  <viewer-legend v-if="showLegend"
+                :width="130" :height="200" :right="0" :top="0" :dark="true"
+                :title="legendTitle" :values-continue="vc"/>
+  <v-container class="layout-buttons">
+    <v-btn-toggle v-model="pointColoring" mandatory>
+      <v-btn value="none" @click="showLegend=false">None</v-btn>
+      <v-btn value="formation">Formation</v-btn>
+      <v-btn value="distance">Distance</v-btn>
+    </v-btn-toggle>
+    <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
+    <select-colormap v-model="colormapName" class="mt-n1"/>
+    <v-btn @click="makeImage">Save image</v-btn>
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+  </v-container>
 </v-app>
 </template>
 
 
 <style scoped>
-.hull-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-width: 800px;
-  padding: 0;
-}
 
 .hull-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
-  padding: 0;
   background-color: #90CEEC;
 
   --vis-axis-tick-color: black;
 }
 
-.hull-buttons {
-  display: flex;
-  max-width: 3000px !important;
-  width: 100vw;
-  gap: 10px;
-  justify-content: end;
-}
-
 .hull-legend {
-    position: absolute;
-    top: 10px;
-    left: 120px;
+  position: absolute;
+  top: 10px;
+  left: 120px;
 }
 
 :deep(.legend-color) {
