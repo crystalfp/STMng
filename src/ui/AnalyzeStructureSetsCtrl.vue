@@ -747,7 +747,7 @@ const border = computed(() => {
             label="Distance threshold" :min="0" :max="1" :step="0.005" :precision="3" class="mt-0"/>
   </v-row>
   <v-label class="result-label ml-1">{{ summaryLabel }}</v-label>
-  <block-button :disabled="!state.removeDuplicates || analysisRunning"
+  <block-button :disabled="!state.removeDuplicates || analysisRunning || countAccumulated === 0"
                 :loading="analysisRunning"
                 label="Analyze selected for duplicates" class="mb-n2 mt-2"
                 @click="analysisRunning=true; savedFiles=-1; analyzeSelected()"/>

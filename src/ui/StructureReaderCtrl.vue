@@ -736,10 +736,13 @@ const clearErrors = (): void => {
 
 /**
  * Block rendering when speed === "fast"
+ * (Set the initial value from the non default project)
  */
 const checkRenderingSpeed = (): void => {
+
     controlStore.blockRendering = speed.value === 0;
 };
+setTimeout(checkRenderingSpeed, 50);
 
 </script>
 
