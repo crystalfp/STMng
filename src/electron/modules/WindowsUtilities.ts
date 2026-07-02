@@ -213,8 +213,7 @@ let paramsData: CtrlParams = {};
  */
 export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
 
-    let isOpen = params.alreadyOpen;
-    isOpen ??= openedWindows.has(params.routerPath);
+    const isOpen = params.alreadyOpen ?? openedWindows.has(params.routerPath);
     const channel = params.routerPath.slice(1);
 
     if(isOpen) {
@@ -227,6 +226,7 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
     else {
         if(params.data) {
             paramsData = structuredClone(params.data);
+            ipcMain.removeHandler(`SYSTEM:INITIAL-DATA:${channel}`);
             ipcMain.handleOnce(`SYSTEM:INITIAL-DATA:${channel}`, (): CtrlParams => {
                 return paramsData;
             });

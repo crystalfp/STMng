@@ -28,7 +28,6 @@ import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Mesh, MeshStandardMaterial, LineSegments, Group,
         FrontSide, Object3D, Color, AmbientLight} from "three";
 import {CSS2DRenderer, CSS2DObject} from "three/addons/renderers/CSS2DRenderer.js";
-import {Line2, LineGeometry, LineMaterial} from "three/examples/jsm/Addons.js";
 import {Lut} from "three/addons/math/Lut.js";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
@@ -60,7 +59,7 @@ const pointColoring = ref("formation");
 const notificationQueue = ref<string[]>([]);
 
 /**
- * Report an error on video and on the log file
+ * Report an error on screen and on the log file
  *
  * @param message - Error message
  */
@@ -255,20 +254,21 @@ const createReference4D = (): void => {
         mesh.removeFromParent();
     }
 
-    const points = [
-        0, 0, 0,                1, 0, 0,
-        1, 0, 0,                0.5, 0.86602540378, 0,
-        0.5, 0.86602540378, 0,  0, 0, 0, // √3/2
-        0, 0, 0,                0.5, 0.2886751346, 0.86602540378,
-        1, 0, 0,                0.5, 0.2886751346, 0.86602540378,
-        0.5, 0.86602540378, 0,  0.5, 0.2886751346, 0.86602540378,
+    // Tetrahedra vertices and connection of edges
+    const vertices = [
+        0, 0, 0,
+        1, 0, 0,
+        0.5, 0.86602540378, 0,
+        0.5, 0.2886751346, 0.86602540378
     ];
+    const indices = [0, 1, 1, 2, 2, 0, 0, 3, 1, 3, 2, 3];
 
-    const geometry = new LineGeometry();
-    geometry.setPositions(points);
+    const geometry = new BufferGeometry();
+	geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
 
-    const material = new LineMaterial({linewidth: 1, color: "#0000FF"});
-    const line = new Line2(geometry, material);
+    const material = new LineBasicMaterial({color: "#0000FF"});
+    const line = new LineSegments(geometry, material);
     line.name = "ConvexHullRef";
 
     scene.add(line);
@@ -347,7 +347,7 @@ const createLabels = (stableVertices: number[], zScale: number,
     for(const element of document.querySelectorAll<HTMLDivElement>(".label")) element.remove();
 
     const len = stableVertices.length/3;
-    for(let i=0; i < len; ++i) {
+    for(let i=0, i3=0; i < len; ++i, i3+=3) {
 
         const text = document.createElement("div");
         text.style.color = "blue";
@@ -357,10 +357,9 @@ const createLabels = (stableVertices: number[], zScale: number,
         text.className = "label";
 
         const label = new CSS2DObject(text);
-        const i3 = 3*i;
         label.position.set(stableVertices[i3],
-                            stableVertices[i3+1]*0.9+0.1,
-                            stableVertices[i3+2]*zScale);
+                           stableVertices[i3+1]*0.9+0.1,
+                           stableVertices[i3+2]*zScale);
         labelsGroup.add(label);
     }
 
