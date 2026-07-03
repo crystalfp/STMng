@@ -71,41 +71,32 @@ const format = (value: number): string => {
 
 
 <template>
-<v-app :theme>
-  <v-container class="means-portal">
-    <v-container class="means-container">
-      <v-table class="pa-1 w-100 bg-transparent" density="default">
-        <tr>
-          <th colspan="2">Atom (index)</th>
-          <th class="pl-4" colspan="3">Mean position {{ coordinates }}</th>
-          <th class="pl-10">MSD</th>
-        </tr>
-        <tr v-for="e of means" :key="e.index">
-          <td class="w-2">{{ e.atomType }}</td>
-          <td class="w-4">{{ `(${e.index}):` }}</td>
-          <td class="w-1 right">{{ `[ ${e.position[0].toFixed(3)},` }}</td>
-          <td class="w-1 right">{{ `${e.position[1].toFixed(3)},` }}</td>
-          <td class="w-1 right">{{ `${e.position[2].toFixed(3)} ]` }}</td>
-          <td class="w-4 right pr-4">{{ format(e.displacement) }}</td>
-        </tr>
-      </v-table>
-    </v-container>
-    <v-container class="button-strip justify-end">
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
-    </v-container>
+<v-app :theme class="layout-app">
+  <v-container class="means-container">
+    <v-table class="pa-1 w-100 bg-transparent" density="default">
+      <tr>
+        <th colspan="2">Atom (index)</th>
+        <th class="pl-4" colspan="3">Mean position {{ coordinates }}</th>
+        <th class="pl-10">MSD</th>
+      </tr>
+      <tr v-for="e of means" :key="e.index">
+        <td class="w-2">{{ e.atomType }}</td>
+        <td class="w-4">{{ `(${e.index}):` }}</td>
+        <td class="w-1 right">{{ `[ ${e.position[0].toFixed(3)},` }}</td>
+        <td class="w-1 right">{{ `${e.position[1].toFixed(3)},` }}</td>
+        <td class="w-1 right">{{ `${e.position[2].toFixed(3)} ]` }}</td>
+        <td class="w-4 right pr-4">{{ format(e.displacement) }}</td>
+      </tr>
+    </v-table>
+  </v-container>
+  <v-container class="layout-buttons">
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
 </v-app>
 </template>
 
 
 <style scoped>
-
-.means-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 0;
-}
 
 .means-container {
   overflow-y: auto;
@@ -116,7 +107,7 @@ const format = (value: number): string => {
   margin: 0;
   height: 100%;
   max-width: 3000px !important;
-  scrollbar-gutter: stable;
+  padding-right: 0;
 }
 
 th {

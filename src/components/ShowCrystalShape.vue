@@ -289,42 +289,13 @@ const updateVisibility = (visible: boolean | null): void => {
 
 
 <template>
-<v-app :theme>
-  <div class="shape-portal">
-    <div class="shape-viewer" />
-    <v-container class="shape-buttons">
+<v-app :theme class="layout-app">
+    <div class="layout-main shape-viewer" />
+    <v-container class="layout-buttons">
       <v-switch v-model="visibleBV" label="Show basis vectors"
                 @update:modelValue="updateVisibility"/>
       <v-btn @click="centerView">Center</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
-  </div>
 </v-app>
 </template>
-
-
-<style scoped>
-
-.shape-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 0;
-}
-
-.shape-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
-  padding: 0;
-}
-
-.shape-buttons {
-  display: flex;
-  max-width: 3000px !important;
-  width: 100vw;
-  gap: 10px;
-  justify-content: end;
-}
-
-</style>

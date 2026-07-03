@@ -227,64 +227,48 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
 
 
 <template>
-<v-app :theme>
-  <div class="fp-chart-portal">
-    <VisXYContainer :margin="{right: 40, top: 20, left: 10, bottom: 50}" :duration="0"
-                    class="fp-chart-viewer">
-      <VisLine v-if="showLine" :key="forceUpdate" :data="points" :x="xp" :y="yp" curveType="step"/>
-      <VisScatter v-if="showPoints" :key="forceUpdate" :data="points" :x="xp" :y="yp"
-                  :size="8" shape="square"/>
-      <VisPlotline v-if="showZero" lineStyle="dot" :value="0" :duration="0" />
-      <VisAxis type="x" :gridLine="false" :label="titleX" :fullSize="true"
-               :labelFontSize="24"/>
-      <VisAxis type="y" :gridLine="false" :label="titleY"
-               :fullSize="true" :labelFontSize="24" />
-      <VisTooltip :triggers :followCursor="false" verticalPlacement="bottom" />
-    </VisXYContainer>
-    <v-container class="fp-chart-buttons">
-      <div class="buttons-line1">
-        <slider-with-steppers v-show="showStepSlider" v-model="fpIndex"
-                                v-model:raw="showFpIndex" label-width="11rem"
-                                :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
-                                :min="0" :max="countFingerprints-1" :step="1" />
-        <slider-with-steppers v-show="showBinCountSlider" v-model="binCount"
-                                v-model:raw="showBinCount" label-width="11rem"
-                                :label="`Bin count (${showBinCount})`"
-                                :min="2" :max="200" :step="1" />
-    </div>
-      <div class="buttons-line">
-        <v-btn-toggle v-model="chartType" mandatory>
-          <v-btn value="fp">Fingerprint</v-btn>
-          <v-btn value="en" :disabled="!haveEnergies">Energy</v-btn>
-          <v-btn value="ed" :disabled="!haveEnergies || !haveDistances">Energy-Dist</v-btn>
-          <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
-          <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
-          <v-btn value="op">Order param</v-btn>
-          <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
-        </v-btn-toggle>
-        <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
-      </div>
-    </v-container>
+<v-app :theme class="layout-app">
+  <VisXYContainer :margin="{right: 40, top: 20, left: 10, bottom: 50}" :duration="0"
+                  class="layout-main">
+    <VisLine v-if="showLine" :key="forceUpdate" :data="points" :x="xp" :y="yp" curveType="step"/>
+    <VisScatter v-if="showPoints" :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                :size="8" shape="square"/>
+    <VisPlotline v-if="showZero" lineStyle="dot" :value="0" :duration="0" />
+    <VisAxis type="x" :gridLine="false" :label="titleX" :fullSize="true"
+              :labelFontSize="24"/>
+    <VisAxis type="y" :gridLine="false" :label="titleY"
+              :fullSize="true" :labelFontSize="24" />
+    <VisTooltip :triggers :followCursor="false" verticalPlacement="bottom" />
+  </VisXYContainer>
+  <v-container class="fp-chart-buttons">
+    <div class="buttons-line1">
+      <slider-with-steppers v-show="showStepSlider" v-model="fpIndex"
+                              v-model:raw="showFpIndex" label-width="11rem"
+                              :label="`Structure step ${ids[showFpIndex] ?? '(none)'}`"
+                              :min="0" :max="countFingerprints-1" :step="1" />
+      <slider-with-steppers v-show="showBinCountSlider" v-model="binCount"
+                              v-model:raw="showBinCount" label-width="11rem"
+                              :label="`Bin count (${showBinCount})`"
+                              :min="2" :max="200" :step="1" />
   </div>
+    <div class="buttons-line">
+      <v-btn-toggle v-model="chartType" mandatory>
+        <v-btn value="fp">Fingerprint</v-btn>
+        <v-btn value="en" :disabled="!haveEnergies">Energy</v-btn>
+        <v-btn value="ed" :disabled="!haveEnergies || !haveDistances">Energy-Dist</v-btn>
+        <v-btn value="eh" :disabled="!haveEnergies">Hist energies</v-btn>
+        <v-btn value="dh" :disabled="!haveDistances">Hist distances</v-btn>
+        <v-btn value="op">Order param</v-btn>
+        <v-btn value="di" :disabled="!haveDistances">Distances</v-btn>
+      </v-btn-toggle>
+      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+    </div>
+  </v-container>
 </v-app>
 </template>
 
 
 <style scoped>
-
-.fp-chart-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 0;
-}
-
-.fp-chart-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
-  padding: 20px;
-}
 
 .fp-chart-buttons {
   flex-direction: column;

@@ -263,47 +263,30 @@ const renderPoints = (): void => {
 
 
 <template>
-<v-app :theme>
-  <div class="landscape-portal">
-    <div class="landscape-viewer" />
-    <v-container class="landscape-buttons">
-      <slider-with-steppers v-model="energyScale" v-model:raw="showEnergyScale"
-                              class="mb-2 aa" label-width="4.9rem"
-                              :label="`Scale (${showEnergyScale})`"
-                              :min="0" :max="2" :step="0.1" />
-      <slider-with-steppers v-model="gridSideExp" v-model:raw="showGridSideExp"
-                              class="mb-2 bb" label-width="7.5rem"
-                              :label="`Grid side (${2**showGridSideExp})`"
-                              :min="6" :max="11" :step="1" />
-      <slider-with-steppers v-model="power" v-model:raw="showPower"
-                              class="mb-2 mr-0 cc" label-width="5.5rem"
-                              :label="`Power (${showPower})`"
-                              :min="1" :max="6" :step="0.1" />
-      <select-colormap v-model="colormapName" class="dd" />
-      <v-btn v-focus class="mt-2 ee" @click="closeWindow(windowPath)">Close</v-btn>
-      <v-switch v-model="showPoints" class="ml-4 ff" label="Show points" />
-    </v-container>
-  </div>
+<v-app :theme class="layout-app">
+  <div class="landscape-viewer layout-main" />
+  <v-container class="layout-buttons landscape-buttons">
+    <slider-with-steppers v-model="energyScale" v-model:raw="showEnergyScale"
+                            class="mb-2 aa" label-width="4.9rem"
+                            :label="`Scale (${showEnergyScale})`"
+                            :min="0" :max="2" :step="0.1" />
+    <slider-with-steppers v-model="gridSideExp" v-model:raw="showGridSideExp"
+                            class="mb-2 bb" label-width="7.5rem"
+                            :label="`Grid side (${2**showGridSideExp})`"
+                            :min="6" :max="11" :step="1" />
+    <slider-with-steppers v-model="power" v-model:raw="showPower"
+                            class="mb-2 mr-0 cc" label-width="5.5rem"
+                            :label="`Power (${showPower})`"
+                            :min="1" :max="6" :step="0.1" />
+    <select-colormap v-model="colormapName" class="dd" />
+    <v-btn v-focus class="mt-2 ee" @click="closeWindow(windowPath)">Close</v-btn>
+    <v-switch v-model="showPoints" class="ml-4 ff" label="Show points" />
+  </v-container>
 </v-app>
 </template>
 
 
 <style scoped>
-
-.landscape-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-width: 1100px;
-  padding: 0;
-}
-
-.landscape-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
-  padding: 0;
-}
 
 .landscape-buttons {
   display: grid;

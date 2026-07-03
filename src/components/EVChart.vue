@@ -193,35 +193,32 @@ const triggers = {
 
 
 <template>
-<v-app :theme>
-  <div class="ev-portal">
-      <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
-                      :duration="0" class="ev-viewer">
-        <VisLine :data="line" :x="xp" :y="yp" curveType="linear"/>
-        <VisScatter :key="forceUpdate" :data="points" :x="xp" :y="yp"
-                    :color="cp" :size="9" cursor="pointer" />
-        <VisAxis type="x" :gridLine="false" label="Cell volume (Å³)"
-                labelColor="black" :labelFontSize="24" tickTextColor="black"/>
-        <VisAxis type="y" :gridLine="false" label="Energy per structure (eV)"
-                labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
-        <VisTooltip :triggers :followCursor="false" />
-      </VisXYContainer>
-      <viewer-legend v-if="showLegend"
-                    :width="130" :height="200" :right="0" :top="0" :dark="true"
-                    title="Convex hull distance" :values-continue="vc"/>
-    <v-container class="ev-buttons">
-      <v-btn-toggle v-model="pointColoring" mandatory class="mr-4">
-        <v-btn value="none" @click="showLegend=false">None</v-btn>
-        <v-btn value="distance">Distance</v-btn>
-      </v-btn-toggle>
-      <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
-      <div style="width:200px">
-        <select-colormap v-model="colormapName" class="mt-n1 ml-4"/>
-      </div>
-      <v-spacer />
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
-    </v-container>
-  </div>
+<v-app :theme class="layout-app">
+  <VisXYContainer :margin="{right: 20, top: 20, left: 20, bottom: 20}"
+                  :duration="0" class="layout-main ev-viewer">
+    <VisLine :data="line" :x="xp" :y="yp" curveType="linear"/>
+    <VisScatter :key="forceUpdate" :data="points" :x="xp" :y="yp"
+                :color="cp" :size="9" cursor="pointer" />
+    <VisAxis type="x" :gridLine="false" label="Cell volume (Å³)"
+            labelColor="black" :labelFontSize="24" tickTextColor="black"/>
+    <VisAxis type="y" :gridLine="false" label="Energy per structure (eV)"
+            labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
+    <VisTooltip :triggers :followCursor="false" />
+  </VisXYContainer>
+  <viewer-legend v-if="showLegend"
+                :width="130" :height="200" :right="0" :top="0" :dark="true"
+                title="Convex hull distance" :values-continue="vc"/>
+  <v-container class="layout-buttons">
+    <v-btn-toggle v-model="pointColoring" mandatory class="mr-4">
+      <v-btn value="none" @click="showLegend=false">None</v-btn>
+      <v-btn value="distance">Distance</v-btn>
+    </v-btn-toggle>
+    <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
+    <div style="width:200px">
+      <select-colormap v-model="colormapName" class="mt-n1 ml-4"/>
+    </div>
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+  </v-container>
 </v-app>
 </template>
 
@@ -232,29 +229,14 @@ const triggers = {
   text-align: right;
 }
 
-.ev-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-width: 800px;
-  padding: 0;
-}
-
 .ev-viewer {
-  overflow: hidden;
+ /* overflow: hidden;
   width: 100vw;
-  flex: 2;
-  padding: 0;
+   flex: 2;
+  padding: 0; */
   background-color: #90CEEC;
 
   --vis-axis-tick-color: black;
 }
 
-.ev-buttons {
-  display: flex;
-  max-width: 3000px !important;
-  width: 100vw;
-  gap: 10px;
-  justify-content: end;
-}
 </style>
