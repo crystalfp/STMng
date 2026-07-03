@@ -139,50 +139,38 @@ const template = (d: DataRecord): string =>
 
 
 <template>
-<v-app :theme>
-  <div class="chart-portal">
-    <VisXYContainer :margin="{right: 20, top: 30, left: 20, bottom: 10}"
-                    :xDomain="range" :yDomain="[0, 100]" :duration="0"
-                    :scaleByDomain="true" class="chart-container">
-      <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
-      <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
-                  color="red" :size="4"
-                  :label="lp" labelColor="red" labelPosition="right" />
-      <VisAxis type="x" label="2θ (degrees)" :gridLine="showGrid"
-               labelColor="#6C778C" :labelFontSize="24" numTicks="10"
-               tickTextColor="#6C778C"/>
-      <VisAxis type="y" label="Intensity (a. u.)" :gridLine="showGrid"
-               labelColor="#6C778C" :labelFontSize="24"
-               tickTextColor="#6C778C"/>
-      <VisTooltip />
-      <VisCrosshair :data="points" :x="xp" :y="yp" :template />
-    </VisXYContainer>
-    <v-container class="button-strip">
-      <v-switch v-model="showGrid" label="Show grid"/>
-      <v-btn @click="savePeaks">Save peaks</v-btn>
-      <v-btn @click="savePoints">Save points</v-btn>
-      <v-btn @click="makeImage">Save image</v-btn>
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
-    </v-container>
-  </div>
+<v-app :theme class="layout-app">
+  <VisXYContainer :margin="{right: 20, top: 30, left: 20, bottom: 10}"
+                  :xDomain="range" :yDomain="[0, 100]" :duration="0"
+                  :scaleByDomain="true" class="layout-main chart-container">
+    <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
+    <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
+                color="red" :size="4"
+                :label="lp" labelColor="red" labelPosition="right" />
+    <VisAxis type="x" label="2θ (degrees)" :gridLine="showGrid"
+              labelColor="#6C778C" :labelFontSize="24" numTicks="10"
+              tickTextColor="#6C778C"/>
+    <VisAxis type="y" label="Intensity (a. u.)" :gridLine="showGrid"
+              labelColor="#6C778C" :labelFontSize="24"
+              tickTextColor="#6C778C"/>
+    <VisTooltip />
+    <VisCrosshair :data="points" :x="xp" :y="yp" :template />
+  </VisXYContainer>
+  <v-container class="layout-buttons">
+  <!-- <v-container class="button-strip"> -->
+    <v-switch v-model="showGrid" label="Show grid"/>
+    <v-btn @click="savePeaks">Save peaks</v-btn>
+    <v-btn @click="savePoints">Save points</v-btn>
+    <v-btn @click="makeImage">Save image</v-btn>
+    <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+  </v-container>
 </v-app>
 </template>
 
 
 <style scoped>
 
-.chart-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
 .chart-container {
-  overflow-y: auto;
-  width: 100vw;
-  flex: 2;
-  padding: 0;
-
   --vis-axis-tick-color: #6C778C;
   --vis-axis-grid-color: #6C778C;
   --vis-axis-grid-line-dasharray: 1 3;

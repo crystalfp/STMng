@@ -537,46 +537,44 @@ const changeVisibility = (): void => {
 
 
 <template>
-<v-app :theme>
-  <div class="hull3d-portal">
-    <div class="hull3d-viewer" />
-    <div v-if="viewStep !== ''" class="hull3d-panel">
-      <div v-html="viewFormula"/>
-      <table>
-        <tbody>
-          <tr><td>Step:</td><td class="align">{{ viewStep }}</td></tr>
-          <tr><td>Composition:</td><td class="align">{{ viewParts }}</td></tr>
-          <tr><td>Enthalpy:</td><td class="align">{{ viewEnthalpy }}</td></tr>
-          <tr><td>Distance:</td><td class="align">{{ viewDistance }}</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <v-container class="hull3d-controls">
-      <slider-with-steppers v-model="scale" v-model:raw="showScale" class="aa"
-                            label-width="5.5rem" :disabled="disableScale"
-                            :label="`Scale (${showScale})`"
-                            :min="0" :max="1" :step="0.01" />
-      <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
-                            label-width="8rem" class="bb"
-                            :label="`Point size (${showPointSize})`"
-                            :min="0.005" :max="0.05" :step="0.005" />
-      <div class="dd">
-        <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
-        <select-colormap v-model="colormapName"/>
-        <v-btn-toggle v-model="pointColoring" mandatory>
-          <v-btn value="none" @click="showLegend=false">None</v-btn>
-          <v-btn value="formation">Formation</v-btn>
-          <v-btn value="distance">Distance</v-btn>
-        </v-btn-toggle>
-        <v-switch v-model="showLines" label="Show lines"
-                  @update:modelValue="changeVisibility"/>
-        <v-switch v-model="showLabels" label="Show labels" class="mr-2"
-                  @update:modelValue="changeVisibility"/>
-      </div>
-      <v-btn class="cc" @click="centerView">Center</v-btn>
-      <v-btn v-focus class="ff" @click="closeWindow(windowPath)">Close</v-btn>
-    </v-container>
+<v-app :theme class="layout-app">
+  <div class="layout-main hull3d-viewer" />
+  <div v-if="viewStep !== ''" class="hull3d-panel">
+    <div v-html="viewFormula"/>
+    <table>
+      <tbody>
+        <tr><td>Step:</td><td class="align">{{ viewStep }}</td></tr>
+        <tr><td>Composition:</td><td class="align">{{ viewParts }}</td></tr>
+        <tr><td>Enthalpy:</td><td class="align">{{ viewEnthalpy }}</td></tr>
+        <tr><td>Distance:</td><td class="align">{{ viewDistance }}</td></tr>
+      </tbody>
+    </table>
   </div>
+  <v-container class="layout-buttons hull3d-controls">
+    <slider-with-steppers v-model="scale" v-model:raw="showScale" class="aa"
+                          label-width="5.5rem" :disabled="disableScale"
+                          :label="`Scale (${showScale})`"
+                          :min="0" :max="1" :step="0.01" />
+    <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
+                          label-width="8rem" class="bb"
+                          :label="`Point size (${showPointSize})`"
+                          :min="0.005" :max="0.05" :step="0.005" />
+    <div class="dd">
+      <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
+      <select-colormap v-model="colormapName"/>
+      <v-btn-toggle v-model="pointColoring" mandatory>
+        <v-btn value="none" @click="showLegend=false">None</v-btn>
+        <v-btn value="formation">Formation</v-btn>
+        <v-btn value="distance">Distance</v-btn>
+      </v-btn-toggle>
+      <v-switch v-model="showLines" label="Show lines"
+                @update:modelValue="changeVisibility"/>
+      <v-switch v-model="showLabels" label="Show labels" class="mr-2"
+                @update:modelValue="changeVisibility"/>
+    </div>
+    <v-btn class="cc" @click="centerView">Center</v-btn>
+    <v-btn v-focus class="ff" @click="closeWindow(windowPath)">Close</v-btn>
+  </v-container>
   <viewer-legend v-if="showLegend" :dark="true"
                  :width="130" :height="285" :bottom="CONTROLS_HEIGHT" :right="0"
                  :title="legendTitle" :values-continue="vc"/>
@@ -596,13 +594,6 @@ const changeVisibility = (): void => {
   flex-direction: column;
   height: 100vh;
   min-width: 1100px;
-  padding: 0;
-}
-
-.hull3d-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
   padding: 0;
 }
 
