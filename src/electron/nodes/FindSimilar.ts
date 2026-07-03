@@ -30,7 +30,7 @@ import {sendToClient} from "../modules/ToClient";
 import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen, sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {collectionGetNearestStructures, collectionGetStructure} from "../modules/CollectionDb";
+import {collectionGetName, collectionGetNearestStructures, collectionGetStructure} from "../modules/CollectionDb";
 import {findMatchingPrototypes, prototypeGetStructure} from "../modules/PrototypeDb";
 import type {Atom, ChannelDefinition, Crystal, CtrlParams,
 			 FingerprintingParameters, PrototypeAtomsData, Structure} from "@/types";
@@ -401,9 +401,12 @@ export class FindSimilar extends NodeCore {
 				return {error: message};
 			}
 
+			const name = collectionGetName(id);
+
 			dataForClient = {
 				matrix: structure.crystal.basis,
-				atoms: this.formatAtoms(structure.atoms)
+				atoms: this.formatAtoms(structure.atoms),
+				mineral: name,
 			};
 		}
 		else {

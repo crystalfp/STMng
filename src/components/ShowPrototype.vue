@@ -98,8 +98,8 @@ requestData(windowPath, (params: CtrlParams) => {
 
     sv.setSceneModified();
 
-    if(!mineral && !aflow && !pearson && !strukturbericht) {
-        prototypeName.value = "";
+    if(!aflow && !pearson && !strukturbericht) {
+        prototypeName.value = mineral || "";
     }
     else {
         const sb = strukturbericht.replace(/_([^_]+)$/u, "<sub>$1</sub>");
@@ -475,42 +475,17 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
 
 
 <template>
-<v-app :theme>
-  <div class="prototype-portal">
-    <div class="prototype-viewer" />
-    <v-container class="prototype-buttons">
+<v-app :theme class="layout-app">
+    <div class="layout-main prototype-viewer" />
+    <v-container class="layout-buttons" style="justify-content: space-between">
       <v-label v-html="prototypeName"/>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>
-  </div>
 </v-app>
 </template>
 
 
 <style scoped>
-.prototype-portal {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-width: 1100px;
-  padding: 0;
-}
-
-.prototype-viewer {
-  overflow: hidden;
-  width: 100vw;
-  flex: 2;
-  padding: 0;
-}
-
-.prototype-buttons {
-  display: flex;
-  max-width: 3000px !important;
-  width: 100vw;
-  gap: 10px;
-  justify-content: space-between;
-  align-items: baseline
-}
 
 :deep(sub) {
   position: relative;
