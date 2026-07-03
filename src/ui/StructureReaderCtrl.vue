@@ -195,10 +195,6 @@ askNode(id, "init")
             showPrototypes.value = format.value === "Prototypes";
         }
 
-        // batchRead().catch((error: Error) => {
-        //     showNodeAlert(`Error from batch read for ${label}: ${error.message}`,
-        //                   "structureReader");
-        // });
         return batchRead();
     })
     .catch((error: Error) => {
@@ -351,6 +347,12 @@ const setFormat = (): void => {
     // Clean the labels of the file selectors
     label1.value = "";
     label2.value = "";
+
+    // Reset blocked rendering
+    if(speed.value === 0) {
+        speed.value = 1;
+        controlStore.blockRendering = false;
+    }
 };
 
 /** Formats that needs atoms types */
@@ -742,7 +744,7 @@ const checkRenderingSpeed = (): void => {
 
     controlStore.blockRendering = speed.value === 0;
 };
-setTimeout(checkRenderingSpeed, 50);
+setTimeout(checkRenderingSpeed, 100);
 
 </script>
 
