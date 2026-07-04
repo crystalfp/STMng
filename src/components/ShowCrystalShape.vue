@@ -26,15 +26,18 @@ import {ref} from "vue";
 import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
         Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
         BufferGeometry, AmbientLight, FrontSide, DirectionalLight} from "three";
+import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
 import {SimpleViewer} from "@/services/SimpleViewer";
 import {Lut} from "three/addons/math/Lut.js";
-import {closeWindow, requestData} from "@/services/RoutesClient";
+import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {spriteText} from "@/services/SpriteText";
 import type {CtrlParams, PositionType} from "@/types";
 
 const windowPath = "/crystal-shape";
+
+let id = "";
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
@@ -164,6 +167,8 @@ const renderBasisVectors = (center: [x: number, y: number, z: number],
     sv.setSceneModified();
 };
 
+let shape: Mesh | undefined;
+
 /**
  * Render the surface of the crystal shape
  *
@@ -225,7 +230,7 @@ const renderShape = (vertices: number[], index: number[], colors: number[]): num
     sv.setCamera(cameraPosition, cameraCenter, cameraZoom);
 
     // Create shape
-    const shape = new Mesh(geometry, material);
+    shape = new Mesh(geometry, material);
     shape.name = surfaceName;
     scene.add(shape);
     sv.setSceneModified();
@@ -245,6 +250,7 @@ requestData(windowPath, (params: CtrlParams) => {
     if(!index) return;
     const basis = params.basis as number[];
     if(!basis) return;
+    id = params.id as string ?? "";
 
     // Transform color index into color per vertex
     const lut = new Lut("rainbow", maxColor+1);
@@ -285,6 +291,23 @@ const updateVisibility = (visible: boolean | null): void => {
     sv.setSceneModified();
 };
 
+const binary = ref(true);
+
+/**
+ * Export the crystal shape as STL file
+ */
+const exportSTL = (): void => {
+
+    if(!shape) return;
+    const exporter = new STLExporter();
+    const result = exporter.parse(shape, {binary: binary.value}) as unknown;
+
+    sendToNode(id, "stl", {
+        binary: binary.value,
+        content: binary.value ? (result as DataView<ArrayBuffer>).buffer : result as string,
+    });
+};
+
 </script>
 
 
@@ -294,6 +317,8 @@ const updateVisibility = (visible: boolean | null): void => {
     <v-container class="layout-buttons">
       <v-switch v-model="visibleBV" label="Show basis vectors"
                 @update:modelValue="updateVisibility"/>
+      <v-btn @click="exportSTL">Export STL</v-btn>
+      <v-switch v-model="binary" label="Binary STL" class="ml-2"/>
       <v-btn @click="centerView">Center</v-btn>
       <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
     </v-container>

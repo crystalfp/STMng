@@ -22,6 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
+import log from "electron-log";
+import {dialog} from "electron";
+import {writeFileSync} from "node:fs";
 import {NodeCore} from "../modules/NodeCore";
 import {hasNoUnitCell} from "../modules/Helpers";
 import {sendToClient} from "../modules/ToClient";
@@ -48,6 +51,7 @@ export class CrystalShape extends NodeCore {
 		{name: "init",	  type: "invoke",	    callback: this.channelInit.bind(this)},
 		{name: "state",	  type: "send",			callback: this.channelState.bind(this)},
 		{name: "compute", type: "invokeAsync",	callback: this.channelCompute.bind(this)},
+		{name: "stl",	  type: "send", 	    callback: this.channelSTL.bind(this)},
 	];
 
 	/**
@@ -193,7 +197,8 @@ export class CrystalShape extends NodeCore {
 							colors: this.crystalResults.colors,
 							maxColor: this.crystalResults.maxColor,
 							index: this.crystalResults.index!,
-							basis};
+							basis,
+							id: this.id};
 
 		// Open the chart
 		createOrUpdateSecondaryWindow({
@@ -266,5 +271,34 @@ export class CrystalShape extends NodeCore {
 		}
 
 		return index;
+	}
+
+	/**
+	 * Channel handler for creating a STL file
+	 *
+	 * @param params - Params from the client
+	 * @returns Params with the operation status
+	 */
+	private channelSTL(params: CtrlParams): void {
+
+		const {content} = params;
+		if(!content) return;
+		const binary = params.binary as boolean ?? false;
+
+		// Select the save file
+		const filename = dialog.showSaveDialogSync({
+			title: "Save STL geometry file",
+			defaultPath: "geometry.stl",
+			filters: [{name: "STL", extensions: ["stl"]}]
+		});
+		if(!filename) return;
+
+		try {
+			if(binary) writeFileSync(filename, Buffer.from(content as ArrayBuffer));
+			else       writeFileSync(filename, content as string, "utf8");
+		}
+		catch(error) {
+			log.error(`Cannot save STL file ${filename}. Error: ${(error as Error).message}`);
+		}
 	}
 }
