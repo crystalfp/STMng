@@ -1,5 +1,5 @@
-name: Push webpages to another repository
-run-name: ${{ github.actor }} is pushing webpages to another repository
+name: Pushing doc to STMng-pages repository
+run-name: Pushing doc to STMng-pages repository
 on:
   # - create
 
@@ -16,10 +16,10 @@ env:
 concurrency:
   group: "pages"
   cancel-in-progress: false
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+
 permissions:
   contents: read
-  pages: write
+  deployments: write
 
 jobs:
   # Single deploy job since we're just deploying
@@ -34,5 +34,6 @@ jobs:
           source-files: 'public/doc/'
           destination-username: 'crystalfp'
           destination-repository: 'STMng-pages'
+          destination-branch: 'master'
           destination-directory: '.'
           commit-email: 'mvalle@ikmail.com'
