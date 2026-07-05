@@ -33,6 +33,6 @@ jobs:
         with:
           source-files: 'public/doc/'
           destination-username: 'crystalfp'
-          destination-repository: 'https://github.com/crystalfp/STMng-pages'
+          destination-repository: 'STMng-pages'
           destination-directory: '.'
           commit-email: 'mvalle@ikmail.com'
