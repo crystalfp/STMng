@@ -119,32 +119,32 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
 
 
 <template>
-<v-app :theme class="layout-app">
-  <v-row class="layout-main">
-    <v-col cols="4" class="flex-1-1-0 pr-6 pt-4">
-      <v-label class="text-headline-small no-select justify-center mt-n2 mb-2 w-100">Prototype matches</v-label>
-      <v-container v-for="entry of prototypes" :key="entry.aflow" v-ripple
-                  class="mb-3 ml-4 py-1 pl-2 border-thin rounded-lg cursor-pointer"
-                  @click="selectResult(entry.aflow, false)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
-        <v-label class="bigger-result cursor-pointer">{{ `aflow: ${entry.aflow}` }}</v-label>
-      </v-container>
-    </v-col>
-    <v-divider vertical thickness="6px" opacity="0.6"/>
-    <v-col cols="5" class="flex-1-1-0 pr-4 pt-4">
-      <v-label class="text-headline-small no-select justify-center mt-n2 mb-2 w-100">Collection matches</v-label>
-      <v-container v-for="entry of collection" :key="entry.id" v-ripple
-                   class="mb-3 py-1 pl-2 ml-2 border-thin rounded-lg cursor-pointer"
-                   @click="selectResult(entry.id, true)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title"/><br>
-        <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
-        <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
-            {{ entry.distance!.toFixed(4) }}</v-label>
-      </v-container>
-    </v-col>
-  </v-row>
-  <v-container class="layout-buttons put-symmetry">
-    <div>
+<v-app :theme>
+<div class="match-grid">
+  <v-label class="aa text-headline-small no-select justify-center my-2">Prototype matches</v-label>
+  <v-divider vertical thickness="6px" opacity="0.6" class="bb"/>
+  <v-label class="cc text-headline-small no-select justify-center my-2">Collection matches</v-label>
+
+  <v-container class="dd">
+    <v-container v-for="entry of prototypes" :key="entry.aflow" v-ripple
+                class="mb-3 mr-2 py-1 pl-2 border-thin rounded-lg cursor-pointer"
+                @click="selectResult(entry.aflow, false)">
+      <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
+      <v-label class="bigger-result cursor-pointer">{{ `aflow: ${entry.aflow}` }}</v-label>
+    </v-container>
+  </v-container>
+  <v-container class="ee">
+    <v-container v-for="entry of collection" :key="entry.id" v-ripple
+                  class="mb-3 mr-2 py-1 pl-2 border-thin rounded-lg cursor-pointer"
+                  @click="selectResult(entry.id, true)">
+      <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title"/><br>
+      <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
+      <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
+          {{ entry.distance!.toFixed(4) }}</v-label>
+    </v-container>
+  </v-container>
+  <v-container class="ff">
+    <div class="mt-1">
       <span class="text-title-medium no-select mr-2">Structure:</span>
       <span class="text-title-medium result-label" v-html="formula" />
       <span class="text-title-medium no-select mr-2 ml-4">Symmetry:</span>
@@ -152,6 +152,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
     </div>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
+  </div>
 </v-app>
 </template>
 
@@ -162,7 +163,35 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
   bottom: -0.2rem;
 }
 
-.put-symmetry {
+.match-grid {
+  display: grid;
+  gap: 0;
+  grid-template:
+    "aa bb cc" 50px
+    "dd bb ee" 1fr
+    "ff ff ff" 70px / 0.5fr 6px 0.5fr;
+  height: 100vh;
+}
+
+.aa {grid-area: aa;}
+.bb {grid-area: bb;}
+.cc {grid-area: cc;}
+.dd {
+  grid-area: dd;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.ee {
+  grid-area: ee;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.ff {
+  grid-area: ff;
+  display: flex;
   justify-content: space-between;
+  max-width: 3000px !important;
+  gap: 10px;
+  vertical-align: center;
 }
 </style>
