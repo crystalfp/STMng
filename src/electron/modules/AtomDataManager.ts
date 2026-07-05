@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {app, ipcMain} from "electron";
+import {app, dialog, ipcMain} from "electron";
 import {existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync} from "node:fs";
 import path from "node:path";
 import {getAtomDataDefault, setAtomDataDefault} from "./Preferences";
@@ -98,5 +98,40 @@ export const setupChannelAtomData = (): void => {
 		setAtomDataDefault(params.useDefault);
 		loadDataTable(JSON.parse(params.data) as AtomInfo[]);
 		writeFileSync(getDataFilePath("atom-data.json"), params.data, "utf8");
+	});
+
+	ipcMain.handle("ATOM-DATA:IMPORT", () => {
+
+		const file = dialog.showOpenDialogSync({
+			title: "Import atom data",
+			filters: [
+				{name: "Atom data", extensions: ["json"]},
+			]
+		});
+
+		if(!file) return {data: ""};
+
+		const content = readFileSync(file[0], "utf8");
+		loadDataTable(JSON.parse(content) as AtomInfo[]);
+		writeFileSync(getDataFilePath("atom-data.json"), content, "utf8");
+
+		return {
+			useDefault: getAtomDataDefault(),
+			data: JSON.stringify(getDataTable())
+		};
+	});
+
+	ipcMain.on("ATOM-DATA:EXPORT", (_event, params: {data: string}) => {
+
+ 		const file = dialog.showSaveDialogSync({
+			title: "Export atom data",
+			filters: [
+				{name: "Atom data", extensions: ["json"]},
+			]
+		});
+
+		if(file) {
+			writeFileSync(file, params.data, "utf8");
+		}
 	});
 };

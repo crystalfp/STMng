@@ -86,20 +86,27 @@ const saveDialog = (): void => {
  * Reset data from the default atom data set
  */
 const resetDialog = (): void => {
-  askNode("ATOM-DATA", "GET")
-  .then((params) => {
-      atomData.length = 0;
-      usingDefault.value = params.useDefault as boolean ?? true;
-      const dataString = params.data as string;
-      if(!dataString) return;
-      const dataRaw = JSON.parse(dataString) as AtomInfo[];
-      for(const entry of dataRaw) atomData.push(entry);
-      modified.value = false;
-  })
-  .catch((error: Error) => {
-      showNodeAlert(`Error from set atom data reset: ${error.message}`,
-                    "selectAtomData");
-  });
+
+    askNode("ATOM-DATA", "GET")
+    .then((params) => {
+        atomData.length = 0;
+        usingDefault.value = params.useDefault as boolean ?? true;
+        const dataString = params.data as string;
+        if(!dataString) return;
+        const dataRaw = JSON.parse(dataString) as AtomInfo[];
+        for(const entry of dataRaw) atomData.push(entry);
+        modified.value = false;
+
+        const entry = atomData[currentIdx.value];
+        currentAtom.color = entry.color;
+        currentAtom.rCov = entry.rCov;
+        currentAtom.rVdW = entry.rVdW;
+        currentAtom.bondStrength = entry.bondStrength;
+    })
+    .catch((error: Error) => {
+        showNodeAlert(`Error from set atom data reset: ${error.message}`,
+                      "selectAtomData");
+    });
 };
 
 /** Which set is loaded */
@@ -336,6 +343,45 @@ const sphere = (color: string, rCov: number): Record<string, string> => {
     };
 };
 
+/**
+ * Import the atom data table from a JSON file
+ */
+const importData = (): void => {
+
+    askNode("ATOM-DATA", "IMPORT")
+        .then((params) => {
+
+            const dataString = params.data as string;
+            if(!dataString) return;
+
+            usingDefault.value = false;
+            atomData.length = 0;
+            const dataRaw = JSON.parse(dataString) as AtomInfo[];
+            for(const entry of dataRaw) atomData.push(entry);
+            modified.value = true;
+
+            const entry = atomData[currentIdx.value];
+            currentAtom.color = entry.color;
+            currentAtom.rCov = entry.rCov;
+            currentAtom.rVdW = entry.rVdW;
+            currentAtom.bondStrength = entry.bondStrength;
+        })
+        .catch((error: Error) => {
+            showNodeAlert(`Error importing atom data: ${error.message}`,
+                          "selectAtomData");
+        });
+};
+
+/**
+ * Export the atom data table to a JSON file
+ */
+const exportData = (): void => {
+
+    sendToNode("ATOM-DATA", "EXPORT", {
+        data: JSON.stringify(toRaw(atomData)).replaceAll("},{", "},\n{")
+    });
+};
+
 </script>
 
 
@@ -389,6 +435,8 @@ const sphere = (color: string, rCov: number): Record<string, string> => {
       </div>
     </v-card-text>
     <v-card-actions>
+      <v-btn @click="importData">Import</v-btn>
+      <v-btn @click="exportData">Export</v-btn>
       <v-btn :disabled="!modified" @click="resetDialog">Reset</v-btn>
       <v-btn :disabled="!modified" @click="saveDialog">Save</v-btn>
       <v-btn v-focus @click="closeDialog">Close</v-btn>
