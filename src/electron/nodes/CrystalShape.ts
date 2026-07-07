@@ -25,20 +25,23 @@
 import log from "electron-log";
 import {dialog} from "electron";
 import {writeFileSync} from "node:fs";
+import {lusolve} from "mathjs";
 import {NodeCore} from "../modules/NodeCore";
 import {hasNoUnitCell} from "../modules/Helpers";
 import {sendToClient} from "../modules/ToClient";
 import {computeCrystalPlanes} from "../shapes/ComputeCrystalPlanes";
 import {buildCrystalShape, type CrystalGeometry} from "../shapes/BuildCrystal";
+import {getMiller} from "../shapes/GetMiller";
 import {createOrUpdateSecondaryWindow} from "../modules/WindowsUtilities";
 import {markDuplicates} from "../modules/MarkDuplicates";
-import type {ChannelDefinition, CtrlParams, Structure} from "@/types";
+import type {BasisType, ChannelDefinition, CtrlParams, Structure} from "@/types";
 
 export class CrystalShape extends NodeCore {
 
 	private structure: Structure | undefined;
 	private crystalResults: CrystalGeometry | undefined;
 	private previousPlanesCount = -1;
+	private faceMiller: string[] = [];
 
 	// Mirror of the UI reactive state
 	private readonly state = {
@@ -191,6 +194,9 @@ export class CrystalShape extends NodeCore {
 
 			// Orient triangles so their normals point to the outside
 			this.crystalResults.index = this.orientSurfaces();
+
+			this.faceMiller = this.createMillerIndices(this.crystalResults, basis);
+
 		}
 		const dataToSend: CtrlParams = {
 							vertices: this.crystalResults.vertices,
@@ -198,6 +204,7 @@ export class CrystalShape extends NodeCore {
 							maxColor: this.crystalResults.maxColor,
 							index: this.crystalResults.index!,
 							basis,
+							faceMiller: this.faceMiller,
 							id: this.id};
 
 		// Open the chart
@@ -300,5 +307,36 @@ export class CrystalShape extends NodeCore {
 		catch(error) {
 			log.error(`Cannot save STL file ${filename}. Error: ${(error as Error).message}`);
 		}
+	}
+
+	// TBD
+	private createMillerIndices(geometry: CrystalGeometry, basis: BasisType): string[] {
+
+		const miller: string[] = [];
+		const d = [1, 1, 1];
+		const {vertices, index} = geometry;
+		const ntri = vertices.length / 9;
+		for(let i=0, i3=0; i < ntri; ++i, i3 += 3) {
+			const i0 = index![i3]*3;
+			const i1 = index![i3+1]*3;
+			const i2 = index![i3+2]*3;
+			const matrix = [
+				[vertices[i0], vertices[i0+1], vertices[i0+2]],
+				[vertices[i1], vertices[i1+1], vertices[i1+2]],
+				[vertices[i2], vertices[i2+1], vertices[i2+2]]
+			];
+
+			const x = lusolve(matrix, d) as number[][];
+			const [a, b, c] = x.flat();
+
+			const ta = a*basis[0]+b*basis[1]+c*basis[2];
+			const tb = a*basis[3]+b*basis[4]+c*basis[5];
+			const tc = a*basis[6]+b*basis[7]+c*basis[8];
+
+			const hkl = getMiller(1/ta, 1/tb, 1/tc);
+			miller.push(hkl);
+		}
+
+		return miller;
 	}
 }
