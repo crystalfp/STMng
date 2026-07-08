@@ -170,4 +170,5 @@ html {
   max-width: 3000px !important;
   width: 100%;
   gap: 10px;
+  align-items: center;
 }

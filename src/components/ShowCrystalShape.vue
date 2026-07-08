@@ -26,7 +26,7 @@ import {ref} from "vue";
 import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
         Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
         BufferGeometry, AmbientLight, FrontSide, DirectionalLight,
-        Object3D, type Intersection} from "three";
+        Object3D, Color} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
@@ -45,99 +45,19 @@ const millerText = ref("");
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
 
-/**
- * Handle intersection with a face
- *
- * @param object - Clicked on object
- * @param intersects - The intersection result from the raycaster
- */
-const raycasterHandler = (object?: Object3D, intersects?: Intersection): void => {
-
-    if(!object || !intersects) {
-        millerText.value = "";
-        return;
-    }
-
-    const mesh = object as Mesh;
-    const vertices = mesh.geometry.getAttribute("position");
-    const va = vertices.array;
-    const nv = vertices.array.length/3;
-    const close = [];
-    for(let i=0, i3=0; i < nv; ++i, i3 +=3) {
-        const dist = intersects.point.distanceTo(new Vector3(va[i3], va[i3+1], va[i3+2]));
-        const obj = {
-            index: i3,
-            dist: dist
-        };
-        close.push(obj);
-    }
-    close.sort((a, b) => a.dist - b.dist);
-
-    const ci = close[0].index;
-    const point = new Vector3(va[ci], va[ci+1], va[ci+2]);
-
-    const index = mesh.geometry.index!.array;
-
-    const faces = [];
-    const ntri = vertices.array.length/9;
-    for(let i=0, i3=0; i < ntri; ++i, i3+=3) {
-
-        const ia = index[i3]*3;
-        const ib = index[i3+1]*3;
-        const ic = index[i3+2]*3;
-
-        const vertexa = new Vector3(va[ia], va[ia+1], va[ia+2]);
-        const vertexb = new Vector3(va[ib], va[ib+1], va[ib+2]);
-        const vertexc = new Vector3(va[ic], va[ic+1], va[ic+2]);
-
-        if(point.equals(vertexa) ||
-            point.equals(vertexb) ||
-            point.equals(vertexc)) faces.push([ia, ib, ic, i]);
-    }
-
-    const centroids = [];
-    for(const idx of faces) {
-        const vA = [va[idx[0]], va[idx[0]+1], va[idx[0]+2]];
-        const vB = [va[idx[1]], va[idx[1]+1], va[idx[1]+2]];
-        const vC = [va[idx[2]], va[idx[2]+1], va[idx[2]+2]];
-
-        const meanX = (vA[0]+vB[0]+vC[0])/3;
-        const meanY = (vA[1]+vB[1]+vC[1])/3;
-        const meanZ = (vA[2]+vB[2]+vC[2])/3;
-        const vObj = {
-            index: idx[3],
-            v: new Vector3(meanX, meanY, meanZ)
-        };
-
-        centroids.push(vObj);
-    }
-
-    const closeCentroids = [];
-
-    for(let i = 0; i < centroids.length; i++) {
-        const dist = intersects.point.distanceTo(centroids[i].v);
-        const obj = {
-            index: i,
-            dist: dist
-        };
-        closeCentroids.push(obj);
-    }
-    closeCentroids.sort((a, b) => a.dist - b.dist);
-
-    const faceIdx = centroids[closeCentroids[0].index].index;
-    millerText.value = faceMiller[faceIdx];
-};
-
 /** Initialize the 3D viewer */
 const basisVectorGroup = new Group();
 const nameBV = "Basis";
 const visibleBV = ref(false);
+const shapeGroup = new Group();
+const nameShape = "Shape";
 
 const sv = new SimpleViewer(".shape-viewer", false, (scene) => {
 
     basisVectorGroup.name = nameBV;
     basisVectorGroup.visible = visibleBV.value;
     scene.add(basisVectorGroup);
+    scene.add(shapeGroup);
 
     // Increase ambient light intensity
     scene.traverse((object) => {
@@ -151,7 +71,16 @@ const sv = new SimpleViewer(".shape-viewer", false, (scene) => {
     light.position.set(0.5, -0.5, 0.5);
     scene.add(light);
 
-    sv.setRaycaster("Shape", raycasterHandler);
+    sv.setRaycaster("Facet", (object?: Object3D): void => {
+
+        if(!object) {
+            millerText.value = "";
+            return;
+        }
+
+        const {miller} = object.userData as {miller: string};
+        millerText.value = miller;
+    });
 });
 
 /** Camera position for centering */
@@ -255,86 +184,122 @@ const renderBasisVectors = (center: [x: number, y: number, z: number],
     sv.setSceneModified();
 };
 
-let shape: Mesh | undefined;
-
 /**
  * Render the surface of the crystal shape
  *
  * @param vertices - Surface triangles vertices [x0, y0, z0, x1, y1, z1, ...]
  * @param index - Index of the triangle vertices
+ * @param colorIndex - Index of the color of each triangle
  * @param colors - Color of each vertex
+ * @param maxColor - Max color index
+ * @param millerLabel - Label for each triangle
  * @returns Radius of the bounding sphere
  */
-const renderShape = (vertices: number[], index: number[], colors: number[]): number => {
+const renderShape = (vertices: number[], index: number[], colorIndex: number[], colors: number[],
+                     maxColor: number, millerLabel: string[]): number => {
 
-    const surfaceName = "Shape";
+    // Clear the shape
+    sv.clearGroup(nameShape);
 
-    // Remove existing surface
-    const scene = sv.getScene();
-    const mesh = scene.getObjectByName(surfaceName) as Mesh;
-    if(mesh) {
-        mesh.geometry.dispose();
-        (mesh.material as MeshStandardMaterial).dispose();
-        mesh.removeFromParent();
+    // For each facet
+    let idx = 0;
+    for(let color=0; color <= maxColor; ++color) {
+
+        const facetVertices: number[] = [];
+        const facetIndex: number[] = [];
+        const miller = millerLabel[idx/3];
+        const surfaceColor = new Color(colors[3*idx], colors[3*idx+1], colors[3*idx+2]);
+        let fi = 0;
+        for(; colorIndex[idx] === color; ++idx) {
+
+            facetIndex.push(fi++);
+            const ia = index[idx]*3;
+            facetVertices.push(vertices[ia], vertices[ia+1], vertices[ia+2]);
+        }
+
+        const geometry = new BufferGeometry();
+        geometry.setIndex(facetIndex);
+        geometry.setAttribute("position", new Float32BufferAttribute(facetVertices, 3));
+        geometry.computeVertexNormals();
+
+        // Define material
+        const material = new MeshStandardMaterial({
+            side: FrontSide,
+            roughness: 0.5,
+            metalness: 0.6,
+            color: surfaceColor
+        });
+        const shape = new Mesh(geometry, material);
+        shape.userData = {miller};
+        shape.name = "Facet";
+        shapeGroup.add(shape);
     }
 
-    // Build the geometry
-    const geometry = new BufferGeometry();
-    geometry.setIndex(index);
-    geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
-    geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
-    geometry.computeVertexNormals();
-
-    // Define material
-    const material = new MeshStandardMaterial({
-        side: FrontSide,
-        roughness: 0.5,
-        metalness: 0.6,
-        vertexColors: true
-    });
+    // Get bounding box from the rendered shape
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let minZ = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+    let maxZ = Number.NEGATIVE_INFINITY;
+    let meanX = 0;
+    let meanY = 0;
+    let meanZ = 0;
+    let n = 0;
+    for(let i=0; i < vertices.length; i+=3) {
+        const x = vertices[i];
+        const y = vertices[i+1];
+        const z = vertices[i+2];
+        if(x < minX) minX = x;
+        if(x > maxX) maxX = x;
+        if(y < minY) minY = y;
+        if(y > maxY) maxY = y;
+        if(z < minZ) minZ = z;
+        if(z > maxZ) maxZ = z;
+        meanX += x;
+        meanY += y;
+        meanZ += z;
+        ++n;
+    }
+    meanX /= n;
+    meanY /= n;
+    meanZ /= n;
+    const r0 = Math.hypot(minX-meanX, minY-meanY, minZ-meanZ);
+    const r1 = Math.hypot(maxX-meanX, maxY-meanY, maxZ-meanZ);
+    const radius = Math.max(r0, r1);
 
     // Move the camera to have the surface at the center of the viewer
-    geometry.computeBoundingSphere();
-    const bs = geometry.boundingSphere;
-    if(bs) {
+    cameraCenter = [
+        meanX,
+        meanY,
+        meanZ
+    ];
+    cameraPosition = [
+        cameraCenter[0]+6*radius,
+        cameraCenter[1]+6*radius,
+        cameraCenter[2]+6*radius
+    ];
+    cameraZoom = 15/radius;
 
-        cameraCenter = [
-            bs.center.x,
-            bs.center.y,
-            bs.center.z
-        ];
-        cameraPosition = [
-            cameraCenter[0]+6*bs.radius,
-            cameraCenter[1]+6*bs.radius,
-            cameraCenter[2]+6*bs.radius
-        ];
-        cameraZoom = 8/bs.radius;
-    }
-    else {
-        cameraPosition = [1, 1, 1];
-        cameraCenter = [0, 0, 0];
-        cameraZoom = 1;
-    }
     sv.setCamera(cameraPosition, cameraCenter, cameraZoom);
 
-    // Create shape
-    shape = new Mesh(geometry, material);
-    shape.name = surfaceName;
-    scene.add(shape);
     sv.setSceneModified();
 
-    return bs?.radius ?? 1;
+    return radius;
 };
+
+let vertices: number[] | undefined;
+let index: number[] | undefined;
 
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
 
-    const vertices = params.vertices as number[];
+    vertices = params.vertices as number[];
     if(!vertices) return;
     const colorIndex = params.colors as number[];
     if(!colorIndex) return;
     const maxColor = params.maxColor as number ?? 1;
-    const index = params.index as number[];
+    index = params.index as number[];
     if(!index) return;
     const basis = params.basis as number[];
     if(!basis) return;
@@ -357,7 +322,7 @@ requestData(windowPath, (params: CtrlParams) => {
         colors[i3+2] = b;
     }
 
-    const radius = renderShape(vertices, index, colors);
+    const radius = renderShape(vertices, index, colorIndex, colors, maxColor, faceMiller);
     renderBasisVectors(cameraCenter, radius, basis);
 });
 
@@ -381,13 +346,30 @@ const updateVisibility = (visible: boolean | null): void => {
 };
 
 const binary = ref(true);
+const scale = ref(1);
 
 /**
  * Export the crystal shape as STL file
  */
 const exportSTL = (): void => {
 
-    if(!shape) return;
+    if(!index || !vertices) return;
+
+    const stlVertices = Array<number>(vertices.length);
+    for(let i=0; i < vertices.length; ++i) stlVertices[i] = vertices[i]*scale.value;
+
+    const geometry = new BufferGeometry();
+    geometry.setIndex(index);
+    geometry.setAttribute("position", new Float32BufferAttribute(stlVertices, 3));
+    geometry.computeVertexNormals();
+    const material = new MeshStandardMaterial({
+        side: FrontSide,
+        roughness: 0.5,
+        metalness: 0.6,
+        color: "#333"
+    });
+    const shape = new Mesh(geometry, material);
+
     const exporter = new STLExporter();
     const result = exporter.parse(shape, {binary: binary.value}) as unknown;
 
@@ -404,9 +386,11 @@ const exportSTL = (): void => {
 <v-app :theme class="layout-app">
     <div class="layout-main shape-viewer" />
     <v-container class="layout-buttons">
-      <v-label :text="millerText" class="flex-1-1 mr-2 result-label"/>
+      <v-label :text="millerText" class="flex-1-1 mr-2 result-label" style="width: 70px"/>
       <v-switch v-model="visibleBV" label="Show basis vectors"
                 @update:modelValue="updateVisibility"/>
+      <v-number-input v-model="scale" label="STL scale" class="mb-n6 mr-0"
+                      :min="1" :max="100" :step="1" />
       <v-btn @click="exportSTL">Export STL</v-btn>
       <v-switch v-model="binary" label="Binary STL" class="ml-2"/>
       <v-btn @click="centerView">Center</v-btn>
