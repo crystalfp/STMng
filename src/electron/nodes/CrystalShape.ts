@@ -309,7 +309,13 @@ export class CrystalShape extends NodeCore {
 		}
 	}
 
-	// TBD
+	/**
+	 * Reconstruct the Miller indices for each crystal face
+	 *
+	 * @param geometry - Geometry of the crystal shape
+	 * @param basis - Basis vectors
+	 * @returns Miller index representation for each triangle
+	 */
 	private createMillerIndices(geometry: CrystalGeometry, basis: BasisType): string[] {
 
 		const miller: string[] = [];

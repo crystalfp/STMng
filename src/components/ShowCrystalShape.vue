@@ -23,10 +23,10 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {ref} from "vue";
-import {MeshStandardMaterial, Group, Vector3, CylinderGeometry, Object3D,
+import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
         Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
         BufferGeometry, AmbientLight, FrontSide, DirectionalLight,
-        Int32BufferAttribute, type Intersection} from "three";
+        Object3D, type Intersection} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
@@ -265,7 +265,7 @@ let shape: Mesh | undefined;
  * @param colors - Color of each vertex
  * @returns Radius of the bounding sphere
  */
-const renderShape = (vertices: number[], index: number[], colors: number[], faceIndex: number[]): number => {
+const renderShape = (vertices: number[], index: number[], colors: number[]): number => {
 
     const surfaceName = "Shape";
 
@@ -284,7 +284,6 @@ const renderShape = (vertices: number[], index: number[], colors: number[], face
     geometry.setAttribute("position", new Float32BufferAttribute(vertices, 3));
     geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
     geometry.computeVertexNormals();
-    geometry.setAttribute("customID", new Int32BufferAttribute(faceIndex, 1));
 
     // Define material
     const material = new MeshStandardMaterial({
@@ -358,7 +357,7 @@ requestData(windowPath, (params: CtrlParams) => {
         colors[i3+2] = b;
     }
 
-    const radius = renderShape(vertices, index, colors, colorIndex);
+    const radius = renderShape(vertices, index, colors);
     renderBasisVectors(cameraCenter, radius, basis);
 });
 
