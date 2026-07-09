@@ -1,4 +1,9 @@
 /**
+ * Definitions for KDtree.js
+ * @packageDocumentation
+ *
+ * @author Mario Valle "mvalle at ikmail.com"
+ * @since 2025-10-17
  *
  * Copyright 2026 Mario Valle
  *

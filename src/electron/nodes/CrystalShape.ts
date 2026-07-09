@@ -338,8 +338,7 @@ export class CrystalShape extends NodeCore {
 			const ta = a*basis[0]+b*basis[1]+c*basis[2];
 			const tb = a*basis[3]+b*basis[4]+c*basis[5];
 			const tc = a*basis[6]+b*basis[7]+c*basis[8];
-
-			const hkl = getMiller(1/ta, 1/tb, 1/tc);
+			const hkl = getMiller(ta, tb, tc);
 			miller.push(hkl);
 		}
 

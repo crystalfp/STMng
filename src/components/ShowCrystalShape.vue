@@ -386,7 +386,7 @@ const exportSTL = (): void => {
 <v-app :theme class="layout-app">
     <div class="layout-main shape-viewer" />
     <v-container class="layout-buttons">
-      <v-label :text="millerText" class="flex-1-1 mr-2 result-label" style="width: 70px"/>
+      <v-label :text="millerText" class="flex-1-1 mr-2 result-label font-weight-bold" style="width: 70px"/>
       <v-switch v-model="visibleBV" label="Show basis vectors"
                 @update:modelValue="updateVisibility"/>
       <v-number-input v-model="scale" label="STL scale" class="mb-n6 mr-0"
