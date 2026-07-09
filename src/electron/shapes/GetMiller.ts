@@ -38,7 +38,7 @@ const isZero = (v: number): boolean => Math.abs(v) < 1e-10;
  * @param v - Value to test
  * @returns If negative returns -1 else 1
  */
-const sign = (v: number): number => (v >=0 ? 1 : -1);
+const sign = (v: number): number => (v >= 0 ? 1 : -1);
 
 /**
  * From the multipliers along the basis axis extract the miller indices
@@ -98,6 +98,13 @@ export const getMiller = (ta: number, tb: number, tc: number): string => {
 				}
 			}
 		}
+
+		const m = gcd(minA, minB);
+		if(m > 1) {
+			minA /= m;
+			minB /= m;
+		}
+
 		if(za) return `(0 ${minA} ${minB})`;
 		if(zb) return `(${minA} 0 ${minB})`;
 		if(zc) return `(${minA} ${minB} 0)`;
