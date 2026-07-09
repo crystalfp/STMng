@@ -22,10 +22,12 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import type {NodeProps} from "@vue-flow/core";
+// To solve a problem building under typescript 7 the following two lines
+// have been disabled and substitute by the minimal defineProps below.
+// import type {NodeProps} from "@vue-flow/core";
+// defineProps<NodeProps>();
 
-// eslint-disable-next-line vue/no-unused-properties
-defineProps<NodeProps>();
+defineProps<{data: {label: string}}>();
 
 </script>
 

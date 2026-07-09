@@ -923,12 +923,12 @@ const border = computed(() => {
         </template> -->
       </VueFlow>
     </div>
-    <div class="bb button-strip pr-7">
+    <div class="bb button-strip">
       <v-btn @click="confirmNewProject">New project</v-btn>
       <v-btn :disabled="!projectModified || currentProjectPath===''"
             @click="saveProjectGraph(false)">Save</v-btn>
       <v-btn :disabled="!projectModified" @click="saveProjectGraph(true)">Save as…</v-btn>
-      <v-btn v-focus @click="tryToExit">Close</v-btn>
+      <v-btn v-focus @click="tryToExit" class="mr-2">Close</v-btn>
     </div>
   </div>
 
