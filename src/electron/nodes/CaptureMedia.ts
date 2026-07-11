@@ -149,6 +149,7 @@ export class CaptureView extends NodeCore {
 
 		const filename = dialog.showSaveDialogSync({
 			title: "Save movie",
+			defaultPath: ".",
 			filters: [
 				{name: "WEBm", extensions: ["webm"]},
 				{name: "mp4",  extensions: ["mp4"]},

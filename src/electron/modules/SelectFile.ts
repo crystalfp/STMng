@@ -39,6 +39,7 @@ export const setupChannelFileSelector = (): void => {
 		if(kind === "load") {
 			const file = dialog.showOpenDialogSync({
 				title,
+				defaultPath: ".",
 				properties: ["openFile"],
 				filters: filter,
 			});
@@ -49,6 +50,7 @@ export const setupChannelFileSelector = (): void => {
 		else {
 			const file = dialog.showSaveDialogSync({
 				title,
+				defaultPath: ".",
 				filters: filter,
 			});
 			if(file) return {

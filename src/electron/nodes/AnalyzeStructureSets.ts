@@ -583,6 +583,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const file = dialog.showSaveDialogSync({
 			title: "Output enthalpy transitions file",
+			defaultPath: "transitions.poscar",
 			filters: [{name: "POSCAR", extensions: ["poscar"]}],
 		});
 		if(!file) return;
@@ -628,6 +629,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const file = dialog.showSaveDialogSync({
 			title: "Output enthalpy transitions file",
+			defaultPath: "transitions.poscar",
 			filters: [{name: "POSCAR", extensions: ["poscar"]}],
 		});
 		if(!file) return;
@@ -923,6 +925,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const dir = dialog.showOpenDialogSync({
 			title: "Output directory",
+			defaultPath: ".",
 			properties: ["openDirectory"],
 		});
 		if(!dir) return {saved: -1};

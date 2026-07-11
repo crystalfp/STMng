@@ -95,6 +95,7 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     click() {
                         const file = dialog.showOpenDialogSync({
                             title: "Load project",
+                            defaultPath: ".",
                             properties: ["openFile"],
                             filters: [
                                 {name: "STMng project", extensions: ["stm"]},
@@ -132,6 +133,7 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                     click() {
                         const file = dialog.showSaveDialogSync({
                             title: "Save project",
+                            defaultPath: "project.stm",
                             filters: [
                                 {name: "STMng project", extensions: ["stm"]},
                             ]

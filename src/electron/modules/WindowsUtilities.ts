@@ -256,6 +256,7 @@ export const setupChannelSnapshot = (): void => {
 
         const file = dialog.showSaveDialogSync({
             title,
+            defaultPath: "snapshot.png",
             filters: [
                 {name: "PNG", extensions: ["png"]},
             ]

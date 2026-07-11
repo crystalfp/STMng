@@ -104,6 +104,7 @@ export const setupChannelAtomData = (): void => {
 
 		const file = dialog.showOpenDialogSync({
 			title: "Import atom data",
+			defaultPath: "atom-data.json",
 			filters: [
 				{name: "Atom data", extensions: ["json"]},
 			]
@@ -125,6 +126,7 @@ export const setupChannelAtomData = (): void => {
 
  		const file = dialog.showSaveDialogSync({
 			title: "Export atom data",
+			defaultPath: "atom-data.json",
 			filters: [
 				{name: "Atom data", extensions: ["json"]},
 			]

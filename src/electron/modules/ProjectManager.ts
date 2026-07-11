@@ -566,6 +566,7 @@ export const setupChannelProject = (): void => {
 
 		const file = currentFilename || dialog.showSaveDialogSync({
 			title: "Save modified project",
+			defaultPath: "project.stm",
 			filters: [
 				{name: "STMng project", extensions: ["stm"]},
 			]

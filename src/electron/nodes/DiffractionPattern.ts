@@ -387,6 +387,7 @@ export class DiffractionPattern extends NodeCore {
 
 				const file = dialog.showSaveDialogSync({
 					title: "Save X-Ray diffraction points",
+					defaultPath: "diffraction.dat",
 					filters: [
 						{name: "Point data", extensions: ["dat"]},
 					]
@@ -415,6 +416,7 @@ export class DiffractionPattern extends NodeCore {
 
 				const file = dialog.showSaveDialogSync({
 					title: "Save X-Ray diffraction peaks",
+					defaultPath: "peaks.dat",
 					filters: [
 						{name: "Peaks data", extensions: ["dat"]},
 					]
