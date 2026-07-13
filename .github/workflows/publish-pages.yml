@@ -27,7 +27,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build # The folder the action should deploy.
+          folder: public/doc/ # The folder the action should deploy.
           token: ${{ secrets.API_TOKEN_GITHUB }}
           repository-name: crystalfp/STMng-pages
           target-folder: .
