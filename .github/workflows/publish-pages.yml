@@ -30,4 +30,4 @@ jobs:
           folder: build # The folder the action should deploy.
           token: ${{ secrets.API_TOKEN_GITHUB }}
           repository-name: crystalfp/STMng-pages
-          target-forlder: .
+          target-folder: .
