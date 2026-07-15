@@ -928,7 +928,7 @@ const border = computed(() => {
       <v-btn :disabled="!projectModified || currentProjectPath===''"
             @click="saveProjectGraph(false)">Save</v-btn>
       <v-btn :disabled="!projectModified" @click="saveProjectGraph(true)">Save as…</v-btn>
-      <v-btn v-focus @click="tryToExit" class="mr-2">Close</v-btn>
+      <v-btn v-focus class="mr-2" @click="tryToExit">Close</v-btn>
     </div>
   </div>
 
