@@ -117,7 +117,7 @@ export class StructureWriter extends NodeCore {
 		this.outputFilename = params.filename as string ?? "";
 
 		// If continuous capture requested
-		if(this.continuous && running) {
+		if(running && this.continuous) {
 			this.capturedStructures.length = 0;
 			this.capturedStructures.push(this.structure!);
 			this.captureData = true;

@@ -360,7 +360,7 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
             const labelsNew: string[] = [];
 
             const groupedSitesLength = groupedSites.length;
-            for(let groupIdx = 0; groupIdx < groupedSitesLength && valid; groupIdx++) {
+            for(let groupIdx = 0; valid && groupIdx < groupedSitesLength; groupIdx++) {
 
                 const gsites = groupedSites[groupIdx];
                 const gfCoords = groupedFracCoords[groupIdx];

@@ -283,7 +283,7 @@ export class DrawUnitCellRenderer {
 		sm.clearGroup(this.nameBV);
 
 		// No vertices or not visible, nothing to do
-		if(vertices.length === 0 || !visible) return;
+		if(!visible || vertices.length === 0) return;
 
 		// Basis vectors visible, create them
 		const originZero = new Vector3(vertices[9], vertices[10], vertices[11]);

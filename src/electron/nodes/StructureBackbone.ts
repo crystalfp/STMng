@@ -269,7 +269,7 @@ export class StructureBackbone extends NodeCore {
 		const labelKind = params.labelKind as AtomSelectorModes ?? "symbol";
 		const atomsSelector = params.atomsSelector as string;
 
-		if(!this.inputStructure || !atomsSelector) return {status: "none"};
+		if(!atomsSelector || !this.inputStructure) return {status: "none"};
 		const status = checkAtomsSelector(this.inputStructure, labelKind, atomsSelector);
 		if(status) return {error: status};
 		return {status: "ok"};

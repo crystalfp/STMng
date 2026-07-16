@@ -504,7 +504,7 @@ export class DrawStructureRenderer {
 		const {atoms} = renderInfo;
 
 		// No atoms present or no label requested, display nothing
-		if(!atoms?.length || !showLabels) return;
+		if(!showLabels || !atoms?.length) return;
 
 		// Render labels
 		const billboardLabels = new BillboardBatchedText();

@@ -420,7 +420,7 @@ onMounted(() => {
         const mimeType = `image/${mimeTypeFormat}`;
 
         // If requested png with transparent background
-        if(configStore.camera.snapshotTransparent && mimeTypeFormat === "png") {
+        if(mimeTypeFormat === "png" && configStore.camera.snapshotTransparent) {
             sm.transparentSceneBackground(true);
             setTimeout(() => {
                 askNode("SYSTEM", channel, {

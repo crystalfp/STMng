@@ -863,9 +863,9 @@ let lastMoveEvent: number | undefined;
 const mousemove = (event: MouseEvent): void => {
 
     // Selection not started or not active
-    if(!showSelectionRectangle.value ||
-    rectangleStartX === undefined ||
-    rectangleStartY === undefined) return;
+    if(rectangleStartX === undefined ||
+       rectangleStartY === undefined ||
+       !showSelectionRectangle.value) return;
 
     // Avoid too many events
     if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 50) return;

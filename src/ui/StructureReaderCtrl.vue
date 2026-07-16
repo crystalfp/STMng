@@ -205,7 +205,7 @@ askNode(id, "init")
 // Reset accumulate for fingerprint when changing to a single step structure
 const stopWatcher1 = watch(countSteps, (after: number, before: number) => {
 
-    if(before > 1 && after === 1) controlStore.fingerprintsAccumulate = false;
+    if(after === 1 && before > 1) controlStore.fingerprintsAccumulate = false;
 });
 
 // Manage the step selection
@@ -213,7 +213,7 @@ const stopWatcher2 = watch(step, (
        after:  number,
        before: number) => {
 
-    if(running.value || before === after) return;
+    if(before === after || running.value) return;
 
     askNode(id, "step", {
             step: after,

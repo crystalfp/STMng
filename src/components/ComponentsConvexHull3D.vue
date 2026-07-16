@@ -352,7 +352,7 @@ const createLabels = (stableVertices: number[], zScale: number,
         const text = document.createElement("div");
         text.style.color = "blue";
         text.style.fontSize = "18px";
-        // eslint-disable-next-line unicorn/prefer-dom-node-html-methods, unicorn/no-unsafe-dom-html
+        // eslint-disable-next-line unicorn/no-unsafe-dom-html
         text.innerHTML = formulaText[indexVertices[i]];
         text.className = "label";
 

@@ -863,7 +863,7 @@ export class SliceStructure extends NodeCore {
 		const labelKind = params.labelKind as AtomSelectorModes ?? "symbol";
 		const atomsSelector = params.atomsSelector as string;
 
-		if(!this.structure || !atomsSelector) return {status: "none"};
+		if(!atomsSelector || !this.structure) return {status: "none"};
 		const status = checkAtomsSelector(this.structure, labelKind, atomsSelector);
 		if(status) return {error: status};
 		return {status: "ok"};

@@ -285,7 +285,7 @@ export class ComputeSymmetries extends NodeCore {
 
 		// If only apply symmetries, but no symmetry, copy input structure to output
 		const noSymmetries = noSymmetriesSpaceGroup.has(crystal.spaceGroup);
-		if(this.applyInputSymmetries && !this.enableFindSymmetries && noSymmetries) {
+		if(noSymmetries && this.applyInputSymmetries && !this.enableFindSymmetries) {
 
 			this.structure = this.fillUnitCell ?
 								this.fillCellFull(this.inputStructure) : this.inputStructure;

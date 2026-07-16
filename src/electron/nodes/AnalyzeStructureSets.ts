@@ -1125,7 +1125,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		}
 
 		// Do nothing except grouping structures
-		if(!this.options.removeDuplicates || count === 0) {
+		if(count === 0 || !this.options.removeDuplicates) {
 
 			return {status: "OK!", total: count, valid: count, key};
 		}

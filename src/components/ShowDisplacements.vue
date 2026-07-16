@@ -61,7 +61,7 @@ const FORMAT_LIMIT = 10**(-FORMAT_MAX_DIGITS);
  */
 const format = (value: number): string => {
 
-    if(Math.abs(value) > FORMAT_LIMIT || value === 0) {
+    if(value === 0 || Math.abs(value) > FORMAT_LIMIT) {
         return value.toFixed(FORMAT_MAX_DIGITS);
     }
     return value.toExponential(FORMAT_MAX_DIGITS-2);

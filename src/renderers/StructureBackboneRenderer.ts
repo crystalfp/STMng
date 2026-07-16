@@ -65,7 +65,7 @@ export class StructureBackboneRenderer {
 		// Remove existing tubes
 		sm.clearGroup(this.name);
 
-		if(!coordinates?.length || !visible) return;
+		if(!visible || !coordinates?.length) return;
 
 		const len = chainStart.length;
 		for(let i=0; i < len-1; ++i) {

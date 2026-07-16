@@ -195,7 +195,7 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
 
     const ss = params.sides as number[];
     const aa = params.angles as number[];
-    if(!ss || ss[0] === 0 || !aa) {
+    if(!ss || !aa || ss[0] === 0) {
         sides.value[0] = 0;
         return;
     }

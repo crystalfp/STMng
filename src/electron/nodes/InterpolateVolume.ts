@@ -188,7 +188,7 @@ export class InterpolateVolume extends NodeCore {
 								if(ii===0 && jj===0 && (kk===0 || kk===(pa+1))) continue;
 								if(ii===0 && jj===(pa+1) && (kk===0 || kk===(pa+1))) continue;
 								if(ii===(pa+1) && jj===(pa+1) && (kk===0 || kk===(pa+1))) continue;
-								if(ii===(pa+1) && jj===0 && (kk===0 || kk===(pa+1))) continue;
+								if(jj===0 && ii===(pa+1) && (kk===0 || kk===(pa+1))) continue;
 
 								const fii = ii * 1/(pa+1) + i - oi;
 

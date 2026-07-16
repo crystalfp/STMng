@@ -54,11 +54,11 @@ export const handleSpecialKeys = (windowPath: string, options: SpecialKeysOption
 
 	const specialKeysHandler = (event: KeyboardEvent): void => {
 
-		if(event.key === "Escape" && escape) {
+		if(escape && event.key === "Escape") {
 			closeWindow(windowPath);
 			event.preventDefault();
 		}
-		else if(event.key === "F1" && f1) {
+		else if(f1 && event.key === "F1") {
 			// Handle help
 			sendToNode("SYSTEM", "secondary-key", {
         		key: "F1",
@@ -66,7 +66,7 @@ export const handleSpecialKeys = (windowPath: string, options: SpecialKeysOption
 		    });
 			event.preventDefault();
 		}
-		else if(event.key === "F12" && f12) {
+		else if(f12 && event.key === "F12") {
 			// Handle devtools
 			sendToNode("SYSTEM", "secondary-key", {
         		key: "F12",

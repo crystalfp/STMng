@@ -235,7 +235,7 @@ const renderPoints = (): void => {
         sv.setSceneModified();
     }
 
-    if(!showPoints.value || !energyLandscapeData) return;
+    if(!energyLandscapeData || !showPoints.value) return;
 
     const POINT_SIZE = 0.01;
     const {points: points2D, energies} = energyLandscapeData;
