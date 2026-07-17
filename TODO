@@ -1,6 +1,5 @@
 Requests:
   ☐ Fix loading of the SPGlib library files on Linux
-  ☐ Fix that, when changing theme, the points color in scatterplot does not change
   ☐ Experiment with a more efficient way to visualize labels to atoms (use MSDF)
   ☐ Parallelize more the group analysis in variable composition
   ☐ (future) Move to WebGPU renderer from current WebGL renderer
@@ -72,6 +71,7 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Fix that, when changing theme, the points color in scatterplot does not change @done(2026-07-17 16:53) @project(Requests)
   ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43) @project(Bugs)
   ✔ Symmetry: display mode=intl. but show symmetry displays symmop @done(2026-06-30 15:49) @project(Bugs)
   ✔ Try t-SNE for projecting fingerprints <https://distill.pub/2016/misread-tsne/> <https://projector.tensorflow.org/> @done(2026-06-28 16:54) @project(ToDo eventually)

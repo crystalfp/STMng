@@ -95,6 +95,7 @@ let canvas: HTMLCanvasElement | null;
 const errorMessage = ref("");
 const successMessage = ref("");
 
+
 /**
  * Convert point coordinates into screen coordinates
  *
@@ -497,10 +498,10 @@ const pointClicked = (event: MouseEvent): void => {
     textShow.value = true;
 };
 
-// Redraw canvas if parameters change
+// Redraw canvas if parameters change (or theme changes)
 const stopWatcher1 = watch([
     pointRadius, scatterplotType, selectedPoints, textShow,
-    x, y, width, height, showSelectionRectangle
+    x, y, width, height, showSelectionRectangle, theme
 ], drawPoints, {deep: true});
 
 let resizeObserver: ResizeObserver;
