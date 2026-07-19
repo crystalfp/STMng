@@ -25,7 +25,6 @@
     "postcss-scss",
     "@rollup/plugin-node-resolve",
     "@oxlint/migrate",
-    "@typescript/native-preview",
     "@golar/vue",
     "rolldown"
   ],
