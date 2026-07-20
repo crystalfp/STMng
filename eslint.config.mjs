@@ -70,7 +70,8 @@ export default defineConfig([
             defineEmits: "readonly",
             defineModel: "readonly",
             withDefaults: "readonly",
-            navigator: "readonly"
+            navigator: "readonly",
+            TextDecoder: "readonly"
         },
         parserOptions: {
             parser: tsParser,
