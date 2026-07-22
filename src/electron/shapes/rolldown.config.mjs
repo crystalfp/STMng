@@ -30,5 +30,8 @@ export default defineConfig({
 		alias: {
 			"@": "../../"
 		}
+	},
+	checks: {
+		pluginTimings: false
 	}
 });
