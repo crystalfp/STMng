@@ -71,6 +71,7 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Crosshair does not work in X-Ray chart @done(2026-07-23 06:45) @project(Bugs)
   ✔ Fix that, when changing theme, the points color in scatterplot does not change @done(2026-07-17 16:53) @project(Requests)
   ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43) @project(Bugs)
   ✔ Symmetry: display mode=intl. but show symmetry displays symmop @done(2026-06-30 15:49) @project(Bugs)
