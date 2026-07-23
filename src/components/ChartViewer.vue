@@ -157,7 +157,6 @@ const template = (d: DataRecord): string =>
     <VisCrosshair :data="points" :x="xp" :y="yp" :template />
   </VisXYContainer>
   <v-container class="layout-buttons">
-  <!-- <v-container class="button-strip"> -->
     <v-switch v-model="showGrid" label="Show grid"/>
     <v-btn @click="savePeaks">Save peaks</v-btn>
     <v-btn @click="savePoints">Save points</v-btn>
