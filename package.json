@@ -23,7 +23,7 @@
     "stylelint": "stylelint ./src/App.vue ./src/**/*.vue ./src/styles/* ./public/doc/**/*.css",
     "start": "start /D .\\release\\%npm_package_version%\\win-unpacked STMng.exe",
     "oxlint": "oxlint -c ./oxlint.jsonc --tsconfig=tsconfig.json",
-    "migrate": "migrate --type-aware --js-plugins --with-nursery",
+    "migrate": "migrate --type-aware --js-plugins --with-nursery --merge",
     "mess": "vue-mess-detector analyze src --exclude=src/cpp,KDtree.js --ignore=elementAttributeOrder,shortVariableName,multiAttributeElements,elseCondition",
     "cruise": "depcruise -v -T dot -x cpp/ src | dot -T svg | depcruise-wrap-stream-in-html > local-doc/dependency-graph.html",
     "cruise:err": "depcruise -T err -x cpp/ src",
@@ -53,7 +53,7 @@
     "valibot": "^1.4.2",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
-    "vuetify": "^4.1.5",
+    "vuetify": "^4.1.6",
     "workerpool": "^10.0.3"
   },
   "devDependencies": {
