@@ -44,8 +44,8 @@ declare module "troika-three-text" {
     	public textIndent: number;
     	public unicodeFontsUrl: string;
 		public anchorX: "left" | "center" | "right";
-		public anchorY: "top" | "top-baseline" | "top-cap" | "top-ex" |
-						"middle" | "bottom-baseline" | "bottom";
+		public anchorY: "top" | "top-baseline" | "top-cap" | "top-ex"
+						| "middle" | "bottom-baseline" | "bottom";
 	}
 
 	export class BatchedText extends Text {

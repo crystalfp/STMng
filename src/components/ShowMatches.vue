@@ -174,18 +174,21 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
 }
 
 .aa {grid-area: aa;}
+
 .bb {grid-area: bb;}
+
 .cc {grid-area: cc;}
+
 .dd {
   grid-area: dd;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
 }
+
 .ee {
   grid-area: ee;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
 }
+
 .ff {
   grid-area: ff;
   display: flex;
