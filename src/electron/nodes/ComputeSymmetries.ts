@@ -422,7 +422,7 @@ export class ComputeSymmetries extends NodeCore {
 				inSymmetry,
 				outSymmetry,
 				pointGroup,
-				intlSymbol,
+				intlSymbol: this.enableFindSymmetries ? intlSymbol : "",
 				intlSymbolIn,
 				sgNumberIn,
 				sgNumberOut,
@@ -860,13 +860,12 @@ export class ComputeSymmetries extends NodeCore {
 			inSymmetry: this.inputStructure?.crystal?.spaceGroup ?? "",
 			outSymmetry: this.computedSpaceGroup,
 			pointGroup: this.pointGroup,
-			intlSymbol: this.intlSymbol,
+			intlSymbol: this.enableFindSymmetries ? this.intlSymbol : "",
 			intlSymbolIn: this.intlSymbolIn,
 			displayMode: this.displayMode,
 			sgNumberIn: this.sgNumberIn,
 			sgNumberOut: this.sgNumberOut
 		};
-
 		createOrUpdateSecondaryWindow({
 			routerPath: "/symmetries",
 			width: 700,
