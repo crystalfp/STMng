@@ -44,13 +44,25 @@
     "public/doc/scripts.js",
     "tests/**"
   ],
+  "overrides": [
+    {
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.vue",
+        "vite.config.mts"
+      ],
+    }
+  ],
   "options":{
     "typeAware": true,
-    "typeCheck": true
+    "typeCheck": true,
+    "reportUnusedDisableDirectives": "error",
+    "respectEslintDisableDirectives": true
   },
   "env": {
-    "es2026": true,
-    "builtin": true
+    "node": true,
+    "builtin": true,
+    "vue": true
   },
   "rules": {
     "constructor-super": "error",
