@@ -1,0 +1,4 @@
+- Use `as const` for constant arrays
+- Use `readonly` for constant function parameters
+- Don't use flags as function parameters
+- Use fat arrows for functions
