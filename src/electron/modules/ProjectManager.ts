@@ -371,7 +371,7 @@ class ProjectManager {
 	 *
 	 * @returns Full path to the default project
 	 */
-	private getDefaultProject(): string {
+	private static getDefaultProject(): string {
 
 		return publicDirPath("default-project.stm");
 	}
@@ -391,7 +391,7 @@ class ProjectManager {
 			sendAlertToClient(`Project file "${filename}" does not exist or is invalid. Loading default project`);
 
 			removeProjectPath();
-			filename = this.getDefaultProject();
+			filename = ProjectManager.getDefaultProject();
 			sendProjectPath();
 			loadedDefaultProject = true;
 		}
@@ -415,7 +415,7 @@ class ProjectManager {
 		let filename;
 		let loadedDefaultProject = false;
 		if(ignoreSaved) {
-			filename = this.getDefaultProject();
+			filename = ProjectManager.getDefaultProject();
 			removeProjectPath();
 			sendProjectPath();
 			loadedDefaultProject = true;
@@ -430,13 +430,13 @@ class ProjectManager {
 				else {
 					sendAlertToClient(`Project file "${filename}" does not exist or is invalid. Loading default project`);
 					removeProjectPath();
-					filename = this.getDefaultProject();
+					filename = ProjectManager.getDefaultProject();
 					sendProjectPath();
 					loadedDefaultProject = true;
 				}
 			}
 			else {
-				filename = this.getDefaultProject();
+				filename = ProjectManager.getDefaultProject();
 				sendProjectPath();
 				loadedDefaultProject = true;
 				sendProjectPath(filename);

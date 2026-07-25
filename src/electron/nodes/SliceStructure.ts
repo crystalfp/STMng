@@ -94,7 +94,7 @@ export class SliceStructure extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -246,7 +246,7 @@ export class SliceStructure extends NodeCore {
 							 (this.parallelB ? 2 : 0) +
 							 (this.parallelC ? 4 : 0);
 
-		return this.createPlane(points, parallelCode, basis);
+		return SliceStructure.createPlane(points, parallelCode, basis);
 	}
 
 	/**
@@ -316,7 +316,7 @@ export class SliceStructure extends NodeCore {
 			points[8] = pc*basis[8]+origin[2];
 		}
 
-		const {normal, point} = this.createPlane(points, parallelCode, basis);
+		const {normal, point} = SliceStructure.createPlane(points, parallelCode, basis);
 
 		this.planesNormals = [
 			normal[0],
@@ -506,7 +506,7 @@ export class SliceStructure extends NodeCore {
 	 * @param bStart - Index in which start the coordinates in the second vector
 	 * @returns Normalized vector resulting from cross product of the two vectors
 	 */
-	private crossProductAndNormalize(a: number[], aStart: number,
+	private static crossProductAndNormalize(a: number[], aStart: number,
 									 b: number[], bStart: number): number[] {
 
 		const cross = [
@@ -527,7 +527,7 @@ export class SliceStructure extends NodeCore {
 	 * @param cStart - Index in which start the coordinates of the (optional) third point
 	 * @returns Middle point coordinates
 	 */
-	private middlePoint(points: number[],
+	private static middlePoint(points: number[],
 						aStart: number,
 						bStart: number,
 						cStart?: number): number[] {
@@ -555,51 +555,51 @@ export class SliceStructure extends NodeCore {
 	 * @param basis - The structure basis vectors
 	 * @returns The normal of the plane and a point on the plane
 	 */
-	private createPlane(points: number[], parallelCode: number, basis: BasisType): PlaneParams {
+	private static createPlane(points: number[], parallelCode: number, basis: BasisType): PlaneParams {
 
 		switch(parallelCode) {
 			case 0: { // Plane through the 3 points
 				const vAB = [points[0]-points[3], points[1]-points[4], points[2]-points[5]]; // AB
 				const vAC = [points[0]-points[6], points[1]-points[7], points[2]-points[8]]; // AC
 				return {
-					normal: this.crossProductAndNormalize(vAB, 0, vAC, 0),
-					point: this.middlePoint(points, 0, 3, 6)
+					normal: SliceStructure.crossProductAndNormalize(vAB, 0, vAC, 0),
+					point: SliceStructure.middlePoint(points, 0, 3, 6)
 				};
 			}
 			case 1: { // Through b and c parallel to a
 				const vBC = [points[3]-points[6], points[4]-points[7], points[5]-points[8]]; // BC
 				return {
-					normal: this.crossProductAndNormalize(vBC, 0, basis, 0),
-					point: this.middlePoint(points, 3, 6)
+					normal: SliceStructure.crossProductAndNormalize(vBC, 0, basis, 0),
+					point: SliceStructure.middlePoint(points, 3, 6)
 				};
 			}
 			case 2: { // Through a and c parallel to b
 				const vAC = [points[0]-points[6], points[1]-points[7], points[2]-points[8]]; // AC
 				return {
-					normal: this.crossProductAndNormalize(vAC, 0, basis, 3),
-					point: this.middlePoint(points, 0, 6)
+					normal: SliceStructure.crossProductAndNormalize(vAC, 0, basis, 3),
+					point: SliceStructure.middlePoint(points, 0, 6)
 				};
 			}
 			case 3: // Parallel to a and b through c
 				return {
-					normal: this.crossProductAndNormalize(basis, 0, basis, 3),
+					normal: SliceStructure.crossProductAndNormalize(basis, 0, basis, 3),
 					point: [points[6], points[7], points[8]]
 				};
 			case 4: { // Through a and b parallel to c
 				const vAB = [points[0]-points[3], points[1]-points[4], points[2]-points[5]]; // AB
 				return {
-					normal: this.crossProductAndNormalize(vAB, 0, basis, 6),
-					point: this.middlePoint(points, 0, 3)
+					normal: SliceStructure.crossProductAndNormalize(vAB, 0, basis, 6),
+					point: SliceStructure.middlePoint(points, 0, 3)
 				};
 			}
 			case 5: // Parallel to a and c through b
 				return {
-					normal: this.crossProductAndNormalize(basis, 0, basis, 6),
+					normal: SliceStructure.crossProductAndNormalize(basis, 0, basis, 6),
 					point: [points[3], points[4], points[5]]
 				};
 			case 6: // Parallel to b and c through a
 				return {
-					normal: this.crossProductAndNormalize(basis, 3, basis, 6),
+					normal: SliceStructure.crossProductAndNormalize(basis, 3, basis, 6),
 					point: [points[0], points[1], points[2]]
 				};
 		}

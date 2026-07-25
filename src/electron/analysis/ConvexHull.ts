@@ -296,7 +296,7 @@ export class VariableCompositionConvexHull {
 		}
 
 		// Add distances from the convex hull
-		this.distances = this.distanceFromConvexHull3D(points, this.x, this.y,
+		this.distances = VariableCompositionConvexHull.distanceFromConvexHull3D(points, this.x, this.y,
 													   this.e, hull, limit);
 
 		return "";
@@ -497,7 +497,7 @@ export class VariableCompositionConvexHull {
 	 * @param c - Vertex of the triangle (only x and y used)
 	 * @returns Barycentric coordinates [u, v, w] of the point
 	 */
-	private barycentricCoordinates(point: number[],
+	private static barycentricCoordinates(point: number[],
 								   a: number[],
 								   b: number[],
 								   c: number[]): [u: number, v: number, w: number] {
@@ -536,9 +536,9 @@ export class VariableCompositionConvexHull {
 	 * @param c - Vertex of the triangle
 	 * @returns Distance from the triangle or -1 if the point is not perpendicular to the triangle
 	 */
-	closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
+	static closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
 
-		const [u, v, w] = this.barycentricCoordinates(p, a, b, c);
+		const [u, v, w] = VariableCompositionConvexHull.barycentricCoordinates(p, a, b, c);
 		if(u >= -1e-12 && v >= -1e-12 && w >= -1e-12) {
 
 			const z = u*c[2]+v*b[2]+w*a[2];
@@ -561,7 +561,7 @@ export class VariableCompositionConvexHull {
 	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Distances of the points from the surface
 	 */
-	private distanceFromConvexHull3D(vertices: number[][],
+	private static distanceFromConvexHull3D(vertices: number[][],
 									 x: number[],
 									 y: number[],
 									 e: number[],
@@ -583,7 +583,7 @@ export class VariableCompositionConvexHull {
 					const [v1, v2, v3] = facet.verts;
 
 					// Test if closest triangle
-					const d = this.closestPointTriangleAlongZ(point,
+					const d = VariableCompositionConvexHull.closestPointTriangleAlongZ(point,
 															  vertices[v1],
 															  vertices[v2],
 															  vertices[v3]);

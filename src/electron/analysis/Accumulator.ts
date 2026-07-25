@@ -86,7 +86,7 @@ export class StructureSetsAccumulator {
 	 * @param atoms - Atoms in the input structure
 	 * @returns The chemical formula as HTML string (with subscript as <sub></sub>)
 	 */
-	private getFormula(atoms: Atom[]): string {
+	private static getFormula(atoms: Atom[]): string {
 
 		let formula = "";
 		let currentZ = 0;
@@ -118,7 +118,7 @@ export class StructureSetsAccumulator {
 	 * @param basis - Unit cell basis vectors
 	 * @returns Unit cell volume
 	 */
-	private	getCellVolume(basis: BasisType): number {
+	private	static getCellVolume(basis: BasisType): number {
 
 		return basis[0]*basis[4]*basis[8] + basis[1]*basis[5]*basis[6] +
                basis[2]*basis[3]*basis[7] - basis[2]*basis[4]*basis[6] -
@@ -149,7 +149,7 @@ export class StructureSetsAccumulator {
 			step,
 			energy: energy*atoms.length,
 			energyPerAtom: energy,
-			volume: this.getCellVolume(basis),
+			volume: StructureSetsAccumulator.getCellVolume(basis),
 
 			basis: [
 				basis[0], basis[1], basis[2],
@@ -159,7 +159,7 @@ export class StructureSetsAccumulator {
 			atomsPosition: [],
 			atomsZ: [],
 			species: new Map<number, number>(),
-			formula: this.getFormula(atoms),
+			formula: StructureSetsAccumulator.getFormula(atoms),
 
 			parts: [],
 			key: "1", // This is for one component structures
@@ -340,7 +340,7 @@ export class StructureSetsAccumulator {
 	 *
 	 * @returns True if structures have energies
 	 */
-	hasEnergies(): boolean {
+	static hasEnergies(): boolean {
 		return true;
 	}
 

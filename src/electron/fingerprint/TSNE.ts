@@ -74,14 +74,12 @@ export class TSNE {
 	}
 
 	// utility function
-	private assert(condition: boolean, message?: string): void {
+	private static assert(condition: boolean, message?: string): void {
 		if(!condition) throw Error(message ?? "Assertion failed");
 	}
 
 	// utility that creates contiguous vector of zeros of size n
-	private zeros(n: number): number[] {
-
-
+	private static zeros(n: number): number[] {
 		return Array<number>(n).fill(0);
 	}
 
@@ -128,7 +126,7 @@ export class TSNE {
 	}
 
 	// compute L2 distance between two vectors
-	private L2(x1: number[], x2: number[]): number {
+	private static L2(x1: number[], x2: number[]): number {
 		const D = x1.length;
 		let d = 0;
 		for(let i=0; i<D; ++i) {
@@ -140,12 +138,12 @@ export class TSNE {
 	}
 
 	// compute pairwise distance in all vectors in X
-	private xtod(X: number[][]): number[] {
+	private static xtod(X: number[][]): number[] {
 		const N = X.length;
-		const dist = this.zeros(N * N); // allocate contiguous array
+		const dist = TSNE.zeros(N * N); // allocate contiguous array
 		for(let i=0; i<N-1; i++) {
 			for(let j=i+1; j<N; j++) {
-				const d = this.L2(X[i], X[j]);
+				const d = TSNE.L2(X[i], X[j]);
 				dist[i*N+j] = d;
 				dist[j*N+i] = d;
 			}
@@ -154,15 +152,15 @@ export class TSNE {
 	}
 
 	// compute (p_{i|j} + p_{j|i})/(2n)
-	private d2p(D: number[], perplexity: number, tol: number): number[] {
+	private static d2p(D: number[], perplexity: number, tol: number): number[] {
 
 		const Nf = Math.sqrt(D.length); // this better be an integer
 		const N = Math.floor(Nf);
-		this.assert(N === Nf, "D should have square number of elements.");
+		TSNE.assert(N === Nf, "D should have square number of elements.");
 		const Htarget = Math.log(perplexity); // target entropy of distribution
-		const P = this.zeros(N * N); // temporary probability matrix
+		const P = TSNE.zeros(N * N); // temporary probability matrix
 
-		const prow = this.zeros(N); // a temporary storage compartment
+		const prow = TSNE.zeros(N); // a temporary storage compartment
 		for(let i=0; i<N; i++) {
 
 			let betamin = -Infinity;
@@ -219,7 +217,7 @@ export class TSNE {
 		} // end loop over examples i
 
 		// symmetrize P and normalize it to sum to 1 over all ij
-		const Pout = this.zeros(N * N);
+		const Pout = TSNE.zeros(N * N);
 		const N2 = N*2;
 		for(let i=0; i<N; i++) {
 			for(let j=0; j<N; j++) {
@@ -230,13 +228,13 @@ export class TSNE {
 		return Pout;
 	}
 
-	private d2p2(N: number, getDists: (i: number, j: number) => number,
-				 perplexity: number, tol: number): number[] {
+	private static d2p2(N: number, getDists: (i: number, j: number) => number,
+						perplexity: number, tol: number): number[] {
 
 		const Htarget = Math.log(perplexity); // target entropy of distribution
-		const P = this.zeros(N * N); // temporary probability matrix
+		const P = TSNE.zeros(N * N); // temporary probability matrix
 
-		const prow = this.zeros(N); // a temporary storage compartment
+		const prow = TSNE.zeros(N); // a temporary storage compartment
 		for(let i=0; i<N; i++) {
 
 			let betamin = -Infinity;
@@ -294,7 +292,7 @@ export class TSNE {
 		} // end loop over examples i
 
 		// symmetrize P and normalize it to sum to 1 over all ij
-		const Pout = this.zeros(N * N);
+		const Pout = TSNE.zeros(N * N);
 		const N2 = N*2;
 		for(let i=0; i<N; i++) {
 			for(let j=0; j<N; j++) {
@@ -306,7 +304,7 @@ export class TSNE {
 	}
 
 	// helper function
-	private sign(x: number): number {
+	private static sign(x: number): number {
 		if(x > 0) return 1;
 		if(x < 0) return -1;
 		return 0;
@@ -321,10 +319,10 @@ export class TSNE {
 
 		const N = X.length;
 		const D = X[0].length;
-		this.assert(N > 0, " X is empty? You must have some data!");
-		this.assert(D > 0, " X[0] is empty? Where is the data?");
-		const dists = this.xtod(X); // convert X to distances using gaussian kernel
-		this.P = this.d2p(dists, this.params.perplexity, 1e-4); // attach to object
+		TSNE.assert(N > 0, " X is empty? You must have some data!");
+		TSNE.assert(D > 0, " X[0] is empty? Where is the data?");
+		const dists = TSNE.xtod(X); // convert X to distances using gaussian kernel
+		this.P = TSNE.d2p(dists, this.params.perplexity, 1e-4); // attach to object
 		this.N = N; // back up the size of the dataset
 		this.initSolution(); // refresh this
     }
@@ -337,9 +335,9 @@ export class TSNE {
     initDataDist(D: number[][]): void {
 
 		const N = D.length;
-		this.assert(N > 0, " X is empty? You must have some data!");
+		TSNE.assert(N > 0, " X is empty? You must have some data!");
 		// convert D to a (fast) typed array version
-		const dists = this.zeros(N * N); // allocate contiguous array
+		const dists = TSNE.zeros(N * N); // allocate contiguous array
 		for(let i=0; i<N-1; i++) {
 			for(let j=i+1; j<N; j++) {
 				const d = D[i][j];
@@ -347,7 +345,7 @@ export class TSNE {
 				dists[j*N+i] = d;
 			}
 		}
-		this.P = this.d2p(dists, this.params.perplexity, 1e-4);
+		this.P = TSNE.d2p(dists, this.params.perplexity, 1e-4);
 		this.N = N;
 		this.initSolution(); // refresh this
     }
@@ -361,7 +359,7 @@ export class TSNE {
 	initDataDistComputed(N: number, getDist: (i: number, j: number) => number): void {
 
 		this.N = N;
-		this.P = this.d2p2(N, getDist, this.params.perplexity, 1e-4);
+		this.P = TSNE.d2p2(N, getDist, this.params.perplexity, 1e-4);
 		this.initSolution(); // refresh this
 	}
 
@@ -426,7 +424,7 @@ export class TSNE {
      	const {cost, grad} = this.costGrad(this.Y); // evaluate gradient
 
 		// perform gradient step
-		const ymean = this.zeros(this.params.dim);
+		const ymean = TSNE.zeros(this.params.dim);
 		for(let i=0; i<N; i++) {
 			for(let d=0; d<this.params.dim; d++) {
 
@@ -435,7 +433,7 @@ export class TSNE {
 				const gainid = this.gains[i][d];
 
 				// compute gain update
-				let newgain = this.sign(gid) === this.sign(sid) ? gainid * 0.8 : gainid + 0.2;
+				let newgain = TSNE.sign(gid) === TSNE.sign(sid) ? gainid * 0.8 : gainid + 0.2;
 				if(newgain < 0.01) newgain = 0.01; // clamp
 				this.gains[i][d] = newgain; // store for next turn
 
@@ -498,7 +496,7 @@ export class TSNE {
 		const pmul = this.iter < 100 ? 4 : 1; // trick that helps with local optima
 
 		// compute current Q distribution, unnormalized first
-		const Qu = this.zeros(N * N);
+		const Qu = TSNE.zeros(N * N);
 		let qsum = 0.0;
 		for(let i=0; i<N-1; i++) {
 			for(let j=i+1; j<N; j++) {
@@ -516,7 +514,7 @@ export class TSNE {
 
 		// normalize Q distribution to sum to 1
 		const NN = N*N;
-		const Q = this.zeros(NN);
+		const Q = TSNE.zeros(NN);
 		for(let q=0; q<NN; q++) Q[q] = Math.max(Qu[q] / qsum, 1e-100);
 
 		let cost = 0.0;

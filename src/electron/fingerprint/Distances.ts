@@ -272,7 +272,7 @@ export class Distances {
      *
      * @returns The list of distance methods for the selector on the UI
      */
-    getDistancesMethodsNames(): string[] {
+    static getDistancesMethodsNames(): string[] {
 
         return measuringMethods.map((method) => method.label);
     }

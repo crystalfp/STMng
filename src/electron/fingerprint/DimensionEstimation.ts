@@ -172,7 +172,7 @@ class DimensionEstimator {
         // This sets the upper bound for the correlation analysis.
         const maxRadius = meanDistance / (2*distancesCount);
 
-        const radii = this.generateLogSpace(0.01, maxRadius, numberRadii);
+        const radii = DimensionEstimator.generateLogSpace(0.01, maxRadius, numberRadii);
         const correlations: number[] = [];
 
         for(const r of radii) {
@@ -195,7 +195,7 @@ class DimensionEstimator {
         const logRadii = radii.map((r) => Math.log(r));
         const logCorrelations = correlations.map((c) => Math.log(c));
 
-        const dimension = this.linearRegression(logRadii, logCorrelations).slope;
+        const dimension = DimensionEstimator.linearRegression(logRadii, logCorrelations).slope;
 
         return {
             method: "Correlation Dimension",
@@ -250,9 +250,9 @@ class DimensionEstimator {
      */
     pcaDimension(varianceThreshold = 0.95): DimensionEstimate {
 
-        const centeredMatrix = this.centerMatrix(this.matrix);
-        const covarianceMatrix = this.computeCovariance(centeredMatrix);
-        const eigenvalues = this.computeEigenvalues(covarianceMatrix);
+        const centeredMatrix = DimensionEstimator.centerMatrix(this.matrix);
+        const covarianceMatrix = DimensionEstimator.computeCovariance(centeredMatrix);
+        const eigenvalues = DimensionEstimator.computeEigenvalues(covarianceMatrix);
 
         // Sort eigenvalues in descending order
         eigenvalues.sort((a, b) => b - a);
@@ -397,7 +397,7 @@ class DimensionEstimator {
      * @param count - Number of points to generate
      * @returns List of logarithmic coordinates
      */
-    private generateLogSpace(start: number, end: number, count: number): number[] {
+    private static generateLogSpace(start: number, end: number, count: number): number[] {
 
         const logStart = Math.log(start);
         const logEnd = Math.log(end);
@@ -413,7 +413,7 @@ class DimensionEstimator {
      * @param y - Y coordinates
      * @returns Parameters of the interpolating line
      */
-    private linearRegression(x: number[], y: number[]): {slope: number; intercept: number} {
+    private static linearRegression(x: number[], y: number[]): {slope: number; intercept: number} {
 
         const n = x.length;
         const sumX = x.reduce((sum, value) => sum + value, 0);
@@ -433,7 +433,7 @@ class DimensionEstimator {
      * @param matrix - Matrix to be centered
      * @returns Centered matrix around mean
      */
-    private centerMatrix(matrix: number[][]): number[][] {
+    private static centerMatrix(matrix: number[][]): number[][] {
 
         const n = matrix[0].length;
         const means = Array<number>(n).fill(0);
@@ -460,7 +460,7 @@ class DimensionEstimator {
      * @param matrix - Input centered matrix
      * @returns Covariance matrix
      */
-    private computeCovariance(matrix: number[][]): number[][] {
+    private static computeCovariance(matrix: number[][]): number[][] {
 
         const n = matrix.length;
         const d = matrix[0].length;
@@ -485,7 +485,7 @@ class DimensionEstimator {
      * @param matrix - Input matrix
      * @returns List of matrix eigenvalues
      */
-    private computeEigenvalues(matrix: number[][]): number[] {
+    private static computeEigenvalues(matrix: number[][]): number[] {
 
         const eigenvalues: number[] = [];
 

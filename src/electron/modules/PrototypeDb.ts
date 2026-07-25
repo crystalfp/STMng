@@ -201,7 +201,7 @@ class PrototypeDb {
 	 * @param snl - Prototype structure from the aflow database
 	 * @returns Prototype structure as STMng Structure
 	 */
-	private snlToStructure(snl: SNL): Structure {
+	private static snlToStructure(snl: SNL): Structure {
 
 		const structure = new EmptyStructure();
 
@@ -236,7 +236,7 @@ class PrototypeDb {
 	 * @param structure - STMng structure to be converted
 	 * @returns The structure in SNL format or undefined if it has no unit cell
 	 */
-	structureToSNL(structure: Structure, duplicates: boolean[]): SNL | undefined {
+	private static structureToSNL(structure: Structure, duplicates: boolean[]): SNL | undefined {
 
 		const {crystal, atoms} = structure;
 		const {basis, origin} = crystal;
@@ -339,7 +339,7 @@ class PrototypeDb {
 			aflow,
 			strukturbericht: tags.strukturbericht,
 			mineral: tags.mineral,
-			structure: this.snlToStructure(proto.snl)
+			structure: PrototypeDb.snlToStructure(proto.snl)
 		};
 	}
 
@@ -371,7 +371,7 @@ class PrototypeDb {
 		const duplicates = markDuplicates(atoms, crystal);
 
 		// Convert STMng Structure to Pymatgen SNL
-		const snl = this.structureToSNL(structure, duplicates);
+		const snl = PrototypeDb.structureToSNL(structure, duplicates);
 
 		// If valid get the prototypes
 		if(!snl) return {mineral: [], aflow: []};

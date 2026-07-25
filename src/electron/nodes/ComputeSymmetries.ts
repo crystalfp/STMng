@@ -162,7 +162,7 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -383,7 +383,8 @@ export class ComputeSymmetries extends NodeCore {
 			status: computed.status,
 			extra
 		};
-		this.structure = this.fillUnitCell ? this.fillCell(out) : this.buildStructure(out);
+		this.structure = this.fillUnitCell ?
+							this.fillCell(out) : ComputeSymmetries.buildStructure(out);
 		if(out.noCellChanges && this.inputStructure) this.structure.volume = volume;
 
 		this.computedSpaceGroup = computed.spaceGroup;
@@ -713,7 +714,7 @@ export class ComputeSymmetries extends NodeCore {
 	 * @param out - Structure data just computed
 	 * @returns Complete structure
 	 */
-	private buildStructure(out: ComputeSymmetriesOutput): Structure {
+	private static buildStructure(out: ComputeSymmetriesOutput): Structure {
 
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ,
 			   chains, extra, labels} = out;

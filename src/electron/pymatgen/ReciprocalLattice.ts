@@ -263,7 +263,7 @@ export class ReciprocalLattice {
         }
 
         // Find all neighboring cubes for each atom in the lattice cell
-        const siteNeighbors = this.findNeighbors(siteCubeIndex, nxyz);
+        const siteNeighbors = ReciprocalLattice.findNeighbors(siteCubeIndex, nxyz);
 
         const ii = centerCoords;
         const jj = siteNeighbors;
@@ -374,7 +374,7 @@ export class ReciprocalLattice {
      * Returns:
      *     Neighbor cell indices.
      */
-    private findNeighbors(label: number[][], nxyz: number[]): number[][] {
+    private static findNeighbors(label: number[][], nxyz: number[]): number[][] {
 
         const neighborVectors: number[][] = [];
         for(let i=-1; i <= 1; ++i) {

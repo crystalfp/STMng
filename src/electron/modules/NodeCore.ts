@@ -111,7 +111,7 @@ export abstract class NodeCore {
 	 * @param id - ID of the node
 	 * @param channels - Array of channels definitions
 	 */
-	protected setupChannels(id: string, channels: ChannelDefinition[]): void {
+	protected static setupChannels(id: string, channels: ChannelDefinition[]): void {
 
 		for(const channel of channels) {
 			const channelName = id + ":" + channel.name;

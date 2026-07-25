@@ -64,7 +64,7 @@ export class CrystalShape extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -195,7 +195,7 @@ export class CrystalShape extends NodeCore {
 			// Orient triangles so their normals point to the outside
 			this.crystalResults.index = this.orientSurfaces();
 
-			this.faceMiller = this.createMillerIndices(this.crystalResults, basis);
+			this.faceMiller = CrystalShape.createMillerIndices(this.crystalResults, basis);
 
 		}
 		const dataToSend: CtrlParams = {
@@ -316,7 +316,7 @@ export class CrystalShape extends NodeCore {
 	 * @param basis - Basis vectors
 	 * @returns Miller index representation for each triangle
 	 */
-	private createMillerIndices(geometry: CrystalGeometry, basis: BasisType): string[] {
+	private static createMillerIndices(geometry: CrystalGeometry, basis: BasisType): string[] {
 
 		const miller: string[] = [];
 		const d = [1, 1, 1];

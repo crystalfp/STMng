@@ -284,7 +284,7 @@ export class DrawStructureRenderer {
 	 * @param monochromeColor - Color for monochrome coloring
 	 * @returns The atom color
 	 */
-	private computeAtomColor(atomColoring: ColoringType, // oxlint-disable-line @typescript-eslint/consistent-return
+	private static computeAtomColor(atomColoring: ColoringType, // oxlint-disable-line @typescript-eslint/consistent-return
 							 atom: AtomRenderInfo,
 							 monochromeColor: string): string {
 
@@ -353,7 +353,7 @@ export class DrawStructureRenderer {
 						break;
 				}
 
-				const sphereColor = this.computeAtomColor(atomColoring, atom, monochromeColor);
+				const sphereColor = DrawStructureRenderer.computeAtomColor(atomColoring, atom, monochromeColor);
 				spheresCache.addSphere(position, radius, sphereColor);
 			}
 			spheresCache.renderSpheres(this.atomsGroup);
@@ -383,16 +383,16 @@ export class DrawStructureRenderer {
 						const strengthFrom = renderInfo.atoms[bond.from].bondStrength;
 						const strengthTo   = renderInfo.atoms[bond.to].bondStrength;
 						const strength     = Math.sqrt(strengthFrom*strengthTo)*4;
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
+						const colorFrom = DrawStructureRenderer.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = DrawStructureRenderer.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						cylinderCache.addCylinder(atomFrom.position, atomTo.position,
 												  colorFrom, colorTo, strength);
 					}
 					else {
 						const radiusStart = atomFrom.rCov*R_COV_SCALE*spheresRadiusMultiplier;
 						const radiusEnd   = atomTo.rCov*R_COV_SCALE*spheresRadiusMultiplier;
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
+						const colorFrom = DrawStructureRenderer.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = DrawStructureRenderer.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						const {start, end} = this.adjustLimitsCylinder(atomFrom.position,
 																	   atomTo.position,
 																	   radiusStart, radiusEnd);
@@ -413,8 +413,8 @@ export class DrawStructureRenderer {
 					const atomFrom = renderInfo.atoms[bond.from];
 					const atomTo   = renderInfo.atoms[bond.to];
 					if(isNormalBond(bond)) {
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
+						const colorFrom = DrawStructureRenderer.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = DrawStructureRenderer.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						cylinderCache.addCylinder(atomFrom.position,
 												  atomTo.position,
 												  colorFrom, colorTo);
@@ -453,15 +453,15 @@ export class DrawStructureRenderer {
 					}
 					else if(atomColoring === "bonds" && atomFrom.bondCount === atomTo.bondCount) {
 						const {position} = atomFrom;
-						const color = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const color = DrawStructureRenderer.computeAtomColor(atomColoring, atomFrom, monochromeColor);
 						DrawStructureRenderer.addNormalBondSameAtoms(position,
 																	 atomTo.position,
 																	 color,
 																	 this.bondsGroup);
 					}
 					else {
-						const colorFrom = this.computeAtomColor(atomColoring, atomFrom, monochromeColor);
-						const colorTo   = this.computeAtomColor(atomColoring, atomTo, monochromeColor);
+						const colorFrom = DrawStructureRenderer.computeAtomColor(atomColoring, atomFrom, monochromeColor);
+						const colorTo   = DrawStructureRenderer.computeAtomColor(atomColoring, atomTo, monochromeColor);
 						DrawStructureRenderer.addNormalBond(atomFrom.position,
 															atomTo.position,
 															colorFrom,
@@ -579,7 +579,7 @@ export class DrawStructureRenderer {
 	 *
 	 * @returns Colors for the various number of bonds
 	 */
-	getNumBondsColors(): string[] {
+	static getNumBondsColors(): string[] {
 
 		return COLOR_SCALE;
 	}

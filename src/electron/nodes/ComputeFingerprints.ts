@@ -156,7 +156,7 @@ export class ComputeFingerprints extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -863,11 +863,11 @@ export class ComputeFingerprints extends NodeCore {
 			peakWidth: this.peakWidth,
 			processParallelism: this.processParallelism,
 
-			distanceMethods: JSON.stringify(this.dist.getDistancesMethodsNames()),
+			distanceMethods: JSON.stringify(Distances.getDistancesMethodsNames()),
 			distanceMethod: this.distanceMethod,
 			fixTriangleInequality: this.fixTriangleInequality,
 
-			groupingMethods: JSON.stringify(this.grouping.getGroupingMethodsNames()),
+			groupingMethods: JSON.stringify(Grouping.getGroupingMethodsNames()),
 			groupingMethod: this.groupingMethod,
 			groupingThreshold: this.groupingThreshold,
 			addedMargin: this.addedMargin,
@@ -1230,7 +1230,7 @@ export class ComputeFingerprints extends NodeCore {
 					sorter.push({idx: k++, energy, outEnergy});
 				}
 			}
-			return this.exportStructuresAndEnergy(filename, writer, structures, sorter);
+			return ComputeFingerprints.exportStructuresAndEnergy(filename, writer, structures, sorter);
 		});
 
 		ipcMain.on("SYSTEM:selected-plot", (_event, params: CtrlParams): void => {
@@ -1389,7 +1389,7 @@ export class ComputeFingerprints extends NodeCore {
 						return {error: "Invalid kind"};
 				}
 
-				return this.exportStructuresAndEnergy(filename, writer, structures, sorter);
+				return ComputeFingerprints.exportStructuresAndEnergy(filename, writer, structures, sorter);
 			});
 		}
 	}
@@ -1479,7 +1479,7 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param sorter - Auxiliary list of energies for output sorting
 	 * @returns File names or error message
 	 */
-	private exportStructuresAndEnergy(filename: string,
+	private static exportStructuresAndEnergy(filename: string,
 									  writer: WriterPOSCAR,
 									  structures: Structure[],
 									  sorter: SorterItem[]): CtrlParams {

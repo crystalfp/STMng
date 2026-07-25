@@ -25,7 +25,7 @@
 import {Group, GridHelper, Mesh, CylinderGeometry,
 		ConeGeometry, MeshStandardMaterial, DoubleSide} from "three";
 import {watchEffect, watch, onUnmounted} from "vue";
-import {sm} from "./SceneManager";
+import {sm, SceneManager} from "./SceneManager";
 import {useConfigStore} from "@/stores/configStore";
 import {spriteText} from "./SpriteText";
 import {storeToRefs} from "pinia";
@@ -49,7 +49,7 @@ export const setupSceneHelpers = (): void => {
 	const stopWatcher2 = watchEffect(() => {
 
 		// Manage axis helper
-		let axis = sm.getObjectByName("AxisHelper") as Group | undefined;
+		let axis = SceneManager.getObjectByName("AxisHelper") as Group | undefined;
 		if(configStore.helpers.showAxis) {
 
 			if(axis) {
@@ -72,7 +72,7 @@ export const setupSceneHelpers = (): void => {
 		else if(axis) axis.visible = false;
 
 		// Manage XZ helper plane
-		let gridXZ = sm.getObjectByName("GridHelperXZ") as GridHelper | undefined;
+		let gridXZ = SceneManager.getObjectByName("GridHelperXZ") as GridHelper | undefined;
 		if(configStore.helpers.showGridXZ) {
 			if(gridXZ) {
 				gridXZ.visible = true;
@@ -95,7 +95,7 @@ export const setupSceneHelpers = (): void => {
 		else if(gridXZ) gridXZ.visible = false;
 
 		// Manage XY helper plane
-		let gridXY = sm.getObjectByName("GridHelperXY") as GridHelper | undefined;
+		let gridXY = SceneManager.getObjectByName("GridHelperXY") as GridHelper | undefined;
 		if(configStore.helpers.showGridXY) {
 			if(gridXY) {
 				gridXY.visible = true;
@@ -118,7 +118,7 @@ export const setupSceneHelpers = (): void => {
 		else if(gridXY) gridXY.visible = false;
 
 		// Manage YZ helper plane
-		let gridYZ = sm.getObjectByName("GridHelperYZ") as GridHelper | undefined;
+		let gridYZ = SceneManager.getObjectByName("GridHelperYZ") as GridHelper | undefined;
 		if(configStore.helpers.showGridYZ) {
 			if(gridYZ) {
 				gridYZ.visible = true;

@@ -249,7 +249,7 @@ export class StructureMatcher {
      * @returns Structure made comparable, the supercell size fu to make struct1 comparable to s2
         and if structure1 has a supercell
      */
-    private preprocess(struct1: SNL, struct2: SNL, skipStructureReduction = false):
+    private static preprocess(struct1: SNL, struct2: SNL, skipStructureReduction = false):
         {struct1: SNL; struct2: SNL; fu: number; s1Supercell: boolean} {
 
         const fu = 1;
@@ -287,7 +287,7 @@ export class StructureMatcher {
 	 */
 	fitAnonymous(struct1: SNL, struct2: SNL, skipStructureReduction = false): [Map<string, string>, MatchResult][] | null {
 
-        const {struct1: s1, struct2: s2, fu, s1Supercell} = this.preprocess(struct1, struct2, skipStructureReduction);
+        const {struct1: s1, struct2: s2, fu, s1Supercell} = StructureMatcher.preprocess(struct1, struct2, skipStructureReduction);
 
         return this.anonymousMatch(s1, s2, fu, s1Supercell);
 	}
@@ -306,7 +306,7 @@ export class StructureMatcher {
      * @param composition - Composition of the structure
      * @returns The structure has as a string
      */
-    private getHash(composition: Map<string, number>): string {
+    private static getHash(composition: Map<string, number>): string {
 
         let natoms = 0;
         for(const count of composition.values()) {
@@ -330,7 +330,7 @@ export class StructureMatcher {
      * @param spMapping - Species to swap. Species can be elements too. e.g.
                 (Element("Li"): Element("Na")) performs a Li for Na substitution.
      */
-    private replaceSpecies(mappedStruct: SNL, spMapping: Map<string, string>): void {
+    private static replaceSpecies(mappedStruct: SNL, spMapping: Map<string, string>): void {
 
         for(const site of mappedStruct.sites) {
             const mappedElement = spMapping.get(site.species[0].element)!;
@@ -387,10 +387,10 @@ export class StructureMatcher {
             const mappedComp = new Map<string, number>(
                 [...s1Comp].map(([k, v]) => [spMapping.get(k)!, v])
             );
-            if(this.getHash(mappedComp) !== this.getHash(s2Comp)) continue;
+            if(StructureMatcher.getHash(mappedComp) !== StructureMatcher.getHash(s2Comp)) continue;
 
             const mappedStruct = structuredClone(struct1);
-            this.replaceSpecies(mappedStruct, spMapping);
+            StructureMatcher.replaceSpecies(mappedStruct, spMapping);
 
             const match: MatchResult | null = swapped ? this.strictMatch(
                     struct2,
@@ -450,7 +450,7 @@ export class StructureMatcher {
      * @param s1Supercell - Is supercell
      * @returns mask, struct1 translation indices, struct2 translation index
      */
-    private getMask(
+    private static getMask(
         struct1: SNL,
         struct2: SNL,
         fu: number,
@@ -572,7 +572,7 @@ export class StructureMatcher {
 
         for(const [latt, _, scaleM] of lattices) {
             const det = determinant(scaleM);
-            if(this.isClose(Math.abs(det), supercellSize, 0.5, 0)) {
+            if(StructureMatcher.isClose(Math.abs(det), supercellSize, 0.5, 0)) {
                 yield [matrixToLattice(latt), scaleM];
             }
         }
@@ -587,7 +587,7 @@ export class StructureMatcher {
      * @param relativeTolerance - Relative tolerance
      * @returns If they are close
      */
-    private isClose(
+    private static isClose(
         a: number,
         b: number,
         absTolerance = 1e-9,
@@ -604,7 +604,7 @@ export class StructureMatcher {
      * @param l2 - Second lattice
      * @returns Average lattice
      */
-    private avLat(l1: Lattice, l2: Lattice): Lattice {
+    private static avLat(l1: Lattice, l2: Lattice): Lattice {
         const a = (l1.a + l2.a)/2;
         const b = (l1.b + l2.b)/2;
         const c = (l1.c + l2.c)/2;
@@ -645,7 +645,7 @@ export class StructureMatcher {
                 yield {
                     s1Coords: fc,
                     s2Coords: s2Fc,
-                    avgLattice: this.avLat(latt, s2.lattice),
+                    avgLattice: StructureMatcher.avLat(latt, s2.lattice),
                     supercellMatrix: scM
                 };
             }
@@ -681,7 +681,7 @@ export class StructureMatcher {
                 yield {
                     s1Coords: fc,
                     s2Coords: s2Fc,
-                    avgLattice: this.avLat(latt, s2.lattice),
+                    avgLattice: StructureMatcher.avLat(latt, s2.lattice),
                     supercellMatrix: scM
                 };
             }
@@ -737,7 +737,7 @@ export class StructureMatcher {
      *          - Fractional translation vector to apply to s2
      *          - Mapping from s1 to s2, i.e. s1[mapping[i]] =\> s2[i]
      */
-    private cartDists(
+    private static cartDists(
         s1: number[][],
         s2: number[][],
         avgLattice: Lattice,
@@ -798,7 +798,7 @@ export class StructureMatcher {
             to superset[2]
      * @returns True if a matching exists between s2 and s2
      */
-    private cmpFstruct(s1: number[][], s2: number[][], fracTol: number[], mask: number[][]): boolean {
+    private static cmpFstruct(s1: number[][], s2: number[][], fracTol: number[], mask: number[][]): boolean {
 
         if(s2.length > s1.length) {
             throw Error(`${s1.length} must be larger than ${s2.length}`);
@@ -833,7 +833,7 @@ export class StructureMatcher {
             throw new Error("fu cannot be less than 1");
         }
 
-        const [mask, s1TInds, s2TInd] = this.getMask(struct1, struct2, fu, s1Supercell);
+        const [mask, s1TInds, s2TInd] = StructureMatcher.getMask(struct1, struct2, fu, s1Supercell);
 
         if(mask.length > mask[0].length) {
             throw new Error("after supercell creation, struct1 must have more sites than struct2");
@@ -863,11 +863,11 @@ export class StructureMatcher {
                 const t = subtractVectors(s1fc[s1i], s2fc[s2TInd]);
                 const tS2fc = s2fc.map((coord: number[]) => addVectors(coord, t));
 
-                if(this.cmpFstruct(s1fc, tS2fc, fracTol, mask)) {
+                if(StructureMatcher.cmpFstruct(s1fc, tS2fc, fracTol, mask)) {
                     const reducedLatticeMatrix = getLLLmatrices(avgL).matrix;
                     const invLllAbc = reciprocalLatticeLengths(reducedLatticeMatrix);
                     const lllFracTol = invLllAbc.map((value: number) => value * this.stol / (Math.PI * normalization));
-                    const {dist, tAdj, mapping} = this.cartDists(s1fc, tS2fc, avgL, mask, normalization, lllFracTol);
+                    const {dist, tAdj, mapping} = StructureMatcher.cartDists(s1fc, tS2fc, avgL, mask, normalization, lllFracTol);
 
                     const value = useRms
                         ? norm(dist) / Math.sqrt(dist.length)
@@ -879,7 +879,7 @@ export class StructureMatcher {
                         bestMatch = [value, dist, scM, adjustedT, mapping];
 
                         if((breakOnMatch || value < 1e-5) && value < this.stol) {
-                            return this.formatMatchResult(bestMatch);
+                            return StructureMatcher.formatMatchResult(bestMatch);
                         }
                     }
                 }
@@ -887,7 +887,7 @@ export class StructureMatcher {
         }
 
         if(bestMatch && bestMatch[0] < this.stol) {
-            return this.formatMatchResult(bestMatch);
+            return StructureMatcher.formatMatchResult(bestMatch);
         }
 
         return null;
@@ -899,7 +899,7 @@ export class StructureMatcher {
      * @param match - Match values
      * @returns - Formatted match values
      */
-    private formatMatchResult(match: [number, number[], number[][], number[], number[]]): MatchResult {
+    private static formatMatchResult(match: [number, number[], number[][], number[], number[]]): MatchResult {
         return {
             rms: match[0],
             maxDist: match[0],

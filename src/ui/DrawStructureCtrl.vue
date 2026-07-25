@@ -153,7 +153,7 @@ const prepareLegend = (info: StructureRenderInfo): void => {
         }
     }
 
-    const colors = renderer.getNumBondsColors();
+    const colors = DrawStructureRenderer.getNumBondsColors();
     let plus = false;
     if(maxBonds > colors.length) {
         maxBonds = colors.length;

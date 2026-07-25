@@ -37,7 +37,7 @@ import type {StructureRenderInfo} from "@/types";
  * Routines related to the 3D scene
  * @notExported
  */
-class SceneManager {
+export class SceneManager {
 
     private static instance: SceneManager;
 	private static readonly scene = new Scene();
@@ -203,7 +203,7 @@ class SceneManager {
 	 * @param name - Name of the object to be retrieved
 	 * @returns The object with the given name or undefined if not found
 	 */
-	getObjectByName(name: string): Object3D | undefined {
+	static getObjectByName(name: string): Object3D | undefined {
 		return SceneManager.scene.getObjectByName(name);
 	}
 
@@ -400,7 +400,7 @@ class SceneManager {
 	 * @param scale - How much to scale
 	 * @returns The input matrix scaled by the given amount
 	 */
-	private scaleMatrix(matrix: Matrix4, scale: number): Matrix4 {
+	private static scaleMatrix(matrix: Matrix4, scale: number): Matrix4 {
 
 		const position = new Vector3();
 		const rotation = new Quaternion();
@@ -440,7 +440,7 @@ class SceneManager {
 					const matrix = new Matrix4();
 					im.getMatrixAt(idx, matrix);
 					const geometry = new SphereGeometry(1, 18, 18);
-					const out = this.scaleMatrix(matrix, scale);
+					const out = SceneManager.scaleMatrix(matrix, scale);
 					geometry.applyMatrix4(out);
 					const material = new MeshBasicMaterial();
 					const sphere = new Mesh(geometry, material);
@@ -461,7 +461,7 @@ class SceneManager {
 					const matrix = new Matrix4();
 					im.getMatrixAt(idx, matrix);
 					const geometry = new CylinderGeometry(radius, radius, 1, 64, 1, false);
-					const out = this.scaleMatrix(matrix, scale);
+					const out = SceneManager.scaleMatrix(matrix, scale);
 					geometry.applyMatrix4(out);
 					const material = new MeshBasicMaterial();
 					const cylinder = new Mesh(geometry, material);
@@ -493,7 +493,7 @@ class SceneManager {
 	 *
 	 * @param callback - Callback to be called for each object in the scene
 	 */
-	traverse(callback: (object: Object3D) => void): void {
+	static traverse(callback: (object: Object3D) => void): void {
 		SceneManager.scene.traverse(callback);
 	}
 

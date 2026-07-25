@@ -67,7 +67,7 @@ export class Trajectories extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {

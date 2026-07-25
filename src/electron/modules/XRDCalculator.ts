@@ -83,7 +83,7 @@ export class XRDCalculator {
 	 *
 	 * @returns The list of available wavelengths symbols
 	 */
-	getWavelengthNames(): string[] {
+	static getWavelengthNames(): string[] {
 
 		return Object.keys(WAVELENGTHS);
 	}
@@ -256,7 +256,7 @@ export class XRDCalculator {
 
                 toSort.push({twoTheta: Number.parseFloat(key),
                              intensity: scaled ? scaledIntensity : peaks[key][0],
-                             label: this.getUniqueFamilies(peaks[key][1])});
+                             label: XRDCalculator.getUniqueFamilies(peaks[key][1])});
             }
         }
 
@@ -297,7 +297,7 @@ export class XRDCalculator {
      * @param hkls - ([h, k, l]): List of Miller indices
      * @returns Label for the peak
      */
-    private getUniqueFamilies(hkls: [number[]]): string {
+    private static getUniqueFamilies(hkls: [number[]]): string {
 
         const unique: Record<string, {idx: number[]; val: number[][]}> = {};
         for(const hkl of hkls) {

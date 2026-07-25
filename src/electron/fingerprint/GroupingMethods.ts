@@ -48,7 +48,7 @@ abstract class GroupingMethod {
      * @param threshold - Distance threshold to consider two structures in the same group
      * @returns Connection matrix between structures
      */
-    sparsify(countStructures: number,
+    static sparsify(countStructures: number,
              distances: DistanceMatrix,
              threshold: number): number[] {
 
@@ -102,7 +102,7 @@ class PseudoSNNGrouping extends GroupingMethod {
                threshold: number,
                margin: number): Set<number>[] {
 
-        const connection = this.sparsify(countStructures, distances, threshold);
+        const connection = GroupingMethod.sparsify(countStructures, distances, threshold);
 
         // Compute the number of shared NN
         for(let idx1=0; idx1 < countStructures-1; ++idx1) {

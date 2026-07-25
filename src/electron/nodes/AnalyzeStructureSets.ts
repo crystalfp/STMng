@@ -142,7 +142,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -217,7 +217,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @returns Empty string if the step is the given combination of components,
 	 * 			otherwise the error message
 	 */
-	private verify(composition: number[], parts: number[], nspecies: number,
+	private static verify(composition: number[], parts: number[], nspecies: number,
 				   ncomponents: number, components: number[]): string {
 
 		for(let j=0; j < ncomponents; ++j) {
@@ -326,7 +326,7 @@ export class AnalyzeStructureSets extends NodeCore {
 				}
 			}
 
-			const sts = this.verify(step, parts, nspecies, ncomponents, components);
+			const sts = AnalyzeStructureSets.verify(step, parts, nspecies, ncomponents, components);
 			if(sts !== "") {
 
 				sendAlertToClient(`Invalid composition for step ${stepNumber}: ${sts}`,
@@ -555,7 +555,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @param volume - Points volumes
 	 * @returns Distances of the point from the convex hull
 	 */
-	private deltaEnergy(lineX: number[], lineY: number[],
+	private static deltaEnergy(lineX: number[], lineY: number[],
 						energy: number[], volume: number[]): number[] {
 
 		const nPoints = volume.length;
@@ -674,7 +674,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @param intervals - Array of intervals tuples [start, end]
 	 * @returns Array of merged intervals
 	 */
-	private mergeIntervals(intervals: Interval[]): Interval[] {
+	private static mergeIntervals(intervals: Interval[]): Interval[] {
 
 		// 1. Se l'array è vuoto o ha un solo elemento, non serve unire
 		if(intervals.length <= 1) return intervals;
@@ -715,7 +715,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @param atomCounts - Atom count for each atomTypes concatenated for each component
 	 * @returns The label as normal string and the formula as HTML string
 	 */
-	private makeLabel(key: string, numberComponents: number,
+	private static makeLabel(key: string, numberComponents: number,
 					  atomTypes: string[], atomCounts: number[]): [label: string, html: string] {
 
 		const keyParts = key.split("-");
@@ -787,7 +787,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		// Merge intervals
 		for(const [key, value] of lines) {
 
-			const updated = this.mergeIntervals(value);
+			const updated = AnalyzeStructureSets.mergeIntervals(value);
 			lines.set(key, updated);
 		}
 
@@ -795,7 +795,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		const out: SummaryTableEntry[] = [];
 		for(const [key, value] of lines) {
 
-			const [label, formula] = this.makeLabel(key, numberComponents, atomTypes, atomCounts);
+			const [label, formula] = AnalyzeStructureSets.makeLabel(key, numberComponents, atomTypes, atomCounts);
 
 			for(const v of value) {
 
@@ -1208,7 +1208,7 @@ export class AnalyzeStructureSets extends NodeCore {
 
 		const {vertexX, vertexY, index} = convexHull2D(hullPoints, LIMIT);
 
-		const delta = this.deltaEnergy(vertexX, vertexY, energy, volume);
+		const delta = AnalyzeStructureSets.deltaEnergy(vertexX, vertexY, energy, volume);
 
 		const dataToSend = {
 			energy,

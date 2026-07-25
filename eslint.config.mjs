@@ -261,6 +261,26 @@ export default defineConfig([
         "no-loss-of-precision": "error",
         // "no-mixed-spaces-and-tabs": "off",
         "no-duplicate-imports": ["error", {allowSeparateTypeImports: true}],
+        "class-methods-use-this": ["warn", {
+            exceptMethods: [
+                "description",
+                "saveStatus",
+                "loadStatus",
+                "channelShow",
+                "channelSTL",
+                "channelMovie",
+                "channelMovieStart",
+                "channelSnapshotPDF",
+                "channelSnapshot",
+                "fromPreviousNode",
+                "clusterDistance",
+                "computeDistance",
+                "compute"
+            ],
+            ignoreClassesWithImplements: "all",
+            ignoreOverrideMethods: true
+        }],
+        "no-unreachable-loop": "warn",
 
         "@typescript-eslint/await-thenable": "error",
         "@typescript-eslint/no-array-delete": "error",

@@ -73,7 +73,7 @@ export class DiffractionPattern extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -167,12 +167,12 @@ export class DiffractionPattern extends NodeCore {
 
 		// Chart of the line spectra
 		this.lineCoordinates = this.state.width > 0 ?
-									this.smoothPeaks(xCleaned,
+									DiffractionPattern.smoothPeaks(xCleaned,
 													 yCleaned,
 													 this.state.thetaLow,
 													 this.state.thetaHigh,
 													 this.state.width) :
-									this.hardPeaks(xCleaned,
+									DiffractionPattern.hardPeaks(xCleaned,
 												   yCleaned,
 												   this.state.thetaLow,
 												   this.state.thetaHigh);
@@ -199,7 +199,7 @@ export class DiffractionPattern extends NodeCore {
 	 * @param width - Width of the gaussian to be used to smooth the peaks (FWHM)
 	 * @returns Array of points coordinates to be used in the chart
 	 */
-	private smoothPeaks(x: number[],
+	private static smoothPeaks(x: number[],
 						y: number[],
 						min: number,
 						max: number,
@@ -256,7 +256,7 @@ export class DiffractionPattern extends NodeCore {
 	 * @param max - Theta max value
 	 * @returns Array of points coordinates to be used in the chart
 	 */
-	private hardPeaks(twoTheta: number[],
+	private static hardPeaks(twoTheta: number[],
 					  intensity: number[],
 					  min: number,
 					  max: number): LineCoordinates {
@@ -289,7 +289,7 @@ export class DiffractionPattern extends NodeCore {
 			thetaHigh: this.state.thetaHigh,
 			width: this.state.width,
 			wavelengthCode: this.state.wavelengthCode,
-			wavelengthCodes: this.xrd.getWavelengthNames(),
+			wavelengthCodes: XRDCalculator.getWavelengthNames(),
 			wavelengthNumeric: this.state.wavelengthNumeric,
 			showHKL: this.state.showHKL,
 			threshold: this.state.threshold

@@ -24,7 +24,7 @@
  */
 import {Group, IcosahedronGeometry, PointsMaterial, Points, type Mesh, type MeshLambertMaterial,
 		Color, type ColorRepresentation, type TypedArray} from "three";
-import {sm} from "@/services/SceneManager";
+import {sm, SceneManager} from "@/services/SceneManager";
 import {spriteTextAlongBond} from "@/services/SpriteText";
 import type {BondData, CtrlParams, SelectedAtom} from "@/types";
 
@@ -160,9 +160,10 @@ export class MeasuresRenderer {
 	 * @param idxNew - Index of the selected polyhedra
 	 * @param idxCurrent - Index of the previously selected polyhedra
 	 */
-	selectPolyhedra(idxNew: number | undefined, idxCurrent: number | undefined): void {
+	selectPolyhedra(idxNew: number | undefined,
+					idxCurrent: number | undefined): void {
 
-		sm.traverse((object) => {
+		SceneManager.traverse((object) => {
 			if(object.name !== "Polyhedron") return;
 			if(object.userData.idx === idxNew) {
 				this.objectNew = object as Mesh;

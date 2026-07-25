@@ -70,7 +70,7 @@ export class FindSimilar extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -164,10 +164,10 @@ export class FindSimilar extends NodeCore {
 		// Remove duplicate and outside unit cell atoms
 		const duplicates = markDuplicates(atoms, crystal);
 
-		this.formula = this.getChemicalFormula(this.structure, duplicates);
+		this.formula = FindSimilar.getChemicalFormula(this.structure, duplicates);
 
 		// Compute the input structure fingerprint
-		const fp = this.computeFingerprint(atoms, crystal, duplicates);
+		const fp = FindSimilar.computeFingerprint(atoms, crystal, duplicates);
 
 		// Find similar
 		const results = collectionGetNearestStructures(fp, this.state.numberMatches);
@@ -182,7 +182,7 @@ export class FindSimilar extends NodeCore {
 			this.titleCollection.push(title);
 			this.idCollection.push(id);
 			this.distance.push(distance!);
-			this.colorBand.push(this.getBand(distance!));
+			this.colorBand.push(FindSimilar.getBand(distance!));
 		}
 		sendToClient(this.id, "load-coll", {
 			titles: this.titleCollection,
@@ -199,7 +199,7 @@ export class FindSimilar extends NodeCore {
 	 * @param distance - Structure distance from the input one
 	 * @returns Color based on distance
 	 */
-	private getBand(distance: number): string {
+	private static getBand(distance: number): string {
 
 		// #FF1700		>0.15 - questionable relatives
 		// #FFC200		0.12-0.15 distant relatives
@@ -220,7 +220,7 @@ export class FindSimilar extends NodeCore {
 	 * @param duplicates - True for atoms that should be ignored
 	 * @returns The fingerprint
 	 */
-	private computeFingerprint(atoms: Atom[],
+	private static computeFingerprint(atoms: Atom[],
 							   crystal: Crystal,
 							   duplicates: boolean[]): Float64Array {
 
@@ -299,7 +299,7 @@ export class FindSimilar extends NodeCore {
 	 * @param duplicates - Atoms marked as duplicates and thus ignored
 	 * @returns HTML string with the structure empirical formula
 	 */
-	private getChemicalFormula(structure: Structure | undefined, duplicates: boolean[]): string {
+	private static getChemicalFormula(structure: Structure | undefined, duplicates: boolean[]): string {
 
 		if(!structure || structure.atoms.length === 0) return "";
 
@@ -359,7 +359,7 @@ export class FindSimilar extends NodeCore {
 	 * @param atoms - Structure atoms
 	 * @returns JSON formatted string with atoms for the visualizer
 	 */
-	private formatAtoms(atoms: Atom[]): string {
+	private static formatAtoms(atoms: Atom[]): string {
 
 		const out: PrototypeAtomsData = {
 			positions: [],
@@ -405,7 +405,7 @@ export class FindSimilar extends NodeCore {
 
 			dataForClient = {
 				matrix: structure.crystal.basis,
-				atoms: this.formatAtoms(structure.atoms),
+				atoms: FindSimilar.formatAtoms(structure.atoms),
 				mineral: name,
 			};
 		}
@@ -422,7 +422,7 @@ export class FindSimilar extends NodeCore {
 				strukturbericht: prototype.strukturbericht,
 				mineral: prototype.mineral,
 				matrix: prototype.structure.crystal.basis,
-				atoms: this.formatAtoms(prototype.structure.atoms)
+				atoms: FindSimilar.formatAtoms(prototype.structure.atoms)
 			};
 		}
 

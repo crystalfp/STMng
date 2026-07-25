@@ -55,7 +55,7 @@ export class Measures extends NodeCore {
 	 */
 	constructor(id: string) {
 		super(id);
-		this.setupChannels(id, this.channels);
+		NodeCore.setupChannels(id, this.channels);
 	}
 
 	description(): string {
@@ -64,7 +64,7 @@ export class Measures extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		sendToClient(this.id, "new", this.summarizeStructure(data));
+		sendToClient(this.id, "new", Measures.summarizeStructure(data));
 		if(!data?.atoms.length) return;
 		this.structure = data;
 	}
@@ -82,7 +82,7 @@ export class Measures extends NodeCore {
 	 * @param structure - The current structure to count
 	 * @returns Atoms count by species
 	 */
-	private countInsideUnitCell(structure: Structure): Record<string, number> {
+	private static countInsideUnitCell(structure: Structure): Record<string, number> {
 
 		const {atoms, crystal} = structure;
 		const {basis} = crystal;
@@ -177,7 +177,7 @@ export class Measures extends NodeCore {
 	 * @param structure - The current structure to summarize
 	 * @returns Summary to be visualized by the client
 	 */
-	private summarizeStructure(structure: Structure): CtrlParams {
+	private static summarizeStructure(structure: Structure): CtrlParams {
 
 		if(!structure?.atoms.length) return {natoms: 0};
 		const species = new Map<number, number>();
@@ -190,7 +190,7 @@ export class Measures extends NodeCore {
 			counts[getAtomicSymbol(entry[0])] = entry[1];
 		}
 
-		const inside = this.countInsideUnitCell(structure);
+		const inside = Measures.countInsideUnitCell(structure);
 
 		const counts2: Record<string, [countAll: number, countInside: number]> = {};
 		for(const full in counts) {

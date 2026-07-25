@@ -100,7 +100,7 @@ export class EquivalentPlanes {
 		// If no symmetries all planes should be computed
 		if(!this.hasSymmetry) return false;
 
-		const hash = this.hash(mH, mK, mL);
+		const hash = EquivalentPlanes.hash(mH, mK, mL);
 
 		// Check if the candidate plane is already here
 		if(this.computedFrom.has(hash)) return true;
@@ -120,7 +120,7 @@ export class EquivalentPlanes {
 	 * @param l - Third hkl index
 	 * @returns A single number encoding the given vector
 	 */
-	private hash(h: number, k: number, l: number): number {
+	private static hash(h: number, k: number, l: number): number {
 		return (h+4)+10*(k+4)+100*(l+4);
 	}
 
@@ -130,8 +130,8 @@ export class EquivalentPlanes {
 	 * @param v - Vector of h, k, l values
 	 * @returns A single number encoding the given vector
 	 */
-	private hashVector([h, k, l]: number[]): number {
-		return this.hash(h, k, l);
+	private static hashVector([h, k, l]: number[]): number {
+		return EquivalentPlanes.hash(h, k, l);
 	}
 
 	/**
@@ -144,7 +144,7 @@ export class EquivalentPlanes {
 				for(let mL = -4; mL <= 4; mL++) {
 
 					const v = [mH, mK, mL];
-					const hash = this.hashVector(v);
+					const hash = EquivalentPlanes.hashVector(v);
 
 					let all;
 					if(this.equivalents.has(hash)) {
@@ -157,7 +157,7 @@ export class EquivalentPlanes {
 
 					for(const m of this.mR) {
 						const w = multiply(m, v);
-						all.add(this.hashVector(w));
+						all.add(EquivalentPlanes.hashVector(w));
 					}
 				}
 			}
@@ -176,14 +176,14 @@ export class EquivalentPlanes {
 		// Map hash to position in planes vector
 		const map = new Map<number, number>();
 		const n = pl.length;
-		for(let i=0; i < n; ++i) map.set(this.hashVector(pl[i]), i);
+		for(let i=0; i < n; ++i) map.set(EquivalentPlanes.hashVector(pl[i]), i);
 
 		let neq = 0;
 		for(let i=0; i < n; ++i) {
 
 			if(pl[i][3] !== Number.POSITIVE_INFINITY) continue;
 
-			const hash = this.hashVector(pl[i]);
+			const hash = EquivalentPlanes.hashVector(pl[i]);
 
 			const hash2 = this.computedFrom.get(hash);
 			if(hash2 === undefined) {
