@@ -28,7 +28,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {FingerprintsAccumulator, type StructureReduced} from "../fingerprint/Accumulator";
-import {Fingerprinting} from "../fingerprint/Compute";
+import {computeFingerprints} from "../fingerprint/Compute";
 import {Distances} from "../fingerprint/Distances";
 import {Grouping} from "../fingerprint/Grouping";
 import {normalizeCoordinates2D} from "../fingerprint/Helpers";
@@ -81,7 +81,6 @@ export class ComputeFingerprints extends NodeCore {
 
 	private structure: Structure | undefined;
 	private readonly accumulator = new FingerprintsAccumulator();
-	private readonly fp = new Fingerprinting();
 	private readonly dist = new Distances();
 	private readonly grouping = new Grouping();
 
@@ -1014,7 +1013,7 @@ export class ComputeFingerprints extends NodeCore {
         this.duplicatesThreshold = params.duplicatesThreshold as number ?? 0.015;
 		this.processParallelism = params.processParallelism as boolean ?? false;
 
-		const resultFP = await this.fp.compute(this.accumulator, {
+		const resultFP = await computeFingerprints(this.accumulator, {
 			method: this.fingerprintingMethod,
 			areNanoclusters: this.areNanoclusters,
 			cutoffDistance: this.cutoffDistance,
