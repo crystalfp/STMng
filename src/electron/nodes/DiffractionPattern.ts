@@ -29,6 +29,7 @@ import {XRDCalculator, type DiffractionPatternResult} from "../modules/XRDCalcul
 import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
 		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {sendAlertToClient, sendToClient} from "../modules/ToClient";
+import {markDuplicates} from "../modules/MarkDuplicates";
 import {hasUnitCell} from "../modules/Helpers";
 import type {Structure, CtrlParams, ChannelDefinition} from "@/types";
 
@@ -82,32 +83,46 @@ export class DiffractionPattern extends NodeCore {
 
 	override fromPreviousNode(data: Structure): void {
 
-		this.structure = data;
 		const hasData = Boolean(data) && hasUnitCell(data.crystal.basis);
 
 		// There is the structure so the XRD could be computed
 		sendToClient(this.id, "enable", {enableComputation: hasData});
 
-		if(hasData && isSecondaryWindowOpen("/chart")) {
-
-			// Compute spectra
-			try {
-				this.xy = this.xrd.getDiffractionPattern(this.structure,
-														 this.state.wavelengthCode,
-														 true,
-														 this.state.thetaLow,
-														 this.state.thetaHigh);
+		if(hasData) {
+			const duplicates = markDuplicates(data.atoms, data.crystal);
+			this.structure = {
+				atoms: [],
+				crystal: data.crystal,
+				bonds: data.bonds,
+				volume: [],
+				extra: data.extra
+			};
+			for(let i=0; i < data.atoms.length; ++i) {
+				if(duplicates[i]) continue;
+				this.structure.atoms.push(data.atoms[i]);
 			}
-			catch(error: unknown) {
-				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
-				return;
+
+			if(isSecondaryWindowOpen("/chart")) {
+
+				// Compute spectra
+				try {
+					this.xy = this.xrd.getDiffractionPattern(this.structure,
+															this.state.wavelengthCode,
+															true,
+															this.state.thetaLow,
+															this.state.thetaHigh);
+				}
+				catch(error: unknown) {
+					sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
+					return;
+				}
+
+				// Compute chart data
+				const dataToSend = this.createDataForChart();
+
+				// Update window
+				sendToSecondaryWindow("/chart", dataToSend);
 			}
-
-			// Compute chart data
-			const dataToSend = this.createDataForChart();
-
-			// Update window
-			sendToSecondaryWindow("/chart", dataToSend);
 		}
 	}
 
