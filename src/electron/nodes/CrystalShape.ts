@@ -54,7 +54,7 @@ export class CrystalShape extends NodeCore {
 		{name: "init",	  type: "invoke",	    callback: this.channelInit.bind(this)},
 		{name: "state",	  type: "send",			callback: this.channelState.bind(this)},
 		{name: "compute", type: "invokeAsync",	callback: this.channelCompute.bind(this)},
-		{name: "stl",	  type: "send", 	    callback: this.channelSTL.bind(this)},
+		{name: "stl",	  type: "send", 	    callback: CrystalShape.channelSTL.bind(this)},
 	];
 
 	/**
@@ -286,7 +286,7 @@ export class CrystalShape extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private channelSTL(params: CtrlParams): void {
+	private static channelSTL(params: CtrlParams): void {
 
 		const {content} = params;
 		if(!content) return;

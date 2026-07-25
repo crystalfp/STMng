@@ -59,7 +59,7 @@ export class FindSimilar extends NodeCore {
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
 		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
-		{name: "show",		type: "invoke",	callback: this.channelShow.bind(this)},
+		{name: "show",		type: "invoke",	callback: FindSimilar.channelShow.bind(this)},
 		{name: "matches",	type: "send",	callback: this.channelMatches.bind(this)},
 	];
 
@@ -387,7 +387,7 @@ export class FindSimilar extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private channelShow(params: CtrlParams): CtrlParams {
+	private static channelShow(params: CtrlParams): CtrlParams {
 
 		const id = params.id as string;
 		if(!id) return {result: "Empty file ID"};

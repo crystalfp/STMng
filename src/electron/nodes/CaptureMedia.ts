@@ -33,11 +33,11 @@ import type {ChannelDefinition, CtrlParams} from "@/types";
 export class CaptureView extends NodeCore {
 
 	private readonly channels: ChannelDefinition[] = [
-		{name: "snapshot",	  type: "invoke", 	   callback: this.channelSnapshot.bind(this)},
-		{name: "snapshotPDF", type: "invokeAsync", callback: this.channelSnapshotPDF.bind(this)},
-		{name: "movie-start", type: "invoke",	   callback: this.channelMovieStart.bind(this)},
-		{name: "movie",		  type: "invoke", 	   callback: this.channelMovie.bind(this)},
-		{name: "stl",		  type: "invoke", 	   callback: this.channelSTL.bind(this)},
+		{name: "snapshot",	  type: "invoke", 	   callback: CaptureView.channelSnapshot.bind(this)},
+		{name: "snapshotPDF", type: "invokeAsync", callback: CaptureView.channelSnapshotPDF.bind(this)},
+		{name: "movie-start", type: "invoke",	   callback: CaptureView.channelMovieStart.bind(this)},
+		{name: "movie",		  type: "invoke", 	   callback: CaptureView.channelMovie.bind(this)},
+		{name: "stl",		  type: "invoke", 	   callback: CaptureView.channelSTL.bind(this)},
 	];
 
 	/**
@@ -68,7 +68,7 @@ export class CaptureView extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private channelSnapshot(params: CtrlParams): CtrlParams {
+	private static channelSnapshot(params: CtrlParams): CtrlParams {
 
 		const dataURI = params.dataURI as string;
 		if(!dataURI) return {payload: ""};
@@ -101,7 +101,7 @@ export class CaptureView extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private async channelSnapshotPDF(params: CtrlParams): Promise<CtrlParams> {
+	private static async channelSnapshotPDF(params: CtrlParams): Promise<CtrlParams> {
 
 		const dataURI = params.dataURI as string;
 		if(!dataURI) return {payload: ""};
@@ -145,7 +145,7 @@ export class CaptureView extends NodeCore {
 	 *
 	 * @returns Params with the operation status
 	 */
-	private channelMovieStart(): CtrlParams {
+	private static channelMovieStart(): CtrlParams {
 
 		const filename = dialog.showSaveDialogSync({
 			title: "Save movie",
@@ -166,7 +166,7 @@ export class CaptureView extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private channelMovie(params: CtrlParams): CtrlParams {
+	private static channelMovie(params: CtrlParams): CtrlParams {
 
 		const buffer = params.buffer as ArrayBuffer;
 		if(!buffer) return {payload: ""};
@@ -188,7 +188,7 @@ export class CaptureView extends NodeCore {
 	 * @param params - Params from the client
 	 * @returns Params with the operation status
 	 */
-	private channelSTL(params: CtrlParams): CtrlParams {
+	private static channelSTL(params: CtrlParams): CtrlParams {
 
 		const binary = params.binary as boolean ?? false;
 		const {content} = params;

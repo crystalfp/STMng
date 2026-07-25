@@ -56,8 +56,6 @@
   "options":{
     "typeAware": true,
     "typeCheck": true,
-    "reportUnusedDisableDirectives": "error",
-    "respectEslintDisableDirectives": true
   },
   "env": {
     "node": true,

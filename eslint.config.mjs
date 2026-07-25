@@ -266,16 +266,9 @@ export default defineConfig([
                 "description",
                 "saveStatus",
                 "loadStatus",
-                "channelShow",
-                "channelSTL",
-                "channelMovie",
-                "channelMovieStart",
-                "channelSnapshotPDF",
-                "channelSnapshot",
                 "fromPreviousNode",
                 "clusterDistance",
-                "computeDistance",
-                "compute"
+                "computeDistance"
             ],
             ignoreClassesWithImplements: "all",
             ignoreOverrideMethods: true
