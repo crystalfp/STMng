@@ -61,7 +61,10 @@ export class Grouping {
      */
     static getGroupingMethodsNames(): GroupingMethodName[] {
 
-		return groupingMethods.map((method) => ({label: method.label, usingMargin: method.usingMargin}));
+		return groupingMethods.map((method) => ({
+			label: method.label,
+			usingMargin: method.usingMargin
+		}));
     }
 
 	/**

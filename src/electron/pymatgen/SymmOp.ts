@@ -164,8 +164,8 @@ export class SymmOp {
 	 * @param translation - (3x1 array): Translation vector
 	 * @returns SymmOp object
 	 */
-	static fromRotationAndTranslation(rotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-									  translation = [0, 0, 0]): SymmOp {
+	private static fromRotationAndTranslation(rotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+									  		  translation = [0, 0, 0]): SymmOp {
 
 		const affineMatrix: number[][] = [
 			[rotation[0][0], rotation[0][1], rotation[0][2], translation[0]],

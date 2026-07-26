@@ -316,7 +316,8 @@ export class CrystalShape extends NodeCore {
 	 * @param basis - Basis vectors
 	 * @returns Miller index representation for each triangle
 	 */
-	private static createMillerIndices(geometry: CrystalGeometry, basis: BasisType): string[] {
+	private static createMillerIndices(geometry: CrystalGeometry,
+									   basis: BasisType): string[] {
 
 		const miller: string[] = [];
 		const d = [1, 1, 1];

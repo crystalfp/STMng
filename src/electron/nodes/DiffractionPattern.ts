@@ -215,10 +215,10 @@ export class DiffractionPattern extends NodeCore {
 	 * @returns Array of points coordinates to be used in the chart
 	 */
 	private static smoothPeaks(x: number[],
-						y: number[],
-						min: number,
-						max: number,
-						width: number): LineCoordinates {
+							   y: number[],
+							   min: number,
+							   max: number,
+							   width: number): LineCoordinates {
 
   		const sigma = width * 0.5;
 
@@ -272,9 +272,9 @@ export class DiffractionPattern extends NodeCore {
 	 * @returns Array of points coordinates to be used in the chart
 	 */
 	private static hardPeaks(twoTheta: number[],
-					  intensity: number[],
-					  min: number,
-					  max: number): LineCoordinates {
+							 intensity: number[],
+							 min: number,
+							 max: number): LineCoordinates {
 
 		const len = intensity.length;
 		const x: number[] = [min];

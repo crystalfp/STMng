@@ -556,7 +556,9 @@ export class ComputeBonds extends NodeCore {
 	 * @param atomZ - Atomic number of the X or Y atoms
 	 * @returns True if an H bond could form
 	 */
-	private static atomForHBond(atomZ: number): boolean {return atomZForH.has(atomZ);}
+	private static atomForHBond(atomZ: number): boolean {
+		return atomZForH.has(atomZ);
+	}
 
 	// > Compute the valence angle
 	/**

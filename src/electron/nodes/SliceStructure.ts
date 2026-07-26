@@ -507,7 +507,7 @@ export class SliceStructure extends NodeCore {
 	 * @returns Normalized vector resulting from cross product of the two vectors
 	 */
 	private static crossProductAndNormalize(a: number[], aStart: number,
-									 b: number[], bStart: number): number[] {
+											b: number[], bStart: number): number[] {
 
 		const cross = [
 			a[aStart+1]*b[bStart+2] - a[aStart+2]*b[bStart+1],
@@ -528,9 +528,9 @@ export class SliceStructure extends NodeCore {
 	 * @returns Middle point coordinates
 	 */
 	private static middlePoint(points: number[],
-						aStart: number,
-						bStart: number,
-						cStart?: number): number[] {
+							   aStart: number,
+							   bStart: number,
+							   cStart?: number): number[] {
 
 		if(cStart !== undefined) {
 			return [
@@ -555,7 +555,9 @@ export class SliceStructure extends NodeCore {
 	 * @param basis - The structure basis vectors
 	 * @returns The normal of the plane and a point on the plane
 	 */
-	private static createPlane(points: number[], parallelCode: number, basis: BasisType): PlaneParams {
+	private static createPlane(points: number[],
+							   parallelCode: number,
+							   basis: BasisType): PlaneParams {
 
 		switch(parallelCode) {
 			case 0: { // Plane through the 3 points

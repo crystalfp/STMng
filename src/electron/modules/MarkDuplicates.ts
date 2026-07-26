@@ -32,7 +32,7 @@ import {invertBasis} from "./Helpers";
  *
  * @param atoms - Input structure atoms
  * @param crystal - Input structure crystal data
- * @returns The excluded markers (one per atom)
+ * @returns The duplicated markers (one per atom, true if duplicated)
  */
 export const markDuplicates = (atoms: Atom[], crystal: Crystal): boolean[] => {
 

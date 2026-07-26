@@ -161,8 +161,11 @@ export class StructureBackbone extends NodeCore {
 	 * @param origin - Structure origin
 	 * @param threshold - Threshold to select next node to be moved
 	 */
-	private static disentangleChains(coordinates: number[], chainStart: number[],
-							 		 basis: BasisType, origin: PositionType, threshold: number): void {
+	private static disentangleChains(coordinates: number[],
+									 chainStart: number[],
+							 		 basis: BasisType,
+									 origin: PositionType,
+									 threshold: number): void {
 
 		// Convert each point into fractional coordinates
 		const inverse = invertBasis(basis);

@@ -441,7 +441,9 @@ export class ComputeSymmetries extends NodeCore {
 	 * @param basis - Structure basis vectors
 	 * @returns Atom position in cartesian coordinates
 	 */
-	private static fractionalToPosition(idx: number, fractionalCoordinates: number[], basis: BasisType): PositionType {
+	private static fractionalToPosition(idx: number,
+										fractionalCoordinates: number[],
+										basis: BasisType): PositionType {
 
 		const k = idx*3;
 		const fx = fractionalCoordinates[k];

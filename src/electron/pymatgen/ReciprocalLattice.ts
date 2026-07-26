@@ -317,7 +317,9 @@ export class ReciprocalLattice {
     // Returns:
     //     np.ndarray: nx3 array int indices
     //
-    private static computeCubeIndex(coords: number[][], globalMin: number[], radius: number): number[][] {
+    private static computeCubeIndex(coords: number[][],
+                                    globalMin: number[],
+                                    radius: number): number[][] {
 
         return coords.map((coord) => [
                     Math.floor((coord[0]-globalMin[0])/radius),
@@ -334,7 +336,8 @@ export class ReciprocalLattice {
     Returns:
         np.ndarray: nx3 array int indices
      */
-    private static threeToOne(label3d: number[][], ny: number, nz: number): number[][] {
+    private static threeToOne(label3d: number[][],
+                              ny: number, nz: number): number[][] {
 
         const out: number[][] = [];
         for(const one of label3d) {

@@ -295,8 +295,8 @@ export class ReaderPDB implements ReaderImplementation {
 	 * @param type - Type of the bond: 0: normal bond; 1: hydrogen bond
 	 */
 	private static checkAndAddBond(from: number, to: number,
-							snMap: Map<number, number>,
-							bonds: Bond[], type: 0 | 1): void {
+								   snMap: Map<number, number>,
+								   bonds: Bond[], type: 0 | 1): void {
 
 		if(!snMap.has(to)) return;
 

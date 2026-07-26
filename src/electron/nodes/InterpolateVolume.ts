@@ -215,7 +215,8 @@ export class InterpolateVolume extends NodeCore {
 	 * @param dy - Y dimension of the input data
 	 * @returns The interpolation matrix
 	 */
-	private static computeMatrix(oi: number, oj: number, ok: number, volume: number[], dx: number, dy: number): number[] {
+	private static computeMatrix(oi: number, oj: number, ok: number,
+								 volume: number[], dx: number, dy: number): number[] {
 
 		// ijk
 		const vv = [];

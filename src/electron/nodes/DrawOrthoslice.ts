@@ -187,8 +187,8 @@ export class DrawOrthoslice extends NodeCore {
      * @param vertices - Where the point coordinates will be put
      */
     private static fractionToAbsolute(fx: number, fy: number, fz: number,
-                               basis: BasisType, origin: PositionType,
-                               vertices: number[]): void {
+                                      basis: BasisType, origin: PositionType,
+                                      vertices: number[]): void {
 
         vertices.push(
             fx*basis[0] + fy*basis[3] + fz*basis[6] + origin[0],
@@ -204,7 +204,9 @@ export class DrawOrthoslice extends NodeCore {
      * @param slowSide - The index that varies slower than the other
      * @param indices - Where the computed triangles vertices indices goes
      */
-    private static generateIndices(fastSide: number, slowSide: number, indices: number[]): void {
+    private static generateIndices(fastSide: number,
+                                   slowSide: number,
+                                   indices: number[]): void {
 
         for(let vv=0; vv < slowSide; ++vv) {
             for(let uu=0; uu < fastSide; ++uu) {

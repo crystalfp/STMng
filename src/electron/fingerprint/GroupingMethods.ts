@@ -49,8 +49,8 @@ abstract class GroupingMethod {
      * @returns Connection matrix between structures
      */
     static sparsify(countStructures: number,
-             distances: DistanceMatrix,
-             threshold: number): number[] {
+                    distances: DistanceMatrix,
+                    threshold: number): number[] {
 
         // The connection matrix between every structure
         const connection = Array<number>(countStructures*countStructures).fill(0);

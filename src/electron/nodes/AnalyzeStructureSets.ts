@@ -217,8 +217,9 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @returns Empty string if the step is the given combination of components,
 	 * 			otherwise the error message
 	 */
-	private static verify(composition: number[], parts: number[], nspecies: number,
-				   ncomponents: number, components: number[]): string {
+	private static verify(composition: number[],
+						  parts: number[], nspecies: number,
+				   		  ncomponents: number, components: number[]): string {
 
 		for(let j=0; j < ncomponents; ++j) {
 			const part = parts[j];
@@ -556,7 +557,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @returns Distances of the point from the convex hull
 	 */
 	private static deltaEnergy(lineX: number[], lineY: number[],
-						energy: number[], volume: number[]): number[] {
+							   energy: number[], volume: number[]): number[] {
 
 		const nPoints = volume.length;
 		const delta = Array<number>(nPoints);
@@ -715,8 +716,10 @@ export class AnalyzeStructureSets extends NodeCore {
 	 * @param atomCounts - Atom count for each atomTypes concatenated for each component
 	 * @returns The label as normal string and the formula as HTML string
 	 */
-	private static makeLabel(key: string, numberComponents: number,
-					  atomTypes: string[], atomCounts: number[]): [label: string, html: string] {
+	private static makeLabel(key: string,
+							 numberComponents: number,
+					  		 atomTypes: string[],
+							 atomCounts: number[]): [label: string, html: string] {
 
 		const keyParts = key.split("-");
 		const parts = keyParts.map((value) => Number.parseInt(value, 10));

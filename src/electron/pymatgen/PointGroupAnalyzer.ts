@@ -748,7 +748,8 @@ export class PointGroupAnalyzer {
 	 * @param threshold - Distance threshold
 	 * @returns Cluster index for each atom and the number of clusters
 	 */
-	private static singleLinkageClustering(values: number[], threshold: number): {cluster: number[]; nclusters: number} {
+	private static singleLinkageClustering(values: number[],
+										   threshold: number): {cluster: number[]; nclusters: number} {
 
 		// Initialize root (to point to all)
         const root: number[][] = [];
@@ -798,10 +799,12 @@ export class PointGroupAnalyzer {
 	 * @param idxi - Indices of the first group elements
 	 * @param idxj - Indices of the second group elements
 	 * @param values - Values associated to each point.
-	 * 					The distance is the difference between these values
+	 * 				   The distance is the difference between these values
 	 * @returns Distance between the two groups
 	 */
-	protected static clusterDistance(idxi: number[], idxj: number[], values: number[]): number {
+	protected static clusterDistance(idxi: number[],
+									 idxj: number[],
+									 values: number[]): number {
 
 		const leni = idxi.length;
 		const lenj = idxj.length;

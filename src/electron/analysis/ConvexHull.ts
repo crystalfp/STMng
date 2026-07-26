@@ -498,9 +498,9 @@ export class VariableCompositionConvexHull {
 	 * @returns Barycentric coordinates [u, v, w] of the point
 	 */
 	private static barycentricCoordinates(point: number[],
-								   a: number[],
-								   b: number[],
-								   c: number[]): [u: number, v: number, w: number] {
+								  		  a: number[],
+								  		  b: number[],
+								  		  c: number[]): [u: number, v: number, w: number] {
 
 		// Compute vectors and dot products
 		const [cx, cy] = point;
@@ -536,7 +536,10 @@ export class VariableCompositionConvexHull {
 	 * @param c - Vertex of the triangle
 	 * @returns Distance from the triangle or -1 if the point is not perpendicular to the triangle
 	 */
-	static closestPointTriangleAlongZ(p: number[], a: number[], b: number[], c: number[]): number {
+	static closestPointTriangleAlongZ(p: number[],
+									  a: number[],
+									  b: number[],
+									  c: number[]): number {
 
 		const [u, v, w] = VariableCompositionConvexHull.barycentricCoordinates(p, a, b, c);
 		if(u >= -1e-12 && v >= -1e-12 && w >= -1e-12) {
@@ -562,11 +565,11 @@ export class VariableCompositionConvexHull {
 	 * @returns Distances of the points from the surface
 	 */
 	private static distanceFromConvexHull3D(vertices: number[][],
-									 x: number[],
-									 y: number[],
-									 e: number[],
-									 hull: Facet[],
-									 limit: number): number[] {
+											x: number[],
+											y: number[],
+											e: number[],
+											hull: Facet[],
+											limit: number): number[] {
 
 		const count = x.length;
 		const distances = Array<number>(count).fill(-1);

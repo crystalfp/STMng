@@ -221,8 +221,8 @@ export class FindSimilar extends NodeCore {
 	 * @returns The fingerprint
 	 */
 	private static computeFingerprint(atoms: Atom[],
-							   crystal: Crystal,
-							   duplicates: boolean[]): Float64Array {
+							   		  crystal: Crystal,
+							   		  duplicates: boolean[]): Float64Array {
 
 		// Should be the same values set in the preprocessor
 		const params: FingerprintingParameters = {
@@ -299,7 +299,8 @@ export class FindSimilar extends NodeCore {
 	 * @param duplicates - Atoms marked as duplicates and thus ignored
 	 * @returns HTML string with the structure empirical formula
 	 */
-	private static getChemicalFormula(structure: Structure | undefined, duplicates: boolean[]): string {
+	private static getChemicalFormula(structure: Structure | undefined,
+									  duplicates: boolean[]): string {
 
 		if(!structure || structure.atoms.length === 0) return "";
 

@@ -236,7 +236,8 @@ class PrototypeDb {
 	 * @param structure - STMng structure to be converted
 	 * @returns The structure in SNL format or undefined if it has no unit cell
 	 */
-	private static structureToSNL(structure: Structure, duplicates: boolean[]): SNL | undefined {
+	private static structureToSNL(structure: Structure,
+								  duplicates: boolean[]): SNL | undefined {
 
 		const {crystal, atoms} = structure;
 		const {basis, origin} = crystal;

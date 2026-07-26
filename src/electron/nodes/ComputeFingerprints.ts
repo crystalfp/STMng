@@ -305,7 +305,8 @@ export class ComputeFingerprints extends NodeCore {
 	 * @param targetCount - The maximum number of points after decimation
 	 * @returns The decimated list of points
 	 */
-	private static decimatePoints(points: number[][], targetCount: number): number[][] {
+	private static decimatePoints(points: number[][],
+								  targetCount: number): number[][] {
 
 		if(points.length <= targetCount) return points;
 
@@ -1479,9 +1480,9 @@ export class ComputeFingerprints extends NodeCore {
 	 * @returns File names or error message
 	 */
 	private static exportStructuresAndEnergy(filename: string,
-									  writer: WriterPOSCAR,
-									  structures: Structure[],
-									  sorter: SorterItem[]): CtrlParams {
+											 writer: WriterPOSCAR,
+											 structures: Structure[],
+											 sorter: SorterItem[]): CtrlParams {
 
 		if(structures.length === 0) return {error: "No structures to save"};
 

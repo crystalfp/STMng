@@ -118,7 +118,7 @@ export class StructureSetsAccumulator {
 	 * @param basis - Unit cell basis vectors
 	 * @returns Unit cell volume
 	 */
-	private	static getCellVolume(basis: BasisType): number {
+	private static getCellVolume(basis: BasisType): number {
 
 		return basis[0]*basis[4]*basis[8] + basis[1]*basis[5]*basis[6] +
                basis[2]*basis[3]*basis[7] - basis[2]*basis[4]*basis[6] -
