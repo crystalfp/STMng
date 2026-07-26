@@ -54,7 +54,7 @@ export class DiffractionPattern extends NodeCore {
 	private readonly state = {
 		thetaLow: 0,
 		thetaHigh: 90,
-		width: 0.25,
+		width: 0.1,
 		wavelengthCode: "CuKa",
 		wavelengthNumeric: 1.54184,
 		showHKL: false,
@@ -135,7 +135,7 @@ export class DiffractionPattern extends NodeCore {
 		this.state.threshold = params.threshold as number ?? 3;
 		this.state.thetaLow = params.thetaLow as number ?? 0;
 		this.state.thetaHigh = params.thetaHigh as number ?? 90;
-		this.state.width = params.width as number ?? 0.25;
+		this.state.width = params.width as number ?? 0.1;
 		this.state.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		this.state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
 		this.state.showHKL = params.showHKL as boolean ?? false;
@@ -332,7 +332,7 @@ export class DiffractionPattern extends NodeCore {
 		this.state.wavelengthNumeric = wavelengthNumeric;
 		this.state.thetaLow = thetaLow;
 		this.state.thetaHigh = thetaHigh;
-		this.state.width = params.width as number ?? 0.25;
+		this.state.width = params.width as number ?? 0.1;
 		this.state.showHKL = params.showHKL as boolean ?? false;
 		this.state.threshold = threshold;
 
