@@ -35,10 +35,13 @@ withDefaults(defineProps<{
     /** Show that the corresponding operation is running */
     loading?: boolean;
 
+    color?: string;
+
   }>(), {
 
     disabled: false,
-    loading: false
+    loading: false,
+    color: "primary"
 });
 
 const emit = defineEmits<{
@@ -51,6 +54,6 @@ const emit = defineEmits<{
 
 <template>
 <v-container class="pl-0 pt-0 pr-2">
-  <v-btn block :disabled :loading @click="emit('click')">{{ label }}</v-btn>
+  <v-btn block :disabled :loading :color @click="emit('click')">{{ label }}</v-btn>
 </v-container>
 </template>
