@@ -705,7 +705,7 @@ export class PointGroupAnalyzer {
 								  centeredStructure[i][2]));
 		}
 
-		const {cluster, nclusters} = this.singleLinkageClustering(dists, tol);
+		const {cluster, nclusters} = PointGroupAnalyzer.singleLinkageClustering(dists, tol);
 		const clusteredDists: number[][] = [];
 		for(let i=0; i < nclusters; ++i) {
 			clusteredDists.push([]);
@@ -748,7 +748,7 @@ export class PointGroupAnalyzer {
 	 * @param threshold - Distance threshold
 	 * @returns Cluster index for each atom and the number of clusters
 	 */
-	private singleLinkageClustering(values: number[], threshold: number): {cluster: number[]; nclusters: number} {
+	private static singleLinkageClustering(values: number[], threshold: number): {cluster: number[]; nclusters: number} {
 
 		// Initialize root (to point to all)
         const root: number[][] = [];
@@ -764,7 +764,7 @@ export class PointGroupAnalyzer {
             const len = root.length;
             for(let ni=0; ni < len-1; ++ni) {
                 for(let nj=ni+1; nj < len; ++nj) {
-                    const distance = this.clusterDistance(root[ni], root[nj], values);
+                    const distance = PointGroupAnalyzer.clusterDistance(root[ni], root[nj], values);
                     if(distance < minDistance) {
                         minDistance = distance;
                         mini = ni;
@@ -801,7 +801,7 @@ export class PointGroupAnalyzer {
 	 * 					The distance is the difference between these values
 	 * @returns Distance between the two groups
 	 */
-	protected clusterDistance(idxi: number[], idxj: number[], values: number[]): number {
+	protected static clusterDistance(idxi: number[], idxj: number[], values: number[]): number {
 
 		const leni = idxi.length;
 		const lenj = idxj.length;

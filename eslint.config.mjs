@@ -267,7 +267,6 @@ export default defineConfig([
                 "saveStatus",
                 "loadStatus",
                 "fromPreviousNode",
-                "clusterDistance",
                 "computeDistance"
             ],
             ignoreClassesWithImplements: "all",
