@@ -35,6 +35,7 @@ withDefaults(defineProps<{
     /** Show that the corresponding operation is running */
     loading?: boolean;
 
+    /** Color of the characters and border */
     color?: string;
 
   }>(), {
