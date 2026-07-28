@@ -220,9 +220,15 @@ export const MDS = (distancesVector: number[],
  * Get the rotation matrices for a given space group
  *
  * @param spaceGroup - The space group string
- * @returns The list of matrices and the status (on error contains the error string)
+ * @returns The list of matrices and the status
+ * 			(on error it contains the error string)
  */
 export const getSeitzRotations = (spaceGroup: string): SeitzRotationsOutput => {
+
+	// Sanitize space group (when it is like "P21/c = P121/a1")
+	if(spaceGroup.includes("=")) {
+		spaceGroup = spaceGroup.split(" =", 1)[0];
+	}
 
 	return addon.getSeitzRotations(spaceGroup);
 };
