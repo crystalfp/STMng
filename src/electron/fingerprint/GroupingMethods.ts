@@ -78,7 +78,9 @@ abstract class GroupingMethod {
      * @param nnodes - Total number of selected structures
      */
     depthFirstVisit(idx: number, assigned: boolean[],
-                    group: Set<number>, connection: number[], nnodes: number): void {
+                    group: Set<number>,
+                    connection: number[],
+                    nnodes: number): void {
 
         // Assign the node to the connected component
         assigned[idx] = true;

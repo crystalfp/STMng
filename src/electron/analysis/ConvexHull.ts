@@ -66,7 +66,7 @@ export class VariableCompositionConvexHull {
 	 * @param p - Proportions (barycentric coordinates) for each point
 	 * @returns List of points for the convex hull routine and mapping to the original point
 	 */
-	private preparePointsForConvexHull4D(p: number[][]): {points: number[][]; idx: number[]} {
+	private preparePointsForConvexHull4D(p: readonly number[][]): {points: number[][]; idx: number[]} {
 
 		// For coincident configurations retain only the one with minimal energy
 		const minEnergies = new Map<string, {idx: number; energy: number}>();
@@ -497,10 +497,10 @@ export class VariableCompositionConvexHull {
 	 * @param c - Vertex of the triangle (only x and y used)
 	 * @returns Barycentric coordinates [u, v, w] of the point
 	 */
-	private static barycentricCoordinates(point: number[],
-								  		  a: number[],
-								  		  b: number[],
-								  		  c: number[]): [u: number, v: number, w: number] {
+	private static barycentricCoordinates(point: readonly number[],
+								  		  a: readonly number[],
+								  		  b: readonly number[],
+								  		  c: readonly number[]): [u: number, v: number, w: number] {
 
 		// Compute vectors and dot products
 		const [cx, cy] = point;
@@ -536,10 +536,10 @@ export class VariableCompositionConvexHull {
 	 * @param c - Vertex of the triangle
 	 * @returns Distance from the triangle or -1 if the point is not perpendicular to the triangle
 	 */
-	static closestPointTriangleAlongZ(p: number[],
-									  a: number[],
-									  b: number[],
-									  c: number[]): number {
+	static closestPointTriangleAlongZ(p: readonly number[],
+									  a: readonly number[],
+									  b: readonly number[],
+									  c: readonly number[]): number {
 
 		const [u, v, w] = VariableCompositionConvexHull.barycentricCoordinates(p, a, b, c);
 		if(u >= -1e-12 && v >= -1e-12 && w >= -1e-12) {
@@ -564,11 +564,11 @@ export class VariableCompositionConvexHull {
 	 * @param limit - Maximum value of the normal to classify the facet as a bottom one
 	 * @returns Distances of the points from the surface
 	 */
-	private static distanceFromConvexHull3D(vertices: number[][],
-											x: number[],
-											y: number[],
-											e: number[],
-											hull: Facet[],
+	private static distanceFromConvexHull3D(vertices: readonly number[][],
+											x: readonly number[],
+											y: readonly number[],
+											e: readonly number[],
+											hull: readonly Facet[],
 											limit: number): number[] {
 
 		const count = x.length;
@@ -609,10 +609,10 @@ export class VariableCompositionConvexHull {
 	 * @param facetC - Hyperplane c parameter from the convex hull
 	 * @returns Minimal distance from the convex hull for each structure
 	 */
-	private distanceFromConvexHull4D(parts: number[][],
-									 idxVertices: Set<number>,
-									 facetA: number[][],
-									 facetC: number[]): number[] {
+	private distanceFromConvexHull4D(parts: readonly number[][],
+									 idxVertices: ReadonlySet<number>,
+									 facetA: readonly number[][],
+									 facetC: readonly number[]): number[] {
 
 		const distances: number[] = [];
 

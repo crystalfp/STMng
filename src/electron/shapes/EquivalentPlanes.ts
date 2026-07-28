@@ -130,7 +130,7 @@ export class EquivalentPlanes {
 	 * @param v - Vector of h, k, l values
 	 * @returns A single number encoding the given vector
 	 */
-	private static hashVector([h, k, l]: number[]): number {
+	private static hashVector([h, k, l]: readonly number[]): number {
 		return EquivalentPlanes.hash(h, k, l);
 	}
 
@@ -169,7 +169,7 @@ export class EquivalentPlanes {
 	 *
 	 * @param pl - Computed planes
 	 */
-	fillEquivalent(pl: PlaneType[]): void {
+	fillEquivalent(pl: readonly PlaneType[]): void {
 
 		if(!this.hasSymmetry) return;
 

@@ -31,7 +31,7 @@ const ATOL = 1e-8;
  * @param row - Array of values to sort
  * @returns The sorted values positions
  */
-export const argsortByAbsRow = (row: number[]): number[] => {
+export const argsortByAbsRow = (row: readonly number[]): number[] => {
     return row
             .map((v, i) => [Math.abs(v), i])
             .toSorted((a, b) => a[0] - b[0])
@@ -45,7 +45,7 @@ export const argsortByAbsRow = (row: number[]): number[] => {
  * @param b - Second 3-vector
  * @returns - Cross product
  */
-export const cross3 = (a: number[], b: number[]): number[] => {
+export const cross3 = (a: readonly number[], b: readonly number[]): number[] => {
     return [
         a[1]*b[2] - a[2]*b[1],
         a[2]*b[0] - a[0]*b[2],
@@ -59,7 +59,7 @@ export const cross3 = (a: number[], b: number[]): number[] => {
  * @param v - Vector
  * @returns Norm of the vector
  */
-export const norm = (v: number[]): number => {
+export const norm = (v: readonly number[]): number => {
     return Math.sqrt(v.reduce((s, x) => s + x * x, 0));
 };
 
@@ -85,7 +85,7 @@ export const det3x3 = (m: number[][]): number => {
  * @param b - b vector
  * @returns Solution vector
  */
-export const solve3x3det = (det: number, m: number[][], b: number[]): number[] => {
+export const solve3x3det = (det: number, m: number[][], b: readonly number[]): number[] => {
 
     // Cramer's rule
     const solve1D = (col: number): number => {
@@ -109,7 +109,7 @@ export const isClose = (a: number, b: number, atol = ATOL, rtol = RTOL): boolean
  * @param b - Second vector
  * @returns - Dot product
  */
-export const dot = (a: number[], b: number[]): number => {
+export const dot = (a: readonly number[], b: readonly number[]): number => {
     return a.reduce((sum, v, i) => sum + v * b[i], 0);
 };
 
@@ -120,7 +120,7 @@ export const dot = (a: number[], b: number[]): number => {
  * @param b - Second 3-vector
  * @returns - Dot product
  */
-export const dot3 = (a: number[], b: number[]): number =>
+export const dot3 = (a: readonly number[], b: readonly number[]): number =>
     a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
 /**
@@ -130,7 +130,7 @@ export const dot3 = (a: number[], b: number[]): number =>
  * @param b - Vector to subtract
  * @returns Resulting vector
  */
-export const sub3 = (a: number[], b: number[]): number[] =>
+export const sub3 = (a: readonly number[], b: readonly number[]): number[] =>
     [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 
 /**
@@ -159,7 +159,7 @@ export const inv3 = (m: number[][]): number[][] | undefined => {
  * @param m - Matrix to multiply
  * @returns Resulting vector
  */
-export const mulVecMat3 = (v: number[], m: number[][]): number[] => [
+export const mulVecMat3 = (v: readonly number[], m: readonly number[][]): number[] => [
 	v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0],
 	v[0] * m[0][1] + v[1] * m[1][1] + v[2] * m[2][1],
 	v[0] * m[0][2] + v[1] * m[1][2] + v[2] * m[2][2],
@@ -169,7 +169,7 @@ export const mulVecMat3 = (v: number[], m: number[][]): number[] => [
  * Euclidean distance between two 3-vectors.
  * Inlined to avoid building full distance matrices.
  */
-export const euclidean = (a: number[], b: number[]): number => {
+export const euclidean = (a: readonly number[], b: readonly number[]): number => {
     return Math.sqrt(a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0));
 };
 
@@ -180,7 +180,7 @@ export const euclidean = (a: number[], b: number[]): number => {
  * @param v - Vector
  * @returns Product Mv
  */
-export const matVec = (m: number[][], v: number[]): number[] => {
+export const matVec = (m: number[][], v: readonly number[]): number[] => {
   	return m.map((row) => row.reduce((s, value, i) => s + value * v[i], 0));
 };
 
