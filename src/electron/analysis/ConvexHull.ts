@@ -37,13 +37,13 @@ export class VariableCompositionConvexHull {
 
 	private readonly accumulator: StructureSetsAccumulator;
 	private dimension = 0;
-	private x: number[] = [];
-	private y: number[] = [];
-	private z: number[] = [];
-	private e: number[] = [];
-	private step: number[] = [];
-	private parts: string[] = [];
-	private formula: string[] = [];
+	private readonly x: number[] = [];
+	private readonly y: number[] = [];
+	private readonly z: number[] = [];
+	private readonly e: number[] = [];
+	private readonly step: number[] = [];
+	private readonly parts: string[] = [];
+	private readonly formula: string[] = [];
 	private vertices: number[] = [];
 	private idxVertices: number[] = [];
 	private distances: number[] = [];

@@ -36,8 +36,8 @@ const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1",
  */
 export class EquivalentPlanes {
 
-	private hasSymmetry = true;
-	private mR: number[][][] = [];
+	private readonly hasSymmetry: boolean = true;
+	private readonly mR: number[][][] = [];
 	private readonly equivalents = new Map<number, Set<number>>();
 	private readonly computedFrom = new Map<number, number>();
 
