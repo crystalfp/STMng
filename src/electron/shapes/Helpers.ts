@@ -78,15 +78,15 @@ export const det3x3 = (m: number[][]): number => {
 };
 
 /**
- * Solve the equation Mx = b
+ * Solve the equation Mx = b having the det(M) already computed
  *
+ * @param det - M matrix determinant
  * @param m - M 3x3 matrix
  * @param b - b vector
  * @returns Solution vector
  */
-export const solve3x3 = (m: number[][], b: number[]): number[] => {
+export const solve3x3det = (det: number, m: number[][], b: number[]): number[] => {
 
-    const det = det3x3(m);
     // Cramer's rule
     const solve1D = (col: number): number => {
         const t = m.map((row, i) =>

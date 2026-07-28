@@ -71,7 +71,7 @@ const arange3d = (maxCoat: number): number[][] => {
  * @returns Normalized valence effort
  */
 const valenceAffortNormalize = (inputCell: Structure,
-								fractionalCoordinates: number[],
+								fractionalCoordinates: readonly number[],
 								radii: number[]): number[] => {
 
 	const maxCoat = 10;
@@ -147,14 +147,22 @@ const valenceAffortNormalize = (inputCell: Structure,
 	return norms;
 };
 
-// Tile norms, radii, vElNumber sz times and reshape to [sz * cell.length, 1]
-const tileAndReshape = (array: number[], sz: number): number[][] => {
-	const tiled: number[] = [];
-	for(let i = 0; i < sz; i++) tiled.push(...array);
-	return tiled.map((v) => [v]);
+/**
+ * Tile norms, radii, vElNumber sz times
+ *
+ * @param array - Array to reshape
+ * @param sz - How many time to tile it
+ * @returns Reshaped to [sz * cell.length, 1]
+ */
+const tileAndReshape = (array: readonly number[], sz: number): number[][] => {
+	const tiled: number[][] = [];
+	for(let i = 0; i < sz; i++) {
+		for(const a of array) tiled.push([a]);
+	}
+	return tiled;
 };
 
-const connectedComponents = (matrix: number[][]): {count: number; labels: number[]} => {
+const connectedComponents = (matrix: readonly number[][]): {count: number; labels: number[]} => {
 
 	const n = matrix.length;
 	const labels = Array<number>(n).fill(-1);
@@ -185,18 +193,18 @@ const connectedComponents = (matrix: number[][]): {count: number; labels: number
  * Compute energies needed
  *
  * @param cell - Atoms fractional coordinates
- * @param trans - Unit cell vectors
+ * @param trans - Unit cell vectors (cannot be readonly)
  * @param norms - Normalized valence distances per atom
  * @param radii - Atoms covalent radii
  * @param electrons - Atoms number of electrons
  * @param goodBonds - ?
  * @returns Extra energy
  */
-const determineEnergiesNeeded = (cell: number[][],
+const determineEnergiesNeeded = (cell: readonly number[][],
 								 trans: number[][],
-								 norms: number[],
-								 radii: number[],
-								 electrons: number[],
+								 norms: readonly number[],
+								 radii: readonly number[],
+								 electrons: readonly number[],
 								 goodBonds: number): number => {
 
 	const sz = 27;
@@ -301,6 +309,15 @@ const checkSign = (h: number, k: number, l: number): boolean =>
 	(h === 0 && k > 0 && l === 0) ||
 	(h === 0 && k === 0 && l > 0);
 
+/**
+ * Check if the miller indices cannot be simplified
+ * (could become: return gcd(h, k, l) === 1)
+ *
+ * @param h - First Miller index of the new plane
+ * @param k - Second Miller index of the new plane
+ * @param l - Third Miller index of the new plane
+ * @returns True if the indices cannot be simplified (by dividing by their gcd)
+ */
 const isSimple = (h: number, k: number, l: number): boolean => {
 
 	const indxs = [];

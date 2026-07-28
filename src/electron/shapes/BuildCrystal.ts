@@ -26,7 +26,7 @@ import Delaunator from "delaunator";
 import type {BasisType} from "@/types";
 import type {PlaneType} from "./ComputeCrystalPlanes";
 import {argsortByAbsRow, cross3, det3x3, dot, dot3, euclidean,
-        inv3, isClose, mulVecMat3, norm, solve3x3, sub3} from "./Helpers";
+        inv3, isClose, mulVecMat3, norm, solve3x3det, sub3} from "./Helpers";
 
 const DEDUP_ATOL = 1e-6;
 
@@ -112,35 +112,33 @@ const concN = (planeNormals: number[][]): number[][][] => {
     ]);
 };
 
-// --- plane_intersections ---
+/**
+ * Compute plane intersections
+ *
+ * @param planeNormals - All planes normals
+ * @param planeRvalue - All planes point
+ */
 const planeIntersections = (planeNormals: number[][],
-                            planeRvalue: number[]
-                           ): number[][] => {
+                            planeRvalue: number[]): number[][] => {
 
     // Build all [3,3] normal matrices for strictly-ordered triples
     const allN  = concN(planeNormals);
     const allRV = concRV(planeRvalue);
 
+    // Allocate the maximum number of results
+    const results: number[][] = Array<number[]>(allN.length);
+
     // Keep only triples whose normal matrix has non-zero determinant
-    const filteredN:  number[][][] = [];
-    const filteredRV: number[][]  = [];
+    let k = 0;
     for(let t = 0; t < allN.length; t++) {
-        if(Math.abs(det3x3(allN[t])) > 1e-14) {
-            filteredN.push(allN[t]);
-            filteredRV.push(allRV[t]);
+
+        const det = det3x3(allN[t]);
+        if(Math.abs(det) > 1e-14) {
+            results[k++] = solve3x3det(det, allN[t], allRV[t]);
         }
     }
 
-    // Solve in batches of 100,000 (mirrors Python's chunked np.linalg.solve)
-    const results: number[][] = [];
-    const batchSize = 100_000;
-    for(let start = 0; start < filteredN.length; start += batchSize) {
-        const end = Math.min(start + batchSize, filteredN.length);
-        for(let t = start; t < end; t++) {
-            results.push(solve3x3(filteredN[t], filteredRV[t]));
-        }
-    }
-
+    results.length = k;
     return results;
 };
 
@@ -209,7 +207,7 @@ export const buildCrystalShape = (
                                     sendMsg: (msg: string) => void
                                 ): CrystalGeometry => {
 
-	// Planes used in the subsequent steps
+    // Planes used in the subsequent steps
 	const planeMiller: number[][] = [];
 	const planeEnergy: number[] = [];
 
@@ -262,8 +260,8 @@ export const buildCrystalShape = (
 
     sendMsg("Searching interior polyhedra vertices");
 
-    // The Python code chunks in blocks of 100 000; with 71 rows here one pass suffices,
-    // but the chunked loop is preserved for correctness with larger datasets.
+    // The Python code chunks in blocks of 100 000,
+    // the chunked loop is preserved for correctness with larger datasets.
     const CHUNK = 100_000;
     const inPolyhedra: boolean[] = [];
     const nRows = planeR.length;
