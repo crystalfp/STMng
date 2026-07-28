@@ -142,11 +142,10 @@ const planeIntersections = (planeNormals: number[][],
     return results;
 };
 
-const ifInPolyhedra = (
-                        points: number[][],
-                        normals: number[][],
-                        rvalues: number[],
-                    ): boolean[] => {
+const ifInPolyhedra = (points: number[][],
+                       normals: number[][],
+                       rvalues: number[]): boolean[] => {
+
     return points.map((p) =>
         normals.every((n, j) => {
             const d = dot(p, n);
@@ -260,21 +259,7 @@ export const buildCrystalShape = (
 
     sendMsg("Searching interior polyhedra vertices");
 
-    // The Python code chunks in blocks of 100 000,
-    // the chunked loop is preserved for correctness with larger datasets.
-    const CHUNK = 100_000;
-    const inPolyhedra: boolean[] = [];
-    const nRows = planeR.length;
-    const iMax = Math.floor(nRows / CHUNK);
-
-    for(let i = 0; i < iMax; i++) {
-        inPolyhedra.push(
-            ...ifInPolyhedra(planeR.slice(i * CHUNK, (i + 1) * CHUNK), planeNormals, planeRvalue),
-        );
-    }
-    inPolyhedra.push(
-        ...ifInPolyhedra(planeR.slice(iMax * CHUNK), planeNormals, planeRvalue),
-    );
+    const inPolyhedra = ifInPolyhedra(planeR, planeNormals, planeRvalue);
 
     const polyhedraRNu: number[][] = planeR.filter((_, i) => inPolyhedra[i]);
 
