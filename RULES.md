@@ -1,4 +1,5 @@
 - Use `as const` for constant arrays
-- Use `readonly` for constant function parameters
-- Don't use flags as function parameters
+- Use `readonly` for constant array function parameters
+- Don't use flags as function parameters. Split the function
 - Use fat arrows for functions
+- Label tuple elements
