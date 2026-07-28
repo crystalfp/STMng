@@ -295,7 +295,7 @@ export class CrystalShape extends NodeCore {
 		// Select the save file
 		const filename = dialog.showSaveDialogSync({
 			title: "Save STL geometry file",
-			defaultPath: "geometry.stl",
+			defaultPath: "crystal-shape.stl",
 			filters: [{name: "STL", extensions: ["stl"]}]
 		});
 		if(!filename) return;

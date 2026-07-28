@@ -401,8 +401,8 @@ export class DiffractionPattern extends NodeCore {
 			ipcMain.on("SYSTEM:save-xrd", () => {
 
 				const file = dialog.showSaveDialogSync({
-					title: "Save X-Ray diffraction points",
-					defaultPath: "diffraction.dat",
+					title: "Save X-Ray diffraction spectra",
+					defaultPath: "diffraction-spectra.dat",
 					filters: [
 						{name: "Point data", extensions: ["dat"]},
 					]

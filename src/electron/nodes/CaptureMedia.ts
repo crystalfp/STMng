@@ -111,8 +111,8 @@ export class CaptureView extends NodeCore {
 		// Select the save file
 		const filename = dialog.showSaveDialogSync({
 			title: "Save snapshot file",
-			defaultPath: `snapshot.${format}`,
-			filters: [{name: format, extensions: [format]}]
+			defaultPath: "snapshot.pdf",
+			filters: [{name: format, extensions: ["pdf"]}]
 		});
 		if(!filename) return {payload: ""};
 
