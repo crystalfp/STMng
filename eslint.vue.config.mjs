@@ -23,5 +23,8 @@ export const vueRules = {
 	}],
 	"vue/no-unused-refs": "error",
 	"vue/no-unused-emit-declarations": "error",
-	"vue/no-dupe-keys": "error"
+	"vue/no-dupe-keys": "error",
+	"vue/block-order": ["error", {order: ["script", "template", "style"]}],
+	"vue/block-lang": ["error", {"script": {"lang": "ts"}}],
+	// "vue/no-ref-object-reactivity-loss": "error"
 }

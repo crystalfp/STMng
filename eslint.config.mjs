@@ -233,8 +233,16 @@ export default defineConfig([
         "@typescript-eslint/prefer-includes": "warn",
         "@typescript-eslint/prefer-nullish-coalescing": "warn",
         "@typescript-eslint/prefer-optional-chain": "warn",
-        // "@typescript-eslint/prefer-readonly": "warn",
-        // "@typescript-eslint/prefer-readonly-parameter-types": "off",
+        "@typescript-eslint/prefer-readonly": "warn",
+        // "@typescript-eslint/prefer-readonly-parameter-types": ["warn", {
+        //     allow: [
+        //         {from: "file", name: "StructureSetsAccumulator"},
+        //         {from: "file", name: "PlaneType"},
+        //         {from: "file", name: "Facet"},
+        //     ],
+        //     ignoreInferredTypes: true,
+        //     treatMethodsAsReadonly: true,
+        // }],
         "@typescript-eslint/no-confusing-void-expression": ["error", {ignoreArrowShorthand: true}],
         // "@typescript-eslint/explicit-member-accessibility": ["warn", {
         //         accessibility: "explicit",
@@ -267,7 +275,8 @@ export default defineConfig([
                 "saveStatus",
                 "loadStatus",
                 "fromPreviousNode",
-                "computeDistance"
+                "computeDistance",
+                "clusterDistance"
             ],
             ignoreClassesWithImplements: "all",
             ignoreOverrideMethods: true
