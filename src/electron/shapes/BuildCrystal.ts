@@ -113,13 +113,14 @@ const concN = (planeNormals: number[][]): number[][][] => {
 };
 
 /**
- * Compute plane intersections
+ * Compute plane intersections and keep the ones in polyhedra
  *
  * @param planeNormals - All planes normals
  * @param planeRvalue - All planes point
+ * @returns Intersections that are in polyhedra
  */
-const planeIntersections = (planeNormals: number[][],
-                            planeRvalue: number[]): number[][] => {
+const planeIntersectionsAndInPolyhedra = (planeNormals: number[][],
+                                          planeRvalue: number[]): number[][] => {
 
     // Build all [3,3] normal matrices for strictly-ordered triples
     const allN  = concN(planeNormals);
@@ -134,24 +135,19 @@ const planeIntersections = (planeNormals: number[][],
 
         const det = det3x3(allN[t]);
         if(Math.abs(det) > 1e-14) {
-            results[k++] = solve3x3det(det, allN[t], allRV[t]);
+
+            const result = solve3x3det(det, allN[t], allRV[t]);
+
+            // Keep if it is in polyhedra
+            if(planeNormals.every((n, j) => {
+                const d = dot(result, n);
+                return d < planeRvalue[j] || isClose(d, planeRvalue[j]);
+            })) results[k++] = result;
         }
     }
 
     results.length = k;
     return results;
-};
-
-const ifInPolyhedra = (points: number[][],
-                       normals: number[][],
-                       rvalues: number[]): boolean[] => {
-
-    return points.map((p) =>
-        normals.every((n, j) => {
-            const d = dot(p, n);
-            return d < rvalues[j] || isClose(d, rvalues[j]);
-        })
-    );
 };
 
 const markDuplicatesInChunk = (chunkStart: number,
@@ -255,13 +251,10 @@ export const buildCrystalShape = (
 	// Compute normals
 	const [planeNormals, planeRvalue] = getNormalsRvalues(planeMiller, planeEnergy, cell);
 
-    const planeR = planeIntersections(planeNormals, planeRvalue);
+    // Compute intersections and searching interior polyhedra vertices
+    const polyhedraRNu = planeIntersectionsAndInPolyhedra(planeNormals, planeRvalue);
 
-    sendMsg("Searching interior polyhedra vertices");
-
-    const inPolyhedra = ifInPolyhedra(planeR, planeNormals, planeRvalue);
-
-    const polyhedraRNu: number[][] = planeR.filter((_, i) => inPolyhedra[i]);
+    sendMsg("Deduplicate points");
 
     // ─── Step 2: deduplicate (keep unique rows up to atol = 1e-6) ─────────────────
     // Python uses a lower-triangular trick with cdist:
@@ -282,7 +275,7 @@ export const buildCrystalShape = (
 
     sendMsg("Calculating surface triangulation");
 
-    // ─── Step 1: blng  (shape: numPlanes × numVertices) ──────────────────────────
+    // ─── Step 1: blng (shape: numPlanes × numVertices) ──────────────────────────
     // Python: blng = np.isclose(np.dot(polyhedra_R, plane_normals.T), plane_rvalue).astype(int).T
     //
     // For each vertex v and each plane p: is dot(v, normal_p) ≈ rvalue_p ?
@@ -350,7 +343,7 @@ export const buildCrystalShape = (
             flat[idx++] = y;
         }
 
-        const del = new Delaunator(flat as unknown as number[]);
+        const del = new Delaunator(flat);
 
         // del.triangles is a flat Uint32Array of simplex indices (groups of 3)
         const simplices: [number, number, number][] = [];

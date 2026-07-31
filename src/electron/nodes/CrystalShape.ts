@@ -171,7 +171,9 @@ export class CrystalShape extends NodeCore {
 					throw Error("No planes computed");
 				}
 
-				sendToClient(this.id, "step", {message: "Computing intersections"});
+				sendToClient(this.id, "step", {
+					message: "Computing intersections and polyhedra vertices"
+				});
 
 				this.crystalResults = buildCrystalShape(basis, planes, this.previousPlanesCount,
 					(message) => sendToClient(this.id, "step", {message})
