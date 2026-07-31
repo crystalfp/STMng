@@ -44,7 +44,7 @@
     "delaunator": "^5.1.0",
     "electron-log": "^5.4.4",
     "mathjs": "^15.2.0",
-    "mediabunny": "^1.51.0",
+    "mediabunny": "^1.52.1",
     "pinia": "^4.0.2",
     "three": "^0.185.1",
     "three-viewport-gizmo": "^2.2.0",
@@ -53,7 +53,7 @@
     "valibot": "^1.4.2",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
-    "vuetify": "^4.1.6",
+    "vuetify": "^4.1.7",
     "workerpool": "^10.0.3"
   },
   "devDependencies": {
@@ -102,7 +102,7 @@
     "typedoc-plugin-missing-exports": "^4.1.4",
     "typedoc-plugin-vue": "^1.5.1",
     "typescript": "6.0.3",
-    "vite": "^8.1.5",
+    "vite": "^8.2.0",
     "vite-plugin-clean-pattern": "^1.1.0",
     "vite-plugin-electron": "^1.1.0",
     "vite-plugin-vue-devtools": "^8.2.1",
