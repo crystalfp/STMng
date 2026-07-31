@@ -22,8 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {Output, BufferTarget, CanvasSource, QUALITY_HIGH, type VideoCodec,
-		Mp4OutputFormat, MkvOutputFormat, WebMOutputFormat} from "mediabunny";
+import {Output, BufferTarget, CanvasSource, type VideoCodec,
+		Mp4OutputFormat, MkvOutputFormat, WebMOutputFormat,
+        Quality} from "mediabunny";
 import {askNode} from "@/services/RoutesClient";
 import {showNodeAlert} from "@/services/AlertMessage";
 
@@ -84,7 +85,7 @@ export class CaptureMovie {
 
         this.source = new CanvasSource(canvas, {
             codec,
-            bitrate: QUALITY_HIGH,
+            quality: new Quality("high"),
         });
 
         this.out.addVideoTrack(this.source, {frameRate: fps});
