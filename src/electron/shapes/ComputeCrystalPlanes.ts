@@ -474,8 +474,9 @@ export const computeCrystalPlanes = async (structure: Structure,
 	}
 
 	const results = await Promise.all(promises).catch((error: unknown) => {
-		log.error("Error from the worker pool.", error);
-		throw Error(`Error from the worker pool. ${(error as Error).message}`);
+		const message = `Error from the worker pool. ${(error as Error).message}`;
+		log.error(message);
+		throw Error(message);
 	});
 
 	// Release the pool

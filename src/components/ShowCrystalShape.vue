@@ -57,6 +57,7 @@ const sv = new SimpleViewer(".shape-viewer", false, (scene) => {
     basisVectorGroup.name = nameBV;
     basisVectorGroup.visible = visibleBV.value;
     scene.add(basisVectorGroup);
+    shapeGroup.name = nameShape;
     scene.add(shapeGroup);
 
     // Increase ambient light intensity
