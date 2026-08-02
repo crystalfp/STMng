@@ -3,3 +3,4 @@
 - Don't use flags as function parameters. Split the function
 - Use fat arrows for functions
 - Label tuple elements
+- Use destructuring for function arguments that accepts a tuple or an object
