@@ -26,9 +26,9 @@ export default defineConfig({
             "local-doc", "other", "release", "report", "save", "test-data",
             "tests", "work"
         ],
-        include: [
-            "three/addons/geometries/ConvexGeometry.js"
-        ],
+        // include: [
+        //     "three/addons/geometries/ConvexGeometry.js"
+        // ],
         holdUntilCrawlEnd: false
     },
     plugins: [

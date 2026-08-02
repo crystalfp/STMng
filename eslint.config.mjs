@@ -33,7 +33,7 @@ export default defineConfig([
 		"src/assets",
         "src/cpp",
         "src/electron/fingerprint/rolldown.config.mjs",
-        "src/electron/fingerprint/KDtree.js",
+        "src/electron/fingerprint/KDtree.mjs",
         "src/electron/fingerprint/.rollup.cache/**",
         "src/electron/shapes/.rollup.cache/**",
         "src/electron/shapes/rolldown.config.mjs",

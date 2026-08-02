@@ -1,5 +1,5 @@
 /**
- * Definitions for KDtree.js
+ * Definitions for KDtree.mjs
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle at ikmail.com"

@@ -1,6 +1,6 @@
 scc --no-cocomo --wide --by-file --exclude-ext txt,svg \
 	--exclude-dir sginfo,spglib-2.7.0,Eigen,stm4,.rollup.cache \
-	--exclude-file Worker.js,KDtree.js,WorkerShape.js --sort complexity \
+	--exclude-file Worker.js,KDtree.mjs,WorkerShape.js --sort complexity \
 	--count-as jsonc:json,gyp:py \
 src public package.json tsconfig.json tsdoc.json troika-three-text.d.ts \
 	eslint.config.mjs eslint.vue.config.mjs .stylelintrc.yaml docgen.config.js \

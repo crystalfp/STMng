@@ -43,7 +43,7 @@
     "troika-three-text.d.ts",
     "src/**/*.ts",
     "src/**/*.vue"
-  ],
+, "src/electron/fingerprint/KDtree.d.mts"  ],
   "exclude": [
     "src/cpp/spglib*/**/*.ts",
     "other/**"

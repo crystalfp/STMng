@@ -29,7 +29,7 @@ import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {askNode, closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
 import {contrastingColors} from "@/electron/fingerprint/ContrastingColors";
-import {KDTree} from "@/electron/fingerprint/KDtree.js";
+import {KDTree} from "@/electron/fingerprint/KDtree.mjs";
 import type {CtrlParams, ScatterplotData} from "@/types";
 
 import SelectFile from "@/widgets/SelectFile.vue";
