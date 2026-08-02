@@ -379,7 +379,7 @@ const summaryEvents = {
         click: resetTable
     },
     [Timeline.selectors.row]: {
-        click: (x: {data: SummaryTableEntry[]}) => {
+        click: (x: {data: SummaryTableEntry[]}): void => {
           if(x) explainSummaryLine(x.data[0]);
           else resetTable();
         }
@@ -395,7 +395,7 @@ const detailsEvents = {
         click: resetTable
     },
     [Timeline.selectors.row]: {
-        click: (x: {data: DataRecord[]}) => {
+        click: (x: {data: DataRecord[]}): void => {
           if(x) explainDetailsLine(x.data[0]);
           else resetTable();
         }

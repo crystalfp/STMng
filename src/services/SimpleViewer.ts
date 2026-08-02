@@ -27,7 +27,7 @@ import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, OrthographicCamera, Vector3, Vector2, type Group,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-        Box3, Sphere, MathUtils, Timer, Mesh, Object3D} from "three";
+        Box3, Sphere, MathUtils, Timer, type Mesh, type Object3D} from "three";
 
 /** Simple 3D viewer */
 export class SimpleViewer {

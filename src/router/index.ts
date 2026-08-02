@@ -112,6 +112,7 @@ export const router = createRouter({
             component: {
                 setup() {
                     const route = useRoute();
+                    // oxlint-disable-next-line explicit-function-return-type
                     return () => h("p", {style: "color: red; margin: 1rem"},
                         `Page /${route.params.catchAll as string} not found`);
                 }

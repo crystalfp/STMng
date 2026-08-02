@@ -68,6 +68,7 @@ const vertex = ref<DataRecord[]>([]);
 const forceUpdate = ref(true);
 const dimension = ref(2);
 const edges = ref<DataRecord[]>([]);
+const pointColoring = ref<ColoringKind>("formation");
 
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
@@ -204,7 +205,6 @@ const showStructures = ref(true);
 const showOnLine = ref(true);
 const showLegend = ref(false);
 const showFormula = ref(true);
-const pointColoring = ref<ColoringKind>("formation");
 const colormapName = ref("rainbow");
 const lutMin = ref(0);
 const lutMax = ref(1);

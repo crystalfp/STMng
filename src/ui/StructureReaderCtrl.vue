@@ -108,6 +108,10 @@ const aflowTag        = ref("");     // The selected prototype aflow tag
 const collection      = ref<CollectionType[]>([]); // The structure collection
 const collectionQuery = ref("");     // The selected collection entry ID
 
+// To clear the select atoms labels
+const label1 = ref("");
+const label2 = ref("");
+
 const controlStore = useControlStore();
 const configStore  = useConfigStore();
 
@@ -607,10 +611,6 @@ const filterFromFormat = (fileFormat: string): string => {
 
     return JSON.stringify(filter);
 };
-
-// To clear the select atoms labels
-const label1 = ref("");
-const label2 = ref("");
 
 // Add loaded file to the window title
 const stopWatcher5 = watch(label1, () => {setFileInTitle(label1.value);});

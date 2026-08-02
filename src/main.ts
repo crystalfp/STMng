@@ -187,7 +187,7 @@ const app = createApp(App)
 	});
 
 // Add global error handlers
-app.config.errorHandler = (error: unknown, _instance: unknown, info: string) => {
+app.config.errorHandler = (error: unknown, _instance: unknown, info: string): void => {
 
 	const e = error as Error;
 

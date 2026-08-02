@@ -1282,9 +1282,9 @@ export class ComputeFingerprints extends NodeCore {
 		ipcMain.handle("SYSTEM:get-structure", (_event, params: CtrlParams): CtrlParams => {
 
 			const empty: CtrlParams = {};
-			const step = params.step as number;
+			const step = params.step;
 			if(step === undefined) return empty;
-			const structure = this.accumulator.getStructureByStep(step);
+			const structure = this.accumulator.getStructureByStep(step as number);
 			if(!structure) return empty;
 
 			const out: CtrlParams = {

@@ -159,7 +159,8 @@ export class FindSimilar extends NodeCore {
 	 */
 	private findSimilarInCollection(): void {
 
-		const {atoms, crystal} = this.structure!;
+		if(this.structure === undefined) return;
+		const {atoms, crystal} = this.structure;
 
 		// Remove duplicate and outside unit cell atoms
 		const duplicates = markDuplicates(atoms, crystal);
@@ -189,7 +190,7 @@ export class FindSimilar extends NodeCore {
 			ids: this.idCollection,
 			distances: this.distance,
 			color: this.colorBand,
-			spaceGroup: this.structure!.crystal.spaceGroup
+			spaceGroup: this.structure.crystal.spaceGroup
 		});
 	}
 

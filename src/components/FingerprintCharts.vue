@@ -75,7 +75,7 @@ const xp = (d: DataRecord): number => d.x;
 const yp = (d: DataRecord): number => d.y;
 const triggers = {
 
-    [Scatter.selectors.point]: (d: DataRecord) => {
+    [Scatter.selectors.point]: (d: DataRecord): string => {
 
         const x = titleX.value.includes("step") ? d.x.toFixed(0) : d.x.toFixed(3);
         return `

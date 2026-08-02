@@ -271,7 +271,7 @@ export class ComputeSymmetries extends NodeCore {
 		const {crystal, atoms, volume, extra} = this.inputStructure;
 
 		// If no unit cell or no atoms, copy input structure to output
-		if(crystal === undefined || hasNoUnitCell(crystal.basis) || atoms.length === 0) {
+		if(hasNoUnitCell(crystal.basis) || atoms.length === 0) {
 			return this.inputStructure;
 		}
 

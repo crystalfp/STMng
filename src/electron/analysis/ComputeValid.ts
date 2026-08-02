@@ -26,13 +26,13 @@ import log from "electron-log";
 import os from "node:os";
 import workerpool from "workerpool";
 import {publicDirPath} from "../modules/GetPublicPath";
-import {StructureSetsAccumulator} from "./Accumulator";
 import {isRejected, isFulfilled} from "../fingerprint/AllSettledHelpers";
 import {variablePerSiteFinishStep} from "../fingerprint/OganovValleFinishStep";
 import {computeDistances} from "./ComputeDistances";
 import {measuringMethods} from "../fingerprint/DistanceMethods";
 import {removeDuplicatePoints} from "./RemoveDuplicates";
 import type {WorkerResults} from "../fingerprint/Worker";
+import type {StructureSetsAccumulator} from "./Accumulator";
 
 /**
  * Parameters for compute valid entries
