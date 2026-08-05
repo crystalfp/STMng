@@ -1,7 +1,8 @@
 declare module "troika-three-text" {
 
 	/* oxlint-disable-next-line no-redeclare */
-	import type {Mesh, Color, MeshBasicMaterial, MeshStandardMaterial} from "three";
+	import type {Mesh, Color, MeshBasicMaterial, Camera,
+				 MeshStandardMaterial, Vector3} from "three";
 
 	function preloadFont(options: {font: string; characters: string}, callback: () => void): void;
 
@@ -52,8 +53,8 @@ declare module "troika-three-text" {
 
 		constructor();
 		update(camera: Camera): void;
-		addText(text: TroikaText): Text;
-		add(text: TroikaText): Text;
+		// addText(text: TroikaText): Text;
+		// add(text: TroikaText): Text;
 		public _members: Map<Text, string>;
 		public _text: string;
 		public _scale: Vector3;
