@@ -132,7 +132,7 @@ class CollectionDb {
 		if(header[5] !== this.headerToCheck[5]) {
 			throw Error(`Collection database invalid: file format ${header[5]} instead of ${this.headerToCheck[5]}`);
 		}
-		if(!header.every((value, index) => value === this.headerToCheck[index])) {
+		if(header.some((value, index) => value !== this.headerToCheck[index])) {
 			throw Error("Corrupted collection database");
 		}
 

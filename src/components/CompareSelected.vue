@@ -439,9 +439,7 @@ const stopWatcher = watch([aroundA, aroundB, aroundC],
 onUnmounted(() => stopWatcher());
 
 // Workaround to non-working CSS light-dark() in production
-const disabled = computed(() => {
-    return theme.value === "light" ? "#1010104D" : "#FFFFFF4D";
-});
+const disabled = computed(() => (theme.value === "light" ? "#1010104D" : "#FFFFFF4D"));
 
 </script>
 

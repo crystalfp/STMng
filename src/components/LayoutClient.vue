@@ -155,9 +155,7 @@ const confirmedExit = (): void => {
 };
 
 // Workaround to non-working CSS light-dark() in production
-const gutter = computed(() => {
-    return theme.value === "light" ? "#b0b0b0" : "#3e3e3e";
-});
+const gutter = computed(() => (theme.value === "light" ? "#b0b0b0" : "#3e3e3e"));
 
 </script>
 

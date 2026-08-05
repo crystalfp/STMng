@@ -282,9 +282,7 @@ const names = [
 ];
 
 /** Current atom identity */
-const identity = computed(() => {
-    return `Atom: ${currentAtom.symbol} (${currentAtom.atomZ}) ${names[currentAtom.atomZ]}`;
-});
+const identity = computed(() => `Atom: ${currentAtom.symbol} (${currentAtom.atomZ}) ${names[currentAtom.atomZ]}`);
 
 /**
  * Set the table as modified

@@ -406,9 +406,7 @@ const detailsEvents = {
 const chartMargins = ref({right: 0, top: 15, left: 10, bottom: 5});
 
 // Workaround to non-working CSS light-dark() in production
-const contrast = computed(() => {
-    return theme.value === "light" ? "#000" : "#FFF";
-});
+const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
 
 </script>
 

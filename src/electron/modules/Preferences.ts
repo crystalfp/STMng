@@ -90,10 +90,7 @@ export const setProjectPath = (filename: string): void => {
  *
  * @returns True if the viewer 3D is extended
  */
-export const isExtended = (): boolean => {
-
-	return store.getBoolean("ViewerExtended", false);
-};
+export const isExtended = (): boolean => store.getBoolean("ViewerExtended", false);
 
 /**
  * Set viewer 3D extended status
@@ -120,10 +117,7 @@ export const setMaximized = (isMaximized: boolean): void => {
  *
  * @returns True if the window is maximized
  */
-export const isMaximized = (): boolean =>  {
-
-	return store.getBoolean("MainWindowMaximized", true);
-};
+export const isMaximized = (): boolean => store.getBoolean("MainWindowMaximized", true);
 
 /**
  * Save windows dimensions
@@ -160,10 +154,7 @@ export const setAntialiasing = (setAA: boolean): void => {
  *
  * @returns True if using the default atom data set.
  */
-export const getAtomDataDefault = (): boolean => {
-
-	return store.getBoolean("UseDefaultAtomData", true);
-};
+export const getAtomDataDefault = (): boolean => store.getBoolean("UseDefaultAtomData", true);
 
 /**
  * Set default atom data set

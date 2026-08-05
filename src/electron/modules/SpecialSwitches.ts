@@ -30,8 +30,5 @@ import {ipcMain} from "electron";
  */
 export const setupChannelSpecialSwitches = (params: CtrlParams): void => {
 
-    ipcMain.handle("SYSTEM:SWITCHES", (): CtrlParams => {
-
-		return params;
-	});
+    ipcMain.handle("SYSTEM:SWITCHES", (): CtrlParams => params);
 };

@@ -83,9 +83,7 @@ const haveHeader = ref(!!title);
 const useDark = dark ? "dark" : "";
 
 // Workaround to non-working CSS light-dark() in production
-const highlight = computed(() => {
-    return theme.value === "light" ? "#202020" : "#e6e6e6";
-});
+const highlight = computed(() => (theme.value === "light" ? "#202020" : "#e6e6e6"));
 
 </script>
 

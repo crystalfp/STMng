@@ -227,9 +227,8 @@ export const createOrUpdateSecondaryWindow = (params: WindowsParams): void => {
         if(params.data) {
             paramsData = structuredClone(params.data);
             ipcMain.removeHandler(`SYSTEM:INITIAL-DATA:${channel}`);
-            ipcMain.handleOnce(`SYSTEM:INITIAL-DATA:${channel}`, (): CtrlParams => {
-                return paramsData;
-            });
+            ipcMain.handleOnce(`SYSTEM:INITIAL-DATA:${channel}`,
+                                (): CtrlParams => paramsData);
         }
 
         createSecondaryWindow(params);

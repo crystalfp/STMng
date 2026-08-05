@@ -59,9 +59,8 @@ export const cross3 = (a: readonly number[], b: readonly number[]): number[] => 
  * @param v - Vector
  * @returns Norm of the vector
  */
-export const norm = (v: readonly number[]): number => {
-    return Math.sqrt(v.reduce((s, x) => s + x * x, 0));
-};
+export const norm = (v: readonly number[]): number =>
+                                    Math.sqrt(v.reduce((s, x) => s + x * x, 0));
 
 /**
  * Compute determinant of 3x3 matrix
@@ -98,9 +97,8 @@ export const solve3x3det = (det: number, m: number[][], b: readonly number[]): n
 };
 
 /** np.isclose equivalent: |a - b| \<= atol + rtol * |b| */
-export const isClose = (a: number, b: number, atol = ATOL, rtol = RTOL): boolean => {
-    return Math.abs(a - b) <= atol + rtol * Math.abs(b);
-};
+export const isClose = (a: number, b: number, atol = ATOL, rtol = RTOL): boolean =>
+                                    Math.abs(a - b) <= atol + rtol * Math.abs(b);
 
 /**
  * Dot product of two vectors
@@ -109,9 +107,8 @@ export const isClose = (a: number, b: number, atol = ATOL, rtol = RTOL): boolean
  * @param b - Second vector
  * @returns - Dot product
  */
-export const dot = (a: readonly number[], b: readonly number[]): number => {
-    return a.reduce((sum, v, i) => sum + v * b[i], 0);
-};
+export const dot = (a: readonly number[], b: readonly number[]): number =>
+                                    a.reduce((sum, v, i) => sum + v * b[i], 0);
 
 /**
  * Dot product of two 3-vectors
@@ -169,9 +166,8 @@ export const mulVecMat3 = (v: readonly number[], m: readonly number[][]): number
  * Euclidean distance between two 3-vectors.
  * Inlined to avoid building full distance matrices.
  */
-export const euclidean = (a: readonly number[], b: readonly number[]): number => {
-    return Math.sqrt(a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0));
-};
+export const euclidean = (a: readonly number[], b: readonly number[]): number =>
+    Math.sqrt(a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0));
 
 /**
  * Multiply vector by a matrix
@@ -180,9 +176,8 @@ export const euclidean = (a: readonly number[], b: readonly number[]): number =>
  * @param v - Vector
  * @returns Product Mv
  */
-export const matVec = (m: number[][], v: readonly number[]): number[] => {
-  	return m.map((row) => row.reduce((s, value, i) => s + value * v[i], 0));
-};
+export const matVec = (m: number[][], v: readonly number[]): number[] =>
+  	            m.map((row) => row.reduce((s, value, i) => s + value * v[i], 0));
 
 /**
  * Transpose matrix
@@ -190,9 +185,8 @@ export const matVec = (m: number[][], v: readonly number[]): number[] => {
  * @param m - Matrix NxN to transpose
  * @returns Transposed matrix
  */
-const transpose2D = (m: number[][]): number[][] => {
-  	return Array.from({length: m[0].length}, (_, i) => m.map((row) => row[i]));
-};
+const transpose2D = (m: number[][]): number[][] =>
+  	        Array.from({length: m[0].length}, (_, i) => m.map((row) => row[i]));
 
 /**
  * Multiply each point by the matrix transpose

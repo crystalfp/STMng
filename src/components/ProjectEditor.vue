@@ -858,12 +858,8 @@ const resetContextMenu = (): void => {
 };
 
 // Workaround to non-working CSS light-dark() in production
-const bck = computed(() => {
-    return theme.value === "light" ? "#AAAAAAC0" : "#2D3748C0";
-});
-const border = computed(() => {
-    return theme.value === "light" ? "#808080" : "#B3B3B3";
-});
+const bck = computed(() => (theme.value === "light" ? "#AAAAAAC0" : "#2D3748C0"));
+const border = computed(() => (theme.value === "light" ? "#808080" : "#B3B3B3"));
 
 </script>
 

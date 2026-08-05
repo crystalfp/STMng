@@ -627,12 +627,8 @@ const headers = ref([
 ]);
 
 // Workaround to non-working CSS light-dark() in production
-const bck = computed(() => {
-    return theme.value === "light" ? "#FFFFFF" : "#212121";
-});
-const border = computed(() => {
-    return theme.value === "light" ? "#E0DCDF" : "#3C3C3C";
-});
+const bck = computed(() => (theme.value === "light" ? "#FFFFFF" : "#212121"));
+const border = computed(() => (theme.value === "light" ? "#E0DCDF" : "#3C3C3C"));
 
 </script>
 

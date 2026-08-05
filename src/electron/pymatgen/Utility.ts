@@ -329,10 +329,7 @@ export const solveLinearSystem = (A: number[][], b: number[][]): number[][] | un
  * @param lattice - Basis matrix
  * @returns Cell volume
  */
-export const calculateVolume = (lattice: number[][]): number => {
-
-    return Math.abs(determinant(lattice));
-};
+export const calculateVolume = (lattice: number[][]): number => Math.abs(determinant(lattice));
 
 /**
  * Compute vectors angle
@@ -451,9 +448,8 @@ export const cartesianProduct = (...arrays: number[][]): number[][] => {
  * @param v2 - Second vector
  * @returns Difference of the two vectors
  */
-export const subtractVectors = (v1: number[], v2: number[]): number[] => {
-    return v1.map((value, i) => value - v2[i]);
-};
+export const subtractVectors = (v1: number[], v2: number[]): number[] =>
+                                            v1.map((value, i) => value - v2[i]);
 
 /**
  * Sum vectors
@@ -462,9 +458,8 @@ export const subtractVectors = (v1: number[], v2: number[]): number[] => {
  * @param v2 - Second addendum
  * @returns Sum of the two vectors
  */
-export const addVectors = (v1: number[], v2: number[]): number[] => {
-    return v1.map((value, i) => value + v2[i]);
-};
+export const addVectors = (v1: number[], v2: number[]): number[] =>
+                                            v1.map((value, i) => value + v2[i]);
 
 /**
  * Compute the norm of a vector
@@ -472,9 +467,8 @@ export const addVectors = (v1: number[], v2: number[]): number[] => {
  * @param vector - Vector to be analyzed
  * @returns Norm of the vector
  */
-export const norm = (vector: number[]): number => {
-    return Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
-};
+export const norm = (vector: number[]): number =>
+                Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0));
 
 /**
  * Return a value inside [0..1] interval.
