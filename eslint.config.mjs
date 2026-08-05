@@ -433,6 +433,8 @@ export default defineConfig([
         "unicorn/no-non-function-verb-prefix": "off",
         "unicorn/no-unreadable-for-of-expression": "off",
         "unicorn/prefer-continue": "off",
+        "unicorn/single-line-block-comment-style": "off",
+        "unicorn/consistent-arrow-return-style": "off",
 
         // > ******************* sonarjs ***********************
         "sonarjs/cognitive-complexity": ["off", 40],

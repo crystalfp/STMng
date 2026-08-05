@@ -328,7 +328,8 @@
     "eslint/sort-vars": "off",
     "eslint/max-classes-per-file": "off",
     "eslint/no-inline-comments": "off",
-    "eslint/require-await": "off", // Temporary (false positive)
+    "typescript/require-await": "error",
+    "eslint/require-await": "off",
 
     // *** Oxc ***
     "oxc/approx-constant": "off",
