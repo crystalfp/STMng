@@ -1,7 +1,7 @@
 // <reference types="vitest/config" />
 import {defineConfig} from "vite";
 import electron from "vite-plugin-electron";
-import vueDevTools from "vite-plugin-vue-devtools";
+// import vueDevTools from "vite-plugin-vue-devtools";
 import cleanPlugin from "vite-plugin-clean-pattern";
 import vue from "@vitejs/plugin-vue";
 import {fileURLToPath, URL} from "node:url";
@@ -68,7 +68,7 @@ export default defineConfig({
                 }
             },
         ]),
-        vueDevTools(),
+        // vueDevTools(),
         cleanPlugin({
             targetFiles: ["dist", "dist-electron"]
         })
