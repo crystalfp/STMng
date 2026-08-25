@@ -21,6 +21,7 @@ To do:
   ☐ Don't use flags as function parameters
   ☐ Add synchronization between documentation and site
   ☐ Avoid: new object every render. Better use `computed()` See <https://certificates.dev/blog/vapor-mode-in-practice>
+  ☐ Remember last used path in dialog save file <https://www.electronjs.org/docs/latest/breaking-changes#behavior-changed-dialog-methods-default-to-downloads-directory>
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
