@@ -59,6 +59,7 @@ import {SliceStructure} from "../nodes/SliceStructure";
 import {FindSimilar} from "../nodes/FindSimilar";
 import {AnalyzeStructureSets} from "../nodes/AnalyzeStructureSets";
 import {CrystalShape} from "../nodes/CrystalShape";
+import {EditStructure} from "../nodes/EditStructure";
 
 /**
  * Manage everything related to the loaded project
@@ -139,6 +140,9 @@ class ProjectManager {
 		{type: "compute-crystal-shape",		in: true,  out: false, graphic: "none",
 											handler: CrystalShape,
 											idPrefix: "shape", ui: "CrystalShapeCtrl"},
+		{type: "edit-structure",			in: true,  out: true, graphic: "out",
+											handler: EditStructure,
+											idPrefix: "edit", ui: "EditStructureCtrl"},
 	];
 
 	/**

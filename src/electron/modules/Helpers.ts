@@ -224,6 +224,26 @@ export const cartesianToFractionalCoordinates = (structure: Structure): number[]
 };
 
 /**
+ * Convert cartesian coordinates into corresponding fractional ones
+ *
+ * @param basis - The structure basis vectors
+ * @param cx - The cartesian x coordinate
+ * @param cy - The cartesian y coordinate
+ * @param cz - The cartesian z coordinate
+ * @returns The corresponding fractional coordinates
+ */
+export const c2f = (basis: BasisType,
+					cx: number, cy: number, cz: number): PositionType => {
+
+	// Compute inverse matrix
+	const inverse = invertBasis(basis);
+
+	return [cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
+			cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
+			cx*inverse[2] + cy*inverse[5] + cz*inverse[8]];
+};
+
+/**
  * Output from reducing to fractional coordinates
  * @notExported
  */

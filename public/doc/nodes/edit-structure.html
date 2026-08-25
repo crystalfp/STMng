@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Mario Valle">
+  <meta name="description" content="Documentation for the STMng edit-structure node">
+  <meta name="keywords" content="STMng">
+  <meta name="date" content="2026-08-25"/>
+  <meta name="copyright" content="Copyright 2023-2026 by Mario Valle">
+  <meta name="dcterms.rightsHolder" content="Copyright 2023-2026 by Mario Valle"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="stylesheet" href="../style.css" type="text/css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+
+  <title>STMng — Edit structure</title>
+</head>
+
+<body>
+<h1 class="title">Edit-structure</h1>
+<h1 class="subh1">Small editing of a loaded structure</h1>
+
+<div class="description">
+<p>Edit an existing structure by adding, deleting or changing its atoms.</p>
+<p>To edit or delete an atom, select it in the viewer by Ctrl-click on it.</p>
+<p>To remove selection, Ctrl-click on the viewer background.</p>
+<p>When no atom is selected, an atom could be added by filling its characteristics.</p>
+</div>
+
+<h2>Controls</h2>
+<table cellpadding="2" cellspacing="2">
+<tr>
+	<td class="c1">Select an atom /<br>Selected atom (index: <i>n</i>)</td>
+	<td class="c2">readonly text</td>
+	<td class="c3">If an atom is select it shows its index.</td>
+</tr>
+<tr>
+	<td class="c1">Atom type</td>
+	<td class="c2">list</td>
+	<td class="c3">Set/Change atom type. It should always be set.</td>
+</tr>
+<tr>
+	<td class="c1">Label</td>
+	<td class="c2">text</td>
+	<td class="c3">Set/Change atom label.</td>
+</tr>
+<tr>
+	<td class="c1">Chain</td>
+	<td class="c2">text</td>
+	<td class="c3">Optionally set/change atom chain.</td>
+</tr>
+<tr>
+	<td class="c1">Use fractional coordinates</td>
+	<td class="c2">toggle</td>
+	<td class="c3">Set how the coordinates should be interpreted.</td>
+</tr>
+<tr>
+	<td class="c1">x / fa</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">X cartesian coordinate or Fa fractional coordinate of the atom.</td>
+</tr>
+<tr>
+	<td class="c1">y / fb</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">Y cartesian coordinate or Fb fractional coordinate of the atom.</td>
+</tr>
+<tr>
+	<td class="c1">z / fc</td>
+	<td class="c2">numeric field</td>
+	<td class="c3">Z cartesian coordinate or Fc fractional coordinate of the atom.</td>
+</tr>
+<tr>
+	<td class="c1">Delete</td>
+	<td class="c2">button</td>
+	<td class="c3">After asking confirmation delete the selected atom. Disabled if no atom selected.</td>
+</tr>
+<tr>
+	<td class="c1">Change</td>
+	<td class="c2">button</td>
+	<td class="c3">After asking confirmation change the values of the selected atom to the ones entered. Disabled if no atom selected.</td>
+</tr>
+<tr>
+	<td class="c1">Add</td>
+	<td class="c2">button</td>
+	<td class="c3">After asking confirmation add an atom with the given characteristics. Disabled if an atom is selected.</td>
+</tr>
+<tr>
+	<td class="c1">Reset structure</td>
+	<td class="c2">button</td>
+	<td class="c3">After asking confirmation return the structure to the input, not edited, one. Disabled if no changes have been made.</td>
+</tr>
+</table>
+
+<p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
+</body>
+
+</html>
