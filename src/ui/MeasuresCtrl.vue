@@ -304,7 +304,7 @@ onUnmounted(() => {
     <table v-if="details.length > 0" class="pa-1 pr-4 w-100 text-body-2">
       <tbody>
       <tr v-for="line of details" :key="line.index">
-        <td :style="`color:${line.color};width:3rem`">{{ line.label }}</td>
+        <td :style="`color:${line.color};width:4rem`">{{ line.label }}</td>
         <td class="w-1">{{ line.symbol }}</td>
         <td class="w-3 right">[</td>
         <td class="w-1 right">{{ `${showCoords(line, 0)},` }}</td>

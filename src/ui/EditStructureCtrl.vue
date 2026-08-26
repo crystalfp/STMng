@@ -106,6 +106,9 @@ const stopWatcher1 = watch(controlStore.atomsSelected, (a: number[]) => {
         editedAtom.atomZ = 0;
         atomSelected.value = false;
         editedAtom.atomLabel = "";
+        editedAtom.x = 0;
+        editedAtom.y = 0;
+        editedAtom.z = 0;
         return;
     }
     atomSelected.value = true;
@@ -123,9 +126,9 @@ const stopWatcher1 = watch(controlStore.atomsSelected, (a: number[]) => {
         const [x, y, z] = details[0].position;
         const [fx, fy, fz] = details[0].fractional;
         if(params.useFractional as boolean ?? false) {
-            editedAtom.x = fx;
-            editedAtom.y = fy;
-            editedAtom.z = fz;
+            editedAtom.fx = fx;
+            editedAtom.fy = fy;
+            editedAtom.fz = fz;
         }
         else {
             editedAtom.x = x;
@@ -176,9 +179,9 @@ const changedUseFractional = (): void => {
     const [x, y, z] = details[0].position;
     const [fx, fy, fz] = details[0].fractional;
     if(editedAtom.useFractional) {
-        editedAtom.x = fx;
-        editedAtom.y = fy;
-        editedAtom.z = fz;
+        editedAtom.fx = fx;
+        editedAtom.fy = fy;
+        editedAtom.fz = fz;
     }
     else {
         editedAtom.x = x;
@@ -257,18 +260,6 @@ const confirmAction = (): void => {
 
     const index = action === "Delete" || action === "Change" ? details[0]?.index : 0;
 
-    console.log({
-        action,
-        index,
-        atomZ: editedAtom.atomZ,
-        label: editedAtom.atomLabel,
-        chain: editedAtom.chain,
-        useFractional: editedAtom.useFractional,
-        x: editedAtom.x,
-        y: editedAtom.y,
-        z: editedAtom.z
-    }); // TBD
-
     askNode(id, "op", {
         action,
         index,
@@ -315,13 +306,13 @@ const confirmAction = (): void => {
               @update:model-value="changedUseFractional"/>
     <v-table v-if="editedAtom.useFractional" class="pa-1">
       <tr><td style="width: 35%">fa:</td>
-          <td><v-number-input v-model="editedAtom.x" :min="0" :max="1" :step="0.001"
+          <td><v-number-input v-model="editedAtom.fx" :min="0" :max="1" :step="0.001"
                               :precision="3" hide-details/></td></tr>
       <tr><td>fb:</td>
-          <td><v-number-input v-model="editedAtom.y" :min="0" :max="1" :step="0.001"
+          <td><v-number-input v-model="editedAtom.fy" :min="0" :max="1" :step="0.001"
                               :precision="3" hide-details/></td></tr>
       <tr><td>fc:</td>
-          <td><v-number-input v-model="editedAtom.z" :min="0" :max="1" :step="0.001"
+          <td><v-number-input v-model="editedAtom.fz" :min="0" :max="1" :step="0.001"
                               :precision="3" hide-details/></td></tr>
     </v-table>
     <v-table v-else class="pa-1">
