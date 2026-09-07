@@ -50,7 +50,7 @@ const {disabled, hide = [], id, channel} = defineProps<{
 }>();
 
 /** Returning kind of atom selection */
-const labelKind = defineModel<AtomSelectorModes>("kind");
+const labelKind = defineModel<AtomSelectorModes>("kind", {required: true});
 
 if(hide) {
     if(!hide.includes("symbol"))     labelKind.value = "symbol";
@@ -62,7 +62,7 @@ if(hide) {
 else labelKind.value = "symbol";
 
 /** Returning selector string */
-const atomsSelector = defineModel<string>("selector");
+const atomsSelector = defineModel<string>("selector", {required: true});
 
 const atomsSelectorInternal = ref(atomsSelector.value);
 const stopWatcher = watchEffect(() => {

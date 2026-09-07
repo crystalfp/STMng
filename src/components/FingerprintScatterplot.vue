@@ -911,6 +911,8 @@ const count = computed(() => {
     return "";
 });
 
+const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
+
 // > Start template
 </script>
 
@@ -971,7 +973,7 @@ const count = computed(() => {
 
     <div class="side-n">
       <canvas :width="scatterplotWidth-20" :height="scatterplotHeight-40"
-              :style="{border: `2px solid ${fgColor}`}"
+              :style="borderColor"
               @mousedown="mousedown" @mouseup="mouseup" @mousemove="mousemove" />
 
       <viewer-legend v-if="showLegendDiscrete"

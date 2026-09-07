@@ -76,8 +76,7 @@ export abstract class NodeCore {
 	 * @throws Error.
 	 * If the node calls fromPreviousNode without overriding it
 	 */
-	fromPreviousNode(data: Structure): void {
-		void data;
+	fromPreviousNode(_data: Structure): void {
 		throw Error("Notifier should not be called for this node");
 	}
 

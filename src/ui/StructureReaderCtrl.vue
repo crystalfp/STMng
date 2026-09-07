@@ -746,6 +746,8 @@ const checkRenderingSpeed = (): void => {
 };
 setTimeout(checkRenderingSpeed, 100);
 
+const styleVisibility = computed<Record<string, string>>(() => ({visibility: speed.value===0? "hidden" : "visible"}));
+
 </script>
 
 
@@ -833,7 +835,7 @@ setTimeout(checkRenderingSpeed, 100);
               class="mr-6 mt-n6" icon="mdi-arrow-expand-horizontal" @click="resetRange" />
       </v-row>
       <v-slider v-model="step" min="1" :max="countSteps" step="1" class="mr-9"
-                :style="{visibility: speed===0? 'hidden' : 'visible'}"/>
+                :style="styleVisibility"/>
       <v-range-slider v-model="stepRange" min="1" :max="countSteps" step="1" strict class="mr-9 mt-n6"/>
       <v-row class="mr-8 mt-n2">
         <v-spacer />
