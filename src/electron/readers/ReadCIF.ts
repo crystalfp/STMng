@@ -26,7 +26,7 @@ import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import {extractBasis, fractionalToCartesianCoordinates,
 		hasNoUnitCell, invertBasis} from "../modules/Helpers";
-import {getAtomicNumber} from "../modules/AtomData";
+import {getAtomicNumber, getDataTable} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {ParseQuotedLine} from "../modules/ParseQuotedLine";
 import type {Structure, Atom, ReaderImplementation, BasisType} from "@/types";
@@ -134,6 +134,19 @@ export class ReaderCIF implements ReaderImplementation {
 	private readonly structures: Structure[] = [];
 	private step = -1;
 	private alreadyHaveCell = false;
+	private readonly symbols: string[];
+
+	constructor() {
+
+		const info = getDataTable();
+		this.symbols = info.map((atom) => atom.symbol);
+		this.symbols.push("D");
+		this.symbols.sort((a, b) => {
+			const d = b.length - a.length;
+			if(d !== 0) return d;
+			return a.localeCompare(b);
+		});
+	}
 
 	/**
 	 * Read the structures from the file
@@ -304,6 +317,21 @@ export class ReaderCIF implements ReaderImplementation {
 	}
 
 	/**
+	 * Extract atom symbol from label
+	 *
+	 * @param label - Atom label
+	 * @returns Atom symbol extracted from its label
+	 */
+	private label2symbol(label: string): string {
+
+		for(const symbol of this.symbols) {
+			if(label.startsWith(symbol)) return symbol;
+		}
+
+		return label.replaceAll(/[^a-z]/giu, "");
+	}
+
+	/**
 	 * Use the values of a table to fill the structures
 	 */
 	private useTable(): void {
@@ -329,7 +357,7 @@ export class ReaderCIF implements ReaderImplementation {
 				const fx = Number.parseFloat(fracX[i]);
 				const fy = Number.parseFloat(fracY[i]);
 				const fz = Number.parseFloat(fracZ[i]);
-				const az = (hasSymbol ? symbol[i] : label[i]).replaceAll(/[^a-z]/giu, "");
+				const az = (hasSymbol ? symbol[i].replaceAll(/[^a-z]/giu, "") : this.label2symbol(label[i]));
 				const atom: Atom = {
 					atomZ: getAtomicNumber(az),
 					label: hasLabel ? label[i] : symbol[i],
