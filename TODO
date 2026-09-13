@@ -5,7 +5,6 @@ Requests:
   ☐ (future) Move to WebGPU renderer from current WebGL renderer
   ☐ (maybe) Add a `metadata` section to project files.
   ☐ Create a tutorial
-  ☐ Fixing X-ray diffraction
   ☐ (low priority) Incomplete polyhedra.
   ☐ Extending variable composition analysis to systems with >5 components.
   ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
@@ -20,8 +19,6 @@ To do:
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
   ☐ Add synchronization between documentation and site
-  ✔ Avoid: new object every render. Better use `computed()` See <https://certificates.dev/blog/vapor-mode-in-practice> @done(2026-09-10 07:46)
-  ☐ Remember last used path in dialog save file <https://www.electronjs.org/docs/latest/breaking-changes#behavior-changed-dialog-methods-default-to-downloads-directory>
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
@@ -74,6 +71,9 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Fixing X-ray diffraction @done(2026-09-13 05:33) @project(Requests)
+  ✔ Avoid: new object every render. Better use `computed()` See <https://certificates.dev/blog/vapor-mode-in-practice> @done(2026-09-10 07:46) @project(To do)
+  ✔ Remember last used path in dialog save file <https://www.electronjs.org/docs/latest/breaking-changes#behavior-changed-dialog-methods-default-to-downloads-directory> @done(2026-09-13 05:32) @project(To do)
   ✔ Crosshair does not work in X-Ray chart @done(2026-07-23 06:45) @project(Bugs)
   ✔ Fix that, when changing theme, the points color in scatterplot does not change @done(2026-07-17 16:53) @project(Requests)
   ✘ Bounding sphere does not consider supercell @cancelled(2026-06-29 14:43) @project(Bugs)
