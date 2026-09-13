@@ -23,6 +23,8 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {ipcMain, dialog} from "electron";
+import path from "node:path";
+import {getLastUsedPath, setLastUsedPath} from "./Preferences";
 import type {CtrlParams, FileFilter} from "@/types";
 
 /**
@@ -37,15 +39,19 @@ export const setupChannelFileSelector = (): void => {
 		const filter = JSON.parse(params.filter as string ?? "[{name: 'All', extensions: ['*']}]") as FileFilter[];
 
 		if(kind === "load") {
+			const lastUsedPath = getLastUsedPath();
 			const file = dialog.showOpenDialogSync({
 				title,
-				defaultPath: ".",
+				defaultPath: lastUsedPath,
 				properties: ["openFile"],
 				filters: filter,
 			});
-			if(file) return {
-				filename: file[0].replaceAll("\\", "/")
-			};
+			if(file) {
+				setLastUsedPath(path.dirname(file[0].replaceAll("\\", "/")));
+				return {
+					filename: file[0].replaceAll("\\", "/")
+				};
+			}
 		}
 		else {
 			const file = dialog.showSaveDialogSync({

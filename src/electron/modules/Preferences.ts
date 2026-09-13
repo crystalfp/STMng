@@ -165,3 +165,19 @@ export const setAtomDataDefault = (use: boolean): void => {
 
 	store.setBoolean("UseDefaultAtomData", use);
 };
+
+/**
+ * Save last used path
+ *
+ * @param dir - Loaded path to be remembered.
+ */
+export const setLastUsedPath = (dir: string): void => {
+	store.setString("LastUsedPath", dir);
+};
+
+/**
+ * Retrieve last used path
+ *
+ * @returns Last used path
+ */
+export const getLastUsedPath = (): string => store.getString("LastUsedPath", ".");
