@@ -9,7 +9,6 @@
 				"src/cpp/sginfo/sgclib.c",
 				"src/cpp/sginfo/sgfind.c",
 				"src/cpp/sginfo/sghkl.c",
-				"src/cpp/sginfo/sginfo.c",
 				"src/cpp/sginfo/sgio.c",
 				"src/cpp/sginfo/sgsi.c",
 				"src/cpp/FindAndApplySymmetries.cpp",

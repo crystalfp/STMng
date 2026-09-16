@@ -11,9 +11,9 @@ const isProd = process.env.NODE_ENV === "production";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    // experimental: {
-    //     bundledDev: true,
-    // },
+    experimental: {
+        bundledDev: true,
+    },
     resolve: {
         alias: {
             "@": fileURLToPath(new URL("src", import.meta.url))
