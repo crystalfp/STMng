@@ -163,8 +163,7 @@ export class XRDCalculator {
             delta = b.coord[10] - a.coord[1];
             if(delta !== 0) return delta;
             delta = b.coord[2] - a.coord[2];
-            if(delta !== 0) return delta;
-            return 0;
+            return delta === 0 ? 0 : delta;
         });
 
         for(const pt of reciprocalPoints) {

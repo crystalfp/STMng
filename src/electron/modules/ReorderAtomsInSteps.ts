@@ -355,10 +355,10 @@ export class ReorderAtomsInSteps {
 			}
 		}
 
-		if(this.hasUnitCell) {
-			for(let i=0; i < 9; ++i) this.averageBasis[i] += this.basis[i];
-			++this.steps;
-		}
+		if(!this.hasUnitCell) return;
+
+		for(let i=0; i < 9; ++i) this.averageBasis[i] += this.basis[i];
+		++this.steps;
 	}
 
 	/**

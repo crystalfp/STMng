@@ -75,11 +75,10 @@ const openSelector = (): void => {
         .then((params) => {
 
             const filename = params.filename as string;
-            if(filename) {
-                const pos = filename.lastIndexOf("/");
-                fileLabel.value = filename.slice(pos+1);
-                emit("selected", filename);
-            }
+            if(!filename) return;
+            const pos = filename.lastIndexOf("/");
+            fileLabel.value = filename.slice(pos+1);
+            emit("selected", filename);
         })
         .finally(() => {inProgress.value = false;})
         .catch((error: Error) => {

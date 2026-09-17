@@ -76,11 +76,8 @@ export const projectIsValid = (prj: Project): boolean => {
 		return false;
 	}
 
-	// Check IDs
-	if(!checkIds(prj)) return false;
-
-	// Check for the presence of cycles
-	return checkCycles(prj);
+	// Check IDs and then check for the presence of cycles
+	return checkIds(prj) ? checkCycles(prj) : false;
 };
 
 // > Check node IDs in the project

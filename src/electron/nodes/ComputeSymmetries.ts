@@ -417,20 +417,19 @@ export class ComputeSymmetries extends NodeCore {
 								  intlSymbol, intlSymbolIn, sgNumberIn, sgNumberOut});
 
 		// Update the dialog if it is open
-		if(isSecondaryWindowOpen("/symmetries")) {
+		if(!isSecondaryWindowOpen("/symmetries")) return;
 
-			const dataToSend: CtrlParams = {
-				inSymmetry,
-				outSymmetry,
-				pointGroup,
-				intlSymbol: this.enableFindSymmetries ? intlSymbol : "",
-				intlSymbolIn,
-				sgNumberIn,
-				sgNumberOut,
-				displayMode,
-			};
-			sendToSecondaryWindow("/symmetries", dataToSend);
-		}
+		const dataToSend: CtrlParams = {
+			inSymmetry,
+			outSymmetry,
+			pointGroup,
+			intlSymbol: this.enableFindSymmetries ? intlSymbol : "",
+			intlSymbolIn,
+			sgNumberIn,
+			sgNumberOut,
+			displayMode,
+		};
+		sendToSecondaryWindow("/symmetries", dataToSend);
 	}
 
 	/**
@@ -824,14 +823,12 @@ export class ComputeSymmetries extends NodeCore {
 		this.displayMode = params.displayMode as string ?? "international";
 
 		// Update the dialog if it is open
-		if(isSecondaryWindowOpen("/symmetries")) {
+		if(!isSecondaryWindowOpen("/symmetries")) return;
 
-			const dataToSend: CtrlParams = {
-				displayMode: this.displayMode,
-			};
-			sendToSecondaryWindow("/symmetries", dataToSend);
-		}
-
+		const dataToSend: CtrlParams = {
+			displayMode: this.displayMode,
+		};
+		sendToSecondaryWindow("/symmetries", dataToSend);
 	}
 
 	/**

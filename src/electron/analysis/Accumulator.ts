@@ -317,8 +317,7 @@ export class StructureSetsAccumulator {
 	 * 			or undefined if out of range
 	 */
 	getEntry(idx: number): SetEntry | undefined {
-		if(idx < 0 || idx >= this.accumulator.length) return undefined;
-		return this.accumulator[idx];
+		return idx < 0 || idx >= this.accumulator.length ? undefined : this.accumulator[idx];
 	}
 
 	/**

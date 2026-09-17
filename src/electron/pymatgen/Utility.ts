@@ -478,6 +478,5 @@ export const norm = (vector: number[]): number =>
  * @returns Clamped value
  */
 export const pbc = (value: number): number => {
-    if(value > 0.5-1e-5 && value < 0.5+1e-5) return value;
-    return value - Math.round(value);
+    return value > 0.5-1e-5 && value < 0.5+1e-5 ? value : value - Math.round(value);
 };

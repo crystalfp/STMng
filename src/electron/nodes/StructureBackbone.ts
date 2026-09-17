@@ -274,7 +274,6 @@ export class StructureBackbone extends NodeCore {
 
 		if(!atomsSelector || !this.inputStructure) return {status: "none"};
 		const status = checkAtomsSelector(this.inputStructure, labelKind, atomsSelector);
-		if(status) return {error: status};
-		return {status: "ok"};
+		return status ? {error: status} : {status: "ok"};
 	}
 }

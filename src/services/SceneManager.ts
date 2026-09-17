@@ -169,12 +169,11 @@ export class SceneManager {
 	deleteMesh(meshName: string): void {
 
         const object = SceneManager.scene.getObjectByName(meshName) as Mesh;
-        if(object) {
-            SceneManager.scene.remove(object);
-            if(object.geometry) object.geometry.dispose();
-			(object.material as Material).dispose();
-			this.sceneModified = true;
-        }
+        if(!object) return;
+		SceneManager.scene.remove(object);
+		if(object.geometry) object.geometry.dispose();
+		(object.material as Material).dispose();
+		this.sceneModified = true;
 	}
 
 	/**

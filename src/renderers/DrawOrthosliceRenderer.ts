@@ -87,9 +87,10 @@ export class DrawOrthosliceRenderer {
 		sm.add(this.isolinesGroup);
 
 		// Sanity check
-		if(!vertices || !indices || !values || !isolineVertices || !isolineValues) return;
-		if(vertices.length === 0 || indices.length === 0 || values.length === 0 ||
-		isolineVertices.length === 0 || isolineValues.length === 0) return;
+		if(!vertices || !indices || !values ||
+		   !isolineVertices || !isolineValues || vertices.length === 0 ||
+		   indices.length === 0 || values.length === 0 ||
+		   isolineVertices.length === 0 || isolineValues.length === 0) return;
 
 		// Create the isoline colors
 		const isolineColors = isolineValues.map((value) => this.lut.getColor(value).getHex());

@@ -104,22 +104,21 @@ export class FindSimilar extends NodeCore {
 
 		this.findSimilar();
 
-		if(isSecondaryWindowOpen("/matches")) {
+		if(!isSecondaryWindowOpen("/matches")) return;
 
-			const dataToSend: CtrlParams = {
-				id: this.id,
-				idCollection: this.idCollection,
-				titleCollection: this.titleCollection,
-				distance: this.distance,
-				color: this.colorBand,
-				aflow: this.idPrototypes,
-				titlePrototypes: this.titlePrototypes,
-				spaceGroup: this.structure.crystal.spaceGroup,
-				formula: this.formula
-			};
+		const dataToSend: CtrlParams = {
+			id: this.id,
+			idCollection: this.idCollection,
+			titleCollection: this.titleCollection,
+			distance: this.distance,
+			color: this.colorBand,
+			aflow: this.idPrototypes,
+			titlePrototypes: this.titlePrototypes,
+			spaceGroup: this.structure.crystal.spaceGroup,
+			formula: this.formula
+		};
 
-			sendToSecondaryWindow("/matches", dataToSend);
-		}
+		sendToSecondaryWindow("/matches", dataToSend);
 	}
 
 	// > Computation
@@ -209,8 +208,7 @@ export class FindSimilar extends NodeCore {
 
 		if(distance <= 0.04) return "#00FF00";
 		if(distance <= 0.12) return "#D5FF00";
-		if(distance <= 0.15) return "#FFC200";
-		return "#FF0000";
+		return distance <= 0.15 ? "#FFC200" : "#FF0000";
 	}
 
 	/**

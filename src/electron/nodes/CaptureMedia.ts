@@ -156,8 +156,7 @@ export class CaptureView extends NodeCore {
 				{name: "mkv",  extensions: ["mkv"]},
 			]
 		});
-		if(filename) return {filename, extension: path.extname(filename)};
-		return {filename: "", extension: ""};
+		return filename ? {filename, extension: path.extname(filename)} : {filename: "", extension: ""};
 	}
 
 	/**

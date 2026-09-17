@@ -341,11 +341,10 @@ export const broadcastMessage = (eventType: string, ...params: (boolean | string
 export const showDevToolsOnSecondaryWindow = (windowPath: string): void => {
 
     const win = openedWindows.get(windowPath);
-    if(win) {
+    if(!win) return;
 
-        win.webContents.closeDevTools();
-        win.webContents.openDevTools();
-    }
+    win.webContents.closeDevTools();
+    win.webContents.openDevTools();
 };
 
 /**

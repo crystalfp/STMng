@@ -514,10 +514,9 @@ export class ComputeFingerprints extends NodeCore {
 	private createUpdateLandscape(opKind: "update" | "create"): void {
 
 		const landscapeOpen = isSecondaryWindowOpen("/fp-landscape");
-		if(opKind !== "create" && !landscapeOpen) return;
-
+		if((opKind !== "create" && !landscapeOpen) ||
+		   !this.accumulator.accumulatedHaveEnergies()) return;
 		// Should have energies
-		if(!this.accumulator.accumulatedHaveEnergies()) return;
 
 		// Collect energies per structure
 		const energies = this.accumulator.iterateSelectedStructures().map((structure) => structure.energy!).toArray();
@@ -1320,32 +1319,33 @@ export class ComputeFingerprints extends NodeCore {
 
 		this.createUpdateCharts("create", "fp");
 
-		if(!this.channelChartsOpened) {
-			this.channelChartsOpened = true;
+		if(this.channelChartsOpened) return;
 
-			ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
+		this.channelChartsOpened = true;
 
-				this.chartType = params.chartType as FingerprintsChartKind ?? "fp";
-				this.lambda = 0;
-				switch(this.chartType) {
-					case "fp":
-					case "di":
-						this.lambda = params.fpIndex as number ?? 0;
-						break;
-					case "eh":
-					case "dh":
-						this.lambda = params.binCount as number ?? 50;
-						break;
-					case "en":
-					case "ed":
-					case "op":
-						this.lambda = 0;
-						break;
-				}
+		ipcMain.on("SYSTEM:chart-request", (_event: unknown, params: CtrlParams): void => {
 
-				this.createUpdateCharts("update", this.chartType, this.lambda);
-			});
-		}
+			this.chartType = params.chartType as FingerprintsChartKind ?? "fp";
+			this.lambda = 0;
+			switch(this.chartType) {
+				case "fp":
+				case "di":
+					this.lambda = params.fpIndex as number ?? 0;
+					break;
+				case "eh":
+				case "dh":
+					this.lambda = params.binCount as number ?? 50;
+					break;
+				case "en":
+				case "ed":
+				case "op":
+					this.lambda = 0;
+					break;
+			}
+
+			this.createUpdateCharts("update", this.chartType, this.lambda);
+		});
+
 	}
 
 	/**
@@ -1364,34 +1364,33 @@ export class ComputeFingerprints extends NodeCore {
 			data: {hasEnergy}
 		});
 
-		if(!this.channelExportOpened) {
-			this.channelExportOpened = true;
+		if(this.channelExportOpened) return;
+		this.channelExportOpened = true;
 
-			const writer = new WriterPOSCAR();
+		const writer = new WriterPOSCAR();
 
-			ipcMain.handle("SYSTEM:export-points", (_event: unknown, params: CtrlParams): CtrlParams => {
+		ipcMain.handle("SYSTEM:export-points", (_event: unknown, params: CtrlParams): CtrlParams => {
 
-				const kind = params.kind as string;
-				const filename = params.filename as string;
-				const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
+			const kind = params.kind as string;
+			const filename = params.filename as string;
+			const saveEnergyPerAtom = params.saveEnergyPerAtom as boolean ?? false;
 
-				const structures: Structure[] = [];
-				const sorter: SorterItem[] = [];
+			const structures: Structure[] = [];
+			const sorter: SorterItem[] = [];
 
-				switch(kind) {
-					case "all":
-						this.getAllEnabledStructures(saveEnergyPerAtom, structures, sorter);
-						break;
-					case "min":
-						this.getMinEnergyPerGroup(saveEnergyPerAtom, structures, sorter);
-						break;
-					default:
-						return {error: "Invalid kind"};
-				}
+			switch(kind) {
+				case "all":
+					this.getAllEnabledStructures(saveEnergyPerAtom, structures, sorter);
+					break;
+				case "min":
+					this.getMinEnergyPerGroup(saveEnergyPerAtom, structures, sorter);
+					break;
+				default:
+					return {error: "Invalid kind"};
+			}
 
-				return ComputeFingerprints.exportStructuresAndEnergy(filename, writer, structures, sorter);
-			});
-		}
+			return ComputeFingerprints.exportStructuresAndEnergy(filename, writer, structures, sorter);
+		});
 	}
 
 	/**

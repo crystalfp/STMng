@@ -532,17 +532,14 @@ export class SliceStructure extends NodeCore {
 							   bStart: number,
 							   cStart?: number): number[] {
 
-		if(cStart !== undefined) {
-			return [
-				(points[aStart]+points[bStart]+points[cStart])/3,
-				(points[aStart+1]+points[bStart+1]+points[cStart+1])/3,
-				(points[aStart+2]+points[bStart+2]+points[cStart+2])/3
-			];
-		}
-		return [
+		return cStart === undefined ? [
 			(points[aStart]+points[bStart])/2,
 			(points[aStart+1]+points[bStart+1])/2,
 			(points[aStart+2]+points[bStart+2])/2
+		] : [
+			(points[aStart]+points[bStart]+points[cStart])/3,
+			(points[aStart+1]+points[bStart+1]+points[cStart+1])/3,
+			(points[aStart+2]+points[bStart+2]+points[cStart+2])/3
 		];
 	}
 
@@ -849,10 +846,10 @@ export class SliceStructure extends NodeCore {
         this.mode = params.mode as SlicingModes ?? "plane";
 		this.geometryColor = params.geometryColor as string ?? "#FFFFFF80";
 
-		if(this.structure) {
-			if(this.enableSlicer || this.showSlicer) this.prepareSlicerGeometry();
-			this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);
-		}
+		if(!this.structure) return;
+
+		if(this.enableSlicer || this.showSlicer) this.prepareSlicerGeometry();
+		this.toNextNode(this.enableSlicer ? this.sliceStructure() : this.structure);
 	}
 
 	/**
@@ -867,7 +864,6 @@ export class SliceStructure extends NodeCore {
 
 		if(!atomsSelector || !this.structure) return {status: "none"};
 		const status = checkAtomsSelector(this.structure, labelKind, atomsSelector);
-		if(status) return {error: status};
-		return {status: "ok"};
+		return status ? {error: status} : {status: "ok"};
 	}
 }

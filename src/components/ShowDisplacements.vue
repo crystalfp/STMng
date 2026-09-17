@@ -39,12 +39,11 @@ requestData(windowPath, (params: CtrlParams) => void nextTick().then(() => {
     means.length = 0;
     coordinates.value = "(cartesian)";
     const decodedData = JSON.parse(params.means as string) as AveragesResult[];
-    if(decodedData.length > 0) {
+    if(decodedData.length === 0) return;
 
-        for(const entry of decodedData) means.push(entry);
+    for(const entry of decodedData) means.push(entry);
 
-        if(decodedData[0].isFractional) coordinates.value = "(fractional)";
-    }
+    if(decodedData[0].isFractional) coordinates.value = "(fractional)";
 }));
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -61,10 +60,9 @@ const FORMAT_LIMIT = 10**(-FORMAT_MAX_DIGITS);
  */
 const format = (value: number): string => {
 
-    if(value === 0 || Math.abs(value) > FORMAT_LIMIT) {
-        return value.toFixed(FORMAT_MAX_DIGITS);
-    }
-    return value.toExponential(FORMAT_MAX_DIGITS-2);
+    return (value === 0 || Math.abs(value) > FORMAT_LIMIT) ?
+        value.toFixed(FORMAT_MAX_DIGITS) :
+        value.toExponential(FORMAT_MAX_DIGITS-2);
 };
 
 </script>

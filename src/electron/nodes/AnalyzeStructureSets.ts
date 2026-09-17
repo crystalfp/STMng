@@ -162,19 +162,18 @@ export class AnalyzeStructureSets extends NodeCore {
 		}
 		this.structure = data;
 
-		if(this.enableAnalysis) {
+		if(!this.enableAnalysis) return;
 
-			this.accumulator.add(data);
+		this.accumulator.add(data);
 
-			const remaining = (this.state.filterStructures && this.state.numberComponents === 1) ?
-								this.filterOnEnergy() : 0;
+		const remaining = (this.state.filterStructures && this.state.numberComponents === 1) ?
+							this.filterOnEnergy() : 0;
 
-			sendToClient(this.id, "load", {
-				countAccumulated: this.accumulator.size(),
-				countRemaining: remaining,
-				species: this.accumulator.symbols(),
-			});
-		}
+		sendToClient(this.id, "load", {
+			countAccumulated: this.accumulator.size(),
+			countRemaining: remaining,
+			species: this.accumulator.symbols(),
+		});
 	}
 
 	// > Load/save status
@@ -464,8 +463,7 @@ export class AnalyzeStructureSets extends NodeCore {
 			// so it is not relevant)
 			entry[1] = toOrder.toSorted((a, b) => {
 									const e = a[0] - b[0];
-									if(e !== 0) return e;
-									return a[1] - b[1];
+									return e === 0 ? a[1] - b[1] : e;
 								}).map((value) => value[1]);
 
 			const name = `composition-${entry[0]}`;
@@ -517,8 +515,7 @@ export class AnalyzeStructureSets extends NodeCore {
 			const d = a[2] - b[2];
 			if(d !== 0) return d;
 			const e = a[1] - b[1];
-			if(e !== 0) return e;
-			return a[0] - b[0];
+			return e === 0 ? a[0] - b[0] : e;
 		});
 
 		const pos = dataFile.lastIndexOf(".");
@@ -1006,11 +1003,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		if(this.options.distanceMethod < 0 || this.options.distanceMethod > 2) {
 			return {error: "Invalid distance method"};
 		}
-		if(this.options.duplicatesThreshold <= 0) {
-			return {error: "Invalid duplicates threshold"};
-		}
-
-		return {countEnabled: this.accumulator.enabledCount()};
+		return this.options.duplicatesThreshold <= 0 ? {error: "Invalid duplicates threshold"} : {countEnabled: this.accumulator.enabledCount()};
 	}
 
 	/**
@@ -1134,8 +1127,7 @@ export class AnalyzeStructureSets extends NodeCore {
 		}
 
 		const status = await computeValid(this.accumulator, validIndices, this.options);
-		if(status.error) return {error: status.error, key};
-		return {status: "OK!", total: count, valid: status.count, key};
+		return status.error ? {error: status.error, key} : {status: "OK!", total: count, valid: status.count, key};
 	}
 
 	/**

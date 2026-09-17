@@ -886,11 +886,7 @@ export class StructureMatcher {
             }
         }
 
-        if(bestMatch && bestMatch[0] < this.stol) {
-            return StructureMatcher.formatMatchResult(bestMatch);
-        }
-
-        return null;
+        return bestMatch && bestMatch[0] < this.stol ? StructureMatcher.formatMatchResult(bestMatch) : null;
     }
 
     /**

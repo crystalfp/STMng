@@ -43,8 +43,5 @@ export const publicDirPath = (filename: string, unpacked=false): string => {
 		const mainSourceDirectory = path.dirname(fileURLToPath(modulePath));
 		return path.join(mainSourceDirectory, "..", "public", filename);
 	}
-	if(unpacked) {
-		return path.join(process.resourcesPath, filename);
-	}
-	return path.join(path.resolve(process.resourcesPath, "app.asar/dist"), filename);
+	return unpacked ? path.join(process.resourcesPath, filename) : path.join(path.resolve(process.resourcesPath, "app.asar/dist"), filename);
 };

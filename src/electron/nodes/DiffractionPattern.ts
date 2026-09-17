@@ -88,42 +88,40 @@ export class DiffractionPattern extends NodeCore {
 		// There is the structure so the XRD could be computed
 		sendToClient(this.id, "enable", {enableComputation: hasData});
 
-		if(hasData) {
-			const duplicates = markDuplicates(data.atoms, data.crystal);
-			this.structure = {
-				atoms: [],
-				crystal: data.crystal,
-				bonds: data.bonds,
-				volume: [],
-				extra: data.extra
-			};
-			for(let i=0; i < data.atoms.length; ++i) {
-				if(duplicates[i]) continue;
-				this.structure.atoms.push(data.atoms[i]);
-			}
-
-			if(isSecondaryWindowOpen("/chart")) {
-
-				// Compute spectra
-				try {
-					this.xy = this.xrd.getDiffractionPattern(this.structure,
-															this.state.wavelengthCode,
-															true,
-															this.state.thetaLow,
-															this.state.thetaHigh);
-				}
-				catch(error: unknown) {
-					sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
-					return;
-				}
-
-				// Compute chart data
-				const dataToSend = this.createDataForChart();
-
-				// Update window
-				sendToSecondaryWindow("/chart", dataToSend);
-			}
+		if(!hasData) return;
+		const duplicates = markDuplicates(data.atoms, data.crystal);
+		this.structure = {
+			atoms: [],
+			crystal: data.crystal,
+			bonds: data.bonds,
+			volume: [],
+			extra: data.extra
+		};
+		for(let i=0; i < data.atoms.length; ++i) {
+			if(duplicates[i]) continue;
+			this.structure.atoms.push(data.atoms[i]);
 		}
+
+		if(!isSecondaryWindowOpen("/chart")) return;
+
+		// Compute spectra
+		try {
+			this.xy = this.xrd.getDiffractionPattern(this.structure,
+													this.state.wavelengthCode,
+													true,
+													this.state.thetaLow,
+													this.state.thetaHigh);
+		}
+		catch(error: unknown) {
+			sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
+			return;
+		}
+
+		// Compute chart data
+		const dataToSend = this.createDataForChart();
+
+		// Update window
+		sendToSecondaryWindow("/chart", dataToSend);
 	}
 
 	// > Load/save status
@@ -337,29 +335,28 @@ export class DiffractionPattern extends NodeCore {
 		this.state.threshold = threshold;
 
 		// Compute spectra if the view window is open
-		if(this.structure && isSecondaryWindowOpen("/chart")) {
+		if(!(this.structure && isSecondaryWindowOpen("/chart"))) return;
 
-			if(recompute) {
-				try {
-					this.xy = this.xrd.getDiffractionPattern(this.structure,
-															 this.state.wavelengthCode,
-															 true,
-															 this.state.thetaLow,
-															 this.state.thetaHigh,
-															 this.state.wavelengthNumeric);
-				}
-				catch(error: unknown) {
-					sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
-					return;
-				}
+		if(recompute) {
+			try {
+				this.xy = this.xrd.getDiffractionPattern(this.structure,
+															this.state.wavelengthCode,
+															true,
+															this.state.thetaLow,
+															this.state.thetaHigh,
+															this.state.wavelengthNumeric);
 			}
-
-			// Compute chart data
-			const dataToSend = this.createDataForChart();
-
-			// Update window
-			sendToSecondaryWindow("/chart", dataToSend);
+			catch(error: unknown) {
+				sendAlertToClient(`Error in getDiffractionPattern: ${(error as Error).message}`);
+				return;
+			}
 		}
+
+		// Compute chart data
+		const dataToSend = this.createDataForChart();
+
+		// Update window
+		sendToSecondaryWindow("/chart", dataToSend);
 	}
 
 	/**
@@ -424,34 +421,33 @@ export class DiffractionPattern extends NodeCore {
 			});
 		}
 
-		if(!this.channelSavePeaksOpened) {
-			this.channelSavePeaksOpened = true;
+		if(this.channelSavePeaksOpened) return;
+		this.channelSavePeaksOpened = true;
 
-			ipcMain.on("SYSTEM:save-peaks", () => {
+		ipcMain.on("SYSTEM:save-peaks", () => {
 
-				const file = dialog.showSaveDialogSync({
-					title: "Save X-Ray diffraction peaks",
-					defaultPath: "peaks.dat",
-					filters: [
-						{name: "Peaks data", extensions: ["dat"]},
-					]
-				});
-				if(file) {
-					try {
-						let out = "";
-						const len = this.xy.twoTheta.length;
-						for(let i=0; i < len; ++i) {
-							out += this.xy.twoTheta[i].toFixed(4);
-							out += ` ${this.xy.intensity[i].toExponential(8)}`;
-							out += ` "${this.xy.label[i]}"\n`;
-						}
-						writeFileSync(file, out, "utf8");
-					}
-					catch(error: unknown) {
-						sendAlertToClient(`Error in save-peaks: ${(error as Error).message}`);
-					}
-				}
+			const file = dialog.showSaveDialogSync({
+				title: "Save X-Ray diffraction peaks",
+				defaultPath: "peaks.dat",
+				filters: [
+					{name: "Peaks data", extensions: ["dat"]},
+				]
 			});
-		}
+			if(file) {
+				try {
+					let out = "";
+					const len = this.xy.twoTheta.length;
+					for(let i=0; i < len; ++i) {
+						out += this.xy.twoTheta[i].toFixed(4);
+						out += ` ${this.xy.intensity[i].toExponential(8)}`;
+						out += ` "${this.xy.label[i]}"\n`;
+					}
+					writeFileSync(file, out, "utf8");
+				}
+				catch(error: unknown) {
+					sendAlertToClient(`Error in save-peaks: ${(error as Error).message}`);
+				}
+			}
+		});
 	}
 }

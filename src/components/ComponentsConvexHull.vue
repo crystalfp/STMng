@@ -169,14 +169,13 @@ const yp = (d: DataRecord): number => d.y!;
 
 const triggerFunction = (d: DataRecord): string => {
 
-    if(d.dist === undefined) return `
+    return (d.dist === undefined) ? `
         <b>${d.formula!}</b><br>
         Step: ${d.step}<br>
         Composition: ${d.parts!.replaceAll("-", ":")}<br>
         Enthalpy of formation: ${d.enthalpy!.toFixed(4)}<br>
         Distance from convex hull: 0.0000
-    `;
-    return `
+    ` : `
         <b>${d.formula!}</b><br>
         Step: ${d.step}<br>
         Composition: ${d.parts!.replaceAll("-", ":")}<br>
@@ -335,10 +334,8 @@ const vc = computed(() => {
 });
 
 /** Set legend title */
-const legendTitle = computed(() => {
-    if(pointColoring.value === "distance") return "Distance";
-    return "Enthalpy of formation";
-});
+const legendTitle = computed(() => ((pointColoring.value === "distance") ?
+                                        "Distance" : "Enthalpy of formation"));
 
 </script>
 

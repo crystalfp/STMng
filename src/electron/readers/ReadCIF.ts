@@ -94,11 +94,7 @@ class Table {
 	 */
 	getColumn(header: string): string[] {
 		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
-		if(idx === -1) return [];
-		// const result = [];
-		// for(const row of this.rows) result.push(row[idx]);
-		// return result;
-		return this.rows.map((row) => row[idx]);
+		return (idx === -1) ? [] : this.rows.map((row) => row[idx]);
 	}
 
 	/**
@@ -110,11 +106,7 @@ class Table {
 	 */
 	getColumns(header: string): string[][] {
 		const idx = this.headers.indexOf(header.replaceAll(".", "_"));
-		if(idx === -1) return [];
-		// const result = [];
-		// for(const row of this.rows) result.push(row);
-		// return result;
-		return [...this.rows];
+		return (idx === -1) ? [] : [...this.rows];
 	}
 
 	/**
@@ -143,8 +135,7 @@ export class ReaderCIF implements ReaderImplementation {
 		this.symbols.push("D");
 		this.symbols.sort((a, b) => {
 			const d = b.length - a.length;
-			if(d !== 0) return d;
-			return a.localeCompare(b);
+			return d === 0 ? a.localeCompare(b) : d;
 		});
 	}
 
@@ -169,9 +160,8 @@ export class ReaderCIF implements ReaderImplementation {
 
 			// Clear line from comments and control characters
 			const lineNC = line.replace(/#.*/u, "").trim();
-			if(lineNC === "") continue;
 			// eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-			if(/[\u{0}-\u{8}\u{E}-\u{1F}]/u.test(lineNC)) continue;
+			if(lineNC === "" || /[\u{0}-\u{8}\u{E}-\u{1F}]/u.test(lineNC)) continue;
 
 			// The keys are case insensitive
 			const lineLC = lineNC.toLowerCase();
@@ -487,11 +477,10 @@ export class ReaderCIF implements ReaderImplementation {
 		}
 
 		// Remove found atoms starting with the highest index
-		if(atomsToRemove.size > 0) {
-			const remove = [...atomsToRemove].toSorted((a, b) => b-a);
-			for(const idx of remove) {
-				atoms.splice(idx, 1);
-			}
+		if(atomsToRemove.size === 0) return;
+		const remove = [...atomsToRemove].toSorted((a, b) => b-a);
+		for(const idx of remove) {
+			atoms.splice(idx, 1);
 		}
 	}
 }

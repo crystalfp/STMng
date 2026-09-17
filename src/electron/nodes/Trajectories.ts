@@ -78,62 +78,44 @@ export class Trajectories extends NodeCore {
 
 		if(!data) return;
 		this.structure = data;
-		if(this.createTrajectories || isSecondaryWindowOpen("/displacements")) {
+		if(!(this.createTrajectories || isSecondaryWindowOpen("/displacements"))) return;
 
-			const {atoms} = this.structure;
+		const {atoms} = this.structure;
 
-			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
+		this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
 
-			const len = this.indices.length;
+		const len = this.indices.length;
 
-			// Safety check
-			if(atoms.length < len) return;
+		// Safety check
+		if(atoms.length < len) return;
 
-			if(this.nextSteps) {
+		if(this.nextSteps) {
 
-				// Complete the pair of points that characterize each segment
-				for(let i=0; i < len; ++i) {
+			// Complete the pair of points that characterize each segment
+			for(let i=0; i < len; ++i) {
 
-					const idx = this.indices[i];
-					const {position} = atoms[idx];
-					if(this.segments[i].length === 1) {
-						this.segments[i].push([position[0], position[1], position[2]]);
-					}
-					else {
-						const p2 = this.segments[i][1];
-						this.segments[i][0] = [p2[0], p2[1], p2[2]];
-						this.segments[i][1] = [position[0], position[1], position[2]];
-					}
-					this.segmentsSkip[i] = false;
+				const idx = this.indices[i];
+				const {position} = atoms[idx];
+				if(this.segments[i].length === 1) {
+					this.segments[i].push([position[0], position[1], position[2]]);
 				}
-
-				// After the first step increase the points size
-				// if the number of atoms traced increases
-				const previousLength = this.segments.length;
-				if(len > previousLength) {
-
-					this.segments.length = len;
-					this.segmentsColor.length = len;
-					this.segmentsSkip.length = len;
-					for(let i=previousLength; i < len; ++i) {
-						const idx = this.indices[i];
-						const {atomZ, position} = atoms[idx];
-						this.segments[i] = [[position[0], position[1], position[2]]];
-						this.segmentsColor[i] = getAtomData(atomZ).color;
-						this.segmentsSkip[i] = true;
-					}
+				else {
+					const p2 = this.segments[i][1];
+					this.segments[i][0] = [p2[0], p2[1], p2[2]];
+					this.segments[i][1] = [position[0], position[1], position[2]];
 				}
+				this.segmentsSkip[i] = false;
 			}
-			else {
 
-				this.nextSteps = true;
+			// After the first step increase the points size
+			// if the number of atoms traced increases
+			const previousLength = this.segments.length;
+			if(len > previousLength) {
 
-				// First step, initialize the set of coordinates
 				this.segments.length = len;
 				this.segmentsColor.length = len;
 				this.segmentsSkip.length = len;
-				for(let i=0; i < len; ++i) {
-
+				for(let i=previousLength; i < len; ++i) {
 					const idx = this.indices[i];
 					const {atomZ, position} = atoms[idx];
 					this.segments[i] = [[position[0], position[1], position[2]]];
@@ -141,18 +123,35 @@ export class Trajectories extends NodeCore {
 					this.segmentsSkip[i] = true;
 				}
 			}
-
-			// Create lines
-			if(this.createTrajectories) {
-				this.markJumps(this.maxDisplacement);
-				sendSegmentsToClient(this.id,
-								     this.segments,
-								     this.segmentsColor,
-								     this.segmentsSkip);
-			}
-
-			this.sendMeanDisplacement(this.indices);
 		}
+		else {
+
+			this.nextSteps = true;
+
+			// First step, initialize the set of coordinates
+			this.segments.length = len;
+			this.segmentsColor.length = len;
+			this.segmentsSkip.length = len;
+			for(let i=0; i < len; ++i) {
+
+				const idx = this.indices[i];
+				const {atomZ, position} = atoms[idx];
+				this.segments[i] = [[position[0], position[1], position[2]]];
+				this.segmentsColor[i] = getAtomData(atomZ).color;
+				this.segmentsSkip[i] = true;
+			}
+		}
+
+		// Create lines
+		if(this.createTrajectories) {
+			this.markJumps(this.maxDisplacement);
+			sendSegmentsToClient(this.id,
+									this.segments,
+									this.segmentsColor,
+									this.segmentsSkip);
+		}
+
+		this.sendMeanDisplacement(this.indices);
 	}
 
 	/**
@@ -260,16 +259,17 @@ export class Trajectories extends NodeCore {
 
 		this.createTrajectories = params.createTrajectories as boolean ?? false;
 
-		if(this.createTrajectories && this.structure && isSecondaryWindowOpen("/displacements")) {
+		if(!(this.createTrajectories &&
+			 this.structure &&
+			 isSecondaryWindowOpen("/displacements"))) return;
 
-			this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
-			const averageResults = this.disentangler.loadStep(this.structure, this.indices);
+		this.indices = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
+		const averageResults = this.disentangler.loadStep(this.structure, this.indices);
 
-			const dataToSend = JSON.stringify(averageResults.averages);
-			sendToSecondaryWindow("/displacements", {means: dataToSend});
+		const dataToSend = JSON.stringify(averageResults.averages);
+		sendToSecondaryWindow("/displacements", {means: dataToSend});
 
-			this.toNextNode(averageResults.structure);
-		}
+		this.toNextNode(averageResults.structure);
 	}
 
 	/**

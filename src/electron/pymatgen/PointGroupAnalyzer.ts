@@ -224,16 +224,13 @@ export class PointGroupAnalyzer {
 		if(currentRot === 3) {
 			const mirrorType = this.findMirror(mainAxis);
 			if(mirrorType === "") return "T";
-			if(this.isValidOp(PointGroupAnalyzer.inversionOp)) return "Th";
-			return "Td";
+			return this.isValidOp(PointGroupAnalyzer.inversionOp) ? "Th" : "Td";
 		}
 		if(currentRot === 4) {
-			if(this.isValidOp(PointGroupAnalyzer.inversionOp)) return "Oh";
-			return "O";
+			return this.isValidOp(PointGroupAnalyzer.inversionOp) ? "Oh" : "O";
 		}
 		if(currentRot === 5) {
-			if(this.isValidOp(PointGroupAnalyzer.inversionOp)) return "Ih";
-			return "I";
+			return this.isValidOp(PointGroupAnalyzer.inversionOp) ? "Ih" : "I";
 		}
 
 		return this.schSymbol;
@@ -286,10 +283,7 @@ export class PointGroupAnalyzer {
 		if(countRotSym >= 2) {
 			return this.procDihedral();
 		}
-		if(countRotSym === 1) {
-			return this.procCyclic();
-		}
-		return this.procNoRotSym();
+		return countRotSym === 1 ? this.procCyclic() : this.procNoRotSym();
 	}
 
 	/**
@@ -373,9 +367,7 @@ export class PointGroupAnalyzer {
       		this.schSymbol = `S${2 * currentRot}`;
     	}
 
-		if(this.schSymbol === "C1v" || this.schSymbol === "C1h") return "Cs";
-
-		return this.schSymbol;
+		return this.schSymbol === "C1v" || this.schSymbol === "C1h" ? "Cs" : this.schSymbol;
 	}
 
 	/**

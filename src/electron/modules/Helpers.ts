@@ -101,15 +101,11 @@ export const fractionalToCartesianCoordinates = (basis: BasisType,
 	// if(fz < 0) fz += 1;
 	// else if(fz > 1) fz -= 1;
 
-	if(origin) {
-		return [
+	return origin ? [
 			fx*basis[0] + fy*basis[3] + fz*basis[6] + origin[0],
 			fx*basis[1] + fy*basis[4] + fz*basis[7] + origin[1],
 			fx*basis[2] + fy*basis[5] + fz*basis[8] + origin[2],
-		];
-	}
-
-	return [
+		] : [
 		fx*basis[0] + fy*basis[3] + fz*basis[6],
 		fx*basis[1] + fy*basis[4] + fz*basis[7],
 		fx*basis[2] + fy*basis[5] + fz*basis[8],

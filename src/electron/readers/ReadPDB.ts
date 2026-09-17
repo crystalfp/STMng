@@ -72,8 +72,7 @@ const fixedWidthStringSpaceTrimmed = (line: string, start: number, length: numbe
  */
 const fixedWidthIntNotEmpty = (line: string, start: number, length: number): number => {
 	const field = line.slice(start, start+length).trim();
-	if(field === "") return -1;
-	return Number.parseInt(field, 10);
+	return field === "" ? -1 : Number.parseInt(field, 10);
 };
 
 /** Map of used record types */

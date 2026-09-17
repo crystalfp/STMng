@@ -38,8 +38,7 @@ const FOLD_TOL = 1e-5;
 const foldIntoUnitCell = (fc: number): number => {
 
 	if(fc > 1 + FOLD_TOL) return fc % 1;
-	if(fc < -FOLD_TOL) return 1-((-fc)%1);
-	return fc;
+	return fc < -FOLD_TOL ? 1-((-fc)%1) : fc;
 };
 
 /**

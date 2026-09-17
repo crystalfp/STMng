@@ -62,8 +62,7 @@ export const convexHull2D = (points: number[][], limit: number): ConvexHullVE =>
 
 	// Sort convex hull points by increasing x value
 	toOrder.sort((a, b) => {
-		if(a.x !== b.x) return a.x - b.x;
-		return a.y - b.y;
+		return a.x === b.x ? a.y - b.y : a.x - b.x;
 	});
 
 	// Remove duplicated convex hull points

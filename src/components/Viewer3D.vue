@@ -614,15 +614,14 @@ onMounted(() => {
         renderedEmptyScene = false;
 
         const doRender = controls.update(clock.getDelta());
-        if(doRender || sm.needRendering()) {
+        if(!(doRender || sm.needRendering())) return;
 
-            const labels = scene.getObjectByName("AtomLabels") as BillboardBatchedText;
+        const labels = scene.getObjectByName("AtomLabels") as BillboardBatchedText;
 
-            if(labels) labels.update(camera);
+        if(labels) labels.update(camera);
 
-            renderer.render(scene, camera);
-            if(configStore.helpers.showGizmo) viewportGizmo.render();
-        }
+        renderer.render(scene, camera);
+        if(configStore.helpers.showGizmo) viewportGizmo.render();
     };
 
     // First time render everything

@@ -87,10 +87,9 @@ askNode(id, "init")
         limits.value[0] = valueMin.value;
         limits.value[1] = valueMax.value;
 
-        if(countDatasets.value === 0) {
-            showOrthoslice.value = false;
-            showIsolines.value = false;
-        }
+        if(countDatasets.value !== 0) return;
+        showOrthoslice.value = false;
+        showIsolines.value = false;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from UI init for ${label}: ${error.message}`);

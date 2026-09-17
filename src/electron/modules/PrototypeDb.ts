@@ -190,9 +190,7 @@ class PrototypeDb {
 		if(idx === undefined) return undefined;
 
 		const proto = this.aflowSrcPrototypeLibrary[idx];
-		if(!proto) return undefined;
-
-		return this.correctTags(aflow, proto.tags);
+		return proto ? this.correctTags(aflow, proto.tags) : undefined;
 	}
 
 	/**

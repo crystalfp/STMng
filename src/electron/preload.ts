@@ -52,21 +52,20 @@ const onContentLoaded = (loadEvent: Event): void => {
 
     // Specific operations for each kind of window opened
     const {href} = (loadEvent as unknown as DOMContentLoadedEvent).target.location;
-    if(href.endsWith("#/")) {
+    if(!href.endsWith("#/")) return;
 
-        // Setup the customized titlebar in the main window only
-        const ct = new CustomTitlebar({
-            backgroundColor: TitlebarColor.fromHex("#202120"),
-            titleHorizontalAlignment: "center",
-            icon: nativeImage.createFromDataURL(favicon)
-        });
+    // Setup the customized titlebar in the main window only
+    const ct = new CustomTitlebar({
+        backgroundColor: TitlebarColor.fromHex("#202120"),
+        titleHorizontalAlignment: "center",
+        icon: nativeImage.createFromDataURL(favicon)
+    });
 
-        // Export set title and refresh menu functions
-        contextBridge.exposeInMainWorld("api", {
-            setTitle: (title: string): CustomTitlebar => ct.updateTitle(title),
-            refreshMenu: (): void => void ct.refreshMenu()
-        });
-    }
+    // Export set title and refresh menu functions
+    contextBridge.exposeInMainWorld("api", {
+        setTitle: (title: string): CustomTitlebar => ct.updateTitle(title),
+        refreshMenu: (): void => void ct.refreshMenu()
+    });
 };
 
 addEventListener("DOMContentLoaded", onContentLoaded);

@@ -320,21 +320,20 @@ export class Measures extends NodeCore {
 							   radius: rCov,
 							   fractional});
 		}
-		if(idx3 !== undefined) {
-			const {position, atomZ} = atoms[idx3];
-			const {symbol, rCov} = getAtomData(atomZ);
-			const fractional: PositionType = invalid ? [-1, -1, -1] :
-					[fractionalCoordinates[3*idx3],
-					 fractionalCoordinates[3*idx3+1],
-					 fractionalCoordinates[3*idx3+2]];
-			this.details.push({index: idx3,
-							   label: labels[2],
-							   symbol,
-							   color: colors[2],
-							   position,
-							   radius: rCov,
-							   fractional});
-		}
+		if(idx3 === undefined) return;
+		const {position, atomZ} = atoms[idx3];
+		const {symbol, rCov} = getAtomData(atomZ);
+		const fractional: PositionType = invalid ? [-1, -1, -1] :
+				[fractionalCoordinates[3*idx3],
+					fractionalCoordinates[3*idx3+1],
+					fractionalCoordinates[3*idx3+2]];
+		this.details.push({index: idx3,
+							label: labels[2],
+							symbol,
+							color: colors[2],
+							position,
+							radius: rCov,
+							fractional});
 	}
 
 	// > Channel handlers

@@ -117,15 +117,15 @@ export const markDuplicates = (atoms: Atom[], crystal: Crystal): boolean[] => {
 const checkCorrespondence = (li: boolean[], lj: boolean[], ld: boolean[]): boolean => {
 
 	// On the corners
-	if(li[0] && li[1] && li[2] && lj[0] && lj[1] && lj[2]) return true;
+	return ((li[0] && li[1] && li[2] && lj[0] && lj[1] && lj[2]) ||
 
-	// On the edges
-	if(li[0] && li[1] && lj[0] && lj[1] && ld[2]) return true;
-	if(li[0] && li[2] && lj[0] && lj[2] && ld[1]) return true;
-	if(li[1] && li[2] && lj[1] && lj[2] && ld[0]) return true;
+		// On the edges
+		(li[0] && li[1] && lj[0] && lj[1] && ld[2]) ||
+		(li[0] && li[2] && lj[0] && lj[2] && ld[1]) ||
+		(li[1] && li[2] && lj[1] && lj[2] && ld[0])) ? true :
 
-	// On the facies
-	return (li[0] && lj[0] && ld[1] && ld[2]) ||
-		   (li[1] && lj[1] && ld[0] && ld[2]) ||
-		   (li[2] && lj[2] && ld[0] && ld[1]);
+		// On the facies
+		((li[0] && lj[0] && ld[1] && ld[2]) ||
+		 (li[1] && lj[1] && ld[0] && ld[2]) ||
+		 (li[2] && lj[2] && ld[0] && ld[1]));
 };

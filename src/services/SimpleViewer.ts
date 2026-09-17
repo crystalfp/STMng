@@ -157,12 +157,11 @@ export class SimpleViewer {
 
 			clock.update();
 			const doRender = this.controls!.update(clock.getDelta());
-			if(doRender || this.needRendering()) {
+			if(!(doRender || this.needRendering())) return;
 
-				// light.position.copy(this.camera!.position);
-				if(this.extraOnRendering) this.extraOnRendering(this.scene, this.camera!);
-				this.renderer!.render(this.scene, this.camera!);
-			}
+			// light.position.copy(this.camera!.position);
+			if(this.extraOnRendering) this.extraOnRendering(this.scene, this.camera!);
+			this.renderer!.render(this.scene, this.camera!);
 		};
 		this.renderer.setAnimationLoop(animationLoop);
 	}

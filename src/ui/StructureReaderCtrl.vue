@@ -353,10 +353,9 @@ const setFormat = (): void => {
     label2.value = "";
 
     // Reset blocked rendering
-    if(speed.value === 0) {
-        speed.value = 1;
-        controlStore.blockRendering = false;
-    }
+    if(speed.value !== 0) return;
+    speed.value = 1;
+    controlStore.blockRendering = false;
 };
 
 /** Formats that needs atoms types */

@@ -105,11 +105,8 @@ class CosineDistance extends DistanceMethod {
 
             for(let j=0; j < nsect2; ++j) {
 
-                // If already paired, skip it
-                if(bAtomUsed[j]) continue;
-
-                // If different type, skip it
-                if(aAtomZ[i] !== bAtomZ[j]) continue;
+                // If already paired or different type, skip it
+                if(bAtomUsed[j] || aAtomZ[i] !== bAtomZ[j]) continue;
 
                 // Compute the distance
                 let oneDistance = 0.0;
@@ -206,11 +203,8 @@ class EuclideanDistance extends DistanceMethod {
 
             for(let j=0; j < nsect2; ++j) {
 
-                // If already paired, skip it
-                if(bAtomUsed[j]) continue;
-
-                // If different type, skip it
-                if(aAtomZ[i] !== bAtomZ[j]) continue;
+                // If already paired or different type, skip it
+                if(bAtomUsed[j] || aAtomZ[i] !== bAtomZ[j]) continue;
 
                 // Compute the distance
                 let oneDistance = 0.0;
@@ -305,11 +299,8 @@ class MinkowskiDistance extends DistanceMethod {
 
             for(let j=0; j < nsect2; ++j) {
 
-                // If already paired, skip it
-                if(bAtomUsed[j]) continue;
-
-                // If different type, skip it
-                if(aAtomZ[i] !== bAtomZ[j]) continue;
+                // If already paired or different type, skip it
+                if(bAtomUsed[j] || aAtomZ[i] !== bAtomZ[j]) continue;
 
                 // Compute the distance
                 let oneDistance = 0.0;

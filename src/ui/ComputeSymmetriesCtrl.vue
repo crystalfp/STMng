@@ -209,13 +209,11 @@ receiveFromNode(id, "cell-parameters", (params: CtrlParams) => {
 
 const inputValue = computed(() => {
     if(displayMode.value === "international" && intlSymbolIn.value !== "") return intlSymbolIn.value;
-    if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
-    return inputSpaceGroup.value;
+    return displayMode.value === "table" && sgNumberIn.value !== 0 ? sgNumberIn.value.toString() : inputSpaceGroup.value;
 });
 const finalValue = computed(() => {
     if(displayMode.value === "table" && sgNumberOut.value !== 0) return sgNumberOut.value.toString();
-    if(displayMode.value === "symmop") return computedSpaceGroup.value;
-    return intlSymbol.value;
+    return displayMode.value === "symmop" ? computedSpaceGroup.value : intlSymbol.value;
 });
 
 </script>

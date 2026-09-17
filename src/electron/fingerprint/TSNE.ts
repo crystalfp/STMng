@@ -306,8 +306,7 @@ export class TSNE {
 	// helper function
 	private static sign(x: number): number {
 		if(x > 0) return 1;
-		if(x < 0) return -1;
-		return 0;
+		return x < 0 ? -1 : 0;
 	}
 
 	/**

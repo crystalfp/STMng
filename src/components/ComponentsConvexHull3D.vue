@@ -518,10 +518,8 @@ const vc = computed(() => {
 });
 
 /** Set legend title */
-const legendTitle = computed(() => {
-    if(pointColoring.value === "distance") return "Distance";
-    return "Enthalpy of formation";
-});
+const legendTitle = computed(() => ((pointColoring.value === "distance") ?
+                                        "Distance" : "Enthalpy of formation"));
 
 /**
  * Change visibility of lines and labels

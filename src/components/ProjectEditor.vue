@@ -103,11 +103,9 @@ const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 const sanitizeId = (id: string | undefined | null): string | undefined => {
 
     if(!id) return undefined;
-    if(DANGEROUS_KEYS.has(id)) {
+    return (DANGEROUS_KEYS.has(id)) ?
         // Prefix dangerous keys to ensure they cannot collide with Object.prototype
-        return `id_${id}`;
-    }
-    return id;
+        `id_${id}` : id;
 };
 
 /**
@@ -376,6 +374,7 @@ const nodes = computed<Node<NodeData>[]>(() => {
             sourcePosition: Position.Right,
             width: 100
         };
+        // eslint-disable-next-line unicorn/no-immediate-mutation
         if(type === "none") out.class = "vue-flow__node-default";
         resultNodes.push(out);
     }
@@ -475,10 +474,9 @@ const onConnect = (params: Connection): void => {
 const sortGraph = (a: GraphFlowItem, b: GraphFlowItem): number => {
 
     const dx = a.position.x - b.position.x;
-    if(dx < 10 && dx > -10) {
-        return a.position.y - b.position.y; // This is dy
-    }
-    return dx;
+    return (dx < 10 && dx > -10) ?
+                    // This is dy
+                    a.position.y - b.position.y : dx;
 };
 
 /** To show error messages */

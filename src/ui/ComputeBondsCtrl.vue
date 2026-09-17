@@ -166,13 +166,12 @@ receiveFromNode(id, "params", (params: CtrlParams) => {
         const mm = maxAtoms > 0 ? `More than ${maxAtoms} atoms` : "Too many atoms";
         showSystemAlert(`${mm}. Disabled bonds computation`, "warning");
     }
-    if(params.perPairData !== undefined) {
-        perPairData.length = 0;
-        const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
-        for(const item of pairData) {
-            perPairData.push(item);
-            showScale.push(item.scale);
-        }
+    if(params.perPairData === undefined) return;
+    perPairData.length = 0;
+    const pairData = JSON.parse(params.perPairData as string ?? "[]") as PairData[];
+    for(const item of pairData) {
+        perPairData.push(item);
+        showScale.push(item.scale);
     }
 });
 

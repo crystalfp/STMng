@@ -447,31 +447,30 @@ const stopWatcher4 = watch(state, (st) => {
     // Pass state changes to the main process for saving in the project file
     sendToNode(id, "state", toRaw(st));
 
-    if(st.filterStructures !== lastFilterStructures ||
-       st.distanceFromHull !== lastDistanceFromHull ||
-       st.energyFromMinimum !== lastEnergyFromMinimum) {
+    if(st.filterStructures === lastFilterStructures &&
+       st.distanceFromHull === lastDistanceFromHull &&
+       st.energyFromMinimum === lastEnergyFromMinimum) return;
 
-        lastFilterStructures = st.filterStructures;
-        lastDistanceFromHull = st.distanceFromHull;
-        lastEnergyFromMinimum = st.energyFromMinimum;
+    lastFilterStructures = st.filterStructures;
+    lastDistanceFromHull = st.distanceFromHull;
+    lastEnergyFromMinimum = st.energyFromMinimum;
 
-        askNode(id, "filter", {
-            numberComponents: countComponents.value,
-            filterStructures: st.filterStructures,
-            distanceFromHull: st.distanceFromHull,
-            energyFromMinimum: st.energyFromMinimum
-        })
-        .then((response) => {
+    askNode(id, "filter", {
+        numberComponents: countComponents.value,
+        filterStructures: st.filterStructures,
+        distanceFromHull: st.distanceFromHull,
+        energyFromMinimum: st.energyFromMinimum
+    })
+    .then((response) => {
 
-            remainingAfterFilter.value = response.remaining as number ?? 0;
-            summary.value[0] = 0;
-            summary.value[1] = 0;
-        })
-        .catch((error: Error) => {
-            showNodeAlert(`Filter structures error: ${error.message}`,
-                          "analyzeStructureSets");
-        });
-    }
+        remainingAfterFilter.value = response.remaining as number ?? 0;
+        summary.value[0] = 0;
+        summary.value[1] = 0;
+    })
+    .catch((error: Error) => {
+        showNodeAlert(`Filter structures error: ${error.message}`,
+                        "analyzeStructureSets");
+    });
 }, {deep: true});
 
 // Cleanup
@@ -490,8 +489,7 @@ const summaryLabel = computed(() =>
 
 const compositionsLabel = computed(() => {
     if(countComponents.value === 1) return "Compositions: 1";
-    if(countAccumulated.value === 0 || numberCompositions.value === 0) return  " ";
-    return `Compositions: ${numberCompositions.value}`;
+    return countAccumulated.value === 0 || numberCompositions.value === 0 ? " " : `Compositions: ${numberCompositions.value}`;
 });
 
 /** Result table entry */

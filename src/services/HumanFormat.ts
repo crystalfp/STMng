@@ -38,6 +38,6 @@ export const humanFormat = (x: number): string => {
 
     if(x === 0) return formatZero;
     if(Math.abs(x) >= tenToN) return x.toExponential(formatPrecision);
-    if(Math.abs(x) < tenToMinusN) return x.toExponential(formatPrecision);
-    return x.toPrecision(formatPrecision);
+    return Math.abs(x) < tenToMinusN ?
+                        x.toExponential(formatPrecision) : x.toPrecision(formatPrecision);
 };

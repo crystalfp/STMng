@@ -217,9 +217,7 @@ const fixTriangleInequalityViolations = (distances: DistanceMatrix, maxIteration
 	while(violated > 0 && maxIterations > 0);
 
 	// Check if the max number of iterations has been exceeded
-	if(violated > 0) return -1;
-
-	return 1;
+	return violated > 0 ? -1 : 1;
 };
 
 /**

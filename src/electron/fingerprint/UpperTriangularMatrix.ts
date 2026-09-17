@@ -88,8 +88,8 @@ export class UpperTriangularMatrix {
                     const ri = row+i;
                     if(ri < 0 || ri >= this.side) continue;
                     const rj = col+j;
-                    if(rj < 0 || rj >= this.side) continue;
-                    if(ri > rj) continue; // Only upper triangular part
+                    if(rj < 0 || rj >= this.side || ri > rj) continue;
+                    // Only upper triangular part
 
                     const index = this.getIndexInFlattenedArray(ri, rj);
                     this.data[index] += value*this.smoothingMatrix[i+size][j+size];

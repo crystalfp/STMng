@@ -121,11 +121,10 @@ export class CrystalShape extends NodeCore {
 		// Save the full state
 		this.initializeState(params);
 		const currentPlanesCount = this.state.allPlanes ? 0 : this.state.maxPlanesCount;
-		if(currentPlanesCount !== this.previousPlanesCount) {
+		if(currentPlanesCount === this.previousPlanesCount) return;
 
-			this.crystalResults = undefined;
-			this.previousPlanesCount = currentPlanesCount;
-		}
+		this.crystalResults = undefined;
+		this.previousPlanesCount = currentPlanesCount;
 	}
 
 	/**

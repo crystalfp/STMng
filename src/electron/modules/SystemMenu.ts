@@ -67,8 +67,7 @@ const openDocumentation = async (kind: "top" | "node" | "secondary", file?: stri
     }
     if(existsSync(url)) {
         const sts = await shell.openPath(url);
-        if(sts) return `Error from help file "${file}.html" for this "${kind}": ${sts}`;
-        return "";
+        return sts ? `Error from help file "${file}.html" for this "${kind}": ${sts}` : "";
     }
     return `Help file "${file}.html" for this "${kind}" not found`;
 };
@@ -101,11 +100,10 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                                 {name: "STMng project", extensions: ["stm"]},
                             ]
                         });
-                        if(file) {
-                            const loadedDefaultProject = pm.loadProjectAndRemember(file[0]);
-                            disableSaveProjectEntry(loadedDefaultProject);
-                            sendProjectToEditor();
-                        }
+                        if(!file) return;
+                        const loadedDefaultProject = pm.loadProjectAndRemember(file[0]);
+                        disableSaveProjectEntry(loadedDefaultProject);
+                        sendProjectToEditor();
                     }
                 },
                 {
@@ -138,11 +136,11 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
                                 {name: "STMng project", extensions: ["stm"]},
                             ]
                         });
-                        if(file) {
-                            void pm.saveProjectAs(file);
-                            disableSaveProjectEntry(false);
-                            sendProjectToEditor();
-                        }
+                        if(!file) return;
+
+                        void pm.saveProjectAs(file);
+                        disableSaveProjectEntry(false);
+                        sendProjectToEditor();
                     }
                 },
                 {type: "separator"},
@@ -293,10 +291,9 @@ export const setupMenu = (isDevelopment: boolean, mainWindow: BrowserWindow): vo
 export const disableSaveProjectEntry = (disable: boolean): void => {
 
     const entry = systemMenu.getMenuItemById("saveProject");
-    if(entry) {
-        entry.enabled = !disable;
-        refreshSystemMenu();
-    }
+    if(!entry) return;
+    entry.enabled = !disable;
+    refreshSystemMenu();
 };
 
 /**
@@ -311,10 +308,9 @@ export const setupChannelMenu = (isDevelopment: boolean): void => {
 
         setExtended(!params.normalScreen);
         const entry = systemMenu.getMenuItemById("toggleExtended");
-        if(entry) {
-            entry.checked = !params.normalScreen;
-            refreshSystemMenu();
-        }
+        if(!entry) return;
+        entry.checked = !params.normalScreen;
+        refreshSystemMenu();
     });
 
     ipcMain.on("SYSTEM:secondary-key", (_event, params: CtrlParams) => {

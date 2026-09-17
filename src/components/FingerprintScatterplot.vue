@@ -569,13 +569,12 @@ requestData(windowPath, (params: CtrlParams) => {
 
     drawPoints();
 
-    if(scatterplotType.value === "group") {
+    if(scatterplotType.value !== "group") return;
 
-        countPerGroup.clear();
-        for(const group of scatterplotData.value.values) {
-            const n = countPerGroup.get(group) ?? 0;
-            countPerGroup.set(group, n+1);
-        }
+    countPerGroup.clear();
+    for(const group of scatterplotData.value.values) {
+        const n = countPerGroup.get(group) ?? 0;
+        countPerGroup.set(group, n+1);
     }
 });
 
@@ -650,10 +649,9 @@ const selectByCriteria = (criteria: string): void => {
     .then((params: CtrlParams) => {
 
         const selection = params.selectedPoints as number[] ?? [];
-        if(selection.length > 0) {
-            for(const idx of selection) selectedPoints.add(idx);
-            drawPoints();
-        }
+        if(selection.length === 0) return;
+        for(const idx of selection) selectedPoints.add(idx);
+        drawPoints();
     })
     .catch((error: Error) => {
         const message = `Error from getting selected points for "${criteria}":`;
@@ -735,8 +733,8 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
         }
         return out;
     }
-    if(scatterplotType.value === "silhouette") {
-        return [
+    return (scatterplotType.value === "silhouette") ?
+        [
             {key: 0, color: "green",   label: "Strong"},
             {key: 1, color: "yellow",  label: "Reasonable"},
             {key: 2, color: "orange",  label: "Weak"},
@@ -744,10 +742,7 @@ const legendDiscrete = computed<{key: number; color: string; label: string}[]>((
             {key: 4, color: "#bd0000", label: "Very bad"},
             {key: 5, color: "#00c0ff", label: "Group of one element"},
             {key: 6, color: "white",   label: "Across groups border"},
-        ];
-    }
-
-    return [];
+        ] : [];
 });
 
 
@@ -802,8 +797,9 @@ const mousedown = (event: MouseEvent): void => {
  */
 const mouseup = (event: MouseEvent): void => {
 
-    if(event.button !== 2) return;
-    if(rectangleStartX === undefined || rectangleStartY === undefined) return;
+    if(rectangleStartX === undefined ||
+       rectangleStartY === undefined ||
+       event.button !== 2) return;
 
     let rectangleEndX = event.clientX - scatterplotX;
     let rectangleEndY = event.clientY - scatterplotY;
@@ -863,13 +859,12 @@ let lastMoveEvent: number | undefined;
 */
 const mousemove = (event: MouseEvent): void => {
 
-    // Selection not started or not active
+    // Selection not started or not active and avoid too many events
     if(rectangleStartX === undefined ||
        rectangleStartY === undefined ||
-       !showSelectionRectangle.value) return;
+       !showSelectionRectangle.value ||
+       (lastMoveEvent && (event.timeStamp - lastMoveEvent) < 50)) return;
 
-    // Avoid too many events
-    if(lastMoveEvent && (event.timeStamp - lastMoveEvent) < 50) return;
     lastMoveEvent = event.timeStamp;
 
     const rectangleEndX = event.clientX - scatterplotX;
@@ -905,10 +900,8 @@ const vc = computed(() => {
 });
 
 const count = computed(() => {
-    if(countPerGroup.has(showSelectedGroup.value)) {
-        return `Group size:  ${countPerGroup.get(showSelectedGroup.value)}`;
-    }
-    return "";
+    return (countPerGroup.has(showSelectedGroup.value)) ?
+            `Group size:  ${countPerGroup.get(showSelectedGroup.value)}` : "";
 });
 
 const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));

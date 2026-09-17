@@ -321,6 +321,7 @@ const checkSign = (h: number, k: number, l: number): boolean =>
 const isSimple = (h: number, k: number, l: number): boolean => {
 
 	const indxs = [];
+    // eslint-disable-next-line unicorn/no-immediate-mutation
     if(h !== 0) indxs.push(Math.abs(h));
 	if(k !== 0) indxs.push(Math.abs(k));
 	if(l !== 0) indxs.push(Math.abs(l));

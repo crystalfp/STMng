@@ -65,13 +65,11 @@ handleSpecialKeys(windowPath);
 
 const inputValue = computed(() => {
     if(displayMode.value === "table" && sgNumberIn.value !== 0) return sgNumberIn.value.toString();
-    if(displayMode.value === "international") return intlSymbolIn.value;
-    return inSymmetry.value;
+    return displayMode.value === "international" ? intlSymbolIn.value : inSymmetry.value;
 });
 const finalValue = computed(() => {
     if(displayMode.value === "table" && sgNumberOut.value !== 0) return sgNumberOut.value.toString();
-    if(displayMode.value === "symmop") return outSymmetry.value;
-    return intlSymbol.value;
+    return displayMode.value === "symmop" ? outSymmetry.value : intlSymbol.value;
 });
 
 </script>

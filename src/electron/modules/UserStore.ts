@@ -159,12 +159,11 @@ export class Store {
 			stringValues.push(s);
 			if(this.data.get(keys[i]) !== s) needsSave = true;
 		}
-		if(needsSave) {
-			for(let i = 0; i < keys.length; i++) {
-				this.data.set(keys[i], stringValues[i]);
-			}
-			this.save();
+		if(!needsSave) return;
+		for(let i = 0; i < keys.length; i++) {
+			this.data.set(keys[i], stringValues[i]);
 		}
+		this.save();
 	}
 
 	/**

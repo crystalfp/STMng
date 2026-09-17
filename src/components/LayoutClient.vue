@@ -55,32 +55,32 @@ addEventListener("DOMContentLoaded", () => {
           clearInterval(timer);
           showSystemAlert("Waiting too long for IPC to setup");
         }
-        if(isLoaded()) {
-            clearInterval(timer);
-            handleFullscreen((isFullScreen: boolean) => {
-                const root = document.documentElement;
-                root.style.setProperty("--container-height",
-                                       isFullScreen ? "calc(100vh - 90px)" :
-                                                      "calc(100vh - 121px)");
-            });
-            setProjectPathInTitle("See the Molecule new generation");
-            receiveRefreshMenu();
+        if(!isLoaded()) return;
+        clearInterval(timer);
+        handleFullscreen((isFullScreen: boolean) => {
+            const root = document.documentElement;
+            root.style.setProperty("--container-height",
+                                    isFullScreen ? "calc(100vh - 90px)" :
+                                                    "calc(100vh - 121px)");
+        });
+        setProjectPathInTitle("See the Molecule new generation");
+        receiveRefreshMenu();
 
-            // Show drop target on entering the application
-            const dom = document.querySelector<HTMLDivElement>(".app-top");
-            if(dom) {
-                dom.addEventListener("dragenter", (event: DragEvent) => {
+        // Show drop target on entering the application
+        const dom = document.querySelector<HTMLDivElement>(".app-top");
+        if(!dom) return;
 
-                    if(event.dataTransfer?.types.includes("Files")) {
-                        controlStore.draggingFile = true;
-                    }
-                });
-                dom.addEventListener("dragleave", () => {
+        dom.addEventListener("dragenter", (event: DragEvent) => {
 
-                    controlStore.draggingFile = false;
-                });
+            if(event.dataTransfer?.types.includes("Files")) {
+                controlStore.draggingFile = true;
             }
-        }
+        });
+        dom.addEventListener("dragleave", () => {
+
+            controlStore.draggingFile = false;
+        });
+
     }, 20);
 });
 

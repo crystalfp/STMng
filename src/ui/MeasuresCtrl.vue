@@ -184,8 +184,7 @@ const bondsLabel = computed<string>(() => {
     const nhb = nhbonds.value;
     const nb = nbonds.value.toString();
     if(nhb === 0) return nb;
-    if(nhb > 1) return `${nb} (of which ${nhb} H bonds)`;
-    return `${nb} (of which 1 H bond)`;
+    return nhb > 1 ? `${nb} (of which ${nhb} H bonds)` : `${nb} (of which 1 H bond)`;
 });
 
 // Watch polyhedra selection

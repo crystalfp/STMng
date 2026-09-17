@@ -166,12 +166,11 @@ class CollectionDb {
 		closeSync(fd);
 
 		if(bytes === 0) throw Error("Collection fingerprints not loaded");
-		if(this.cfp.length !== this.countEntries*this.cfpLength) {
-			const n = this.cfp.BYTES_PER_ELEMENT;
-			throw Error(`Fingerprint file size ${this.cfp.length*n} ` +
-						" is not a multiple of the number of entries " +
-						this.countEntries*this.cfpLength*n);
-		}
+		if(this.cfp.length === this.countEntries*this.cfpLength) return;
+		const n = this.cfp.BYTES_PER_ELEMENT;
+		throw Error(`Fingerprint file size ${this.cfp.length*n} ` +
+					" is not a multiple of the number of entries " +
+					this.countEntries*this.cfpLength*n);
 	}
 
 	/**
@@ -342,8 +341,7 @@ class CollectionDb {
 		const idx = Number.parseInt(id, 10);
 		if(Number.isNaN(idx) || idx < 0 || idx >= this.countEntries) return "";
 		const entry = this.entries![idx];
-		if(entry) return this.entries![idx].title;
-		return "";
+		return entry ? this.entries![idx].title : "";
 	}
 
 	// > Access the singleton instance

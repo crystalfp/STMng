@@ -113,10 +113,9 @@ export const receiveNotifications = (callback: (type: AlertLevel,
 		const messageStore = useMessageStore();
 
 		const message = messageStore.system.message;
-		if(message) {
-			callback(messageStore.system.level, message, "");
-			messageStore.system.message = "";
-		}
+		if(!message) return;
+		callback(messageStore.system.level, message, "");
+		messageStore.system.message = "";
 	});
 };
 

@@ -915,16 +915,15 @@ export const getNiggliReducedLattice = (lattice: number[][], tol = 1e-5): number
     const mapped = findMapping(lattice, otherLattice, eps, 1, true);
     if(mapped !== null && mapped[0].length > 0) {
 
-        if(determinant(mapped[0]) > 0) {
-            return mapped[0];
-        }
+        return (determinant(mapped[0]) > 0) ?
+            mapped[0] :
 
-        // Return lattice with negated matrix
-        return [
-            [-mapped[0][0][0], -mapped[0][0][1], -mapped[0][0][2]],
-            [-mapped[0][1][0], -mapped[0][1][1], -mapped[0][1][2]],
-            [-mapped[0][2][0], -mapped[0][2][1], -mapped[0][2][2]]
-        ];
+            // Return lattice with negated matrix
+            [
+                [-mapped[0][0][0], -mapped[0][0][1], -mapped[0][0][2]],
+                [-mapped[0][1][0], -mapped[0][1][1], -mapped[0][1][2]],
+                [-mapped[0][2][0], -mapped[0][2][1], -mapped[0][2][2]]
+            ];
     }
 
     throw new Error("Can't find niggli");

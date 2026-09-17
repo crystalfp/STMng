@@ -230,8 +230,7 @@ const stopWatcher1 = watch(fingerprintsAccumulate, () => {
 /** Count of the structures selected */
 const accumulatedLabel = computed(() => {
     if(countSelected.value === 0) return "No structure selected";
-    if(countSelected.value === countAccumulated.value) return `All ${countAccumulated.value} structures selected`;
-    return `Structures selected: ${countSelected.value} of ${countAccumulated.value}`;
+    return countSelected.value === countAccumulated.value ? `All ${countAccumulated.value} structures selected` : `Structures selected: ${countSelected.value} of ${countAccumulated.value}`;
 });
 
 /** On change of the energy filtering parameters */

@@ -212,8 +212,8 @@ export class DrawPolyhedraRenderer {
 	 */
 	private static extractOpacity(color: string): number {
 
-		if(color.length < 9) return 1;
-		return Number.parseInt(color.slice(7, 9), 16) / 255;
+		return color.length < 9 ?
+							1 : Number.parseInt(color.slice(7, 9), 16) / 255;
 	}
 
 	/**
