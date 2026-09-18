@@ -83,7 +83,7 @@ class CollectionDb {
 	private cfpFilename = "";
 	private cfp: Float64Array | undefined;
 	private cfpLength = 0;
-	private readonly format = 5;
+	private readonly format = 1;
 
 	/**
 	 * Initialize the interface to the collection db
@@ -220,18 +220,13 @@ class CollectionDb {
 		readSync(fd, natomsBuffer, 0, 2, start);
 		const natoms = natomsBuffer[1]*256+natomsBuffer[0];
 
-		// Length of the space group string
-		const sglenBuffer = new Uint8Array(2);
-		readSync(fd, sglenBuffer, 0, 2, start+2);
-		const sglen = sglenBuffer[1]*256+sglenBuffer[0];
-
 		// Atom types
 		const atomsZBuffer = new Uint8Array(natoms);
-		readSync(fd, atomsZBuffer, 0, natoms, start+4);
+		readSync(fd, atomsZBuffer, 0, natoms, start+2);
 
 		const floatPart = new Float32Array(9+natoms*3);
 		const floatLength = floatPart.byteLength;
-		readSync(fd, floatPart, 0, floatLength, start+4+natoms);
+		readSync(fd, floatPart, 0, floatLength, start+2+natoms);
 		for(let i=0; i < 9; ++i) {
 			structure.crystal.basis[i] = floatPart[i];
 		}
@@ -248,13 +243,6 @@ class CollectionDb {
 			};
 			structure.atoms.push(atom);
 		}
-
-		const sgBuffer = new Uint8Array(sglen);
-
-		readSync(fd, sgBuffer, 0, sglen, start+4+atomsZBuffer.byteLength+floatLength);
-
-		const decoder = new TextDecoder();
-		structure.crystal.spaceGroup = decoder.decode(sgBuffer);
 
 		closeSync(fd);
 
