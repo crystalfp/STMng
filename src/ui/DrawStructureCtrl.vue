@@ -248,7 +248,6 @@ const showAll = ref(false);
 const showCombined = computed({
     get: () => {
         const result = [];
-        // eslint-disable-next-line unicorn/no-immediate-mutation
         if(showAtoms.value) result.push("atoms");
         if(showBonds.value) result.push("bonds");
         if(showLabels.value) result.push("labels");

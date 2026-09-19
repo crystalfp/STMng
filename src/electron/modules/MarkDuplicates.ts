@@ -117,6 +117,7 @@ export const markDuplicates = (atoms: Atom[], crystal: Crystal): boolean[] => {
 const checkCorrespondence = (li: boolean[], lj: boolean[], ld: boolean[]): boolean => {
 
 	// On the corners
+	// eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
 	return ((li[0] && li[1] && li[2] && lj[0] && lj[1] && lj[2]) ||
 
 		// On the edges

@@ -77,6 +77,7 @@ export const projectIsValid = (prj: Project): boolean => {
 	}
 
 	// Check IDs and then check for the presence of cycles
+	// eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
 	return checkIds(prj) ? checkCycles(prj) : false;
 };
 

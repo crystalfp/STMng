@@ -374,7 +374,6 @@ const nodes = computed<Node<NodeData>[]>(() => {
             sourcePosition: Position.Right,
             width: 100
         };
-        // eslint-disable-next-line unicorn/no-immediate-mutation
         if(type === "none") out.class = "vue-flow__node-default";
         resultNodes.push(out);
     }
