@@ -23,6 +23,7 @@
 <div class="description">
 <p>Edit an existing structure by adding, deleting or changing its atoms.</p>
 <p>To edit or delete an atom, select it in the viewer by Ctrl-click on it.</p>
+<p>When an atom is deleted, all bonds are deleted because they will be recomputed anyway.</p>
 <p>To remove selection, Ctrl-click on the viewer background.</p>
 <p>When no atom is selected, an atom could be added by filling its characteristics.</p>
 <p class="alert">Note. The atom selection interferes with the <a href="measures.html">Measures</a> node. As a consequence, the project should contains the Edit structure node or the Measures node but not both.</p>
@@ -73,22 +74,22 @@
 <tr>
 	<td class="c1">Delete</td>
 	<td class="c2">button</td>
-	<td class="c3">After asking confirmation delete the selected atom. Disabled if no atom selected.</td>
+	<td class="c3">After asking confirmation, deletes the selected atom. Disabled if no atom selected.</td>
 </tr>
 <tr>
 	<td class="c1">Change</td>
 	<td class="c2">button</td>
-	<td class="c3">After asking confirmation change the values of the selected atom to the ones entered. Disabled if no atom selected.</td>
+	<td class="c3">After asking confirmation, changes the values of the selected atom to the ones entered. Disabled if no atom selected.</td>
 </tr>
 <tr>
 	<td class="c1">Add</td>
 	<td class="c2">button</td>
-	<td class="c3">After asking confirmation add an atom with the given characteristics. Disabled if an atom is selected.</td>
+	<td class="c3">After asking confirmation, adds an atom with the given characteristics. Disabled if an atom is selected.</td>
 </tr>
 <tr>
 	<td class="c1">Reset structure</td>
 	<td class="c2">button</td>
-	<td class="c3">After asking confirmation return the structure to the input, not edited, one. Disabled if no changes have been made.</td>
+	<td class="c3">After asking confirmation, returns the structure to the input, not edited, one. Disabled if no changes have been made.</td>
 </tr>
 </table>
 

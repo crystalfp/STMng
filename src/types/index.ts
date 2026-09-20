@@ -388,6 +388,9 @@ export interface SelectedAtom {
     /** Label for the selected atom */
     label: string;
 
+    /** Chain */
+    chain: string;
+
     /** Atomic symbol */
     symbol: string;
 

@@ -119,7 +119,7 @@ export class EditStructure extends NodeCore {
 			invalid = true;
 		}
 
-		const {position, atomZ, label} = atoms[idx];
+		const {position, atomZ, label, chain} = atoms[idx];
 		const {symbol, rCov} = getAtomData(atomZ);
 		const fractional: PositionType = invalid ? [-1, -1, -1] :
 				   [fractionalCoordinates[3*idx],
@@ -127,6 +127,7 @@ export class EditStructure extends NodeCore {
 					fractionalCoordinates[3*idx+2]];
 		return {details: JSON.stringify([{index: idx,
 							label,
+							chain,
 							symbol,
 							color: "#FF0000",
 							position,
@@ -181,14 +182,7 @@ export class EditStructure extends NodeCore {
 		}
 		switch(op) {
 			case "Delete": {
-				const nbonds = this.outputStructure.bonds.length;
-				for(let i=nbonds-1; i >= 0; --i) {
-					const bond = this.outputStructure.bonds[i];
-					if(bond.from === index || bond.to === index) {
-						this.outputStructure.bonds.splice(i, 1);
-					}
-				}
-
+				this.outputStructure.bonds.length = 0;
 				this.outputStructure.atoms.splice(index, 1);
 				break;
 			}

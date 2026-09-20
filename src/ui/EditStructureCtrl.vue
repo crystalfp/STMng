@@ -106,6 +106,7 @@ const stopWatcher1 = watch(controlStore.atomsSelected, (a: number[]) => {
         editedAtom.atomZ = 0;
         atomSelected.value = false;
         editedAtom.atomLabel = "";
+        editedAtom.chain = "";
         editedAtom.x = 0;
         editedAtom.y = 0;
         editedAtom.z = 0;
@@ -123,6 +124,7 @@ const stopWatcher1 = watch(controlStore.atomsSelected, (a: number[]) => {
         for(const atom of rawDetails) details.push(atom);
         editedAtom.atomZ = params.atomZ as number ?? 0;
         editedAtom.atomLabel = details[0].label;
+        editedAtom.chain = details[0].chain;
         const [x, y, z] = details[0].position;
         const [fx, fy, fz] = details[0].fractional;
         if(params.useFractional as boolean ?? false) {
@@ -251,6 +253,7 @@ const resetStructure = (): void => {
     editedAtom.atomZ = 0;
     atomSelected.value = false;
     editedAtom.atomLabel = "";
+    editedAtom.chain = "";
 };
 
 /**
@@ -274,6 +277,19 @@ const confirmAction = (): void => {
     .then((response) => {
 
         if(response.error) throw Error(response.error as string);
+
+        if(action !== "Delete") return;
+        details.length = 0;
+        editedAtom.atomZ = 0;
+        atomSelected.value = false;
+        editedAtom.atomLabel = "";
+        editedAtom.chain = "";
+        editedAtom.x = 0;
+        editedAtom.y = 0;
+        editedAtom.z = 0;
+        editedAtom.fx = 0;
+        editedAtom.fy = 0;
+        editedAtom.fz = 0;
     })
     .catch((error: Error) => {
         showSystemAlert(`Error from selecting atom in ${label}: ${error.message}`);
@@ -342,7 +358,7 @@ const confirmAction = (): void => {
             class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
       <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
-        <v-btn @click="confirmAction">Yes</v-btn>
+        <v-btn @click="confirmAction">{{ confirmTitle }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
