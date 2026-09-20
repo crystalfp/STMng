@@ -160,6 +160,10 @@ const changedUseFractional = (): void => {
             fz: editedAtom.fz,
         })
         .then((response) => {
+            if(response.error) {
+                editedAtom.useFractional = false;
+                throw Error(response.error as string);
+            }
             if(editedAtom.useFractional) {
                 editedAtom.fx = response.fx as number ?? 0;
                 editedAtom.fy = response.fy as number ?? 0;

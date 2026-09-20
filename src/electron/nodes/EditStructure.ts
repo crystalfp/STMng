@@ -223,15 +223,25 @@ export class EditStructure extends NodeCore {
 	}
 
 	/**
-	 * Channel handler for edit operations
+	 * Channel handler for changing coordinates type
 	 *
-	 * @returns Parameters to initialize the user interface
+	 * @returns Coordinates
 	 */
 	private channelConvert(params: CtrlParams): CtrlParams {
 
-		if((params.useFractional as boolean ?? false) &&
-		   this.outputStructure &&
-		   hasUnitCell(this.outputStructure.crystal.basis)) {
+		if(!this.outputStructure?.crystal) {
+			const x = params.x as number ?? 0;
+			const y = params.y as number ?? 0;
+			const z = params.z as number ?? 0;
+			return {x, y, z, fx: 0, fy: 0, fz: 0};
+		}
+		if(hasNoUnitCell(this.outputStructure.crystal.basis)) {
+			const x = params.x as number ?? 0;
+			const y = params.y as number ?? 0;
+			const z = params.z as number ?? 0;
+			return {x, y, z, fx: 0, fy: 0, fz: 0, error: "No unit cell"};
+		}
+		if(params.useFractional as boolean ?? false) {
 			const x = params.x as number ?? 0;
 			const y = params.y as number ?? 0;
 			const z = params.z as number ?? 0;
@@ -243,7 +253,7 @@ export class EditStructure extends NodeCore {
 		const fy = params.fy as number ?? 0;
 		const fz = params.fz as number ?? 0;
 		const [x, y, z] = fractionalToCartesianCoordinates(
-										this.outputStructure!.crystal.basis,
+										this.outputStructure.crystal.basis,
 										fx, fy, fz);
 		return {x, y, z};
 	}
