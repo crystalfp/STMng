@@ -337,7 +337,7 @@ const sphere = (color: string, rCov: number): Record<string, string> => {
       backgroundColor: color,
       width: dpx,
       height: dpx,
-      boxShadow: `${opx} ${opx} 15px black, inset -${opx} -${opx} 10px #333`
+      boxShadow: `${opx} ${opx} 15px black, inset -${opx} -${opx} 10px #030303B0`
     };
 };
 
