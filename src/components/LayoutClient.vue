@@ -174,11 +174,11 @@ const gutter = computed(() => (theme.value === "light" ? "#b0b0b0" : "#3e3e3e"))
 <component :is="loadedPanel" @close-panel="loadedPanel = undefined" />
 
 <v-dialog v-model="showExitConfirm">
-  <v-card title="Confirm exit application" text="Do you want to quit the application?"
+  <v-card title="Confirm exit application" text="Do you want to exit the application?"
           class="mx-auto no-select" elevation="16" max-width="500">
   <v-card-actions>
       <v-btn v-focus class="px-4" @click="showExitConfirm=false">Dismiss</v-btn>
-      <v-btn @click="confirmedExit">Yes</v-btn>
+      <v-btn @click="confirmedExit">Exit application</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>

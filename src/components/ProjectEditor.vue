@@ -930,7 +930,7 @@ const border = computed(() => (theme.value === "light" ? "#808080" : "#B3B3B3"))
           class="mx-auto no-select focus-visible-buttons" elevation="16" max-width="500">
     <v-card-actions>
         <v-btn v-focus @click="showConfirm=false">Dismiss</v-btn>
-        <v-btn @click="confirmDeletion">Yes</v-btn>
+        <v-btn @click="confirmDeletion">Delete selection</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
