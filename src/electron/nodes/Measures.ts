@@ -291,7 +291,7 @@ export class Measures extends NodeCore {
 		}
 
 		if(idx1 !== undefined) {
-			const {position, atomZ} = atoms[idx1];
+			const {position, atomZ, chain} = atoms[idx1];
 			const {symbol, rCov} = getAtomData(atomZ);
 			const fractional: PositionType = invalid ? [-1, -1, -1] :
 					[fractionalCoordinates[3*idx1],
@@ -300,13 +300,14 @@ export class Measures extends NodeCore {
 			this.details.push({index: idx1,
 							   label: labels[0],
 							   symbol,
+							   chain,
 							   color: colors[0],
 							   position,
 							   radius: rCov,
 							   fractional});
 		}
 		if(idx2 !== undefined) {
-			const {position, atomZ} = atoms[idx2];
+			const {position, atomZ, chain} = atoms[idx2];
 			const {symbol, rCov} = getAtomData(atomZ);
 			const fractional: PositionType = invalid ? [-1, -1, -1] :
 					[fractionalCoordinates[3*idx2],
@@ -315,13 +316,14 @@ export class Measures extends NodeCore {
 			this.details.push({index: idx2,
 							   label: labels[1],
 							   symbol,
+							   chain,
 							   color: colors[1],
 							   position,
 							   radius: rCov,
 							   fractional});
 		}
 		if(idx3 === undefined) return;
-		const {position, atomZ} = atoms[idx3];
+		const {position, atomZ, chain} = atoms[idx3];
 		const {symbol, rCov} = getAtomData(atomZ);
 		const fractional: PositionType = invalid ? [-1, -1, -1] :
 				[fractionalCoordinates[3*idx3],
@@ -330,6 +332,7 @@ export class Measures extends NodeCore {
 		this.details.push({index: idx3,
 							label: labels[2],
 							symbol,
+							chain,
 							color: colors[2],
 							position,
 							radius: rCov,
