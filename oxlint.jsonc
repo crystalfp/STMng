@@ -42,7 +42,8 @@
     ".dependency-cruiser.js",
     "work/**",
     "public/doc/scripts.js",
-    "tests/**"
+    "tests/**",
+    "linux-scripts"
   ],
   "overrides": [
     {

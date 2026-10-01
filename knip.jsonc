@@ -26,7 +26,8 @@
     "@rollup/plugin-node-resolve",
     "@oxlint/migrate",
     "@golar/vue",
-    "rolldown"
+    "rolldown",
+    "@eslint/config-inspector"
   ],
   "tags": ["-knipIgnore"]
 }

@@ -174,7 +174,7 @@ export default defineConfig([
         // "no-new": "error",
         // "no-bitwise": "off",
         // "no-unsafe-negation": ["warn", {enforceForOrderingRelations: true}],
-        eqeqeq: ["error", "always"],
+        eqeqeq: "error",
         // "strict": ["error", "global"],
         // "max-params": ["warn", 6],
         // "space-before-blocks": "warn",
@@ -192,14 +192,13 @@ export default defineConfig([
         // "consistent-return": "off",
         // "@typescript-eslint/consistent-return": ["error", {treatUndefinedAsUnspecified: true}],
         // "no-unmodified-loop-condition": "error",
-        // "array-bracket-spacing": ["warn", "never"],
         // "no-var": "error",
         // "block-scoped-var": "error",
         // "yoda": "error",
         camelcase: ["warn", {properties: "never"}],
         // "max-depth": ["warn", 8],
         // "arrow-parens": "error",
-        "no-confusing-arrow": ["error", {allowParens: true}],
+        // "no-confusing-arrow": ["error", {allowParens: true}],
         // "dot-location": ["error", "property"],
         "no-else-return": "error",
         "no-array-constructor": "error",
@@ -325,6 +324,7 @@ export default defineConfig([
         "@typescript-eslint/consistent-generic-constructors": "warn",
 
         // > ******************* stylistic ***********************
+        "@stylistic/no-confusing-arrow": "warn",
         "@stylistic/lines-between-class-members": "warn",
         "@stylistic/quotes": ["warn", "double", {avoidEscape: true}],
         "@stylistic/space-before-function-paren": [
@@ -409,7 +409,7 @@ export default defineConfig([
         "unicorn/switch-case-braces": "off",
         "unicorn/prefer-json-parse-buffer": "off",
         "unicorn/prefer-class-fields": "warn",
-        "unicorn/better-regex": "warn",              // Simplify regexes: /[0-9]/ → /\d/
+        // "unicorn/better-regex": "warn",              // Simplify regexes: /[0-9]/ → /\d/
         "unicorn/custom-error-definition": "error",  // Correct Error subclassing
         "unicorn/no-unused-properties": "warn",      // Dead code detection
         "unicorn/consistent-destructuring": "warn",  // Use destructured vars consistently
@@ -480,8 +480,8 @@ export default defineConfig([
         // "@eslint-community/eslint-comments/no-aggregating-enable": "warn",
         // "@eslint-community/eslint-comments/no-duplicate-disable": "warn",
         // "@eslint-community/eslint-comments/no-unlimited-disable": "warn",
-        "@eslint-community/eslint-comments/no-unused-disable": "warn",
-        "@eslint-community/eslint-comments/no-unused-enable": "warn",
+        // "@eslint-community/eslint-comments/no-unused-disable": "warn",
+        // "@eslint-community/eslint-comments/no-unused-enable": "warn",
         "tsdoc/syntax": "warn",
     }
 }]);
