@@ -32,6 +32,6 @@ export default defineConfig({
 		}
 	},
 	checks: {
-		pluginTimings: false
+		bundlerTimings: false
 	}
 });
