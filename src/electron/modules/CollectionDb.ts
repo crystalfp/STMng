@@ -37,6 +37,8 @@ interface CollectionDbEntry {
 	title: string;
 	/** Start byte of the structure in the db */
 	start: number;
+	/** Fingerprint index */
+	fpIdx: number;
 }
 
 /**
@@ -83,7 +85,8 @@ class CollectionDb {
 	private cfpFilename = "";
 	private cfp: Float64Array | undefined;
 	private cfpLength = 0;
-	private readonly format = 1;
+	private readonly format = 2;
+	private readonly mapCfp = new Map<number, number[]>();
 
 	/**
 	 * Initialize the interface to the collection db
@@ -145,6 +148,17 @@ class CollectionDb {
 		this.entries = db.index;
 		this.countEntries = this.entries.length;
 		this.cfpLength = db.cfpLength;
+
+		// Map from fpIdx to corresponding entries
+		for(let i=0; i < this.countEntries; ++i) {
+			const fpIdx = this.entries[i].fpIdx;
+			if(this.mapCfp.has(fpIdx)) {
+				this.mapCfp.get(fpIdx)!.push(i);
+			}
+			else {
+				this.mapCfp.set(fpIdx, [i]);
+			}
+		}
 	}
 
 	/**
@@ -287,18 +301,21 @@ class CollectionDb {
 
 		const candidates = new Map<number, number[]>();
 
-		for(let i=0; i < this.countEntries; ++i) {
+		for(const fpIdx of this.mapCfp.keys()) {
 
 			// Check if this is an excluded file
-			if(this.cfp![i*this.cfpLength] < -1) continue;
+			if(this.cfp![fpIdx*this.cfpLength] < -1) continue;
 
 			// Compute distance
-			const dist = this.computeFpDistance(fp, i);
+			const dist = this.computeFpDistance(fp, fpIdx);
+
+			// Get the entries index
+			const entryIdx = this.mapCfp.get(fpIdx)![0];
 
 			// Group by distances
 			const key = dist === 0 || Object.is(dist, -0) ? 0 : Math.round(dist*1000);
-			if(candidates.has(key)) candidates.get(key)!.push(i);
-			else candidates.set(key, [i]);
+			if(candidates.has(key)) candidates.get(key)!.push(entryIdx);
+			else candidates.set(key, [entryIdx]);
 		}
 
 		const out: CollectionIndexEntry[] = [];
