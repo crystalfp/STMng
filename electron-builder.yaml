@@ -31,7 +31,7 @@ electronLanguages:
   - en-US
 linux:
   icon: resources/icon.png
-  category: Visualization
+  category: Science;DataVisualization;Chemistry
   target:
   - AppImage
   extraFiles:
