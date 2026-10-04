@@ -70,6 +70,7 @@ const fixedWidthStringSpaceTrimmed = (line: string, start: number, length: numbe
  * @param length - Length of the field
  * @returns The integer number contained in the field or -1 if the field is empty
  */
+// eslint-disable-next-line unicorn/no-unnecessary-parameters
 const fixedWidthIntNotEmpty = (line: string, start: number, length: number): number => {
 	const field = line.slice(start, start+length).trim();
 	return field === "" ? -1 : Number.parseInt(field, 10);

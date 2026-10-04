@@ -25,8 +25,23 @@
 import {inv, cross} from "mathjs";
 import {cdist, dotRows, range, cross3, norm, matVec} from "./Helpers";
 
+/**
+ * Apply sign
+ *
+ * @param mag - Value from which takes the magnitude
+ * @param sign - Value from which takes the sign
+ * @returns Magnitude with sign from the other parameter
+ */
 const cs = (mag: number, sign: number): number => Math.sign(sign) * Math.abs(mag);
-const sorted2 = (a: number, b: number): [number, number] => (a <= b ? [a, b] : [b, a]);
+
+/**
+ * Create sorted tuple
+ *
+ * @param a - Always zero
+ * @param b - The other value
+ * @returns Ordered tuple with values in increasing order
+ */
+const sorted2 = (b: number): [number, number] => (0 <= b ? [0, b] : [b, 0]);
 
 const reduced = (m: number[]): number[] => {
 
@@ -75,19 +90,19 @@ const determineTransform = (
 		shift = [-mK, 0, 0];
 		r1    = [-mK, mH, 0];
 		r2    = [0, 0, 1];
-		scope = [sorted2(0, mK), sorted2(0, mH), [0, 1]];
+		scope = [sorted2(mK), sorted2(mH), [0, 1]];
 	}
 	else if(mH === 0 && mK !== 0 && mL !== 0) {
 		shift = [0, 0, -mK];
 		r2    = [0, mL, -mK];
 		r1    = [1, 0, 0];
-		scope = [[0, 1], sorted2(0, mL), sorted2(0, mK)];
+		scope = [[0, 1], sorted2(mL), sorted2(mK)];
 	}
 	else if(mH !== 0 && mK === 0 && mL !== 0) {
 		shift = [0, 0, -mH];
 		r2    = [0, 1, 0];
 		r1    = [mL, 0, -mH];
-		scope = [sorted2(0, mL), [0, 1], sorted2(0, mH)];
+		scope = [sorted2(mL), [0, 1], sorted2(mH)];
 	}
 	else if(mH !== 0 && mK !== 0 && mL !== 0) {
 		const mRed = reduced([Math.abs(mK*mL), Math.abs(mL*mH), Math.abs(mH*mK)]);
@@ -95,13 +110,13 @@ const determineTransform = (
 		r1    = [cs(mRed[0], mH), 0, -cs(mRed[2], mL)];
 		r2    = [0, cs(mRed[1], mK), -cs(mRed[2], mL)];
 		scope = [
-			sorted2(0, cs(mRed[0], mH)),
-			sorted2(0, cs(mRed[1], mK)),
-			sorted2(0, 2 * cs(mRed[2], mL)),
+			sorted2(cs(mRed[0], mH)),
+			sorted2(cs(mRed[1], mK)),
+			sorted2(2 * cs(mRed[2], mL)),
 		];
 	}
 	else {
-		throw new Error("Invalid Indexes");
+		throw new Error("Invalid indexes");
 	}
 
 	// Build matrix M = [r1, r2, r1×r2]^T  (rows are r1, r2, normal)

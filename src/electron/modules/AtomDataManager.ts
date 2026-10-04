@@ -32,17 +32,16 @@ import {getDataTable, loadDataTable, type AtomInfo} from "./AtomData";
 /**
  * Get path to the user atom data file
  *
- * @param filename - User data file name
  * @returns Full path to the user atom data file
  */
-const getDataFilePath = (filename: string): string => {
+const getDataFilePath = (): string => {
 
 	const directory = app.getPath("userData");
 	const userDataDir = path.join(directory, "UserData");
 	if(!existsSync(userDataDir)) {
 		mkdirSync(userDataDir, {recursive: true});
 	}
-	return path.join(userDataDir, filename);
+	return path.join(userDataDir, "atom-data.json");
 };
 
 /**
@@ -63,7 +62,7 @@ export const selectAtomDataFile = (useDefault: boolean): void => {
 	}
 	else {
 
-		filePath = getDataFilePath("atom-data.json");
+		filePath = getDataFilePath();
 		if(!existsSync(filePath)) {
 
 			const sourcePath = publicDirPath("default-atom-data.json");
@@ -97,7 +96,7 @@ export const setupChannelAtomData = (): void => {
 
 		setAtomDataDefault(params.useDefault);
 		loadDataTable(JSON.parse(params.data) as AtomInfo[]);
-		writeFileSync(getDataFilePath("atom-data.json"), params.data, "utf8");
+		writeFileSync(getDataFilePath(), params.data, "utf8");
 	});
 
 	ipcMain.handle("ATOM-DATA:IMPORT", () => {
@@ -114,7 +113,7 @@ export const setupChannelAtomData = (): void => {
 
 		const content = readFileSync(file[0], "utf8");
 		loadDataTable(JSON.parse(content) as AtomInfo[]);
-		writeFileSync(getDataFilePath("atom-data.json"), content, "utf8");
+		writeFileSync(getDataFilePath(), content, "utf8");
 
 		return {
 			useDefault: getAtomDataDefault(),

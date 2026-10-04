@@ -305,12 +305,12 @@ export class SceneManager {
 	 * @param near - Start distance
 	 * @param far - End distance for the fog
 	 */
-	setDepthCueing(enable: boolean, near?: number, far?: number): void {
+	setDepthCueing(enable: boolean, near=1, far=100): void {
 
 		if(enable) {
 			const configStore = useConfigStore();
 			const bck = new Color(configStore.scene.background);
-			SceneManager.scene.fog = new Fog(bck, near ?? 1, far ?? 100);
+			SceneManager.scene.fog = new Fog(bck, near, far);
 		}
 		else {
 			// eslint-disable-next-line unicorn/no-null

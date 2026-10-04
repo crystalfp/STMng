@@ -140,7 +140,7 @@ export class VariableCompositionConvexHull {
 
 			const {parts, step, energyPerAtom, key, formula} = structure;
 
-			const energy = energyPerAtom ?? 0;
+			const energy = energyPerAtom;
 			this.x.push(parts[1]/(parts[0]+parts[1]));
 			this.e.push(energy);
 			this.step.push(step);
@@ -214,7 +214,7 @@ export class VariableCompositionConvexHull {
 
 			const {parts, step, energyPerAtom, key, formula} = structure;
 
-			const energy = energyPerAtom ?? 0;
+			const energy = energyPerAtom;
 			this.step.push(step);
 			this.parts.push(key);
 			this.formula.push(formula);
@@ -328,7 +328,7 @@ export class VariableCompositionConvexHull {
 		for(const structure of this.accumulator.iterateEnabledStructures()) {
 
 			const {parts, step, energyPerAtom, key, formula} = structure;
-			const energy = energyPerAtom ?? 0;
+			const energy = energyPerAtom;
 
 			this.e.push(energy);
 			if(parts[0] === 1 &&

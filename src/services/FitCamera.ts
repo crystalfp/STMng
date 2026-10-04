@@ -40,8 +40,7 @@ export const fitCamera = (camera: OrthographicCamera | PerspectiveCamera,
 	const margin = camera instanceof OrthographicCamera ? 1.1 : 0.9;
 
 	// Get bounding sphere of the scene - this will be used to setup controls and camera
-	const controlStore = useControlStore();
-	const {sceneCenter, sceneRadius} = controlStore;
+	const {sceneCenter, sceneRadius} = useControlStore();
 
 	const center = new Vector3(sceneCenter[0], sceneCenter[1], sceneCenter[2]);
 	camera.lookAt(center);

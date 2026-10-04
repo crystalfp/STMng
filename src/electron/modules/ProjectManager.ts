@@ -300,7 +300,7 @@ class ProjectManager {
 			const node = this.activeNodes.get(entry);
 			if(!node) throw Error(`Invalid type "${entry}" in buildProjectInfo`);
 
-			const {label, type, in: inString, x, y} = this.project.graph[entry];
+			const {label, type, in: inString = "", x, y} = this.project.graph[entry];
 
 			const uiInfo = this.allNodesMap.get(type);
 			if(!uiInfo) throw Error(`Invalid type ${entry} in allNodeMap`);
@@ -309,7 +309,7 @@ class ProjectManager {
 				id: entry,
 				label,
 				type,
-				in: inString ?? "",
+				in: inString,
 				ui: uiInfo.ui,
 				graphic: uiInfo.graphic,
 				x,

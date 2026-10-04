@@ -85,8 +85,7 @@ export const variablePerSiteFinishStep = (accumulator: Accumulator,
 	// Compute the centroid of the fingerprints
 	for(const idx of indices) {
 
-		const entry = accumulator.getEntry(idx)!;
-		const {fingerprint, countSections, sectionLength} = entry;
+		const {fingerprint, countSections, sectionLength} = accumulator.getEntry(idx)!;
 
 		const dimension = countSections*sectionLength;
         if(nloaded > 0) {
@@ -108,8 +107,7 @@ export const variablePerSiteFinishStep = (accumulator: Accumulator,
 	// Remove centroid from each fingerprint
 	for(const idx of indices) {
 
-		const entry = accumulator.getEntry(idx)!;
-		const {fingerprint} = entry;
+		const {fingerprint} = accumulator.getEntry(idx)!;
 
 		for(let i=0; i < len; ++i) {
 			fingerprint[i] -= centroid[i];

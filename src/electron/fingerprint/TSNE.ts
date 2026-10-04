@@ -73,17 +73,17 @@ export class TSNE {
 		this.params = {...defaults, ...opt};
 	}
 
-	// utility function
-	private static assert(condition: boolean, message?: string): void {
-		if(!condition) throw Error(message ?? "Assertion failed");
+	// Utility function
+	private static assert(condition: boolean, message="Assertion failed"): void {
+		if(!condition) throw Error(message);
 	}
 
-	// utility that creates contiguous vector of zeros of size n
+	// Utility that creates contiguous vector of zeros of size n
 	private static zeros(n: number): number[] {
 		return Array<number>(n).fill(0);
 	}
 
-	// return 0 mean unit standard deviation random number
+	// Return 0 mean unit standard deviation random number
 	private gaussRandom(): number {
 		if(this.returnValue) {
 			this.returnValue = false;

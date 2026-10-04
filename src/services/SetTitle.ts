@@ -66,7 +66,7 @@ export const setBaseTitle = (baseTitle: string): void => {
  *
  * @param project - Current loaded project or empty string if default project
  */
-export const setProjectInTitle = (project: string): void => {
+export const setProjectInTitle = (project: string): void => { // eslint-disable-line unicorn/prefer-default-parameters
 
 	titleParts.project = project || "default project";
 	// titleParts.file = "";

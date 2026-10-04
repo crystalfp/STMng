@@ -60,11 +60,9 @@ import type {Lattice} from "./types";
  * This basis is used for all the periodic boundary condition calculations.
  *
  * @param basis - The lattice matrix (assumed to be 3x3)
- * @param delta - Reduction parameter. Default of 0.75 is usually fine.
  * @returns Tuple of [reduced lattice matrix, mapping to get to that lattice]
  */
-const computeLLL = (basis: number[][],
-                    delta = 0.75): [reduced: number[][], mapping: number[][]] => {
+const computeLLL = (basis: number[][]): [reduced: number[][], mapping: number[][]] => {
 
     // Transpose the lattice matrix first so that basis vectors are columns.
     // Makes life easier.
@@ -115,6 +113,9 @@ const computeLLL = (basis: number[][],
                 }
             }
         }
+
+        // delta - Reduction parameter. Default of 0.75 is usually fine.
+        const delta = 0.75;
 
         // Check the Lovasz condition
         const leftSide = dotProduct(getColumn(b, k - 1), getColumn(b, k - 1));

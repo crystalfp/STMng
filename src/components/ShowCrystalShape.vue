@@ -100,7 +100,7 @@ let cameraZoom = 1;
  * @param group - The arrow is added to this group
  */
 const basisVectorArrow = (basis: Vector3, origin: Vector3, size: number,
-                          color: string, axisLabel: string, group: Group): void => {
+                          color: string, axisLabel: string): void => {
 
     const versor = basis.clone().normalize();
     const basisLen = basis.length();
@@ -144,7 +144,7 @@ const basisVectorArrow = (basis: Vector3, origin: Vector3, size: number,
     ];
     const sprite = spriteText(axisLabel, color, labelSize, labelPosition);
 
-    group.add(cylinder, cone, sprite);
+    basisVectorGroup.add(cylinder, cone, sprite);
 };
 
 /**
@@ -178,9 +178,9 @@ const renderBasisVectors = (center: [x: number, y: number, z: number],
 	basisB.multiplyScalar(scale);
 	basisC.multiplyScalar(scale);
 
-	basisVectorArrow(basisA, origin, width, "#FF0000", "a", basisVectorGroup);
-	basisVectorArrow(basisB, origin, width, "#79FF00", "b", basisVectorGroup);
-	basisVectorArrow(basisC, origin, width, "#0000FF", "c", basisVectorGroup);
+	basisVectorArrow(basisA, origin, width, "#FF0000", "a");
+	basisVectorArrow(basisB, origin, width, "#79FF00", "b");
+	basisVectorArrow(basisC, origin, width, "#0000FF", "c");
 
     sv.setSceneModified();
 };
@@ -340,6 +340,7 @@ const centerView = (): void => {
  *
  * @param visible - Toggle position
  */
+// eslint-disable-next-line unicorn/prefer-default-parameters
 const updateVisibility = (visible: boolean | null): void => {
 
     basisVectorGroup.visible = visible ?? false;
