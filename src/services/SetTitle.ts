@@ -22,7 +22,6 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {setTitle} from "./RoutesClient";
 
 /** The various title parts */
 const titleParts = {
@@ -62,35 +61,35 @@ export const setBaseTitle = (baseTitle: string): void => {
 };
 
 /**
- * Set current loaded project in title
+ * Format current loaded project for the title
  *
  * @param project - Current loaded project or empty string if default project
  */
-export const setProjectInTitle = (project: string): void => { // eslint-disable-line unicorn/prefer-default-parameters
+export const formatProjectInTitle = (project: string): string => { // eslint-disable-line unicorn/prefer-default-parameters
 
 	titleParts.project = project || "default project";
 	// titleParts.file = "";
-	setTitle(combineParts());
+	return combineParts();
 };
 
 /**
- * Set currently loaded structure file in title
+ * Format title with currently loaded structure file
  *
  * @param filename - Current loaded structure file
  */
-export const setFileInTitle = (filename: string): void => {
+export const formatFileInTitle = (filename: string): string => {
 
 	titleParts.file = filename;
-	setTitle(combineParts());
+	return combineParts();
 };
 
 /**
- * Mark file as having the cell standardized
+ * Format title for file having the cell standardized
  *
  * @param standardized - If the unit cell has been standardized
  */
-export const setStandardizedInTitle = (standardized: boolean): void => {
+export const formatStandardizedInTitle = (standardized: boolean): string => {
 
 	titleParts.standardized = standardized;
-	setTitle(combineParts());
+	return combineParts();
 };

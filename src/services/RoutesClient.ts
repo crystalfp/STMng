@@ -28,7 +28,7 @@ import {useMessageStore, type AlertLevel} from "@/stores/messageStore";
 import type {ElectronAPI} from "@electron-toolkit/preload";
 import type {CtrlParams, PositionType, StructureRenderInfo} from "@/types";
 import type {ClientProjectInfo} from "@/types/NodeInfo";
-import {setBaseTitle, setProjectInTitle} from "@/services/SetTitle";
+import {formatFileInTitle, formatProjectInTitle, formatStandardizedInTitle, setBaseTitle} from "@/services/SetTitle";
 
 /** Global definitions of the interfaces exported by preload.js */
 declare global {
@@ -196,7 +196,37 @@ export const setProjectPathInTitle = (baseTitle: string): void => {
  *
  * @param title - The title to be set
  */
-export const setTitle = (title: string): void => window.api.setTitle(title);
+const setTitle = (title: string): void => window.api.setTitle(title);
+
+/**
+ * Mark file as having the cell standardized
+ *
+ * @param standardized - If the unit cell has been standardized
+ */
+export const setStandardizedInTitle = (standardized: boolean): void => {
+
+	setTitle(formatStandardizedInTitle(standardized));
+};
+
+/**
+ * Set currently loaded structure file in title
+ *
+ * @param filename - Current loaded structure file
+ */
+export const setFileInTitle = (filename: string): void => {
+
+	setTitle(formatFileInTitle(filename));
+};
+
+/**
+ * Set current loaded project in title
+ *
+ * @param project - Current loaded project or empty string if default project
+ */
+const setProjectInTitle = (project: string): void => {
+
+	setTitle(formatProjectInTitle(project));
+};
 
 // > Preferences
 /**

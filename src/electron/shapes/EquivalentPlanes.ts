@@ -25,7 +25,7 @@
 import log from "electron-log";
 import {multiply, inv} from "mathjs";
 import {getSeitzRotations} from "../modules/NativeFunctions";
-import type {PlaneType} from "./ComputeCrystalPlanes";
+import type {PlaneType} from "./BuildCrystal";
 
 /** Space groups that are not symmetries */
 const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1",

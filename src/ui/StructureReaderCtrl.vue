@@ -23,8 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {ref, reactive, watch, computed, onUnmounted} from "vue";
-import {askNode, sendToNode} from "@/services/RoutesClient";
-import {setFileInTitle} from "@/services/SetTitle";
+import {askNode, sendToNode, setFileInTitle} from "@/services/RoutesClient";
 import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";

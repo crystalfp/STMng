@@ -23,9 +23,9 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {computed, onUnmounted, ref, watch} from "vue";
-import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
+import {askNode, receiveFromNode, sendToNode,
+        setStandardizedInTitle} from "@/services/RoutesClient";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
-import {setStandardizedInTitle} from "@/services/SetTitle";
 import type {CtrlParams} from "@/types";
 
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";

@@ -32,6 +32,7 @@ import {publicDirPath} from "../modules/GetPublicPath";
 import {EquivalentPlanes} from "./EquivalentPlanes";
 import type {Structure} from "@/types";
 import type {WorkerResults} from "./WorkerShape";
+import type {PlaneType} from "./BuildCrystal";
 
 /**
  * Electrons count for each atom Z value (index equal Z)
@@ -332,8 +333,6 @@ const isSimple = (h: number, k: number, l: number): boolean => {
 };
 
 // > Entry point
-/** Type of one plane computed */
-export type PlaneType = [h: number, k: number, l: number, energy: number];
 
 /**
  * Find Miller planes and their energies that characterize the structure

@@ -24,11 +24,13 @@
  */
 import Delaunator from "delaunator";
 import type {BasisType} from "@/types";
-import type {PlaneType} from "./ComputeCrystalPlanes";
 import {argsortByAbsRow, cross3, det3x3, dot, dot3, euclidean,
         inv3, isClose, mulVecMat3, norm, solve3x3det, sub3} from "./Helpers";
 
 const DEDUP_ATOL = 1e-6;
+
+/** Type of one plane computed */
+export type PlaneType = [h: number, k: number, l: number, energy: number];
 
 // --- get_normals ---
 // plane_miller: [N, 3]   cell: [3, 3]
