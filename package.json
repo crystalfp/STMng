@@ -30,6 +30,7 @@
     "cruise:err2": "depcruise -T err-html -x cpp/ src > local-doc/dependency-errors.html",
     "cruise:archi": "depcruise -v -T archi -x cpp/ src | dot -T svg | depcruise-wrap-stream-in-html > local-doc/dependency-graph.html",
     "cruise:flat": "depcruise -v -T flat -x cpp/ src | dot -T svg | depcruise-wrap-stream-in-html > local-doc/dependency-graph.html",
+    "cruise:json": "depcruise -v -T json -c .dependency-cruiser.js src > dep.json",
     "test": "vitest run"
   },
   "dependencies": {
@@ -52,7 +53,7 @@
     "troika-three-text": "^0.52.5",
     "valibot": "^1.5.0",
     "vue": "^3.5.43",
-    "vue-router": "^5.3.1",
+    "vue-router": "^5.4.0",
     "vuetify": "^4.2.4",
     "workerpool": "^10.0.3"
   },
@@ -71,7 +72,7 @@
     "@typescript-eslint/parser": "^8.71.1",
     "@vitejs/plugin-vue": "^6.0.9",
     "dependency-cruiser": "^18.5.0",
-    "electron": "^44.5.1",
+    "electron": "^44.7.0",
     "electron-builder": "^26.15.3",
     "eslint": "^10.12.0",
     "eslint-formatter-codeframe": "^7.32.2",
@@ -92,7 +93,7 @@
     "oxlint": "^1.87.0",
     "oxlint-tsgolint": "^7.0.2003",
     "postcss-html": "^2.0.0",
-    "rolldown": "^1.2.12",
+    "rolldown": "^1.2.13",
     "stylelint": "^17.16.0",
     "stylelint-config-recommended-scss": "^17.0.1",
     "stylelint-config-recommended-vue": "^2.0.0",
@@ -103,7 +104,7 @@
     "typedoc-plugin-missing-exports": "^4.1.4",
     "typedoc-plugin-vue": "^1.5.1",
     "typescript": "6.0.3",
-    "vite": "^8.3.2",
+    "vite": "^8.3.3",
     "vite-plugin-clean-pattern": "^1.1.0",
     "vite-plugin-electron": "^1.1.2",
     "vitest": "^5.0.3",
