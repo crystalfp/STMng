@@ -104,7 +104,7 @@
     "typedoc-plugin-missing-exports": "^4.1.4",
     "typedoc-plugin-vue": "^1.5.1",
     "typescript": "6.0.3",
-    "vite": "^8.3.3",
+    "vite": "^8.3.4",
     "vite-plugin-clean-pattern": "^1.1.0",
     "vite-plugin-electron": "^1.1.2",
     "vitest": "^5.0.3",
