@@ -14,6 +14,7 @@ import tsdocPlugin from "eslint-plugin-tsdoc";
 import jsPlugin from "@eslint/js";
 import stylistic from "@stylistic/eslint-plugin";
 import depend from "eslint-plugin-depend";
+import e18ePlugin from "@e18e/eslint-plugin";
 import {createNodeResolver, importX} from "eslint-plugin-import-x";
 import {createTypeScriptImportResolver} from "eslint-import-resolver-typescript";
 
@@ -103,6 +104,7 @@ export default defineConfig([
         depend: depend,
         "@eslint-community/eslint-comments": commentsPlugin,
         "@eslint/js": jsPlugin,
+        e18e: e18ePlugin
     },
     settings: {
         "import-x/parsers": {"@typescript-eslint/parser": [".ts", ".tsx", ".mts"]},
@@ -130,7 +132,7 @@ export default defineConfig([
         ...typescriptPlugin.configs["strict-type-checked"].rules,
         // oxlint-disable-next-line no-named-as-default-member
         ...depend.configs["flat/recommended"].rules,
-
+        ...e18ePlugin.configs.recommended.rules,
 
         // > ******************* unified rules ***********************
         ...vueRules,
