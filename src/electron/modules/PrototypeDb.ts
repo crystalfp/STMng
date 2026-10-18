@@ -61,7 +61,7 @@ interface LibraryEntry {
  * prototypeGetStructure return type
  * @notExported
  */
-interface PrototypeStructure {
+export interface PrototypeStructure {
 
 	/** Pearson symbol */
 	pearson: string;
@@ -90,7 +90,7 @@ interface Matches {
 /**
  * Access to the prototypes collection
  */
-class PrototypeDb {
+export class PrototypeDb {
 
 	private static instance: PrototypeDb;
 

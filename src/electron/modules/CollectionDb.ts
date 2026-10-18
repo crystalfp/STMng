@@ -45,7 +45,7 @@ interface CollectionDbEntry {
  * Collection database index file content
  * @notExported
  */
-interface CollectionDbIndex {
+export interface CollectionDbIndex {
 	/** The structure index */
 	index: CollectionDbEntry[];
 	/** File format version */
@@ -72,7 +72,7 @@ export interface CollectionIndexEntry {
 /**
  * Access to the structure collection in binary form
  */
-class CollectionDb {
+export class CollectionDb {
 
 	private static instance: CollectionDb;
 

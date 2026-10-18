@@ -23,6 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import log from "electron-log";
+// eslint-disable-next-line e18e/ban-dependencies
 import {tmpNameSync, setGracefulCleanup} from "tmp";
 import {unlinkSync, writeFileSync} from "node:fs";
 import path from "node:path";
@@ -30,8 +31,8 @@ import {NodeCore} from "../modules/NodeCore";
 import {sendAlertToClient} from "../modules/ToClient";
 import {getAtomicNumber, getAtomicSymbol} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {prototypeLoadList, prototypeGetStructure} from "../modules/PrototypeDb";
-import {collectionLoadList, collectionGetStructure, collectionGetName} from "../modules/CollectionDb";
+import {collectionLoadList, collectionGetStructure,
+		prototypeLoadList, prototypeGetStructure} from "../modules/StructureCollection";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition,
 			 ReaderOptions, ReaderImplementation} from "@/types";
@@ -59,6 +60,7 @@ export class StructureReader extends NodeCore {
 	private fileToRead = "";
 	private reader: ReaderImplementation | undefined;
 	private readerOptions: ReaderOptions = {};
+	private readonly spaces = /\s+/u;
 
 	/** Steps to add at each tick */
 	private stepIncrement = 1;
@@ -97,7 +99,7 @@ export class StructureReader extends NodeCore {
 	}
 
 	description(): string {
-		return "Read a structure from file optionally with its auxiliary file";
+		return "Read a structure from file optionally with its auxiliary file. Also access Prototypes and Collection structure sets.";
 	}
 
 	// > Load/save status
@@ -137,7 +139,7 @@ export class StructureReader extends NodeCore {
 	private channelInit(): CtrlParams {
 
 		const db = prototypeLoadList();
-		const collection = JSON.stringify(collectionLoadList());
+		const collection = collectionLoadList();
 		return {
 			loopSteps: this.loopSteps,
 			stepBackward: this.stepBackward,
@@ -245,7 +247,7 @@ export class StructureReader extends NodeCore {
 		if(formatsThatNeedsAtomTypes.has(requestedFormat)) {
 
 			const atomsTypesTrimmed = this.atomsTypes.trim();
-			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(/\s+/u);
+			const atoms = atomsTypesTrimmed === "" ? [] : atomsTypesTrimmed.split(this.spaces);
 			this.readerOptions = {atomsTypes: atoms};
 		}
 		else {
@@ -529,7 +531,7 @@ export class StructureReader extends NodeCore {
 		}
 		else {
 
-			typesAfter = renamedAtomTypes.split(/\s+/u);
+			typesAfter = renamedAtomTypes.split(this.spaces);
 			if(currentAtomsZ.size > typesAfter.length) {
 				const missing = currentAtomsZ.size - typesAfter.length;
 				const plural = missing === 1 ? "" : "s";
@@ -697,10 +699,6 @@ export class StructureReader extends NodeCore {
 		}
 
 		const proto = prototypeGetStructure(aflow);
-		if(proto?.error) {
-			log.error(proto.error);
-			return {error: proto.error};
-		}
 
 		if(proto) {
 
@@ -773,18 +771,18 @@ export class StructureReader extends NodeCore {
 			return {result: "Empty filename"};
 		}
 
-		const structure = collectionGetStructure(fileID);
-		if(structure === undefined) {
+		const description = collectionGetStructure(fileID);
+		if(description === undefined) {
 			this.toNextNode(new EmptyStructure());
 			const message = `File for ID "${fileID}" not found`;
 			log.error(message);
 			return {error: message};
 		}
-		this.structures = [structure];
+		this.structures = [description.structure];
 		const checkMessage = StructureReader.checkStructures(this.structures);
 		if(!checkMessage) {
 
-			const name = collectionGetName(fileID);
+			const name = description.mineral;
 			this.toNextNode(this.structures[0]);
 			this.countSteps = 1;
 			return {name};
